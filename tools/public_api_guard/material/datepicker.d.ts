@@ -184,12 +184,36 @@ export declare class MatDatepicker<D> extends MatDatepickerBase<MatDatepickerCon
     static ɵfac: i0.ɵɵFactoryDef<MatDatepicker<any>, never>;
 }
 
+export declare class MatDatepickerActions implements AfterViewInit, OnDestroy {
+    _template: TemplateRef<unknown>;
+    constructor(_datepicker: MatDatepickerBase<MatDatepickerControl<unknown>, unknown>, _viewContainerRef: ViewContainerRef);
+    ngAfterViewInit(): void;
+    ngOnDestroy(): void;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepickerActions, "mat-datepicker-actions, mat-date-range-picker-actions", never, {}, {}, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerActions, never>;
+}
+
 export declare const matDatepickerAnimations: {
     readonly transformPanel: AnimationTriggerMetadata;
     readonly fadeInCalendar: AnimationTriggerMetadata;
 };
 
-export declare class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>> extends _MatDatepickerContentMixinBase implements AfterViewInit, OnDestroy, CanColor {
+export declare class MatDatepickerApply {
+    constructor(_datepicker: MatDatepickerBase<MatDatepickerControl<unknown>, unknown>);
+    _applySelection(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDatepickerApply, "[matDatepickerApply], [matDateRangePickerApply]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerApply, never>;
+}
+
+export declare class MatDatepickerCancel {
+    _datepicker: MatDatepickerBase<MatDatepickerControl<unknown>, unknown>;
+    constructor(_datepicker: MatDatepickerBase<MatDatepickerControl<unknown>, unknown>);
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDatepickerCancel, "[matDatepickerCancel], [matDateRangePickerCancel]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatDatepickerCancel, never>;
+}
+
+export declare class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>> extends _MatDatepickerContentMixinBase implements OnInit, AfterViewInit, OnDestroy, CanColor {
+    _actionsPortal: TemplatePortal | null;
     _animationDone: Subject<void>;
     _animationState: 'enter' | 'void';
     _calendar: MatCalendar<D>;
@@ -199,13 +223,15 @@ export declare class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>
     comparisonEnd: D | null;
     comparisonStart: D | null;
     datepicker: MatDatepickerBase<any, S, D>;
-    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _model: MatDateSelectionModel<S, D>, _dateAdapter: DateAdapter<D>, _rangeSelectionStrategy: MatDateRangeSelectionStrategy<D>,
+    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _globalModel: MatDateSelectionModel<S, D>, _dateAdapter: DateAdapter<D>, _rangeSelectionStrategy: MatDateRangeSelectionStrategy<D>,
     intl?: MatDatepickerIntl);
+    _applyPendingSelection(): void;
     _getSelected(): D | DateRange<D> | null;
     _handleUserSelection(event: MatCalendarUserEvent<D | null>): void;
     _startExitAnimation(): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
+    ngOnInit(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatDatepickerContent<any, any>, "mat-datepicker-content", ["matDatepickerContent"], { "color": "color"; }, {}, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatDatepickerContent<any, any>, [null, null, null, null, { optional: true; }, null]>;
 }
@@ -265,7 +291,7 @@ export declare class MatDatepickerIntl {
 
 export declare class MatDatepickerModule {
     static ɵinj: i0.ɵɵInjectorDef<MatDatepickerModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatDatepickerModule, [typeof i1.MatCalendar, typeof i2.MatCalendarBody, typeof i3.MatDatepicker, typeof i4.MatDatepickerContent, typeof i5.MatDatepickerInput, typeof i6.MatDatepickerToggle, typeof i6.MatDatepickerToggleIcon, typeof i7.MatMonthView, typeof i8.MatYearView, typeof i9.MatMultiYearView, typeof i1.MatCalendarHeader, typeof i10.MatDateRangeInput, typeof i11.MatStartDate, typeof i11.MatEndDate, typeof i12.MatDateRangePicker], [typeof i13.CommonModule, typeof i14.MatButtonModule, typeof i15.MatDialogModule, typeof i16.OverlayModule, typeof i17.A11yModule, typeof i18.PortalModule, typeof i19.MatCommonModule], [typeof i20.CdkScrollableModule, typeof i1.MatCalendar, typeof i2.MatCalendarBody, typeof i3.MatDatepicker, typeof i4.MatDatepickerContent, typeof i5.MatDatepickerInput, typeof i6.MatDatepickerToggle, typeof i6.MatDatepickerToggleIcon, typeof i7.MatMonthView, typeof i8.MatYearView, typeof i9.MatMultiYearView, typeof i1.MatCalendarHeader, typeof i10.MatDateRangeInput, typeof i11.MatStartDate, typeof i11.MatEndDate, typeof i12.MatDateRangePicker]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatDatepickerModule, [typeof i1.MatCalendar, typeof i2.MatCalendarBody, typeof i3.MatDatepicker, typeof i4.MatDatepickerContent, typeof i5.MatDatepickerInput, typeof i6.MatDatepickerToggle, typeof i6.MatDatepickerToggleIcon, typeof i7.MatMonthView, typeof i8.MatYearView, typeof i9.MatMultiYearView, typeof i1.MatCalendarHeader, typeof i10.MatDateRangeInput, typeof i11.MatStartDate, typeof i11.MatEndDate, typeof i12.MatDateRangePicker, typeof i13.MatDatepickerActions, typeof i13.MatDatepickerCancel, typeof i13.MatDatepickerApply], [typeof i14.CommonModule, typeof i15.MatButtonModule, typeof i16.MatDialogModule, typeof i17.OverlayModule, typeof i18.A11yModule, typeof i19.PortalModule, typeof i20.MatCommonModule], [typeof i21.CdkScrollableModule, typeof i1.MatCalendar, typeof i2.MatCalendarBody, typeof i3.MatDatepicker, typeof i4.MatDatepickerContent, typeof i5.MatDatepickerInput, typeof i6.MatDatepickerToggle, typeof i6.MatDatepickerToggleIcon, typeof i7.MatMonthView, typeof i8.MatYearView, typeof i9.MatMultiYearView, typeof i1.MatCalendarHeader, typeof i10.MatDateRangeInput, typeof i11.MatStartDate, typeof i11.MatEndDate, typeof i12.MatDateRangePicker, typeof i13.MatDatepickerActions, typeof i13.MatDatepickerCancel, typeof i13.MatDatepickerApply]>;
 }
 
 export declare class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDestroy {
@@ -363,6 +389,7 @@ export declare abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSe
     selection: S, _adapter: DateAdapter<D>);
     protected _isValidDateInstance(date: D): boolean;
     abstract add(date: D | null): void;
+    clone(): MatDateSelectionModel<S, D>;
     abstract isComplete(): boolean;
     abstract isValid(): boolean;
     ngOnDestroy(): void;
@@ -465,6 +492,7 @@ export declare class MatMultiYearView<D> implements AfterContentInit, OnDestroy 
 export declare class MatRangeDateSelectionModel<D> extends MatDateSelectionModel<DateRange<D>, D> {
     constructor(adapter: DateAdapter<D>);
     add(date: D | null): void;
+    clone(): MatRangeDateSelectionModel<D>;
     isComplete(): boolean;
     isValid(): boolean;
     static ɵfac: i0.ɵɵFactoryDef<MatRangeDateSelectionModel<any>, never>;
@@ -474,6 +502,7 @@ export declare class MatRangeDateSelectionModel<D> extends MatDateSelectionModel
 export declare class MatSingleDateSelectionModel<D> extends MatDateSelectionModel<D | null, D> {
     constructor(adapter: DateAdapter<D>);
     add(date: D | null): void;
+    clone(): MatSingleDateSelectionModel<D>;
     isComplete(): boolean;
     isValid(): boolean;
     static ɵfac: i0.ɵɵFactoryDef<MatSingleDateSelectionModel<any>, never>;

@@ -16,7 +16,7 @@ import {
   ScrollStrategy,
   FlexibleConnectedPositionStrategy,
 } from '@angular/cdk/overlay';
-import {ComponentPortal, ComponentType} from '@angular/cdk/portal';
+import {ComponentPortal, ComponentType, TemplatePortal} from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
 import {
   AfterViewInit,
@@ -39,6 +39,7 @@ import {
   Directive,
   OnChanges,
   SimpleChanges,
+  OnInit,
 } from '@angular/core';
 import {
   CanColor,
@@ -126,8 +127,9 @@ const _MatDatepickerContentMixinBase: CanColorCtor & typeof MatDatepickerContent
   inputs: ['color'],
 })
 export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
-  extends _MatDatepickerContentMixinBase implements AfterViewInit, OnDestroy, CanColor {
+  extends _MatDatepickerContentMixinBase implements OnInit, AfterViewInit, OnDestroy, CanColor {
   private _subscriptions = new Subscription();
+  private _model: MatDateSelectionModel<S, D>;
 
   /** Reference to the internal calendar component. */
   @ViewChild(MatCalendar) _calendar: MatCalendar<D>;
@@ -156,10 +158,13 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
   /** Whether the close button currently has focus. */
   _closeButtonFocused: boolean;
 
+  /** Portal with projected action buttons. */
+  _actionsPortal: TemplatePortal | null = null;
+
   constructor(
     elementRef: ElementRef,
     private _changeDetectorRef: ChangeDetectorRef,
-    private _model: MatDateSelectionModel<S, D>,
+    private _globalModel: MatDateSelectionModel<S, D>,
     private _dateAdapter: DateAdapter<D>,
     @Optional() @Inject(MAT_DATE_RANGE_SELECTION_STRATEGY)
         private _rangeSelectionStrategy: MatDateRangeSelectionStrategy<D>,
@@ -173,11 +178,17 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
     this._closeButtonText = intl?.closeCalendarLabel || 'Close calendar';
   }
 
+  ngOnInit() {
+    // If we have actions, clone the model so that we have the ability to cancel the selection,
+    // otherwise update the global model directly. Note that we want to assign this as soon as
+    // possible, but `_actionsPortal` isn't available in the constructor so we do it in `ngOnInit`.
+    this._model = this._actionsPortal ? this._globalModel.clone() : this._globalModel;
+  }
+
   ngAfterViewInit() {
     this._subscriptions.add(this.datepicker.stateChanges.subscribe(() => {
       this._changeDetectorRef.markForCheck();
     }));
-
     this._calendar.focusActiveCell();
   }
 
@@ -205,7 +216,8 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
       this._model.add(value);
     }
 
-    if (!this._model || this._model.isComplete()) {
+    // Delegate closing the popup to the actions.
+    if ((!this._model || this._model.isComplete()) && !this._actionsPortal) {
       this.datepicker.close();
     }
   }
@@ -217,6 +229,13 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
 
   _getSelected() {
     return this._model.selection as unknown as D | DateRange<D> | null;
+  }
+
+  /** Applies the current pending selection to the global model. */
+  _applyPendingSelection() {
+    if (this._model !== this._globalModel) {
+      this._globalModel.updateSelection(this._model.selection, this);
+    }
   }
 }
 
@@ -407,6 +426,9 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   /** Unique class that will be added to the backdrop so that the test harnesses can look it up. */
   private _backdropHarnessClass = `${this.id}-backdrop`;
 
+  /** Currently-registered actions portal. */
+  private _actionsPortal: TemplatePortal | null;
+
   /** The input element this datepicker is associated with. */
   datepickerInput: C;
 
@@ -487,6 +509,27 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     return this._model;
   }
 
+  /**
+   * Registers a portal containing action buttons with the datepicker.
+   * @param portal Portal to be registered.
+   */
+  registerActions(portal: TemplatePortal): void {
+    if (this._actionsPortal && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw Error('A MatDatepicker can only be associated with a single actions row.');
+    }
+    this._actionsPortal = portal;
+  }
+
+  /**
+   * Removes a portal containing action buttons from the datepicker.
+   * @param portal Portal to be removed.
+   */
+  removeActions(portal: TemplatePortal): void {
+    if (portal === this._actionsPortal) {
+      this._actionsPortal = null;
+    }
+  }
+
   /** Open the calendar. */
   open(): void {
     if (this._opened || this.disabled) {
@@ -541,6 +584,12 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     } else {
       completeClose();
     }
+  }
+
+  /** Applies the current pending selection on the popup to the model. */
+  _applyPendingSelection() {
+    const instance = this._popupComponentRef?.instance || this._dialogRef?.componentInstance;
+    instance?._applyPendingSelection();
   }
 
   /** Open the calendar as a dialog. */
@@ -608,6 +657,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   protected _forwardContentValues(instance: MatDatepickerContent<S, D>) {
     instance.datepicker = this;
     instance.color = this.color;
+    instance._actionsPortal = this._actionsPortal;
   }
 
   /** Create the popup. */

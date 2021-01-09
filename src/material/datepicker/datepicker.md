@@ -193,6 +193,31 @@ but allow selection via the calendar or vice-versa.
 
 <!-- example(datepicker-disabled) -->
 
+### Confirmation action buttons
+
+By default, clicking on a date in the calendar will select it and close the calendar popup. In some
+cases this may not be desirable, because the user doesn't have a quick way of going back if they've
+changed their mind. If you want your users to be able to cancel their selection and to have to
+explicitly accept the value that they've selected, you can add a `<mat-datepicker-actions>` element
+inside `<mat-datepicker>` with a "Cancel" and an "Apply" button marked with the
+`matDatepickerCancel` and `matDatepickerApply` attributes respectively. Doing so will cause the
+datepicker to only assign the value to the data model if the user presses "Apply", whereas pressing
+"Cancel" will close popup without changing the value.
+
+<!-- example({"example":"datepicker-actions",
+              "file":"datepicker-actions-example.html",
+              "region":"datepicker-actions"}) -->
+
+The actions element is also supported for `<mat-date-range-picker>` where that it is called
+`<mat-date-range-picker-actions>` and the buttons are called `matDateRangePickerCancel` and
+`matDateRangePickerApply` respectively.
+
+<!-- example({"example":"datepicker-actions",
+              "file":"datepicker-actions-example.html",
+              "region":"date-range-picker-actions"}) -->
+
+<!-- example(datepicker-actions) -->
+
 ### Comparison ranges
 
 If your users need to compare the date range that they're currently selecting with another range,

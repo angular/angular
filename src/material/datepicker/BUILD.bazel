@@ -18,6 +18,7 @@ ng_module(
     ),
     assets = [
         ":datepicker-content.css",
+        ":datepicker-actions.css",
         ":datepicker-toggle.css",
         ":date-range-input.css",
         ":calendar-body.css",
@@ -79,6 +80,11 @@ sass_binary(
     deps = ["//src/material/core:core_scss_lib"],
 )
 
+sass_binary(
+    name = "datepicker_actions_scss",
+    src = "datepicker-actions.scss",
+)
+
 ng_test_library(
     name = "unit_test_sources",
     srcs = glob(
@@ -98,6 +104,7 @@ ng_test_library(
         "//src/material/form-field",
         "//src/material/input",
         "//src/material/testing",
+        "@npm//@angular/common",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",

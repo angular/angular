@@ -83,6 +83,19 @@ export abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSelection<
 
   /** Checks whether the current selection is complete. */
   abstract isComplete(): boolean;
+
+  /**
+   * Clones the selection model.
+   * @deprecated To be turned into an abstract method.
+   * @breaking-change 12.0.0
+   */
+  clone(): MatDateSelectionModel<S, D> {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      throw Error('Not implemented');
+    }
+
+    return null!;
+  }
 }
 
 /**  A selection model that contains a single date. */
@@ -111,6 +124,13 @@ export class MatSingleDateSelectionModel<D> extends MatDateSelectionModel<D | nu
    */
   isComplete() {
     return this.selection != null;
+  }
+
+  /** Clones the selection model. */
+  clone() {
+    const clone = new MatSingleDateSelectionModel<D>(this._adapter);
+    clone.updateSelection(this.selection, this);
+    return clone;
   }
 }
 
@@ -167,6 +187,13 @@ export class MatRangeDateSelectionModel<D> extends MatDateSelectionModel<DateRan
    */
   isComplete(): boolean {
     return this.selection.start != null && this.selection.end != null;
+  }
+
+  /** Clones the selection model. */
+  clone() {
+    const clone = new MatRangeDateSelectionModel<D>(this._adapter);
+    clone.updateSelection(this.selection, this);
+    return clone;
   }
 }
 

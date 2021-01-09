@@ -42,6 +42,7 @@ import {
   DateRangePickerSelectionStrategyExample
 } from './date-range-picker-selection-strategy/date-range-picker-selection-strategy-example';
 import {DatepickerHarnessExample} from './datepicker-harness/datepicker-harness-example';
+import {DatepickerActionsExample} from './datepicker-actions/datepicker-actions-example';
 
 export {
   DatepickerApiExample,
@@ -66,6 +67,7 @@ export {
   DateRangePickerFormsExample,
   DateRangePickerComparisonExample,
   DateRangePickerSelectionStrategyExample,
+  DatepickerActionsExample,
   ExampleHeader,
 };
 
@@ -92,6 +94,7 @@ const EXAMPLES = [
   DateRangePickerFormsExample,
   DateRangePickerComparisonExample,
   DateRangePickerSelectionStrategyExample,
+  DatepickerActionsExample,
   ExampleHeader,
 ];
 

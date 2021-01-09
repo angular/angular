@@ -33,6 +33,7 @@ export interface MatDateRangePickerInput<D> extends MatDatepickerControl<D> {
   providers: [
     MAT_RANGE_DATE_SELECTION_MODEL_PROVIDER,
     MAT_CALENDAR_RANGE_STRATEGY_PROVIDER,
+    {provide: MatDatepickerBase, useExisting: MatDateRangePicker},
   ]
 })
 export class MatDateRangePicker<D> extends MatDatepickerBase<MatDateRangePickerInput<D>,

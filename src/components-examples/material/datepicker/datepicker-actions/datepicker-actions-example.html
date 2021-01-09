@@ -1,0 +1,30 @@
+<mat-form-field appearance="fill" class="example-form-field">
+  <mat-label>Choose a date</mat-label>
+  <input matInput [matDatepicker]="datepicker">
+  <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
+<!-- #docregion datepicker-actions -->
+  <mat-datepicker #datepicker>
+    <mat-datepicker-actions>
+      <button mat-button matDatepickerCancel>Cancel</button>
+      <button mat-raised-button color="primary" matDatepickerApply>Apply</button>
+    </mat-datepicker-actions>
+  </mat-datepicker>
+<!-- #enddocregion datepicker-actions -->
+</mat-form-field>
+
+<mat-form-field appearance="fill" class="example-form-field">
+  <mat-label>Enter a date range</mat-label>
+  <mat-date-range-input [rangePicker]="rangePicker">
+    <input matStartDate placeholder="Start date">
+    <input matEndDate placeholder="End date">
+  </mat-date-range-input>
+  <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
+<!-- #docregion date-range-picker-actions -->
+  <mat-date-range-picker #rangePicker>
+    <mat-date-range-picker-actions>
+      <button mat-button matDateRangePickerCancel>Cancel</button>
+      <button mat-raised-button color="primary" matDateRangePickerApply>Apply</button>
+    </mat-date-range-picker-actions>
+  </mat-date-range-picker>
+<!-- #enddocregion date-range-picker-actions -->
+</mat-form-field>

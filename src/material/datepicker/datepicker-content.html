@@ -1,4 +1,7 @@
-<div cdkTrapFocus>
+<div
+  cdkTrapFocus
+  class="mat-datepicker-content-container"
+  [class.mat-datepicker-content-container-with-actions]="_actionsPortal">
   <mat-calendar
     [id]="datepicker.id"
     [ngClass]="datepicker.panelClass"
@@ -17,6 +20,8 @@
     (monthSelected)="datepicker._selectMonth($event)"
     (viewChanged)="datepicker._viewChanged($event)"
     (_userSelection)="_handleUserSelection($event)"></mat-calendar>
+
+  <ng-template [cdkPortalOutlet]="_actionsPortal"></ng-template>
 
   <!-- Invisible close button for screen reader users. -->
   <button

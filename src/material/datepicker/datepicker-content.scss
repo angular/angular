@@ -15,6 +15,7 @@ $mat-datepicker-touch-landscape-width: 64vh;
 $mat-datepicker-touch-landscape-height: 80vh;
 $mat-datepicker-touch-portrait-width: 80vw;
 $mat-datepicker-touch-portrait-height: 100vw;
+$mat-datepicker-touch-portrait-height-with-actions: 115vw;
 $mat-datepicker-touch-min-width: 250px;
 $mat-datepicker-touch-min-height: 312px;
 $mat-datepicker-touch-max-width: 750px;
@@ -40,6 +41,14 @@ $mat-datepicker-touch-max-height: 788px;
   }
 }
 
+.mat-datepicker-content-container {
+  display: flex;
+  flex-direction: column;
+
+  // Ensures that `mat-datepicker-actions` is pushed to the bottom of the popup.
+  justify-content: space-between;
+}
+
 .mat-datepicker-content-touch {
   display: block;
   // Make sure the dialog scrolls rather than being cropped on ludicrously small screens
@@ -50,24 +59,35 @@ $mat-datepicker-touch-max-height: 788px;
   // TODO(mmalerba): Remove when we switch away from using dialog.
   margin: -24px;
 
-  .mat-calendar {
-    min-width: $mat-datepicker-touch-min-width;
+  .mat-datepicker-content-container {
     min-height: $mat-datepicker-touch-min-height;
-    max-width: $mat-datepicker-touch-max-width;
     max-height: $mat-datepicker-touch-max-height;
+    min-width: $mat-datepicker-touch-min-width;
+    max-width: $mat-datepicker-touch-max-width;
+  }
+
+  .mat-calendar {
+    width: 100%;
+    height: auto;
   }
 }
 
 @media all and (orientation: landscape) {
-  .mat-datepicker-content-touch .mat-calendar {
+  .mat-datepicker-content-touch .mat-datepicker-content-container {
     width: $mat-datepicker-touch-landscape-width;
     height: $mat-datepicker-touch-landscape-height;
   }
 }
 
 @media all and (orientation: portrait) {
-  .mat-datepicker-content-touch .mat-calendar {
+  .mat-datepicker-content-touch .mat-datepicker-content-container {
     width: $mat-datepicker-touch-portrait-width;
     height: $mat-datepicker-touch-portrait-height;
+  }
+
+  // The content needs to be a bit taller when actions have
+  // been projected so that it doesn't have to scroll.
+  .mat-datepicker-content-touch .mat-datepicker-content-container-with-actions {
+    height: $mat-datepicker-touch-portrait-height-with-actions;
   }
 }

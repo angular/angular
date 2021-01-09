@@ -52,6 +52,7 @@ export class DatepickerDemo {
   lastDateInput: Date | null;
   lastDateChange: Date | null;
   color: ThemePalette;
+  showActions = false;
 
   dateCtrl = new FormControl();
   range1 = new FormGroup({start: new FormControl(), end: new FormControl()});
