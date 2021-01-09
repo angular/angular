@@ -16,12 +16,10 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
   // snackbar. The canonical snack-bar parent is the "MatSnackBarContainer".
   /** The selector for the host element of a `MatSnackBar` instance. */
   static hostSelector = '.mat-snack-bar-container';
-
-  private _simpleSnackBar = this.locatorForOptional('.mat-simple-snackbar');
+  protected _messageSelector = '.mat-simple-snackbar > span';
+  protected _simpleSnackBarSelector = '.mat-simple-snackbar';
+  protected _actionButtonSelector = '.mat-simple-snackbar-action > button';
   private _simpleSnackBarLiveRegion = this.locatorFor('[aria-live]');
-  private _simpleSnackBarMessage = this.locatorFor('.mat-simple-snackbar > span');
-  private _simpleSnackBarActionButton =
-      this.locatorForOptional('.mat-simple-snackbar-action > button');
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatSnackBarHarness` that meets
@@ -57,7 +55,7 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
    */
   async hasAction(): Promise<boolean> {
     await this._assertSimpleSnackBar();
-    return (await this._simpleSnackBarActionButton()) !== null;
+    return (await this._getSimpleSnackBarActionButton()) !== null;
   }
 
   /**
@@ -66,7 +64,7 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
    */
   async getActionDescription(): Promise<string> {
     await this._assertSimpleSnackBarWithAction();
-    return (await this._simpleSnackBarActionButton())!.text();
+    return (await this._getSimpleSnackBarActionButton())!.text();
   }
 
 
@@ -76,7 +74,7 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
    */
   async dismissWithAction(): Promise<void> {
     await this._assertSimpleSnackBarWithAction();
-    await (await this._simpleSnackBarActionButton())!.click();
+    await (await this._getSimpleSnackBarActionButton())!.click();
   }
 
   /**
@@ -84,7 +82,7 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
    */
   async getMessage(): Promise<string> {
     await this._assertSimpleSnackBar();
-    return (await this._simpleSnackBarMessage()).text();
+    return (await this.locatorFor(this._messageSelector)()).text();
   }
 
   /** Gets whether the snack-bar has been dismissed. */
@@ -126,6 +124,11 @@ export class MatSnackBarHarness extends ContentContainerComponentHarness<string>
 
   /** Whether the snack-bar is using the default content template. */
   private async _isSimpleSnackBar(): Promise<boolean> {
-    return await this._simpleSnackBar() !== null;
+    return await this.locatorForOptional(this._simpleSnackBarSelector)() !== null;
+  }
+
+  /** Gets the simple snack bar action button. */
+  private async _getSimpleSnackBarActionButton() {
+    return this.locatorForOptional(this._actionButtonSelector)();
   }
 }

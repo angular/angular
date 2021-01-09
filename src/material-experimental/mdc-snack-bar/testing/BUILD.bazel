@@ -10,8 +10,8 @@ ts_library(
     ),
     module_name = "@angular/material-experimental/mdc-snack-bar/testing",
     deps = [
-        "//src/cdk/a11y",
         "//src/cdk/testing",
+        "//src/material/snack-bar/testing",
     ],
 )
 

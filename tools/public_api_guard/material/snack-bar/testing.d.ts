@@ -1,4 +1,7 @@
 export declare class MatSnackBarHarness extends ContentContainerComponentHarness<string> {
+    protected _actionButtonSelector: string;
+    protected _messageSelector: string;
+    protected _simpleSnackBarSelector: string;
     dismissWithAction(): Promise<void>;
     getActionDescription(): Promise<string>;
     getAriaLive(): Promise<AriaLivePoliteness>;
