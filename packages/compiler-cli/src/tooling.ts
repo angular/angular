@@ -44,6 +44,6 @@ export function constructorParametersDownlevelTransform(program: ts.Program):
   const typeChecker = program.getTypeChecker();
   const reflectionHost = new TypeScriptReflectionHost(typeChecker);
   return getDownlevelDecoratorsTransform(
-      typeChecker, reflectionHost, [], /* isCore */ false,
+      program, reflectionHost, [], /* isCore */ false,
       /* enableClosureCompiler */ false, /* skipClassDecorators */ true);
 }

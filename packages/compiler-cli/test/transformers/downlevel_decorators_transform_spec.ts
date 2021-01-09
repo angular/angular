@@ -59,7 +59,7 @@ describe('downlevel decorator transform', () => {
       before: [
         ...preTransformers,
         getDownlevelDecoratorsTransform(
-            program.getTypeChecker(), reflectionHost, diagnostics,
+            program, reflectionHost, diagnostics,
             /* isCore */ false, isClosureEnabled, skipClassDecorators)
       ]
     };
@@ -835,7 +835,7 @@ describe('downlevel decorator transform', () => {
       const reflectionHost = new TypeScriptReflectionHost(typeChecker);
       const transformers: ts.CustomTransformers = {
         before: [getDownlevelDecoratorsTransform(
-            program.getTypeChecker(), reflectionHost, diagnostics,
+            program, reflectionHost, diagnostics,
             /* isCore */ false, isClosureEnabled, skipClassDecorators)]
       };
       return {program, transformers};
