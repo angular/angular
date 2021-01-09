@@ -59,7 +59,7 @@ describe('downlevel decorator transform', () => {
       before: [
         ...preTransformers,
         getDownlevelDecoratorsTransform(
-            program, reflectionHost, diagnostics,
+            program.getTypeChecker(), reflectionHost, diagnostics,
             /* isCore */ false, isClosureEnabled, skipClassDecorators)
       ]
     };
@@ -769,7 +769,7 @@ describe('downlevel decorator transform', () => {
         }
       `);
 
-      const {program, transformers} = createProgramWithTransform(['/bar.ts', '/foo.ts']);
+      const {program, transformers} = createProgramWithTransform(['/foo.ts', '/bar.ts']);
       program.emit(undefined, undefined, undefined, undefined, transformers);
 
       expect(context.readFile('/foo.js')).toContain(`import { Foo } from './foo_service';`);
@@ -835,7 +835,7 @@ describe('downlevel decorator transform', () => {
       const reflectionHost = new TypeScriptReflectionHost(typeChecker);
       const transformers: ts.CustomTransformers = {
         before: [getDownlevelDecoratorsTransform(
-            program, reflectionHost, diagnostics,
+            program.getTypeChecker(), reflectionHost, diagnostics,
             /* isCore */ false, isClosureEnabled, skipClassDecorators)]
       };
       return {program, transformers};

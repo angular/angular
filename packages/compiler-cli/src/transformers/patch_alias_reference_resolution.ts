@@ -17,13 +17,12 @@ interface TransformationContextWithResolver extends ts.TransformationContext {
   getEmitResolver: () => EmitResolver;
 }
 
-const isReferencedAliasDeclarationPatchedForAliases =
-    Symbol('isReferencedAliasDeclarationPatchedForAliases');
+const patchedReferencesAliasesSymbol = Symbol('patchedAliasedReferences');
 
 /** Describes a subset of the TypeScript internal emit resolver. */
 interface EmitResolver {
   isReferencedAliasDeclaration?(node: ts.Node, checkChildren?: boolean): void;
-  [isReferencedAliasDeclarationPatchedForAliases]?: Set<ts.Declaration>;
+  [patchedReferencesAliasesSymbol]?: Set<ts.Declaration>;
 }
 
 /**
@@ -64,12 +63,16 @@ interface EmitResolver {
  * `emitDecoratorMetadata` flag is enabled. TypeScript basically surfaces the same problem and
  * solves it conceptually the same way, but obviously doesn't need to access an `@internal` API.
  *
+ * The set that is returned by this function is meant to be filled with import declaration nodes
+ * that have been referenced in a value-position by the transform, such the the installed patch can
+ * ensure that those import declarations are not elided.
+ *
  * See below. Note that this uses sourcegraph as the TypeScript checker file doesn't display on
  * Github.
  * https://sourcegraph.com/github.com/microsoft/TypeScript@3eaa7c65f6f076a08a5f7f1946fd0df7c7430259/-/blob/src/compiler/checker.ts#L31219-31257
  */
-export function patchAliasReferenceResolutionOrDie(
-    context: ts.TransformationContext, referencedAliases: Set<ts.Declaration>): void {
+export function loadAliasReferenceResolutionPatchOrDie(context: ts.TransformationContext):
+    Set<ts.Declaration> {
   // If the `getEmitResolver` method is not available, TS most likely changed the
   // internal structure of the transformation context. We will abort gracefully.
   if (!isTransformationContextWithEmitResolver(context)) {
@@ -77,17 +80,15 @@ export function patchAliasReferenceResolutionOrDie(
   }
   const emitResolver = context.getEmitResolver();
 
-  // Don't apply the patch if the emit resolver has already had the patch applied. This may happen
-  // because the emit resolver is owned by `ts.TypeChecker` and not the `ts.TransformationContext`,
-  // so multiple transforms would otherwise cause the patch to be applied repeatedly.
+  // The emit resolver may have been patched already, in which case we return the set of referenced
+  // aliases that was created when the patch was first applied.
   // See https://github.com/angular/angular/issues/40276.
-  if (emitResolver[isReferencedAliasDeclarationPatchedForAliases]) {
-    if (emitResolver[isReferencedAliasDeclarationPatchedForAliases] !== referencedAliases) {
-      throwConflictingAliasReferencePatchError();
-    }
-
-    return;
+  const existingReferencedAliases = emitResolver[patchedReferencesAliasesSymbol];
+  if (existingReferencedAliases !== undefined) {
+    return existingReferencedAliases;
   }
+
+  const referencedAliases = new Set<ts.Declaration>();
 
   const originalReferenceResolution = emitResolver.isReferencedAliasDeclaration;
   // If the emit resolver does not have a function called `isReferencedAliasDeclaration`, then
@@ -101,7 +102,8 @@ export function patchAliasReferenceResolutionOrDie(
     }
     return originalReferenceResolution.call(emitResolver, node, ...args);
   };
-  emitResolver[isReferencedAliasDeclarationPatchedForAliases] = referencedAliases;
+  emitResolver[patchedReferencesAliasesSymbol] = referencedAliases;
+  return referencedAliases;
 }
 
 /**
@@ -133,16 +135,4 @@ function throwIncompatibleTransformationContextError(): never {
       'downgrading.\n\n' +
       'Please report an issue on the Angular repositories when this issue ' +
       'surfaces and you are using a supposedly compatible TypeScript version.');
-}
-
-/**
- * The patch to `EmitResolver.isReferencedAliasDeclaration` closes over a set of aliased
- * declarations, which makes the patch only applicable to that set. This error is thrown if the
- * patch is reapplied using a different set, as that would introduce a conflicting state which
- * would be hard to diagnose without this error.
- */
-function throwConflictingAliasReferencePatchError(): never {
-  throw Error(
-      'Invalid state: the patch to `EmitResolver.isReferencedAliasDeclaration` should be applied ' +
-      'using a unique set of aliased declarations, but it was reapplied with a different set.');
 }

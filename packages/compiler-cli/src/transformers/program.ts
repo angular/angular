@@ -540,13 +540,13 @@ class AngularCompilerProgram implements Program {
     // identifying static properties. e.g. it's more difficult handling `<..>.decorators`
     // or `<..>.ctorParameters` compared to the `ts.Decorator` AST nodes.
     if (this.options.annotationsAs !== 'decorators') {
-      const tsProgram = this.getTsProgram();
-      const reflectionHost = new TypeScriptReflectionHost(tsProgram.getTypeChecker());
+      const typeChecker = this.getTsProgram().getTypeChecker();
+      const reflectionHost = new TypeScriptReflectionHost(typeChecker);
       // Similarly to how we handled tsickle decorator downleveling in the past, we just
       // ignore diagnostics that have been collected by the transformer. These are
       // non-significant failures that shouldn't prevent apps from compiling.
       beforeTs.push(getDownlevelDecoratorsTransform(
-          tsProgram, reflectionHost, [], this.isCompilingAngularCore, annotateForClosureCompiler,
+          typeChecker, reflectionHost, [], this.isCompilingAngularCore, annotateForClosureCompiler,
           /* skipClassDecorators */ false));
     }
 

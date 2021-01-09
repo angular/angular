@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 import {Decorator, ReflectionHost} from '../ngtsc/reflection';
-import {isAliasImportDeclaration, patchAliasReferenceResolutionOrDie} from './patch_alias_reference_resolution';
+import {isAliasImportDeclaration, loadAliasReferenceResolutionPatchOrDie} from './patch_alias_reference_resolution';
 
 /**
  * Whether a given decorator should be treated as an Angular decorator.
@@ -328,25 +328,9 @@ interface ParameterDecorationInfo {
   decorators: ts.Decorator[];
 }
 
-const referencedParameterTypesSymbol = Symbol('referencedParameterTypes');
-
-/**
- * The downlevel decorators transform captures all alias declarations in a set, which is used to
- * determine which
- * @param program
- */
-function getReferencedParameterTypesSet(program: ts.Program): Set<ts.Declaration> {
-  const tsProgram = program as {[referencedParameterTypesSymbol]?: Set<ts.Declaration>};
-  const referencedParameterTypes = tsProgram[referencedParameterTypesSymbol];
-  if (referencedParameterTypes !== undefined) {
-    return referencedParameterTypes;
-  }
-  return tsProgram[referencedParameterTypesSymbol] = new Set<ts.Declaration>();
-}
-
 /**
  * Gets a transformer for downleveling Angular decorators.
- * @param program The program for which the transform is created.
+ * @param typeChecker Reference to the program's type checker.
  * @param host Reflection host that is used for determining decorators.
  * @param diagnostics List which will be populated with diagnostics if any.
  * @param isCore Whether the current TypeScript program is for the `@angular/core` package.
@@ -359,19 +343,16 @@ function getReferencedParameterTypesSet(program: ts.Program): Set<ts.Declaration
  *   Angular will generate the corresponding injectable factory.
  */
 export function getDownlevelDecoratorsTransform(
-    program: ts.Program, host: ReflectionHost, diagnostics: ts.Diagnostic[], isCore: boolean,
-    isClosureCompilerEnabled: boolean,
+    typeChecker: ts.TypeChecker, host: ReflectionHost, diagnostics: ts.Diagnostic[],
+    isCore: boolean, isClosureCompilerEnabled: boolean,
     skipClassDecorators: boolean): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext) => {
-    const typeChecker = program.getTypeChecker();
-    const referencedParameterTypes = getReferencedParameterTypesSet(program);
-
     // Ensure that referenced type symbols are not elided by TypeScript. Imports for
     // such parameter type symbols previously could be type-only, but now might be also
     // used in the `ctorParameters` static property as a value. We want to make sure
     // that TypeScript does not elide imports for such type references. Read more
     // about this in the description for `patchAliasReferenceResolution`.
-    patchAliasReferenceResolutionOrDie(context, referencedParameterTypes);
+    const referencedParameterTypes = loadAliasReferenceResolutionPatchOrDie(context);
 
     /**
      * Converts an EntityName (from a type annotation) to an expression (accessing a value).
