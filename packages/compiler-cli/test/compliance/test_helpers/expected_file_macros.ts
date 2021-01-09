@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AttributeMarker, SelectorFlags} from '@angular/compiler/src/core';
+import {QueryFlags} from '@angular/compiler/src/render3/view/compiler';
 import {i18nIcuMsg, i18nMsg, i18nMsgWithPostprocess, Placeholder} from './i18n_helpers';
 
 const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [
@@ -35,6 +36,9 @@ const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [
 
   // E.g. `__SelectorFlags.ELEMENT__`
   flagUnion(/__SelectorFlags\.([^_]+)__/, (_match, member) => getSelectorFlag(member)),
+
+  // E.g. `__QueryFlags.ELEMENT__`
+  flagUnion(/__QueryFlags\.([^_]+)__/, (_match, member) => getQueryFlag(member)),
 ];
 
 /**
@@ -101,6 +105,21 @@ const SelectorFlagsMap: Record<string, SelectorFlags> = {
 
 function getSelectorFlag(member: string): number {
   const marker = SelectorFlagsMap[member];
+  if (typeof marker !== 'number') {
+    throw new Error('Unknown SelectorFlag: ' + member);
+  }
+  return marker;
+}
+
+const QueryFlagsMap: Record<string, QueryFlags> = {
+  none: QueryFlags.none,
+  descendants: QueryFlags.descendants,
+  isStatic: QueryFlags.isStatic,
+  emitDistinctChangesOnly: QueryFlags.emitDistinctChangesOnly,
+};
+
+function getQueryFlag(member: string): number {
+  const marker = QueryFlagsMap[member];
   if (typeof marker !== 'number') {
     throw new Error('Unknown SelectorFlag: ' + member);
   }

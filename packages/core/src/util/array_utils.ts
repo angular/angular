@@ -25,7 +25,7 @@ export function addAllToArray(items: any[], arr: any[]) {
  *
  * @param a first array
  * @param b second array
- * @param identityAccessor Optional functions for extracting stable object identity from a value in
+ * @param identityAccessor Optional function for extracting stable object identity from a value in
  *     the array.
  */
 export function arrayEquals<T>(a: T[], b: T[], identityAccessor?: (value: T) => unknown): boolean {

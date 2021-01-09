@@ -206,8 +206,6 @@ export {
 
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
-  ɵɵstaticContentQuery,
-  ɵɵstaticViewQuery,
   ɵɵstyleMap,
   ɵɵstyleMapInterpolate1,
   ɵɵstyleMapInterpolate2,

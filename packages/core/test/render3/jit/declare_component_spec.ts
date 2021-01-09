@@ -128,14 +128,14 @@ describe('component declaration jit compilation', () => {
 
     expectComponentDef(def, {
       contentQueries: functionContaining([
-        // "byRef" should use `contentQuery` with `0` (`QueryFlags.none`) for descendants flag
+        // "byRef" should use `contentQuery` with `0` (`QueryFlags.none`) for query flag
         // without a read token, and bind to the full query result.
         // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
         /(?:contentQuery|anonymous)[^(]*\(dirIndex,_c0,4\)/,
         '(ctx.byRef = _t)',
 
         // "byToken" should use `staticContentQuery` with `3`
-        // (`QueryFlags.descendants|QueryFlags.isStatic`) for descendants flag and `ElementRef` as
+        // (`QueryFlags.descendants|QueryFlags.isStatic`) for query flag and `ElementRef` as
         // read token, and bind to the first result in the query result.
         // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
         /(?:contentQuery|anonymous)[^(]*\(dirIndex,[^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,
@@ -174,7 +174,7 @@ describe('component declaration jit compilation', () => {
         '(ctx.byRef = _t)',
 
         // "byToken" should use `viewQuery` with `3`
-        // (`QueryFlags.descendants|QueryFlags.isStatic`) for descendants flag and `ElementRef` as
+        // (`QueryFlags.descendants|QueryFlags.isStatic`) for query flag and `ElementRef` as
         // read token, and bind to the first result in the query result.
         // NOTE: the `anonymous` match is to support IE11, as functions don't have a name there.
         /(?:viewQuery|anonymous)[^(]*\([^,]*String[^,]*,3,[^)]*ElementRef[^)]*\)/,

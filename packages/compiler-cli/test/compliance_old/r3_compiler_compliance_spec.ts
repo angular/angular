@@ -1746,7 +1746,7 @@ describe('compiler compliance', () => {
             selectors: [["view-query-component"]],
             viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
-                $r3$.ɵɵstaticViewQuery(SomeDirective, 3);
+                $r3$.ɵɵviewQuery(SomeDirective, 3);
                 $r3$.ɵɵviewQuery($refs$, 1);
               }
               if (rf & 2) {
@@ -1992,7 +1992,7 @@ describe('compiler compliance', () => {
             selectors: [["content-query-component"]],
             contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
               if (rf & 1) {
-              $r3$.ɵɵstaticContentQuery(dirIndex, SomeDirective, 3);
+              $r3$.ɵɵcontentQuery(dirIndex, SomeDirective, 3);
               $r3$.ɵɵcontentQuery(dirIndex, $ref0$, 1);
               }
               if (rf & 2) {
