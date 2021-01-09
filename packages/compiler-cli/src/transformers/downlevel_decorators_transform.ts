@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 import {Decorator, ReflectionHost} from '../ngtsc/reflection';
-import {isAliasImportDeclaration, patchAliasReferenceResolutionOrDie} from './patch_alias_reference_resolution';
+import {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from './patch_alias_reference_resolution';
 
 /**
  * Whether a given decorator should be treated as an Angular decorator.
@@ -347,7 +347,12 @@ export function getDownlevelDecoratorsTransform(
     isCore: boolean, isClosureCompilerEnabled: boolean,
     skipClassDecorators: boolean): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext) => {
-    let referencedParameterTypes = new Set<ts.Declaration>();
+    // Ensure that referenced type symbols are not elided by TypeScript. Imports for
+    // such parameter type symbols previously could be type-only, but now might be also
+    // used in the `ctorParameters` static property as a value. We want to make sure
+    // that TypeScript does not elide imports for such type references. Read more
+    // about this in the description for `loadIsReferencedAliasDeclarationPatch`.
+    const referencedParameterTypes = loadIsReferencedAliasDeclarationPatch(context);
 
     /**
      * Converts an EntityName (from a type annotation) to an expression (accessing a value).
@@ -595,12 +600,6 @@ export function getDownlevelDecoratorsTransform(
     }
 
     return (sf: ts.SourceFile) => {
-      // Ensure that referenced type symbols are not elided by TypeScript. Imports for
-      // such parameter type symbols previously could be type-only, but now might be also
-      // used in the `ctorParameters` static property as a value. We want to make sure
-      // that TypeScript does not elide imports for such type references. Read more
-      // about this in the description for `patchAliasReferenceResolution`.
-      patchAliasReferenceResolutionOrDie(context, referencedParameterTypes);
       // Downlevel decorators and constructor parameter types. We will keep track of all
       // referenced constructor parameter types so that we can instruct TypeScript to
       // not elide their imports if they previously were only type-only.
