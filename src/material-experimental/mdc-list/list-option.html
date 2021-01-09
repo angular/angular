@@ -10,14 +10,8 @@
 
 <ng-template #checkbox>
   <div class="mdc-checkbox" [class.mdc-checkbox--disabled]="disabled">
-    <!--
-      Note: We stop propagation of the change event for the indicator checkbox so that
-      no accidental change event leaks out of the list option or selection list when
-      the checkbox is directly clicked.
-    -->
-    <input type="checkbox" tabindex="-1" class="mdc-checkbox__native-control"
-           [checked]="selected" [disabled]="disabled" [attr.aria-describedby]="_optionTextId"
-           (change)="$event.stopPropagation()" />
+    <input type="checkbox" class="mdc-checkbox__native-control"
+           [checked]="selected" [disabled]="disabled"/>
     <div class="mdc-checkbox__background">
       <svg class="mdc-checkbox__checkmark"
            viewBox="0 0 24 24">
@@ -41,7 +35,7 @@
 </ng-template>
 
 <!-- Text -->
-<span class="mdc-list-item__text" #text [id]="_optionTextId">
+<span class="mdc-list-item__text" #text>
   <ng-content></ng-content>
 </span>
 

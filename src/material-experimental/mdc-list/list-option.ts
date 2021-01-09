@@ -51,9 +51,6 @@ export interface SelectionList extends MatListBase {
   _onTouched: () => void;
 }
 
-/** Unique id for created list options. */
-let uniqueId = 0;
-
 @Component({
   selector: 'mat-list-option',
   exportAs: 'matListOption',
@@ -88,9 +85,6 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
 
   @ContentChildren(MatLine, {read: ElementRef, descendants: true}) lines:
     QueryList<ElementRef<Element>>;
-
-  /** Unique id for the text. Used for describing the underlying checkbox input. */
-  _optionTextId: string = `mat-mdc-list-option-text-${uniqueId++}`;
 
   /** Whether the label should appear before or after the checkbox. Defaults to 'after' */
   @Input() checkboxPosition: MatListOptionCheckboxPosition = 'after';
