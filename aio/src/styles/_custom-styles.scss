@@ -116,6 +116,10 @@
             }
         }
 
+        ul.toc-list:not(.embedded) li:not(.active):hover a:before {
+            background-color: $theme-accent-color;
+        }
+
         .toc-heading.secondary:hover {
             color: $theme-accent-lighter-color;
         }
@@ -353,6 +357,7 @@
     table {
         background-color: $theme-background-color;
         border: 1px solid $theme-divider-color;
+        @include mat-elevation(4);
 
         thead > {
             tr > th {
@@ -449,6 +454,10 @@
         color: $syntax-keyword-color;
     }
 
+    .dec, .var {
+        color: $syntax-keyword-color;
+    }
+
     .str, .atv {
         color: $syntax-string-color;
     }
@@ -464,6 +473,13 @@
     }
 
     // src/styles/2-modules/_api-pages.scss
+
+    .api-body {
+        .from-constructor, .read-only-property, .write-only-property {
+            background-color: $theme-foreground-color;
+            color: $theme-background-color;
+        }
+    }
 
     .api-body table {
         tr {
@@ -490,6 +506,26 @@
                 }
             }
         }
+    }
+
+    // src/styles/2-modules/_search-results.scss
+
+    aio-search-results.embedded .search-results .search-area .search-section-header,
+    aio-search-results.embedded .search-results .search-area .search-result-item,
+    aio-search-results .search-results .search-area ul .search-result-item {
+        color: $theme-foreground-color;
+    }
+
+    aio-search-results.embedded .search-results .search-area .search-result-item,
+    aio-search-results .search-results .search-area ul .search-result-item {
+        &:hover {
+            color: $theme-accent-color;
+        }
+    }
+
+    aio-search-results .search-results .search-area ul.priority-pages .search-result-item {
+        font-weight: normal;
+        text-decoration: underline;
     }
 
     // src/styles/2-modules/_api-list.scss
