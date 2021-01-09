@@ -6,7 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BooleanInput, coerceArray, coerceBooleanProperty} from '@angular/cdk/coercion';
+import {
+  BooleanInput,
+  coerceArray,
+  coerceNumberProperty,
+  coerceBooleanProperty,
+  NumberInput,
+} from '@angular/cdk/coercion';
 import {
   ElementRef,
   EventEmitter,
@@ -135,6 +141,10 @@ export class CdkDropList<T = any> implements OnDestroy {
   /** Whether to auto-scroll the view when the user moves their pointer close to the edges. */
   @Input('cdkDropListAutoScrollDisabled')
   autoScrollDisabled: boolean;
+
+  /** Number of pixels to scroll for each frame when auto-scrolling an element. */
+  @Input('cdkDropListAutoScrollStep')
+  autoScrollStep: number;
 
   /** Emits when the user drops an item inside the container. */
   @Output('cdkDropListDropped')
@@ -301,6 +311,7 @@ export class CdkDropList<T = any> implements OnDestroy {
       ref.lockAxis = this.lockAxis;
       ref.sortingDisabled = coerceBooleanProperty(this.sortingDisabled);
       ref.autoScrollDisabled = coerceBooleanProperty(this.autoScrollDisabled);
+      ref.autoScrollStep = coerceNumberProperty(this.autoScrollStep, 2);
       ref
         .connectedTo(siblings.filter(drop => drop && drop !== this).map(list => list._dropListRef))
         .withOrientation(this.orientation);
@@ -380,4 +391,5 @@ export class CdkDropList<T = any> implements OnDestroy {
   static ngAcceptInputType_disabled: BooleanInput;
   static ngAcceptInputType_sortingDisabled: BooleanInput;
   static ngAcceptInputType_autoScrollDisabled: BooleanInput;
+  static ngAcceptInputType_autoScrollStep: NumberInput;
 }

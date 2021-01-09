@@ -3978,6 +3978,25 @@ describe('CdkDrag', () => {
       expect(container.scrollTop).toBeGreaterThan(0);
     }));
 
+    it('should be able to configure the auto-scroll speed', fakeAsync(() => {
+      const fixture = createComponent(DraggableInScrollableVerticalDropZone);
+      fixture.detectChanges();
+      fixture.componentInstance.dropInstance.autoScrollStep = 20;
+      const item = fixture.componentInstance.dragItems.first.element.nativeElement;
+      const list = fixture.componentInstance.dropInstance.element.nativeElement;
+      const listRect = list.getBoundingClientRect();
+
+      expect(list.scrollTop).toBe(0);
+
+      startDraggingViaMouse(fixture, item);
+      dispatchMouseEvent(document, 'mousemove',
+        listRect.left + listRect.width / 2, listRect.top + listRect.height);
+      fixture.detectChanges();
+      tickAnimationFrames(10);
+
+      expect(list.scrollTop).toBeGreaterThan(100);
+    }));
+
     it('should pick up descendants inside of containers', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZoneWithContainer);
       fixture.detectChanges();

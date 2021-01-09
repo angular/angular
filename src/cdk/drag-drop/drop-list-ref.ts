@@ -38,12 +38,6 @@ const DROP_PROXIMITY_THRESHOLD = 0.05;
 const SCROLL_PROXIMITY_THRESHOLD = 0.05;
 
 /**
- * Number of pixels to scroll for each frame when auto-scrolling an element.
- * The value comes from trying it out manually until it feels right.
- */
-const AUTO_SCROLL_STEP = 2;
-
-/**
  * Entry in the position cache for draggable items.
  * @docs-private
  */
@@ -90,6 +84,9 @@ export class DropListRef<T = any> {
    * moves their pointer close to the edges is disabled.
    */
   autoScrollDisabled: boolean = false;
+
+  /** Number of pixels to scroll for each frame when auto-scrolling an element. */
+  autoScrollStep: number = 2;
 
   /**
    * Function that is used to determine whether an item
@@ -788,17 +785,18 @@ export class DropListRef<T = any> {
       .pipe(takeUntil(this._stopScrollTimers))
       .subscribe(() => {
         const node = this._scrollNode;
+        const scrollStep = this.autoScrollStep;
 
         if (this._verticalScrollDirection === AutoScrollVerticalDirection.UP) {
-          incrementVerticalScroll(node, -AUTO_SCROLL_STEP);
+          incrementVerticalScroll(node, -scrollStep);
         } else if (this._verticalScrollDirection === AutoScrollVerticalDirection.DOWN) {
-          incrementVerticalScroll(node, AUTO_SCROLL_STEP);
+          incrementVerticalScroll(node, scrollStep);
         }
 
         if (this._horizontalScrollDirection === AutoScrollHorizontalDirection.LEFT) {
-          incrementHorizontalScroll(node, -AUTO_SCROLL_STEP);
+          incrementHorizontalScroll(node, -scrollStep);
         } else if (this._horizontalScrollDirection === AutoScrollHorizontalDirection.RIGHT) {
-          incrementHorizontalScroll(node, AUTO_SCROLL_STEP);
+          incrementHorizontalScroll(node, scrollStep);
         }
       });
   }

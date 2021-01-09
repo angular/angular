@@ -157,6 +157,7 @@ export interface CdkDragStart<T = any> {
 export declare class CdkDropList<T = any> implements OnDestroy {
     _dropListRef: DropListRef<CdkDropList<T>>;
     autoScrollDisabled: boolean;
+    autoScrollStep: number;
     connectedTo: (CdkDropList | string)[] | CdkDropList | string;
     data: T;
     get disabled(): boolean;
@@ -179,9 +180,10 @@ export declare class CdkDropList<T = any> implements OnDestroy {
     ngOnDestroy(): void;
     removeItem(item: CdkDrag): void;
     static ngAcceptInputType_autoScrollDisabled: BooleanInput;
+    static ngAcceptInputType_autoScrollStep: NumberInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_sortingDisabled: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkDropList<any>, "[cdkDropList], cdk-drop-list", ["cdkDropList"], { "connectedTo": "cdkDropListConnectedTo"; "data": "cdkDropListData"; "orientation": "cdkDropListOrientation"; "id": "id"; "lockAxis": "cdkDropListLockAxis"; "disabled": "cdkDropListDisabled"; "sortingDisabled": "cdkDropListSortingDisabled"; "enterPredicate": "cdkDropListEnterPredicate"; "sortPredicate": "cdkDropListSortPredicate"; "autoScrollDisabled": "cdkDropListAutoScrollDisabled"; }, { "dropped": "cdkDropListDropped"; "entered": "cdkDropListEntered"; "exited": "cdkDropListExited"; "sorted": "cdkDropListSorted"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkDropList<any>, "[cdkDropList], cdk-drop-list", ["cdkDropList"], { "connectedTo": "cdkDropListConnectedTo"; "data": "cdkDropListData"; "orientation": "cdkDropListOrientation"; "id": "id"; "lockAxis": "cdkDropListLockAxis"; "disabled": "cdkDropListDisabled"; "sortingDisabled": "cdkDropListSortingDisabled"; "enterPredicate": "cdkDropListEnterPredicate"; "sortPredicate": "cdkDropListSortPredicate"; "autoScrollDisabled": "cdkDropListAutoScrollDisabled"; "autoScrollStep": "cdkDropListAutoScrollStep"; }, { "dropped": "cdkDropListDropped"; "entered": "cdkDropListEntered"; "exited": "cdkDropListExited"; "sorted": "cdkDropListSorted"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkDropList<any>, [null, null, null, null, { optional: true; }, { optional: true; skipSelf: true; }, { optional: true; }]>;
 }
 
@@ -337,6 +339,7 @@ export declare type DropListOrientation = 'horizontal' | 'vertical';
 
 export declare class DropListRef<T = any> {
     autoScrollDisabled: boolean;
+    autoScrollStep: number;
     beforeStarted: Subject<void>;
     data: T;
     disabled: boolean;
