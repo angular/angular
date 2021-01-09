@@ -188,6 +188,18 @@ describe('MatAutocomplete', () => {
           .toEqual('', `Expected clicking outside the panel to close the panel.`);
     }));
 
+    it('should close the panel when the user clicks away via auxilliary button', fakeAsync(() => {
+      dispatchFakeEvent(input, 'focusin');
+      fixture.detectChanges();
+      zone.simulateZoneExit();
+      dispatchFakeEvent(document, 'auxclick');
+
+      expect(fixture.componentInstance.trigger.panelOpen)
+          .toBe(false, `Expected clicking outside the panel to set its state to closed.`);
+      expect(overlayContainerElement.textContent)
+          .toEqual('', `Expected clicking outside the panel to close the panel.`);
+    }));
+
     it('should close the panel when the user taps away on a touch device', fakeAsync(() => {
       dispatchFakeEvent(input, 'focus');
       fixture.detectChanges();

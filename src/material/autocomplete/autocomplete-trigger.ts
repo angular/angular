@@ -349,6 +349,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
   private _getOutsideClickStream(): Observable<any> {
     return merge(
             fromEvent(this._document, 'click') as Observable<MouseEvent>,
+            fromEvent(this._document, 'auxclick') as Observable<MouseEvent>,
             fromEvent(this._document, 'touchend') as Observable<TouchEvent>)
         .pipe(filter(event => {
           // If we're in the Shadow DOM, the event target will be the shadow root, so we have to
