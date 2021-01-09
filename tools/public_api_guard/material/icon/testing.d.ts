@@ -3,6 +3,7 @@ export declare class FakeMatIconRegistry implements PublicApi<MatIconRegistry>, 
     addSvgIconInNamespace(): this;
     addSvgIconLiteral(): this;
     addSvgIconLiteralInNamespace(): this;
+    addSvgIconResolver(): this;
     addSvgIconSet(): this;
     addSvgIconSetInNamespace(): this;
     addSvgIconSetLiteral(): this;

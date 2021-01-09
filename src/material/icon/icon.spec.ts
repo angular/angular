@@ -1001,6 +1001,118 @@ describe('MatIcon', () => {
 
   });
 
+  describe('Icons resolved through a resolver function', () => {
+    it('should resolve icons through a resolver function', fakeAsync(() => {
+      iconRegistry.addSvgIconResolver(name => {
+        if (name === 'fluffy') {
+          return trustUrl('cat.svg');
+        } else if (name === 'fido') {
+          return trustUrl('dog.svg');
+        } else if (name === 'felix') {
+          return {url: trustUrl('auth-cat.svg'), options: {withCredentials: true}};
+        }
+        return null;
+      });
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+      let svgElement: SVGElement;
+      let testRequest: TestRequest;
+      const testComponent = fixture.componentInstance;
+      const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+
+      testComponent.iconName = 'fido';
+      fixture.detectChanges();
+      http.expectOne('dog.svg').flush(FAKE_SVGS.dog);
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
+      verifyPathChildElement(svgElement, 'woof');
+
+      // Change the icon, and the SVG element should be replaced.
+      testComponent.iconName = 'fluffy';
+      fixture.detectChanges();
+      http.expectOne('cat.svg').flush(FAKE_SVGS.cat);
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
+      verifyPathChildElement(svgElement, 'meow');
+
+      // Using an icon from a previously loaded URL should not cause another HTTP request.
+      testComponent.iconName = 'fido';
+      fixture.detectChanges();
+      http.expectNone('dog.svg');
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
+      verifyPathChildElement(svgElement, 'woof');
+
+      // Change icon to one that needs credentials during fetch.
+      testComponent.iconName = 'felix';
+      fixture.detectChanges();
+      testRequest = http.expectOne('auth-cat.svg');
+      expect(testRequest.request.withCredentials).toBeTrue();
+      testRequest.flush(FAKE_SVGS.cat);
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
+      verifyPathChildElement(svgElement, 'meow');
+
+      // Assert that a registered icon can be looked-up by url.
+      iconRegistry.getSvgIconFromUrl(trustUrl('cat.svg')).subscribe(element => {
+        verifyPathChildElement(element, 'meow');
+      });
+
+      tick();
+    }));
+
+    it('should fall back to second resolver if the first one returned null', fakeAsync(() => {
+      iconRegistry
+        .addSvgIconResolver(() => null)
+        .addSvgIconResolver(name => name === 'fido' ? trustUrl('dog.svg') : null);
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+      const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+
+      fixture.componentInstance.iconName = 'fido';
+      fixture.detectChanges();
+      http.expectOne('dog.svg').flush(FAKE_SVGS.dog);
+      verifyPathChildElement(verifyAndGetSingleSvgChild(iconElement), 'woof');
+      tick();
+    }));
+
+    it('should be able to set the viewBox when resolving an icon with a function', fakeAsync(() => {
+      iconRegistry.addSvgIconResolver(name => {
+        if (name === 'fluffy') {
+          return {url: trustUrl('cat.svg'), options: {viewBox: '0 0 27 27'}};
+        } else if (name === 'fido') {
+          return {url: trustUrl('dog.svg'), options: {viewBox: '0 0 43 43'}};
+        }
+        return null;
+      });
+
+      const fixture = TestBed.createComponent(IconFromSvgName);
+      let svgElement: SVGElement;
+      const testComponent = fixture.componentInstance;
+      const iconElement = fixture.debugElement.nativeElement.querySelector('mat-icon');
+
+      testComponent.iconName = 'fido';
+      fixture.detectChanges();
+      http.expectOne('dog.svg').flush(FAKE_SVGS.dog);
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
+      expect(svgElement.getAttribute('viewBox')).toBe('0 0 43 43');
+
+      // Change the icon, and the SVG element should be replaced.
+      testComponent.iconName = 'fluffy';
+      fixture.detectChanges();
+      http.expectOne('cat.svg').flush(FAKE_SVGS.cat);
+      svgElement = verifyAndGetSingleSvgChild(iconElement);
+      expect(svgElement.getAttribute('viewBox')).toBe('0 0 27 27');
+    }));
+
+    it('should throw an error when the resolver returns an untrusted URL', () => {
+      iconRegistry.addSvgIconResolver(() => 'not-trusted.svg');
+
+      expect(() => {
+        const fixture = TestBed.createComponent(IconFromSvgName);
+        fixture.componentInstance.iconName = 'fluffy';
+        fixture.detectChanges();
+      }).toThrowError(/unsafe value used in a resource URL context/);
+    });
+
+  });
+
   it('should handle assigning an icon through the setter', fakeAsync(() => {
     iconRegistry.addSvgIconLiteral('fido', trustHtml(FAKE_SVGS.dog));
 

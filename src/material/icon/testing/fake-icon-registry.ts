@@ -10,11 +10,9 @@ import {Injectable, NgModule, OnDestroy} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {Observable, of as observableOf} from 'rxjs';
 
-// tslint:disable:no-any Impossible to tell param types.
 type PublicApi<T> = {
   [K in keyof T]: T[K] extends (...x: any[]) => T ? (...x: any[]) => PublicApi<T> : T[K]
 };
-// tslint:enable:no-any
 
 /**
  * A null icon registry that must be imported to allow disabling of custom
@@ -75,6 +73,10 @@ export class FakeMatIconRegistry implements PublicApi<MatIconRegistry>, OnDestro
   }
 
   setDefaultFontSetClass(): this {
+    return this;
+  }
+
+  addSvgIconResolver(): this {
     return this;
   }
 

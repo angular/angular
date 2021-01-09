@@ -19,6 +19,8 @@ export interface IconOptions {
     withCredentials?: boolean;
 }
 
+export declare type IconResolver = (name: string, namespace: string) => (SafeResourceUrl | SafeResourceUrlWithIconOptions | null);
+
 export declare const MAT_ICON_LOCATION: InjectionToken<MatIconLocation>;
 
 export declare function MAT_ICON_LOCATION_FACTORY(): MatIconLocation;
@@ -59,6 +61,7 @@ export declare class MatIconRegistry implements OnDestroy {
     addSvgIconInNamespace(namespace: string, iconName: string, url: SafeResourceUrl, options?: IconOptions): this;
     addSvgIconLiteral(iconName: string, literal: SafeHtml, options?: IconOptions): this;
     addSvgIconLiteralInNamespace(namespace: string, iconName: string, literal: SafeHtml, options?: IconOptions): this;
+    addSvgIconResolver(resolver: IconResolver): this;
     addSvgIconSet(url: SafeResourceUrl, options?: IconOptions): this;
     addSvgIconSetInNamespace(namespace: string, url: SafeResourceUrl, options?: IconOptions): this;
     addSvgIconSetLiteral(literal: SafeHtml, options?: IconOptions): this;
@@ -72,4 +75,9 @@ export declare class MatIconRegistry implements OnDestroy {
     setDefaultFontSetClass(className: string): this;
     static ɵfac: i0.ɵɵFactoryDef<MatIconRegistry, [{ optional: true; }, null, { optional: true; }, null]>;
     static ɵprov: i0.ɵɵInjectableDef<MatIconRegistry>;
+}
+
+export interface SafeResourceUrlWithIconOptions {
+    options: IconOptions;
+    url: SafeResourceUrl;
 }

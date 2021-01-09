@@ -75,6 +75,19 @@ export interface IconOptions {
 }
 
 /**
+ * Function that will be invoked by the icon registry when trying to resolve the
+ * URL from which to fetch an icon. The returned URL will be used to make a request for the icon.
+ */
+export type IconResolver = (name: string, namespace: string) =>
+    (SafeResourceUrl | SafeResourceUrlWithIconOptions | null);
+
+/** Object that specifies a URL from which to fetch an icon and the options to use for it. */
+export interface SafeResourceUrlWithIconOptions {
+  url: SafeResourceUrl;
+  options: IconOptions;
+}
+
+/**
  * Configuration for an icon, including the URL and possibly the cached SVG element.
  * @docs-private
  */
@@ -121,6 +134,9 @@ export class MatIconRegistry implements OnDestroy {
   /** Map from font identifiers to their CSS class names. Used for icon fonts. */
   private _fontCssClassesByAlias = new Map<string, string>();
 
+  /** Registered icon resolver functions. */
+  private _resolvers: IconResolver[] = [];
+
   /**
    * The CSS class to apply when an `<mat-icon>` component has no icon name, url, or font specified.
    * The default 'material-icons' value assumes that the material icon font has been loaded as
@@ -163,6 +179,19 @@ export class MatIconRegistry implements OnDestroy {
   addSvgIconInNamespace(namespace: string, iconName: string, url: SafeResourceUrl,
                         options?: IconOptions): this {
     return this._addSvgIconConfig(namespace, iconName, new SvgIconConfig(url, null, options));
+  }
+
+  /**
+   * Registers an icon resolver function with the registry. The function will be invoked with the
+   * name and namespace of an icon when the registry tries to resolve the URL from which to fetch
+   * the icon. The resolver is expected to return a `SafeResourceUrl` that points to the icon,
+   * an object with the icon URL and icon options, or `null` if the icon is not supported. Resolvers
+   * will be invoked in the order in which they have been registered.
+   * @param resolver Resolver function to be registered.
+   */
+  addSvgIconResolver(resolver: IconResolver): this {
+    this._resolvers.push(resolver);
+    return this;
   }
 
   /**
@@ -301,11 +330,19 @@ export class MatIconRegistry implements OnDestroy {
    * @param namespace Namespace in which to look for the icon.
    */
   getNamedSvgIcon(name: string, namespace: string = ''): Observable<SVGElement> {
-    // Return (copy of) cached icon if possible.
     const key = iconKey(namespace, name);
-    const config = this._svgIconConfigs.get(key);
+    let config = this._svgIconConfigs.get(key);
+
+    // Return (copy of) cached icon if possible.
+    if (config) {
+      return this._getSvgFromConfig(config);
+    }
+
+    // Otherwise try to resolve the config from one of the resolver functions.
+    config = this._getIconConfigFromResolvers(namespace, name);
 
     if (config) {
+      this._svgIconConfigs.set(key, config);
       return this._getSvgFromConfig(config);
     }
 
@@ -320,9 +357,10 @@ export class MatIconRegistry implements OnDestroy {
   }
 
   ngOnDestroy() {
-   this._svgIconConfigs.clear();
-   this._iconSetConfigs.clear();
-   this._cachedIconsByUrl.clear();
+    this._resolvers = [];
+    this._svgIconConfigs.clear();
+    this._iconSetConfigs.clear();
+    this._cachedIconsByUrl.clear();
   }
 
   /**
@@ -623,6 +661,21 @@ export class MatIconRegistry implements OnDestroy {
 
     return config.svgElement;
   }
+
+  /** Tries to create an icon config through the registered resolver functions. */
+  private _getIconConfigFromResolvers(namespace: string, name: string): SvgIconConfig | undefined {
+    for (let i = 0; i < this._resolvers.length; i++) {
+      const result = this._resolvers[i](name, namespace);
+
+      if (result) {
+        return isSafeUrlWithOptions(result) ?
+          new SvgIconConfig(result.url, null, result.options) :
+          new SvgIconConfig(result, null);
+      }
+    }
+
+    return undefined;
+  }
 }
 
 /** @docs-private */
@@ -657,4 +710,8 @@ function cloneSvg(svg: SVGElement): SVGElement {
 /** Returns the cache key to use for an icon namespace and name. */
 function iconKey(namespace: string, name: string) {
   return namespace + ':' + name;
+}
+
+function isSafeUrlWithOptions(value: any): value is SafeResourceUrlWithIconOptions {
+  return !!(value.url && value.options);
 }
