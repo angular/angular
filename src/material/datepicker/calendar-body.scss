@@ -150,6 +150,13 @@ $mat-calendar-range-end-body-cell-size:
 
 .mat-calendar-body-disabled {
   cursor: default;
+
+  // Fade out the disabled cells so that they can be distinguished from the enabled ones. Note that
+  // ideally we'd use `color: GreyText` here which is what the browser uses for disabled buttons,
+  // but we can't because Firefox doesn't recognize it.
+  @include cdk-high-contrast(active, off) {
+    opacity: 0.5;
+  }
 }
 
 .mat-calendar-body-cell-content {
