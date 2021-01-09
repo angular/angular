@@ -170,9 +170,9 @@ export declare class ScrollDispatcher implements OnDestroy {
     _globalSubscription: Subscription | null;
     scrollContainers: Map<CdkScrollable, Subscription>;
     constructor(_ngZone: NgZone, _platform: Platform, document: any);
-    ancestorScrolled(elementRef: ElementRef, auditTimeInMs?: number): Observable<CdkScrollable | void>;
+    ancestorScrolled(elementOrElementRef: ElementRef | HTMLElement, auditTimeInMs?: number): Observable<CdkScrollable | void>;
     deregister(scrollable: CdkScrollable): void;
-    getAncestorScrollContainers(elementRef: ElementRef): CdkScrollable[];
+    getAncestorScrollContainers(elementOrElementRef: ElementRef | HTMLElement): CdkScrollable[];
     ngOnDestroy(): void;
     register(scrollable: CdkScrollable): void;
     scrolled(auditTimeInMs?: number): Observable<CdkScrollable | void>;

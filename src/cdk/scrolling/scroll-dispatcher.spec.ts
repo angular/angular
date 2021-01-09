@@ -159,6 +159,14 @@ describe('ScrollDispatcher', () => {
       expect(scrollableElementIds).toEqual(['scrollable-1', 'scrollable-1a']);
     });
 
+    it('allows a raw HTMLElement', () => {
+      const scrollContainers = scroll.getAncestorScrollContainers(element.nativeElement);
+      const scrollableElementIds =
+          scrollContainers.map(scrollable => scrollable.getElementRef().nativeElement.id);
+
+      expect(scrollableElementIds).toEqual(['scrollable-1', 'scrollable-1a']);
+    });
+
     it('should emit when one of the ancestor scrollable containers is scrolled', () => {
       const spy = jasmine.createSpy('scroll spy');
       const subscription = scroll.ancestorScrolled(element, 0).subscribe(spy);
@@ -172,6 +180,22 @@ describe('ScrollDispatcher', () => {
 
       subscription.unsubscribe();
     });
+
+    it('should emit when one of the ancestor scrollable containers is scrolled (HTMLElement API)',
+      () => {
+        const spy = jasmine.createSpy('scroll spy');
+        const subscription = scroll.ancestorScrolled(element.nativeElement, 0).subscribe(spy);
+        const grandparent = fixture.debugElement.nativeElement.querySelector('#scrollable-1');
+
+        dispatchFakeEvent(grandparent, 'scroll', false);
+        expect(spy).toHaveBeenCalledTimes(1);
+
+        dispatchFakeEvent(window.document, 'scroll', false);
+        expect(spy).toHaveBeenCalledTimes(2);
+
+        subscription.unsubscribe();
+      });
+
 
     it('should not emit when a non-ancestor is scrolled', () => {
       const spy = jasmine.createSpy('scroll spy');
