@@ -44,6 +44,13 @@
       border: solid $high-contrast-border-width currentColor;
       margin: 0;
     }
+
+    // Fade out the option when it is disabled so that it can be distinguished from the enabled
+    // options. Note that ideally we'd use `color: GreyText` here which is what the browser uses
+    // for disabled buttons, but we can't because Firefox doesn't recognize it.
+    &[aria-disabled='true'] {
+      opacity: 0.5;
+    }
   }
 }
 
