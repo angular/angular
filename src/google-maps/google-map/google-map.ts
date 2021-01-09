@@ -120,16 +120,16 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.click
    */
   @Output()
-  mapClick: Observable<google.maps.MouseEvent|google.maps.IconMouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent|google.maps.IconMouseEvent>('click');
+  mapClick: Observable<google.maps.MapMouseEvent|google.maps.IconMouseEvent> = this._eventManager
+      .getLazyEmitter<google.maps.MapMouseEvent|google.maps.IconMouseEvent>('click');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.dblclick
    */
   @Output()
-  mapDblclick: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dblclick');
+  mapDblclick: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dblclick');
 
   /**
    * See
@@ -174,24 +174,24 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.mousemove
    */
   @Output()
-  mapMousemove: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mousemove');
+  mapMousemove: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mousemove');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.mouseout
    */
   @Output()
-  mapMouseout: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mouseout');
+  mapMouseout: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseout');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.mouseover
    */
   @Output()
-  mapMouseover: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mouseover');
+  mapMouseover: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseover');
 
   /**
    * See
@@ -206,8 +206,8 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.rightclick
    */
   @Output()
-  mapRightclick: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('rightclick');
+  mapRightclick: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('rightclick');
 
   /**
    * See

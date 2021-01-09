@@ -77,22 +77,22 @@ export class MapPolyline implements OnInit, OnDestroy {
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.drag
    */
   @Output()
-  polylineDrag: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('drag');
+  polylineDrag: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('drag');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dragend
    */
   @Output()
-  polylineDragend: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dragend');
+  polylineDragend: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragend');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dragstart
    */
   @Output()
-  polylineDragstart: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dragstart');
+  polylineDragstart: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragstart');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mousedown

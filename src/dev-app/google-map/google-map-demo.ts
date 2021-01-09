@@ -98,11 +98,11 @@ export class GoogleMapDemo {
   markerClustererImagePath =
       'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
 
-  handleClick(event: google.maps.MouseEvent) {
+  handleClick(event: google.maps.MapMouseEvent) {
     this.markerPositions.push(event.latLng.toJSON());
   }
 
-  handleMove(event: google.maps.MouseEvent) {
+  handleMove(event: google.maps.MapMouseEvent) {
     this.display = event.latLng.toJSON();
   }
 

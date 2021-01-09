@@ -63,88 +63,88 @@ export class MapRectangle implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/polygon#Rectangle.click
    */
   @Output()
-  rectangleClick: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('click');
+  rectangleClick: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('click');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/polygon#Rectangle.dblclick
    */
   @Output()
-  rectangleDblclick: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dblclick');
+  rectangleDblclick: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dblclick');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/polygon#Rectangle.drag
    */
   @Output()
-  rectangleDrag: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('drag');
+  rectangleDrag: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('drag');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/polygon#Rectangle.dragend
    */
   @Output()
-  rectangleDragend: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dragend');
+  rectangleDragend: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragend');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/polygon#Rectangle.dragstart
    */
   @Output()
-  rectangleDragstart: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dragstart');
+  rectangleDragstart: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragstart');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/polygon#Rectangle.mousedown
    */
   @Output()
-  rectangleMousedown: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mousedown');
+  rectangleMousedown: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mousedown');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/polygon#Rectangle.mousemove
    */
   @Output()
-  rectangleMousemove: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mousemove');
+  rectangleMousemove: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mousemove');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/polygon#Rectangle.mouseout
    */
   @Output()
-  rectangleMouseout: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mouseout');
+  rectangleMouseout: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseout');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/polygon#Rectangle.mouseover
    */
   @Output()
-  rectangleMouseover: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mouseover');
+  rectangleMouseover: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseover');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/polygon#Rectangle.mouseup
    */
   @Output()
-  rectangleMouseup: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mouseup');
+  rectangleMouseup: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseup');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/polygon#Rectangle.rightclick
    */
   @Output()
-  rectangleRightclick: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('rightclick');
+  rectangleRightclick: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('rightclick');
 
   constructor(private readonly _map: GoogleMap, private readonly _ngZone: NgZone) {}
 

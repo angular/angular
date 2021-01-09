@@ -19,7 +19,7 @@ export class GoogleMapDemo {
   markerOptions: google.maps.MarkerOptions = {draggable: false};
   markerPositions: google.maps.LatLngLiteral[] = [];
 
-  addMarker(event: google.maps.MouseEvent) {
+  addMarker(event: google.maps.MapMouseEvent) {
     this.markerPositions.push(event.latLng.toJSON());
   }
 }

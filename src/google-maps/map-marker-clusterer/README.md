@@ -29,7 +29,7 @@ export class GoogleMapDemo {
   markerClustererImagePath =
       'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
 
-  addMarker(event: google.maps.MouseEvent) {
+  addMarker(event: google.maps.MapMouseEvent) {
     this.markerPositions.push(event.latLng.toJSON());
   }
 }

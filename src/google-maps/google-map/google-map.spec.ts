@@ -371,7 +371,7 @@ class TestApp {
   options?: google.maps.MapOptions;
   mapTypeId?: google.maps.MapTypeId;
 
-  handleClick(event: google.maps.MouseEvent) {}
+  handleClick(event: google.maps.MapMouseEvent) {}
   handleCenterChanged() {}
-  handleRightclick(event: google.maps.MouseEvent) {}
+  handleRightclick(event: google.maps.MapMouseEvent) {}
 }

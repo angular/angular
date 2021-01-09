@@ -71,8 +71,8 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/image-overlay#GroundOverlay.click
    */
   @Output()
-  mapClick: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('click');
+  mapClick: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('click');
 
   /**
    * See
@@ -80,8 +80,8 @@ export class MapGroundOverlay implements OnInit, OnDestroy {
    * #GroundOverlay.dblclick
    */
   @Output()
-  mapDblclick: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dblclick');
+  mapDblclick: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dblclick');
 
   constructor(private readonly _map: GoogleMap, private readonly _ngZone: NgZone) {}
 

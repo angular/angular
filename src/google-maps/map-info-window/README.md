@@ -22,7 +22,7 @@ export class GoogleMapDemo {
   markerPositions: google.maps.LatLngLiteral[] = [];
   zoom = 4;
 
-  addMarker(event: google.maps.MouseEvent) {
+  addMarker(event: google.maps.MapMouseEvent) {
     this.markerPositions.push(event.latLng.toJSON());
   }
 

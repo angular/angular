@@ -107,8 +107,8 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.click
    */
   @Output()
-  mapClick: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('click');
+  mapClick: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('click');
 
   /**
    * See
@@ -129,24 +129,24 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.dblclick
    */
   @Output()
-  mapDblclick: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dblclick');
+  mapDblclick: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dblclick');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.drag
    */
   @Output()
-  mapDrag: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('drag');
+  mapDrag: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('drag');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.dragend
    */
   @Output()
-  mapDragend: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dragend');
+  mapDragend: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragend');
 
   /**
    * See
@@ -160,8 +160,8 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.dragstart
    */
   @Output()
-  mapDragstart: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('dragstart');
+  mapDragstart: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragstart');
 
   /**
    * See
@@ -180,32 +180,32 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.mousedown
    */
   @Output()
-  mapMousedown: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mousedown');
+  mapMousedown: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mousedown');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.mouseout
    */
   @Output()
-  mapMouseout: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mouseout');
+  mapMouseout: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseout');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.mouseover
    */
   @Output()
-  mapMouseover: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mouseover');
+  mapMouseover: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseover');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.mouseup
    */
   @Output()
-  mapMouseup: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('mouseup');
+  mapMouseup: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseup');
 
   /**
    * See
@@ -219,8 +219,8 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.rightclick
    */
   @Output()
-  mapRightclick: Observable<google.maps.MouseEvent> =
-      this._eventManager.getLazyEmitter<google.maps.MouseEvent>('rightclick');
+  mapRightclick: Observable<google.maps.MapMouseEvent> =
+      this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('rightclick');
 
   /**
    * See
