@@ -54,10 +54,6 @@ export class QueryList<T> implements Iterable<T> {
 
   /**
    * Returns `Observable` of `QueryList` notifying the subscriber of changes.
-   *
-   * NOTE: This currently points to `changesDeprecated` which incorrectly notifies of changes even
-   * if no changes to `QueryList` have occurred. (It fires more often than it needs to.)
-   * The implementation will change to point `changesStrict` starting with v12.
    */
   get changes(): Observable<any> {
     return this._changes || (this._changes = new EventEmitter());
@@ -151,10 +147,15 @@ export class QueryList<T> implements Iterable<T> {
    * occurs.
    *
    * @param resultsTree The query results to store
-   * @param identityAccessor Optional functions for extracting stable object identity from a value
-   *     in the array.
+   * @param identityAccessor Optional function for extracting stable object identity from a value
+   *    in the array. This function is executed for each element of the query result list while
+   *    comparing current query list with the new one (provided as a first argument of the `reset`
+   *    function) to detect if the lists are different. If the function is not provided, elements
+   *    are compared as is (without any pre-processing).
    */
   reset(resultsTree: Array<T|any[]>, identityAccessor?: (value: T) => unknown): void {
+    // Cast to `QueryListInternal` so that we can mutate fields which are readonly for the usage of
+    // QueryList (but not for QueryList itself.)
     const self = this as QueryListInternal<T>;
     (self as {dirty: boolean}).dirty = false;
     const newResultFlat = flatten(resultsTree);
@@ -170,7 +171,7 @@ export class QueryList<T> implements Iterable<T> {
    * Triggers a change event by emitting on the `changes` {@link EventEmitter}.
    */
   notifyOnChanges(): void {
-    if (this._changes && (this._emitDistinctChangesOnly ? this._changesDetected : true))
+    if (this._changes && (this._changesDetected || !this._emitDistinctChangesOnly))
       this._changes.emit(this);
   }
 
@@ -196,7 +197,7 @@ export class QueryList<T> implements Iterable<T> {
 /**
  * Internal set of APIs used by the framework. (not to be made public)
  */
-export interface QueryListInternal<T> extends QueryList<T> {
+interface QueryListInternal<T> extends QueryList<T> {
   reset(a: any[]): void;
   notifyOnChanges(): void;
   length: number;

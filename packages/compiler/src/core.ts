@@ -40,6 +40,7 @@ export interface Query {
   isViewQuery: boolean;
   selector: any;
   static?: boolean;
+  emitDistinctChangesOnly: boolean;
 }
 
 export const createContentChildren = makeMetadataFactory<Query>(

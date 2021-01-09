@@ -90,7 +90,6 @@ export class ElementRef<T = any> {
 /**
  * Unwraps `ElementRef` and return the `nativeElement`.
  *
- * Conditionally unwrap the `ElementRef`.
  * @param value value to unwrap
  * @returns `nativeElement` if `ElementRef` otherwise returns value as is.
  */
