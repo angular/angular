@@ -19,7 +19,6 @@ $mat-tab-animation-duration: 500ms !default;
     // is an opt-in behavior. Also technically we don't need to combine the two classes, but
     // we need the extra specificity to avoid issues with CSS insertion order.
     flex-grow: 0;
-    min-width: 160px;
   }
 
   // Used to render out the background tint when hovered/focused. Usually this is done by
