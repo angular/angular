@@ -20,12 +20,15 @@ import {
   ComponentRef,
   ElementRef,
   EmbeddedViewRef,
+  Inject,
   NgZone,
   OnDestroy,
+  Optional,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
 import {MatSnackBarConfig, _SnackBarContainer} from '@angular/material/snack-bar';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MDCSnackbarAdapter, MDCSnackbarFoundation} from '@material/snackbar';
 import {Platform} from '@angular/cdk/platform';
 import {Observable, Subject} from 'rxjs';
@@ -57,6 +60,7 @@ const MDC_SNACKBAR_LABEL_CLASS = 'mdc-snackbar__label';
     // been dismissed and will soon be removed from the DOM. This is used by the snackbar
     // test harness.
     '[attr.mat-exit]': `_exiting ? '' : null`,
+    '[class._mat-animation-noopable]': `_animationMode === 'NoopAnimations'`,
   }
 })
 export class MatSnackBarContainer extends BasePortalOutlet
@@ -114,7 +118,8 @@ export class MatSnackBarContainer extends BasePortalOutlet
       private _elementRef: ElementRef<HTMLElement>,
       public snackBarConfig: MatSnackBarConfig,
       private _platform: Platform,
-      private _ngZone: NgZone) {
+      private _ngZone: NgZone,
+      @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super();
 
     // Use aria-live rather than a live role like 'alert' or 'status'

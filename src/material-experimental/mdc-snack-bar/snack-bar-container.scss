@@ -13,6 +13,10 @@
   @include cdk-high-contrast(active, off) {
     border: solid 1px;
   }
+
+  &._mat-animation-noopable .mdc-snackbar__surface {
+    transition: none;
+  }
 }
 
 // These elements need to have full width using flex layout.
