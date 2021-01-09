@@ -11,7 +11,7 @@ import {
 } from '@angular/forms';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {OverlayContainer} from '@angular/cdk/overlay';
-import {MatNativeDateModule} from '@angular/material/core';
+import {ErrorStateMatcher, MatNativeDateModule} from '@angular/material/core';
 import {MatDatepickerModule} from './datepicker-module';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -826,6 +826,15 @@ describe('MatDateRangeInput', () => {
     subscription.unsubscribe();
   });
 
+  it('should be able to pass in a different error state matcher through an input', () => {
+    const fixture = createComponent(RangePickerErrorStateMatcher);
+    fixture.detectChanges();
+    const {startInput, endInput, matcher} = fixture.componentInstance;
+
+    expect(startInput.errorStateMatcher).toBe(matcher);
+    expect(endInput.errorStateMatcher).toBe(matcher);
+  });
+
 });
 
 @Component({
@@ -973,4 +982,23 @@ class RangePickerWithCustomValidator {
   end: Date | null = null;
   min: Date;
   max: Date;
+}
+
+
+@Component({
+  template: `
+    <mat-form-field>
+      <mat-date-range-input [rangePicker]="rangePicker">
+        <input matStartDate [errorStateMatcher]="matcher"/>
+        <input matEndDate [errorStateMatcher]="matcher"/>
+      </mat-date-range-input>
+
+      <mat-date-range-picker #rangePicker></mat-date-range-picker>
+    </mat-form-field>
+  `
+})
+class RangePickerErrorStateMatcher {
+  @ViewChild(MatStartDate) startInput: MatStartDate<Date>;
+  @ViewChild(MatEndDate) endInput: MatEndDate<Date>;
+  matcher: ErrorStateMatcher = {isErrorState: () => false};
 }

@@ -203,7 +203,8 @@ const _MatDateRangeInputBase:
   ],
   // These need to be specified explicitly, because some tooling doesn't
   // seem to pick them up from the base class. See #20932.
-  outputs: ['dateChange', 'dateInput']
+  outputs: ['dateChange', 'dateInput'],
+  inputs: ['errorStateMatcher']
 })
 export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements
     CanUpdateErrorState, DoCheck, OnInit {
@@ -307,7 +308,8 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements
   ],
   // These need to be specified explicitly, because some tooling doesn't
   // seem to pick them up from the base class. See #20932.
-  outputs: ['dateChange', 'dateInput']
+  outputs: ['dateChange', 'dateInput'],
+  inputs: ['errorStateMatcher']
 })
 export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements
     CanUpdateErrorState, DoCheck, OnInit {
