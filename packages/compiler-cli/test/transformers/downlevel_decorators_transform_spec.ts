@@ -740,6 +740,107 @@ describe('downlevel decorator transform', () => {
       `);
     });
   });
+
+  describe('transforming multiple files', () => {
+    it('should work correctly for multiple files that import distinct declarations', () => {
+      context.writeFile('foo_service.d.ts', `
+        export declare class Foo {};
+      `);
+      context.writeFile('foo.ts', `
+        import {Injectable} from '@angular/core';
+        import {Foo} from './foo_service';
+
+        @Injectable()
+        export class MyService {
+          constructor(foo: Foo) {}
+        }
+      `);
+
+      context.writeFile('bar_service.d.ts', `
+        export declare class Bar {};
+      `);
+      context.writeFile('bar.ts', `
+        import {Injectable} from '@angular/core';
+        import {Bar} from './bar_service';
+
+        @Injectable()
+        export class MyService {
+          constructor(bar: Bar) {}
+        }
+      `);
+
+      const {program, transformers} = createProgramWithTransform(['/foo.ts', '/bar.ts']);
+      program.emit(undefined, undefined, undefined, undefined, transformers);
+
+      expect(context.readFile('/foo.js')).toContain(`import { Foo } from './foo_service';`);
+      expect(context.readFile('/bar.js')).toContain(`import { Bar } from './bar_service';`);
+    });
+
+    it('should not result in a stack overflow for a large number of files', () => {
+      // The decorators transform used to patch `ts.EmitResolver.isReferencedAliasDeclaration`
+      // repeatedly for each source file in the program, causing a stack overflow once a large
+      // number of source files was reached. This test verifies that emit succeeds even when there's
+      // lots of source files. See https://github.com/angular/angular/issues/40276.
+      context.writeFile('foo.d.ts', `
+        export declare class Foo {};
+      `);
+
+      // A somewhat minimal number of source files that used to trigger a stack overflow.
+      const numberOfTestFiles = 6500;
+      const files: string[] = [];
+      for (let i = 0; i < numberOfTestFiles; i++) {
+        const file = `/${i}.ts`;
+        files.push(file);
+        context.writeFile(file, `
+          import {Injectable} from '@angular/core';
+          import {Foo} from './foo';
+
+          @Injectable()
+          export class MyService {
+            constructor(foo: Foo) {}
+          }
+        `);
+      }
+
+      const {program, transformers} = createProgramWithTransform(files);
+
+      let written = 0;
+      program.emit(undefined, (fileName, outputText) => {
+        written++;
+
+        // The below assertion throws an explicit error instead of using a Jasmine expectation,
+        // as we want to abort on the first failure, if any. This avoids as many as `numberOfFiles`
+        // expectation failures, which would bloat the test output.
+        if (!outputText.includes(`import { Foo } from './foo';`)) {
+          throw new Error(`Transform failed to preserve the import in ${fileName}:\n${outputText}`);
+        }
+      }, undefined, undefined, transformers);
+      expect(written).toBe(numberOfTestFiles);
+    });
+
+    function createProgramWithTransform(files: string[]) {
+      const program = ts.createProgram(
+          files, {
+            moduleResolution: ts.ModuleResolutionKind.NodeJs,
+            importHelpers: true,
+            lib: [],
+            module: ts.ModuleKind.ESNext,
+            target: ts.ScriptTarget.Latest,
+            declaration: false,
+            experimentalDecorators: true,
+            emitDecoratorMetadata: false,
+          },
+          host);
+      const typeChecker = program.getTypeChecker();
+      const reflectionHost = new TypeScriptReflectionHost(typeChecker);
+      const transformers: ts.CustomTransformers = {
+        before: [getDownlevelDecoratorsTransform(
+            program.getTypeChecker(), reflectionHost, diagnostics,
+            /* isCore */ false, isClosureEnabled, skipClassDecorators)]
+      };
+      return {program, transformers};
+    }
+  });
 });
 
 /** Template string function that can be used to dedent a given string literal. */
