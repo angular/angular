@@ -479,10 +479,9 @@ export const enum QueryFlags {
  * @param query
  */
 function toQueryFlags(query: R3QueryMetadata): number {
-  // NOTE: Verify that changes here match
-  return (query.descendants ? 1 /* TQueryFlags.descendants */ : 0) |
-      (query.static ? 2 /* TQueryFlags.isStatic */ : 0) |
-      (query.emitDistinctChangesOnly ? 4 /* TQueryFlags.emitDistinctChangesOnly */ : 0);
+  return (query.descendants ? QueryFlags.descendants : QueryFlags.none) |
+      (query.static ? QueryFlags.isStatic : QueryFlags.none) |
+      (query.emitDistinctChangesOnly ? QueryFlags.emitDistinctChangesOnly : QueryFlags.none);
 }
 
 function convertAttributesToExpressions(attributes: {[name: string]: o.Expression}):
@@ -503,11 +502,9 @@ function createContentQueriesFunction(
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
   for (const query of queries) {
-    const queryInstruction = query.static ? R3.staticContentQuery : R3.contentQuery;
-
     // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null);
     createStatements.push(
-        o.importExpr(queryInstruction)
+        o.importExpr(R3.contentQuery)
             .callFn([o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any])
             .toStmt());
 
@@ -587,11 +584,9 @@ function createViewQueriesFunction(
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
   viewQueries.forEach((query: R3QueryMetadata) => {
-    const queryInstruction = query.static ? R3.staticViewQuery : R3.viewQuery;
-
     // creation, e.g. r3.viewQuery(somePredicate, true);
     const queryDefinition =
-        o.importExpr(queryInstruction).callFn(prepareQueryParams(query, constantPool));
+        o.importExpr(R3.viewQuery).callFn(prepareQueryParams(query, constantPool));
     createStatements.push(queryDefinition.toStmt());
 
     // update, e.g. (r3.queryRefresh(tmp = r3.loadQuery()) && (ctx.someDir = tmp));

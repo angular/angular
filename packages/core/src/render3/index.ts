@@ -162,9 +162,6 @@ export {
   ɵɵcontentQuery,
   ɵɵloadQuery,
   ɵɵqueryRefresh,
-  ɵɵstaticContentQuery
-,
-  ɵɵstaticViewQuery,
   ɵɵviewQuery} from './query';
 export {
   ɵɵdisableBindings,

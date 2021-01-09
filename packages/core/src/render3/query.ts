@@ -202,8 +202,8 @@ class TQuery_ implements TQuery {
   }
 
   private isApplyingToNode(tNode: TNode): boolean {
-    const isDescend = (this.metadata.flags & QueryFlags.descendants) === QueryFlags.descendants;
-    if (this._appliesToNextNode && !isDescend) {
+    if (this._appliesToNextNode &&
+        (this.metadata.flags & QueryFlags.descendants) !== QueryFlags.descendants) {
       const declarationNodeIdx = this._declarationNodeIndex;
       let parent = tNode.parent;
       // Determine if a given TNode is a "direct" child of a node on which a content query was
@@ -428,8 +428,9 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
   setCurrentQueryIndex(queryIndex + 1);
 
   const tQuery = getTQuery(tView, queryIndex);
-  const isStatic = (tQuery.metadata.flags & QueryFlags.isStatic) === QueryFlags.isStatic;
-  if (queryList.dirty && (isCreationMode(lView) === isStatic)) {
+  if (queryList.dirty &&
+      (isCreationMode(lView) ===
+       ((tQuery.metadata.flags & QueryFlags.isStatic) === QueryFlags.isStatic))) {
     if (tQuery.matches === null) {
       queryList.reset([]);
     } else {
@@ -446,21 +447,6 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
 }
 
 /**
- * Creates new QueryList for a static view query.
- *
- * @param predicate The type for which the query will search
- * @param flags Flags associated with the query
- * @param read What to save in the query
- *
- * @codeGenApi
- */
-export function ɵɵstaticViewQuery<T>(
-    predicate: Type<any>|InjectionToken<unknown>|string[], flags: QueryFlags, read?: any): void {
-  ngDevMode && assertNumber(flags, 'Expecting flags');
-  viewQueryInternal(getTView(), getLView(), predicate, flags | QueryFlags.isStatic, read);
-}
-
-/**
  * Creates new QueryList, stores the reference in LView and returns QueryList.
  *
  * @param predicate The type for which the query will search
@@ -472,19 +458,14 @@ export function ɵɵstaticViewQuery<T>(
 export function ɵɵviewQuery<T>(
     predicate: Type<any>|InjectionToken<unknown>|string[], flags: QueryFlags, read?: any): void {
   ngDevMode && assertNumber(flags, 'Expecting flags');
-  viewQueryInternal(getTView(), getLView(), predicate, flags, read);
-}
-
-function viewQueryInternal<T>(
-    tView: TView, lView: LView, predicate: Type<any>|InjectionToken<unknown>|string[],
-    flags: QueryFlags, read: any): void {
+  const tView = getTView();
   if (tView.firstCreatePass) {
     createTQuery(tView, new TQueryMetadata_(predicate, flags, read), -1);
-    if (flags & QueryFlags.isStatic) {
+    if ((flags & QueryFlags.isStatic) === QueryFlags.isStatic) {
       tView.staticViewQueries = true;
     }
   }
-  createLQuery<T>(tView, lView, flags);
+  createLQuery<T>(tView, getLView(), flags);
 }
 
 /**
@@ -503,42 +484,17 @@ export function ɵɵcontentQuery<T>(
     directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[],
     flags: QueryFlags, read?: any): void {
   ngDevMode && assertNumber(flags, 'Expecting flags');
-  contentQueryInternal(
-      getTView(), getLView(), predicate, flags, read, false, getCurrentTNode()!, directiveIndex);
-}
-
-/**
- * Registers a QueryList, associated with a static content query, for later refresh
- * (part of a view refresh).
- *
- * @param directiveIndex Current directive index
- * @param predicate The type for which the query will search
- * @param flags Flags associated with the query
- * @param read What to save in the query
- * @returns QueryList<T>
- *
- * @codeGenApi
- */
-export function ɵɵstaticContentQuery<T>(
-    directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[],
-    flags: QueryFlags, read?: any): void {
-  ngDevMode && assertNumber(flags, 'Expecting flags');
-  contentQueryInternal(
-      getTView(), getLView(), predicate, flags, read, true, getCurrentTNode()!, directiveIndex);
-}
-
-function contentQueryInternal<T>(
-    tView: TView, lView: LView, predicate: Type<any>|InjectionToken<unknown>|string[],
-    flags: QueryFlags, read: any, isStatic: boolean, tNode: TNode, directiveIndex: number): void {
+  const tView = getTView();
   if (tView.firstCreatePass) {
+    const tNode = getCurrentTNode()!;
     createTQuery(tView, new TQueryMetadata_(predicate, flags, read), tNode.index);
     saveContentQueryAndDirectiveIndex(tView, directiveIndex);
-    if (isStatic) {
+    if ((flags & QueryFlags.isStatic) === QueryFlags.isStatic) {
       tView.staticContentQueries = true;
     }
   }
 
-  createLQuery<T>(tView, lView, flags);
+  createLQuery<T>(tView, getLView(), flags);
 }
 
 /**
