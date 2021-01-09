@@ -328,6 +328,17 @@ interface ParameterDecorationInfo {
   decorators: ts.Decorator[];
 }
 
+const referencedParameterTypesSymbol = Symbol('referencedParameterTypes');
+
+function getReferencedParameterTypesSet(typeChecker: ts.TypeChecker): Set<ts.Declaration> {
+  const checker = typeChecker as {[referencedParameterTypesSymbol]?: Set<ts.Declaration>};
+  const referencedParameterTypes = checker[referencedParameterTypesSymbol];
+  if (referencedParameterTypes !== undefined) {
+    return referencedParameterTypes;
+  }
+  return checker[referencedParameterTypesSymbol] = new Set<ts.Declaration>();
+}
+
 /**
  * Gets a transformer for downleveling Angular decorators.
  * @param typeChecker Reference to the program's type checker.
@@ -346,7 +357,7 @@ export function getDownlevelDecoratorsTransform(
     typeChecker: ts.TypeChecker, host: ReflectionHost, diagnostics: ts.Diagnostic[],
     isCore: boolean, isClosureCompilerEnabled: boolean,
     skipClassDecorators: boolean): ts.TransformerFactory<ts.SourceFile> {
-  const referencedParameterTypes = new Set<ts.Declaration>();
+  const referencedParameterTypes = getReferencedParameterTypesSet(typeChecker);
   return (context: ts.TransformationContext) => {
     /**
      * Converts an EntityName (from a type annotation) to an expression (accessing a value).
