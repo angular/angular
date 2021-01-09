@@ -31,6 +31,12 @@
   $mdc-snackbar-fill-color: $orig-mdc-snackbar-fill-color !global;
   $mdc-snackbar-label-ink-color: $orig-mdc-snackbar-label-ink-color !global;
   $mdc-snackbar-dismiss-ink-color: $orig-mdc-snackbar-dismiss-ink-color !global;
+
+  .mat-mdc-simple-snack-bar .mdc-snackbar__action {
+    $is-dark-theme: map-get($config, is-dark);
+    $accent: map-get($config, accent);
+    color: if($is-dark-theme, inherit, mat-color($accent, text));
+  }
 }
 
 @mixin mat-mdc-snack-bar-typography($config-or-theme) {
