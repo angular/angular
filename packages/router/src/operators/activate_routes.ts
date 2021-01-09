@@ -114,8 +114,8 @@ export class ActivateRoutes {
     const contexts = context && route.value.component ? context.children : parentContexts;
     const children: {[outletName: string]: TreeNode<ActivatedRoute>} = nodeChildrenAsMap(route);
 
-    for (const child of Object.values(children)) {
-      this.deactivateRouteAndItsChildren(child, contexts);
+    for (const childOutlet of Object.keys(children)) {
+      this.deactivateRouteAndItsChildren(children[childOutlet], contexts);
     }
 
     if (context && context.outlet) {
