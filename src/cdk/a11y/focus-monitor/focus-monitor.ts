@@ -313,8 +313,9 @@ export class FocusMonitor implements OnDestroy {
     // If the element is focused already, calling `focus` again won't trigger the event listener
     // which means that the focus classes won't be updated. If that's the case, update the classes
     // directly without waiting for an event.
-    if (nativeElement === focusedElement && this._elementInfo.has(nativeElement)) {
-      this._originChanged(nativeElement, origin, this._elementInfo.get(nativeElement)!);
+    if (nativeElement === focusedElement) {
+      this._getClosestElementsInfo(nativeElement)
+        .forEach(([currentElement, info]) => this._originChanged(currentElement, origin, info));
     } else {
       this._setOriginForCurrentEventQueue(origin);
 
@@ -552,6 +553,23 @@ export class FocusMonitor implements OnDestroy {
     this._setClasses(element, origin);
     this._emitOrigin(elementInfo.subject, origin);
     this._lastFocusOrigin = origin;
+  }
+
+  /**
+   * Collects the `MonitoredElementInfo` of a particular element and
+   * all of its ancestors that have enabled `checkChildren`.
+   * @param element Element from which to start the search.
+   */
+  private _getClosestElementsInfo(element: HTMLElement): [HTMLElement, MonitoredElementInfo][] {
+    const results: [HTMLElement, MonitoredElementInfo][] = [];
+
+    this._elementInfo.forEach((info, currentElement) => {
+      if (currentElement === element || (info.checkChildren && currentElement.contains(element))) {
+        results.push([currentElement, info]);
+      }
+    });
+
+    return results;
   }
 }
 
