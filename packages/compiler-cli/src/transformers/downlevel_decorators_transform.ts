@@ -346,9 +346,8 @@ export function getDownlevelDecoratorsTransform(
     typeChecker: ts.TypeChecker, host: ReflectionHost, diagnostics: ts.Diagnostic[],
     isCore: boolean, isClosureCompilerEnabled: boolean,
     skipClassDecorators: boolean): ts.TransformerFactory<ts.SourceFile> {
+  const referencedParameterTypes = new Set<ts.Declaration>();
   return (context: ts.TransformationContext) => {
-    let referencedParameterTypes = new Set<ts.Declaration>();
-
     /**
      * Converts an EntityName (from a type annotation) to an expression (accessing a value).
      *
@@ -594,13 +593,14 @@ export function getDownlevelDecoratorsTransform(
       return ts.visitEachChild(node, decoratorDownlevelVisitor, context);
     }
 
+    // Ensure that referenced type symbols are not elided by TypeScript. Imports for
+    // such parameter type symbols previously could be type-only, but now might be also
+    // used in the `ctorParameters` static property as a value. We want to make sure
+    // that TypeScript does not elide imports for such type references. Read more
+    // about this in the description for `patchAliasReferenceResolution`.
+    patchAliasReferenceResolutionOrDie(context, referencedParameterTypes);
+
     return (sf: ts.SourceFile) => {
-      // Ensure that referenced type symbols are not elided by TypeScript. Imports for
-      // such parameter type symbols previously could be type-only, but now might be also
-      // used in the `ctorParameters` static property as a value. We want to make sure
-      // that TypeScript does not elide imports for such type references. Read more
-      // about this in the description for `patchAliasReferenceResolution`.
-      patchAliasReferenceResolutionOrDie(context, referencedParameterTypes);
       // Downlevel decorators and constructor parameter types. We will keep track of all
       // referenced constructor parameter types so that we can instruct TypeScript to
       // not elide their imports if they previously were only type-only.
