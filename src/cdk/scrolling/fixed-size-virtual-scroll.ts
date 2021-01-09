@@ -125,7 +125,8 @@ export class FixedSizeVirtualScrollStrategy implements VirtualScrollStrategy {
     const viewportSize = this._viewport.getViewportSize();
     const dataLength = this._viewport.getDataLength();
     let scrollOffset = this._viewport.measureScrollOffset();
-    let firstVisibleIndex = scrollOffset / this._itemSize;
+     // Prevent NaN as result when dividing by zero.
+    let firstVisibleIndex = (this._itemSize > 0) ? scrollOffset / this._itemSize : 0;
 
     // If user scrolls to the bottom of the list and data changes to a smaller list
     if (newRange.end > dataLength) {
