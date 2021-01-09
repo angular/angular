@@ -1,6 +1,7 @@
 @import '@material/notched-outline/variables.import';
 @import '@material/textfield/variables.import';
 @import 'form-field-sizing';
+@import '../../cdk/a11y/a11y';
 
 // Mixin that can be included to override the default MDC text-field
 // styles to fit our needs. See individual comments for context on why
@@ -84,5 +85,13 @@
   // e.g. No vertical spacing to the bottom-line if the control is too large.
   .mat-mdc-text-field-wrapper::before {
     content: none;
+  }
+
+  // The outline of the `fill` appearance is achieved through a background color
+  // which won't be visible in high contrast mode. Add an outline to replace it.
+  .mat-form-field-appearance-fill .mat-mdc-text-field-wrapper {
+    @include cdk-high-contrast(active, off) {
+      outline: solid 1px;
+    }
   }
 }
