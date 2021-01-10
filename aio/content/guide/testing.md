@@ -287,7 +287,7 @@ After you've set up your app for testing, you may find the following testing  gu
 * [Component testing scenarios](guide/testing-components-scenarios)&mdash;read about the various kinds of component testing scenarios and use cases.
 * [Testing attribute directives](guide/testing-attribute-directives)&mdash;learn about how to test your attribute directives.
 * [Testing pipes](guide/testing-pipes)&mdash;find out how to test attribute directives.
-* [Debugging tests](guide/testing-attribute-directives)&mdash;uncover common testing bugs.
+* [Debugging tests](guide/test-debugging)&mdash;uncover common testing bugs.
 * [Testing utility APIs](guide/testing-utility-apis)&mdash;get familiar with Angular testing features.
 
 
