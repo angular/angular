@@ -191,7 +191,8 @@ export interface R3DeclareDirectiveFacade {
 }
 
 export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
-  template: {source: string; isInline: boolean;};
+  template: string;
+  isInline?: boolean;
   styles?: string[];
   directives?: {
     selector: string; type: OpaqueValue | (() => OpaqueValue);

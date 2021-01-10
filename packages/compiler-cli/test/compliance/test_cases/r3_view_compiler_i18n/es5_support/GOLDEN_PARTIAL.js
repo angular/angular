@@ -7,7 +7,7 @@ var MyComponent = /** @class */ (function () {
     function MyComponent() {
     }
     MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-    MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<div i18n="meaning:A|descA@@idA">Content A</div>', isInline: true } });
+    MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<div i18n="meaning:A|descA@@idA">Content A</div>', isInline: true });
     return MyComponent;
 }());
 export { MyComponent };

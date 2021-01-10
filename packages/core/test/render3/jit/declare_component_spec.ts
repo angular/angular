@@ -14,7 +14,7 @@ describe('component declaration jit compilation', () => {
   it('should compile a minimal component declaration', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate(`<div></div>`),
+                  template: `<div></div>`,
                 }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -27,8 +27,7 @@ describe('component declaration jit compilation', () => {
 
   it('should compile a selector', () => {
     const def =
-        ɵɵngDeclareComponent(
-            {type: TestClass, template: createTemplate('<div></div>'), selector: '[dir], test'}) as
+        ɵɵngDeclareComponent({type: TestClass, template: '<div></div>', selector: '[dir], test'}) as
         ComponentDef<TestClass>;
 
     expectComponentDef(def, {
@@ -39,7 +38,7 @@ describe('component declaration jit compilation', () => {
   it('should compile inputs and outputs', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   inputs: {
                     minifiedProperty: 'property',
                     minifiedClassProperty: ['bindingName', 'classProperty'],
@@ -67,7 +66,7 @@ describe('component declaration jit compilation', () => {
   it('should compile exportAs', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   exportAs: ['a', 'b'],
                 }) as ComponentDef<TestClass>;
 
@@ -79,7 +78,7 @@ describe('component declaration jit compilation', () => {
   it('should compile providers', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   providers: [
                     {provide: 'token', useValue: 123},
                   ],
@@ -94,7 +93,7 @@ describe('component declaration jit compilation', () => {
   it('should compile view providers', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   viewProviders: [
                     {provide: 'token', useValue: 123},
                   ],
@@ -109,7 +108,7 @@ describe('component declaration jit compilation', () => {
   it('should compile content queries', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   queries: [
                     {
                       propertyName: 'byRef',
@@ -146,7 +145,7 @@ describe('component declaration jit compilation', () => {
   it('should compile view queries', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   viewQueries: [
                     {
                       propertyName: 'byRef',
@@ -183,7 +182,7 @@ describe('component declaration jit compilation', () => {
   it('should compile host bindings', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   host: {
                     attributes: {
                       'attr': 'value',
@@ -218,7 +217,7 @@ describe('component declaration jit compilation', () => {
   it('should compile components with inheritance', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   usesInheritance: true,
                 }) as ComponentDef<TestClass>;
 
@@ -230,7 +229,7 @@ describe('component declaration jit compilation', () => {
   it('should compile components with onChanges lifecycle hook', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   usesOnChanges: true,
                 }) as ComponentDef<TestClass>;
 
@@ -242,7 +241,7 @@ describe('component declaration jit compilation', () => {
   it('should compile components with OnPush change detection strategy', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   changeDetection: ChangeDetectionStrategy.OnPush,
                 }) as ComponentDef<TestClass>;
 
@@ -254,7 +253,7 @@ describe('component declaration jit compilation', () => {
   it('should compile components with styles', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   styles: ['div {}'],
                 }) as ComponentDef<TestClass>;
 
@@ -267,7 +266,7 @@ describe('component declaration jit compilation', () => {
   it('should compile components with view encapsulation', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   styles: ['div {}'],
                   encapsulation: ViewEncapsulation.ShadowDom,
                 }) as ComponentDef<TestClass>;
@@ -281,7 +280,7 @@ describe('component declaration jit compilation', () => {
   it('should compile components with animations', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div></div>'),
+                  template: '<div></div>',
                   animations: [{type: 'trigger'}],
                 }) as ComponentDef<TestClass>;
 
@@ -293,7 +292,7 @@ describe('component declaration jit compilation', () => {
   });
 
   it('should honor preserveWhitespaces', () => {
-    const template = createTemplate('<div>    Foo    </div>');
+    const template = '<div>    Foo    </div>';
     const whenTrue = ɵɵngDeclareComponent({
                        type: TestClass,
                        template,
@@ -323,7 +322,7 @@ describe('component declaration jit compilation', () => {
   it('should honor custom interpolation config', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('{% foo %}'),
+                  template: '{% foo %}',
                   interpolation: ['{%', '%}'],
                 }) as ComponentDef<TestClass>;
 
@@ -338,7 +337,7 @@ describe('component declaration jit compilation', () => {
   it('should compile used directives', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div dir></div>'),
+                  template: '<div dir></div>',
                   directives: [{
                     type: TestDir,
                     selector: '[dir]',
@@ -353,7 +352,7 @@ describe('component declaration jit compilation', () => {
   it('should compile forward declared directives', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div forward></div>'),
+                  template: '<div forward></div>',
                   directives: [{
                     type: forwardRef(function() {
                       return ForwardDir;
@@ -374,7 +373,7 @@ describe('component declaration jit compilation', () => {
   it('should compile mixed forward and direct declared directives', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('<div dir forward></div>'),
+                  template: '<div dir forward></div>',
                   directives: [
                     {
                       type: TestDir,
@@ -401,7 +400,7 @@ describe('component declaration jit compilation', () => {
   it('should compile used pipes', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('{{ expr | test }}'),
+                  template: '{{ expr | test }}',
                   pipes: {
                     'test': TestPipe,
                   },
@@ -415,7 +414,7 @@ describe('component declaration jit compilation', () => {
   it('should compile forward declared pipes', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('{{ expr | forward }}'),
+                  template: '{{ expr | forward }}',
                   pipes: {
                     'forward': forwardRef(function() {
                       return ForwardPipe;
@@ -435,7 +434,7 @@ describe('component declaration jit compilation', () => {
   it('should compile mixed forward and direct declared pipes', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
-                  template: createTemplate('{{ expr | forward | test }}'),
+                  template: '{{ expr | forward | test }}',
                   pipes: {
                     'test': TestPipe,
                     'forward': forwardRef(function() {
@@ -453,10 +452,6 @@ describe('component declaration jit compilation', () => {
     });
   });
 });
-
-function createTemplate(template: string) {
-  return {source: template, isInline: true};
-}
 
 type ComponentDefExpectations = jasmine.Expected<Pick<
     ComponentDef<unknown>,

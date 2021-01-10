@@ -6,7 +6,7 @@ import * as i0 from "@angular/core";
 export class ChildComponent {
 }
 ChildComponent.ɵfac = function ChildComponent_Factory(t) { return new (t || ChildComponent)(); };
-ChildComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ChildComponent, selector: "child", ngImport: i0, template: { source: 'child-view', isInline: true } });
+ChildComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ChildComponent, selector: "child", ngImport: i0, template: 'child-view', isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ChildComponent, [{
         type: Component,
         args: [{ selector: 'child', template: 'child-view' }]
@@ -22,7 +22,7 @@ SomeDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", 
 export class MyComponent {
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<child some-directive></child>!', isInline: true }, directives: [{ type: ChildComponent, selector: "child" }, { type: SomeDirective, selector: "[some-directive]" }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<child some-directive></child>!', isInline: true, directives: [{ type: ChildComponent, selector: "child" }, { type: SomeDirective, selector: "[some-directive]" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<child some-directive></child>!' }]
@@ -114,7 +114,7 @@ import * as i0 from "@angular/core";
 export class SomeComponent {
 }
 SomeComponent.ɵfac = function SomeComponent_Factory(t) { return new (t || SomeComponent)(); };
-SomeComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: SomeComponent, selector: "#my-app", ngImport: i0, template: { source: '', isInline: true } });
+SomeComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: SomeComponent, selector: "#my-app", ngImport: i0, template: '', isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SomeComponent, [{
         type: Component,
         args: [{ selector: '#my-app', template: '' }]
@@ -158,7 +158,7 @@ RouterOutlet.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", t
 export class EmptyOutletComponent {
 }
 EmptyOutletComponent.ɵfac = function EmptyOutletComponent_Factory(t) { return new (t || EmptyOutletComponent)(); };
-EmptyOutletComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: EmptyOutletComponent, selector: "ng-component", ngImport: i0, template: { source: '<router-outlet></router-outlet>', isInline: true }, directives: [{ type: RouterOutlet, selector: "router-outlet" }] });
+EmptyOutletComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: EmptyOutletComponent, selector: "ng-component", ngImport: i0, template: '<router-outlet></router-outlet>', isInline: true, directives: [{ type: RouterOutlet, selector: "router-outlet" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(EmptyOutletComponent, [{
         type: Component,
         args: [{ template: '<router-outlet></router-outlet>' }]
@@ -203,7 +203,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(i0.ɵɵdirectiveInject(i0.ElementRef), i0.ɵɵdirectiveInject(i0.ViewContainerRef), i0.ɵɵdirectiveInject(i0.ChangeDetectorRef)); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '', isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '' }]
@@ -256,7 +256,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: { source: '<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>', isInline: true }, directives: [{ type: IfDirective, selector: "[if]" }] });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>', isInline: true, directives: [{ type: IfDirective, selector: "[if]" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{ selector: 'my-component', template: '<ul #foo><li *if>{{salutation}} {{foo}}</li></ul>' }]
@@ -299,10 +299,10 @@ import * as i0 from "@angular/core";
 export class MyComp {
 }
 MyComp.ɵfac = function MyComp_Factory(t) { return new (t || MyComp)(); };
-MyComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComp, selector: "my-comp", inputs: { names: "names" }, ngImport: i0, template: { source: `
+MyComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComp, selector: "my-comp", inputs: { names: "names" }, ngImport: i0, template: `
     <p>{{ names[0] }}</p>
     <p>{{ names[1] }}</p>
-  `, isInline: true } });
+  `, isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComp, [{
         type: Component,
         args: [{
@@ -321,9 +321,9 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: `
   <my-comp [names]="['Nancy', customName]"></my-comp>
-`, isInline: true }, directives: [{ type: MyComp, selector: "my-comp", inputs: ["names"] }] });
+`, isInline: true, directives: [{ type: MyComp, selector: "my-comp", inputs: ["names"] }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{
@@ -370,7 +370,7 @@ import * as i0 from "@angular/core";
 export class MyComp {
 }
 MyComp.ɵfac = function MyComp_Factory(t) { return new (t || MyComp)(); };
-MyComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComp, selector: "my-comp", inputs: { names: "names" }, ngImport: i0, template: { source: `
+MyComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComp, selector: "my-comp", inputs: { names: "names" }, ngImport: i0, template: `
     {{ names[0] }}
     {{ names[1] }}
     {{ names[3] }}
@@ -382,7 +382,7 @@ MyComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: M
     {{ names[9] }}
     {{ names[10] }}
     {{ names[11] }}
-  `, isInline: true } });
+  `, isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComp, [{
         type: Component,
         args: [{
@@ -418,10 +418,10 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: `
   <my-comp [names]="['start-', n0, n1, n2, n3, n4, '-middle-', n5, n6, n7, n8, '-end']">
   </my-comp>
-`, isInline: true }, directives: [{ type: MyComp, selector: "my-comp", inputs: ["names"] }] });
+`, isInline: true, directives: [{ type: MyComp, selector: "my-comp", inputs: ["names"] }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{
@@ -477,10 +477,10 @@ import * as i0 from "@angular/core";
 export class ObjectComp {
 }
 ObjectComp.ɵfac = function ObjectComp_Factory(t) { return new (t || ObjectComp)(); };
-ObjectComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ObjectComp, selector: "object-comp", inputs: { config: "config" }, ngImport: i0, template: { source: `
+ObjectComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ObjectComp, selector: "object-comp", inputs: { config: "config" }, ngImport: i0, template: `
     <p> {{ config['duration'] }} </p>
     <p> {{ config.animation }} </p>
-  `, isInline: true } });
+  `, isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ObjectComp, [{
         type: Component,
         args: [{
@@ -499,9 +499,9 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: `
   <object-comp [config]="{'duration': 500, animation: name}"></object-comp>
-`, isInline: true }, directives: [{ type: ObjectComp, selector: "object-comp", inputs: ["config"] }] });
+`, isInline: true, directives: [{ type: ObjectComp, selector: "object-comp", inputs: ["config"] }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{
@@ -550,11 +550,11 @@ import * as i0 from "@angular/core";
 export class NestedComp {
 }
 NestedComp.ɵfac = function NestedComp_Factory(t) { return new (t || NestedComp)(); };
-NestedComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: NestedComp, selector: "nested-comp", inputs: { config: "config" }, ngImport: i0, template: { source: `
+NestedComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: NestedComp, selector: "nested-comp", inputs: { config: "config" }, ngImport: i0, template: `
     <p> {{ config.animation }} </p>
     <p> {{config.actions[0].opacity }} </p>
     <p> {{config.actions[1].duration }} </p>
-  `, isInline: true } });
+  `, isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(NestedComp, [{
         type: Component,
         args: [{
@@ -575,10 +575,10 @@ export class MyApp {
     }
 }
 MyApp.ɵfac = function MyApp_Factory(t) { return new (t || MyApp)(); };
-MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: { source: `
+MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: `
   <nested-comp [config]="{animation: name, actions: [{ opacity: 0, duration: 0}, {opacity: 1, duration: duration }]}">
   </nested-comp>
-`, isInline: true }, directives: [{ type: NestedComp, selector: "nested-comp", inputs: ["config"] }] });
+`, isInline: true, directives: [{ type: NestedComp, selector: "nested-comp", inputs: ["config"] }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{
