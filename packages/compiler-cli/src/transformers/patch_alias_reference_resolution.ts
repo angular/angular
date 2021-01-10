@@ -21,7 +21,7 @@ const patchedReferencedAliasesSymbol = Symbol('patchedReferencedAliases');
 
 /** Describes a subset of the TypeScript internal emit resolver. */
 interface EmitResolver {
-  isReferencedAliasDeclaration?(node: ts.Node, checkChildren?: boolean): void;
+  isReferencedAliasDeclaration?(node: ts.Node, ...args: unknown[]): void;
   [patchedReferencedAliasesSymbol]?: Set<ts.Declaration>;
 }
 
