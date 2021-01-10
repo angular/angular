@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 import {Decorator, ReflectionHost} from '../ngtsc/reflection';
-import {isAliasImportDeclaration, loadAliasReferenceResolutionPatchOrDie} from './patch_alias_reference_resolution';
+import {isAliasImportDeclaration, loadIsReferencedAliasDeclarationPatch} from './patch_alias_reference_resolution';
 
 /**
  * Whether a given decorator should be treated as an Angular decorator.
@@ -351,8 +351,8 @@ export function getDownlevelDecoratorsTransform(
     // such parameter type symbols previously could be type-only, but now might be also
     // used in the `ctorParameters` static property as a value. We want to make sure
     // that TypeScript does not elide imports for such type references. Read more
-    // about this in the description for `patchAliasReferenceResolution`.
-    const referencedParameterTypes = loadAliasReferenceResolutionPatchOrDie(context);
+    // about this in the description for `loadIsReferencedAliasDeclarationPatch`.
+    const referencedParameterTypes = loadIsReferencedAliasDeclarationPatch(context);
 
     /**
      * Converts an EntityName (from a type annotation) to an expression (accessing a value).

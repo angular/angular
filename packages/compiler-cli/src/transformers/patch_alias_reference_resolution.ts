@@ -17,12 +17,12 @@ interface TransformationContextWithResolver extends ts.TransformationContext {
   getEmitResolver: () => EmitResolver;
 }
 
-const patchedReferencesAliasesSymbol = Symbol('patchedAliasedReferences');
+const patchedReferencedAliasesSymbol = Symbol('patchedReferencedAliases');
 
 /** Describes a subset of the TypeScript internal emit resolver. */
 interface EmitResolver {
   isReferencedAliasDeclaration?(node: ts.Node, checkChildren?: boolean): void;
-  [patchedReferencesAliasesSymbol]?: Set<ts.Declaration>;
+  [patchedReferencedAliasesSymbol]?: Set<ts.Declaration>;
 }
 
 /**
@@ -71,7 +71,7 @@ interface EmitResolver {
  * Github.
  * https://sourcegraph.com/github.com/microsoft/TypeScript@3eaa7c65f6f076a08a5f7f1946fd0df7c7430259/-/blob/src/compiler/checker.ts#L31219-31257
  */
-export function loadAliasReferenceResolutionPatchOrDie(context: ts.TransformationContext):
+export function loadIsReferencedAliasDeclarationPatch(context: ts.TransformationContext):
     Set<ts.Declaration> {
   // If the `getEmitResolver` method is not available, TS most likely changed the
   // internal structure of the transformation context. We will abort gracefully.
@@ -83,27 +83,26 @@ export function loadAliasReferenceResolutionPatchOrDie(context: ts.Transformatio
   // The emit resolver may have been patched already, in which case we return the set of referenced
   // aliases that was created when the patch was first applied.
   // See https://github.com/angular/angular/issues/40276.
-  const existingReferencedAliases = emitResolver[patchedReferencesAliasesSymbol];
+  const existingReferencedAliases = emitResolver[patchedReferencedAliasesSymbol];
   if (existingReferencedAliases !== undefined) {
     return existingReferencedAliases;
   }
 
-  const referencedAliases = new Set<ts.Declaration>();
-
-  const originalReferenceResolution = emitResolver.isReferencedAliasDeclaration;
+  const originalIsReferencedAliasDeclaration = emitResolver.isReferencedAliasDeclaration;
   // If the emit resolver does not have a function called `isReferencedAliasDeclaration`, then
   // we abort gracefully as most likely TS changed the internal structure of the emit resolver.
-  if (originalReferenceResolution === undefined) {
+  if (originalIsReferencedAliasDeclaration === undefined) {
     throwIncompatibleTransformationContextError();
   }
+
+  const referencedAliases = new Set<ts.Declaration>();
   emitResolver.isReferencedAliasDeclaration = function(node, ...args) {
     if (isAliasImportDeclaration(node) && referencedAliases.has(node)) {
       return true;
     }
-    return originalReferenceResolution.call(emitResolver, node, ...args);
+    return originalIsReferencedAliasDeclaration.call(emitResolver, node, ...args);
   };
-  emitResolver[patchedReferencesAliasesSymbol] = referencedAliases;
-  return referencedAliases;
+  return emitResolver[patchedReferencedAliasesSymbol] = referencedAliases;
 }
 
 /**
