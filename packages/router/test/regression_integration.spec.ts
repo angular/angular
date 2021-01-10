@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule} from '@angular/common';
+import {CommonModule, Location} from '@angular/common';
+import {SpyLocation} from '@angular/common/testing';
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Router} from '@angular/router';
@@ -227,6 +228,54 @@ describe('Integration', () => {
        expect(fixture.nativeElement.innerHTML).toContain('router-outlet');
        expect(fixture.nativeElement.innerHTML).not.toContain('simple');
      }));
+
+  describe('useHash', () => {
+    it('should restore hash to match current route - #28561', fakeAsync(() => {
+         @Component({selector: 'root-cmp', template: `<router-outlet></router-outlet>`})
+         class RootCmp {
+         }
+
+         @Component({template: 'simple'})
+         class SimpleCmp {
+         }
+
+         TestBed.configureTestingModule({
+           imports: [RouterTestingModule.withRoutes([
+             {path: '', component: SimpleCmp},
+             {path: 'one', component: SimpleCmp, canActivate: ['returnRootUrlTree']}
+           ])],
+           declarations: [SimpleCmp, RootCmp],
+           providers: [
+             {
+               provide: 'returnRootUrlTree',
+               useFactory: (router: Router) => () => {
+                 return router.parseUrl('/');
+               },
+               deps: [Router]
+             },
+           ],
+         });
+
+         const router = TestBed.inject(Router);
+         const location = TestBed.inject(Location) as SpyLocation;
+
+         router.navigateByUrl('/');
+         // Will setup location change listeners
+         const fixture = createRoot(router, RootCmp);
+
+         location.simulateHashChange('/one');
+         advance(fixture);
+
+         const BASE_ERROR_MESSAGE =
+             'This asserts current behavior, which is incorrect. When #28561 is fixed, it should be: ';
+
+         expect(location.path()).toEqual('/one', BASE_ERROR_MESSAGE + '/');
+         const urlChanges = ['replace: /', 'hash: /one'];
+         expect(location.urlChanges)
+             .toEqual(
+                 urlChanges, BASE_ERROR_MESSAGE + JSON.stringify(urlChanges.concat('replace: /')));
+       }));
+  });
 });
 
 function advance<T>(fixture: ComponentFixture<T>): void {
