@@ -41,9 +41,10 @@ export function createComponentDefinitionMap(meta: R3ComponentMetadata, template
   const definitionMap: DefinitionMap<R3DeclareComponentMetadata> =
       createDirectiveDefinitionMap(meta);
 
-  const templateMap = compileTemplateDefinition(template);
-
-  definitionMap.set('template', templateMap);
+  definitionMap.set('template', getTemplateExpression(template));
+  if (template.isInline) {
+    definitionMap.set('isInline', o.literal(true));
+  }
 
   definitionMap.set('styles', toOptionalLiteralArray(meta.styles, o.literal));
   definitionMap.set('directives', compileUsedDirectiveMetadata(meta));
@@ -73,17 +74,6 @@ export function createComponentDefinitionMap(meta: R3ComponentMetadata, template
   }
 
   return definitionMap;
-}
-
-/**
- * Compiles the provided template into its partial definition.
- */
-function compileTemplateDefinition(template: ParsedTemplate): o.LiteralMapExpr {
-  const templateMap = new DefinitionMap<R3DeclareComponentMetadata['template']>();
-  const templateExpr = getTemplateExpression(template);
-  templateMap.set('source', templateExpr);
-  templateMap.set('isInline', o.literal(template.isInline));
-  return templateMap.toLiteralMap();
 }
 
 function getTemplateExpression(template: ParsedTemplate): o.Expression {

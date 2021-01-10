@@ -13,7 +13,7 @@ export class MyComponent {
     }
 }
 MyComponent.ɵfac = function MyComponent_Factory(t) { return new (t || MyComponent)(); };
-MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", inputs: { name: "name" }, host: { attributes: { "title": "foo title" }, properties: { "style": "this.myStyle", "class": "this.myClass", "id": "this.id", "title": "this.title" }, styleAttribute: "width:200px; height:500px", classAttribute: "foo baz" }, ngImport: i0, template: { source: '', isInline: true } });
+MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", inputs: { name: "name" }, host: { attributes: { "title": "foo title" }, properties: { "style": "this.myStyle", "class": "this.myClass", "id": "this.id", "title": "this.title" }, styleAttribute: "width:200px; height:500px", classAttribute: "foo baz" }, ngImport: i0, template: '', isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
         args: [{
@@ -150,9 +150,9 @@ MyDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: My
 export class MyAppComp {
 }
 MyAppComp.ɵfac = function MyAppComp_Factory(t) { return new (t || MyAppComp)(); };
-MyAppComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyAppComp, selector: "my-app", ngImport: i0, template: { source: `
+MyAppComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyAppComp, selector: "my-app", ngImport: i0, template: `
     <div my-dir></div>
-  `, isInline: true }, directives: [{ type: MyDir, selector: "[my-dir]" }] });
+  `, isInline: true, directives: [{ type: MyDir, selector: "[my-dir]" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyAppComp, [{
         type: Component,
         args: [{

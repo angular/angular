@@ -49,9 +49,8 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
   private toR3ComponentMeta(metaObj: AstObject<R3DeclareComponentMetadata, TExpression>):
       R3ComponentMetadata {
     const interpolation = parseInterpolationConfig(metaObj);
-    const templateObj = metaObj.getObject('template');
-    const templateSource = templateObj.getValue('source');
-    const isInline = templateObj.getBoolean('isInline');
+    const templateSource = metaObj.getValue('template');
+    const isInline = metaObj.has('isInline') ? metaObj.getBoolean('isInline') : false;
     const templateInfo = this.getTemplateInfo(templateSource, isInline);
 
     // We always normalize line endings if the template is inline.

@@ -345,7 +345,7 @@ function convertDeclareComponentFacadeToMetadata(
     declaration: R3DeclareComponentFacade, typeSourceSpan: ParseSourceSpan,
     sourceMapUrl: string): R3ComponentMetadata {
   const {template, interpolation} = parseJitTemplate(
-      declaration.template.source, declaration.type.name, sourceMapUrl,
+      declaration.template, declaration.type.name, sourceMapUrl,
       declaration.preserveWhitespaces ?? false, declaration.interpolation);
 
   return {

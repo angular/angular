@@ -119,22 +119,18 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
  */
 export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
   /**
-   * Information about the component's template.
+   * The component's unparsed template string as opaque expression. The template is represented
+   * using either a string literal or template literal without substitutions, but its value is
+   * not read directly. Instead, the template parser is given the full source file's text and
+   * the range of this expression to parse directly from source.
    */
-  template: {
-    /**
-     * The component's unparsed template string as opaque expression. The template is represented
-     * using either a string literal or template literal without substitutions, but its value is
-     * not read directly. Instead, the template parser is given the full source file's text and
-     * the range of this expression to parse directly from source.
-     */
-    source: o.Expression;
+  template: o.Expression;
 
-    /**
-     * Whether the template was inline (using `template`) or external (using `templateUrl`).
-     */
-    isInline: boolean;
-  };
+  /**
+   * Whether the template was inline (using `template`) or external (using `templateUrl`).
+   * Defaults to false.
+   */
+  isInline?: boolean;
 
   /**
    * CSS from inline styles and included styleUrls.
