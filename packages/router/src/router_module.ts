@@ -411,7 +411,9 @@ export interface ExtraOptions {
    * ];
    * ```
    *
-   * From the `ContainerComponent`, this will not work:
+   * From the `ContainerComponent`, you should be able to navigate to `AComponent` using
+   * the following `routerLink`, but it will not work if `relativeLinkResolution` is set
+   * to `'legacy'`:
    *
    * `<a [routerLink]="['./a']">Link to A</a>`
    *
@@ -419,7 +421,8 @@ export interface ExtraOptions {
    *
    * `<a [routerLink]="['../a']">Link to A</a>`
    *
-   * In other words, you're required to use `../` rather than `./`.
+   * In other words, you're required to use `../` rather than `./` when the relative link
+   * resolution is set to `'legacy'`.
    *
    * The default in v11 is `corrected`.
    */
