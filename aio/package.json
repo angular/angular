@@ -53,7 +53,7 @@
     "check-env": "yarn ~~check-env",
     "postcheck-env": "yarn aio-check-local",
     "payload-size": "scripts/payload.sh",
-    "predocs": "node scripts/contributors/check-pictures && yarn generate-stackblitz && yarn generate-zips",
+    "predocs": "node scripts/contributors/validate-data && yarn generate-stackblitz && yarn generate-zips",
     "docs": "yarn docs-only",
     "docs-only": "dgeni ./tools/transforms/angular.io-package",
     "docs-watch": "node tools/transforms/authors-package/watchr.js",
