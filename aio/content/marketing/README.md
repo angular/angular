@@ -16,12 +16,11 @@ https://docs.google.com/spreadsheets/d/1_Ls2Kle7NxPBIG8f3OEVZ4gJZ8OCTtBxGYwMPb1T
 
 - Ours: https://angular.io/about?group=GDE which is derived from `contributors.json`.
 
-Alex Eagle is investigating how to reconcile these two lists.
-
 ## About the data
 
 - Keys in `contributors.json` should be GitHub handles. (Most currently are, but not all.)
   This will allow us to use GitHub as the default source for things like name, avatar, etc.
+- Keys are sorted in alphabetical order, please keep the sorting order when adding new entries.
 - Pictures are stored in `aio/content/images/bios/<picture-filename>`.
 
 ## Processing the data
