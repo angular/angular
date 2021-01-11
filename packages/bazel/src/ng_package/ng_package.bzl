@@ -811,23 +811,3 @@ ng_package = rule(
 """
 ng_package produces an npm-ready package from an Angular library.
 """
-
-def ng_package_macro(name, **kwargs):
-    ng_package(
-        name = name,
-        **kwargs
-    )
-    native.alias(
-        name = name + ".pack",
-        actual = select({
-            "@bazel_tools//src/conditions:host_windows": name + ".pack.bat",
-            "//conditions:default": name + ".pack.sh",
-        }),
-    )
-    native.alias(
-        name = name + ".publish",
-        actual = select({
-            "@bazel_tools//src/conditions:host_windows": name + ".publish.bat",
-            "//conditions:default": name + ".publish.sh",
-        }),
-    )
