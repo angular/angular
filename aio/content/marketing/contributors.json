@@ -40,7 +40,7 @@
   "alan-agius4": {
     "name": "Alan Agius",
     "groups": ["Angular"],
-    "lead": "alexeagle",
+    "lead": "kyliau",
     "picture": "alan-agius4.jpg",
     "bio": "Angular CLI Member, Loves TypeScript, Build Tools, Food, Beer & Coffee :)"
   },
@@ -59,7 +59,7 @@
     "website": "https://plus.google.com/+AlexRickabaugh/about",
     "bio": "Core team member working to optimize the Angular platform for the next generation of applications, including mobile. Before joining the Angular team, Alex worked in the Google sales organization where he helped build the first large Angular application within Google.",
     "groups": ["Angular"],
-    "lead": "kara"
+    "lead": "jelbourn"
   },
   "alyssa": {
     "name": "Alyssa Nicoll",
@@ -74,7 +74,7 @@
     "picture": "andrew-kushnir.jpg",
     "bio": "Andrew is a software engineer at Google on the Angular Core team.",
     "groups": ["Angular"],
-    "lead": "kara"
+    "lead": "jelbourn"
   },
   "andrewseguin": {
     "name": "Andrew Seguin",
@@ -96,7 +96,7 @@
     "picture": "andrewscott.jpg",
     "bio": "Andrew is a software engineer at Google on the Angular Core team",
     "groups": ["Angular"],
-    "lead": "kara"
+    "lead": "jelbourn"
   },
   "ayazhafiz": {
     "name": "Ayaz Hafiz",
@@ -147,7 +147,6 @@
   "CaerusKaru": {
     "name": "Adam Plumer",
     "groups": ["Collaborators"],
-    "mentor": "vikerman",
     "picture": "CaerusKaru.jpg"
   },
   "cexbrayat": {
@@ -199,7 +198,7 @@
   "clydin": {
     "name": "Charles Lyding",
     "groups": ["Angular"],
-    "lead": "alexeagle",
+    "lead": "kyliau",
     "picture": "clydin.jpg"
   },
   "coryrylan": {
@@ -249,7 +248,7 @@
     "website": "https://github.com/DevVersion",
     "bio": "Paul is a 17-year-old developer living in Germany. While he attends school, Paul works as a core team member on Angular Material. Paul focuses on tooling and building components for Angular.",
     "groups": ["Angular"],
-    "lead": "kara"
+    "lead": "jelbourn"
   },
   "dgp1130": {
     "name": "Doug Parker",
@@ -305,7 +304,7 @@
     "website": "https://github.com/filipesilva",
     "bio": "Filipe is a passion-driven developer that always strives for the most elegant solution for each problem. He is currently an author for Angular.io, a core contributor for Angular-CLI and senior front end engineer at KonnectAgain. When not busy going through PRs, you can find him scouring reddit for new dinner recipes to cook or enjoying a craft beer in Dublin.",
     "groups": ["Angular"],
-    "lead": "alexeagle"
+    "lead": "kyliau"
   },
   "fmalcher": {
     "name": "Ferdinand Malcher",
@@ -335,7 +334,7 @@
   "gregmagolan": {
     "name": "Greg Magolan",
     "groups": ["Angular"],
-    "lead": "alexeagle",
+    "lead": "kyliau",
     "picture": "gregmagolan.jpg",
     "bio": "Building great software with Angular and Node.js."
   },
@@ -481,7 +480,7 @@
     "twitter": "kapunahele",
     "bio": "Kapunahele is a developer and Angular fan who works on the Angular docs writing guides and developing example apps. She also enjoys Native Hawaiian practices, textile arts, and marveling at little, inconspicuous plants growing in forgotten places outdoors.",
     "groups": ["Angular"],
-    "lead": "dennispbrown"
+    "lead": "aikidave"
   },
   "katerina": {
     "name": "Katerina Skroumpelou",
@@ -638,7 +637,7 @@
     "website": "http://misko.hevery.com",
     "bio": "Miško Hevery is the creator of AngularJS framework. He has passion for making complex things simple. He currently works at Google, but has previously worked at Adobe, Sun Microsystems, Intel, and Xerox, where he became an expert in building web applications in web related technologies such as Java, JavaScript, Flex and ActionScript.",
     "groups": ["Angular"],
-    "lead": "kara"
+    "lead": "jelbourn"
   },
   "michaelhladky": {
     "name": "Michael Hladky",
@@ -710,7 +709,7 @@
     "twitter": "pkozlowski_os",
     "bio": "Open source hacker, AngularJS book author, AngularUI lead developer. Pawel is an software-development addict who believes in free, open source software. He is a core contributor to the AngularJS framework, AngularUI, Karma-runner and several other projects. He is the co-author of the \"Mastering Web Application Development with AngularJS\" book. When not coding, Pawel can be spotted speaking at various software development conferences.",
     "groups": ["Angular"],
-    "lead": "kara"
+    "lead": "jelbourn"
   },
   "ralph": {
     "name": "Ralph Wang",
