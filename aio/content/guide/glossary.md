@@ -22,7 +22,7 @@ Una estructura que proporciona metadatos para una clase. Ver [decorador](#decora
 
 Es una herramienta que utiliza la CLI para realizar tareas complejas, como la compilación y la ejecución de pruebas, de acuerdo con una configuración proporcionada.
 
-El architect es un shell que ejecuta un [constructor](#builder) (definido en un [paquete npm](#npm-package)) con una [configuración de destino] dada (#target).
+El architect es un shell que ejecuta un [constructor](#builder) (definido en un [paquete npm](#npm-package)) con una [configuración de destino](#target) dada.
 
 En el [archivo de configuración del espacio de trabajo](guide/workspace-config#project-tool-configuration-options), una sección de "architect" proporciona opciones de configuración para los architects constructores.
 
@@ -105,15 +105,15 @@ La compilación ahead-of-time (AOT) de Angular convierte el código Angular HTML
 
 Este es el mejor modo de compilación para entornos de producción, con un menor tiempo de carga y un mayor rendimiento en comparación con [compilación just-in-time (JIT)](#jit).
 
-Al compilar su aplicación utilizando la herramienta de línea de comandos `ngc`, puede iniciar directamente a una module factory, por lo que no necesita incluir el compilador Angular en su paquete de JavaScript.
+Al compilar tu aplicación utilizando la herramienta de línea de comandos `ngc`, puedes iniciar directamente a una module factory, por lo que no necesitas incluir el compilador Angular en tu paquete de JavaScript.
 
 {@a jit}
 
 ## compilación just-in-time (JIT)
 
-El compilador Angular just-in-time (JIT) convierte su código Angular HTML y TypeScript en código JavaScript eficiente en tiempo de ejecución, como parte del arranque.
+El compilador Angular just-in-time (JIT) convierte tu código Angular HTML y TypeScript en código JavaScript eficiente en tiempo de ejecución, como parte del arranque.
 
-La compilación JIT es el valor predeterminado (a diferencia de la compilación AOT) cuando ejecuta los comandos CLI `ng build` y`ng serve` de Angular, y es una buena opción durante el desarrollo.
+La compilación JIT es el valor predeterminado (a diferencia de la compilación AOT) cuando ejecutas los comandos CLI `ng build` y`ng serve` de Angular, y es una buena opción durante el desarrollo.
 El modo JIT no se recomienda para el uso en producción porque da como resultado grandes cargas útiles de aplicaciones que dificultan el rendimiento de arranque.
 
 Comparar con [compilación ahead-of-time (AOT)](#aot).
@@ -188,10 +188,10 @@ El detector de cambios es responsable de actualizar la vista para reflejar el mo
 Del mismo modo, el usuario puede interactuar con la interfaz de usuario, lo que provoca eventos que cambian el estado del modelo de datos.
 Estos eventos pueden desencadenar la detección de cambios.
 
-Usando la estrategia de detección de cambio predeterminada ("CheckAlways"), el detector de cambio pasa por la [jerarquía de vista](#view-tree) en cada turno de VM para verificar cada [propiedad vinculada a datos](#data-binding) en la plantilla. en el modelo. En la primera fase, compara el estado actual de los datos dependientes con el estado anterior y recopila los cambios.
+Usando la estrategia de detección de cambio predeterminada ("CheckAlways"), el detector de cambio pasa por la [jerarquía de vista](#view-tree) en cada turno de VM para verificar cada [propiedad vinculada a datos](#data-binding) en la plantilla. En la primera fase, compara el estado actual de los datos dependientes con el estado anterior y recopila los cambios.
 En la segunda fase, actualiza la página DOM para reflejar los nuevos valores de datos.
 
-Si configuras la estrategia de detección de cambios `OnPush` ("CheckOnce"), el detector de cambios se ejecuta solo cuando [invocado explícitamente](api/core/ChangeDetectorRef), o cuando se activa mediante un cambio de referencia en mediante un `Input` o un controlador de eventos. Esto generalmente mejora el rendimiento. Para obtener más información, consulta [Optimizar la detección de cambios de Angular](https://web.dev/faster-angular-change-detection/).
+Si configuras la estrategia de detección de cambios `OnPush` ("CheckOnce"), el detector de cambios se ejecuta solo cuando es [invocado explícitamente](api/core/ChangeDetectorRef), o cuando se activa mediante un cambio de referencia en mediante un `Input` o un controlador de eventos. Esto generalmente mejora el rendimiento. Para obtener más información, consulta [Optimizar la detección de cambios de Angular](https://web.dev/faster-angular-change-detection/).
 
 {@a class-decorator}
 
@@ -227,7 +227,7 @@ Obtén más información en [Directivas de atributos](guide/attribute-directives
 
 ## directivas estructurales
 
-Una categoría de [directiva](#directive) que es responsable de dar forma al diseño HTML modificando DOM y mdashthat, es decir, agregando, eliminando o manipulando elementos y sus elementos secundarios.
+Una categoría de [directiva](#directive) que es responsable de dar forma al diseño HTML modificando el DOM, es decir, agregando, eliminando o manipulando elementos y sus elementos secundarios.
 
 Obtén más información en [Directivas estructurales](guide/structural-directives).
 
@@ -263,7 +263,7 @@ Consulta [decorador de clase](#class-decorator), [decorador de campo de clase](#
 
 ## directiva
 
-Una clase que puede modificar la estructura del DOM o modificar atributos en el DOM y el modelo de datos de componentes. Una definición de clase directiva está precedida inmediatamente por un `@Directive()` [decorador](#decorator) que proporciona metadatos.
+Una clase que puede modificar la estructura del DOM o modificar atributos en el DOM y el modelo de datos de componentes. Una definición de clase directiva está precedida inmediatamente por un [decorador](#decorator) `@Directive()` que proporciona metadatos.
 
 Una clase de directiva generalmente está asociada con un elemento o atributo HTML, y ese elemento o atributo a menudo se conoce como la directiva misma. Cuando Angular encuentra una directiva en una [plantilla](#template) HTML, crea la instancia de clase de directiva coincidente y le da a la instancia control sobre esa parte del DOM del navegador.
 
@@ -276,8 +276,8 @@ Hay tres categorías de directivas:
 - [Directivas estructurales](#structural-directive) modifican la estructura del DOM.
 
 Angular proporciona una serie de directivas integradas que comienzan con el prefijo `ng`.
-También puede crear nuevas directivas para implementar su propia funcionalidad.
-Asocia un _selector_ (una etiqueta HTML como `<my-directive>`) con una directiva personalizada, extendiendo así la [sintaxis de plantilla](guide/template-syntax) que puede usar en sus aplicaciones.
+También puedes crear nuevas directivas para implementar tu propia funcionalidad.
+Asocia un _selector_ (una etiqueta HTML como `<my-directive>`) con una directiva personalizada, extendiendo así la [sintaxis de plantilla](guide/template-syntax) que puede usar en tus aplicaciones.
 
 {@a E}
 
@@ -287,15 +287,15 @@ Asocia un _selector_ (una etiqueta HTML como `<my-directive>`) con una directiva
 
 La [especificación oficial del lenguaje JavaScript](https://es.wikipedia.org/wiki/ECMAScript).
 
-No todos los navegadores son compatibles con el último estándar ECMAScript, pero puede usar un [transpiler](#transpile) (como [TypeScript](#typescript)) para escribir código utilizando las últimas funciones, que luego se transpilarán al código que se ejecuta en las versiones que son compatibles con los navegadores.
+No todos los navegadores son compatibles con el último estándar ECMAScript, pero puedes usar un [transpiler](#transpile) (como [TypeScript](#typescript)) para escribir código utilizando las últimas funciones, que luego se transpilarán al código que se ejecuta en las versiones que son compatibles con los navegadores.
 
-Para obtener más información, consultá [Browser Support](guide/browser-support).
+Para obtener más información, consulta [Browser Support](guide/browser-support).
 
 {@a binding}
 
 ## enlaces (binding)
 
-En general, es la práctica de establecer una variable o propiedad en un valor de datos Dentro de Angular, generalmente se refiere a [enlace de datos](#data-binding), que coordina las propiedades del objeto DOM con las propiedades del objeto de datos.
+En general, es la práctica de establecer una variable o propiedad en un valor de datos. Dentro de Angular, generalmente se refiere a [enlace de datos](#data-binding), que coordina las propiedades del objeto DOM con las propiedades del objeto de datos.
 
 A veces se refiere a una [inyección de dependencia](#dependency-injection) de enlace
 entre un [token](#token) y una dependencia de [proveedor](#provider).
@@ -340,7 +340,7 @@ Una herramienta que configura e implementa la navegación entre estados y [vista
 
 El módulo `Router` es un [NgModule](#ngmodule) que proporciona los proveedores de servicios y las directivas necesarias para navegar por las vistas de la aplicación. Un [componente de enrutamiento](#router-outlet) es aquel que importa el módulo `Router` y cuya plantilla contiene un elemento `RouterOutlet` donde puede mostrar vistas producidas por el enrutador.
 
-El enrutador define la navegación entre vistas en una sola página, a diferencia de la navegación entre páginas. Interpreta enlaces de tipo URL para determinar qué vistas crear o destruir, y qué componentes cargar o descargar. Le permite aprovechar [carga diferida](#lazy-load) en las aplicaciones Angular.
+A diferencia de la navegación entre páginas, el enrutador define la navegación entre vistas en una sola página. Interpreta enlaces de tipo URL para determinar qué vistas crear o destruir, y qué componentes cargar o descargar. Te permite aprovechar la [carga diferida](#lazy-load) en las aplicaciones Angular.
 
 Obtén más información en [Enrutamiento y navegación](guide/router).
 
@@ -353,7 +353,7 @@ En la mayoría de los casos, esto le permite usar plantillas de Angular y enlace
 
 La documentación generalmente se refiere a _elementos_ (instancias `ElementRef`), a diferencia de _elementos DOM_ (que se puede acceder directamente si es necesario).
 
-Comparado con [elemento personalizado](#custom-element).
+Comparar con [elemento personalizado](#custom-element).
 
 {@a angular-element}
 
@@ -404,15 +404,15 @@ Usando Node 6.9 o superior, instala la CLI de esquemas globalmente:
 npm install -g @angular-devkit/schematics-cli
 </code-example>
 
-Esto instala el ejecutable `schematics`, que puede usar para crear un nuevo esquema [colección](#collection) con un esquema inicial llamado. La carpeta de colección es un espacio de trabajo para esquemas. También puede usar el comando `schematics` para agregar un nuevo esquema a una colección existente, o extender un esquema existente.
+Esto instala el ejecutable `schematics`, que puedes usar para crear un nuevo esquema [colección](#collection) con un esquema inicial llamado. La carpeta de colección es un espacio de trabajo para esquemas. También puedes usar el comando `schematics` para agregar un nuevo esquema a una colección existente, o extender un esquema existente.
 
 {@a workspace}
 
 ## espacio de trabajo
 
-Una colección de [proyectos](#project) Angular (es decir, aplicaciones y librerías) con tecnología de [anglar CLI](#cli) que generalmente se ubican en un único repositorio de control de fuente (como [git](https://git-scm.com/)).
+Una colección de [proyectos](#project) Angular (es decir, aplicaciones y librerías) con tecnología de [Angular CLI](#cli) que generalmente se ubican en un único repositorio de control de fuente (como [git](https://git-scm.com/)).
 
-El [CLI](#cli) [`ng new` command](cli/new) crea un directorio del sistema de archivos (la "raíz del espacio de trabajo"). En la raíz del espacio de trabajo, también crea el espacio de trabajo [archivo de configuración](#configuration) (`angular.json`) y, por defecto, un proyecto de aplicación inicial con el mismo nombre.
+El [comando CLI `ng new`](cli/new) crea un directorio del sistema de archivos (la "raíz del espacio de trabajo"). En la raíz del espacio de trabajo, también crea el espacio de trabajo [archivo de configuración](#configuration) (`angular.json`) y, por defecto, un proyecto de aplicación inicial con el mismo nombre.
 
 Los comandos que crean u operan en aplicaciones y librerías (como `add` y `generate`) deben ejecutarse desde una carpeta de espacio de trabajo.
 
@@ -457,9 +457,9 @@ Cuando se usan formularios reactivos:
 - La validación se configura mediante funciones de validación en lugar de directivas de validación.
 - Cada control se crea explícitamente en la clase de componente creando una instancia de `FormControl` manualmente o con `FormBuilder`.
 - Los elementos de entrada de la plantilla _no_ usan `ngModel`.
-- as directivas Angular asociadas tienen el prefijo `form`, como `formControl`, `formGroup` y `formControlName`.
+- Las directivas Angular asociadas tienen el prefijo `form`, como `formControl`, `formGroup` y `formControlName`.
 
-La alternativa es un formulario basado en plantillas. Para una introducción y comparación de ambos enfoques de formularios, consulte [Introducción a los formularios Angular](guide/forms-overview).
+La alternativa es un formulario basado en plantillas. Para una introducción y comparación de ambos enfoques de formularios, consulta [Introducción a los formularios Angular](guide/forms-overview).
 
 {@a unidirectional-data-flow}
 
@@ -470,9 +470,9 @@ Un modelo de flujo de datos donde el árbol de componentes siempre se verifica e
 En la práctica, esto significa que los datos en Angular fluyen hacia abajo durante la detección de cambios.
 Un componente primario puede cambiar fácilmente los valores en sus componentes secundarios porque primero se verifica el primario.
 Sin embargo, podría producirse un error si un componente secundario intenta cambiar un valor en su elemento primario durante la detección de cambio (invirtiendo el flujo de datos esperado), porque el componente principal ya se ha procesado.
-En modo de desarrollo, Angular arroja el error `ExpressionChangedAfterItHasBeenCheckedError` si su aplicación intenta hacer esto, en lugar de fallar silenciosamente en representar el nuevo valor.
+En modo de desarrollo, Angular arroja el error `ExpressionChangedAfterItHasBeenCheckedError` si tu aplicación intenta hacer esto, en lugar de fallar silenciosamente en representar el nuevo valor.
 
-Para evitar este error, un método [lifecycle hook](guide/lifecycle-hooks)que busca realizar dicho cambio debería desencadenar una nueva ejecución de detección de cambio. La nueva ejecución sigue la misma dirección que antes, pero logra recoger el nuevo valor.
+Para evitar este error, un método [lifecycle hook](guide/lifecycle-hooks) que busca realizar dicho cambio debería desencadenar una nueva ejecución de detección de cambio. La nueva ejecución sigue la misma dirección que antes, pero logra recoger el nuevo valor.
 
 {@a G}
 
@@ -508,10 +508,10 @@ Obtén más información en [Inyección de dependencia en Angular](guide/depende
 
 ## interfaz de línea de comandos (CLI)
 
-[Angular CLI](cli) es una herramienta de línea de comandos para administrar el ciclo de desarrollo Angular. Úsalo para crear la estructura inicial del sistema de archivos para un [espacio de trabajo](#workspace) o [proyecto](#project), y para ejecutar [esquemas](#schematic) que agregue y modifique código para versiones genéricas iniciales de varios elementos. La CLI admite todas las etapas del ciclo de desarrollo, incluidas la construcción, las pruebas, la agrupación y la implementación.
+[Angular CLI](cli) es una herramienta de línea de comandos para administrar el ciclo de desarrollo Angular. Úsalo para crear la estructura inicial del sistema de archivos para un [espacio de trabajo](#workspace) o [proyecto](#project), y para ejecutar [esquemas](#schematic) que agreguen y modifiquen código para versiones genéricas iniciales de varios elementos. La CLI admite todas las etapas del ciclo de desarrollo, incluidas la construcción, las pruebas, la agrupación y la implementación.
 
-- Para comenzar a usar la CLI para un nuevo proyecto, consultá [Configuración del entorno local](guide/setup-local "Configuración para el desarrollo local").
-- Para obtener más información sobre las capacidades completas de la CLI, consultá la [Referencia del comando CLI](cli).
+- Para comenzar a usar la CLI para un nuevo proyecto, consulta [Configuración del entorno local](guide/setup-local "Configuración para el desarrollo local").
+- Para obtener más información sobre las capacidades completas de la CLI, consulta la [Referencia del comando CLI](cli).
 
 Ver también [Esquemas CLI](#schematics-cli).
 
@@ -519,13 +519,13 @@ Ver también [Esquemas CLI](#schematics-cli).
 
 ## inmutabilidad
 
-La capacidad de alterar el estado de un valor después de su creación. [Formularios reactivos](#reactive-forms) realizan cambios inmutables en ese cada cambio en el modelo de datos produce un nuevo modelo de datos en lugar de modificar el existente. [Formas controladas por plantilla](#template-driven-forms) realizan cambios mutables con `NgModel` y [enlace de datos bidireccional](#data-binding) para modificar el modelo de datos existente en su lugar.
+La capacidad de alterar el estado de un valor después de su creación. [Formularios reactivos](#reactive-forms) realizan cambios inmutables en ese cada cambio en el modelo de datos produce un nuevo modelo de datos en lugar de modificar el existente. [Formularios controlados por plantilla](#template-driven-forms) realizan cambios mutables con `NgModel` y [enlace de datos bidireccional](#data-binding) para modificar el modelo de datos existente en su lugar.
 
 {@a injectable}
 
 ## inyectable
 
-Una clase Angular u otra definición que proporciona una dependencia utilizando el mecanismo de [inyección de dependencia](#di). Una clase inyectable [servicio](#service) debe estar marcada por el `@Injectable()` [decorador](#decorator). Otros elementos, como valores constantes, también pueden ser inyectables.
+Una clase Angular u otra definición que proporciona una dependencia utilizando el mecanismo de [inyección de dependencia](#di). Una clase inyectable de [servicio](#service) debe estar marcada por el [decorador](#decorator) `@Injectable()`. Otros elementos, como valores constantes, también pueden ser inyectables.
 
 {@a injector}
 
@@ -590,7 +590,7 @@ La jerarquía de vistas no implica una jerarquía de componentes. Las vistas que
 
 ## lenguaje específico de dominio (DSL)
 
-Una librería o API de propósito especial; consulte [Idioma específico del dominio](https://es.wikipedia.org/wiki/Lenguaje_espec%C3%ADfico_de_dominio).
+Una librería o API de propósito especial; consulte [lenguaje específico del dominio](https://es.wikipedia.org/wiki/Lenguaje_espec%C3%ADfico_de_dominio).
 Angular extiende TypeScript con lenguajes específicos de dominio para varios dominios relevantes para aplicaciones Angular, definidas en NgModules como [animaciones](guide/animations), [formularios](guide/forms), y [enrutamiento y navegación](guide/router).
 
 {@a library}
@@ -635,7 +635,7 @@ Obtén más información en [Lifecycle Hooks](guide/lifecycle-hooks).
 
 ## modelo de formulario
 
-La "fuente de verdad" para el valor y el estado de validación de un elemento de entrada de formulario en un momento dado. Cuando se usan [formularios reactivos](#reactive-forms), tel modelo de formulario se crea explícitamente en la clase de componente. Al utilizar [formularios controlados por plantilla](#template-driven-forms), el modelo de formulario se crea implícitamente mediante directivas.
+La "fuente de verdad" para el valor y el estado de validación de un elemento de entrada de formulario en un momento dado. Cuando se usan [formularios reactivos](#reactive-forms), el modelo de formulario se crea explícitamente en la clase de componente. Al utilizar [formularios controlados por plantilla](#template-driven-forms), el modelo de formulario se crea implícitamente mediante directivas.
 
 Obtén más información sobre los formularios reactivos y basados en plantillas en [Introducción a los formularios en Angular](guide/forms-overview).
 
@@ -669,7 +669,7 @@ Una definición de clase precedida por el `@NgModule()` [decorador](#decorator),
 Al igual que un [módulo JavaScript](#module), un NgModule puede exportar la funcionalidad para que otros NgModules la usen e importar la funcionalidad pública de otros NgModules.
 Los metadatos para una clase NgModule recopilan componentes, directivas y canalizaciones que la aplicación usa junto con la lista de importaciones y exportaciones. Ver también [declarable](#declarable).
 
-Los NgModules generalmente llevan el nombre del archivo en el que se define lo exportado. Por ejemplo, la clase Angular [DatePipe](api/common/DatePipe) pertenece a un módulo de características llamado `date_pipe` en el archivo`date_pipe.ts`. Se importa desde un [paquete con scope](#scoped-package) como `@angular/core`.
+Los NgModules generalmente llevan el nombre del archivo en el que se define lo exportado. Por ejemplo, la clase [DatePipe](api/common/DatePipe) de Angular pertenece a un módulo de características llamado `date_pipe` en el archivo`date_pipe.ts`. Se importa desde un [paquete con scope](#scoped-package) como `@angular/core`.
 
 Cada aplicación Angular tiene un módulo raíz. Por convención, la clase se llama `AppModule` y reside en un archivo llamado `app.module.ts`.
 
@@ -777,7 +777,7 @@ El archivo [`angular.json`](guide/workspace-config) configura todos los proyecto
 
 Una forma de insertar contenido DOM desde fuera de un componente en la vista del componente en un lugar designado.
 
-Para obtener más información, consultá [Respuesta a cambios en el contenido](guide/lifecycle-hooks#content-projection).
+Para obtener más información, consulta [Respuesta a cambios en el contenido](guide/lifecycle-hooks#content-projection).
 
 {@a provider}
 
