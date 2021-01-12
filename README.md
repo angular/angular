@@ -33,7 +33,7 @@ If you'd like to contribute, please follow our [contributing guidelines][contrib
 our [`help wanted`][help-wanted] label for a list of issues with good opportunities for
 contribution.
 
-## What we're working on now (Q4 2020):
+## What we're working on now (Q1 2021):
 * Continuing to create new, API-compatible versions of the Angular Material components backed by
 [MDC Web][] ([see @jelbourn's ng-conf talk](https://youtu.be/4EXQKP-Sihw?t=891)). Much of our effort
 is dedicated towards rolling out these new versions of the components across Angular apps
