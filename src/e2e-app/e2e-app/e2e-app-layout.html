@@ -1,43 +1,9 @@
 <button (click)="showLinks = !showLinks">Toggle Navigation Links</button>
 
-<mat-nav-list *ngIf="showLinks">
-  <a mat-list-item [routerLink]="['block-scroll-strategy']">Block scroll strategy</a>
-  <a mat-list-item [routerLink]="['button']">Button</a>
-  <a mat-list-item [routerLink]="['button-toggle']">Button Toggle</a>
-  <a mat-list-item [routerLink]="['checkbox']">Checkbox</a>
-  <a mat-list-item [routerLink]="['component-harness']">Component Harness</a>
-  <a mat-list-item [routerLink]="['dialog']">Dialog</a>
-  <a mat-list-item [routerLink]="['expansion']">Expansion</a>
-  <a mat-list-item [routerLink]="['grid-list']">Grid list</a>
-  <a mat-list-item [routerLink]="['icon']">Icon</a>
-  <a mat-list-item [routerLink]="['input']">Input</a>
-  <a mat-list-item [routerLink]="['list']">List</a>
-  <a mat-list-item [routerLink]="['menu']">Menu</a>
-  <a mat-list-item [routerLink]="['progress-bar']">Progress bar</a>
-  <a mat-list-item [routerLink]="['progress-spinner']">Progress Spinner</a>
-  <a mat-list-item [routerLink]="['radio']">Radios</a>
-  <a mat-list-item [routerLink]="['sidenav']">Sidenav</a>
-  <a mat-list-item [routerLink]="['slide-toggle']">Slide Toggle</a>
-  <a mat-list-item [routerLink]="['stepper']">Stepper</a>
-  <a mat-list-item [routerLink]="['tabs']">Tabs</a>
-  <a mat-list-item [routerLink]="['cards']">Cards</a>
-  <a mat-list-item [routerLink]="['toolbar']">Toolbar</a>
-  <a mat-list-item [routerLink]="['virtual-scroll']">Virtual Scroll</a>
-  <a mat-list-item [routerLink]="['mdc-button']">MDC Button</a>
-  <a mat-list-item [routerLink]="['mdc-card']">MDC Card</a>
-  <a mat-list-item [routerLink]="['mdc-checkbox']">MDC Checkbox</a>
-  <a mat-list-item [routerLink]="['mdc-chips']">MDC Chips</a>
-  <a mat-list-item [routerLink]="['mdc-dialog']">MDC Dialog</a>
-  <a mat-list-item [routerLink]="['mdc-input']">MDC Input</a>
-  <a mat-list-item [routerLink]="['mdc-menu']">MDC Menu</a>
-  <a mat-list-item [routerLink]="['mdc-radio']">MDC Radio</a>
-  <a mat-list-item [routerLink]="['mdc-slide-toggle']">MDC Slide Toggle</a>
-  <a mat-list-item [routerLink]="['mdc-table']">MDC Table</a>
-  <a mat-list-item [routerLink]="['mdc-tabs']">MDC Tabs</a>
-  <a mat-list-item [routerLink]="['mdc-progress-bar']">MDC Progress bar</a>
-  <a mat-list-item [routerLink]="['mdc-progress-spinner']">MDC Progress spinner</a>
-</mat-nav-list>
-
 <main>
+  <mat-nav-list *ngIf="showLinks">
+    <a mat-list-item *ngFor="let link of navLinks" [routerLink]="[link.path]">{{link.title}}</a>
+  </mat-nav-list>
+
   <ng-content></ng-content>
 </main>

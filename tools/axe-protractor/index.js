@@ -4,7 +4,7 @@
  * Protractor Plugin to run axe-core accessibility audits after Angular bootstrapped.
  */
 
-const AxeBuilder = require('axe-webdriverjs');
+const AxeBuilder = require('@axe-core/webdriverjs');
 const {buildMessage} = require('./build-message');
 
 /* List of pages which were already checked by axe-core and shouldn't run again */
@@ -13,10 +13,19 @@ const checkedPages = [];
 /**
  * Protractor plugin hook which always runs when Angular successfully bootstrapped.
  */
-async function onPageStable() {
-  await AxeBuilder(browser.driver)
-    .configure(this.config || {})
-    .analyze(results => handleResults(this, results));
+function onPageStable() {
+  return new Promise((resolve, reject) => {
+    new AxeBuilder(browser.driver)
+      .configure(this.config || {})
+      .analyze((err, results) => {
+        if (err) {
+          reject(err);
+        } else {
+          handleResults(this, results);
+          resolve(results);
+        }
+      });
+  });
 }
 
 /**
@@ -26,22 +35,15 @@ async function onPageStable() {
  * @param {!axe.AxeResults} results
  */
 function handleResults(context, results) {
-
   if (checkedPages.indexOf(results.url) === -1) {
-
     checkedPages.push(results.url);
 
     results.violations.forEach(violation => {
-
       let specName = `${violation.help} (${results.url})`;
       let message = '\n' + buildMessage(violation);
-
       context.addFailure(message, {specName});
-
     });
-
   }
-
 }
 
 exports.name = 'protractor-axe';

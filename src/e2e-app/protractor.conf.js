@@ -18,6 +18,13 @@ exports.config = {
 
         // Disable color contrast checks since the final colors will vary based on the theme.
         {id: 'color-contrast', enabled: false},
+
+        // Don't require all content to be inside landmarks since some tests depend on the
+        // page layout and moving this around can break them.
+        {id: 'region', enabled: false},
+
+        // Don't require at least one `<h1>` since we don't have any content.
+        {id: 'page-has-heading-one', enabled: false}
       ]
     }
   ],
