@@ -3616,6 +3616,11 @@ clone@^1.0.2:
   resolved "https://registry.yarnpkg.com/clone/-/clone-1.0.4.tgz#da309cc263df15994c688ca902179ca3c7cd7c7e"
   integrity sha1-2jCcwmPfFZlMaIypAheco8fNfH4=
 
+clonedeep@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/clonedeep/-/clonedeep-2.0.0.tgz#8ceca0777f477bbf31fe8c871aaf63a390bbc272"
+  integrity sha1-jOygd39He78x/oyHGq9jo5C7wnI=
+
 co@^4.6.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/co/-/co-4.6.0.tgz#6ea6bdf3d853ae54ccb8e47bfa0bf3f9031fb184"
@@ -4677,7 +4682,22 @@ dgeni-packages@^0.28.4:
     typescript "^3.2.2"
     urlencode "^1.1.0"
 
-dgeni@^0.4.11, dgeni@^0.4.9:
+dgeni@^0.4.13:
+  version "0.4.13"
+  resolved "https://registry.yarnpkg.com/dgeni/-/dgeni-0.4.13.tgz#274ad9edfe17bd6c2c1c51e9f30cb20faccdabc0"
+  integrity sha512-gryF1gNdzbQdgAeQxjaFbbKgR0qzyjq93Rc6/3CsBIN88NJ5yvsT4x26BvCKVI6jh2WatgvuGj+akmWvGndTyQ==
+  dependencies:
+    canonical-path "~0.0.2"
+    clonedeep "^2.0.0"
+    dependency-graph "^0.7.0"
+    di "0.0.1"
+    fast-deep-equal "^3.1.3"
+    objectdiff "^1.1.0"
+    optimist "~0.6.1"
+    validate.js "^0.12.0"
+    winston "^2.1.1"
+
+dgeni@^0.4.9:
   version "0.4.12"
   resolved "https://registry.yarnpkg.com/dgeni/-/dgeni-0.4.12.tgz#574a91de25dab0018a9832da83fdb7c2b8c7507b"
   integrity sha512-AhlRuwduzZhHIpf8DYZ0wWHLvV+9IQ8dQRqzx3ryYEg9trU/gWc2xz3wnJrRpDnS6Hu6F73saj6m1xbckW3k9Q==
@@ -5559,6 +5579,11 @@ fast-deep-equal@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.1.tgz#545145077c501491e33b15ec408c294376e94ae4"
   integrity sha512-8UEa58QDLauDNfpbrX55Q9jrGHThw2ZMdOky5Gl1CDtVeJDPVrG4Jxx1N8jw2gkWaff5UUuX1KJd+9zGe2B+ZA==
+
+fast-deep-equal@^3.1.3:
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
+  integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==
 
 fast-glob@^2.2.6:
   version "2.2.7"
