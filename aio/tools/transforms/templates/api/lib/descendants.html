@@ -4,7 +4,7 @@
   {% for descendant in descendants %}
     <li>
       <code>{$ descendant.name $}</code>
-      {$ renderDescendantList(descendant.descendants | filterByPropertyValue('docType', docTypeMatcher), docType, recursed, docTypeMatcher) $}
+      {$ renderDescendantList(descendant.descendants | filterByPropertyValue('docType', docTypeMatcher) | filterByPropertyValue('privateExport', undefined), docType, recursed, docTypeMatcher) $}
     </li>
   {% endfor %}
 </ul>
