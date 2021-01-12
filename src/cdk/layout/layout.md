@@ -2,7 +2,7 @@ The `layout` package provides utilities to build responsive UIs that react to sc
 
 ### BreakpointObserver
 
-`BreakpointObserver` is a utility for evaluating media queries and reacting to their changing.
+`BreakpointObserver`  is a utility for evaluating media queries and reacting to changes in the results of those queries.
 
 #### Evaluate against the current viewport
 The `isMatched` method is used to evaluate one or more media queries against the current viewport
