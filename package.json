@@ -13,7 +13,7 @@
     "yarn": ">= 1.0.0"
   },
   "scripts": {
-    "postinstall": "node tools/postinstall/apply-patches.js && ngcc --properties module main --create-ivy-entry-points && node tools/postinstall/update-ngcc-main-fields.js",
+    "postinstall": "husky install && node tools/postinstall/apply-patches.js && ngcc --properties module main --create-ivy-entry-points && node tools/postinstall/update-ngcc-main-fields.js",
     "build": "node ./scripts/build-packages-dist.js",
     "build-docs-content": "node ./scripts/build-docs-content.js",
     "dev-app": "ibazel run //src/dev-app:devserver",
@@ -38,8 +38,8 @@
     "tslint": "tslint -c tslint.json --project ./tsconfig.json",
     "stylelint": "stylelint \"src/**/*.+(css|scss)\" --config .stylelintrc.json --syntax scss",
     "resync-caretaker-app": "ts-node --project scripts/tsconfig.json scripts/caretaking/resync-caretaker-app-prs.ts",
-    "ts-circular-deps:check": "yarn -s ts-circular-deps check --config ./src/circular-deps-test.conf.js",
-    "ts-circular-deps:approve": "yarn -s ts-circular-deps approve --config ./src/circular-deps-test.conf.js",
+    "ts-circular-deps:check": "yarn -s ng-dev ts-circular-deps check --config ./src/circular-deps-test.conf.js",
+    "ts-circular-deps:approve": "yarn -s ng-dev ts-circular-deps approve --config ./src/circular-deps-test.conf.js",
     "merge": "ng-dev pr merge",
     "approve-api": "node ./scripts/approve-api-golden.js",
     "approve-size-tests": "node ./scripts/approve-size-golden.js",
@@ -76,7 +76,7 @@
     "@angular/bazel": "^11.1.0-next.2",
     "@angular/benchpress": "0.2.1",
     "@angular/compiler-cli": "^11.1.0-next.2",
-    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#f8bc880d554d45ca8bf881b8a776f00f61b918fb",
+    "@angular/dev-infra-private": "https://github.com/angular/dev-infra-private-builds.git#62d6227d822b26b60919950dbbbd399f287956e5",
     "@angular/platform-browser-dynamic": "^11.1.0-next.2",
     "@angular/platform-server": "^11.1.0-next.2",
     "@angular/router": "^11.1.0-next.2",
@@ -125,7 +125,7 @@
     "gulp-cli": "^2.3.0",
     "gulp-sass": "^4.0.2",
     "highlight.js": "^10.4.0",
-    "husky": "^4.3.0",
+    "husky": "5.0.1",
     "inquirer": "^7.1.0",
     "jasmine": "^3.5.0",
     "jasmine-core": "^3.5.0",
@@ -174,11 +174,5 @@
   },
   "resolutions": {
     "dgeni-packages/typescript": "4.1.2"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "yarn -s ng-dev commit-message pre-commit-validate --file-env-variable HUSKY_GIT_PARAMS",
-      "prepare-commit-msg": "yarn -s ng-dev commit-message restore-commit-message-draft --file-env-variable HUSKY_GIT_PARAMS"
-    }
   }
 }
