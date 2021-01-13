@@ -89,6 +89,19 @@ describe('diagnostics', () => {
     }
   });
 
+  it('should not produce diagnostics for absolute template url', () => {
+    mockHost.override(APP_COMPONENT, `
+      import {Component} from '@angular/core';
+
+      @Component({
+        templateUrl: '${TEST_TEMPLATE}',
+      })
+      export class AppComponent {}
+    `);
+    const diags = ngLS.getSemanticDiagnostics(APP_COMPONENT);
+    expect(diags).toEqual([]);
+  });
+
   it('should not produce diagnostics for slice pipe with arguments', () => {
     mockHost.override(TEST_TEMPLATE, `
       <div *ngFor="let h of heroes | slice:0:1">
