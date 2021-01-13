@@ -20,3 +20,10 @@
 .mdc-data-table__table {
   table-layout: auto;
 }
+
+// MDC table rows are styled with a top border, whereas our legacy flex table styles rows with
+// a bottom border. Remove the bottom border style from the rows and let MDC display its top
+// border.
+mat-row.mat-mdc-row, mat-header-row.mat-mdc-header-row, mat-footer-row.mat-mdc-footer-row {
+  border-bottom: none;
+}
