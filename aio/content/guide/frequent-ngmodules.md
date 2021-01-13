@@ -115,8 +115,6 @@ Angular returns an error telling you to use `CommonModule` instead.
   <img src="generated/images/guide/frequent-ngmodules/browser-module-error.gif" width=750 alt="BrowserModule error">
 </div>
 
-<hr />
-
 
 ## More on NgModules
 

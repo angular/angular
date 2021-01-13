@@ -158,8 +158,6 @@ If you look at the `http-server` logs, you can see the service worker requesting
 
 The service worker installed the updated version of your app *in the background*, and the next time the page is loaded or reloaded, the service worker switches to the latest version.
 
-<hr />
-
 ## More on Angular service workers
 
 You may also be interested in the following:

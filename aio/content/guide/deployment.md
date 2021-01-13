@@ -156,10 +156,7 @@ Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpa
 
 </div>
 
-<hr>
-
 {@a server-configuration}
-
 ## Server configuration
 
 This section covers changes you may have to make to the server or to files deployed on the server.
@@ -299,10 +296,7 @@ The server must be configured to accept the application's requests.
 Read about how to enable CORS for specific servers at
 <a href="https://enable-cors.org/server.html" title="Enabling CORS server">enable-cors.org</a>.
 
-<hr>
-
 {@a optimize}
-
 ## Production optimizations
 
 The `--prod` _meta-flag_ engages the following build optimization features.

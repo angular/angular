@@ -275,8 +275,6 @@ Now you can run the following commands to use the `--no-sandbox` flag:
 </div>
 
 
-<hr />
-
 ## More info on testing
 
 After you've set up your app for testing, you may find the following testing  guides useful.

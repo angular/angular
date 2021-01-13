@@ -10,10 +10,7 @@ See the <live-example></live-example> for a working example containing the code 
 
 For more detail, including how to build your own custom directives, see [Attribute Directives](guide/attribute-directives) and [Structural Directives](guide/structural-directives).
 
-<hr/>
-
 {@a attribute-directives}
-
 ## Built-in attribute directives
 
 Attribute directives listen to and modify the behavior of
@@ -28,10 +25,7 @@ The most common attribute directives are as follows:
 * [`NgStyle`](guide/built-in-directives#ngStyle)&mdash;adds and removes a set of HTML styles.
 * [`NgModel`](guide/built-in-directives#ngModel)&mdash;adds two-way data binding to an HTML form element.
 
-<hr/>
-
 {@a ngClass}
-
 ## `NgClass`
 
 Add or remove several CSS classes simultaneously with `ngClass`.
@@ -62,10 +56,7 @@ both initially and when the dependent properties change.
 
 </div>
 
-<hr/>
-
 {@a ngStyle}
-
 ## `NgStyle`
 
 Use `NgStyle` to set many inline styles simultaneously and dynamically, based on the state of the component.
@@ -95,10 +86,7 @@ Remember to call `setCurrentStyles()`, both initially and when the dependent pro
 </div>
 
 
-<hr/>
-
 {@a ngModel}
-
 ## `[(ngModel)]`: Two-way binding
 
 The `NgModel` directive allows you to display a data property and
@@ -167,10 +155,7 @@ Here are all variations in action, including the uppercase version:
   <img src='generated/images/guide/built-in-directives/ng-model-anim.gif' alt="NgModel variations">
 </div>
 
-<hr/>
-
 {@a structural-directives}
-
 ## Built-in _structural_ directives
 
 Structural directives are responsible for HTML layout.
@@ -198,10 +183,7 @@ to group elements when there is no suitable host element for the directive.
 
 </div>
 
-<hr/>
-
 {@a ngIf}
-
 ## NgIf
 
 You can add or remove an element from the DOM by applying an `NgIf` directive to
@@ -264,8 +246,6 @@ The `nullCustomer` will not be displayed as long as it is `null`.
 <code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2" header="src/app/app.component.html"></code-example>
 
 <code-example path="built-in-directives/src/app/app.component.html" region="NgIf-2b" header="src/app/app.component.html"></code-example>
-
-<hr/>
 
 {@a ngFor}
 ## `NgFor`
@@ -382,8 +362,6 @@ Built-in directives use only public APIs; that is,
 they do not have special access to any private APIs that other directives can't access.
 
 </div>
-
-<hr/>
 
 {@a ngSwitch}
 ## The `NgSwitch` directives

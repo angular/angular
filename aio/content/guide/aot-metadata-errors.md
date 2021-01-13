@@ -15,8 +15,6 @@ The following are metadata errors you may encounter, with explanations and sugge
 [Tagged template expressions are not supported](#tagged-template-expressions-not-supported)<br>
 [Symbol reference expected](#symbol-reference-expected)<br>
 
-<hr>
-
 {@a expression-form-not-supported}
 ## Expression form not supported
 
@@ -46,8 +44,6 @@ You just can't use those features within expressions that define Angular metadat
 Avoid this error by sticking to the compiler's [restricted expression syntax](guide/aot-compiler#expression-syntax)
 when writing Angular metadata
 and be wary of new or unusual TypeScript features.
-
-<hr>
 
 {@a reference-to-a-local-symbol}
 ## Reference to a local (non-exported) symbol
@@ -128,8 +124,6 @@ The compiler needs the value of the `template` property _right now_ to generate 
 The variable reference alone is insufficient.
 Prefixing the declaration with `export` merely produces a new error, "[`Only initialized variables and constants can be referenced`](#only-initialized-variables)".
 
-<hr>
-
 {@a only-initialized-variables}
 ## Only initialized variables and constants
 
@@ -187,8 +181,6 @@ export let someTemplate = '<h1>Greetings from Angular</h1>';
 export class MyComponent {}
 ```
 
-<hr>
-
 {@a reference-to-a-non-exported-class}
 ## Reference to a non-exported class
 
@@ -228,7 +220,6 @@ export abstract class MyStrategy { }
   ]
   ...
 ```
-<hr>
 
 {@a reference-to-a-non-exported-function}
 ## Reference to a non-exported function
@@ -266,7 +257,6 @@ export function myStrategy() { ... }
   ]
   ...
 ```
-<hr>
 
 {@a function-calls-not-supported}
 ## Function calls are not supported
@@ -322,8 +312,6 @@ export function someValueFactory() {
   ...
 ```
 
-<hr>
-
 {@a destructured-variable-not-supported}
 ## Destructured variable or constant not supported
 
@@ -363,8 +351,6 @@ import { configuration } from './configuration';
   ]
   ...
 ```
-
-<hr>
 
 {@a could-not-resolve-type}
 ## Could not resolve type
@@ -437,7 +423,6 @@ export class MyComponent {
   constructor (@Inject(DOCUMENT) private doc: Document) { ... }
 }
 ```
-<hr>
 
 {@a name-expected}
 ## Name expected
@@ -461,8 +446,6 @@ Change the name of the property to something non-numeric.
 // CORRECTED
 provider: [{ provide: Foo, useValue: { '0': 'test' } }]
 ```
-
-<hr>
 
 {@a unsupported-enum-member-name}
 ## Unsupported enum member name
@@ -494,8 +477,6 @@ enum Colors {
 
 Avoid referring to enums with complicated initializers or computed properties.
 
-<hr>
-
 {@a tagged-template-expressions-not-supported}
 ## Tagged template expressions are not supported
 
@@ -519,8 +500,6 @@ const raw = String.raw`A tagged template ${expression} string`;
 is a _tag function_ native to JavaScript ES2015.
 
 The AOT compiler does not support tagged template expressions; avoid them in metadata expressions.
-
-<hr>
 
 {@a symbol-reference-expected}
 ## Symbol reference expected

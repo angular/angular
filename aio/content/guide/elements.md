@@ -52,8 +52,6 @@ When your custom element is placed on a page, the browser creates an instance of
   <img src="generated/images/guide/elements/customElement1.png" alt="Custom element in browser" class="left">
 </div>
 
-<hr class="clear">
-
 ## Transforming components to custom elements
 
 Angular provides the `createCustomElement()` function for converting an Angular component,
@@ -119,7 +117,7 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 
 In browsers that support Custom Elements natively, the specification requires developers use ES2015 classes to define Custom Elements - developers can opt-in to this by setting the `target: "es2015"` property in their project's [TypeScript configuration file](/guide/typescript-configuration). As Custom Element and ES2015 support may not be available in all browsers, developers can instead choose to use a polyfill to support older browsers and ES5 code.
 
-Use the [Angular CLI](cli) to automatically set up your project with the correct polyfill: 
+Use the [Angular CLI](cli) to automatically set up your project with the correct polyfill:
 
 <code-example language="sh">
 

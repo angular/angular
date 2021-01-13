@@ -74,10 +74,8 @@ For more information on how to bind to the `colSpan` property, see the [`colspan
 
 </div>
 
-<hr/>
 
 {@a class-binding}
-
 ## Binding to the `class` attribute
 
 You can use class binding to add and remove CSS class names from an element's `class` attribute.
@@ -159,10 +157,8 @@ The following table summarizes class binding syntax.
   </tr>
 </table>
 
-<hr/>
 
 {@a style-binding}
-
 ## Binding to the style attribute
 
 You can use style binding to set styles dynamically.
@@ -260,10 +256,7 @@ However, using the above style binding syntax without `NgStyle` is preferred bec
 
 </div>
 
-<hr/>
-
 {@a styling-precedence}
-
 ## Styling Precedence
 
 A single HTML element can have its CSS class list and style values bound to multiple sources (for example, host bindings from multiple directives).
@@ -325,8 +318,6 @@ Imagine that the `dirWithHostBinding` directive and the `comp-with-host-binding`
 In that case, if `dirWithHostBinding` sets its binding to `undefined`, the `width` property will fall back to the value of the `comp-with-host-binding` host binding.
 However, if `dirWithHostBinding` sets its binding to `null`, the `width` property will be removed entirely.
 
-
-<hr/>
 
 ## Injecting attribute values
 
