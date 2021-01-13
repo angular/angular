@@ -13,7 +13,7 @@ To get the most out of this tutorial you should already have a basic understandi
 
 * [HTML](https://developer.mozilla.org/en-US/docs/Learn/HTML "Learning HTML: Guides and tutorials")
 * [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript")
-* [TypeScript](https://www.typescriptlang.org/docs/home.html "TypeScript documentation")
+* [TypeScript](https://www.typescriptlang.org/ "The TypeScript language")
 
 <hr />
 

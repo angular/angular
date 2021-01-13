@@ -42,7 +42,7 @@ This tutorial teaches you how to do the following:
 
 Before going further into template-driven forms, you should have a basic understanding of the following.
 
-* TypeScript and HTML5 programming.
+* [TypeScript](https://www.typescriptlang.org/ "The TypeScript language") and HTML5 programming.
 * Angular app-design fundamentals, as described in [Angular Concepts](guide/architecture "Introduction to Angular concepts.").
 * The basics of [Angular template syntax](guide/template-syntax "Template syntax guide").
 * The form-design concepts that are presented in [Introduction to Forms](guide/forms-overview "Overview of Angular forms.").
