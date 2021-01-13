@@ -106,6 +106,17 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
           ngLS.getCompletionEntrySymbol(fileName, position, name);
     }
   }
+  /**
+   * Gets global diagnostics related to the program configuration and compiler options.
+   */
+  function getCompilerOptionsDiagnostics(): ts.Diagnostic[] {
+    const diagnostics: ts.Diagnostic[] = [];
+    if (!angularOnly) {
+      diagnostics.push(...tsLS.getCompilerOptionsDiagnostics());
+    }
+    diagnostics.push(...ngLS.getCompilerOptionsDiagnostics());
+    return diagnostics;
+  }
 
   return {
     ...tsLS,
@@ -118,6 +129,7 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     getCompletionsAtPosition,
     getCompletionEntryDetails,
     getCompletionEntrySymbol,
+    getCompilerOptionsDiagnostics,
   };
 }
 

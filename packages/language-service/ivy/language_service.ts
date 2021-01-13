@@ -8,6 +8,7 @@
 
 import {AST, TmplAstBoundEvent, TmplAstNode} from '@angular/compiler';
 import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/compiler-cli';
+import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import {absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
@@ -29,7 +30,8 @@ export class LanguageService {
   private readonly adapter: LanguageServiceAdapter;
   private readonly parseConfigHost: LSParseConfigHost;
 
-  constructor(project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
+  constructor(
+      private readonly project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
     this.parseConfigHost = new LSParseConfigHost(project.projectService.host);
     this.options = parseNgCompilerOptions(project, this.parseConfigHost);
     logCompilerOptions(project, this.options);
@@ -170,6 +172,34 @@ export class LanguageService {
     const result = builder.getCompletionEntrySymbol(entryName);
     this.compilerFactory.registerLastKnownProgram();
     return result;
+  }
+
+  getCompilerOptionsDiagnostics(): ts.Diagnostic[] {
+    const project = this.project;
+    if (!(project instanceof ts.server.ConfiguredProject)) {
+      return [];
+    }
+
+    const diagnostics: ts.Diagnostic[] = [];
+    const configSourceFile = ts.readJsonConfigFile(
+        project.getConfigFilePath(), (path: string) => project.readFile(path));
+
+    if (!this.options.strictTemplates && !this.options.fullTemplateTypeCheck) {
+      diagnostics.push({
+        messageText: 'Some language features are not available. ' +
+            'To access all features, enable `strictTemplates` in `angularCompilerOptions`.',
+        category: ts.DiagnosticCategory.Suggestion,
+        code: ngErrorCode(ErrorCode.SUGGEST_STRICT_TEMPLATES),
+        file: configSourceFile,
+        start: undefined,
+        length: undefined,
+      });
+    }
+
+    const compiler = this.compilerFactory.getOrCreate();
+    diagnostics.push(...compiler.getOptionDiagnostics());
+
+    return diagnostics;
   }
 
   private watchConfigFile(project: ts.server.Project) {
