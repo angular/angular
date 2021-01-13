@@ -906,7 +906,7 @@ function getR3SymbolsFile(program: ts.Program): ts.SourceFile|null {
 
 /**
  * Since "strictTemplates" is a true superset of type checking capabilities compared to
- * "strictTemplateTypeCheck", it is required that the latter is not explicitly disabled if the
+ * "fullTemplateTypeCheck", it is required that the latter is not explicitly disabled if the
  * former is enabled.
  */
 function verifyCompatibleTypeCheckOptions(options: NgCompilerOptions): ts.Diagnostic|null {

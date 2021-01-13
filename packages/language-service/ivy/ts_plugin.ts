@@ -119,6 +119,17 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
           ngLS.getCompletionEntrySymbol(fileName, position, name);
     }
   }
+  /**
+   * Gets global diagnostics related to the program configuration and compiler options.
+   */
+  function getCompilerOptionsDiagnostics(): ts.Diagnostic[] {
+    const diagnostics: ts.Diagnostic[] = [];
+    if (!angularOnly) {
+      diagnostics.push(...tsLS.getCompilerOptionsDiagnostics());
+    }
+    diagnostics.push(...ngLS.getCompilerOptionsDiagnostics());
+    return diagnostics;
+  }
 
   function getTcb(fileName: string, position: number): GetTcbResponse {
     return ngLS.getTcb(fileName, position);
@@ -137,6 +148,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getCompletionEntryDetails,
     getCompletionEntrySymbol,
     getTcb,
+    getCompilerOptionsDiagnostics,
   };
 }
 
