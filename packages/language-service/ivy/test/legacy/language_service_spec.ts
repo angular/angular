@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {LanguageService} from '../../language_service';
@@ -31,15 +32,6 @@ describe('language service adapter', () => {
   });
 
   describe('parse compiler options', () => {
-    beforeEach(() => {
-      // Need to reset project on each test to reinitialize file watchers.
-      const {project: _project, tsLS, service: _service, configFileFs: _configFileFs} = setup();
-      project = _project;
-      service = _service;
-      configFileFs = _configFileFs;
-      ngLS = new LanguageService(project, tsLS);
-    });
-
     it('should initialize with angularCompilerOptions from tsconfig.json', () => {
       expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
         enableIvy: true,  // default for ivy is true
@@ -55,11 +47,11 @@ describe('language service adapter', () => {
         strictInjectionParameters: true,
       }));
 
-      configFileFs.overwriteConfigFile(TSCONFIG, `{
-         "angularCompilerOptions": {
-           "strictTemplates": false
-         }
-       }`);
+      configFileFs.overwriteConfigFile(TSCONFIG, {
+        angularCompilerOptions: {
+          strictTemplates: false,
+        }
+      });
 
       expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
         strictTemplates: false,
@@ -67,6 +59,44 @@ describe('language service adapter', () => {
     });
   });
 
+  describe('compiler options diagnostics', () => {
+    it('suggests turning on strict flag', () => {
+      configFileFs.overwriteConfigFile(TSCONFIG, {
+        angularCompilerOptions: {},
+      });
+      const diags = ngLS.getCompilerOptionsDiagnostics();
+      const diag = diags.find(isSuggestStrictTemplatesDiag);
+      expect(diag).toBeDefined();
+      expect(diag!.category).toBe(ts.DiagnosticCategory.Suggestion);
+      expect(diag!.file?.getSourceFile().fileName).toBe(TSCONFIG);
+    });
+
+    it('does not suggest turning on strict mode is strictTemplates flag is on', () => {
+      configFileFs.overwriteConfigFile(TSCONFIG, {
+        angularCompilerOptions: {
+          strictTemplates: true,
+        },
+      });
+      const diags = ngLS.getCompilerOptionsDiagnostics();
+      const diag = diags.find(isSuggestStrictTemplatesDiag);
+      expect(diag).toBeUndefined();
+    });
+
+    it('does not suggest turning on strict mode is fullTemplateTypeCheck flag is on', () => {
+      configFileFs.overwriteConfigFile(TSCONFIG, {
+        angularCompilerOptions: {
+          fullTemplateTypeCheck: true,
+        },
+      });
+      const diags = ngLS.getCompilerOptionsDiagnostics();
+      const diag = diags.find(isSuggestStrictTemplatesDiag);
+      expect(diag).toBeUndefined();
+    });
+
+    function isSuggestStrictTemplatesDiag(diag: ts.Diagnostic) {
+      return diag.code === ngErrorCode(ErrorCode.SUGGEST_STRICT_TEMPLATES);
+    }
+  });
 
   describe('last known program', () => {
     beforeEach(() => {

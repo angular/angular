@@ -127,9 +127,9 @@ export interface StrictTemplateOptions {
   /**
    * If `true`, implies all template strictness flags below (unless individually disabled).
    *
-   * Has no effect unless `fullTemplateTypeCheck` is also enabled.
+   * This flag is a superset of `fullTemplateTypeCheck`.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`, even if "fullTemplateTypeCheck" is `true`.
    */
   strictTemplates?: boolean;
 
