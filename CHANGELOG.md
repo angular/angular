@@ -1,3 +1,9 @@
+<a name="11.1.0-rc.0"></a>
+# 11.1.0-rc.0 (2021-01-13)
+
+No changes between this RC and the previous `11.1.0-next.5` release.
+
+
 <a name="11.1.0-next.5"></a>
 # 11.1.0-next.5 (2021-01-13)
 
