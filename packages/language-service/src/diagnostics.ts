@@ -7,7 +7,6 @@
  */
 
 import {NgAnalyzedModules} from '@angular/compiler';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
@@ -15,7 +14,7 @@ import {getTemplateExpressionDiagnostics} from './expression_diagnostics';
 import {findPropertyValueOfType, findTightestNode} from './ts_utils';
 import * as ng from './types';
 import {TypeScriptServiceHost} from './typescript_host';
-import {offsetSpan, spanOf} from './utils';
+import {extractAbsoluteFilePath, offsetSpan, spanOf} from './utils';
 
 /**
  * Return diagnostic information for the parsed AST of the template.
@@ -161,8 +160,8 @@ function validateUrls(
       // picked up by the TS Language Server.
       continue;
     }
-    const curPath = urlNode.getSourceFile().fileName;
-    const url = path.join(path.dirname(curPath), urlNode.text);
+
+    const url = extractAbsoluteFilePath(urlNode);
     if (tsLsHost.fileExists(url)) continue;
 
     // Exclude opening and closing quotes in the url span.
