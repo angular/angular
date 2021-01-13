@@ -19,12 +19,23 @@ const textContent = require('hast-util-to-string');
  * @property codeElements an array of strings.
  * Only text contained in these elements will be linked to.
  * Usually set to "code" but also "code-example" for angular.io.
+ *
+ * @property ignoredLanguages an array of languages that should not be auto-linked
+ *
+ * @property ignoredLanguages an array of languages that should not be auto-linked
+ *
+ * @property failOnMissingDocPath if set to true then this post-processor will cause the doc-gen
+ * to fail when it attempts to auto-link to a doc that has no `doc.path` property, which implies
+ * that it exists but is not public (nor rendered).
+ *
  */
 module.exports = function autoLinkCode(getDocFromAlias) {
   autoLinkCodeImpl.docTypes = [];
   autoLinkCodeImpl.customFilters = [];
   autoLinkCodeImpl.codeElements = ['code'];
   autoLinkCodeImpl.ignoredLanguages = ['bash', 'sh', 'shell', 'json', 'markdown'];
+  autoLinkCodeImpl.failOnMissingDocPath = false;
+
   return autoLinkCodeImpl;
 
   function autoLinkCodeImpl() {
@@ -64,8 +75,10 @@ module.exports = function autoLinkCode(getDocFromAlias) {
     // * do not have an ignored language
     // * are not inside links
     const isCodeElement = autoLinkCodeImpl.codeElements.some(elementType => is(node, elementType));
-    const hasNoAutoLink = node.properties.className && node.properties.className.includes('no-auto-link');
-    const isLanguageSupported = !autoLinkCodeImpl.ignoredLanguages.includes(node.properties.language);
+    const hasNoAutoLink =
+        node.properties.className && node.properties.className.includes('no-auto-link');
+    const isLanguageSupported =
+        !autoLinkCodeImpl.ignoredLanguages.includes(node.properties.language);
     const isInLink = isInsideLink(ancestors);
     return isCodeElement && !hasNoAutoLink && isLanguageSupported && !isInLink;
   }
@@ -76,19 +89,19 @@ module.exports = function autoLinkCode(getDocFromAlias) {
 
   function getNodes(node, file) {
     return textContent(node)
-      .split(/([A-Za-z0-9_.-]+)/)
-      .filter(word => word.length)
-      .map((word, index, words) => {
-        // remove docs that fail the custom filter tests
-        const filteredDocs = autoLinkCodeImpl.customFilters.reduce(
-            (docs, filter) => filter(docs, words, index), getDocFromAlias(word));
+        .split(/([A-Za-z0-9_.-]+)/)
+        .filter(word => word.length)
+        .map((word, index, words) => {
+          // remove docs that fail the custom filter tests
+          const filteredDocs = autoLinkCodeImpl.customFilters.reduce(
+              (docs, filter) => filter(docs, words, index), getDocFromAlias(word));
 
-        return foundValidDoc(filteredDocs, word, file) ?
-            // Create a link wrapping the text node.
-            createLinkNode(filteredDocs[0], word) :
-            // this is just text so push a new text node
-            {type: 'text', value: word};
-      });
+          return foundValidDoc(filteredDocs, word, file) ?
+              // Create a link wrapping the text node.
+              createLinkNode(filteredDocs[0], word) :
+              // this is just text so push a new text node
+              {type: 'text', value: word};
+        });
   }
 
   /**
@@ -112,12 +125,16 @@ module.exports = function autoLinkCode(getDocFromAlias) {
       return false;
     }
 
-    if (doc.path === '') {
+    if (!doc.path) {
       var message = `
       autoLinkCode: Doc path is empty for "${doc.id}" - link will not be generated for "${keyword}".
       Please make sure if the doc should be public. If not, it should probably not be referenced in the docs.`;
 
-      file.message(message);
+      if (autoLinkCodeImpl.failOnMissingDocPath) {
+        file.fail(message);
+      } else {
+        file.message(message);
+      }
       return false;
     }
 
