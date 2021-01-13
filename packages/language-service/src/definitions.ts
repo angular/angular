@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as path from 'path';
 import * as ts from 'typescript';  // used as value and is provided at runtime
 
 import {locateSymbols} from './locate_symbol';
 import {findTightestNode, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';
 import {AstResult, Span} from './types';
+import {extractAbsoluteFilePath} from './utils';
 
 /**
  * Convert Angular Span to TypeScript TextSpan. Angular Span has 'start' and
@@ -59,10 +59,9 @@ function getUrlFromProperty(
     return;
   }
 
-  const sf = urlNode.getSourceFile();
   // Extract url path specified by the url node, which is relative to the TypeScript source file
   // the url node is defined in.
-  const url = path.join(path.dirname(sf.fileName), urlNode.text);
+  const url = extractAbsoluteFilePath(urlNode);
 
   // If the file does not exist, bail. It is possible that the TypeScript language service host
   // does not have a `fileExists` method, in which case optimistically assume the file exists.
