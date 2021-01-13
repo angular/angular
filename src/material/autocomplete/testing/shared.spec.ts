@@ -5,6 +5,7 @@ import {Component} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatAutocompleteHarness} from '@angular/material/autocomplete/testing';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 /**
  * Function that can be used to run the shared autocomplete harness tests for either the non-MDC or
@@ -19,7 +20,10 @@ export function runHarnessTests(
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [autocompleteModule],
+      imports: [
+          NoopAnimationsModule,
+          autocompleteModule
+      ],
       declarations: [AutocompleteHarnessTest],
     }).compileComponents();
 

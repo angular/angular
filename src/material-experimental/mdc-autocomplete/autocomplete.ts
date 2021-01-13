@@ -7,20 +7,20 @@
  */
 
 import {
-  Component,
-  ViewEncapsulation,
   ChangeDetectionStrategy,
+  Component,
   ContentChildren,
   QueryList,
+  ViewEncapsulation,
 } from '@angular/core';
-import {_MatAutocompleteBase} from '@angular/material/autocomplete';
 import {
-  MAT_OPTION_PARENT_COMPONENT,
   MAT_OPTGROUP,
+  MAT_OPTION_PARENT_COMPONENT,
   MatOptgroup,
   MatOption,
 } from '@angular/material-experimental/mdc-core';
-
+import {_MatAutocompleteBase} from '@angular/material/autocomplete';
+import {panelAnimation} from './animations';
 
 @Component({
   selector: 'mat-autocomplete',
@@ -35,7 +35,8 @@ import {
   },
   providers: [
     {provide: MAT_OPTION_PARENT_COMPONENT, useExisting: MatAutocomplete}
-  ]
+  ],
+  animations: [panelAnimation],
 })
 export class MatAutocomplete extends _MatAutocompleteBase {
   @ContentChildren(MAT_OPTGROUP, {descendants: true}) optionGroups: QueryList<MatOptgroup>;

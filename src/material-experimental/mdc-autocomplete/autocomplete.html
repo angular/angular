@@ -6,6 +6,7 @@
     [ngClass]="_classList"
     [attr.aria-label]="ariaLabel || null"
     [attr.aria-labelledby]="_getPanelAriaLabelledby(formFieldId)"
+    [@panelAnimation]="isOpen ? 'visible' : 'hidden'"
     #panel>
     <ng-content></ng-content>
   </div>

@@ -13,6 +13,9 @@
   max-height: 256px; // Prevents lists with a lot of option from growing too high.
   position: static; // MDC uses `absolute` by default which will throw off our positioning.
   visibility: hidden;
+  // MDC sets the transform-origin programatically based on whether the dropdown is above or below
+  // the input. We use our own positioning logic, so we need to set this ourselves.
+  transform-origin: center top;
 
   // Note that we include this private mixin, because the public
   // one adds a bunch of styles that we aren't using for the menu.
@@ -29,6 +32,9 @@
   .mat-mdc-autocomplete-panel-above & {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+    // MDC sets the transform-origin programatically based on whether the dropdown is above or below
+    // the input. We use our own positioning logic, so we need to set this ourselves.
+    transform-origin: center bottom;
   }
 
   // These classes are used to toggle the panel visibility depending on whether it has any options.

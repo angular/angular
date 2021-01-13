@@ -180,6 +180,7 @@ describe('MDC-based MatAutocomplete', () => {
       fixture.detectChanges();
       zone.simulateZoneExit();
       dispatchFakeEvent(document, 'click');
+      tick();
 
       expect(fixture.componentInstance.trigger.panelOpen)
           .toBe(false, `Expected clicking outside the panel to set its state to closed.`);
@@ -192,6 +193,7 @@ describe('MDC-based MatAutocomplete', () => {
       fixture.detectChanges();
       zone.simulateZoneExit();
       dispatchFakeEvent(document, 'auxclick');
+      tick();
 
       expect(fixture.componentInstance.trigger.panelOpen)
           .toBe(false, `Expected clicking outside the panel to set its state to closed.`);
@@ -219,6 +221,7 @@ describe('MDC-based MatAutocomplete', () => {
       const option = overlayContainerElement.querySelector('mat-option') as HTMLElement;
       option.click();
       fixture.detectChanges();
+      tick();
 
       expect(fixture.componentInstance.trigger.panelOpen)
           .toBe(false, `Expected clicking an option to set the panel state to closed.`);
@@ -251,6 +254,7 @@ describe('MDC-based MatAutocomplete', () => {
       options = overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
       options[1].click();
       fixture.detectChanges();
+      tick();
 
       expect(fixture.componentInstance.trigger.panelOpen)
           .toBe(false, `Expected clicking a new option to set the panel state to closed.`);
@@ -258,18 +262,19 @@ describe('MDC-based MatAutocomplete', () => {
           .toEqual('', `Expected clicking a new option to close the panel.`);
     }));
 
-    it('should close the panel programmatically', () => {
+    it('should close the panel programmatically', fakeAsync(() => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
 
       fixture.componentInstance.trigger.closePanel();
       fixture.detectChanges();
+      tick();
 
       expect(fixture.componentInstance.trigger.panelOpen)
           .toBe(false, `Expected closing programmatically to set the panel state to closed.`);
       expect(overlayContainerElement.textContent)
           .toEqual('', `Expected closing programmatically to close the panel.`);
-    });
+    }));
 
     it('should not throw when attempting to close the panel of a destroyed autocomplete', () => {
       const trigger = fixture.componentInstance.trigger;
@@ -1032,6 +1037,7 @@ describe('MDC-based MatAutocomplete', () => {
       flush();
       fixture.componentInstance.trigger._handleKeydown(ENTER_EVENT);
       fixture.detectChanges();
+      tick();
 
       expect(fixture.componentInstance.trigger.panelOpen)
           .toBe(false, `Expected panel state to read closed after ENTER key.`);
@@ -1248,6 +1254,7 @@ describe('MDC-based MatAutocomplete', () => {
 
       dispatchKeyboardEvent(input, 'keydown', TAB);
       fixture.detectChanges();
+      tick();
 
       expect(overlayContainerElement.querySelector('.mat-mdc-autocomplete-panel'))
           .toBeFalsy('Expected panel to be removed.');
