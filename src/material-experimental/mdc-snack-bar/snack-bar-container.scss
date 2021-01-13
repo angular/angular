@@ -27,3 +27,8 @@
   // declaration so the container doesn't collapse on IE11.
   flex: 1 1 auto;
 }
+
+// Ensures that the snack bar stretches to full width in handset mode.
+.mat-mdc-snack-bar-handset .mdc-snackbar__surface {
+  width: 100%;
+}
