@@ -148,17 +148,6 @@ button.vertical-menu-item {
   padding-left: 20px;
   margin: 0;
   transition: background-color 0.2s;
-
-  &.expanded .mat-icon,
-  .level-2.expanded .mat-icon {
-    @include rotate(90deg);
-  }
-
-  &:not(.expanded) .mat-icon,
-  .level-2:not(.expanded) .mat-icon {
-    @include rotate(0deg);
-  }
-
 }
 
 .level-2 {
@@ -168,16 +157,6 @@ button.vertical-menu-item {
   font-weight: 400;
   margin: 0;
   padding-left: 32px;
-
-  &.expanded .mat-icon,
-  .level-3.expanded .mat-icon {
-    @include rotate(90deg);
-  }
-
-  &:not(.expanded) .mat-icon,
-  .level-3:not(.expanded) .mat-icon {
-    @include rotate(0deg);
-  }
 }
 
 .level-3 {
@@ -194,6 +173,16 @@ button.vertical-menu-item {
   @include font-size(14);
   margin: 0;
   padding-left: 48px;
+}
+
+.level-1, .level-2, .level-3 {
+  &.collapsed > .mat-icon {
+    @include rotate(0deg);
+  }
+
+  &.expanded > .mat-icon {
+    @include rotate(90deg);
+  }
 }
 
 aio-nav-menu.top-menu {
