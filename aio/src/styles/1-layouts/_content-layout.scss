@@ -6,6 +6,8 @@
 .sidenav-content {
   min-height: 100vh;
   padding: 80px 3rem 2rem;
+  max-width: 50em;
+  margin: 0 auto;
 
   @media screen and (max-width: 600px) {
     min-height: 450px;
@@ -16,9 +18,15 @@
     padding: 80px 1rem 1rem;
   }
 
-  aio-shell.page-docs & {
-    // padding: 6rem 3rem 3rem 3rem; // THIS CAUSES THE TOP NAV TOOLBAR TO JUMP BETWEEN DOCS AND OTHER PAGES
-    margin: auto;
+  .page-about &,
+  .page-contribute &,
+  .page-events &,
+  .page-features &,
+  .page-guide-cheatsheet &,
+  .page-home &,
+  .page-presskit &,
+  .page-resources & {
+    max-width: none;
   }
 
   button {
