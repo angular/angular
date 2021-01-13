@@ -7,7 +7,6 @@ aio-nav-menu {
   display: block;
   margin: 0 auto;
   max-width: 268px;
-  @include font-size(13);
 
   &:first-of-type {
     margin-top: 16px;
@@ -111,6 +110,7 @@ button.vertical-menu-item {
   color: $darkgray;
   cursor: pointer;
   position: relative;
+  @include font-size(16);
 }
 
 .heading-children {
@@ -143,7 +143,7 @@ button.vertical-menu-item {
 
 .level-1 {
   font-family: $main-font;
-  @include font-size(14);
+  @include font-size(16);
   font-weight: 400;
   padding-left: 20px;
   margin: 0;
