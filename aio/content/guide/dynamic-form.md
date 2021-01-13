@@ -37,7 +37,7 @@ See the <live-example name="dynamic-form"></live-example>.
 
 Before doing this tutorial, you should have a basic understanding to the following.
 
-* [TypeScript](https://www.typescriptlang.org/docs/home.html "The TypeScript language") and HTML5 programming.
+* [TypeScript](https://www.typescriptlang.org/ "The TypeScript language") and HTML5 programming.
 
 * Fundamental concepts of [Angular app design](guide/architecture "Introduction to Angular app-design concepts").
 
