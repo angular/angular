@@ -219,6 +219,59 @@ You'll need to push a new commit to trigger a build.
 
 * Learn more about Travis CI testing from [Travis CI documentation](https://docs.travis-ci.com/).
 
+### Configure project for GitLab CI
+
+Step 1: Create a file called `.gitlab-ci.yml` at the project root, with the following content:
+
+```
+image: node:14.15-stretch
+variables:
+  FF_USE_FASTZIP: "true"
+
+cache:
+  untracked: true
+  policy: push
+  key: ${CI_COMMIT_SHORT_SHA}
+  paths:
+    - node_modules/
+
+.pull_cached_node_modules:
+  cache:
+    untracked: true
+    key: ${CI_COMMIT_SHORT_SHA}
+    policy: pull
+
+stages:
+  - setup
+  - test
+
+install:
+  stage: setup
+  script:
+    - npm ci
+
+test:
+  stage: test
+  extends: .pull_cached_node_modules
+  before_script:
+    - apt-get update
+    - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+    - apt install -y ./google-chrome*.deb;
+    - export CHROME_BIN=/usr/bin/google-chrome
+  script:
+    - npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+    - npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
+```
+
+This configuration caches `node_modules/` in the `install` job and re-uses the cached `node_modules/` in the `test` job.
+
+Step 2: [Sign up for GitLab CI](https://gitlab.com/users/sign_in) and [add your project](https://gitlab.com/projects/new).
+You'll need to push a new commit to trigger a build.
+
+Step 3: Commit your changes and push them to your repository.
+
+* Learn more about GitLab CI testing from [GitLab CI/CD documentation](https://docs.gitlab.com/ee/ci/).
+
 ### Configure CLI for CI testing in Chrome
 
 When the CLI commands `ng test` and `ng e2e` are generally running the CI tests in your environment, you might still need to adjust your configuration to run the Chrome browser tests.
