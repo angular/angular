@@ -2,10 +2,6 @@
 
 set -u -e -o pipefail
 
-# Runs the pre-check before performing the publish to ensure
-# the version is valid for release.
-sh "$(dirname "$0")/pre-check";
-
 # Use for BETA and RC releases
 # Query Bazel for npm_package and ng_package rules with tags=["release-with-framework"]
 # Publish them to npm (tagged next)
