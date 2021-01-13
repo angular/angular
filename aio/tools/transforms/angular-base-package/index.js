@@ -140,6 +140,7 @@ module.exports = new Package('angular-base', [
   .config(function(postProcessHtml, addImageDimensions, autoLinkCode, filterPipes, filterAmbiguousDirectiveAliases, ignoreHttpInUrls, ignoreGenericWords) {
     addImageDimensions.basePath = path.resolve(AIO_PATH, 'src');
     autoLinkCode.customFilters = [ignoreGenericWords, ignoreHttpInUrls, filterPipes, filterAmbiguousDirectiveAliases];
+    autoLinkCode.failOnMissingDocPath = true;
     postProcessHtml.plugins = [
       require('./post-processors/autolink-headings'),
       addImageDimensions,
