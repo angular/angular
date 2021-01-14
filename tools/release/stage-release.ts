@@ -1,4 +1,4 @@
-import * as Octokit from '@octokit/rest';
+import {Octokit} from '@octokit/rest';
 import * as chalk from 'chalk';
 import {existsSync, readFileSync, writeFileSync} from 'fs';
 import {join} from 'path';
