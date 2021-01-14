@@ -173,7 +173,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
   }
 
   /**
-   * Rewrite the the IVY switch markers to indicate we are in IVY mode.
+   * Rewrite the IVY switch markers to indicate we are in IVY mode.
    */
   rewriteSwitchableDeclarations(
       outputText: MagicString, sourceFile: ts.SourceFile,

@@ -1773,7 +1773,7 @@ export class HttpClient {
 
   /**
    * Constructs a `PATCH` request that interprets the body as an `ArrayBuffer` and
-   *  returns the the full event stream.
+   *  returns the full event stream.
    *
    * @param url The endpoint URL.
    * @param body The resources to edit.

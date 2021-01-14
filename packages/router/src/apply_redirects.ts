@@ -167,7 +167,7 @@ class ApplyRedirects {
         .pipe(
             concatMap(childOutlet => {
               const child = segmentGroup.children[childOutlet];
-              // Sort the routes so routes with outlets that match the the segment appear
+              // Sort the routes so routes with outlets that match the segment appear
               // first, followed by routes for other outlets, which might match if they have an
               // empty path.
               const sortedRoutes = sortByMatchingOutlets(routes, childOutlet);
