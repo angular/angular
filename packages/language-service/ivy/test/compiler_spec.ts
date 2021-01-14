@@ -130,7 +130,7 @@ describe('language-service/compiler integration', () => {
     // when invoked via the Language Service. Testing this via the LS is important as only the LS
     // requests Angular analysis in the presence of TypeScript-level errors. In the case of broken
     // imports this distinction is especially important: Angular's incremental analysis is
-    // built on the the compiler's dependency graph, and this graph must be able to function even
+    // built on the compiler's dependency graph, and this graph must be able to function even
     // with broken imports.
     //
     // The test works by creating a component/module pair where the module imports and declares a

@@ -516,7 +516,7 @@ export function getStatusText(code: number) {
 }
 
 /**
- * Returns true if the the Http Status Code is 200-299 (success)
+ * Returns true if the Http Status Code is 200-299 (success)
  */
 export function isSuccess(status: number): boolean {
   return status >= 200 && status < 300;

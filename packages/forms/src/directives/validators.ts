@@ -365,7 +365,7 @@ export class MinLengthValidator implements Validator, OnChanges {
 
   /**
    * @description
-   * Tracks changes to the the minimum length bound to this directive.
+   * Tracks changes to the minimum length bound to this directive.
    */
   @Input()
   minlength!: string|number;  // This input is always defined, since the name matches selector.
@@ -443,7 +443,7 @@ export class MaxLengthValidator implements Validator, OnChanges {
 
   /**
    * @description
-   * Tracks changes to the the maximum length bound to this directive.
+   * Tracks changes to the maximum length bound to this directive.
    */
   @Input()
   maxlength!: string|number;  // This input is always defined, since the name matches selector.
@@ -537,7 +537,7 @@ export class PatternValidator implements Validator, OnChanges {
   }
 
   /**
-   * Method that validates whether the value matches the the pattern requirement.
+   * Method that validates whether the value matches the pattern requirement.
    * @nodoc
    */
   validate(control: AbstractControl): ValidationErrors|null {

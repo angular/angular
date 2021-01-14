@@ -205,7 +205,7 @@ function validateCommonConfig(config) {
  */
 function readConfigFile(configPath, returnEmptyObjectOnError) {
     if (returnEmptyObjectOnError === void 0) { returnEmptyObjectOnError = false; }
-    // If the the `.ts` extension has not been set up already, and a TypeScript based
+    // If the `.ts` extension has not been set up already, and a TypeScript based
     // version of the given configuration seems to exist, set up `ts-node` if available.
     if (require.extensions['.ts'] === undefined && fs.existsSync(configPath + ".ts") &&
         isTsNodeAvailable()) {

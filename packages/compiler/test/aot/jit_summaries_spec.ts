@@ -448,7 +448,7 @@ describe('aot summaries for jit', () => {
     expect(lib3ModuleNgSummarySource)
         .toMatch(/export function Lib3ModuleNgSummary\(\).*reference:i3\.ReexportModule,/s);
     // ngsummaries should re-export all used summaries directly. With external symbol re-exports
-    // enabled, the the "lib1" summaries would be re-exported through "lib2" in order to avoid
+    // enabled, the "lib1" summaries would be re-exported through "lib2" in order to avoid
     // a *direct* dependency on "lib1".
     expect(lib3ModuleNgSummarySource)
         .toContain(
