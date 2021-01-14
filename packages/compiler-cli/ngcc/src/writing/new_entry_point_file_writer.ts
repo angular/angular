@@ -112,7 +112,7 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
         this.fs.writeFile(newSourceMapPath, JSON.stringify(sourceMap));
       } catch (e) {
         this.logger.warn(`Failed to process source-map at ${sourceMapPath}`);
-        this.logger.warn(e.message);
+        this.logger.warn(e.message ?? e);
       }
     }
   }
