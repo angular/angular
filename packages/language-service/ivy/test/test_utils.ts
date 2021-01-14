@@ -1,4 +1,3 @@
-
 /**
  * @license
  * Copyright Google LLC All Rights Reserved.
@@ -57,9 +56,8 @@ export function createModuleWithDeclarations(
 export function humanizeDocumentSpanLike<T extends ts.DocumentSpan>(
     item: T, env: LanguageServiceTestEnvironment, overrides: Map<string, string> = new Map()): T&
     Stringy<ts.DocumentSpan> {
-  const fileContents =
-      (overrides.get(item.fileName) !== undefined ? overrides.get(item.fileName) :
-                                                    env.host.readFile(item.fileName)) ??
+  const fileContents = (overrides.has(item.fileName) ? overrides.get(item.fileName) :
+                                                       env.host.readFile(item.fileName)) ??
       '';
   if (!fileContents) {
     throw new Error('Could not read file ${entry.fileName}');
