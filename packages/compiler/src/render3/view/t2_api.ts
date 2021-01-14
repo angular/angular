@@ -37,12 +37,12 @@ export interface InputOutputPropertySet {
 }
 
 /**
- * A data structure which give the static animation names
- * and if includes the trigger name that can't be evaluated.
+ * A data structure which captures the animation trigger names that are statically resolvable
+ * and whether some names could not be statically evaluated.
  */
 export interface AnimationTriggerNames {
-  includeDynamicAnimations: boolean;
-  staticNames: string[];
+  includesDynamicAnimations: boolean;
+  triggerNames: string[];
 }
 
 /**
@@ -88,7 +88,7 @@ export interface DirectiveMeta {
 
   /**
    * The name of animations that the user defines in the component.
-   * Only include the animation names.
+   * Only includes the animation names.
    */
   animationTriggerNames: AnimationTriggerNames|null;
 }

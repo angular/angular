@@ -35,29 +35,6 @@ const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
 
 /**
- * Collect the animation names from the static evaluation result.
- * @param value the static evaluation result of the animations
- * @param animationTriggerNames the animation names collected
- */
-function collectAnimationName(
-    value: ResolvedValueArray, animationTriggerNames: AnimationTriggerNames) {
-  for (const resolvedValue of value) {
-    if (resolvedValue instanceof Map) {
-      const name = resolvedValue.get('name');
-      if (typeof name === 'string') {
-        animationTriggerNames.staticNames.push(name);
-      } else {
-        animationTriggerNames.includeDynamicAnimations = true;
-      }
-    } else if (Array.isArray(resolvedValue)) {
-      collectAnimationName(resolvedValue, animationTriggerNames);
-    } else {
-      animationTriggerNames.includeDynamicAnimations = true;
-    }
-  }
-}
-
-/**
  * These fields of `R3ComponentMetadata` are updated in the `resolve` phase.
  *
  * The `keyof R3ComponentMetadata &` condition ensures that only fields of `R3ComponentMetadata` can
@@ -338,13 +315,12 @@ export class ComponentDecoratorHandler implements
     let animationTriggerNames: AnimationTriggerNames|null = null;
     if (component.has('animations')) {
       animations = new WrappedNodeExpr(component.get('animations')!);
-      const eva = this.evaluator.evaluate(component.get('animations')!);
-      if (Array.isArray(eva)) {
-        animationTriggerNames = {includeDynamicAnimations: false, staticNames: []};
-        const res: string[] = [];
-        collectAnimationName(eva, animationTriggerNames);
+      const animationsValue = this.evaluator.evaluate(component.get('animations')!);
+      if (Array.isArray(animationsValue)) {
+        animationTriggerNames = {includesDynamicAnimations: false, triggerNames: []};
+        collectAnimationNames(animationsValue, animationTriggerNames);
       } else {
-        animationTriggerNames = {includeDynamicAnimations: true, staticNames: []};
+        animationTriggerNames = {includesDynamicAnimations: true, triggerNames: []};
       }
     }
 
@@ -409,7 +385,7 @@ export class ComponentDecoratorHandler implements
       ...analysis.typeCheckMeta,
       isPoisoned: analysis.isPoisoned,
       isStructural: false,
-      animationTriggerNames: analysis.animationTriggerNames
+      animationTriggerNames: analysis.animationTriggerNames,
     });
 
     this.resourceRegistry.registerResources(analysis.resources, node);
@@ -1015,4 +991,28 @@ export interface ParsedComponentTemplate extends ParsedTemplate {
 
 export interface ParsedTemplateWithSource extends ParsedComponentTemplate {
   sourceMapping: TemplateSourceMapping;
+}
+
+/**
+ * Collect the animation names from the static evaluation result.
+ * @param value the static evaluation result of the animations
+ * @param animationTriggerNames the animation names collected and whether some names could not be
+ *     statically evaluated.
+ */
+function collectAnimationNames(
+    value: ResolvedValueArray, animationTriggerNames: AnimationTriggerNames) {
+  for (const resolvedValue of value) {
+    if (resolvedValue instanceof Map) {
+      const name = resolvedValue.get('name');
+      if (typeof name === 'string') {
+        animationTriggerNames.triggerNames.push(name);
+      } else {
+        animationTriggerNames.includesDynamicAnimations = true;
+      }
+    } else if (Array.isArray(resolvedValue)) {
+      collectAnimationNames(resolvedValue, animationTriggerNames);
+    } else {
+      animationTriggerNames.includesDynamicAnimations = true;
+    }
+  }
 }

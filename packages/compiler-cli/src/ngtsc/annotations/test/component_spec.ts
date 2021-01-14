@@ -256,14 +256,13 @@ runInEachFileSystem(() => {
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       handler.register(TestCmp, analysis!);
       const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
-      expect(meta?.animationTriggerNames?.staticNames.length).toBe(2);
-      expect(meta?.animationTriggerNames?.staticNames).toEqual([
+      expect(meta?.animationTriggerNames?.triggerNames).toEqual([
         'animationName', 'nestedAnimationName'
       ]);
-      expect(meta?.animationTriggerNames?.includeDynamicAnimations).toBeFalse();
+      expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeFalse();
     });
 
-    it('should tell if the animations include the dynamic value', () => {
+    it('should tell if the animations include a dynamic value', () => {
       const {program, options, host} = makeProgram([
         {
           name: _('/node_modules/@angular/core/index.d.ts'),
@@ -303,12 +302,11 @@ runInEachFileSystem(() => {
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       handler.register(TestCmp, analysis!);
       const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
-      expect(meta?.animationTriggerNames?.staticNames.length).toBe(1);
-      expect(meta?.animationTriggerNames?.staticNames).toEqual(['animationName']);
-      expect(meta?.animationTriggerNames?.includeDynamicAnimations).toBeTrue();
+      expect(meta?.animationTriggerNames?.triggerNames).toEqual(['animationName']);
+      expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeTrue();
     });
 
-    it('should return `AnimationTriggerNames` when animations is complex', () => {
+    it('should treat complex animations expressions as dynamic', () => {
       const {program, options, host} = makeProgram([
         {
           name: _('/node_modules/@angular/core/index.d.ts'),
@@ -345,8 +343,8 @@ runInEachFileSystem(() => {
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       handler.register(TestCmp, analysis!);
       const meta = metaRegistry.getDirectiveMetadata(new Reference(TestCmp));
-      expect(meta?.animationTriggerNames?.includeDynamicAnimations).toBeTrue();
-      expect(meta?.animationTriggerNames?.staticNames.length).toBe(0);
+      expect(meta?.animationTriggerNames?.includesDynamicAnimations).toBeTrue();
+      expect(meta?.animationTriggerNames?.triggerNames.length).toBe(0);
     });
 
     it('does not emit a program with template parse errors', () => {
