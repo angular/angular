@@ -40,7 +40,7 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     // The new folder is at the root of the overall package
     const entryPoint = bundle.entryPoint;
     const ngccFolder = this.fs.join(entryPoint.packagePath, NGCC_DIRECTORY);
-    this.copyBundle(bundle, entryPoint.packagePath, ngccFolder);
+    this.copyBundle(bundle, entryPoint.packagePath, ngccFolder, transformedFiles);
     transformedFiles.forEach(file => this.writeFile(file, entryPoint.packagePath, ngccFolder));
     this.updatePackageJson(entryPoint, formatProperties, ngccFolder);
   }
@@ -67,9 +67,14 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
   }
 
   protected copyBundle(
-      bundle: EntryPointBundle, packagePath: AbsoluteFsPath, ngccFolder: AbsoluteFsPath) {
+      bundle: EntryPointBundle, packagePath: AbsoluteFsPath, ngccFolder: AbsoluteFsPath,
+      transformedFiles: FileToWrite[]) {
+    const doNotCopy = new Set(transformedFiles.map(f => f.path));
     bundle.src.program.getSourceFiles().forEach(sourceFile => {
       const originalPath = absoluteFromSourceFile(sourceFile);
+      if (doNotCopy.has(originalPath)) {
+        return;
+      }
       const relativePath = this.fs.relative(packagePath, originalPath);
       const isInsidePackage = isLocalRelativePath(relativePath);
       if (!sourceFile.isDeclarationFile && isInsidePackage) {
