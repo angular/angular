@@ -199,7 +199,7 @@ You should configure the HTTP headers for Trusted Types in the following locatio
 The following is an example of a header specifically configured for Trusted Types and Angular:
 
 <code-example language="html">
-Content-Security-Policy: trusted-types angular; required-trusted-types-for 'script';
+Content-Security-Policy: trusted-types angular; require-trusted-types-for 'script';
 </code-example>
 
 The following is an example of a header specifically configured for Trusted Types and Angular applications that use any of the methods in Angular's [DomSanitizer](api/platform-browser/DomSanitizer) that bypasses security.
