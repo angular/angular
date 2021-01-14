@@ -244,7 +244,7 @@ export class BindingParser {
       targetProps: ParsedProperty[], keySpan?: ParseSourceSpan) {
     if (isAnimationLabel(name)) {
       name = name.substring(1);
-      if (keySpan) {
+      if (keySpan !== undefined) {
         keySpan = moveParseSourceSpan(
             keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));
       }
@@ -278,7 +278,7 @@ export class BindingParser {
     if (name.startsWith(ANIMATE_PROP_PREFIX)) {
       isAnimationProp = true;
       name = name.substring(ANIMATE_PROP_PREFIX.length);
-      if (keySpan) {
+      if (keySpan !== undefined) {
         keySpan = moveParseSourceSpan(
             keySpan,
             new AbsoluteSourceSpan(
@@ -287,7 +287,7 @@ export class BindingParser {
     } else if (isAnimationLabel(name)) {
       isAnimationProp = true;
       name = name.substring(1);
-      if (keySpan) {
+      if (keySpan !== undefined) {
         keySpan = moveParseSourceSpan(
             keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));
       }
@@ -438,7 +438,7 @@ export class BindingParser {
 
     if (isAnimationLabel(name)) {
       name = name.substr(1);
-      if (keySpan) {
+      if (keySpan !== undefined) {
         keySpan = moveParseSourceSpan(
             keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));
       }
