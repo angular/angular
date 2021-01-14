@@ -46,7 +46,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
-    // First we try one of the the following:
+    // First we try one of the following:
     // 1. The `exports` identifier - referring to the current file/module.
     // 2. An identifier (e.g. `foo`) that refers to an imported UMD module.
     // 3. A UMD style export identifier (e.g. the `foo` of `exports.foo`).

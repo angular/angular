@@ -107,7 +107,7 @@ echo "export CI_SECRET_PAYLOAD_FIREBASE_TOKEN=\"${CI_SECRET_PAYLOAD_FIREBASE_TOK
 ####################################################################################################
 ####################################################################################################
 ##                  Source `$BASH_ENV` to make the variables available immediately.               ##
-##                  ***NOTE: This must remain the the last action in this script***               ##
+##                  ***NOTE: This must remain the last action in this script***               ##
 ####################################################################################################
 ####################################################################################################
 source $BASH_ENV;

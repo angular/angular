@@ -331,7 +331,7 @@ def _filter_out_generated_files(files, extension, package_path = None):
     files_list = files.to_list() if type(files) == _DEPSET_TYPE else files
     for file in files_list:
         # If the "package_path" parameter has been specified, filter out files
-        # that do not start with the the specified package path.
+        # that do not start with the specified package path.
         if package_path and not file.short_path.startswith(package_path):
             continue
 

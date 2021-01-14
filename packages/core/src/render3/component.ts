@@ -178,7 +178,7 @@ export function createRootComponentView(
   ngDevMode && assertIndexInRange(rootView, index);
   rootView[index] = rNode;
   // '#host' is added here as we don't know the real host DOM name (we don't want to read it) and at
-  // the same time we want to communicate the the debug `TNode` that this is a special `TNode`
+  // the same time we want to communicate the debug `TNode` that this is a special `TNode`
   // representing a host element.
   const tNode: TElementNode = getOrCreateTNode(tView, index, TNodeType.Element, '#host', null);
   const mergedAttrs = tNode.mergedAttrs = def.hostAttrs;

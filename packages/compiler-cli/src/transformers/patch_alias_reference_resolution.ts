@@ -64,7 +64,7 @@ interface EmitResolver {
  * solves it conceptually the same way, but obviously doesn't need to access an `@internal` API.
  *
  * The set that is returned by this function is meant to be filled with import declaration nodes
- * that have been referenced in a value-position by the transform, such the the installed patch can
+ * that have been referenced in a value-position by the transform, such the installed patch can
  * ensure that those import declarations are not elided.
  *
  * See below. Note that this uses sourcegraph as the TypeScript checker file doesn't display on
