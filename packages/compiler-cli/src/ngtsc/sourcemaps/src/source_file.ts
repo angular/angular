@@ -17,6 +17,44 @@ export function removeSourceMapComments(contents: string): string {
   return removeMapFileComments(removeComments(contents)).replace(/\n\n$/, '\n');
 }
 
+
+/** A small helper structure that is returned from `loadSourceMap()`. */
+export interface MapAndPath {
+  /** The path to the source map if it was external or `null` if it was inline. */
+  mapPath: AbsoluteFsPath|null;
+  /** The raw source map itself. */
+  map: RawSourceMap;
+  /** If true then the source-map was found inline, rather than loaded from the file-system. */
+  origin?: ContentOrigin;
+}
+
+/**
+ * Where the content for a source file or source-map came from.
+ *
+ * - Source files can be linked to source-maps by:
+ *   - providing the content inline via a base64 encoded data comment,
+ *   - providing a URL to the file path in a comment,
+ *   - the loader inferring the source-map path from the source file path.
+ * - Source-maps can link to source files by:
+ *   - providing the content inline in the `sourcesContent` property
+ *   - providing the path to the file in the `sources` property
+ */
+export enum ContentOrigin {
+  /**
+   * The contents were provided programmatically when calling `loadSourceFile()`.
+   */
+  Provided,
+  /**
+   * The contents were extracted directly form the contents of the referring file.
+   */
+  Inline,
+  /**
+     The contents were loaded from the file-system, after being explicitly referenced or inferred
+     from the referring file.
+   */
+  FileSystem,
+}
+
 export class SourceFile {
   /**
    * The parsed mappings that have been flattened so that any intermediate source mappings have been
@@ -33,10 +71,8 @@ export class SourceFile {
       readonly sourcePath: AbsoluteFsPath,
       /** The contents of this source file. */
       readonly contents: string,
-      /** The raw source map (if any) associated with this source file. */
-      readonly rawMap: RawSourceMap|null,
-      /** Whether this source file's source map was inline or external. */
-      readonly inline: boolean,
+      /** The raw source map (if any) referenced by this source file. */
+      readonly rawMap: MapAndPath|null,
       /** Any source files referenced by the raw source map associated with this source file. */
       readonly sources: (SourceFile|null)[],
       private fs: PathManipulation,
@@ -141,7 +177,8 @@ export class SourceFile {
    * source files with no transitive source maps.
    */
   private flattenMappings(): Mapping[] {
-    const mappings = parseMappings(this.rawMap, this.sources, this.startOfLinePositions);
+    const mappings =
+        parseMappings(this.rawMap && this.rawMap.map, this.sources, this.startOfLinePositions);
     ensureOriginalSegmentLinks(mappings);
     const flattenedMappings: Mapping[] = [];
     for (let mappingIndex = 0; mappingIndex < mappings.length; mappingIndex++) {

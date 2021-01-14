@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 export {RawSourceMap} from './src/raw_source_map';
-export {Mapping, SourceFile} from './src/source_file';
-export {MapAndPath, SourceFileLoader} from './src/source_file_loader';
+export {ContentOrigin, MapAndPath, Mapping, SourceFile} from './src/source_file';
+export {SourceFileLoader} from './src/source_file_loader';
