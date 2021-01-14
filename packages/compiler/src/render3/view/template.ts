@@ -862,10 +862,27 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Prepare attributes parameter (including attributes used for directive matching and content
     // projection logic)
-    const attrsExprs: o.Expression[] = this.getAttributeExpressions(
-        NG_TEMPLATE_TAG_NAME, staticAttrs, inputs, template.outputs, stylingBuilder,
-        template.templateAttrs, i18nInputs);
-    parameters.push(this.addAttrsToConsts(attrsExprs));
+    if (template.tagName === NG_TEMPLATE_TAG_NAME) {
+      const attrsExprs: o.Expression[] = this.getAttributeExpressions(
+          NG_TEMPLATE_TAG_NAME, staticAttrs, inputs, template.outputs, stylingBuilder,
+          template.templateAttrs, i18nInputs);
+      parameters.push(this.addAttrsToConsts(attrsExprs));
+    } else {
+      const elementAttrExprs: o.Expression[] = this.getAttributeExpressions(
+          NG_TEMPLATE_TAG_NAME, staticAttrs, inputs, template.outputs, stylingBuilder,
+          [] /* template.templateAttrs */, i18nInputs);
+      // TODO: check with 0 attrs (only *ngIf)!
+      // TODO: check with i18n when `consts` is a function!
+      const indexExpr = this.addAttrsToConsts(elementAttrExprs);
+
+      const templateAttrs: o.Expression[] = [];
+      templateAttrs.push(o.literal(core.AttributeMarker.Template));
+      template.templateAttrs.forEach(attr => templateAttrs.push(o.literal(attr.name)));
+      if (indexExpr !== o.TYPED_NULL_EXPR) {
+        templateAttrs.unshift(o.literal(~(indexExpr.value as number)));
+      }
+      parameters.push(this.addAttrsToConsts(templateAttrs));
+    }
 
     // Local refs (ex.: <ng-template #foo>)
     if (template.references && template.references.length) {

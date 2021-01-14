@@ -28,7 +28,7 @@ import {executeCheckHooks, executeInitAndCheckHooks, incrementInitPhaseFlags} fr
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS} from '../interfaces/container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, HostBindingsFunction, PipeDefListOrFactory, RenderFlags, ViewQueriesFunction} from '../interfaces/definition';
 import {NodeInjectorFactory} from '../interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from '../interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LocalRefExtractor, PropertyAliases, PropertyAliasValue, TAttributes, TConstants, TConstantsOrFactory, TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TIcuContainerNode, TNode, TNodeFlags, TNodeType, TProjectionNode} from '../interfaces/node';
 import {isProceduralRenderer, Renderer3, RendererFactory3} from '../interfaces/renderer';
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
@@ -647,7 +647,7 @@ export function createTView(
           typeof pipes === 'function' ? pipes() : pipes,  // pipeRegistry: PipeDefList|null,
           null,                                           // firstChild: TNode|null,
           schemas,                                        // schemas: SchemaMetadata[]|null,
-          consts,                                         // consts: TConstants|null
+          consts === null ? null : resolveRefs(consts),   // consts: TConstants|null
           false,                                          // incompleteFirstPass: boolean
           decls,                                          // ngDevMode only: decls
           vars,                                           // ngDevMode only: vars
@@ -691,6 +691,19 @@ export function createTView(
     Object.seal(tView);
   }
   return tView;
+}
+
+// TODO: add docs
+function resolveRefs(consts: TConstants): TConstants {
+  // TODO: may be avoid `map` and use for loops instead?
+  return consts.map((item: string|TAttributes, index: number) => {
+    if (Array.isArray(item) && item[0] < 0) {
+      const refIndex = ~item[0];
+      // TODO: optimize this to avoid intermediate arrays creation
+      return consts[refIndex].slice().concat(item.slice(1) as any);
+    }
+    return item;
+  });
 }
 
 function createViewBlueprint(bindingStartIndex: number, initialViewLength: number): LView {
@@ -738,10 +751,10 @@ export function locateHostElement(
       elementOrSelector;
   ngDevMode && assertHostNodeExists(rElement, elementOrSelector);
 
-  // Always clear host element's content when Renderer3 is in use. For procedural renderer case we
-  // make it depend on whether ShadowDom encapsulation is used (in which case the content should be
-  // preserved to allow native slot projection). ShadowDom encapsulation requires procedural
-  // renderer, and procedural renderer case is handled above.
+  // Always clear host element's content when Renderer3 is in use. For procedural renderer case
+  // we make it depend on whether ShadowDom encapsulation is used (in which case the content
+  // should be preserved to allow native slot projection). ShadowDom encapsulation requires
+  // procedural renderer, and procedural renderer case is handled above.
   rElement.textContent = '';
 
   return rElement;
@@ -762,7 +775,8 @@ export function storeCleanupWithContext(
   const lCleanup = getOrCreateLViewCleanup(lView);
   if (context === null) {
     // If context is null that this is instance specific callback. These callbacks can only be
-    // inserted after template shared instances. For this reason in ngDevMode we freeze the TView.
+    // inserted after template shared instances. For this reason in ngDevMode we freeze the
+    // TView.
     if (ngDevMode) {
       Object.freeze(getOrCreateTViewCleanup(tView));
     }
