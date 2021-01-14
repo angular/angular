@@ -49,7 +49,7 @@
     "check-mdc-tests": "ts-node --project scripts/tsconfig.json scripts/check-mdc-tests.ts",
     "check-mdc-exports": "ts-node --project scripts/tsconfig.json scripts/check-mdc-exports.ts"
   },
-  "version": "11.1.0-rc.0",
+  "version": "11.2.0-next.0",
   "dependencies": {
     "@angular/animations": "^11.1.0-rc.0",
     "@angular/common": "^11.1.0-rc.0",
