@@ -41,7 +41,7 @@ export class SitePage {
 
   async navigateTo(pageUrl: string) {
     // Navigate to the page, disable animations, and wait for Angular.
-    await browser.get(`/${pageUrl}`);
+    await browser.get(`/${pageUrl.replace(/^\//, '')}`);
     await browser.executeScript('document.body.classList.add(\'no-animations\')');
     await browser.waitForAngular();
   }
