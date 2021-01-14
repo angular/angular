@@ -13,10 +13,12 @@ import {StepperOptionalExample} from './stepper-optional/stepper-optional-exampl
 import {StepperOverviewExample} from './stepper-overview/stepper-overview-example';
 import {StepperStatesExample} from './stepper-states/stepper-states-example';
 import {StepperVerticalExample} from './stepper-vertical/stepper-vertical-example';
+import {StepperHarnessExample} from './stepper-harness/stepper-harness-example';
 
 export {
   StepperEditableExample,
   StepperErrorsExample,
+  StepperHarnessExample,
   StepperLabelPositionBottomExample,
   StepperOptionalExample,
   StepperOverviewExample,
@@ -27,6 +29,7 @@ export {
 const EXAMPLES = [
   StepperEditableExample,
   StepperErrorsExample,
+  StepperHarnessExample,
   StepperLabelPositionBottomExample,
   StepperOptionalExample,
   StepperOverviewExample,
