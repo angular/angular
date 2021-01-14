@@ -14,13 +14,17 @@ import {
   Directive,
   ElementRef,
   HostBinding,
+  Inject,
   Input,
   NgZone,
   OnDestroy,
+  Optional,
   QueryList
 } from '@angular/core';
 import {
+  MAT_RIPPLE_GLOBAL_OPTIONS,
   RippleConfig,
+  RippleGlobalOptions,
   RippleRenderer,
   RippleTarget,
   setLines,
@@ -74,17 +78,20 @@ export abstract class MatListItemBase implements AfterContentInit, OnDestroy, Ri
    * Implemented as part of `RippleTarget`.
    * @docs-private
    */
-  rippleConfig: RippleConfig = {};
+  rippleConfig: RippleConfig & RippleGlobalOptions;
 
   /**
    * Implemented as part of `RippleTarget`.
    * @docs-private
    */
-  get rippleDisabled(): boolean { return this.disableRipple; }
+  get rippleDisabled(): boolean { return this.disableRipple || !!this.rippleConfig.disabled; }
 
   constructor(public _elementRef: ElementRef<HTMLElement>, protected _ngZone: NgZone,
-              private _listBase: MatListBase, private _platform: Platform) {
+              private _listBase: MatListBase, private _platform: Platform,
+              @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
+                  globalRippleOptions?: RippleGlobalOptions) {
     this._hostElement = this._elementRef.nativeElement;
+    this.rippleConfig = globalRippleOptions || {};
 
     if (!this._listBase._isNonInteractive) {
       this._initInteractiveListItem();

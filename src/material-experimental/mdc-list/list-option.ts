@@ -21,11 +21,17 @@ import {
   NgZone,
   OnDestroy,
   OnInit,
+  Optional,
   QueryList,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
-import {MatLine, ThemePalette} from '@angular/material-experimental/mdc-core';
+import {
+  MatLine,
+  MAT_RIPPLE_GLOBAL_OPTIONS,
+  RippleGlobalOptions,
+  ThemePalette,
+} from '@angular/material-experimental/mdc-core';
 import {MatListBase, MatListItemBase} from './list-base';
 import {LIST_OPTION, ListOption, MatListOptionCheckboxPosition} from './list-option-types';
 
@@ -125,8 +131,9 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
       ngZone: NgZone,
       platform: Platform,
       @Inject(SELECTION_LIST) public _selectionList: SelectionList,
-      private _changeDetectorRef: ChangeDetectorRef) {
-    super(element, ngZone, _selectionList, platform);
+      private _changeDetectorRef: ChangeDetectorRef,
+      @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalRippleOptions?: RippleGlobalOptions) {
+    super(element, ngZone, _selectionList, platform, globalRippleOptions);
 
     // By default, we mark all options as unselected. The MDC list foundation will
     // automatically update the attribute based on selection. Note that we need to

@@ -12,12 +12,18 @@ import {
   Component,
   ContentChildren,
   ElementRef,
+  Inject,
   NgZone,
+  Optional,
   QueryList,
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
-import {MatLine} from '@angular/material-experimental/mdc-core';
+import {
+  MatLine,
+  MAT_RIPPLE_GLOBAL_OPTIONS,
+  RippleGlobalOptions,
+} from '@angular/material-experimental/mdc-core';
 import {MatListBase, MatListItemBase} from './list-base';
 
 @Component({
@@ -52,7 +58,12 @@ export class MatListItem extends MatListItemBase {
       QueryList<ElementRef<Element>>;
   @ViewChild('text') _itemText: ElementRef<HTMLElement>;
 
-  constructor(element: ElementRef, ngZone: NgZone, listBase: MatListBase, platform: Platform) {
-    super(element, ngZone, listBase, platform);
+  constructor(
+    element: ElementRef,
+    ngZone: NgZone,
+    listBase: MatListBase,
+    platform: Platform,
+    @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalRippleOptions?: RippleGlobalOptions) {
+    super(element, ngZone, listBase, platform, globalRippleOptions);
   }
 }
