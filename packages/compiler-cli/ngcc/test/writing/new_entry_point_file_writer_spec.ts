@@ -51,6 +51,12 @@ runInEachFileSystem(() => {
         {name: _('/node_modules/test/esm5.js'), contents: 'export function FooTop() {}'},
         {name: _('/node_modules/test/esm5.js.map'), contents: 'ORIGINAL MAPPING DATA'},
         {name: _('/node_modules/test/es2015/index.js'), contents: 'export {FooTop} from "./foo";'},
+        {
+          name: _('/node_modules/test/es2015/index.js.map'),
+          contents:
+              '{"version":3,"file":"index.js","sources":["../src/index.ts"],"mappings":"AAAA"}'
+        },
+        {name: _('/node_modules/test/src/index.ts'), contents: 'export {FooTop} from "./foo";'},
         {name: _('/node_modules/test/es2015/foo.js'), contents: 'export class FooTop {}'},
         {
           name: _('/node_modules/test/a/package.json'),
@@ -153,6 +159,85 @@ runInEachFileSystem(() => {
         expect(fs.readFile(_('/node_modules/test/es2015/index.js')))
             .toEqual('export {FooTop} from "./foo";');
       });
+
+      it('should copy any source-map for unmodified files in the program (adding missing sourceRoot)',
+         () => {
+           // Ensure source-mapping for a non-processed source file `index.js`.
+           const sourceMap = {
+             version: 3,
+             file: 'index.js',
+             sources: ['../src/index.ts'],
+             mappings: 'AAAA',
+           };
+           loadTestFiles([
+             {
+               name: _('/node_modules/test/es2015/index.js.map'),
+               contents: JSON.stringify(sourceMap)
+             },
+             {name: _('/node_modules/test/src/index.ts'), contents: 'export {FooTop} from "./foo";'}
+           ]);
+
+           // Simulate that only the `foo.js` file was modified
+           const modifiedFiles = [{
+             path: _('/node_modules/test/es2015/foo.js'),
+             contents: 'export class FooTop {} // MODIFIED'
+           }];
+           fileWriter.writeBundle(esm2015bundle, modifiedFiles, ['es2015']);
+
+           expect(JSON.parse(fs.readFile(_('/node_modules/test/__ivy_ngcc__/es2015/index.js.map'))))
+               .toEqual({...sourceMap, sourceRoot: '../../es2015'});
+         });
+
+      it('should copy any source-map for unmodified files in the program (updating sourceRoot)',
+         () => {
+           // Ensure source-mapping for a non-processed source file `index.js`.
+           const sourceMap = {
+             version: 3,
+             file: 'index.js',
+             sourceRoot: '../src',
+             sources: ['index.ts'],
+             mappings: 'AAAA',
+           };
+           loadTestFiles([
+             {
+               name: _('/node_modules/test/es2015/index.js.map'),
+               contents: JSON.stringify(sourceMap)
+             },
+             {name: _('/node_modules/test/src/index.ts'), contents: 'export {FooTop} from "./foo";'}
+           ]);
+
+           // Simulate that only the `foo.js` file was modified
+           const modifiedFiles = [{
+             path: _('/node_modules/test/es2015/foo.js'),
+             contents: 'export class FooTop {} // MODIFIED'
+           }];
+           fileWriter.writeBundle(esm2015bundle, modifiedFiles, ['es2015']);
+
+           expect(JSON.parse(fs.readFile(_('/node_modules/test/__ivy_ngcc__/es2015/index.js.map'))))
+               .toEqual({...sourceMap, sourceRoot: '../../src'});
+         });
+
+      it('should ignore (with a warning) any invalid source-map for unmodified files in the program',
+         () => {
+           // Ensure source-mapping for a non-processed source file `index.js`.
+           loadTestFiles([
+             {name: _('/node_modules/test/es2015/index.js.map'), contents: 'INVALID JSON STRING'},
+             {name: _('/node_modules/test/src/index.ts'), contents: 'export {FooTop} from "./foo";'}
+           ]);
+
+           // Simulate that only the `foo.js` file was modified
+           const modifiedFiles = [{
+             path: _('/node_modules/test/es2015/foo.js'),
+             contents: 'export class FooTop {} // MODIFIED'
+           }];
+           fileWriter.writeBundle(esm2015bundle, modifiedFiles, ['es2015']);
+
+           expect(fs.exists(_('/node_modules/test/__ivy_ngcc__/es2015/index.js.map'))).toBe(false);
+           expect(logger.logs.warn).toEqual([
+             [`Failed to process source-map at ${_('/node_modules/test/es2015/index.js.map')}`],
+             ['Unexpected token I in JSON at position 0'],
+           ]);
+         });
 
       it('should update the package.json properties', () => {
         fileWriter.writeBundle(
