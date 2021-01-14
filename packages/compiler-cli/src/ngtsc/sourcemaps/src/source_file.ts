@@ -10,7 +10,7 @@ import {decode, encode, SourceMapMappings, SourceMapSegment} from 'sourcemap-cod
 
 import {AbsoluteFsPath, PathManipulation} from '../../file_system';
 
-import {RawSourceMap} from './raw_source_map';
+import {RawSourceMap, SourceMapInfo} from './raw_source_map';
 import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker';
 
 export function removeSourceMapComments(contents: string): string {
@@ -33,10 +33,8 @@ export class SourceFile {
       readonly sourcePath: AbsoluteFsPath,
       /** The contents of this source file. */
       readonly contents: string,
-      /** The raw source map (if any) associated with this source file. */
-      readonly rawMap: RawSourceMap|null,
-      /** Whether this source file's source map was inline or external. */
-      readonly inline: boolean,
+      /** The raw source map (if any) referenced by this source file. */
+      readonly rawMap: SourceMapInfo|null,
       /** Any source files referenced by the raw source map associated with this source file. */
       readonly sources: (SourceFile|null)[],
       private fs: PathManipulation,
@@ -141,7 +139,8 @@ export class SourceFile {
    * source files with no transitive source maps.
    */
   private flattenMappings(): Mapping[] {
-    const mappings = parseMappings(this.rawMap, this.sources, this.startOfLinePositions);
+    const mappings =
+        parseMappings(this.rawMap && this.rawMap.map, this.sources, this.startOfLinePositions);
     ensureOriginalSegmentLinks(mappings);
     const flattenedMappings: Mapping[] = [];
     for (let mappingIndex = 0; mappingIndex < mappings.length; mappingIndex++) {
