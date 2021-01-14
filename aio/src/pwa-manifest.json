@@ -1,6 +1,9 @@
 {
-  "short_name": "angular.io",
   "name": "Angular Documentation",
+  "short_name": "angular.io",
+  "background_color": "#1976d2",
+  "theme_color": "#1976d2",
+  "display": "standalone",
   "icons": [
     {
       "src": "assets/images/favicons/favicon-194x194.png",
@@ -19,8 +22,5 @@
       "purpose": "maskable"
     }
   ],
-  "start_url": "/?utm_source=homescreen",
-  "background_color": "#1976d2",
-  "theme_color": "#1976d2",
-  "display": "standalone"
+  "start_url": "/?utm_source=homescreen"
 }
