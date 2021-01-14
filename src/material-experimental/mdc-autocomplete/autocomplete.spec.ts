@@ -2013,6 +2013,21 @@ describe('MDC-based MatAutocomplete', () => {
           .toContain('mat-mdc-option-active', 'Expected first option to be highlighted.');
     }));
 
+    it('should skip to the next enabled option if the first one is disabled ' +
+      'when using `autoActiveFirstOption`', fakeAsync(() => {
+        const testComponent = fixture.componentInstance;
+        testComponent.trigger.autocomplete.autoActiveFirstOption = true;
+        testComponent.states[0].disabled = true;
+        testComponent.states[1].disabled = true;
+        testComponent.trigger.openPanel();
+        fixture.detectChanges();
+        zone.simulateZoneExit();
+        fixture.detectChanges();
+
+        expect(overlayContainerElement.querySelectorAll('mat-option')[2].classList)
+            .toContain('mat-mdc-option-active', 'Expected third option to be highlighted.');
+      }));
+
     it('should remove aria-activedescendant when panel is closed with autoActiveFirstOption',
       fakeAsync(() => {
         const input: HTMLElement = fixture.nativeElement.querySelector('input');
@@ -2763,7 +2778,8 @@ const SIMPLE_AUTOCOMPLETE_TEMPLATE = `
     <mat-option
       *ngFor="let state of filteredStates"
       [value]="state"
-      [style.height.px]="state.height">
+      [style.height.px]="state.height"
+      [disabled]="state.disabled">
       <span>{{ state.code }}: {{ state.name }}</span>
     </mat-option>
   </mat-autocomplete>
@@ -2790,7 +2806,7 @@ class SimpleAutocomplete implements OnDestroy {
   @ViewChild(MatFormField) formField: MatFormField;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
 
-  states: {code: string, name: string, height?: number}[] = [
+  states: {code: string, name: string, height?: number, disabled?: boolean}[] = [
     {code: 'AL', name: 'Alabama'},
     {code: 'CA', name: 'California'},
     {code: 'FL', name: 'Florida'},
