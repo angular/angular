@@ -107,7 +107,9 @@ describe('di', () => {
           (DirA as any)['__NG_ELEMENT_ID__'] = 1;
           (DirC as any)['__NG_ELEMENT_ID__'] = 257;
           new ComponentFixture(App);
-        }).toThrowError('NG0201: No provider for DirB found in NodeInjector');
+        })
+            .toThrowError(
+                'NG0201: No provider for DirB found in NodeInjector. Find more at https://angular.io/errors/NG0201');
       });
     });
   });

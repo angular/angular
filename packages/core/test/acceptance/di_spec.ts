@@ -617,7 +617,8 @@ describe('di', () => {
 
           TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
           expect(() => TestBed.createComponent(MyComp))
-              .toThrowError('NG0200: Circular dependency in DI detected for DirectiveA');
+              .toThrowError(
+                  'NG0200: Circular dependency in DI detected for DirectiveA. Find more at https://angular.io/errors/NG0200');
         });
 
     onlyInIvy('Ivy has different error message for circular dependency')
@@ -633,7 +634,8 @@ describe('di', () => {
 
           TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
           expect(() => TestBed.createComponent(MyComp))
-              .toThrowError('NG0200: Circular dependency in DI detected for DirectiveA');
+              .toThrowError(
+                  'NG0200: Circular dependency in DI detected for DirectiveA. Find more at https://angular.io/errors/NG0200');
         });
 
     describe('flags', () => {
@@ -1779,7 +1781,8 @@ describe('di', () => {
 
               TestBed.configureTestingModule({declarations: [DirectiveString, MyComp, MyApp]});
               expect(() => TestBed.createComponent(MyApp))
-                  .toThrowError('NG0201: No provider for String found in NodeInjector');
+                  .toThrowError(
+                      'NG0201: No provider for String found in NodeInjector. Find more at https://angular.io/errors/NG0201');
             });
 
         onlyInIvy('Ivy has different error message when dependency is not found')
@@ -1859,7 +1862,8 @@ describe('di', () => {
 
               TestBed.configureTestingModule({declarations: [DirectiveComp, MyComp, MyApp]});
               expect(() => TestBed.createComponent(MyApp))
-                  .toThrowError('NG0201: No provider for MyApp found in NodeInjector');
+                  .toThrowError(
+                      'NG0201: No provider for MyApp found in NodeInjector. Find more at https://angular.io/errors/NG0201');
             });
 
         describe('regression', () => {
