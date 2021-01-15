@@ -62,22 +62,27 @@
 }
 
 @mixin _mat-mdc-tabs-background($background-color, $foreground-color) {
-  .mat-mdc-tab-header, .mat-mdc-tab-links, .mat-mdc-tab-header-pagination {
+  // Note that these selectors target direct descendants so
+  // that the styles don't apply to any nested tab groups.
+
+  > .mat-mdc-tab-header, > .mat-mdc-tab-link-container, > .mat-mdc-tab-header-pagination {
     // Set background color for the tab group
     @include mdc-theme-prop(background-color, $background-color);
   }
 
-  // Set labels to contrast against background
-  .mdc-tab__text-label, .mat-mdc-tab-link {
-    @include mdc-theme-prop(color, $foreground-color);
-  }
+  > .mat-mdc-tab-header, > .mat-mdc-tab-link-container {
+    // Set labels to contrast against background
+    .mdc-tab__text-label, .mat-mdc-tab-link {
+      @include mdc-theme-prop(color, $foreground-color);
+    }
 
-  .mat-ripple-element, .mdc-tab__ripple::before {
-    @include mdc-theme-prop(background-color, $foreground-color);
-  }
+    .mat-ripple-element, .mdc-tab__ripple::before {
+      @include mdc-theme-prop(background-color, $foreground-color);
+    }
 
-  .mdc-tab-indicator__content--underline, .mat-mdc-tab-header-pagination-chevron {
-    @include mdc-theme-prop(border-color, $foreground-color);
+    .mdc-tab-indicator__content--underline, .mat-mdc-tab-header-pagination-chevron {
+      @include mdc-theme-prop(border-color, $foreground-color);
+    }
   }
 }
 
