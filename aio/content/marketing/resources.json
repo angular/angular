@@ -190,6 +190,13 @@
       "Tooling": {
         "order": 2,
         "resources": {
+          "ub": {
+            "desc": "UI Bakery is a low code platform to generate Angular applications.",
+            "logo": "",
+            "rev": true,
+            "title": "UI Bakery",
+            "url": "https://uibakery.io/"
+          },
           "a1": {
             "desc": "A Google Chrome Dev Tools extension for debugging Angular applications.",
             "logo": "https://augury.angular.io/images/augury-logo.svg",
