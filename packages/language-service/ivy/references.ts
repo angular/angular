@@ -67,7 +67,7 @@ export class ReferencesAndRenameBuilder {
   getRenameInfo(filePath: string, position: number):
       Omit<ts.RenameInfoSuccess, 'kind'|'kindModifiers'>|ts.RenameInfoFailure {
     const templateInfo = getTemplateInfoAtPosition(filePath, position, this.compiler);
-    // We could not get a template at position so we assume the request is came from outside the
+    // We could not get a template at position so we assume the request came from outside the
     // template.
     if (templateInfo === undefined) {
       return this.tsLS.getRenameInfo(filePath, position);
@@ -80,10 +80,7 @@ export class ReferencesAndRenameBuilder {
     const {templateTarget} = allTargetDetails[0];
     const templateTextAndSpan = getRenameTextAndSpanAtPosition(templateTarget, position);
     if (templateTextAndSpan === null) {
-      return {
-        canRename: false,
-        localizedErrorMessage: 'Could not find determine template node text.'
-      };
+      return {canRename: false, localizedErrorMessage: 'Could not determine template node text.'};
     }
     const {text, span} = templateTextAndSpan;
     return {
@@ -97,7 +94,7 @@ export class ReferencesAndRenameBuilder {
   findRenameLocations(filePath: string, position: number): readonly ts.RenameLocation[]|undefined {
     this.ttc.generateAllTypeCheckBlocks();
     const templateInfo = getTemplateInfoAtPosition(filePath, position, this.compiler);
-    // We could not get a template at position so we assume the request is came from outside the
+    // We could not get a template at position so we assume the request came from outside the
     // template.
     if (templateInfo === undefined) {
       const requestNode = this.getTsNodeAtPosition(filePath, position);

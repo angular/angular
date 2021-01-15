@@ -1414,11 +1414,11 @@ describe('find references and rename locations', () => {
       const result = env.ngLS.getRenameInfo(_('/my-comp.ts'), cursor) as ts.RenameInfoSuccess;
       expect(result.canRename).toEqual(true);
       expect(result.displayName).toEqual('myProp');
-      expect(result.kind.toString()).toEqual('property');
+      expect(result.kind).toEqual('property');
       expect(result.triggerSpan.length).toEqual('myProp'.length);
     });
 
-    it('gets rename info when cursor is outside template', () => {
+    it('gets rename info when cursor is on a directive input in a template', () => {
       const dirFile = {
         name: _('/dir.ts'),
         contents: `
@@ -1440,7 +1440,7 @@ describe('find references and rename locations', () => {
       const result = env.ngLS.getRenameInfo(_('/my-comp.ts'), cursor) as ts.RenameInfoSuccess;
       expect(result.canRename).toEqual(true);
       expect(result.displayName).toEqual('dir');
-      expect(result.kind.toString()).toEqual('property');
+      expect(result.kind).toEqual('property');
     });
   });
 

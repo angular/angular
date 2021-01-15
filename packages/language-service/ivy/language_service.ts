@@ -123,9 +123,8 @@ export class LanguageService {
 
     const quickInfo = this.getQuickInfoAtPosition(fileName, position) ??
         this.tsLS.getQuickInfoAtPosition(fileName, position);
-    const unknown = 'unknown' as ts.ScriptElementKind;
-    const kind = quickInfo?.kind ?? unknown;
-    const kindModifiers = quickInfo?.kindModifiers ?? unknown;
+    const kind = quickInfo?.kind ?? ts.ScriptElementKind.unknown;
+    const kindModifiers = quickInfo?.kindModifiers ?? ts.ScriptElementKind.unknown;
     return {...renameInfo, kind, kindModifiers};
   }
 
