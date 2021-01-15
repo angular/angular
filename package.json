@@ -89,7 +89,7 @@
     "@bazel/karma": "^2.3.2",
     "@bazel/protractor": "^2.3.2",
     "@bazel/rollup": "^2.3.2",
-    "@bazel/terser": "^2.3.2",
+    "@bazel/terser": "^3.0.0",
     "@bazel/typescript": "^2.3.2",
     "@firebase/app-types": "^0.6.1",
     "@octokit/rest": "18.0.12",
