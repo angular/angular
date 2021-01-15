@@ -114,7 +114,6 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *  |                    | O, OO & OOO | Short localized GMT format                                    | GMT-8                                                      |
  *  |                    | OOOO        | Long localized GMT format                                     | GMT-08:00                                                  |
  *
- * Note that timezone correction is not applied to an ISO string that has no time component, such as "2016-09-19"
  *
  * ### Format examples
  *
