@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode} from './ts_utils';
-import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, isWithin, TemplateInfo, toTextSpan} from './utils';
+import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromShimLocation, isWithin, TemplateInfo, toTextSpan} from './utils';
 
 export class ReferenceBuilder {
   private readonly ttc = this.compiler.getTemplateTypeChecker();
@@ -184,30 +184,17 @@ export class ReferenceBuilder {
       // return references to the parameter in the template itself.
       return null;
     }
-
-    // TODO(atscott): Determine how to consistently resolve paths. i.e. with the project serverHost
-    // or LSParseConfigHost in the adapter. We should have a better defined way to normalize paths.
-    const mapping = templateTypeChecker.getTemplateMappingAtShimLocation({
-      shimPath: absoluteFrom(shimReferenceEntry.fileName),
-      positionInShimFile: shimReferenceEntry.textSpan.start,
-    });
+    // TODO(atscott): Determine how to consistently resolve paths. i.e. with the project
+    // serverHost or LSParseConfigHost in the adapter. We should have a better defined way to
+    // normalize paths.
+    const mapping = getTemplateLocationFromShimLocation(
+        templateTypeChecker, absoluteFrom(shimReferenceEntry.fileName),
+        shimReferenceEntry.textSpan.start);
     if (mapping === null) {
       return null;
     }
-    const {templateSourceMapping, span} = mapping;
 
-    let templateUrl: AbsoluteFsPath;
-    if (templateSourceMapping.type === 'direct') {
-      templateUrl = absoluteFromSourceFile(templateSourceMapping.node.getSourceFile());
-    } else if (templateSourceMapping.type === 'external') {
-      templateUrl = absoluteFrom(templateSourceMapping.templateUrl);
-    } else {
-      // This includes indirect mappings, which are difficult to map directly to the code location.
-      // Diagnostics similarly return a synthetic template string for this case rather than a real
-      // location.
-      return null;
-    }
-
+    const {span, templateUrl} = mapping;
     return {
       ...shimReferenceEntry,
       fileName: templateUrl,
