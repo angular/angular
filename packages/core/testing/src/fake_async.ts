@@ -9,7 +9,7 @@ const _Zone: any = typeof Zone !== 'undefined' ? Zone : null;
 const fakeAsyncTestModule = _Zone && _Zone[_Zone.__symbol__('fakeAsyncTest')];
 
 const fakeAsyncTestModuleNotLoadedErrorMessage =
-    `zone-testing.js is needed for the async() test helper but could not be found.
+    `zone-testing.js is needed for the fakeAsync() test helper but could not be found.
         Please make sure that your environment includes zone.js/dist/zone-testing.js`;
 
 /**
