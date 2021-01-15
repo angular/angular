@@ -1398,7 +1398,7 @@ describe('find references and rename locations', () => {
       const result = env.ngLS.getRenameInfo(_('/my-comp.ts'), cursor) as ts.RenameInfoSuccess;
       expect(result.canRename).toEqual(true);
       expect(result.displayName).toEqual('myProp');
-      expect(result.kind.toString()).toEqual('property');
+      expect(result.kind).toEqual('property');
     });
 
     it('gets rename info on keyed read', () => {
