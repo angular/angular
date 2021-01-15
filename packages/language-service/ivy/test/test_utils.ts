@@ -66,7 +66,9 @@ export function humanizeDefinitionInfo(
   const contents = (overrides.get(def.fileName) !== undefined ? overrides.get(def.fileName) :
                                                                 host.readFile(def.fileName)) ??
       '';
-
+  if (!contents) {
+    throw new Error(`Could not read file ${def.fileName}`);
+  }
   return {
     fileName: def.fileName,
     textSpan: contents.substr(def.textSpan.start, def.textSpan.start + def.textSpan.length),
