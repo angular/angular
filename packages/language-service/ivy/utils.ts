@@ -7,9 +7,10 @@
  */
 import {AbsoluteSourceSpan, CssSelector, ParseSourceSpan, SelectorMatcher, TmplAstBoundEvent} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {DirectiveSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {DirectiveSymbol, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 import * as ts from 'typescript';
@@ -345,4 +346,32 @@ export function isWithin(position: number, span: AbsoluteSourceSpan|ParseSourceS
   // Note both start and end are inclusive because we want to match conditions
   // like ¦start and end¦ where ¦ is the cursor.
   return start <= position && position <= end;
+}
+
+/**
+ * For a given location in a shim file, retrieves the corresponding file url for the template and
+ * the span in the template.
+ */
+export function getTemplateLocationFromShimLocation(
+    templateTypeChecker: TemplateTypeChecker, shimPath: AbsoluteFsPath,
+    positionInShimFile: number): {templateUrl: AbsoluteFsPath, span: ParseSourceSpan}|null {
+  const mapping =
+      templateTypeChecker.getTemplateMappingAtShimLocation({shimPath, positionInShimFile});
+  if (mapping === null) {
+    return null;
+  }
+  const {templateSourceMapping, span} = mapping;
+
+  let templateUrl: AbsoluteFsPath;
+  if (templateSourceMapping.type === 'direct') {
+    templateUrl = absoluteFromSourceFile(templateSourceMapping.node.getSourceFile());
+  } else if (templateSourceMapping.type === 'external') {
+    templateUrl = absoluteFrom(templateSourceMapping.templateUrl);
+  } else {
+    // This includes indirect mappings, which are difficult to map directly to the code
+    // location. Diagnostics similarly return a synthetic template string for this case rather
+    // than a real location.
+    return null;
+  }
+  return {templateUrl, span};
 }

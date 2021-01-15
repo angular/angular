@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode} from './ts_utils';
-import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, isWithin, TemplateInfo, toTextSpan} from './utils';
+import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromShimLocation, isWithin, TemplateInfo, toTextSpan} from './utils';
 
 interface FilePosition {
   fileName: string;
@@ -376,27 +376,14 @@ export class ReferencesAndRenameBuilder {
     // TODO(atscott): Determine how to consistently resolve paths. i.e. with the project
     // serverHost or LSParseConfigHost in the adapter. We should have a better defined way to
     // normalize paths.
-    const mapping = templateTypeChecker.getTemplateMappingAtShimLocation({
-      shimPath: absoluteFrom(shimDocumentSpan.fileName),
-      positionInShimFile: shimDocumentSpan.textSpan.start,
-    });
+    const mapping = getTemplateLocationFromShimLocation(
+        templateTypeChecker, absoluteFrom(shimDocumentSpan.fileName),
+        shimDocumentSpan.textSpan.start);
     if (mapping === null) {
       return null;
     }
-    const {templateSourceMapping, span} = mapping;
 
-    let templateUrl: AbsoluteFsPath;
-    if (templateSourceMapping.type === 'direct') {
-      templateUrl = absoluteFromSourceFile(templateSourceMapping.node.getSourceFile());
-    } else if (templateSourceMapping.type === 'external') {
-      templateUrl = absoluteFrom(templateSourceMapping.templateUrl);
-    } else {
-      // This includes indirect mappings, which are difficult to map directly to the code
-      // location. Diagnostics similarly return a synthetic template string for this case rather
-      // than a real location.
-      return null;
-    }
-
+    const {span, templateUrl} = mapping;
     if (requiredNodeText !== undefined && span.toString() !== requiredNodeText) {
       return null;
     }

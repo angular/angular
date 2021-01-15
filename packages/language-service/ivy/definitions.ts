@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
-import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
+import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromShimLocation, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
 
 interface DefinitionMeta {
   node: AST|TmplAstNode;
@@ -100,15 +100,22 @@ export class DefinitionBuilder {
       case SymbolKind.Reference: {
         const definitions: ts.DefinitionInfo[] = [];
         if (symbol.declaration !== node) {
-          definitions.push({
-            name: symbol.declaration.name,
-            containerName: '',
-            containerKind: ts.ScriptElementKind.unknown,
-            kind: ts.ScriptElementKind.variableElement,
-            textSpan: getTextSpanOfNode(symbol.declaration),
-            contextSpan: toTextSpan(symbol.declaration.sourceSpan),
-            fileName: symbol.declaration.sourceSpan.start.file.url,
-          });
+          const shimLocation = symbol.kind === SymbolKind.Variable ? symbol.localVarLocation :
+                                                                     symbol.referenceVarLocation;
+          const mapping = getTemplateLocationFromShimLocation(
+              this.compiler.getTemplateTypeChecker(), shimLocation.shimPath,
+              shimLocation.positionInShimFile);
+          if (mapping !== null) {
+            definitions.push({
+              name: symbol.declaration.name,
+              containerName: '',
+              containerKind: ts.ScriptElementKind.unknown,
+              kind: ts.ScriptElementKind.variableElement,
+              textSpan: getTextSpanOfNode(symbol.declaration),
+              contextSpan: toTextSpan(symbol.declaration.sourceSpan),
+              fileName: mapping.templateUrl,
+            });
+          }
         }
         if (symbol.kind === SymbolKind.Variable) {
           definitions.push(

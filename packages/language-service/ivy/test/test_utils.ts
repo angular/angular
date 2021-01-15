@@ -60,7 +60,7 @@ export function humanizeDocumentSpanLike<T extends ts.DocumentSpan>(
                                                        env.host.readFile(item.fileName)) ??
       '';
   if (!fileContents) {
-    throw new Error('Could not read file ${entry.fileName}');
+    throw new Error(`Could not read file ${item.fileName}`);
   }
   return {
     ...item,
