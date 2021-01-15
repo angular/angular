@@ -1119,6 +1119,32 @@ describe('MatDatepicker', () => {
         expect(document.activeElement).toBe(toggle, 'Expected focus to be restored to toggle.');
       });
 
+      it('should allow for focus restoration to be disabled', () => {
+        let toggle = fixture.debugElement.query(By.css('button'))!.nativeElement;
+
+        fixture.componentInstance.touchUI = false;
+        fixture.componentInstance.restoreFocus = false;
+        fixture.detectChanges();
+
+        toggle.focus();
+        expect(document.activeElement).toBe(toggle, 'Expected toggle to be focused.');
+
+        fixture.componentInstance.datepicker.open();
+        fixture.detectChanges();
+
+        let pane = document.querySelector('.cdk-overlay-pane')!;
+
+        expect(pane).toBeTruthy('Expected calendar to be open.');
+        expect(pane.contains(document.activeElement))
+            .toBe(true, 'Expected focus to be inside the calendar.');
+
+        fixture.componentInstance.datepicker.close();
+        fixture.detectChanges();
+
+        expect(document.activeElement)
+            .not.toBe(toggle, 'Expected focus not to be restored to toggle.');
+      });
+
       it('should not override focus if it was moved inside the closed event in touchUI mode',
         fakeAsync(() => {
           const focusTarget = document.createElement('button');
@@ -2318,13 +2344,14 @@ class DatepickerWithFormControl {
   template: `
     <input [matDatepicker]="d">
     <mat-datepicker-toggle [for]="d" [aria-label]="ariaLabel"></mat-datepicker-toggle>
-    <mat-datepicker #d [touchUi]="touchUI"></mat-datepicker>
+    <mat-datepicker #d [touchUi]="touchUI" [restoreFocus]="restoreFocus"></mat-datepicker>
   `,
 })
 class DatepickerWithToggle {
   @ViewChild('d') datepicker: MatDatepicker<Date>;
   @ViewChild(MatDatepickerInput) input: MatDatepickerInput<Date>;
   touchUI = true;
+  restoreFocus = true;
   ariaLabel: string;
 }
 

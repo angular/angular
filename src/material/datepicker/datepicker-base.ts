@@ -349,6 +349,18 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   yPosition: DatepickerDropdownPositionY = 'below';
 
   /**
+   * Whether to restore focus to the previously-focused element when the calendar is closed.
+   * Note that automatic focus restoration is an accessibility feature and it is recommended that
+   * you provide your own equivalent, if you decide to turn it off.
+   */
+  @Input()
+  get restoreFocus(): boolean { return this._restoreFocus; }
+  set restoreFocus(value: boolean) {
+    this._restoreFocus = coerceBooleanProperty(value);
+  }
+  private _restoreFocus = true;
+
+  /**
    * Emits selected year in multiyear view.
    * This doesn't imply a change on the selected date.
    */
@@ -572,7 +584,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
       }
     };
 
-    if (this._focusedElementBeforeOpen &&
+    if (this._restoreFocus && this._focusedElementBeforeOpen &&
       typeof this._focusedElementBeforeOpen.focus === 'function') {
       // Because IE moves focus asynchronously, we can't count on it being restored before we've
       // marked the datepicker as closed. If the event fires out of sequence and the element that
@@ -744,4 +756,5 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   static ngAcceptInputType_disabled: BooleanInput;
   static ngAcceptInputType_opened: BooleanInput;
   static ngAcceptInputType_touchUi: BooleanInput;
+  static ngAcceptInputType_restoreFocus: BooleanInput;
 }
