@@ -525,9 +525,12 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   }
 
   /** Gets how well an overlay at the given point will fit within the viewport. */
-  private _getOverlayFit(point: Point, overlay: ClientRect, viewport: ClientRect,
+  private _getOverlayFit(point: Point, rawOverlayRect: ClientRect, viewport: ClientRect,
     position: ConnectedPosition): OverlayFit {
 
+    // Round the overlay rect when comparing against the
+    // viewport, because the viewport is always rounded.
+    const overlay = getRoundedBoundingClientRect(rawOverlayRect);
     let {x, y} = point;
     let offsetX = this._getOffset(position, 'x');
     let offsetY = this._getOffset(position, 'y');
@@ -595,7 +598,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    *     originPoint.
    */
   private _pushOverlayOnScreen(start: Point,
-                               overlay: ClientRect,
+                               rawOverlayRect: ClientRect,
                                scrollPosition: ViewportScrollPosition): Point {
     // If the position is locked and we've pushed the overlay already, reuse the previous push
     // amount, rather than pushing it again. If we were to continue pushing, the element would
@@ -607,6 +610,9 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       };
     }
 
+    // Round the overlay rect when comparing against the
+    // viewport, because the viewport is always rounded.
+    const overlay = getRoundedBoundingClientRect(rawOverlayRect);
     const viewport = this._viewportRect;
 
     // Determine how much the overlay goes outside the viewport on each
@@ -1218,4 +1224,21 @@ function getPixelValue(input: number|string|null|undefined): number|null {
   }
 
   return input || null;
+}
+
+/**
+ * Gets a version of an element's bounding `ClientRect` where all the values are rounded down to
+ * the nearest pixel. This allows us to account for the cases where there may be sub-pixel
+ * deviations in the `ClientRect` returned by the browser (e.g. when zoomed in with a percentage
+ * size, see #21350).
+ */
+function getRoundedBoundingClientRect(clientRect: ClientRect): ClientRect {
+  return {
+    top: Math.floor(clientRect.top),
+    right: Math.floor(clientRect.right),
+    bottom: Math.floor(clientRect.bottom),
+    left: Math.floor(clientRect.left),
+    width: Math.floor(clientRect.width),
+    height: Math.floor(clientRect.height)
+  };
 }

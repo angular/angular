@@ -1,8 +1,8 @@
 import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
 import {CdkScrollable, ScrollingModule, ViewportRuler} from '@angular/cdk/scrolling';
-import {MockNgZone} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent, MockNgZone} from '@angular/cdk/testing/private';
 import {Component, ElementRef, NgModule, NgZone} from '@angular/core';
-import {inject, TestBed} from '@angular/core/testing';
+import {fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {Subscription} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {
@@ -2194,7 +2194,51 @@ describe('FlexibleConnectedPositionStrategy', () => {
         expect(Math.floor(overlayRect.width)).toBe(rightOffset);
       });
 
+    it('should account for sub-pixel deviations in the size of the overlay', fakeAsync(() => {
+      originElement.style.top = '200px';
+      originElement.style.left = '200px';
 
+      positionStrategy
+        .withFlexibleDimensions()
+        .withPositions([{
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top'
+        }]);
+
+      attachOverlay({
+        positionStrategy,
+        height: '100%'
+      });
+
+      const originalGetBoundingClientRect = overlayRef.overlayElement.getBoundingClientRect;
+
+      // The browser may return a `ClientRect` with sub-pixel deviations if the screen is zoomed in.
+      // Since there's no way for us to zoom in the screen programmatically, we simulate the effect
+      // by patching `getBoundingClientRect` to return a slightly different value.
+      overlayRef.overlayElement.getBoundingClientRect = function() {
+        const clientRect = originalGetBoundingClientRect.apply(this);
+        const zoomOffset = 0.1;
+
+        return {
+          top: clientRect.top,
+          right: clientRect.right + zoomOffset,
+          bottom: clientRect.bottom + zoomOffset,
+          left: clientRect.left,
+          width: clientRect.width + zoomOffset,
+          height: clientRect.height + zoomOffset
+        } as any;
+      };
+
+      // Trigger a resize so that the overlay get repositioned from scratch
+      // and to have it use the patched `getBoundingClientRect`.
+      dispatchFakeEvent(window, 'resize');
+      tick(100); // The resize listener is usually debounced.
+
+      const overlayRect = originalGetBoundingClientRect.apply(overlayRef.overlayElement);
+      expect(Math.floor(overlayRect.top)).toBe(0);
+    }));
 
   });
 
