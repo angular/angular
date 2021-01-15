@@ -101,6 +101,16 @@ export function formatDate(
   return text;
 }
 
+/**
+ * Return a date with full year instead of converting it to 19{yearProvided}, See:
+ * https://github.com/angular/angular/issues/40377
+ */
+function createDate(year: number, month: number, date: number): Date {
+  const newDate = new Date(0);
+  newDate.setFullYear(year, month, date);
+  return newDate;
+}
+
 function getNamedFormat(locale: string, format: string): string {
   const localeId = getLocaleId(locale);
   NAMED_FORMATS[localeId] = NAMED_FORMATS[localeId] || {};
@@ -362,13 +372,13 @@ function timeZoneGetter(width: ZoneWidth): DateFormatter {
 const JANUARY = 0;
 const THURSDAY = 4;
 function getFirstThursdayOfYear(year: number) {
-  const firstDayOfYear = (new Date(year, JANUARY, 1)).getDay();
-  return new Date(
+  const firstDayOfYear = createDate(year, JANUARY, 1).getDay();
+  return createDate(
       year, 0, 1 + ((firstDayOfYear <= THURSDAY) ? THURSDAY : THURSDAY + 7) - firstDayOfYear);
 }
 
 function getThursdayThisWeek(datetime: Date) {
-  return new Date(
+  return createDate(
       datetime.getFullYear(), datetime.getMonth(),
       datetime.getDate() + (THURSDAY - datetime.getDay()));
 }
@@ -720,7 +730,7 @@ export function toDate(value: string|number|Date): Date {
       is applied.
       Note: ISO months are 0 for January, 1 for February, ... */
       const [y, m = 1, d = 1] = value.split('-').map((val: string) => +val);
-      return new Date(y, m - 1, d);
+      return createDate(y, m - 1, d);
     }
 
     const parsedNb = parseFloat(value);

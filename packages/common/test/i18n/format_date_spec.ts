@@ -345,6 +345,12 @@ describe('Format date', () => {
           .toEqual('10:14 AM');
       expect(formatDate('2017-06-13T10:14:39+0000', 'h:mm a', ɵDEFAULT_LOCALE_ID, '+0000'))
           .toEqual('10:14 AM');
+      expect(formatDate('2019-09-20', `MMM d, y, h:mm:ss a 'UTC'ZZZZZ`, ɵDEFAULT_LOCALE_ID, '-7'))
+          .toEqual('Sep 19, 2019, 5:00:00 PM UTC-07:00');
+      expect(formatDate('2021-01-22', 'yyyy-MM-dd - HH:mm:ss Z', ɵDEFAULT_LOCALE_ID, '+0000'))
+          .toEqual('2021-01-22 - 00:00:00 +0000');
+      expect(formatDate('2021-01-22', 'yyyy-MM-dd - HH:mm:ss Z', ɵDEFAULT_LOCALE_ID))
+          .toEqual('2021-01-22 - 00:00:00 +0000');
     });
 
     it('should remove bidi control characters',
@@ -389,6 +395,17 @@ describe('Format date', () => {
          expect(formatDate('2013-12-29', 'YYYY', 'en')).toEqual('2014');
          expect(formatDate('2010-01-02', 'YYYY', 'en')).toEqual('2009');
          expect(formatDate('2010-01-04', 'YYYY', 'en')).toEqual('2010');
+         expect(formatDate('0049-01-01', 'YYYY', 'en')).toEqual('0048');
+         expect(formatDate('0049-01-04', 'YYYY', 'en')).toEqual('0049');
        });
+
+    // https://github.com/angular/angular/issues/40377
+    it('should format date with year between 0 and 99 correctly', () => {
+      expect(formatDate('0098-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0098');
+      expect(formatDate('0099-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0099');
+      expect(formatDate('0100-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0100');
+      expect(formatDate('0001-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0001');
+      expect(formatDate('0000-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0000');
+    });
   });
 });
