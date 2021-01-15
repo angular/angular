@@ -54,7 +54,7 @@ ways that would be difficult to accomplish with flat nodes.
 #### Writing your tree template
 
 The only thing you need to define is the tree node template. There are two types of tree nodes,
-`<cdk-tree-node>` for flat tree and `<cdk-tree-nested-node> for nested tree`. The tree node
+`<cdk-tree-node>` for flat tree and `<cdk-tree-nested-node>` for nested tree. The tree node
 template defines the look of the tree node, expansion/collapsing control and the structure for
 nested children nodes.
 
