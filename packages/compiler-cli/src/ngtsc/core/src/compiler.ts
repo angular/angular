@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from '../../annotations';
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
-import {ErrorCode, ngErrorCode} from '../../diagnostics';
+import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, ngErrorCode} from '../../diagnostics';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {LogicalFileSystem, resolve} from '../../file_system';
 import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
@@ -179,7 +179,8 @@ export class NgCompiler {
    * Get all Angular-related diagnostics for this compilation.
    */
   getDiagnostics(): ts.Diagnostic[] {
-    return [...this.getNonTemplateDiagnostics(), ...this.getTemplateDiagnostics()];
+    return this.addMessageTextDetails(
+        [...this.getNonTemplateDiagnostics(), ...this.getTemplateDiagnostics()]);
   }
 
   /**
@@ -188,10 +189,26 @@ export class NgCompiler {
    * If a `ts.SourceFile` is passed, only diagnostics related to that file are returned.
    */
   getDiagnosticsForFile(file: ts.SourceFile, optimizeFor: OptimizeFor): ts.Diagnostic[] {
-    return [
+    return this.addMessageTextDetails([
       ...this.getNonTemplateDiagnostics().filter(diag => diag.file === file),
       ...this.getTemplateDiagnosticsForFile(file, optimizeFor)
-    ];
+    ]);
+  }
+
+  /**
+   * Add Angular.io error guide links to diagnostics for this compilation.
+   */
+  private addMessageTextDetails(diagnostics: ts.Diagnostic[]): ts.Diagnostic[] {
+    return diagnostics.map(diag => {
+      if (diag.code && COMPILER_ERRORS_WITH_GUIDES.has(ngErrorCode(diag.code))) {
+        return {
+          ...diag,
+          messageText: diag.messageText +
+              `. Find more at ${ERROR_DETAILS_PAGE_BASE_URL}/NG${ngErrorCode(diag.code)}`
+        };
+      }
+      return diag;
+    });
   }
 
   /**
