@@ -51,10 +51,10 @@ class NoUnescapedHtmlTagWalker extends Lint.RuleWalker {
     // Whether an opening backtick has been found without a closing pair
     let openBacktick = false;
 
-    for (const char of fullText) {
-      if (char === '`') {
+    for (let i = 0; i < fullText.length; i++) {
+      if (fullText[i] === '`') {
         openBacktick = !openBacktick;
-      } else if (matches.test(char) && !openBacktick) {
+      } else if (matches.test(fullText[i]) && !openBacktick) {
         return false;
       }
     }

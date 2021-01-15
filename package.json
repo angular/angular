@@ -47,7 +47,8 @@
     "integration-tests:view-engine": "bazel test --test_tag_filters=view-engine-only --build_tests_only -- //integration/... -//integration/size-test/...",
     "integration-tests:size-test": "bazel test //integration/size-test/...",
     "check-mdc-tests": "ts-node --project scripts/tsconfig.json scripts/check-mdc-tests.ts",
-    "check-mdc-exports": "ts-node --project scripts/tsconfig.json scripts/check-mdc-exports.ts"
+    "check-mdc-exports": "ts-node --project scripts/tsconfig.json scripts/check-mdc-exports.ts",
+    "check-tools": "yarn tsc --project tools/tsconfig-ci.json"
   },
   "version": "11.2.0-next.0",
   "dependencies": {

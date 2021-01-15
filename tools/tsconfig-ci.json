@@ -1,0 +1,15 @@
+// A lot of the scripts under `tools` are run manually, rather than on the CI. As such, it's easy
+// to miss compilation errors in them. This config is used to verify the files on the CI. Note that
+// the compiler options are somewhat loose, which is intentional in order to mimic the default
+// options used by `ts-node` when running the scripts.
+{
+  "include": ["./**/*.ts"],
+  "exclude": ["./public_api_guard/**/*.ts"],
+  "compilerOptions": {
+    "outDir": "../dist/tools",
+    "lib": ["es2015"],
+    "skipLibCheck": true,
+    // Don't emit to the file system, because we only want to check for compilation errors.
+    "noEmit": true
+  }
+}

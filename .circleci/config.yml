@@ -395,6 +395,9 @@ jobs:
             pkg_json_version=$(node -pe "require('./package.json').version")
             expected_version="${pkg_json_version}-sha-$(git rev-parse --short HEAD)"
             yarn check-release-output ${expected_version}
+      - run:
+          name: Checking tooling scripts
+          command: yarn check-tools
 
       # TODO(devversion): replace this with bazel tests that run Madge. This is
       # cumbersome and doesn't guarantee no circular deps for other entry-points.
