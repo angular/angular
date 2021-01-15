@@ -28,8 +28,8 @@ module.exports = config => {
       }
     ],
     files: [
-      {pattern: 'node_modules/core-js/client/core.min.js', included: true, watched: false},
-      {pattern: 'node_modules/core-js/client/core.min.js.map', included: false, watched: false},
+      {pattern: 'node_modules/core-js-bundle/minified.js', included: true, watched: false},
+      {pattern: 'node_modules/core-js-bundle/minified.js.map', included: false, watched: false},
       {pattern: 'node_modules/tslib/tslib.js', included: false, watched: false},
       {pattern: 'node_modules/systemjs/dist/system.js', included: true, watched: false},
       {pattern: 'node_modules/systemjs/dist/system.js.map', included: false, watched: false},

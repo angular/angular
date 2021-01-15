@@ -165,7 +165,7 @@ filegroup(
         "@npm//:node_modules/@material/textfield/dist/mdc.textfield.js",
         "@npm//:node_modules/@material/top-app-bar/dist/mdc.topAppBar.js",
         "@npm//:node_modules/@webcomponents/custom-elements/custom-elements.min.js",
-        "@npm//:node_modules/core-js/client/core.js",
+        "@npm//:node_modules/core-js-bundle/index.js",
         "@npm//:node_modules/moment/min/moment-with-locales.min.js",
         "@npm//:node_modules/rxjs/bundles/rxjs.umd.min.js",
         "@npm//:node_modules/systemjs/dist/system.js",
