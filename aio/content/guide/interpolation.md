@@ -96,25 +96,33 @@ This next example features a template reference variable, `#customerInput`.
 
 <code-example path="interpolation/src/app/app.component.html" region="template-reference-variable" header="src/app/app.component.html (template reference variable)"></code-example>
 
-The context against which an expression evaluates is the union of the template variables, the directive's context object&mdash;if it has one&mdash;and the component's members.
-If you reference a name that belongs to more than one of these namespaces, Angular  applies the following logic to determine the context:
-
-1. The template variable name.
-1. A name in the directive's context.
-1. The component's member names.
-
-The previous example presents such a name collision. The component has a `customer`
-property and the `*ngFor` defines a `customer` template variable.
-
 <div class="alert is-helpful">
-
-The `customer` in `{{customer.name}}` refers to the template input variable, not the component's property.
 
 Template expressions cannot refer to anything in the global namespace, except `undefined`.
 They can't refer to `window` or `document`.
 Additionally, they can't call `console.log()` or `Math.max()` and they are restricted to referencing members of the expression context.
 
 </div>
+
+### Preventing name collisions
+
+The context against which an expression evaluates is the union of the template variables, the directive's context object&mdash;if it has one&mdash;and the component's members.
+If you reference a name that belongs to more than one of these namespaces, Angular applies the following logic to determine the context:
+
+1. The template variable name.
+1. A name in the directive's context.
+1. The component's member names.
+
+To avoid variables shadowing variables in another context, keep variable names unique.
+In the following example, the `AppComponent` template greets the `customer`, Padma.
+
+An `ngFor` then lists each `customer` in the `customers` array.
+
+<code-example path="interpolation/src/app/app.component.1.ts" region="var-collision" header="src/app/app.component.ts"></code-example>
+
+The `customer` within the `ngFor` is in the context of an `<ng-template>` and so refers to the `customer` in the `customers` array, in this case Ebony and Chiho.
+This list does not feature Padma because `customer` outside of the `ngFor` is in a different context.
+Conversely, `customer` in the `<h1>` doesn't include Ebony or Chiho because the context for this `customer` is the class and the class value for `customer` is Padma.
 
 ## Expression best practices
 
