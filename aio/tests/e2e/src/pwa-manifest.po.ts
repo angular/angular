@@ -12,7 +12,7 @@ export type Json = null | boolean | number | string | Json[] | { [key: string]: 
  * @see https://developer.mozilla.org/en-US/docs/Web/Manifest
  */
 export type PwaManifest = Json & {
-  shortcuts?: PwaShortcutItem[];
+  shortcuts?: PwaShortcutItem[],
 };
 
 /**
@@ -20,11 +20,11 @@ export type PwaManifest = Json & {
  * @see https://developer.mozilla.org/en-US/docs/Web/Manifest/shortcuts
  */
 export type PwaShortcutItem = Json & {
-  url: string;
-  name: string;
-  short_name?: string;
-  description?: string;
-  icons?: PwaImageResource[];
+  url: string,
+  name: string,
+  short_name?: string,
+  description?: string,
+  icons?: PwaImageResource[],
 };
 
 /**
@@ -33,10 +33,10 @@ export type PwaShortcutItem = Json & {
  * @see https://w3c.github.io/manifest/#manifestimageresource-and-its-members
  */
 export type PwaImageResource = Json & {
-  src: string;
-  sizes?: string;
-  type?: string;
-  purpose?: string;
+  src: string,
+  sizes?: string,
+  type?: string,
+  purpose?: string,
 };
 
 
