@@ -13,6 +13,28 @@ import {extractCursorInfo, LanguageServiceTestEnvironment} from './env';
 import {assertFileNames, createModuleWithDeclarations, humanizeDocumentSpanLike} from './test_utils';
 
 describe('definitions', () => {
+  it('gets definition for template reference in overridden template', () => {
+    initMockFileSystem('Native');
+    const templateFile = {contents: '', name: absoluteFrom('/app.html')};
+    const appFile = {
+      name: absoluteFrom('/app.ts'),
+      contents: `
+        import {Component} from '@angular/core';
+
+        @Component({templateUrl: '/app.html'})
+        export class AppCmp {}
+      `,
+    };
+
+    const env = createModuleWithDeclarations([appFile], [templateFile]);
+    const {cursor} = env.overrideTemplateWithCursor(
+        absoluteFrom('/app.ts'), 'AppCmp', '<input #myInput /> {{myIn¦put.value}}');
+    env.expectNoSourceDiagnostics();
+    const {definitions} = env.ngLS.getDefinitionAndBoundSpan(absoluteFrom('/app.html'), cursor)!;
+    expect(definitions![0].name).toEqual('myInput');
+    assertFileNames(Array.from(definitions!), ['app.html']);
+  });
+
   it('returns the pipe class as definition when checkTypeOfPipes is false', () => {
     initMockFileSystem('Native');
     const {cursor, text} = extractCursorInfo('{{"1/1/2020" | dat¦e}}');
