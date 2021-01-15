@@ -87,8 +87,13 @@ class Scheduler {
     return this._currentFakeBaseSystemTime + this._currentTickTime;
   }
 
-  setFakeBaseSystemTime(fakeBaseSystemTime: number) {
-    this._currentFakeBaseSystemTime = fakeBaseSystemTime;
+  setFakeSystemTime(fakeSystemTime: number) {
+    this._currentFakeBaseSystemTime = fakeSystemTime;
+    // Since we need to reset _currentTickTime, we need to
+    // apply the diff to all endTime of the current remaining tasks.
+    this._schedulerQueue.forEach(
+        queueItem => queueItem.endTime = queueItem.endTime - this._currentTickTime);
+    this._currentTickTime = 0;
   }
 
   getRealSystemTime() {
@@ -433,8 +438,8 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     return this._scheduler.getFakeSystemTime();
   }
 
-  setFakeBaseSystemTime(realTime: number) {
-    this._scheduler.setFakeBaseSystemTime(realTime);
+  setFakeSystemTime(realTime: number) {
+    this._scheduler.setFakeSystemTime(realTime);
   }
 
   getRealSystemTime() {

@@ -188,7 +188,7 @@ Zone.__load_patch('jest', (context: any, Zone: ZoneType, api: _ZonePrivate) => {
       return function(self: any, args: any[]) {
         const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
         if (fakeAsyncZoneSpec && isPatchingFakeTimer()) {
-          fakeAsyncZoneSpec.setFakeBaseSystemTime(args[0]);
+          fakeAsyncZoneSpec.setFakeSystemTime(args[0]);
         } else {
           return delegate.apply(self, args);
         }
