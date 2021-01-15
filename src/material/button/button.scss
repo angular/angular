@@ -143,7 +143,9 @@
   .mat-form-field-prefix,
   .mat-form-field-suffix {
     .mat-icon-button {
-      display: block;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
       font-size: inherit;
       width: 2.5em;
       height: 2.5em;
