@@ -554,33 +554,43 @@ describe('find references and rename locations', () => {
       let cursor: number;
       beforeEach(() => {
         const cursorInfo = extractCursorInfo(`
+          <div *ngFor="let hero of heroes">
+            <span *ngIf="hero">
+              {{her¦o}}
+            </span>
+          </div>
+          `);
+        cursor = cursorInfo.cursor;
+        const appFile = {
+          name: _('/app.ts'),
+          contents: `
           import {Component} from '@angular/core';
 
-          @Component({template: '<div *ngFor="let hero of heroes">{{her¦o}}</div>'})
+          @Component({templateUrl: './template.ng.html'})
           export class AppCmp {
             heroes: string[] = [];
-          }`);
-        cursor = cursorInfo.cursor;
-        const appFile = {name: _('/app.ts'), contents: cursorInfo.text};
-        env = createModuleWithDeclarations([appFile]);
+          }`
+        };
+        const templateFile = {name: _('/template.ng.html'), contents: cursorInfo.text};
+        env = createModuleWithDeclarations([appFile], [templateFile]);
       });
 
       it('should find references', () => {
-        const refs = getReferencesAtPosition(_('/app.ts'), cursor)!;
-        expect(refs.length).toBe(2);
-        assertFileNames(refs, ['app.ts']);
+        const refs = getReferencesAtPosition(_('/template.ng.html'), cursor)!;
+        expect(refs.length).toBe(3);
+        assertFileNames(refs, ['template.ng.html']);
         assertTextSpans(refs, ['hero']);
 
-        const originalRefs = env.ngLS.getReferencesAtPosition(_('/app.ts'), cursor)!;
+        const originalRefs = env.ngLS.getReferencesAtPosition(_('/template.ng.html'), cursor)!;
         // Get the declaration by finding the reference that appears first in the template
         originalRefs.sort((a, b) => a.textSpan.start - b.textSpan.start);
         expect(originalRefs[0].isDefinition).toBe(true);
       });
 
       it('should find rename locations', () => {
-        const renameLocations = getRenameLocationsAtPosition(_('/app.ts'), cursor)!;
-        expect(renameLocations.length).toBe(2);
-        assertFileNames(renameLocations, ['app.ts']);
+        const renameLocations = getRenameLocationsAtPosition(_('/template.ng.html'), cursor)!;
+        expect(renameLocations.length).toBe(3);
+        assertFileNames(renameLocations, ['template.ng.html']);
         assertTextSpans(renameLocations, ['hero']);
       });
     });

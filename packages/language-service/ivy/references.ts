@@ -166,7 +166,7 @@ export class ReferencesAndRenameBuilder {
       return undefined;
     }
 
-    const entries: ts.RenameLocation[] = [];
+    const entries: Map<string, ts.RenameLocation> = new Map();
     for (const location of locations) {
       // TODO(atscott): Determine if a file is a shim file in a more robust way and make the API
       // available in an appropriate location.
@@ -177,17 +177,17 @@ export class ReferencesAndRenameBuilder {
         if (entry === null) {
           return undefined;
         }
-        entries.push(entry);
+        entries.set(createLocationKey(entry), entry);
       } else {
         // Ensure we only allow renaming a TS result with matching text
         const refNode = this.getTsNodeAtPosition(location.fileName, location.textSpan.start);
         if (refNode === null || refNode.getText() !== originalNodeText) {
           return undefined;
         }
-        entries.push(location);
+        entries.set(createLocationKey(location), location);
       }
     }
-    return entries;
+    return Array.from(entries.values());
   }
 
   getReferencesAtPosition(filePath: string, position: number): ts.ReferenceEntry[]|undefined {
@@ -344,18 +344,18 @@ export class ReferencesAndRenameBuilder {
       return undefined;
     }
 
-    const entries: ts.ReferenceEntry[] = [];
+    const entries: Map<string, ts.ReferenceEntry> = new Map();
     for (const ref of refs) {
       if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(ref.fileName))) {
         const entry = this.convertToTemplateDocumentSpan(ref, this.ttc);
         if (entry !== null) {
-          entries.push(entry);
+          entries.set(createLocationKey(entry), entry);
         }
       } else {
-        entries.push(ref);
+        entries.set(createLocationKey(ref), ref);
       }
     }
-    return entries;
+    return Array.from(entries.values());
   }
 
   private convertToTemplateDocumentSpan<T extends ts.DocumentSpan>(
@@ -431,4 +431,14 @@ function getRenameTextAndSpanAtPosition(node: TmplAstNode|AST, position: number)
   }
 
   return null;
+}
+
+
+/**
+ * Creates a "key" for a rename/reference location by concatenating file name, span start, and span
+ * length. This allows us to de-duplicate template results when an item may appear several times
+ * in the TCB but map back to the same template location.
+ */
+function createLocationKey(ds: ts.DocumentSpan) {
+  return ds.fileName + ds.textSpan.start + ds.textSpan.length;
 }
