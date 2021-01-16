@@ -86,6 +86,12 @@ describe('Zone.js npm_package', () => {
           expect(shx.cat('zone.umd.js')).not.toContain('sourceMappingURL');
         });
       });
+
+      it('zone.js(es5) should contain use strict', () => {
+        checkInSubFolder('./bundles', () => {
+          expect(shx.cat('zone.umd.js')).toMatch(/^\s*'use strict';/);
+        });
+      });
     });
 
     describe('es2015', () => {
@@ -97,6 +103,11 @@ describe('Zone.js npm_package', () => {
       it('zone.js(es2015) should not contain source map comment', () => {
         checkInSubFolder('./fesm2015', () => {
           expect(shx.cat('zone.js')).not.toContain('sourceMappingURL');
+        });
+      });
+      it('zone.js(es2015) should contain use strict', () => {
+        checkInSubFolder('./fesm2015', () => {
+          expect(shx.cat('zone.js')).toMatch(/^\s*'use strict';/);
         });
       });
     });
