@@ -29,6 +29,7 @@ export {
   NG_INJ_DEF as ɵNG_INJ_DEF,
   NG_PROV_DEF as ɵNG_PROV_DEF,
 } from './di/interface/defs';
+export {compileInjectable as ɵcompileInjectable} from './di/jit/injectable';
 export {CREATE_ATTRIBUTE_DECORATOR__POST_R3__ as ɵCREATE_ATTRIBUTE_DECORATOR__POST_R3__} from './di/metadata_attr';
 export {createInjector as ɵcreateInjector} from './di/r3_injector';
 export {
@@ -76,6 +77,7 @@ export {
   NG_COMP_DEF as ɵNG_COMP_DEF,
   NG_DIR_DEF as ɵNG_DIR_DEF,
   NG_ELEMENT_ID as ɵNG_ELEMENT_ID,
+  NG_FACTORY_DEF as ɵNG_FACTORY_DEF,
   NG_MOD_DEF as ɵNG_MOD_DEF,
   NG_PIPE_DEF as ɵNG_PIPE_DEF,
 } from './render3/fields';

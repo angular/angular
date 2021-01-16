@@ -24,12 +24,14 @@ import {convertDependencies, reflectDependencies} from './util';
  * Compile an Angular injectable according to its `Injectable` metadata, and patch the resulting
  * injectable def (`ɵprov`) onto the injectable type.
  */
-export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
+export function compileInjectable(
+    type: Type<any>, srcMeta?: Injectable, forceCompile?: boolean): void {
   let ngInjectableDef: any = null;
   let ngFactoryDef: any = null;
 
-  // if NG_PROV_DEF is already defined on this class then don't overwrite it
-  if (!type.hasOwnProperty(NG_PROV_DEF)) {
+  // If NG_PROV_DEF is already defined on this class then don't overwrite it,
+  // unless it's specifically requested to recompile this injectable.
+  if (!type.hasOwnProperty(NG_PROV_DEF) || !!forceCompile) {
     Object.defineProperty(type, NG_PROV_DEF, {
       get: () => {
         if (ngInjectableDef === null) {
@@ -39,11 +41,14 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
         }
         return ngInjectableDef;
       },
+      // Make the property configurable in dev mode to allow overriding in tests.
+      configurable: true
     });
   }
 
-  // if NG_FACTORY_DEF is already defined on this class then don't overwrite it
-  if (!type.hasOwnProperty(NG_FACTORY_DEF)) {
+  // If NG_FACTORY_DEF is already defined on this class then don't overwrite it,
+  // unless it's specifically requested to recompile this injectable.
+  if (!type.hasOwnProperty(NG_FACTORY_DEF) || !!forceCompile) {
     Object.defineProperty(type, NG_FACTORY_DEF, {
       get: () => {
         if (ngFactoryDef === null) {
@@ -61,6 +66,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
         return ngFactoryDef;
       },
       // Leave this configurable so that the factories from directives or pipes can take precedence.
+      // This is also needed in dev mode to allow overriding in tests.
       configurable: true
     });
   }
