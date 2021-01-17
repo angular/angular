@@ -7,13 +7,13 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Component, Directive, forwardRef, Input, Type} from '@angular/core';
+import {Component, Directive, forwardRef, Input, OnDestroy, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
-import {merge, NEVER, of, timer} from 'rxjs';
+import {merge, NEVER, of, Subscription, timer} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 
 import {MyInput, MyInputForm} from './value_accessor_integration_spec';
@@ -1127,6 +1127,48 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           expect(input.value).toEqual('', 'Expected view value to reset');
           expect(control.value).toBe(null, 'Expected pending value to reset.');
           expect(control.dirty).toBe(false, 'Expected pending dirty value to reset.');
+        });
+
+        it('should be able to remove a control as a result of another control being reset', () => {
+          @Component({
+            template: `
+              <form [formGroup]="form">
+                <input formControlName="name">
+                <input formControlName="surname">
+              </form>
+            `
+          })
+          class App implements OnDestroy {
+            private _subscription: Subscription;
+
+            form = new FormGroup({
+              name: new FormControl('Frodo'),
+              surname: new FormControl('Baggins'),
+            });
+
+            constructor() {
+              this._subscription = this.form.controls.name.valueChanges.subscribe(value => {
+                if (!value) {
+                  this.form.removeControl('surname');
+                }
+              });
+            }
+
+            ngOnDestroy() {
+              this._subscription.unsubscribe();
+            }
+          }
+
+          const fixture = initTest(App);
+          fixture.detectChanges();
+          expect(fixture.componentInstance.form.value).toEqual({name: 'Frodo', surname: 'Baggins'});
+
+          expect(() => {
+            fixture.componentInstance.form.reset();
+            fixture.detectChanges();
+          }).not.toThrow();
+
+          expect(fixture.componentInstance.form.value).toEqual({name: null});
         });
 
         it('should not emit valueChanges or statusChanges until blur', () => {

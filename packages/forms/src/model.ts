@@ -1690,7 +1690,12 @@ export class FormGroup extends AbstractControl {
 
   /** @internal */
   _forEachChild(cb: (v: any, k: string) => void): void {
-    Object.keys(this.controls).forEach(k => cb(this.controls[k], k));
+    Object.keys(this.controls).forEach(key => {
+      // Controls can change while the loop is running so we
+      // have to null check before invoking the callback.
+      const control = this.controls[key];
+      control && cb(control, key);
+    });
   }
 
   /** @internal */
