@@ -10,8 +10,9 @@ import {commentRegex, fromComment, mapFileCommentRegex} from 'convert-source-map
 import {AbsoluteFsPath, ReadonlyFileSystem} from '../../file_system';
 import {Logger} from '../../logging';
 
-import {RawSourceMap} from './raw_source_map';
-import {ContentOrigin, MapAndPath, SourceFile} from './source_file';
+import {ContentOrigin} from './content_origin';
+import {MapAndPath, RawSourceMap, SourceMapInfo} from './raw_source_map';
+import {SourceFile} from './source_file';
 
 const SCHEME_MATCHER = /^([a-z][a-z0-9.-]*):\/\//i;
 
@@ -33,46 +34,60 @@ export class SourceFileLoader {
       private schemeMap: Record<string, AbsoluteFsPath>) {}
 
   /**
-   * Load a source file from content, compute its source map, and recursively load any referenced
-   * source files.
+   * Load a source file from the provided content and source map, and recursively load any
+   * referenced source files.
    *
    * @param sourcePath The path to the source file to load.
    * @param contents The contents of the source file to load.
    * @param mapAndPath The raw source-map and the path to the source-map file.
    * @returns a SourceFile object created from the `contents` and provided source-map info.
    */
-  loadSourceFile(sourcePath: AbsoluteFsPath, contents: string, mapAndPath?: MapAndPath): SourceFile;
+  loadSourceFile(sourcePath: AbsoluteFsPath, contents: string, mapAndPath: MapAndPath): SourceFile;
   /**
-   * Load a source file, compute its source map, and recursively load any referenced source files.
+   * Load a source file from the provided content, compute its source map, and recursively load any
+   * referenced source files.
+   *
+   * @param sourcePath The path to the source file to load.
+   * @param contents The contents of the source file to load.
+   * @returns a SourceFile object created from the `contents` and computed source-map info.
+   */
+  loadSourceFile(sourcePath: AbsoluteFsPath, contents: string): SourceFile;
+  /**
+   * Load a source file from the file-system, compute its source map, and recursively load any
+   * referenced source files.
    *
    * @param sourcePath The path to the source file to load.
    * @returns a SourceFile object if its contents could be loaded from disk, or null otherwise.
    */
   loadSourceFile(sourcePath: AbsoluteFsPath): SourceFile|null;
+  loadSourceFile(
+      sourcePath: AbsoluteFsPath, contents: string|null = null,
+      mapAndPath: MapAndPath|null = null): SourceFile|null {
+    const contentsOrigin = contents !== null ? ContentOrigin.Provided : ContentOrigin.FileSystem;
+    const sourceMapInfo: SourceMapInfo|null =
+        mapAndPath && {origin: ContentOrigin.Provided, ...mapAndPath};
+    return this.loadSourceFileInternal(sourcePath, contents, contentsOrigin, sourceMapInfo);
+  }
+
   /**
    * The overload used internally to load source files referenced in a source-map.
    *
    * In this case there is no guarantee that it will return a non-null SourceMap.
    *
-   * @internal
-   *
    * @param sourcePath The path to the source file to load.
    * @param contents The contents of the source file to load, if provided inline. If `null`,
    *     the contents will be read from the file at the `sourcePath`.
-   * @param mapAndPath The raw contents and path of the source-map file. If `null` the
+   * @param sourceOrigin Describes where the source content came from.
+   * @param sourceMapInfo The raw contents and path of the source-map file. If `null` the
    *     source-map will be computed from the contents of the source file, either inline or loaded
    *     from the file-system.
-   * @param sourceOrigin Describes where the source content came from.
    *
    * @returns a SourceFile if the content for one was provided or was able to be loaded from disk,
    * `null` otherwise.
    */
-  loadSourceFile(
-      sourcePath: AbsoluteFsPath, contents: string|null, mapAndPath: MapAndPath|null,
-      sourceOrigin: ContentOrigin): SourceFile|null;
-  loadSourceFile(
-      sourcePath: AbsoluteFsPath, contents: string|null = null, mapAndPath: MapAndPath|null = null,
-      sourceOrigin: ContentOrigin = ContentOrigin.Provided): SourceFile|null {
+  private loadSourceFileInternal(
+      sourcePath: AbsoluteFsPath, contents: string|null, sourceOrigin: ContentOrigin,
+      sourceMapInfo: SourceMapInfo|null): SourceFile|null {
     const previousPaths = this.currentPaths.slice();
     try {
       if (contents === null) {
@@ -83,19 +98,17 @@ export class SourceFileLoader {
       }
 
       // If not provided try to load the source map based on the source itself
-      if (mapAndPath === null) {
-        mapAndPath = this.loadSourceMap(sourcePath, contents, sourceOrigin);
+      if (sourceMapInfo === null) {
+        sourceMapInfo = this.loadSourceMap(sourcePath, contents, sourceOrigin);
       }
 
-      let map: RawSourceMap|null = null;
       let sources: (SourceFile|null)[] = [];
-      if (mapAndPath !== null) {
-        const basePath = mapAndPath.mapPath || sourcePath;
-        sources = this.processSources(basePath, mapAndPath);
-        map = mapAndPath.map;
+      if (sourceMapInfo !== null) {
+        const basePath = sourceMapInfo.mapPath || sourcePath;
+        sources = this.processSources(basePath, sourceMapInfo);
       }
 
-      return new SourceFile(sourcePath, contents, mapAndPath, sources, this.fs);
+      return new SourceFile(sourcePath, contents, sourceMapInfo, sources, this.fs);
     } catch (e) {
       this.logger.warn(
           `Unable to fully load ${sourcePath} for source-map flattening: ${e.message}`);
@@ -120,8 +133,8 @@ export class SourceFileLoader {
    *     otherwise.
    */
   private loadSourceMap(
-      sourcePath: AbsoluteFsPath, sourceContents: string, sourceOrigin: ContentOrigin): MapAndPath
-      |null {
+      sourcePath: AbsoluteFsPath, sourceContents: string,
+      sourceOrigin: ContentOrigin): SourceMapInfo|null {
     // Only consider a source-map comment from the last non-empty line of the file, in case there
     // are embedded source-map comments elsewhere in the file (as can be the case with bundlers like
     // webpack).
@@ -175,9 +188,8 @@ export class SourceFileLoader {
    * Iterate over each of the "sources" for this source file's source map, recursively loading each
    * source file and its associated source map.
    */
-  private processSources(
-      basePath: AbsoluteFsPath,
-      {map, origin: sourceMapOrigin = ContentOrigin.Provided}: MapAndPath): (SourceFile|null)[] {
+  private processSources(basePath: AbsoluteFsPath, {map, origin: sourceMapOrigin}: SourceMapInfo):
+      (SourceFile|null)[] {
     const sourceRoot = this.fs.resolve(
         this.fs.dirname(basePath), this.replaceSchemeWithPath(map.sourceRoot || ''));
     return map.sources.map((source, index) => {
@@ -188,7 +200,7 @@ export class SourceFileLoader {
       const sourceOrigin = content !== null && sourceMapOrigin !== ContentOrigin.Provided ?
           ContentOrigin.Inline :
           ContentOrigin.FileSystem;
-      return this.loadSourceFile(path, content, null, sourceOrigin);
+      return this.loadSourceFileInternal(path, content, sourceOrigin, null);
     });
   }
 

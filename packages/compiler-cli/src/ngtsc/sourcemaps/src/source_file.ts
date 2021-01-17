@@ -10,49 +10,11 @@ import {decode, encode, SourceMapMappings, SourceMapSegment} from 'sourcemap-cod
 
 import {AbsoluteFsPath, PathManipulation} from '../../file_system';
 
-import {RawSourceMap} from './raw_source_map';
+import {RawSourceMap, SourceMapInfo} from './raw_source_map';
 import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker';
 
 export function removeSourceMapComments(contents: string): string {
   return removeMapFileComments(removeComments(contents)).replace(/\n\n$/, '\n');
-}
-
-
-/** A small helper structure that is returned from `loadSourceMap()`. */
-export interface MapAndPath {
-  /** The path to the source map if it was external or `null` if it was inline. */
-  mapPath: AbsoluteFsPath|null;
-  /** The raw source map itself. */
-  map: RawSourceMap;
-  /** If true then the source-map was found inline, rather than loaded from the file-system. */
-  origin?: ContentOrigin;
-}
-
-/**
- * Where the content for a source file or source-map came from.
- *
- * - Source files can be linked to source-maps by:
- *   - providing the content inline via a base64 encoded data comment,
- *   - providing a URL to the file path in a comment,
- *   - the loader inferring the source-map path from the source file path.
- * - Source-maps can link to source files by:
- *   - providing the content inline in the `sourcesContent` property
- *   - providing the path to the file in the `sources` property
- */
-export enum ContentOrigin {
-  /**
-   * The contents were provided programmatically when calling `loadSourceFile()`.
-   */
-  Provided,
-  /**
-   * The contents were extracted directly form the contents of the referring file.
-   */
-  Inline,
-  /**
-     The contents were loaded from the file-system, after being explicitly referenced or inferred
-     from the referring file.
-   */
-  FileSystem,
 }
 
 export class SourceFile {
@@ -72,7 +34,7 @@ export class SourceFile {
       /** The contents of this source file. */
       readonly contents: string,
       /** The raw source map (if any) referenced by this source file. */
-      readonly rawMap: MapAndPath|null,
+      readonly rawMap: SourceMapInfo|null,
       /** Any source files referenced by the raw source map associated with this source file. */
       readonly sources: (SourceFile|null)[],
       private fs: PathManipulation,

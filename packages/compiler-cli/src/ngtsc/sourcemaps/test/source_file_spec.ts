@@ -9,9 +9,10 @@ import {encode} from 'sourcemap-codec';
 
 import {absoluteFrom, getFileSystem, PathManipulation} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {RawSourceMap} from '../src/raw_source_map';
+import {ContentOrigin} from '../src/content_origin';
+import {RawSourceMap, SourceMapInfo} from '../src/raw_source_map';
 import {SegmentMarker} from '../src/segment_marker';
-import {computeStartOfLinePositions, ensureOriginalSegmentLinks, extractOriginalSegments, findLastMappingIndexBefore, MapAndPath, Mapping, parseMappings, SourceFile} from '../src/source_file';
+import {computeStartOfLinePositions, ensureOriginalSegmentLinks, extractOriginalSegments, findLastMappingIndexBefore, Mapping, parseMappings, SourceFile} from '../src/source_file';
 
 runInEachFileSystem(() => {
   describe('SourceFile and utilities', () => {
@@ -342,8 +343,11 @@ runInEachFileSystem(() => {
         });
 
         it('should be empty array for source files with no source map mappings', () => {
-          const rawSourceMap:
-              MapAndPath = {map: {mappings: '', names: [], sources: [], version: 3}, mapPath: null};
+          const rawSourceMap: SourceMapInfo = {
+            map: {mappings: '', names: [], sources: [], version: 3},
+            mapPath: null,
+            origin: ContentOrigin.Provided
+          };
           const sourceFile =
               new SourceFile(_('/foo/src/index.js'), 'index contents', rawSourceMap, [], fs);
           expect(sourceFile.flattenedMappings).toEqual([]);
@@ -351,14 +355,15 @@ runInEachFileSystem(() => {
 
         it('should be the same as non-flat mappings if there is only one level of source map',
            () => {
-             const rawSourceMap: MapAndPath = {
+             const rawSourceMap: SourceMapInfo = {
                mapPath: null,
                map: {
                  mappings: encode([[[0, 0, 0, 0], [6, 0, 0, 3]]]),
                  names: [],
                  sources: ['a.js'],
                  version: 3
-               }
+               },
+               origin: ContentOrigin.Provided,
              };
              const originalSource = new SourceFile(_('/foo/src/a.js'), 'abcdefg', null, [], fs);
              const sourceFile = new SourceFile(
@@ -371,26 +376,28 @@ runInEachFileSystem(() => {
           const cSource = new SourceFile(_('/foo/src/c.js'), 'bcd123', null, [], fs);
           const dSource = new SourceFile(_('/foo/src/d.js'), 'aef', null, [], fs);
 
-          const bSourceMap: MapAndPath = {
+          const bSourceMap: SourceMapInfo = {
             mapPath: null,
             map: {
               mappings: encode([[[0, 1, 0, 0], [1, 0, 0, 0], [4, 1, 0, 1]]]),
               names: [],
               sources: ['c.js', 'd.js'],
               version: 3
-            }
+            },
+            origin: ContentOrigin.Provided,
           };
           const bSource =
               new SourceFile(_('/foo/src/b.js'), 'abcdef', bSourceMap, [cSource, dSource], fs);
 
-          const aSourceMap: MapAndPath = {
+          const aSourceMap: SourceMapInfo = {
             mapPath: null,
             map: {
               mappings: encode([[[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2], [5, 0, 0, 5]]]),
               names: [],
               sources: ['b.js'],
               version: 3
-            }
+            },
+            origin: ContentOrigin.Provided,
           };
           const aSource = new SourceFile(_('/foo/src/a.js'), 'abdecf', aSourceMap, [bSource], fs);
 
@@ -435,24 +442,26 @@ runInEachFileSystem(() => {
         });
 
         it('should ignore mappings to missing source files', () => {
-          const bSourceMap: MapAndPath = {
+          const bSourceMap: SourceMapInfo = {
             mapPath: null,
             map: {
               mappings: encode([[[1, 0, 0, 0], [4, 0, 0, 3], [4, 0, 0, 6], [5, 0, 0, 7]]]),
               names: [],
               sources: ['c.js'],
               version: 3
-            }
+            },
+            origin: ContentOrigin.Provided,
           };
           const bSource = new SourceFile(_('/foo/src/b.js'), 'abcdef', bSourceMap, [null], fs);
-          const aSourceMap: MapAndPath = {
+          const aSourceMap: SourceMapInfo = {
             mapPath: null,
             map: {
               mappings: encode([[[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2], [5, 0, 0, 5]]]),
               names: [],
               sources: ['b.js'],
               version: 3
-            }
+            },
+            origin: ContentOrigin.Provided,
           };
           const aSource = new SourceFile(_('/foo/src/a.js'), 'abdecf', aSourceMap, [bSource], fs);
 
@@ -479,25 +488,27 @@ runInEachFileSystem(() => {
       describe('renderFlattenedSourceMap()', () => {
         it('should convert the flattenedMappings into a raw source-map object', () => {
           const cSource = new SourceFile(_('/foo/src/c.js'), 'bcd123e', null, [], fs);
-          const bToCSourceMap: MapAndPath = {
+          const bToCSourceMap: SourceMapInfo = {
             mapPath: null,
             map: {
               mappings: encode([[[1, 0, 0, 0], [4, 0, 0, 3], [4, 0, 0, 6], [5, 0, 0, 7]]]),
               names: [],
               sources: ['c.js'],
               version: 3
-            }
+            },
+            origin: ContentOrigin.Provided,
           };
           const bSource =
               new SourceFile(_('/foo/src/b.js'), 'abcdef', bToCSourceMap, [cSource], fs);
-          const aToBSourceMap: MapAndPath = {
+          const aToBSourceMap: SourceMapInfo = {
             mapPath: null,
             map: {
               mappings: encode([[[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2], [5, 0, 0, 5]]]),
               names: [],
               sources: ['b.js'],
               version: 3
-            }
+            },
+            origin: ContentOrigin.Provided,
           };
           const aSource =
               new SourceFile(_('/foo/src/a.js'), 'abdecf', aToBSourceMap, [bSource], fs);
@@ -516,7 +527,7 @@ runInEachFileSystem(() => {
 
         it('should handle mappings that map from lines outside of the actual content lines', () => {
           const bSource = new SourceFile(_('/foo/src/b.js'), 'abcdef', null, [], fs);
-          const aToBSourceMap: MapAndPath = {
+          const aToBSourceMap: SourceMapInfo = {
             mapPath: null,
             map: {
               mappings: encode([
@@ -528,7 +539,8 @@ runInEachFileSystem(() => {
               names: [],
               sources: ['b.js'],
               version: 3
-            }
+            },
+            origin: ContentOrigin.Provided,
           };
           const aSource =
               new SourceFile(_('/foo/src/a.js'), 'abdecf', aToBSourceMap, [bSource], fs);
@@ -547,27 +559,29 @@ runInEachFileSystem(() => {
           const cSource1 = new SourceFile(_('/foo/src/lib/c.js'), 'bcd123e', null, [], fs);
           const cSource2 = new SourceFile(_('/foo/src/lib/c.js'), 'bcd123e', null, [], fs);
 
-          const bToCSourceMap: MapAndPath = {
+          const bToCSourceMap: SourceMapInfo = {
             mapPath: null,
             map: {
               mappings: encode([[[1, 0, 0, 0], [4, 0, 0, 3], [4, 0, 0, 6], [5, 0, 0, 7]]]),
               names: [],
               sources: ['c.js'],
               version: 3
-            }
+            },
+            origin: ContentOrigin.Provided,
           };
           const bSource =
               new SourceFile(_('/foo/src/lib/b.js'), 'abcdef', bToCSourceMap, [cSource1], fs);
 
-          const aToBCSourceMap: MapAndPath = {
+          const aToBCSourceMap: SourceMapInfo = {
             mapPath: null,
             map: {
               mappings:
                   encode([[[0, 0, 0, 0], [2, 0, 0, 3], [4, 0, 0, 2], [5, 0, 0, 5], [6, 1, 0, 3]]]),
               names: [],
               sources: ['lib/b.js', 'lib/c.js'],
-              version: 3
-            }
+              version: 3,
+            },
+            origin: ContentOrigin.Provided,
           };
           const aSource = new SourceFile(
               _('/foo/src/a.js'), 'abdecf123', aToBCSourceMap, [bSource, cSource2], fs);
@@ -596,7 +610,7 @@ runInEachFileSystem(() => {
           const cSource = new SourceFile(_('/foo/src/c.js'), 'bcd123', null, [], fs);
           const dSource = new SourceFile(_('/foo/src/d.js'), 'aef', null, [], fs);
 
-          const bSourceMap: MapAndPath = {
+          const bSourceMap: SourceMapInfo = {
             mapPath: null,
             map: {
               mappings: encode([
@@ -609,12 +623,13 @@ runInEachFileSystem(() => {
               names: [],
               sources: ['c.js', 'd.js'],
               version: 3
-            }
+            },
+            origin: ContentOrigin.Provided,
           };
           const bSource =
               new SourceFile(_('/foo/src/b.js'), 'abcdef', bSourceMap, [cSource, dSource], fs);
 
-          const aSourceMap: MapAndPath = {
+          const aSourceMap: SourceMapInfo = {
             mapPath: null,
             map: {
               mappings: encode([
@@ -630,7 +645,8 @@ runInEachFileSystem(() => {
               names: [],
               sources: ['b.js'],
               version: 3
-            }
+            },
+            origin: ContentOrigin.Provided,
           };
           const aSource =
               new SourceFile(_('/foo/src/a.js'), 'abde\n    cf', aSourceMap, [bSource], fs);
@@ -667,7 +683,7 @@ runInEachFileSystem(() => {
         it('should return offset locations across multiple lines', () => {
           const originalSource =
               new SourceFile(_('/foo/src/original.js'), 'abcdef\nghijk\nlmnop', null, [], fs);
-          const generatedSourceMap: MapAndPath = {
+          const generatedSourceMap: SourceMapInfo = {
             mapPath: null,
             map: {
               mappings: encode([
@@ -686,7 +702,8 @@ runInEachFileSystem(() => {
               names: [],
               sources: ['original.js'],
               version: 3
-            }
+            },
+            origin: ContentOrigin.Provided,
           };
           const generatedSource = new SourceFile(
               _('/foo/src/generated.js'), 'ABC\nGHIJDEFK\nLMNOP', generatedSourceMap,
