@@ -150,7 +150,7 @@ The following table summarizes class binding syntax.
     <td><code>"my-class-1 my-class-2 my-class-3"</code></td>
   </tr>
   <tr>
-    <td><code>{[key: string]: boolean | undefined | null}</code></td>
+    <td><code>Record&lt;string, boolean | undefined | null&gt;</code></td>
     <td><code>{foo: true, bar: false}</code></td>
   </tr>
   <tr>
@@ -248,7 +248,7 @@ The following table summarizes style binding syntax.
     <td><code>"width: 100px; height: 100px"</code></td>
   </tr>
   <tr>
-    <td><code>{[key: string]: string | undefined | null}</code></td>
+    <td><code>Record&lt;string, string | undefined | null&gt;</code></td>
     <td><code>{width: '100px', height: '100px'}</code></td>
   </tr>
 </table>
