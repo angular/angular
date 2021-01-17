@@ -196,7 +196,11 @@ export class SourceFileLoader {
       const path = this.fs.resolve(sourceRoot, this.replaceSchemeWithPath(source));
       const content = map.sourcesContent && map.sourcesContent[index] || null;
       // The origin of this source file is "inline" if we extracted it from the source-map's
-      // `sourcesContent` AND the source-map itself was not "provided" in-memory.
+      // `sourcesContent`, except when the source-map itself was "provided" in-memory.
+      // An inline source file is treated as if it were from the file-system if the source-map that
+      // contains it was provided in-memory. The first call to `loadSourceFile()` is special in that
+      // if you "provide" the contents of the source-map in-memory then we don't want to block
+      // loading sources from the file-system just because this source-map had an inline source.
       const sourceOrigin = content !== null && sourceMapOrigin !== ContentOrigin.Provided ?
           ContentOrigin.Inline :
           ContentOrigin.FileSystem;
