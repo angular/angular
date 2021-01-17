@@ -220,7 +220,20 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
   /** @nodoc */
   ngOnChanges(changes: SimpleChanges) {
     this._checkForErrors();
-    if (!this._registered) this._setUpControl();
+    if (!this._registered || 'name' in changes) {
+      if (this._registered) {
+        this._checkName();
+        if (this.formDirective) {
+          // We can't call `formDirective.removeControl(this)`, because the `name` has already been
+          // changed. We also can't reset the name temporarily since the logic in `removeControl`
+          // is inside a promise and it won't run immediately. We work around it by giving it an
+          // object with the same shape instead.
+          const oldName = changes['name'].previousValue;
+          this.formDirective.removeControl({name: oldName, path: this._getPath(oldName)});
+        }
+      }
+      this._setUpControl();
+    }
     if ('isDisabled' in changes) {
       this._updateDisabled(changes);
     }
@@ -242,7 +255,7 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
    * Each index is the string name of the control on that level.
    */
   override get path(): string[] {
-    return this._parent ? controlPath(this.name, this._parent) : [this.name];
+    return this._getPath(this.name);
   }
 
   /**
@@ -332,5 +345,9 @@ export class NgModel extends NgControl implements OnChanges, OnDestroy {
 
       this._changeDetectorRef?.markForCheck();
     });
+  }
+
+  private _getPath(controlName: string): string[] {
+    return this._parent ? controlPath(controlName, this._parent) : [controlName];
   }
 }

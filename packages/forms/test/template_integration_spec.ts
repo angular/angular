@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵgetDOM as getDOM} from '@angular/common';
+import {CommonModule, ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, forwardRef, Input, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, ControlValueAccessor, FormControl, FormsModule, MaxLengthValidator, MaxValidator, MinLengthValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, NgModel, Validator} from '@angular/forms';
@@ -20,7 +20,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
   describe('template-driven forms integration tests', () => {
     function initTest<T>(component: Type<T>, ...directives: Type<any>[]): ComponentFixture<T> {
       TestBed.configureTestingModule(
-          {declarations: [component, ...directives], imports: [FormsModule]});
+          {declarations: [component, ...directives], imports: [FormsModule, CommonModule]});
       return TestBed.createComponent(component);
     }
 
@@ -317,6 +317,119 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
         const form = fixture.debugElement.query(By.css('form'));
         expect(form.nativeElement.hasAttribute('novalidate')).toEqual(false);
       });
+
+      it('should keep track of the ngModel value when together used with an ngFor inside a form',
+         fakeAsync(() => {
+           @Component({
+             template: `
+              <form>
+                <div *ngFor="let item of items; index as i">
+                  <input [(ngModel)]="item.value" name="name-{{i}}">
+                </div>
+              </form>
+            `
+           })
+           class App {
+             private _counter = 0;
+             items: {value: string}[] = [];
+
+             add(amount: number) {
+               for (let i = 0; i < amount; i++) {
+                 this.items.push({value: `${this._counter++}`});
+               }
+             }
+
+             remove(index: number) {
+               this.items.splice(index, 1);
+             }
+           }
+
+           const getValues = () =>
+               fixture.debugElement.queryAll(By.css('input')).map(el => el.nativeElement.value);
+           const fixture = initTest(App);
+           fixture.componentInstance.add(3);
+           fixture.detectChanges();
+           tick();
+           expect(getValues()).toEqual(['0', '1', '2']);
+
+           fixture.componentInstance.remove(1);
+           fixture.detectChanges();
+           tick();
+           expect(getValues()).toEqual(['0', '2']);
+
+           fixture.componentInstance.add(1);
+           fixture.detectChanges();
+           tick();
+           expect(getValues()).toEqual(['0', '2', '3']);
+
+           fixture.componentInstance.items[1].value = '1';
+           fixture.detectChanges();
+           tick();
+           expect(getValues()).toEqual(['0', '1', '3']);
+
+           fixture.componentInstance.items[2].value = '2';
+           fixture.detectChanges();
+           tick();
+           expect(getValues()).toEqual(['0', '1', '2']);
+         }));
+
+      it('should keep track of the ngModel value when together used with an ngFor inside an ngModelGroup',
+         fakeAsync(() => {
+           @Component({
+             template: `
+              <form>
+                <ng-container ngModelGroup="group">
+                  <div *ngFor="let item of items; index as i">
+                    <input [(ngModel)]="item.value" name="name-{{i}}">
+                  </div>
+                </ng-container>
+              </form>
+            `
+           })
+           class App {
+             private _counter = 0;
+             group = {};
+             items: {value: string}[] = [];
+
+             add(amount: number) {
+               for (let i = 0; i < amount; i++) {
+                 this.items.push({value: `${this._counter++}`});
+               }
+             }
+
+             remove(index: number) {
+               this.items.splice(index, 1);
+             }
+           }
+
+           const getValues = () =>
+               fixture.debugElement.queryAll(By.css('input')).map(el => el.nativeElement.value);
+           const fixture = initTest(App);
+           fixture.componentInstance.add(3);
+           fixture.detectChanges();
+           tick();
+           expect(getValues()).toEqual(['0', '1', '2']);
+
+           fixture.componentInstance.remove(1);
+           fixture.detectChanges();
+           tick();
+           expect(getValues()).toEqual(['0', '2']);
+
+           fixture.componentInstance.add(1);
+           fixture.detectChanges();
+           tick();
+           expect(getValues()).toEqual(['0', '2', '3']);
+
+           fixture.componentInstance.items[1].value = '1';
+           fixture.detectChanges();
+           tick();
+           expect(getValues()).toEqual(['0', '1', '3']);
+
+           fixture.componentInstance.items[2].value = '2';
+           fixture.detectChanges();
+           tick();
+           expect(getValues()).toEqual(['0', '1', '2']);
+         }));
     });
 
     describe('name and ngModelOptions', () => {
