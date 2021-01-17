@@ -322,9 +322,9 @@ export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean 
   return BUILTIN_ACCESSORS.some(a => valueAccessor.constructor === a);
 }
 
-export function syncPendingControls(form: FormGroup, directives: NgControl[]): void {
+export function syncPendingControls(form: FormGroup, directives: Set<NgControl>|NgControl[]): void {
   form._syncPendingControls();
-  directives.forEach(dir => {
+  directives.forEach((dir: NgControl) => {
     const control = dir.control as FormControl;
     if (control.updateOn === 'submit' && control._pendingChange) {
       dir.viewToModelUpdate(control._pendingValue);
