@@ -7,7 +7,7 @@
  */
 
 import {isPlatformBrowser} from '@angular/common';
-import {APP_INITIALIZER, ApplicationRef, ErrorHandler, InjectionToken, Injector, ModuleWithProviders, NgModule, NgZone, PLATFORM_ID} from '@angular/core';
+import {APP_INITIALIZER, ApplicationRef, InjectionToken, Injector, ModuleWithProviders, NgModule, NgZone, PLATFORM_ID} from '@angular/core';
 import {merge, Observable, of} from 'rxjs';
 import {delay, filter, take} from 'rxjs/operators';
 
@@ -128,10 +128,9 @@ export function ngswAppInitializer(
     const ngZone = injector.get(NgZone);
     ngZone.runOutsideAngular(
         () => readyToRegister$.pipe(take(1)).subscribe(
-            () => navigator.serviceWorker.register(script, {scope: options.scope}).catch(err => {
-              const errorHandler = injector.get(ErrorHandler);
-              errorHandler.handleError(err);
-            })));
+            () =>
+                navigator.serviceWorker.register(script, {scope: options.scope})
+                    .catch(err => console.error('Service worker registration failed with:', err))));
   };
   return initializer;
 }
