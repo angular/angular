@@ -53,10 +53,11 @@ module.exports = new Package('angular-base', [
     inlineTagProcessor.inlineTagDefinitions.push(require('./inline-tag-defs/custom-search-defs/'));
   })
 
-  .config(function(checkAnchorLinksProcessor) {
-    // This is disabled here to prevent false negatives for the `docs-watch` task.
+  .config(function(checkAnchorLinksProcessor, checkForUnusedExampleRegions) {
+    // These are disabled here to prevent false negatives for the `docs-watch` task.
     // It is re-enabled in the main `angular.io-package`
     checkAnchorLinksProcessor.$enabled = false;
+    checkForUnusedExampleRegions.$enabled = false;
   })
 
   // Where do we get the source files?
