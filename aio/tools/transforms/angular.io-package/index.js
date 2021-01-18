@@ -29,6 +29,12 @@ module.exports = new Package('angular.io', [gitPackage, apiPackage, contentPacka
     renderDocsProcessor.extraData.versionInfo = versionInfo;
   })
 
+  .config(function(checkForUnusedExampleRegions) {
+    // Re-enable this processor that was disabled in the `angular-base` package to
+    // avoid running it during `serve-and-sync` runs.
+    checkForUnusedExampleRegions.$enabled = true;
+  })
+
   .config(function(checkAnchorLinksProcessor, linkInlineTagDef, renderExamples) {
 
     // Fail the processing if there is an invalid link
