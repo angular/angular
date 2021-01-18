@@ -15,8 +15,6 @@ const packageMap = {
   core: ['core/index.ts', 'core/testing/index.ts'],
   elements: ['elements/index.ts'],
   forms: ['forms/index.ts'],
-  // Current plan for Angular v8 is to hide the @angular/http package
-  // http: ['http/index.ts', 'http/testing/index.ts'],
   'platform-browser': ['platform-browser/index.ts', 'platform-browser/animations/index.ts', 'platform-browser/testing/index.ts'],
   'platform-browser-dynamic': ['platform-browser-dynamic/index.ts', 'platform-browser-dynamic/testing/index.ts'],
   'platform-server': ['platform-server/index.ts', 'platform-server/testing/index.ts'],
