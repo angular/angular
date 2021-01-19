@@ -13,7 +13,7 @@ export declare abstract class _MatTabBodyBase implements OnInit, OnDestroy {
     _content: TemplatePortal;
     readonly _onCentered: EventEmitter<void>;
     readonly _onCentering: EventEmitter<number>;
-    abstract _portalHost: PortalHostDirective;
+    abstract _portalHost: CdkPortalOutlet;
     _position: MatTabBodyPositionState;
     _translateTabComplete: Subject<AnimationEvent>;
     animationDuration: string;
@@ -154,7 +154,7 @@ export declare class MatTab extends _MatTabMixinBase implements OnInit, CanDisab
 }
 
 export declare class MatTabBody extends _MatTabBodyBase {
-    _portalHost: PortalHostDirective;
+    _portalHost: CdkPortalOutlet;
     constructor(elementRef: ElementRef<HTMLElement>, dir: Directionality, changeDetectorRef: ChangeDetectorRef);
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTabBody, "mat-tab-body", never, {}, {}, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTabBody, [null, { optional: true; }, null]>;

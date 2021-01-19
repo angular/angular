@@ -25,7 +25,7 @@ import {
   matTabsAnimations,
   _MatTabBodyBase,
 } from '@angular/material/tabs';
-import {PortalHostDirective} from '@angular/cdk/portal';
+import {CdkPortalOutlet} from '@angular/cdk/portal';
 import {Directionality} from '@angular/cdk/bidi';
 import {DOCUMENT} from '@angular/common';
 
@@ -62,7 +62,7 @@ export class MatTabBodyPortal extends BaseMatTabBodyPortal {
   },
 })
 export class MatTabBody extends _MatTabBodyBase {
-  @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
+  @ViewChild(CdkPortalOutlet) _portalHost: CdkPortalOutlet;
 
   constructor(elementRef: ElementRef<HTMLElement>,
     @Optional() dir: Directionality,

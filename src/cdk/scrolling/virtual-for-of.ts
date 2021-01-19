@@ -154,7 +154,7 @@ export class CdkVirtualForOf<T> implements
   dataStream: Observable<T[] | ReadonlyArray<T>> = this._dataSourceChanges
   .pipe(
       // Start off with null `DataSource`.
-      startWith(null!),
+      startWith(null),
       // Bundle up the previous and current data sources so we can work with both.
       pairwise(),
       // Use `_changeDataSource` to disconnect from the previous data source and connect to the

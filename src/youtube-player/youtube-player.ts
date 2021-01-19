@@ -45,7 +45,6 @@ import {
   combineLatest as combineLatestOp,
   distinctUntilChanged,
   filter,
-  flatMap,
   map,
   publish,
   scan,
@@ -56,6 +55,7 @@ import {
   withLatestFrom,
   switchMap,
   tap,
+  mergeMap,
 } from 'rxjs/operators';
 
 declare global {
@@ -586,7 +586,7 @@ function bindSuggestedQualityToPlayer(
  */
 function waitUntilReady(onAbort: (player: UninitializedPlayer) => void):
   OperatorFunction<UninitializedPlayer | undefined, Player | undefined> {
-  return flatMap(player => {
+  return mergeMap(player => {
     if (!player) {
       return observableOf<Player|undefined>(undefined);
     }

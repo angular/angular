@@ -42,7 +42,7 @@ export class HeaderRowEventDispatcher {
    * Emits the header that is currently hovered or hosting an active resize event (with active
    * taking precedence).
    */
-  readonly headerRowHoveredOrActiveDistinct = combineLatest(
+  readonly headerRowHoveredOrActiveDistinct = combineLatest([
       this.headerCellHoveredDistinct.pipe(
           map(cell => _closest(cell, HEADER_ROW_SELECTOR)),
           startWith(null),
@@ -53,7 +53,7 @@ export class HeaderRowEventDispatcher {
           startWith(null),
           distinctUntilChanged(),
       ),
-  ).pipe(
+  ]).pipe(
       skip(1), // Ignore initial [null, null] emission.
       map(([hovered, active]) => active || hovered),
       distinctUntilChanged(),

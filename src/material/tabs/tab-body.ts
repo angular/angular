@@ -26,7 +26,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {AnimationEvent} from '@angular/animations';
-import {TemplatePortal, CdkPortalOutlet, PortalHostDirective} from '@angular/cdk/portal';
+import {TemplatePortal, CdkPortalOutlet} from '@angular/cdk/portal';
 import {Directionality, Direction} from '@angular/cdk/bidi';
 import {DOCUMENT} from '@angular/common';
 import {Subscription, Subject} from 'rxjs';
@@ -131,7 +131,7 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
   @Output() readonly _onCentered: EventEmitter<void> = new EventEmitter<void>(true);
 
    /** The portal host inside of this container into which the tab body content will be loaded. */
-  abstract _portalHost: PortalHostDirective;
+  abstract _portalHost: CdkPortalOutlet;
 
   /** The tab body content to display. */
   @Input('content') _content: TemplatePortal;
@@ -256,7 +256,7 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
   }
 })
 export class MatTabBody extends _MatTabBodyBase {
-  @ViewChild(PortalHostDirective) _portalHost: PortalHostDirective;
+  @ViewChild(CdkPortalOutlet) _portalHost: CdkPortalOutlet;
 
   constructor(elementRef: ElementRef<HTMLElement>,
               @Optional() dir: Directionality,

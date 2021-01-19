@@ -83,7 +83,7 @@ describe('MDC-based MatPaginator', () => {
     it('should re-render when the i18n labels change', () => {
       const fixture = createComponent(MatPaginatorApp);
       const label = fixture.nativeElement.querySelector('.mat-mdc-paginator-page-size-label');
-      const intl = TestBed.get<MatPaginatorIntl>(MatPaginatorIntl);
+      const intl = TestBed.inject(MatPaginatorIntl);
 
       intl.itemsPerPageLabel = '1337 items per page';
       intl.changes.next();
