@@ -697,6 +697,7 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
     // won't be rendered if the animations are disabled or there is no web animations polyfill.
     '[style.zoom]': '_visibility === "visible" ? 1 : null',
     '(body:click)': 'this._handleBodyInteraction()',
+    '(body:auxclick)': 'this._handleBodyInteraction()',
     'aria-hidden': 'true',
   }
 })

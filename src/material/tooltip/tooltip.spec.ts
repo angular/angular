@@ -627,6 +627,25 @@ describe('MatTooltip', () => {
       expect(overlayContainerElement.textContent).toBe('');
     }));
 
+    it('should hide when clicking away with an auxilliary button', fakeAsync(() => {
+      tooltipDirective.show();
+      tick(0);
+      fixture.detectChanges();
+      tick(500);
+
+      expect(tooltipDirective._isTooltipVisible()).toBe(true);
+      expect(overlayContainerElement.textContent).toContain(initialTooltipMessage);
+
+      dispatchFakeEvent(document.body, 'auxclick');
+      tick(0);
+      fixture.detectChanges();
+      tick(500);
+      fixture.detectChanges();
+
+      expect(tooltipDirective._isTooltipVisible()).toBe(false);
+      expect(overlayContainerElement.textContent).toBe('');
+    }));
+
     it('should not hide immediately if a click fires while animating', fakeAsync(() => {
       tooltipDirective.show();
       tick(0);
