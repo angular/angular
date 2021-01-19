@@ -21,9 +21,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     BrowserModule,
 // #enddocregion module-imports
 // #enddocregion remove-heroes
-// #docregion animation-import
     BrowserAnimationsModule,
-// #enddocregion animation-import
 // #docregion remove-heroes
 // #docregion module-imports
     FormsModule,
@@ -41,14 +39,3 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 export class AppModule { }
 // #enddocregion remove-heroes
 // #enddocregion
-
-/*
-// #docregion module-imports-2
-  imports: [
-    RouterModule.forChild([
-      // Heroes Routes
-    ]),
-    AppRoutingModule
-  ],
-// #enddocregion module-imports-2
-*/

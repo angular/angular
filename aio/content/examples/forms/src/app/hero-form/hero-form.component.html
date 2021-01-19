@@ -102,7 +102,6 @@
 
 <!-- ====================================================  -->
 <hr>
-<!-- #docregion  phase1-->
 <style>
   .no-style .ng-valid {
   border-left: 1px  solid #CCC
@@ -113,7 +112,6 @@
 }
 </style>
 <div class="no-style" style="margin-left: 4px">
-   <!-- #docregion start -->
   <div class="container">
       <h1>Hero Form</h1>
       <form>
@@ -127,7 +125,6 @@
           <input type="text" class="form-control" id="alterEgo">
         </div>
 
-    <!-- #enddocregion start -->
         <!-- #docregion powers -->
         <div class="form-group">
           <label for="power">Hero Power</label>
@@ -137,17 +134,13 @@
         </div>
 
         <!-- #enddocregion powers -->
-    <!-- #docregion start -->
         <button type="submit" class="btn btn-success">Submit</button>
 
       </form>
   </div>
-    <!-- #enddocregion start -->
-  <!-- #enddocregion  phase1-->
 
   <!-- ====================================================  -->
   <hr>
-  <!-- #docregion phase2-->
   <div class="container">
       <h1>Hero Form</h1>
       <!-- #docregion template-variable-->
@@ -182,7 +175,6 @@
 
       </form>
   </div>
-  <!-- #enddocregion  phase2-->
 
   <!-- EXTRA MATERIAL FOR DOCUMENTATION -->
   <hr>
@@ -193,11 +185,9 @@
     TODO: remove this: {{model.name}}
   <!-- #enddocregion ngModelName-1 -->
   <hr>
-  <!-- #docregion ngModel-3-->
     <input type="text" class="form-control" id="name"
            required
            [ngModel]="model.name" name="name"
            (ngModelChange)="model.name = $event">
     TODO: remove this: {{model.name}}
-  <!-- #enddocregion ngModel-3-->
 </div>

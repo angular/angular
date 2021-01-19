@@ -22,13 +22,11 @@ import { Logger } from './logger.service';
     HeroListComponent,
     SalesTaxComponent
   ],
-// #docregion providers
   providers: [
     BackendService,
     HeroService,
     Logger
   ],
-// #enddocregion providers
   bootstrap: [ AppComponent ]
 })
 // #docregion export

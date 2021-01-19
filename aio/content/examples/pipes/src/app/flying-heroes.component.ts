@@ -35,9 +35,7 @@ export class FlyingHeroesComponent {
 // #enddocregion v1
     } else {
       // Pipe updates display because heroes array is a new object
-// #docregion concat
       this.heroes = this.heroes.concat(hero);
-// #enddocregion concat
     }
 // #docregion v1
   }
@@ -47,15 +45,11 @@ export class FlyingHeroesComponent {
 // #enddocregion v1
 
 ////// Identical except for impure pipe //////
-// #docregion impure-component
 @Component({
   selector: 'app-flying-heroes-impure',
   templateUrl: './flying-heroes-impure.component.html',
-// #enddocregion impure-component
   styles: ['.flyers, .all {font-style: italic}'],
-// #docregion impure-component
 })
 export class FlyingHeroesImpureComponent extends FlyingHeroesComponent {
   title = 'Flying Heroes (impure pipe)';
 }
-// #enddocregion impure-component

@@ -7,9 +7,7 @@ export class Logger {
   log(message: string) { console.log(message); }
 }
 
-// #docregion import-core-component
 import { Component } from '@angular/core';
-// #enddocregion import-core-component
 
 @Component({
  selector: 'app-root',
@@ -35,9 +33,7 @@ import { BrowserModule } from '@angular/platform-browser';
   exports:      [ AppComponent ],
   bootstrap:    [ AppComponent ]
 })
-// #docregion export
 export class AppModule { }
-// #enddocregion export
 // #enddocregion module
 
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';

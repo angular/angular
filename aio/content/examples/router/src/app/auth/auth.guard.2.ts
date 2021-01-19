@@ -29,9 +29,3 @@ export class AuthGuard implements CanActivate {
   }
 }
 // #enddocregion
-
-/*
-// #docregion can-load-interface
-export class AuthGuard implements CanActivate, CanLoad {
-// #enddocregion can-load-interface
-*/

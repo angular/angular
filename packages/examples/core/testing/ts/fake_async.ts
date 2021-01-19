@@ -25,7 +25,6 @@ describe('this test', () => {
 });
 // #enddocregion
 
-// #docregion pending
 describe('this test', () => {
   it('aborts a periodic timer', <any>fakeAsync((): void => {
        // This timer is scheduled but doesn't need to complete for the
@@ -37,4 +36,3 @@ describe('this test', () => {
        discardPeriodicTasks();
      }));
 });
-// #enddocregion

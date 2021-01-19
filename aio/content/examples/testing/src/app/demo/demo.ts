@@ -16,7 +16,6 @@ export interface Hero {
 }
 
 ////////// Services ///////////////
-// #docregion ValueService
 @Injectable()
 export class ValueService {
   value = 'real value';
@@ -32,7 +31,6 @@ export class ValueService {
     return of('observable delay value').pipe(delay(10));
   }
 }
-// #enddocregion ValueService
 
 // #docregion MasterService
 @Injectable()
@@ -46,7 +44,6 @@ export class MasterService {
 /*
  * Reverse the input string.
 */
-// #docregion ReversePipe
 @Pipe({ name: 'reverse' })
 export class ReversePipe implements PipeTransform {
   transform(s: string) {
@@ -55,7 +52,6 @@ export class ReversePipe implements PipeTransform {
     return r;
   }
 }
-// #enddocregion ReversePipe
 
 //////////// Components /////////////
 @Component({

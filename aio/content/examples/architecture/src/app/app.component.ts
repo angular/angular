@@ -9,6 +9,4 @@ import { Component } from '@angular/core';
     <app-sales-tax></app-sales-tax>
   `
 })
-// #docregion export
 export class AppComponent { }
-// #enddocregion export

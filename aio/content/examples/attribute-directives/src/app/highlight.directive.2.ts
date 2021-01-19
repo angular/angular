@@ -14,19 +14,14 @@ export class HighlightDirective {
   constructor(private el: ElementRef) { }
   // #enddocregion ctor
 
-  // #docregion mouse-methods, host
+  // #docregion mouse-methods
   @HostListener('mouseenter') onMouseEnter() {
-    // #enddocregion host
     this.highlight('yellow');
-    // #docregion host
   }
 
   @HostListener('mouseleave') onMouseLeave() {
-    // #enddocregion host
     this.highlight(null);
-    // #docregion host
   }
-  // #enddocregion host
 
   private highlight(color: string) {
     this.el.nativeElement.style.backgroundColor = color;

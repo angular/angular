@@ -7,18 +7,14 @@
   <img [src]="itemImageUrl">
   <!-- #enddocregion property-binding -->
   <h2>Using bind- syntax:</h2>
-  <!-- #docregion bind-prefix -->
   <img bind-src="itemImageUrl">
-  <!-- #enddocregion bind-prefix -->
   <hr />
 
   <h2>Binding to the colSpan property</h2>
   <table border=1>
     <tr><td>Column 1</td><td>Column 2</td></tr>
-    <!-- #docregion colSpan -->
     <!-- Notice the colSpan property is camel case -->
     <tr><td [colSpan]="2">Span 2 columns</td></tr>
-    <!-- #enddocregion colSpan -->
   </table>
 
 
@@ -51,9 +47,7 @@
 
   <hr />
   <h2>Initialized string:</h2>
-  <!-- #docregion string-init -->
   <app-string-init prefix="This is a one-time initialized string."></app-string-init>
-<!-- #enddocregion string-init -->
 
   <hr />
 

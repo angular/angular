@@ -1,4 +1,3 @@
-// #docplaster
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -16,17 +15,13 @@ import { HeroesComponent } from './heroes/heroes.component';
 import { HeroSearchComponent } from './hero-search/hero-search.component';
 import { MessagesComponent } from './messages/messages.component';
 
-// #docregion platform-detection
 import { PLATFORM_ID, APP_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 
-// #enddocregion platform-detection
 
 @NgModule({
   imports: [
-    // #docregion browsermodule
     BrowserModule.withServerTransition({ appId: 'tour-of-heroes' }),
-    // #enddocregion browsermodule
     FormsModule,
     AppRoutingModule,
     HttpClientModule,
@@ -49,7 +44,6 @@ import { isPlatformBrowser } from '@angular/common';
   bootstrap: [ AppComponent ]
 })
 export class AppModule {
-  // #docregion platform-detection
   constructor(
     @Inject(PLATFORM_ID) private platformId: object,
     @Inject(APP_ID) private appId: string) {
@@ -57,5 +51,4 @@ export class AppModule {
       'in the browser' : 'on the server';
     console.log(`Running ${platform} with appId=${appId}`);
   }
-  // #enddocregion platform-detection
 }

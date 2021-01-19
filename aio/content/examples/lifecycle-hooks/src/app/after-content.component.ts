@@ -50,7 +50,6 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
     }
   }
 // #enddocregion hooks
-// #docregion do-something
 
   // This surrogate for real business logic sets the `comment`
   private doSomething() {

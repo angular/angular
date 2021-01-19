@@ -22,9 +22,7 @@ import { HeroService } from './hero.service';
 export class HeroListComponent {
   heroes: Hero[];
 
-  // #docregion ctor
   constructor(heroService: HeroService) {
     this.heroes = heroService.getHeroes();
   }
-  // #enddocregion ctor
 }

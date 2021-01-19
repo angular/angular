@@ -8,9 +8,7 @@ import { LoggerService } from './logger.service';
 @Injectable({
   providedIn: 'root'
 })
-// #docregion date-logger-service-signature
 export class DateLoggerService extends LoggerService
-// #enddocregion date-logger-service-signature
 {
   logInfo(msg: any)  { super.logInfo(stamp(msg)); }
   logDebug(msg: any) { super.logInfo(stamp(msg)); }

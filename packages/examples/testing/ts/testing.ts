@@ -11,16 +11,13 @@ let db: any;
 class MyService {}
 class MyMockService implements MyService {}
 
-// #docregion describeIt
 describe('some component', () => {
   it('does something',
      () => {
          // This is a test.
      });
 });
-// #enddocregion
 
-// #docregion fdescribe
 /* tslint:disable-next-line:no-jasmine-focus */
 fdescribe('some component', () => {
   it('has a test',
@@ -33,9 +30,7 @@ describe('another component', () => {
     throw 'This test will not run.';
   });
 });
-// #enddocregion
 
-// #docregion xdescribe
 xdescribe('some component', () => {
   it('has a test', () => {
     throw 'This test will not run.';
@@ -47,9 +42,7 @@ describe('another component', () => {
          // This test will run.
      });
 });
-// #enddocregion
 
-// #docregion fit
 describe('some component', () => {
   /* tslint:disable-next-line:no-jasmine-focus */
   fit('has a test',
@@ -60,9 +53,7 @@ describe('some component', () => {
     throw 'This test will not run.';
   });
 });
-// #enddocregion
 
-// #docregion xit
 describe('some component', () => {
   xit('has a test', () => {
     throw 'This test will not run.';
@@ -72,9 +63,7 @@ describe('some component', () => {
          // This test will run.
      });
 });
-// #enddocregion
 
-// #docregion beforeEach
 describe('some component', () => {
   beforeEach(() => {
     db.connect();
@@ -84,9 +73,7 @@ describe('some component', () => {
          // Database is connected.
      });
 });
-// #enddocregion
 
-// #docregion afterEach
 describe('some component', () => {
   afterEach((done: Function) => {
     db.reset().then((_: any) => done());
@@ -97,4 +84,3 @@ describe('some component', () => {
          // The afterEach will ensure it gets reset.
      });
 });
-// #enddocregion

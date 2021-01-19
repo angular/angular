@@ -10,7 +10,7 @@ import { CartService } from '../cart.service';
   templateUrl: './shipping.component.html',
   styleUrls: ['./shipping.component.css']
 })
-// #docregion props, ctor
+// #docregion props
 export class ShippingComponent {
   shippingCosts = this.cartService.getShippingPrices();
 // #enddocregion props

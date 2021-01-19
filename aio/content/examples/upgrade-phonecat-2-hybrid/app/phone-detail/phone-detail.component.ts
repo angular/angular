@@ -1,21 +1,14 @@
-// #docplaster
-// #docregion
 declare var angular: angular.IAngularStatic;
 import { downgradeComponent } from '@angular/upgrade/static';
 
-// #docregion initialclass
 import { Component } from '@angular/core';
 
 import { Phone, PhoneData } from '../core/phone/phone.service';
-// #enddocregion initialclass
 import { RouteParams } from '../ajs-upgraded-providers';
 
-// #docregion initialclass
 @Component({
   selector: 'phone-detail',
   templateUrl: './phone-detail.template.html',
-  // #enddocregion initialclass
-  // #docregion initialclass
 })
 export class PhoneDetailComponent {
   phone: PhoneData;
@@ -32,7 +25,6 @@ export class PhoneDetailComponent {
     this.mainImageUrl = imageUrl;
   }
 }
-// #enddocregion initialclass
 
 angular.module('phoneDetail')
   .directive(
