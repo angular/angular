@@ -24,9 +24,9 @@ if (bazel_stamp_file) {
 // `this` should be `undefined` but is assigned with `Window` instead.
 const banner = `'use strict';
 /**
-* @license Angular v${version}
-* (c) 2010-2020 Google LLC. https://angular.io/
-* License: MIT
+ * @license Angular v${version}
+ * (c) 2010-2020 Google LLC. https://angular.io/
+ * License: MIT
 */`;
 
 module.exports = {
