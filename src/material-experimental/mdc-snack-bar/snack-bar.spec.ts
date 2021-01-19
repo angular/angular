@@ -21,6 +21,7 @@ import {
   MatSnackBarModule,
   MatSnackBarRef,
 } from './index';
+import {Platform} from '@angular/cdk/platform';
 
 describe('MatSnackBar', () => {
   let snackBar: MatSnackBar;
@@ -159,6 +160,30 @@ describe('MatSnackBar', () => {
 
     expect(liveElement.getAttribute('aria-live'))
         .toBe('off', 'Expected snack bar container live region to have aria-live="off"');
+  });
+
+  it('should have role of `alert` with an `assertive` politeness (Firefox only)', () => {
+    const platform = TestBed.inject(Platform);
+    snackBar.openFromComponent(BurritosNotification, {politeness: 'assertive'});
+    viewContainerFixture.detectChanges();
+
+    const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const liveElement = containerElement.querySelector('[aria-live]')!;
+
+    expect(liveElement.getAttribute('role'))
+      .toBe(platform.FIREFOX ? 'alert' : null);
+  });
+
+  it('should have role of `status` with an `polite` politeness (Firefox only)', () => {
+    const platform = TestBed.inject(Platform);
+    snackBar.openFromComponent(BurritosNotification, {politeness: 'polite'});
+    viewContainerFixture.detectChanges();
+
+    const containerElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
+    const liveElement = containerElement.querySelector('[aria-live]')!;
+
+    expect(liveElement.getAttribute('role'))
+      .toBe(platform.FIREFOX ? 'status' : null);
   });
 
   it('should have exactly one MDC label element when opened through simple snack bar', () => {

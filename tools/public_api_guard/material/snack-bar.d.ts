@@ -54,6 +54,7 @@ export declare class MatSnackBarContainer extends BasePortalOutlet implements On
     readonly _onEnter: Subject<void>;
     readonly _onExit: Subject<void>;
     _portalOutlet: CdkPortalOutlet;
+    _role?: 'status' | 'alert';
     attachDomPortal: (portal: DomPortal) => void;
     snackBarConfig: MatSnackBarConfig;
     constructor(_ngZone: NgZone, _elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, _platform: Platform,

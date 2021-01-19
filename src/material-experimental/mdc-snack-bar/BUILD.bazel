@@ -69,6 +69,7 @@ ng_test_library(
         ":mdc-snack-bar",
         "//src/cdk/a11y",
         "//src/cdk/overlay",
+        "//src/cdk/platform",
         "@npm//@angular/common",
         "@npm//@angular/platform-browser",
     ],

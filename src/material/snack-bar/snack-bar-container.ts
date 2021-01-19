@@ -98,6 +98,12 @@ export class MatSnackBarContainer extends BasePortalOutlet
   /** aria-live value for the live region. */
   _live: AriaLivePoliteness;
 
+  /**
+   * Role of the live region. This is only for Firefox as there is a known issue where Firefox +
+   * JAWS does not read out aria-live message.
+   */
+  _role?: 'status' | 'alert';
+
   constructor(
     private _ngZone: NgZone,
     private _elementRef: ElementRef<HTMLElement>,
@@ -116,6 +122,17 @@ export class MatSnackBarContainer extends BasePortalOutlet
       this._live = 'off';
     } else {
       this._live = 'polite';
+    }
+
+    // Only set role for Firefox. Set role based on aria-live because setting role="alert" implies
+    // aria-live="assertive" which may cause issues if aria-live is set to "polite" above.
+    if (this._platform.FIREFOX) {
+      if (this._live === 'polite') {
+        this._role = 'status';
+      }
+      if (this._live === 'assertive') {
+        this._role = 'alert';
+      }
     }
   }
 
