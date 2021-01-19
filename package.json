@@ -159,7 +159,7 @@
     "sass": "^1.29.0",
     "scss-bundle": "^3.1.2",
     "selenium-webdriver": "^3.6.0",
-    "semver": "^6.3.0",
+    "semver": "^7.3.4",
     "send": "^0.17.1",
     "shelljs": "^0.8.3",
     "stylelint": "^13.8.0",
