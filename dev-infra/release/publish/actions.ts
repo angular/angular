@@ -282,6 +282,15 @@ export abstract class ReleaseAction {
       title,
     });
 
+    // Add labels to the newly created PR if provided in the configuration.
+    if (this.config.releasePrLabels !== undefined) {
+      await this.git.github.issues.addLabels({
+        ...this.git.remoteParams,
+        issue_number: data.number,
+        labels: this.config.releasePrLabels,
+      });
+    }
+
     info(green(`  ✓   Created pull request #${data.number} in ${repoSlug}.`));
     return {
       id: data.number,

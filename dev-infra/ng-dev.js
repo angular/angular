@@ -5676,6 +5676,10 @@ class ReleaseAction {
             const { fork, branchName } = yield this._pushHeadToFork(proposedForkBranchName, true);
             const { data } = yield this.git.github.pulls.create(Object.assign(Object.assign({}, this.git.remoteParams), { head: `${fork.owner}:${branchName}`, base: targetBranch, body,
                 title }));
+            // Add labels to the newly created PR if provided in the configuration.
+            if (this.config.releasePrLabels !== undefined) {
+                yield this.git.github.issues.addLabels(Object.assign(Object.assign({}, this.git.remoteParams), { issue_number: data.number, labels: this.config.releasePrLabels }));
+            }
             info(green(`  ✓   Created pull request #${data.number} in ${repoSlug}.`));
             return {
                 id: data.number,

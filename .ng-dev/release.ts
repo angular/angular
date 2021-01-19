@@ -32,7 +32,5 @@ export const release: ReleaseConfig = {
   generateReleaseNotesForHead: async () => {
     exec('yarn -s gulp changelog', {cwd: join(__dirname, '../')});
   },
-  // The `comp: *` labels will be automatically added by PullApprove and the targeting label will
-  // be added by the release tooling, only `action: merge` must be manually included to the list.
   releasePrLabels: ['comp: build & ci', 'action: merge', 'PullApprove: disable'],
 };
