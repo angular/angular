@@ -790,7 +790,7 @@ describe('MatRadio', () => {
       const radioButtonEl =
           predefinedFixture.debugElement.query(By.css('.mat-radio-button'))!.nativeElement;
 
-      expect(radioButtonEl.getAttribute('tabindex')).toBe('-1');
+      expect(radioButtonEl.hasAttribute('tabindex')).toBe(false);
     });
 
     it('should forward a pre-defined tabindex to the underlying input', () => {

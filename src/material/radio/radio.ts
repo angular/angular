@@ -640,8 +640,8 @@ export abstract class _MatRadioButtonBase extends _MatRadioButtonMixinBase imple
     '[class.mat-primary]': 'color === "primary"',
     '[class.mat-accent]': 'color === "accent"',
     '[class.mat-warn]': 'color === "warn"',
-    // Needs to be -1 so the `focus` event still fires.
-    '[attr.tabindex]': '-1',
+    // Needs to be removed since it causes some a11y issues (see #21266).
+    '[attr.tabindex]': 'null',
     '[attr.id]': 'id',
     '[attr.aria-label]': 'null',
     '[attr.aria-labelledby]': 'null',

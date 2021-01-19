@@ -796,17 +796,7 @@ describe('MDC-based MatRadio', () => {
       const radioButtonEl =
           predefinedFixture.debugElement.query(By.css('.mat-mdc-radio-button'))!.nativeElement;
 
-      expect(radioButtonEl.getAttribute('tabindex')).toBe('-1');
-    });
-
-    it('should set the tabindex to -1 on the host element', () => {
-      const predefinedFixture = TestBed.createComponent(RadioButtonWithPredefinedTabindex);
-      predefinedFixture.detectChanges();
-
-      const radioButtonEl =
-          predefinedFixture.debugElement.query(By.css('.mat-mdc-radio-button'))!.nativeElement;
-
-      expect(radioButtonEl.getAttribute('tabindex')).toBe('-1');
+      expect(radioButtonEl.hasAttribute('tabindex')).toBe(false);
     });
 
     it('should forward a pre-defined tabindex to the underlying input', () => {
