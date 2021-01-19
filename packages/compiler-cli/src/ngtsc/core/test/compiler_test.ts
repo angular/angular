@@ -10,15 +10,25 @@ import * as ts from 'typescript';
 
 import {absoluteFrom as _, FileSystem, getFileSystem, getSourceFileOrError, NgtscCompilerHost, setFileSystem} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {NoopIncrementalBuildStrategy} from '../../incremental';
+import {IncrementalBuildStrategy, NoopIncrementalBuildStrategy} from '../../incremental';
 import {ClassDeclaration, isNamedClassDeclaration} from '../../reflection';
 import {ReusedProgramStrategy} from '../../typecheck';
-import {OptimizeFor} from '../../typecheck/api';
+import {OptimizeFor, TypeCheckingProgramStrategy} from '../../typecheck/api';
 
 import {NgCompilerOptions} from '../api';
 
-import {NgCompiler} from '../src/compiler';
+import {freshCompilationTicket, NgCompiler} from '../src/compiler';
 import {NgCompilerHost} from '../src/host';
+
+function makeFreshCompiler(
+    host: NgCompilerHost, options: NgCompilerOptions, program: ts.Program,
+    programStrategy: TypeCheckingProgramStrategy, incrementalStrategy: IncrementalBuildStrategy,
+    enableTemplateTypeChecker: boolean, usePoisonedData: boolean): NgCompiler {
+  const ticket = freshCompilationTicket(
+      program, options, incrementalStrategy, programStrategy, enableTemplateTypeChecker,
+      usePoisonedData);
+  return NgCompiler.fromTicket(ticket, host);
+}
 
 runInEachFileSystem(() => {
   describe('NgCompiler', () => {
@@ -50,7 +60,7 @@ runInEachFileSystem(() => {
       const baseHost = new NgtscCompilerHost(getFileSystem(), options);
       const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, /* oldProgram */ null);
       const program = ts.createProgram({host, options, rootNames: host.inputFiles});
-      const compiler = new NgCompiler(
+      const compiler = makeFreshCompiler(
           host, options, program, new ReusedProgramStrategy(program, host, options, []),
           new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
           /* usePoisonedData */ false);
@@ -101,7 +111,7 @@ runInEachFileSystem(() => {
         const program = ts.createProgram({host, options, rootNames: host.inputFiles});
         const CmpA = getClass(getSourceFileOrError(program, cmpAFile), 'CmpA');
         const CmpC = getClass(getSourceFileOrError(program, cmpCFile), 'CmpC');
-        const compiler = new NgCompiler(
+        const compiler = makeFreshCompiler(
             host, options, program, new ReusedProgramStrategy(program, host, options, []),
             new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
             /* usePoisonedData */ false);
@@ -153,7 +163,7 @@ runInEachFileSystem(() => {
         const program = ts.createProgram({host, options, rootNames: host.inputFiles});
         const CmpA = getClass(getSourceFileOrError(program, cmpAFile), 'CmpA');
         const CmpC = getClass(getSourceFileOrError(program, cmpCFile), 'CmpC');
-        const compiler = new NgCompiler(
+        const compiler = makeFreshCompiler(
             host, options, program, new ReusedProgramStrategy(program, host, options, []),
             new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
             /* usePoisonedData */ false);
@@ -187,7 +197,7 @@ runInEachFileSystem(() => {
         const host = NgCompilerHost.wrap(baseHost, [cmpAFile], options, /* oldProgram */ null);
         const program = ts.createProgram({host, options, rootNames: host.inputFiles});
         const CmpA = getClass(getSourceFileOrError(program, cmpAFile), 'CmpA');
-        const compiler = new NgCompiler(
+        const compiler = makeFreshCompiler(
             host, options, program, new ReusedProgramStrategy(program, host, options, []),
             new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
             /* usePoisonedData */ false);
@@ -223,7 +233,7 @@ runInEachFileSystem(() => {
         const host = NgCompilerHost.wrap(baseHost, [cmpAFile], options, /* oldProgram */ null);
         const program = ts.createProgram({host, options, rootNames: host.inputFiles});
         const CmpA = getClass(getSourceFileOrError(program, cmpAFile), 'CmpA');
-        const compiler = new NgCompiler(
+        const compiler = makeFreshCompiler(
             host, options, program, new ReusedProgramStrategy(program, host, options, []),
             new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
             /* usePoisonedData */ false);
@@ -255,7 +265,7 @@ runInEachFileSystem(() => {
         const baseHost = new NgtscCompilerHost(getFileSystem(), options);
         const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, /* oldProgram */ null);
         const program = ts.createProgram({host, options, rootNames: host.inputFiles});
-        const compiler = new NgCompiler(
+        const compiler = makeFreshCompiler(
             host, options, program, new ReusedProgramStrategy(program, host, options, []),
             new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
             /* usePoisonedData */ false);
