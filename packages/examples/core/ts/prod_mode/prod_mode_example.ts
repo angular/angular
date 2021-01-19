@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// #docregion enableProdMode
 import {enableProdMode, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -20,4 +19,3 @@ export class AppModule {
 }
 
 platformBrowserDynamic().bootstrapModule(AppModule);
-// #enddocregion

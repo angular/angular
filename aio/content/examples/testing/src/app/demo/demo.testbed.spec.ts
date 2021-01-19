@@ -37,7 +37,6 @@ describe('demo (with TestBed):', () => {
 
   ////////  Service Tests  /////////////
 
-  // #docregion ValueService
   describe('ValueService', () => {
 
     // #docregion value-service-before-each
@@ -92,7 +91,6 @@ describe('demo (with TestBed):', () => {
       expect(value).toBe('promise value');
     }));
   });
-  // #enddocregion ValueService
 
   describe('MasterService', () => {
     // #docregion master-service-before-each
@@ -232,8 +230,6 @@ describe('demo (with TestBed):', () => {
       expect(rowComp.hero.name).toBe(heroName, 'component.hero');
     });
 
-
-    // #docregion ButtonComp
     it('should support clicking a button', () => {
       const fixture = TestBed.createComponent(LightswitchComponent);
       const btn = fixture.debugElement.query(By.css('button'));
@@ -246,7 +242,6 @@ describe('demo (with TestBed):', () => {
       fixture.detectChanges();
       expect(span.textContent).toMatch(/is on/i, 'after click');
     });
-    // #enddocregion ButtonComp
 
     // ngModel is async so we must wait for it with promise-based `whenStable`
     it('should support entering text in input box (ngModel)', waitForAsync(() => {
@@ -324,7 +319,6 @@ describe('demo (with TestBed):', () => {
         `After ngModel updates the model, comp.name should be ${expectedNewName} `);
     }));
 
-    // #docregion ReversePipeComp
     it('ReversePipeComp should reverse the input text', fakeAsync(() => {
       const inputText = 'the quick brown fox.';
       const expectedText = '.xof nworb kciuq eht';
@@ -350,7 +344,6 @@ describe('demo (with TestBed):', () => {
       expect(span.textContent).toBe(expectedText, 'output span');
       expect(comp.text).toBe(inputText, 'component.text');
     }));
-    // #enddocregion ReversePipeComp
 
     // Use this technique to find attached directives of any kind
     it('can examine attached directives and listeners', () => {
@@ -367,7 +360,6 @@ describe('demo (with TestBed):', () => {
       expect(inputEl.listeners.length).toBeGreaterThan(2, 'several listeners attached');
     });
 
-    // #docregion dom-attributes
     it('BankAccountComponent should set attributes, styles, classes, and properties', () => {
       const fixture = TestBed.createComponent(BankAccountParentComponent);
       fixture.detectChanges();
@@ -388,14 +380,11 @@ describe('demo (with TestBed):', () => {
 
       expect(el.styles.color).toBe(comp.color, 'color style');
       expect(el.styles.width).toBe(comp.width + 'px', 'width style');
-      // #enddocregion dom-attributes
 
       // Removed on 12/02/2016 when ceased public discussion of the `Renderer`. Revive in future?
       // expect(el.properties['customProperty']).toBe(true, 'customProperty');
 
-      // #docregion dom-attributes
     });
-    // #enddocregion dom-attributes
 
 
   });
@@ -628,7 +617,7 @@ describe('demo (with TestBed):', () => {
 
       child.childValue = 'bar';
 
-      return new Promise(resolve => {
+      return new Promise<void>(resolve => {
         // Wait one JS engine turn!
         setTimeout(() => resolve(), 0);
       })

@@ -14,7 +14,6 @@ import localeFr from './locale-fr';
 // registering french data
 registerLocaleData(localeFr);
 
-// #docregion DatePipe
 @Component({
   selector: 'date-pipe',
   template: `<div>
@@ -44,9 +43,6 @@ export class DatePipeComponent {
   today = Date.now();
   fixedTimezone = '2015-06-15T09:03:01+0900';
 }
-// #enddocregion
-
-// #docregion DeprecatedDatePipe
 @Component({
   selector: 'deprecated-date-pipe',
   template: `<div>
@@ -66,4 +62,3 @@ export class DatePipeComponent {
 export class DeprecatedDatePipeComponent {
   today = Date.now();
 }
-// #enddocregion

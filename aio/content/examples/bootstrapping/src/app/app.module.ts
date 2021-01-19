@@ -1,6 +1,4 @@
 // #docplaster
-// #docregion whole-ngmodule
-
 // imports
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
@@ -32,5 +30,3 @@ import { ItemDirective } from './item.directive';
   bootstrap: [AppComponent]
 })
 export class AppModule { }
-
-// #enddocregion whole-ngmodule

@@ -6,7 +6,7 @@ import { Hero } from './hero';
 import { HeroService } from './hero.service';
 
 /////// HeroesBaseComponent /////
-// #docregion heroes-base, injection
+// #docregion heroes-base
 @Component({
   selector: 'app-unsorted-heroes',
   template: `<div *ngFor="let hero of heroes">{{hero.name}}</div>`,
@@ -14,7 +14,6 @@ import { HeroService } from './hero.service';
 })
 export class HeroesBaseComponent implements OnInit {
   constructor(private heroService: HeroService) { }
-// #enddocregion injection
 
   heroes: Array<Hero>;
 
@@ -26,9 +25,8 @@ export class HeroesBaseComponent implements OnInit {
   // Post-process heroes in derived class override.
   protected afterGetHeroes() {}
 
-// #docregion injection
 }
-// #enddocregion heroes-base,injection
+// #enddocregion heroes-base
 
 /////// SortedHeroesComponent /////
 // #docregion sorted-heroes

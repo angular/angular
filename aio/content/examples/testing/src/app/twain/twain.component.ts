@@ -6,7 +6,6 @@ import { catchError, startWith } from 'rxjs/operators';
 
 import { TwainService } from './twain.service';
 
-// #docregion component
 @Component({
   selector: 'twain-quote',
   // #docregion template
@@ -45,4 +44,3 @@ export class TwainComponent implements OnInit {
   }
 
 }
-// #enddocregion component

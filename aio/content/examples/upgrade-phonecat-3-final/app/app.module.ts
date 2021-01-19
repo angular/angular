@@ -1,4 +1,3 @@
-// #docregion
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -27,8 +26,6 @@ import { PhoneListComponent } from './phone-list/phone-list.component';
   providers: [
     Phone
   ],
-  // #docregion bootstrap
   bootstrap: [ AppComponent ]
-  // #enddocregion bootstrap
 })
 export class AppModule {}
