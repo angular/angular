@@ -87,6 +87,13 @@ export function setIncludeViewProviders(v: boolean): boolean {
 const BLOOM_SIZE = 256;
 const BLOOM_MASK = BLOOM_SIZE - 1;
 
+/**
+ * The number of bits that is represented by a single bloom bucket. JS bit operations are 32 bits,
+ * so each bucket represents 32 distinct tokens which accounts for log2(32) = 5 bits of a bloom hash
+ * number.
+ */
+const BLOOM_BUCKET_BITS = 5;
+
 /** Counter used to generate unique IDs for directives. */
 let nextNgElementId = 0;
 
@@ -116,27 +123,17 @@ export function bloomAdd(
 
   // We only have BLOOM_SIZE (256) slots in our bloom filter (8 buckets * 32 bits each),
   // so all unique IDs must be modulo-ed into a number from 0 - 255 to fit into the filter.
-  const bloomBit = id & BLOOM_MASK;
+  const bloomHash = id & BLOOM_MASK;
 
   // Create a mask that targets the specific bit associated with the directive.
   // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
   // to bit positions 0 - 31 in a 32 bit integer.
-  const mask = 1 << bloomBit;
+  const mask = 1 << bloomHash;
 
-  // Use the raw bloomBit number to determine which bloom filter bucket we should check
-  // e.g: bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127], etc
-  const b7 = bloomBit & 0x80;
-  const b6 = bloomBit & 0x40;
-  const b5 = bloomBit & 0x20;
-  const tData = tView.data as number[];
-
-  if (b7) {
-    b6 ? (b5 ? (tData[injectorIndex + 7] |= mask) : (tData[injectorIndex + 6] |= mask)) :
-         (b5 ? (tData[injectorIndex + 5] |= mask) : (tData[injectorIndex + 4] |= mask));
-  } else {
-    b6 ? (b5 ? (tData[injectorIndex + 3] |= mask) : (tData[injectorIndex + 2] |= mask)) :
-         (b5 ? (tData[injectorIndex + 1] |= mask) : (tData[injectorIndex] |= mask));
-  }
+  // Each bloom bucket in `tData` represents `BLOOM_BUCKET_BITS` number of bits of `bloomHash`.
+  // Any bits in `bloomHash` beyond `BLOOM_BUCKET_BITS` indicate the bucket offset that the mask
+  // should be written to.
+  (tView.data as number[])[injectorIndex + (bloomHash >> BLOOM_BUCKET_BITS)] |= mask;
 }
 
 /**
@@ -675,22 +672,11 @@ export function bloomHasToken(bloomHash: number, injectorIndex: number, injector
   // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
   // to bit positions 0 - 31 in a 32 bit integer.
   const mask = 1 << bloomHash;
-  const b7 = bloomHash & 0x80;
-  const b6 = bloomHash & 0x40;
-  const b5 = bloomHash & 0x20;
 
-  // Our bloom filter size is 256 bits, which is eight 32-bit bloom filter buckets:
-  // bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127], etc.
-  // Get the bloom filter value from the appropriate bucket based on the directive's bloomBit.
-  let value: number;
-
-  if (b7) {
-    value = b6 ? (b5 ? injectorView[injectorIndex + 7] : injectorView[injectorIndex + 6]) :
-                 (b5 ? injectorView[injectorIndex + 5] : injectorView[injectorIndex + 4]);
-  } else {
-    value = b6 ? (b5 ? injectorView[injectorIndex + 3] : injectorView[injectorIndex + 2]) :
-                 (b5 ? injectorView[injectorIndex + 1] : injectorView[injectorIndex]);
-  }
+  // Each bloom bucket in `injectorView` represents `BLOOM_BUCKET_BITS` number of bits of
+  // `bloomHash`. Any bits in `bloomHash` beyond `BLOOM_BUCKET_BITS` indicate the bucket offset
+  // that should be used.
+  const value = injectorView[injectorIndex + (bloomHash >> BLOOM_BUCKET_BITS)];
 
   // If the bloom filter value has the bit corresponding to the directive's bloomBit flipped on,
   // this injector is a potential match.
