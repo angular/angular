@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode, getParentClassDeclaration} from './ts_utils';
-import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateMappingAtShimLocation, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
+import {flatMap, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromShimLocation, getTextSpanOfNode, isDollarEvent, isTypeScriptFile, TemplateInfo, toTextSpan} from './utils';
 
 interface DefinitionMeta {
   node: AST|TmplAstNode;
@@ -102,7 +102,7 @@ export class DefinitionBuilder {
         if (symbol.declaration !== node) {
           const shimLocation = symbol.kind === SymbolKind.Variable ? symbol.localVarLocation :
                                                                      symbol.referenceVarLocation;
-          const mapping = getTemplateMappingAtShimLocation(
+          const mapping = getTemplateLocationFromShimLocation(
               this.compiler.getTemplateTypeChecker(), shimLocation.shimPath,
               shimLocation.positionInShimFile);
           if (mapping !== null) {

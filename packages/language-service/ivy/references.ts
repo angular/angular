@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
 import {findTightestNode} from './ts_utils';
-import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateMappingAtShimLocation, isWithin, TemplateInfo, toTextSpan} from './utils';
+import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateInfoAtPosition, getTemplateLocationFromShimLocation, isWithin, TemplateInfo, toTextSpan} from './utils';
 
 interface FilePosition {
   fileName: string;
@@ -376,7 +376,7 @@ export class ReferencesAndRenameBuilder {
     // TODO(atscott): Determine how to consistently resolve paths. i.e. with the project
     // serverHost or LSParseConfigHost in the adapter. We should have a better defined way to
     // normalize paths.
-    const mapping = getTemplateMappingAtShimLocation(
+    const mapping = getTemplateLocationFromShimLocation(
         templateTypeChecker, absoluteFrom(shimDocumentSpan.fileName),
         shimDocumentSpan.textSpan.start);
     if (mapping === null) {
