@@ -20,12 +20,10 @@ export function shallowEqualArrays(a: any[], b: any[]): boolean {
 }
 
 export function shallowEqual(a: Params, b: Params): boolean {
-  // Casting Object.keys return values to include `undefined` as there are some cases
-  // in IE 11 where this can happen. Cannot provide a test because the behavior only
-  // exists in certain circumstances in IE 11, therefore doing this cast ensures the
-  // logic is correct for when this edge case is hit.
-  const k1 = Object.keys(a) as string[] | undefined;
-  const k2 = Object.keys(b) as string[] | undefined;
+  // While `undefined` should never be possible, it would sometimes be the case in IE 11
+  // and pre-chromium Edge. The check below accounts for this edge case.
+  const k1 = a ? Object.keys(a) : undefined;
+  const k2 = b ? Object.keys(b) : undefined;
   if (!k1 || !k2 || k1.length != k2.length) {
     return false;
   }
