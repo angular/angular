@@ -132,3 +132,25 @@ export function newTrustedFunctionForDev(...args: string[]): Function {
   // the implementation of this function can be simplified to:
   // return new Function(...args.map(a => trustedScriptFromString(a)));
 }
+
+/**
+ * Returns true if `value` is a TrustedHTML.
+ */
+export function isTrustedHTML(value: unknown): value is TrustedHTML {
+  return global.trustedTypes && (global.trustedTypes as TrustedTypePolicyFactory).isHTML(value);
+}
+
+/**
+ * Returns true if `value` is a TrustedScript.
+ */
+export function isTrustedScript(value: unknown): value is TrustedScript {
+  return global.trustedTypes && (global.trustedTypes as TrustedTypePolicyFactory).isScript(value);
+}
+
+/**
+ * Returns true if `value` is a TrustedScriptURL.
+ */
+export function isTrustedScriptURL(value: unknown): value is TrustedScriptURL {
+  return global.trustedTypes &&
+      (global.trustedTypes as TrustedTypePolicyFactory).isScriptURL(value);
+}
