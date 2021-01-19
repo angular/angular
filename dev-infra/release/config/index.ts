@@ -34,6 +34,8 @@ export interface ReleaseConfig {
    */
   // TODO: Remove this in favor of a canonical changelog format across the Angular organization.
   extractReleaseNotesPattern?: (version: semver.SemVer) => RegExp;
+  /** The list of github labels to add to the release PRs. */
+  releasePrLabels?: string[];
 }
 
 /** Configuration for releases in the dev-infra configuration. */
