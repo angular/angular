@@ -36,3 +36,55 @@ export async function setNpmTagForPackage(
   }
   await spawnWithDebugOutput('npm', args, {mode: 'silent'});
 }
+
+/**
+ * Checks whether the user is currently logged into NPM.
+ * @returns Whether the user is currently logged into NPM.
+ */
+export async function npmIsLoggedIn(registryUrl: string|undefined): Promise<boolean> {
+  const args = ['whoami'];
+  // If a custom registry URL has been specified, add the `--registry` flag.
+  if (registryUrl !== undefined) {
+    args.push('--registry', registryUrl);
+  }
+  try {
+    await spawnWithDebugOutput('npm', args, {mode: 'silent'});
+  } catch (e) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Log into NPM at a provided registry.
+ * @throws With the process log output if the login fails.
+ */
+export async function npmLogin(registryUrl: string|undefined) {
+  const args = ['login', '--no-browser'];
+  // If a custom registry URL has been specified, add the `--registry` flag. The `--registry` flag
+  // must be spliced into the correct place in the command as npm expects it to be the flag
+  // immediately following the login subcommand.
+  if (registryUrl !== undefined) {
+    args.splice(1, 0, '--registry', registryUrl);
+  }
+  await spawnWithDebugOutput('npm', args);
+}
+
+/**
+ * Log out of NPM at a provided registry.
+ * @returns Whether the user was logged out of NPM.
+ */
+export async function npmLogout(registryUrl: string|undefined): Promise<boolean> {
+  const args = ['logout'];
+  // If a custom registry URL has been specified, add the `--registry` flag. The `--registry` flag
+  // must be spliced into the correct place in the command as npm expects it to be the flag
+  // immediately following the logout subcommand.
+  if (registryUrl !== undefined) {
+    args.splice(1, 0, '--registry', registryUrl);
+  }
+  try {
+    await spawnWithDebugOutput('npm', args, {mode: 'silent'});
+  } finally {
+    return npmIsLoggedIn(registryUrl);
+  }
+}

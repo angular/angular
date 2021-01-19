@@ -9,10 +9,11 @@
 import {ListChoiceOptions, prompt} from 'inquirer';
 
 import {GithubConfig} from '../../utils/config';
-import {error, info, log, red, yellow} from '../../utils/console';
+import {debug, error, info, log, promptConfirm, red, yellow} from '../../utils/console';
 import {GitClient} from '../../utils/git/index';
 import {ReleaseConfig} from '../config';
 import {ActiveReleaseTrains, fetchActiveReleaseTrains, nextBranchName} from '../versioning/active-release-trains';
+import {npmIsLoggedIn, npmLogin, npmLogout} from '../versioning/npm-publish';
 import {printActiveReleaseTrains} from '../versioning/print-active-trains';
 import {GithubRepoWithApi} from '../versioning/version-branches';
 
@@ -29,6 +30,8 @@ export enum CompletionState {
 export class ReleaseTool {
   /** Client for interacting with the Github API and the local Git command. */
   private _git = new GitClient(this._githubToken, {github: this._github}, this._projectRoot);
+  /** The previous git commit to return back to after the release tool runs. */
+  private previousGitBranchOrRevision = this._git.getCurrentBranchOrRevision();
 
   constructor(
       protected _config: ReleaseConfig, protected _github: GithubConfig,
@@ -46,6 +49,10 @@ export class ReleaseTool {
       return CompletionState.FATAL_ERROR;
     }
 
+    if (!await this._verifyNpmLoginState()) {
+      return CompletionState.MANUALLY_ABORTED;
+    }
+
     const {owner, name} = this._github;
     const repo: GithubRepoWithApi = {owner, name, api: this._git.github};
     const releaseTrains = await fetchActiveReleaseTrains(repo);
@@ -55,7 +62,6 @@ export class ReleaseTool {
     await printActiveReleaseTrains(releaseTrains, this._config);
 
     const action = await this._promptForReleaseAction(releaseTrains);
-    const previousGitBranchOrRevision = this._git.getCurrentBranchOrRevision();
 
     try {
       await action.perform();
@@ -70,10 +76,18 @@ export class ReleaseTool {
       }
       return CompletionState.FATAL_ERROR;
     } finally {
-      this._git.checkout(previousGitBranchOrRevision, true);
+      await this.cleanup();
     }
 
     return CompletionState.SUCCESS;
+  }
+
+  /** Run post release tool cleanups. */
+  private async cleanup(): Promise<void> {
+    // Return back to the git state from before the release tool ran.
+    this._git.checkout(this.previousGitBranchOrRevision, true);
+    // Ensure log out of NPM.
+    await npmLogout(this._config.publishRegistry);
   }
 
   /** Prompts the caretaker for a release action that should be performed. */
@@ -128,5 +142,29 @@ export class ReleaseTool {
       return false;
     }
     return true;
+  }
+
+  /**
+   * Verifies that the user is logged into NPM at the correct registry, if defined for the release.
+   * @returns a boolean indicating whether the user is logged into NPM.
+   */
+  private async _verifyNpmLoginState(): Promise<boolean> {
+    const registry = `NPM at the ${this._config.publishRegistry ?? 'default NPM'} registry`;
+    if (await npmIsLoggedIn(this._config.publishRegistry)) {
+      debug(`Already logged into ${registry}.`);
+      return true;
+    }
+    error(red(`  ✘   Not currently logged into ${registry}.`));
+    const shouldLogin = await promptConfirm('Would you like to log into NPM now?');
+    if (shouldLogin) {
+      debug('Starting NPM login.');
+      try {
+        await npmLogin(this._config.publishRegistry);
+      } catch {
+        return false;
+      }
+      return true;
+    }
+    return false;
   }
 }
