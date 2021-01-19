@@ -39,6 +39,11 @@
             "desc": "Angular Nation is a free private network created for Angular developers to network, collaborate, and ask questions.",
             "url": "https://www.angularnation.net/",
             "title": "Angular Nation"
+          },
+          "angular-builders": {
+            "desc": "A collection of Angular builders for your Angular projects",
+            "url": "https://angular-builders.dev/",
+            "title": "Angular Builders"
           }
         }
       },
