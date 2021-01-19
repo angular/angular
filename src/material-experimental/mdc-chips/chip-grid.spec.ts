@@ -12,7 +12,6 @@ import {
   TAB
 } from '@angular/cdk/keycodes';
 import {
-  createFakeEvent,
   createKeyboardEvent,
   dispatchEvent,
   dispatchFakeEvent,
@@ -216,7 +215,7 @@ describe('MDC-based MatChipGrid', () => {
           expect(chipGridInstance.focus).toHaveBeenCalled();
         });
 
-        it('should move focus to the last chip when the focused chip was deleted inside a' +
+        it('should move focus to the last chip when the focused chip was deleted inside a ' +
           'component with animations', fakeAsync(() => {
             fixture.destroy();
             TestBed.resetTestingModule();
@@ -602,7 +601,6 @@ describe('MDC-based MatChipGrid', () => {
 
   describe('with chip remove', () => {
     let chipGrid: MatChipGrid;
-    let chipElements: DebugElement[];
     let chipRemoveDebugElements: DebugElement[];
 
     beforeEach(() => {
@@ -610,7 +608,6 @@ describe('MDC-based MatChipGrid', () => {
       fixture.detectChanges();
 
       chipGrid = fixture.debugElement.query(By.directive(MatChipGrid))!.componentInstance;
-      chipElements = fixture.debugElement.queryAll(By.directive(MatChipRow));
       chipRemoveDebugElements = fixture.debugElement.queryAll(By.directive(MatChipRemove));
       chips = chipGrid._chips;
     });
@@ -621,12 +618,6 @@ describe('MDC-based MatChipGrid', () => {
       // Destroy the third focused chip by dispatching a bubbling click event on the
       // associated chip remove element.
       dispatchMouseEvent(chipRemoveDebugElements[2].nativeElement, 'click');
-      fixture.detectChanges();
-
-      const fakeEvent = createFakeEvent('transitionend');
-      (fakeEvent as any).propertyName = 'width';
-      chipElements[2].nativeElement.dispatchEvent(fakeEvent);
-
       fixture.detectChanges();
 
       expect(chips.toArray()[2].value).not.toBe(2, 'Expected the third chip to be removed.');
@@ -771,9 +762,10 @@ describe('MDC-based MatChipGrid', () => {
 
       dispatchFakeEvent(nativeChips[0], 'focusout');
       fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
       zone.simulateZoneExit();
       fixture.detectChanges();
-      tick();
       expect(formField.classList).not.toContain('mat-focused');
     }));
 
@@ -786,10 +778,6 @@ describe('MDC-based MatChipGrid', () => {
       chipEls.forEach(chip => {
         chip.focus();
         dispatchKeyboardEvent(chip, 'keydown', BACKSPACE);
-        fixture.detectChanges();
-        const fakeEvent = createFakeEvent('transitionend');
-        (fakeEvent as any).propertyName = 'width';
-        chip.dispatchEvent(fakeEvent);
         fixture.detectChanges();
         tick();
       });
