@@ -46,6 +46,8 @@ async function handler(args: Arguments<ReleasePublishOptions>) {
       info(green(`Release action has completed successfully.`));
       break;
   }
+
+  await task.cleanup();
 }
 
 /** CLI command module for publishing a release. */
