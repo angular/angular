@@ -5016,6 +5016,159 @@ const ReleaseBuildCommandModule = {
  * found in the LICENSE file at https://angular.io/license
  */
 /**
+ * Spawns a given command with the specified arguments inside a shell. All process stdout
+ * output is captured and returned as resolution on completion. Depending on the chosen
+ * output mode, stdout/stderr output is also printed to the console, or only on error.
+ *
+ * @returns a Promise resolving with captured stdout on success. The promise
+ *   rejects on command failure.
+ */
+function spawnWithDebugOutput(command, args, options) {
+    if (options === void 0) { options = {}; }
+    return new Promise(function (resolve, reject) {
+        var commandText = command + " " + args.join(' ');
+        var outputMode = options.mode;
+        debug("Executing command: " + commandText);
+        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: ['inherit', 'pipe', 'pipe'] }));
+        var logOutput = '';
+        var stdout = '';
+        // Capture the stdout separately so that it can be passed as resolve value.
+        // This is useful if commands return parsable stdout.
+        childProcess.stderr.on('data', function (message) {
+            logOutput += message;
+            // If console output is enabled, print the message directly to the stderr. Note that
+            // we intentionally print all output to stderr as stdout should not be polluted.
+            if (outputMode === undefined || outputMode === 'enabled') {
+                process.stderr.write(message);
+            }
+        });
+        childProcess.stdout.on('data', function (message) {
+            stdout += message;
+            logOutput += message;
+            // If console output is enabled, print the message directly to the stderr. Note that
+            // we intentionally print all output to stderr as stdout should not be polluted.
+            if (outputMode === undefined || outputMode === 'enabled') {
+                process.stderr.write(message);
+            }
+        });
+        childProcess.on('exit', function (status, signal) {
+            var exitDescription = status !== null ? "exit code \"" + status + "\"" : "signal \"" + signal + "\"";
+            var printFn = outputMode === 'on-error' ? error : debug;
+            printFn("Command \"" + commandText + "\" completed with " + exitDescription + ".");
+            printFn("Process output: \n" + logOutput);
+            // On success, resolve the promise. Otherwise reject with the captured stderr
+            // and stdout log output if the output mode was set to `silent`.
+            if (status === 0) {
+                resolve({ stdout: stdout });
+            }
+            else {
+                reject(outputMode === 'silent' ? logOutput : undefined);
+            }
+        });
+    });
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * Runs NPM publish within a specified package directory.
+ * @throws With the process log output if the publish failed.
+ */
+function runNpmPublish(packagePath, distTag, registryUrl) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const args = ['publish', '--access', 'public', '--tag', distTag];
+        // If a custom registry URL has been specified, add the `--registry` flag.
+        if (registryUrl !== undefined) {
+            args.push('--registry', registryUrl);
+        }
+        yield spawnWithDebugOutput('npm', args, { cwd: packagePath, mode: 'silent' });
+    });
+}
+/**
+ * Sets the NPM tag to the specified version for the given package.
+ * @throws With the process log output if the tagging failed.
+ */
+function setNpmTagForPackage(packageName, distTag, version, registryUrl) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const args = ['dist-tag', 'add', `${packageName}@${version}`, distTag];
+        // If a custom registry URL has been specified, add the `--registry` flag.
+        if (registryUrl !== undefined) {
+            args.push('--registry', registryUrl);
+        }
+        yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
+    });
+}
+/**
+ * Checks whether the user is currently logged into NPM.
+ * @returns Whether the user is currently logged into NPM.
+ */
+function npmIsLoggedIn(registryUrl) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const args = ['whoami'];
+        // If a custom registry URL has been specified, add the `--registry` flag.
+        if (registryUrl !== undefined) {
+            args.push('--registry', registryUrl);
+        }
+        try {
+            yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
+        }
+        catch (e) {
+            return false;
+        }
+        return true;
+    });
+}
+/**
+ * Log into NPM at a provided registry.
+ * @throws With the process log output if the login fails.
+ */
+function npmLogin(registryUrl) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const args = ['login', '--no-browser'];
+        // If a custom registry URL has been specified, add the `--registry` flag. The `--registry` flag
+        // must be spliced into the correct place in the command as npm expects it to be the flag
+        // immediately following the login subcommand.
+        if (registryUrl !== undefined) {
+            args.splice(1, 0, '--registry', registryUrl);
+        }
+        yield spawnWithDebugOutput('npm', args);
+    });
+}
+/**
+ * Log out of NPM at a provided registry.
+ * @returns Whether the user was logged out of NPM.
+ */
+function npmLogout(registryUrl) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        const args = ['logout'];
+        // If a custom registry URL has been specified, add the `--registry` flag. The `--registry` flag
+        // must be spliced into the correct place in the command as npm expects it to be the flag
+        // immediately following the logout subcommand.
+        if (registryUrl !== undefined) {
+            args.splice(1, 0, '--registry', registryUrl);
+        }
+        try {
+            yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
+        }
+        finally {
+            return npmIsLoggedIn(registryUrl);
+        }
+    });
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
  * Prints the active release trains to the console.
  * @params active Active release trains that should be printed.
  * @params config Release configuration used for querying NPM on published versions.
@@ -5113,102 +5266,6 @@ class FatalReleaseActionError extends Error {
 function semverInc(version, release, identifier) {
     const clone = new semver.SemVer(version.version);
     return clone.inc(release, identifier);
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/**
- * Spawns a given command with the specified arguments inside a shell. All process stdout
- * output is captured and returned as resolution on completion. Depending on the chosen
- * output mode, stdout/stderr output is also printed to the console, or only on error.
- *
- * @returns a Promise resolving with captured stdout on success. The promise
- *   rejects on command failure.
- */
-function spawnWithDebugOutput(command, args, options) {
-    if (options === void 0) { options = {}; }
-    return new Promise(function (resolve, reject) {
-        var commandText = command + " " + args.join(' ');
-        var outputMode = options.mode;
-        debug("Executing command: " + commandText);
-        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: ['inherit', 'pipe', 'pipe'] }));
-        var logOutput = '';
-        var stdout = '';
-        // Capture the stdout separately so that it can be passed as resolve value.
-        // This is useful if commands return parsable stdout.
-        childProcess.stderr.on('data', function (message) {
-            logOutput += message;
-            // If console output is enabled, print the message directly to the stderr. Note that
-            // we intentionally print all output to stderr as stdout should not be polluted.
-            if (outputMode === undefined || outputMode === 'enabled') {
-                process.stderr.write(message);
-            }
-        });
-        childProcess.stdout.on('data', function (message) {
-            stdout += message;
-            logOutput += message;
-            // If console output is enabled, print the message directly to the stderr. Note that
-            // we intentionally print all output to stderr as stdout should not be polluted.
-            if (outputMode === undefined || outputMode === 'enabled') {
-                process.stderr.write(message);
-            }
-        });
-        childProcess.on('exit', function (status, signal) {
-            var exitDescription = status !== null ? "exit code \"" + status + "\"" : "signal \"" + signal + "\"";
-            var printFn = outputMode === 'on-error' ? error : debug;
-            printFn("Command \"" + commandText + "\" completed with " + exitDescription + ".");
-            printFn("Process output: \n" + logOutput);
-            // On success, resolve the promise. Otherwise reject with the captured stderr
-            // and stdout log output if the output mode was set to `silent`.
-            if (status === 0) {
-                resolve({ stdout: stdout });
-            }
-            else {
-                reject(outputMode === 'silent' ? logOutput : undefined);
-            }
-        });
-    });
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/**
- * Runs NPM publish within a specified package directory.
- * @throws With the process log output if the publish failed.
- */
-function runNpmPublish(packagePath, distTag, registryUrl) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const args = ['publish', '--access', 'public', '--tag', distTag];
-        // If a custom registry URL has been specified, add the `--registry` flag.
-        if (registryUrl !== undefined) {
-            args.push('--registry', registryUrl);
-        }
-        yield spawnWithDebugOutput('npm', args, { cwd: packagePath, mode: 'silent' });
-    });
-}
-/**
- * Sets the NPM tag to the specified version for the given package.
- * @throws With the process log output if the tagging failed.
- */
-function setNpmTagForPackage(packageName, distTag, version, registryUrl) {
-    return tslib.__awaiter(this, void 0, void 0, function* () {
-        const args = ['dist-tag', 'add', `${packageName}@${version}`, distTag];
-        // If a custom registry URL has been specified, add the `--registry` flag.
-        if (registryUrl !== undefined) {
-            args.push('--registry', registryUrl);
-        }
-        yield spawnWithDebugOutput('npm', args, { mode: 'silent' });
-    });
 }
 
 /**
@@ -6383,6 +6440,8 @@ class ReleaseTool {
         this._projectRoot = _projectRoot;
         /** Client for interacting with the Github API and the local Git command. */
         this._git = new GitClient(this._githubToken, { github: this._github }, this._projectRoot);
+        /** The previous git commit to return back to after the release tool runs. */
+        this.previousGitBranchOrRevision = this._git.getCurrentBranchOrRevision();
     }
     /** Runs the interactive release tool. */
     run() {
@@ -6395,6 +6454,9 @@ class ReleaseTool {
             if (!(yield this._verifyNoUncommittedChanges()) || !(yield this._verifyRunningFromNextBranch())) {
                 return CompletionState.FATAL_ERROR;
             }
+            if (!(yield this._verifyNpmLoginState())) {
+                return CompletionState.MANUALLY_ABORTED;
+            }
             const { owner, name } = this._github;
             const repo = { owner, name, api: this._git.github };
             const releaseTrains = yield fetchActiveReleaseTrains(repo);
@@ -6402,7 +6464,6 @@ class ReleaseTool {
             // the current project branching state without switching context.
             yield printActiveReleaseTrains(releaseTrains, this._config);
             const action = yield this._promptForReleaseAction(releaseTrains);
-            const previousGitBranchOrRevision = this._git.getCurrentBranchOrRevision();
             try {
                 yield action.perform();
             }
@@ -6418,9 +6479,18 @@ class ReleaseTool {
                 return CompletionState.FATAL_ERROR;
             }
             finally {
-                this._git.checkout(previousGitBranchOrRevision, true);
+                yield this.cleanup();
             }
             return CompletionState.SUCCESS;
+        });
+    }
+    /** Run post release tool cleanups. */
+    cleanup() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            // Return back to the git state from before the release tool ran.
+            this._git.checkout(this.previousGitBranchOrRevision, true);
+            // Ensure log out of NPM.
+            yield npmLogout(this._config.publishRegistry);
         });
     }
     /** Prompts the caretaker for a release action that should be performed. */
@@ -6471,6 +6541,33 @@ class ReleaseTool {
                 return false;
             }
             return true;
+        });
+    }
+    /**
+     * Verifies that the user is logged into NPM at the correct registry, if defined for the release.
+     * @returns a boolean indicating whether the user is logged into NPM.
+     */
+    _verifyNpmLoginState() {
+        var _a;
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            const registry = `NPM at the ${(_a = this._config.publishRegistry) !== null && _a !== void 0 ? _a : 'default NPM'} registry`;
+            if (yield npmIsLoggedIn(this._config.publishRegistry)) {
+                debug(`Already logged into ${registry}.`);
+                return true;
+            }
+            error(red(`  ✘   Not currently logged into ${registry}.`));
+            const shouldLogin = yield promptConfirm('Would you like to log into NPM now?');
+            if (shouldLogin) {
+                debug('Starting NPM login.');
+                try {
+                    yield npmLogin(this._config.publishRegistry);
+                }
+                catch (_b) {
+                    return false;
+                }
+                return true;
+            }
+            return false;
         });
     }
 }
