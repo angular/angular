@@ -32,7 +32,7 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
         silent = True,
         sourcemap = "false",
         entry_point = test_entry_point,
-        config_file = "//packages/zone.js:rollup-es5.config.js",
+        config_file = "//packages/zone.js:rollup.config.js",
         deps = [
             ":" + name + "_test",
             "@npm//rollup-plugin-commonjs",

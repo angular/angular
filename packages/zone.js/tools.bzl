@@ -3,11 +3,7 @@
 load("//tools:defaults.bzl", "rollup_bundle")
 
 def zone_rollup_bundle(module_name, entry_point, rollup_config):
-    config_file = ""
-    if rollup_config["rollup"] == "global-es2015":
-        config_file = "//packages/zone.js:rollup-es5_global-es2015.config.js"
-    if rollup_config["rollup"] == "es5":
-        config_file = "//packages/zone.js:rollup-es5.config.js"
+    config_file = "//packages/zone.js:rollup.config.js"
     rollup_bundle(
         name = module_name + "-rollup",
         config_file = config_file,
