@@ -196,6 +196,11 @@
               "url": "guide/inputs-outputs",
               "title": "Inputs and Outputs",
               "tooltip": "Introductory guide to sharing data between parent and child directives or components."
+            },
+            {
+              "url": "guide/svg-in-templates",
+              "title": "SVG as templates",
+              "tooltip": "Learn how to use SVGs as templates for Angular applications."
             }
           ]
         },
