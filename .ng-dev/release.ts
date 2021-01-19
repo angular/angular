@@ -4,6 +4,7 @@ import {ReleaseConfig} from '../dev-infra/release/config';
 
 /** Configuration for the `ng-dev release` command. */
 export const release: ReleaseConfig = {
+  publishRegistry: 'https://wombat-dressing-room.appspot.com',
   npmPackages: [
     '@angular/animations',
     '@angular/bazel',
