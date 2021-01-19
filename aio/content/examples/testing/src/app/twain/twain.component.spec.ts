@@ -161,7 +161,6 @@ describe('TwainComponent', () => {
     });
     // #enddocregion spy-done-test
 
-    // #docregion async-error-test
     it('should display error when TwainService fails', fakeAsync(() => {
          // tell spy to return an async error observable
          getQuoteSpy.and.returnValue(asyncError<string>('TwainService test failure'));
@@ -173,6 +172,5 @@ describe('TwainComponent', () => {
          expect(errorMessage()).toMatch(/test failure/, 'should display error');
          expect(quoteEl.textContent).toBe('...', 'should show placeholder');
        }));
-    // #enddocregion async-error-test
   });
 });

@@ -1,5 +1,4 @@
 <h3>Heroes</h3>
-<!-- #docregion add -->
 <div>
   <label>Hero name:
     <input #heroName />
@@ -12,9 +11,7 @@
     search
   </button>
 </div>
-<!-- #enddocregion add -->
 
-<!-- #docregion list -->
 <ul class="heroes">
   <li *ngFor="let hero of heroes">
     <a (click)="edit(hero)">
@@ -23,10 +20,7 @@
       <input *ngIf="hero===editHero" [(ngModel)]="hero.name"
         (blur)="update()" (keyup.enter)="update()">
     </a>
-    <!-- #docregion delete -->
     <button class="delete" title="delete hero"
     (click)="delete(hero)">x</button>
-    <!-- #enddocregion delete -->
   </li>
 </ul>
-<!-- #enddocregion list -->

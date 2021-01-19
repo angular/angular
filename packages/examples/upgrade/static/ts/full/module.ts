@@ -26,7 +26,6 @@ export class TextFormatter {
 }
 
 // #enddocregion
-// #docregion Angular Stuff
 // #docregion ng2-heroes
 // This Angular component will be "downgraded" to be used in AngularJS
 @Component({
@@ -120,14 +119,10 @@ export class Ng2AppModule {
 }
 // #enddocregion bootstrap-ng1
 // #enddocregion ng2-module
-// #enddocregion
 
 
-// #docregion Angular 1 Stuff
-// #docregion ng1-module
 // This Angular 1 module represents the AngularJS pieces of the application
 export const ng1AppModule: ng.IModule = angular.module('ng1AppModule', []);
-// #enddocregion
 
 // #docregion ng1-hero
 // This AngularJS component will be "upgraded" to be used in Angular
@@ -177,7 +172,6 @@ ng1AppModule.component('exampleApp', {
             <p class="extra">There are {{ $ctrl.heroesService.heroes.length }} heroes.</p>
           </ng2-heroes>`
 });
-// #enddocregion
 // #enddocregion
 
 

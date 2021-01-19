@@ -48,19 +48,3 @@ export class NumberPipeComponent {
   e: number = 2.718281828459045;
 }
 // #enddocregion
-
-// #docregion DeprecatedNumberPipe
-@Component({
-  selector: 'deprecated-number-pipe',
-  template: `<div>
-    <p>e (no formatting): {{e}}</p>
-    <p>e (3.1-5): {{e | number:'3.1-5'}}</p>
-    <p>pi (no formatting): {{pi}}</p>
-    <p>pi (3.5-5): {{pi | number:'3.5-5'}}</p>
-  </div>`
-})
-export class DeprecatedNumberPipeComponent {
-  pi: number = 3.141592;
-  e: number = 2.718281828459045;
-}
-// #enddocregion

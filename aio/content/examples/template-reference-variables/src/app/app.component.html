@@ -16,10 +16,8 @@
 </div>
 
 <div>
-  <!-- #docregion ref-fax -->
   <input ref-fax placeholder="fax number" />
   <button (click)="callFax(fax.value)">Fax</button>
-  <!-- #enddocregion ref-fax -->
 </div>
 
 <hr />
@@ -84,11 +82,9 @@ not work. The value to the right is empty and changing the
 value of the input will have no effect. -->
 
 <div class="example">
-  <!-- #docregion template-ref-vars-scope2 -->
   <input *ngIf="true" #ref2 type="text" [(ngModel)]="secondExample" />
   <!-- <span>Value: {{ ref2?.value }}</span> -->
   <!-- uncomment the above and the app breaks -->
-  <!-- #enddocregion template-ref-vars-scope2 -->
 </div>
 
 <p>Here's the desugared syntax:</p>

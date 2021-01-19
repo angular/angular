@@ -35,7 +35,6 @@ export function provideTheParent
 
 
 ///////// C - Child //////////
-// #docregion carol
 const templateC = `
   <div class="c">
     <h3>{{name}}</h3>
@@ -54,7 +53,6 @@ export class CarolComponent {
   // #enddocregion carol-ctor
 }
 // #enddocregion carol-class
-// #enddocregion carol
 
 @Component({
   selector: 'chris',
@@ -132,7 +130,7 @@ export class BethComponent implements Parent {
 
 ///////// A - Grandparent //////
 
-// #docregion alex, alex-1
+// #docregion alex-1
 @Component({
   selector: 'alex',
   template: `
@@ -157,11 +155,10 @@ export class AlexComponent extends Base
 {
   name = 'Alex';
 }
-// #enddocregion alex, alex-1
+// #enddocregion alex-1
 
 /////
 
-// #docregion alice
 @Component({
   selector: 'alice',
   template: `
@@ -182,7 +179,6 @@ export class AliceComponent implements Parent
 {
   name = 'Alice';
 }
-// #enddocregion alice
 
 //////  Cathy ///////////
 /**

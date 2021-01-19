@@ -16,9 +16,7 @@ import { HEROES } from '../mock-heroes';
 // #docregion component
 export class HeroesComponent implements OnInit {
 
-  // #docregion heroes
   heroes = HEROES;
-  // #enddocregion heroes
   // #enddocregion component
   // #docregion on-select
   selectedHero: Hero;

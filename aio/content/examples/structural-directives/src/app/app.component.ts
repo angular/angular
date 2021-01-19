@@ -1,4 +1,3 @@
-// #docregion
 import { Component } from '@angular/core';
 
 import { Hero, heroes } from './hero';
@@ -17,7 +16,5 @@ export class AppComponent {
   showSad = true;
   status = 'ready';
 
-  // #docregion trackByHero
   trackById(index: number, hero: Hero): number { return hero.id; }
-  // #enddocregion trackByHero
 }

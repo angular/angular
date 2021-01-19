@@ -3,7 +3,6 @@
 // #docregion
 import { Component } from '@angular/core';
 
-// #docregion key-up-component-1
 @Component({
   selector: 'app-key-up1',
 // #docregion key-up-component-1-template
@@ -32,7 +31,7 @@ export class KeyUpComponent_v1 {
   }
 // #docregion key-up-component-1-class-no-type
 }
-// #enddocregion key-up-component-1,key-up-component-1-class, key-up-component-1-class-no-type
+// #enddocregion key-up-component-1-class, key-up-component-1-class-no-type
 
 //////////////////////////////////////////
 

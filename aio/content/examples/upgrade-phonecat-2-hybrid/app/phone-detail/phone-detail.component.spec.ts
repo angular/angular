@@ -1,8 +1,5 @@
-// #docregion
-// #docregion activatedroute
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-// #enddocregion activatedroute
 import { Observable, of } from 'rxjs';
 
 import { PhoneDetailComponent } from './phone-detail.component';
@@ -19,16 +16,13 @@ class MockPhone {
   }
 }
 
-// #docregion activatedroute
 
 class ActivatedRouteMock {
   constructor(public snapshot: any) {}
 }
 
-// #enddocregion activatedroute
 
 describe('PhoneDetailComponent', () => {
-  // #docregion activatedroute
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -40,7 +34,6 @@ describe('PhoneDetailComponent', () => {
     })
     .compileComponents();
   }));
-  // #enddocregion activatedroute
 
   it('should fetch phone detail', () => {
     const fixture = TestBed.createComponent(PhoneDetailComponent);

@@ -1,12 +1,10 @@
-<!-- #docregion relative-navigation-router-link -->
-  <ul class="crises">
-    <li *ngFor="let crisis of crises$ | async"
-      [class.selected]="crisis.id === selectedId">
-      <a [routerLink]="[crisis.id]">
-        <span class="badge">{{ crisis.id }}</span>{{ crisis.name }}
-      </a>
-    </li>
-  </ul>
+<ul class="crises">
+  <li *ngFor="let crisis of crises$ | async"
+    [class.selected]="crisis.id === selectedId">
+    <a [routerLink]="[crisis.id]">
+      <span class="badge">{{ crisis.id }}</span>{{ crisis.name }}
+    </a>
+  </li>
+</ul>
 
-  <router-outlet></router-outlet>
-<!-- #enddocregion relative-navigation-router-link -->
+<router-outlet></router-outlet>

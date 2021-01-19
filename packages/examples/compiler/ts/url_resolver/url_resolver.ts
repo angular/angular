@@ -15,7 +15,6 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 class MyApp {
 }
 
-// #docregion url_resolver
 class MyUrlResolver extends UrlResolver {
   resolve(baseUrl: string, url: string): string {
     // Serve CSS files from a special CDN.
@@ -37,4 +36,3 @@ class AppModule {
 export function main() {
   platformBrowserDynamic().bootstrapModule(AppModule);
 }
-// #enddocregion

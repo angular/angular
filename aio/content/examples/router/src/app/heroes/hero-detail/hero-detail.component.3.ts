@@ -45,9 +45,3 @@ export class HeroDetailComponent implements OnInit {
   }
   // #enddocregion gotoHeroes
 }
-
-/*
-// #docregion redirect
-  this.router.navigate(['/superheroes', { id: heroId, foo: 'foo' }]);
-// #enddocregion redirect
-*/

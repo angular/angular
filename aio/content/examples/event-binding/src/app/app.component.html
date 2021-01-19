@@ -2,13 +2,9 @@
 
 <div class="group">
   <h3>Target event</h3>
-  <!-- #docregion event-binding-1 -->
   <button (click)="onSave($event)">Save</button>
-  <!-- #enddocregion event-binding-1 -->
 
-  <!-- #docregion event-binding-2 -->
   <button on-click="onSave($event)">on-click Save</button>
-  <!-- #enddocregion event-binding-2 -->
 
   <!-- #docregion custom-directive -->
   <h4>myClick is an event on the custom ClickDirective:</h4>

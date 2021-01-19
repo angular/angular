@@ -50,7 +50,6 @@
   border-radius: 4px 0 0 4px;
 }
 
-/* #docregion additions */
 button {
   background-color: #eee;
   border: none;
@@ -71,5 +70,3 @@ button.delete {
   background-color: gray !important;
   color: white;
 }
-/* #enddocregion additions */
-

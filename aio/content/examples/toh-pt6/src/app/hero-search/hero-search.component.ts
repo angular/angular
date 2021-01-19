@@ -2,13 +2,11 @@
 // #docregion
 import { Component, OnInit } from '@angular/core';
 
-// #docregion rxjs-imports
 import { Observable, Subject } from 'rxjs';
 
 import {
    debounceTime, distinctUntilChanged, switchMap
  } from 'rxjs/operators';
-// #enddocregion rxjs-imports
 
 import { Hero } from '../hero';
 import { HeroService } from '../hero.service';

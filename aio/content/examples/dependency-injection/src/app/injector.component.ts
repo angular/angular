@@ -8,7 +8,6 @@ import { HeroService } from './heroes/hero.service';
 import { heroServiceProvider } from './heroes/hero.service.provider';
 import { Logger } from './logger.service';
 
-// #docregion injector
 @Component({
   selector: 'app-injectors',
   template: `
@@ -40,7 +39,6 @@ export class InjectorComponent implements OnInit {
     return this.injector.get(ROUS, rousDontExist);
   }
 }
-// #enddocregion injector
 
 /**
  * R.O.U.S. - Rodents Of Unusual Size
