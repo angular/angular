@@ -1425,7 +1425,15 @@ describe('find references and rename locations', () => {
       expect(result.canRename).toEqual(true);
       expect(result.displayName).toEqual('myProp');
       expect(result.kind).toEqual('property');
-      expect(result.triggerSpan.length).toEqual('myProp'.length);
+      expect(text.substring(
+                 result.triggerSpan.start, result.triggerSpan.start + result.triggerSpan.length))
+          .toBe('myProp');
+      // re-queries also work
+      const {triggerSpan, displayName} =
+          env.ngLS.getRenameInfo(_('/my-comp.ts'), cursor) as ts.RenameInfoSuccess;
+      expect(displayName).toEqual('myProp');
+      expect(text.substring(triggerSpan.start, triggerSpan.start + triggerSpan.length))
+          .toBe('myProp');
     });
 
     it('gets rename info when cursor is on a directive input in a template', () => {

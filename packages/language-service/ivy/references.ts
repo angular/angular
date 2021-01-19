@@ -87,7 +87,7 @@ export class ReferencesAndRenameBuilder {
       canRename: true,
       displayName: text,
       fullDisplayName: text,
-      triggerSpan: toTextSpan(span),
+      triggerSpan: span,
     };
   }
 
@@ -396,19 +396,19 @@ export class ReferencesAndRenameBuilder {
   }
 }
 
-function getRenameTextAndSpanAtPosition(node: TmplAstNode|AST, position: number):
-    {text: string, span: ParseSourceSpan|AbsoluteSourceSpan}|null {
+function getRenameTextAndSpanAtPosition(
+    node: TmplAstNode|AST, position: number): {text: string, span: ts.TextSpan}|null {
   if (node instanceof TmplAstBoundAttribute || node instanceof TmplAstTextAttribute ||
       node instanceof TmplAstBoundEvent) {
     if (node.keySpan === undefined) {
       return null;
     }
-    return {text: node.name, span: node.keySpan};
+    return {text: node.name, span: toTextSpan(node.keySpan)};
   } else if (node instanceof TmplAstVariable || node instanceof TmplAstReference) {
     if (isWithin(position, node.keySpan)) {
-      return {text: node.keySpan.toString(), span: node.keySpan};
+      return {text: node.keySpan.toString(), span: toTextSpan(node.keySpan)};
     } else if (node.valueSpan && isWithin(position, node.valueSpan)) {
-      return {text: node.valueSpan.toString(), span: node.valueSpan};
+      return {text: node.valueSpan.toString(), span: toTextSpan(node.valueSpan)};
     }
   }
 
@@ -418,14 +418,14 @@ function getRenameTextAndSpanAtPosition(node: TmplAstNode|AST, position: number)
   }
   if (node instanceof PropertyRead || node instanceof MethodCall || node instanceof PropertyWrite ||
       node instanceof SafePropertyRead || node instanceof SafeMethodCall) {
-    return {text: node.name, span: node.nameSpan};
+    return {text: node.name, span: toTextSpan(node.nameSpan)};
   } else if (node instanceof LiteralPrimitive) {
-    const span = node.span;
+    const span = toTextSpan(node.sourceSpan);
     const text = node.value;
     if (typeof text === 'string') {
       // The span of a string literal includes the quotes but they should be removed for renaming.
       span.start += 1;
-      span.end -= 1;
+      span.length -= 2;
     }
     return {text, span};
   }
