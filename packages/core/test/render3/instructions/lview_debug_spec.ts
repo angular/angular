@@ -6,15 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵProvidersFeature} from '@angular/core/src/core';
+import {Component, Injectable, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵProvidersFeature} from '@angular/core/src/core';
+import {getLContext} from '@angular/core/src/render3/context_discovery';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '@angular/core/src/render3/instructions/element';
 import {TNodeDebug} from '@angular/core/src/render3/instructions/lview_debug';
 import {createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
+import {MONKEY_PATCH_KEY_NAME} from '@angular/core/src/render3/interfaces/context';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {LView, TView, TViewType} from '@angular/core/src/render3/interfaces/view';
+import {LView, LViewDebug, TView, TViewType} from '@angular/core/src/render3/interfaces/view';
 import {enterView, leaveView} from '@angular/core/src/render3/state';
 import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
+import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
 import {KeyValueArray} from '@angular/core/src/util/array_utils';
+import {TestBed} from '@angular/core/testing';
 import {TemplateFixture} from '../render_util';
 
 describe('lView_debug', () => {
@@ -237,6 +241,64 @@ describe('lView_debug', () => {
         viewProviders: [],
         parentInjectorIndex: 22,
       });
+    });
+  });
+
+  describe('debugNodeInjectorPath', () => {
+    @Injectable()
+    class MyService {
+    }
+
+    @Injectable()
+    class OtherService {
+    }
+
+    @Component({
+      selector: 'parent',
+      template: `Parent: [<child></child>]`,
+      providers: [MyService],
+    })
+    class ParentComponent {
+    }
+    @Component({
+      selector: 'child',
+      template: `<b>Child!</b>`,
+      providers: [OtherService],
+    })
+    class ChildComponent {
+      constructor(private myService: MyService, private otherService: OtherService) {}
+    }
+
+    it('should display injection path', () => {
+      expect(ngDevMode).toBeTruthy();
+      TestBed.configureTestingModule({declarations: [ParentComponent, ChildComponent]});
+      const parentFixture = TestBed.createComponent(ParentComponent);
+      const parentHostElement = parentFixture.nativeElement as HTMLElement;
+      const childElement = parentHostElement.querySelector('child')! as HTMLElement;
+      if (!(childElement as any)[MONKEY_PATCH_KEY_NAME]) {
+        // In these browsers:
+        //  - Chrome Mobile 72.0.3626 (Android 0.0.0)
+        //  - IE 11.0.0 (Windows 8.1.0.0)
+        // Retrieving `LContext` does not work for unknown reasons, and we are unable to debug it.
+        // Exiting tests early to prevent breaking the test suite.
+        return;
+      }
+      const childLViewDebug = getComponentLView(childElement).debug!;
+      const parentLViewDebug = childLViewDebug.parent as LViewDebug;
+      const rootLViewDebug = parentLViewDebug.parent! as LViewDebug;
+      const childRootNode = childLViewDebug.nodes[0];
+      expect(childRootNode.injector.bloom).toEqual('NO_NODE_INJECTOR');
+      expect(childRootNode.injector.cumulativeBloom).toEqual('NO_NODE_INJECTOR');
+      const injectorResolutionPath = childRootNode.injectorResolutionPath;
+      expect(injectorResolutionPath.length).toEqual(2);
+      expect(injectorResolutionPath[0].injector)
+          .toEqual(
+              parentLViewDebug.nodes[1].injector,
+          );
+      expect(injectorResolutionPath[1].injector)
+          .toEqual(
+              rootLViewDebug.nodes[0].injector,
+          );
     });
   });
 });
