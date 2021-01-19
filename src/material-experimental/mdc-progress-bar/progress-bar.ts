@@ -199,7 +199,14 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
       const direction = this._dir ? this._dir.value : 'ltr';
       const mode = this.mode;
 
-      foundation.setReverse(direction === 'rtl' ? mode !== 'query' : mode === 'query');
+      const reverse = direction === 'rtl' ? mode !== 'query' : mode === 'query';
+      const progressDirection = reverse ? 'rtl' : 'ltr';
+      const currentDirection = this._rootElement.getAttribute('dir');
+      if (currentDirection !== progressDirection) {
+        this._rootElement.setAttribute('dir', progressDirection);
+        foundation.restartAnimation();
+      }
+
       foundation.setDeterminate(mode !== 'indeterminate' && mode !== 'query');
 
       // Divide by 100 because MDC deals with values between 0 and 1.
