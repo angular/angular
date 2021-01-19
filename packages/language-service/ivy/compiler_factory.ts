@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {TrackedIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
 import {TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
@@ -38,17 +38,15 @@ export class CompilerFactory {
   getOrCreate(): NgCompiler {
     const program = this.programStrategy.getProgram();
     if (this.compiler === null || program !== this.lastKnownProgram) {
-      this.compiler = new NgCompiler(
-          this.adapter,  // like compiler host
-          this.options,  // angular compiler options
-          program,
-          this.programStrategy,
-          this.incrementalStrategy,
-          true,  // enableTemplateTypeChecker
-          true,  // usePoisonedData
-          this.lastKnownProgram,
-          undefined,  // perfRecorder (use default)
-      );
+      let ticket: CompilationTicket;
+      if (this.compiler === null || this.lastKnownProgram === null) {
+        ticket = freshCompilationTicket(
+            program, this.options, this.incrementalStrategy, this.programStrategy, true, true);
+      } else {
+        ticket = incrementalFromCompilerTicket(
+            this.compiler, program, this.incrementalStrategy, this.programStrategy, new Set());
+      }
+      this.compiler = NgCompiler.fromTicket(ticket, this.adapter);
       this.lastKnownProgram = program;
     }
     return this.compiler;

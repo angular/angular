@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {NgCompiler, NgCompilerHost} from './core';
+import {CompilationTicket, freshCompilationTicket, incrementalFromDriverTicket, NgCompiler, NgCompilerHost} from './core';
 import {NgCompilerOptions, UnifiedModulesHost} from './core/api';
 import {NodeJSFileSystem, setFileSystem} from './file_system';
 import {PatchedProgramIncrementalBuildStrategy} from './incremental';
@@ -101,10 +101,29 @@ export class NgTscPlugin implements TscPlugin {
     untagAllTsFiles(program);
     const typeCheckStrategy = new ReusedProgramStrategy(
         program, this.host, this.options, this.host.shimExtensionPrefixes);
-    this._compiler = new NgCompiler(
-        this.host, this.options, program, typeCheckStrategy,
-        new PatchedProgramIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
-        /* usePoisonedData */ false, oldProgram, NOOP_PERF_RECORDER);
+    const strategy = new PatchedProgramIncrementalBuildStrategy();
+    const oldDriver = oldProgram !== undefined ? strategy.getIncrementalDriver(oldProgram) : null;
+    let ticket: CompilationTicket;
+
+    let modifiedResourceFiles: Set<string>|undefined = undefined;
+    if (this.host.getModifiedResourceFiles !== undefined) {
+      modifiedResourceFiles = this.host.getModifiedResourceFiles();
+    }
+    if (modifiedResourceFiles === undefined) {
+      modifiedResourceFiles = new Set<string>();
+    }
+
+    if (oldProgram === undefined || oldDriver === null) {
+      ticket = freshCompilationTicket(
+          program, this.options, strategy, typeCheckStrategy,
+          /* enableTemplateTypeChecker */ false, /* usePoisonedData */ false);
+    } else {
+      strategy.toNextBuildStrategy().getIncrementalDriver(oldProgram);
+      ticket = incrementalFromDriverTicket(
+          oldProgram, oldDriver, program, this.options, strategy, typeCheckStrategy,
+          modifiedResourceFiles, false, false);
+    }
+    this._compiler = NgCompiler.fromTicket(ticket, this.host, NOOP_PERF_RECORDER);
     return {
       ignoreForDiagnostics: this._compiler.ignoreForDiagnostics,
       ignoreForEmit: this._compiler.ignoreForEmit,
