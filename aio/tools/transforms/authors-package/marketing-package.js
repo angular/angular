@@ -7,10 +7,11 @@
  */
 const Package = require('dgeni').Package;
 const contentPackage = require('../angular-content-package');
-const { CONTENTS_PATH } = require('../config');
+const {CONTENTS_PATH} = require('../config');
+const baseAuthoringPackage = require('./base-authoring-package');
 
 function createPackage() {
-  return new Package('author-marketing', [contentPackage])
+  return new Package('author-marketing', [baseAuthoringPackage, contentPackage])
     .config(function(readFilesProcessor) {
       readFilesProcessor.sourceFiles = [
         {

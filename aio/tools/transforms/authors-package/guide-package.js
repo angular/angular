@@ -14,6 +14,7 @@ const {readFileSync} = require('fs');
 
 const contentPackage = require('../angular-content-package');
 const {CONTENTS_PATH} = require('../config');
+const baseAuthoringPackage = require('./base-authoring-package');
 const {codeExampleMatcher} = require('./utils');
 
 function createPackage(guideName) {
@@ -27,7 +28,7 @@ function createPackage(guideName) {
     console.log(examples.map(example => ' - ' + example).join('\n'));
   }
 
-  return new Package('author-guide', [contentPackage]).config(function(readFilesProcessor) {
+  return new Package('author-guide', [baseAuthoringPackage, contentPackage]).config(function(readFilesProcessor) {
     readFilesProcessor.sourceFiles = [
       {basePath: CONTENTS_PATH, include: guideFilePath, fileReader: 'contentFileReader'}, {
         basePath: CONTENTS_PATH,
