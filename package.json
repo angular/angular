@@ -104,7 +104,7 @@
     "@types/marked": "^1.2.1",
     "@types/merge2": "^0.3.30",
     "@types/minimist": "^1.2.0",
-    "@types/node": "^12.11.1",
+    "@types/node": "^14.14.22",
     "@types/node-fetch": "^2.5.5",
     "@types/parse5": "^6.0.0",
     "@types/resize-observer-browser": "^0.1.3",
