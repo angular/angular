@@ -265,6 +265,7 @@ export class LanguageService {
   private withCompiler<T>(fileName: string, p: (compiler: NgCompiler) => T): T {
     const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
     const result = p(compiler);
+    this.compilerFactory.registerLastKnownProgram();
     return result;
   }
 
