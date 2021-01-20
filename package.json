@@ -126,7 +126,7 @@
     "gulp-cli": "^2.3.0",
     "gulp-sass": "^4.0.2",
     "highlight.js": "^10.4.0",
-    "husky": "5.0.1",
+    "husky": "5.0.6",
     "inquirer": "^7.1.0",
     "jasmine": "^3.5.0",
     "jasmine-core": "^3.5.0",
