@@ -1,33 +1,31 @@
-# Update `module` and `target` compiler options migration
+# Actualizar las opciones del compilador `module` y `target` en la migración 
 
-## What does this migration do?
+## ¿Qué hace esta migración?
 
-This migration adjusts the [`target`](https://www.typescriptlang.org/v2/en/tsconfig#target) and [`module`](https://www.typescriptlang.org/v2/en/tsconfig#module) settings within the [TypeScript configuration files](guide/typescript-configuration) for the workspace.
-The changes to each option vary based on the builder or command that uses the TypeScript configuration file.
-Unless otherwise noted, changes are only made if the existing value was not changed since the project was created.
-This process helps ensure that intentional changes to the options are kept in place.
+Esta migración ajusta la configuración de [`target`](https://www.typescriptlang.org/tsconfig#target) y [`module`](https://www.typescriptlang.org/v2/en/tsconfig#module) dentro de [los archivos de configuración de TypeScript](guide/typescript-configuration) para el espacio de trabajo.
+Los cambios en cada opción varían según el constructor o comando que usa el archivo de configuración de TypeScript. A menos que se indique lo contrario, los cambios solo se realizan si el valor existente no se modificó desde que se creó el proyecto. Este proceso ayuda a garantizar que se mantengan los cambios intencionales en las opciones.
 
-TypeScript Configuration File(s) | Changed Property | Existing Value | New Value
+Archivo(s) de configuración de TypeScript | Propiedad Cambiada | Valor existente | Nuevo Valor
 ------------- | ------------- | ------------- | ------------- | -------------
-`<workspace base>/tsconfig.base.json` | `"module"` | `"esnext"` | `"es2020"`
-Used in `browser` builder options (`ng build` for applications) | `"module"` | `"esnext"` | `"es2020"`
-Used in `ng-packgr` builder options (`ng build` for libraries) | `"module"` | `"esnext"` | `"es2020"`
-Used in `karma` builder options (`ng test` for applications) | `"module"` | `"esnext"` | `"es2020"`
-Used in `server` builder options (universal) | `"module"` | `"commonjs"` | _removed_
-Used in `server` builder options (universal) | `"target"` | _any_ | `"es2016"`
-Used in `protractor` builder options (`ng e2e` for applications) | `"target"` | `"es5"` | `"es2018"`
+`<espacio de trabajo>/tsconfig.base.json` | `"module"` | `"esnext"` | `"es2020"`
+Utilizado en las opciones del constructor de `browser` (`ng build` para aplicaciones) | `"module"` | `"esnext"` | `"es2020"`
+Utilizado en las opciones del constructor de `ng-packgr` (`ng build` para librerías) | `"module"` | `"esnext"` | `"es2020"`
+Utilizado en las opciones del constructor de `karma` (`ng test` para aplicaciones) | `"module"` | `"esnext"` | `"es2020"`
+Utilizado en las opciones (universales) del constructor de `server` | `"module"` | `"commonjs"` | _removed_
+Utilizado en las opciones (universales) del constructor de `server` | `"target"` | _any_ | `"es2016"`
+Utilizado en las opciones del constructor de `protractor` (`ng e2e` para aplicaciones) | `"target"` | `"es5"` | `"es2018"`
 
-## Why is this migration necessary?
+## ¿Por qué es necesaria esta migración?
 
-This migration provides improvements to the long-term supportability of projects by updating the projects to use recommended best practice compilation options.
+Esta migración proporciona mejoras en la compatibilidad a largo plazo de los proyectos mediante la actualización de los proyectos utilizando las buenas prácticas recomendadas en las opciones de compilación.
 
-For the functionality that executes on Node.js, such as Universal and Protractor, the new settings provide performance and troubleshooting benefits as well.
-The minimum Node.js version for the Angular CLI (v10.13) supports features in ES2018 and earlier.
-By targeting later ES versions, the compiler transforms less code and can use newer features directly.
-Since zone.js does not support native `async` and `await`, the universal builds still target ES2016.
+Para la funcionalidad que se ejecuta en Node.js, como Universal y Protractor, las nuevas configuraciones también brindan beneficios de rendimiento y resolución de problemas.
+La versión mínima de Node.js para Angular CLI (v10.13) admite funciones en ES2018 y versiones anteriores.
+Al apuntar a versiones posteriores de ES, el compilador transforma menos código y puede usar funciones más nuevas directamente.
+Dado que zone.js no admite `async` y `await` de forma nativa, las compilaciones universales todavía apuntan a ES2016.
 
-## Why `"es2020"` instead of `"esnext"`?
+## ¿Por qué `"es2020"` en lugar de `"esnext"`?
 
-In TypeScript 3.9, the behavior of the TypeScript compiler controlled by `module` is the same with both `"esnext"` and `"es2020"` values.
-This behavior can change in the future, because the `"esnext"` option could evolve in a backwards incompatible ways, resulting in build-time or run-time errors during a TypeScript update.
-As a result, code can become unstable. Using the `"es2020"` option mitigates this risk.
+En TypeScript 3.9, el comportamiento del compilador TypeScript controlado por `module` es el mismo con los valores `"esnext"` y `"es2020"`.
+Este comportamiento puede cambiar en el futuro, porque la opción `"esnext"` podría evolucionar de manera incompatible hacia atrás, lo que resultaría en errores en tiempo de compilación o de ejecución durante una actualización de TypeScript.
+Como resultado, el código puede volverse inestable. El uso de la opción `"es2020"` mitiga este riesgo.
