@@ -1,28 +1,29 @@
 # Debugging tests
 
-If your tests aren't working as you expect them to, you can inspect and debug them in the browser.
+Si tus tests no están funcionando como esperas, puedes inspeccionarlos y hacer debug en el navegador.
+
+
 
 <div class="alert is-helpful">
+Para la aplicación de ejemplo que las guías de testing describe, consulta <live-example name="testing" embedded-style noDownload>app de ejemplo</live-example>.
 
-  For the sample app that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
-
-  For the tests features in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
+Para las funcionalidades de los tests en las guías de testing, consulta  <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
 
 </div>
 
+Puedes hacer debug de especificaciones en el navegador de la misma forma que haces debug a una aplicación.
 
-Debug specs in the browser in the same way that you debug an application.
-
-1. Reveal the Karma browser window. See [Set up testing](guide/testing#set-up-testing) if you need help with this step.
-1. Click the **DEBUG** button; it opens a new browser tab and re-runs the tests.
-1. Open the browser's “Developer Tools” (`Ctrl-Shift-I` on Windows; `Command-Option-I` in macOS).
-1. Pick the "sources" section.
-1. Open the `1st.spec.ts` test file (Control/Command-P, then start typing the name of the file).
-1. Set a breakpoint in the test.
-1. Refresh the browser, and it stops at the breakpoint.
+1. Revela la ventana del navegador Karma. Consulta [configuración del testing](guide/testing#set-up-testing) si necesitas ayuda con este paso.
+1. Haz click en el botón **DEBUG**; abrirá una nueva pestaña en el navegador y volverá a ejecutar los tests.
+1. Abre las "Herramientas de desarrollador" del navegador (`Ctrl-Shift-I` en Windows; `Command-Option-I` in macOS).
+1. Selecciona la sección "fuentes".
+1. Abre el archivo test `1st.spec.ts` (Control/Command-P, luego escribe el nombre del archivo).
+1. Coloca un breakpoint en el test. 
+1. Actualiza tu navegador, se detendrá en el breakpoint establecido.
 
 <div class="lightbox">
   <img src='generated/images/guide/testing/karma-1st-spec-debug.png' alt="Karma debugging">
 </div>
 
 <hr>
+
