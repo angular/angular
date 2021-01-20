@@ -5,17 +5,21 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+const { extname, resolve } = require('canonical-path');
+const { existsSync } = require('fs');
 const path = require('path');
-const Package = require('dgeni').Package;
 
+const Package = require('dgeni').Package;
 const gitPackage = require('dgeni-packages/git');
 const jsdocPackage = require('dgeni-packages/jsdoc');
 const nunjucksPackage = require('dgeni-packages/nunjucks');
-const linksPackage = require('../links-package');
-const examplesPackage = require('../examples-package');
-const targetPackage = require('../target-package');
-const remarkPackage = require('../remark-package');
 const postProcessPackage = require('dgeni-packages/post-process-html');
+
+const { SRC_PATH } = require('../config');
+const examplesPackage = require('../examples-package');
+const linksPackage = require('../links-package');
+const remarkPackage = require('../remark-package');
+const targetPackage = require('../target-package');
 
 const { PROJECT_ROOT, CONTENTS_PATH, OUTPUT_PATH, DOCS_OUTPUT_PATH, TEMPLATES_PATH, AIO_PATH, requireFolder } = require('../config');
 
@@ -51,13 +55,6 @@ module.exports = new Package('angular-base', [
   // Configure jsdoc-style tag parsing
   .config(function(inlineTagProcessor) {
     inlineTagProcessor.inlineTagDefinitions.push(require('./inline-tag-defs/custom-search-defs/'));
-  })
-
-  .config(function(checkAnchorLinksProcessor, checkForUnusedExampleRegions) {
-    // These are disabled here to prevent false negatives for the `docs-watch` task.
-    // It is re-enabled in the main `angular.io-package`
-    checkAnchorLinksProcessor.$enabled = false;
-    checkForUnusedExampleRegions.$enabled = false;
   })
 
   // Where do we get the source files?
@@ -125,7 +122,25 @@ module.exports = new Package('angular-base', [
     getLinkInfo.useFirstAmbiguousLink = false;
   })
 
-
+  .config(function(checkAnchorLinksProcessor) {
+    // since we encode the HTML to JSON we need to ensure that this processor runs before that encoding happens.
+    checkAnchorLinksProcessor.$runBefore = ['convertToJsonProcessor'];
+    checkAnchorLinksProcessor.$runAfter = ['fixInternalDocumentLinks'];
+    // We only want to check docs that are going to be output as JSON docs.
+    checkAnchorLinksProcessor.checkDoc = (doc) => doc.path && doc.outputPath && extname(doc.outputPath) === '.json' && doc.docType !== 'json-doc';
+    // Since we have a `base[href="/"]` arrangement all links are relative to that and not relative to the source document's path
+    checkAnchorLinksProcessor.base = '/';
+    // Ignore links to local assets
+    // (This is not optimal in terms of performance without making changes to dgeni-packages there is no other way.
+    //  That being said do this only add 500ms onto the ~30sec doc-gen run - so not a huge issue)
+    checkAnchorLinksProcessor.ignoredLinks.push({
+      test(url) {
+        return (existsSync(resolve(SRC_PATH, url)));
+      }
+    });
+    checkAnchorLinksProcessor.pathVariants = ['', '/', '.html', '/index.html', '#top-of-page'];
+    checkAnchorLinksProcessor.errorOnUnmatchedLinks = true;
+  })
 
   .config(function(computePathsProcessor, generateKeywordsProcessor) {
 
