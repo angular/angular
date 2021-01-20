@@ -5,6 +5,16 @@
   {$ github.githubEditLink(doc, versionInfo) $}
 </div>
 
+{% if doc.videoUrl.length %}
+<div class="error-video-container">
+  <iframe
+  src="{$ doc.videoUrl $}" 
+  frameborder="0" 
+  allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" 
+  allowfullscreen></iframe>
+</div>
+{% endif%}
+
 {% block content %}
 <div class="content">
   <h2>Description</h2>
