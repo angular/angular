@@ -145,6 +145,10 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
             .toEqual('ul[a-host] > .z[contenta], li[a-host] > .z[contenta] {}');
       });
 
+      it('should handle compound class selectors', () => {
+        expect(s(':host(.a.b) {}', 'contenta', 'a-host')).toEqual('.a.b[a-host] {}');
+      });
+
       it('should handle multiple class selectors', () => {
         expect(s(':host(.x,.y) {}', 'contenta', 'a-host')).toEqual('.x[a-host], .y[a-host] {}');
         expect(s(':host(.x,.y) > .z {}', 'contenta', 'a-host'))
@@ -207,6 +211,42 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
             .toEqual('[a="b"][a-host], [a="b"] [a-host] {}');
         expect(s(':host-context([a=b]) {}', 'contenta', 'a-host'))
             .toEqual('[a=b][a-host], [a="b"] [a-host] {}');
+      });
+
+      it('should handle multiple :host-context() selectors', () => {
+        expect(s(':host-context(.one):host-context(.two) {}', 'contenta', 'a-host'))
+            .toEqual(
+                '.one.two[a-host], ' +    // `one` and `two` both on the host
+                '.one.two [a-host], ' +   // `one` and `two` are both on the same ancestor
+                '.one .two[a-host], ' +   // `one` is an ancestor and `two` is on the host
+                '.one .two [a-host], ' +  // `one` and `two` are both ancestors (in that order)
+                '.two .one[a-host], ' +   // `two` is an ancestor and `one` is on the host
+                '.two .one [a-host]' +    // `two` and `one` are both ancestors (in that order)
+                ' {}');
+
+        expect(s(':host-context(.X):host-context(.Y):host-context(.Z) {}', 'contenta', 'a-host')
+                   .replace(/ \{\}$/, '')
+                   .split(/\,\s+/))
+            .toEqual([
+              '.X.Y.Z[a-host]',
+              '.X.Y.Z [a-host]',
+              '.X.Y .Z[a-host]',
+              '.X.Y .Z [a-host]',
+              '.X.Z .Y[a-host]',
+              '.X.Z .Y [a-host]',
+              '.X .Y.Z[a-host]',
+              '.X .Y.Z [a-host]',
+              '.X .Y .Z[a-host]',
+              '.X .Y .Z [a-host]',
+              '.X .Z .Y[a-host]',
+              '.X .Z .Y [a-host]',
+              '.Y.Z .X[a-host]',
+              '.Y.Z .X [a-host]',
+              '.Y .Z .X[a-host]',
+              '.Y .Z .X [a-host]',
+              '.Z .Y .X[a-host]',
+              '.Z .Y .X [a-host]',
+            ]);
       });
     });
 
