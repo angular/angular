@@ -7,5 +7,5 @@
  */
 
 module.exports = {
-  codeExampleMatcher: /<code-(?:pane|example)(?:[^>]|[ \r\n])*path="([^"]+)"/g,
+  codeExampleMatcher: /<code-(?:pane|example)[^>]*\bpath="([^"]+)"/g,
 };
