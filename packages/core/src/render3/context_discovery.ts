@@ -9,7 +9,7 @@ import '../util/ng_dev_mode';
 
 import {assertDomNode} from '../util/assert';
 
-import {EMPTY_ARRAY} from './empty';
+import {EMPTY_ARRAY} from '../util/empty';
 import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';

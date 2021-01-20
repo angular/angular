@@ -13,6 +13,7 @@ import {AbstractType, Type} from '../interface/type';
 import {FactoryFn, getFactoryDef} from '../render3/definition_factory';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors_di';
 import {deepForEach, newArray} from '../util/array_utils';
+import {EMPTY_ARRAY} from '../util/empty';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
@@ -47,8 +48,6 @@ const NOT_YET = {};
  * a circular dependency among the providers.
  */
 const CIRCULAR = {};
-
-const EMPTY_ARRAY = [] as any[];
 
 /**
  * A lazily initialized NullInjector.
