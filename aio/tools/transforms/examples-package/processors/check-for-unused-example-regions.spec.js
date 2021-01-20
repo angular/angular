@@ -32,46 +32,46 @@ describe('checkForUnusedExampleRegions', () => {
       expect(() => processor.$process())
           .toThrowError('There is 1 unused example region:\n - some/file#not-used');
     });
-  });
 
-  it('should not error if there are no example folders', () => {
-    expect(() => processor.$process()).not.toThrowError();
-  });
+    it('should not error if there are no example folders', () => {
+      expect(() => processor.$process()).not.toThrowError();
+    });
 
-  it('should not error if there are no example files', () => {
-    exampleMap['examples'] = {};
-    expect(() => processor.$process()).not.toThrowError();
-  });
+    it('should not error if there are no example files', () => {
+      exampleMap['examples'] = {};
+      expect(() => processor.$process()).not.toThrowError();
+    });
 
-  it('should not error if there are no example regions', () => {
-    exampleMap['examples'] = {
-      'some/file': {
-        regions: {},
-      },
-    };
-    expect(() => processor.$process()).not.toThrowError();
-  });
-
-  it('should not error if there are no unused named example regions', () => {
-    exampleMap['examples'] = {
-      'some/file': {
-        regions: {
-          '': {id: 'some/file#'},
+    it('should not error if there are no example regions', () => {
+      exampleMap['examples'] = {
+        'some/file': {
+          regions: {},
         },
-      },
-    };
-    expect(() => processor.$process()).not.toThrowError();
-  });
+      };
+      expect(() => processor.$process()).not.toThrowError();
+    });
 
-  it('should error if there are no unused named example regions', () => {
-    exampleMap['examples'] = {
-      'some/file': {
-        regions: {
-          '': {id: 'some/file#'},
-          'used': {id: 'some/file#used', usedInDoc: {}},
+    it('should not error if there are no named example regions', () => {
+      exampleMap['examples'] = {
+        'some/file': {
+          regions: {
+            '': {id: 'some/file#'},
+          },
+        },
+      };
+      expect(() => processor.$process()).not.toThrowError();
+    });
+
+    it('should not error if there are no unused named example regions', () => {
+      exampleMap['examples'] = {
+        'some/file': {
+          regions: {
+            '': {id: 'some/file#'},
+            'used': {id: 'some/file#used', usedInDoc: {}},
+          }
         }
-      }
-    };
-    expect(() => processor.$process()).not.toThrowError();
+      };
+      expect(() => processor.$process()).not.toThrowError();
+    });
   });
 });

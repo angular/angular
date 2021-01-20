@@ -19,10 +19,8 @@ module.exports = function checkForUnusedExampleRegions(exampleMap) {
       const unusedExampleRegions = [];
       for (const exampleFolder of Object.values(exampleMap)) {
         for (const exampleFile of Object.values(exampleFolder)) {
-          for (const regionName of Object.keys(exampleFile.regions)) {
-            if (regionName === '') continue;
-            const region = exampleFile.regions[regionName];
-            if (region.usedInDoc) continue;
+          for (const [regionName, region] of Object.entries(exampleFile.regions)) {
+            if (regionName === '' || region.usedInDoc) continue;
             unusedExampleRegions.push(region);
           }
         }
