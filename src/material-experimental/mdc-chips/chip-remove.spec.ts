@@ -1,4 +1,5 @@
 import {
+  createFakeEvent,
   dispatchKeyboardEvent,
   createKeyboardEvent,
   dispatchEvent,
@@ -54,6 +55,18 @@ describe('MDC-based Chip Remove', () => {
       expect(buttonElement.hasAttribute('type')).toBe(false);
     });
 
+    it('should start MDC exit animation on click', () => {
+      let buttonElement = chipNativeElement.querySelector('button')!;
+
+      testChip.removable = true;
+      fixture.detectChanges();
+
+      buttonElement.click();
+      fixture.detectChanges();
+
+      expect(chipNativeElement.classList.contains('mdc-chip--exit')).toBe(true);
+    });
+
     it('should emit (removed) event when exit animation is complete', () => {
       let buttonElement = chipNativeElement.querySelector('button')!;
 
@@ -63,6 +76,10 @@ describe('MDC-based Chip Remove', () => {
       spyOn(testChip, 'didRemove');
       buttonElement.click();
       fixture.detectChanges();
+
+      const fakeEvent = createFakeEvent('transitionend');
+      (fakeEvent as any).propertyName = 'width';
+      chipNativeElement.dispatchEvent(fakeEvent);
 
       expect(testChip.didRemove).toHaveBeenCalled();
     });
@@ -146,6 +163,10 @@ describe('MDC-based Chip Remove', () => {
       spyOn(testChip, 'didRemove');
       dispatchKeyboardEvent(buttonElement, 'keydown', TAB);
       fixture.detectChanges();
+
+      const fakeEvent = createFakeEvent('transitionend');
+      (fakeEvent as any).propertyName = 'width';
+      chipNativeElement.dispatchEvent(fakeEvent);
 
       expect(testChip.didRemove).not.toHaveBeenCalled();
     });

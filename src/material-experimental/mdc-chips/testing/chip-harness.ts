@@ -43,6 +43,9 @@ export class MatChipHarness extends ComponentHarness {
   async remove(): Promise<void> {
     const hostEl = await this.host();
     await hostEl.sendKeys(TestKey.DELETE);
+
+    // @breaking-change 12.0.0 Remove non-null assertion from `dispatchEvent`.
+    await hostEl.dispatchEvent!('transitionend', {propertyName: 'width'});
   }
 
   /**

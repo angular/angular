@@ -505,7 +505,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
         const newChipIndex = Math.min(this._lastDestroyedChipIndex, this._chips.length - 1);
         this._keyManager.setActiveCell({
           row: newChipIndex,
-          column: Math.max(this._keyManager.activeColumnIndex, 0)
+          column: this._keyManager.activeColumnIndex
         });
       } else {
         this.focus();

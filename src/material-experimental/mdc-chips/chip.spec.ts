@@ -1,4 +1,5 @@
 import {Directionality} from '@angular/cdk/bidi';
+import {createFakeEvent} from '@angular/cdk/testing/private';
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatRipple} from '@angular/material-experimental/mdc-core';
@@ -134,7 +135,22 @@ describe('MDC-based MatChip', () => {
       chipInstance.remove();
       fixture.detectChanges();
 
+      const fakeEvent = createFakeEvent('transitionend');
+      (fakeEvent as any).propertyName = 'width';
+      chipNativeElement.dispatchEvent(fakeEvent);
+
       expect(testComponent.chipRemove).toHaveBeenCalledWith({chip: chipInstance});
+    });
+
+    it('should make the chip non-focusable when it is removed', () => {
+      chipInstance.remove();
+      fixture.detectChanges();
+
+      const fakeEvent = createFakeEvent('transitionend');
+      (fakeEvent as any).propertyName = 'width';
+      chipNativeElement.dispatchEvent(fakeEvent);
+
+      expect(chipNativeElement.style.display).toBe('none');
     });
 
     it('should be able to disable ripples with the `[rippleDisabled]` input', () => {

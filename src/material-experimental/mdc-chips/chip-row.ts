@@ -99,12 +99,6 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
   /** The focusable grid cells for this row. Implemented as part of GridKeyManagerRow. */
   cells!: HTMLElement[];
 
-  /**
-   * Timeout used to give some time between `focusin` and `focusout`
-   * in order to determine whether focus has left the chip.
-   */
-  private _focusoutTimeout: number | null;
-
   constructor(
     @Inject(DOCUMENT) private readonly _document: any,
     changeDetectorRef: ChangeDetectorRef,
@@ -159,13 +153,12 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
    * to the other gridcell.
    */
   _focusout(event: FocusEvent) {
-    if (this._focusoutTimeout) {
-      clearTimeout(this._focusoutTimeout);
-    }
-
+    this._hasFocusInternal = false;
     // Wait to see if focus moves to the other gridcell
-    this._focusoutTimeout = setTimeout(() => {
-      this._hasFocusInternal = false;
+    setTimeout(() => {
+      if (this._hasFocus()) {
+        return;
+      }
       this._onBlur.next({chip: this});
       this._handleInteraction(event);
     });
@@ -173,11 +166,6 @@ export class MatChipRow extends MatChip implements AfterContentInit, AfterViewIn
 
   /** Records that the chip has focus when one of the gridcells is focused. */
   _focusin(event: FocusEvent) {
-    if (this._focusoutTimeout) {
-      clearTimeout(this._focusoutTimeout);
-      this._focusoutTimeout = null;
-    }
-
     this._hasFocusInternal = true;
     this._handleInteraction(event);
   }

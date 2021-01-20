@@ -11,8 +11,14 @@
   cursor: default;
 
   &._mat-animation-noopable {
+    // MDC's chip removal works by toggling a class on the chip, waiting for its transitions
+    // to finish and emitting the remove event at the end. The problem is that if our animations
+    // were disabled via the `NoopAnimationsModule`, the element won't have a transition and
+    // `transitionend` won't fire. We work around the issue by assigning a very short transition.
+    transition-duration: 1ms;
+
+    // Disables the chip enter animation.
     animation: none;
-    transition: none;
 
     .mdc-chip__checkmark-svg {
       transition: none;

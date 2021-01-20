@@ -2,6 +2,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {BACKSPACE, DELETE, RIGHT_ARROW, ENTER} from '@angular/cdk/keycodes';
 import {
   createKeyboardEvent,
+  createFakeEvent,
   dispatchEvent,
   dispatchFakeEvent,
 } from '@angular/cdk/testing/private';
@@ -96,6 +97,10 @@ describe('MDC-based Row Chips', () => {
         chipInstance.remove();
         fixture.detectChanges();
 
+        const fakeEvent = createFakeEvent('transitionend');
+        (fakeEvent as any).propertyName = 'width';
+        chipNativeElement.dispatchEvent(fakeEvent);
+
         expect(testComponent.chipRemove).toHaveBeenCalledWith({chip: chipInstance});
       });
 
@@ -122,6 +127,10 @@ describe('MDC-based Row Chips', () => {
           chipInstance._keydown(DELETE_EVENT);
           fixture.detectChanges();
 
+          const fakeEvent = createFakeEvent('transitionend');
+          (fakeEvent as any).propertyName = 'width';
+          chipNativeElement.dispatchEvent(fakeEvent);
+
           expect(testComponent.chipRemove).toHaveBeenCalled();
         });
 
@@ -133,6 +142,10 @@ describe('MDC-based Row Chips', () => {
           chipInstance._keydown(BACKSPACE_EVENT);
           fixture.detectChanges();
 
+          const fakeEvent = createFakeEvent('transitionend');
+          (fakeEvent as any).propertyName = 'width';
+          chipNativeElement.dispatchEvent(fakeEvent);
+
           expect(testComponent.chipRemove).toHaveBeenCalled();
         });
 
@@ -143,6 +156,10 @@ describe('MDC-based Row Chips', () => {
 
           removeIconInstance.interaction.next(ARROW_KEY_EVENT);
           fixture.detectChanges();
+
+          const fakeEvent = createFakeEvent('transitionend');
+          (fakeEvent as any).propertyName = 'width';
+          chipNativeElement.dispatchEvent(fakeEvent);
 
           expect(testComponent.chipRemove).not.toHaveBeenCalled();
         });
@@ -162,6 +179,10 @@ describe('MDC-based Row Chips', () => {
           chipInstance._keydown(DELETE_EVENT);
           fixture.detectChanges();
 
+          const fakeEvent = createFakeEvent('transitionend');
+          (fakeEvent as any).propertyName = 'width';
+          chipNativeElement.dispatchEvent(fakeEvent);
+
           expect(testComponent.chipRemove).not.toHaveBeenCalled();
         });
 
@@ -173,6 +194,10 @@ describe('MDC-based Row Chips', () => {
           // Use the delete to remove the chip
           chipInstance._keydown(BACKSPACE_EVENT);
           fixture.detectChanges();
+
+          const fakeEvent = createFakeEvent('transitionend');
+          (fakeEvent as any).propertyName = 'width';
+          chipNativeElement.dispatchEvent(fakeEvent);
 
           expect(testComponent.chipRemove).not.toHaveBeenCalled();
         });
