@@ -140,7 +140,7 @@
     "karma-requirejs": "^1.1.0",
     "karma-sauce-launcher": "^2.0.2",
     "karma-sourcemap-loader": "^0.3.7",
-    "madge": "^3.4.4",
+    "madge": "^4.0.0",
     "marked": "^1.0.0",
     "merge2": "^1.2.3",
     "minimatch": "^3.0.4",
