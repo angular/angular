@@ -62,7 +62,12 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   private readonly staticSymbolResolver: StaticSymbolResolver;
 
   private readonly staticSymbolCache = new StaticSymbolCache();
-  private readonly fileToComponent = new Map<string, StaticSymbol>();
+  /**
+   * Key of the `fileToComponent` map must be TS internal normalized path (path
+   * separator must be `/`), value of the map is the StaticSymbol for the
+   * Component class declaration.
+   */
+  private readonly fileToComponent = new Map<ts.server.NormalizedPath, StaticSymbol>();
   private readonly collectedErrors = new Map<string, any[]>();
   private readonly fileVersions = new Map<string, string>();
   private readonly urlResolver: UrlResolver;
@@ -165,7 +170,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
   /**
    * Return all known external templates.
    */
-  getExternalTemplates(): string[] {
+  getExternalTemplates(): ts.server.NormalizedPath[] {
     return [...this.fileToComponent.keys()];
   }
 
@@ -210,7 +215,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
           const templateName = this.urlResolver.resolve(
               this.reflector.componentModuleUrl(directive.reference),
               metadata.template.templateUrl);
-          this.fileToComponent.set(templateName, directive.reference);
+          this.fileToComponent.set(tss.server.toNormalizedPath(templateName), directive.reference);
         }
       }
     }
@@ -417,7 +422,7 @@ export class TypeScriptServiceHost implements LanguageServiceHost {
     }
     const source = snapshot.getText(0, snapshot.getLength());
     // Next find the component class symbol
-    const classSymbol = this.fileToComponent.get(fileName);
+    const classSymbol = this.fileToComponent.get(tss.server.toNormalizedPath(fileName));
     if (!classSymbol) {
       return;
     }
