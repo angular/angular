@@ -617,7 +617,7 @@ describe('demo (with TestBed):', () => {
 
       child.childValue = 'bar';
 
-      return new Promise(resolve => {
+      return new Promise<void>(resolve => {
         // Wait one JS engine turn!
         setTimeout(() => resolve(), 0);
       })
