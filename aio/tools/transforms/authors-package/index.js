@@ -51,6 +51,10 @@ module.exports = {
   generateDocs: function(changedFile, options = {}) {
     const {Dgeni} = require('dgeni');
     const package = createPackage(changedFile);
+    if (package === undefined) {
+      console.log('The changed file was not matched to a dgeni package - skipping doc-gen');
+      return Promise.resolve();
+    }
     if (options.silent) {
       package.config(function(log) { log.level = 'error'; });
     }
