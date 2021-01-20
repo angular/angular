@@ -12,6 +12,7 @@ const {readFileSync} = require('fs');
 
 const contentPackage = require('../angular-content-package');
 const {CONTENTS_PATH} = require('../config');
+const baseAuthoringPackage = require('./base-authoring-package');
 const {codeExampleMatcher} = require('./utils');
 
 /* eslint no-console: "off" */
@@ -27,7 +28,7 @@ function createPackage(tutorialName) {
     console.log(examples.map(example => ' - ' + example).join('\n'));
   }
 
-  return new Package('author-tutorial', [contentPackage]).config(function(readFilesProcessor) {
+  return new Package('author-tutorial', [baseAuthoringPackage, contentPackage]).config(function(readFilesProcessor) {
     readFilesProcessor.sourceFiles = [
       {basePath: CONTENTS_PATH, include: tutorialFilePath, fileReader: 'contentFileReader'}, {
         basePath: CONTENTS_PATH,
