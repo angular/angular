@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {CycleAnalyzer} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {absoluteFrom, relative} from '../../file_system';
+import {absoluteFrom, AbsoluteFsPath, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
@@ -246,24 +246,14 @@ export class ComponentDecoratorHandler implements
 
       template = preanalyzed;
     } else {
-      // The template was not already parsed. Either there's a templateUrl, or an inline template.
-      if (component.has('templateUrl')) {
-        const templateUrlExpr = component.get('templateUrl')!;
-        const templateUrl = this.evaluator.evaluate(templateUrlExpr);
-        if (typeof templateUrl !== 'string') {
-          throw createValueHasWrongTypeError(
-              templateUrlExpr, templateUrl, 'templateUrl must be a string');
-        }
-        const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
-        template = this._extractExternalTemplate(node, component, templateUrlExpr, resourceUrl);
-      } else {
-        // Expect an inline template to be present.
-        template = this._extractInlineTemplate(node, decorator, component, containingFile);
-      }
+      const templateDecl = this.parseTemplateDeclaration(decorator, component, containingFile);
+      template = this.extractTemplate(node, templateDecl);
     }
-    const templateResource = template.isInline ?
-        {path: null, expression: component.get('template')!} :
-        {path: absoluteFrom(template.templateUrl), expression: template.sourceMapping.node};
+    const templateResource =
+        template.isInline ? {path: null, expression: component.get('template')!} : {
+          path: absoluteFrom(template.declaration.resolvedTemplateUrl),
+          expression: template.sourceMapping.node
+        };
 
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
     // precede inline styles, and styles defined in the template override styles defined in the
@@ -732,8 +722,8 @@ export class ComponentDecoratorHandler implements
       // URLs to resolve.
       if (templatePromise !== undefined) {
         return templatePromise.then(() => {
-          const template =
-              this._extractExternalTemplate(node, component, templateUrlExpr, resourceUrl);
+          const templateDecl = this.parseTemplateDeclaration(decorator, component, containingFile);
+          const template = this.extractTemplate(node, templateDecl);
           this.preanalyzeTemplateCache.set(node, template);
           return template;
         });
@@ -741,92 +731,134 @@ export class ComponentDecoratorHandler implements
         return Promise.resolve(null);
       }
     } else {
-      const template = this._extractInlineTemplate(node, decorator, component, containingFile);
+      const templateDecl = this.parseTemplateDeclaration(decorator, component, containingFile);
+      const template = this.extractTemplate(node, templateDecl);
       this.preanalyzeTemplateCache.set(node, template);
       return Promise.resolve(template);
     }
   }
 
-  private _extractExternalTemplate(
-      node: ClassDeclaration, component: Map<string, ts.Expression>, templateUrlExpr: ts.Expression,
-      resourceUrl: string): ParsedTemplateWithSource {
-    const templateStr = this.resourceLoader.load(resourceUrl);
-    if (this.depTracker !== null) {
-      this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
-    }
+  private extractTemplate(node: ClassDeclaration, template: TemplateDeclaration):
+      ParsedTemplateWithSource {
+    if (template.isInline) {
+      let templateStr: string;
+      let templateLiteral: ts.Node|null = null;
+      let templateUrl: string = '';
+      let templateRange: LexerRange|null = null;
+      let sourceMapping: TemplateSourceMapping;
+      let escapedString = false;
+      // We only support SourceMaps for inline templates that are simple string literals.
+      if (ts.isStringLiteral(template.expression) ||
+          ts.isNoSubstitutionTemplateLiteral(template.expression)) {
+        // the start and end of the `templateExpr` node includes the quotation marks, which we must
+        // strip
+        templateRange = getTemplateRange(template.expression);
+        templateStr = template.expression.getSourceFile().text;
+        templateLiteral = template.expression;
+        templateUrl = template.templateUrl;
+        escapedString = true;
+        sourceMapping = {
+          type: 'direct',
+          node: template.expression,
+        };
+      } else {
+        const resolvedTemplate = this.evaluator.evaluate(template.expression);
+        if (typeof resolvedTemplate !== 'string') {
+          throw createValueHasWrongTypeError(
+              template.expression, resolvedTemplate, 'template must be a string');
+        }
+        templateStr = resolvedTemplate;
+        sourceMapping = {
+          type: 'indirect',
+          node: template.expression,
+          componentClass: node,
+          template: templateStr,
+        };
+      }
 
-    const template = this._parseTemplate(
-        component, templateStr, /* templateLiteral */ null, sourceMapUrl(resourceUrl),
-        /* templateRange */ undefined,
-        /* escapedString */ false);
-
-    return {
-      ...template,
-      sourceMapping: {
-        type: 'external',
-        componentClass: node,
-        node: templateUrlExpr,
-        template: templateStr,
-        templateUrl: resourceUrl,
-      },
-    };
-  }
-
-  private _extractInlineTemplate(
-      node: ClassDeclaration, decorator: Decorator, component: Map<string, ts.Expression>,
-      containingFile: string): ParsedTemplateWithSource {
-    if (!component.has('template')) {
-      throw new FatalDiagnosticError(
-          ErrorCode.COMPONENT_MISSING_TEMPLATE, Decorator.nodeForError(decorator),
-          'component is missing a template');
-    }
-    const templateExpr = component.get('template')!;
-
-    let templateStr: string;
-    let templateLiteral: ts.Node|null = null;
-    let templateUrl: string = '';
-    let templateRange: LexerRange|undefined = undefined;
-    let sourceMapping: TemplateSourceMapping;
-    let escapedString = false;
-    // We only support SourceMaps for inline templates that are simple string literals.
-    if (ts.isStringLiteral(templateExpr) || ts.isNoSubstitutionTemplateLiteral(templateExpr)) {
-      // the start and end of the `templateExpr` node includes the quotation marks, which we
-      // must
-      // strip
-      templateRange = getTemplateRange(templateExpr);
-      templateStr = templateExpr.getSourceFile().text;
-      templateLiteral = templateExpr;
-      templateUrl = containingFile;
-      escapedString = true;
-      sourceMapping = {
-        type: 'direct',
-        node: templateExpr as (ts.StringLiteral | ts.NoSubstitutionTemplateLiteral),
+      return {
+        ...this._parseTemplate(template, templateStr, templateRange, escapedString),
+        sourceMapping,
+        declaration: template,
       };
     } else {
-      const resolvedTemplate = this.evaluator.evaluate(templateExpr);
-      if (typeof resolvedTemplate !== 'string') {
-        throw createValueHasWrongTypeError(
-            templateExpr, resolvedTemplate, 'template must be a string');
+      const templateStr = this.resourceLoader.load(template.resolvedTemplateUrl);
+      if (this.depTracker !== null) {
+        this.depTracker.addResourceDependency(
+            node.getSourceFile(), absoluteFrom(template.resolvedTemplateUrl));
       }
-      templateStr = resolvedTemplate;
-      sourceMapping = {
-        type: 'indirect',
-        node: templateExpr,
-        componentClass: node,
-        template: templateStr,
+
+      return {
+        ...this._parseTemplate(
+            template, templateStr, /* templateRange */ null,
+            /* escapedString */ false),
+        sourceMapping: {
+          type: 'external',
+          componentClass: node,
+          // TODO(alxhub): TS in g3 is unable to make this inference on its own, so cast it here
+          // until g3 is able to figure this out.
+          node: (template as ExternalTemplateDeclaration).templateUrlExpression,
+          template: templateStr,
+          templateUrl: template.resolvedTemplateUrl,
+        },
+        declaration: template,
       };
     }
-
-    const template = this._parseTemplate(
-        component, templateStr, templateLiteral, templateUrl, templateRange, escapedString);
-
-    return {...template, sourceMapping};
   }
 
   private _parseTemplate(
-      component: Map<string, ts.Expression>, templateStr: string, templateLiteral: ts.Node|null,
-      templateUrl: string, templateRange: LexerRange|undefined,
+      template: TemplateDeclaration, templateStr: string, templateRange: LexerRange|null,
       escapedString: boolean): ParsedComponentTemplate {
+    // We always normalize line endings if the template has been escaped (i.e. is inline).
+    const i18nNormalizeLineEndingsInICUs = escapedString || this.i18nNormalizeLineEndingsInICUs;
+
+    const parsedTemplate = parseTemplate(templateStr, template.sourceMapUrl, {
+      preserveWhitespaces: template.preserveWhitespaces,
+      interpolationConfig: template.interpolationConfig,
+      range: templateRange ?? undefined,
+      escapedString,
+      enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+      i18nNormalizeLineEndingsInICUs,
+      isInline: template.isInline,
+    });
+
+    // Unfortunately, the primary parse of the template above may not contain accurate source map
+    // information. If used directly, it would result in incorrect code locations in template
+    // errors, etc. There are two main problems:
+    //
+    // 1. `preserveWhitespaces: false` annihilates the correctness of template source mapping, as
+    //    the whitespace transformation changes the contents of HTML text nodes before they're
+    //    parsed into Angular expressions.
+    // 2. By default, the template parser strips leading trivia characters (like spaces, tabs, and
+    //    newlines). This also destroys source mapping information.
+    //
+    // In order to guarantee the correctness of diagnostics, templates are parsed a second time
+    // with the above options set to preserve source mappings.
+
+    const {nodes: diagNodes} = parseTemplate(templateStr, template.sourceMapUrl, {
+      preserveWhitespaces: true,
+      interpolationConfig: template.interpolationConfig,
+      range: templateRange ?? undefined,
+      escapedString,
+      enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+      i18nNormalizeLineEndingsInICUs,
+      leadingTriviaChars: [],
+      isInline: template.isInline,
+    });
+
+    return {
+      ...parsedTemplate,
+      diagNodes,
+      template: template.isInline ? new WrappedNodeExpr(template.expression) : templateStr,
+      templateUrl: template.resolvedTemplateUrl,
+      isInline: template.isInline,
+      file: new ParseSourceFile(templateStr, template.resolvedTemplateUrl),
+    };
+  }
+
+  private parseTemplateDeclaration(
+      decorator: Decorator, component: Map<string, ts.Expression>,
+      containingFile: string): TemplateDeclaration {
     let preserveWhitespaces: boolean = this.defaultPreserveWhitespaces;
     if (component.has('preserveWhitespaces')) {
       const expr = component.get('preserveWhitespaces')!;
@@ -849,52 +881,39 @@ export class ComponentDecoratorHandler implements
       interpolationConfig = InterpolationConfig.fromArray(value as [string, string]);
     }
 
-    // We always normalize line endings if the template has been escaped (i.e. is inline).
-    const i18nNormalizeLineEndingsInICUs = escapedString || this.i18nNormalizeLineEndingsInICUs;
+    if (component.has('templateUrl')) {
+      const templateUrlExpr = component.get('templateUrl')!;
+      const templateUrl = this.evaluator.evaluate(templateUrlExpr);
+      if (typeof templateUrl !== 'string') {
+        throw createValueHasWrongTypeError(
+            templateUrlExpr, templateUrl, 'templateUrl must be a string');
+      }
+      const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
 
-    const isInline = component.has('template');
-    const parsedTemplate = parseTemplate(templateStr, templateUrl, {
-      preserveWhitespaces,
-      interpolationConfig,
-      range: templateRange,
-      escapedString,
-      enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-      i18nNormalizeLineEndingsInICUs,
-      isInline,
-    });
-
-    // Unfortunately, the primary parse of the template above may not contain accurate source map
-    // information. If used directly, it would result in incorrect code locations in template
-    // errors, etc. There are two main problems:
-    //
-    // 1. `preserveWhitespaces: false` annihilates the correctness of template source mapping, as
-    //    the whitespace transformation changes the contents of HTML text nodes before they're
-    //    parsed into Angular expressions.
-    // 2. By default, the template parser strips leading trivia characters (like spaces, tabs, and
-    //    newlines). This also destroys source mapping information.
-    //
-    // In order to guarantee the correctness of diagnostics, templates are parsed a second time
-    // with the above options set to preserve source mappings.
-
-    const {nodes: diagNodes} = parseTemplate(templateStr, templateUrl, {
-      preserveWhitespaces: true,
-      interpolationConfig,
-      range: templateRange,
-      escapedString,
-      enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
-      i18nNormalizeLineEndingsInICUs,
-      leadingTriviaChars: [],
-      isInline,
-    });
-
-    return {
-      ...parsedTemplate,
-      diagNodes,
-      template: templateLiteral !== null ? new WrappedNodeExpr(templateLiteral) : templateStr,
-      templateUrl,
-      isInline,
-      file: new ParseSourceFile(templateStr, templateUrl),
-    };
+      return {
+        isInline: false,
+        interpolationConfig,
+        preserveWhitespaces,
+        templateUrl,
+        templateUrlExpression: templateUrlExpr,
+        resolvedTemplateUrl: resourceUrl,
+        sourceMapUrl: sourceMapUrl(resourceUrl),
+      };
+    } else if (component.has('template')) {
+      return {
+        isInline: true,
+        interpolationConfig,
+        preserveWhitespaces,
+        expression: component.get('template')!,
+        templateUrl: containingFile,
+        resolvedTemplateUrl: containingFile,
+        sourceMapUrl: containingFile,
+      };
+    } else {
+      throw new FatalDiagnosticError(
+          ErrorCode.COMPONENT_MISSING_TEMPLATE, Decorator.nodeForError(decorator),
+          'component is missing a template');
+    }
   }
 
   private _expressionToImportedFile(expr: Expression, origin: ts.SourceFile): ts.SourceFile|null {
@@ -978,4 +997,42 @@ export interface ParsedComponentTemplate extends ParsedTemplate {
 
 export interface ParsedTemplateWithSource extends ParsedComponentTemplate {
   sourceMapping: TemplateSourceMapping;
+  declaration: TemplateDeclaration;
 }
+
+/**
+ * Common fields extracted from the declaration of a template.
+ */
+interface CommonTemplateDeclaration {
+  preserveWhitespaces: boolean;
+  interpolationConfig: InterpolationConfig;
+  templateUrl: string;
+  resolvedTemplateUrl: string;
+  sourceMapUrl: string;
+}
+
+/**
+ * Information extracted from the declaration of an inline template.
+ */
+interface InlineTemplateDeclaration extends CommonTemplateDeclaration {
+  isInline: true;
+  expression: ts.Expression;
+}
+
+/**
+ * Information extracted from the declaration of an external template.
+ */
+interface ExternalTemplateDeclaration extends CommonTemplateDeclaration {
+  isInline: false;
+  templateUrlExpression: ts.Expression;
+}
+
+/**
+ * The declaration of a template extracted from a component decorator.
+ *
+ * This data is extracted and stored separately to faciliate re-interpreting the template
+ * declaration whenever the compiler is notified of a change to a template file. With this
+ * information, `ComponentDecoratorHandler` is able to re-read the template and update the component
+ * record without needing to parse the original decorator again.
+ */
+type TemplateDeclaration = InlineTemplateDeclaration|ExternalTemplateDeclaration;
