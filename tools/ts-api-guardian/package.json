@@ -44,5 +44,8 @@
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
   },
-  "homepage": "https://github.com/angular/angular/tools/ts-api-guardian"
+  "homepage": "https://github.com/angular/angular/tools/ts-api-guardian",
+  "publishConfig": {
+    "registry": "https://wombat-dressing-room.appspot.com"
+  }
 }
