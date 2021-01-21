@@ -120,16 +120,17 @@ export class BindingParser {
 
   parseInterpolation(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     const sourceInfo = sourceSpan.start.toString();
+    const absoluteOffset = sourceSpan.fullStart.offset;
 
     try {
       const ast = this._exprParser.parseInterpolation(
-          value, sourceInfo, sourceSpan.start.offset, this._interpolationConfig)!;
+          value, sourceInfo, absoluteOffset, this._interpolationConfig)!;
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
-      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, sourceSpan.start.offset);
+      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
     }
   }
 
@@ -140,16 +141,17 @@ export class BindingParser {
    */
   parseInterpolationExpression(expression: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     const sourceInfo = sourceSpan.start.toString();
+    const absoluteOffset = sourceSpan.start.offset;
 
     try {
-      const ast = this._exprParser.parseInterpolationExpression(
-          expression, sourceInfo, sourceSpan.start.offset);
+      const ast =
+          this._exprParser.parseInterpolationExpression(expression, sourceInfo, absoluteOffset);
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
-      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, sourceSpan.start.offset);
+      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
     }
   }
 

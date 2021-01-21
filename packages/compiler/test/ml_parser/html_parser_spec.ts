@@ -709,6 +709,23 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
           ]);
         });
 
+        it('should set the end source span excluding trailing whitespace whitespace', () => {
+          expect(humanizeDomSourceSpans(
+                     parser.parse('<input type="text" />\n\n\n  <span>\n</span>', 'TestComp', {
+                       leadingTriviaChars: [' ', '\n', '\r', '\t'],
+                     })))
+              .toEqual([
+                [
+                  html.Element, 'input', 0, '<input type="text" />', '<input type="text" />',
+                  '<input type="text" />'
+                ],
+                [html.Attribute, 'type', 'text', 'type="text"'],
+                [html.Text, '\n\n\n  ', 0, ''],
+                [html.Element, 'span', 0, '<span>\n</span>', '<span>', '</span>'],
+                [html.Text, '\n', 1, ''],
+              ]);
+        });
+
         it('should not set the end source span for elements that are implicitly closed', () => {
           expect(humanizeDomSourceSpans(parser.parse('<div><p></div>', 'TestComp'))).toEqual([
             [html.Element, 'div', 0, '<div><p></div>', '<div>', '</div>'],
