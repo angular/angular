@@ -26,7 +26,7 @@ import {CompilerFactory} from './compiler_factory';
 import {CompletionBuilder, CompletionNodeContext} from './completions';
 import {DefinitionBuilder} from './definitions';
 import {QuickInfoBuilder} from './quick_info';
-import {ReferencesAndRenameBuilder} from './references';
+import {ReferencesAndRenameBuilder} from './references_and_rename';
 import {getSignatureHelp} from './signature_help';
 import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_target';
 import {findTightestNode, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';
