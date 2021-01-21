@@ -17,6 +17,38 @@ describe('language-service/compiler integration', () => {
     initMockFileSystem('Native');
   });
 
+  it('should react to a change in an external template', () => {
+    const cmpFile = absoluteFrom('/test.ts');
+    const tmplFile = absoluteFrom('/test.html');
+
+    const env = LanguageServiceTestEnvironment.setup([
+      {
+        name: cmpFile,
+        contents: `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            templateUrl: './test.html',
+          })
+          export class TestCmp {}
+        `,
+        isRoot: true,
+      },
+      {
+        name: tmplFile,
+        contents: '<other-cmp>Test</other-cmp>',
+      },
+    ]);
+
+    const diags = env.ngLS.getSemanticDiagnostics(cmpFile);
+    expect(diags.length).toBeGreaterThan(0);
+
+    env.updateFile(tmplFile, '<div>Test</div>');
+    const afterDiags = env.ngLS.getSemanticDiagnostics(cmpFile);
+    expect(afterDiags.length).toBe(0);
+  });
+
   it('should not produce errors from inline test declarations mixing with those of the app', () => {
     const appCmpFile = absoluteFrom('/test.cmp.ts');
     const appModuleFile = absoluteFrom('/test.mod.ts');

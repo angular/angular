@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {initMockFileSystem, TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
 import * as ts from 'typescript/lib/tsserverlibrary';
@@ -476,8 +476,8 @@ describe('quick info', () => {
       });
 
       it('should provide documentation', () => {
-        const {cursor} = env.overrideTemplateWithCursor(
-            absoluteFrom('/app.ts'), 'AppCmp', `<div>{{¦title}}</div>`);
+        const {cursor} =
+            env.updateFileWithCursor(absoluteFrom('/app.html'), `<div>{{¦title}}</div>`);
         const quickInfo = env.ngLS.getQuickInfoAtPosition(absoluteFrom('/app.html'), cursor);
         const documentation = toText(quickInfo!.documentation);
         expect(documentation).toBe('This is the title of the `AppCmp` Component.');
@@ -522,8 +522,7 @@ describe('quick info', () => {
       {templateOverride, expectedSpanText, expectedDisplayString}:
           {templateOverride: string, expectedSpanText: string, expectedDisplayString: string}):
       ts.QuickInfo {
-    const {cursor, text} =
-        env.overrideTemplateWithCursor(absoluteFrom('/app.ts'), 'AppCmp', templateOverride);
+    const {cursor, text} = env.updateFileWithCursor(absoluteFrom('/app.html'), templateOverride);
     env.expectNoSourceDiagnostics();
     env.expectNoTemplateDiagnostics(absoluteFrom('/app.ts'), 'AppCmp');
     const quickInfo = env.ngLS.getQuickInfoAtPosition(absoluteFrom('/app.html'), cursor);

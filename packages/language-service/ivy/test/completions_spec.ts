@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TmplAstNode} from '@angular/compiler';
 import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import * as ts from 'typescript';
 import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from '../display_parts';
 import {LanguageService} from '../language_service';
 
-import {LanguageServiceTestEnvironment} from './env';
+import {extractCursorInfo, LanguageServiceTestEnvironment} from './env';
 
 const DIR_WITH_INPUT = {
   'Dir': `
@@ -640,7 +639,6 @@ function setup(
   AppCmp: ts.ClassDeclaration,
   ngLS: LanguageService,
   cursor: number,
-  nodes: TmplAstNode[],
   text: string,
 } {
   const codePath = absoluteFrom('/test.ts');
@@ -650,6 +648,7 @@ function setup(
 
   const otherDirectiveClassDecls = Object.values(otherDeclarations).join('\n\n');
 
+  const {cursor, text: templateWithoutCursor} = extractCursorInfo(templateWithCursor);
   const env = LanguageServiceTestEnvironment.setup([
     {
       name: codePath,
@@ -675,18 +674,15 @@ function setup(
     },
     {
       name: templatePath,
-      contents: 'Placeholder template',
+      contents: templateWithoutCursor,
     }
   ]);
-  const {nodes, cursor, text} =
-      env.overrideTemplateWithCursor(codePath, 'AppCmp', templateWithCursor);
   return {
     env,
     fileName: templatePath,
     AppCmp: env.getClass(codePath, 'AppCmp'),
     ngLS: env.ngLS,
-    nodes,
-    text,
+    text: templateWithoutCursor,
     cursor,
   };
 }

@@ -67,7 +67,7 @@ export class LanguageService {
   }
 
   getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
+    const compiler = this.compilerFactory.getOrCreate();
     const ttc = compiler.getTemplateTypeChecker();
     const diagnostics: ts.Diagnostic[] = [];
     if (isTypeScriptFile(fileName)) {
@@ -90,7 +90,7 @@ export class LanguageService {
 
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
+    const compiler = this.compilerFactory.getOrCreate();
     const results =
         new DefinitionBuilder(this.tsLS, compiler).getDefinitionAndBoundSpan(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
@@ -99,7 +99,7 @@ export class LanguageService {
 
   getTypeDefinitionAtPosition(fileName: string, position: number):
       readonly ts.DefinitionInfo[]|undefined {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
+    const compiler = this.compilerFactory.getOrCreate();
     const results =
         new DefinitionBuilder(this.tsLS, compiler).getTypeDefinitionsAtPosition(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
@@ -107,7 +107,7 @@ export class LanguageService {
   }
 
   getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
+    const compiler = this.compilerFactory.getOrCreate();
     const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
     if (templateInfo === undefined) {
       return undefined;
@@ -129,7 +129,7 @@ export class LanguageService {
   }
 
   getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[]|undefined {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
+    const compiler = this.compilerFactory.getOrCreate();
     const results = new ReferencesAndRenameBuilder(this.strategy, this.tsLS, compiler)
                         .getReferencesAtPosition(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
@@ -137,7 +137,7 @@ export class LanguageService {
   }
 
   getRenameInfo(fileName: string, position: number): ts.RenameInfo {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
+    const compiler = this.compilerFactory.getOrCreate();
     const renameInfo = new ReferencesAndRenameBuilder(this.strategy, this.tsLS, compiler)
                            .getRenameInfo(absoluteFrom(fileName), position);
     if (!renameInfo.canRename) {
@@ -152,7 +152,7 @@ export class LanguageService {
   }
 
   findRenameLocations(fileName: string, position: number): readonly ts.RenameLocation[]|undefined {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
+    const compiler = this.compilerFactory.getOrCreate();
     const results = new ReferencesAndRenameBuilder(this.strategy, this.tsLS, compiler)
                         .findRenameLocations(fileName, position);
     this.compilerFactory.registerLastKnownProgram();
@@ -161,7 +161,7 @@ export class LanguageService {
 
   private getCompletionBuilder(fileName: string, position: number):
       CompletionBuilder<TmplAstNode|AST>|null {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
+    const compiler = this.compilerFactory.getOrCreate();
     const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
     if (templateInfo === undefined) {
       return null;
@@ -219,7 +219,7 @@ export class LanguageService {
   }
 
   getTcb(fileName: string, position: number): GetTcbResponse {
-    return this.withCompiler<GetTcbResponse>(fileName, compiler => {
+    return this.withCompiler<GetTcbResponse>(compiler => {
       const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
       if (templateInfo === undefined) {
         return undefined;
@@ -263,8 +263,8 @@ export class LanguageService {
     });
   }
 
-  private withCompiler<T>(fileName: string, p: (compiler: NgCompiler) => T): T {
-    const compiler = this.compilerFactory.getOrCreateWithChangedFile(fileName);
+  private withCompiler<T>(p: (compiler: NgCompiler) => T): T {
+    const compiler = this.compilerFactory.getOrCreate();
     const result = p(compiler);
     this.compilerFactory.registerLastKnownProgram();
     return result;
