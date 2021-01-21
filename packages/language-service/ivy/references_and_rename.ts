@@ -16,6 +16,61 @@ import {convertToTemplateDocumentSpan, createLocationKey, getRenameTextAndSpanAt
 import {findTightestNode} from './ts_utils';
 import {getTemplateInfoAtPosition, TemplateInfo} from './utils';
 
+export class ReferencesBuilder {
+  private readonly ttc = this.compiler.getTemplateTypeChecker();
+
+  constructor(
+      private readonly driver: ProgramDriver, private readonly tsLS: ts.LanguageService,
+      private readonly compiler: NgCompiler) {}
+
+  getReferencesAtPosition(filePath: string, position: number): ts.ReferenceEntry[]|undefined {
+    this.ttc.generateAllTypeCheckBlocks();
+    const templateInfo = getTemplateInfoAtPosition(filePath, position, this.compiler);
+    if (templateInfo === undefined) {
+      return this.getReferencesAtTypescriptPosition(filePath, position);
+    }
+    return this.getReferencesAtTemplatePosition(templateInfo, position);
+  }
+
+  private getReferencesAtTemplatePosition(templateInfo: TemplateInfo, position: number):
+      ts.ReferenceEntry[]|undefined {
+    const allTargetDetails = getTargetDetailsAtTemplatePosition(templateInfo, position, this.ttc);
+    if (allTargetDetails === null) {
+      return undefined;
+    }
+    const allReferences: ts.ReferenceEntry[] = [];
+    for (const targetDetails of allTargetDetails) {
+      for (const location of targetDetails.typescriptLocations) {
+        const refs = this.getReferencesAtTypescriptPosition(location.fileName, location.position);
+        if (refs !== undefined) {
+          allReferences.push(...refs);
+        }
+      }
+    }
+    return allReferences.length > 0 ? allReferences : undefined;
+  }
+
+  private getReferencesAtTypescriptPosition(fileName: string, position: number):
+      ts.ReferenceEntry[]|undefined {
+    const refs = this.tsLS.getReferencesAtPosition(fileName, position);
+    if (refs === undefined) {
+      return undefined;
+    }
+
+    const entries: Map<string, ts.ReferenceEntry> = new Map();
+    for (const ref of refs) {
+      if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(ref.fileName))) {
+        const entry = convertToTemplateDocumentSpan(ref, this.ttc, this.driver.getProgram());
+        if (entry !== null) {
+          entries.set(createLocationKey(entry), entry);
+        }
+      } else {
+        entries.set(createLocationKey(ref), ref);
+      }
+    }
+    return Array.from(entries.values());
+  }
+}
 
 enum RequestKind {
   Template,
@@ -35,7 +90,8 @@ interface TypeScriptRequest {
 
 type RequestOrigin = TemplateRequest|TypeScriptRequest;
 
-export class ReferencesAndRenameBuilder {
+
+export class RenameBuilder {
   private readonly ttc = this.compiler.getTemplateTypeChecker();
 
   constructor(
@@ -125,14 +181,6 @@ export class ReferencesAndRenameBuilder {
     return allRenameLocations.length > 0 ? allRenameLocations : undefined;
   }
 
-  private getTsNodeAtPosition(filePath: string, position: number): ts.Node|null {
-    const sf = this.driver.getProgram().getSourceFile(filePath);
-    if (!sf) {
-      return null;
-    }
-    return findTightestNode(sf, position) ?? null;
-  }
-
   findRenameLocationsAtTypescriptPosition(
       filePath: string, position: number,
       requestOrigin: RequestOrigin): readonly ts.RenameLocation[]|undefined {
@@ -181,54 +229,11 @@ export class ReferencesAndRenameBuilder {
     });
   }
 
-  getReferencesAtPosition(filePath: string, position: number): ts.ReferenceEntry[]|undefined {
-    this.ttc.generateAllTypeCheckBlocks();
-
-    return this.compiler.perfRecorder.inPhase(PerfPhase.LsReferencesAndRenames, () => {
-      const templateInfo = getTemplateInfoAtPosition(filePath, position, this.compiler);
-      if (templateInfo === undefined) {
-        return this.getReferencesAtTypescriptPosition(filePath, position);
-      }
-      return this.getReferencesAtTemplatePosition(templateInfo, position);
-    });
-  }
-
-  private getReferencesAtTemplatePosition(templateInfo: TemplateInfo, position: number):
-      ts.ReferenceEntry[]|undefined {
-    const allTargetDetails = getTargetDetailsAtTemplatePosition(templateInfo, position, this.ttc);
-    if (allTargetDetails === null) {
-      return undefined;
+  private getTsNodeAtPosition(filePath: string, position: number): ts.Node|null {
+    const sf = this.driver.getProgram().getSourceFile(filePath);
+    if (!sf) {
+      return null;
     }
-    const allReferences: ts.ReferenceEntry[] = [];
-    for (const targetDetails of allTargetDetails) {
-      for (const location of targetDetails.typescriptLocations) {
-        const refs = this.getReferencesAtTypescriptPosition(location.fileName, location.position);
-        if (refs !== undefined) {
-          allReferences.push(...refs);
-        }
-      }
-    }
-    return allReferences.length > 0 ? allReferences : undefined;
-  }
-
-  private getReferencesAtTypescriptPosition(fileName: string, position: number):
-      ts.ReferenceEntry[]|undefined {
-    const refs = this.tsLS.getReferencesAtPosition(fileName, position);
-    if (refs === undefined) {
-      return undefined;
-    }
-
-    const entries: Map<string, ts.ReferenceEntry> = new Map();
-    for (const ref of refs) {
-      if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(ref.fileName))) {
-        const entry = convertToTemplateDocumentSpan(ref, this.ttc, this.driver.getProgram());
-        if (entry !== null) {
-          entries.set(createLocationKey(entry), entry);
-        }
-      } else {
-        entries.set(createLocationKey(ref), ref);
-      }
-    }
-    return Array.from(entries.values());
+    return findTightestNode(sf, position) ?? null;
   }
 }
