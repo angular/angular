@@ -27,8 +27,8 @@ describe('definitions', () => {
     };
 
     const env = createModuleWithDeclarations([appFile], [templateFile]);
-    const {cursor} = env.overrideTemplateWithCursor(
-        absoluteFrom('/app.ts'), 'AppCmp', '<input #myInput /> {{myIn¦put.value}}');
+    const {cursor} = env.updateFileWithCursor(
+        absoluteFrom('/app.html'), '<input #myInput /> {{myIn¦put.value}}');
     env.expectNoSourceDiagnostics();
     const {definitions} = env.ngLS.getDefinitionAndBoundSpan(absoluteFrom('/app.html'), cursor)!;
     expect(definitions![0].name).toEqual('myInput');
