@@ -23,7 +23,11 @@ import {
 import {CanColor, CanColorCtor, mixinColor} from '@angular/material-experimental/mdc-core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {ProgressAnimationEnd} from '@angular/material/progress-bar';
-import {MDCLinearProgressAdapter, MDCLinearProgressFoundation} from '@material/linear-progress';
+import {
+  MDCLinearProgressAdapter,
+  MDCLinearProgressFoundation,
+  WithMDCResizeObserver,
+} from '@material/linear-progress';
 import {Subscription, fromEvent, Observable} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {Directionality} from '@angular/cdk/bidi';
@@ -93,10 +97,13 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
     },
     getWidth: () => this._rootElement.offsetWidth,
     attachResizeObserver: (callback) => {
-      if ((typeof window !== 'undefined') && window.ResizeObserver) {
-        const ro = new ResizeObserver(callback);
-        ro.observe(this._rootElement);
-        return ro;
+      const resizeObserverConstructor = (typeof window !== 'undefined') &&
+                                        (window as unknown as WithMDCResizeObserver).ResizeObserver;
+
+      if (resizeObserverConstructor) {
+        const observer = new resizeObserverConstructor(callback);
+        observer.observe(this._rootElement);
+        return observer;
       }
 
       return null;

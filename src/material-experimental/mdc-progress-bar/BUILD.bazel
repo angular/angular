@@ -27,7 +27,6 @@ ng_module(
         "//src/material/progress-bar",
         "@npm//@angular/core",
         "@npm//@material/linear-progress",
-        "@npm//@types/resize-observer-browser",
     ],
 )
 
