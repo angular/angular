@@ -31,7 +31,7 @@ export type GetTcbResponse = {
    * purposes.
    */
   fileName: string,
-  /** The content of the typecheck block. */
+  /** The content of the SourceFile this typecheck block belongs to. */
   content: string,
   /**
    * Spans over node(s) in the typecheck block corresponding to the
@@ -245,10 +245,9 @@ export class LanguageService {
                      }))
                 .filter((n): n is ts.Node => n !== null);
 
-        const tcbStart = tcb.getStart(sf);
         selections = selectionNodes.map(n => {
           return {
-            start: n.getStart(sf) - tcbStart,
+            start: n.getStart(sf),
             length: n.end - n.getStart(sf),
           };
         });
@@ -256,7 +255,7 @@ export class LanguageService {
 
       return {
         fileName: sf.fileName,
-        content: tcb.getText(sf),
+        content: sf.text,
         selections,
       };
     });
