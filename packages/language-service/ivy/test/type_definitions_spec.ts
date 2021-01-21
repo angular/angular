@@ -49,8 +49,7 @@ describe('type definitions', () => {
   });
 
   function getTypeDefinitionsAndAssertBoundSpan({templateOverride}: {templateOverride: string}) {
-    const {cursor, text} =
-        env.overrideTemplateWithCursor(absoluteFrom('/app.ts'), 'AppCmp', templateOverride);
+    const {cursor, text} = env.updateFileWithCursor(absoluteFrom('/app.html'), templateOverride);
     env.expectNoSourceDiagnostics();
     env.expectNoTemplateDiagnostics(absoluteFrom('/app.ts'), 'AppCmp');
     const defs = env.ngLS.getTypeDefinitionAtPosition(absoluteFrom('/app.html'), cursor);

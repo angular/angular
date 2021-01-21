@@ -46,13 +46,6 @@ function writeTsconfig(
 
 export type TestableOptions = StrictTemplateOptions;
 
-export interface TemplateOverwriteResult {
-  cursor: number;
-  nodes: TmplAstNode[];
-  component: ts.ClassDeclaration;
-  text: string;
-}
-
 export class LanguageServiceTestEnvironment {
   private constructor(
       readonly tsLS: ts.LanguageService, readonly ngLS: LanguageService,
@@ -118,26 +111,16 @@ export class LanguageServiceTestEnvironment {
     return getClassOrError(sf, className);
   }
 
-  overrideTemplateWithCursor(fileName: AbsoluteFsPath, className: string, contents: string):
-      TemplateOverwriteResult {
-    const program = this.tsLS.getProgram();
-    if (program === undefined) {
-      throw new Error(`Expected to get a ts.Program`);
-    }
-    const sf = getSourceFileOrError(program, fileName);
-    const component = getClassOrError(sf, className);
-
-    const ngCompiler = this.ngLS.compilerFactory.getOrCreate();
-    const templateTypeChecker = ngCompiler.getTemplateTypeChecker();
-
+  updateFileWithCursor(fileName: AbsoluteFsPath, contents: string): {cursor: number, text: string} {
     const {cursor, text} = extractCursorInfo(contents);
-
-    const {nodes} = templateTypeChecker.overrideComponentTemplate(component, text);
-    return {cursor, nodes, component, text};
+    this.updateFile(fileName, text);
+    return {cursor, text};
   }
 
   updateFile(fileName: AbsoluteFsPath, contents: string): void {
-    const scriptInfo = this.projectService.getScriptInfo(fileName);
+    const normalFileName = ts.server.toNormalizedPath(fileName);
+    const scriptInfo =
+        this.projectService.getOrCreateScriptInfoForNormalizedPath(normalFileName, true, '');
     if (scriptInfo === undefined) {
       throw new Error(`Could not find a file named ${fileName}`);
     }
