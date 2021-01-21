@@ -523,7 +523,7 @@ describe('serializeI18nMessageForLocalize', () => {
        expect(humanizeSourceSpan(messageParts[3].sourceSpan)).toEqual('"" (29-29)');
 
        expect(placeHolders[0].text).toEqual('START_BOLD_TEXT');
-       expect(humanizeSourceSpan(placeHolders[0].sourceSpan)).toEqual('"<b>   " (10-16)');
+       expect(humanizeSourceSpan(placeHolders[0].sourceSpan)).toEqual('"<b>" (10-13)');
        expect(placeHolders[1].text).toEqual('INTERPOLATION');
        expect(humanizeSourceSpan(placeHolders[1].sourceSpan)).toEqual('"{{value}}" (16-25)');
        expect(placeHolders[2].text).toEqual('CLOSE_BOLD_TEXT');

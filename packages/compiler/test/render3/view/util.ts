@@ -16,6 +16,7 @@ import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml
 import * as a from '../../../src/render3/r3_ast';
 import {htmlAstToRender3Ast, Render3ParseResult} from '../../../src/render3/r3_template_transform';
 import {I18nMetaVisitor} from '../../../src/render3/view/i18n/meta';
+import {LEADING_TRIVIA_CHARS} from '../../../src/render3/view/template';
 import {BindingParser} from '../../../src/template_parser/binding_parser';
 import {MockSchemaRegistry} from '../../../testing';
 
@@ -84,9 +85,10 @@ export function parseR3(
               ignoreError?: boolean} = {}): Render3ParseResult {
   const htmlParser = new HtmlParser();
 
-  const parseResult = htmlParser.parse(
-      input, 'path:://to/template',
-      {tokenizeExpansionForms: true, leadingTriviaChars: options.leadingTriviaChars});
+  const parseResult = htmlParser.parse(input, 'path:://to/template', {
+    tokenizeExpansionForms: true,
+    leadingTriviaChars: options.leadingTriviaChars ?? LEADING_TRIVIA_CHARS,
+  });
 
   if (parseResult.errors.length > 0 && !options.ignoreError) {
     const msg = parseResult.errors.map(e => e.toString()).join('\n');
