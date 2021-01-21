@@ -1,6 +1,6 @@
 {
   "name": "ts-api-guardian",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Guards the API of TypeScript libraries!",
   "main": "lib/main.js",
   "typings": "lib/main.d.ts",
