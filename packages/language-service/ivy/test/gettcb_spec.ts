@@ -33,7 +33,7 @@ describe('get typecheck block', () => {
     env.expectNoSourceDiagnostics();
     const result = env.ngLS.getTcb(appFi, cursor);
     if (result === undefined) {
-      fail('Expeced a valid TCB response');
+      fail('Expected a valid TCB response');
       return;
     }
     const {content, selections} = result;
@@ -63,7 +63,7 @@ describe('get typecheck block', () => {
     env.expectNoSourceDiagnostics();
     const result = env.ngLS.getTcb(templateFi, cursor);
     if (result === undefined) {
-      fail('Expeced a valid TCB response');
+      fail('Expected a valid TCB response');
       return;
     }
     const {content, selections} = result;

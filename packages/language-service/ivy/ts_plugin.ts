@@ -9,7 +9,9 @@
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {GetTcbResponse, LanguageService} from './language_service';
 
-export type NgLanguageService = ts.LanguageService&Pick<LanguageService, 'getTcb'>;
+export interface NgLanguageService extends ts.LanguageService {
+  getTcb(fileName: string, position: number): GetTcbResponse;
+}
 
 export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   const {project, languageService: tsLS, config} = info;
