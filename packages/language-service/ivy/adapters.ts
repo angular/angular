@@ -25,7 +25,13 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
   readonly factoryTracker = null;      // no .ngfactory shims
   readonly unifiedModulesHost = null;  // only used in Bazel
   readonly rootDirs: AbsoluteFsPath[];
-  private readonly templateVersion = new Map<string, string>();
+
+  /**
+   * Map of resource filenames to the version of the file last read via `readResource`.
+   *
+   * Used to implement `getModifiedResourceFiles`.
+   */
+  private readonly lastReadResourceVersion = new Map<string, string>();
 
   constructor(private readonly project: ts.server.Project) {
     this.rootDirs = getRootDirs(this, project.getCompilationSettings());
@@ -81,14 +87,18 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
       throw new Error(`Failed to get script snapshot while trying to read ${fileName}`);
     }
     const version = this.project.getScriptVersion(fileName);
-    this.templateVersion.set(fileName, version);
+    this.lastReadResourceVersion.set(fileName, version);
     return snapshot.getText(0, snapshot.getLength());
   }
 
-  isTemplateDirty(fileName: string): boolean {
-    const lastVersion = this.templateVersion.get(fileName);
-    const latestVersion = this.project.getScriptVersion(fileName);
-    return lastVersion !== latestVersion;
+  getModifiedResourceFiles(): Set<string>|undefined {
+    const modifiedFiles = new Set<string>();
+    for (const [fileName, oldVersion] of this.lastReadResourceVersion) {
+      if (this.project.getScriptVersion(fileName) !== oldVersion) {
+        modifiedFiles.add(fileName);
+      }
+    }
+    return modifiedFiles.size > 0 ? modifiedFiles : undefined;
   }
 }
 
