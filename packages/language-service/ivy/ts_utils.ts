@@ -79,3 +79,18 @@ export function getClassDeclFromDecoratorProp(propAsgnNode: ts.PropertyAssignmen
   const classDeclNode = decorator.parent;
   return classDeclNode;
 }
+
+/**
+ * Collects all member methods, including those from base classes.
+ */
+export function collectMemberMethods(
+    clazz: ts.ClassDeclaration, typeChecker: ts.TypeChecker): ts.MethodDeclaration[] {
+  const members: ts.MethodDeclaration[] = [];
+  const apparentProps = typeChecker.getTypeAtLocation(clazz).getApparentProperties();
+  for (const prop of apparentProps) {
+    if (ts.isMethodDeclaration(prop.valueDeclaration) && prop.valueDeclaration) {
+      members.push(prop.valueDeclaration);
+    }
+  }
+  return members;
+}

@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../imports';
-import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, LocalMetadataRegistry, MetadataRegistry, PipeMeta} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataRegistry, DirectiveMeta, LocalMetadataRegistry, MetadataRegistry, MetaType, PipeMeta} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {ScopeData} from '../src/api';
 import {DtsModuleScopeResolver} from '../src/dependency';
@@ -232,6 +232,7 @@ describe('LocalModuleScopeRegistry', () => {
 function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
   const name = ref.debugName!;
   return {
+    type: MetaType.Directive,
     ref,
     name,
     selector: `[${ref.debugName}]`,
@@ -255,7 +256,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
 
 function fakePipe(ref: Reference<ClassDeclaration>): PipeMeta {
   const name = ref.debugName!;
-  return {ref, name};
+  return {type: MetaType.Pipe, ref, name, nameExpr: null};
 }
 
 class MockDtsModuleScopeResolver implements DtsModuleScopeResolver {

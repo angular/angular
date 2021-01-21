@@ -18,7 +18,7 @@ import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracke
 import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
-import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, ResourceRegistry} from '../../metadata';
+import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, PipeMeta, ResourceRegistry} from '../../metadata';
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ActivePerfRecorder, DelegatingPerfRecorder, PerfCheckpoint, PerfEvent, PerfPhase} from '../../perf';
@@ -526,6 +526,19 @@ export class NgCompiler {
     }
 
     return {styles, template};
+  }
+
+  getMeta(classDecl: DeclarationNode): PipeMeta|DirectiveMeta|null {
+    if (!isNamedClassDeclaration(classDecl)) {
+      return null;
+    }
+    const ref = new Reference(classDecl);
+    const {metaReader} = this.ensureAnalyzed();
+    const meta = metaReader.getPipeMetadata(ref) ?? metaReader.getDirectiveMetadata(ref);
+    if (meta === null) {
+      return null;
+    }
+    return meta;
   }
 
   /**

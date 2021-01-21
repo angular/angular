@@ -117,6 +117,15 @@ export class Project {
     return this.buffers.get(projectFileName)!;
   }
 
+  getSourceFile(projectFileName: string): ts.SourceFile|undefined {
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    return this.tsProject.getSourceFile(this.projectService.toPath(fileName));
+  }
+
+  getTypeChecker(): ts.TypeChecker {
+    return this.ngLS.compilerFactory.getOrCreate().getCurrentProgram().getTypeChecker();
+  }
+
   getDiagnosticsForFile(projectFileName: string): ts.Diagnostic[] {
     const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
     const diagnostics: ts.Diagnostic[] = [];

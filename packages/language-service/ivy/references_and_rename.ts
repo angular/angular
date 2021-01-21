@@ -8,12 +8,14 @@
 import {AST, TmplAstNode} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {MetaType, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
 import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
+import {SymbolKind} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript';
 
-import {convertToTemplateDocumentSpan, createLocationKey, getRenameTextAndSpanAtPosition, getTargetDetailsAtTemplatePosition} from './references_and_rename_utils';
-import {findTightestNode} from './ts_utils';
+import {convertToTemplateDocumentSpan, createLocationKey, FilePosition, getParentClassMeta, getRenameTextAndSpanAtPosition, getTargetDetailsAtTemplatePosition, TemplateLocationDetails} from './references_and_rename_utils';
+import {collectMemberMethods, findTightestNode} from './ts_utils';
 import {getTemplateInfoAtPosition, TemplateInfo} from './utils';
 
 export class ReferencesBuilder {
@@ -73,23 +75,70 @@ export class ReferencesBuilder {
 }
 
 enum RequestKind {
-  Template,
-  TypeScript,
+  DirectFromTemplate,
+  DirectFromTypeScript,
+  PipeName,
+  Selector,
 }
 
-interface TemplateRequest {
-  kind: RequestKind.Template;
-  requestNode: TmplAstNode|AST;
-  position: number;
+/** The context needed to perform a rename of a pipe name. */
+interface PipeRenameContext {
+  type: RequestKind.PipeName;
+
+  /** The string literal for the pipe name that appears in the @Pipe meta */
+  pipeNameExpr: ts.StringLiteral;
+
+  /**
+   * The location to use for querying the native TS LS for rename positions. This will be the
+   * pipe's transform method.
+   */
+  renamePosition: FilePosition;
 }
 
-interface TypeScriptRequest {
-  kind: RequestKind.TypeScript;
+/** The context needed to perform a rename of a directive/component selector. */
+interface SelectorRenameContext {
+  type: RequestKind.Selector;
+
+  /** The string literal that appears in the directive/component metadata. */
+  selectorExpr: ts.StringLiteral;
+
+  /**
+   * The location to use for querying the native TS LS for rename positions. This will be the
+   * component/directive class itself. Doing so will allow us to find the location of the
+   * directive/component instantiations, which map to template elements.
+   */
+  renamePosition: FilePosition;
+}
+
+interface DirectFromTypescriptRenameContext {
+  type: RequestKind.DirectFromTypeScript;
+
+  /** The node that is being renamed. */
   requestNode: ts.Node;
 }
 
-type RequestOrigin = TemplateRequest|TypeScriptRequest;
+interface DirectFromTemplateRenameContext {
+  type: RequestKind.DirectFromTemplate;
 
+  /** The position in the TCB file to use as the request to the native TSLS for renaming. */
+  renamePosition: FilePosition;
+
+  /** The position in the template the request originated from. */
+  templatePosition: number;
+
+  /** The target node in the template AST that corresponds to the template position. */
+  requestNode: AST|TmplAstNode;
+}
+
+type IndirectRenameContext = PipeRenameContext|SelectorRenameContext;
+type RenameRequest =
+    IndirectRenameContext|DirectFromTemplateRenameContext|DirectFromTypescriptRenameContext;
+
+function isDirectRenameContext(context: RenameRequest): context is DirectFromTemplateRenameContext|
+    DirectFromTypescriptRenameContext {
+  return context.type === RequestKind.DirectFromTemplate ||
+      context.type === RequestKind.DirectFromTypeScript;
+}
 
 export class RenameBuilder {
   private readonly ttc = this.compiler.getTemplateTypeChecker();
@@ -133,94 +182,86 @@ export class RenameBuilder {
     });
   }
 
-  findRenameLocations(filePath: string, position: number): readonly ts.RenameLocation[]|undefined {
+  findRenameLocations(filePath: string, position: number): readonly ts.RenameLocation[]|null {
     this.ttc.generateAllTypeCheckBlocks();
     return this.compiler.perfRecorder.inPhase(PerfPhase.LsReferencesAndRenames, () => {
       const templateInfo = getTemplateInfoAtPosition(filePath, position, this.compiler);
       // We could not get a template at position so we assume the request came from outside the
       // template.
       if (templateInfo === undefined) {
-        const requestNode = this.getTsNodeAtPosition(filePath, position);
-        if (requestNode === null) {
-          return undefined;
+        const renameRequest = this.buildRenameRequestAtTypescriptPosition(filePath, position);
+        if (renameRequest === null) {
+          return null;
         }
-        const requestOrigin: TypeScriptRequest = {kind: RequestKind.TypeScript, requestNode};
-        return this.findRenameLocationsAtTypescriptPosition(filePath, position, requestOrigin);
+        return this.findRenameLocationsAtTypescriptPosition(renameRequest);
       }
-
       return this.findRenameLocationsAtTemplatePosition(templateInfo, position);
     });
   }
 
   private findRenameLocationsAtTemplatePosition(templateInfo: TemplateInfo, position: number):
-      readonly ts.RenameLocation[]|undefined {
+      readonly ts.RenameLocation[]|null {
     const allTargetDetails = getTargetDetailsAtTemplatePosition(templateInfo, position, this.ttc);
     if (allTargetDetails === null) {
-      return undefined;
+      return null;
+    }
+    const renameRequests = this.buildRenameRequestsFromTemplateDetails(allTargetDetails, position);
+    if (renameRequests === null) {
+      return null;
     }
 
     const allRenameLocations: ts.RenameLocation[] = [];
-    for (const targetDetails of allTargetDetails) {
-      const requestOrigin: TemplateRequest = {
-        kind: RequestKind.Template,
-        requestNode: targetDetails.templateTarget,
-        position,
-      };
-
-      for (const location of targetDetails.typescriptLocations) {
-        const locations = this.findRenameLocationsAtTypescriptPosition(
-            location.fileName, location.position, requestOrigin);
-        // If we couldn't find rename locations for _any_ result, we should not allow renaming to
-        // proceed instead of having a partially complete rename.
-        if (locations === undefined) {
-          return undefined;
-        }
-        allRenameLocations.push(...locations);
+    for (const renameRequest of renameRequests) {
+      const locations = this.findRenameLocationsAtTypescriptPosition(renameRequest);
+      // If we couldn't find rename locations for _any_ result, we should not allow renaming to
+      // proceed instead of having a partially complete rename.
+      if (locations === null) {
+        return null;
       }
+      allRenameLocations.push(...locations);
     }
-    return allRenameLocations.length > 0 ? allRenameLocations : undefined;
+    return allRenameLocations.length > 0 ? allRenameLocations : null;
   }
 
-  findRenameLocationsAtTypescriptPosition(
-      filePath: string, position: number,
-      requestOrigin: RequestOrigin): readonly ts.RenameLocation[]|undefined {
+  findRenameLocationsAtTypescriptPosition(renameRequest: RenameRequest):
+      readonly ts.RenameLocation[]|null {
     return this.compiler.perfRecorder.inPhase(PerfPhase.LsReferencesAndRenames, () => {
-      let originalNodeText: string;
-      if (requestOrigin.kind === RequestKind.TypeScript) {
-        originalNodeText = requestOrigin.requestNode.getText();
-      } else {
-        const templateNodeText =
-            getRenameTextAndSpanAtPosition(requestOrigin.requestNode, requestOrigin.position);
-        if (templateNodeText === null) {
-          return undefined;
-        }
-        originalNodeText = templateNodeText.text;
+      const renameInfo = getExpectedRenameTextAndInitalRenameEntries(renameRequest);
+      if (renameInfo === null) {
+        return null;
       }
-
-      const locations = this.tsLS.findRenameLocations(
-          filePath, position, /*findInStrings*/ false, /*findInComments*/ false);
+      const {entries, expectedRenameText} = renameInfo;
+      const {fileName, position} = getRenameRequestPosition(renameRequest);
+      const findInStrings = false;
+      const findInComments = false;
+      const locations =
+          this.tsLS.findRenameLocations(fileName, position, findInStrings, findInComments);
       if (locations === undefined) {
-        return undefined;
+        return null;
       }
 
-      const entries: Map<string, ts.RenameLocation> = new Map();
       for (const location of locations) {
-        // TODO(atscott): Determine if a file is a shim file in a more robust way and make the API
-        // available in an appropriate location.
         if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(location.fileName))) {
           const entry = convertToTemplateDocumentSpan(
-              location, this.ttc, this.driver.getProgram(), originalNodeText);
+              location, this.ttc, this.driver.getProgram(), expectedRenameText);
           // There is no template node whose text matches the original rename request. Bail on
           // renaming completely rather than providing incomplete results.
           if (entry === null) {
-            return undefined;
+            return null;
           }
           entries.set(createLocationKey(entry), entry);
         } else {
+          if (!isDirectRenameContext(renameRequest)) {
+            // Discard any non-template results for non-direct renames. We should only rename
+            // template results + the name/selector/alias `ts.Expression`. The other results
+            // will be the the `ts.Identifier` of the transform method (pipe rename) or the
+            // directive class (selector rename).
+            continue;
+          }
           // Ensure we only allow renaming a TS result with matching text
           const refNode = this.getTsNodeAtPosition(location.fileName, location.textSpan.start);
-          if (refNode === null || refNode.getText() !== originalNodeText) {
-            return undefined;
+          if (refNode === null || refNode.getText() !== expectedRenameText) {
+            return null;
           }
           entries.set(createLocationKey(location), location);
         }
@@ -236,4 +277,118 @@ export class RenameBuilder {
     }
     return findTightestNode(sf, position) ?? null;
   }
+
+  private buildRenameRequestsFromTemplateDetails(
+      allTargetDetails: TemplateLocationDetails[], templatePosition: number): RenameRequest[]|null {
+    const renameRequests: RenameRequest[] = [];
+    for (const targetDetails of allTargetDetails) {
+      for (const location of targetDetails.typescriptLocations) {
+        if (targetDetails.symbol.kind === SymbolKind.Pipe) {
+          const meta =
+              this.compiler.getMeta(targetDetails.symbol.classSymbol.tsSymbol.valueDeclaration);
+          if (meta === null || meta.type !== MetaType.Pipe) {
+            return null;
+          }
+          const renameRequest = this.buildPipeRenameRequest(meta);
+          if (renameRequest === null) {
+            return null;
+          }
+          renameRequests.push(renameRequest);
+        } else {
+          const renameRequest: RenameRequest = {
+            type: RequestKind.DirectFromTemplate,
+            templatePosition,
+            requestNode: targetDetails.templateTarget,
+            renamePosition: location
+          };
+          renameRequests.push(renameRequest);
+        }
+      }
+    }
+    return renameRequests;
+  }
+
+  private buildRenameRequestAtTypescriptPosition(filePath: string, position: number): RenameRequest
+      |null {
+    const requestNode = this.getTsNodeAtPosition(filePath, position);
+    if (requestNode === null) {
+      return null;
+    }
+    const meta = getParentClassMeta(requestNode, this.compiler);
+    if (meta !== null && meta.type === MetaType.Pipe && meta.nameExpr === requestNode) {
+      return this.buildPipeRenameRequest(meta);
+    } else {
+      return {type: RequestKind.DirectFromTypeScript, requestNode};
+    }
+  }
+
+  private buildPipeRenameRequest(meta: PipeMeta): PipeRenameContext|null {
+    if (!ts.isClassDeclaration(meta.ref.node) || meta.nameExpr === null ||
+        !ts.isStringLiteral(meta.nameExpr)) {
+      return null;
+    }
+    const typeChecker = this.driver.getProgram().getTypeChecker();
+    const memberMethods = collectMemberMethods(meta.ref.node, typeChecker) ?? [];
+    const pipeTransformNode: ts.MethodDeclaration|undefined =
+        memberMethods.find(m => m.name.getText() === 'transform');
+    if (pipeTransformNode === undefined) {
+      return null;
+    }
+    return {
+      type: RequestKind.PipeName,
+      pipeNameExpr: meta.nameExpr,
+      renamePosition: {
+        fileName: pipeTransformNode.getSourceFile().fileName,
+        position: pipeTransformNode.getStart(),
+      }
+    };
+  }
+}
+
+/**
+ * From the provided `RenameRequest`, determines what text we should expect all produced
+ * `ts.RenameLocation`s to have and creates an initial entry for indirect renames (one which is
+ * required for the rename operation, but cannot be found by the native TS LS).
+ */
+function getExpectedRenameTextAndInitalRenameEntries(renameRequest: RenameRequest):
+    {expectedRenameText: string, entries: Map<string, ts.RenameLocation>}|null {
+  let expectedRenameText: string;
+  const entries = new Map<string, ts.RenameLocation>();
+  if (renameRequest.type === RequestKind.DirectFromTypeScript) {
+    expectedRenameText = renameRequest.requestNode.getText();
+  } else if (renameRequest.type === RequestKind.DirectFromTemplate) {
+    const templateNodeText =
+        getRenameTextAndSpanAtPosition(renameRequest.requestNode, renameRequest.templatePosition);
+    if (templateNodeText === null) {
+      return null;
+    }
+    expectedRenameText = templateNodeText.text;
+  } else if (renameRequest.type === RequestKind.PipeName) {
+    const {pipeNameExpr} = renameRequest;
+    expectedRenameText = pipeNameExpr.text;
+    const entry: ts.RenameLocation = {
+      fileName: renameRequest.pipeNameExpr.getSourceFile().fileName,
+      textSpan: {start: pipeNameExpr.getStart() + 1, length: pipeNameExpr.getText().length - 2},
+    };
+    entries.set(createLocationKey(entry), entry);
+  } else {
+    // TODO(atscott): Implement other types of special renames
+    return null;
+  }
+
+  return {entries, expectedRenameText};
+}
+
+/**
+ * Given a `RenameRequest`, determines the `FilePosition` to use asking the native TS LS for rename
+ * locations.
+ */
+function getRenameRequestPosition(renameRequest: RenameRequest): FilePosition {
+  const fileName = renameRequest.type === RequestKind.DirectFromTypeScript ?
+      renameRequest.requestNode.getSourceFile().fileName :
+      renameRequest.renamePosition.fileName;
+  const position = renameRequest.type === RequestKind.DirectFromTypeScript ?
+      renameRequest.requestNode.getStart() :
+      renameRequest.renamePosition.position;
+  return {fileName, position};
 }
