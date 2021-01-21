@@ -129,6 +129,12 @@ export interface DecoratorHandler<D, A, R> {
       AnalysisOutput<A>;
 
   /**
+   * React to a change in a resource file by updating the `analysis` or `resolution`, under the
+   * assumption that nothing in the TypeScript code has changed.
+   */
+  updateResources?(node: ClassDeclaration, analysis: A, resolution: R): void;
+
+  /**
    * Post-process the analysis of a decorator/class combination and record any necessary information
    * in the larger compilation.
    *
