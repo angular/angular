@@ -148,6 +148,13 @@ describe('R3 AST source spans', () => {
         ['TextAttribute', 'a', 'a', '<empty>'],
       ]);
     });
+
+    it('is correct for self-closing elements with trailing whitespace', () => {
+      expectFromHtml('<input />\n  <span>\n</span>').toEqual([
+        ['Element', '<input />', '<input />', '<input />'],
+        ['Element', '<span>\n</span>', '<span>', '</span>'],
+      ]);
+    });
   });
 
   describe('bound text nodes', () => {

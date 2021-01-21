@@ -27,7 +27,16 @@ function parse(template: string): ParseResult {
   template = template.replace('¦', '');
   const templateUrl = '/foo';
   return {
-    ...parseTemplate(template, templateUrl),
+    ...parseTemplate(template, templateUrl, {
+      // Set `leadingTriviaChars` and `preserveWhitespaces` such that whitespace is not stripped
+      // and fully accounted for in source spans. Without these flags the source spans can be
+      // inaccurate.
+      // Note: template parse options should be aligned with the `diagNodes` in
+      // `ComponentDecoratorHandler._parseTemplate`. and
+      // `TemplateTypeCheckerImpl.overrideComponentTemplate`.
+      leadingTriviaChars: [],
+      preserveWhitespaces: true,
+    }),
     position,
   };
 }

@@ -879,6 +879,9 @@ export class ComponentDecoratorHandler implements
     //
     // In order to guarantee the correctness of diagnostics, templates are parsed a second time
     // with the above options set to preserve source mappings.
+    //
+    // Note: template parse options should be aligned with `template_target_spec.ts` and
+    // `TemplateTypeCheckerImpl.overrideComponentTemplate`.
 
     const {nodes: diagNodes} = parseTemplate(templateStr, template.sourceMapUrl, {
       preserveWhitespaces: true,

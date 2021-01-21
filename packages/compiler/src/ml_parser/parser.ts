@@ -259,7 +259,7 @@ class _TreeBuilder {
       this._advance();
       selfClosing = false;
     }
-    const end = this._peek.sourceSpan.start;
+    const end = this._peek.sourceSpan.fullStart;
     const span = new ParseSourceSpan(
         startTagToken.sourceSpan.start, end, startTagToken.sourceSpan.fullStart);
     // Create a separate `startSpan` because `span` will be modified when there is an `end` span.
