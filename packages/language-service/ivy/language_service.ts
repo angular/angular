@@ -26,7 +26,7 @@ import {CompilerFactory} from './compiler_factory';
 import {CompletionBuilder, CompletionNodeContext} from './completions';
 import {DefinitionBuilder} from './definitions';
 import {QuickInfoBuilder} from './quick_info';
-import {ReferencesAndRenameBuilder} from './references_and_rename';
+import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
 import {getSignatureHelp} from './signature_help';
 import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_target';
 import {findTightestNode, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';
@@ -168,14 +168,14 @@ export class LanguageService {
 
   getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[]|undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      return new ReferencesAndRenameBuilder(this.programDriver, this.tsLS, compiler)
+      return new ReferencesBuilder(this.programDriver, this.tsLS, compiler)
           .getReferencesAtPosition(fileName, position);
     });
   }
 
   getRenameInfo(fileName: string, position: number): ts.RenameInfo {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      const renameInfo = new ReferencesAndRenameBuilder(this.programDriver, this.tsLS, compiler)
+      const renameInfo = new RenameBuilder(this.programDriver, this.tsLS, compiler)
                              .getRenameInfo(absoluteFrom(fileName), position);
       if (!renameInfo.canRename) {
         return renameInfo;
@@ -191,7 +191,7 @@ export class LanguageService {
 
   findRenameLocations(fileName: string, position: number): readonly ts.RenameLocation[]|undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      return new ReferencesAndRenameBuilder(this.programDriver, this.tsLS, compiler)
+      return new RenameBuilder(this.programDriver, this.tsLS, compiler)
           .findRenameLocations(fileName, position);
     });
   }
