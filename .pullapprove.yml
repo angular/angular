@@ -802,7 +802,6 @@ groups:
           ])
     reviewers:
       users:
-        - ayazhafiz
         - kyliau
         - atscott
 
