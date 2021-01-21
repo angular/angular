@@ -27,6 +27,7 @@ import {CompletionBuilder, CompletionNodeContext} from './completions';
 import {DefinitionBuilder} from './definitions';
 import {QuickInfoBuilder} from './quick_info';
 import {ReferencesBuilder, RenameBuilder} from './references_and_rename';
+import {createLocationKey} from './references_and_rename_utils';
 import {getSignatureHelp} from './signature_help';
 import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_target';
 import {findTightestNode, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';
@@ -168,8 +169,9 @@ export class LanguageService {
 
   getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[]|undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      return new ReferencesBuilder(this.programDriver, this.tsLS, compiler)
-          .getReferencesAtPosition(fileName, position);
+      const results = new ReferencesBuilder(this.programDriver, this.tsLS, compiler)
+                          .getReferencesAtPosition(fileName, position);
+      return results === undefined ? undefined : getUniqueLocations(results);
     });
   }
 
@@ -191,9 +193,9 @@ export class LanguageService {
 
   findRenameLocations(fileName: string, position: number): readonly ts.RenameLocation[]|undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      return new RenameBuilder(this.programDriver, this.tsLS, compiler)
-                 .findRenameLocations(fileName, position) ??
-          undefined;
+      const results = new RenameBuilder(this.programDriver, this.tsLS, compiler)
+                          .findRenameLocations(fileName, position);
+      return results === null ? undefined : getUniqueLocations(results);
     });
   }
 
@@ -564,4 +566,12 @@ function findTightestNodeAtPosition(program: ts.Program, fileName: string, posit
   }
 
   return findTightestNode(sourceFile, position);
+}
+
+function getUniqueLocations<T extends ts.DocumentSpan>(locations: readonly T[]): T[] {
+  const uniqueLocations: Map<string, T> = new Map();
+  for (const location of locations) {
+    uniqueLocations.set(createLocationKey(location), location);
+  }
+  return Array.from(uniqueLocations.values());
 }
