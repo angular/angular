@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgZone} from '@angular/core';
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -19,17 +20,32 @@ import {forEach} from '../utils/collection';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 export const activateRoutes =
-    (rootContexts: ChildrenOutletContexts, routeReuseStrategy: RouteReuseStrategy,
+    (rootContexts: ChildrenOutletContexts, routeReuseStrategy: RouteReuseStrategy, ngZone: NgZone,
      forwardEvent: (evt: Event) => void): MonoTypeOperatorFunction<NavigationTransition> =>
         map(t => {
-          new ActivateRoutes(
-              routeReuseStrategy, t.targetRouterState!, t.currentRouterState, forwardEvent)
-              .activate(rootContexts);
+          const activate = () => {
+            new ActivateRoutes(
+                routeReuseStrategy, t.targetRouterState!, t.currentRouterState, forwardEvent)
+                .activate(rootContexts);
+          };
+          // https://github.com/angular/angular/issues/37223
+          // In some case, activate routes may happen outside of angular zone,
+          // for example, in the issue above, the async canActivate guard is outside
+          // of angular zone. And this makes the component first time rendering and
+          // event listener binding also outside of angular zone, so all event listeners
+          // is registered outside of angular zone and not trigger change detection
+          // correctly. So we need to make sure the route activation happen inside angular zone.
+          if (NgZone.isInAngularZone()) {
+            activate();
+          } else {
+            ngZone.run(activate);
+          }
           return t;
         });
 
 export class ActivateRoutes {
   constructor(
+
       private routeReuseStrategy: RouteReuseStrategy, private futureState: RouterState,
       private currState: RouterState, private forwardEvent: (evt: Event) => void) {}
 

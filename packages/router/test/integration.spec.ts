@@ -3466,6 +3466,41 @@ describe('Integration', () => {
              expect(log).toEqual(['parent', 'child']);
            })));
       });
+
+      describe(
+          'should activate route inside angular zone when canActivate is outside of angular zone',
+          () => {
+            const outsideOfNgZoneOp = (zone: NgZone) => <T>(source: Observable<T>) =>
+                new Observable<T>(
+                    observer => zone.runOutsideAngular(() => source.subscribe(observer)));
+
+            @Injectable({providedIn: 'root'})
+            class OutsideOfNgZoneGuard implements CanActivate {
+              constructor(private ngZone: NgZone) {}
+
+              canActivate() {
+                return of(true).pipe(delay(1000), outsideOfNgZoneOp(this.ngZone));
+              }
+            }
+
+            it('works',
+               fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+                 const fixture = createRoot(router, RootCmp);
+
+                 router.resetConfig([
+                   {path: 'zone', component: ZoneCheckCmp, canActivate: [OutsideOfNgZoneGuard]}
+                 ]);
+
+                 router.navigateByUrl('/zone');
+                 advance(fixture, 1000);
+                 expect(location.path()).toEqual('/zone');
+                 const zoneCheckCmpElem = fixture.debugElement.query(By.directive(ZoneCheckCmp));
+                 const zoneCheckCmp = zoneCheckCmpElem.context as ZoneCheckCmp;
+                 const button = zoneCheckCmpElem.nativeElement.querySelector('button');
+                 button.click();
+                 expect(zoneCheckCmp.isOnInitInNgZone).toBe(true);
+               })));
+          });
     });
 
     describe('CanDeactivate', () => {
@@ -6102,6 +6137,19 @@ class ThrowingCmp {
   }
 }
 
+@Component({
+  selector: 'zone-check-cmp',
+  template:
+      `<button (click)="onClick()"></button><span>click in ngZone: {{isOnInitInNgZone}}</span>`
+})
+class ZoneCheckCmp {
+  isOnInitInNgZone = false;
+  constructor() {}
+
+  onClick() {
+    this.isOnInitInNgZone = NgZone.isInAngularZone();
+  }
+}
 
 
 function advance(fixture: ComponentFixture<any>, millis?: number): void {
@@ -6120,7 +6168,6 @@ function createRoot(router: Router, type: any): ComponentFixture<any> {
 @Component({selector: 'lazy', template: 'lazy-loaded'})
 class LazyComponent {
 }
-
 
 @NgModule({
   imports: [RouterTestingModule, CommonModule],
@@ -6151,7 +6198,8 @@ class LazyComponent {
     RootCmpWithTwoOutlets,
     RootCmpWithNamedOutlet,
     EmptyQueryParamsCmp,
-    ThrowingCmp
+    ThrowingCmp,
+    ZoneCheckCmp
   ],
 
 
@@ -6183,7 +6231,8 @@ class LazyComponent {
     RootCmpWithTwoOutlets,
     RootCmpWithNamedOutlet,
     EmptyQueryParamsCmp,
-    ThrowingCmp
+    ThrowingCmp,
+    ZoneCheckCmp
   ],
 
 
@@ -6216,7 +6265,8 @@ class LazyComponent {
     RootCmpWithTwoOutlets,
     RootCmpWithNamedOutlet,
     EmptyQueryParamsCmp,
-    ThrowingCmp
+    ThrowingCmp,
+    ZoneCheckCmp
   ]
 })
 class TestModule {
