@@ -248,14 +248,14 @@ export class LanguageService {
         selections = selectionNodes.map(n => {
           return {
             start: n.getStart(sf),
-            length: n.end - n.getStart(sf),
+            length: n.getEnd() - n.getStart(sf),
           };
         });
       }
 
       return {
         fileName: sf.fileName,
-        content: sf.text,
+        content: sf.getFullText(),
         selections,
       };
     });
