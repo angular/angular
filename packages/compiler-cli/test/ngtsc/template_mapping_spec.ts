@@ -432,7 +432,7 @@ runInEachFileSystem((os) => {
              const mappings = compileAndMap(
                  `<div i18n title="  pre-title {{name}}  post-title" i18n-title>  pre-body {{greeting}}  post-body</div>`);
              expectMapping(mappings, {
-               source: '<div i18n title="  pre-title {{name}}  post-title" i18n-title>  ',
+               source: '<div i18n title="  pre-title {{name}}  post-title" i18n-title>',
                generated: 'i0.ɵɵelementStart(0, "div", 0)',
                sourceUrl: '../test.ts',
              });
@@ -491,12 +491,12 @@ runInEachFileSystem((os) => {
              // ivy instructions
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: '<div i18n>\n  ',
+               source: '<div i18n>',
                generated: 'i0.ɵɵelementStart(0, "div")',
              });
              expectMapping(mappings, {
                sourceUrl: '../test.ts',
-               source: '<div i18n>\n  ',
+               source: '<div i18n>',
                generated: 'i0.ɵɵi18nStart(1, 0)',
              });
              expectMapping(mappings, {
