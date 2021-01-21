@@ -80,10 +80,17 @@ export interface DirectiveTypeCheckMeta {
   isGeneric: boolean;
 }
 
+export enum MetaType {
+  Pipe,
+  Directive,
+}
+
 /**
  * Metadata collected for a directive within an NgModule's scope.
  */
 export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
+  type: MetaType.Directive;
+
   ref: Reference<ClassDeclaration>;
   /**
    * Unparsed selector of the directive, or null if the directive does not have a selector.
@@ -144,8 +151,10 @@ export interface TemplateGuardMeta {
  * Metadata for a pipe within an NgModule's scope.
  */
 export interface PipeMeta {
+  type: MetaType.Pipe;
   ref: Reference<ClassDeclaration>;
   name: string;
+  nameExpr: ts.Expression|null;
 }
 
 /**

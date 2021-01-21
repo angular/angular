@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
-import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
+import {DirectiveMeta, MetadataReader, MetaType, NgModuleMeta, PipeMeta} from './api';
 import {ClassPropertyMapping} from './property_mapping';
 import {extractDirectiveTypeCheckMeta, extractReferencesFromType, readStringArrayType, readStringMapType, readStringType} from './util';
 
@@ -95,6 +95,7 @@ export class DtsMetadataReader implements MetadataReader {
     const outputs =
         ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[4]));
     return {
+      type: MetaType.Directive,
       ref,
       name: clazz.name.text,
       isComponent,
@@ -131,7 +132,12 @@ export class DtsMetadataReader implements MetadataReader {
       return null;
     }
     const name = type.literal.text;
-    return {ref, name};
+    return {
+      type: MetaType.Pipe,
+      ref,
+      name,
+      nameExpr: null,
+    };
   }
 }
 

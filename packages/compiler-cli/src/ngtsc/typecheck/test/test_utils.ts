@@ -13,7 +13,7 @@ import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} f
 import {TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
-import {ClassPropertyMapping, CompoundMetadataReader} from '../../metadata';
+import {ClassPropertyMapping, CompoundMetadataReader, MetaType} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
 import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -595,6 +595,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
 
     if (decl.type === 'directive') {
       scope.directives.push({
+        type: MetaType.Directive,
         ref: new Reference(declClass),
         baseClass: null,
         name: decl.name,
@@ -618,8 +619,10 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
       });
     } else if (decl.type === 'pipe') {
       scope.pipes.push({
+        type: MetaType.Pipe,
         ref: new Reference(declClass),
         name: decl.pipeName,
+        nameExpr: null,
       });
     }
   }

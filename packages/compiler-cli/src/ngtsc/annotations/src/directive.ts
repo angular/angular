@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Reference} from '../../imports';
 import {areTypeParametersEqual, extractSemanticTypeParameters, isArrayEqual, isSetEqual, isSymbolEqual, SemanticDepGraphUpdater, SemanticSymbol, SemanticTypeParameter} from '../../incremental/semantic_graph';
-import {BindingPropertyName, ClassPropertyMapping, ClassPropertyName, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, TemplateGuardMeta} from '../../metadata';
+import {BindingPropertyName, ClassPropertyMapping, ClassPropertyName, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaType, TemplateGuardMeta} from '../../metadata';
 import {extractDirectiveTypeCheckMeta} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
@@ -256,6 +256,7 @@ export class DirectiveDecoratorHandler implements
     // the information about the directive is available during the compile() phase.
     const ref = new Reference(node);
     this.metaRegistry.registerDirectiveMetadata({
+      type: MetaType.Directive,
       ref,
       name: node.name.text,
       selector: analysis.meta.selector,

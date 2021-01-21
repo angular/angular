@@ -192,7 +192,8 @@ export class LanguageService {
   findRenameLocations(fileName: string, position: number): readonly ts.RenameLocation[]|undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
       return new RenameBuilder(this.programDriver, this.tsLS, compiler)
-          .findRenameLocations(fileName, position);
+                 .findRenameLocations(fileName, position) ??
+          undefined;
     });
   }
 

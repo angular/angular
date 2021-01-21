@@ -6,20 +6,26 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AST, BindingPipe, LiteralPrimitive, MethodCall, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstNode, TmplAstReference, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {DirectiveSymbol, ShimLocation, SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {DirectiveMeta, PipeMeta} from '@angular/compiler-cli/src/ngtsc/metadata';
+import {DirectiveSymbol, ShimLocation, Symbol, SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {ExpressionIdentifier, hasExpressionIdentifier} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import * as ts from 'typescript';
 
 import {getTargetAtPosition, TargetNodeKind} from './template_target';
-import {findTightestNode} from './ts_utils';
+import {findTightestNode, getParentClassDeclaration} from './ts_utils';
 import {getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTemplateLocationFromShimLocation, isWithin, TemplateInfo, toTextSpan} from './utils';
 
-interface FilePosition {
+/** Represents a location in a file. */
+export interface FilePosition {
   fileName: string;
   position: number;
 }
 
+/**
+ * Converts a `ShimLocation` to a more genericly named `FilePosition`.
+ */
 function toFilePosition(shimLocation: ShimLocation): FilePosition {
   return {fileName: shimLocation.shimPath, position: shimLocation.positionInShimFile};
 }
@@ -35,9 +41,18 @@ export interface TemplateLocationDetails {
    * directives or a directive and one of its inputs.
    */
   typescriptLocations: FilePosition[];
+
+  /**
+   * The resolved Symbol for the template target.
+   */
+  symbol: Symbol;
 }
 
 
+/**
+ * Takes a position in a template and finds equivalent targets in TS files as well as details about
+ * the targeted template node.
+ */
 export function getTargetDetailsAtTemplatePosition(
     {template, component}: TemplateInfo, position: number,
     templateTypeChecker: TemplateTypeChecker): TemplateLocationDetails[]|null {
@@ -69,7 +84,11 @@ export function getTargetDetailsAtTemplatePosition(
         break;
       case SymbolKind.Element: {
         const matches = getDirectiveMatchesForElementTag(symbol.templateNode, symbol.directives);
-        details.push({typescriptLocations: getPositionsForDirectives(matches), templateTarget});
+        details.push({
+          typescriptLocations: getPositionsForDirectives(matches),
+          templateTarget,
+          symbol,
+        });
         break;
       }
       case SymbolKind.DomBinding: {
@@ -84,6 +103,7 @@ export function getTargetDetailsAtTemplatePosition(
         details.push({
           typescriptLocations: getPositionsForDirectives(directives),
           templateTarget,
+          symbol,
         });
         break;
       }
@@ -91,6 +111,7 @@ export function getTargetDetailsAtTemplatePosition(
         details.push({
           typescriptLocations: [toFilePosition(symbol.referenceVarLocation)],
           templateTarget,
+          symbol,
         });
         break;
       }
@@ -102,12 +123,14 @@ export function getTargetDetailsAtTemplatePosition(
             details.push({
               typescriptLocations: [toFilePosition(symbol.initializerLocation)],
               templateTarget,
+              symbol,
             });
           } else if (isWithin(position, templateTarget.keySpan)) {
             // In the keySpan of the variable, we want to get the reference of the local variable.
             details.push({
               typescriptLocations: [toFilePosition(symbol.localVarLocation)],
               templateTarget,
+              symbol,
             });
           }
         } else {
@@ -116,6 +139,7 @@ export function getTargetDetailsAtTemplatePosition(
           details.push({
             typescriptLocations: [toFilePosition(symbol.localVarLocation)],
             templateTarget,
+            symbol,
           });
         }
         break;
@@ -125,12 +149,17 @@ export function getTargetDetailsAtTemplatePosition(
         details.push({
           typescriptLocations: symbol.bindings.map(binding => toFilePosition(binding.shimLocation)),
           templateTarget,
+          symbol,
         });
         break;
       }
       case SymbolKind.Pipe:
       case SymbolKind.Expression: {
-        details.push({typescriptLocations: [toFilePosition(symbol.shimLocation)], templateTarget});
+        details.push({
+          typescriptLocations: [toFilePosition(symbol.shimLocation)],
+          templateTarget,
+          symbol,
+        });
         break;
       }
     }
@@ -139,6 +168,9 @@ export function getTargetDetailsAtTemplatePosition(
   return details.length > 0 ? details : null;
 }
 
+/**
+ * Given a set of `DirectiveSymbol`s, finds the equivalent `FilePosition` of the class declaration.
+ */
 function getPositionsForDirectives(directives: Set<DirectiveSymbol>): FilePosition[] {
   const allDirectives: FilePosition[] = [];
   for (const dir of directives.values()) {
@@ -164,6 +196,13 @@ export function createLocationKey(ds: ts.DocumentSpan) {
   return ds.fileName + ds.textSpan.start + ds.textSpan.length;
 }
 
+/**
+ * Converts a given `ts.DocumentSpan` in a shim file to its equivalent `ts.DocumentSpan` in the
+ * template.
+ *
+ * You can optionally provide a `requiredNodeText` that ensures the equivalent template node's text
+ * matches. If it does not, this function will return `null`.
+ */
 export function convertToTemplateDocumentSpan<T extends ts.DocumentSpan>(
     shimDocumentSpan: T, templateTypeChecker: TemplateTypeChecker, program: ts.Program,
     requiredNodeText?: string): T|null {
@@ -206,6 +245,9 @@ export function convertToTemplateDocumentSpan<T extends ts.DocumentSpan>(
   };
 }
 
+/**
+ * Finds the text and `ts.TextSpan` for the node at a position in a template.
+ */
 export function getRenameTextAndSpanAtPosition(
     node: TmplAstNode|AST, position: number): {text: string, span: ts.TextSpan}|null {
   if (node instanceof TmplAstBoundAttribute || node instanceof TmplAstTextAttribute ||
@@ -222,12 +264,9 @@ export function getRenameTextAndSpanAtPosition(
     }
   }
 
-  if (node instanceof BindingPipe) {
-    // TODO(atscott): Add support for renaming pipes
-    return null;
-  }
   if (node instanceof PropertyRead || node instanceof MethodCall || node instanceof PropertyWrite ||
-      node instanceof SafePropertyRead || node instanceof SafeMethodCall) {
+      node instanceof SafePropertyRead || node instanceof SafeMethodCall ||
+      node instanceof BindingPipe) {
     return {text: node.name, span: toTextSpan(node.nameSpan)};
   } else if (node instanceof LiteralPrimitive) {
     const span = toTextSpan(node.sourceSpan);
@@ -241,4 +280,18 @@ export function getRenameTextAndSpanAtPosition(
   }
 
   return null;
+}
+
+/**
+ * Retrives the `PipeMeta` or `DirectiveMeta` of the given `ts.Node`'s parent class.
+ *
+ * Returns `null` if the node has no parent class or there is no meta associated with the class.
+ */
+export function getParentClassMeta(requestNode: ts.Node, compiler: NgCompiler): PipeMeta|
+    DirectiveMeta|null {
+  const parentClass = getParentClassDeclaration(requestNode);
+  if (parentClass === undefined) {
+    return null;
+  }
+  return compiler.getMeta(parentClass);
 }

@@ -16,7 +16,7 @@ import {ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../i
 import {DependencyTracker} from '../../incremental/api';
 import {extractSemanticTypeParameters, isArrayEqual, isReferenceEqual, SemanticDepGraphUpdater, SemanticReference, SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
-import {ClassPropertyMapping, ComponentResources, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, Resource, ResourceRegistry} from '../../metadata';
+import {ClassPropertyMapping, ComponentResources, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, MetaType, Resource, ResourceRegistry} from '../../metadata';
 import {EnumValue, PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
@@ -524,6 +524,7 @@ export class ComponentDecoratorHandler implements
     // the information about the component is available during the compile() phase.
     const ref = new Reference(node);
     this.metaRegistry.registerDirectiveMetadata({
+      type: MetaType.Directive,
       ref,
       name: node.name.text,
       selector: analysis.meta.selector,
