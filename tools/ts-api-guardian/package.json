@@ -29,7 +29,6 @@
     "source-map-support": "^0.5.9",
     "typescript": "4.1.2"
   },
-  "repository": {},
   "keywords": [
     "typescript"
   ],
@@ -45,6 +44,11 @@
     "url": "https://github.com/angular/angular/issues"
   },
   "homepage": "https://github.com/angular/angular/tools/ts-api-guardian",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "tools/ts-api-guardian"
+  },
   "publishConfig": {
     "registry": "https://wombat-dressing-room.appspot.com"
   }
