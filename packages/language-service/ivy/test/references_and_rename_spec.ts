@@ -967,8 +967,7 @@ describe('find references and rename locations', () => {
         file.moveCursorToText('[mod¦el]');
       });
 
-      // TODO(atscott): Does not work because we don't fully de-duplicate
-      xit('should find references', () => {
+      it('should find references', () => {
         const refs = getReferencesAtPosition(file)!;
         expect(refs.length).toEqual(3);
         assertFileNames(refs, ['string-model.ts', 'app.ts', 'other-dir.ts']);
@@ -1257,10 +1256,7 @@ describe('find references and rename locations', () => {
     file.moveCursorToText('[(mod¦el)]');
 
     const refs = getReferencesAtPosition(file)!;
-    // Note that this includes the 'model` twice from the template. As with other potential
-    // duplicates (like if another plugin returns the same span), we expect the LS clients to filter
-    // these out themselves.
-    expect(refs.length).toEqual(4);
+    expect(refs.length).toEqual(3);
     assertFileNames(refs, ['dir.ts', 'app.ts']);
     assertTextSpans(refs, ['model', 'modelChange']);
   });
@@ -1347,7 +1343,7 @@ describe('find references and rename locations', () => {
 
       it('gets references to all matching directives', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toBe(8);
+        expect(refs.length).toBe(7);
         assertTextSpans(refs, ['<div dir>', 'Dir', 'Dir2']);
         assertFileNames(refs, ['app.ts', 'dir.ts', 'dir2.ts']);
       });

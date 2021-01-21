@@ -59,18 +59,18 @@ export class ReferencesBuilder {
       return undefined;
     }
 
-    const entries: Map<string, ts.ReferenceEntry> = new Map();
+    const entries: ts.ReferenceEntry[] = [];
     for (const ref of refs) {
       if (this.ttc.isTrackedTypeCheckFile(absoluteFrom(ref.fileName))) {
         const entry = convertToTemplateDocumentSpan(ref, this.ttc, this.driver.getProgram());
         if (entry !== null) {
-          entries.set(createLocationKey(entry), entry);
+          entries.push(entry);
         }
       } else {
-        entries.set(createLocationKey(ref), ref);
+        entries.push(ref);
       }
     }
-    return Array.from(entries.values());
+    return entries;
   }
 }
 
@@ -249,7 +249,7 @@ export class RenameBuilder {
           if (entry === null) {
             return null;
           }
-          entries.set(createLocationKey(entry), entry);
+          entries.push(entry);
         } else {
           if (!isDirectRenameContext(renameRequest)) {
             // Discard any non-template results for non-direct renames. We should only rename
@@ -263,10 +263,10 @@ export class RenameBuilder {
           if (refNode === null || refNode.getText() !== expectedRenameText) {
             return null;
           }
-          entries.set(createLocationKey(location), location);
+          entries.push(location);
         }
       }
-      return Array.from(entries.values());
+      return entries;
     });
   }
 
@@ -351,9 +351,9 @@ export class RenameBuilder {
  * required for the rename operation, but cannot be found by the native TS LS).
  */
 function getExpectedRenameTextAndInitalRenameEntries(renameRequest: RenameRequest):
-    {expectedRenameText: string, entries: Map<string, ts.RenameLocation>}|null {
+    {expectedRenameText: string, entries: ts.RenameLocation[]}|null {
   let expectedRenameText: string;
-  const entries = new Map<string, ts.RenameLocation>();
+  const entries: ts.RenameLocation[] = [];
   if (renameRequest.type === RequestKind.DirectFromTypeScript) {
     expectedRenameText = renameRequest.requestNode.getText();
   } else if (renameRequest.type === RequestKind.DirectFromTemplate) {
@@ -370,7 +370,7 @@ function getExpectedRenameTextAndInitalRenameEntries(renameRequest: RenameReques
       fileName: renameRequest.pipeNameExpr.getSourceFile().fileName,
       textSpan: {start: pipeNameExpr.getStart() + 1, length: pipeNameExpr.getText().length - 2},
     };
-    entries.set(createLocationKey(entry), entry);
+    entries.push(entry);
   } else {
     // TODO(atscott): Implement other types of special renames
     return null;
