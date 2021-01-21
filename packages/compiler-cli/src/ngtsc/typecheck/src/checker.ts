@@ -318,6 +318,25 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return engine.getExpressionCompletionLocation(ast);
   }
 
+  invalidateClass(clazz: ts.ClassDeclaration): void {
+    this.completionCache.delete(clazz);
+    this.symbolBuilderCache.delete(clazz);
+    this.scopeCache.delete(clazz);
+    this.elementTagCache.delete(clazz);
+
+    const sf = clazz.getSourceFile();
+    const sfPath = absoluteFromSourceFile(sf);
+    const shimPath = this.typeCheckingStrategy.shimPathForComponent(clazz);
+    const fileData = this.getFileData(sfPath);
+    const templateId = fileData.sourceManager.getTemplateId(clazz);
+
+    fileData.shimData.delete(shimPath);
+    fileData.isComplete = false;
+    fileData.templateOverrides?.delete(templateId);
+
+    this.isComplete = false;
+  }
+
   private getOrCreateCompletionEngine(component: ts.ClassDeclaration): CompletionEngine|null {
     if (this.completionCache.has(component)) {
       return this.completionCache.get(component)!;

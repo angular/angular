@@ -17,7 +17,7 @@ import {OptimizeFor, TypeCheckingProgramStrategy} from '../../typecheck/api';
 
 import {NgCompilerOptions} from '../api';
 
-import {freshCompilationTicket, NgCompiler} from '../src/compiler';
+import {freshCompilationTicket, NgCompiler, resourceChangeTicket} from '../src/compiler';
 import {NgCompilerHost} from '../src/host';
 
 function makeFreshCompiler(
@@ -111,6 +111,7 @@ runInEachFileSystem(() => {
         const program = ts.createProgram({host, options, rootNames: host.inputFiles});
         const CmpA = getClass(getSourceFileOrError(program, cmpAFile), 'CmpA');
         const CmpC = getClass(getSourceFileOrError(program, cmpCFile), 'CmpC');
+
         const compiler = makeFreshCompiler(
             host, options, program, new ReusedProgramStrategy(program, host, options, []),
             new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
@@ -276,6 +277,53 @@ runInEachFileSystem(() => {
           jasmine.stringMatching(/\/template.html$/),
           jasmine.stringMatching(/\/style.css$/),
         ]));
+      });
+    });
+
+    describe('resource-only changes', () => {
+      it('should reuse the full compilation state for a resource-only change', () => {
+        const COMPONENT = _('/cmp.ts');
+        const TEMPLATE = _('/template.html');
+        fs.writeFile(COMPONENT, `
+          import {Component} from '@angular/core';
+          @Component({
+            selector: 'test-cmp',
+            templateUrl: './template.html',
+          })
+          export class Cmp {}
+        `);
+        fs.writeFile(TEMPLATE, `<h1>Resource</h1>`);
+
+        const options: NgCompilerOptions = {
+          strictTemplates: true,
+        };
+        const baseHost = new NgtscCompilerHost(getFileSystem(), options);
+        const host = NgCompilerHost.wrap(baseHost, [COMPONENT], options, /* oldProgram */ null);
+        const program = ts.createProgram({host, options, rootNames: host.inputFiles});
+        const compilerA = makeFreshCompiler(
+            host, options, program, new ReusedProgramStrategy(program, host, options, []),
+            new NoopIncrementalBuildStrategy(), /** enableTemplateTypeChecker */ false,
+            /* usePoisonedData */ false);
+
+        const componentSf = getSourceFileOrError(program, COMPONENT);
+
+        // There should be no diagnostics for the component.
+        expect(compilerA.getDiagnosticsForFile(componentSf, OptimizeFor.WholeProgram).length)
+            .toBe(0);
+
+        // Change the resource file and introduce an error.
+        fs.writeFile(TEMPLATE, `<h1>Resource</h2>`);
+
+        // Perform a resource-only incremental step.
+        const resourceTicket = resourceChangeTicket(compilerA, new Set([TEMPLATE]));
+        const compilerB = NgCompiler.fromTicket(resourceTicket, host);
+
+        // A resource-only update should reuse the same compiler instance.
+        expect(compilerB).toBe(compilerA);
+
+        // The new template error should be reported in component diagnostics.
+        expect(compilerB.getDiagnosticsForFile(componentSf, OptimizeFor.WholeProgram).length)
+            .toBe(1);
       });
     });
   });

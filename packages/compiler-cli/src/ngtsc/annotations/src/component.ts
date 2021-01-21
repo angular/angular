@@ -71,6 +71,16 @@ export interface ComponentAnalysisData {
 
   resources: ComponentResources;
 
+  /**
+   * The literal `styleUrls` extracted from the decorator, if present.
+   */
+  styleUrls: string[]|null;
+
+  /**
+   * Inline stylesheets extracted from the decorator, if present.
+   */
+  inlineStyles: string[]|null;
+
   isPoisoned: boolean;
 }
 
@@ -275,9 +285,11 @@ export class ComponentDecoratorHandler implements
         }
       }
     }
+    let inlineStyles: string[]|null = null;
     if (component.has('styles')) {
       const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
       if (litStyles !== null) {
+        inlineStyles = [...litStyles];
         if (styles === null) {
           styles = litStyles;
         } else {
@@ -333,6 +345,8 @@ export class ComponentDecoratorHandler implements
         template,
         providersRequiringFactory,
         viewProvidersRequiringFactory,
+        inlineStyles,
+        styleUrls,
         resources: {
           styles: styleResources,
           template: templateResource,
@@ -579,6 +593,37 @@ export class ComponentDecoratorHandler implements
     }
 
     return {data};
+  }
+
+  updateResources(node: ClassDeclaration, analysis: ComponentAnalysisData): void {
+    const containingFile = node.getSourceFile().fileName;
+
+    // If the template is external, re-parse it.
+    const templateDecl = analysis.template.declaration;
+    if (!templateDecl.isInline) {
+      analysis.template = this.extractTemplate(node, templateDecl);
+    }
+
+    // Update any external stylesheets and rebuild the combined 'styles' list.
+    // TODO(alxhub): write tests for styles when the primary compiler uses the updateResources path
+    let styles: string[] = [];
+    if (analysis.styleUrls !== null) {
+      for (const styleUrl of analysis.styleUrls) {
+        const resolvedStyleUrl = this.resourceLoader.resolve(styleUrl, containingFile);
+        const styleText = this.resourceLoader.load(resolvedStyleUrl);
+        styles.push(styleText);
+      }
+    }
+    if (analysis.inlineStyles !== null) {
+      for (const styleText of analysis.inlineStyles) {
+        styles.push(styleText);
+      }
+    }
+    for (const styleText of analysis.template.styles) {
+      styles.push(styleText);
+    }
+
+    analysis.meta.styles = styles;
   }
 
   compileFull(
