@@ -63,6 +63,7 @@ interface LazyCompilationState {
 export enum CompilationTicketKind {
   Fresh,
   IncrementalTypeScript,
+  IncrementalResource,
 }
 
 /**
@@ -93,6 +94,12 @@ export interface IncrementalTypeScriptCompilationTicket {
   usePoisonedData: boolean;
 }
 
+export interface IncrementalResourceCompilationTicket {
+  kind: CompilationTicketKind.IncrementalResource;
+  compiler: NgCompiler;
+  modifiedResourceFiles: Set<string>;
+}
+
 /**
  * A request to begin Angular compilation, either starting from scratch or from a known prior state.
  *
@@ -100,7 +107,8 @@ export interface IncrementalTypeScriptCompilationTicket {
  * Angular compiler. They abstract the starting state of compilation and allow `NgCompiler` to be
  * managed independently of any incremental compilation lifecycle.
  */
-export type CompilationTicket = FreshCompilationTicket|IncrementalTypeScriptCompilationTicket;
+export type CompilationTicket = FreshCompilationTicket|IncrementalTypeScriptCompilationTicket|
+    IncrementalResourceCompilationTicket;
 
 /**
  * Create a `CompilationTicket` for a brand new compilation, using no prior state.
@@ -177,6 +185,15 @@ export function incrementalFromDriverTicket(
     typeCheckingProgramStrategy,
     enableTemplateTypeChecker,
     usePoisonedData,
+  };
+}
+
+export function resourceChangeTicket(compiler: NgCompiler, modifiedResourceFiles: Set<string>):
+    IncrementalResourceCompilationTicket {
+  return {
+    kind: CompilationTicketKind.IncrementalResource,
+    compiler,
+    modifiedResourceFiles,
   };
 }
 
@@ -260,6 +277,10 @@ export class NgCompiler {
             ticket.usePoisonedData,
             perfRecorder,
         );
+      case CompilationTicketKind.IncrementalResource:
+        const compiler = ticket.compiler;
+        compiler.updateWithChangedResources(ticket.modifiedResourceFiles);
+        return compiler;
     }
   }
 
@@ -304,6 +325,36 @@ export class NgCompiler {
     this.ignoreForDiagnostics =
         new Set(tsProgram.getSourceFiles().filter(sf => this.adapter.isShim(sf)));
     this.ignoreForEmit = this.adapter.ignoreForEmit;
+  }
+
+  private updateWithChangedResources(changedResources: Set<string>): void {
+    if (this.compilation === null) {
+      // Analysis hasn't happened yet, so no update is necessary - any changes to resources will be
+      // captured by the inital analysis pass itself.
+      return;
+    }
+
+    this.resourceManager.invalidate();
+
+    const classesToUpdate = new Set<DeclarationNode>();
+    for (const resourceFile of changedResources) {
+      for (const templateClass of this.getComponentsWithTemplateFile(resourceFile)) {
+        classesToUpdate.add(templateClass);
+      }
+
+      for (const styleClass of this.getComponentsWithStyleFile(resourceFile)) {
+        classesToUpdate.add(styleClass);
+      }
+    }
+
+    for (const clazz of classesToUpdate) {
+      this.compilation.traitCompiler.updateResources(clazz);
+      if (!ts.isClassDeclaration(clazz)) {
+        continue;
+      }
+
+      this.compilation.templateTypeChecker.invalidateClass(clazz);
+    }
   }
 
   /**

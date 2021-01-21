@@ -453,6 +453,20 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     }
   }
 
+  updateResources(clazz: DeclarationNode): void {
+    if (!this.reflector.isClass(clazz) || !this.classes.has(clazz)) {
+      return;
+    }
+    const record = this.classes.get(clazz)!;
+    for (const trait of record.traits) {
+      if (trait.state !== TraitState.Resolved || trait.handler.updateResources === undefined) {
+        continue;
+      }
+
+      trait.handler.updateResources(clazz, trait.analysis, trait.resolution);
+    }
+  }
+
   compile(clazz: DeclarationNode, constantPool: ConstantPool): CompileResult[]|null {
     const original = ts.getOriginalNode(clazz) as typeof clazz;
     if (!this.reflector.isClass(clazz) || !this.reflector.isClass(original) ||

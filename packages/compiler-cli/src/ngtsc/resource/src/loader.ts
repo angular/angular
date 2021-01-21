@@ -114,6 +114,13 @@ export class AdapterResourceLoader implements ResourceLoader {
   }
 
   /**
+   * Invalidate the entire resource cache.
+   */
+  invalidate(): void {
+    this.cache.clear();
+  }
+
+  /**
    * Attempt to resolve `url` in the context of `fromFile`, while respecting the rootDirs
    * option from the tsconfig. First, normalize the file name.
    */
