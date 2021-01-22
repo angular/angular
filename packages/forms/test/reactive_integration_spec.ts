@@ -7,7 +7,7 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Component, Directive, forwardRef, Input, OnDestroy, Type} from '@angular/core';
+import {Component, Directive, forwardRef, Input, NgModule, OnDestroy, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/core/testing/src/testing_internal';
 import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
@@ -4126,6 +4126,32 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           ownValidators: root,
           valueChanges: {group: {control: 'Updated value'}},
         });
+      });
+
+      // See https://github.com/angular/angular/issues/40521.
+      it('should properly clean up when FormControlName has no CVA', () => {
+        @Component({
+          selector: 'no-cva-compo',
+          template: `
+            <form [formGroup]="form">
+              <div formControlName="control"></div>
+            </form>
+          `
+        })
+        class NoCVAComponent {
+          form = new FormGroup({control: new FormControl()});
+        }
+
+        const fixture = initTest(NoCVAComponent);
+        expect(() => {
+          fixture.detectChanges();
+        }).toThrowError('No value accessor for form control with name: \'control\'');
+
+        // Making sure that cleanup between tests doesn't cause any issues
+        // for not fully initialized controls.
+        expect(() => {
+          fixture.destroy();
+        }).not.toThrow();
       });
     });
   });
