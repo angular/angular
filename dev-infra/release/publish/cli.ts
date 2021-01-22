@@ -36,10 +36,11 @@ async function handler(args: Arguments<ReleasePublishOptions>) {
   switch (result) {
     case CompletionState.FATAL_ERROR:
       error(red(`Release action has been aborted due to fatal errors. See above.`));
-      process.exitCode = 1;
+      process.exitCode = 2;
       break;
     case CompletionState.MANUALLY_ABORTED:
       info(yellow(`Release action has been manually aborted.`));
+      process.exitCode = 1;
       break;
     case CompletionState.SUCCESS:
       info(green(`Release action has completed successfully.`));

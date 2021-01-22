@@ -387,7 +387,9 @@ function captureLogOutputForCommand(argv) {
     LOGGED_TEXT += headerLine + "\nCommand: " + argv.$0 + " " + argv._.join(' ') + "\nRan at: " + now + "\n";
     // On process exit, write the logged output to the appropriate log files
     process.on('exit', function (code) {
-        LOGGED_TEXT += "Command ran in " + (new Date().getTime() - now.getTime()) + "ms";
+        LOGGED_TEXT += headerLine + "\n";
+        LOGGED_TEXT += "Command ran in " + (new Date().getTime() - now.getTime()) + "ms\n";
+        LOGGED_TEXT += "Exit Code: " + code + "\n";
         /** Path to the log file location. */
         var logFilePath = path.join(getRepoBaseDir(), '.ng-dev.log');
         // Strip ANSI escape codes from log outputs.
@@ -396,7 +398,9 @@ function captureLogOutputForCommand(argv) {
         // For failure codes greater than 1, the new logged lines should be written to a specific log
         // file for the command run failure.
         if (code > 1) {
-            fs.writeFileSync(path.join(getRepoBaseDir(), ".ng-dev.err-" + now.getTime() + ".log"), LOGGED_TEXT);
+            var logFileName = ".ng-dev.err-" + now.getTime() + ".log";
+            console.error("Exit code: " + code + ". Writing full log to " + logFileName);
+            fs.writeFileSync(path.join(getRepoBaseDir(), logFileName), LOGGED_TEXT);
         }
     });
     // Mark file logging as enabled to prevent the function from executing multiple times.
@@ -6489,10 +6493,11 @@ function handler$9(args) {
         switch (result) {
             case CompletionState.FATAL_ERROR:
                 error(red(`Release action has been aborted due to fatal errors. See above.`));
-                process.exitCode = 1;
+                process.exitCode = 2;
                 break;
             case CompletionState.MANUALLY_ABORTED:
                 info(yellow(`Release action has been manually aborted.`));
+                process.exitCode = 1;
                 break;
             case CompletionState.SUCCESS:
                 info(green(`Release action has completed successfully.`));
