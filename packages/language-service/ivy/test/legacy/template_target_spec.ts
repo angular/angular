@@ -27,7 +27,13 @@ function parse(template: string): ParseResult {
   template = template.replace('¦', '');
   const templateUrl = '/foo';
   return {
-    ...parseTemplate(template, templateUrl),
+    ...parseTemplate(template, templateUrl, {
+      // Set `leadingTriviaChars` and `preserveWhitespaces` such that whitespace is not stripped
+      // and fully accounted for in source spans. Without these flags the source spans can be
+      // inaccurate.
+      leadingTriviaChars: [],
+      preserveWhitespaces: true,
+    }),
     position,
   };
 }
