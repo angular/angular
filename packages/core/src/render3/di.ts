@@ -13,6 +13,7 @@ import {Injector} from '../di/injector';
 import {InjectorMarkers} from '../di/injector_marker';
 import {getInjectorDef} from '../di/interface/defs';
 import {InjectFlags} from '../di/interface/injector';
+import {lookupTokenInGlobalRegistry, TOKEN_NOT_FOUND} from '../di/r3_injector';
 import {AbstractType, Type} from '../interface/type';
 import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
 import {noSideEffects} from '../util/closure';
@@ -610,7 +611,16 @@ export function getNodeInjectable(
             success, true,
             'Because flags do not contain \`SkipSelf\' we expect this to always succeed.');
     try {
-      value = lView[index] = factory.factory(undefined, tData, lView, tNode);
+      const token = tData[index] as Type<any>| AbstractType<any>| InjectionToken<any>;
+      // Checking whether a given token has a value (override) that should be used instead of the
+      // one configured in the local injector.
+      const valueFromGlobalRegistry = lookupTokenInGlobalRegistry(token, lView);
+      if (valueFromGlobalRegistry !== TOKEN_NOT_FOUND) {
+        value = valueFromGlobalRegistry;
+      } else {
+        value = factory.factory(undefined, tData, lView, tNode);
+      }
+      lView[index] = value;
       // This code path is hit for both directives and providers.
       // For perf reasons, we want to avoid searching for hooks on providers.
       // It does no harm to try (the hooks just won't exist), but the extra

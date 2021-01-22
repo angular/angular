@@ -290,6 +290,128 @@ describe('TestBed', () => {
     expect(hello.nativeElement).toHaveText('Hello injected World a second time!');
   });
 
+  it('should not expose overridden non-tree-shakable provider in module injector', () => {
+    @Injectable()
+    class MyService {
+      public name = 'MyService';
+    }
+
+    class FakeService {
+      name = 'FakeService';
+    }
+
+    @Component({
+      selector: 'my-comp',
+      template: '...',
+      providers: [MyService],
+    })
+    class MyComponent {
+      constructor(public myService: MyService) {}
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [MyComponent],
+    });
+
+    TestBed.overrideProvider(MyService, {
+      useFactory: () => new FakeService(),
+    });
+
+    const fixture = TestBed.createComponent(MyComponent);
+    fixture.detectChanges();
+
+    debugger;
+
+    const NOT_FOUND = Symbol('NOT_FOUND');
+    const service = TestBed.inject(MyService, NOT_FOUND as any);
+
+    // Since provider was exposed on the component level only (thus only NodeInjector should have
+    // it), we do not expect to see it in ModuleInjector.
+    expect(service).toBe(NOT_FOUND);
+  });
+
+  it('should not expose overridden non-tree-shakable provider in module injector', () => {
+    @Injectable()
+    class MyService {
+      public name = 'MyService';
+    }
+
+    class FakeService {
+      name = 'FakeService';
+    }
+
+    @Component({
+      selector: 'my-comp',
+      template: '...',
+      providers: [MyService],
+    })
+    class MyComponent {
+      constructor(public myService: MyService) {}
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [MyComponent],
+    });
+
+    TestBed.overrideProvider(MyService, {
+      useFactory: () => new FakeService(),
+    });
+
+    const fixture = TestBed.createComponent(MyComponent);
+    fixture.detectChanges();
+
+    const NOT_FOUND = Symbol('NOT_FOUND');
+    const service = TestBed.inject(MyService, NOT_FOUND as any);
+
+    // Since provider was exposed on the component level only (thus only NodeInjector should have
+    // it), we do not expect to see it in ModuleInjector.
+    expect(service).toBe(NOT_FOUND);
+  });
+
+  it('should override tree-shakable providers', () => {
+    function useFactory(name: string) {
+      class FakeService {
+        name = name;
+      };
+      return {
+        useFactory: () => new FakeService(),
+      };
+    }
+
+    @Injectable({providedIn: 'root'})
+    class RootProvider {
+      name = 'root';
+    }
+    TestBed.overrideProvider(RootProvider, useFactory('overridden (root) - initial'));
+    // Add second override to verify that it invalidates the first one.
+    TestBed.overrideProvider(RootProvider, useFactory('overridden (root)'));
+
+    @Injectable({providedIn: 'platform'})
+    class PlatformProvider {
+      name = 'platform';
+    }
+    TestBed.overrideProvider(PlatformProvider, useFactory('overridden (platform) - initial'));
+    // Add second override to verify that it invalidates the first one.
+    TestBed.overrideProvider(PlatformProvider, useFactory('overridden (platform)'));
+
+    @Injectable({providedIn: 'any'})
+    class AnyProvider {
+      name = 'any';
+    }
+    TestBed.overrideProvider(AnyProvider, useFactory('overridden (any) - initial'));
+    // Add second override to verify that it invalidates the first one.
+    TestBed.overrideProvider(AnyProvider, useFactory('overridden (any)'));
+
+    const rootProvider = TestBed.inject(RootProvider);
+    expect(rootProvider.name).toBe('overridden (root)');
+
+    const platformProvider = TestBed.inject(PlatformProvider);
+    expect(platformProvider.name).toBe('overridden (platform)');
+
+    const anyProvider = TestBed.inject(AnyProvider);
+    expect(anyProvider.name).toBe('overridden (any)');
+  });
+
   it('should not call ngOnDestroy for a service that was overridden', () => {
     SimpleService.ngOnDestroyCalls = 0;
 
@@ -716,6 +838,36 @@ describe('TestBed', () => {
 
     const fixture = TestBed.createComponent(MyComp);
     expect(fixture.componentInstance.myProviders).toEqual([{value: 'new provider'}]);
+  });
+
+  it('should override providers in NodeInjector', () => {
+    const MY_TOKEN = new InjectionToken('MyProvider');
+    @Component({
+      selector: 'root',
+      template: `<child></child>`,
+      providers: [{provide: MY_TOKEN, useValue: 'original'}]
+    })
+    class Root {
+    }
+
+    @Component({
+      selector: 'child',
+      template: `{{ provider }}`,
+    })
+    class Child {
+      constructor(@Inject(MY_TOKEN) public provider: string) {}
+    }
+
+    TestBed.configureTestingModule({
+      declarations: [Root, Child],
+    });
+
+    TestBed.overrideProvider(MY_TOKEN, {useValue: 'overridden'});
+
+    const fixture = TestBed.createComponent(Root);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('overridden');
   });
 
   it('should resolve components that are extended by other components', () => {
@@ -1241,7 +1393,7 @@ describe('TestBed', () => {
   onlyInIvy('VE injects undefined when provider does not have useValue or useFactory')
       .describe('overrides provider', () => {
         it('with empty provider object', () => {
-          @Injectable()
+          @Injectable({providedIn: 'root'})
           class Service {
           }
           TestBed.overrideProvider(Service, {});

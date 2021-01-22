@@ -97,6 +97,38 @@ export function createInjectorWithoutInjectorInstances(
   return new R3Injector(defType, additionalProviders, parent || getNullInjector(), name);
 }
 
+/**
+ * Marker that indicates that a token was not found in global registry.
+ */
+export const TOKEN_NOT_FOUND = {};
+
+/**
+ * Reference to the current implementation of the global token registry. This is *ONLY* used to
+ * provide a way to override configured providers for testing. Default implementation is a noop.
+ */
+let _globalTokenRegistryImpl:
+    ((token: Type<any>|AbstractType<any>|InjectionToken<any>, localCache: {}) => any) =
+        (token, localCache) => TOKEN_NOT_FOUND;
+
+/**
+ * Defines global token registry implementation to use. This API is used only in testing scenarios.
+ */
+export function setGlobalTokenRegistryImpl(
+    impl: (token: Type<any>|AbstractType<any>|InjectionToken<any>, localCache: {}) => any) {
+  _globalTokenRegistryImpl = impl;
+}
+
+/**
+ * Method to retrieve tokens from global registry. This API is used only in testing scenarios.
+ *
+ * @param token Token used as a lookup key.
+ * @param localCache Local cache where retrieved value is stored for faster subsequent lookups.
+ */
+export function lookupTokenInGlobalRegistry(
+    token: Type<any>|AbstractType<any>|InjectionToken<any>, localCache: {}) {
+  return _globalTokenRegistryImpl(token, localCache);
+}
+
 export class R3Injector {
   /**
    * Map of tokens to records which contain the instances of those tokens.
@@ -405,6 +437,13 @@ export class R3Injector {
   }
 
   private hydrate<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>, record: Record<T>): T {
+    // Checking whether a given token has a value (override) that should be used instead of the one
+    // configured in the local injector.
+    const value = lookupTokenInGlobalRegistry(token, this);
+    if (value !== TOKEN_NOT_FOUND) {
+      return value as T;
+    }
+
     if (ngDevMode && record.value === CIRCULAR) {
       throwCyclicDependencyError(stringify(token));
     } else if (record.value === NOT_YET) {
@@ -535,7 +574,7 @@ function makeRecord<T>(
   };
 }
 
-function isValueProvider(value: SingleProvider): value is ValueProvider {
+export function isValueProvider(value: SingleProvider): value is ValueProvider {
   return value !== null && typeof value == 'object' && USE_VALUE in value;
 }
 
