@@ -311,12 +311,16 @@ describe('FormGroup', () => {
   });
 
   describe('patchValue', () => {
-    let c: FormControl, c2: FormControl, g: FormGroup;
+    let c: FormControl, c2: FormControl, g: FormGroup, g2: FormGroup;
 
     beforeEach(() => {
       c = new FormControl('');
       c2 = new FormControl('');
       g = new FormGroup({'one': c, 'two': c2});
+      g2 = new FormGroup({
+        'array': new FormArray([new FormControl(1), new FormControl(2)]),
+        'group': new FormGroup({'one': new FormControl(3)}),
+      });
     });
 
     it('should set its own value', () => {
@@ -374,6 +378,22 @@ describe('FormGroup', () => {
       expect(g.value).toEqual({'one': '', 'two': ''});
     });
 
+    it('should ignore a control if `null` or `undefined` are used as values', () => {
+      const INITIAL_STATE = {'array': [1, 2], 'group': {'one': 3}};
+
+      g2.patchValue({'array': null});
+      expect(g2.value).toEqual(INITIAL_STATE);
+
+      g2.patchValue({'array': undefined});
+      expect(g2.value).toEqual(INITIAL_STATE);
+
+      g2.patchValue({'group': null});
+      expect(g2.value).toEqual(INITIAL_STATE);
+
+      g2.patchValue({'group': undefined});
+      expect(g2.value).toEqual(INITIAL_STATE);
+    });
+
     describe('patchValue() events', () => {
       let form: FormGroup;
       let logger: any[];
@@ -402,6 +422,27 @@ describe('FormGroup', () => {
         g.patchValue({'one': 'one'});
         expect(logger).toEqual(['control1', 'group', 'form']);
       });
+
+      it('should not emit valueChange events for skipped controls (represented as `null` or `undefined`)',
+         () => {
+           const logEvent = () => logger.push('valueChanges event');
+
+           const [formArrayControl1, formArrayControl2] = (g2.controls.array as FormArray).controls;
+           const formGroupControl = (g2.controls.group as FormGroup).controls.one;
+
+           formArrayControl1.valueChanges.subscribe(logEvent);
+           formArrayControl2.valueChanges.subscribe(logEvent);
+           formGroupControl.valueChanges.subscribe(logEvent);
+
+           g2.patchValue({'array': null});
+           g2.patchValue({'array': undefined});
+           g2.patchValue({'group': null});
+           g2.patchValue({'group': undefined});
+
+           // No events are expected in `valueChanges` since
+           // all controls were skipped in `patchValue`.
+           expect(logger).toEqual([]);
+         });
 
       it('should not fire an event when explicitly specified', fakeAsync(() => {
            form.valueChanges.subscribe((value) => {
