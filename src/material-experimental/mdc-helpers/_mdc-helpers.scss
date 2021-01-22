@@ -18,7 +18,8 @@ $mat-theme-styles-query: color;
 $mat-typography-styles-query: typography;
 
 // Mappings between Angular Material and MDC's typography levels.
-$mat-typography-level-mappings: (
+// TODO: delete once all MDC components have migrated to using the 2018 mappings.
+$mat-typography-2014-level-mappings: (
   mdc-to-mat: (
     headline1: display-4,
     headline2: display-3,
@@ -51,9 +52,49 @@ $mat-typography-level-mappings: (
   )
 );
 
+// Mappings between Angular Material and MDC's typography levels.
+$mat-typography-2018-level-mappings: (
+    // Maps from MDC typography levels (e.g. body1) to Angular Material typography levels
+    // (e.g. body-1).
+    mdc-to-mat: (
+        headline1: headline-1,
+        headline2: headline-2,
+        headline3: headline-3,
+        headline4: headline-4,
+        headline5: headline-5,
+        headline6: headline-6,
+        subtitle1: subtitle-1,
+        subtitle2: subtitle-2,
+        body1: body-1,
+        body2: body-2,
+        caption: caption,
+        button: button,
+        overline: overline
+    ),
+    // Maps from Angular Material typography levels (e.g. body-1) to MDC typography levels
+    // (e.g. body1).
+    mat-to-mdc: (
+        headline-1: headline1,
+        headline-2: headline2,
+        headline-3: headline3,
+        headline-4: headline4,
+        headline-5: headline5,
+        headline-6: headline6,
+        subtitle-1: subtitle1,
+        subtitle-2: subtitle2,
+        body-1: body1,
+        body-2: body2,
+        caption: caption,
+        button: button,
+        overline: overline
+    )
+);
+
 // Converts an Angular Material typography level config to an MDC one.
 @function mat-typography-level-config-to-mdc($mat-config, $mat-level) {
-  $mdc-level: map-get(map-get($mat-typography-level-mappings, mat-to-mdc), $mat-level);
+  $mappings: if(mat-private-typography-is-2018-config($mat-config),
+      $mat-typography-2018-level-mappings, $mat-typography-2014-level-mappings);
+  $mdc-level: map-get(map-get($mappings, mat-to-mdc), $mat-level);
 
   @return map-merge(
       if($mdc-level,
@@ -81,7 +122,10 @@ $mat-typography-level-mappings: (
 @function mat-typography-config-to-mdc($mat-config: mat-typography-config()) {
   $mdc-config: ();
 
-  @each $mdc-level, $mat-level in map-get($mat-typography-level-mappings, mdc-to-mat) {
+  $mappings: if(mat-private-typography-is-2018-config($mat-config),
+      $mat-typography-2018-level-mappings, $mat-typography-2014-level-mappings);
+
+  @each $mdc-level, $mat-level in map-get($mappings, mdc-to-mat) {
     $mdc-config: map-merge(
         $mdc-config,
         ($mdc-level: mat-typography-level-config-to-mdc($mat-config, $mat-level)));
@@ -98,17 +142,6 @@ $mat-typography-level-mappings: (
       map-get($mdc-typography-styles, font-weight),
       map-get($mdc-typography-styles, font-family),
       map-get($mdc-typography-styles, letter-spacing));
-}
-
-// Converts an MDC typography config to an Angular Material one.
-@function mat-typography-config-from-mdc() {
-  $mat-config: ();
-
-  @each $mat-level, $mdc-level in map-get($mat-typography-level-mappings, mat-to-mdc) {
-    $mat-config: map-merge($mat-config, mat-typography-config-from-mdc($mdc-level));
-  }
-
-  @return $mat-config;
 }
 
 // Configures MDC's global variables to reflect the given theme, applies the given styles,
