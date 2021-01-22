@@ -12,6 +12,10 @@
  */
 let msgIndex = 0;
 
+export function resetMessageIndex(): void {
+  msgIndex = 0;
+}
+
 /**
  * Generate a string that represents expected i18n block content for a simple message.
  */
