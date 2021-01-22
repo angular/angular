@@ -75,8 +75,15 @@ export function cleanUpControl(
     }
   };
 
-  dir.valueAccessor!.registerOnChange(noop);
-  dir.valueAccessor!.registerOnTouched(noop);
+  // The `valueAccessor` field is typically defined on FromControl and FormControlName directive
+  // instances and there is a logic in `selectValueAccessor` function that throws if it's not the
+  // case. We still check the presence of `valueAccessor` before invoking its methods to make sure
+  // that cleanup works correctly if app code or tests are setup to ignore the error thrown from
+  // `selectValueAccessor`. See https://github.com/angular/angular/issues/40521.
+  if (dir.valueAccessor) {
+    dir.valueAccessor.registerOnChange(noop);
+    dir.valueAccessor.registerOnTouched(noop);
+  }
 
   cleanUpValidators(control, dir, /* handleOnValidatorChange */ true);
 
