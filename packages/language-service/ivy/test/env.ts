@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {TmplAstNode} from '@angular/compiler';
+import {ParseError, TmplAstNode} from '@angular/compiler';
 import {StrictTemplateOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MockFileSystem, TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
@@ -51,6 +51,7 @@ export interface TemplateOverwriteResult {
   nodes: TmplAstNode[];
   component: ts.ClassDeclaration;
   text: string;
+  errors: ParseError[]|null;
 }
 
 export class LanguageServiceTestEnvironment {
@@ -106,6 +107,7 @@ export class LanguageServiceTestEnvironment {
     const tsLS = project.getLanguageService();
 
     const ngLS = new LanguageService(project, tsLS);
+
     return new LanguageServiceTestEnvironment(tsLS, ngLS, projectService, host);
   }
 
@@ -132,8 +134,8 @@ export class LanguageServiceTestEnvironment {
 
     const {cursor, text} = extractCursorInfo(contents);
 
-    const {nodes} = templateTypeChecker.overrideComponentTemplate(component, text);
-    return {cursor, nodes, component, text};
+    const {nodes, errors} = templateTypeChecker.overrideComponentTemplate(component, text);
+    return {cursor, nodes, component, text, errors};
   }
 
   updateFile(fileName: AbsoluteFsPath, contents: string): void {

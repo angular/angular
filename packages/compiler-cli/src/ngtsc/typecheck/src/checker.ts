@@ -154,7 +154,33 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   overrideComponentTemplate(component: ts.ClassDeclaration, template: string):
       {nodes: TmplAstNode[], errors: ParseError[]|null} {
-    const {nodes, errors} = parseTemplate(template, 'override.html', {
+    const sourceMapping = this.templateSourceRegistry.getSourceMapping(component);
+    let templateUrl: string;
+
+    if (sourceMapping === null) {
+      // A source mapping could be unavailable for a broken component. Fallback to 'override.html'
+      // as an error state.
+      templateUrl = 'override.html';
+    } else {
+      switch (sourceMapping.type) {
+        case 'direct': {
+          templateUrl = absoluteFromSourceFile(component.getSourceFile());
+          break;
+        }
+        case 'indirect': {
+          // Fallback to 'override.html' because we cannot correctly sourcemap an indirect
+          // template.
+          templateUrl = 'override.html';
+          break;
+        }
+        case 'external': {
+          templateUrl = sourceMapping.templateUrl;
+          break;
+        }
+      }
+    }
+
+    const {nodes, errors} = parseTemplate(template, templateUrl, {
       preserveWhitespaces: true,
       leadingTriviaChars: [],
     });

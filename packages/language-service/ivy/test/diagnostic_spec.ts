@@ -192,4 +192,118 @@ describe('getSemanticDiagnostics', () => {
       'component is missing a template',
     ]);
   });
+
+  it('reports parse errors when overrding an external template', () => {
+    const appFile = {
+      name: absoluteFrom('/app.ts'),
+      contents: `
+      import {Component, NgModule} from '@angular/core';
+
+      @Component({ templateUrl: './app.html' })
+      export class AppComponent { nope = false; }
+    `
+    };
+    const templateFile = {name: absoluteFrom('/app.html'), contents: `{{nope}}`};
+
+    const moduleFile = {
+      name: absoluteFrom('/app-module.ts'),
+      contents: `
+        import {NgModule} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        import {AppComponent} from './app';
+
+        @NgModule({
+          declarations: [AppComponent],
+          imports: [CommonModule],
+        })
+        export class AppModule {}
+    `,
+      isRoot: true
+    };
+
+    const env = LanguageServiceTestEnvironment.setup([moduleFile, appFile, templateFile]);
+    env.expectNoSourceDiagnostics();
+
+    const overrideResult =
+        env.overrideTemplateWithCursor(absoluteFrom('/app.ts'), 'AppComponent', '{{nope=false}}¦');
+    expect(overrideResult!.errors!.map(x => x.msg)).toEqual([
+      'Parser Error: Bindings cannot contain assignments at column 6 in [{{nope=false}}] in /app.html@0:0'
+    ]);
+  });
+
+  it('reports parse errors when overrding a inline template', () => {
+    const appFile = {
+      name: absoluteFrom('/app.ts'),
+      contents: `
+      import {Component, NgModule} from '@angular/core';
+
+      @Component({ template: '{{nope}}' })
+      export class AppComponent { nope = false; }
+    `
+    };
+
+    const moduleFile = {
+      name: absoluteFrom('/app-module.ts'),
+      contents: `
+        import {NgModule} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        import {AppComponent} from './app';
+
+        @NgModule({
+          declarations: [AppComponent],
+          imports: [CommonModule],
+        })
+        export class AppModule {}
+    `,
+      isRoot: true
+    };
+
+    const env = LanguageServiceTestEnvironment.setup([moduleFile, appFile]);
+    env.expectNoSourceDiagnostics();
+
+    const overrideResult =
+        env.overrideTemplateWithCursor(absoluteFrom('/app.ts'), 'AppComponent', '{{nope=false}}¦');
+    expect(overrideResult!.errors!.map(x => x.msg)).toEqual([
+      'Parser Error: Bindings cannot contain assignments at column 6 in [{{nope=false}}] in /app.ts@0:0'
+    ]);
+  });
+
+  it('reports parse errors when overrding an indirect template', () => {
+    const appFile = {
+      name: absoluteFrom('/app.ts'),
+      contents: `
+      import {Component, NgModule} from '@angular/core';
+
+      const template = '{{nope}}';
+
+      @Component({ template: template })
+      export class AppComponent { nope = false; }
+    `
+    };
+
+    const moduleFile = {
+      name: absoluteFrom('/app-module.ts'),
+      contents: `
+        import {NgModule} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        import {AppComponent} from './app';
+
+        @NgModule({
+          declarations: [AppComponent],
+          imports: [CommonModule],
+        })
+        export class AppModule {}
+    `,
+      isRoot: true
+    };
+
+    const env = LanguageServiceTestEnvironment.setup([moduleFile, appFile]);
+    env.expectNoSourceDiagnostics();
+
+    const overrideResult =
+        env.overrideTemplateWithCursor(absoluteFrom('/app.ts'), 'AppComponent', '{{nope=false}}¦');
+    expect(overrideResult!.errors!.map(x => x.msg)).toEqual([
+      'Parser Error: Bindings cannot contain assignments at column 6 in [{{nope=false}}] in override.html@0:0'
+    ]);
+  });
 });
