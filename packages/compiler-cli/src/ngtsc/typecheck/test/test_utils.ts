@@ -27,6 +27,7 @@ import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
 import {OutOfBandDiagnosticRecorder} from '../src/oob';
 import {TypeCheckShimGenerator} from '../src/shim';
+import {TemplateSourceRegistryImpl} from '../src/template_source_registry';
 import {generateTypeCheckBlock} from '../src/type_check_block';
 
 export function typescriptLibDts(): TestFile {
@@ -356,7 +357,11 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
   const fullConfig = {...ALL_ENABLED_CONFIG, ...config};
 
   // Map out the scope of each target component, which is needed for the ComponentScopeReader.
+  // Also capture the template source mapping of each target component, which is needed for
+  //  overrideTemplate.
   const scopeMap = new Map<ClassDeclaration, ScopeData>();
+  const templateSourceRegistry = new TemplateSourceRegistryImpl();
+
   for (const target of targets) {
     const sf = getSourceFileOrError(program, target.fileName);
     const scope = makeScope(program, sf, target.declarations ?? []);
@@ -364,6 +369,22 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
     for (const className of Object.keys(target.templates)) {
       const classDecl = getClass(sf, className);
       scopeMap.set(classDecl, scope);
+
+      const template = target.templates[className];
+      const templateUrl = `${className}.html`;
+      const templateFile = new ParseSourceFile(template, templateUrl);
+      const classRef = new Reference(classDecl);
+
+      const sourceMapping: TemplateSourceMapping = {
+        type: 'external',
+        template,
+        templateUrl,
+        componentClass: classRef.node,
+        // Use the class's name for error mappings.
+        node: classRef.node.name,
+      };
+
+      templateSourceRegistry.captureSource(classRef.node, sourceMapping, templateFile);
     }
   }
 
@@ -397,17 +418,9 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
         });
         const binder = new R3TargetBinder(matcher);
         const classRef = new Reference(classDecl);
+        const sourceMapping = templateSourceRegistry.getSourceMappingOrThrow(classRef.node);
 
-        const sourceMapping: TemplateSourceMapping = {
-          type: 'external',
-          template,
-          templateUrl,
-          componentClass: classRef.node,
-          // Use the class's name for error mappings.
-          node: classRef.node.name,
-        };
-
-        ctx.addTemplate(classRef, binder, nodes, pipes, [], sourceMapping, templateFile, errors);
+        ctx.addTemplate(classRef, binder, nodes, pipes, [], sourceMapping, errors);
       }
     }
   });
@@ -466,7 +479,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
 
   const templateTypeChecker = new TemplateTypeCheckerImpl(
       program, programStrategy, checkAdapter, fullConfig, emitter, reflectionHost, host,
-      NOOP_INCREMENTAL_BUILD, fakeScopeReader, typeCheckScopeRegistry);
+      NOOP_INCREMENTAL_BUILD, fakeScopeReader, typeCheckScopeRegistry, templateSourceRegistry);
   return {
     templateTypeChecker,
     program,

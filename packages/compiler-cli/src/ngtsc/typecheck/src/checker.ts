@@ -12,18 +12,18 @@ import * as ts from 'typescript';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
-import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
+import {ClassDeclaration, DeclarationNode, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 import {ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull} from '../../util/src/typescript';
-import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, ShimLocation, Symbol, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
+import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, ShimLocation, Symbol, TemplateId, TemplateSourceRegistry, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
 import {TemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
 import {InliningMode, ShimTypeCheckingData, TemplateData, TemplateOverride, TypeCheckContextImpl, TypeCheckingHost} from './context';
 import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
-import {TemplateSourceManager} from './source';
-import {findTypeCheckBlock, getTemplateMapping, TemplateSourceResolver} from './tcb_util';
+import {TemplateNodeManager} from './source';
+import {findTypeCheckBlock, getTemplateMapping, TemplateNodeResolver} from './tcb_util';
 import {SymbolBuilder} from './template_symbol_builder';
 
 
@@ -84,7 +84,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
       private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>,
       private readonly componentScopeReader: ComponentScopeReader,
-      private readonly typeCheckScopeRegistry: TypeCheckScopeRegistry) {}
+      private readonly typeCheckScopeRegistry: TypeCheckScopeRegistry,
+      private templateSourceRegistry: TemplateSourceRegistry) {}
 
   resetOverrides(): void {
     for (const fileRecord of this.state.values()) {
@@ -209,7 +210,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return null;
     }
     return getTemplateMapping(
-        shimSf, positionInShimFile, fileRecord.sourceManager, /*isDiagnosticsRequest*/ false);
+        shimSf, positionInShimFile, fileRecord.sourceManager, /*isDiagnosticsRequest*/ false,
+        this.getTemplateSourceRegistry());
   }
 
   generateAllTypeCheckBlocks() {
@@ -239,13 +241,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     if (fileRecord.hasInlines) {
       const inlineSf = getSourceFileOrError(typeCheckProgram, sfPath);
       diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(inlineSf).map(
-          diag => convertDiagnostic(diag, fileRecord.sourceManager)));
+          diag =>
+              convertDiagnostic(diag, fileRecord.sourceManager, this.getTemplateSourceRegistry())));
     }
 
     for (const [shimPath, shimRecord] of fileRecord.shimData) {
       const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
       diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(shimSf).map(
-          diag => convertDiagnostic(diag, fileRecord.sourceManager)));
+          diag =>
+              convertDiagnostic(diag, fileRecord.sourceManager, this.getTemplateSourceRegistry())));
       diagnostics.push(...shimRecord.genesisDiagnostics);
 
       for (const templateData of shimRecord.templates.values()) {
@@ -278,12 +282,14 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     if (shimRecord.hasInlines) {
       const inlineSf = getSourceFileOrError(typeCheckProgram, sfPath);
       diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(inlineSf).map(
-          diag => convertDiagnostic(diag, fileRecord.sourceManager)));
+          diag =>
+              convertDiagnostic(diag, fileRecord.sourceManager, this.getTemplateSourceRegistry())));
     }
 
     const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
     diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(shimSf).map(
-        diag => convertDiagnostic(diag, fileRecord.sourceManager)));
+        diag =>
+            convertDiagnostic(diag, fileRecord.sourceManager, this.getTemplateSourceRegistry())));
     diagnostics.push(...shimRecord.genesisDiagnostics);
 
     for (const templateData of shimRecord.templates.values()) {
@@ -473,12 +479,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       this.state.set(path, {
         hasInlines: false,
         templateOverrides: null,
-        sourceManager: new TemplateSourceManager(),
+        sourceManager: new TemplateNodeManager(),
         isComplete: false,
         shimData: new Map(),
       });
     }
     return this.state.get(path)!;
+  }
+  getTemplateSourceRegistry(): TemplateSourceRegistry {
+    return this.templateSourceRegistry;
   }
   getSymbolOfNode(node: TmplAstTemplate, component: ts.ClassDeclaration): TemplateSymbol|null;
   getSymbolOfNode(node: TmplAstElement, component: ts.ClassDeclaration): ElementSymbol|null;
@@ -631,11 +640,12 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 }
 
 function convertDiagnostic(
-    diag: ts.Diagnostic, sourceResolver: TemplateSourceResolver): TemplateDiagnostic|null {
+    diag: ts.Diagnostic, sourceResolver: TemplateNodeResolver,
+    templateSourceRegistry: TemplateSourceRegistry): TemplateDiagnostic|null {
   if (!shouldReportDiagnostic(diag)) {
     return null;
   }
-  return translateDiagnostic(diag, sourceResolver);
+  return translateDiagnostic(diag, sourceResolver, templateSourceRegistry);
 }
 
 /**
@@ -653,7 +663,7 @@ export interface FileTypeCheckingData {
    * Source mapping information for mapping diagnostics from inlined type check blocks back to the
    * original template.
    */
-  sourceManager: TemplateSourceManager;
+  sourceManager: TemplateNodeManager;
 
   /**
    * Map of template overrides applied to any components in this input file.
@@ -681,8 +691,12 @@ export interface FileTypeCheckingData {
 class WholeProgramTypeCheckingHost implements TypeCheckingHost {
   constructor(private impl: TemplateTypeCheckerImpl) {}
 
-  getSourceManager(sfPath: AbsoluteFsPath): TemplateSourceManager {
+  getSourceManager(sfPath: AbsoluteFsPath): TemplateNodeManager {
     return this.impl.getFileData(sfPath).sourceManager;
+  }
+
+  getTemplateSourceRegistry(): TemplateSourceRegistry {
+    return this.impl.getTemplateSourceRegistry();
   }
 
   shouldCheckComponent(node: ts.ClassDeclaration): boolean {
@@ -735,9 +749,13 @@ class SingleFileTypeCheckingHost implements TypeCheckingHost {
     }
   }
 
-  getSourceManager(sfPath: AbsoluteFsPath): TemplateSourceManager {
+  getSourceManager(sfPath: AbsoluteFsPath): TemplateNodeManager {
     this.assertPath(sfPath);
     return this.fileData.sourceManager;
+  }
+
+  getTemplateSourceRegistry(): TemplateSourceRegistry {
+    return this.impl.getTemplateSourceRegistry();
   }
 
   shouldCheckComponent(node: ts.ClassDeclaration): boolean {

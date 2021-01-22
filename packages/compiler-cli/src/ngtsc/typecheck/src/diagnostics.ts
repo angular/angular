@@ -7,9 +7,9 @@
  */
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import * as ts from 'typescript';
-import {TemplateId} from '../api';
+import {TemplateId, TemplateSourceRegistry} from '../api';
 import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
-import {getTemplateMapping, TemplateSourceResolver} from './tcb_util';
+import {getTemplateMapping, TemplateNodeResolver} from './tcb_util';
 
 
 /**
@@ -87,12 +87,14 @@ export function shouldReportDiagnostic(diagnostic: ts.Diagnostic): boolean {
  * file from being reported as type-check errors.
  */
 export function translateDiagnostic(
-    diagnostic: ts.Diagnostic, resolver: TemplateSourceResolver): TemplateDiagnostic|null {
+    diagnostic: ts.Diagnostic, resolver: TemplateNodeResolver,
+    templateSourceResolver: TemplateSourceRegistry): TemplateDiagnostic|null {
   if (diagnostic.file === undefined || diagnostic.start === undefined) {
     return null;
   }
   const fullMapping = getTemplateMapping(
-      diagnostic.file, diagnostic.start, resolver, /*isDiagnosticsRequest*/ true);
+      diagnostic.file, diagnostic.start, resolver, /*isDiagnosticsRequest*/ true,
+      templateSourceResolver);
   if (fullMapping === null) {
     return null;
   }

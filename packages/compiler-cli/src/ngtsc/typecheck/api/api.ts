@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, BoundTarget, DirectiveMeta, ParseSourceSpan, SchemaMetadata} from '@angular/compiler';
+import {AbsoluteSourceSpan, BoundTarget, DirectiveMeta, ParseSourceFile, ParseSourceSpan, SchemaMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -382,4 +382,32 @@ export enum UpdateMode {
    * reverting any prior changes.
    */
   Incremental,
+}
+
+export interface TemplateSourceRegistry {
+  /**
+   * For the given template class declaration, retrieve the original source mapping which describes
+   * how the offsets in the template should be interpreted.
+   *
+   * Throws an exception if the original source mapping is not found.
+   */
+  getSourceMappingOrThrow(node: ts.ClassDeclaration): TemplateSourceMapping;
+
+  /**
+   * For the given template class declaration, retrieve the original source mapping which describes
+   * how the offsets in the template should be interpreted.
+   *
+   * Returns null if not found.
+   */
+  getSourceMapping(node: ts.ClassDeclaration): TemplateSourceMapping|null;
+
+  /**
+   * Convert an absolute source span associated with the given template declaration into a full
+   * `ParseSourceSpan`. The returned parse span has line and column numbers in addition to only
+   * absolute offsets and gives access to the original template source.
+   */
+  toParseSourceSpan(node: ts.ClassDeclaration, span: AbsoluteSourceSpan): ParseSourceSpan|null;
+
+  captureSource(node: ClassDeclaration, mapping: TemplateSourceMapping, file: ParseSourceFile):
+      ClassDeclaration;
 }

@@ -10,10 +10,10 @@ import {DomElementSchemaRegistry, ParseSourceSpan, SchemaMetadata, TmplAstElemen
 import * as ts from 'typescript';
 
 import {ErrorCode, ngErrorCode} from '../../diagnostics';
-import {TemplateId} from '../api';
+import {TemplateId, TemplateSourceMapping, TemplateSourceRegistry} from '../api';
 import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
 
-import {TemplateSourceResolver} from './tcb_util';
+import {TemplateNodeResolver} from './tcb_util';
 
 const REGISTRY = new DomElementSchemaRegistry();
 const REMOVE_XHTML_REGEX = /^:xhtml:/;
@@ -71,7 +71,9 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     return this._diagnostics;
   }
 
-  constructor(private resolver: TemplateSourceResolver) {}
+  constructor(
+      private resolver: TemplateNodeResolver,
+      private templateSourceResolver: TemplateSourceRegistry) {}
 
   checkElement(id: TemplateId, element: TmplAstElement, schemas: SchemaMetadata[]): void {
     // HTML elements inside an SVG `foreignObject` are declared in the `xhtml` namespace.
@@ -80,7 +82,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
     const name = element.name.replace(REMOVE_XHTML_REGEX, '');
 
     if (!REGISTRY.hasElement(name, schemas)) {
-      const mapping = this.resolver.getSourceMapping(id);
+      const mapping = this.getSourceMappingForTemplateIdOrThrow(id);
 
       let errorMsg = `'${name}' is not a known element:\n`;
       errorMsg +=
@@ -104,7 +106,7 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
       id: TemplateId, element: TmplAstElement, name: string, span: ParseSourceSpan,
       schemas: SchemaMetadata[]): void {
     if (!REGISTRY.hasProperty(element.name, name, schemas)) {
-      const mapping = this.resolver.getSourceMapping(id);
+      const mapping = this.getSourceMappingForTemplateIdOrThrow(id);
 
       let errorMsg =
           `Can't bind to '${name}' since it isn't a known property of '${element.name}'.`;
@@ -128,5 +130,13 @@ export class RegistryDomSchemaChecker implements DomSchemaChecker {
           ngErrorCode(ErrorCode.SCHEMA_INVALID_ATTRIBUTE), errorMsg);
       this._diagnostics.push(diag);
     }
+  }
+
+  private getSourceMappingForTemplateIdOrThrow(id: TemplateId): TemplateSourceMapping {
+    const templateNode = this.resolver.getTemplateNode(id);
+    if (!templateNode) {
+      throw new Error(`template node not found for template id ${id}`);
+    }
+    return this.templateSourceResolver.getSourceMappingOrThrow(templateNode);
   }
 }

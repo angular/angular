@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
 import {ClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {getTokenAtPosition} from '../../util/src/typescript';
-import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceMapping} from '../api';
+import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceRegistry} from '../api';
 
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
 import {checkIfClassIsExported, checkIfGenericTypesAreUnbound} from './ts_util';
@@ -21,21 +20,10 @@ import {checkIfClassIsExported, checkIfGenericTypesAreUnbound} from './ts_util';
  * Adapter interface which allows the template type-checking diagnostics code to interpret offsets
  * in a TCB and map them back to original locations in the template.
  */
-export interface TemplateSourceResolver {
+export interface TemplateNodeResolver {
   getTemplateId(node: ts.ClassDeclaration): TemplateId;
 
-  /**
-   * For the given template id, retrieve the original source mapping which describes how the offsets
-   * in the template should be interpreted.
-   */
-  getSourceMapping(id: TemplateId): TemplateSourceMapping;
-
-  /**
-   * Convert an absolute source span associated with the given template id into a full
-   * `ParseSourceSpan`. The returned parse span has line and column numbers in addition to only
-   * absolute offsets and gives access to the original template source.
-   */
-  toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan|null;
+  getTemplateNode(id: TemplateId): ts.ClassDeclaration|null;
 }
 
 export function requiresInlineTypeCheckBlock(
@@ -62,16 +50,25 @@ export function requiresInlineTypeCheckBlock(
 
 /** Maps a shim position back to a template location. */
 export function getTemplateMapping(
-    shimSf: ts.SourceFile, position: number, resolver: TemplateSourceResolver,
-    isDiagnosticRequest: boolean): FullTemplateMapping|null {
+    shimSf: ts.SourceFile,
+    position: number,
+    resolver: TemplateNodeResolver,
+
+    isDiagnosticRequest: boolean,
+    templateSourceResolver: TemplateSourceRegistry,
+    ): FullTemplateMapping|null {
   const node = getTokenAtPosition(shimSf, position);
   const sourceLocation = findSourceLocation(node, shimSf, isDiagnosticRequest);
   if (sourceLocation === null) {
     return null;
   }
 
-  const mapping = resolver.getSourceMapping(sourceLocation.id);
-  const span = resolver.toParseSourceSpan(sourceLocation.id, sourceLocation.span);
+  const templateNode = resolver.getTemplateNode(sourceLocation.id);
+  if (templateNode === null) {
+    return null;
+  }
+  const mapping = templateSourceResolver.getSourceMappingOrThrow(templateNode);
+  const span = templateSourceResolver.toParseSourceSpan(templateNode, sourceLocation.span);
   if (span === null) {
     return null;
   }

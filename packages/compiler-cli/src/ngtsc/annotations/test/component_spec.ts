@@ -19,6 +19,7 @@ import {PartialEvaluator} from '../../partial_evaluator';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
+import {TemplateSourceRegistryImpl} from '../../typecheck/src/template_source_registry';
 import {ResourceLoader} from '../src/api';
 import {ComponentDecoratorHandler} from '../src/component';
 
@@ -55,30 +56,18 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
   const typeCheckScopeRegistry = new TypeCheckScopeRegistry(scopeRegistry, metaReader);
 
   const handler = new ComponentDecoratorHandler(
-      reflectionHost,
-      evaluator,
-      metaRegistry,
-      metaReader,
-      scopeRegistry,
-      scopeRegistry,
-      typeCheckScopeRegistry,
-      resourceRegistry,
-      /* isCore */ false,
-      new StubResourceLoader(),
+      reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, scopeRegistry,
+      typeCheckScopeRegistry, resourceRegistry,
+      /* isCore */ false, new StubResourceLoader(),
       /* rootDirs */['/'],
       /* defaultPreserveWhitespaces */ false,
       /* i18nUseExternalIds */ true,
       /* enableI18nLegacyMessageIdFormat */ false,
       /* usePoisonedData */ false,
-      /* i18nNormalizeLineEndingsInICUs */ undefined,
-      moduleResolver,
-      cycleAnalyzer,
-      refEmitter,
+      /* i18nNormalizeLineEndingsInICUs */ undefined, moduleResolver, cycleAnalyzer, refEmitter,
       NOOP_DEFAULT_IMPORT_RECORDER,
-      /* depTracker */ null,
-      injectableRegistry,
-      /* annotateForClosureCompiler */ false,
-  );
+      /* depTracker */ null, injectableRegistry,
+      /* annotateForClosureCompiler */ false, new TemplateSourceRegistryImpl());
   return {reflectionHost, handler};
 }
 

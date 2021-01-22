@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
+import {TemplateSourceRegistryImpl} from '@angular/compiler-cli/src/ngtsc/typecheck/src/template_source_registry';
 import * as ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
@@ -102,7 +103,8 @@ export class DecorationAnalyzer {
         /* usePoisonedData */ false,
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
         this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER, NOOP_DEPENDENCY_TRACKER,
-        this.injectableRegistry, !!this.compilerOptions.annotateForClosureCompiler),
+        this.injectableRegistry, !!this.compilerOptions.annotateForClosureCompiler,
+        new TemplateSourceRegistryImpl()),
     // See the note in ngtsc about why this cast is needed.
     // clang-format off
     new DirectiveDecoratorHandler(

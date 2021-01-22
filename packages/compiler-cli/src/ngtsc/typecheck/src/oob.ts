@@ -11,10 +11,10 @@ import * as ts from 'typescript';
 
 import {ErrorCode, makeDiagnostic, makeRelatedInformation, ngErrorCode} from '../../diagnostics';
 import {ClassDeclaration} from '../../reflection';
-import {TemplateId} from '../api';
+import {TemplateId, TemplateSourceMapping, TemplateSourceRegistry} from '../api';
 import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
 
-import {TemplateSourceResolver} from './tcb_util';
+import {TemplateNodeResolver} from './tcb_util';
 
 
 
@@ -79,14 +79,22 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
    */
   private recordedPipes = new Set<BindingPipe>();
 
-  constructor(private resolver: TemplateSourceResolver) {}
+  constructor(
+      private resolver: TemplateNodeResolver,
+      private templateSourceResolver: TemplateSourceRegistry) {}
 
   get diagnostics(): ReadonlyArray<TemplateDiagnostic> {
     return this._diagnostics;
   }
 
   missingReferenceTarget(templateId: TemplateId, ref: TmplAstReference): void {
-    const mapping = this.resolver.getSourceMapping(templateId);
+    const templateNode = this.resolver.getTemplateNode(templateId);
+
+    if (templateNode === null) {
+      throw new Error(`No declaration found for template id ${templateId}.`);
+    }
+
+    const mapping = this.templateSourceResolver.getSourceMappingOrThrow(templateNode!);
     const value = ref.value.trim();
 
     const errorMsg = `No directive found with exportAs '${value}'.`;
@@ -100,10 +108,15 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
       return;
     }
 
-    const mapping = this.resolver.getSourceMapping(templateId);
+    const templateNode = this.resolver.getTemplateNode(templateId);
+    if (!templateNode) {
+      throw new Error(`Cannot find template node for template id ${templateId}`);
+    }
+
+    const mapping = this.getSourceMappingForTemplateIdOrThrow(templateId);
     const errorMsg = `No pipe found with name '${ast.name}'.`;
 
-    const sourceSpan = this.resolver.toParseSourceSpan(templateId, ast.nameSpan);
+    const sourceSpan = this.templateSourceResolver.toParseSourceSpan(templateNode, ast.nameSpan);
     if (sourceSpan === null) {
       throw new Error(
           `Assertion failure: no SourceLocation found for usage of pipe '${ast.name}'.`);
@@ -116,12 +129,17 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
   illegalAssignmentToTemplateVar(
       templateId: TemplateId, assignment: PropertyWrite, target: TmplAstVariable): void {
-    const mapping = this.resolver.getSourceMapping(templateId);
+    const templateNode = this.resolver.getTemplateNode(templateId);
+    if (!templateNode) {
+      throw new Error(`cannot find template node for id ${templateId}`);
+    }
+    const mapping = this.templateSourceResolver.getSourceMappingOrThrow(templateNode);
     const errorMsg = `Cannot use variable '${
         assignment
             .name}' as the left-hand side of an assignment expression. Template variables are read-only.`;
 
-    const sourceSpan = this.resolver.toParseSourceSpan(templateId, assignment.sourceSpan);
+    const sourceSpan =
+        this.templateSourceResolver.toParseSourceSpan(templateNode, assignment.sourceSpan);
     if (sourceSpan === null) {
       throw new Error(`Assertion failure: no SourceLocation found for property binding.`);
     }
@@ -135,7 +153,7 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
 
   duplicateTemplateVar(
       templateId: TemplateId, variable: TmplAstVariable, firstDecl: TmplAstVariable): void {
-    const mapping = this.resolver.getSourceMapping(templateId);
+    const mapping = this.getSourceMappingForTemplateIdOrThrow(templateId);
     const errorMsg = `Cannot redeclare variable '${
         variable.name}' as it was previously declared elsewhere for the same template.`;
 
@@ -173,6 +191,14 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         templateId, ErrorCode.INLINE_TYPE_CTOR_REQUIRED, node.name, message,
         directives.map(
             dir => makeRelatedInformation(dir.name, `Requires an inline type constructor.`))));
+  }
+
+  private getSourceMappingForTemplateIdOrThrow(id: TemplateId): TemplateSourceMapping {
+    const templateNode = this.resolver.getTemplateNode(id);
+    if (!templateNode) {
+      throw new Error(`template node not found for template id ${id}`);
+    }
+    return this.templateSourceResolver.getSourceMappingOrThrow(templateNode);
   }
 }
 

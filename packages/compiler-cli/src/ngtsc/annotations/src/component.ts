@@ -20,7 +20,7 @@ import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
-import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck/api';
+import {TemplateSourceMapping, TemplateSourceRegistry, TypeCheckContext} from '../../typecheck/api';
 import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 
@@ -95,7 +95,8 @@ export class ComponentDecoratorHandler implements
       private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
       private depTracker: DependencyTracker|null,
       private injectableRegistry: InjectableClassRegistry,
-      private annotateForClosureCompiler: boolean) {}
+      private annotateForClosureCompiler: boolean,
+      private templateSourceRegistry: TemplateSourceRegistry) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
   private elementSchemaRegistry = new DomElementSchemaRegistry();
@@ -377,6 +378,9 @@ export class ComponentDecoratorHandler implements
 
     this.resourceRegistry.registerResources(analysis.resources, node);
     this.injectableRegistry.registerInjectable(node);
+
+    this.templateSourceRegistry.captureSource(
+        ref.node, analysis.template.sourceMapping, analysis.template.file);
   }
 
   index(
@@ -432,7 +436,7 @@ export class ComponentDecoratorHandler implements
     const binder = new R3TargetBinder(scope.matcher);
     ctx.addTemplate(
         new Reference(node), binder, meta.template.diagNodes, scope.pipes, scope.schemas,
-        meta.template.sourceMapping, meta.template.file, meta.template.errors);
+        meta.template.sourceMapping, meta.template.errors);
   }
 
   resolve(node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>):

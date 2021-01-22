@@ -30,6 +30,7 @@ import {ivySwitchTransform} from '../../switch';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgramStrategy} from '../../typecheck/api';
+import {TemplateSourceRegistryImpl} from '../../typecheck/src/template_source_registry';
 import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
 import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
@@ -774,6 +775,7 @@ export class NgCompiler {
 
     const defaultImportTracker = new DefaultImportTracker();
     const resourceRegistry = new ResourceRegistry();
+    const templateSourceRegistry = new TemplateSourceRegistryImpl();
 
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
@@ -785,7 +787,7 @@ export class NgCompiler {
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
           this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
           refEmitter, defaultImportTracker, this.incrementalDriver.depGraph, injectableRegistry,
-          this.closureCompilerEnabled),
+          this.closureCompilerEnabled, templateSourceRegistry),
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
       // clang-format off
@@ -821,7 +823,7 @@ export class NgCompiler {
     const templateTypeChecker = new TemplateTypeCheckerImpl(
         this.tsProgram, this.typeCheckingProgramStrategy, traitCompiler,
         this.getTypeCheckingConfig(), refEmitter, reflector, this.adapter, this.incrementalDriver,
-        scopeRegistry, typeCheckScopeRegistry);
+        scopeRegistry, typeCheckScopeRegistry, templateSourceRegistry);
 
     return {
       isCore,

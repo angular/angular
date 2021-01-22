@@ -14,13 +14,13 @@ import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {ComponentToShimMappingStrategy, TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
+import {ComponentToShimMappingStrategy, TemplateId, TemplateSourceMapping, TemplateSourceRegistry, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
 import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
 
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
-import {TemplateSourceManager} from './source';
+import {TemplateNodeManager,} from './source';
 import {requiresInlineTypeCheckBlock} from './tcb_util';
 import {generateTypeCheckBlock} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
@@ -90,7 +90,7 @@ export interface PendingFileTypeCheckingData {
    * Source mapping information for mapping diagnostics from inlined type check blocks back to the
    * original template.
    */
-  sourceManager: TemplateSourceManager;
+  sourceManager: TemplateNodeManager;
 
   /**
    * Map of in-progress shim data for shims generated from this input file.
@@ -132,7 +132,9 @@ export interface TypeCheckingHost {
   /**
    * Retrieve the `TemplateSourceManager` responsible for components in the given input file path.
    */
-  getSourceManager(sfPath: AbsoluteFsPath): TemplateSourceManager;
+  getSourceManager(sfPath: AbsoluteFsPath): TemplateNodeManager;
+
+  getTemplateSourceRegistry(): TemplateSourceRegistry;
 
   /**
    * Whether a particular component class should be included in the current type-checking pass.
@@ -184,7 +186,6 @@ export enum InliningMode {
  */
 export class TypeCheckContextImpl implements TypeCheckContext {
   private fileMap = new Map<AbsoluteFsPath, PendingFileTypeCheckingData>();
-
   constructor(
       private config: TypeCheckingConfig,
       private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
@@ -213,7 +214,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
       pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping, file: ParseSourceFile,
+      schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping,
       parseErrors: ParseError[]|null): void {
     if (!this.host.shouldCheckComponent(ref.node)) {
       return;
@@ -297,8 +298,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       return;
     }
 
+    const id = fileData.sourceManager.captureSource(ref.node);
+
     const meta = {
-      id: fileData.sourceManager.captureSource(ref.node, sourceMapping, file),
+      id,
       boundTarget,
       pipes,
       schemas,
@@ -410,6 +413,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     return updates;
   }
 
+  getTemplateSourceRegistry(): TemplateSourceRegistry {
+    return this.host.getTemplateSourceRegistry();
+  }
+
   private addInlineTypeCheckBlock(
       fileData: PendingFileTypeCheckingData, shimData: PendingShimData,
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
@@ -430,8 +437,10 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const shimPath = this.componentMappingStrategy.shimPathForComponent(node);
     if (!fileData.shimData.has(shimPath)) {
       fileData.shimData.set(shimPath, {
-        domSchemaChecker: new RegistryDomSchemaChecker(fileData.sourceManager),
-        oobRecorder: new OutOfBandDiagnosticRecorderImpl(fileData.sourceManager),
+        domSchemaChecker: new RegistryDomSchemaChecker(
+            fileData.sourceManager, this.host.getTemplateSourceRegistry()),
+        oobRecorder: new OutOfBandDiagnosticRecorderImpl(
+            fileData.sourceManager, this.host.getTemplateSourceRegistry()),
         file: new TypeCheckFile(
             shimPath, this.config, this.refEmitter, this.reflector, this.compilerHost),
         templates: new Map<TemplateId, TemplateData>(),

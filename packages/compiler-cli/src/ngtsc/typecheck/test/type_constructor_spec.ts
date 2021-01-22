@@ -16,7 +16,8 @@ import {getRootDirs} from '../../util/src/typescript';
 import {ComponentToShimMappingStrategy, UpdateMode} from '../api';
 import {ReusedProgramStrategy} from '../src/augmented_program';
 import {InliningMode, PendingFileTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from '../src/context';
-import {TemplateSourceManager} from '../src/source';
+import {TemplateNodeManager} from '../src/source';
+import {TemplateSourceRegistryImpl} from '../src/template_source_registry';
 import {TypeCheckFile} from '../src/type_check_file';
 
 import {ALL_ENABLED_CONFIG} from './test_utils';
@@ -192,16 +193,21 @@ TestClass.ngTypeCtor({value: 'test'});
 function makePendingFile(): PendingFileTypeCheckingData {
   return {
     hasInlines: false,
-    sourceManager: new TemplateSourceManager(),
+    sourceManager: new TemplateNodeManager(),
     shimData: new Map(),
   };
 }
 
 class TestTypeCheckingHost implements TypeCheckingHost {
-  private sourceManager = new TemplateSourceManager();
+  private sourceManager = new TemplateNodeManager();
+  private templateSourceRegistry = new TemplateSourceRegistryImpl();
 
-  getSourceManager(): TemplateSourceManager {
+  getSourceManager(): TemplateNodeManager {
     return this.sourceManager;
+  }
+
+  getTemplateSourceRegistry(): TemplateSourceRegistryImpl {
+    return this.templateSourceRegistry;
   }
 
   shouldCheckComponent(): boolean {
