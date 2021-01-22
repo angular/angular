@@ -754,11 +754,12 @@ describe('find references and rename locations', () => {
           }
         }`;
 
-    describe('when cursor is on pipe name', () => {
-      let file: OpenBuffer;
-      beforeEach(() => {
-        const files = {
-          'app.ts': `
+    for (const checkTypeOfPipes of [true, false]) {
+      describe(`when cursor is on pipe name, checkTypeOfPipes: ${checkTypeOfPipes}`, () => {
+        let file: OpenBuffer;
+        beforeEach(() => {
+          const files = {
+            'app.ts': `
         import {Component} from '@angular/core';
 
         @Component({template: '{{birthday | prefixPipe: "MM/dd/yy"}}'})
@@ -766,35 +767,36 @@ describe('find references and rename locations', () => {
           birthday = '';
         }
       `,
-          'prefix-pipe.ts': prefixPipe
-        };
+            'prefix-pipe.ts': prefixPipe
+          };
 
-        env = LanguageServiceTestEnv.setup();
-        const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        file = project.openFile('app.ts');
-        file.moveCursorToText('prefi¦xPipe:');
-      });
+          env = LanguageServiceTestEnv.setup();
+          const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+          file = project.openFile('app.ts');
+          file.moveCursorToText('prefi¦xPipe:');
+        });
 
-      it('should find references', () => {
-        const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toBe(5);
-        assertFileNames(refs, ['index.d.ts', 'prefix-pipe.ts', 'app.ts']);
-        assertTextSpans(refs, ['transform', 'prefixPipe']);
-      });
+        it('should find references', () => {
+          const refs = getReferencesAtPosition(file)!;
+          expect(refs.length).toBe(5);
+          assertFileNames(refs, ['index.d.ts', 'prefix-pipe.ts', 'app.ts']);
+          assertTextSpans(refs, ['transform', 'prefixPipe']);
+        });
 
-      it('should find rename locations', () => {
-        const renameLocations = getRenameLocationsAtPosition(file)!;
-        expect(renameLocations.length).toBe(2);
-        assertFileNames(renameLocations, ['prefix-pipe.ts', 'app.ts']);
-        assertTextSpans(renameLocations, ['prefixPipe']);
-      });
+        it('should find rename locations', () => {
+          const renameLocations = getRenameLocationsAtPosition(file)!;
+          expect(renameLocations.length).toBe(2);
+          assertFileNames(renameLocations, ['prefix-pipe.ts', 'app.ts']);
+          assertTextSpans(renameLocations, ['prefixPipe']);
+        });
 
-      it('should get rename info', () => {
-        const result = file.getRenameInfo() as ts.RenameInfoSuccess;
-        expect(result.canRename).toEqual(true);
-        expect(result.displayName).toEqual('prefixPipe');
+        it('should get rename info', () => {
+          const result = file.getRenameInfo() as ts.RenameInfoSuccess;
+          expect(result.canRename).toEqual(true);
+          expect(result.displayName).toEqual('prefixPipe');
+        });
       });
-    });
+    }
 
     describe('when cursor is on pipe name expression', () => {
       it('finds rename locations and rename info', () => {

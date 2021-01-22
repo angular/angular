@@ -757,7 +757,9 @@ function allTests(os: string) {
         // ModuleA classes
 
         @Pipe({name: 'number'})
-        class PipeA {}
+        class PipeA {
+          transform() {}
+        }
 
         @NgModule({
           declarations: [PipeA],
@@ -768,7 +770,9 @@ function allTests(os: string) {
         // ModuleB classes
 
         @Pipe({name: 'number'})
-        class PipeB {}
+        class PipeB {
+          transform() {}
+        }
 
         @Component({
           selector: 'app',
@@ -800,7 +804,9 @@ function allTests(os: string) {
             // ModuleA classes
 
             @Pipe({name: 'number'})
-            class PipeA {}
+            class PipeA {
+              transform() {}
+            }
 
             @NgModule({
               declarations: [PipeA],
@@ -811,7 +817,9 @@ function allTests(os: string) {
             // ModuleB classes
 
             @Pipe({name: 'number'})
-            class PipeB {}
+            class PipeB {
+              transform() {}
+            }
 
             @NgModule({
               declarations: [PipeB],
@@ -1647,7 +1655,9 @@ function allTests(os: string) {
         import {Component, NgModule, Pipe} from '@angular/core';
 
         @Pipe({name: 'test'})
-        export class TestPipe {}
+        export class TestPipe {
+          transform() {}
+        }
 
         @Component({selector: 'test-cmp', template: '{{value | test}}'})
         export class TestCmp {
