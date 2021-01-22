@@ -7,7 +7,7 @@
  */
 import {AttributeMarker, SelectorFlags} from '@angular/compiler/src/core';
 import {QueryFlags} from '@angular/compiler/src/render3/view/compiler';
-import {i18nIcuMsg, i18nMsg, i18nMsgWithPostprocess, Placeholder} from './i18n_helpers';
+import {i18nIcuMsg, i18nMsg, i18nMsgWithPostprocess, Placeholder, resetMessageIndex} from './i18n_helpers';
 
 const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [
   [
@@ -47,6 +47,8 @@ const EXPECTED_FILE_MACROS: [RegExp, (...args: string[]) => string][] = [
  * @param expectedContent The content to process.
  */
 export function replaceMacros(expectedContent: string): string {
+  resetMessageIndex();
+
   for (const [regex, replacer] of EXPECTED_FILE_MACROS) {
     expectedContent = expectedContent.replace(regex, replacer);
   }
