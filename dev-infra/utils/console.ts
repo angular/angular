@@ -193,7 +193,9 @@ export function captureLogOutputForCommand(argv: Arguments) {
 
   // On process exit, write the logged output to the appropriate log files
   process.on('exit', (code: number) => {
-    LOGGED_TEXT += `Command ran in ${new Date().getTime() - now.getTime()}ms`;
+    LOGGED_TEXT += `${headerLine}\n`;
+    LOGGED_TEXT += `Command ran in ${new Date().getTime() - now.getTime()}ms\n`;
+    LOGGED_TEXT += `Exit Code: ${code}\n`;
     /** Path to the log file location. */
     const logFilePath = join(getRepoBaseDir(), '.ng-dev.log');
 
@@ -205,7 +207,9 @@ export function captureLogOutputForCommand(argv: Arguments) {
     // For failure codes greater than 1, the new logged lines should be written to a specific log
     // file for the command run failure.
     if (code > 1) {
-      writeFileSync(join(getRepoBaseDir(), `.ng-dev.err-${now.getTime()}.log`), LOGGED_TEXT);
+      const logFileName = `.ng-dev.err-${now.getTime()}.log`;
+      console.error(`Exit code: ${code}. Writing full log to ${logFileName}`);
+      writeFileSync(join(getRepoBaseDir(), logFileName), LOGGED_TEXT);
     }
   });
 
