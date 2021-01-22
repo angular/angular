@@ -430,19 +430,14 @@ export class SymbolBuilder {
   }
 
   private getSymbolOfPipe(expression: BindingPipe): PipeSymbol|null {
-    const node = findFirstMatchingNode(
-        this.typeCheckBlock, {withSpan: expression.sourceSpan, filter: ts.isCallExpression});
-    if (node === null || !ts.isPropertyAccessExpression(node.expression)) {
+    const methodAccess = findFirstMatchingNode(
+        this.typeCheckBlock,
+        {withSpan: expression.nameSpan, filter: ts.isPropertyAccessExpression});
+    if (methodAccess === null) {
       return null;
     }
 
-    const methodAccess = node.expression;
-    // Find the node for the pipe variable from the transform property access. This will be one of
-    // two forms: `_pipe1.transform` or `(_pipe1 as any).transform`.
-    const pipeVariableNode = ts.isParenthesizedExpression(methodAccess.expression) &&
-            ts.isAsExpression(methodAccess.expression.expression) ?
-        methodAccess.expression.expression.expression :
-        methodAccess.expression;
+    const pipeVariableNode = methodAccess.expression;
     const pipeDeclaration = this.getTypeChecker().getSymbolAtLocation(pipeVariableNode);
     if (pipeDeclaration === undefined || pipeDeclaration.valueDeclaration === undefined) {
       return null;

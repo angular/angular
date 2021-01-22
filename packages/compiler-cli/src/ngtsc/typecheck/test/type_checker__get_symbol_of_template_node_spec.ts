@@ -722,29 +722,19 @@ runInEachFileSystem(() => {
               BindingPipe;
         }
 
-        it('should get symbol for pipe', () => {
-          setupPipesTest();
-          const pipeSymbol = templateTypeChecker.getSymbolOfNode(binding, cmp)!;
-          assertPipeSymbol(pipeSymbol);
-          expect(program.getTypeChecker().symbolToString(pipeSymbol.tsSymbol!))
-              .toEqual('transform');
-          expect(program.getTypeChecker().symbolToString(pipeSymbol.classSymbol.tsSymbol))
-              .toEqual('TestPipe');
-          expect(program.getTypeChecker().typeToString(pipeSymbol.tsType!))
-              .toEqual('(value: string, repeat: number, commaSeparate: boolean) => string[]');
-        });
-
-        it('should get symbol for pipe, checkTypeOfPipes: false', () => {
-          setupPipesTest(false);
-          const pipeSymbol = templateTypeChecker.getSymbolOfNode(binding, cmp)! as PipeSymbol;
-          assertPipeSymbol(pipeSymbol);
-          expect(pipeSymbol.tsSymbol).toBeNull();
-          expect(program.getTypeChecker().typeToString(pipeSymbol.tsType!)).toEqual('any');
-          expect(program.getTypeChecker().symbolToString(pipeSymbol.classSymbol.tsSymbol))
-              .toEqual('TestPipe');
-          expect(program.getTypeChecker().typeToString(pipeSymbol.classSymbol.tsType))
-              .toEqual('TestPipe');
-        });
+        for (const checkTypeOfPipes of [true, false]) {
+          it(`should get symbol for pipe, checkTypeOfPipes: ${checkTypeOfPipes}`, () => {
+            setupPipesTest(checkTypeOfPipes);
+            const pipeSymbol = templateTypeChecker.getSymbolOfNode(binding, cmp)!;
+            assertPipeSymbol(pipeSymbol);
+            expect(program.getTypeChecker().symbolToString(pipeSymbol.tsSymbol!))
+                .toEqual('transform');
+            expect(program.getTypeChecker().symbolToString(pipeSymbol.classSymbol.tsSymbol))
+                .toEqual('TestPipe');
+            expect(program.getTypeChecker().typeToString(pipeSymbol.tsType!))
+                .toEqual('(value: string, repeat: number, commaSeparate: boolean) => string[]');
+          });
+        }
 
         it('should get symbols for pipe expression and args', () => {
           setupPipesTest(false);

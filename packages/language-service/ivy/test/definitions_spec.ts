@@ -8,7 +8,7 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {assertFileNames, createModuleAndProjectWithDeclarations, humanizeDocumentSpanLike, LanguageServiceTestEnv, OpenBuffer} from '../testing';
+import {assertFileNames, assertTextSpans, createModuleAndProjectWithDeclarations, humanizeDocumentSpanLike, LanguageServiceTestEnv, OpenBuffer} from '../testing';
 
 describe('definitions', () => {
   it('gets definition for template reference in overridden template', () => {
@@ -35,7 +35,7 @@ describe('definitions', () => {
     assertFileNames(Array.from(definitions!), ['app.html']);
   });
 
-  it('returns the pipe class as definition when checkTypeOfPipes is false', () => {
+  it('returns the pipe definitions when checkTypeOfPipes is false', () => {
     initMockFileSystem('Native');
     const files = {
       'app.ts': `
@@ -57,10 +57,9 @@ describe('definitions', () => {
 
     const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
     expect(template.contents.substr(textSpan.start, textSpan.length)).toEqual('date');
-    expect(definitions!.length).toEqual(1);
-    const [def] = definitions!;
-    expect(def.textSpan).toContain('DatePipe');
-    expect(def.contextSpan).toContain('DatePipe');
+    expect(definitions.length).toEqual(3);
+    assertTextSpans(definitions, ['transform']);
+    assertFileNames(definitions, ['index.d.ts']);
   });
 
   it('gets definitions for all inputs when attribute matches more than one', () => {

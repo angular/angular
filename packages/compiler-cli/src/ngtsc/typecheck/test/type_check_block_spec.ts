@@ -992,7 +992,7 @@ describe('type check blocks', () => {
         const DISABLED_CONFIG: TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfPipes: false};
         const block = tcb(TEMPLATE, PIPES, DISABLED_CONFIG);
         expect(block).toContain('var _pipe1: i0.TestPipe = null!;');
-        expect(block).toContain('((_pipe1 as any).transform(((ctx).a), ((ctx).b), ((ctx).c)));');
+        expect(block).toContain('((_pipe1.transform as any)(((ctx).a), ((ctx).b), ((ctx).c))');
       });
     });
 

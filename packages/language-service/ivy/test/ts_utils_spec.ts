@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import * as ts from 'typescript';
 import {LanguageServiceTestEnv, OpenBuffer, Project} from '../testing';
@@ -7,7 +15,7 @@ describe('ts utils', () => {
   describe('collectMemberMethods', () => {
     beforeEach(() => {
       initMockFileSystem('Native');
-    })
+    });
 
     it('gets only methods in class, not getters, setters, or properties', () => {
       const files = {
@@ -69,7 +77,7 @@ describe('ts utils', () => {
     function getMemberMethodNames(project: Project, file: OpenBuffer): string[] {
       const sf = project.getSourceFile('app.ts')!;
       const node = findTightestNode(sf, file.cursor)!;
-      expect(ts.isClassDeclaration(node.parent)).toBe(true)
+      expect(ts.isClassDeclaration(node.parent)).toBe(true);
       return collectMemberMethods(node.parent as ts.ClassDeclaration, project.getTypeChecker())
           .map(m => m.name.getText())
           .sort();

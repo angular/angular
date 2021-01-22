@@ -1712,17 +1712,19 @@ class TcbExpressionTranslator {
 
         // Use an 'any' value to at least allow the rest of the expression to be checked.
         pipe = NULL_AS_ANY;
-      } else if (this.tcb.env.config.checkTypeOfPipes) {
+      } else {
         // Use a variable declared as the pipe's type.
         pipe = this.tcb.env.pipeInst(pipeRef);
-      } else {
-        // Use an 'any' value when not checking the type of the pipe.
-        pipe = ts.createAsExpression(
-            this.tcb.env.pipeInst(pipeRef), ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
       }
       const args = ast.args.map(arg => this.translate(arg));
-      const methodAccess = ts.createPropertyAccess(pipe, 'transform');
+      let methodAccess: ts.Expression =
+          ts.factory.createPropertyAccessExpression(pipe, 'transform');
       addParseSpanInfo(methodAccess, ast.nameSpan);
+      if (!this.tcb.env.config.checkTypeOfPipes) {
+        methodAccess = ts.factory.createAsExpression(
+            methodAccess, ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+      }
+
       const result = ts.createCall(
           /* expression */ methodAccess,
           /* typeArguments */ undefined,

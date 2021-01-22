@@ -559,8 +559,13 @@ describe('quick info', () => {
       // checkTypeOfPipes is set to false when strict templates is false
       project = env.addProject('test', quickInfoSkeleton(), {strictTemplates: false});
       const templateOverride = `<p>The hero's birthday is {{birthday | da¦te: "MM/dd/yy"}}</p>`;
-      expectQuickInfo(
-          {templateOverride, expectedSpanText: 'date', expectedDisplayString: '(pipe) DatePipe'});
+      expectQuickInfo({
+        templateOverride,
+        expectedSpanText: 'date',
+        expectedDisplayString:
+            '(pipe) DatePipe.transform(value: string | number | Date, format?: string | undefined, timezone?: ' +
+            'string | undefined, locale?: string | undefined): string | null (+2 overloads)'
+      });
     });
 
     it('should still get quick info if there is an invalid css resource', () => {

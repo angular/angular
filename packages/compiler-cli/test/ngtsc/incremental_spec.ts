@@ -200,7 +200,9 @@ runInEachFileSystem(() => {
         import {Pipe} from '@angular/core';
 
         @Pipe({name: 'myPipe'})
-        export class MyPipe {}
+        export class MyPipe {
+          transform() {}
+        }
       `);
       env.write('module.ts', `
         import {NgModule, NO_ERRORS_SCHEMA} from '@angular/core';
@@ -238,7 +240,9 @@ runInEachFileSystem(() => {
         import {Pipe} from '@angular/core';
 
         @Pipe({name: 'foo_changed'})
-        export class FooPipe {}
+        export class FooPipe {
+          transform() {}
+        }
       `);
       env.driveMain();
       const written = env.getFilesWrittenSinceLastFlush();
@@ -910,7 +914,9 @@ runInEachFileSystem(() => {
     import {Pipe} from '@angular/core';
 
     @Pipe({name: 'foo'})
-    export class FooPipe {}
+    export class FooPipe {
+      transform() {}
+    }
   `);
     env.write('foo_module.ts', `
     import {NgModule} from '@angular/core';
@@ -940,7 +946,9 @@ runInEachFileSystem(() => {
     import {Pipe} from '@angular/core';
 
     @Pipe({name: 'foo'})
-    export class BarPipe {}
+    export class BarPipe {
+      transform() {}
+    }
   `);
     env.write('bar_module.ts', `
     import {NgModule} from '@angular/core';

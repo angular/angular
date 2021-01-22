@@ -11,6 +11,7 @@ export class HostBindingComp {
 
 @Pipe({name: 'my_forward_pipe'})
 class MyForwardPipe {
+  transform() {}
 }
 
 @NgModule({declarations: [HostBindingComp, MyForwardPipe]})
