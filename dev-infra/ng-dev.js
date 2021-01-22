@@ -3970,15 +3970,20 @@ var AutosquashMergeStrategy = /** @class */ (function (_super) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+var defaultPullRequestMergeTaskFlags = {
+    branchPrompt: true,
+};
 /**
  * Class that accepts a merge script configuration and Github token. It provides
  * a programmatic interface for merging multiple pull requests based on their
  * labels that have been resolved through the merge script configuration.
  */
 var PullRequestMergeTask = /** @class */ (function () {
-    function PullRequestMergeTask(config, git) {
+    function PullRequestMergeTask(config, git, flags) {
         this.config = config;
         this.git = git;
+        // Update flags property with the provided flags values as patches to the default flag values.
+        this.flags = tslib.__assign(tslib.__assign({}, defaultPullRequestMergeTaskFlags), flags);
     }
     /**
      * Merges the given pull request and pushes it upstream.
@@ -3988,10 +3993,10 @@ var PullRequestMergeTask = /** @class */ (function () {
     PullRequestMergeTask.prototype.merge = function (prNumber, force) {
         if (force === void 0) { force = false; }
         return tslib.__awaiter(this, void 0, void 0, function () {
-            var hasOauthScopes, pullRequest, _a, strategy, previousBranchOrRevision, failure, e_1;
+            var hasOauthScopes, pullRequest, _a, _b, strategy, previousBranchOrRevision, failure, e_1;
             var _this = this;
-            return tslib.__generator(this, function (_b) {
-                switch (_b.label) {
+            return tslib.__generator(this, function (_c) {
+                switch (_c.label) {
                     case 0: return [4 /*yield*/, this.git.hasOauthScopes(function (scopes, missing) {
                             if (!scopes.includes('repo')) {
                                 if (_this.config.remote.private) {
@@ -4003,7 +4008,7 @@ var PullRequestMergeTask = /** @class */ (function () {
                             }
                         })];
                     case 1:
-                        hasOauthScopes = _b.sent();
+                        hasOauthScopes = _c.sent();
                         if (hasOauthScopes !== true) {
                             return [2 /*return*/, {
                                     status: 5 /* GITHUB_ERROR */,
@@ -4015,43 +4020,48 @@ var PullRequestMergeTask = /** @class */ (function () {
                         }
                         return [4 /*yield*/, loadAndValidatePullRequest(this, prNumber, force)];
                     case 2:
-                        pullRequest = _b.sent();
+                        pullRequest = _c.sent();
                         if (!isPullRequest(pullRequest)) {
                             return [2 /*return*/, { status: 3 /* FAILED */, failure: pullRequest }];
                         }
+                        _a = this.flags.branchPrompt;
+                        if (!_a) return [3 /*break*/, 4];
                         return [4 /*yield*/, promptConfirm(getTargettedBranchesConfirmationPromptMessage(pullRequest))];
                     case 3:
-                        if (!(_b.sent())) {
+                        _a = !(_c.sent());
+                        _c.label = 4;
+                    case 4:
+                        if (_a) {
                             return [2 /*return*/, { status: 4 /* USER_ABORTED */ }];
                         }
-                        _a = pullRequest.hasCaretakerNote;
-                        if (!_a) return [3 /*break*/, 5];
+                        _b = pullRequest.hasCaretakerNote;
+                        if (!_b) return [3 /*break*/, 6];
                         return [4 /*yield*/, promptConfirm(getCaretakerNotePromptMessage(pullRequest))];
-                    case 4:
-                        _a = !(_b.sent());
-                        _b.label = 5;
                     case 5:
+                        _b = !(_c.sent());
+                        _c.label = 6;
+                    case 6:
                         // If the pull request has a caretaker note applied, raise awareness by prompting
                         // the caretaker. The caretaker can then decide to proceed or abort the merge.
-                        if (_a) {
+                        if (_b) {
                             return [2 /*return*/, { status: 4 /* USER_ABORTED */ }];
                         }
                         strategy = this.config.githubApiMerge ?
                             new GithubApiMergeStrategy(this.git, this.config.githubApiMerge) :
                             new AutosquashMergeStrategy(this.git);
                         previousBranchOrRevision = null;
-                        _b.label = 6;
-                    case 6:
-                        _b.trys.push([6, 10, 11, 12]);
+                        _c.label = 7;
+                    case 7:
+                        _c.trys.push([7, 11, 12, 13]);
                         previousBranchOrRevision = this.git.getCurrentBranchOrRevision();
                         // Run preparations for the merge (e.g. fetching branches).
                         return [4 /*yield*/, strategy.prepare(pullRequest)];
-                    case 7:
-                        // Run preparations for the merge (e.g. fetching branches).
-                        _b.sent();
-                        return [4 /*yield*/, strategy.merge(pullRequest)];
                     case 8:
-                        failure = _b.sent();
+                        // Run preparations for the merge (e.g. fetching branches).
+                        _c.sent();
+                        return [4 /*yield*/, strategy.merge(pullRequest)];
+                    case 9:
+                        failure = _c.sent();
                         if (failure !== null) {
                             return [2 /*return*/, { status: 3 /* FAILED */, failure: failure }];
                         }
@@ -4059,26 +4069,26 @@ var PullRequestMergeTask = /** @class */ (function () {
                         // branches because we cannot delete branches which are currently checked out.
                         this.git.run(['checkout', '-f', previousBranchOrRevision]);
                         return [4 /*yield*/, strategy.cleanup(pullRequest)];
-                    case 9:
-                        _b.sent();
+                    case 10:
+                        _c.sent();
                         // Return a successful merge status.
                         return [2 /*return*/, { status: 2 /* SUCCESS */ }];
-                    case 10:
-                        e_1 = _b.sent();
+                    case 11:
+                        e_1 = _c.sent();
                         // Catch all git command errors and return a merge result w/ git error status code.
                         // Other unknown errors which aren't caused by a git command are re-thrown.
                         if (e_1 instanceof GitCommandError) {
                             return [2 /*return*/, { status: 0 /* UNKNOWN_GIT_ERROR */ }];
                         }
                         throw e_1;
-                    case 11:
+                    case 12:
                         // Always try to restore the branch if possible. We don't want to leave
                         // the repository in a different state than before.
                         if (previousBranchOrRevision !== null) {
                             this.git.runGraceful(['checkout', '-f', previousBranchOrRevision]);
                         }
                         return [7 /*endfinally*/];
-                    case 12: return [2 /*return*/];
+                    case 13: return [2 /*return*/];
                 }
             });
         });
@@ -4106,8 +4116,7 @@ var PullRequestMergeTask = /** @class */ (function () {
  * @param projectRoot Path to the local Git project that is used for merging.
  * @param config Configuration for merging pull requests.
  */
-function mergePullRequest(prNumber, githubToken, projectRoot, config) {
-    if (projectRoot === void 0) { projectRoot = getRepoBaseDir(); }
+function mergePullRequest(prNumber, githubToken, flags) {
     return tslib.__awaiter(this, void 0, void 0, function () {
         /** Performs the merge and returns whether it was successful or not. */
         function performMerge(ignoreFatalErrors) {
@@ -4223,7 +4232,7 @@ function mergePullRequest(prNumber, githubToken, projectRoot, config) {
                     // Set the environment variable to skip all git commit hooks triggered by husky. We are unable to
                     // rely on `--no-verify` as some hooks still run, notably the `prepare-commit-msg` hook.
                     process.env['HUSKY'] = '0';
-                    return [4 /*yield*/, createPullRequestMergeTask(githubToken, projectRoot, config)];
+                    return [4 /*yield*/, createPullRequestMergeTask(githubToken, flags)];
                 case 1:
                     api = _a.sent();
                     return [4 /*yield*/, performMerge(false)];
@@ -4244,16 +4253,13 @@ function mergePullRequest(prNumber, githubToken, projectRoot, config) {
  * and optional explicit configuration. An explicit configuration can be specified
  * when the merge script is used outside of a `ng-dev` configured repository.
  */
-function createPullRequestMergeTask(githubToken, projectRoot, explicitConfig) {
+function createPullRequestMergeTask(githubToken, flags) {
     return tslib.__awaiter(this, void 0, void 0, function () {
-        var git_1, devInfraConfig, git, _a, config, errors;
+        var projectRoot, devInfraConfig, git, _a, config, errors;
         return tslib.__generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    if (explicitConfig !== undefined) {
-                        git_1 = new GitClient(githubToken, { github: explicitConfig.remote }, projectRoot);
-                        return [2 /*return*/, new PullRequestMergeTask(explicitConfig, git_1)];
-                    }
+                    projectRoot = getRepoBaseDir();
                     devInfraConfig = getConfig();
                     git = new GitClient(githubToken, devInfraConfig, projectRoot);
                     return [4 /*yield*/, loadAndValidateConfig(devInfraConfig, git.github)];
@@ -4269,7 +4275,7 @@ function createPullRequestMergeTask(githubToken, projectRoot, explicitConfig) {
                     config.remote = devInfraConfig.github;
                     // We can cast this to a merge config with remote because we always set the
                     // remote above.
-                    return [2 /*return*/, new PullRequestMergeTask(config, git)];
+                    return [2 /*return*/, new PullRequestMergeTask(config, git, flags)];
             }
         });
     });
@@ -4282,17 +4288,29 @@ function createPullRequestMergeTask(githubToken, projectRoot, explicitConfig) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** Builds the options for the merge command. */
-function buildMergeCommand(yargs) {
-    return addGithubTokenOption(yargs).help().strict().positional('pr-number', { demandOption: true, type: 'number' });
+/** Builds the command. */
+function builder$7(yargs) {
+    return addGithubTokenOption(yargs)
+        .help()
+        .strict()
+        .positional('pr', {
+        demandOption: true,
+        type: 'number',
+        description: 'The PR to be merged.',
+    })
+        .option('branch-prompt', {
+        type: 'boolean',
+        default: true,
+        description: 'Whether to prompt to confirm the branches a PR will merge into.',
+    });
 }
-/** Handles the merge command. i.e. performs the merge of a specified pull request. */
-function handleMergeCommand(_a) {
-    var pr = _a["pr-number"], githubToken = _a.githubToken;
+/** Handles the command. */
+function handler$7(_a) {
+    var pr = _a.pr, githubToken = _a.githubToken, branchPrompt = _a.branchPrompt;
     return tslib.__awaiter(this, void 0, void 0, function () {
         return tslib.__generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, mergePullRequest(pr, githubToken)];
+                case 0: return [4 /*yield*/, mergePullRequest(pr, githubToken, { branchPrompt: branchPrompt })];
                 case 1:
                     _b.sent();
                     return [2 /*return*/];
@@ -4300,6 +4318,13 @@ function handleMergeCommand(_a) {
         });
     });
 }
+/** yargs command module describing the command.  */
+var MergeCommandModule = {
+    handler: handler$7,
+    builder: builder$7,
+    command: 'merge <pr>',
+    describe: 'Merge a PR into its targeted branches.',
+};
 
 /**
  * @license
@@ -4459,9 +4484,9 @@ function buildPrParser(localYargs) {
     return localYargs.help()
         .strict()
         .demandCommand()
-        .command('merge <pr-number>', 'Merge pull requests', buildMergeCommand, handleMergeCommand)
         .command('discover-new-conflicts <pr-number>', 'Check if a pending PR causes new conflicts for other pending PRs', buildDiscoverNewConflictsCommand, handleDiscoverNewConflictsCommand)
         .command('rebase <pr-number>', 'Rebase a pending PR and push the rebased commits back to Github', buildRebaseCommand, handleRebaseCommand)
+        .command(MergeCommandModule)
         .command(CheckoutCommandModule)
         .command(CheckTargetBranchesModule);
 }
@@ -4930,7 +4955,7 @@ function buildReleaseOutput() {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Yargs command builder for configuring the `ng-dev release build` command. */
-function builder$7(argv) {
+function builder$8(argv) {
     return argv.option('json', {
         type: 'boolean',
         description: 'Whether the built packages should be printed to stdout as JSON.',
@@ -4938,7 +4963,7 @@ function builder$7(argv) {
     });
 }
 /** Yargs command handler for building a release. */
-function handler$7(args) {
+function handler$8(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const { npmPackages } = getReleaseConfig();
         let builtPackages = yield buildReleaseOutput();
@@ -4973,8 +4998,8 @@ function handler$7(args) {
 }
 /** CLI command module for building release output. */
 const ReleaseBuildCommandModule = {
-    builder: builder$7,
-    handler: handler$7,
+    builder: builder$8,
+    handler: handler$8,
     command: 'build',
     describe: 'Builds the release output for the current branch.',
 };
@@ -6450,11 +6475,11 @@ class ReleaseTool {
  * found in the LICENSE file at https://angular.io/license
  */
 /** Yargs command builder for configuring the `ng-dev release publish` command. */
-function builder$8(argv) {
+function builder$9(argv) {
     return addGithubTokenOption(argv);
 }
 /** Yargs command handler for staging a release. */
-function handler$8(args) {
+function handler$9(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const config = getConfig();
         const releaseConfig = getReleaseConfig(config);
@@ -6477,8 +6502,8 @@ function handler$8(args) {
 }
 /** CLI command module for publishing a release. */
 const ReleasePublishCommandModule = {
-    builder: builder$8,
-    handler: handler$8,
+    builder: builder$9,
+    handler: handler$9,
     command: 'publish',
     describe: 'Publish new releases and configure version branches.',
 };
@@ -6490,7 +6515,7 @@ const ReleasePublishCommandModule = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-function builder$9(args) {
+function builder$a(args) {
     return args
         .positional('tagName', {
         type: 'string',
@@ -6504,7 +6529,7 @@ function builder$9(args) {
     });
 }
 /** Yargs command handler for building a release. */
-function handler$9(args) {
+function handler$a(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const { targetVersion: rawVersion, tagName } = args;
         const { npmPackages, publishRegistry } = getReleaseConfig();
@@ -6536,8 +6561,8 @@ function handler$9(args) {
 }
 /** CLI command module for setting an NPM dist tag. */
 const ReleaseSetDistTagCommand = {
-    builder: builder$9,
-    handler: handler$9,
+    builder: builder$a,
+    handler: handler$a,
     command: 'set-dist-tag <tag-name> <target-version>',
     describe: 'Sets a given NPM dist tag for all release packages.',
 };
@@ -6616,22 +6641,22 @@ function getCurrentGitUser() {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-function builder$a(args) {
+function builder$b(args) {
     return args.option('mode', {
         demandOption: true,
         description: 'Whether the env-stamp should be built for a snapshot or release',
         choices: ['snapshot', 'release']
     });
 }
-function handler$a({ mode }) {
+function handler$b({ mode }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         buildEnvStamp(mode);
     });
 }
 /** CLI command module for building the environment stamp. */
 const BuildEnvStampCommand = {
-    builder: builder$a,
-    handler: handler$a,
+    builder: builder$b,
+    handler: handler$b,
     command: 'build-env-stamp',
     describe: 'Build the environment stamping information',
 };
