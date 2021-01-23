@@ -3,7 +3,7 @@ import { HEROES } from './mock-heroes';
 import { Logger } from '../logger.service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class HeroService {
 

@@ -6,7 +6,7 @@ import { HEROES } from './mock-heroes';
 @Injectable({
   // we declare that this service should be created
   // by any injector that includes HeroModule.
-  providedIn: HeroModule,
+  providedIn: HeroModule
 })
 export class HeroService {
   getHeroes() { return HEROES; }
