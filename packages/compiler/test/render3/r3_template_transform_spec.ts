@@ -273,6 +273,11 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should report an error if a reference is used multiple times on the same template', () => {
+      expect(() => parse('<ng-template #a #a></ng-template>'))
+          .toThrowError(/Reference "#a" is defined more than once/);
+    });
+
     it('should parse variables via let-...', () => {
       expectFromHtml('<ng-template let-a="b"></ng-template>').toEqual([
         ['Template'],
@@ -462,6 +467,11 @@ describe('R3 template transform', () => {
 
     it('should report missing reference names', () => {
       expect(() => parse('<div #></div>')).toThrowError(/Reference does not have a name/);
+    });
+
+    it('should report an error if a reference is used multiple times on the same element', () => {
+      expect(() => parse('<div #a #a></div>'))
+          .toThrowError(/Reference "#a" is defined more than once/);
     });
   });
 

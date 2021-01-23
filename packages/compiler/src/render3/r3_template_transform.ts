@@ -458,6 +458,8 @@ class HtmlAstToIvyAst implements html.Visitor {
       this.reportError(`"-" is not allowed in reference names`, sourceSpan);
     } else if (identifier.length === 0) {
       this.reportError(`Reference does not have a name`, sourceSpan);
+    } else if (references.some(reference => reference.name === identifier)) {
+      this.reportError(`Reference "#${identifier}" is defined more than once`, sourceSpan);
     }
 
     references.push(new t.Reference(identifier, value, sourceSpan, keySpan, valueSpan));
