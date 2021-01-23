@@ -14,20 +14,13 @@ describe('comment node text escaping', () => {
       expect(escapeCommentText('text')).toEqual('text');
     });
 
-    it('should escape "<" or ">"', () => {
-      expect(escapeCommentText('<')).toEqual('\u200b<\u200b');
-      expect(escapeCommentText('<<')).toEqual('\u200b<\u200b\u200b<\u200b');
-      expect(escapeCommentText('>')).toEqual('\u200b>\u200b');
-      expect(escapeCommentText('>>')).toEqual('\u200b>\u200b\u200b>\u200b');
-    });
-
     it('should escape end marker', () => {
-      expect(escapeCommentText('before-->after')).toEqual('before--\u200b>\u200bafter');
+      expect(escapeCommentText('before-->after')).toEqual('before-\u200b-\u200b>after');
     });
 
     it('should escape multiple markers', () => {
       expect(escapeCommentText('before-->inline-->after'))
-          .toEqual('before--\u200b>\u200binline--\u200b>\u200bafter');
+          .toEqual('before-\u200b-\u200b>inline-\u200b-\u200b>after');
     });
   });
 });
