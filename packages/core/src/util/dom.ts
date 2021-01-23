@@ -6,18 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-const END_COMMENT = /(<|>)/g;
-const END_COMMENT_ESCAPED = '\u200B$1\u200B';
+const END_COMMENT = /-->/g;
+const END_COMMENT_ESCAPED = '-\u200B-\u200B>';
 
 /**
  * Escape the content of the strings so that it can be safely inserted into a comment node.
  *
  * The issue is that HTML does not specify any way to escape comment end text inside the comment.
- * Consider: `<!-- The way you close a comment is with ">", and "->" at the beginning or by "-->" or
- * "--!>" at the end. -->`. Above the `"-->"` is meant to be text not an end to the comment. This
- * can be created programmatically through DOM APIs. (`<!--` are also disallowed.)
- *
- * see: https://html.spec.whatwg.org/multipage/syntax.html#comments
+ * `<!-- The way you close a comment is with "-->". -->`. Above the `"-->"` is meant to be text not
+ * an end to the comment. This can be created programmatically through DOM APIs.
  *
  * ```
  * div.innerHTML = div.innerHTML
@@ -29,7 +26,7 @@ const END_COMMENT_ESCAPED = '\u200B$1\u200B';
  * may contain such text and expect them to be safe.)
  *
  * This function escapes the comment text by looking for the closing char sequence `-->` and replace
- * it with `--_>_` where the `_` is a zero width space `\u200B`. The result is that if a comment
+ * it with `-_-_>` where the `_` is a zero width space `\u200B`. The result is that if a comment
  * contains `-->` text it will render normally but it will not cause the HTML parser to close the
  * comment.
  *
