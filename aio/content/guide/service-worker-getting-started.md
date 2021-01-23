@@ -115,7 +115,7 @@ Pay attention to two key points:
 ### Making changes to your application
 
 Now that you've seen how service workers cache your application, the
-next step is understanding how updates work.
+next step is understanding how updates work. Let's make a change to the application, and watch the service worker install the update:
 
 1. If you're testing in an incognito window, open a second blank tab. This will keep the incognito and the cache state alive during your test.
 
@@ -123,13 +123,11 @@ next step is understanding how updates work.
 
 3. Shut down `http-server`.
 
-4. Next, make a change to the application, and watch the service worker install the update.
+4. Open `src/app/app.component.html` for editing.
 
-5. Open `src/app/app.component.html` for editing.
+5. Change the text `Welcome to {{title}}!` to `Bienvenue à {{title}}!`.
 
-6. Change the text `Welcome to {{title}}!` to `Bienvenue à {{title}}!`.
-
-7. Build and run the server again:
+6. Build and run the server again:
 
 ```sh
 ng build --prod
