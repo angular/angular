@@ -55,7 +55,7 @@ region="ctor-signature">
 </code-example>
 
 
-For more information, see and [Providing dependencies in modules](guide/providers) and [Hierarchical injectors](guide/hierarchical-dependency-injection).
+For more information, see [Providing dependencies in modules](guide/providers) and [Hierarchical injectors](guide/hierarchical-dependency-injection).
 
 {@a service-needs-service}
 
