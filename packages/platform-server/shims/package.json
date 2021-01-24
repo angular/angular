@@ -1,0 +1,4 @@
+{
+  "name": "@angular/platform-server/shims",
+  "sideEffects": true
+}
