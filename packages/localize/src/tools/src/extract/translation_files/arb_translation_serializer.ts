@@ -50,7 +50,8 @@ export class ArbTranslationSerializer implements TranslationSerializer {
       const id = getMessageId(message);
       output += this.serializeMessage(id, message);
       output += this.serializeMeta(
-          id, message.description, duplicateMessages.filter(hasLocation).map(m => m.location));
+          id, message.description, message.meaning,
+          duplicateMessages.filter(hasLocation).map(m => m.location));
     }
 
     output += '\n}';
@@ -62,12 +63,17 @@ export class ArbTranslationSerializer implements TranslationSerializer {
     return `,\n  ${JSON.stringify(id)}: ${JSON.stringify(message.text)}`;
   }
 
-  private serializeMeta(id: string, description: string|undefined, locations: ɵSourceLocation[]):
-      string {
+  private serializeMeta(
+      id: string, description: string|undefined, meaning: string|undefined,
+      locations: ɵSourceLocation[]): string {
     const meta: string[] = [];
 
     if (description) {
       meta.push(`\n    "description": ${JSON.stringify(description)}`);
+    }
+
+    if (meaning) {
+      meta.push(`\n    "x-meaning": ${JSON.stringify(meaning)}`);
     }
 
     if (locations.length > 0) {
