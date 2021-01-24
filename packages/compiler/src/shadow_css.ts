@@ -314,7 +314,7 @@ export class ShadowCss {
 
       // The context selectors now must be combined with each other to capture all the possible
       // selectors that `:host-context` can match.
-      return combineHostContextSelectors(_polyfillHostNoCombinator, contextSelectors, selectorText);
+      return combineHostContextSelectors(contextSelectors, selectorText);
     });
   }
 
@@ -682,8 +682,10 @@ function escapeBlocks(
  * @param contextSelectors an array of context selectors that will be combined.
  * @param otherSelectors the rest of the selectors that are not context selectors.
  */
-function combineHostContextSelectors(
-    hostMarker: string, contextSelectors: string[], otherSelectors: string): string {
+function combineHostContextSelectors(contextSelectors: string[], otherSelectors: string): string {
+  const hostMarker = _polyfillHostNoCombinator;
+  const otherSelectorsHasHost = _polyfillHostRe.test(otherSelectors);
+
   // If there are no context selectors then just output a host marker
   if (contextSelectors.length === 0) {
     return hostMarker + otherSelectors;
@@ -706,6 +708,9 @@ function combineHostContextSelectors(
   // Finally connect the selector to the `hostMarker`s: either acting directly on the host
   // (A<hostMarker>) or as an ancestor (A <hostMarker>).
   return combined
-      .map(s => `${s}${hostMarker}${otherSelectors}, ${s} ${hostMarker}${otherSelectors}`)
+      .map(
+          s => otherSelectorsHasHost ?
+              `${s}${otherSelectors}` :
+              `${s}${hostMarker}${otherSelectors}, ${s} ${hostMarker}${otherSelectors}`)
       .join(',');
 }
