@@ -260,6 +260,21 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       });
     });
 
+    describe((':host-context and :host combination selector'), () => {
+      it('should handle selectors on the same element', () => {
+        expect(s(':host-context(div):host(.x) > .y {}', 'contenta', 'a-host'))
+            .toEqual('div.x[a-host] > .y[contenta] {}');
+      });
+
+      it('should handle selectors on different elements', () => {
+        expect(s(':host-context(div) :host(.x) > .y {}', 'contenta', 'a-host'))
+            .toEqual('div .x[a-host] > .y[contenta] {}');
+
+        expect(s(':host-context(div) > :host(.x) > .y {}', 'contenta', 'a-host'))
+            .toEqual('div > .x[a-host] > .y[contenta] {}');
+      });
+    });
+
     it('should support polyfill-next-selector', () => {
       let css = s('polyfill-next-selector {content: \'x > y\'} z {}', 'contenta');
       expect(css).toEqual('x[contenta] > y[contenta]{}');
