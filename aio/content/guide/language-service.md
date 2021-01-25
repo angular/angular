@@ -54,7 +54,7 @@ You can then click "Go to definition" or press F12 to go directly to the definit
 ## Angular Language Service in your editor
 
 Angular Language Service is currently available as an extension for [Visual Studio Code](https://code.visualstudio.com/),
-[WebStorm](https://www.jetbrains.com/webstorm), and [Sublime Text](https://www.sublimetext.com/).
+[WebStorm](https://www.jetbrains.com/webstorm), [Sublime Text](https://www.sublimetext.com/) and [Eclipse IDE](https://www.eclipse.org/eclipseide/).
 
 ### Visual Studio Code
 
@@ -103,7 +103,9 @@ npm install --save-dev @angular/language-service
 
 This allows the Angular Language Service to provide diagnostics and completions in `.ts` files.
 
+### Eclipse IDE
 
+Either directly install the "Eclipse IDE for Web and JavaScript developers" package which comes with the Angular Language Server included, or from other Eclipse IDE packages, use Help > Eclipse Marketplace to find and install [Eclipse Wild Web Developer](https://marketplace.eclipse.org/content/wild-web-developer-html-css-javascript-typescript-nodejs-angular-json-yaml-kubernetes-xml).
 
 
 ## How the Language Service works
