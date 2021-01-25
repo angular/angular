@@ -43,3 +43,7 @@ $mat-autocomplete-panel-border-radius: 4px !default;
   }
 }
 
+// Prevent the overlay host node from affecting its surrounding layout.
+mat-autocomplete {
+  display: none;
+}

@@ -47,3 +47,7 @@
   }
 }
 
+// Prevent the overlay host node from affecting its surrounding layout.
+mat-autocomplete {
+  display: none;
+}
