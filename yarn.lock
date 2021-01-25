@@ -7734,9 +7734,9 @@ jasmine@2.8.0:
     jasmine-core "~2.8.0"
 
 jasmine@^3.5.0:
-  version "3.6.3"
-  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-3.6.3.tgz#520cd71f76bd8251e9f566b622e13602e9ddcf26"
-  integrity sha512-Th91zHsbsALWjDUIiU5d/W5zaYQsZFMPTdeNmi8GivZPmAaUAK8MblSG3yQI4VMGC/abF2us7ex60NH1AAIMTA==
+  version "3.6.4"
+  resolved "https://registry.yarnpkg.com/jasmine/-/jasmine-3.6.4.tgz#1f8e4a0d5028a2dc66942b73b9fef4c32be97ad5"
+  integrity sha512-hIeOou6y0BgCOKYgXYveQvlY+PTHgDPajFf+vLCYbMTQ+VjAP9+EQv0nuC9+gyCAAWISRFauB1XUb9kFuOKtcQ==
   dependencies:
     glob "^7.1.6"
     jasmine-core "~3.6.0"
