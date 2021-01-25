@@ -18,6 +18,10 @@ export const config = {
       '_MatAutocompleteTriggerBase',
       '_MatAutocompleteOriginBase'
     ],
+    'mdc-autocomplete/testing': [
+      // Private base classes that are only exported for MDC.
+      '_MatAutocompleteHarnessBase'
+    ],
     'mdc-core': [
       // Private base classes that are only exported for MDC.
       '_MatOptionBase',
@@ -32,6 +36,11 @@ export const config = {
     'mdc-menu': [
       // Private base class that is only exported for MDC.
       '_MatMenuBase'
+    ],
+    'mdc-menu/testing': [
+      // Private base class that is only exported for MDC.
+      '_MatMenuHarnessBase',
+      '_MatMenuItemHarnessBase'
     ],
     'mdc-paginator': [
       // Private base class that is only exported for MDC.
@@ -50,6 +59,10 @@ export const config = {
     'mdc-select': [
       // Private base class that is only exported for MDC.
       '_MatSelectBase'
+    ],
+    'mdc-select/testing': [
+      // Private base class that is only exported for MDC.
+      '_MatSelectHarnessBase'
     ],
     'mdc-slide-toggle': [
       // Private module used to provide some common functionality.
