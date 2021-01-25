@@ -42,6 +42,11 @@ export const config = {
       '_MatRadioGroupBase',
       '_MatRadioButtonBase',
     ],
+    'mdc-radio/testing': [
+      // Private base classes that are only exported for MDC.
+      '_MatRadioGroupHarnessBase',
+      '_MatRadioButtonHarnessBase',
+    ],
     'mdc-select': [
       // Private base class that is only exported for MDC.
       '_MatSelectBase'

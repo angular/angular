@@ -10,7 +10,6 @@ ts_library(
     ),
     module_name = "@angular/material-experimental/mdc-radio/testing",
     deps = [
-        "//src/cdk/coercion",
         "//src/cdk/testing",
         "//src/material/radio/testing",
     ],
