@@ -6478,10 +6478,13 @@ class ReleaseTool {
                 }
                 return CompletionState.FATAL_ERROR;
             }
+            finally {
+                yield this.cleanup();
+            }
             return CompletionState.SUCCESS;
         });
     }
-    /** Run post release tool clean ups. */
+    /** Run post release tool cleanups. */
     cleanup() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             // Return back to the git state from before the release tool ran.
@@ -6545,19 +6548,21 @@ class ReleaseTool {
      * @returns a boolean indicating whether the user is logged into NPM.
      */
     _verifyNpmLoginState() {
+        var _a;
         return tslib.__awaiter(this, void 0, void 0, function* () {
+            const registry = `NPM at the ${(_a = this._config.publishRegistry) !== null && _a !== void 0 ? _a : 'default NPM'} registry`;
             if (yield npmIsLoggedIn(this._config.publishRegistry)) {
-                debug('Already logged into NPM.');
+                debug(`Already logged into ${registry}.`);
                 return true;
             }
-            error(red(`  ✘   Not currently logged into NPM.`));
+            error(red(`  ✘   Not currently logged into NPM at the ${registry}.`));
             const shouldLogin = yield promptConfirm('Would you like to log into NPM now?');
             if (shouldLogin) {
                 debug('Starting NPM login.');
                 try {
                     yield npmLogin(this._config.publishRegistry);
                 }
-                catch (_a) {
+                catch (_b) {
                     return false;
                 }
                 return true;
@@ -6599,7 +6604,6 @@ function handler$9(args) {
                 info(green(`Release action has completed successfully.`));
                 break;
         }
-        yield task.cleanup();
     });
 }
 /** CLI command module for publishing a release. */

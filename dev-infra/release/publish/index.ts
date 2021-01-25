@@ -75,13 +75,15 @@ export class ReleaseTool {
         console.error(e);
       }
       return CompletionState.FATAL_ERROR;
+    } finally {
+      await this.cleanup();
     }
 
     return CompletionState.SUCCESS;
   }
 
-  /** Run post release tool clean ups. */
-  async cleanup(): Promise<void> {
+  /** Run post release tool cleanups. */
+  private async cleanup(): Promise<void> {
     // Return back to the git state from before the release tool ran.
     this._git.checkout(this.previousGitBranchOrRevision, true);
     // Ensure log out of NPM.
@@ -147,11 +149,12 @@ export class ReleaseTool {
    * @returns a boolean indicating whether the user is logged into NPM.
    */
   private async _verifyNpmLoginState(): Promise<boolean> {
+    const registry = `NPM at the ${this._config.publishRegistry ?? 'default NPM'} registry`;
     if (await npmIsLoggedIn(this._config.publishRegistry)) {
-      debug('Already logged into NPM.');
+      debug(`Already logged into ${registry}.`);
       return true;
     }
-    error(red(`  ✘   Not currently logged into NPM.`));
+    error(red(`  ✘   Not currently logged into NPM at the ${registry}.`));
     const shouldLogin = await promptConfirm('Would you like to log into NPM now?');
     if (shouldLogin) {
       debug('Starting NPM login.');
