@@ -46,6 +46,10 @@ export const config = {
       // Private base class that is only exported for MDC.
       '_MatPaginatorBase'
     ],
+    'mdc-paginator/testing': [
+      // Private base class that is only exported for MDC.
+      '_MatPaginatorHarnessBase'
+    ],
     'mdc-radio': [
       // Private base classes that are only exported for MDC.
       '_MatRadioGroupBase',

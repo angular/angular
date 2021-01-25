@@ -10,7 +10,6 @@ ts_library(
     ),
     module_name = "@angular/material-experimental/mdc-paginator/testing",
     deps = [
-        "//src/cdk/coercion",
         "//src/cdk/testing",
         "//src/material-experimental/mdc-select/testing",
         "//src/material/paginator/testing",
