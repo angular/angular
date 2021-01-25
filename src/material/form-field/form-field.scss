@@ -184,7 +184,9 @@ $mat-form-field-default-infix-width: 180px !default;
 .mat-form-field.mat-form-field-invalid {
   .mat-form-field-ripple {
     opacity: 1;
-    transform: scaleX(1);
+    // Note that we transition this to `none`, rather than `scaleX(1)`, because the scaling
+    // seems to cause some rendering artifacts on adjacent form fields (see #21612).
+    transform: none;
     transition: transform 300ms $swift-ease-out-timing-function,
                 opacity 100ms $swift-ease-out-timing-function,
                 background-color 300ms $swift-ease-out-timing-function;
