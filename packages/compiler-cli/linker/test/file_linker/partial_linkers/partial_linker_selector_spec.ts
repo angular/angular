@@ -44,6 +44,12 @@ describe('PartialLinkerSelector', () => {
          expect(selector.supportsDeclaration('ɵɵngDeclareComponent')).toBe(true);
          expect(selector.supportsDeclaration('$foo')).toBe(false);
        });
+
+    it('should return false for methods on `Object`', () => {
+      const selector = new PartialLinkerSelector(
+          environment, fs.resolve('/some/path/to/file.js'), 'some file contents');
+      expect(selector.supportsDeclaration('toString')).toBe(false);
+    });
   });
 
   describe('getLinker()', () => {
