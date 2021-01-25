@@ -7,7 +7,7 @@ As a contributor, see the instructions in [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 # Change approvals
 
-Change approvals in our monorepo are managed via [PullApprove](https://docs.pullapprove.com/) and are configured via the [`.pullapprove`](../.pullapprove) file.
+Change approvals in our monorepo are managed via [PullApprove](https://docs.pullapprove.com/) and are configured via the [`.pullapprove.yml`](../.pullapprove.yml) file.
 
 # Merging
 
