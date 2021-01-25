@@ -19,6 +19,12 @@ export const ɵɵngDeclareDirective = 'ɵɵngDeclareDirective';
 export const ɵɵngDeclareComponent = 'ɵɵngDeclareComponent';
 export const declarationFunctions = [ɵɵngDeclareDirective, ɵɵngDeclareComponent];
 
+type DeclarationFnName = typeof ɵɵngDeclareDirective|typeof ɵɵngDeclareComponent;
+interface LinkerRange<TExpression> {
+  range: string;
+  linker: PartialLinker<TExpression>;
+}
+
 /**
  * A helper that selects the appropriate `PartialLinker` for a given declaration.
  *
@@ -35,7 +41,7 @@ export const declarationFunctions = [ɵɵngDeclareDirective, ɵɵngDeclareCompon
  * allows the linker to work on local builds effectively.
  */
 export class PartialLinkerSelector<TStatement, TExpression> {
-  private readonly linkers: Record<string, {range: string, linker: PartialLinker<TExpression>}[]>;
+  private readonly linkers: Map<string, LinkerRange<TExpression>[]>;
 
   constructor(
       environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
@@ -47,7 +53,7 @@ export class PartialLinkerSelector<TStatement, TExpression> {
    * Returns true if there are `PartialLinker` classes that can handle functions with this name.
    */
   supportsDeclaration(functionName: string): boolean {
-    return this.linkers[functionName] !== undefined;
+    return this.linkers.has(functionName);
   }
 
   /**
@@ -55,7 +61,7 @@ export class PartialLinkerSelector<TStatement, TExpression> {
    * Throws an error if there is none.
    */
   getLinker(functionName: string, version: string): PartialLinker<TExpression> {
-    const versions = this.linkers[functionName];
+    const versions = this.linkers.get(functionName);
     if (versions === undefined) {
       throw new Error(`Unknown partial declaration function ${functionName}.`);
     }
@@ -71,21 +77,21 @@ export class PartialLinkerSelector<TStatement, TExpression> {
 
   private createLinkerMap(
       environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
-      code: string) {
+      code: string): Map<DeclarationFnName, LinkerRange<TExpression>[]> {
     const partialDirectiveLinkerVersion1 = new PartialDirectiveLinkerVersion1(sourceUrl, code);
     const partialComponentLinkerVersion1 = new PartialComponentLinkerVersion1(
         environment, createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl,
         code);
 
-    return {
-      [ɵɵngDeclareDirective]: [
-        {range: '0.0.0-PLACEHOLDER', linker: partialDirectiveLinkerVersion1},
-        {range: '>=11.1.0-next.1', linker: partialDirectiveLinkerVersion1},
-      ],
-      [ɵɵngDeclareComponent]: [
-        {range: '0.0.0-PLACEHOLDER', linker: partialComponentLinkerVersion1},
-        {range: '>=11.1.0-next.1', linker: partialComponentLinkerVersion1},
-      ],
-    };
+    const map = new Map<DeclarationFnName, LinkerRange<TExpression>[]>();
+    map.set(ɵɵngDeclareDirective, [
+      {range: '0.0.0-PLACEHOLDER', linker: partialDirectiveLinkerVersion1},
+      {range: '>=11.1.0-next.1', linker: partialDirectiveLinkerVersion1},
+    ]);
+    map.set(ɵɵngDeclareComponent, [
+      {range: '0.0.0-PLACEHOLDER', linker: partialComponentLinkerVersion1},
+      {range: '>=11.1.0-next.1', linker: partialComponentLinkerVersion1},
+    ]);
+    return map;
   }
 }
