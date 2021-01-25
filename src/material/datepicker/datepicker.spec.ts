@@ -1258,32 +1258,8 @@ describe('MatDatepicker', () => {
         expect(button.getAttribute('tabindex')).toBe('7');
       });
 
-      it('should reset the tabindex from the mat-datepicker-toggle host', () => {
+      it('should remove the tabindex from the mat-datepicker-toggle host', () => {
         const fixture = createComponent(DatepickerWithTabindexOnToggle, [MatNativeDateModule]);
-        fixture.detectChanges();
-
-        const host = fixture.nativeElement.querySelector('.mat-datepicker-toggle');
-
-        expect(host.getAttribute('tabindex')).toBe('-1');
-      });
-
-      it('should forward focus to the underlying button when the host is focused', () => {
-        const fixture = createComponent(DatepickerWithTabindexOnToggle, [MatNativeDateModule]);
-        fixture.detectChanges();
-
-        const host = fixture.nativeElement.querySelector('.mat-datepicker-toggle');
-        const button = host.querySelector('button');
-
-        expect(document.activeElement).not.toBe(button);
-
-        host.focus();
-
-        expect(document.activeElement).toBe(button);
-      });
-
-      it('should remove the tabindex from the mat-datepicker-toggle host when disabled', () => {
-        const fixture = createComponent(DatepickerWithTabindexOnToggle, [MatNativeDateModule]);
-        fixture.componentInstance.disabled = true;
         fixture.detectChanges();
 
         const host = fixture.nativeElement.querySelector('.mat-datepicker-toggle');
