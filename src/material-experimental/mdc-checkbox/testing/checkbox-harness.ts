@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentHarness, HarnessPredicate} from '@angular/cdk/testing';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {CheckboxHarnessFilters} from '@angular/material/checkbox/testing';
+import {HarnessPredicate} from '@angular/cdk/testing';
+import {CheckboxHarnessFilters, _MatCheckboxHarnessBase} from '@angular/material/checkbox/testing';
 
 /** Harness for interacting with a MDC-based mat-checkbox in tests. */
-export class MatCheckboxHarness extends ComponentHarness {
+export class MatCheckboxHarness extends _MatCheckboxHarnessBase {
   static hostSelector = '.mat-mdc-checkbox';
 
   /**
@@ -33,120 +32,12 @@ export class MatCheckboxHarness extends ComponentHarness {
         .addOption('name', options.name, async (harness, name) => await harness.getName() === name);
   }
 
-  private _label = this.locatorFor('label');
-  private _input = this.locatorFor('input');
+  protected _input = this.locatorFor('input');
+  protected _label = this.locatorFor('label');
   private _inputContainer = this.locatorFor('.mdc-checkbox');
 
-  /** Gets a boolean promise indicating if the checkbox is checked. */
-  async isChecked(): Promise<boolean> {
-    const checked = (await this._input()).getProperty('checked');
-    return coerceBooleanProperty(await checked);
-  }
-
-  /** Gets a boolean promise indicating if the checkbox is in an indeterminate state. */
-  async isIndeterminate(): Promise<boolean> {
-    const indeterminate = (await this._input()).getProperty('indeterminate');
-    return coerceBooleanProperty(await indeterminate);
-  }
-
-  /** Gets a boolean promise indicating if the checkbox is disabled. */
-  async isDisabled(): Promise<boolean> {
-    const disabled = (await this._input()).getAttribute('disabled');
-    return coerceBooleanProperty(await disabled);
-  }
-
-  /** Gets a boolean promise indicating if the checkbox is required. */
-  async isRequired(): Promise<boolean> {
-    const required = (await this._input()).getAttribute('required');
-    return coerceBooleanProperty(await required);
-  }
-
-  /** Gets a boolean promise indicating if the checkbox is valid. */
-  async isValid(): Promise<boolean> {
-    const invalid = (await this.host()).hasClass('ng-invalid');
-    return !(await invalid);
-  }
-
-  /** Gets a promise for the checkbox's name. */
-  async getName(): Promise<string|null> {
-    return (await this._input()).getAttribute('name');
-  }
-
-  /** Gets a promise for the checkbox's value. */
-  async getValue(): Promise<string|null> {
-    return (await this._input()).getProperty('value');
-  }
-
-  /** Gets a promise for the checkbox's aria-label. */
-  async getAriaLabel(): Promise<string|null> {
-    return (await this._input()).getAttribute('aria-label');
-  }
-
-  /** Gets a promise for the checkbox's aria-labelledby. */
-  async getAriaLabelledby(): Promise<string|null> {
-    return (await this._input()).getAttribute('aria-labelledby');
-  }
-
-  /** Gets a promise for the checkbox's label text. */
-  async getLabelText(): Promise<string> {
-    return (await this._label()).text();
-  }
-
-  /** Focuses the checkbox and returns a void promise that indicates when the action is complete. */
-  async focus(): Promise<void> {
-    return (await this._input()).focus();
-  }
-
-  /** Blurs the checkbox and returns a void promise that indicates when the action is complete. */
-  async blur(): Promise<void> {
-    return (await this._input()).blur();
-  }
-
-  /** Whether the checkbox is focused. */
-  async isFocused(): Promise<boolean> {
-    return (await this._input()).isFocused();
-  }
-
-  /**
-   * Toggle the checked state of the checkbox and returns a void promise that indicates when the
-   * action is complete.
-   *
-   * Note: This attempts to toggle the checkbox as a user would, by clicking it. Therefore if you
-   * are using `MAT_CHECKBOX_DEFAULT_OPTIONS` to change the behavior on click, calling this method
-   * might not have the expected result.
-   */
   async toggle(): Promise<void> {
     const elToClick = await this.isDisabled() ? this._inputContainer() : this._input();
     return (await elToClick).click();
-  }
-
-  /**
-   * Puts the checkbox in a checked state by toggling it if it is currently unchecked, or doing
-   * nothing if it is already checked. Returns a void promise that indicates when the action is
-   * complete.
-   *
-   * Note: This attempts to check the checkbox as a user would, by clicking it. Therefore if you
-   * are using `MAT_CHECKBOX_DEFAULT_OPTIONS` to change the behavior on click, calling this method
-   * might not have the expected result.
-   */
-  async check(): Promise<void> {
-    if (!(await this.isChecked())) {
-      await this.toggle();
-    }
-  }
-
-  /**
-   * Puts the checkbox in an unchecked state by toggling it if it is currently checked, or doing
-   * nothing if it is already unchecked. Returns a void promise that indicates when the action is
-   * complete.
-   *
-   * Note: This attempts to uncheck the checkbox as a user would, by clicking it. Therefore if you
-   * are using `MAT_CHECKBOX_DEFAULT_OPTIONS` to change the behavior on click, calling this method
-   * might not have the expected result.
-   */
-  async uncheck(): Promise<void> {
-    if (await this.isChecked()) {
-      await this.toggle();
-    }
   }
 }

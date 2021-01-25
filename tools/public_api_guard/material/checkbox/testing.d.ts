@@ -1,9 +1,6 @@
-export interface CheckboxHarnessFilters extends BaseHarnessFilters {
-    label?: string | RegExp;
-    name?: string;
-}
-
-export declare class MatCheckboxHarness extends ComponentHarness {
+export declare abstract class _MatCheckboxHarnessBase extends ComponentHarness {
+    protected abstract _input: AsyncFactoryFn<TestElement>;
+    protected abstract _label: AsyncFactoryFn<TestElement>;
     blur(): Promise<void>;
     check(): Promise<void>;
     focus(): Promise<void>;
@@ -18,8 +15,19 @@ export declare class MatCheckboxHarness extends ComponentHarness {
     isIndeterminate(): Promise<boolean>;
     isRequired(): Promise<boolean>;
     isValid(): Promise<boolean>;
-    toggle(): Promise<void>;
+    abstract toggle(): Promise<void>;
     uncheck(): Promise<void>;
+}
+
+export interface CheckboxHarnessFilters extends BaseHarnessFilters {
+    label?: string | RegExp;
+    name?: string;
+}
+
+export declare class MatCheckboxHarness extends _MatCheckboxHarnessBase {
+    protected _input: AsyncFactoryFn<TestElement>;
+    protected _label: AsyncFactoryFn<TestElement>;
+    toggle(): Promise<void>;
     static hostSelector: string;
     static with(options?: CheckboxHarnessFilters): HarnessPredicate<MatCheckboxHarness>;
 }

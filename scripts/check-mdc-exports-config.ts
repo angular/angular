@@ -71,6 +71,10 @@ export const config = {
       // Private symbols that are only exported for MDC.
       '_MatTableDataSource',
       '_MAT_TEXT_COLUMN_TEMPLATE'
+    ],
+    'mdc-checkbox/testing': [
+      // Private symbols that are only exported for MDC.
+      '_MatCheckboxHarnessBase'
     ]
   }
 };
