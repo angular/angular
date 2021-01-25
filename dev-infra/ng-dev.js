@@ -4301,7 +4301,7 @@ function builder$7(yargs) {
         .option('branch-prompt', {
         type: 'boolean',
         default: true,
-        description: 'Whether to to prompt to confirm the branches a PR will merge into.',
+        description: 'Whether to prompt to confirm the branches a PR will merge into.',
     });
 }
 /** Handles the command. */
@@ -4323,7 +4323,7 @@ var MergeCommandModule = {
     handler: handler$7,
     builder: builder$7,
     command: 'merge <pr>',
-    describe: 'Merge a PR into its targeted branches',
+    describe: 'Merge a PR into its targeted branches.',
 };
 
 /**

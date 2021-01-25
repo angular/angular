@@ -32,7 +32,7 @@ function builder(yargs: Argv) {
       .option('branch-prompt' as 'branchPrompt', {
         type: 'boolean',
         default: true,
-        description: 'Whether to to prompt to confirm the branches a PR will merge into.',
+        description: 'Whether to prompt to confirm the branches a PR will merge into.',
       });
 }
 
@@ -46,5 +46,5 @@ export const MergeCommandModule: CommandModule<{}, MergeCommandOptions> = {
   handler,
   builder,
   command: 'merge <pr>',
-  describe: 'Merge a PR into its targeted branches',
+  describe: 'Merge a PR into its targeted branches.',
 };
