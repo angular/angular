@@ -23,7 +23,7 @@ import {NgModuleFactory} from './ng_module_factory';
 
 
 /**
- * Combination of NgModuleFactory and ComponentFactorys.
+ * Combination of NgModuleFactory and ComponentFactories.
  *
  * @publicApi
  */
