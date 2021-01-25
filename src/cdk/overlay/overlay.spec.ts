@@ -123,7 +123,7 @@ describe('Overlay', () => {
 
     expect(paneElement.childNodes.length).not.toBe(0);
     expect(paneElement.style.pointerEvents)
-      .toBe('auto', 'Expected the overlay pane to enable pointerEvents when attached.');
+      .toBe('', 'Expected the overlay pane to enable pointerEvents when attached.');
 
     overlayRef.detach();
 

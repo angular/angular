@@ -368,7 +368,7 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
 
   /** Toggles the pointer events for the overlay pane element. */
   private _togglePointerEvents(enablePointer: boolean) {
-    this._pane.style.pointerEvents = enablePointer ? 'auto' : 'none';
+    this._pane.style.pointerEvents = enablePointer ? '' : 'none';
   }
 
   /** Attaches a backdrop for this overlay. */
