@@ -5592,6 +5592,21 @@ describe('CdkDrag', () => {
 
       expect(event.stopPropagation).toHaveBeenCalled();
     }));
+
+    it('should stop event propagation when dragging item nested via ng-template', fakeAsync(() => {
+      const fixture = createComponent(NestedDragsThroughTemplate);
+      fixture.detectChanges();
+      const dragElement = fixture.componentInstance.item.nativeElement;
+
+      const event = createMouseEvent('mousedown');
+      spyOn(event, 'stopPropagation').and.callThrough();
+
+      dispatchEvent(dragElement, event);
+      fixture.detectChanges();
+
+      expect(event.stopPropagation).toHaveBeenCalled();
+    }));
+
   });
 });
 
@@ -6555,6 +6570,52 @@ class NestedDragsComponent {
   itemDragStartedSpy = jasmine.createSpy('item drag started spy');
   itemDragMovedSpy = jasmine.createSpy('item drag moved spy');
   itemDragReleasedSpy = jasmine.createSpy('item drag released spy');
+}
+
+@Component({
+  styles: [`
+    :host {
+      height: 400px;
+      width: 400px;
+      position: absolute;
+    }
+    .container {
+      height: 200px;
+      width: 200px;
+      position: absolute;
+    }
+    .item {
+      height: 50px;
+      width: 50px;
+      position: absolute;
+    }
+  `],
+  template: `
+    <div
+      cdkDrag
+      #container
+      class="container"
+      (cdkDragStarted)="containerDragStartedSpy($event)"
+      (cdkDragMoved)="containerDragMovedSpy($event)"
+      (cdkDragReleased)="containerDragReleasedSpy($event)">
+      <ng-container [ngTemplateOutlet]="itemTemplate"></ng-container>
+    </div>
+
+    <ng-template #itemTemplate>
+      <div
+        cdkDrag
+        class="item"
+        #item
+        (cdkDragStarted)="itemDragStartedSpy($event)"
+        (cdkDragMoved)="itemDragMovedSpy($event)"
+        (cdkDragReleased)="itemDragReleasedSpy($event)">
+      </div>
+    </ng-template>
+  `
+})
+class NestedDragsThroughTemplate {
+  @ViewChild('container') container: ElementRef;
+  @ViewChild('item') item: ElementRef;
 }
 
 @Component({

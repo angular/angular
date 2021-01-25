@@ -56,12 +56,14 @@ import {DragDrop} from '../drag-drop';
 import {CDK_DRAG_CONFIG, DragDropConfig, DragStartDelay, DragAxis} from './config';
 import {assertElementNode} from './assertions';
 
+const DRAG_HOST_CLASS = 'cdk-drag';
+
 /** Element that can be moved inside a CdkDropList container. */
 @Directive({
   selector: '[cdkDrag]',
   exportAs: 'cdkDrag',
   host: {
-    'class': 'cdk-drag',
+    'class': DRAG_HOST_CLASS,
     '[class.cdk-drag-disabled]': 'disabled',
     '[class.cdk-drag-dragging]': '_dragRef.isDragging()',
   },
@@ -69,6 +71,7 @@ import {assertElementNode} from './assertions';
 })
 export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   private _destroyed = new Subject<void>();
+  private static _dragInstances: CdkDrag[] = [];
 
   /** Reference to the underlying drag instance. */
   _dragRef: DragRef<CdkDrag<T>>;
@@ -193,16 +196,20 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
       @Optional() private _dir: Directionality, dragDrop: DragDrop,
       private _changeDetectorRef: ChangeDetectorRef,
       @Optional() @Self() @Inject(CDK_DRAG_HANDLE) private _selfHandle?: CdkDragHandle,
-      @Optional() @SkipSelf() @Inject(CDK_DRAG_PARENT) parentDrag?: CdkDrag) {
+      @Optional() @SkipSelf() @Inject(CDK_DRAG_PARENT) private _parentDrag?: CdkDrag) {
     this._dragRef = dragDrop.createDrag(element, {
       dragStartThreshold: config && config.dragStartThreshold != null ?
           config.dragStartThreshold : 5,
       pointerDirectionChangeThreshold: config && config.pointerDirectionChangeThreshold != null ?
           config.pointerDirectionChangeThreshold : 5,
       zIndex: config?.zIndex,
-      parentDragRef: parentDrag?._dragRef
     });
     this._dragRef.data = this;
+
+    // We have to keep track of the drag instances in order to be able to match an element to
+    // a drag instance. We can't go through the global registry of `DragRef`, because the root
+    // element could be different.
+    CdkDrag._dragInstances.push(this);
 
     if (config) {
       this._assignDefaults(config);
@@ -318,6 +325,10 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
       this.dropContainer.removeItem(this);
     }
 
+    const index = CdkDrag._dragInstances.indexOf(this);
+    if (index > -1) {
+      CdkDrag._dragInstances.splice(index, -1);
+    }
     this._destroyed.next();
     this._destroyed.complete();
     this._dragRef.dispose();
@@ -390,6 +401,29 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
         if (dir) {
           ref.withDirection(dir.value);
         }
+      }
+    });
+
+    // This only needs to be resolved once.
+    ref.beforeStarted.pipe(take(1)).subscribe(() => {
+      // If we managed to resolve a parent through DI, use it.
+      if (this._parentDrag) {
+        ref.withParent(this._parentDrag._dragRef);
+        return;
+      }
+
+      // Otherwise fall back to resolving the parent by looking up the DOM. This can happen if
+      // the item was projected into another item by something like `ngTemplateOutlet`.
+      let parent = this.element.nativeElement.parentElement;
+      while (parent) {
+        // `classList` needs to be null checked, because IE doesn't have it on some elements.
+        if (parent.classList?.contains(DRAG_HOST_CLASS)) {
+          ref.withParent(CdkDrag._dragInstances.find(drag => {
+            return drag.element.nativeElement === parent;
+          })?._dragRef || null);
+          break;
+        }
+        parent = parent.parentElement;
       }
     });
   }

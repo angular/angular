@@ -42,7 +42,7 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDes
     constructor(
     element: ElementRef<HTMLElement>,
     dropContainer: CdkDropList,
-    _document: any, _ngZone: NgZone, _viewContainerRef: ViewContainerRef, config: DragDropConfig, _dir: Directionality, dragDrop: DragDrop, _changeDetectorRef: ChangeDetectorRef, _selfHandle?: CdkDragHandle | undefined, parentDrag?: CdkDrag);
+    _document: any, _ngZone: NgZone, _viewContainerRef: ViewContainerRef, config: DragDropConfig, _dir: Directionality, dragDrop: DragDrop, _changeDetectorRef: ChangeDetectorRef, _selfHandle?: CdkDragHandle | undefined, _parentDrag?: CdkDrag<any> | undefined);
     getFreeDragPosition(): {
         readonly x: number;
         readonly y: number;
@@ -318,6 +318,7 @@ export declare class DragRef<T = any> {
     withBoundaryElement(boundaryElement: ElementRef<HTMLElement> | HTMLElement | null): this;
     withDirection(direction: Direction): this;
     withHandles(handles: (HTMLElement | ElementRef<HTMLElement>)[]): this;
+    withParent(parent: DragRef<unknown> | null): this;
     withPlaceholderTemplate(template: DragHelperTemplate | null): this;
     withPreviewTemplate(template: DragPreviewTemplate | null): this;
     withRootElement(rootElement: ElementRef<HTMLElement> | HTMLElement): this;

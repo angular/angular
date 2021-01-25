@@ -230,6 +230,9 @@ export class DragRef<T = any> {
   /** Layout direction of the item. */
   private _direction: Direction = 'ltr';
 
+  /** Ref that the current drag item is nested in. */
+  private _parentDragRef: DragRef<unknown> | null;
+
   /**
    * Cached shadow root that the element is placed in. `null` means that the element isn't in
    * the shadow DOM and `undefined` means that it hasn't been resolved yet. Should be read via
@@ -324,7 +327,7 @@ export class DragRef<T = any> {
     private _viewportRuler: ViewportRuler,
     private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>) {
 
-    this.withRootElement(element);
+    this.withRootElement(element).withParent(_config.parentDragRef || null);
     this._parentPositions = new ParentPositionTracker(_document, _viewportRuler);
     _dragDropRegistry.registerDragItem(this);
   }
@@ -430,6 +433,12 @@ export class DragRef<T = any> {
     return this;
   }
 
+  /** Sets the parent ref that the ref is nested in.  */
+  withParent(parent: DragRef<unknown> | null): this {
+    this._parentDragRef = parent;
+    return this;
+  }
+
   /** Removes the dragging functionality from the DOM element. */
   dispose() {
     this._removeRootElementListeners(this._rootElement);
@@ -461,7 +470,7 @@ export class DragRef<T = any> {
     this._resizeSubscription.unsubscribe();
     this._parentPositions.clear();
     this._boundaryElement = this._rootElement = this._ownerSVGElement = this._placeholderTemplate =
-        this._previewTemplate = this._anchor = null!;
+        this._previewTemplate = this._anchor = this._parentDragRef = null!;
   }
 
   /** Checks whether the element is currently being dragged. */
@@ -790,7 +799,7 @@ export class DragRef<T = any> {
   private _initializeDragSequence(referenceElement: HTMLElement, event: MouseEvent | TouchEvent) {
     // Stop propagation if the item is inside another
     // draggable so we don't start multiple drag sequences.
-    if (this._config.parentDragRef) {
+    if (this._parentDragRef) {
       event.stopPropagation();
     }
 
