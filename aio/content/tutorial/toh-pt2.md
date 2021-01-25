@@ -1,11 +1,11 @@
 # Display a selection list
 
-In this page, you'll expand the Tour of Heroes app to display a list of heroes, and
+In this page, you'll expand the Tour of Heroes application to display a list of heroes, and
 allow users to select a hero and display the hero's details.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  For the sample application that this page describes, see the <live-example></live-example>.
 
 </div>
 
@@ -108,10 +108,9 @@ The `heroes.component.css` styles apply only to the `HeroesComponent` and don't 
 
 </div>
 
-## Master/Detail
+## Viewing details
 
-When the user clicks a hero in the **master** list,
-the component should display the selected hero's **details** at the bottom of the page.
+When the user clicks a hero in the list, the component should display the selected hero's details at the bottom of the page.
 
 In this section, you'll listen for the hero item click event
 and update the hero detail.
@@ -160,7 +159,7 @@ Open the browser developer tools and look in the console for an error message li
 
 #### What happened?
 
-When the app starts, the `selectedHero` is `undefined` _by design_.
+When the application starts, the `selectedHero` is `undefined` _by design_.
 
 Binding expressions in the template that refer to properties of `selectedHero`&mdash;expressions like `{{selectedHero.name}}`&mdash;_must fail_ because there is no selected hero.
 
@@ -185,7 +184,7 @@ Don't forget the asterisk (*) in front of `ngIf`. It's a critical part of the sy
 After the browser refreshes, the list of names reappears.
 The details area is blank.
 Click a hero in the list of heroes and its details appear.
-The app seems to be working again.
+The application seems to be working again.
 The heroes appear in a list and details about the clicked hero appear at the bottom of the page.
 
 
@@ -198,18 +197,14 @@ When the user picks a hero, `selectedHero` has a value and
 
 ### Style the selected hero
 
-It's difficult to identify the _selected hero_ in the list when all `<li>` elements look alike.
-
-If the user clicks "Magneta", that hero should render with a distinctive but subtle background color like this:
+To help identify the selected hero, you can use the `.selected` CSS class in the [styles you added earlier](#styles).
+To apply the `.selected` class to the `<li>` when the user clicks it, use class binding.
 
 <div class="lightbox">
-  <img src='generated/images/guide/toh/heroes-list-selected.png' alt="Selected hero">
+  <img src='generated/images/guide/toh/heroes-list-selected.png' alt="Selected hero with dark background and light text that differentiates it from unselected list items">
 </div>
 
-That _selected hero_ coloring is the work of the `.selected` CSS class in the [styles you added earlier](#styles).
-You just have to apply the `.selected` class to the `<li>` when the user clicks it.
-
-The Angular [class binding](guide/attribute-binding#class-binding) makes it easy to add and remove a CSS class conditionally.
+Angular's [class binding](guide/attribute-binding#class-binding) can add and remove a CSS class conditionally.
 Just add `[class.some-css-class]="some-condition"` to the element you want to style.
 
 Add the following `[class.selected]` binding to the `<li>` in the `HeroesComponent` template:
@@ -246,7 +241,7 @@ Here are the code files discussed on this page, including the `HeroesComponent` 
 
 ## Summary
 
-* The Tour of Heroes app displays a list of heroes in a Master/Detail view.
+* The Tour of Heroes application displays a list of heroes with a detail view.
 * The user can select a hero and see that hero's details.
 * You used `*ngFor` to display a list.
 * You used `*ngIf` to conditionally include or exclude a block of HTML.
