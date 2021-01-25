@@ -12,6 +12,7 @@ import {
   forwardRef,
   Inject,
   Input,
+  OnDestroy,
   Optional,
 } from '@angular/core';
 import {
@@ -28,6 +29,7 @@ import {
 } from '@angular/material/core';
 import {MatFormField, MAT_FORM_FIELD} from '@angular/material/form-field';
 import {MAT_INPUT_VALUE_ACCESSOR} from '@angular/material/input';
+import {Subscription} from 'rxjs';
 import {MatDatepickerInputBase, DateFilterFn} from './datepicker-input-base';
 import {MatDatepickerControl, MatDatepickerPanel} from './datepicker-base';
 import {DateSelectionModelChange} from './date-selection-model';
@@ -72,12 +74,15 @@ export const MAT_DATEPICKER_VALIDATORS: any = {
   exportAs: 'matDatepickerInput',
 })
 export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
-  implements MatDatepickerControl<D | null> {
+  implements MatDatepickerControl<D | null>, OnDestroy {
+  private _closedSubscription = Subscription.EMPTY;
+
   /** The datepicker that this input is associated with. */
   @Input()
   set matDatepicker(datepicker: MatDatepickerPanel<MatDatepickerControl<D>, D | null, D>) {
     if (datepicker) {
       this._datepicker = datepicker;
+      this._closedSubscription = datepicker.closedStream.subscribe(() => this._onTouched());
       this._registerModel(datepicker.registerInput(this));
     }
   }
@@ -150,6 +155,11 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
   /** Gets the value at which the calendar should start. */
   getStartValue(): D | null {
     return this.value;
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
+    this._closedSubscription.unsubscribe();
   }
 
   /** Opens the associated datepicker. */

@@ -857,6 +857,26 @@ describe('MatDatepicker', () => {
         expect(inputEl.classList).toContain('ng-touched');
       });
 
+      it('should mark input as touched when the datepicker is closed', fakeAsync(() => {
+        let inputEl = fixture.debugElement.query(By.css('input'))!.nativeElement;
+
+        expect(inputEl.classList).toContain('ng-untouched');
+
+        fixture.componentInstance.datepicker.open();
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(inputEl.classList).toContain('ng-untouched');
+
+        fixture.componentInstance.datepicker.close();
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(inputEl.classList).toContain('ng-touched');
+      }));
+
       it('should reformat the input value on blur', () => {
         if (SUPPORTS_INTL) {
           // Skip this test if the internationalization API is not supported in the current

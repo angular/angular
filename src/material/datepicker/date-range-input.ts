@@ -25,7 +25,7 @@ import {
 import {MatFormFieldControl, MatFormField, MAT_FORM_FIELD} from '@angular/material/form-field';
 import {ThemePalette, DateAdapter} from '@angular/material/core';
 import {NgControl, ControlContainer} from '@angular/forms';
-import {Subject, merge} from 'rxjs';
+import {Subject, merge, Subscription} from 'rxjs';
 import {coerceBooleanProperty, BooleanInput} from '@angular/cdk/coercion';
 import {
   MatStartDate,
@@ -68,6 +68,8 @@ let nextUniqueId = 0;
 export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   MatDatepickerControl<D>, MatDateRangeInputParent<D>, MatDateRangePickerInput<D>,
   AfterContentInit, OnChanges, OnDestroy {
+  private _closedSubscription = Subscription.EMPTY;
+
   /** Current value of the range input. */
   get value() {
     return this._model ? this._model.selection : null;
@@ -105,6 +107,11 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
     if (rangePicker) {
       this._model = rangePicker.registerInput(this);
       this._rangePicker = rangePicker;
+      this._closedSubscription.unsubscribe();
+      this._closedSubscription = rangePicker.closedStream.subscribe(() => {
+        this._startInput?._onTouched();
+        this._endInput?._onTouched();
+      });
       this._registerModel(this._model!);
     }
   }
@@ -291,6 +298,7 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
   }
 
   ngOnDestroy() {
+    this._closedSubscription.unsubscribe();
     this.stateChanges.complete();
   }
 

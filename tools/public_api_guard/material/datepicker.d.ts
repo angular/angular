@@ -236,7 +236,7 @@ export declare class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>
     static ɵfac: i0.ɵɵFactoryDef<MatDatepickerContent<any, any>, [null, null, null, null, { optional: true; }, null]>;
 }
 
-export declare class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D> implements MatDatepickerControl<D | null> {
+export declare class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D> implements MatDatepickerControl<D | null>, OnDestroy {
     _datepicker: MatDatepickerPanel<MatDatepickerControl<D>, D | null, D>;
     protected _validator: ValidatorFn | null;
     get dateFilter(): DateFilterFn<D | null>;
@@ -257,6 +257,7 @@ export declare class MatDatepickerInput<D> extends MatDatepickerInputBase<D | nu
     getConnectedOverlayOrigin(): ElementRef;
     getStartValue(): D | null;
     getThemePalette(): ThemePalette;
+    ngOnDestroy(): void;
     static ngAcceptInputType_value: any;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDatepickerInput<any>, "input[matDatepicker]", ["matDatepickerInput"], { "matDatepicker": "matDatepicker"; "min": "min"; "max": "max"; "dateFilter": "matDatepickerFilter"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatDatepickerInput<any>, [null, { optional: true; }, { optional: true; }, { optional: true; }]>;

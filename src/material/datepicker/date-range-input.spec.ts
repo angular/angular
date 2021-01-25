@@ -636,6 +636,36 @@ describe('MatDateRangeInput', () => {
     expect(endModel.dirty).toBe(true);
   }));
 
+  it('should mark both inputs as touched when the range picker is closed', fakeAsync(() => {
+    const fixture = createComponent(RangePickerNgModel);
+    fixture.detectChanges();
+    flush();
+    const {startModel, endModel, rangePicker} = fixture.componentInstance;
+
+    expect(startModel.dirty).toBe(false);
+    expect(startModel.touched).toBe(false);
+    expect(endModel.dirty).toBe(false);
+    expect(endModel.touched).toBe(false);
+
+    rangePicker.open();
+    fixture.detectChanges();
+    flush();
+
+    expect(startModel.dirty).toBe(false);
+    expect(startModel.touched).toBe(false);
+    expect(endModel.dirty).toBe(false);
+    expect(endModel.touched).toBe(false);
+
+    rangePicker.close();
+    fixture.detectChanges();
+    flush();
+
+    expect(startModel.dirty).toBe(false);
+    expect(startModel.touched).toBe(true);
+    expect(endModel.dirty).toBe(false);
+    expect(endModel.touched).toBe(true);
+  }));
+
   it('should move focus to the start input when pressing backspace on an empty end input', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();
@@ -928,6 +958,7 @@ class RangePickerNgModel {
   @ViewChild(MatEndDate, {read: NgModel}) endModel: NgModel;
   @ViewChild(MatStartDate, {read: ElementRef}) startInput: ElementRef<HTMLInputElement>;
   @ViewChild(MatEndDate, {read: ElementRef}) endInput: ElementRef<HTMLInputElement>;
+  @ViewChild(MatDateRangePicker) rangePicker: MatDateRangePicker<Date>;
   start: Date | null = null;
   end: Date | null = null;
 }
