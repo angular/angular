@@ -19,7 +19,6 @@ export const ɵɵngDeclareDirective = 'ɵɵngDeclareDirective';
 export const ɵɵngDeclareComponent = 'ɵɵngDeclareComponent';
 export const declarationFunctions = [ɵɵngDeclareDirective, ɵɵngDeclareComponent];
 
-type DeclarationFnName = typeof ɵɵngDeclareDirective|typeof ɵɵngDeclareComponent;
 interface LinkerRange<TExpression> {
   range: string;
   linker: PartialLinker<TExpression>;
@@ -61,10 +60,10 @@ export class PartialLinkerSelector<TStatement, TExpression> {
    * Throws an error if there is none.
    */
   getLinker(functionName: string, version: string): PartialLinker<TExpression> {
-    const versions = this.linkers.get(functionName);
-    if (versions === undefined) {
+    if (!this.linkers.has(functionName)) {
       throw new Error(`Unknown partial declaration function ${functionName}.`);
     }
+    const versions = this.linkers.get(functionName)!;
     for (const {range, linker} of versions) {
       if (satisfies(version, range, {includePrerelease: true})) {
         return linker;
@@ -77,21 +76,21 @@ export class PartialLinkerSelector<TStatement, TExpression> {
 
   private createLinkerMap(
       environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
-      code: string): Map<DeclarationFnName, LinkerRange<TExpression>[]> {
+      code: string): Map<string, LinkerRange<TExpression>[]> {
     const partialDirectiveLinkerVersion1 = new PartialDirectiveLinkerVersion1(sourceUrl, code);
     const partialComponentLinkerVersion1 = new PartialComponentLinkerVersion1(
         environment, createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl,
         code);
 
-    const map = new Map<DeclarationFnName, LinkerRange<TExpression>[]>();
-    map.set(ɵɵngDeclareDirective, [
+    const linkers = new Map<string, LinkerRange<TExpression>[]>();
+    linkers.set(ɵɵngDeclareDirective, [
       {range: '0.0.0-PLACEHOLDER', linker: partialDirectiveLinkerVersion1},
       {range: '>=11.1.0-next.1', linker: partialDirectiveLinkerVersion1},
     ]);
-    map.set(ɵɵngDeclareComponent, [
+    linkers.set(ɵɵngDeclareComponent, [
       {range: '0.0.0-PLACEHOLDER', linker: partialComponentLinkerVersion1},
       {range: '>=11.1.0-next.1', linker: partialComponentLinkerVersion1},
     ]);
-    return map;
+    return linkers;
   }
 }
