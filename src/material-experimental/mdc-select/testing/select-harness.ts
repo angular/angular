@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HarnessPredicate, parallel} from '@angular/cdk/testing';
-import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
+import {HarnessPredicate} from '@angular/cdk/testing';
+import {_MatSelectHarnessBase} from '@angular/material/select/testing';
 import {
   MatOptionHarness,
   MatOptgroupHarness,
@@ -18,13 +18,14 @@ import {SelectHarnessFilters} from './select-harness-filters';
 
 
 /** Harness for interacting with an MDC-based mat-select in tests. */
-export class MatSelectHarness extends MatFormFieldControlHarness {
-  private _documentRootLocator = this.documentRootLocatorFactory();
-  private _backdrop = this._documentRootLocator.locatorFor('.cdk-overlay-backdrop');
-  private _trigger = this.locatorFor('.mat-mdc-select-trigger');
-  private _value = this.locatorFor('.mat-mdc-select-value');
-
+export class MatSelectHarness extends  _MatSelectHarnessBase<
+  typeof MatOptionHarness, MatOptionHarness, OptionHarnessFilters,
+  typeof MatOptgroupHarness, MatOptgroupHarness, OptgroupHarnessFilters
+> {
   static hostSelector = '.mat-mdc-select';
+  protected _prefix = 'mat-mdc';
+  protected _optionClass = MatOptionHarness;
+  protected _optionGroupClass = MatOptgroupHarness;
 
   /**
    * Gets a `HarnessPredicate` that can be used to search for a `MatSelectHarness` that meets
@@ -34,117 +35,5 @@ export class MatSelectHarness extends MatFormFieldControlHarness {
    */
   static with(options: SelectHarnessFilters = {}): HarnessPredicate<MatSelectHarness> {
     return new HarnessPredicate(MatSelectHarness, options);
-  }
-
-  /** Gets a boolean promise indicating if the select is disabled. */
-  async isDisabled(): Promise<boolean> {
-    return (await this.host()).hasClass('mat-mdc-select-disabled');
-  }
-
-  /** Gets a boolean promise indicating if the select is valid. */
-  async isValid(): Promise<boolean> {
-    return !(await (await this.host()).hasClass('ng-invalid'));
-  }
-
-  /** Gets a boolean promise indicating if the select is required. */
-  async isRequired(): Promise<boolean> {
-    return (await this.host()).hasClass('mat-mdc-select-required');
-  }
-
-  /** Gets a boolean promise indicating if the select is empty (no value is selected). */
-  async isEmpty(): Promise<boolean> {
-    return (await this.host()).hasClass('mat-mdc-select-empty');
-  }
-
-  /** Gets a boolean promise indicating if the select is in multi-selection mode. */
-  async isMultiple(): Promise<boolean> {
-    return (await this.host()).hasClass('mat-mdc-select-multiple');
-  }
-
-  /** Gets a promise for the select's value text. */
-  async getValueText(): Promise<string> {
-    return (await this._value()).text();
-  }
-
-  /** Focuses the select and returns a void promise that indicates when the action is complete. */
-  async focus(): Promise<void> {
-    return (await this.host()).focus();
-  }
-
-  /** Blurs the select and returns a void promise that indicates when the action is complete. */
-  async blur(): Promise<void> {
-    return (await this.host()).blur();
-  }
-
-  /** Whether the select is focused. */
-  async isFocused(): Promise<boolean> {
-    return (await this.host()).isFocused();
-  }
-
-  /** Gets the options inside the select panel. */
-  async getOptions(filter: Omit<OptionHarnessFilters, 'ancestor'> = {}):
-    Promise<MatOptionHarness[]> {
-    return this._documentRootLocator.locatorForAll(MatOptionHarness.with({
-      ...filter,
-      ancestor: await this._getPanelSelector()
-    }))();
-  }
-
-  /** Gets the groups of options inside the panel. */
-  async getOptionGroups(filter: Omit<OptgroupHarnessFilters, 'ancestor'> = {}):
-    Promise<MatOptgroupHarness[]> {
-    return this._documentRootLocator.locatorForAll(MatOptgroupHarness.with({
-      ...filter,
-      ancestor: await this._getPanelSelector()
-    }))();
-  }
-
-  /** Gets whether the select is open. */
-  async isOpen(): Promise<boolean> {
-    return !!await this._documentRootLocator.locatorForOptional(await this._getPanelSelector())();
-  }
-
-  /** Opens the select's panel. */
-  async open(): Promise<void> {
-    if (!await this.isOpen()) {
-      return (await this._trigger()).click();
-    }
-  }
-
-  /**
-   * Clicks the options that match the passed-in filter. If the select is in multi-selection
-   * mode all options will be clicked, otherwise the harness will pick the first matching option.
-   */
-  async clickOptions(filter: OptionHarnessFilters = {}): Promise<void> {
-    await this.open();
-
-    const [isMultiple, options] =
-        await parallel(() => [this.isMultiple(), this.getOptions(filter)]);
-
-    if (options.length === 0) {
-      throw Error('Select does not have options matching the specified filter');
-    }
-
-    if (isMultiple) {
-      await parallel(() => options.map(option => option.click()));
-    } else {
-      await options[0].click();
-    }
-  }
-
-  /** Closes the select's panel. */
-  async close(): Promise<void> {
-    if (await this.isOpen()) {
-      // This is the most consistent way that works both in both single and multi-select modes,
-      // but it assumes that only one overlay is open at a time. We should be able to make it
-      // a bit more precise after #16645 where we can dispatch an ESCAPE press to the host instead.
-      return (await this._backdrop()).click();
-    }
-  }
-
-  /** Gets the selector that should be used to find this select's panel. */
-  private async _getPanelSelector(): Promise<string> {
-    const id = await (await this.host()).getAttribute('id');
-    return `#${id}-panel`;
   }
 }
