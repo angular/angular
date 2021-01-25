@@ -2,6 +2,17 @@
 @import '../mdc-helpers/mdc-helpers';
 @import '@material/theme/functions.import';
 
+@mixin _selected-color($color) {
+  @include mdc-chip-fill-color($color, $query: $mat-theme-styles-query);
+  @include mdc-chip-ink-color(text-primary-on-dark, $query: $mat-theme-styles-query);
+  @include mdc-chip-selected-ink-color-without-ripple_(
+                  text-primary-on-dark,
+                  $query: $mat-theme-styles-query
+  );
+  @include mdc-chip-leading-icon-color(text-primary-on-dark, $query: $mat-theme-styles-query);
+  @include mdc-chip-trailing-icon-color(text-primary-on-dark, $query: $mat-theme-styles-query);
+}
+
 @mixin mat-mdc-chips-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
   $primary: mat-color(map-get($config, primary));
@@ -29,21 +40,24 @@
       @include mdc-chip-fill-color-accessible($unselected-background,
         $query: $mat-theme-styles-query);
 
+      // mdc-chip-fill-color-accessible includes mdc-chip-selected-ink-color which overrides the
+      // opacity so selected chips always show a ripple.
+      // Include the same mixins but use mdc-chip-selected-ink-color-without-ripple
       &.mat-primary {
         &.mdc-chip--selected, &.mat-mdc-chip-highlighted {
-          @include mdc-chip-fill-color-accessible($primary, $query: $mat-theme-styles-query);
+          @include _selected-color($primary);
         }
       }
 
       &.mat-accent {
         &.mdc-chip--selected, &.mat-mdc-chip-highlighted {
-          @include mdc-chip-fill-color-accessible($accent, $query: $mat-theme-styles-query);
+          @include _selected-color($accent);
         }
       }
 
       &.mat-warn {
         &.mdc-chip--selected, &.mat-mdc-chip-highlighted {
-          @include mdc-chip-fill-color-accessible($warn, $query: $mat-theme-styles-query);
+          @include _selected-color($warn);
         }
       }
     }
