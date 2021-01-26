@@ -5130,9 +5130,9 @@ function npmIsLoggedIn(registryUrl) {
 function npmLogin(registryUrl) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const args = ['login', '--no-browser'];
-        // If a custom registry URL has been specified, add the `--registry` flag. The --registry flag
+        // If a custom registry URL has been specified, add the `--registry` flag. The `--registry` flag
         // must be spliced into the correct place in the command as npm expects it to be the flag
-        // immediately folling the login subcommand.
+        // immediately following the login subcommand.
         if (registryUrl !== undefined) {
             args.splice(1, 0, '--registry', registryUrl);
         }
@@ -5146,9 +5146,9 @@ function npmLogin(registryUrl) {
 function npmLogout(registryUrl) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const args = ['logout'];
-        // If a custom registry URL has been specified, add the `--registry` flag. The --registry flag
+        // If a custom registry URL has been specified, add the `--registry` flag. The `--registry` flag
         // must be spliced into the correct place in the command as npm expects it to be the flag
-        // immediately folling the login subcommand.
+        // immediately following the logout subcommand.
         if (registryUrl !== undefined) {
             args.splice(1, 0, '--registry', registryUrl);
         }
@@ -6555,7 +6555,7 @@ class ReleaseTool {
                 debug(`Already logged into ${registry}.`);
                 return true;
             }
-            error(red(`  ✘   Not currently logged into NPM at the ${registry}.`));
+            error(red(`  ✘   Not currently logged into ${registry}.`));
             const shouldLogin = yield promptConfirm('Would you like to log into NPM now?');
             if (shouldLogin) {
                 debug('Starting NPM login.');

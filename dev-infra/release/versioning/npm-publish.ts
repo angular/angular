@@ -61,9 +61,9 @@ export async function npmIsLoggedIn(registryUrl: string|undefined): Promise<bool
  */
 export async function npmLogin(registryUrl: string|undefined) {
   const args = ['login', '--no-browser'];
-  // If a custom registry URL has been specified, add the `--registry` flag. The --registry flag
+  // If a custom registry URL has been specified, add the `--registry` flag. The `--registry` flag
   // must be spliced into the correct place in the command as npm expects it to be the flag
-  // immediately folling the login subcommand.
+  // immediately following the login subcommand.
   if (registryUrl !== undefined) {
     args.splice(1, 0, '--registry', registryUrl);
   }
@@ -76,9 +76,9 @@ export async function npmLogin(registryUrl: string|undefined) {
  */
 export async function npmLogout(registryUrl: string|undefined): Promise<boolean> {
   const args = ['logout'];
-  // If a custom registry URL has been specified, add the `--registry` flag. The --registry flag
+  // If a custom registry URL has been specified, add the `--registry` flag. The `--registry` flag
   // must be spliced into the correct place in the command as npm expects it to be the flag
-  // immediately folling the login subcommand.
+  // immediately following the logout subcommand.
   if (registryUrl !== undefined) {
     args.splice(1, 0, '--registry', registryUrl);
   }

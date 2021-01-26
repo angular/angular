@@ -154,7 +154,7 @@ export class ReleaseTool {
       debug(`Already logged into ${registry}.`);
       return true;
     }
-    error(red(`  ✘   Not currently logged into NPM at the ${registry}.`));
+    error(red(`  ✘   Not currently logged into ${registry}.`));
     const shouldLogin = await promptConfirm('Would you like to log into NPM now?');
     if (shouldLogin) {
       debug('Starting NPM login.');
