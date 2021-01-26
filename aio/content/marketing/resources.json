@@ -469,6 +469,11 @@
             "desc": "NGX Skeleton Loader is a lightweight and A11Y friendly solution for blazing fast loading skeletons that automatically adapt to your Angular apps.",
             "title": "NGX Skeleton Loader",
             "url": "https://www.npmjs.com/package/ngx-skeleton-loader"
+          },
+          "taiga-ui": {
+            "desc": "Taiga UI is fully-treeshakable Angular UI Kit consisting of multiple base libraries and several add-ons. We have 130+ components, 100+ directives, dozens of tokens, utils and tools. They are easily customizable and well engineered.",
+            "title": "Taiga UI",
+            "url": "https://taiga-ui.dev"
           }
         }
       }
