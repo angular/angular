@@ -76,7 +76,7 @@ rbe_autoconfig(
     # Need to specify a base container digest in order to ensure that we can use the checked-in
     # platform configurations for the "ubuntu16_04" image. Otherwise the autoconfig rule would
     # need to pull the image and run it in order determine the toolchain configuration. See:
-    # https://github.com/bazelbuild/bazel-toolchains/blob/3.6.0/configs/ubuntu16_04_clang/versions.bzl
+    # https://github.com/bazelbuild/bazel-toolchains/blob/4.0.0/configs/ubuntu16_04_clang/versions.bzl
     base_container_digest = "sha256:f6568d8168b14aafd1b707019927a63c2d37113a03bcee188218f99bd0327ea1",
     # Note that if you change the `digest`, you might also need to update the
     # `base_container_digest` to make sure marketplace.gcr.io/google/rbe-ubuntu16-04-webtest:<digest>

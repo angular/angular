@@ -17,7 +17,7 @@ pkg_npm(
         "//packages/bazel/docs",
     ],
     substitutions = {
-        "(#|\/\/)\\s+BEGIN-DEV-ONLY[\\w\W]+?(#|\/\/)\\s+END-DEV-ONLY": "",
+        "(#|//)\\s+BEGIN-DEV-ONLY[\\w\\W]+?(#|//)\\s+END-DEV-ONLY": "",
         "//packages/bazel/": "//@angular/bazel/",
         "@npm//@bazel/typescript/internal:": "//@bazel/typescript/internal:",
     },
