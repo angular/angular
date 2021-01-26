@@ -75,7 +75,7 @@ When the browser encounters the tag for the registered element, it uses the cons
 
   Avoid using the [`@Component`](api/core/Component) [selector](api/core/Directive#selector) as the custom-element tag name.
   This can lead to unexpected behavior, due to Angular creating two component instances for a single DOM element:
-  One regular Angular component and a second one via the custom element.
+  One regular Angular component and a second one using the custom element.
 
 </div>
 
