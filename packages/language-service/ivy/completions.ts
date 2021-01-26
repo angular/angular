@@ -220,12 +220,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
 
     const {componentContext, templateContext} = completions;
 
-    let replacementSpan: ts.TextSpan|undefined = undefined;
-    // Non-empty nodes get replaced with the completion.
-    if (!(this.node instanceof EmptyExpr || this.node instanceof LiteralPrimitive ||
-          this.node instanceof BoundEvent)) {
-      replacementSpan = makeReplacementSpanFromAst(this.node);
-    }
+    const replacementSpan = makeReplacementSpanFromAst(this.node);
 
     // Merge TS completion results with results from the template scope.
     let entries: ts.CompletionEntry[] = [];
@@ -631,7 +626,14 @@ function makeReplacementSpanFromParseSourceSpan(span: ParseSourceSpan): ts.TextS
 }
 
 function makeReplacementSpanFromAst(node: PropertyRead|PropertyWrite|MethodCall|SafePropertyRead|
-                                    SafeMethodCall|BindingPipe): ts.TextSpan {
+                                    SafeMethodCall|BindingPipe|EmptyExpr|LiteralPrimitive|
+                                    BoundEvent): ts.TextSpan|undefined {
+  if ((node instanceof EmptyExpr || node instanceof LiteralPrimitive ||
+       node instanceof BoundEvent)) {
+    // empty nodes do not replace any existing text
+    return undefined;
+  }
+
   return {
     start: node.nameSpan.start,
     length: node.nameSpan.end - node.nameSpan.start,
