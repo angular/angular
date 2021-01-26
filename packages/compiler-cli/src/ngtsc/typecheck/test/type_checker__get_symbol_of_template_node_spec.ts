@@ -40,33 +40,6 @@ runInEachFileSystem(() => {
       assertElementSymbol(symbol.host);
     });
 
-    it('should invalidate symbols when template overrides change', () => {
-      const fileName = absoluteFrom('/main.ts');
-      const templateString = `<div id="helloWorld"></div>`;
-      const {templateTypeChecker, program} = setup(
-          [
-            {
-              fileName,
-              templates: {'Cmp': templateString},
-              source: `export class Cmp {}`,
-            },
-          ],
-      );
-      const sf = getSourceFileOrError(program, fileName);
-      const cmp = getClass(sf, 'Cmp');
-      const {attributes: beforeAttributes} = getAstElements(templateTypeChecker, cmp)[0];
-      const beforeSymbol = templateTypeChecker.getSymbolOfNode(beforeAttributes[0], cmp)!;
-
-      // Replace the <div> with a <span>.
-      templateTypeChecker.overrideComponentTemplate(cmp, '<span id="helloWorld"></span>');
-
-      const {attributes: afterAttributes} = getAstElements(templateTypeChecker, cmp)[0];
-      const afterSymbol = templateTypeChecker.getSymbolOfNode(afterAttributes[0], cmp)!;
-
-      // After the override, the symbol cache should have been invalidated.
-      expect(beforeSymbol).not.toBe(afterSymbol);
-    });
-
     describe('should get a symbol for text attributes corresponding with a directive input', () => {
       let fileName: AbsoluteFsPath;
       let targets: TypeCheckingTarget[];
