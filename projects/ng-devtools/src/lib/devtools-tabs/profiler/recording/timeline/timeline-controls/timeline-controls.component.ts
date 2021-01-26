@@ -13,6 +13,7 @@ export class TimelineControlsComponent {
   @Input() frameColor: string;
   @Input() visualizationMode: VisualizationMode;
   @Input() empty: boolean;
+  @Input() changeDetection: boolean;
   @Output() changeVisualizationMode = new EventEmitter<VisualizationMode>();
   @Output() exportProfile = new EventEmitter<void>();
   @Output() toggleChangeDetection = new EventEmitter<boolean>();

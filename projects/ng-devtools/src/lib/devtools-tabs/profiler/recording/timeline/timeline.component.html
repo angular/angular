@@ -10,6 +10,7 @@
     [frameColor]="getColorByFrameRate(estimateFrameRate(frame?.duration))"
     [estimatedFrameRate]="estimateFrameRate(frame?.duration)"
     [visualizationMode]="visualizationMode"
+    [changeDetection]="changeDetection"
     (changeVisualizationMode)="visualizationMode = $event"
     (exportProfile)="exportProfile.emit($event)"
     (toggleChangeDetection)="changeDetection = $event"
