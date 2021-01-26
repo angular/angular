@@ -19,7 +19,7 @@
 // have to load a single css file for Angular Material in your app.
 // **Be sure that you only ever include this mixin once!**
 @include mat-core();
-@include angular-material-mdc-typography();
+@include angular-material-mdc-typography(mat-mdc-typography-config());
 @include mat-popover-edit-typography(mat-typography-config());
 
 // Include base styles for strong focus indicators.
