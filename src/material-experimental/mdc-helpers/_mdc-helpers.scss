@@ -53,7 +53,7 @@ $mat-typography-level-mappings: (
 
 // Converts an Angular Material typography level config to an MDC one.
 @function mat-typography-level-config-to-mdc($mat-config, $mat-level) {
-  $mdc-level: map-get($mat-typography-level-mappings, $mat-level);
+  $mdc-level: map-get(map-get($mat-typography-level-mappings, mat-to-mdc), $mat-level);
 
   @return map-merge(
       if($mdc-level,
