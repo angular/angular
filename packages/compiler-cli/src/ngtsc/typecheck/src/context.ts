@@ -51,11 +51,6 @@ export interface ShimTypeCheckingData {
   templates: Map<TemplateId, TemplateData>;
 }
 
-export interface TemplateOverride {
-  nodes: TmplAstNode[];
-  errors: ParseError[]|null;
-}
-
 /**
  * Data tracked for each template processed by the template type-checking system.
  */
@@ -144,12 +139,6 @@ export interface TypeCheckingHost {
   shouldCheckComponent(node: ts.ClassDeclaration): boolean;
 
   /**
-   * Check if the given component has had its template overridden, and retrieve the new template
-   * nodes if so.
-   */
-  getTemplateOverride(sfPath: AbsoluteFsPath, node: ts.ClassDeclaration): TemplateOverride|null;
-
-  /**
    * Report data from a shim generated from the given input file path.
    */
   recordShimData(sfPath: AbsoluteFsPath, data: ShimTypeCheckingData): void;
@@ -224,13 +213,6 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     const templateId = fileData.sourceManager.getTemplateId(ref.node);
 
     const templateDiagnostics: TemplateDiagnostic[] = [];
-
-    const sfPath = absoluteFromSourceFile(ref.node.getSourceFile());
-    const overrideTemplate = this.host.getTemplateOverride(sfPath, ref.node);
-    if (overrideTemplate !== null) {
-      template = overrideTemplate.nodes;
-      parseErrors = overrideTemplate.errors;
-    }
 
     if (parseErrors !== null) {
       templateDiagnostics.push(
