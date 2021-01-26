@@ -135,14 +135,6 @@
     ora "5.1.0"
     rxjs "6.6.3"
 
-"@angular/benchpress@^0.2.1":
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/@angular/benchpress/-/benchpress-0.2.1.tgz#f8b58d9acfda0d29959b87dcb8082b1c33735db5"
-  integrity sha512-ojHCP96ZunHBZpt08USSEdLJsuXnEEdJtfzl+9oTdMXbooKkzSVO7N6bVdjefbGRNAleAuSAo3gVrdPqumLznA==
-  dependencies:
-    "@angular/core" "^10.0.0-0 || ^11.0.0"
-    reflect-metadata "^0.1.13"
-
 "@angular/cli@11.0.0-rc.1":
   version "11.0.0-rc.1"
   resolved "https://registry.yarnpkg.com/@angular/cli/-/cli-11.0.0-rc.1.tgz#e99e92b25db61e39b3ff4c88f9b2d88bc3d694cc"
@@ -168,13 +160,6 @@
     symbol-observable "2.0.3"
     universal-analytics "0.4.23"
     uuid "8.3.1"
-
-"@angular/core@^10.0.0-0 || ^11.0.0":
-  version "11.1.0"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-11.1.0.tgz#724c13c53e4afb6d4ef4d9236d50f0be956f57ca"
-  integrity sha512-VhiRWZEj9Q/OvbbSDcgQ4f53oVcMnDB4uNL8xaWnK0Sb3lZA4aQW3VOlROBITS5n2g7D1zRhvUzdfzVuyuMIaQ==
-  dependencies:
-    tslib "^2.0.0"
 
 "@babel/cli@^7.8.4":
   version "7.8.4"
@@ -13177,7 +13162,7 @@ redeyed@~2.1.0:
   dependencies:
     esprima "~4.0.0"
 
-reflect-metadata@^0.1.13, reflect-metadata@^0.1.3:
+reflect-metadata@^0.1.3:
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
   integrity sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==
