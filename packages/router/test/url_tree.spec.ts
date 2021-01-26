@@ -25,6 +25,16 @@ describe('UrlTree', () => {
         'k/(a;b)': 'c',
       });
     });
+
+    it('should parse query parameters containing question marks', () => {
+      const tree = serializer.parse('/path/to/search?q1=something?&q2=something%3F&q3=?something&q4=%3Fsomething');
+      expect(tree.queryParams).toEqual({
+        'q1': 'something?',
+        'q2': 'something?',
+        'q3': '?something',
+        'q4': '?something',
+      });
+    });
   });
 
   describe('containsTree', () => {
