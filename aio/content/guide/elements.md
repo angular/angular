@@ -71,6 +71,15 @@ When the browser encounters the tag for the registered element, it uses the cons
   <img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">
 </div>
 
+<div class="alert is-important">
+
+  Avoid using the [`@Component`](api/core/Component) [selector](api/core/Directive#selector) as the custom-element tag name.
+  This can lead to unexpected behavior, due to Angular creating two component instances for a single DOM element:
+  One regular Angular component and a second one using the custom element.
+
+</div>
+
+
 ### Mapping
 
 A custom element _hosts_ an Angular component, providing a bridge between the data and logic defined in the component and standard DOM APIs. Component properties and logic maps directly into HTML attributes and the browser's event system.
