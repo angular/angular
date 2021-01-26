@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, Interpolation, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
+import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {IvyParser, Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -908,6 +908,12 @@ describe('parser', () => {
       expectError(
           parseInterpolation('foo {{  }}')!,
           'Parser Error: Blank expressions are not allowed in interpolated strings');
+    });
+
+    it('should produce an empty expression ast for empty interpolations', () => {
+      const parsed = parseInterpolation('{{}}')!.ast as Interpolation;
+      expect(parsed.expressions.length).toBe(1);
+      expect(parsed.expressions[0]).toBeAnInstanceOf(EmptyExpr);
     });
 
     it('should parse conditional expression', () => {
