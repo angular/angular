@@ -10,5 +10,6 @@
 {% block content %}
 <div class="content">
 {$ doc.description | marked $}
+{% if doc.reviewed %}<span class="reviewed">Last reviewed on {$ doc.reviewed.date.toDateString() $}</span>{% endif %}
 </div>
 {% endblock %}
