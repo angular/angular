@@ -295,26 +295,62 @@ export class ShadowCss {
   private _convertColonHostContext(cssText: string): string {
     return cssText.replace(_cssColonHostContextReGlobal, selectorText => {
       // We have captured a selector that contains a `:host-context` rule.
-      // There may be more than one so `selectorText` could look like:
+
+      // For backward compatibility `:host-context` may contain a comma separated list of selectors.
+      // Each context selector group will contain a list of host-context selectors that must match
+      // an ancestor of the host.
+      // (Normally `contextSelectorGroups` will only contain a single array of context selectors.)
+      const contextSelectorGroups: string[][] = [[]];
+
+      // There may be more than `:host-context` in this selector so `selectorText` could look like:
       // `:host-context(.one):host-context(.two)`.
-
-      const contextSelectors: string[] = [];
-      let match: RegExpMatchArray|null;
-
       // Execute `_cssColonHostContextRe` over and over until we have extracted all the
       // `:host-context` selectors from this selector.
+      let match: RegExpMatchArray|null;
       while (match = _cssColonHostContextRe.exec(selectorText)) {
         // `match` = [':host-context(<selectors>)<rest>', <selectors>, <rest>]
-        const contextSelector = (match[1] ?? '').trim();
-        if (contextSelector !== '') {
-          contextSelectors.push(contextSelector);
+
+        // The `<selectors>` could actually be a comma separated list: `:host-context(.one, .two)`.
+        const newContextSelectors =
+            (match[1] ?? '').trim().split(',').map(m => m.trim()).filter(m => m !== '');
+
+        // We must duplicate the current selector group for each of these new selectors.
+        // For example if the current groups are:
+        // ```
+        // [
+        //   ['a', 'b', 'c'],
+        //   ['x', 'y', 'z'],
+        // ]
+        // ```
+        // And we have a new set of comma separated selectors: `:host-context(m,n)` then the new
+        // groups are:
+        // ```
+        // [
+        //   ['a', 'b', 'c', 'm'],
+        //   ['x', 'y', 'z', 'm'],
+        //   ['a', 'b', 'c', 'n'],
+        //   ['x', 'y', 'z', 'n'],
+        // ]
+        // ```
+        const contextSelectorGroupsLength = contextSelectorGroups.length;
+        repeatGroups(contextSelectorGroups, newContextSelectors.length);
+        for (let i = 0; i < newContextSelectors.length; i++) {
+          for (let j = 0; j < contextSelectorGroupsLength; j++) {
+            contextSelectorGroups[j + (i * contextSelectorGroupsLength)].push(
+                newContextSelectors[i]);
+          }
         }
+
+        // Update the `selectorText` and see repeat to see if there are more `:host-context`s.
         selectorText = match[2];
       }
 
       // The context selectors now must be combined with each other to capture all the possible
-      // selectors that `:host-context` can match.
-      return combineHostContextSelectors(contextSelectors, selectorText);
+      // selectors that `:host-context` can match. See `combineHostContextSelectors()` for more
+      // info about how this is done.
+      return contextSelectorGroups
+          .map(contextSelectors => combineHostContextSelectors(contextSelectors, selectorText))
+          .join(', ');
     });
   }
 
@@ -713,4 +749,24 @@ function combineHostContextSelectors(contextSelectors: string[], otherSelectors:
               `${s}${otherSelectors}` :
               `${s}${hostMarker}${otherSelectors}, ${s} ${hostMarker}${otherSelectors}`)
       .join(',');
+}
+
+/**
+ * Mutate the given `groups` array so that there are `multiples` clones of the original array
+ * stored.
+ *
+ * For example `repeatGroups([a, b], 3)` will result in `[a, b, a, b, a, b]` - but importantly the
+ * newly added groups will be clones of the original.
+ *
+ * @param groups An array of groups of strings that will be repeated. This array is mutated
+ *     in-place.
+ * @param multiples The number of times the current groups should appear.
+ */
+export function repeatGroups<T>(groups: string[][], multiples: number): void {
+  const length = groups.length;
+  for (let i = 1; i < multiples; i++) {
+    for (let j = 0; j < length; j++) {
+      groups[j + (i * length)] = groups[j].slice(0);
+    }
+  }
 }
