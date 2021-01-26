@@ -10,7 +10,7 @@ body {
 }
 
 // Light theme
-$light-primary: mat-palette($mat-grey, 700);
+$light-primary: mat-palette($mat-grey, 700, 200);
 $light-accent: mat-palette($mat-teal, 300);
 $light-theme: mat-light-theme($light-primary, $light-accent);
 

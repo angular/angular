@@ -13,20 +13,30 @@
   .mat-stroked-button {
     height: 20px;
     line-height: 20px;
-    font-size: 0.8em;
+    font-size: 1em;
     margin-right: 5px;
     width: fit-content;
+
+    &:hover {
+      background-color: #ebf1fb;
+    }
   }
 
   .mat-card.breadcrumb-card span {
-    color: #3f51b5;
+    color: #8a1882;
   }
 }
 
 :host-context(.dark-theme) {
   ::ng-deep {
     .mat-card.breadcrumb-card span {
-      color: #5CAACE;
+      color: #5caace;
+    }
+
+    .mat-stroked-button {
+      &:hover {
+        background-color: #093e69;
+      }
     }
   }
 }

@@ -18,7 +18,7 @@
   </as-split-area>
   <as-split-area size="25" minSize="15" *ngIf="selectedEntry">
     <mat-card class="selected-entry">
-      <mat-toolbar color="accent">{{ selectedEntry.label }} details</mat-toolbar>
+      <mat-toolbar>{{ selectedEntry.label }} details</mat-toolbar>
       <section class="entry-statistics">
         <div class="txt-total-time">
           <label>Total time spent:</label><span> {{ selectedEntry.value | number }}ms</span>

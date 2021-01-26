@@ -31,7 +31,7 @@ mat-tab-group {
 }
 
 #version-number {
-  color: #3f51b5;
+  color: #1b1aa5;
   cursor: text;
   -moz-user-select: text;
   -khtml-user-select: text;
@@ -96,7 +96,7 @@ mat-tab-group {
 
 :host-context(.dark-theme) {
   #version-number {
-    color: #5CAACE;
+    color: #5caace;
   }
 }
 

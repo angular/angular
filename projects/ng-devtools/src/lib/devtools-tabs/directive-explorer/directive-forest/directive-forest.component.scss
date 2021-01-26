@@ -4,9 +4,8 @@
   overflow: auto;
 
   .tree-node {
-    padding-top: 2px;
-    padding-bottom: 2px;
     position: relative;
+    color: #8a1882;
 
     cursor: default;
     font-family: Menlo, monospace;
@@ -21,7 +20,7 @@
       padding: 0;
       position: absolute;
       background-color: transparent;
-      top: 5px;
+      top: 2px;
     }
 
     .mat-icon {
@@ -31,33 +30,32 @@
       display: inline-block;
     }
 
+    .dir-names {
+      color: #9b4807;
+    }
+
+    .console-reference {
+      color: #748591;
+      padding-left: 8px;
+      font-style: italic;
+    }
+
     &:hover {
-      background-color: #cce7df;
-      color: rgba(0, 0, 0, 0.87);
+      background-color: #ebf1fb;
       cursor: pointer;
     }
 
     &.matched {
-      background-color: #d2e6e4;
-      color: rgba(0, 0, 0, 0.87);
+      background-color: #ebf1fb;
 
       &:hover {
-        background-color: #85CDC9;
-      }
-
-      .dir-names, .console-reference {
-        opacity: 0.7;
+        background-color: #cfe8fc;
       }
     }
 
     &.selected,
     &.highlighted {
-      background-color: #4db6ac;
-      color: rgba(0, 0, 0, 0.87);
-
-      .dir-names, .console-reference {
-        opacity: 1.0;
-      }
+      background-color: #cfe8fc;
     }
   }
 }
@@ -67,7 +65,8 @@
     background-color: transparent;
   }
   50% {
-    background-color: #FECF4A;
+    background-color: #fecf4a;
+    color: #748591;
   }
   100% {
     background-color: transparent;
@@ -113,7 +112,7 @@
 
 .angular-element {
   content: '';
-  color: #3f51b5;
+  color: #1b1aa5;
 
   &::before {
     content: '<';
@@ -124,43 +123,34 @@
   }
 }
 
-.dir-names {
-  opacity: 0.7;
-}
-
-.console-reference {
-  padding-left: 8px;
-  opacity: 0.7;
-  font-style: italic;
-}
-
 :host-context(.dark-theme) {
-  .tree-node, .tree-node .mat-icon {
-    color: #fff;
+  .tree-node,
+  .tree-node .mat-icon {
+    color: #5cadd3;
+
+    .dir-names {
+      color: #91adcb;
+    }
 
     .angular-element {
-      color: #5CAACE;
+      color: #dc8c61;
     }
-    
+
     &:hover {
-      background-color: #7b5681;
+      background-color: #262d36;
     }
 
     &.matched {
-      background-color: #61193f;
+      background-color: #093e69;
 
       &:hover {
-        background-color: #880e4f;
+        background-color: #073d69;
       }
     }
 
     &.selected,
     &.highlighted {
-      background-color: #ce93d8;
-      color: black;
-      .mat-icon {
-        color: black;
-      }
+      background-color: #073d69;
     }
   }
 }
