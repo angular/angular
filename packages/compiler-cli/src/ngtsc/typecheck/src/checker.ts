@@ -20,7 +20,7 @@ import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, 
 import {TemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
-import {InliningMode, ShimTypeCheckingData, TemplateData, TemplateOverride, TypeCheckContextImpl, TypeCheckingHost} from './context';
+import {InliningMode, ShimTypeCheckingData, TemplateData, TypeCheckContextImpl, TypeCheckingHost} from './context';
 import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
 import {TemplateSourceManager} from './source';
 import {findTypeCheckBlock, getTemplateMapping, TemplateSourceResolver} from './tcb_util';
@@ -56,10 +56,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   /**
    * Stores directives and pipes that are in scope for each component.
    *
-   * Unlike other caches, the scope of a component is not affected by its template, so this
-   * cache does not need to be invalidate if the template is overridden. It will be destroyed when
-   * the `ts.Program` changes and the `TemplateTypeCheckerImpl` as a whole is destroyed and
-   * replaced.
+   * Unlike other caches, the scope of a component is not affected by its template. It will be
+   * destroyed when the `ts.Program` changes and the `TemplateTypeCheckerImpl` as a whole is
+   * destroyed and replaced.
    */
   private scopeCache = new Map<ts.ClassDeclaration, ScopeData>();
 
@@ -67,10 +66,9 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
    * Stores potential element tags for each component (a union of DOM tags as well as directive
    * tags).
    *
-   * Unlike other caches, the scope of a component is not affected by its template, so this
-   * cache does not need to be invalidate if the template is overridden. It will be destroyed when
-   * the `ts.Program` changes and the `TemplateTypeCheckerImpl` as a whole is destroyed and
-   * replaced.
+   * Unlike other caches, the scope of a component is not affected by its template. It will be
+   * destroyed when the `ts.Program` changes and the `TemplateTypeCheckerImpl` as a whole is
+   * destroyed and replaced.
    */
   private elementTagCache = new Map<ts.ClassDeclaration, Map<string, DirectiveInScope|null>>();
 
@@ -85,22 +83,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>,
       private readonly componentScopeReader: ComponentScopeReader,
       private readonly typeCheckScopeRegistry: TypeCheckScopeRegistry) {}
-
-  resetOverrides(): void {
-    for (const fileRecord of this.state.values()) {
-      if (fileRecord.templateOverrides !== null) {
-        fileRecord.templateOverrides = null;
-        fileRecord.shimData.clear();
-        fileRecord.isComplete = false;
-      }
-    }
-
-    // Ideally only those components with overridden templates would have their caches invalidated,
-    // but the `TemplateTypeCheckerImpl` does not track the class for components with overrides. As
-    // a quick workaround, clear the entire cache instead.
-    this.completionCache.clear();
-    this.symbolBuilderCache.clear();
-  }
 
   getTemplate(component: ts.ClassDeclaration): TmplAstNode[]|null {
     const {data} = this.getLatestComponentState(component);
@@ -149,42 +131,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
 
     return {data, tcb, shimPath};
-  }
-
-  overrideComponentTemplate(component: ts.ClassDeclaration, template: string):
-      {nodes: TmplAstNode[], errors: ParseError[]|null} {
-    const {nodes, errors} = parseTemplate(template, 'override.html', {
-      // Set `leadingTriviaChars` and `preserveWhitespaces` such that whitespace is not stripped
-      // and fully accounted for in source spans. Without these flags the source spans can be
-      // inaccurate.
-      // Note: template parse options should be aligned with `template_target_spec.ts` and the
-      // `diagNodes` in `ComponentDecoratorHandler._parseTemplate`.
-      preserveWhitespaces: true,
-      leadingTriviaChars: [],
-    });
-
-    const filePath = absoluteFromSourceFile(component.getSourceFile());
-
-    const fileRecord = this.getFileData(filePath);
-    const id = fileRecord.sourceManager.getTemplateId(component);
-
-    if (fileRecord.templateOverrides === null) {
-      fileRecord.templateOverrides = new Map();
-    }
-
-    fileRecord.templateOverrides.set(id, {nodes, errors});
-
-    // Clear data for the shim in question, so it'll be regenerated on the next request.
-    const shimFile = this.typeCheckingStrategy.shimPathForComponent(component);
-    fileRecord.shimData.delete(shimFile);
-    fileRecord.isComplete = false;
-    this.isComplete = false;
-
-    // Overriding a component's template invalidates its cached results.
-    this.completionCache.delete(component);
-    this.symbolBuilderCache.delete(component);
-
-    return {nodes, errors};
   }
 
   isTrackedTypeCheckFile(filePath: AbsoluteFsPath): boolean {
@@ -337,7 +283,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
     fileData.shimData.delete(shimPath);
     fileData.isComplete = false;
-    fileData.templateOverrides?.delete(templateId);
 
     this.isComplete = false;
   }
@@ -361,10 +306,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const sfPath = absoluteFromSourceFile(sf);
     if (this.state.has(sfPath)) {
       const existingResults = this.state.get(sfPath)!;
-      if (existingResults.templateOverrides !== null) {
-        // Cannot adopt prior results if template overrides have been requested.
-        return;
-      }
 
       if (existingResults.isComplete) {
         // All data for this file has already been generated, so no need to adopt anything.
@@ -373,8 +314,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
 
     const previousResults = this.priorBuild.priorTypeCheckingResultsFor(sf);
-    if (previousResults === null || !previousResults.isComplete ||
-        previousResults.templateOverrides !== null) {
+    if (previousResults === null || !previousResults.isComplete) {
       return;
     }
 
@@ -496,7 +436,6 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     if (!this.state.has(path)) {
       this.state.set(path, {
         hasInlines: false,
-        templateOverrides: null,
         sourceManager: new TemplateSourceManager(),
         isComplete: false,
         shimData: new Map(),
@@ -680,11 +619,6 @@ export interface FileTypeCheckingData {
   sourceManager: TemplateSourceManager;
 
   /**
-   * Map of template overrides applied to any components in this input file.
-   */
-  templateOverrides: Map<TemplateId, TemplateOverride>|null;
-
-  /**
    * Data for each shim generated from this input file.
    *
    * A single input file will generate one or more shim files that actually contain template
@@ -714,20 +648,6 @@ class WholeProgramTypeCheckingHost implements TypeCheckingHost {
     const shimPath = this.impl.typeCheckingStrategy.shimPathForComponent(node);
     // The component needs to be checked unless the shim which would contain it already exists.
     return !fileData.shimData.has(shimPath);
-  }
-
-  getTemplateOverride(sfPath: AbsoluteFsPath, node: ts.ClassDeclaration): TemplateOverride|null {
-    const fileData = this.impl.getFileData(sfPath);
-    if (fileData.templateOverrides === null) {
-      return null;
-    }
-
-    const templateId = fileData.sourceManager.getTemplateId(node);
-    if (fileData.templateOverrides.has(templateId)) {
-      return fileData.templateOverrides.get(templateId)!;
-    }
-
-    return null;
   }
 
   recordShimData(sfPath: AbsoluteFsPath, data: ShimTypeCheckingData): void {
@@ -772,20 +692,6 @@ class SingleFileTypeCheckingHost implements TypeCheckingHost {
 
     // Only need to generate a TCB for the class if no shim exists for it currently.
     return !this.fileData.shimData.has(shimPath);
-  }
-
-  getTemplateOverride(sfPath: AbsoluteFsPath, node: ts.ClassDeclaration): TemplateOverride|null {
-    this.assertPath(sfPath);
-    if (this.fileData.templateOverrides === null) {
-      return null;
-    }
-
-    const templateId = this.fileData.sourceManager.getTemplateId(node);
-    if (this.fileData.templateOverrides.has(templateId)) {
-      return this.fileData.templateOverrides.get(templateId)!;
-    }
-
-    return null;
   }
 
   recordShimData(sfPath: AbsoluteFsPath, data: ShimTypeCheckingData): void {
