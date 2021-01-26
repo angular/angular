@@ -7,7 +7,7 @@
  */
 
 import {HttpClient} from '@angular/common/http/src/client';
-import {HttpErrorResponse, HttpEventType, HttpResponse} from '@angular/common/http/src/response';
+import {HttpErrorResponse, HttpEventType, HttpResponse, HttpStatusCode} from '@angular/common/http/src/response';
 import {HttpClientTestingBackend} from '@angular/common/http/testing/src/backend';
 import {ddescribe, describe, fit, it} from '@angular/core/testing/src/testing_internal';
 import {toArray} from 'rxjs/operators';
@@ -105,7 +105,7 @@ import {toArray} from 'rxjs/operators';
         client.post('/test', 'text body', {observe: 'response', responseType: 'text'})
             .subscribe(res => {
               expect(res.ok).toBeTruthy();
-              expect(res.status).toBe(200);
+              expect(res.status).toBe(HttpStatusCode.Ok);
               done();
             });
         backend.expectOne('/test').flush('hello world');
@@ -114,7 +114,7 @@ import {toArray} from 'rxjs/operators';
         const body = {data: 'json body'};
         client.post('/test', body, {observe: 'response', responseType: 'text'}).subscribe(res => {
           expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(HttpStatusCode.Ok);
           done();
         });
         const testReq = backend.expectOne('/test');
@@ -124,7 +124,7 @@ import {toArray} from 'rxjs/operators';
       it('with a json body of false', done => {
         client.post('/test', false, {observe: 'response', responseType: 'text'}).subscribe(res => {
           expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(HttpStatusCode.Ok);
           done();
         });
         const testReq = backend.expectOne('/test');
@@ -134,7 +134,7 @@ import {toArray} from 'rxjs/operators';
       it('with a json body of 0', done => {
         client.post('/test', 0, {observe: 'response', responseType: 'text'}).subscribe(res => {
           expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(HttpStatusCode.Ok);
           done();
         });
         const testReq = backend.expectOne('/test');
@@ -145,7 +145,7 @@ import {toArray} from 'rxjs/operators';
         const body = new ArrayBuffer(4);
         client.post('/test', body, {observe: 'response', responseType: 'text'}).subscribe(res => {
           expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
+          expect(res.status).toBe(HttpStatusCode.Ok);
           done();
         });
         const testReq = backend.expectOne('/test');
@@ -167,7 +167,8 @@ import {toArray} from 'rxjs/operators';
           done();
         });
         backend.expectOne('/test').flush(
-            {'data': 'hello world'}, {status: 500, statusText: 'Server error'});
+            {'data': 'hello world'},
+            {status: HttpStatusCode.InternalServerError, statusText: 'Server error'});
       });
     });
   });
