@@ -154,6 +154,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   overrideComponentTemplate(component: ts.ClassDeclaration, template: string):
       {nodes: TmplAstNode[], errors: ParseError[]|null} {
     const {nodes, errors} = parseTemplate(template, 'override.html', {
+      // Set `leadingTriviaChars` and `preserveWhitespaces` such that whitespace is not stripped
+      // and fully accounted for in source spans. Without these flags the source spans can be
+      // inaccurate.
+      // Note: template parse options should be aligned with `template_target_spec.ts` and the
+      // `diagNodes` in `ComponentDecoratorHandler._parseTemplate`.
       preserveWhitespaces: true,
       leadingTriviaChars: [],
     });
