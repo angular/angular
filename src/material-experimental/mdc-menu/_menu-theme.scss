@@ -4,6 +4,7 @@
 @import '@material/list/variables.import';
 @import '@material/theme/functions.import';
 @import '@material/theme/mixins.import';
+@import '@material/typography/mixins.import';
 @import '../mdc-helpers/mdc-helpers';
 
 @mixin mat-mdc-menu-color($config-or-theme) {
@@ -47,10 +48,16 @@
   @include mat-using-mdc-typography($config) {
     @include mdc-menu-surface-core-styles($mat-typography-styles-query);
 
-    .mat-mdc-menu-content, .mat-mdc-menu-item {
+    .mat-mdc-menu-content {
       // Note that we include this private mixin, because the public
       // one adds a bunch of styles that we aren't using for the menu.
       @include mdc-list-base_($mat-typography-styles-query);
+
+      // MDC uses the `subtitle1` level for list items, but the spec shows `body1` as the correct
+      // level.
+      .mat-mdc-menu-item {
+        @include mdc-typography(body1, $query: $mat-typography-styles-query);
+      }
     }
   }
 }

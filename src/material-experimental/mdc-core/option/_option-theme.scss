@@ -2,6 +2,7 @@
 @import '@material/list/variables.import';
 @import '@material/theme/functions.import';
 @import '@material/theme/mixins.import';
+@import '@material/typography/mixins.import';
 @import '../../mdc-helpers/mdc-helpers';
 @import '../../../material/core/theming/theming';
 
@@ -43,6 +44,14 @@
 
 @mixin mat-mdc-option-typography($config-or-theme) {
   $config: mat-get-typography-config($config-or-theme);
+
+  @include mat-using-mdc-typography($config) {
+    // MDC uses the `subtitle1` level for list items, but the spec shows `body1` as the correct
+    // level. Class is repeated for increased specificity.
+    .mat-mdc-option {
+      @include mdc-typography(body1, $query: $mat-typography-styles-query);
+    }
+  }
 }
 
 @mixin mat-mdc-option-density($config-or-theme) {
