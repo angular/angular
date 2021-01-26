@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssRule, processRules, ShadowCss} from '@angular/compiler/src/shadow_css';
+import {CssRule, processRules, repeatGroups, ShadowCss} from '@angular/compiler/src/shadow_css';
 import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
 
 {
@@ -249,14 +249,27 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
             ]);
       });
 
-      // This test is checking backward compatibility.
-      // It is not clear what the behaviour should be for a `:host-context` with no selectors.
-      // Arguably it is actually an error that should be reported.
+      // It is not clear what the behavior should be for a `:host-context` with no selectors.
+      // This test is checking that the result is backward compatible with previous behavior.
+      // Arguably it should actually be an error that should be reported.
       it('should handle :host-context with no ancestor selectors', () => {
-        expect(s('.outer :host-context .inner {}', 'contenta', 'a-host'))
-            .toEqual('.outer [a-host] .inner[contenta] {}');
-        expect(s('.outer :host-context() .inner {}', 'contenta', 'a-host'))
-            .toEqual('.outer [a-host] .inner[contenta] {}');
+        expect(s(':host-context .inner {}', 'contenta', 'a-host'))
+            .toEqual('[a-host] .inner[contenta] {}');
+        expect(s(':host-context() .inner {}', 'contenta', 'a-host'))
+            .toEqual('[a-host] .inner[contenta] {}');
+      });
+
+      // More than one selector such as this is not valid as part of the :host-context spec.
+      // This test is checking that the result is backward compatible with previous behavior.
+      // Arguably it should actually be an error that should be reported.
+      it('should handle selectors', () => {
+        expect(s(':host-context(.one,.two) .inner {}', 'contenta', 'a-host'))
+            .toEqual(
+                '.one[a-host] .inner[contenta], ' +
+                '.one [a-host] .inner[contenta], ' +
+                '.two[a-host] .inner[contenta], ' +
+                '.two [a-host] .inner[contenta] ' +
+                '{}');
       });
     });
 
@@ -480,6 +493,34 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
                    (cssRule: CssRule) => new CssRule(cssRule.selector, cssRule.content + '2')))
             .toEqual('a {b2}');
       });
+    });
+  });
+
+  describe('repeatGroups()', () => {
+    it('should do nothing if `multiples` is 0', () => {
+      const groups = [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']];
+      repeatGroups(groups, 0);
+      expect(groups).toEqual([['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']]);
+    });
+
+    it('should do nothing if `multiples` is 1', () => {
+      const groups = [['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']];
+      repeatGroups(groups, 1);
+      expect(groups).toEqual([['a1', 'b1', 'c1'], ['a2', 'b2', 'c2']]);
+    });
+
+    it('should add clones of the original groups if `multiples` is greater than 1', () => {
+      const group1 = ['a1', 'b1', 'c1'];
+      const group2 = ['a2', 'b2', 'c2'];
+      const groups = [group1, group2];
+      repeatGroups(groups, 3);
+      expect(groups).toEqual([group1, group2, group1, group2, group1, group2]);
+      expect(groups[0]).toBe(group1);
+      expect(groups[1]).toBe(group2);
+      expect(groups[2]).not.toBe(group1);
+      expect(groups[3]).not.toBe(group2);
+      expect(groups[4]).not.toBe(group1);
+      expect(groups[5]).not.toBe(group2);
     });
   });
 }
