@@ -243,14 +243,12 @@ export class Parser {
         const fullEnd = exprEnd + interpEnd.length;
 
         const text = input.substring(exprStart, exprEnd);
-        if (text.trim().length > 0) {
-          expressions.push({text, start: fullStart, end: fullEnd});
-        } else {
+        if (text.trim().length === 0) {
           this._reportError(
               'Blank expressions are not allowed in interpolated strings', input,
               `at column ${i} in`, location);
-          expressions.push({text: '$implicit', start: fullStart, end: fullEnd});
         }
+        expressions.push({text, start: fullStart, end: fullEnd});
         offsets.push(exprStart);
 
         i = fullEnd;
@@ -571,7 +569,14 @@ export class _ParseAST {
         this.error(`Unexpected token '${this.next}'`);
       }
     }
-    if (exprs.length == 0) return new EmptyExpr(this.span(start), this.sourceSpan(start));
+    if (exprs.length == 0) {
+      // We have no expressions so create an empty expression that spans the entire input length
+      const artificialStart = this.offset;
+      const artificialEnd = this.offset + this.inputLength;
+      return new EmptyExpr(
+          this.span(artificialStart, artificialEnd),
+          this.sourceSpan(artificialStart, artificialEnd));
+    }
     if (exprs.length == 1) return exprs[0];
     return new Chain(this.span(start), this.sourceSpan(start), exprs);
   }
