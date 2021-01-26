@@ -12,7 +12,8 @@ import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpRequest} from './request';
-import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse} from './response';
+import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse, HttpStatusCode} from './response';
+
 
 // Every request made through JSONP needs a callback name that's unique across the
 // whole page. Each request is assigned an id and the callback name is constructed
@@ -169,7 +170,7 @@ export class JsonpClientBackend implements HttpBackend {
           // returned.
           observer.next(new HttpResponse({
             body,
-            status: 200,
+            status: HttpStatusCode.Ok,
             statusText: 'OK',
             url,
           }));
