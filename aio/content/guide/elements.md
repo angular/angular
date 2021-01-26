@@ -64,8 +64,7 @@ create and destroy instances, and to detect and respond to changes.
 The conversion process implements the `NgElementConstructor` interface, and creates a
 constructor class that is configured to produce a self-bootstrapping instance of your component.
 
-Use a JavaScript function, `customElements.define()`,  to register the configured constructor
-and its associated custom-element tag with the browser's `CustomElementRegistry`.
+Use the built-in [`customElements.define()`](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry/define) function to register the configured constructor and its associated custom-element tag with the browser's [`CustomElementRegistry`](https://developer.mozilla.org/en-US/docs/Web/API/CustomElementRegistry).
 When the browser encounters the tag for the registered element, it uses the constructor to create a custom-element instance.
 
 <div class="lightbox">
@@ -119,7 +118,7 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 
 In browsers that support Custom Elements natively, the specification requires developers use ES2015 classes to define Custom Elements - developers can opt-in to this by setting the `target: "es2015"` property in their project's [TypeScript configuration file](/guide/typescript-configuration). As Custom Element and ES2015 support may not be available in all browsers, developers can instead choose to use a polyfill to support older browsers and ES5 code.
 
-Use the [Angular CLI](cli) to automatically set up your project with the correct polyfill: 
+Use the [Angular CLI](cli) to automatically set up your project with the correct polyfill:
 
 <code-example language="sh">
 
