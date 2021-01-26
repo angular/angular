@@ -30,27 +30,9 @@ import {DirectiveSymbol, ElementSymbol, ShimLocation, Symbol, TemplateSymbol} fr
  */
 export interface TemplateTypeChecker {
   /**
-   * Clear all overrides and return the template type-checker to the original input program state.
-   */
-  resetOverrides(): void;
-
-  /**
    * Retrieve the template in use for the given component.
-   *
-   * If the template has been overridden via `overrideComponentTemplate`, this will retrieve the
-   * overridden template nodes.
    */
   getTemplate(component: ts.ClassDeclaration): TmplAstNode[]|null;
-
-  /**
-   * Provide a new template string that will be used in place of the user-defined template when
-   * checking or operating on the given component.
-   *
-   * The compiler will parse this template for diagnostics, and will return any parsing errors if it
-   * is not valid. If the template cannot be parsed correctly, no override will occur.
-   */
-  overrideComponentTemplate(component: ts.ClassDeclaration, template: string):
-      {nodes: TmplAstNode[], errors: ParseError[]|null};
 
   /**
    * Get all `ts.Diagnostic`s currently available for the given `ts.SourceFile`.
