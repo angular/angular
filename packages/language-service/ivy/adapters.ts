@@ -52,6 +52,14 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
   }
 
   /**
+   * Return the real path of a symlink. This method is required in order to
+   * resolve symlinks in node_modules.
+   */
+  realpath(path: string): string {
+    return this.project.realpath?.(path) ?? path;
+  }
+
+  /**
    * readResource() is an Angular-specific method for reading files that are not
    * managed by the TS compiler host, namely templates and stylesheets.
    * It is a method on ExtendedTsCompilerHost, see
