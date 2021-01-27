@@ -179,7 +179,7 @@ export class LanguageService {
     return new CompletionBuilder(
         this.tsLS, compiler, templateInfo.component, node,
         nodeContextFromTarget(positionDetails.context), positionDetails.parent,
-        positionDetails.template);
+        positionDetails.template, position);
   }
 
   getCompletionsAtPosition(

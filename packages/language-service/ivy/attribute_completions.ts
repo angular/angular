@@ -490,6 +490,19 @@ export function addAttributeCompletionEntries(
   }
 }
 
+export function buildAnimationCompletionEntries(
+    animations: string[], replacementSpan: ts.TextSpan,
+    kind: DisplayInfoKind): ts.CompletionEntry[] {
+  return animations.map(animation => {
+    return {
+      kind: unsafeCastDisplayInfoKindToScriptElementKind(kind),
+      name: animation,
+      sortText: animation,
+      replacementSpan,
+    };
+  });
+}
+
 export function getAttributeCompletionSymbol(
     completion: AttributeCompletion, checker: ts.TypeChecker): ts.Symbol|null {
   switch (completion.kind) {

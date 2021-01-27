@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, BindingPipe, EmptyExpr, ImplicitReceiver, LiteralPrimitive, MethodCall, ParseSourceSpan, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
+import {AST, BindingPipe, BindingType, EmptyExpr, ImplicitReceiver, LiteralPrimitive, MethodCall, ParsedEventType, ParseSourceSpan, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstBoundAttribute, TmplAstBoundEvent, TmplAstElement, TmplAstNode, TmplAstReference, TmplAstTemplate, TmplAstTextAttribute, TmplAstVariable} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {CompletionKind, DirectiveInScope, TemplateDeclarationSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {BoundEvent} from '@angular/compiler/src/render3/r3_ast';
 import * as ts from 'typescript';
 
-import {addAttributeCompletionEntries, AttributeCompletionKind, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
+import {addAttributeCompletionEntries, AttributeCompletionKind, buildAnimationCompletionEntries, buildAttributeCompletionTable, getAttributeCompletionSymbol} from './attribute_completions';
 import {DisplayInfo, DisplayInfoKind, getDirectiveDisplayInfo, getSymbolDisplayInfo, getTsSymbolDisplayInfo, unsafeCastDisplayInfoKindToScriptElementKind} from './display_parts';
-import {filterAliasImports} from './utils';
+import {filterAliasImports, isWithin} from './utils';
 
 type PropertyExpressionCompletionBuilder =
     CompletionBuilder<PropertyRead|PropertyWrite|MethodCall|EmptyExpr|SafePropertyRead|
@@ -22,6 +22,8 @@ type PropertyExpressionCompletionBuilder =
 
 type ElementAttributeCompletionBuilder =
     CompletionBuilder<TmplAstElement|TmplAstBoundAttribute|TmplAstTextAttribute|TmplAstBoundEvent>;
+
+type ElementAnimationCompletionBuilder = CompletionBuilder<TmplAstBoundAttribute|TmplAstBoundEvent>;
 
 type PipeCompletionBuilder = CompletionBuilder<BindingPipe>;
 
@@ -54,7 +56,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
       private readonly component: ts.ClassDeclaration, private readonly node: N,
       private readonly nodeContext: CompletionNodeContext,
       private readonly nodeParent: TmplAstNode|AST|null,
-      private readonly template: TmplAstTemplate|null) {}
+      private readonly template: TmplAstTemplate|null, private position: number) {}
 
   /**
    * Analogue for `ts.LanguageService.getCompletionsAtPosition`.
@@ -66,7 +68,11 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     } else if (this.isElementTagCompletion()) {
       return this.getElementTagCompletion();
     } else if (this.isElementAttributeCompletion()) {
-      return this.getElementAttributeCompletions();
+      if (this.isAnimationCompletions()) {
+        return this.getAnimationCompletions();
+      } else {
+        return this.getElementAttributeCompletions();
+      }
     } else if (this.isPipeCompletion()) {
       return this.getPipeCompletions();
     } else {
@@ -422,6 +428,62 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
          this.node instanceof TmplAstTextAttribute || this.node instanceof TmplAstBoundEvent);
   }
 
+  private isAnimationCompletions(): this is ElementAnimationCompletionBuilder {
+    return (this.node instanceof TmplAstBoundAttribute &&
+            this.node.type === BindingType.Animation) ||
+        (this.node instanceof TmplAstBoundEvent && this.node.type === ParsedEventType.Animation);
+  }
+
+  private getAnimationCompletions(this: ElementAnimationCompletionBuilder):
+      ts.WithMetadata<ts.CompletionInfo>|undefined {
+    if (this.node instanceof TmplAstBoundAttribute) {
+      const animations = this.compiler.getTemplateTypeChecker()
+                             .getDirectiveMetadata(this.component)
+                             ?.animationTriggerNames?.triggerNames;
+      const replacementSpan = makeReplacementSpanFromParseSourceSpan(this.node.keySpan);
+      if (animations) {
+        const entries = buildAnimationCompletionEntries(
+            [...animations, '.disabled'], replacementSpan, DisplayInfoKind.ATTRIBUTE);
+        return {
+          entries,
+          isGlobalCompletion: false,
+          isMemberCompletion: false,
+          isNewIdentifierLocation: true,
+        };
+      }
+    } else {
+      const animationNameSpan = buildAnimationNameSpan(this.node);
+      const phaseSpan = buildAnimationPhaseSpan(this.node);
+      if (isWithin(this.position, animationNameSpan)) {
+        const animations = this.compiler.getTemplateTypeChecker()
+                               .getDirectiveMetadata(this.component)
+                               ?.animationTriggerNames?.triggerNames;
+        const replacementSpan = makeReplacementSpanFromParseSourceSpan(animationNameSpan);
+        if (animations) {
+          const entries =
+              buildAnimationCompletionEntries(animations, replacementSpan, DisplayInfoKind.EVENT);
+          return {
+            entries,
+            isGlobalCompletion: false,
+            isMemberCompletion: false,
+            isNewIdentifierLocation: true,
+          };
+        }
+      }
+      if (phaseSpan !== null && isWithin(this.position, phaseSpan)) {
+        const replacementSpan = makeReplacementSpanFromParseSourceSpan(phaseSpan);
+        const entries = buildAnimationCompletionEntries(
+            ['start', 'done'], replacementSpan, DisplayInfoKind.EVENT);
+        return {
+          entries,
+          isGlobalCompletion: false,
+          isMemberCompletion: false,
+          isNewIdentifierLocation: true,
+        };
+      }
+    }
+  }
+
   private getElementAttributeCompletions(this: ElementAttributeCompletionBuilder):
       ts.WithMetadata<ts.CompletionInfo>|undefined {
     let element: TmplAstElement|TmplAstTemplate;
@@ -661,4 +723,15 @@ function stripBindingSugar(binding: string): {name: string, kind: DisplayInfoKin
   } else {
     return {name, kind: DisplayInfoKind.ATTRIBUTE};
   }
+}
+
+function buildAnimationNameSpan(node: TmplAstBoundEvent): ParseSourceSpan {
+  return new ParseSourceSpan(node.keySpan.start, node.keySpan.start.moveBy(node.name.length));
+}
+
+function buildAnimationPhaseSpan(node: TmplAstBoundEvent): ParseSourceSpan|null {
+  if (node.phase !== null) {
+    return new ParseSourceSpan(node.keySpan.end.moveBy(-node.phase.length), node.keySpan.end);
+  }
+  return null;
 }

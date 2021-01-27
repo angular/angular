@@ -93,6 +93,14 @@ const SOME_PIPE = {
    `
 };
 
+const ANIMATION_TRIGGER_FUNCTION = `
+function trigger(name: string) {
+  return {name};
+}
+`;
+
+const ANIMATION_METADATA = `animations: [trigger('animationName')],`;
+
 describe('completions', () => {
   beforeEach(() => {
     initMockFileSystem('Native');
@@ -484,6 +492,56 @@ describe('completions', () => {
         });
       });
 
+      describe('animations', () => {
+        it('should return animation names for the property binding', () => {
+          const {ngLS, fileName, cursor, text} =
+              setup(`<input [@my¦]>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+              ['animationName']);
+          expectReplacementText(completions, text, 'my');
+        });
+
+        it('should return the special animation control binding called @.disabled ', () => {
+          const {ngLS, fileName, cursor, text} =
+              setup(`<input [@.dis¦]>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+              ['.disabled']);
+          expectReplacementText(completions, text, '.dis');
+        });
+
+        it('should return animation names for the event binding', () => {
+          const {ngLS, fileName, cursor, text} =
+              setup(`<input (@my¦)>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+              ['animationName']);
+          expectReplacementText(completions, text, 'my');
+        });
+
+        it('should return the animation phase for the event binding', () => {
+          const {ngLS, fileName, cursor, text} =
+              setup(`<input (@my.do¦)>`, '', {}, ANIMATION_TRIGGER_FUNCTION, ANIMATION_METADATA);
+
+          const completions =
+              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+              ['done']);
+          expectReplacementText(completions, text, 'do');
+        });
+      });
+
       it('should return input completions for a partial attribute', () => {
         const {ngLS, fileName, cursor, text} = setup(`<input my¦>`, '', DIR_WITH_SELECTED_INPUT);
 
@@ -639,7 +697,8 @@ function toText(displayParts?: ts.SymbolDisplayPart[]): string {
 
 function setup(
     templateWithCursor: string, classContents: string,
-    otherDeclarations: {[name: string]: string} = {}): {
+    otherDeclarations: {[name: string]: string} = {}, functionDeclarations: string = '',
+    componentMetadata: string = ''): {
   env: LanguageServiceTestEnvironment,
   fileName: AbsoluteFsPath,
   AppCmp: ts.ClassDeclaration,
@@ -661,9 +720,12 @@ function setup(
       contents: `
         import {Component, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
 
+        ${functionDeclarations}
+
         @Component({
           templateUrl: './test.html',
           selector: 'app-cmp',
+          ${componentMetadata}
         })
         export class AppCmp {
           ${classContents}
