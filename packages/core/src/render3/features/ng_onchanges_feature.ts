@@ -8,7 +8,7 @@
 
 import {OnChanges} from '../../interface/lifecycle_hooks';
 import {SimpleChange, SimpleChanges} from '../../interface/simple_change';
-import {EMPTY_OBJ} from '../empty';
+import {EMPTY_OBJ} from '../../util/empty';
 import {DirectiveDef, DirectiveDefFeature} from '../interfaces/definition';
 
 /**
