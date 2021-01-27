@@ -5885,11 +5885,13 @@ class ReleaseAction {
                 return false;
             }
             // Create a cherry-pick pull request that should be merged by the caretaker.
-            const { url } = yield this.pushChangesToForkAndCreatePullRequest(nextBranch, `changelog-cherry-pick-${newVersion}`, commitMessage, `Cherry-picks the changelog from the "${stagingBranch}" branch to the next ` +
+            const { url, id } = yield this.pushChangesToForkAndCreatePullRequest(nextBranch, `changelog-cherry-pick-${newVersion}`, commitMessage, `Cherry-picks the changelog from the "${stagingBranch}" branch to the next ` +
                 `branch (${nextBranch}).`);
             info(green(`  ✓   Pull request for cherry-picking the changelog into "${nextBranch}" ` +
                 'has been created.'));
             info(yellow(`      Please ask team members to review: ${url}.`));
+            // Wait for the Pull Request to be merged.
+            yield this.waitForPullRequestToBeMerged(id);
             return true;
         });
     }
