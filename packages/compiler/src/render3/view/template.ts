@@ -18,7 +18,7 @@ import * as html from '../../ml_parser/ast';
 import {HtmlParser} from '../../ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../ml_parser/interpolation_config';
-import {LexerRange} from '../../ml_parser/lexer';
+import {LexerRange, TokenizeOptions} from '../../ml_parser/lexer';
 import {isNgContainer as checkIsNgContainer, splitNsName} from '../../ml_parser/tags';
 import {mapLiteral} from '../../output/map_util';
 import * as o from '../../output/output_ast';
@@ -2076,14 +2076,17 @@ export interface ParseTemplateOptions {
  * @param options options to modify how the template is parsed
  */
 export function parseTemplate(
-    template: string, templateUrl: string, options: ParseTemplateOptions = {}): ParsedTemplate {
+    template: string, templateUrl: string,
+    options: ParseTemplateOptions&TokenizeOptions = {}): ParsedTemplate {
   const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
   const isInline = options.isInline ?? false;
   const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
-  const parseResult = htmlParser.parse(
-      template, templateUrl,
-      {leadingTriviaChars: LEADING_TRIVIA_CHARS, ...options, tokenizeExpansionForms: true});
+  const parseResult = htmlParser.parse(template, templateUrl, {
+    leadingTriviaChars: LEADING_TRIVIA_CHARS,
+    ...options,
+    tokenizeExpansionForms: true,
+  });
 
   if (parseResult.errors && parseResult.errors.length > 0) {
     // TODO(ayazhafiz): we may not always want to bail out at this point (e.g. in

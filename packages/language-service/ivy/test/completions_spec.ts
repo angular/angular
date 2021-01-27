@@ -584,6 +584,15 @@ describe('completions', () => {
       expect(completions?.entries.length).toBe(0);
     });
   });
+
+  it('should provide completions at correct position with CRLF line endings', () => {
+    const {ngLS, fileName, cursor} = setup(`<div></div>\r\n{{¦}}`, 'foo!: string;');
+    const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+    expect(completions?.entries.length).toBe(1);
+    expectContain(
+        completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+        ['foo']);
+  });
 });
 
 function expectContain(

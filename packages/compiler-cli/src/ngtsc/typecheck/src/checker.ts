@@ -155,6 +155,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       {nodes: TmplAstNode[], errors: ParseError[]|null} {
     const {nodes, errors} = parseTemplate(template, 'override.html', {
       preserveWhitespaces: true,
+      preserveLineEndings: true,
       leadingTriviaChars: [],
     });
 

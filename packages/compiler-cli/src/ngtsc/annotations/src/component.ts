@@ -882,6 +882,7 @@ export class ComponentDecoratorHandler implements
 
     const {nodes: diagNodes} = parseTemplate(templateStr, template.sourceMapUrl, {
       preserveWhitespaces: true,
+      preserveLineEndings: true,
       interpolationConfig: template.interpolationConfig,
       range: templateRange ?? undefined,
       escapedString,

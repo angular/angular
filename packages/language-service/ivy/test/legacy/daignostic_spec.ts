@@ -38,4 +38,24 @@ describe('getSemanticDiagnostics', () => {
     expect(d2.length).toBe(1);
     expect(d2[0].messageText).toBe(`Property 'bar' does not exist on type 'TemplateReference'.`);
   });
+
+  it('should work correctly with CRLF endings', () => {
+    // https://github.com/angular/vscode-ng-language-service/issues/235
+    // https://github.com/angular/vscode-ng-language-service/issues/1082
+    // In the example below, the string
+    // `\r\n{{line0}}\r\n{{line1}}\r\n{{line2}}` is tokenized as a whole,
+    // and then CRLF characters are converted to LF.
+    // Source span information is lost in the process.
+    const {text} = service.overwrite(
+        TEST_TEMPLATE, '\r\n<div>\r\n{{line0}}\r\n{{line1}}\r\n{{line2}}\r\n</div>');
+    const ngDiags = ngLS.getSemanticDiagnostics(TEST_TEMPLATE);
+    expect(ngDiags.length).toBe(3);
+    for (let i = 0; i < 3; ++i) {
+      const {messageText, start, length} = ngDiags[i];
+      expect(messageText).toBe(`Property 'line${i}' does not exist on type 'TemplateReference'.`);
+      // Assert that the span is actually highlight the bounded text. The span
+      // would be off if CRLF endings are not handled properly.
+      expect(text.substring(start!, start! + length!)).toBe(`line${i}`);
+    }
+  });
 });
