@@ -289,6 +289,40 @@ describe('FakeAsyncTestZoneSpec', () => {
       });
     });
 
+    it('should clear internal timerId cache', () => {
+      let taskSpy: jasmine.Spy = jasmine.createSpy('taskGetState');
+      fakeAsyncTestZone
+          .fork({
+            name: 'scheduleZone',
+            onScheduleTask: (delegate: ZoneDelegate, curr: Zone, target: Zone, task: Task) => {
+              (task as any)._state = task.state;
+              Object.defineProperty(task, 'state', {
+                configurable: true,
+                enumerable: true,
+                get: () => {
+                  taskSpy();
+                  return (task as any)._state;
+                },
+                set: (newState: string) => {
+                  (task as any)._state = newState;
+                }
+              });
+              return delegate.scheduleTask(target, task);
+            }
+          })
+          .run(() => {
+            const id = setTimeout(() => {}, 0);
+            testZoneSpec.tick();
+            clearTimeout(id);
+            // This is a hack way to test the timerId cache is cleaned or not
+            // since the tasksByHandleId cache is an internal variable held by
+            // zone.js timer patch, if the cache is not cleared, the code in `timer.ts`
+            // will call `task.state` one more time to check whether to clear the
+            // task or not, so here we use this count to check the issue is fixed or not
+            // For details, please refer to https://github.com/angular/angular/issues/40387
+            expect(taskSpy.calls.count()).toEqual(5);
+          });
+    });
     it('should pass arguments to setImmediate', ifEnvSupports('setImmediate', () => {
          fakeAsyncTestZone.run(() => {
            let value = 'genuine value';
