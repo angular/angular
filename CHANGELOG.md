@@ -1,3 +1,31 @@
+## 11.1.1 "silicate-star" (2021-01-27)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** not detecting parent when projected using ngTemplateOutlet ([#21668](https://github.com/angular/components/issues/21668)) ([958ecb265647dd95c2e12fcc97c558452a622ed6](https://github.com/angular/components/commit/958ecb265647dd95c2e12fcc97c558452a622ed6)), closes [#21227](https://github.com/angular/components/issues/21227) |
+| bug fix |  **overlay:** overriding pointer-events style ([#21666](https://github.com/angular/components/issues/21666)) ([ba41912c3cf28f36246da59d02fc7b09798f32c6](https://github.com/angular/components/commit/ba41912c3cf28f36246da59d02fc7b09798f32c6)), closes [#21656](https://github.com/angular/components/issues/21656) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **autocomplete:** prevent inert host node from affecting surrounding layout ([#21649](https://github.com/angular/components/issues/21649)) ([9c99070beb781f6265b4db8c22b2370ddf516e7f](https://github.com/angular/components/commit/9c99070beb781f6265b4db8c22b2370ddf516e7f)), closes [#21246](https://github.com/angular/components/issues/21246) |
+| bug fix |  **datepicker:** clear tabindex from host node ([#21633](https://github.com/angular/components/issues/21633)) ([bd4597fc60b37e74074dbdc8ac161a51c73623a2](https://github.com/angular/components/commit/bd4597fc60b37e74074dbdc8ac161a51c73623a2)), closes [#21280](https://github.com/angular/components/issues/21280) [#21046](https://github.com/angular/components/issues/21046) |
+| bug fix |  **datepicker:** mark date input as touched when calendar is closed ([#21646](https://github.com/angular/components/issues/21646)) ([75367e794884a49413f362114710826ef64419e3](https://github.com/angular/components/commit/75367e794884a49413f362114710826ef64419e3)), closes [#21643](https://github.com/angular/components/issues/21643) |
+| bug fix |  **form-field:** flickering when hovering invalid input on chrome ([#21620](https://github.com/angular/components/issues/21620)) ([fe1b31c288bdd9ba7677081f4ea2e4d3fda84b59](https://github.com/angular/components/commit/fe1b31c288bdd9ba7677081f4ea2e4d3fda84b59)), closes [#21612](https://github.com/angular/components/issues/21612) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-chips:** decouple removal from animation ([#21636](https://github.com/angular/components/issues/21636)) ([7643a3cb1981523a00d86696750dbe7f70ad912b](https://github.com/angular/components/commit/7643a3cb1981523a00d86696750dbe7f70ad912b)) |
+| bug fix |  **mdc-chips:** set correct ripple opacity for focus states ([#21624](https://github.com/angular/components/issues/21624)) ([cf30c4449a72692e5893344ecad1cb4544aa219e](https://github.com/angular/components/commit/cf30c4449a72692e5893344ecad1cb4544aa219e)) |
+| bug fix |  **mdc-radio:** de-duplicate test harness logic ([#21532](https://github.com/angular/components/issues/21532)) ([dfd566a4536a3f09a96843dd42710a16225596d1](https://github.com/angular/components/commit/dfd566a4536a3f09a96843dd42710a16225596d1)) |
+| bug fix |  **mdc-typography:** fix always using mat-level ([#21669](https://github.com/angular/components/issues/21669)) ([de5923a763f3c97186c9a4a113b7d9446254a3a4](https://github.com/angular/components/commit/de5923a763f3c97186c9a4a113b7d9446254a3a4)) |
+
+
 # 11.1.0 "protoplasm-phantasm" (2021-01-20)
 
 ### cdk
