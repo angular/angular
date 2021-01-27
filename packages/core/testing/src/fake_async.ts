@@ -48,7 +48,10 @@ export function resetFakeAsyncZone(): void {
  *
  * @publicApi
  */
-export function fakeAsync(fn: Function): (...args: any[]) => any {
+export function fakeAsync(fn: Function): {
+  (fn: Function): (...args: any[]) => any;
+  wrap: (hooks: {beforeEach?: (() => void); afterEach?: (() => void)}) => typeof fakeAsync
+} {
   if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.fakeAsync(fn);
   }
