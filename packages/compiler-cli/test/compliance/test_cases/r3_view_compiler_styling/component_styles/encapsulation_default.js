@@ -1,1 +1,1 @@
-styles: ["div.foo[_ngcontent-%COMP%] { color: red; }", "[_nghost-%COMP%]   p[_ngcontent-%COMP%]:nth-child(even) { --webkit-transition: 1s linear all; }"]
+styles: ["div.foo[data-ngc%COMP%] { color: red; }", "[data-ngh%COMP%]   p[data-ngc%COMP%]:nth-child(even) { --webkit-transition: 1s linear all; }"]

@@ -7047,7 +7047,7 @@ export const Foo = Foo__PRE_R3__;
         const jsContents = env.getContents('test.js');
         expect(jsContents)
             .toContain(
-                'styles: ["h2[_ngcontent-%COMP%] {width: 10px}", "h1[_ngcontent-%COMP%] {font-size: larger}"]');
+                'styles: ["h2[data-ngc%COMP%] {width: 10px}", "h1[data-ngc%COMP%] {font-size: larger}"]');
       });
 
       it('should process inline <link> tags', () => {
@@ -7064,7 +7064,7 @@ export const Foo = Foo__PRE_R3__;
 
         env.driveMain();
         const jsContents = env.getContents('test.js');
-        expect(jsContents).toContain('styles: ["h1[_ngcontent-%COMP%] {font-size: larger}"]');
+        expect(jsContents).toContain('styles: ["h1[data-ngc%COMP%] {font-size: larger}"]');
       });
 
       it('should share same styles declared in different components in the same file', () => {
@@ -7075,7 +7075,7 @@ export const Foo = Foo__PRE_R3__;
             selector: 'comp-a',
             template: 'Comp A',
             styles: [
-              'span { font-size: larger; }',
+              'span { font-size:larger; }',
               'div { background: url(/some-very-very-long-path.png); }',
               'img { background: url(/a/some-very-very-long-path.png); }'
             ]
@@ -7086,7 +7086,7 @@ export const Foo = Foo__PRE_R3__;
             selector: 'comp-b',
             template: 'Comp B',
             styles: [
-              'span { font-size: larger; }',
+              'span { font-size:larger; }',
               'div { background: url(/some-very-very-long-path.png); }',
               'img { background: url(/b/some-very-very-long-path.png); }'
             ]
@@ -7101,7 +7101,7 @@ export const Foo = Foo__PRE_R3__;
         // separate var.
         expect(jsContents)
             .toContain(
-                '_c0 = "div[_ngcontent-%COMP%] { background: url(/some-very-very-long-path.png); }";');
+                '_c0 = "div[data-ngc%COMP%] { background: url(/some-very-very-long-path.png); }";');
 
         expect(jsContents)
             .toContain(
@@ -7109,13 +7109,13 @@ export const Foo = Foo__PRE_R3__;
                 // This style is present in both components, but was not extracted into
                 // a separate var since it doesn't reach length threshold (50 chars) in
                 // `ConstantPool`.
-                '"span[_ngcontent-%COMP%] { font-size: larger; }", ' +
+                '"span[data-ngc%COMP%] { font-size:larger; }", ' +
                 // Style that is present in both components, but reaches length
                 // threshold - extracted to a separate var.
                 '_c0, ' +
                 // Style that is unique to this component, but that reaches length
                 // threshold - remains a string in the `styles` array.
-                '"img[_ngcontent-%COMP%] { background: url(/a/some-very-very-long-path.png); }"]');
+                '"img[data-ngc%COMP%] { background: url(/a/some-very-very-long-path.png); }"]');
 
         expect(jsContents)
             .toContain(
@@ -7123,13 +7123,13 @@ export const Foo = Foo__PRE_R3__;
                 // This style is present in both components, but was not extracted into
                 // a separate var since it doesn't reach length threshold (50 chars) in
                 // `ConstantPool`.
-                '"span[_ngcontent-%COMP%] { font-size: larger; }", ' +
+                '"span[data-ngc%COMP%] { font-size:larger; }", ' +
                 // Style that is present in both components, but reaches length
                 // threshold - extracted to a separate var.
                 '_c0, ' +
                 // Style that is unique to this component, but that reaches length
                 // threshold - remains a string in the `styles` array.
-                '"img[_ngcontent-%COMP%] { background: url(/b/some-very-very-long-path.png); }"]');
+                '"img[data-ngc%COMP%] { background: url(/b/some-very-very-long-path.png); }"]');
       });
 
       it('large strings are wrapped in a function for Closure', () => {
@@ -7170,7 +7170,7 @@ export const Foo = Foo__PRE_R3__;
         expect(jsContents)
             .toContain(
                 '_c0 = function () {' +
-                ' return "div[_ngcontent-%COMP%] {' +
+                ' return "div[data-ngc%COMP%] {' +
                 ' background: url(/some-very-very-long-path.png);' +
                 ' }";' +
                 ' };');
@@ -7179,7 +7179,7 @@ export const Foo = Foo__PRE_R3__;
             .toContain(
                 'styles: [' +
                 // Check styles for component A.
-                '"div[_ngcontent-%COMP%] { background: url(/a.png); }", ' +
+                '"div[data-ngc%COMP%] { background: url(/a.png); }", ' +
                 // Large string should be called from function definition.
                 '_c0()]');
 
@@ -7187,7 +7187,7 @@ export const Foo = Foo__PRE_R3__;
             .toContain(
                 'styles: [' +
                 // Check styles for component B.
-                '"div[_ngcontent-%COMP%] { background: url(/b.png); }", ' +
+                '"div[data-ngc%COMP%] { background: url(/b.png); }", ' +
                 // Large string should be called from function definition.
                 '_c0()]');
       });

@@ -262,7 +262,7 @@ describe('component declaration jit compilation', () => {
                 }) as ComponentDef<TestClass>;
 
     expectComponentDef(def, {
-      styles: ['div[_ngcontent-%COMP%] {}'],
+      styles: ['div[data-ngc%COMP%] {}'],
       encapsulation: ViewEncapsulation.Emulated,
     });
   });

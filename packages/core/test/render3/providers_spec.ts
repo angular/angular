@@ -1103,7 +1103,7 @@ describe('providers', () => {
          fixture.update();
          expect(fixture.html)
              .toMatch(
-                 /<host-cmp>foo<\/host-cmp><embedded-cmp _nghost-[a-z]+-c(\d+)="">From module injector<\/embedded-cmp>/);
+                 /<host-cmp>foo<\/host-cmp><embedded-cmp data-ngh[a-z]+-c(\d+)="">From module injector<\/embedded-cmp>/);
        });
 
     it('should cross the root view boundary to the parent of the host, thanks to the default root view injector',

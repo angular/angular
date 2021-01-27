@@ -72,7 +72,7 @@ describe('bootstrap', () => {
          const TestModule = createComponentAndModule();
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
-         expect(document.body.innerHTML).toContain('<span _ngcontent-');
+         expect(document.body.innerHTML).toContain('<span data-ngc');
          ngModuleRef.destroy();
        }));
 
@@ -83,7 +83,7 @@ describe('bootstrap', () => {
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(
              TestModule, {defaultEncapsulation: ViewEncapsulation.None});
          expect(document.body.innerHTML).toContain('<span>');
-         expect(document.body.innerHTML).not.toContain('_ngcontent-');
+         expect(document.body.innerHTML).not.toContain('data-ngc');
          ngModuleRef.destroy();
        }));
 
@@ -97,7 +97,7 @@ describe('bootstrap', () => {
                                multi: true
                              }]).bootstrapModule(TestModule);
          expect(document.body.innerHTML).toContain('<span>');
-         expect(document.body.innerHTML).not.toContain('_ngcontent-');
+         expect(document.body.innerHTML).not.toContain('data-ngc');
          ngModuleRef.destroy();
        }));
 
@@ -107,7 +107,7 @@ describe('bootstrap', () => {
 
          const ngModuleRef = await platformBrowserDynamic().bootstrapModule(
              TestModule, {defaultEncapsulation: ViewEncapsulation.None});
-         expect(document.body.innerHTML).toContain('<span _ngcontent-');
+         expect(document.body.innerHTML).toContain('<span data-ngc');
          ngModuleRef.destroy();
        }));
 
@@ -265,7 +265,7 @@ describe('bootstrap', () => {
                    'Provided value for `defaultEncapsulation` can not be changed once it has been set.');
 
            // The options should not have been changed
-           expect(document.body.innerHTML).not.toContain('_ngcontent-');
+           expect(document.body.innerHTML).not.toContain('data-ngc');
 
            ngModuleRefB.destroy();
          }));

@@ -175,16 +175,16 @@ describe('component', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
           .toMatch(
-              /<encapsulated _nghost-[a-z\-]+(\d+)="">foo<leaf _ngcontent-[a-z\-]+\1=""><span>bar<\/span><\/leaf><\/encapsulated>/);
+              /<encapsulated data-ngh[a-z\-]+(\d+)="">foo<leaf data-ngc[a-z\-]+\1=""><span>bar<\/span><\/leaf><\/encapsulated>/);
     });
 
     it('should encapsulate host', () => {
       const fixture = TestBed.createComponent(EncapsulatedComponent);
       fixture.detectChanges();
       const html = fixture.nativeElement.outerHTML;
-      const match = html.match(/_nghost-([a-z\-]+\d+)/);
+      const match = html.match(/data-ngh([a-z\-]+\d+)/);
       expect(match).toBeDefined();
-      expect(html).toMatch(new RegExp(`<leaf _ngcontent-${match[1]}=""><span>bar</span></leaf>`));
+      expect(html).toMatch(new RegExp(`<leaf data-ngc${match[1]}=""><span>bar</span></leaf>`));
     });
 
     it('should encapsulate host and children with different attributes', () => {
@@ -194,12 +194,12 @@ describe('component', () => {
       const fixture = TestBed.createComponent(EncapsulatedComponent);
       fixture.detectChanges();
       const html = fixture.nativeElement.outerHTML;
-      const match = html.match(/_nghost-([a-z\-]+\d+)/g);
+      const match = html.match(/data-ngh([a-z\-]+\d+)/g);
       expect(match).toBeDefined();
       expect(match.length).toEqual(2);
       expect(html).toMatch(
-          `<leaf ${match[0].replace('_nghost', '_ngcontent')}="" ${match[1]}=""><span ${
-              match[1].replace('_nghost', '_ngcontent')}="">bar</span></leaf></div>`);
+          `<leaf ${match[0].replace('data-ngh', 'data-ngc')}="" ${match[1]}=""><span ${
+              match[1].replace('data-ngh', 'data-ngc')}="">bar</span></leaf></div>`);
     });
   });
 
@@ -429,7 +429,7 @@ describe('component', () => {
     });
   });
 
-  it('should use a new ngcontent attribute for child elements created w/ Renderer2', () => {
+  it('should use a new data-ngc... attribute for child elements created w/ Renderer2', () => {
     @Component({
       selector: 'app-root',
       template: '<parent-comp></parent-comp>',
@@ -459,7 +459,7 @@ describe('component', () => {
     const secondParentEl: HTMLElement = fixture.nativeElement.querySelector('parent-comp');
     const elementFromRenderer: HTMLElement = fixture.nativeElement.querySelector('p');
     const getNgContentAttr = (element: HTMLElement) => {
-      return Array.from(element.attributes).map(a => a.name).find(a => /ngcontent/.test(a));
+      return Array.from(element.attributes).map(a => a.name).find(a => /data-ngc/.test(a));
     };
 
     const hostNgContentAttr = getNgContentAttr(secondParentEl);

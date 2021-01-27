@@ -23,8 +23,8 @@ const COMPONENT_REGEX = /%COMP%/g;
 const NG_DEV_MODE = typeof ngDevMode === 'undefined' || !!ngDevMode;
 
 export const COMPONENT_VARIABLE = '%COMP%';
-export const HOST_ATTR = `_nghost-${COMPONENT_VARIABLE}`;
-export const CONTENT_ATTR = `_ngcontent-${COMPONENT_VARIABLE}`;
+export const HOST_ATTR = `data-ngh${COMPONENT_VARIABLE}`;
+export const CONTENT_ATTR = `data-ngc${COMPONENT_VARIABLE}`;
 
 export function shimContentAttribute(componentShortId: string): string {
   return CONTENT_ATTR.replace(COMPONENT_REGEX, componentShortId);

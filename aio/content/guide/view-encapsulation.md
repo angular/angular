@@ -44,10 +44,10 @@ encapsulation enabled, each DOM element has some extra attributes
 attached to it:
 
 <code-example format="">
-  &lt;hero-details _nghost-pmm-5>
-    &lt;h2 _ngcontent-pmm-5>Mister Fantastic&lt;/h2>
-    &lt;hero-team _ngcontent-pmm-5 _nghost-pmm-6>
-      &lt;h3 _ngcontent-pmm-6>Team&lt;/h3>
+  &lt;hero-details data-nghpmm-5>
+    &lt;h2 data-ngcpmm-5>Mister Fantastic&lt;/h2>
+    &lt;hero-team data-ngcpmm-5 data-nghpmm-6>
+      &lt;h3 data-ngcpmm-6>Team&lt;/h3>
     &lt;/hero-team>
   &lt;/hero-detail>
 
@@ -56,8 +56,8 @@ attached to it:
 There are two kinds of generated attributes:
 
 * An element that would be a shadow DOM host in native encapsulation has a
-  generated `_nghost` attribute. This is typically the case for component host elements.
-* An element within a component's view has a `_ngcontent` attribute
+  generated `data-ngh...` attribute. This is typically the case for component host elements.
+* An element within a component's view has a `data-ngc...` attribute
 that identifies to which host's emulated shadow DOM this element belongs.
 
 The exact values of these attributes aren't important. They are automatically
@@ -65,17 +65,17 @@ generated and you should never refer to them in application code. But they are t
 by the generated component styles, which are in the `<head>` section of the DOM:
 
 <code-example format="">
-  [_nghost-pmm-5] {
+  [data-nghpmm-5] {
     display: block;
     border: 1px solid black;
   }
 
-  h3[_ngcontent-pmm-6] {
+  h3[data-ngcpmm-6] {
     background-color: white;
     border: 1px solid #777;
   }
 </code-example>
 
 These styles are post-processed so that each selector is augmented
-with `_nghost` or `_ngcontent` attribute selectors.
+with `data-ngh...` or `data-ngc...` attribute selectors.
 These extra selectors enable the scoping rules described in this page.

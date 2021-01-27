@@ -675,10 +675,10 @@ describe('platform-server integration', () => {
        }));
 
 
-    it('sets a prefix for the _nghost and _ngcontent attributes', waitForAsync(() => {
+    it('sets a prefix for the data-ngh... and data-ngc... attributes', waitForAsync(() => {
          renderModule(ExampleStylesModule, {document: doc}).then(output => {
            expect(output).toMatch(
-               /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><\/html>/);
+               /<html><head><style ng-transition="example-styles">div\[data-ngcsc\d+\] {color: blue; } \[data-nghsc\d+\] { color: red; }<\/style><\/head><body><app data-nghsc\d+="" ng-version="0.0.0-PLACEHOLDER"><div data-ngcsc\d+="">Works!<\/div><\/app><\/body><\/html>/);
            called = true;
          });
        }));
