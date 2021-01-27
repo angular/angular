@@ -101,28 +101,45 @@ class IvyTransformationVisitor extends Visitor {
           field.initializer, this.importManager,
           {recordWrappedNodeExpr: this.recordWrappedNodeExpr});
 
-      // Create a static property declaration for the new field.
-      const property = ts.createProperty(
-          undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], field.name, undefined,
-          undefined, exprNode);
+      // Property name into which to memoize the getter for this field, created by prefixing the
+      // field name with '_'.
+      const memoizedProperty = ts.createPropertyAccess(node.name!, '_' + field.name);
 
-      if (this.isClosureCompilerEnabled) {
-        // Closure compiler transforms the form `Service.ɵprov = X` into `Service$ɵprov = X`. To
-        // prevent this transformation, such assignments need to be annotated with @nocollapse.
-        // Note that tsickle is typically responsible for adding such annotations, however it
-        // doesn't yet handle synthetic fields added during other transformations.
-        ts.addSyntheticLeadingComment(
-            property, ts.SyntaxKind.MultiLineCommentTrivia, '* @nocollapse ',
-            /* hasTrailingNewLine */ false);
-      }
+      // Condition which checks that the memoized field is undefined.
+      const notYetMemoizedCond = ts.createBinary(
+          memoizedProperty,
+          ts.SyntaxKind.EqualsEqualsEqualsToken,
+          ts.createIdentifier('undefined'),
+      );
+
+      // return (Class._memoizedFieldName = exprNode);
+      const initAndReturnMemoized =
+          ts.createReturn(ts.createParen(ts.createAssignment(memoizedProperty, exprNode)));
+
+      // if (Class._memoized === undefined) {
+      //   return (Class._memoized = exprNode);
+      // } else {
+      // return Class._memoized};
+      // }
+      const getterBody = ts.createBlock([
+        ts.createIf(
+            notYetMemoizedCond,
+            ts.createBlock([initAndReturnMemoized]),
+            ts.createBlock([ts.createReturn(memoizedProperty)]),
+            ),
+      ]);
+
+      // static get field() { ... }
+      const memoizedGetter = ts.createGetAccessor(
+          undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], field.name, [], undefined,
+          getterBody);
+      members.push(memoizedGetter);
 
       field.statements
           .map(
               stmt => translateStatement(
                   stmt, this.importManager, {recordWrappedNodeExpr: this.recordWrappedNodeExpr}))
           .forEach(stmt => statements.push(stmt));
-
-      members.push(property);
     }
 
     // Replace the class declaration with an updated version.
@@ -137,8 +154,8 @@ class IvyTransformationVisitor extends Visitor {
   }
 
   /**
-   * Return all decorators on a `Declaration` which are from @angular/core, or an empty set if none
-   * are.
+   * Return all decorators on a `Declaration` which are from @angular/core, or an empty set if
+   * none are.
    */
   private _angularCoreDecorators(decl: ts.Declaration): Set<ts.Decorator> {
     const decorators = this.reflector.getDecoratorsOfDeclaration(decl);
@@ -155,8 +172,8 @@ class IvyTransformationVisitor extends Visitor {
   }
 
   /**
-   * Given a `ts.Node`, filter the decorators array and return a version containing only non-Angular
-   * decorators.
+   * Given a `ts.Node`, filter the decorators array and return a version containing only
+   * non-Angular decorators.
    *
    * If all decorators are removed (or none existed in the first place), this method returns
    * `undefined`.
@@ -196,8 +213,8 @@ class IvyTransformationVisitor extends Visitor {
   /**
    * Remove Angular decorators from a `ts.Node` in a shallow manner.
    *
-   * This will remove decorators from class elements (getters, setters, properties, methods) as well
-   * as parameters of constructors.
+   * This will remove decorators from class elements (getters, setters, properties, methods) as
+   * well as parameters of constructors.
    */
   private _stripAngularDecorators<T extends ts.Node>(node: T): T {
     if (ts.isParameter(node)) {
@@ -256,7 +273,8 @@ function transformIvySourceFile(
   // The transformation process consists of 2 steps:
   //
   //  1. Visit all classes, perform compilation and collect the results.
-  //  2. Perform actual transformation of required TS nodes using compilation results from the first
+  //  2. Perform actual transformation of required TS nodes using compilation results from the
+  //  first
   //     step.
   //
   // This is needed to have all `o.Expression`s generated before any TS transforms happen. This
@@ -335,9 +353,9 @@ function getFileOverviewComment(statements: ts.NodeArray<ts.Statement>): FileOve
 
 function setFileOverviewComment(sf: ts.SourceFile, fileoverview: FileOverviewMeta): void {
   const {comments, host, trailing} = fileoverview;
-  // If host statement is no longer the first one, it means that extra statements were added at the
-  // very beginning, so we need to relocate @fileoverview comment and cleanup the original statement
-  // that hosted it.
+  // If host statement is no longer the first one, it means that extra statements were added at
+  // the very beginning, so we need to relocate @fileoverview comment and cleanup the original
+  // statement that hosted it.
   if (sf.statements.length > 0 && host !== sf.statements[0]) {
     if (trailing) {
       ts.setSyntheticTrailingComments(host, undefined);
