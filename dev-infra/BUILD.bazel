@@ -58,7 +58,7 @@ pkg_npm(
         # This substitution is particularly verbose because we need to make sure
         # that only things available via Angular Bazel are imported from
         # tools/defaults.bzl.
-        "load(\"//tools:defaults.bzl\", \"ng_module\")": "load(\"@npm//@angular/bazel:index.bzl\", \"ng_module\")",
+        "load\\(\"//tools:defaults.bzl\", \"ng_module\"\\)": "load(\"@npm//@angular/bazel:index.bzl\", \"ng_module\")",
     },
     visibility = ["//visibility:public"],
     deps = [
