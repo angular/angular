@@ -93,7 +93,8 @@ describe('common release action logic', () => {
       // it is properly appended. Also expect a pull request to be created in the fork.
       repo.expectChangelogFetch(branchName, fakeReleaseNotes)
           .expectFindForkRequest(fork)
-          .expectPullRequestToBeCreated('master', fork, forkBranchName, 200);
+          .expectPullRequestToBeCreated('master', fork, forkBranchName, 200)
+          .expectPullRequestWait(200);
 
       // Simulate that the fork branch name is available.
       fork.expectBranchRequest(forkBranchName, null);
@@ -119,7 +120,8 @@ describe('common release action logic', () => {
       // it is properly appended. Also expect a pull request to be created in the fork.
       repo.expectChangelogFetch(branchName, customReleaseNotes)
           .expectFindForkRequest(fork)
-          .expectPullRequestToBeCreated('master', fork, forkBranchName, 200);
+          .expectPullRequestToBeCreated('master', fork, forkBranchName, 200)
+          .expectPullRequestWait(200);
 
       // Simulate that the fork branch name is available.
       fork.expectBranchRequest(forkBranchName, null);
@@ -138,7 +140,8 @@ describe('common release action logic', () => {
       // it is properly appended. Also expect a pull request to be created in the fork.
       repo.expectChangelogFetch(branchName, `non analyzable changelog`)
           .expectFindForkRequest(fork)
-          .expectPullRequestToBeCreated('master', fork, forkBranchName, 200);
+          .expectPullRequestToBeCreated('master', fork, forkBranchName, 200)
+          .expectPullRequestWait(200);
 
       // Simulate that the fork branch name is available.
       fork.expectBranchRequest(forkBranchName, null);
@@ -166,7 +169,8 @@ describe('common release action logic', () => {
       // it is properly appended. Also expect a pull request to be created in the fork.
       repo.expectChangelogFetch(branchName, fakeReleaseNotes)
           .expectFindForkRequest(fork)
-          .expectPullRequestToBeCreated('master', fork, forkBranchName, 200);
+          .expectPullRequestToBeCreated('master', fork, forkBranchName, 200)
+          .expectPullRequestWait(200);
 
       // Simulate that the fork branch name is available.
       fork.expectBranchRequest(forkBranchName, null);
