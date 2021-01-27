@@ -213,9 +213,6 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   }
   protected _highlighted: boolean = false;
 
-  /** Emitted when the user interacts with the remove icon. */
-  @Output() removeIconInteraction = new EventEmitter<string>();
-
   /** Emitted when the user interacts with the chip. */
   @Output() interaction = new EventEmitter<string>();
 
@@ -230,9 +227,6 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
 
   /** The unstyled chip selector for this component. */
   protected basicChipAttrName = 'mat-basic-chip';
-
-  /** Subject that emits when the component has been destroyed. */
-  protected _destroyed = new Subject<void>();
 
   /** The chip's leading icon. */
   @ContentChild(MAT_CHIP_AVATAR) leadingIcon: MatChipAvatar;
@@ -276,17 +270,8 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
           // input.
         },
     notifyNavigation: () => this._notifyNavigation(),
-    notifyTrailingIconInteraction: () =>
-        this.removeIconInteraction.emit(this.id),
-    notifyRemoval:
-        () => {
-          this.removed.emit({chip: this});
-
-          // When MDC removes a chip it just transitions it to `width: 0px`
-          // which means that it's still in the DOM and it's still focusable.
-          // Make it `display: none` so users can't tab into it.
-          this._elementRef.nativeElement.style.display = 'none';
-        },
+    notifyTrailingIconInteraction: () => {},
+    notifyRemoval: () => this.remove(),
     notifyEditStart:
         () => {
           this._onEditStart();
@@ -375,24 +360,17 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
 
   ngOnDestroy() {
     this.destroyed.emit({chip: this});
-    this._destroyed.next();
-    this._destroyed.complete();
     this._chipFoundation.destroy();
   }
 
   /** Sets up the remove icon chip foundation, and subscribes to remove icon events. */
-  _initRemoveIcon() {
+  private _initRemoveIcon() {
     if (this.removeIcon) {
       this._chipFoundation.setShouldRemoveOnTrailingIconClick(true);
-      this._listenToRemoveIconInteraction();
       this.removeIcon.disabled = this.disabled;
-    }
-  }
 
-  /** Handles interaction with the remove icon. */
-  _listenToRemoveIconInteraction() {
-    this.removeIcon.interaction
-        .pipe(takeUntil(this._destroyed))
+      this.removeIcon.interaction
+        .pipe(takeUntil(this.destroyed))
         .subscribe(event => {
           // The MDC chip foundation calls stopPropagation() for any trailing icon interaction
           // event, even ones it doesn't handle, so we want to avoid passing it keyboard events
@@ -405,7 +383,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
             return;
           }
 
-          this._chipFoundation.handleTrailingActionInteraction();
+          this.remove();
 
           if (isKeyboardEvent && !hasModifierKey(event as KeyboardEvent)) {
             const keyCode = (event as KeyboardEvent).keyCode;
@@ -416,6 +394,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
             }
           }
         });
+    }
   }
 
   /**
@@ -425,7 +404,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
    */
   remove(): void {
     if (this.removable) {
-      this._chipFoundation.beginExit();
+      this.removed.emit({chip: this});
     }
   }
 
