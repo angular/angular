@@ -869,12 +869,14 @@ export class ComponentDecoratorHandler implements
 
     // Unfortunately, the primary parse of the template above may not contain accurate source map
     // information. If used directly, it would result in incorrect code locations in template
-    // errors, etc. There are two main problems:
+    // errors, etc. There are three main problems:
     //
     // 1. `preserveWhitespaces: false` annihilates the correctness of template source mapping, as
     //    the whitespace transformation changes the contents of HTML text nodes before they're
     //    parsed into Angular expressions.
-    // 2. By default, the template parser strips leading trivia characters (like spaces, tabs, and
+    // 2. `preserveLineEndings: false` causes growing misalignments in templates that use '\r\n'
+    //    line endings, by normalizing them to '\n'.
+    // 3. By default, the template parser strips leading trivia characters (like spaces, tabs, and
     //    newlines). This also destroys source mapping information.
     //
     // In order to guarantee the correctness of diagnostics, templates are parsed a second time
@@ -885,6 +887,7 @@ export class ComponentDecoratorHandler implements
 
     const {nodes: diagNodes} = parseTemplate(templateStr, template.sourceMapUrl, {
       preserveWhitespaces: true,
+      preserveLineEndings: true,
       interpolationConfig: template.interpolationConfig,
       range: templateRange ?? undefined,
       escapedString,

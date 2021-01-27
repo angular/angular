@@ -110,6 +110,23 @@ export declare class AnimationEvent {
       env.driveMain();
     });
 
+    it('should have accurate diagnostics in a template using crlf line endings', () => {
+      env.write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          templateUrl: './test.html',
+        })
+        class TestCmp {}
+      `);
+      env.write('test.html', '<span>\r\n{{does_not_exist}}\r\n</span>');
+
+      const diags = env.driveDiagnostics();
+      expect(diags.length).toBe(1);
+      expect(getSourceCodeForDiagnostic(diags[0])).toBe('does_not_exist');
+    });
+
     it('should check regular attributes that are directive inputs', () => {
       env.tsconfig(
           {fullTemplateTypeCheck: true, strictInputTypes: true, strictAttributeTypes: true});
