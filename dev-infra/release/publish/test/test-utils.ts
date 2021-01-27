@@ -194,7 +194,8 @@ export async function expectStagingAndPublishWithCherryPick(
       .expectTagToBeCreated(expectedTagName, 'STAGING_COMMIT_SHA')
       .expectReleaseToBeCreated(`v${expectedVersion}`, expectedTagName)
       .expectChangelogFetch(expectedBranch, getChangelogForVersion(expectedVersion))
-      .expectPullRequestToBeCreated('master', fork, expectedCherryPickForkBranch, 300);
+      .expectPullRequestToBeCreated('master', fork, expectedCherryPickForkBranch, 300)
+      .expectPullRequestWait(300);
 
   // In the fork, we make the staging and cherry-pick branches appear as
   // non-existent, so that the PRs can be created properly without collisions.

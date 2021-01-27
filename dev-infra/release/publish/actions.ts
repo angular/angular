@@ -450,7 +450,7 @@ export abstract class ReleaseAction {
     }
 
     // Create a cherry-pick pull request that should be merged by the caretaker.
-    const {url} = await this.pushChangesToForkAndCreatePullRequest(
+    const {url, id} = await this.pushChangesToForkAndCreatePullRequest(
         nextBranch, `changelog-cherry-pick-${newVersion}`, commitMessage,
         `Cherry-picks the changelog from the "${stagingBranch}" branch to the next ` +
             `branch (${nextBranch}).`);
@@ -459,6 +459,10 @@ export abstract class ReleaseAction {
         `  ✓   Pull request for cherry-picking the changelog into "${nextBranch}" ` +
         'has been created.'));
     info(yellow(`      Please ask team members to review: ${url}.`));
+
+    // Wait for the Pull Request to be merged.
+    await this.waitForPullRequestToBeMerged(id);
+
     return true;
   }
 
