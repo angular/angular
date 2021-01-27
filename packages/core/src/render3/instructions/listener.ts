@@ -8,8 +8,8 @@
 
 
 import {assertIndexInRange} from '../../util/assert';
+import {EMPTY_OBJ} from '../../util/empty';
 import {isObservable} from '../../util/lang';
-import {EMPTY_OBJ} from '../empty';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, isProceduralRenderer, Renderer3} from '../interfaces/renderer';
 import {RElement} from '../interfaces/renderer_dom';
