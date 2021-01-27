@@ -9,7 +9,7 @@ import {AnimationOptions, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
 import {getOrSetAsInMap} from '../render/shared';
-import {copyObj, interpolateParams, iteratorToArray, mergeAnimationOptions} from '../util';
+import {copyObj, interpolateParams, iteratorToArray} from '../util';
 
 import {StyleAst, TransitionAst} from './animation_ast';
 import {buildAnimationTimelines} from './animation_timeline_builder';
