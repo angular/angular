@@ -52,6 +52,7 @@ export const RUNTIME_ERRORS_WITH_GUIDES = new Set([
   RuntimeErrorCode.PROVIDER_NOT_FOUND,
   RuntimeErrorCode.MULTIPLE_COMPONENTS_MATCH,
   RuntimeErrorCode.EXPORT_NOT_FOUND,
+  RuntimeErrorCode.PIPE_NOT_FOUND,
 ]);
 /* tslint:enable:no-toplevel-property-access */
 
