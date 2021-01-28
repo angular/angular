@@ -718,7 +718,7 @@ export function toDate(value: string|number|Date): Date {
       return new Date(parsedNb);
     }
 
-    if (/^(\d{4}-\d{1,2}-\d{1,2})$/.test(value)) {
+    if (/^(\d{4}(-\d{1,2}(-\d{1,2})?)?)$/.test(value)) {
       /* For ISO Strings without time the day, month and year must be extracted from the ISO String
       before Date creation to avoid time offset and errors in the new Date.
       If we only replace '-' with ',' in the ISO String ("2015,01,01"), and try to create a new
@@ -726,7 +726,7 @@ export function toDate(value: string|number|Date): Date {
       If we leave the '-' ("2015-01-01") and try to create a new Date("2015-01-01") the timeoffset
       is applied.
       Note: ISO months are 0 for January, 1 for February, ... */
-      const [y, m, d] = value.split('-').map((val: string) => +val);
+      const [y, m = 1, d = 1] = value.split('-').map((val: string) => +val);
       return new Date(y, m - 1, d);
     }
 
