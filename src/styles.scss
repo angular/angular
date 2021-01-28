@@ -17,6 +17,20 @@ $light-theme: mat-light-theme($light-primary, $light-accent);
 // Dark theme
 $dark-primary: mat-palette($mat-blue-grey, 50);
 $dark-accent: mat-palette($mat-purple, 200);
+$mat-dark-theme-background: map-merge(
+  $mat-dark-theme-background,
+  (
+    background: #242424,
+    card: #242424,
+  )
+);
+$mat-dark-theme-foreground: map-merge(
+  $mat-dark-theme-foreground,
+  (
+    text: #bcc5ce,
+  )
+);
+
 $dark-theme: mat-dark-theme($dark-primary, $dark-accent);
 
 .light-theme {
