@@ -383,12 +383,6 @@
     "packages/forms/src/validators.ts"
   ],
   [
-    "packages/language-service/src/completions.ts",
-    "packages/language-service/src/template.ts",
-    "packages/language-service/src/typescript_host.ts",
-    "packages/language-service/src/language_service.ts"
-  ],
-  [
     "packages/language-service/src/template.ts",
     "packages/language-service/src/typescript_host.ts"
   ],

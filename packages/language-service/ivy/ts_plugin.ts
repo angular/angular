@@ -7,9 +7,10 @@
  */
 
 import * as ts from 'typescript/lib/tsserverlibrary';
+import {GetTcbResponse, NgLanguageService} from '../api';
 import {LanguageService} from './language_service';
 
-export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
+export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   const {project, languageService: tsLS, config} = info;
   const angularOnly = config?.angularOnly === true;
 
@@ -118,6 +119,10 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     return diagnostics;
   }
 
+  function getTcb(fileName: string, position: number): GetTcbResponse {
+    return undefined;
+  }
+
   return {
     ...tsLS,
     getSemanticDiagnostics,
@@ -130,6 +135,7 @@ export function create(info: ts.server.PluginCreateInfo): ts.LanguageService {
     getCompletionEntryDetails,
     getCompletionEntrySymbol,
     getCompilerOptionsDiagnostics,
+    getTcb,
   };
 }
 
