@@ -15,6 +15,7 @@ import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck'
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import * as ts from 'typescript/lib/tsserverlibrary';
+import {GetTcbResponse} from '../api';
 
 import {LanguageServiceAdapter, LSParseConfigHost} from './adapters';
 import {CompilerFactory} from './compiler_factory';
@@ -24,25 +25,6 @@ import {QuickInfoBuilder} from './quick_info';
 import {ReferencesAndRenameBuilder} from './references';
 import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_target';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
-
-export type GetTcbResponse = {
-  /**
-   * The filename of the SourceFile this typecheck block belongs to.
-   * The filename is entirely opaque and unstable, useful only for debugging
-   * purposes.
-   */
-  fileName: string,
-  /** The content of the SourceFile this typecheck block belongs to. */
-  content: string,
-  /**
-   * Spans over node(s) in the typecheck block corresponding to the
-   * TS code generated for template node under the current cursor position.
-   *
-   * When the cursor position is over a source for which there is no generated
-   * code, `selections` is empty.
-   */
-  selections: ts.TextSpan[],
-}|undefined;
 
 export class LanguageService {
   private options: CompilerOptions;
