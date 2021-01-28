@@ -14,7 +14,7 @@ let nextUniqueId = 0;
 @Directive({
   selector: 'mat-hint',
   host: {
-    'class': 'mat-mdc-form-field-hint',
+    'class': 'mat-mdc-form-field-hint mat-mdc-form-field-bottom-align',
     '[class.mat-mdc-form-field-hint-end]': 'align === "end"',
     '[id]': 'id',
     // Remove align attribute to prevent it from interfering with layout.

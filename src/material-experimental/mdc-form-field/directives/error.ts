@@ -21,7 +21,7 @@ export const MAT_ERROR = new InjectionToken<MatError>('MatError');
 @Directive({
   selector: 'mat-error',
   host: {
-    'class': 'mat-mdc-form-field-error',
+    'class': 'mat-mdc-form-field-error mat-mdc-form-field-bottom-align',
     'role': 'alert',
     '[id]': 'id',
   },

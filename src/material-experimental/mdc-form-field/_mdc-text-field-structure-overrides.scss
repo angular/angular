@@ -9,13 +9,16 @@
 @mixin mat-mdc-private-text-field-structure-overrides() {
   // Unset the border set by MDC. We move the border (which serves as the Material Design
   // text-field bottom line) into its own element. This is necessary because we want the
-  // bottom-line to span across the whole form-field (including prefixes and suffixes). Also
-  // we ensure that font styles are inherited for input elements. We do this because inputs by
-  // default have explicit font styles from the user agent, and we set the desired font styles
-  // in the parent `mat-form-field` element (for better custom form-field control support).
+  // bottom-line to span across the whole form-field (including prefixes and suffixes).
   .mat-mdc-input-element {
-    font: inherit;
     border: none;
+  }
+
+  // In order to ensure proper alignment of the floating label, we reset its line-height.
+  // The line-height is not important as the element is absolutely positioned and only has one line
+  // of text.
+  .mat-mdc-form-field .mdc-floating-label {
+    line-height: normal;
   }
 
   // Reset the height that MDC sets on native input elements. We cannot rely on their

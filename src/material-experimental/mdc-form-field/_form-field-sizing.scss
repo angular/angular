@@ -20,13 +20,7 @@ $mat-form-field-hint-min-space: 1em !default;
 // inputs. We take the explicit numbers provided by the Material Design specification.
 // https://material.io/components/text-fields/#specs
 
-// Dimensions in the spec assume that an input box does not need to account for larger
-// characters. In browsers though, inputs always add additional vertical spacing to account
-// for such potential characters. This means that all determined spacing from the spec needs
-// to account for the input offset. The offset is based on the default font size used in the
-// spec images. i.e. the input box for a 16dp input is 1px larger on top and bottom.
-// Related information: https://www.w3.org/TR/CSS21/visudet.html#inline-non-replaced.
-$mat-form-field-input-box-vertical-offset: 1px;
+$mat-form-field-height: 56px;
 
 // Vertical spacing of the text-field if there is a label. MDC hard-codes the spacing into
 // their styles, but their spacing variables would not work for our form-field structure anyway.
@@ -36,11 +30,11 @@ $mat-form-field-input-box-vertical-offset: 1px;
 // spacing as provided by the Material Design specification. The outlined dimensions in the
 // spec section do not match with the text fields shown in the overview or the ones implemented
 // by MDC. Note that we need to account for the input box offset. See above for more context.
-$mat-form-field-with-label-input-padding-top: 28px - $mat-form-field-input-box-vertical-offset;
-$mat-form-field-with-label-input-padding-bottom: 12px - $mat-form-field-input-box-vertical-offset;
+$mat-form-field-with-label-input-padding-top: 24px;
+$mat-form-field-with-label-input-padding-bottom: 8px;
 
 // Vertical spacing of the text-field if there is no label. We manually measure the
 // spacing in the specs. See comment above for padding for text fields with label. The
 // same reasoning applies to the padding for text fields without label.
-$mat-form-field-no-label-padding-bottom: 20px - $mat-form-field-input-box-vertical-offset;
-$mat-form-field-no-label-padding-top: 20px - $mat-form-field-input-box-vertical-offset;
+$mat-form-field-no-label-padding-bottom: 16px;
+$mat-form-field-no-label-padding-top: 16px;
