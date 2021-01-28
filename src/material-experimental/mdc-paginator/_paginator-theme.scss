@@ -48,9 +48,14 @@
 
 @mixin mat-mdc-paginator-typography($config-or-theme) {
   $config: mat-get-typography-config($config-or-theme);
-  .mat-mdc-paginator {
-    @include mat-using-mdc-typography($config) {
+
+  @include mat-using-mdc-typography($config) {
+    .mat-mdc-paginator {
       @include mdc-typography(caption, $query: $mat-typography-styles-query);
+    }
+
+    .mat-mdc-paginator .mat-mdc-select-value {
+      font-size: mat-font-size($config, caption);
     }
   }
 }
