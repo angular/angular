@@ -275,6 +275,12 @@ function runE2eTestsCLI(appDir, outputFile, bufferOutput, port) {
                            '--port={PORT}',
                          ],
                        }];
+  if (true && testCommands.some(({cmd, args}) => `${cmd} ${args[0]}` === 'yarn e2e')) {
+    testCommands.push({
+      cmd: 'node',
+      args: [`${AIO_PATH}/scripts/audit-web-app`, 'http://localhost:{PORT}/', 'accessibility:100'],
+    });
+  }
   let bufferedOutput = `\n\n============== AIO example output for: ${appDir}\n\n`;
 
   const e2eSpawnPromise = testCommands.reduce((prevSpawnPromise, {cmd, args}) => {
