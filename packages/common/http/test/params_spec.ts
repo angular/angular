@@ -21,6 +21,19 @@ import {HttpParams} from '@angular/common/http/src/params';
         expect(body.getAll('a')).toEqual(['b']);
         expect(body.getAll('c')).toEqual(['d', 'e']);
       });
+
+      it('should ignore question mark in a url', () => {
+        const body = new HttpParams({fromString: '?a=b&c=d&c=e'});
+        expect(body.getAll('a')).toEqual(['b']);
+        expect(body.getAll('c')).toEqual(['d', 'e']);
+      });
+
+      it('should only remove question mark at the beginning of the params', () => {
+        const body = new HttpParams({fromString: '?a=b&c=d&?e=f'});
+        expect(body.getAll('a')).toEqual(['b']);
+        expect(body.getAll('c')).toEqual(['d']);
+        expect(body.getAll('?e')).toEqual(['f']);
+      });
     });
 
     describe('lazy mutation', () => {
