@@ -3,10 +3,19 @@ load("//tools:defaults.bzl", "pkg_npm", "ts_library")
 package(default_visibility = ["//visibility:public"])
 
 ts_library(
+    name = "api",
+    srcs = [
+        "api.ts",
+    ],
+    deps = [
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
     name = "language-service",
-    srcs = glob(
+    srcs = ["index.ts"] + glob(
         [
-            "*.ts",
             "src/**/*.ts",
         ],
         exclude = [
@@ -14,6 +23,7 @@ ts_library(
         ],
     ),
     deps = [
+        ":api",
         ":ts_utils",
         "//packages:types",
         "//packages/compiler",
