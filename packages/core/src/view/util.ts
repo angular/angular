@@ -444,4 +444,5 @@ function _toStringWithNull(v: any): string {
   return v != null ? v.toString() : '';
 }
 
+export const EMPTY_ARRAY: any[] = [];
 export const EMPTY_MAP: {[key: string]: any} = {};
