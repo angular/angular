@@ -20,6 +20,11 @@
             "title": "Made with Angular",
             "url": "https://www.madewithangular.com/"
           },
+          "angular-wiki": {
+            "desc": "Learn Angular from basics to advanced topics with simple detailed tutorials and examples.",
+            "title": "Angular Wiki",
+            "url": "https://www.angularjswiki.com/"
+          },
           "angular-subreddit": {
             "desc": "An Angular-dedicated subreddit.",
             "title": "Angular Subreddit",
