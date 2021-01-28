@@ -11,21 +11,10 @@ import {SchemaMetadata, ViewEncapsulation, ɵConsole as Console} from '@angular/
 import * as path from 'path';
 import * as tss from 'typescript/lib/tsserverlibrary';
 
-import {createLanguageService} from './language_service';
 import {ReflectorHost} from './reflector_host';
 import {ExternalTemplate, InlineTemplate} from './template';
 import {findTightestNode, getClassDeclFromDecoratorProp, getDirectiveClassLike, getPropertyAssignmentFromValue} from './ts_utils';
-import {AstResult, Declaration, DeclarationError, DiagnosticMessageChain, LanguageService, LanguageServiceHost, Span, TemplateSource} from './types';
-
-/**
- * Create a `LanguageServiceHost`
- */
-export function createLanguageServiceFromTypescript(
-    host: tss.LanguageServiceHost, service: tss.LanguageService): LanguageService {
-  const ngHost = new TypeScriptServiceHost(host, service);
-  const ngServer = createLanguageService(ngHost);
-  return ngServer;
-}
+import {AstResult, Declaration, DeclarationError, DiagnosticMessageChain, LanguageServiceHost, Span, TemplateSource} from './types';
 
 /**
  * The language service never needs the normalized versions of the metadata. To avoid parsing
