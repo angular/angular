@@ -24,7 +24,7 @@
     border-left: 1px solid rgba(0, 0, 0, 0.12);
     padding-left: 5px;
     width: 100%;
-    font-size: 0.9em;
+    font-size: 11px;
     font-family: inherit;
     font-weight: inherit;
     height: 30px;
@@ -60,7 +60,7 @@
 
 :host-context(.dark-theme) {
   .filter-input {
-    background-color: #424242;
+    background-color: #242424;
     color: #ffffff;
   }
 }

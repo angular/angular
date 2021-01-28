@@ -9,7 +9,8 @@
 
     cursor: default;
     font-family: Menlo, monospace;
-    font-size: 0.8em;
+    font-size: 11px;
+    line-height: 18px;
 
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -42,7 +43,6 @@
 
     &:hover {
       background-color: #ebf1fb;
-      cursor: pointer;
     }
 
     &.matched {
