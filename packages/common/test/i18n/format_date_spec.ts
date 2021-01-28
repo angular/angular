@@ -60,6 +60,8 @@ describe('Format date', () => {
 
   describe('formatDate', () => {
     const isoStringWithoutTime = '2015-01-01';
+    const isoStringWithoutTimeOrDate = '2015-01';
+    const isoStringWithoutTimeOrDateOrMonth = '2015-01';
     const defaultFormat = 'mediumDate';
     let date: Date;
 
@@ -229,6 +231,16 @@ describe('Format date', () => {
 
       Object.keys(isoStringWithoutTimeFixtures).forEach((pattern: string) => {
         expectDateFormatAs(isoStringWithoutTime, pattern, isoStringWithoutTimeFixtures[pattern]);
+      });
+
+      Object.keys(isoStringWithoutTimeFixtures).forEach((pattern: string) => {
+        expectDateFormatAs(
+            isoStringWithoutTimeOrDate, pattern, isoStringWithoutTimeFixtures[pattern]);
+      });
+
+      Object.keys(isoStringWithoutTimeFixtures).forEach((pattern: string) => {
+        expectDateFormatAs(
+            isoStringWithoutTimeOrDateOrMonth, pattern, isoStringWithoutTimeFixtures[pattern]);
       });
 
       const nightTime = new Date(2015, 5, 15, 2, 3, 1, 550);
