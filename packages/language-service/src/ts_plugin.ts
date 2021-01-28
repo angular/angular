@@ -7,6 +7,7 @@
  */
 
 import * as tss from 'typescript/lib/tsserverlibrary';
+import {NgLanguageService} from '../api';
 
 import {createLanguageService} from './language_service';
 import {TypeScriptServiceHost} from './typescript_host';
@@ -41,7 +42,7 @@ export function getExternalFiles(project: tss.server.Project): string[] {
   });
 }
 
-export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
+export function create(info: tss.server.PluginCreateInfo): NgLanguageService {
   const {languageService: tsLS, languageServiceHost: tsLSHost, config, project} = info;
   // This plugin could operate under two different modes:
   // 1. TS + Angular
@@ -135,6 +136,11 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
     return undefined;
   }
 
+  function getTcb(fileName: string, position: number) {
+    // Not implemented in VE Language Service
+    return undefined;
+  }
+
   return {
     // First clone the original TS language service
     ...tsLS,
@@ -147,5 +153,6 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
     getTypeDefinitionAtPosition,
     getReferencesAtPosition,
     findRenameLocations,
+    getTcb,
   };
 }
