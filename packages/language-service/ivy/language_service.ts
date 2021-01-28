@@ -11,11 +11,13 @@ import {CompilerOptions, ConfigurationHost, readConfiguration} from '@angular/co
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
 import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {GetTcbResponse} from '../api';
+
+import {GetComponentLocationsForTemplateResponse, GetTcbResponse} from '../api';
 
 import {LanguageServiceAdapter, LSParseConfigHost} from './adapters';
 import {CompilerFactory} from './compiler_factory';
@@ -198,6 +200,29 @@ export class LanguageService {
     const result = builder.getCompletionEntrySymbol(entryName);
     this.compilerFactory.registerLastKnownProgram();
     return result;
+  }
+
+  getComponentLocationsForTemplate(fileName: string): GetComponentLocationsForTemplateResponse {
+    return this.withCompiler<GetComponentLocationsForTemplateResponse>((compiler) => {
+      const components = compiler.getComponentsWithTemplateFile(fileName);
+      const componentDeclarationLocations: ts.DocumentSpan[] =
+          Array.from(components.values()).map(c => {
+            let contextSpan: ts.TextSpan|undefined = undefined;
+            let textSpan: ts.TextSpan;
+            if (isNamedClassDeclaration(c)) {
+              textSpan = ts.createTextSpanFromBounds(c.name.getStart(), c.name.getEnd());
+              contextSpan = ts.createTextSpanFromBounds(c.getStart(), c.getEnd());
+            } else {
+              textSpan = ts.createTextSpanFromBounds(c.getStart(), c.getEnd());
+            }
+            return {
+              fileName: c.getSourceFile().fileName,
+              textSpan,
+              contextSpan,
+            };
+          });
+      return componentDeclarationLocations;
+    });
   }
 
   getTcb(fileName: string, position: number): GetTcbResponse {

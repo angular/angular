@@ -7,7 +7,9 @@
  */
 
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {GetTcbResponse, NgLanguageService} from '../api';
+
+import {GetComponentLocationsForTemplateResponse, GetTcbResponse, NgLanguageService} from '../api';
+
 import {LanguageService} from './language_service';
 
 export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
@@ -132,6 +134,14 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return ngLS.getTcb(fileName, position);
   }
 
+  /**
+   * Given an external template, finds the associated components that use it as a `templateUrl`.
+   */
+  function getComponentLocationsForTemplate(fileName: string):
+      GetComponentLocationsForTemplateResponse {
+    return ngLS.getComponentLocationsForTemplate(fileName);
+  }
+
   return {
     ...tsLS,
     getSemanticDiagnostics,
@@ -146,6 +156,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     getCompletionEntrySymbol,
     getTcb,
     getCompilerOptionsDiagnostics,
+    getComponentLocationsForTemplate,
   };
 }
 

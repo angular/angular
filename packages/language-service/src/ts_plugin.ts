@@ -141,6 +141,11 @@ export function create(info: tss.server.PluginCreateInfo): NgLanguageService {
     return undefined;
   }
 
+  function getComponentLocationsForTemplate(fileName: string) {
+    // Not implemented in VE Language Service
+    return [];
+  }
+
   return {
     // First clone the original TS language service
     ...tsLS,
@@ -154,5 +159,6 @@ export function create(info: tss.server.PluginCreateInfo): NgLanguageService {
     getReferencesAtPosition,
     findRenameLocations,
     getTcb,
+    getComponentLocationsForTemplate,
   };
 }
