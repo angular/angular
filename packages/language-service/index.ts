@@ -6,4 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './language-service';
+export * from './api';
+export {create, getExternalFiles} from './src/ts_plugin';
