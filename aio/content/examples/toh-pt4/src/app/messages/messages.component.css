@@ -1,20 +1,19 @@
 /* MessagesComponent's private CSS styles */
 h2 {
-  color: red;
+  color: #A80000;
   font-family: Arial, Helvetica, sans-serif;
   font-weight: lighter;
 }
 
-button.clear {
-  font-family: Arial, sans-serif;
+.clear {
   color: #333;
   background-color: #eee;
   margin-bottom: 12px;
-  border: none;
-  padding: 5px 10px;
+  padding: 1rem;
   border-radius: 4px;
-  cursor: pointer;
+  font-size: 1rem;
 }
-button:hover {
-  background-color: #cfd8dc;
+.clear:hover {
+  color: white;
+  background-color: #42545C;
 }
