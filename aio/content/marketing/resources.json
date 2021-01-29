@@ -265,11 +265,17 @@
             "title": "UI-jar - Test Driven Style Guide Development",
             "url": "https://github.com/ui-jar/ui-jar"
           },
-          "protactor": {
-            "desc": "The official end to end testing framework for Angular apps",
+          "protractor": {
+            "desc": "The official end to end testing framework for Angular applications.",
             "logo": "",
             "title": "Protractor",
             "url": "https://protractor.angular.io/"
+          },
+          "observer-spy": {
+            "desc": "A library for testing RxJS observables that offers an alternative to Marble Tests.",
+            "logo": "",
+            "title": "observer-spy",
+            "url": "https://github.com/hirezio/observer-spy"
           },
           "scully": {
             "desc": "Scully (Jamstack Toolchain for Angular) makes building, testing, and deploying Jamstack apps extremely simple.",
