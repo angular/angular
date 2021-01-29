@@ -148,7 +148,6 @@ export class NgZone {
         !shouldCoalesceRunChangeDetection && shouldCoalesceEventChangeDetection;
     self.shouldCoalesceRunChangeDetection = shouldCoalesceRunChangeDetection;
     self.lastRequestAnimationFrameId = -1;
-    self.isCheckStableRunning = false;
     self.nativeRequestAnimationFrame = getNativeRequestAnimationFrame().nativeRequestAnimationFrame;
     forkInnerZoneWithAngularBehavior(self);
   }
@@ -244,17 +243,6 @@ interface NgZonePrivate extends NgZone {
   hasPendingMacrotasks: boolean;
   hasPendingMicrotasks: boolean;
   lastRequestAnimationFrameId: number;
-  /**
-   * A flag to indicate if NgZone is currently inside
-   * checkStable and to prevent re-entry. The flag is
-   * needed because it is possible to invoke the change
-   * detection from within change detection leading to
-   * incorrect behavior.
-   *
-   * For detail, please refer here,
-   * https://github.com/angular/angular/pull/40540
-   */
-  isCheckStableRunning: boolean;
   isStable: boolean;
   /**
    * Optionally specify coalescing event change detections or not.
@@ -303,9 +291,7 @@ interface NgZonePrivate extends NgZone {
 }
 
 function checkStable(zone: NgZonePrivate) {
-  if (!zone.isCheckStableRunning && zone._nesting == 0 && !zone.hasPendingMicrotasks &&
-      !zone.isStable) {
-    zone.isCheckStableRunning = true;
+  if (zone._nesting == 0 && !zone.hasPendingMicrotasks && !zone.isStable) {
     try {
       zone._nesting++;
       zone.onMicrotaskEmpty.emit(null);
@@ -318,26 +304,12 @@ function checkStable(zone: NgZonePrivate) {
           zone.isStable = true;
         }
       }
-      zone.isCheckStableRunning = false;
     }
   }
 }
 
 function delayChangeDetectionForEvents(zone: NgZonePrivate) {
-  /**
-   * We also need to check isCheckStableRunning here
-   * Consider the following case with shouldCoalesceRunChangeDetection = true
-   *
-   * ngZone.run(() => {});
-   * ngZone.run(() => {});
-   *
-   * We want the two `ngZone.run()` only trigger one change detection
-   * when shouldCoalesceRunChangeDetection is true.
-   * And because in this case, change detection run in async way(requestAnimationFrame),
-   * so we also need to check the isCheckStableRunning here to prevent multiple
-   * change detections.
-   */
-  if (zone.isCheckStableRunning || zone.lastRequestAnimationFrameId !== -1) {
+  if (zone.lastRequestAnimationFrameId !== -1) {
     return;
   }
   zone.lastRequestAnimationFrameId = zone.nativeRequestAnimationFrame.call(global, () => {
