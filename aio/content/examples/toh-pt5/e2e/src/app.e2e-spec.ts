@@ -46,7 +46,7 @@ describe('Tutorial part 5', () => {
 
       appDashboardHref: navElts.get(0),
       appDashboard: element(by.css('app-root app-dashboard')),
-      topHeroes: element.all(by.css('app-root app-dashboard > div h4')),
+      topHeroes: element.all(by.css('app-root app-dashboard > div a')),
 
       appHeroesHref: navElts.get(1),
       appHeroes: element(by.css('app-root app-heroes')),

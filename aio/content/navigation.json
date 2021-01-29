@@ -567,7 +567,7 @@
             },
             {
               "url": "tutorial/toh-pt5",
-              "title": "5. Add In-app Navigation",
+              "title": "5. Add Navigation",
               "tooltip": "Part 5: Add the Angular router and navigate among the views."
             },
             {
