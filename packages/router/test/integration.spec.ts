@@ -2740,7 +2740,7 @@ describe('Integration', () => {
            })));
       });
 
-      describe('should reset the location when cancleling a navigation', () => {
+      describe('should reset the location when cancelling a navigation', () => {
         beforeEach(() => {
           TestBed.configureTestingModule({
             providers: [{
@@ -3320,7 +3320,7 @@ describe('Integration', () => {
 
              const cmp: RouteCmp = fixture.debugElement.children[1].componentInstance;
 
-             // Land on an inital page
+             // Land on an initial page
              router.navigateByUrl('/d/1;dd=11/e/2;dd=22');
              advance(fixture);
 
