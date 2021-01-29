@@ -1,4 +1,4 @@
-# Add in-app navigation with routing
+# Add navigation with routing
 
 There are new requirements for the Tour of Heroes app:
 
@@ -9,11 +9,11 @@ There are new requirements for the Tour of Heroes app:
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  For the sample application that this page describes, see the <live-example></live-example>.
 
 </div>
 
-When you’re done, users will be able to navigate the app like this:
+When you’re done, users will be able to navigate the application like this:
 
 <div class="lightbox">
   <img src='generated/images/guide/toh/nav-diagram.png' alt="View navigations">
@@ -48,7 +48,7 @@ Replace it with the following:
 <code-example path="toh-pt5/src/app/app-routing.module.1.ts" header="src/app/app-routing.module.ts (updated)">
 </code-example>
 
-First, the `app-routing.module.ts` file imports `RouterModule` and `Routes` so the app can have routing functionality. The next import, `HeroesComponent`, will give the Router somewhere to go once you configure the routes.
+First, the `app-routing.module.ts` file imports `RouterModule` and `Routes` so the application can have routing functionality. The next import, `HeroesComponent`, will give the Router somewhere to go once you configure the routes.
 
 Notice that the `CommonModule` references and `declarations` array are unnecessary, so are no
 longer part of `AppRoutingModule`. The following sections explain the rest of the `AppRoutingModule` in more detail.
@@ -105,7 +105,7 @@ Open the `AppComponent` template and replace the `<app-heroes>` element with a `
 <code-example path="toh-pt5/src/app/app.component.html" region="outlet" header="src/app/app.component.html (router-outlet)">
 </code-example>
 
-The `AppComponent` template no longer needs `<app-heroes>` because the app will only display the `HeroesComponent` when the user navigates to it.
+The `AppComponent` template no longer needs `<app-heroes>` because the application will only display the `HeroesComponent` when the user navigates to it.
 
 The `<router-outlet>` tells the router where to display routed views.
 
@@ -124,7 +124,7 @@ You should still be running with this CLI command.
   ng serve
 </code-example>
 
-The browser should refresh and display the app title but not the list of heroes.
+The browser should refresh and display the application title but not the list of heroes.
 
 Look at the browser's address bar.
 The URL ends in `/`.
@@ -153,7 +153,7 @@ The `routerLink` is the selector for the [`RouterLink` directive](/api/router/Ro
 that turns user clicks into router navigations.
 It's another of the public directives in the `RouterModule`.
 
-The browser refreshes and displays the app title and heroes link,
+The browser refreshes and displays the application title and heroes link,
 but not the heroes list.
 
 Click the link.
@@ -228,11 +228,11 @@ Add a route to the `routes` array that matches a path to the `DashboardComponent
 
 ### Add a default route
 
-When the app starts, the browser's address bar points to the web site's root.
+When the application starts, the browser's address bar points to the web site's root.
 That doesn't match any existing route so the router doesn't navigate anywhere.
 The space below the `<router-outlet>` is blank.
 
-To make the app navigate to the dashboard automatically, add the following
+To make the application navigate to the dashboard automatically, add the following
 route to the `routes` array.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts" region="redirect-route">
@@ -274,7 +274,7 @@ and liberate it from the `HeroesComponent`.
 ### Delete _hero details_ from `HeroesComponent`
 
 When the user clicks a hero item in the `HeroesComponent`,
-the app should navigate to the `HeroDetailComponent`,
+the application should navigate to the `HeroDetailComponent`,
 replacing the heroes list view with the hero detail view.
 The heroes list view should no longer show hero details as it does now.
 
@@ -409,7 +409,7 @@ Route parameters are always strings.
 The JavaScript (+) operator converts the string to a number,
 which is what a hero `id` should be.
 
-The browser refreshes and the app crashes with a compiler error.
+The browser refreshes and the application crashes with a compiler error.
 `HeroService` doesn't have a `getHero()` method.
 Add it now.
 
@@ -435,7 +435,7 @@ without having to change the `HeroDetailComponent` that calls it.
 
 #### Try it
 
-The browser refreshes and the app is working again.
+The browser refreshes and the application is working again.
 You can click a hero in the dashboard or in the heroes list and navigate to that hero's detail view.
 
 If you paste `localhost:4200/detail/11` in the browser address bar,
@@ -566,7 +566,7 @@ Here are the code files discussed on this page.
 * You added the Angular router to navigate among different components.
 * You turned the `AppComponent` into a navigation shell with `<a>` links and a `<router-outlet>`.
 * You configured the router in an `AppRoutingModule`
-* You defined simple routes, a redirect route, and a parameterized route.
+* You defined routes, a redirect route, and a parameterized route.
 * You used the `routerLink` directive in anchor elements.
 * You refactored a tightly-coupled master/detail view into a routed detail view.
 * You used router link parameters to navigate to the detail view of a user-selected hero.
