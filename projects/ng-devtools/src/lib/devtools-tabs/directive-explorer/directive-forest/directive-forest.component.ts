@@ -63,7 +63,7 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     (node) => node.expandable
   );
   readonly dataSource = new ComponentDataSource(this.treeControl);
-  readonly itemHeight = 24;
+  readonly itemHeight = 18;
 
   private _initialized = false;
 
