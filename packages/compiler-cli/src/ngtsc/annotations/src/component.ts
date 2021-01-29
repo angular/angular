@@ -16,7 +16,7 @@ import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
 import {ClassPropertyMapping, ComponentResources, DirectiveMeta, DirectiveTypeCheckMeta, extractDirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, Resource, ResourceRegistry} from '../../metadata';
-import {EnumValue, PartialEvaluator} from '../../partial_evaluator';
+import {EnumValue, PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
@@ -72,9 +72,9 @@ export interface ComponentAnalysisData {
   resources: ComponentResources;
 
   /**
-   * The literal `styleUrls` extracted from the decorator, if present.
+   * `styleUrls` extracted from the decorator, if present.
    */
-  styleUrls: string[]|null;
+  styleUrls: StyleUrlMeta[]|null;
 
   /**
    * Inline stylesheets extracted from the decorator, if present.
@@ -85,6 +85,31 @@ export interface ComponentAnalysisData {
 }
 
 export type ComponentResolutionData = Pick<R3ComponentMetadata, ComponentMetadataResolvedFields>;
+
+/**
+ * The literal style url extracted from the decorator, along with metadata for diagnostics.
+ */
+export interface StyleUrlMeta {
+  url: string;
+  nodeForError: ts.Node;
+  source: ResourceTypeForDiagnostics.StylesheetFromTemplate|
+      ResourceTypeForDiagnostics.StylesheetFromDecorator;
+}
+
+/**
+ * Information about the origin of a resource in the application code. This is used for creating
+ * diagnostics, so we can point to the root cause of an error in the application code.
+ *
+ * A template resource comes from the `templateUrl` property on the component decorator.
+ *
+ * Stylesheets resources can come from either the `styleUrls` property on the component decorator,
+ * or from inline `style` tags and style links on the external template.
+ */
+export const enum ResourceTypeForDiagnostics {
+  Template,
+  StylesheetFromTemplate,
+  StylesheetFromDecorator,
+}
 
 /**
  * `DecoratorHandler` which handles the `@Component` annotation.
@@ -157,33 +182,48 @@ export class ComponentDecoratorHandler implements
     const component = reflectObjectLiteral(meta);
     const containingFile = node.getSourceFile().fileName;
 
-    // Convert a styleUrl string into a Promise to preload it.
-    const resolveStyleUrl = (styleUrl: string): Promise<void> => {
-      const resourceUrl = this.resourceLoader.resolve(styleUrl, containingFile);
-      const promise = this.resourceLoader.preload(resourceUrl);
-      return promise || Promise.resolve();
-    };
+    const resolveStyleUrl =
+        (styleUrl: string, nodeForError: ts.Node,
+         resourceType: ResourceTypeForDiagnostics): Promise<void>|undefined => {
+          const resourceUrl =
+              this._resolveResourceOrThrow(styleUrl, containingFile, nodeForError, resourceType);
+          return this.resourceLoader.preload(resourceUrl);
+        };
 
     // A Promise that waits for the template and all <link>ed styles within it to be preloaded.
     const templateAndTemplateStyleResources =
-        this._preloadAndParseTemplate(node, decorator, component, containingFile).then(template => {
-          if (template === null) {
-            return undefined;
-          } else {
-            return Promise.all(template.styleUrls.map(resolveStyleUrl)).then(() => undefined);
-          }
-        });
+        this._preloadAndParseTemplate(node, decorator, component, containingFile)
+            .then((template: ParsedTemplateWithSource|null): Promise<void>|undefined => {
+              if (template === null) {
+                return undefined;
+              }
+
+              const nodeForError = getTemplateDeclarationNodeForError(template.declaration);
+              return Promise
+                  .all(template.styleUrls.map(
+                      styleUrl => resolveStyleUrl(
+                          styleUrl, nodeForError,
+                          ResourceTypeForDiagnostics.StylesheetFromTemplate)))
+                  .then(() => undefined);
+            });
 
     // Extract all the styleUrls in the decorator.
-    const styleUrls = this._extractStyleUrls(component, []);
+    const componentStyleUrls = this._extractComponentStyleUrls(component);
 
-    if (styleUrls === null) {
+    if (componentStyleUrls === null) {
       // A fast path exists if there are no styleUrls, to just wait for
       // templateAndTemplateStyleResources.
       return templateAndTemplateStyleResources;
     } else {
       // Wait for both the template and all styleUrl resources to resolve.
-      return Promise.all([templateAndTemplateStyleResources, ...styleUrls.map(resolveStyleUrl)])
+      return Promise
+          .all([
+            templateAndTemplateStyleResources,
+            ...componentStyleUrls.map(
+                styleUrl => resolveStyleUrl(
+                    styleUrl.url, styleUrl.nodeForError,
+                    ResourceTypeForDiagnostics.StylesheetFromDecorator))
+          ])
           .then(() => undefined);
     }
   }
@@ -268,41 +308,37 @@ export class ComponentDecoratorHandler implements
     // Figure out the set of styles. The ordering here is important: external resources (styleUrls)
     // precede inline styles, and styles defined in the template override styles defined in the
     // component.
-    let styles: string[]|null = null;
+    let styles: string[] = [];
 
     const styleResources = this._extractStyleResources(component, containingFile);
-    const styleUrls = this._extractStyleUrls(component, template.styleUrls);
-    if (styleUrls !== null) {
-      if (styles === null) {
-        styles = [];
-      }
-      for (const styleUrl of styleUrls) {
-        const resourceUrl = this.resourceLoader.resolve(styleUrl, containingFile);
-        const resourceStr = this.resourceLoader.load(resourceUrl);
-        styles.push(resourceStr);
-        if (this.depTracker !== null) {
-          this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
-        }
+    const styleUrls: StyleUrlMeta[] = [
+      ...this._extractComponentStyleUrls(component), ...this._extractTemplateStyleUrls(template)
+    ];
+
+    for (const styleUrl of styleUrls) {
+      const resourceType = styleUrl.source === ResourceTypeForDiagnostics.StylesheetFromDecorator ?
+          ResourceTypeForDiagnostics.StylesheetFromDecorator :
+          ResourceTypeForDiagnostics.StylesheetFromTemplate;
+      const resourceUrl = this._resolveResourceOrThrow(
+          styleUrl.url, containingFile, styleUrl.nodeForError, resourceType);
+      const resourceStr = this.resourceLoader.load(resourceUrl);
+
+      styles.push(resourceStr);
+      if (this.depTracker !== null) {
+        this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
       }
     }
+
     let inlineStyles: string[]|null = null;
     if (component.has('styles')) {
       const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
       if (litStyles !== null) {
         inlineStyles = [...litStyles];
-        if (styles === null) {
-          styles = litStyles;
-        } else {
-          styles.push(...litStyles);
-        }
+        styles.push(...litStyles);
       }
     }
     if (template.styles.length > 0) {
-      if (styles === null) {
-        styles = template.styles;
-      } else {
-        styles.push(...template.styles);
-      }
+      styles.push(...template.styles);
     }
 
     const encapsulation: number =
@@ -329,7 +365,7 @@ export class ComponentDecoratorHandler implements
           },
           encapsulation,
           interpolation: template.interpolationConfig ?? DEFAULT_INTERPOLATION_CONFIG,
-          styles: styles || [],
+          styles,
 
           // These will be replaced during the compilation step, after all `NgModule`s have been
           // analyzed and the full compilation scope for the component can be realized.
@@ -609,7 +645,12 @@ export class ComponentDecoratorHandler implements
     let styles: string[] = [];
     if (analysis.styleUrls !== null) {
       for (const styleUrl of analysis.styleUrls) {
-        const resolvedStyleUrl = this.resourceLoader.resolve(styleUrl, containingFile);
+        const resourceType =
+            styleUrl.source === ResourceTypeForDiagnostics.StylesheetFromDecorator ?
+            ResourceTypeForDiagnostics.StylesheetFromDecorator :
+            ResourceTypeForDiagnostics.StylesheetFromTemplate;
+        const resolvedStyleUrl = this._resolveResourceOrThrow(
+            styleUrl.url, containingFile, styleUrl.nodeForError, resourceType);
         const styleText = this.resourceLoader.load(resolvedStyleUrl);
         styles.push(styleText);
       }
@@ -705,20 +746,54 @@ export class ComponentDecoratorHandler implements
     return resolved;
   }
 
-  private _extractStyleUrls(component: Map<string, ts.Expression>, extraUrls: string[]):
-      string[]|null {
+  private _extractComponentStyleUrls(
+      component: Map<string, ts.Expression>,
+      ): StyleUrlMeta[] {
     if (!component.has('styleUrls')) {
-      return extraUrls.length > 0 ? extraUrls : null;
+      return [];
     }
 
-    const styleUrlsExpr = component.get('styleUrls')!;
-    const styleUrls = this.evaluator.evaluate(styleUrlsExpr);
-    if (!Array.isArray(styleUrls) || !styleUrls.every(url => typeof url === 'string')) {
-      throw createValueHasWrongTypeError(
-          styleUrlsExpr, styleUrls, 'styleUrls must be an array of strings');
+    return this._extractStyleUrlsFromExpression(component.get('styleUrls')!);
+  }
+
+  private _extractStyleUrlsFromExpression(styleUrlsExpr: ts.Expression): StyleUrlMeta[] {
+    const styleUrls: StyleUrlMeta[] = [];
+
+    if (ts.isArrayLiteralExpression(styleUrlsExpr)) {
+      for (const styleUrlExpr of styleUrlsExpr.elements) {
+        if (ts.isSpreadElement(styleUrlExpr)) {
+          styleUrls.push(...this._extractStyleUrlsFromExpression(styleUrlExpr.expression));
+        } else {
+          const styleUrl = this.evaluator.evaluate(styleUrlExpr);
+
+          if (typeof styleUrl !== 'string') {
+            throw createValueHasWrongTypeError(styleUrlExpr, styleUrl, 'styleUrl must be a string');
+          }
+
+          styleUrls.push({
+            url: styleUrl,
+            source: ResourceTypeForDiagnostics.StylesheetFromDecorator,
+            nodeForError: styleUrlExpr,
+          });
+        }
+      }
+    } else {
+      const evaluatedStyleUrls = this.evaluator.evaluate(styleUrlsExpr);
+      if (!isStringArray(evaluatedStyleUrls)) {
+        throw createValueHasWrongTypeError(
+            styleUrlsExpr, evaluatedStyleUrls, 'styleUrls must be an array of strings');
+      }
+
+      for (const styleUrl of evaluatedStyleUrls) {
+        styleUrls.push({
+          url: styleUrl,
+          source: ResourceTypeForDiagnostics.StylesheetFromDecorator,
+          nodeForError: styleUrlsExpr,
+        });
+      }
     }
-    styleUrls.push(...extraUrls);
-    return styleUrls as string[];
+
+    return styleUrls;
   }
 
   private _extractStyleResources(component: Map<string, ts.Expression>, containingFile: string):
@@ -734,7 +809,9 @@ export class ComponentDecoratorHandler implements
     const styleUrlsExpr = component.get('styleUrls');
     if (styleUrlsExpr !== undefined && ts.isArrayLiteralExpression(styleUrlsExpr)) {
       for (const expression of stringLiteralElements(styleUrlsExpr)) {
-        const resourceUrl = this.resourceLoader.resolve(expression.text, containingFile);
+        const resourceUrl = this._resolveResourceOrThrow(
+            expression.text, containingFile, expression,
+            ResourceTypeForDiagnostics.StylesheetFromDecorator);
         styles.add({path: absoluteFrom(resourceUrl), expression});
       }
     }
@@ -751,7 +828,7 @@ export class ComponentDecoratorHandler implements
 
   private _preloadAndParseTemplate(
       node: ClassDeclaration, decorator: Decorator, component: Map<string, ts.Expression>,
-      containingFile: string): Promise<ParsedTemplate|null> {
+      containingFile: string): Promise<ParsedTemplateWithSource|null> {
     if (component.has('templateUrl')) {
       // Extract the templateUrl and preload it.
       const templateUrlExpr = component.get('templateUrl')!;
@@ -760,7 +837,8 @@ export class ComponentDecoratorHandler implements
         throw createValueHasWrongTypeError(
             templateUrlExpr, templateUrl, 'templateUrl must be a string');
       }
-      const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
+      const resourceUrl = this._resolveResourceOrThrow(
+          templateUrl, containingFile, templateUrlExpr, ResourceTypeForDiagnostics.Template);
       const templatePromise = this.resourceLoader.preload(resourceUrl);
 
       // If the preload worked, then actually load and parse the template, and wait for any style
@@ -936,7 +1014,8 @@ export class ComponentDecoratorHandler implements
         throw createValueHasWrongTypeError(
             templateUrlExpr, templateUrl, 'templateUrl must be a string');
       }
-      const resourceUrl = this.resourceLoader.resolve(templateUrl, containingFile);
+      const resourceUrl = this._resolveResourceOrThrow(
+          templateUrl, containingFile, templateUrlExpr, ResourceTypeForDiagnostics.Template);
 
       return {
         isInline: false,
@@ -991,6 +1070,45 @@ export class ComponentDecoratorHandler implements
 
     this.cycleAnalyzer.recordSyntheticImport(origin, imported);
   }
+
+  /**
+   * Resolve the url of a resource relative to the file that contains the reference to it.
+   *
+   * Throws a FatalDiagnosticError when unable to resolve the file.
+   */
+  private _resolveResourceOrThrow(
+      file: string, basePath: string, nodeForError: ts.Node,
+      resourceType: ResourceTypeForDiagnostics): string {
+    try {
+      return this.resourceLoader.resolve(file, basePath);
+    } catch (e) {
+      let errorText: string;
+      switch (resourceType) {
+        case ResourceTypeForDiagnostics.Template:
+          errorText = `Could not find template file '${file}'.`;
+          break;
+        case ResourceTypeForDiagnostics.StylesheetFromTemplate:
+          errorText = `Could not find stylesheet file '${file}' linked from the template.`;
+          break;
+        case ResourceTypeForDiagnostics.StylesheetFromDecorator:
+          errorText = `Could not find stylesheet file '${file}'.`;
+          break;
+      }
+
+      throw new FatalDiagnosticError(
+          ErrorCode.COMPONENT_RESOURCE_NOT_FOUND, nodeForError, errorText);
+    }
+  }
+
+  private _extractTemplateStyleUrls(template: ParsedTemplateWithSource): StyleUrlMeta[] {
+    if (template.styleUrls === null) {
+      return [];
+    }
+
+    const nodeForError = getTemplateDeclarationNodeForError(template.declaration);
+    return template.styleUrls.map(
+        url => ({url, source: ResourceTypeForDiagnostics.StylesheetFromTemplate, nodeForError}));
+  }
 }
 
 function getTemplateRange(templateExpr: ts.Expression) {
@@ -1016,6 +1134,23 @@ function sourceMapUrl(resourceUrl: string): string {
   }
 }
 
+/** Determines if the result of an evaluation is a string array. */
+function isStringArray(resolvedValue: ResolvedValue): resolvedValue is string[] {
+  return Array.isArray(resolvedValue) && resolvedValue.every(elem => typeof elem === 'string');
+}
+
+/** Determines the node to use for debugging purposes for the given TemplateDeclaration. */
+function getTemplateDeclarationNodeForError(declaration: TemplateDeclaration): ts.Node {
+  // TODO(zarend): Change this to if/else when that is compatible with g3. This uses a switch
+  // because if/else fails to compile on g3. That is because g3 compiles this in non-strict mode
+  // where type inference does not work correctly.
+  switch (declaration.isInline) {
+    case true:
+      return declaration.expression;
+    case false:
+      return declaration.templateUrlExpression;
+  }
+}
 
 /**
  * Information about the template which was extracted during parsing.
