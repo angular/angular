@@ -61,7 +61,7 @@ describe('Format date', () => {
   describe('formatDate', () => {
     const isoStringWithoutTime = '2015-01-01';
     const isoStringWithoutTimeOrDate = '2015-01';
-    const isoStringWithoutTimeOrDateOrMonth = '2015-01';
+    const isoStringWithoutTimeOrDateOrMonth = '2015';
     const defaultFormat = 'mediumDate';
     let date: Date;
 
