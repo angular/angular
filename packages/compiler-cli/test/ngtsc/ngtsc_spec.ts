@@ -7718,6 +7718,71 @@ export const Foo = Foo__PRE_R3__;
         });
       });
     });
+
+    it('reports a COMPONENT_RESOURCE_NOT_FOUND for a component with a templateUrl' +
+           ' that points to a non-existent file',
+       () => {
+         env.write('test.ts', `
+                  import {Component} from '@angular/core';
+                  @Component({
+                    selector: 'test-component',
+                    templateUrl: './non-existent-file.html'
+                  })
+                  class TestComponent {}
+                `);
+
+         const diags = env.driveDiagnostics();
+
+         expect(diags.length).toEqual(1);
+         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.COMPONENT_RESOURCE_NOT_FOUND));
+         expect(diags[0].messageText)
+             .toEqual(`Could not find template file './non-existent-file.html'.`);
+       });
+
+    it(`reports a COMPONENT_RESOURCE_NOT_FOUND when style sheet link in a component's template` +
+           ` does not exist`,
+       () => {
+         env.write('test.ts', `
+                  import {Component} from '@angular/core';
+                  @Component({
+                    selector: 'test-component',
+                    templateUrl: './test.html'
+                  })
+                  class TestComponent {}
+                `);
+         env.write('test.html', `
+                  <link rel="stylesheet" href="./non-existent-file.css">
+                  `);
+
+         const diags = env.driveDiagnostics();
+
+         expect(diags.length).toEqual(1);
+         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.COMPONENT_RESOURCE_NOT_FOUND));
+         expect(diags[0].messageText)
+             .toEqual(
+                 `Could not find stylesheet file './non-existent-file.css' linked from the template.`);
+       });
+
+    it('reports a COMPONENT_RESOURCE_NOT_FOUND for a component with a style url ' +
+           'defined in a spread that points to a non-existent file',
+       () => {
+         env.write('test.ts', `
+                  import {Component} from '@angular/core';
+                  @Component({
+                    selector: 'test-component',
+                    template: '',
+                    styleUrls: [...['./non-existent-file.css']]
+                  })
+                  class TestComponent {}
+                `);
+
+         const diags = env.driveDiagnostics();
+
+         expect(diags.length).toEqual(1);
+         expect(diags[0].code).toEqual(ngErrorCode(ErrorCode.COMPONENT_RESOURCE_NOT_FOUND));
+         expect(diags[0].messageText)
+             .toEqual(`Could not find stylesheet file './non-existent-file.css'.`);
+       });
   });
 
   function expectTokenAtPosition<T extends ts.Node>(
