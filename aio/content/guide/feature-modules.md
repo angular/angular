@@ -1,106 +1,79 @@
-# Feature modules
+# Módulos de funcionalidades
 
-Feature modules are NgModules for the purpose of organizing code.
+Los módulos de funcionalidades son NgModules con el propósito de organizar el código.
 
-For the final sample app with a feature module that this page describes,
-see the <live-example></live-example>.
+Para la aplicación de muestra final con un módulo de funcionalidades que se describe en esta página,
+ver el <live-example> </live-example>.
 
 <hr>
 
-As your app grows, you can organize code relevant for a specific feature.
-This helps apply clear boundaries for features. With feature modules,
-you can keep code related to a specific functionality or feature
-separate from other code. Delineating areas of your
-app helps with collaboration between developers and teams, separating
-directives, and managing the size of the root module.
+A medida que tu aplicación crece, puedes organizar el código relevante para una funcionalidad específica. Esto ayuda a aplicar límites claros para las funcionalidades. Con módulos de funcionalidades,
+puedes mantener el código relacionado con una funcionalidad o característica específica
+separado de otro código. Delinear áreas de suaplicación ayuda con la colaboración entre desarrolladores y equipos, separando directivas y gestionar el tamaño del módulo raíz.
 
+## Módulos de funcionalidades frente a módulos raíz
 
-## Feature modules vs. root modules
+Un módulo de funcionalidades es una mejor práctica organizativa, a diferencia de un concepto de la API angular principal. Un módulo de funcionalidades ofrece un conjunto coherente de funcionalidades centradas en una necesidad de aplicación específica, como un flujo de trabajo, enrutamiento o formularios de usuario. Si bien puede hacer todo dentro del módulo raíz, los módulos de funcionalidades lo ayudan a dividir la aplicación en áreas específicas. Un módulo de funcionalidades colabora con el módulo raíz y con otros módulos a través de los servicios que proporciona y los componentes, directivas y canalizaciones que comparte.
 
-A feature module is an organizational best practice, as opposed to a concept of the core Angular API. A feature module delivers a cohesive set of functionality focused on a
-specific application need such as a user workflow, routing, or forms.
-While you can do everything within the root module, feature modules
-help you partition the app into focused areas. A feature module
-collaborates with the root module and with other modules through
-the services it provides and the components, directives, and
-pipes that it shares.
+## Cómo hacer un módulo de funcionalidades
 
-## How to make a feature module
-
-Assuming you already have an app that you created with the [Angular CLI](cli), create a feature
-module using the CLI by entering the following command in the
-root project directory. Replace `CustomerDashboard` with the
-name of your module. You can omit the "Module" suffix from the name because the CLI appends it:
+Suponiendo que ya tienes una aplicación que creó con la [CLI Angular](cli), crea un módulo de funcionalidades usando la CLI ingresando el siguiente comando en el directorio raíz del proyecto. Reemplaza `CustomerDashboard` con el nombre de tu módulo. Puedes omitir el sufijo "Módulo" / "Module" del nombre porque la CLI lo agrega:
 
 ```sh
 ng generate module CustomerDashboard
 
 ```
 
-
-This causes the CLI to create a folder called `customer-dashboard` with a file inside called `customer-dashboard.module.ts` with the following contents:
+Esto hace que la CLI cree una carpeta llamada `customer-dashboard` con un archivo dentro llamado` customer-dashboard.module.ts` con el siguiente contenido:
 
 ```typescript
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
-  imports: [
-    CommonModule
-  ],
-  declarations: []
+  imports: [CommonModule],
+  declarations: [],
 })
-export class CustomerDashboardModule { }
+export class CustomerDashboardModule {}
 ```
 
-The structure of an NgModule is the same whether it is a root module or a feature module. In the CLI generated feature module, there are two JavaScript import statements at the top of the file: the first imports `NgModule`, which, like the root module, lets you use the `@NgModule` decorator; the second imports `CommonModule`, which contributes many common directives such as `ngIf` and `ngFor`. Feature modules import `CommonModule` instead of `BrowserModule`, which is only imported once in the root module. `CommonModule` only contains information for common directives such as `ngIf` and `ngFor` which are needed in most templates, whereas `BrowserModule` configures the Angular app for the browser which needs to be done only once.
+La estructura de un NgModule es la misma si es un módulo raíz o un módulo de funcionalidades. En el módulo de funcionalidades generado por CLI, hay dos declaraciones de importación de JavaScript en la parte superior del archivo: la primera importa `NgModule`, que, como el módulo raíz, le permite usar el decorador `@NgModule`; el segundo importa `CommonModule`, que aporta muchas directivas comunes como `ngIf` y `ngFor`. Los módulos de funcionalidades importan `CommonModule` en lugar de `BrowserModule`, que solo se importa una vez en el módulo raíz. `CommonModule` solo contiene información para directivas comunes como `ngIf` y `ngFor` que se necesitan en la mayoría de las plantillas, mientras que `BrowserModule` configura la aplicación Angular para el navegador, lo cual debe hacerse solo una vez.
 
-The `declarations` array is available for you to add declarables, which
-are components, directives, and pipes that belong exclusively to this particular module. To add a component, enter the following command at the command line where `customer-dashboard` is the directory where the CLI generated the feature module and `CustomerDashboard` is the name of the component:
+La matriz `declaraciones` está disponible para que agregue declarables, que son componentes, directivas y canalizaciones que pertenecen exclusivamente a este módulo en particular. Para agregar un componente, ingresa el siguiente comando en la línea de comando donde `customer-dashboard` es el directorio donde la CLI generó el módulo de funciones y CustomerDashboard` es el nombre del componente:
 
 ```sh
 ng generate component customer-dashboard/CustomerDashboard
-
 ```
 
-This generates a folder for the new component within the customer-dashboard folder and updates the feature module with the `CustomerDashboardComponent` info:
-
+Esto genera una carpeta para el nuevo componente dentro de la carpeta del panel del cliente y actualiza el módulo de funcionalidades con la información de `CustomerDashboardComponent`:
 
 <code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="customer-dashboard-component" header="src/app/customer-dashboard/customer-dashboard.module.ts"></code-example>
 
+El `CustomerDashboardComponent` ahora se encuentra en la lista de importación de JavaScript en la parte superior y se agregó a la matriz de `declaraciones`, lo que le permite a Angular asociar este nuevo componente con este módulo de funciones.
 
+## Importación de un módulo de funcionalidades
 
-The `CustomerDashboardComponent` is now in the JavaScript import list at the top and added to the `declarations` array, which lets Angular know to associate this new component with this feature module.
-
-## Importing a feature module
-
-To incorporate the feature module into your app, you have to let the root module, `app.module.ts`, know about it. Notice the `CustomerDashboardModule` export at the bottom of `customer-dashboard.module.ts`. This exposes it so that other modules can get to it. To import it into the `AppModule`, add it to the imports in `app.module.ts` and to the `imports` array:
+Para incorporar el módulo de funcionalidades en tu aplicación, debes informar al módulo raíz, `app.module.ts`. Observa la exportación de "CustomerDashboardModule" en la parte inferior de `customer-dashboard.module.ts`. Esto lo expone para que otros módulos puedan acceder a él. Para importarlo en el `AppModule`, agrégalo a las importaciones en` app.module.ts` y al arreglo de `import`:
 
 <code-example path="feature-modules/src/app/app.module.ts" region="app-module" header="src/app/app.module.ts"></code-example>
 
+Ahora el `AppModule` conoce el módulo de funcionalidades. Si tuviera que agregar cualquier proveedor de servicios al módulo de funcionalidades, `AppModule` también lo conocería, al igual que cualquier otro módulo de funcionalidades. Sin embargo, los NgModules no exponen sus componentes.
 
-Now the `AppModule` knows about the feature module. If you were to add any service providers to the feature module, `AppModule` would know about those too, as would any other feature modules. However, NgModules don’t expose their components.
+## Representación de la plantilla de componente de un módulo de funcionalidades
 
-
-## Rendering a feature module’s component template
-
-When the CLI generated the `CustomerDashboardComponent` for the feature module, it included a template, `customer-dashboard.component.html`, with the following markup:
+Cuando la CLI generó el `CustomerDashboardComponent` para el módulo de funcionalidades, incluyó una plantilla, `customer-dashboard.component.html`, con el siguiente marcado:
 
 <code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard/customer-dashboard.component.html" region="feature-template" header="src/app/customer-dashboard/customer-dashboard/customer-dashboard.component.html"></code-example>
 
-
-To see this HTML in the `AppComponent`, you first have to export the `CustomerDashboardComponent` in the `CustomerDashboardModule`. In `customer-dashboard.module.ts`, just beneath the `declarations` array, add an `exports` array containing `CustomerDashboardComponent`:
+Para ver este HTML en el `AppComponent`, primero tienes que exportar el `CustomerDashboardComponent` en el `CustomerDashboardModule`. En `customer-dashboard.module.ts`, justo debajo de la matriz de `declaraciones`, agrega una matriz de `exportaciones` que contenga `CustomerDashboardComponent`:
 
 <code-example path="feature-modules/src/app/customer-dashboard/customer-dashboard.module.ts" region="component-exports" header="src/app/customer-dashboard/customer-dashboard.module.ts"></code-example>
 
-
-
-Next, in the `AppComponent`, `app.component.html`, add the tag `<app-customer-dashboard>`:
+Luego, en el `AppComponent`, `app.component.html`, agrega la etiqueta `<app-customer-dashboard>`:
 
 <code-example path="feature-modules/src/app/app.component.html" region="app-component-template" header="src/app/app.component.html"></code-example>
 
-
-Now, in addition to the title that renders by default, the `CustomerDashboardComponent` template renders too:
+Ahora, además del título que se representa de forma predeterminada, la plantilla `CustomerDashboardComponent` también se representa:
 
 <div class="lightbox">
   <img src="generated/images/guide/feature-modules/feature-module.png" alt="feature module component">
@@ -108,9 +81,10 @@ Now, in addition to the title that renders by default, the `CustomerDashboardCom
 
 <hr />
 
-## More on NgModules
+## Más sobre NgModules
 
-You may also be interested in the following:
-* [Lazy Loading Modules with the Angular Router](guide/lazy-loading-ngmodules).
-* [Providers](guide/providers).
-* [Types of Feature Modules](guide/module-types).
+También te puede interesar lo siguiente:
+
+- [Módulos de carga diferida con el enrutador angular](guide/lazy-loading-ngmodules).
+- [Proveedores](guide/providers).
+- [Tipos de módulos de funciones](guide/module-types).
