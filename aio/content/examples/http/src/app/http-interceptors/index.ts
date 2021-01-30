@@ -6,6 +6,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 // #enddocregion interceptor-providers
 import { AuthInterceptor } from './auth-interceptor';
 import { CachingInterceptor } from './caching-interceptor';
+import { CustomJsonInterceptor , CustomJsonParser, JsonParser} from './custom-json-interceptor';
 import { EnsureHttpsInterceptor } from './ensure-https-interceptor';
 import { LoggingInterceptor } from './logging-interceptor';
 // #docregion interceptor-providers
@@ -21,6 +22,10 @@ export const httpInterceptorProviders = [
   // #docregion noop-provider
   { provide: HTTP_INTERCEPTORS, useClass: NoopInterceptor, multi: true },
   // #enddocregion noop-provider, interceptor-providers
+  // #docregion custom-json-interceptor
+  { provide: HTTP_INTERCEPTORS, useClass: CustomJsonInterceptor, multi: true },
+  { provide: JsonParser, useClass: CustomJsonParser },
+  // #enddocregion custom-json-interceptor
 
   { provide: HTTP_INTERCEPTORS, useClass: EnsureHttpsInterceptor, multi: true },
   { provide: HTTP_INTERCEPTORS, useClass: TrimNameInterceptor, multi: true },
