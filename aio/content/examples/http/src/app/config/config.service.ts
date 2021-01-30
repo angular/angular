@@ -14,6 +14,7 @@ import { catchError, retry } from 'rxjs/operators';
 export interface Config {
   heroesUrl: string;
   textfile: string;
+  date: any;
 }
 // #enddocregion config-interface
 // #docregion proto
