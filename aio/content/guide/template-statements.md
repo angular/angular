@@ -18,7 +18,12 @@ Una declaración de plantilla *tiene un efecto secundario*.
 Ese es el objetivo de un evento.
 Es la forma de actualizar el estado de la aplicación a partir de la acción del usuario.
 
-Responder a los eventos es el otro lado del `flujo de datos unidireccionales` de Angular.
+
+<div class="alert is-helpful">
+
+Responder a los eventos es un aspecto del [flujo de datos unidireccional](guide/glossary#unidirectional-data-flow) de Angular.
+
+</div>
 Eres libre de cambiar cualquier cosa, en cualquier lugar, durante este ciclo del evento.
 
 Al igual que las expresiones de plantilla, las *declaraciones* de plantilla utilizan un lenguaje que se parece a JavaScript.
