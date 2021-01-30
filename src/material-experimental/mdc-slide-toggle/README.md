@@ -66,7 +66,7 @@ component by following these steps:
    ));
 
    @include mat-mdc-slide-toggle-theme($my-theme);
-   @include mat-mdc-slide-toggle-typography();
+   @include mat-mdc-slide-toggle-typography($my-theme);
    ```
 
 ## Replacing the standard slide toggle in an existing app

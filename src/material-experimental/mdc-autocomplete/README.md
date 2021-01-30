@@ -70,7 +70,7 @@ component by following these steps:
    ));
 
    @include mat-mdc-autocomplete-theme($my-theme);
-   @include mat-mdc-autocomplete-typography();
+   @include mat-mdc-autocomplete-typography($my-theme);
    ```
 
 ## API differences

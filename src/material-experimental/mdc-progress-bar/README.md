@@ -67,7 +67,7 @@ component by following these steps:
    ));
 
    @include mat-mdc-progress-bar-theme($my-theme);
-   @include mat-mdc-progress-bar-typography();
+   @include mat-mdc-progress-bar-typography($my-theme);
    ```
 
 ## Replacing the standard progress bar in an existing app

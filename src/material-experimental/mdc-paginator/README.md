@@ -66,7 +66,7 @@ component by following these steps:
    ));
 
    @include mat-mdc-paginator-theme($my-theme);
-   @include mat-mdc-paginator-typography();
+   @include mat-mdc-paginator-typography($my-theme);
    ```
 
 ## API differences

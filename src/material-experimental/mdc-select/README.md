@@ -74,7 +74,7 @@ component by following these steps:
    ));
 
    @include mat-mdc-select-theme($my-theme);
-   @include mat-mdc-select-typography();
+   @include mat-mdc-select-typography($my-theme);
    ```
 
 ## API differences

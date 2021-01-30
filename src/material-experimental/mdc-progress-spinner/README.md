@@ -67,7 +67,7 @@ component by following these steps:
    ));
 
    @include mat-mdc-progress-spinner-theme($my-theme);
-   @include mat-mdc-progress-spinner-typography();
+   @include mat-mdc-progress-spinner-typography($my-theme);
    ```
 
 ## Replacing the standard progress spinner in an existing app

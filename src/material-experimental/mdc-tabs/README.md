@@ -70,7 +70,7 @@ component by following these steps:
    ));
 
    @include mat-mdc-tabs-theme($my-theme);
-   @include mat-mdc-tabs-typography();
+   @include mat-mdc-tabs-typography($my-theme);
    ```
 
 ## API differences

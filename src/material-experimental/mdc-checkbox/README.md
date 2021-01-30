@@ -66,7 +66,7 @@ component by following these steps:
    ));
 
    @include mat-mdc-checkbox-theme($my-theme);
-   @include mat-mdc-checkbox-typography();
+   @include mat-mdc-checkbox-typography($my-theme);
    ```
 
 ## API differences

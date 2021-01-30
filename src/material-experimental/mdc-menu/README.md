@@ -70,7 +70,7 @@ component by following these steps:
    ));
 
    @include mat-mdc-menu-theme($my-theme);
-   @include mat-mdc-menu-typography();
+   @include mat-mdc-menu-typography($my-theme);
    ```
 
 ## API differences
