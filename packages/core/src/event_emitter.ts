@@ -81,15 +81,25 @@ export interface EventEmitter<T> extends Subject<T> {
    * @param value The value to emit.
    */
   emit(value?: T): void;
+
   /**
    * Registers handlers for events emitted by this instance.
-   * @param generatorOrNext When supplied, a custom handler for emitted events.
-   * @param error When supplied, a custom handler for an error notification
-   * from this emitter.
-   * @param complete When supplied, a custom handler for a completion
-   * notification from this emitter.
+   * @param next When supplied, a custom handler for emitted events.
+   * @param error When supplied, a custom handler for an error notification from this emitter.
+   * @param complete When supplied, a custom handler for a completion notification from this
+   *     emitter.
    */
-  subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
+  subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void):
+      Subscription;
+  /**
+   * Registers handlers for events emitted by this instance.
+   * @param observerOrNext When supplied, a custom handler for emitted events, or an observer
+   *     object.
+   * @param error When supplied, a custom handler for an error notification from this emitter.
+   * @param complete When supplied, a custom handler for a completion notification from this
+   *     emitter.
+   */
+  subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription;
 }
 
 class EventEmitter_ extends Subject<any> {
@@ -104,38 +114,38 @@ class EventEmitter_ extends Subject<any> {
     super.next(value);
   }
 
-  subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription {
+  subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription {
     let schedulerFn: (t: any) => any;
     let errorFn = (err: any): any => null;
     let completeFn = (): any => null;
 
-    if (generatorOrNext && typeof generatorOrNext === 'object') {
+    if (observerOrNext && typeof observerOrNext === 'object') {
       schedulerFn = this.__isAsync ? (value: any) => {
-        setTimeout(() => generatorOrNext.next(value));
+        setTimeout(() => observerOrNext.next(value));
       } : (value: any) => {
-        generatorOrNext.next(value);
+        observerOrNext.next(value);
       };
 
-      if (generatorOrNext.error) {
+      if (observerOrNext.error) {
         errorFn = this.__isAsync ? (err) => {
-          setTimeout(() => generatorOrNext.error(err));
+          setTimeout(() => observerOrNext.error(err));
         } : (err) => {
-          generatorOrNext.error(err);
+          observerOrNext.error(err);
         };
       }
 
-      if (generatorOrNext.complete) {
+      if (observerOrNext.complete) {
         completeFn = this.__isAsync ? () => {
-          setTimeout(() => generatorOrNext.complete());
+          setTimeout(() => observerOrNext.complete());
         } : () => {
-          generatorOrNext.complete();
+          observerOrNext.complete();
         };
       }
     } else {
       schedulerFn = this.__isAsync ? (value: any) => {
-        setTimeout(() => generatorOrNext(value));
+        setTimeout(() => observerOrNext(value));
       } : (value: any) => {
-        generatorOrNext(value);
+        observerOrNext(value);
       };
 
       if (error) {
@@ -157,8 +167,8 @@ class EventEmitter_ extends Subject<any> {
 
     const sink = super.subscribe(schedulerFn, errorFn, completeFn);
 
-    if (generatorOrNext instanceof Subscription) {
-      generatorOrNext.add(sink);
+    if (observerOrNext instanceof Subscription) {
+      observerOrNext.add(sink);
     }
 
     return sink;
