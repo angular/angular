@@ -97,7 +97,8 @@ export function angularCoreDts(): TestFile {
     }
 
     export declare class EventEmitter<T> {
-      subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown;
+      subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void): unknown;
+      subscribe(observerOrNext?: any, error?: any, complete?: any): unknown;
     }
 
     export declare type NgIterable<T> = Array<T> | Iterable<T>;
