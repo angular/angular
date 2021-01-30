@@ -29,7 +29,7 @@ http_archive(
 load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
 # The minimum bazel version to use with this repo is v3.1.0.
-check_bazel_version("3.1.0")
+check_bazel_version("4.0.0")
 
 node_repositories(
     node_repositories = {
@@ -97,9 +97,12 @@ sass_repositories()
 # Bring in bazel_toolchains for RBE setup configuration.
 http_archive(
     name = "bazel_toolchains",
-    sha256 = "4fb3ceea08101ec41208e3df9e56ec72b69f3d11c56629d6477c0ff88d711cf7",
-    strip_prefix = "bazel-toolchains-3.6.0",
-    url = "https://github.com/bazelbuild/bazel-toolchains/archive/3.6.0.tar.gz",
+    sha256 = "1adf5db506a7e3c465a26988514cfc3971af6d5b3c2218925cd6e71ee443fc3f",
+    strip_prefix = "bazel-toolchains-4.0.0",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-toolchains/releases/download/4.0.0/bazel-toolchains-4.0.0.tar.gz",
+        "https://github.com/bazelbuild/bazel-toolchains/releases/download/4.0.0/bazel-toolchains-4.0.0.tar.gz",
+    ],
 )
 
 load("@bazel_toolchains//repositories:repositories.bzl", bazel_toolchains_repositories = "repositories")
