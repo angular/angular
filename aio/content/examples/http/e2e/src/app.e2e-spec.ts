@@ -66,6 +66,7 @@ describe('Http Tests', () => {
       await checkLogForMessage('GET "assets/config.json"');
       expect(await page.configSpan.getText()).toContain('Heroes API URL is "api/heroes"');
       expect(await page.configSpan.getText()).toContain('Textfile URL is "assets/textfile.txt"');
+      expect(await page.configSpan.getText()).toContain('Date is "Wed Jan 29 2020" (date)');
     });
 
     it('can fetch the configuration JSON file with headers', async () => {

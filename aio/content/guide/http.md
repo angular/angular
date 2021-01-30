@@ -741,6 +741,10 @@ To do this, set the cloned request body to `null`.
   newReq = req.clone({ body: null }); // clear the body
 ```
 
+## Http interceptor use-cases
+
+Below are a number of common uses for interceptors.
+
 ### Setting default headers
 
 Apps often use an interceptor to set default headers on outgoing requests.
@@ -768,7 +772,7 @@ An interceptor that alters headers can be used for a number of different operati
 * Caching behavior; for example, `If-Modified-Since`
 * XSRF protection
 
-### Using interceptors for logging
+### Logging request and response pairs
 
 Because interceptors can process the request and response _together_, they can perform tasks such as timing and logging an entire HTTP operation.
 
@@ -788,9 +792,42 @@ and reports the outcome to the `MessageService`.
 
 Neither `tap` nor `finalize` touch the values of the observable stream returned to the caller.
 
-{@a caching}
+{@a custom-json-parser}
 
-### Using interceptors for caching
+### Custom JSON parsing
+
+Interceptors can be used to replace the built-in JSON parsing with a custom implementation.
+
+The `CustomJsonInterceptor` in the following example demonstrates how to achieve this.
+If the intercepted request expects a `'json'` response, the `reponseType` is changed to `'text'`
+to disable the built-in JSON parsing. Then the response is parsed via the injected `JsonParser`.
+
+<code-example
+  path="http/src/app/http-interceptors/custom-json-interceptor.ts"
+  region="custom-json-interceptor"
+  header="app/http-interceptors/custom-json-interceptor.ts">
+</code-example>
+
+You can then implement your own custom `JsonParser`.
+Here is a custom JsonParser that has a special date reviver.
+
+<code-example
+  path="http/src/app/http-interceptors/custom-json-interceptor.ts"
+  region="custom-json-parser"
+  header="app/http-interceptors/custom-json-interceptor.ts">
+</code-example>
+
+You provide the `CustomParser` along with the `CustomJsonInterceptor`.
+
+<code-example
+  path="http/src/app/http-interceptors/index.ts"
+  region="custom-json-interceptor"
+  header="app/http-interceptors/index.ts">
+</code-example>
+
+
+{@a caching}
+### Caching requests
 
 Interceptors can handle requests by themselves, without forwarding to `next.handle()`.
 
