@@ -233,6 +233,7 @@ function printDiagnostics(
 
 // CLI entry point
 if (require.main === module) {
+  process.title = 'Angular Compiler (ngc)';
   const args = process.argv.slice(2);
   // We are running the real compiler so run against the real file-system
   setFileSystem(new NodeJSFileSystem());
