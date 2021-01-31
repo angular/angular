@@ -23,6 +23,7 @@ import {XtbTranslationParser} from './translation_files/translation_parsers/xtb_
 import {Translator} from './translator';
 
 if (require.main === module) {
+  process.title = 'Angular Localization Message Translator (localize-translate)';
   const args = process.argv.slice(2);
   const options =
       yargs

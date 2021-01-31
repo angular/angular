@@ -41,6 +41,7 @@ function readXi18nCommandLineAndConfiguration(args: string[]): ParsedConfigurati
 
 // Entry point
 if (require.main === module) {
+  process.title = 'Angular i18n Message Extractor (ng-xi18n)';
   const args = process.argv.slice(2);
   // We are running the real compiler so run against the real file-system
   setFileSystem(new NodeJSFileSystem());
