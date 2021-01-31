@@ -25,6 +25,7 @@ import {XmbTranslationSerializer} from './translation_files/xmb_translation_seri
 import {FormatOptions, parseFormatOptions} from './translation_files/format_options';
 
 if (require.main === module) {
+  process.title = 'Angular Localization Message Extractor (localize-extract)';
   const args = process.argv.slice(2);
   const options =
       yargs
