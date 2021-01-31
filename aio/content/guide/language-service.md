@@ -58,9 +58,9 @@ Angular Language Service is currently available as an extension for [Visual Stud
 
 ### Visual Studio Code
 
-In [Visual Studio Code](https://code.visualstudio.com/), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template). You can open the marketplace from the editor using the Extensions icon on the left menu pane, or use VS Quick Open (⌘+P on Mac, CTRL+P on Windows) and type "? ext".
+In [Visual Studio Code](https://code.visualstudio.com/), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template). You can open the marketplace from the editor using the Extensions icon on the left menu pane, or use VS Quick Open (⌘+P on Mac, CTRL+P on Windows) and type "? ext". In the marketplace, search for Angular Language Service extension, and click the **Install** button.
 
-In the marketplace, search for Angular Language Service extension, and click the **Install** button.
+The Visual Studio Code integration with the Angular language service is maintained and distributed by the Angular team.
 
 ### WebStorm
 
