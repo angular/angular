@@ -93,6 +93,11 @@ const MAT_MENU_BASE_ELEVATION = 4;
 
 let menuPanelUid = 0;
 
+
+/** Reason why the menu was closed. */
+export type MenuCloseReason = void | 'click' | 'keydown' | 'tab';
+
+
 /** Base class with all of the `MatMenu` functionality. */
 @Directive()
 export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit,
@@ -239,15 +244,14 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   set classList(classes: string) { this.panelClass = classes; }
 
   /** Event emitted when the menu is closed. */
-  @Output() readonly closed: EventEmitter<void | 'click' | 'keydown' | 'tab'> =
-      new EventEmitter<void | 'click' | 'keydown' | 'tab'>();
+  @Output() readonly closed: EventEmitter<MenuCloseReason> = new EventEmitter<MenuCloseReason>();
 
   /**
    * Event emitted when the menu is closed.
    * @deprecated Switch to `closed` instead
    * @breaking-change 8.0.0
    */
-  @Output() close: EventEmitter<void | 'click' | 'keydown' | 'tab'> = this.closed;
+  @Output() close: EventEmitter<MenuCloseReason> = this.closed;
 
   readonly panelId = `mat-menu-panel-${menuPanelUid++}`;
 

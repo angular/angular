@@ -36,7 +36,7 @@ import {
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {asapScheduler, merge, of as observableOf, Subscription} from 'rxjs';
 import {delay, filter, take, takeUntil} from 'rxjs/operators';
-import {_MatMenuBase} from './menu';
+import {MenuCloseReason, _MatMenuBase} from './menu';
 import {throwMatMenuMissingError, throwMatMenuRecursiveError} from './menu-errors';
 import {MatMenuItem} from './menu-item';
 import {MatMenuPanel, MAT_MENU_PANEL} from './menu-panel';
@@ -103,7 +103,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
 
   // Tracking input type is necessary so it's possible to only auto-focus
   // the first item of the list when the menu is opened via the keyboard
-  _openedBy: Exclude<FocusOrigin, 'program'> = null;
+  _openedBy: Exclude<FocusOrigin, 'program' | null> | undefined = undefined;
 
   /**
    * @deprecated
@@ -131,15 +131,14 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
         throwMatMenuRecursiveError();
       }
 
-      this._menuCloseSubscription = menu.close.subscribe(
-        (reason: 'click' | 'tab' | 'keydown' | undefined) => {
-          this._destroyMenu();
+      this._menuCloseSubscription = menu.close.subscribe((reason: MenuCloseReason) => {
+        this._destroyMenu(reason);
 
-          // If a click closed the menu, we should close the entire chain of nested menus.
-          if ((reason === 'click' || reason === 'tab') && this._parentMaterialMenu) {
-            this._parentMaterialMenu.closed.emit(reason);
-          }
-        });
+        // If a click closed the menu, we should close the entire chain of nested menus.
+        if ((reason === 'click' || reason === 'tab') && this._parentMaterialMenu) {
+          this._parentMaterialMenu.closed.emit(reason);
+        }
+      });
     }
   }
   private _menu: MatMenuPanel;
@@ -284,7 +283,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   }
 
   /** Closes the menu and does the necessary cleanup. */
-  private _destroyMenu() {
+  private _destroyMenu(reason: MenuCloseReason) {
     if (!this._overlayRef || !this.menuOpen) {
       return;
     }
@@ -292,7 +291,16 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     const menu = this.menu;
     this._closingActionsSubscription.unsubscribe();
     this._overlayRef.detach();
-    this._restoreFocus();
+
+    // Always restore focus if the user is navigating using the keyboard or the menu was opened
+    // programmatically. We don't restore for non-root triggers, because it can prevent focus
+    // from making it back to the root trigger when closing a long chain of menus by clicking
+    // on the backdrop.
+    if (this.restoreFocus && (reason === 'keydown' || !this._openedBy || !this.triggersSubmenu())) {
+      this.focus(this._openedBy);
+    }
+
+    this._openedBy = undefined;
 
     if (menu instanceof _MatMenuBase) {
       menu._resetAnimation();
@@ -348,24 +356,6 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
 
       this.menu.setElevation(depth);
     }
-  }
-
-  /** Restores focus to the element that was focused before the menu was open. */
-  private _restoreFocus() {
-    // We should reset focus if the user is navigating using a keyboard or
-    // if we have a top-level trigger which might cause focus to be lost
-    // when clicking on the backdrop.
-    if (this.restoreFocus) {
-      if (!this._openedBy) {
-        // Note that the focus style will show up both for `program` and
-        // `keyboard` so we don't have to specify which one it is.
-        this.focus();
-      } else if (!this.triggersSubmenu()) {
-        this.focus(this._openedBy);
-      }
-    }
-
-    this._openedBy = null;
   }
 
   // set state rather than toggle to support triggers sharing a menu
@@ -506,7 +496,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     if (!isFakeMousedownFromScreenReader(event)) {
       // Since right or middle button clicks won't trigger the `click` event,
       // we shouldn't consider the menu as opened by mouse in those cases.
-      this._openedBy = event.button === 0 ? 'mouse' : null;
+      this._openedBy = event.button === 0 ? 'mouse' : undefined;
 
       // Since clicking on the trigger won't close the menu if it opens a sub-menu,
       // we should prevent focus from moving onto it via click to avoid the

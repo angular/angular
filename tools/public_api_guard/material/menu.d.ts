@@ -12,8 +12,8 @@ export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatM
     backdropClass: string;
     get classList(): string;
     set classList(classes: string);
-    close: EventEmitter<void | 'click' | 'keydown' | 'tab'>;
-    readonly closed: EventEmitter<void | 'click' | 'keydown' | 'tab'>;
+    close: EventEmitter<MenuCloseReason>;
+    readonly closed: EventEmitter<MenuCloseReason>;
     direction: Direction;
     get hasBackdrop(): boolean | undefined;
     set hasBackdrop(value: boolean | undefined);
@@ -149,7 +149,7 @@ export interface MatMenuPanel<T = any> {
 export declare class MatMenuTrigger implements AfterContentInit, OnDestroy {
     get _deprecatedMatMenuTriggerFor(): MatMenuPanel;
     set _deprecatedMatMenuTriggerFor(v: MatMenuPanel);
-    _openedBy: Exclude<FocusOrigin, 'program'>;
+    _openedBy: Exclude<FocusOrigin, 'program' | null> | undefined;
     get dir(): Direction;
     get menu(): MatMenuPanel;
     set menu(menu: MatMenuPanel);
