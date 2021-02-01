@@ -14,7 +14,6 @@ import {
   Component,
   ElementRef,
   Inject,
-  NgZone,
   OnDestroy,
   Optional,
   ViewEncapsulation
@@ -66,7 +65,6 @@ export class MatDialogContainer extends _MatDialogContainerBase implements OnDes
       changeDetectorRef: ChangeDetectorRef,
       @Optional() @Inject(DOCUMENT) document: any,
       config: MatDialogConfig,
-      private _ngZone: NgZone,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) private _animationMode?: string,
       focusMonitor?: FocusMonitor) {
     super(elementRef, focusTrapFactory, changeDetectorRef, document, config, focusMonitor);
@@ -180,6 +178,9 @@ export class MatDialogContainer extends _MatDialogContainerBase implements OnDes
     if (this._animationTimer !== null) {
       clearTimeout(this._animationTimer);
     }
-    this._ngZone.runOutsideAngular(() => this._animationTimer = setTimeout(callback, duration));
+
+    // Note that we want this timer to run inside the NgZone, because we want
+    // the related events like `afterClosed` to be inside the zone as well.
+    this._animationTimer = setTimeout(callback, duration);
   }
 }

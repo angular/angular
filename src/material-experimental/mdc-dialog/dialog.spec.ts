@@ -20,6 +20,7 @@ import {
   Inject,
   Injector,
   NgModule,
+  NgZone,
   TemplateRef,
   ViewChild,
   ViewContainerRef
@@ -200,6 +201,23 @@ describe('MDC-based MatDialog', () => {
        expect(afterCloseCallback).toHaveBeenCalledWith('Charmander');
        expect(overlayContainerElement.querySelector('mat-mdc-dialog-container')).toBeNull();
      }));
+
+  it('should invoke the afterClosed callback inside the NgZone',
+    fakeAsync(inject([NgZone], (zone: NgZone) => {
+      const dialogRef = dialog.open(PizzaMsg, { viewContainerRef: testViewContainerRef });
+      const afterCloseCallback = jasmine.createSpy('afterClose callback');
+
+      dialogRef.afterClosed().subscribe(() => {
+        afterCloseCallback(NgZone.isInAngularZone());
+      });
+      zone.run(() => {
+        dialogRef.close();
+        viewContainerFixture.detectChanges();
+        flush();
+      });
+
+      expect(afterCloseCallback).toHaveBeenCalledWith(true);
+    })));
 
   it('should dispose of dialog if view container is destroyed while animating', fakeAsync(() => {
        const dialogRef = dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
