@@ -204,7 +204,7 @@ def protractor_web_test_suite(**kwargs):
         **kwargs
     )
 
-def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
+def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], exclude_init_script = False, **kwargs):
     # Always include a prebuilt theme in the test suite because otherwise tests, which depend on CSS
     # that is needed for measuring, will unexpectedly fail. Also always adding a prebuilt theme
     # reduces the amount of setup that is needed to create a test suite Bazel target. Note that the
@@ -245,9 +245,7 @@ def ng_web_test_suite(deps = [], static_css = [], bootstrap = [], **kwargs):
 
     karma_web_test_suite(
         # Depend on our custom test initialization script. This needs to be the first dependency.
-        deps = [
-            "//test:angular_test_init",
-        ] + deps,
+        deps = deps if exclude_init_script else ["//test:angular_test_init"] + deps,
         bootstrap = [
             # This matches the ZoneJS bundles used in default CLI projects. See:
             # https://github.com/angular/angular-cli/blob/master/packages/schematics/angular/application/files/src/polyfills.ts.template#L58

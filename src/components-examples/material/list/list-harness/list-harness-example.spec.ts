@@ -1,9 +1,11 @@
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatListHarness} from '@angular/material/list/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatListModule} from '@angular/material/list';
 import {ListHarnessExample} from './list-harness-example';
 
@@ -15,17 +17,15 @@ describe('ListHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatListModule],
-        declarations: [ListHarnessExample]
-      }).compileComponents();
-      fixture = TestBed.createComponent(ListHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-    })
-  );
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatListModule],
+      declarations: [ListHarnessExample]
+    }).compileComponents();
+    fixture = TestBed.createComponent(ListHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
   it('should get all items', async () => {
     const list = await loader.getHarness(MatListHarness);

@@ -1,10 +1,12 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatCheckboxHarness} from '@angular/material/checkbox/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
 import {ReactiveFormsModule} from '@angular/forms';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {CheckboxHarnessExample} from './checkbox-harness-example';
 
@@ -16,15 +18,11 @@ describe('CheckboxHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatCheckboxModule, ReactiveFormsModule],
-        declarations: [CheckboxHarnessExample]
-      }).compileComponents();
-    }));
-
-  beforeEach(() => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatCheckboxModule, ReactiveFormsModule],
+      declarations: [CheckboxHarnessExample]
+    }).compileComponents();
     fixture = TestBed.createComponent(CheckboxHarnessExample);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.loader(fixture);

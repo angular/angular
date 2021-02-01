@@ -1,12 +1,13 @@
-import {TestBed, ComponentFixture, waitForAsync, inject} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatBottomSheetHarness} from '@angular/material/bottom-sheet/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatBottomSheetModule} from '@angular/material/bottom-sheet';
 import {BottomSheetHarnessExample} from './bottom-sheet-harness-example';
-import {OverlayContainer} from '@angular/cdk/overlay';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 
 describe('BottomSheetHarnessExample', () => {
@@ -17,19 +18,14 @@ describe('BottomSheetHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatBottomSheetModule, NoopAnimationsModule],
-        declarations: [BottomSheetHarnessExample]
-      }).compileComponents();
-    }));
-
-  beforeEach(() => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatBottomSheetModule, NoopAnimationsModule],
+      declarations: [BottomSheetHarnessExample]
+    }).compileComponents();
     fixture = TestBed.createComponent(BottomSheetHarnessExample);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.documentRootLoader(fixture);
-    inject([OverlayContainer], () => {})();
   });
 
   it('should load harness for a bottom sheet', async () => {

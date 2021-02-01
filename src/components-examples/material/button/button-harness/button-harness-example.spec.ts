@@ -1,9 +1,11 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatButtonHarness} from '@angular/material/button/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatButtonModule} from '@angular/material/button';
 import {ButtonHarnessExample} from './button-harness-example';
 
@@ -16,17 +18,15 @@ describe('ButtonHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatButtonModule],
-        declarations: [ButtonHarnessExample]
-      }).compileComponents();
-      fixture = TestBed.createComponent(ButtonHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-    })
-  );
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatButtonModule],
+      declarations: [ButtonHarnessExample]
+    }).compileComponents();
+    fixture = TestBed.createComponent(ButtonHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
   it('should load all button harnesses', async () => {
       const buttons = await loader.getAllHarnesses(MatButtonHarness);

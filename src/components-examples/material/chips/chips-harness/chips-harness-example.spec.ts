@@ -1,4 +1,4 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatChipHarness, MatChipListboxHarness} from '@angular/material/chips/testing';
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
@@ -13,20 +13,20 @@ import {MatChipsModule} from '@angular/material/chips';
 describe('ChipsHarnessExample', () => {
   let fixture: ComponentFixture<ChipsHarnessExample>;
   let loader: HarnessLoader;
+
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatChipsModule, NoopAnimationsModule],
-        declarations: [ChipsHarnessExample]
-      }).compileComponents();
-      fixture = TestBed.createComponent(ChipsHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-    })
-  );
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatChipsModule, NoopAnimationsModule],
+      declarations: [ChipsHarnessExample]
+    }).compileComponents();
+    fixture = TestBed.createComponent(ChipsHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
   it('should get whether a chip list is disabled', async () => {
     const chipList = await loader.getHarness(MatChipListboxHarness);

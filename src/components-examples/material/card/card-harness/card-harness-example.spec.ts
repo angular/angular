@@ -1,4 +1,4 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatButtonHarness} from '@angular/material/button/testing';
 import {MatCardHarness} from '@angular/material/card/testing';
@@ -16,15 +16,11 @@ describe('CardHarnessExample', () => {
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatCardModule],
-        declarations: [CardHarnessExample]
-      }).compileComponents();
-    }));
-
-  beforeEach(() => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatCardModule],
+      declarations: [CardHarnessExample]
+    }).compileComponents();
     fixture = TestBed.createComponent(CardHarnessExample);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.loader(fixture);

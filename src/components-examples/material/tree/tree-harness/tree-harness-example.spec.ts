@@ -1,9 +1,11 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatTreeHarness} from '@angular/material/tree/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatTreeModule} from '@angular/material/tree';
 import {TreeHarnessExample} from './tree-harness-example';
 import {MatIconModule} from '@angular/material/icon';
@@ -16,17 +18,15 @@ describe('TreeHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatTreeModule, MatIconModule],
-        declarations: [TreeHarnessExample]
-      }).compileComponents();
-      fixture = TestBed.createComponent(TreeHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-    })
-  );
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatTreeModule, MatIconModule],
+      declarations: [TreeHarnessExample]
+    }).compileComponents();
+    fixture = TestBed.createComponent(TreeHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
   it('should get correct number of children and descendants', async () => {
     const tree = await loader.getHarness(MatTreeHarness);

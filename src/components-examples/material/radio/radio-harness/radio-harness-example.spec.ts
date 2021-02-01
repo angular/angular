@@ -1,9 +1,11 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatRadioButtonHarness, MatRadioGroupHarness} from '@angular/material/radio/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatRadioModule} from '@angular/material/radio';
 import {RadioHarnessExample} from './radio-harness-example';
 import {ReactiveFormsModule} from '@angular/forms';
@@ -16,17 +18,15 @@ describe('RadioHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatRadioModule, ReactiveFormsModule],
-        declarations: [RadioHarnessExample]
-      }).compileComponents();
-      fixture = TestBed.createComponent(RadioHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-    })
-  );
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatRadioModule, ReactiveFormsModule],
+      declarations: [RadioHarnessExample]
+    }).compileComponents();
+    fixture = TestBed.createComponent(RadioHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
   it('should load all radio-group harnesses', async () => {
     const groups = await loader.getAllHarnesses(MatRadioGroupHarness);

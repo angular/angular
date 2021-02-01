@@ -1,43 +1,30 @@
-import {TestBed, ComponentFixture, waitForAsync, inject} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatAutocompleteHarness} from '@angular/material/autocomplete/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {AutocompleteHarnessExample} from './autocomplete-harness-example';
-import {OverlayContainer} from '@angular/cdk/overlay';
 
 describe('AutocompleteHarnessExample', () => {
   let fixture: ComponentFixture<AutocompleteHarnessExample>;
   let loader: HarnessLoader;
-  let overlayContainer: OverlayContainer;
 
   beforeAll(() => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatAutocompleteModule],
-        declarations: [AutocompleteHarnessExample]
-      }).compileComponents();
-    }));
-
-  beforeEach( () => {
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatAutocompleteModule],
+      declarations: [AutocompleteHarnessExample]
+    }).compileComponents();
     fixture = TestBed.createComponent(AutocompleteHarnessExample);
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.loader(fixture);
-    inject([OverlayContainer], (oc: OverlayContainer) => {
-      overlayContainer = oc;
-    })();
-  });
-
-  afterEach(() => {
-    // Angular won't call this for us so we need to do it ourselves to avoid leaks.
-    overlayContainer.ngOnDestroy();
-    overlayContainer = null!;
   });
 
   it('should load all autocomplete harnesses', async () => {

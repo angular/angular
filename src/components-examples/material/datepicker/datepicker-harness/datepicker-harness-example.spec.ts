@@ -1,9 +1,11 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatDatepickerInputHarness} from '@angular/material/datepicker/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {DatepickerHarnessExample} from './datepicker-harness-example';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -18,17 +20,15 @@ describe('DatepickerHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatDatepickerModule, NoopAnimationsModule, MatNativeDateModule, FormsModule],
-        declarations: [DatepickerHarnessExample]
-      }).compileComponents();
-      fixture = TestBed.createComponent(DatepickerHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-    })
-  );
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatDatepickerModule, NoopAnimationsModule, MatNativeDateModule, FormsModule],
+      declarations: [DatepickerHarnessExample]
+    }).compileComponents();
+    fixture = TestBed.createComponent(DatepickerHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
   it('should load all datepicker input harnesses', async () => {
     const inputs = await loader.getAllHarnesses(MatDatepickerInputHarness);

@@ -1,10 +1,13 @@
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "table",
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
     assets = glob([
         "**/*.html",
         "**/*.css",
@@ -38,4 +41,23 @@ filegroup(
         "**/*.css",
         "**/*.ts",
     ]),
+)
+
+ng_test_library(
+    name = "unit_tests_lib",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":table",
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
+        "//src/material/table",
+        "//src/material/table/testing",
+        "@npm//@angular/platform-browser-dynamic",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    exclude_init_script = True,
+    deps = [":unit_tests_lib"],
 )

@@ -1,9 +1,11 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatTableHarness} from '@angular/material/table/testing';
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatTableModule} from '@angular/material/table';
 import {TableHarnessExample} from './table-harness-example';
 
@@ -15,17 +17,15 @@ describe('TableHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatTableModule],
-        declarations: [TableHarnessExample]
-      }).compileComponents();
-      fixture = TestBed.createComponent(TableHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-    })
-  );
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatTableModule],
+      declarations: [TableHarnessExample]
+    }).compileComponents();
+    fixture = TestBed.createComponent(TableHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
   it('should load harness for a table', async () => {
     const tables = await loader.getAllHarnesses(MatTableHarness);

@@ -1,9 +1,11 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatPaginatorHarness} from '@angular/material/paginator/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {PaginatorHarnessExample} from './paginator-harness-example';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -17,18 +19,16 @@ describe('PaginatorHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatPaginatorModule, NoopAnimationsModule],
-        declarations: [PaginatorHarnessExample]
-      }).compileComponents();
-      fixture = TestBed.createComponent(PaginatorHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-      instance = fixture.componentInstance;
-    })
-  );
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatPaginatorModule, NoopAnimationsModule],
+      declarations: [PaginatorHarnessExample]
+    }).compileComponents();
+    fixture = TestBed.createComponent(PaginatorHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+    instance = fixture.componentInstance;
+  });
 
   it('should load all paginator harnesses', async () => {
     const paginators = await loader.getAllHarnesses(MatPaginatorHarness);

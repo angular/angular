@@ -1,9 +1,11 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatToolbarHarness} from '@angular/material/toolbar/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {ToolbarHarnessExample} from './toolbar-harness-example';
 import {MatIconModule} from '@angular/material/icon';
@@ -16,17 +18,15 @@ describe('ToolbarHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatToolbarModule, MatIconModule],
-        declarations: [ToolbarHarnessExample]
-      }).compileComponents();
-      fixture = TestBed.createComponent(ToolbarHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-    })
-  );
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatToolbarModule, MatIconModule],
+      declarations: [ToolbarHarnessExample]
+    }).compileComponents();
+    fixture = TestBed.createComponent(ToolbarHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
   it('should find all toolbars', async () => {
     const toolbars = await loader.getAllHarnesses(MatToolbarHarness);

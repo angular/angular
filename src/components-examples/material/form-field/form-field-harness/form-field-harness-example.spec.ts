@@ -1,9 +1,11 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatFormFieldHarness} from '@angular/material/form-field/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {FormFieldHarnessExample} from './form-field-harness-example';
 import {MatInputModule} from '@angular/material/input';
@@ -19,17 +21,15 @@ describe('FormFieldHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule, NoopAnimationsModule],
-        declarations: [FormFieldHarnessExample]
-      }).compileComponents();
-      fixture = TestBed.createComponent(FormFieldHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-    })
-  );
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatFormFieldModule, MatInputModule, ReactiveFormsModule, NoopAnimationsModule],
+      declarations: [FormFieldHarnessExample]
+    }).compileComponents();
+    fixture = TestBed.createComponent(FormFieldHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
   it('should be able to load harnesses', async () => {
     const formFields = await loader.getAllHarnesses(MatFormFieldHarness);
@@ -47,8 +47,8 @@ describe('FormFieldHarnessExample', () => {
     expect(await formField.getTextHints()).toEqual(['Hint']);
 
     fixture.componentInstance.requiredControl.setValue('');
-    (await formField.getControl())?.blur();
-    expect(await formField.getTextErrors()).toEqual(['Error 1']);
+    await (await formField.getControl())?.blur();
+    expect(await formField.getTextErrors()).toEqual(['Error']);
     expect(await formField.getTextHints()).toEqual([]);
   });
 

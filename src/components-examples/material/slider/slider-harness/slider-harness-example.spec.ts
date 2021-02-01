@@ -1,9 +1,11 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatSliderHarness} from '@angular/material/slider/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatSliderModule} from '@angular/material/slider';
 import {SliderHarnessExample} from './slider-harness-example';
 
@@ -15,17 +17,15 @@ describe('SliderHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatSliderModule],
-        declarations: [SliderHarnessExample]
-      }).compileComponents();
-      fixture = TestBed.createComponent(SliderHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-    })
-  );
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatSliderModule],
+      declarations: [SliderHarnessExample]
+    }).compileComponents();
+    fixture = TestBed.createComponent(SliderHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
   it('should load all slider harnesses', async () => {
     const sliders = await loader.getAllHarnesses(MatSliderHarness);

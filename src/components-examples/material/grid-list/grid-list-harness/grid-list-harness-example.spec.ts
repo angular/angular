@@ -1,9 +1,11 @@
-import {TestBed, ComponentFixture, waitForAsync} from '@angular/core/testing';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {MatGridListHarness, MatGridTileHarness} from '@angular/material/grid-list/testing';
 import {HarnessLoader} from '@angular/cdk/testing';
-import {BrowserDynamicTestingModule, platformBrowserDynamicTesting}
-  from '@angular/platform-browser-dynamic/testing';
+import {
+  BrowserDynamicTestingModule,
+  platformBrowserDynamicTesting,
+} from '@angular/platform-browser-dynamic/testing';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {GridListHarnessExample} from './grid-list-harness-example';
 
@@ -15,17 +17,15 @@ describe('GridListHarnessExample', () => {
     TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting());
   });
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [MatGridListModule],
-        declarations: [GridListHarnessExample]
-      }).compileComponents();
-      fixture = TestBed.createComponent(GridListHarnessExample);
-      fixture.detectChanges();
-      loader = TestbedHarnessEnvironment.loader(fixture);
-    })
-  );
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MatGridListModule],
+      declarations: [GridListHarnessExample]
+    }).compileComponents();
+    fixture = TestBed.createComponent(GridListHarnessExample);
+    fixture.detectChanges();
+    loader = TestbedHarnessEnvironment.loader(fixture);
+  });
 
   it('should be able to load grid-list harnesses', async () => {
     const harnesses = await loader.getAllHarnesses(MatGridListHarness);
