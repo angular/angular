@@ -58,3 +58,5 @@ export declare class MatGridTileText implements AfterContentInit {
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatGridTileText, "mat-grid-tile-header, mat-grid-tile-footer", never, {}, {}, ["_lines"], ["[mat-grid-avatar], [matGridAvatar]", "[mat-line], [matLine]", "*"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatGridTileText, never>;
 }
+
+export declare const ɵTileCoordinator: typeof TileCoordinator;

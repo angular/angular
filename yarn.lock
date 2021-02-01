@@ -12822,10 +12822,10 @@ trough@^1.0.0:
   dependencies:
     glob "^7.1.2"
 
-ts-api-guardian@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/ts-api-guardian/-/ts-api-guardian-0.5.0.tgz#1b63546dfd61581054802bdc8d5915ceebcc2c35"
-  integrity sha512-BjVlb23FUqWU+wmdHkLdaHcllU+v/Cca26sY40bCkM15BCF2yc17daOm+UXyvxQ9NndPM/40m+X+GLyDkrE9tA==
+ts-api-guardian@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/ts-api-guardian/-/ts-api-guardian-0.6.0.tgz#9f44cf9bad1db5de358ccca7b4e6fb1d2c7fe462"
+  integrity sha512-DVA+UgPI1TVRI7GNDG1XBxwGs+cKqJq1os00txr52TUxBPwsUWWT7f83VHWvPQvh7G2wj93U/dTUBeDq3FIDTg==
   dependencies:
     chalk "^2.3.1"
     diff "^3.5.0"
