@@ -92,6 +92,7 @@ export class _RecycleViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemConte
     for (const view of this._viewCache) {
       view.destroy();
     }
+    this._viewCache = [];
   }
 
   /**
@@ -101,7 +102,7 @@ export class _RecycleViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemConte
   private _insertView(viewArgsFactory: () => _ViewRepeaterItemInsertArgs<C>, currentIndex: number,
                       viewContainerRef: ViewContainerRef,
                       value: T): EmbeddedViewRef<C> | undefined {
-    let cachedView = this._insertViewFromCache(currentIndex!, viewContainerRef);
+    const cachedView = this._insertViewFromCache(currentIndex!, viewContainerRef);
     if (cachedView) {
       cachedView.context.$implicit = value;
       return undefined;
@@ -114,15 +115,14 @@ export class _RecycleViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemConte
 
   /** Detaches the view at the given index and inserts into the view cache. */
   private _detachAndCacheView(index: number, viewContainerRef: ViewContainerRef) {
-    const detachedView = this._detachView(index, viewContainerRef);
+    const detachedView = viewContainerRef.detach(index) as EmbeddedViewRef<C>;
     this._maybeCacheView(detachedView, viewContainerRef);
   }
 
   /** Moves view at the previous index to the current index. */
   private _moveView(adjustedPreviousIndex: number, currentIndex: number,
                     viewContainerRef: ViewContainerRef, value: T): EmbeddedViewRef<C> {
-    const view = viewContainerRef.get(adjustedPreviousIndex!) as
-        EmbeddedViewRef<C>;
+    const view = viewContainerRef.get(adjustedPreviousIndex!) as EmbeddedViewRef<C>;
     viewContainerRef.move(view, currentIndex);
     view.context.$implicit = value;
     return view;
@@ -158,10 +158,5 @@ export class _RecycleViewRepeaterStrategy<T, R, C extends _ViewRepeaterItemConte
       viewContainerRef.insert(cachedView, index);
     }
     return cachedView || null;
-  }
-
-  /** Detaches the embedded view at the given index. */
-  private _detachView(index: number, viewContainerRef: ViewContainerRef): EmbeddedViewRef<C> {
-    return viewContainerRef.detach(index) as EmbeddedViewRef<C>;
   }
 }
