@@ -43,7 +43,7 @@
 
     & > .as-split-gutter {
       flex-direction: row;
-      cursor: col-resize;
+      cursor: ew-resize;
       height: 100%; // <- Fix safari bug about gutter height when direction is horizontal.
 
       & > .as-split-gutter-icon {
@@ -61,7 +61,7 @@
 
     & > .as-split-gutter {
       flex-direction: column;
-      cursor: row-resize;
+      cursor: ns-resize;
       width: 100%;
 
       .as-split-gutter-icon {
@@ -96,5 +96,11 @@
     ::ng-deep > .as-split-area {
       transition: flex-basis 0.3s;
     }
+  }
+}
+
+:host-context(.dark-theme) {
+  & > .as-split-gutter {
+    background-color: #3f3f3f;
   }
 }
