@@ -12,6 +12,8 @@ import {AbstractControlDirective} from './abstract_control_directive';
 import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 
+type AnyControlStatus = 'untouched'|'touched'|'pristine'|'dirty'|'valid'|'invalid'|'pending';
+
 export class AbstractControlStatus {
   private _cd: AbstractControlDirective|null;
 
@@ -19,37 +21,19 @@ export class AbstractControlStatus {
     this._cd = cd;
   }
 
-  get ngClassUntouched(): boolean {
-    return this._cd?.control?.untouched ?? false;
-  }
-  get ngClassTouched(): boolean {
-    return this._cd?.control?.touched ?? false;
-  }
-  get ngClassPristine(): boolean {
-    return this._cd?.control?.pristine ?? false;
-  }
-  get ngClassDirty(): boolean {
-    return this._cd?.control?.dirty ?? false;
-  }
-  get ngClassValid(): boolean {
-    return this._cd?.control?.valid ?? false;
-  }
-  get ngClassInvalid(): boolean {
-    return this._cd?.control?.invalid ?? false;
-  }
-  get ngClassPending(): boolean {
-    return this._cd?.control?.pending ?? false;
+  is(status: AnyControlStatus): boolean {
+    return !!this._cd?.control?.[status];
   }
 }
 
 export const ngControlStatusHost = {
-  '[class.ng-untouched]': 'ngClassUntouched',
-  '[class.ng-touched]': 'ngClassTouched',
-  '[class.ng-pristine]': 'ngClassPristine',
-  '[class.ng-dirty]': 'ngClassDirty',
-  '[class.ng-valid]': 'ngClassValid',
-  '[class.ng-invalid]': 'ngClassInvalid',
-  '[class.ng-pending]': 'ngClassPending',
+  '[class.ng-untouched]': 'is("untouched")',
+  '[class.ng-touched]': 'is("touched")',
+  '[class.ng-pristine]': 'is("pristine")',
+  '[class.ng-dirty]': 'is("dirty")',
+  '[class.ng-valid]': 'is("valid")',
+  '[class.ng-invalid]': 'is("invalid")',
+  '[class.ng-pending]': 'is("pending")',
 };
 
 /**
