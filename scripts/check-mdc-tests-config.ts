@@ -172,7 +172,8 @@ export const config = {
       'should adjust for the group padding in ltr',
       'should adjust for the group padding in rtl',
       'should not adjust if all options are within a group, except the selected one',
-      'should align the first option to the trigger, if nothing is selected'
+      'should align the first option to the trigger, if nothing is selected',
+      'should not adjust if option centering is disabled any option under a group is selected'
     ],
     'mdc-slide-toggle': [
       // These tests are verifying implementation details that are not relevant for MDC.

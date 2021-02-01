@@ -4225,6 +4225,25 @@ describe('MatSelect', () => {
               .toBe(Math.floor(triggerTop), 'Expected trigger to align with the first option.');
         }
       }));
+
+      it('should not adjust if option centering is disabled any option under a group is selected',
+        fakeAsync(() => {
+          groupFixture.componentInstance.select.disableOptionCentering = true;
+          groupFixture.componentInstance.control.setValue('oddish-1');
+          groupFixture.detectChanges();
+
+          trigger.click();
+          groupFixture.detectChanges();
+          flush();
+
+          const selected = document.querySelector('.cdk-overlay-pane mat-option.mat-selected')!;
+          const selectedOptionLeft = selected.getBoundingClientRect().left;
+          const triggerLeft = trigger.getBoundingClientRect().left;
+
+          // 16px is the default option padding
+          expect(Math.floor(selectedOptionLeft)).toEqual(Math.floor(triggerLeft - 16));
+        })
+      );
     });
   });
 
