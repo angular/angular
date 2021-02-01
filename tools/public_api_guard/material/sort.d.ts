@@ -5,6 +5,8 @@ export interface ArrowViewStateTransition {
     toState: ArrowViewState;
 }
 
+export declare const MAT_SORT_DEFAULT_OPTIONS: InjectionToken<MatSortDefaultOptions>;
+
 export declare const MAT_SORT_HEADER_INTL_PROVIDER: {
     provide: typeof MatSortHeaderIntl;
     deps: Optional[][];
@@ -23,6 +25,7 @@ export declare class MatSort extends _MatSortMixinBase implements CanDisable, Ha
     readonly sortChange: EventEmitter<Sort>;
     sortables: Map<string, MatSortable>;
     start: 'asc' | 'desc';
+    constructor(_defaultOptions?: MatSortDefaultOptions | undefined);
     deregister(sortable: MatSortable): void;
     getNextSortDirection(sortable: MatSortable): SortDirection;
     ngOnChanges(): void;
@@ -33,7 +36,7 @@ export declare class MatSort extends _MatSortMixinBase implements CanDisable, Ha
     static ngAcceptInputType_disableClear: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatSort, "[matSort]", ["matSort"], { "disabled": "matSortDisabled"; "active": "matSortActive"; "start": "matSortStart"; "direction": "matSortDirection"; "disableClear": "matSortDisableClear"; }, { "sortChange": "matSortChange"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSort, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatSort, [{ optional: true; }]>;
 }
 
 export interface MatSortable {
@@ -50,6 +53,10 @@ export declare const matSortAnimations: {
     readonly arrowPosition: AnimationTriggerMetadata;
     readonly allowChildren: AnimationTriggerMetadata;
 };
+
+export interface MatSortDefaultOptions {
+    disableClear?: boolean;
+}
 
 export declare class MatSortHeader extends _MatSortHeaderMixinBase implements CanDisable, MatSortable, OnDestroy, OnInit, AfterViewInit {
     _arrowDirection: SortDirection;

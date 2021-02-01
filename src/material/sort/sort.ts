@@ -10,10 +10,13 @@ import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   Directive,
   EventEmitter,
+  Inject,
+  InjectionToken,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
+  Optional,
   Output,
 } from '@angular/core';
 import {
@@ -52,6 +55,17 @@ export interface Sort {
   /** The sort direction. */
   direction: SortDirection;
 }
+
+/** Default options for `mat-sort`.  */
+export interface MatSortDefaultOptions {
+  /** Whether to disable clearing the sorting state. */
+  disableClear?: boolean;
+}
+
+/** Injection token to be used to override the default options for `mat-sort`. */
+export const MAT_SORT_DEFAULT_OPTIONS =
+    new InjectionToken<MatSortDefaultOptions>('MAT_SORT_DEFAULT_OPTIONS');
+
 
 // Boilerplate for applying mixins to MatSort.
 /** @docs-private */
@@ -107,6 +121,11 @@ export class MatSort extends _MatSortMixinBase
   /** Event emitted when the user changes either the active sort or sort direction. */
   @Output('matSortChange') readonly sortChange: EventEmitter<Sort> = new EventEmitter<Sort>();
 
+  constructor(@Optional() @Inject(MAT_SORT_DEFAULT_OPTIONS)
+              private _defaultOptions?: MatSortDefaultOptions) {
+    super();
+  }
+
   /**
    * Register function to be used by the contained MatSortables. Adds the MatSortable to the
    * collection of MatSortables.
@@ -150,7 +169,8 @@ export class MatSort extends _MatSortMixinBase
     if (!sortable) { return ''; }
 
     // Get the sort direction cycle with the potential sortable overrides.
-    const disableClear = sortable.disableClear != null ? sortable.disableClear : this.disableClear;
+    const disableClear = sortable?.disableClear ??
+        this.disableClear ?? !!this._defaultOptions?.disableClear;
     let sortDirectionCycle = getSortDirectionCycle(sortable.start || this.start, disableClear);
 
     // Get and return the next direction in the cycle
