@@ -383,6 +383,34 @@ describe('MatMonthView', () => {
                 expect(testComponent.selected).toBeTruthy();
               });
 
+          it('should clear the preview range when the user is done selecting', () => {
+            const cellEls = monthViewNativeElement.querySelectorAll<HTMLElement>(
+                '.mat-calendar-body-cell');
+            testComponent.selected = new DateRange(new Date(2017, JAN, 10), null);
+            fixture.detectChanges();
+            dispatchMouseEvent(cellEls[15], 'mouseenter');
+            fixture.detectChanges();
+
+            // Note that here we only care that _some_ kind of range is rendered. There are
+            // plenty of tests in the calendar body which assert that everything is correct.
+            expect(monthViewNativeElement.querySelectorAll(
+              '.mat-calendar-body-preview-start').length).toBeGreaterThan(0);
+            expect(monthViewNativeElement.querySelectorAll(
+              '.mat-calendar-body-in-preview').length).toBeGreaterThan(0);
+            expect(monthViewNativeElement.querySelectorAll(
+              '.mat-calendar-body-preview-end').length).toBeGreaterThan(0);
+
+            cellEls[15].click();
+            fixture.detectChanges();
+
+            expect(monthViewNativeElement.querySelectorAll(
+              '.mat-calendar-body-preview-start').length).toBe(0);
+            expect(monthViewNativeElement.querySelectorAll(
+              '.mat-calendar-body-in-preview').length).toBe(0);
+            expect(monthViewNativeElement.querySelectorAll(
+              '.mat-calendar-body-preview-end').length).toBe(0);
+          });
+
           it('should not clear the range when pressing escape while there is no preview', () => {
             const getRangeElements = () => monthViewNativeElement.querySelectorAll([
               '.mat-calendar-body-range-start',
