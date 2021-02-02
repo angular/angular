@@ -199,8 +199,9 @@ code {
 
 .sidenav-content a {
   color: $blue;
+
   &:hover {
-    color: $mediumgray;
+    text-decoration: underline;
   }
 }
 
@@ -215,7 +216,6 @@ code {
 .folder-guide,
 .folder-start,
 .folder-tutorial {
-
   aio-doc-viewer{
     a {
       &[href^="http:"]::after,
