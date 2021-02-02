@@ -7,7 +7,6 @@ aio-nav-menu {
   display: block;
   margin: 0 auto;
   max-width: 268px;
-  @include font-size(13);
 
   &:first-of-type {
     margin-top: 16px;
@@ -111,6 +110,7 @@ button.vertical-menu-item {
   color: $darkgray;
   cursor: pointer;
   position: relative;
+  @include font-size(16);
 }
 
 .heading-children {
@@ -143,7 +143,8 @@ button.vertical-menu-item {
 
 .level-1 {
   font-family: $main-font;
-  @include font-size(14);
+  @include font-size(16);
+  @include line-height(28);
   font-weight: 400;
   padding-left: 20px;
   margin: 0;
@@ -164,9 +165,10 @@ button.vertical-menu-item {
 .level-2 {
   font-family: $main-font;
   @include font-size(14);
+  @include line-height(24);
   font-weight: 400;
   margin: 0;
-  padding-left: 32px;
+  padding-left: 36px;
 
   &.expanded .mat-icon,
   .level-3.expanded .mat-icon {
@@ -182,15 +184,17 @@ button.vertical-menu-item {
 .level-3 {
   font-family: $main-font;
   @include font-size(14);
+  @include line-height(24);
   margin: 0;
-  padding-left: 40px;
+  padding-left: 44px;
 }
 
 .level-4 {
   font-family: $main-font;
   @include font-size(14);
+  @include line-height(24);
   margin: 0;
-  padding-left: 48px;
+  padding-left: 52px;
 }
 
 aio-nav-menu.top-menu {
