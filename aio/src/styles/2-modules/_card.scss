@@ -19,19 +19,8 @@
       max-width: none;
     }
 
-    &:hover {
-      section {
-        color: $blue;
-      }
-
-      .card-footer {
-        background-color: rgba($blue, 0.1);
-        color: $blue;
-      }
-    }
-
     section {
-      color: $deepgray;
+      color: $blue;
       @include font-size(20);
       @include line-height(24);
       margin: 0;
@@ -50,6 +39,8 @@
     }
 
     .card-footer {
+      color: $darkblue;
+      background-color: rgba($blue, 0.1);
       bottom: 0;
       border-top: 0.5px solid $lightgray;
       box-sizing: border-box;
@@ -58,7 +49,6 @@
       position: absolute;
       right: 0;
       text-align: right;
-      color: $mediumgray;
 
       a {
         color: $mediumgray;
