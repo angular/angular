@@ -36,6 +36,9 @@
     "name": "NodeInjectorFactory"
   },
   {
+    "name": "PipeDef"
+  },
+  {
     "name": "RuntimeError"
   },
   {

@@ -546,6 +546,9 @@
     "name": "PathLocationStrategy"
   },
   {
+    "name": "PipeDef"
+  },
+  {
     "name": "PlatformLocation"
   },
   {

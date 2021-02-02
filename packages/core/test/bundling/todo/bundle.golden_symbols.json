@@ -87,6 +87,9 @@
     "name": "Optional"
   },
   {
+    "name": "PipeDef"
+  },
+  {
     "name": "R3TemplateRef"
   },
   {

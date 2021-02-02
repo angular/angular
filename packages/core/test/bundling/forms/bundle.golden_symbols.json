@@ -459,6 +459,9 @@
     "name": "PLATFORM_INITIALIZER"
   },
   {
+    "name": "PipeDef"
+  },
+  {
     "name": "PlatformRef"
   },
   {
