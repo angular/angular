@@ -262,13 +262,13 @@ section#intro {
 
 aio-shell {
   &.page-resources, &.page-events, &.page-features, &.page-presskit, &.page-contribute {
-    main {
-      padding: 0rem 0rem 3rem;
+    .sidenav-content {
+      padding: 0 0 3rem;
     }
   }
 
   &.page-home {
-    main {
+    .sidenav-content {
       padding: 0;
     }
   }

@@ -102,13 +102,10 @@ a {
   @include line-height(32);
   font-weight: 400;
   color: $darkgray;
+
   & > em {
     @include letter-spacing(0.3);
   }
-}
-
-p {
-  margin: 14px 0 0;
 }
 
 p + ul {
