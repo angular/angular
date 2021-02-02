@@ -354,6 +354,7 @@ export declare class StickyStyler {
 }
 
 export interface StickyUpdate {
+    elements?: ReadonlyArray<HTMLElement[] | undefined>;
     sizes: StickySize[];
 }
 

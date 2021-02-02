@@ -227,9 +227,11 @@ export class StickyStyler {
       }
 
       if (position === 'top') {
-        this._positionListener?.stickyHeaderRowsUpdated({sizes: stickyCellHeights});
+        this._positionListener?.stickyHeaderRowsUpdated(
+            {sizes: stickyCellHeights, elements: elementsToStick});
       } else {
-        this._positionListener?.stickyFooterRowsUpdated({sizes: stickyCellHeights});
+        this._positionListener?.stickyFooterRowsUpdated(
+            {sizes: stickyCellHeights, elements: elementsToStick});
       }
     });
   }

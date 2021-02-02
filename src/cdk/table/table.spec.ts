@@ -921,9 +921,10 @@ describe('CdkTable', () => {
             headerRows[0].getBoundingClientRect().height,
             undefined,
             headerRows[2].getBoundingClientRect().height,
-          ]
+          ],
+          elements: [[headerRows[0]], undefined, [headerRows[2]]],
         });
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
 
@@ -931,8 +932,8 @@ describe('CdkTable', () => {
         fixture.detectChanges();
         flushMicrotasks();
         expectNoStickyStyles(headerRows);
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
       }));
@@ -948,13 +949,14 @@ describe('CdkTable', () => {
         expectNoStickyStyles([footerRows[1]]);
         expectStickyStyles(footerRows[2], '10', {bottom: '0px'});
         expectStickyBorderClass(footerRows[2]);
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyFooterRowsUpdate).toEqual({
           sizes: [
             footerRows[2].getBoundingClientRect().height,
             undefined,
-            footerRows[1].getBoundingClientRect().height,
-          ]
+            footerRows[0].getBoundingClientRect().height,
+          ],
+          elements: [[footerRows[2]], undefined, [footerRows[0]]],
         });
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
@@ -963,8 +965,8 @@ describe('CdkTable', () => {
         fixture.detectChanges();
         flushMicrotasks();
         expectNoStickyStyles(footerRows);
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
       }));
@@ -1008,8 +1010,8 @@ describe('CdkTable', () => {
           expectStickyBorderClass(cells[2], {left: true});
           expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
         });
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({
           sizes: [
             getCells(dataRows[0])[0].getBoundingClientRect().width,
@@ -1026,8 +1028,8 @@ describe('CdkTable', () => {
         headerRows.forEach(row => expectNoStickyStyles(getHeaderCells(row)));
         dataRows.forEach(row => expectNoStickyStyles(getCells(row)));
         footerRows.forEach(row => expectNoStickyStyles(getFooterCells(row)));
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
       }));
@@ -1061,8 +1063,8 @@ describe('CdkTable', () => {
           expectStickyBorderClass(cells[3], {right: true});
           expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
         });
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({
           sizes: [
@@ -1078,8 +1080,8 @@ describe('CdkTable', () => {
         headerRows.forEach(row => expectNoStickyStyles(getHeaderCells(row)));
         dataRows.forEach(row => expectNoStickyStyles(getCells(row)));
         footerRows.forEach(row => expectNoStickyStyles(getFooterCells(row)));
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
       }));
@@ -1166,10 +1168,12 @@ describe('CdkTable', () => {
         expectNoStickyStyles([footerRows[0], footerRows[1]]);
 
         expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({
-          sizes: [headerRows[0].getBoundingClientRect().height]
+          sizes: [headerRows[0].getBoundingClientRect().height],
+          elements: [[headerRows[0]]],
         });
         expect(component.mostRecentStickyFooterRowsUpdate).toEqual({
-          sizes: [footerRows[2].getBoundingClientRect().height]
+          sizes: [footerRows[2].getBoundingClientRect().height],
+          elements: [[footerRows[2]]],
         });
         expect(component.mostRecentStickyColumnsUpdate).toEqual({
           sizes: [getCells(dataRows[0])[0].getBoundingClientRect().width]
@@ -1189,8 +1193,8 @@ describe('CdkTable', () => {
         dataRows.forEach(row => expectNoStickyStyles([row, ...getCells(row)]));
         footerRows.forEach(row => expectNoStickyStyles([row, ...getFooterCells(row)]));
 
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
       }));
@@ -1230,9 +1234,10 @@ describe('CdkTable', () => {
             headerRows[0].getBoundingClientRect().height,
             undefined,
             headerRows[2].getBoundingClientRect().height,
-          ]
+          ],
+          elements: [getHeaderCells(headerRows[0]), undefined, getHeaderCells(headerRows[2])],
         });
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
 
@@ -1241,8 +1246,8 @@ describe('CdkTable', () => {
         flushMicrotasks();
         expectNoStickyStyles(headerRows);  // No sticky styles on rows for native table
         headerRows.forEach(row => expectNoStickyStyles(getHeaderCells(row)));
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
       }));
@@ -1263,13 +1268,14 @@ describe('CdkTable', () => {
         });
         expectNoStickyStyles(getFooterCells(footerRows[1]));
         expectNoStickyStyles(footerRows);  // No sticky styles on rows for native table
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyFooterRowsUpdate).toEqual({
           sizes: [
             footerRows[2].getBoundingClientRect().height,
             undefined,
-            footerRows[1].getBoundingClientRect().height,
-          ]
+            footerRows[0].getBoundingClientRect().height,
+          ],
+          elements: [getFooterCells(footerRows[2]), undefined, getFooterCells(footerRows[0])],
         });
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
@@ -1279,8 +1285,8 @@ describe('CdkTable', () => {
         flushMicrotasks();
         expectNoStickyStyles(footerRows);  // No sticky styles on rows for native table
         footerRows.forEach(row => expectNoStickyStyles(getFooterCells(row)));
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
       }));
@@ -1333,14 +1339,14 @@ describe('CdkTable', () => {
           expectStickyBorderClass(cells[2], {left: true});
           expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
         });
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({
           sizes: [
             getCells(dataRows[0])[0].getBoundingClientRect().width,
             null,
             getCells(dataRows[0])[2].getBoundingClientRect().width,
-          ]
+          ],
         });
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
 
@@ -1350,8 +1356,8 @@ describe('CdkTable', () => {
         headerRows.forEach(row => expectNoStickyStyles(getHeaderCells(row)));
         dataRows.forEach(row => expectNoStickyStyles(getCells(row)));
         footerRows.forEach(row => expectNoStickyStyles(getFooterCells(row)));
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
       }));
@@ -1385,8 +1391,8 @@ describe('CdkTable', () => {
           expectStickyBorderClass(cells[3], {right: true});
           expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
         });
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({
           sizes: [
@@ -1402,8 +1408,8 @@ describe('CdkTable', () => {
         headerRows.forEach(row => expectNoStickyStyles(getHeaderCells(row)));
         dataRows.forEach(row => expectNoStickyStyles(getCells(row)));
         footerRows.forEach(row => expectNoStickyStyles(getFooterCells(row)));
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
       }));
@@ -1457,10 +1463,12 @@ describe('CdkTable', () => {
         expectNoStickyStyles(footerRows);
 
         expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({
-          sizes: [headerRows[0].getBoundingClientRect().height]
+          sizes: [headerRows[0].getBoundingClientRect().height],
+          elements: [getHeaderCells(headerRows[0])],
         });
         expect(component.mostRecentStickyFooterRowsUpdate).toEqual({
-          sizes: [footerRows[2].getBoundingClientRect().height]
+          sizes: [footerRows[2].getBoundingClientRect().height],
+          elements: [getFooterCells(footerRows[2])],
         });
         expect(component.mostRecentStickyColumnsUpdate).toEqual({
           sizes: [getCells(dataRows[0])[0].getBoundingClientRect().width]
@@ -1480,8 +1488,8 @@ describe('CdkTable', () => {
         dataRows.forEach(row => expectNoStickyStyles([row, ...getCells(row)]));
         footerRows.forEach(row => expectNoStickyStyles([row, ...getFooterCells(row)]));
 
-        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: []});
-        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: []});
+        expect(component.mostRecentStickyHeaderRowsUpdate).toEqual({sizes: [], elements: []});
+        expect(component.mostRecentStickyFooterRowsUpdate).toEqual({sizes: [], elements: []});
         expect(component.mostRecentStickyColumnsUpdate).toEqual({sizes: []});
         expect(component.mostRecentStickyEndColumnsUpdate).toEqual({sizes: []});
       }));

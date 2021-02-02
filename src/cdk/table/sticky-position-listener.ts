@@ -15,6 +15,7 @@ export const STICKY_POSITIONING_LISTENER =
 export type StickySize = number|null|undefined;
 
 export interface StickyUpdate {
+  elements?: ReadonlyArray<HTMLElement[]|undefined>;
   sizes: StickySize[];
 }
 
