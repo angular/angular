@@ -51,9 +51,33 @@ import {toArray} from 'rxjs/operators';
         expect(req.request.headers.get('X-Option')).toEqual('true');
         req.flush({});
       });
-      it('with params', done => {
+      it('with string params', done => {
         client.get('/test', {params: {'test': 'true'}}).subscribe(() => done());
         backend.expectOne('/test?test=true').flush({});
+      });
+      it('with an array of string params', done => {
+        client.get('/test', {params: {'test': ['a', 'b']}}).subscribe(() => done());
+        backend.expectOne('/test?test=a&test=b').flush({});
+      });
+      it('with number params', done => {
+        client.get('/test', {params: {'test': 2}}).subscribe(() => done());
+        backend.expectOne('/test?test=2').flush({});
+      });
+      it('with an array of number params', done => {
+        client.get('/test', {params: {'test': [2, 3]}}).subscribe(() => done());
+        backend.expectOne('/test?test=2&test=3').flush({});
+      });
+      it('with boolean params', done => {
+        client.get('/test', {params: {'test': true}}).subscribe(() => done());
+        backend.expectOne('/test?test=true').flush({});
+      });
+      it('with an array of boolean params', done => {
+        client.get('/test', {params: {'test': [true, false]}}).subscribe(() => done());
+        backend.expectOne('/test?test=true&test=false').flush({});
+      });
+      it('with an array of params of different types', done => {
+        client.get('/test', {params: {'test': [true, 'a', 2] as const}}).subscribe(() => done());
+        backend.expectOne('/test?test=true&test=a&test=2').flush({});
       });
       it('for an arraybuffer', done => {
         const body = new ArrayBuffer(4);

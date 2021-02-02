@@ -98,10 +98,13 @@ function standardEncoding(v: string): string {
       .replace(/%3F/gi, '?')
       .replace(/%2F/gi, '/');
 }
+function valueToString(value: string|number|boolean): string {
+  return `${value}`;
+}
 
 interface Update {
   param: string;
-  value?: string;
+  value?: string|number|boolean;
   op: 'a'|'d'|'s';
 }
 
@@ -118,7 +121,7 @@ export interface HttpParamsOptions {
   fromString?: string;
 
   /** Object map of the HTTP parameters. Mutually exclusive with `fromString`. */
-  fromObject?: {[param: string]: string|ReadonlyArray<string>};
+  fromObject?: {[param: string]: string|number|boolean|ReadonlyArray<string|number|boolean>};
 
   /** Encoding codec used to parse and serialize the parameters. */
   encoder?: HttpParameterCodec;
@@ -205,7 +208,7 @@ export class HttpParams {
    * @param value The new value to add.
    * @return A new body with the appended value.
    */
-  append(param: string, value: string): HttpParams {
+  append(param: string, value: string|number|boolean): HttpParams {
     return this.clone({param, value, op: 'a'});
   }
 
@@ -214,7 +217,8 @@ export class HttpParams {
    * @param params parameters and values
    * @return A new body with the new value.
    */
-  appendAll(params: {[param: string]: string|string[]}): HttpParams {
+  appendAll(params: {[param: string]: string|number|boolean|ReadonlyArray<string|number|boolean>}):
+      HttpParams {
     const updates: Update[] = [];
     Object.keys(params).forEach(param => {
       const value = params[param];
@@ -223,7 +227,7 @@ export class HttpParams {
           updates.push({param, value: _value, op: 'a'});
         });
       } else {
-        updates.push({param, value, op: 'a'});
+        updates.push({param, value: value as (string | number | boolean), op: 'a'});
       }
     });
     return this.clone(updates);
@@ -235,7 +239,7 @@ export class HttpParams {
    * @param value The new value.
    * @return A new body with the new value.
    */
-  set(param: string, value: string): HttpParams {
+  set(param: string, value: string|number|boolean): HttpParams {
     return this.clone({param, value, op: 's'});
   }
 
@@ -246,7 +250,7 @@ export class HttpParams {
    * @return A new body with the given value removed, or with all values
    * removed if no value is specified.
    */
-  delete(param: string, value?: string): HttpParams {
+  delete(param: string, value?: string|number|boolean): HttpParams {
     return this.clone({param, value, op: 'd'});
   }
 
@@ -290,13 +294,13 @@ export class HttpParams {
           case 'a':
           case 's':
             const base = (update.op === 'a' ? this.map!.get(update.param) : undefined) || [];
-            base.push(update.value!);
+            base.push(valueToString(update.value!));
             this.map!.set(update.param, base);
             break;
           case 'd':
             if (update.value !== undefined) {
               let base = this.map!.get(update.param) || [];
-              const idx = base.indexOf(update.value);
+              const idx = base.indexOf(valueToString(update.value));
               if (idx !== -1) {
                 base.splice(idx, 1);
               }
