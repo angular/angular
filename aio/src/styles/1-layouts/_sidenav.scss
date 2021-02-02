@@ -6,15 +6,19 @@
 aio-nav-menu {
   display: block;
   margin: 0 auto;
-  max-width: 260px;
+  max-width: 268px;
   @include font-size(13);
+
+  &:first-of-type {
+    margin-top: 16px;
+  }
+
+  &:last-of-type {
+    margin-bottom: 16px;
+  }
 
   ul, a {
     margin: 0;
-  }
-
-  &:first-child {
-    margin-top: 16px;
   }
 
   aio-nav-item div a {
@@ -27,7 +31,6 @@ mat-sidenav.mat-sidenav.sidenav {
   top: 64px;
   bottom: 0;
   left: 0;
-  padding: 0;
   min-width: 260px;
   background-color: $superlightgray;
   border-right: 1px solid $lightgray;
@@ -75,7 +78,7 @@ mat-sidenav-container div.mat-sidenav-content {
   &:hover {
     background-color: $lightgray;
     color: $blue;
-    text-shadow: 0 0 5px #ffffff;
+    text-shadow: 0 0 5px $white;
   }
 
   &:focus {
@@ -84,11 +87,6 @@ mat-sidenav-container div.mat-sidenav-content {
 
   &.selected {
     color: $darkblue;
-  }
-
-  &.level-2 {
-    padding-top: 4px;
-    padding-bottom: 4px;
   }
 
   span {
@@ -105,8 +103,6 @@ mat-sidenav-container div.mat-sidenav-content {
 button.vertical-menu-item {
   border: none;
   background-color: transparent;
-  padding-top: 10px;
-  padding-bottom: 10px;
   margin: 0;
   width: 100%;
 }
