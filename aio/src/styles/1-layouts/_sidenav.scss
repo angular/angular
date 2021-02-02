@@ -106,13 +106,6 @@ button.vertical-menu-item {
   width: 100%;
 }
 
-.heading {
-  color: $darkgray;
-  cursor: pointer;
-  position: relative;
-  @include font-size(16);
-}
-
 .heading-children {
   &.expanded {
     visibility: visible;
