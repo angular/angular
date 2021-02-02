@@ -2,13 +2,14 @@
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: center;
   margin: 16px 0;
 
   .docs-card {
-    @include card(194px, 30%);
+    @include card(194px, 35%);
     max-width: 340px;
-    min-width: 262px;
-    margin: 24px 8px;
+    min-width: 300px;
+    margin: 24px 16px;
     padding-bottom: 48px;
     position: relative;
 
@@ -18,19 +19,8 @@
       max-width: none;
     }
 
-    &:hover {
-      section {
-        color: $blue;
-      }
-
-      .card-footer {
-        background-color: rgba($blue, 0.1);
-        color: $blue;
-      }
-    }
-
     section {
-      color: $deepgray;
+      color: $blue;
       @include font-size(20);
       @include line-height(24);
       margin: 0;
@@ -49,6 +39,8 @@
     }
 
     .card-footer {
+      color: $darkblue;
+      background-color: rgba($blue, 0.1);
       bottom: 0;
       border-top: 0.5px solid $lightgray;
       box-sizing: border-box;
@@ -57,7 +49,6 @@
       position: absolute;
       right: 0;
       text-align: right;
-      color: $mediumgray;
 
       a {
         color: $mediumgray;
