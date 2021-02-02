@@ -23,6 +23,9 @@ export function extractCursorInfo(textWithCursor: string): {cursor: number, text
 }
 
 function last<T>(array: T[]): T {
+  if (array.length === 0) {
+    throw new Error(`last() called on empty array`);
+  }
   return array[array.length - 1];
 }
 
