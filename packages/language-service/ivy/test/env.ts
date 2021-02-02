@@ -18,6 +18,8 @@ import {LanguageService} from '../language_service';
 
 import {MockServerHost} from './mock_host';
 
+// TODO(alxhub): replace this environment with //packages/language-service/ivy/testing
+
 function writeTsconfig(
     fs: FileSystem, entryFiles: AbsoluteFsPath[], options: TestableOptions): void {
   fs.writeFile(
