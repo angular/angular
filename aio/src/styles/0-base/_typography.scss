@@ -28,28 +28,23 @@ h1 {
 }
 
 h2 {
-  @include font-size(22);
-  margin-top: 2rem;
+  border-top: 1px solid $lightgray;
   clear: both;
+  @include font-size(22);
+  margin-top: 4rem;
+  padding-top: 4rem;
 
-  &:before {
-    content: '';
-    display: block;
-    border-bottom: 1px solid $lightgray;
-    margin: 4rem 0;
-
-    .page-about &,
-    .page-api &,
-    .page-contribute &,
-    .page-events &,
-    .page-features &,
-    .page-home &,
-    .page-presskit &,
-    .page-resources & {
-      border: 0;
-      display: none;
-      visibility: hidden;
-    }
+  .page-about &,
+  .page-api &,
+  .page-contribute &,
+  .page-events &,
+  .page-features &,
+  .page-home &,
+  .page-presskit &,
+  .page-resources & {
+    border-top: 0;
+    margin-top: 2rem;
+    padding-top: 0;
   }
 }
 
