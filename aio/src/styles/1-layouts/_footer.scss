@@ -13,6 +13,7 @@ footer {
 
     & > * {
       color: $white;
+      max-width: 50em;
     }
   }
 
@@ -56,7 +57,7 @@ footer {
 
   p {
     text-align: center;
-    margin: 10px 0px 5px;
+    margin: 10px auto 5px;
 
     @media (max-width: 480px) {
       text-align: left;
@@ -69,7 +70,7 @@ footer {
     display: flex;
     justify-content: center;
     text-align: left;
-    margin: 0 0 40px;
+    margin: 0 auto 40px;
 
     ul {
       list-style-position: inside;
