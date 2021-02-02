@@ -7,8 +7,6 @@ Importing `ServiceWorkerModule` into your `AppModule` doesn't just register the 
 A basic understanding of the following:
 * [Getting Started with Service Workers](guide/service-worker-getting-started).
 
-<hr />
-
 
 ## `SwUpdate` service
 

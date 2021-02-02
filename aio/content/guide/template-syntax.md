@@ -53,7 +53,6 @@ For more information, see the [Security](guide/security) page.
 
 </div>
 
-<hr />
 
 ## More on template syntax
 

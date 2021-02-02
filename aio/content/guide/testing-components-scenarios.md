@@ -124,10 +124,7 @@ There is no harm in calling `detectChanges()` more often than is strictly necess
 
 </div>
 
-<hr>
-
 {@a dispatch-event}
-
 #### Change an input value with _dispatchEvent()_
 
 To simulate user input, you can find the input element and set its `value` property.
@@ -142,8 +139,6 @@ _Then_ you call `detectChanges()`.
 The following example demonstrates the proper sequence.
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="title-case-pipe" header="app/hero/hero-detail.component.spec.ts (pipe test)"></code-example>
-
-<hr>
 
 ## Component with external files
 
@@ -291,10 +286,7 @@ The remaining tests confirm the logic of the component when the service returns 
 The second test validates the effect of changing the user name.
 The third test checks that the component displays the proper message when there is no logged-in user.
 
-<hr>
-
 {@a component-with-async-service}
-
 ## Component with async service
 
 In this sample, the `AboutComponent` template hosts a `TwainComponent`.
@@ -670,8 +662,6 @@ can give you that information and make assertions about the state of the view.
   path="testing/src/app/twain/twain.component.spec.ts"
   region="spy-done-test"></code-example>
 
-<hr>
-
 {@a marble-testing}
 ## Component marble tests
 
@@ -776,10 +766,7 @@ RxJS marble testing is a rich subject, beyond the scope of this guide.
 Learn about it on the web, starting with the
 [official documentation](https://rxjs.dev/guide/testing/marble-testing).
 
-<hr>
-
 {@a component-with-input-output}
-
 ## Component with inputs and outputs
 
 A component with inputs and outputs typically appears inside the view template of a host component.
@@ -970,10 +957,7 @@ Here's the previous test, rewritten using the click helper.
   header="app/dashboard/dashboard-hero.component.spec.ts (test with click helper)">
 </code-example>
 
-<hr>
-
 {@a component-inside-test-host}
-
 ## Component inside a test host
 
 The previous tests played the role of the host `DashboardComponent` themselves.
@@ -1032,10 +1016,7 @@ The tests themselves are almost identical to the stand-alone version:
 Only the selected event test differs. It confirms that the selected `DashboardHeroComponent` hero
 really does find its way up through the event binding to the host component.
 
-<hr>
-
 {@a routing-component}
-
 ## Routing component
 
 A _routing component_ is a component that tells the `Router` to navigate to another component.
@@ -1186,8 +1167,6 @@ New heroes have `id=0` and a blank `name`. This test confirms that the component
   region="route-no-id"
   header="app/hero/hero-detail.component.spec.ts (no id)"></code-example>
 
-<hr>
-
 ## Nested component tests
 
 Component templates often have nested components, whose templates
@@ -1309,8 +1288,6 @@ The Angular compiler creates the `BannerComponentStub` for the `<app-banner>` el
 and applies the `RouterLinkStubDirective` to the anchors with the `routerLink` attribute,
 but it ignores the `<app-welcome>` and `<router-outlet>` tags.
 
-<hr>
-
 {@a routerlink}
 ## Components with _RouterLink_
 
@@ -1417,10 +1394,7 @@ tests with the `RouterTestingModule`.
 
 </div>
 
-<hr>
-
 {@a page-object}
-
 ## Use a _page_ object
 
 The `HeroDetailComponent` is a simple view with a title, two hero fields, and two buttons.
@@ -1473,8 +1447,6 @@ Here are a few more `HeroDetailComponent` tests to reinforce the point.
   path="testing/src/app/hero/hero-detail.component.spec.ts"
   region="selected-tests"
   header="app/hero/hero-detail.component.spec.ts (selected tests)"></code-example>
-
-<hr>
 
 {@a compile-components}
 ## Calling _compileComponents()_
@@ -1619,10 +1591,7 @@ even though it is never required when running `ng test`.
 
 The tests in this guide only call `compileComponents` when necessary.
 
-<hr>
-
 {@a import-module}
-
 ## Setup with module imports
 
 Earlier component tests configured the testing module with a few `declarations` like this:
@@ -1705,10 +1674,7 @@ the module is small, as feature modules tend to be.
 
 </div>
 
-<hr>
-
 {@a component-override}
-
 ## Override component providers
 
 The `HeroDetailComponent` provides its own `HeroDetailService`.
@@ -1817,5 +1783,3 @@ The `TestBed` offers similar `overrideDirective`, `overrideModule`, and `overrid
 for digging into and replacing parts of these other classes.
 
 Explore the options and combinations on your own.
-
-<hr>

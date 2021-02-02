@@ -97,9 +97,6 @@ Child modules and component injectors are independent of each other, and create 
 For more information, see [Hierarchical injectors](guide/hierarchical-dependency-injection).
 
 
-
-<hr>
-
 ## More on NgModules
 
 You may also be interested in:

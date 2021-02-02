@@ -74,5 +74,3 @@ A few techniques are noteworthy:
   and its `defaultColor`.
 
 - `DebugElement.properties` affords access to the artificial custom property that is set by the directive.
-
-<hr>

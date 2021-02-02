@@ -323,8 +323,6 @@ ngOnInit() {
 For more information with a working example, see the [routing tutorial section on preloading](guide/router-tutorial-toh#preloading-background-loading-of-feature-areas).
 
 
-<hr>
-
 ## More on NgModules and routing
 
 You may also be interested in the following:

@@ -59,8 +59,6 @@ In the following example, Angular checks to see if `myClick` is an event on the 
 
 If the target event name, `myClick` fails to match an element event or an output property of `ClickDirective`, Angular reports an "unknown directive" error.
 
-<hr />
-
 ## What's next
 
 For more information on how event binding works, see [How event binding works](guide/event-binding-concepts).
