@@ -1,6 +1,6 @@
 # MapGroundOverlay
 
-The `MapGroundOverlay` component wraps the [`google.maps.BicyclingLayer` class](https://developers.google.com/maps/documentation/javascript/reference/image-overlay#GroundOverlay) from the Google Maps JavaScript API. A url and a bounds are required.
+The `MapGroundOverlay` component wraps the [`google.maps.GroundOverlay` class](https://developers.google.com/maps/documentation/javascript/reference/image-overlay#GroundOverlay) from the Google Maps JavaScript API. A url and a bounds are required.
 
 ## Example
 
