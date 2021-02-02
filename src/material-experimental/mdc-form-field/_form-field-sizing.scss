@@ -20,8 +20,6 @@ $mat-form-field-hint-min-space: 1em !default;
 // inputs. We take the explicit numbers provided by the Material Design specification.
 // https://material.io/components/text-fields/#specs
 
-$mat-form-field-height: 56px;
-
 // Vertical spacing of the text-field if there is a label. MDC hard-codes the spacing into
 // their styles, but their spacing variables would not work for our form-field structure anyway.
 // This is because MDC's alignment depends on the input element to expand to full infix height.
