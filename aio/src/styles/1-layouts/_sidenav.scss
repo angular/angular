@@ -29,8 +29,8 @@ mat-sidenav.mat-sidenav.sidenav {
   left: 0;
   padding: 0;
   min-width: 260px;
-  background-color: $white;
-  box-shadow: 6px 0 6px rgba(0,0,0,0.10);
+  background-color: $lightblue;
+  border-right: 1px solid $lightgray;
 
   &.collapsed {
     top: 56px;
