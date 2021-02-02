@@ -29,8 +29,8 @@ mat-sidenav.mat-sidenav.sidenav {
   left: 0;
   padding: 0;
   min-width: 260px;
-  background-color: $white;
-  box-shadow: 6px 0 6px rgba(0,0,0,0.10);
+  background-color: $superlightgray;
+  border-right: 1px solid $lightgray;
 
   &.collapsed {
     top: 56px;
@@ -83,7 +83,7 @@ mat-sidenav-container div.mat-sidenav-content {
   }
 
   &.selected {
-    color: $blue;
+    color: $darkblue;
   }
 
   &.level-2 {
@@ -168,7 +168,6 @@ button.vertical-menu-item {
 }
 
 .level-2 {
-  color: $mediumgray;
   font-family: $main-font;
   @include font-size(14);
   font-weight: 400;
@@ -188,7 +187,6 @@ button.vertical-menu-item {
 }
 
 .level-3 {
-  color: $mediumgray;
   font-family: $main-font;
   @include font-size(14);
   margin: 0;
@@ -197,7 +195,6 @@ button.vertical-menu-item {
 }
 
 .level-4 {
-  color: $mediumgray;
   font-family: $main-font;
   @include font-size(14);
   margin: 0;
