@@ -5,7 +5,7 @@
 
 En este tutorial, crearás tu propia aplicación desde cero, proporcionando experiencia con el proceso de desarrollo típico, así como una introducción a los conceptos básicos de diseño de aplicaciones, herramientas y terminología.
 
-Si eres completamente nuevo en Angular, es posible que desees probar la aplicación de inicio rápido [**Pruébelo ahora **](start) primero.
+Si eres completamente nuevo en Angular, es posible que desees probar la aplicación de inicio rápido [**Pruébalo ahora**](start) primero.
 Se basa en un proyecto listo y parcialmente completado, que puedes examinar y modificar en el entorno de desarrollo interactivo de StackBlitz, donde puedes ver los resultados en tiempo real.
 
 El tutorial "Pruébalo" cubre los mismos temas principales&mdash;componentes, sintaxis de plantilla, enrutamiento, servicios y acceso a datos a través de HTTP&mdash; en un formato condensado, siguiendo las mejores prácticas más actuales.
@@ -29,9 +29,9 @@ Al final de este tutorial, podrás hacer lo siguiente:
 * Agregar campos editables para actualizar un modelo con enlace de datos bidireccional.
 * Enlazar métodos de componentes a eventos de usuario, como pulsaciones de teclas y clics.
 * Permitir a los usuarios seleccionar un héroe de una lista maestra y editar ese héroe en la vista de detalles.
-* Dar formato a datos con [pipes](guide/glossary#pipe "Definición de Pipe ")
+* Dar formato a datos con [pipes](guide/glossary#pipe "Definición de Pipe").
 * Crear un [servicio](guide/glossary#service "Definición de Servicio") compartido para reunir a los héroes.
-* Utilizar [enrutamiento](guide/glossary#router "Definición de Enrutamiento ")(routing) para navegar entre diferentes vistas y sus componentes.
+* Utilizar [enrutamiento](guide/glossary#router "Definición de Enrutamiento") para navegar entre diferentes vistas y sus componentes.
 
 Aprenderás suficiente Angular para comenzar y ganarás la confianza de que
 Angular puede hacer lo que tú necesites que haga.
