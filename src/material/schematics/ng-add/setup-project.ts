@@ -104,7 +104,8 @@ function addMaterialAppStyles(options: Schema) {
 
     if (!styleFilePath) {
       logger.error(`Could not find the default style file for this project.`);
-      logger.info(`Please consider manually setting up the Roboto font in your CSS.`);
+      logger.info(`Consider manually adding the Roboto font to your CSS.`);
+      logger.info(`More information at https://fonts.google.com/specimen/Roboto`);
       return;
     }
 
@@ -113,7 +114,7 @@ function addMaterialAppStyles(options: Schema) {
     if (!buffer) {
       logger.error(`Could not read the default style file within the project ` +
         `(${styleFilePath})`);
-      logger.info(`Please consider manually setting up the Robot font.`);
+      logger.info(`Please consider manually setting up the Roboto font.`);
       return;
     }
 
