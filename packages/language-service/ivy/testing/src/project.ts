@@ -50,15 +50,15 @@ export class Project {
   readonly ngLS: LanguageService;
   private buffers = new Map<string, OpenBuffer>();
 
-  static initialize(name: string, projectService: ts.server.ProjectService, files: ProjectFiles):
-      Project {
+  static initialize(
+      projectName: string, projectService: ts.server.ProjectService, files: ProjectFiles): Project {
     const fs = getFileSystem();
-    const tsConfigPath = absoluteFrom(`/${name}/tsconfig.json`);
+    const tsConfigPath = absoluteFrom(`/${projectName}/tsconfig.json`);
 
     const entryFiles: AbsoluteFsPath[] = [];
     for (const projectFilePath of Object.keys(files)) {
       const contents = files[projectFilePath];
-      const filePath = absoluteFrom(`/${name}/${projectFilePath}`);
+      const filePath = absoluteFrom(`/${projectName}/${projectFilePath}`);
       const dirPath = fs.dirname(filePath);
       fs.ensureDir(dirPath);
       fs.writeFile(filePath, contents);
@@ -73,7 +73,7 @@ export class Project {
     projectService.openClientFile(entryFiles[0]);
     projectService.closeClientFile(entryFiles[0]);
 
-    return new Project(name, projectService, tsConfigPath);
+    return new Project(projectName, projectService, tsConfigPath);
   }
 
   constructor(
@@ -102,7 +102,7 @@ export class Project {
         throw new Error(
             `Unable to open ScriptInfo for ${projectFileName} in project ${this.tsConfigPath}`);
       }
-      this.buffers.set(projectFileName, new OpenBuffer(this, projectFileName, scriptInfo));
+      this.buffers.set(projectFileName, new OpenBuffer(this.ngLS, projectFileName, scriptInfo));
     }
 
     return this.buffers.get(projectFileName)!;

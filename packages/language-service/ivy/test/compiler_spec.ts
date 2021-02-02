@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
-import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 
+import {isNgSpecificDiagnostic, LanguageServiceTestEnv} from '../testing';
 import {LanguageServiceTestEnvironment} from './env';
 
 describe('language-service/compiler integration', () => {
@@ -50,66 +50,43 @@ describe('language-service/compiler integration', () => {
   });
 
   it('should not produce errors from inline test declarations mixing with those of the app', () => {
-    const appCmpFile = absoluteFrom('/test.cmp.ts');
-    const appModuleFile = absoluteFrom('/test.mod.ts');
-    const testFile = absoluteFrom('/test_spec.ts');
+    const env = LanguageServiceTestEnv.setup();
+    const project = env.addProject('test', {
+      'cmp.ts': `
+        import {Component} from '@angular/core';
 
-    const env = LanguageServiceTestEnvironment.setup([
-      {
-        name: appCmpFile,
-        contents: `
-          import {Component} from '@angular/core';
+        @Component({
+          selector: 'app-cmp',
+          template: 'Some template',
+        })
+        export class AppCmp {}
+      `,
+      'mod.ts': `
+        import {NgModule} from '@angular/core';
+        import {AppCmp} from './cmp';
 
-          @Component({
-            selector: 'app-cmp',
-            template: 'Some template',
-          })
-          export class AppCmp {}
-        `,
-        isRoot: true,
-      },
-      {
-        name: appModuleFile,
-        contents: `
-          import {NgModule} from '@angular/core';
-          import {AppCmp} from './test.cmp';
+        @NgModule({
+          declarations: [AppCmp],
+        })
+        export class AppModule {}
+      `,
+      'test_spec.ts': `
+        import {NgModule} from '@angular/core';
+        import {AppCmp} from './cmp';
 
+        export function test(): void {
           @NgModule({
             declarations: [AppCmp],
           })
-          export class AppModule {}
-        `,
-        isRoot: true,
-      },
-      {
-        name: testFile,
-        contents: `
-          import {NgModule} from '@angular/core';
-          import {AppCmp} from './test.cmp';
-
-          export function test(): void {
-            @NgModule({
-              declarations: [AppCmp],
-            })
-            class TestModule {}
-          }
-        `,
-        isRoot: true,
-      }
-    ]);
+          class TestModule {}
+        }
+      `,
+    });
 
     // Expect that this program is clean diagnostically.
-    const ngCompiler = env.ngLS.compilerFactory.getOrCreate();
-    const program = ngCompiler.getNextProgram();
-    expect(ngCompiler.getDiagnosticsForFile(
-               getSourceFileOrError(program, appCmpFile), OptimizeFor.WholeProgram))
-        .toEqual([]);
-    expect(ngCompiler.getDiagnosticsForFile(
-               getSourceFileOrError(program, appModuleFile), OptimizeFor.WholeProgram))
-        .toEqual([]);
-    expect(ngCompiler.getDiagnosticsForFile(
-               getSourceFileOrError(program, testFile), OptimizeFor.WholeProgram))
-        .toEqual([]);
+    expect(project.getDiagnosticsForFile('cmp.ts')).toEqual([]);
+    expect(project.getDiagnosticsForFile('mod.ts')).toEqual([]);
+    expect(project.getDiagnosticsForFile('test_spec.ts')).toEqual([]);
   });
 
   it('should show type-checking errors from components with poisoned scopes', () => {
@@ -122,39 +99,36 @@ describe('language-service/compiler integration', () => {
     // that a component declared in an NgModule with a faulty import still generates template
     // diagnostics.
 
-    const file = absoluteFrom('/test.ts');
-    const env = LanguageServiceTestEnvironment.setup([{
-      name: file,
-      contents: `
-          import {Component, Directive, Input, NgModule} from '@angular/core';
+    const env = LanguageServiceTestEnv.setup();
+    const project = env.addProject('test', {
+      'test.ts': `
+        import {Component, Directive, Input, NgModule} from '@angular/core';
 
-          @Component({
-            selector: 'test-cmp',
-            template: '<div [dir]="3"></div>',
-          })
-          export class Cmp {}
+        @Component({
+          selector: 'test-cmp',
+          template: '<div [dir]="3"></div>',
+        })
+        export class Cmp {}
 
-          @Directive({
-            selector: '[dir]',
-          })
-          export class Dir {
-            @Input() dir!: string;
-          }
+        @Directive({
+          selector: '[dir]',
+        })
+        export class Dir {
+          @Input() dir!: string;
+        }
 
-          export class NotAModule {}
+        export class NotAModule {}
 
-          @NgModule({
-            declarations: [Cmp, Dir],
-            imports: [NotAModule],
-          })
-          export class Mod {}
-        `,
-      isRoot: true,
-    }]);
+        @NgModule({
+          declarations: [Cmp, Dir],
+          imports: [NotAModule],
+        })
+        export class Mod {}
+      `,
+    });
 
-    const diags = env.ngLS.getSemanticDiagnostics(file);
-    expect(diags.map(diag => diag.messageText))
-        .toContain(`Type 'number' is not assignable to type 'string'.`);
+    const diags = project.getDiagnosticsForFile('test.ts').map(diag => diag.messageText);
+    expect(diags).toContain(`Type 'number' is not assignable to type 'string'.`);
   });
 
   it('should handle broken imports during incremental build steps', () => {
@@ -174,9 +148,6 @@ describe('language-service/compiler integration', () => {
     // build step is performed. The compiler should recognize that the module's previous analysis
     // is stale, even though it was not able to fully understand the import during the first pass.
 
-    const moduleFile = absoluteFrom('/mod.ts');
-    const componentFile = absoluteFrom('/cmp.ts');
-
     const componentSource = (isExported: boolean): string => `
       import {Component} from '@angular/core';
 
@@ -187,43 +158,31 @@ describe('language-service/compiler integration', () => {
       ${isExported ? 'export' : ''} class Cmp {}
     `;
 
-    const env = LanguageServiceTestEnvironment.setup([
-      {
-        name: moduleFile,
-        contents: `
-          import {NgModule} from '@angular/core';
+    const env = LanguageServiceTestEnv.setup();
+    const project = env.addProject('test', {
+      'mod.ts': `
+        import {NgModule} from '@angular/core';
 
-          import {Cmp} from './cmp';
+        import {Cmp} from './cmp';
 
-          @NgModule({
-            declarations: [Cmp],
-          })
-          export class Mod {}
-        `,
-        isRoot: true,
-      },
-      {
-        name: componentFile,
-        contents: componentSource(/* start with component not exported */ false),
-        isRoot: true,
-      }
-    ]);
+        @NgModule({
+          declarations: [Cmp],
+        })
+        export class Mod {}
+      `,
+      'cmp.ts': componentSource(/* start with component not exported */ false),
+    });
 
     // Angular should be complaining about the module not being understandable.
-    const programBefore = env.tsLS.getProgram()!;
-    const moduleSfBefore = programBefore.getSourceFile(moduleFile)!;
-    const ngDiagsBefore = env.ngLS.compilerFactory.getOrCreate().getDiagnosticsForFile(
-        moduleSfBefore, OptimizeFor.SingleFile);
+    const ngDiagsBefore = project.getDiagnosticsForFile('mod.ts').filter(isNgSpecificDiagnostic);
     expect(ngDiagsBefore.length).toBe(1);
 
     // Fix the import.
-    env.updateFile(componentFile, componentSource(/* properly export the component */ true));
+    const file = project.openFile('cmp.ts');
+    file.contents = componentSource(/* properly export the component */ true);
 
     // Angular should stop complaining about the NgModule.
-    const programAfter = env.tsLS.getProgram()!;
-    const moduleSfAfter = programAfter.getSourceFile(moduleFile)!;
-    const ngDiagsAfter = env.ngLS.compilerFactory.getOrCreate().getDiagnosticsForFile(
-        moduleSfAfter, OptimizeFor.SingleFile);
+    const ngDiagsAfter = project.getDiagnosticsForFile('mod.ts').filter(isNgSpecificDiagnostic);
     expect(ngDiagsAfter.length).toBe(0);
   });
 });
