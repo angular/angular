@@ -1,0 +1,11 @@
+@mixin mat-private-expansion-focus {
+  .mat-expansion-panel {
+    & .mat-expansion-panel-header.cdk-keyboard-focused,
+    & .mat-expansion-panel-header.cdk-program-focused,
+    &:not(.mat-expanded) .mat-expansion-panel-header:hover {
+      &:not([aria-disabled='true']) {
+        @content;
+      }
+    }
+  }
+}

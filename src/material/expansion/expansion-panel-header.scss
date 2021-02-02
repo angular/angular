@@ -1,4 +1,7 @@
+@import '../core/style/layout-common';
+@import '../../cdk/a11y/a11y';
 @import './expansion-variables';
+@import './expansion-mixins';
 
 .mat-expansion-panel-header {
   display: flex;
@@ -75,4 +78,20 @@
   padding: 3px;
   transform: rotate(45deg);
   vertical-align: middle;
+}
+
+@include cdk-high-contrast(active, off) {
+  @include mat-private-expansion-focus {
+    &::before {
+      // These styles are identical to the ones generated for all
+      // `.mat-focus-indicator` when strong focus indication is enabled.
+      // We have to repeat them, because strong focus is opt-in.
+      @include mat-fill();
+      box-sizing: border-box;
+      pointer-events: none;
+      border: 3px solid;
+      border-radius: 4px;
+      content: '';
+    }
+  }
 }

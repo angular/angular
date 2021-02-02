@@ -4,6 +4,7 @@
 @import '../core/style/private';
 @import '../core/typography/typography-utils';
 @import './expansion-variables';
+@import './expansion-mixins';
 
 @mixin mat-expansion-panel-color($config-or-theme) {
   $config: mat-get-color-config($config-or-theme);
@@ -20,14 +21,8 @@
     border-top-color: mat-color($foreground, divider);
   }
 
-  .mat-expansion-panel {
-    & .mat-expansion-panel-header.cdk-keyboard-focused,
-    & .mat-expansion-panel-header.cdk-program-focused,
-    &:not(.mat-expanded) .mat-expansion-panel-header:hover {
-      &:not([aria-disabled='true']) {
-        background: mat-color($background, hover);
-      }
-    }
+  @include mat-private-expansion-focus {
+    background: mat-color($background, hover);
   }
 
   // Disable the hover on touch devices since it can appear like it is stuck. We can't use
