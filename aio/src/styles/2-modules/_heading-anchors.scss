@@ -7,8 +7,8 @@
       text-decoration: none;
       user-select: none;
       visibility: hidden;
-      display: inline-block;
-      vertical-align: text-top;
+      display: inline-flex;
+      vertical-align: middle;
     }
 
     &:hover .header-link {
