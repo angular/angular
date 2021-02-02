@@ -14,9 +14,9 @@
      #fallbackOverlayOrigin="cdkOverlayOrigin"
      #trigger>
   <div class="mat-mdc-select-value" [ngSwitch]="empty" [attr.id]="_valueId">
-    <span class="mat-mdc-select-placeholder" *ngSwitchCase="true">{{placeholder || '\u00A0'}}</span>
+    <span class="mat-mdc-select-placeholder mat-mdc-select-min-line" *ngSwitchCase="true">{{placeholder}}</span>
     <span class="mat-mdc-select-value-text" *ngSwitchCase="false" [ngSwitch]="!!customTrigger">
-      <span *ngSwitchDefault>{{triggerValue || '\u00A0'}}</span>
+      <span class="mat-mdc-select-min-line" *ngSwitchDefault>{{triggerValue}}</span>
       <ng-content select="mat-select-trigger" *ngSwitchCase="true"></ng-content>
     </span>
   </div>

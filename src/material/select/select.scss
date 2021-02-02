@@ -147,3 +147,12 @@ $mat-select-placeholder-arrow-space: 2 * ($mat-select-arrow-size + $mat-select-a
     display: block;
   }
 }
+
+// Used to prevent inline elements from collapsing if their text bindings
+// become empty. This is preferrable to inserting a blank space, because the
+// space can be read out by screen readers (see #21725).
+.mat-select-min-line:empty::before {
+  content: ' ';
+  white-space: pre;
+  width: 1px;
+}
