@@ -15,11 +15,8 @@ To get the most out of this tutorial you should already have a basic understandi
 * [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript "JavaScript")
 * [TypeScript](https://www.typescriptlang.org/ "The TypeScript language")
 
-<hr />
-
 
 {@a components}
-
 ## Take a tour of the example application
 
 You build Angular applications with components.

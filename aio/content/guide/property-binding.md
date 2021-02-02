@@ -18,8 +18,6 @@ To get the most out of property binding, you should be familiar with the followi
 * [Basics of templates](guide/glossary#template)
 * [Binding syntax](guide/binding-syntax)
 
-<hr />
-
 ## Understanding the flow of data
 
 Property binding moves a value in one direction, from a component's property into a target element property.
@@ -195,8 +193,6 @@ The following binding pairs do the same thing.
 
 You can use either form when rendering data values as strings, though interpolation is preferable for readability.
 However, when setting an element property to a non-string data value, you must use property binding.
-
-<hr />
 
 ## What's next
 

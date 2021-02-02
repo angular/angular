@@ -220,8 +220,6 @@ The following table summarizes the `@NgModule` metadata properties.
 </table>
 
 
-<hr />
-
 ## More on NgModules
 
 You may also be interested in the following:

@@ -13,13 +13,14 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   color: $deepgray;
+  margin-bottom: 0;
+  font-weight: 500;
 }
 
 h1 {
   @include font-size(24);
-  font-weight: 500;
   display: inline-block;
-  margin: 8px 0px;
+  margin: 1.6rem 0;
 
   @media screen and (max-width: 600px) {
     margin-top: 0;
@@ -27,38 +28,48 @@ h1 {
 }
 
 h2 {
-  @include font-size(22);
-  font-weight: 500;
-  margin: 32px 0px 24px;
+  border-top: 1px solid $lightgray;
   clear: both;
+  @include font-size(22);
+  margin-top: 4rem;
+  padding-top: 4rem;
+
+  .page-about &,
+  .page-api &,
+  .page-contribute &,
+  .page-events &,
+  .page-features &,
+  .page-home &,
+  .page-presskit &,
+  .page-resources & {
+    border-top: 0;
+    margin-top: 2rem;
+    padding-top: 0;
+  }
 }
 
 h3 {
   @include font-size(20);
-  font-weight: 400;
-  margin: 24px 0px 12px;
+  margin-top: 3rem;
   clear: both;
 }
 
 h4 {
   @include font-size(18);
-  font-weight: 400;
-  margin: 8px 0px;
+  margin-top: 3rem;
   clear: both;
 }
 
 h5 {
   @include font-size(16);
-  font-weight: 500;
-  margin: 8px 0px;
+  margin-top: 2rem;
   clear: both;
 }
 
 h6 {
   @include font-size(16);
-  font-weight: 500;
   color: $mediumgray;
-  margin: 8px 0px;
+  margin-top: 2rem;
   clear: both;
 }
 
@@ -204,7 +215,7 @@ code {
 .folder-guide,
 .folder-start,
 .folder-tutorial {
-  
+
   aio-doc-viewer{
     a {
       &[href^="http:"]::after,

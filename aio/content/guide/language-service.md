@@ -123,8 +123,6 @@ The HTML AST can only tell the compiler that there is some text with the charact
 That's when the template parser produces an expression AST, which resides within the template AST.
 The Angular Language Services then looks at `data.---` within its context, asks the TypeScript Language Service what the members of `data` are, and returns the list of possibilities.
 
-<hr>
-
 ## More information
 
 * For more in-depth information on the implementation, see the

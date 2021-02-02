@@ -90,10 +90,7 @@ The revised second version does depend on `Logger` service.
 
 </code-tabs>
 
-
 In this example, the `getHeroes()` method uses the `Logger` service by logging a message when fetching heroes.
-
-<hr />
 
 ## What's next
 

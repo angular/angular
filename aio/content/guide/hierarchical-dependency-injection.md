@@ -1183,8 +1183,6 @@ its injector produces an instance of `Car` resolved by injector (C) with an `Eng
 </div>
 
 
-<hr />
-
 ## More on dependency injection
 
 For more information on Angular dependency injection, see the [DI Providers](guide/dependency-injection-providers) and [DI in Action](guide/dependency-injection-in-action) guides.

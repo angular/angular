@@ -12,17 +12,14 @@ Add [declarable](guide/bootstrapping#the-declarations-array) classes&mdash;compo
 Declare these classes in _exactly one_ module of the application.
 Declare them in a module if they belong to that particular module.
 
-<hr/>
 
 {@a q-declarable}
-
 ## What is a _declarable_?
 
 Declarables are the class types&mdash;components, directives, and pipes&mdash;that
 you can add to a module's `declarations` list.
 They're the only classes that you can add to `declarations`.
 
-<hr/>
 
 ## What classes should I _not_ add to `declarations`?
 
@@ -39,8 +36,6 @@ For example, don't declare `FORMS_DIRECTIVES` from `@angular/forms` because the 
 * Non-Angular classes and objects, such as
 strings, numbers, functions, entity models, configurations, business logic, and helper classes.
 
-<hr/>
-
 
 ## Why list the same component in multiple `NgModule` properties?
 
@@ -56,7 +51,6 @@ Membership in one list doesn't imply membership in another list.
 * A component could be exported for inclusion in an external component's template
 as well as dynamically loaded in a pop-up dialog.
 
-<hr/>
 
 ## What does "Can't bind to 'x' since it isn't a known property of 'y'" mean?
 
@@ -70,7 +64,6 @@ The "x" class isn't visible to other modules until you add it to the `exports` l
 
 </div>
 
-<hr/>
 
 ## What should I import?
 
@@ -89,10 +82,8 @@ components, directives, and pipes.
 
 Import [BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module) only in the root `AppModule`.
 
-<hr/>
 
 {@a q-browser-vs-common-module}
-
 ## Should I import `BrowserModule` or `CommonModule`?
 
 The root application module, `AppModule`, of almost every browser application
@@ -110,10 +101,8 @@ They need the common directives. They don't need to re-install the app-wide prov
 
 Importing `CommonModule` also frees feature modules for use on _any_ target platform, not just browsers.
 
-<hr/>
 
 {@a q-reimport}
-
 ## What if I import the same module twice?
 
 That's not a problem. When three modules all import Module 'A',
@@ -126,10 +115,8 @@ When Angular gets to the 'B' and 'A' in 'D', they're already cached and ready to
 
 Angular doesn't like NgModules with circular references, so don't let Module 'A' import Module 'B', which imports Module 'A'.
 
-<hr/>
 
 {@a q-reexport}
-
 ## What should I export?
 
 Export [declarable](guide/bootstrapping#the-declarations-array) classes that components in _other_ NgModules
@@ -143,7 +130,6 @@ it's declared in this NgModule or in an imported NgModule.
 You _can_ re-export entire imported NgModules, which effectively re-export all of their exported classes.
 An NgModule can even export a module that it doesn't import.
 
-<hr/>
 
 ## What should I *not* export?
 
@@ -158,9 +144,6 @@ While there's no harm in exporting them, there's also no benefit.
 * Pure service modules that don't have public (exported) declarations.
 For example, there's no point in re-exporting `HttpClientModule` because it doesn't export anything.
 Its only purpose is to add http service providers to the application as a whole.
-
-<hr/>
-
 
 
 ## Can I re-export classes and modules?
@@ -185,9 +168,6 @@ For example, there's no point in re-exporting `HttpClientModule` because it does
 Its only purpose is to add http service providers to the application as a whole.
 
 
-<hr/>
-
-
 ## What is the `forRoot()` method?
 
 The `forRoot()` static method is a convention that makes it easy for developers to configure services and providers that are intended to be singletons. A good example of `forRoot()` is the `RouterModule.forRoot()` method.
@@ -209,9 +189,6 @@ makes the service automatically available to the whole application and thus sing
 configure services in root and feature modules respectively.
 
 Follow this convention when you write similar modules with configurable service providers.
-
-
-<hr/>
 
 
 ## Why is a service provided in a feature module visible everywhere?
@@ -238,10 +215,8 @@ not just the classes declared in the `HeroModule`.
 
 To limit access to a service, consider lazy loading the NgModule that provides that service. See [How do I restrict service scope to a module?](guide/ngmodule-faq#service-scope) for more information.
 
-<hr/>
 
 {@a q-lazy-loaded-module-provider-visibility}
-
 ## Why is a service provided in a lazy-loaded module visible only to that module?
 
 Unlike providers of the modules loaded at launch,
@@ -256,8 +231,6 @@ The router adds the lazy module's providers and the providers of its imported Ng
 These providers are insulated from changes to application providers with the same lookup token.
 When the router creates a component within the lazy-loaded context,
 Angular prefers service instances created from these providers to the service instances of the application root injector.
-
-<hr/>
 
 
 ## What if two modules provide the same service?
@@ -277,10 +250,8 @@ that also provides a service for token 'X', then NgModule A's service definition
 The service provided by the root `AppModule` takes precedence over services provided by imported NgModules.
 The `AppModule` always wins.
 
-<hr/>
 
 {@a service-scope}
-
 ## How do I restrict service scope to a module?
 
 When a module is loaded at application launch,
@@ -329,11 +300,8 @@ Define child routes and let the router load module components into that outlet.
 
 Though you can limit access to a service by providing it in a lazy loaded module or providing it in a component, providing services in a component can lead to multiple instances of those services. Thus, the lazy loading is preferable.
 
-<hr/>
 
 {@a q-root-component-or-module}
-
-
 ## Should I add application-wide providers to the root `AppModule` or the root `AppComponent`?
 
  Define application-wide providers by specifying `providedIn: 'root'` on its `@Injectable()` decorator (in the case of services) or at `InjectionToken` construction (in the case where tokens are provided). Providers that are created this way automatically are made available to the entire application and don't need to be listed in any module.
@@ -366,10 +334,8 @@ But in routed applications, routing operates at the root level
 where `AppComponent` services don't exist.
 This means that lazy-loaded modules can't reach them.
 
-<hr/>
 
 {@a q-component-or-module}
-
 ## Should I add other providers to a module or a component?
 
 Providers should be configured using `@Injectable` syntax. If possible, they should be provided in the application root (`providedIn: 'root'`). Services that are configured this way are lazily loaded if they are only used from a lazily loaded context.
@@ -389,11 +355,8 @@ The changes that editor makes in its service don't touch the instances elsewhere
 [Always register _application-wide_ services with the root `AppModule`](guide/ngmodule-faq#q-root-component-or-module),
 not the root `AppComponent`.
 
-<hr/>
 
 {@a q-why-bad}
-
-
 ## Why is it bad if a shared module provides a service to a lazy-loaded module?
 
 ### The eagerly loaded scenario
@@ -426,10 +389,8 @@ Then toggle between the "Contact" and "Heroes" links a few times.
 The username goes bonkers as the Angular creates a new `UserService` instance each time.
 I'd like to see the error so I can include it.-->
 
-<hr/>
 
 {@a q-why-child-injector}
-
 ## Why does lazy loading create a child injector?
 
 Angular adds `@NgModule.providers` to the application root injector, unless the NgModule is lazy-loaded.
@@ -453,10 +414,8 @@ Angular must add the lazy-loaded module's providers to an injector somewhere.
 It can't add them to the app root injector because that injector is closed to new providers.
 So Angular creates a new child injector for the lazy-loaded module context.
 
-<hr/>
 
 {@a q-is-it-loaded}
-
 ## How can I tell if an NgModule or service was previously loaded?
 
 Some NgModules and their services should be loaded only once by the root `AppModule`.
@@ -472,10 +431,8 @@ Here is a custom constructor for an NgModule called `GreetingModule`.
 
 <code-example path="ngmodules/src/app/greeting/greeting.module.ts" region="ctor" header="src/app/greeting/greeting.module.ts (Constructor)"></code-example>
 
-<hr/>
 
 {@a q-entry-component-defined}
-
 ## What is an `entry component`?
 
 An entry component is any component that Angular loads _imperatively_ by type.
@@ -498,7 +455,6 @@ loads the component dynamically into a `RouterOutlet`.
 
 For more information, see [Entry Components](guide/entry-components).
 
-<hr/>
 
 ## What's the difference between a _bootstrap_ component and an _entry component_?
 
@@ -514,7 +470,6 @@ although doing so is harmless.
 
 For more information, see [Entry Components](guide/entry-components).
 
-<hr/>
 
 ## When do I add components to _entryComponents_?
 
@@ -534,8 +489,6 @@ Don't include components that [are referenced](guide/ngmodule-faq#q-template-ref
 in the templates of other components.
 
 For more information, see [Entry Components](guide/entry-components).
-
-<hr/>
 
 
 ## Why does Angular need _entryComponents_?
@@ -559,7 +512,6 @@ and every component reachable from an entry component.
 If a component isn't an _entry component_ or wasn't found in a template,
 the compiler omits it.
 
-<hr/>
 
 ## What kinds of modules should I have and how should I use them?
 
@@ -593,7 +545,6 @@ For more information, see [Feature Modules](guide/feature-modules) and
 [Module Types](guide/module-types)
 
 
-
 ## What's the difference between NgModules and JavaScript Modules?
 
 In an Angular app, NgModules and JavaScript modules work together.
@@ -610,10 +561,8 @@ You _export_ this NgModule's classes so they can be imported and used by compone
 
 For more information, see [JavaScript Modules vs. NgModules](guide/ngmodule-vs-jsmodule).
 
-<hr/>
 
 {@a q-template-reference}
-
 ## How does Angular find components, directives, and pipes in a template?<br>What is a <i><b>template reference</b></i>?
 
 The [Angular compiler](guide/ngmodule-faq#q-angular-compiler) looks inside component templates
@@ -626,10 +575,8 @@ The compiler finds a pipe if the pipe's *name* appears within the pipe syntax of
 Angular only matches selectors and pipe names for classes that are declared by this module
 or exported by a module that this module imports.
 
-<hr/>
 
 {@a q-angular-compiler}
-
 ## What is the Angular compiler?
 
 The Angular compiler converts the application code you write into highly performant JavaScript code.
