@@ -276,6 +276,7 @@
   }
 
   h1 {
+    @include font-size(24);
     margin: 0;
   }
 }

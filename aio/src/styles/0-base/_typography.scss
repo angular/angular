@@ -6,7 +6,7 @@ body {
   font-family: $main-font;
   margin: 0;
   color: $darkgray;
-  @include font-size(14);
+  @include font-size(16);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -18,7 +18,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  @include font-size(24);
+  @include font-size(40);
   display: inline-block;
   margin: 1.6rem 0;
 
@@ -30,7 +30,7 @@ h1 {
 h2 {
   border-top: 1px solid $lightgray;
   clear: both;
-  @include font-size(22);
+  @include font-size(32);
   margin-top: 4rem;
   padding-top: 4rem;
 
@@ -49,19 +49,19 @@ h2 {
 }
 
 h3 {
-  @include font-size(20);
+  @include font-size(24);
   margin-top: 3rem;
   clear: both;
 }
 
 h4 {
-  @include font-size(18);
+  @include font-size(20);
   margin-top: 3rem;
   clear: both;
 }
 
 h5 {
-  @include font-size(16);
+  @include font-size(18);
   margin-top: 2rem;
   clear: both;
 }
@@ -98,9 +98,8 @@ ol,
 li,
 input,
 a {
-  @include font-size(14);
-  @include line-height(24);
-  @include letter-spacing(0.3);
+  @include font-size(16);
+  @include line-height(32);
   font-weight: 400;
   color: $darkgray;
   & > em {
@@ -133,6 +132,7 @@ ol ol {
 
 li {
   padding-bottom: 8px;
+  @include line-height(24);
 
   p {
     margin: 0;
@@ -171,7 +171,6 @@ table tbody th {
 td {
   font-weight: 400;
   padding: 8px 30px;
-  @include letter-spacing(0.3);
 
   > p,
   ul {
