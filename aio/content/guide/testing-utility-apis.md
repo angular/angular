@@ -144,10 +144,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
   </tr>
 </table>
 
-<hr>
-
 {@a testbed-class-summary}
-
 ## _TestBed_ class summary
 
 The `TestBed` class is one of the principal Angular testing utilities.
@@ -789,6 +786,3 @@ The Angular `By` class has three static methods for common predicates:
 - `By.directive(directive)` - return elements that Angular matched to an instance of the directive class.
 
 <code-example path="testing/src/app/hero/hero-list.component.spec.ts" region="by" header="app/hero/hero-list.component.spec.ts"></code-example>
-
-<hr>
-

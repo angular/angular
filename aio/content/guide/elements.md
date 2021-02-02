@@ -52,8 +52,6 @@ When your custom element is placed on a page, the browser creates an instance of
   <img src="generated/images/guide/elements/customElement1.png" alt="Custom element in browser" class="left">
 </div>
 
-<hr class="clear">
-
 ## Transforming components to custom elements
 
 Angular provides the `createCustomElement()` function for converting an Angular component,

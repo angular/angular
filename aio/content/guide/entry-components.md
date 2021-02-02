@@ -107,8 +107,6 @@ the tree shaker will throw it away. So, it's best to add only the components tha
 as trim as possible.
 
 
-<hr />
-
 ## More on Angular modules
 
 You may also be interested in the following:
