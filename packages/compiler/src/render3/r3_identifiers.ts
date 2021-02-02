@@ -293,8 +293,6 @@ export class Identifiers {
 
   static PipeDefWithMeta: o.ExternalReference = {name: 'ɵɵPipeDefWithMeta', moduleName: CORE};
 
-  static definePipe: o.ExternalReference = {name: 'ɵɵdefinePipe', moduleName: CORE};
-
   static queryRefresh: o.ExternalReference = {name: 'ɵɵqueryRefresh', moduleName: CORE};
   static viewQuery: o.ExternalReference = {name: 'ɵɵviewQuery', moduleName: CORE};
   static loadQuery: o.ExternalReference = {name: 'ɵɵloadQuery', moduleName: CORE};

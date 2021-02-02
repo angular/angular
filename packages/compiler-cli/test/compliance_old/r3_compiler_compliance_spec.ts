@@ -2121,11 +2121,11 @@ describe('compiler compliance', () => {
         };
 
         const MyPipeDefinition = `
-            MyPipe.ɵpipe = $r3$.ɵɵdefinePipe({
+            MyPipe.ɵpipe = {
               name: "myPipe",
               type: MyPipe,
               pure: false
-            });
+            };
         `;
 
         const MyPipeFactoryDef = `
@@ -2133,11 +2133,11 @@ describe('compiler compliance', () => {
         `;
 
         const MyPurePipeDefinition = `
-            MyPurePipe.ɵpipe = $r3$.ɵɵdefinePipe({
+            MyPurePipe.ɵpipe = {
               name: "myPurePipe",
               type: MyPurePipe,
               pure: true
-            });`;
+            };`;
 
         const MyPurePipeFactoryDef = `
           MyPurePipe.ɵfac = function MyPurePipe_Factory(t) { return new (t || MyPurePipe)(); };
@@ -2286,11 +2286,11 @@ describe('compiler compliance', () => {
            };
 
            const MyPipeDefinition = `
-              MyPipe.ɵpipe = $r3$.ɵɵdefinePipe({
+              MyPipe.ɵpipe = {
                 name: "myPipe",
                 type: MyPipe,
                 pure: true
-              });
+              };
             `;
 
            const MyPipeFactory = `
@@ -2298,11 +2298,11 @@ describe('compiler compliance', () => {
             `;
 
            const MyOtherPipeDefinition = `
-              MyOtherPipe.ɵpipe = $r3$.ɵɵdefinePipe({
+              MyOtherPipe.ɵpipe = {
                 name: "myOtherPipe",
                 type: MyOtherPipe,
                 pure: true
-              });`;
+              };`;
 
            const MyOtherPipeFactory = `
               MyOtherPipe.ɵfac = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)($r3$.ɵɵinjectPipeChangeDetectorRef(8)); };

@@ -55,7 +55,7 @@ export class StylePipe {
     transform(v) { }
 }
 StylePipe.ɵfac = function StylePipe_Factory(t) { return new (t || StylePipe)(); };
-StylePipe.ɵpipe = i0.ɵɵdefinePipe({ name: "stylePipe", type: StylePipe, pure: true });
+StylePipe.ɵpipe = { name: "stylePipe", type: StylePipe, pure: true };
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(StylePipe, [{
         type: Pipe,
         args: [{ name: 'stylePipe' }]
@@ -64,7 +64,7 @@ export class ClassPipe {
     transform(v) { }
 }
 ClassPipe.ɵfac = function ClassPipe_Factory(t) { return new (t || ClassPipe)(); };
-ClassPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "classPipe", type: ClassPipe, pure: true });
+ClassPipe.ɵpipe = { name: "classPipe", type: ClassPipe, pure: true };
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ClassPipe, [{
         type: Pipe,
         args: [{ name: 'classPipe' }]
@@ -134,7 +134,7 @@ export class PipePipe {
     transform(v) { }
 }
 PipePipe.ɵfac = function PipePipe_Factory(t) { return new (t || PipePipe)(); };
-PipePipe.ɵpipe = i0.ɵɵdefinePipe({ name: "pipe", type: PipePipe, pure: true });
+PipePipe.ɵpipe = { name: "pipe", type: PipePipe, pure: true };
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(PipePipe, [{
         type: Pipe,
         args: [{ name: 'pipe' }]

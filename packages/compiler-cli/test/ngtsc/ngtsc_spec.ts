@@ -655,7 +655,6 @@ runInEachFileSystem(os => {
       expect(jsContents).toContain('TestBase.ɵdir = i0.ɵɵdefineDirective');
       expect(jsContents).toContain('TestComponent.ɵcmp = i0.ɵɵdefineComponent');
       expect(jsContents).toContain('TestDirective.ɵdir = i0.ɵɵdefineDirective');
-      expect(jsContents).toContain('TestPipe.ɵpipe = i0.ɵɵdefinePipe');
       expect(jsContents).toContain('TestInjectable.ɵprov = i0.ɵɵdefineInjectable');
       expect(jsContents).toContain('MyModule.ɵmod = i0.ɵɵdefineNgModule');
       expect(jsContents).toContain('MyModule.ɵinj = i0.ɵɵdefineInjector');
@@ -1470,8 +1469,7 @@ runInEachFileSystem(os => {
       const dtsContents = env.getContents('test.d.ts');
 
       expect(jsContents)
-          .toContain(
-              'TestPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: false })');
+          .toContain('TestPipe.ɵpipe = { name: "test-pipe", type: TestPipe, pure: false }');
       expect(jsContents)
           .toContain(
               'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');
@@ -1495,8 +1493,7 @@ runInEachFileSystem(os => {
       const dtsContents = env.getContents('test.d.ts');
 
       expect(jsContents)
-          .toContain(
-              'TestPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "test-pipe", type: TestPipe, pure: true })');
+          .toContain('TestPipe.ɵpipe = { name: "test-pipe", type: TestPipe, pure: true }');
       expect(jsContents)
           .toContain(
               'TestPipe.ɵfac = function TestPipe_Factory(t) { return new (t || TestPipe)(); }');

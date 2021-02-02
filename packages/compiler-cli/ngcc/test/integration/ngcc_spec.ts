@@ -634,7 +634,7 @@ runInEachFileSystem(() => {
       expect(jsContents)
           .toContain(
               `TestClass.ɵfac = function TestClass_Factory(t) { return new (t || TestClass)(); };\n` +
-              `TestClass.ɵpipe = ɵngcc0.ɵɵdefinePipe({ name: "myTestPipe", type: TestClass, pure: true });\n` +
+              `TestClass.ɵpipe = { name: "myTestPipe", type: TestClass, pure: true };\n` +
               `TestClass.ɵprov = ɵngcc0.ɵɵdefineInjectable({`);
     });
 

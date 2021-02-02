@@ -10,12 +10,14 @@ import {getCompilerFacade, R3PipeMetadataFacade} from '../../compiler/compiler_f
 import {reflectDependencies} from '../../di/jit/util';
 import {Type} from '../../interface/type';
 import {Pipe} from '../../metadata/directives';
+import {ɵɵdefinePipe} from '../definition';
 import {NG_FACTORY_DEF, NG_PIPE_DEF} from '../fields';
+import {PipeDef} from '../interfaces/definition';
 
 import {angularCoreEnv} from './environment';
 
 export function compilePipe(type: Type<any>, meta: Pipe): void {
-  let ngPipeDef: any = null;
+  let ngPipeDef: PipeDef<unknown>|null = null;
   let ngFactoryDef: any = null;
 
   Object.defineProperty(type, NG_FACTORY_DEF, {
@@ -37,8 +39,8 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
     get: () => {
       if (ngPipeDef === null) {
         const metadata = getPipeMetadata(type, meta);
-        ngPipeDef = getCompilerFacade().compilePipe(
-            angularCoreEnv, `ng:///${metadata.name}/ɵpipe.js`, metadata);
+        ngPipeDef = ɵɵdefinePipe(getCompilerFacade().compilePipe(
+            angularCoreEnv, `ng:///${metadata.name}/ɵpipe.js`, metadata));
       }
       return ngPipeDef;
     },

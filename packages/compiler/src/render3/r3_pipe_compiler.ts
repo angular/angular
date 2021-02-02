@@ -69,7 +69,7 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
   // e.g. `pure: true`
   definitionMapValues.push({key: 'pure', value: o.literal(metadata.pure), quoted: false});
 
-  const expression = o.importExpr(R3.definePipe).callFn([o.literalMap(definitionMapValues)]);
+  const expression = o.literalMap(definitionMapValues);
   const type = new o.ExpressionType(o.importExpr(R3.PipeDefWithMeta, [
     typeWithParameters(metadata.type.type, metadata.typeArgumentCount),
     new o.ExpressionType(new o.LiteralExpr(metadata.pipeName)),

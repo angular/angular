@@ -1,5 +1,5 @@
-MyOtherPipe.ɵpipe = $r3$.ɵɵdefinePipe({
+MyOtherPipe.ɵpipe = {
   name: "myOtherPipe",
   type: MyOtherPipe,
   pure: true
-});
+};

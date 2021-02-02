@@ -341,7 +341,7 @@ export class AsyncPipe {
     transform(v) { }
 }
 AsyncPipe.ɵfac = function AsyncPipe_Factory(t) { return new (t || AsyncPipe)(); };
-AsyncPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "async", type: AsyncPipe, pure: true });
+AsyncPipe.ɵpipe = { name: "async", type: AsyncPipe, pure: true };
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AsyncPipe, [{
         type: Pipe,
         args: [{ name: 'async' }]
@@ -407,7 +407,7 @@ export class UppercasePipe {
     transform(v) { }
 }
 UppercasePipe.ɵfac = function UppercasePipe_Factory(t) { return new (t || UppercasePipe)(); };
-UppercasePipe.ɵpipe = i0.ɵɵdefinePipe({ name: "uppercase", type: UppercasePipe, pure: true });
+UppercasePipe.ɵpipe = { name: "uppercase", type: UppercasePipe, pure: true };
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(UppercasePipe, [{
         type: Pipe,
         args: [{ name: 'uppercase' }]
@@ -480,7 +480,7 @@ export class UppercasePipe {
     transform(v) { }
 }
 UppercasePipe.ɵfac = function UppercasePipe_Factory(t) { return new (t || UppercasePipe)(); };
-UppercasePipe.ɵpipe = i0.ɵɵdefinePipe({ name: "uppercase", type: UppercasePipe, pure: true });
+UppercasePipe.ɵpipe = { name: "uppercase", type: UppercasePipe, pure: true };
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(UppercasePipe, [{
         type: Pipe,
         args: [{ name: 'uppercase' }]
@@ -571,7 +571,7 @@ export class UppercasePipe {
     transform(v) { }
 }
 UppercasePipe.ɵfac = function UppercasePipe_Factory(t) { return new (t || UppercasePipe)(); };
-UppercasePipe.ɵpipe = i0.ɵɵdefinePipe({ name: "uppercase", type: UppercasePipe, pure: true });
+UppercasePipe.ɵpipe = { name: "uppercase", type: UppercasePipe, pure: true };
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(UppercasePipe, [{
         type: Pipe,
         args: [{ name: 'uppercase' }]

@@ -10,7 +10,7 @@ export class MyPipe {
     ngOnDestroy() { }
 }
 MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)(); };
-MyPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myPipe", type: MyPipe, pure: false });
+MyPipe.ɵpipe = { name: "myPipe", type: MyPipe, pure: false };
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyPipe, [{
         type: Pipe,
         args: [{ name: 'myPipe', pure: false }]
@@ -21,7 +21,7 @@ export class MyPurePipe {
     }
 }
 MyPurePipe.ɵfac = function MyPurePipe_Factory(t) { return new (t || MyPurePipe)(); };
-MyPurePipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myPurePipe", type: MyPurePipe, pure: true });
+MyPurePipe.ɵpipe = { name: "myPurePipe", type: MyPurePipe, pure: true };
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyPurePipe, [{
         type: Pipe,
         args: [{
@@ -93,7 +93,7 @@ export class MyPipe {
     ngOnDestroy() { }
 }
 MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)(); };
-MyPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myPipe", type: MyPipe, pure: false });
+MyPipe.ɵpipe = { name: "myPipe", type: MyPipe, pure: false };
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyPipe, [{
         type: Pipe,
         args: [{ name: 'myPipe', pure: false }]
@@ -155,7 +155,7 @@ export class MyPipe {
     }
 }
 MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)(i0.ɵɵinjectPipeChangeDetectorRef()); };
-MyPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myPipe", type: MyPipe, pure: true });
+MyPipe.ɵpipe = { name: "myPipe", type: MyPipe, pure: true };
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyPipe, [{
         type: Pipe,
         args: [{ name: 'myPipe' }]
@@ -167,7 +167,7 @@ export class MyOtherPipe {
     }
 }
 MyOtherPipe.ɵfac = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)(i0.ɵɵinjectPipeChangeDetectorRef(8)); };
-MyOtherPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "myOtherPipe", type: MyOtherPipe, pure: true });
+MyOtherPipe.ɵpipe = { name: "myOtherPipe", type: MyOtherPipe, pure: true };
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyOtherPipe, [{
         type: Pipe,
         args: [{ name: 'myOtherPipe' }]
