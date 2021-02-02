@@ -696,9 +696,9 @@
   integrity sha512-+FFpem1Ul/BtqNrom8y1xPIa1cPEZeBvpao8BRLfQt46r7Nk9u11KI8ylNFk+yIQVhFqAD3JBaL3sbLAU7BJ5Q==
 
 "@bazel/protractor@^2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-2.3.2.tgz#a57daa9488c40fa30843947f26474891db130229"
-  integrity sha512-VOKjJjvcO5RSoQX4nNeI41grgFc3j5xirxF26nF+MU0ePg+7giKVZWDtegLO2QRfMfFKjvzpT6HMlzd2GvxI+A==
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-2.3.3.tgz#44eca70d159d3e5a67654683f81266cc3594ce5a"
+  integrity sha512-06EFGstTshvofjiUd1ZJJepGeTgkLZNZB9Bfb7IhMC/ca1ZaeKB8SRWHhiPw7wN1QojHf4JJ+uhbqDt60m+Xrg==
 
 "@bazel/rollup@^2.3.2":
   version "2.3.2"
