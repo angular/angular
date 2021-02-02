@@ -114,13 +114,12 @@ The router interprets a link URL according to your app's view navigation rules a
 
 To define navigation rules, you associate *navigation paths* with your components. A path uses a URL-like syntax that integrates your program data, in much the same way that template syntax integrates your views with your program data. You can then apply program logic to choose which views to show or to hide, in response to user input and your own access rules.
 
- <div class="alert is-helpful">
+<div class="alert is-helpful">
 
-   For a more detailed discussion, see [Routing and navigation](guide/router).
+  For a more detailed discussion, see [Routing and navigation](guide/router).
 
- </div>
+</div>
 
-<hr/>
 
 ## What's next
 

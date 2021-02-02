@@ -53,8 +53,6 @@ The most common way to get a hold of shared services is through Angular
 To read about sharing services, see [Providers](guide/providers).
 
 
-<hr />
-
 ## More on NgModules
 
 You may also be interested in the following:

@@ -311,10 +311,7 @@ Here's how the harness should work when you're done coding.
   <img src="generated/images/guide/attribute-directives/highlight-directive-final-anim.gif" alt="Final Highlight">
 </div>
 
-<hr />
-
 {@a ngNonBindable}
-
 ## `ngNonBindable`
 
 With the built-in template primitive `ngNonBindable`, Angular won't

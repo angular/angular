@@ -171,8 +171,6 @@ Here are the two files in their entirety for reference:
  </code-pane>
 </code-tabs>
 
-<hr />
-
 ## More on NgModules
 
 You may also be interested in:
