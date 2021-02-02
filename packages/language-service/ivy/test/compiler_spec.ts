@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
 import {isNgSpecificDiagnostic, LanguageServiceTestEnv} from '../testing';
-import {LanguageServiceTestEnvironment} from './env';
 
 describe('language-service/compiler integration', () => {
   beforeEach(() => {
@@ -18,35 +16,25 @@ describe('language-service/compiler integration', () => {
   });
 
   it('should react to a change in an external template', () => {
-    const cmpFile = absoluteFrom('/test.ts');
-    const tmplFile = absoluteFrom('/test.html');
-
-    const env = LanguageServiceTestEnvironment.setup([
-      {
-        name: cmpFile,
-        contents: `
-          import {Component} from '@angular/core';
+    const env = LanguageServiceTestEnv.setup();
+    const project = env.addProject('test', {
+      'test.ts': `
+        import {Component} from '@angular/core';
 
           @Component({
             selector: 'test-cmp',
             templateUrl: './test.html',
           })
           export class TestCmp {}
-        `,
-        isRoot: true,
-      },
-      {
-        name: tmplFile,
-        contents: '<other-cmp>Test</other-cmp>',
-      },
-    ]);
+      `,
+      'test.html': `<other-cmp>Test</other-cmp>`
+    });
 
-    const diags = env.ngLS.getSemanticDiagnostics(cmpFile);
-    expect(diags.length).toBeGreaterThan(0);
+    expect(project.getDiagnosticsForFile('test.ts').length).toBeGreaterThan(0);
 
-    env.updateFile(tmplFile, '<div>Test</div>');
-    const afterDiags = env.ngLS.getSemanticDiagnostics(cmpFile);
-    expect(afterDiags.length).toBe(0);
+    const tmplFile = project.openFile('test.html');
+    tmplFile.contents = '<div>Test</div>';
+    expect(project.getDiagnosticsForFile('test.ts').length).toEqual(0);
   });
 
   it('should not produce errors from inline test declarations mixing with those of the app', () => {
