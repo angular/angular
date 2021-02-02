@@ -7,8 +7,8 @@
  */
 
 import * as ts from 'typescript/lib/tsserverlibrary';
+import {LanguageService} from '../../language_service';
 
-import {Project} from './project';
 import {extractCursorInfo} from './util';
 
 /**
@@ -18,7 +18,7 @@ export class OpenBuffer {
   private _cursor: number = 0;
 
   constructor(
-      private project: Project, private projectFileName: string,
+      private ngLS: LanguageService, private projectFileName: string,
       private scriptInfo: ts.server.ScriptInfo) {}
 
   get cursor(): number {
@@ -49,7 +49,10 @@ export class OpenBuffer {
     const {text: snippet, cursor} = extractCursorInfo(snippetWithCursor);
     const snippetIndex = this.contents.indexOf(snippet);
     if (snippetIndex === -1) {
-      throw new Error(`Snippet ${snippet} not found in ${this.projectFileName}`);
+      throw new Error(`Snippet '${snippet}' not found in ${this.projectFileName}`);
+    }
+    if (this.contents.indexOf(snippet, snippetIndex + 1) !== -1) {
+      throw new Error(`Snippet '${snippet}' is not unique within ${this.projectFileName}`);
     }
     this._cursor = snippetIndex + cursor;
   }
@@ -59,6 +62,6 @@ export class OpenBuffer {
    * location in this buffer.
    */
   getDefinitionAndBoundSpan(): ts.DefinitionInfoAndBoundSpan|undefined {
-    return this.project.ngLS.getDefinitionAndBoundSpan(this.scriptInfo.fileName, this._cursor);
+    return this.ngLS.getDefinitionAndBoundSpan(this.scriptInfo.fileName, this._cursor);
   }
 }
