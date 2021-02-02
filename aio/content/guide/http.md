@@ -792,7 +792,7 @@ and reports the outcome to the `MessageService`.
 
 Neither `tap` nor `finalize` touch the values of the observable stream returned to the caller.
 
-{@ custom-json-parser}
+{@a custom-json-parser}
 
 ### Custom JSON parsing
 
