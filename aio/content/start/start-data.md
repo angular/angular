@@ -277,8 +277,6 @@ This section guides you through modifying the `ShippingComponent` to retrieve sh
       <img src='generated/images/guide/start/shipping-prices.png' alt="Display shipping prices">
     </div>
 
-<hr />
-
 ## What's next
 
 You now have a store application with a product catalog, a shopping cart, and you can  look up shipping prices.

@@ -104,8 +104,6 @@ When users click on a name in the product list, the router navigates them to the
 
 For more information about the Angular Router, see [Routing & Navigation](guide/router "Routing & Navigation guide").
 
-<hr />
-
 ## What's next
 
 You have configured your application so you can view product details, each with a distinct URL.

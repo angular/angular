@@ -66,8 +66,6 @@ After putting a few items in the cart, users can review their items, enter their
 
 To confirm submission, open the console to see an object containing the name and address you submitted.
 
-<hr />
-
 ## What's next
 
 You have a complete online store application with a product catalog, a shopping cart, and a checkout function.
