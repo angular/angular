@@ -436,13 +436,13 @@ describe('EventManager', () => {
          removerChildFocus = manager.addEventListener(child, 'blur', blurHandler);
        });
        const sub = zone.onStable.subscribe(() => {
+         sub.unsubscribe();
          logs.push('begin');
          Promise.resolve().then(() => {
            logs.push('promise resolved');
          });
          element.appendChild(child);
          getDOM().dispatchEvent(child, dispatchedBlurEvent);
-         sub.unsubscribe();
          logs.push('end');
        });
        getDOM().dispatchEvent(element, dispatchedClickEvent);
@@ -482,13 +482,13 @@ describe('EventManager', () => {
          removerChildFocus = manager.addEventListener(child, 'blur', blurHandler);
        });
        const sub = zone.onStable.subscribe(() => {
+         sub.unsubscribe();
          logs.push('begin');
          Promise.resolve().then(() => {
            logs.push('promise resolved');
          });
          element.appendChild(child);
          getDOM().dispatchEvent(child, dispatchedBlurEvent);
-         sub.unsubscribe();
          logs.push('end');
        });
        getDOM().dispatchEvent(element, dispatchedClickEvent);

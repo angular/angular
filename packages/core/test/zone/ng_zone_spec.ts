@@ -982,6 +982,7 @@ function commonTests() {
 
     describe('shouldCoalesceEventChangeDetection = true, shouldCoalesceRunChangeDetection = false', () => {
       let nativeRequestAnimationFrame: (fn: FrameRequestCallback) => void;
+      let nativeSetTimeout: any = (global as any)[Zone.__symbol__('setTimeout')];
       if (!(global as any).requestAnimationFrame) {
         nativeRequestAnimationFrame = function(fn: Function) {
           (global as any)[Zone.__symbol__('setTimeout')](fn, 16);
@@ -1042,6 +1043,32 @@ function commonTests() {
            });
          });
 
+      it('should only emit onMicroTaskEmpty once within the same event loop for ngZone.run in onMicrotaskEmpty subscription',
+         (done: DoneFn) => {
+           const tasks: Task[] = [];
+           coalesceZone.onMicrotaskEmpty.subscribe(() => {
+             coalesceZone.run(() => {});
+           });
+           coalesceZone.run(() => {
+             tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+               logs.push('eventTask1');
+             }, undefined, () => {}));
+           });
+           coalesceZone.run(() => {
+             tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+               logs.push('eventTask2');
+             }, undefined, () => {}));
+           });
+           tasks.forEach(t => t.invoke());
+           expect(logs).toEqual(['microTask empty', 'microTask empty', 'eventTask1', 'eventTask2']);
+           nativeSetTimeout(() => {
+             expect(logs).toEqual([
+               'microTask empty', 'microTask empty', 'eventTask1', 'eventTask2', 'microTask empty'
+             ]);
+             done();
+           }, 100);
+         });
+
       it('should emit onMicroTaskEmpty once within the same event loop for not only event tasks, but event tasks are before other tasks',
          (done: DoneFn) => {
            const tasks: Task[] = [];
@@ -1094,6 +1121,7 @@ function commonTests() {
 
     describe('shouldCoalesceRunChangeDetection = true', () => {
       let nativeRequestAnimationFrame: (fn: FrameRequestCallback) => void;
+      let nativeSetTimeout: any = (global as any)[Zone.__symbol__('setTimeout')];
       if (!(global as any).requestAnimationFrame) {
         nativeRequestAnimationFrame = function(fn: Function) {
           (global as any)[Zone.__symbol__('setTimeout')](fn, 16);
@@ -1137,6 +1165,20 @@ function commonTests() {
              expect(logs).toEqual(['microTask empty']);
              done();
            });
+         });
+
+      it('should only emit onMicroTaskEmpty once within the same event loop for ngZone.run in onMicrotaskEmpty subscription',
+         (done: DoneFn) => {
+           coalesceZone.onMicrotaskEmpty.subscribe(() => {
+             coalesceZone.run(() => {});
+           });
+           coalesceZone.run(() => {});
+           coalesceZone.run(() => {});
+           expect(logs).toEqual([]);
+           nativeSetTimeout(() => {
+             expect(logs).toEqual(['microTask empty']);
+             done();
+           }, 100);
          });
 
       it('should only emit onMicroTaskEmpty once within the same event loop for multiple tasks',
