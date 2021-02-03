@@ -260,8 +260,6 @@ The `ProductAlertsComponent` needs to emit an event when the user clicks **Notif
 
 For more information on communication between components, see [Component Interaction](guide/component-interaction "Component interaction").
 
-<hr />
-
 {@a whats-next}
 
 ## What's next
