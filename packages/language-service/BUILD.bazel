@@ -14,9 +14,8 @@ ts_library(
 
 ts_library(
     name = "language-service",
-    srcs = glob(
+    srcs = ["index.ts"] + glob(
         [
-            "index.ts",
             "src/**/*.ts",
         ],
         exclude = [
