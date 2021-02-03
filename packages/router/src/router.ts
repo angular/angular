@@ -377,6 +377,7 @@ export class Router {
   private navigations: Observable<NavigationTransition>;
   private lastSuccessfulNavigation: Navigation|null = null;
   private currentNavigation: Navigation|null = null;
+  private disposed = false;
 
   private locationSubscription?: SubscriptionLike;
   /**
@@ -1043,10 +1044,12 @@ export class Router {
 
   /** Disposes of the router. */
   dispose(): void {
+    this.transitions.complete();
     if (this.locationSubscription) {
       this.locationSubscription.unsubscribe();
       this.locationSubscription = undefined;
     }
+    this.disposed = true;
   }
 
   /**
@@ -1251,6 +1254,9 @@ export class Router {
       rawUrl: UrlTree, source: NavigationTrigger, restoredState: RestoredState|null,
       extras: NavigationExtras,
       priorPromise?: {resolve: any, reject: any, promise: Promise<boolean>}): Promise<boolean> {
+    if (this.disposed) {
+      return Promise.resolve(false);
+    }
     // * Imperative navigations (router.navigate) might trigger additional navigations to the same
     //   URL via a popstate event and the locationChangeListener. We should skip these duplicate
     //   navs. Duplicates may also be triggered by attempts to sync AngularJS and Angular router
