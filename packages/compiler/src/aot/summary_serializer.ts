@@ -461,7 +461,7 @@ class FromJsonDeserializer extends ValueTransformer {
     summaries: Summary<StaticSymbol>[],
     importAs: {symbol: StaticSymbol, importAs: StaticSymbol}[]
   } {
-    const data: {moduleName: string|null, summaries: any[], symbols: any[]} = JSON.parse(json);
+    const data = JSON.parse(json) as {moduleName: string | null, summaries: any[], symbols: any[]};
     const allImportAs: {symbol: StaticSymbol, importAs: StaticSymbol}[] = [];
     this.symbols = data.symbols.map(
         (serializedSymbol) => this.symbolCache.get(
