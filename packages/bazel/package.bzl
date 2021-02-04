@@ -43,11 +43,11 @@ def rules_angular_dev_dependencies():
     _maybe(
         http_archive,
         name = "io_bazel_rules_sass",
-        sha256 = "77e241148f26d5dbb98f96fe0029d8f221c6cb75edbb83e781e08ac7f5322c5f",
-        strip_prefix = "rules_sass-1.24.0",
+        sha256 = "596ab3616d370135e0ecc710e103422e0aa3719f1c970303a0886b70c81ee819",
+        strip_prefix = "rules_sass-1.32.2",
         urls = [
-            "https://github.com/bazelbuild/rules_sass/archive/1.24.0.zip",
-            "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.24.0.zip",
+            "https://github.com/bazelbuild/rules_sass/archive/1.32.2.zip",
+            "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.32.2.zip",
         ],
     )
 
