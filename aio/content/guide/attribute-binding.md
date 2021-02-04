@@ -174,6 +174,12 @@ Optionally, you can add a unit extension like `em` or `%`, which requires a numb
 You can write a style property name in either [dash-case](guide/glossary#dash-case), or
 [camelCase](guide/glossary#camelcase).
 
+<code-example language="html">
+  &lt;nav [style.background-color]="expression"&gt;&lt;/nav&gt;
+
+  &lt;nav [style.backgroundColor]="expression"&gt;&lt;/nav&gt;
+</code-example>
+
 </div>
 
 ### Binding to multiple styles
@@ -181,8 +187,8 @@ You can write a style property name in either [dash-case](guide/glossary#dash-ca
 To toggle multiple styles, bind to the `[style]` attribute&mdash;for example, `[style]="styleExpression"`.
 The `styleExpression` can be one of:
 
-* A string list of styles such as `"width: 100px; height: 100px;"`.
-* An object with style names as the keys and style values as the values, such as `{width: '100px', height: '100px'}`.
+* A string list of styles such as `"width: 100px; height: 100px; background-color: cornflowerblue;"`.
+* An object with style names as the keys and style values as the values, such as `{width: '100px', height: '100px', backgroundColor: 'cornflowerblue'}`.
 
 Note that binding an array to `[style]` is not supported.
 
@@ -192,6 +198,11 @@ When binding `[style]` to an object expression, the identity of the object must 
 Updating the property without changing object identity has no effect.
 
 </div>
+
+#### Single and multiple-style binding example
+
+<code-example path="attribute-binding/src/app/single-and-multiple-style-binding.component.ts" header="nav-bar.component.ts">
+</code-example>
 
 If there are multiple bindings to the same style attribute, Angular uses [styling precedence](guide/style-precedence) to determine which binding to use.
 
