@@ -1,6 +1,6 @@
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("//dev-infra/benchmark/component_benchmark:component_benchmark.bzl", "component_benchmark")
 
 sass_binary(

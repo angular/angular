@@ -28,8 +28,8 @@ function log_verbose(...m) {
 const useBuildOptimizer = TMPL_build_optimizer;
 const bannerFile = TMPL_banner_file;
 const ivyEnabled = 'TMPL_angular_ivy_enabled' === 'True';
-// `bazel_stamp_file` is a substitution that is applied by `@bazel/rollup`.
-const stampDataFile = bazel_stamp_file;
+// `bazel_version_file` is a substitution that is applied by `@bazel/rollup`.
+const stampDataFile = bazel_version_file;
 
 log_verbose(`running with
   cwd: ${process.cwd()}
