@@ -11,6 +11,11 @@ import {Diagnostics} from '../../../diagnostics';
 
 import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
 
+interface SimpleJsonFile {
+  locale: string;
+  translations: {[messageId: string]: string};
+}
+
 /**
  * A translation parser that can parse JSON that has the form:
  *
@@ -27,16 +32,16 @@ import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './trans
  * @see SimpleJsonTranslationSerializer
  * @publicApi used by CLI
  */
-export class SimpleJsonTranslationParser implements TranslationParser<Object> {
+export class SimpleJsonTranslationParser implements TranslationParser<SimpleJsonFile> {
   /**
    * @deprecated
    */
-  canParse(filePath: string, contents: string): Object|false {
+  canParse(filePath: string, contents: string): SimpleJsonFile|false {
     const result = this.analyze(filePath, contents);
     return result.canParse && result.hint;
   }
 
-  analyze(filePath: string, contents: string): ParseAnalysis<Object> {
+  analyze(filePath: string, contents: string): ParseAnalysis<SimpleJsonFile> {
     const diagnostics = new Diagnostics();
     // For this to be parsable, the extension must be `.json` and the contents must include "locale"
     // and "translations" keys.
@@ -46,7 +51,7 @@ export class SimpleJsonTranslationParser implements TranslationParser<Object> {
       return {canParse: false, diagnostics};
     }
     try {
-      const json = JSON.parse(contents);
+      const json = JSON.parse(contents) as SimpleJsonFile;
       if (json.locale === undefined) {
         diagnostics.warn('Required "locale" property missing.');
         return {canParse: false, diagnostics};
@@ -70,8 +75,8 @@ export class SimpleJsonTranslationParser implements TranslationParser<Object> {
     }
   }
 
-  parse(_filePath: string, contents: string, json?: Object): ParsedTranslationBundle {
-    const {locale: parsedLocale, translations} = json || JSON.parse(contents);
+  parse(_filePath: string, contents: string, json?: SimpleJsonFile): ParsedTranslationBundle {
+    const {locale: parsedLocale, translations} = json || JSON.parse(contents) as SimpleJsonFile;
     const parsedTranslations: Record<ɵMessageId, ɵParsedTranslation> = {};
     for (const messageId in translations) {
       const targetMessage = translations[messageId];
