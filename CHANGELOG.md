@@ -35,6 +35,39 @@
 | feature |  **mdc-typography:** add a function to create ([12488cb50d6806810ed664e37c896128edddd871](https://github.com/angular/components/commit/12488cb50d6806810ed664e37c896128edddd871)) |
 
 
+## 11.1.2 "cinnabar-vase" (2021-02-04)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **collections:** recycle repeater strategy retaining references to destroyed views ([#21744](https://github.com/angular/components/issues/21744)) ([4161f0f01aa46afb7f872269a17b73dcc4cd5f88](https://github.com/angular/components/commit/4161f0f01aa46afb7f872269a17b73dcc4cd5f88)) |
+| feature |  **table:** add HTML elements to sticky styler update ([#21704](https://github.com/angular/components/issues/21704)) ([d0106c190150d839c12392fea1007fd932e5f7c4](https://github.com/angular/components/commit/d0106c190150d839c12392fea1007fd932e5f7c4)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** reset preview range after selecting a date ([#21591](https://github.com/angular/components/issues/21591)) ([54997c4a762af8572d5f82b262f3b5932d7fd986](https://github.com/angular/components/commit/54997c4a762af8572d5f82b262f3b5932d7fd986)) |
+| bug fix |  **expansion:** add focus indication in high contrast mode ([#21549](https://github.com/angular/components/issues/21549)) ([fdacb22f21443614c2876e8653d265cea3adfd9e](https://github.com/angular/components/commit/fdacb22f21443614c2876e8653d265cea3adfd9e)), closes [#21544](https://github.com/angular/components/issues/21544) |
+| bug fix |  **menu:** nested menu trigger not restoring focus ([#21531](https://github.com/angular/components/issues/21531)) ([b3302903e62befeabf854ec8e6419c8edd176c08](https://github.com/angular/components/commit/b3302903e62befeabf854ec8e6419c8edd176c08)) |
+| bug fix |  **schematics:** fix typo in warning ([#21754](https://github.com/angular/components/issues/21754)) ([dde0590e68bba556741727f5d625e0af618baf6d](https://github.com/angular/components/commit/dde0590e68bba556741727f5d625e0af618baf6d)), closes [#21705](https://github.com/angular/components/issues/21705) |
+| bug fix |  **select:** overlay offset calculation for disabled option centering ([#21716](https://github.com/angular/components/issues/21716)) ([3c391ebb24eafbde564fe1a9e4b847091947c67a](https://github.com/angular/components/commit/3c391ebb24eafbde564fe1a9e4b847091947c67a)), closes [#21570](https://github.com/angular/components/issues/21570) |
+| bug fix |  **select:** VoiceOver reading out blank space ([#21733](https://github.com/angular/components/issues/21733)) ([51ba599b2cf3d85e31387afce5b679e82d7892e6](https://github.com/angular/components/commit/51ba599b2cf3d85e31387afce5b679e82d7892e6)), closes [#21725](https://github.com/angular/components/issues/21725) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-dialog:** afterClosed being run outside of NgZone ([#21702](https://github.com/angular/components/issues/21702)) ([698d6d0ac4c869a86658e1db617dc85a342eacf7](https://github.com/angular/components/commit/698d6d0ac4c869a86658e1db617dc85a342eacf7)), closes [#21696](https://github.com/angular/components/issues/21696) |
+| bug fix |  **mdc-form-field:** remove extraneous sass var added by [#21676](https://github.com/angular/components/issues/21676) ([#21772](https://github.com/angular/components/issues/21772)) ([7b7bbfb16aea9793e8d98e2a5caa49b07bd0f079](https://github.com/angular/components/commit/7b7bbfb16aea9793e8d98e2a5caa49b07bd0f079)) |
+| bug fix |  **mdc-form-field:** tweak styles to work with MDC ([95182246065cfb637584ac8b13dedf89f5231da6](https://github.com/angular/components/commit/95182246065cfb637584ac8b13dedf89f5231da6)) |
+| bug fix |  **mdc-paginator:** use caption typography for select ([37b96144175487b7f857d29564ee1ba45b9f3500](https://github.com/angular/components/commit/37b96144175487b7f857d29564ee1ba45b9f3500)) |
+| bug fix |  **mdc-typography:** change mdc components to prefer 2018 typography mappings if the config is compatible ([64ab8231ea813ef68ce8e1cc8fc0cf0183bf530c](https://github.com/angular/components/commit/64ab8231ea813ef68ce8e1cc8fc0cf0183bf530c)) |
+| bug fix |  **mdc-typography:** update components using incorrect typography levels ([d9b10c4c7317601fa77f39cc1a0265de2d4c7a3b](https://github.com/angular/components/commit/d9b10c4c7317601fa77f39cc1a0265de2d4c7a3b)) |
+| feature |  **mdc-typography:** add a function to create config from MDC ([b9003f75977c5dc8c8187185ab2a904e190e7b4c](https://github.com/angular/components/commit/b9003f75977c5dc8c8187185ab2a904e190e7b4c)) |
+
+
 ## 11.1.1 "silicate-star" (2021-01-27)
 
 ### cdk
@@ -357,7 +390,7 @@ Note: Support for the node-sass npm package, based on libsass, was deprecated in
 support officially ends with version 11. Ending support for node-sass allows us to switch to the
 new Sass module system (the `@use` syntax), simplifying our Sass and keeping up with ecosystem
 best practices. The `sass` npm package is an API compatible replacement maintained by the official
-Sass team at Google. 
+Sass team at Google.
 
 _Breaking changes:_
 
