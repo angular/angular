@@ -127,7 +127,7 @@ describe('escape/unescape', () => {
         '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
         'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}');
 
-    const unescapedObj = JSON.parse(unescapeHtml(escaped));
+    const unescapedObj = JSON.parse(unescapeHtml(escaped)) as {testString: string};
     expect(unescapedObj['testString']).toBe(testString);
   });
 });
