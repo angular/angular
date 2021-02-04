@@ -584,13 +584,15 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
             if (this.originalFileExists(packageFile)) {
               // Once we see a package.json file, assume false until it we find the bundle index.
               result = false;
-              const packageContent: any = JSON.parse(assert(this.context.readFile(packageFile)));
+              const packageContent =
+                  JSON.parse(assert(this.context.readFile(packageFile))) as {typings: string};
               if (packageContent.typings) {
                 const typings = path.normalize(path.join(directory, packageContent.typings));
                 if (DTS.test(typings)) {
                   const metadataFile = typings.replace(DTS, '.metadata.json');
                   if (this.originalFileExists(metadataFile)) {
-                    const metadata = JSON.parse(assert(this.context.readFile(metadataFile)));
+                    const metadata = JSON.parse(assert(this.context.readFile(metadataFile))) as
+                        {flatModuleIndexRedirect: string, importAs: string};
                     if (metadata.flatModuleIndexRedirect) {
                       this.flatModuleIndexRedirectNames.add(typings);
                       // Note: don't set result = true,

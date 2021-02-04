@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {MappingItem, SourceMapConsumer} from 'source-map';
+import {MappingItem, RawSourceMap, SourceMapConsumer} from 'source-map';
 import {NgtscTestEnvironment} from './env';
 
 class TestSourceFile {
@@ -72,7 +72,7 @@ export function getMappedSegments(
   const mappings: MappingItem[] = [];
 
   const mapContents = env.getContents(sourceMapFileName);
-  const sourceMapConsumer = new SourceMapConsumer(JSON.parse(mapContents));
+  const sourceMapConsumer = new SourceMapConsumer(JSON.parse(mapContents) as RawSourceMap);
   sourceMapConsumer.eachMapping(item => {
     if (!sources.has(item.source)) {
       sources.set(item.source, new TestSourceFile(item.source, env.getContents(item.source)));

@@ -7,6 +7,7 @@
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment} from '../../../../src/ngtsc/file_system';
 import {cleanPackageJson} from '../../packages/build_marker';
+import {EntryPointPackageJson} from '../../packages/entry_point';
 import {NGCC_BACKUP_EXTENSION} from '../in_place_file_writer';
 import {NGCC_DIRECTORY} from '../new_entry_point_file_writer';
 
@@ -30,7 +31,7 @@ export class PackageJsonCleaner implements CleaningStrategy {
     return basename === 'package.json';
   }
   clean(path: AbsoluteFsPath, _basename: PathSegment): void {
-    const packageJson = JSON.parse(this.fs.readFile(path));
+    const packageJson = JSON.parse(this.fs.readFile(path)) as EntryPointPackageJson;
     if (cleanPackageJson(packageJson)) {
       this.fs.writeFile(path, `${JSON.stringify(packageJson, null, 2)}\n`);
     }

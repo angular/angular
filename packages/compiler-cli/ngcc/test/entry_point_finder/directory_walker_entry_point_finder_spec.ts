@@ -210,7 +210,7 @@ runInEachFileSystem(() => {
 
         // Modify the manifest to prove that we use it to find the entry-points
         const manifestPath = _Abs('/sub_entry_points/node_modules/__ngcc_entry_points__.json');
-        const manifestFile: EntryPointManifestFile = JSON.parse(fs.readFile(manifestPath));
+        const manifestFile = JSON.parse(fs.readFile(manifestPath)) as EntryPointManifestFile;
         manifestFile.entryPointPaths.pop();
         fs.writeFile(manifestPath, JSON.stringify(manifestFile));
 
