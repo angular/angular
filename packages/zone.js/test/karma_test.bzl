@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "rollup_bundle", "ts_library")
-load("@npm//@bazel/karma:index.bzl", "karma_web_test_suite")
+load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
 
 def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point):
     ts_library(
