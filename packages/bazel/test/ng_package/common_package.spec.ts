@@ -104,14 +104,20 @@ describe('@angular/common ng_package', () => {
 
 
   describe('should have module resolution properties in the package.json file for', () => {
+    interface PackageJson {
+      main: string;
+      es2015: string;
+      module: string;
+      typings: string;
+    }
     // https://github.com/angular/common-builds/blob/master/package.json
     it('/', () => {
-      const actual = JSON.parse(fs.readFileSync('package.json', {encoding: 'utf-8'}));
+      const actual = JSON.parse(fs.readFileSync('package.json', {encoding: 'utf-8'})) as PackageJson;
       expect(actual['main']).toEqual('./bundles/common.umd.js');
     });
     // https://github.com/angular/common-builds/blob/master/http/package.json
     it('/http', () => {
-      const actual = JSON.parse(fs.readFileSync('http/package.json', {encoding: 'utf-8'}));
+      const actual = JSON.parse(fs.readFileSync('http/package.json', {encoding: 'utf-8'})) as PackageJson;
       expect(actual['main']).toEqual('../bundles/common-http.umd.js');
       expect(actual['es2015']).toEqual('../fesm2015/http.js');
       expect(actual['module']).toEqual('../fesm2015/http.js');
@@ -119,12 +125,14 @@ describe('@angular/common ng_package', () => {
     });
     // https://github.com/angular/common-builds/blob/master/testing/package.json
     it('/testing', () => {
-      const actual = JSON.parse(fs.readFileSync('testing/package.json', {encoding: 'utf-8'}));
+      const actual =
+          JSON.parse(fs.readFileSync('testing/package.json', {encoding: 'utf-8'})) as PackageJson;
       expect(actual['main']).toEqual('../bundles/common-testing.umd.js');
     });
     // https://github.com/angular/common-builds/blob/master/http/testing/package.json
     it('/http/testing', () => {
-      const actual = JSON.parse(fs.readFileSync('http/testing/package.json', {encoding: 'utf-8'}));
+      const actual =
+          JSON.parse(fs.readFileSync('http/testing/package.json', {encoding: 'utf-8'})) as PackageJson;
       expect(actual['main']).toEqual('../../bundles/common-http-testing.umd.js');
       expect(actual['es2015']).toEqual('../../fesm2015/http/testing.js');
       expect(actual['module']).toEqual('../../fesm2015/http/testing.js');
@@ -132,7 +140,8 @@ describe('@angular/common ng_package', () => {
     });
     // https://github.com/angular/common-builds/blob/master/upgrade/package.json
     it('/upgrade', () => {
-      const actual = JSON.parse(fs.readFileSync('upgrade/package.json', {encoding: 'utf-8'}));
+      const actual =
+          JSON.parse(fs.readFileSync('upgrade/package.json', {encoding: 'utf-8'})) as PackageJson;
       expect(actual['main']).toEqual('../bundles/common-upgrade.umd.js');
       expect(actual['es2015']).toEqual('../fesm2015/upgrade.js');
       expect(actual['module']).toEqual('../fesm2015/upgrade.js');

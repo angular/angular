@@ -91,7 +91,7 @@ function main(args: string[]): number {
   const typeDefinitions = typeDefinitionsArg.split(',').filter(s => !!s);
   const srcs = srcsArg.split(',').filter(s => !!s);
   const dataFiles: string[] = dataArg.split(',').filter(s => !!s);
-  const modulesManifest = JSON.parse(modulesManifestArg);
+  const modulesManifest = JSON.parse(modulesManifestArg) as Record<string, any>;
   const dtsBundles: string[] = dtsBundleArg.split(',').filter(s => !!s);
 
   /**
@@ -226,7 +226,7 @@ function main(args: string[]): number {
     let content = fs.readFileSync(src, 'utf-8');
     // Modify package.json files as necessary for publishing
     if (path.basename(src) === 'package.json') {
-      const packageJson = JSON.parse(content);
+      const packageJson = JSON.parse(content) as {[key: string]: string};
       content = amendPackageJson(src, packageJson, false);
 
       const packageName = packageJson['name'];
@@ -439,7 +439,7 @@ export * from '${srcDirRelative(inputPath, typingsFile.replace(/\.d\.tsx?$/, '')
    * @param typingsPath the typings bundle entrypoint
    */
   function rewireMetadata(metadataPath: string, typingsPath: string): string {
-    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
+    const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8')) as {[key: string]: any};
 
     let typingsRelativePath =
         normalizeSeparators(path.relative(path.dirname(metadataPath), typingsPath));
