@@ -657,7 +657,6 @@ class CustomValidatorDirective implements Validator {
         parent.form = new FormGroup({'name': formModel});
         controlNameDir = new FormControlName(parent, [], [], [defaultAccessor], null);
         controlNameDir.name = 'name';
-        (controlNameDir as {control: FormControl}).control = formModel;
       });
 
       it('should reexport control properties', () => {

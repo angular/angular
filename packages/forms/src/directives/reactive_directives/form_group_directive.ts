@@ -73,6 +73,13 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   private readonly _onCollectionChange = () => this._updateDomValue();
 
   /**
+   * Keeps track of currently active FormControl instances associated with active FormControlName
+   * directive instances (i.e. which data is currently rendered). This map is used to determine
+   * which controls should be updated when parent FormGroup changes.
+   */
+  private activeFormControls: Map<FormControlName, FormControl> = new Map();
+
+  /**
    * @description
    * Tracks the list of added `FormControlName` instances
    */
@@ -164,6 +171,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
     setUpControl(ctrl, dir);
     ctrl.updateValueAndValidity({emitEvent: false});
     this.directives.push(dir);
+    this.activeFormControls.set(dir, ctrl);
     return ctrl;
   }
 
@@ -174,7 +182,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
    * @param dir The `FormControlName` directive instance.
    */
   getControl(dir: FormControlName): FormControl {
-    return <FormControl>this.form.get(dir.path);
+    return <FormControl>this.form?.get(dir.path);
   }
 
   /**
@@ -186,6 +194,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   removeControl(dir: FormControlName): void {
     cleanUpControl(dir.control || null, dir, /* validateControlPresenceOnChange */ false);
     removeListItem(this.directives, dir);
+    this.activeFormControls.delete(dir);
   }
 
   /**
@@ -294,13 +303,17 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   /** @internal */
   _updateDomValue() {
     this.directives.forEach(dir => {
-      const newCtrl: any = this.form.get(dir.path);
-      if (dir.control !== newCtrl) {
-        // Note: the value of the `dir.control` may not be defined, for example when it's a first
-        // `FormControl` that is added to a `FormGroup` instance (via `addControl` call).
-        cleanUpControl(dir.control || null, dir);
-        if (newCtrl) setUpControl(newCtrl, dir);
-        (dir as {control: FormControl}).control = newCtrl;
+      // Note: old control will not be present when we set things up initially.
+      const oldCtrl: FormControl|null = this.activeFormControls.get(dir) || null;
+      const newCtrl: FormControl|null = this.form.get(dir.path) as FormControl;
+      if (oldCtrl !== newCtrl) {
+        cleanUpControl(oldCtrl, dir);
+        if (newCtrl) {
+          setUpControl(newCtrl, dir);
+          this.activeFormControls.set(dir, newCtrl);
+        } else {
+          this.activeFormControls.delete(dir);
+        }
       }
     });
 
