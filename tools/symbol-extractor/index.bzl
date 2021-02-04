@@ -25,7 +25,9 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
         data = all_data,
         entry_point = entry_point,
         tags = kwargs.pop("tags", []) + ["symbol_extractor"],
-        templated_args = ["$(rootpath %s)" % src, "$(rootpath %s)" % golden],
+        # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+        # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+        templated_args = ["--bazel_patch_module_resolver", "$(rootpath %s)" % src, "$(rootpath %s)" % golden],
         configuration_env_vars = ["angular_ivy_enabled"],
         **kwargs
     )
@@ -36,6 +38,8 @@ def js_expected_symbol_test(name, src, golden, data = [], **kwargs):
         data = all_data,
         entry_point = entry_point,
         configuration_env_vars = ["angular_ivy_enabled"],
-        templated_args = ["$(rootpath %s)" % src, "$(rootpath %s)" % golden, "--accept"],
+        # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+        # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+        templated_args = ["--bazel_patch_module_resolver", "$(rootpath %s)" % src, "$(rootpath %s)" % golden, "--accept"],
         **kwargs
     )

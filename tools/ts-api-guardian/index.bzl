@@ -48,8 +48,8 @@ def ts_api_guardian_test(
         # Needed so that node doesn't walk back to the source directory.
         # From there, the relative imports would point to .ts files.
         "--node_options=--preserve-symlinks",
-        # Since version 3, monkey-patch the implementation of require() in NodeJS is opt-in
-        # https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+        # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+        # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
         "--bazel_patch_module_resolver",
     ]
 
@@ -112,6 +112,9 @@ def ts_api_guardian_test_npm_package(
         "--node_options=--preserve-symlinks",
         # We automatically discover the enpoints for our NPM package.
         "--autoDiscoverEntrypoints",
+        # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+        # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+        "--bazel_patch_module_resolver",
     ]
 
     for i in strip_export_pattern:

@@ -43,7 +43,7 @@ export function main(
     return true;
   }
 
-  const expectedSizeData = <FileSizeData>JSON.parse(readFileSync(goldenSizeMapPath, 'utf8'));
+  const expectedSizeData = JSON.parse(readFileSync(goldenSizeMapPath, 'utf8')) as FileSizeData;
   const differences =
       compareFileSizeData(sizeResult, expectedSizeData, {maxByteDiff, maxPercentageDiff});
 
