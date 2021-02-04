@@ -44,7 +44,7 @@ export class IOsDriverExtension extends WebDriverExtension {
         .then((entries) => {
           const records: any[] = [];
           entries.forEach((entry: any) => {
-            const message = JSON.parse(entry['message'])['message'];
+            const message = (JSON.parse(entry['message']) as {message: any})['message'];
             if (message['method'] === 'Timeline.eventRecorded') {
               records.push(message['params']['record']);
             }
