@@ -21,6 +21,9 @@ def partial_compliance_golden(filePath):
         entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
         templated_args = [
             filePath,
+            # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+            # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+            "--bazel_patch_module_resolver",
         ],
     )
 
@@ -31,6 +34,9 @@ def partial_compliance_golden(filePath):
         visibility = [":__pkg__"],
         entry_point = "//packages/compiler-cli/test/compliance/partial:cli.ts",
         templated_args = [
+            # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+            # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+            "--bazel_patch_module_resolver",
             "--node_options=--inspect-brk",
             filePath,
         ],

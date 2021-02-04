@@ -86,7 +86,7 @@ export function discoverAllEntrypoints(dirPath: string) {
 
   // Get all typings file locations from package.json files
   for (const packageJson of packageJsons) {
-    const packageJsonObj = JSON.parse(fs.readFileSync(packageJson, {encoding: 'utf8'}));
+    const packageJsonObj = JSON.parse(fs.readFileSync(packageJson, {encoding: 'utf8'})) as any;
     const typings = packageJsonObj.typings;
     if (typings) {
       entryPoints.push(path.join(path.dirname(packageJson), typings));
