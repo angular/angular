@@ -82,7 +82,8 @@ export abstract class ReleaseAction {
   /** Updates the version in the project top-level `package.json` file. */
   protected async updateProjectVersion(newVersion: semver.SemVer) {
     const pkgJsonPath = join(this.projectDir, packageJsonPath);
-    const pkgJson = JSON.parse(await fs.readFile(pkgJsonPath, 'utf8'));
+    const pkgJson =
+        JSON.parse(await fs.readFile(pkgJsonPath, 'utf8')) as {version: string, [key: string]: any};
     pkgJson.version = newVersion.format();
     // Write the `package.json` file. Note that we add a trailing new line
     // to avoid unnecessary diff. IDEs usually add a trailing new line.
@@ -558,7 +559,8 @@ export abstract class ReleaseAction {
   private async _verifyPackageVersions(version: semver.SemVer, packages: BuiltPackage[]) {
     for (const pkg of packages) {
       const {version: packageJsonVersion} =
-          JSON.parse(await fs.readFile(join(pkg.outputPath, 'package.json'), 'utf8'));
+          JSON.parse(await fs.readFile(join(pkg.outputPath, 'package.json'), 'utf8')) as
+          {version: string, [key: string]: any};
       if (version.compare(packageJsonVersion) !== 0) {
         error(red('The built package version does not match the version being released.'));
         error(`  Release Version:   ${version.version}`);

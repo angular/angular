@@ -93,7 +93,7 @@ export function main(
     info(yellow(`   Please rerun with "--warnings" to inspect unresolved imports.`));
   }
 
-  const expected: Golden = JSON.parse(readFileSync(goldenFile, 'utf8'));
+  const expected = JSON.parse(readFileSync(goldenFile, 'utf8')) as Golden;
   const {fixedCircularDeps, newCircularDeps} = compareGoldens(actual, expected);
   const isMatching = fixedCircularDeps.length === 0 && newCircularDeps.length === 0;
 
