@@ -10,6 +10,7 @@ import {isSyntaxError, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getFileSystem, ReadonlyFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+import {NgCompilerOptions} from './ngtsc/core/api';
 
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
@@ -132,39 +133,28 @@ export function calcProjectFileAndBasePath(
   return {projectFile, basePath};
 }
 
-export function createNgCompilerOptions(
-    basePath: string, config: any, tsOptions: ts.CompilerOptions): api.CompilerOptions {
-  // enableIvy `ngtsc` is an alias for `true`.
-  const {angularCompilerOptions = {}} = config;
-  const {enableIvy} = angularCompilerOptions;
-  angularCompilerOptions.enableIvy = enableIvy !== false && enableIvy !== 'tsc';
-
-  return {...tsOptions, ...angularCompilerOptions, genDir: basePath, basePath};
-}
-
 export function readConfiguration(
-    project: string, existingOptions?: ts.CompilerOptions,
+    project: string, existingOptions?: api.CompilerOptions,
     host: ConfigurationHost = getFileSystem()): ParsedConfiguration {
   try {
-    const {projectFile, basePath} = calcProjectFileAndBasePath(project, host);
-
-    const readExtendedConfigFile =
-        (configFile: string, existingConfig?: any): {config?: any, error?: ts.Diagnostic} => {
-          const {config, error} =
-              ts.readConfigFile(configFile, file => host.readFile(host.resolve(file)));
+    const readConfigFile = (configFile: string) =>
+        ts.readConfigFile(configFile, file => host.readFile(host.resolve(file)));
+    const readAngularCompilerOptions =
+        (configFile: string, parentOptions: NgCompilerOptions = {}): NgCompilerOptions => {
+          const {config, error} = readConfigFile(configFile);
 
           if (error) {
-            return {error};
+            // Errors are handled later on by 'parseJsonConfigFileContent'
+            return parentOptions;
           }
 
           // we are only interested into merging 'angularCompilerOptions' as
           // other options like 'compilerOptions' are merged by TS
-          const baseConfig = existingConfig || config;
-          if (existingConfig) {
-            baseConfig.angularCompilerOptions = {
-              ...config.angularCompilerOptions,
-              ...baseConfig.angularCompilerOptions
-            };
+          let existingNgCompilerOptions: NgCompilerOptions;
+          if (parentOptions && config.angularCompilerOptions) {
+            existingNgCompilerOptions = {...config.angularCompilerOptions, ...parentOptions};
+          } else {
+            existingNgCompilerOptions = parentOptions || config.angularCompilerOptions;
           }
 
           if (config.extends) {
@@ -174,16 +164,24 @@ export function readConfiguration(
                 absoluteFrom(`${extendedConfigPath}.json`);
 
             if (host.exists(extendedConfigPath)) {
-              // Call read config recursively as TypeScript only merges CompilerOptions
-              return readExtendedConfigFile(extendedConfigPath, baseConfig);
+              // Call readAngularCompilerOptions recursively to merge NG Compiler options
+              return readAngularCompilerOptions(extendedConfigPath, existingNgCompilerOptions);
             }
           }
 
-          return {config: baseConfig};
+          return existingNgCompilerOptions;
         };
 
-    const {config, error} = readExtendedConfigFile(projectFile);
+    const parseConfigHost = {
+      useCaseSensitiveFileNames: true,
+      fileExists: host.exists.bind(host),
+      readDirectory: ts.sys.readDirectory,
+      readFile: ts.sys.readFile
+    };
 
+    const {projectFile, basePath} = calcProjectFileAndBasePath(project, host);
+    const configFileName = host.resolve(host.pwd(), projectFile);
+    const {config, error} = readConfigFile(projectFile);
     if (error) {
       return {
         project,
@@ -193,19 +191,20 @@ export function readConfiguration(
         emitFlags: api.EmitFlags.Default
       };
     }
-    const parseConfigHost = {
-      useCaseSensitiveFileNames: true,
-      fileExists: host.exists.bind(host),
-      readDirectory: ts.sys.readDirectory,
-      readFile: ts.sys.readFile
+    const existingCompilerOptions = {
+      genDir: basePath,
+      basePath,
+      ...readAngularCompilerOptions(configFileName),
+      ...existingOptions,
     };
-    const configFileName = host.resolve(host.pwd(), projectFile);
-    const parsed = ts.parseJsonConfigFileContent(
-        config, parseConfigHost, basePath, existingOptions, configFileName);
-    const rootNames = parsed.fileNames;
-    const projectReferences = parsed.projectReferences;
 
-    const options = createNgCompilerOptions(basePath, config, parsed.options);
+    const {options, errors, fileNames: rootNames, projectReferences} =
+        ts.parseJsonConfigFileContent(
+            config, parseConfigHost, basePath, existingCompilerOptions, configFileName);
+
+    // Coerce to boolean as `enableIvy` can be `ngtsc|true|false|undefined` here.
+    options.enableIvy = !!(options.enableIvy ?? true);
+
     let emitFlags = api.EmitFlags.Default;
     if (!(options.skipMetadataEmit || options.flatModuleOutFile)) {
       emitFlags |= api.EmitFlags.Metadata;
@@ -213,14 +212,7 @@ export function readConfiguration(
     if (options.skipTemplateCodegen) {
       emitFlags = emitFlags & ~api.EmitFlags.Codegen;
     }
-    return {
-      project: projectFile,
-      rootNames,
-      projectReferences,
-      options,
-      errors: parsed.errors,
-      emitFlags
-    };
+    return {project: projectFile, rootNames, projectReferences, options, errors, emitFlags};
   } catch (e) {
     const errors: ts.Diagnostic[] = [{
       category: ts.DiagnosticCategory.Error,

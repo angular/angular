@@ -7,6 +7,7 @@
  */
 
 import * as path from 'path';
+import * as ts from 'typescript';
 
 import {readConfiguration} from '../src/perform_compile';
 
@@ -77,4 +78,28 @@ describe('perform_compile', () => {
        const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
        expect(options.enableIvy).toBe(false);
      });
+
+  it('should override options defined in tsconfig with those defined in `existingOptions`', () => {
+    support.writeFiles({
+      'tsconfig-level-1.json': `{
+          "compilerOptions": {
+            "target": "es2020"
+          },
+          "angularCompilerOptions": {
+            "annotateForClosureCompiler": true
+          }
+        }
+      `
+    });
+
+    const {options} = readConfiguration(
+        path.resolve(basePath, 'tsconfig-level-1.json'),
+        {annotateForClosureCompiler: false, target: ts.ScriptTarget.ES2015, enableIvy: false});
+
+    expect(options).toEqual(jasmine.objectContaining({
+      enableIvy: false,
+      target: ts.ScriptTarget.ES2015,
+      annotateForClosureCompiler: false,
+    }));
+  });
 });
