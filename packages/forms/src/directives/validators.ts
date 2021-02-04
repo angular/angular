@@ -76,7 +76,7 @@ export interface Validator {
  * For internal use only, this class is not intended for use outside of the Forms package.
  */
 @Directive()
-abstract class AbstractValidatorDirective implements Validator, OnChanges {
+abstract class AbstractValidatorDirective implements Validator {
   private _validator: ValidatorFn = Validators.nullValidator;
   private _onChange!: () => void;
 
@@ -107,8 +107,11 @@ abstract class AbstractValidatorDirective implements Validator, OnChanges {
    */
   abstract normalizeInput(input: unknown): unknown;
 
-  /** @nodoc */
-  ngOnChanges(changes: SimpleChanges): void {
+  /**
+   * Helper function invoked from child classes to process changes (from `ngOnChanges` hook).
+   * @nodoc
+   */
+  handleChanges(changes: SimpleChanges): void {
     if (this.inputName in changes) {
       const input = this.normalizeInput(changes[this.inputName].currentValue);
       this._validator = this.createValidator(input);
@@ -166,7 +169,7 @@ export const MAX_VALIDATOR: StaticProvider = {
   providers: [MAX_VALIDATOR],
   host: {'[attr.max]': 'max ? max : null'}
 })
-export class MaxValidator extends AbstractValidatorDirective {
+export class MaxValidator extends AbstractValidatorDirective implements OnChanges {
   /**
    * @description
    * Tracks changes to the max bound to this directive.
@@ -178,6 +181,15 @@ export class MaxValidator extends AbstractValidatorDirective {
   normalizeInput = (input: string): number => parseInt(input, 10);
   /** @internal */
   createValidator = (max: number): ValidatorFn => Validators.max(max);
+  /**
+   * Declare `ngOnChanges` lifecycle hook at the main directive level (vs keeping it in base class)
+   * to avoid differences in handling inheritance of lifecycle hooks between Ivy and ViewEngine in
+   * AOT mode. This could be refactored once ViewEngine is removed.
+   * @nodoc
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    this.handleChanges(changes);
+  }
 }
 
 /**
@@ -217,7 +229,7 @@ export const MIN_VALIDATOR: StaticProvider = {
   providers: [MIN_VALIDATOR],
   host: {'[attr.min]': 'min ? min : null'}
 })
-export class MinValidator extends AbstractValidatorDirective {
+export class MinValidator extends AbstractValidatorDirective implements OnChanges {
   /**
    * @description
    * Tracks changes to the min bound to this directive.
@@ -229,6 +241,15 @@ export class MinValidator extends AbstractValidatorDirective {
   normalizeInput = (input: string): number => parseInt(input, 10);
   /** @internal */
   createValidator = (min: number): ValidatorFn => Validators.min(min);
+  /**
+   * Declare `ngOnChanges` lifecycle hook at the main directive level (vs keeping it in base class)
+   * to avoid differences in handling inheritance of lifecycle hooks between Ivy and ViewEngine in
+   * AOT mode. This could be refactored once ViewEngine is removed.
+   * @nodoc
+   */
+  ngOnChanges(changes: SimpleChanges): void {
+    this.handleChanges(changes);
+  }
 }
 
 /**
