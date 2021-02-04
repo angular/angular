@@ -103,11 +103,12 @@ export class NewEntryPointFileWriter extends InPlaceFileWriter {
     const sourceMapPath = (originalSrcPath + '.map') as AbsoluteFsPath;
     if (this.fs.exists(sourceMapPath)) {
       try {
-        const sourceMap = JSON.parse(this.fs.readFile(sourceMapPath));
+        const sourceMap =
+            JSON.parse(this.fs.readFile(sourceMapPath)) as {sourceRoot: string, [key: string]: any};
         const newSourceMapPath = (newSrcPath + '.map') as AbsoluteFsPath;
         const relativePath =
             this.fs.relative(this.fs.dirname(newSourceMapPath), this.fs.dirname(sourceMapPath));
-        sourceMap['sourceRoot'] = this.fs.join(relativePath, sourceMap['sourceRoot'] || '.');
+        sourceMap.sourceRoot = this.fs.join(relativePath, sourceMap.sourceRoot || '.');
         this.fs.ensureDir(this.fs.dirname(newSourceMapPath));
         this.fs.writeFile(newSourceMapPath, JSON.stringify(sourceMap));
       } catch (e) {

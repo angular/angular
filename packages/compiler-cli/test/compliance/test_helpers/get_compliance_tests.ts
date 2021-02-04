@@ -55,9 +55,9 @@ export function* getComplianceTests(testConfigPath: string): Generator<Complianc
 }
 
 function loadTestCasesFile(
-    fs: ReadonlyFileSystem, testCasesPath: AbsoluteFsPath, basePath: AbsoluteFsPath): any {
+    fs: ReadonlyFileSystem, testCasesPath: AbsoluteFsPath, basePath: AbsoluteFsPath) {
   try {
-    return JSON.parse(fs.readFile(testCasesPath));
+    return JSON.parse(fs.readFile(testCasesPath)) as {cases: TestCaseJson | TestCaseJson[]};
   } catch (e) {
     throw new Error(
         `Failed to load test-cases at "${fs.relative(basePath, testCasesPath)}":\n ${e.message}`);
@@ -298,3 +298,24 @@ export type ExtraCheck = (string|[string, ...any]);
  * Options to pass to configure the compiler.
  */
 export type ConfigOptions = Record<string, string|boolean|null>;
+
+
+
+/**
+ * Interface espressing the type for the json object found at ../test_cases/test_case_schema.json.
+ */
+export interface TestCaseJson {
+  description: string;
+  compilationModeFilter?: ('fulll compile'|'linked compile')[];
+  inputFiles?: string[];
+  expectations?: {
+    failureMessage?: string;
+    files?: ExpectedFile[] | string;
+    expectedErrors?: {message: string, location?: string};
+    extraChecks?: (string | string[])[];
+  };
+  compilerOptions?: ConfigOptions;
+  angularCompilerOptions?: ConfigOptions;
+  focusTest?: boolean;
+  excludeTest?: boolean;
+}
