@@ -1,3 +1,40 @@
+# 11.2.0-rc.0 "sandstone-pyramid" (2021-02-03)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **collections:** recycle repeater strategy retaining references to destroyed views ([#21744](https://github.com/angular/components/issues/21744)) ([42361c0b31a484efbe516c9990f7c6143f4ea4e3](https://github.com/angular/components/commit/42361c0b31a484efbe516c9990f7c6143f4ea4e3)) |
+| feature |  **table:** add HTML elements to sticky styler update ([#21704](https://github.com/angular/components/issues/21704)) ([155c7c2da536e9c80b7914ad88ef0e11dc1b1fb9](https://github.com/angular/components/commit/155c7c2da536e9c80b7914ad88ef0e11dc1b1fb9)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** reset preview range after selecting a date ([#21591](https://github.com/angular/components/issues/21591)) ([192efb80aae464cdeb4ed57c198d943975ff0f8a](https://github.com/angular/components/commit/192efb80aae464cdeb4ed57c198d943975ff0f8a)) |
+| bug fix |  **expansion:** add focus indication in high contrast mode ([#21549](https://github.com/angular/components/issues/21549)) ([d3deb8b9c61f79f6a4ab75d74914aac3b43592bf](https://github.com/angular/components/commit/d3deb8b9c61f79f6a4ab75d74914aac3b43592bf)), closes [#21544](https://github.com/angular/components/issues/21544) |
+| bug fix |  **menu:** nested menu trigger not restoring focus ([#21531](https://github.com/angular/components/issues/21531)) ([21cae48024db4279143a9391049ab0301f0f25f4](https://github.com/angular/components/commit/21cae48024db4279143a9391049ab0301f0f25f4)) |
+| bug fix |  **schematics:** fix typo in warning ([#21754](https://github.com/angular/components/issues/21754)) ([8f558eeb7e475da54ad69e85ec07229fb4b0c3e9](https://github.com/angular/components/commit/8f558eeb7e475da54ad69e85ec07229fb4b0c3e9)), closes [#21705](https://github.com/angular/components/issues/21705) |
+| bug fix |  **select:** overlay offset calculation for disabled option centering ([#21716](https://github.com/angular/components/issues/21716)) ([da1f7e7a5d4724ccbca72fbb35772c1a35db6518](https://github.com/angular/components/commit/da1f7e7a5d4724ccbca72fbb35772c1a35db6518)), closes [#21570](https://github.com/angular/components/issues/21570) |
+| bug fix |  **select:** VoiceOver reading out blank space ([#21733](https://github.com/angular/components/issues/21733)) ([9f913aa909c2313be2684cd071c5d200ddf20f82](https://github.com/angular/components/commit/9f913aa909c2313be2684cd071c5d200ddf20f82)), closes [#21725](https://github.com/angular/components/issues/21725) |
+| feature |  **datepicker:** allow for focus restoration to be disabled ([#21444](https://github.com/angular/components/issues/21444)) ([6d726f49125c517d2e68bca4fdc1f3674c56cc3c](https://github.com/angular/components/commit/6d726f49125c517d2e68bca4fdc1f3674c56cc3c)), closes [#20750](https://github.com/angular/components/issues/20750) |
+| feature |  **sort:** Add default configuration options ([#21648](https://github.com/angular/components/issues/21648)) ([dff4a3ca2372d3fa55a319d5d8b451781c8cd3ec](https://github.com/angular/components/commit/dff4a3ca2372d3fa55a319d5d8b451781c8cd3ec)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-chips:** decouple removal from animation ([#21586](https://github.com/angular/components/issues/21586)) ([2d66ecbeedf74b24dd97e2f2b95c0de0266757b4](https://github.com/angular/components/commit/2d66ecbeedf74b24dd97e2f2b95c0de0266757b4)), closes [#21561](https://github.com/angular/components/issues/21561) |
+| bug fix |  **mdc-chips:** set correct ripple opacity for … ([#21624](https://github.com/angular/components/issues/21624)) ([277ad5b40d195e9823bb2a9154fee0f9cb0d1eff](https://github.com/angular/components/commit/277ad5b40d195e9823bb2a9154fee0f9cb0d1eff)) |
+| bug fix |  **mdc-dialog:** afterClosed being run outside of NgZone ([#21702](https://github.com/angular/components/issues/21702)) ([57c68e81e12fb5c5ff0e55e5a4f6d83a71e46a4a](https://github.com/angular/components/commit/57c68e81e12fb5c5ff0e55e5a4f6d83a71e46a4a)), closes [#21696](https://github.com/angular/components/issues/21696) |
+| bug fix |  **mdc-form-field:** remove extraneous sass var added by [#21676](https://github.com/angular/components/issues/21676) ([#21772](https://github.com/angular/components/issues/21772)) ([fc86fb543973913fdfa017a161e923d6bce55727](https://github.com/angular/components/commit/fc86fb543973913fdfa017a161e923d6bce55727)) |
+| bug fix |  **mdc-form-field:** tweak styles to work with MDC ([e5db56f9e86eb3672554c264230137a44cf4f7b2](https://github.com/angular/components/commit/e5db56f9e86eb3672554c264230137a44cf4f7b2)) |
+| bug fix |  **mdc-paginator:** use caption typography for ([d7ec42c2c2ef76f4c0d14b2db399007aa24171a4](https://github.com/angular/components/commit/d7ec42c2c2ef76f4c0d14b2db399007aa24171a4)) |
+| bug fix |  **mdc-typography:** change mdc components to prefer ([b8cdb83d650d37076316d9871da34db01f5009dc](https://github.com/angular/components/commit/b8cdb83d650d37076316d9871da34db01f5009dc)) |
+| bug fix |  **mdc-typography:** update components using incorrect typography levels ([8f22f5ecb818ba14a67eed206f7ab7882e40b5c3](https://github.com/angular/components/commit/8f22f5ecb818ba14a67eed206f7ab7882e40b5c3)) |
+| feature |  **mdc-typography:** add a function to create ([12488cb50d6806810ed664e37c896128edddd871](https://github.com/angular/components/commit/12488cb50d6806810ed664e37c896128edddd871)) |
+
+
 ## 11.1.1 "silicate-star" (2021-01-27)
 
 ### cdk
