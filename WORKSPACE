@@ -8,8 +8,8 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "9d93d4e1340c43dbf6b2fd66b683d89630a6310bf8be3bf40ec96685dcacc26c",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/2.3.3/rules_nodejs-2.3.3.tar.gz"],
+    sha256 = "dd4dc46066e2ce034cba0c81aa3e862b27e8e8d95871f567359f7a534cccb666",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.1.0/rules_nodejs-3.1.0.tar.gz"],
 )
 
 # Check the rules_nodejs version and download npm dependencies
@@ -31,6 +31,9 @@ yarn_install(
     name = "npm",
     manual_build_file_contents = npm_package_archives(),
     package_json = "//:package.json",
+    # TODO(josephperrott): Correct usage of transitive dependencies to reenable strict_visibility
+    # See: https://github.com/bazelbuild/rules_nodejs/wiki#strict_visibility-on-yarn_install-and-npm_install-now-defaults-true-2199
+    strict_visibility = False,
     yarn_lock = "//:yarn.lock",
 )
 
@@ -44,11 +47,6 @@ load("@npm//@bazel/protractor:package.bzl", "npm_bazel_protractor_dependencies")
 
 npm_bazel_protractor_dependencies()
 
-# Load karma dependencies
-load("@npm//@bazel/karma:package.bzl", "npm_bazel_karma_dependencies")
-
-npm_bazel_karma_dependencies()
-
 # Setup the rules_webtesting toolchain
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories")
 
@@ -59,7 +57,7 @@ load("//dev-infra/browsers:browser_repositories.bzl", "browser_repositories")
 browser_repositories()
 
 # Setup the rules_sass toolchain
-load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
 
 sass_repositories()
 
