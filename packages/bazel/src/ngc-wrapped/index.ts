@@ -377,8 +377,9 @@ export function compile({
     if (importedFilePath.indexOf('node_modules') >= 0) {
       const maybeMetadataFile = importedFilePath.replace(EXT, '') + '.metadata.json';
       if (fs.existsSync(maybeMetadataFile)) {
-        const moduleName =
-            JSON.parse(fs.readFileSync(maybeMetadataFile, {encoding: 'utf-8'})).importAs;
+        const moduleName = (JSON.parse(fs.readFileSync(maybeMetadataFile, {encoding: 'utf-8'})) as {
+                             importAs: string
+                           }).importAs;
         if (moduleName) {
           return moduleName;
         }
