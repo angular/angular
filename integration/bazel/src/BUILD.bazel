@@ -5,7 +5,7 @@ load("@npm//http-server:index.bzl", "http_server")
 load("@npm//@angular/bazel:index.bzl", "ng_module")
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
-load("@npm//@bazel/typescript:index.bzl", "ts_devserver")
+load("@npm//@bazel/concatjs:index.bzl", "concatjs_devserver")
 
 # Allow targets under sub-packages to reference the tsconfig.json file
 exports_files(["tsconfig.json"])
@@ -35,7 +35,7 @@ filegroup(
     ],
 )
 
-ts_devserver(
+concatjs_devserver(
     name = "devserver",
     entry_module = "bazel_integration_test/src/main",
     scripts = [

@@ -5,18 +5,18 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Fetch rules_nodejs so we can install our npm dependencies
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "9d93d4e1340c43dbf6b2fd66b683d89630a6310bf8be3bf40ec96685dcacc26c",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/2.3.3/rules_nodejs-2.3.3.tar.gz"],
+    sha256 = "dd4dc46066e2ce034cba0c81aa3e862b27e8e8d95871f567359f7a534cccb666",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.1.0/rules_nodejs-3.1.0.tar.gz"],
 )
 
 # Fetch sass rules for compiling sass files
 http_archive(
     name = "io_bazel_rules_sass",
-    sha256 = "77e241148f26d5dbb98f96fe0029d8f221c6cb75edbb83e781e08ac7f5322c5f",
-    strip_prefix = "rules_sass-1.24.0",
+    sha256 = "596ab3616d370135e0ecc710e103422e0aa3719f1c970303a0886b70c81ee819",
+    strip_prefix = "rules_sass-1.32.2",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/1.24.0.zip",
-        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.24.0.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1.32.2.zip",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.32.2.zip",
     ],
 )
 
@@ -34,6 +34,7 @@ node_repositories(
 # Install our npm dependencies into @npm
 yarn_install(
     name = "npm",
+    frozen_lockfile = False,
     package_json = "//:package.json",
     # Turn off symlink_node_modules here as it causes flakiness with missing
     # files in node_modules.
@@ -48,11 +49,6 @@ load("@npm//@bazel/protractor:package.bzl", "npm_bazel_protractor_dependencies")
 
 npm_bazel_protractor_dependencies()
 
-# Load karma dependencies
-load("@npm//@bazel/karma:package.bzl", "npm_bazel_karma_dependencies")
-
-npm_bazel_karma_dependencies()
-
 # Setup the rules_webtesting toolchain
 load("@io_bazel_rules_webtesting//web:repositories.bzl", "web_test_repositories")
 
@@ -66,6 +62,6 @@ browser_repositories(
 )
 
 # Setup the rules_sass toolchain
-load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_repositories")
 
 sass_repositories()
