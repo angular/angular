@@ -994,7 +994,7 @@ describe('Driver', () => {
     const getClientAssignments = async (sw: SwTestHarness, baseHref: string) => {
       const cache = await sw.caches.open(`ngsw:${baseHref}:db:control`) as unknown as MockCache;
       const dehydrated = cache.dehydrate();
-      return JSON.parse(dehydrated['/assignments'].body!);
+      return JSON.parse(dehydrated['/assignments'].body!) as any;
     };
 
     const initializeSwFor = async (baseHref: string, initialCacheState = '{}') => {
