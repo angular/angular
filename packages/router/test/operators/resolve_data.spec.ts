@@ -97,6 +97,6 @@ function createTransition(...resolvers: {[key: string]: string}[]) {
   };
 }
 
-function deepClone(obj: any) {
-  return JSON.parse(JSON.stringify(obj));
+function deepClone<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj)) as T;
 }
