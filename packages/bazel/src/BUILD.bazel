@@ -11,16 +11,12 @@ exports_files(glob(["*.bzl"]))
 
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
-filegroup(
-    name = "empty_node_modules",
-    srcs = [],
-)
-
 nodejs_binary(
     name = "modify_tsconfig",
-    data = ["modify_tsconfig.js"],
+    data = [
+        "modify_tsconfig.js",
+    ],
     entry_point = ":modify_tsconfig.js",
-    node_modules = ":empty_node_modules",
     visibility = ["//visibility:public"],
 )
 # END-DEV-ONLY
