@@ -427,7 +427,7 @@ export class MockAotCompilerHost implements AotCompilerHost {
       if (this.metadataVisible) {
         const metadataPath = modulePath.replace(DTS, '.metadata.json');
         if (this.tsHost.fileExists(metadataPath)) {
-          let result = JSON.parse(this.tsHost.readFile(metadataPath));
+          let result = JSON.parse(this.tsHost.readFile(metadataPath)) as {[key: string]: any}[];
           return Array.isArray(result) ? result : [result];
         }
       }
