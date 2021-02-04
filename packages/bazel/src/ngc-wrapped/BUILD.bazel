@@ -9,7 +9,6 @@ ts_library(
         "index.ts",
     ],
     module_name = "@angular/bazel",
-    node_modules = "@npm//typescript:typescript__typings",
     tsconfig = ":tsconfig.json",
     visibility = [
         "//packages/bazel:__pkg__",
@@ -21,6 +20,7 @@ ts_library(
         "@npm//@types/node",
         "@npm//tsickle",
         "@npm//typescript",
+        "@npm//typescript:typescript__typings",
     ],
 )
 
