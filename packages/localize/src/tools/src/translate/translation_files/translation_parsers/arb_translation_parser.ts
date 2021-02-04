@@ -93,7 +93,7 @@ export class ArbTranslationParser implements TranslationParser<ArbJsonObject> {
   }
 
   private tryParseArbFormat(contents: string): ArbJsonObject {
-    const json = JSON.parse(contents);
+    const json = JSON.parse(contents) as ArbJsonObject;
     if (typeof json['@@locale'] !== 'string') {
       throw new Error('Missing @@locale property.');
     }

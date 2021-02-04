@@ -40,5 +40,5 @@ export function validateOptions(name: string, validOptions: ValidOptions, option
  * @param optionString The string to parse.
  */
 export function parseFormatOptions(optionString: string = '{}'): FormatOptions {
-  return JSON.parse(optionString);
+  return JSON.parse(optionString) as FormatOptions;
 }
