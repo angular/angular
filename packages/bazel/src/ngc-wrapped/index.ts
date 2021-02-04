@@ -44,81 +44,54 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
   const project = args[0].replace(/^@+/, '');
 
   const [parsedOptions, errors] = parseTsconfig(project);
-  if (errors && errors.length) {
+  if (errors?.length) {
     console.error(ng.formatDiagnostics(errors));
     return false;
   }
-  const {options: tsOptions, bazelOpts, files, config} = parsedOptions;
-  const angularCompilerOptions: {[k: string]: unknown} = config['angularCompilerOptions'] || {};
 
-  // Allow Bazel users to control some of the bazel options.
-  // Since TypeScript's "extends" mechanism applies only to "compilerOptions"
-  // we have to repeat some of their logic to get the user's "angularCompilerOptions".
-  if (config['extends']) {
-    // Load the user's config file
-    // Note: this doesn't handle recursive extends so only a user's top level
-    // `angularCompilerOptions` will be considered. As this code is going to be
-    // removed with Ivy, the added complication of handling recursive extends
-    // is likely not needed.
-    let userConfigFile = resolveNormalizedPath(path.dirname(project), config['extends']);
-    if (!userConfigFile.endsWith('.json')) userConfigFile += '.json';
-    const {config: userConfig, error} = ts.readConfigFile(userConfigFile, ts.sys.readFile);
-    if (error) {
-      console.error(ng.formatDiagnostics([error]));
-      return false;
-    }
+  const {bazelOpts, options: tsOptions, files, config} = parsedOptions;
+  const {errors: userErrors, options: userOptions} = ng.readConfiguration(project);
 
-    // All user angularCompilerOptions values that a user has control
-    // over should be collected here
-    if (userConfig.angularCompilerOptions) {
-      angularCompilerOptions['diagnostics'] =
-          angularCompilerOptions['diagnostics'] || userConfig.angularCompilerOptions.diagnostics;
-      angularCompilerOptions['trace'] =
-          angularCompilerOptions['trace'] || userConfig.angularCompilerOptions.trace;
-
-      angularCompilerOptions['disableExpressionLowering'] =
-          angularCompilerOptions['disableExpressionLowering'] ||
-          userConfig.angularCompilerOptions.disableExpressionLowering;
-      angularCompilerOptions['disableTypeScriptVersionCheck'] =
-          angularCompilerOptions['disableTypeScriptVersionCheck'] ||
-          userConfig.angularCompilerOptions.disableTypeScriptVersionCheck;
-
-      angularCompilerOptions['i18nOutLocale'] = angularCompilerOptions['i18nOutLocale'] ||
-          userConfig.angularCompilerOptions.i18nOutLocale;
-      angularCompilerOptions['i18nOutFormat'] = angularCompilerOptions['i18nOutFormat'] ||
-          userConfig.angularCompilerOptions.i18nOutFormat;
-      angularCompilerOptions['i18nOutFile'] =
-          angularCompilerOptions['i18nOutFile'] || userConfig.angularCompilerOptions.i18nOutFile;
-
-      angularCompilerOptions['i18nInFormat'] =
-          angularCompilerOptions['i18nInFormat'] || userConfig.angularCompilerOptions.i18nInFormat;
-      angularCompilerOptions['i18nInLocale'] =
-          angularCompilerOptions['i18nInLocale'] || userConfig.angularCompilerOptions.i18nInLocale;
-      angularCompilerOptions['i18nInFile'] =
-          angularCompilerOptions['i18nInFile'] || userConfig.angularCompilerOptions.i18nInFile;
-
-      angularCompilerOptions['i18nInMissingTranslations'] =
-          angularCompilerOptions['i18nInMissingTranslations'] ||
-          userConfig.angularCompilerOptions.i18nInMissingTranslations;
-      angularCompilerOptions['i18nUseExternalIds'] = angularCompilerOptions['i18nUseExternalIds'] ||
-          userConfig.angularCompilerOptions.i18nUseExternalIds;
-
-      angularCompilerOptions['preserveWhitespaces'] =
-          angularCompilerOptions['preserveWhitespaces'] ||
-          userConfig.angularCompilerOptions.preserveWhitespaces;
-
-      angularCompilerOptions.createExternalSymbolFactoryReexports =
-          angularCompilerOptions.createExternalSymbolFactoryReexports ||
-          userConfig.angularCompilerOptions.createExternalSymbolFactoryReexports;
-    }
+  if (userErrors?.length) {
+    console.error(ng.formatDiagnostics(userErrors));
+    return false;
   }
+
+  const allowedNgCompilerOptionsOverrides = new Set<string>([
+    'diagnostics',
+    'trace',
+    'disableExpressionLowering',
+    'disableTypeScriptVersionCheck',
+    'i18nOutLocale',
+    'i18nOutFormat',
+    'i18nOutFile',
+    'i18nInLocale',
+    'i18nInFile',
+    'i18nInFormat',
+    'i18nUseExternalIds',
+    'i18nInMissingTranslations',
+    'preserveWhitespaces',
+    'createExternalSymbolFactoryReexports',
+  ]);
+
+  const userOverrides = Object.entries(userOptions)
+                            .filter(([key]) => allowedNgCompilerOptionsOverrides.has(key))
+                            .reduce((obj, [key, value]) => {
+                              obj[key] = value;
+
+                              return obj;
+                            }, {});
+
+  const compilerOpts: ng.AngularCompilerOptions = {
+    ...userOverrides,
+    ...config['angularCompilerOptions'],
+    ...tsOptions,
+  };
 
   // These are options passed through from the `ng_module` rule which aren't supported
   // by the `@angular/compiler-cli` and are only intended for `ngc-wrapped`.
   const {expectedOut, _useManifestPathsAsModuleName} = config['angularCompilerOptions'];
 
-  const {basePath} = ng.calcProjectFileAndBasePath(project);
-  const compilerOpts = ng.createNgCompilerOptions(basePath, config, tsOptions);
   const tsHost = ts.createCompilerHost(compilerOpts, true);
   const {diagnostics} = compile({
     allDepsCompiledWithBazel: ALL_DEPS_COMPILED_WITH_BAZEL,
