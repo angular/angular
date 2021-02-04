@@ -3,10 +3,10 @@
 load("@bazel_tools//tools/build_defs/pkg:pkg.bzl", "pkg_tar")
 load("@build_bazel_rules_nodejs//:index.bzl", _nodejs_binary = "nodejs_binary", _pkg_npm = "pkg_npm")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
-load("@npm//@bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
+load("@npm//@bazel/concatjs:index.bzl", _concatjs_devserver = "concatjs_devserver", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@bazel/rollup:index.bzl", _rollup_bundle = "rollup_bundle")
 load("@npm//@bazel/terser:index.bzl", "terser_minified")
-load("@npm//@bazel/typescript:index.bzl", _ts_config = "ts_config", _ts_devserver = "ts_devserver", _ts_library = "ts_library")
+load("@npm//@bazel/typescript:index.bzl", _ts_config = "ts_config", _ts_library = "ts_library")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//typescript:index.bzl", "tsc")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
@@ -88,7 +88,7 @@ def _default_module_name(testonly):
 def ts_devserver(**kwargs):
     """Default values for ts_devserver"""
     serving_path = kwargs.pop("serving_path", "/app_bundle.js")
-    _ts_devserver(
+    _concatjs_devserver(
         serving_path = serving_path,
         **kwargs
     )
@@ -362,7 +362,10 @@ def jasmine_node_test(bootstrap = [], **kwargs):
     configuration_env_vars = kwargs.pop("configuration_env_vars", []) + [
         "angular_ivy_enabled",
     ]
-    templated_args = kwargs.pop("templated_args", [])
+
+    # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+    # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+    templated_args = ["--bazel_patch_module_resolver"] + kwargs.pop("templated_args", [])
     for label in bootstrap:
         deps += [label]
         templated_args += ["--node_options=--require=$$(rlocation $(rootpath %s))" % label]
