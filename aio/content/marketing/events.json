@@ -1,5 +1,14 @@
 [
   {
+    "name": "Angular Global Summit",
+    "location": "Online",
+    "linkUrl": "https://angular.geekle.us/",
+    "date": {
+      "start": "2021-04-13",
+      "end": "2021-04-14"
+    }
+  },
+  {
     "name": "ng-china",
     "location": "Online",
     "linkUrl": "https://ng-china.org/",
