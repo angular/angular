@@ -1,8 +1,7 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@npm//@bazel/karma:index.bzl", "karma_web_test_suite")
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary")
+load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
 load("@npm//@angular/bazel:index.bzl", "ng_package")
 load("//tools:ng_ts_library.bzl", "ng_ts_library")
 
@@ -31,7 +30,7 @@ ng_package(
     deps = [":hello-world"],
 )
 
-ts_library(
+ng_ts_library(
     name = "test_lib",
     testonly = 1,
     srcs = glob(["*.spec.ts"]),
