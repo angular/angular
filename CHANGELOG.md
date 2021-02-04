@@ -1,6 +1,8 @@
 <a name="11.2.0-rc.0"></a>
 # 11.2.0-rc.0 (2021-02-03)
 
+This release contains the same set the of changes as 11.2.0-next.1.
+
 
 <a name="11.2.0-next.1"></a>
 # 11.2.0-next.1 (2021-02-03)
