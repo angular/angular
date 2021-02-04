@@ -11,7 +11,7 @@ import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
-import {EntryPoint, EntryPointJsonProperty, getEntryPointFormat, getEntryPointInfo, IGNORED_ENTRY_POINT, INCOMPATIBLE_ENTRY_POINT, isEntryPoint, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, getEntryPointFormat, getEntryPointInfo, IGNORED_ENTRY_POINT, INCOMPATIBLE_ENTRY_POINT, isEntryPoint, NO_ENTRY_POINT, SUPPORTED_FORMAT_PROPERTIES} from '../../src/packages/entry_point';
 
 runInEachFileSystem(() => {
   describe('getEntryPointInfo()', () => {
@@ -116,8 +116,8 @@ runInEachFileSystem(() => {
       ]);
 
       const config = new NgccConfiguration(fs, _('/project'));
-      const info: EntryPoint =
-          getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath) as any;
+      const info = getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath) as
+          EntryPoint;
 
       expect(info.packageJson).toEqual(jasmine.objectContaining({packageVersion: '1'}));
     });
@@ -159,8 +159,8 @@ runInEachFileSystem(() => {
       ]);
 
       const config = new NgccConfiguration(fs, _('/project'));
-      const info: EntryPoint =
-          getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath) as any;
+      const info = getEntryPointInfo(fs, config, new MockLogger(), SOME_PACKAGE, entryPointPath) as
+          EntryPoint;
 
       expect(info.packageJson).toEqual(jasmine.objectContaining({packageVersion: '3'}));
     });
@@ -233,7 +233,8 @@ runInEachFileSystem(() => {
          ]);
          const config = new NgccConfiguration(fs, _('/project'));
          const override =
-             JSON.parse(createPackageJson('missing_package_json', {excludes: ['name']}));
+             JSON.parse(createPackageJson('missing_package_json', {excludes: ['name']})) as
+             Partial<EntryPointPackageJson>;
          spyOn(config, 'getPackageConfig')
              .and.returnValue(new ProcessedNgccPackageConfig(
                  fs, _('/project/node_modules/some_package/'),
@@ -762,7 +763,7 @@ export function createPackageJson(
       typingsIsArray?: boolean,
       version?: string
     } = {}): string {
-  const packageJson: any = {
+  const packageJson: EntryPointPackageJson = {
     name: (entryPointName === '') ? 'some_package' : `some_package/${entryPointName}`,
     version,
     [typingsProp]: typingsIsArray ? [`./${entryPointName}.d.ts`] : `./${entryPointName}.d.ts`,
@@ -782,5 +783,6 @@ export function createPackageJson(
 }
 
 export function loadPackageJson(fs: ReadonlyFileSystem, packagePath: string) {
-  return JSON.parse(fs.readFile(fs.resolve(packagePath + '/package.json')));
+  return JSON.parse(fs.readFile(fs.resolve(packagePath + '/package.json'))) as
+      EntryPointPackageJson;
 }

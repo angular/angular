@@ -60,7 +60,7 @@ function linkPartials(fileSystem: FileSystem, test: ComplianceTest): CompileResu
       const source = fileSystem.readFile(fileName);
       const sourceMapPath = fileSystem.resolve(fileName + '.map');
       const sourceMap = fileSystem.exists(sourceMapPath) ?
-          JSON.parse(fileSystem.readFile(sourceMapPath)) :
+          JSON.parse(fileSystem.readFile(sourceMapPath)) as RawSourceMap :
           undefined;
       const {linkedSource, linkedSourceMap} =
           applyLinker(builtDirectory, fileName, source, sourceMap, linkerPlugin);

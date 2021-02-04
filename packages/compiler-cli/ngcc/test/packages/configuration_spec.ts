@@ -10,7 +10,7 @@ import {createHash} from 'crypto';
 import {absoluteFrom, getFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
-import {DEFAULT_NGCC_CONFIG, NgccConfiguration, ProcessLockingConfiguration} from '../../src/packages/configuration';
+import {DEFAULT_NGCC_CONFIG, NgccConfiguration, NgccProjectConfig, ProcessLockingConfiguration, RawNgccPackageConfig} from '../../src/packages/configuration';
 
 
 runInEachFileSystem(() => {
@@ -567,7 +567,9 @@ runInEachFileSystem(() => {
             entryPoints: {'./default-level-entry-point': {}},
           };
         });
-        afterEach(() => DEFAULT_NGCC_CONFIG.packages = JSON.parse(originalDefaultConfig));
+        afterEach(
+            () => DEFAULT_NGCC_CONFIG.packages =
+                JSON.parse(originalDefaultConfig) as NgccProjectConfig['packages']);
 
         it('should return configuration for a package found in the default config', () => {
           const readFileSpy = spyOn(fs, 'readFile').and.callThrough();

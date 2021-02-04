@@ -18,7 +18,7 @@ runInEachFileSystem(() => {
     let updater: PackageJsonUpdater;
 
     // Helpers
-    const readJson = (path: AbsoluteFsPath) => JSON.parse(fs.readFile(path));
+    const readJson = <T>(path: AbsoluteFsPath) => JSON.parse(fs.readFile(path)) as T;
 
     beforeEach(() => {
       _ = absoluteFrom;
@@ -55,7 +55,7 @@ runInEachFileSystem(() => {
         {name: jsonPath, contents: '{"foo": true, "bar": {"baz": "OK"}}'},
       ]);
 
-      const pkg = readJson(jsonPath);
+      const pkg = readJson<{foo: boolean, bar: {baz: string | number}}>(jsonPath);
       const update = updater.createUpdate().addChange(['foo'], false).addChange(['bar', 'baz'], 42);
 
       // Not updated yet.
@@ -95,7 +95,7 @@ runInEachFileSystem(() => {
         {name: jsonPath, contents: '{"foo": {}}'},
       ]);
 
-      const pkg = readJson(jsonPath);
+      const pkg = readJson<{foo: {bar: {baz: {qux: string}}}}>(jsonPath);
       updater.createUpdate()
           .addChange(['foo', 'bar', 'baz', 'qux'], 'updated')
           .writeChanges(jsonPath, pkg);

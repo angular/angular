@@ -16,7 +16,7 @@ import {ModuleResolver} from '../../src/dependencies/module_resolver';
 import {TargetedEntryPointFinder} from '../../src/entry_point_finder/targeted_entry_point_finder';
 import {NGCC_VERSION} from '../../src/packages/build_marker';
 import {NgccConfiguration, ProcessedNgccPackageConfig} from '../../src/packages/configuration';
-import {EntryPoint} from '../../src/packages/entry_point';
+import {EntryPoint, EntryPointPackageJson} from '../../src/packages/entry_point';
 import {PathMappings} from '../../src/path_mappings';
 
 runInEachFileSystem(() => {
@@ -555,7 +555,7 @@ runInEachFileSystem(() => {
 
              // Add a build marker to the package.json
              const packageJsonPath = _Abs(`${targetPath}/package.json`);
-             const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+             const packageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
              packageJson.__processed_by_ivy_ngcc__ = {
                esm5: NGCC_VERSION,
              };
@@ -579,7 +579,7 @@ runInEachFileSystem(() => {
 
           // Add build markers to the package.json
           const packageJsonPath = _Abs(`${targetPath}/package.json`);
-          const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+          const packageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
           packageJson.__processed_by_ivy_ngcc__ = {
             fesm2015: NGCC_VERSION,
             esm5: NGCC_VERSION,
@@ -625,7 +625,7 @@ runInEachFileSystem(() => {
 
              // Add build markers to the package.json
              const packageJsonPath = _Abs(`${targetPath}/package.json`);
-             const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+             const packageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
              packageJson.__processed_by_ivy_ngcc__ = {
                esm5: NGCC_VERSION,
              };
@@ -651,7 +651,7 @@ runInEachFileSystem(() => {
 
              // Add build markers to the package.json
              const packageJsonPath = _Abs(`${targetPath}/package.json`);
-             const packageJson = JSON.parse(fs.readFile(packageJsonPath));
+             const packageJson = JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
              packageJson.__processed_by_ivy_ngcc__ = {
                fesm2015: NGCC_VERSION,
              };

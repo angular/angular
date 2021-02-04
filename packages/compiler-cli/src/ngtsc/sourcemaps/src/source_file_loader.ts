@@ -226,7 +226,7 @@ export class SourceFileLoader {
    */
   private readRawSourceMap(mapPath: AbsoluteFsPath): RawSourceMap {
     this.trackPath(mapPath);
-    return JSON.parse(this.fs.readFile(mapPath));
+    return JSON.parse(this.fs.readFile(mapPath)) as RawSourceMap;
   }
 
   /**

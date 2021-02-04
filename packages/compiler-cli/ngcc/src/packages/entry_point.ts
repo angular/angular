@@ -256,7 +256,7 @@ export function getEntryPointFormat(
 function loadPackageJson(
     fs: ReadonlyFileSystem, packageJsonPath: AbsoluteFsPath): EntryPointPackageJson|null {
   try {
-    return JSON.parse(fs.readFile(packageJsonPath));
+    return JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
   } catch {
     return null;
   }
