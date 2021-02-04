@@ -1,6 +1,6 @@
 load("//tools:defaults.bzl", "protractor_web_test_suite", "ts_library")
 
-def example_test(name, srcs, server, data = [], **kwargs):
+def example_test(name, srcs, server, data = [], deps = [], **kwargs):
     ts_library(
         name = "%s_lib" % name,
         testonly = True,
@@ -12,7 +12,7 @@ def example_test(name, srcs, server, data = [], **kwargs):
             "@npm//@types/jasminewd2",
             "@npm//@types/selenium-webdriver",
             "@npm//protractor",
-        ],
+        ] + deps,
     )
 
     protractor_web_test_suite(
