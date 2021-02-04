@@ -2391,7 +2391,7 @@ class Buildifier extends Formatter {
             check: {
                 commandFlags: `${BAZEL_WARNING_FLAG} --lint=warn --mode=check --format=json`,
                 callback: (_, code, stdout) => {
-                    return code !== 0 || !JSON.parse(stdout)['success'];
+                    return code !== 0 || !JSON.parse(stdout).success;
                 },
             },
             format: {

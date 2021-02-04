@@ -42,7 +42,6 @@ describe('sourcemaps', function() {
           Buffer.from(content.substring(index + marker.length), 'base64').toString('utf8');
 
       const decoder = new SourceMapConsumer(JSON.parse(sourceMapData) as RawSourceMap);
-
       const originalPosition = decoder.originalPositionFor({line: errorLine, column: errorColumn});
       const sourceCodeLines = readFileSync(require.resolve('../../src/sourcemap/index.ts'), {
                                 encoding: 'UTF-8'
