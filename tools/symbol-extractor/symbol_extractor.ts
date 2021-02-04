@@ -74,14 +74,14 @@ export class SymbolExtractor {
 
   static diff(actual: Symbol[], expected: string|((Symbol | string)[])): {[name: string]: number} {
     if (typeof expected == 'string') {
-      expected = JSON.parse(expected);
+      expected = JSON.parse(expected) as string[];
     }
     const diff: {[name: string]: number} = {};
 
     // All symbols in the golden file start out with a count corresponding to the number of symbols
     // with that name. Once they are matched with symbols in the actual output, the count should
     // even out to 0.
-    (expected as (Symbol | string)[]).forEach((nameOrSymbol) => {
+    expected.forEach(nameOrSymbol => {
       const symbolName = typeof nameOrSymbol == 'string' ? nameOrSymbol : nameOrSymbol.name;
       diff[symbolName] = (diff[symbolName] || 0) + 1;
     });
