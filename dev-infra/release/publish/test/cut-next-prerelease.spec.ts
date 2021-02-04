@@ -49,7 +49,7 @@ describe('cut next pre-release action', () => {
     await expectStagingAndPublishWithoutCherryPick(action, 'master', '10.2.0-next.0', 'next');
 
     const pkgJsonContents = readFileSync(join(action.testTmpDir, packageJsonPath), 'utf8');
-    const pkgJson = JSON.parse(pkgJsonContents);
+    const pkgJson = JSON.parse(pkgJsonContents) as {version: string, [key: string]: any};
     expect(pkgJson.version).toBe('10.2.0-next.0', 'Expected version to not have changed.');
   });
 
