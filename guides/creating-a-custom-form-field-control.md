@@ -42,6 +42,7 @@ class MyTel {
       outline: none;
       font: inherit;
       text-align: center;
+      color: currentColor;
     }
   `],
 })
