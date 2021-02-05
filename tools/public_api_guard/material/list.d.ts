@@ -123,14 +123,14 @@ export declare class MatSelectionList extends _MatSelectionListMixinBase impleme
     _removeOptionFromList(option: MatListOption): MatListOption | null;
     _reportValueChange(): void;
     _setFocusedOption(option: MatListOption): void;
-    deselectAll(): void;
+    deselectAll(): MatListOption[];
     focus(options?: FocusOptions): void;
     ngAfterContentInit(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     registerOnChange(fn: (value: any) => void): void;
     registerOnTouched(fn: () => void): void;
-    selectAll(): void;
+    selectAll(): MatListOption[];
     setDisabledState(isDisabled: boolean): void;
     writeValue(values: string[]): void;
     static ngAcceptInputType_disableRipple: BooleanInput;

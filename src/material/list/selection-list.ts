@@ -517,14 +517,14 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
     this._element.nativeElement.focus(options);
   }
 
-  /** Selects all of the options. */
-  selectAll() {
-    this._setAllOptionsSelected(true);
+  /** Selects all of the options. Returns the options that changed as a result. */
+  selectAll(): MatListOption[] {
+    return this._setAllOptionsSelected(true);
   }
 
-  /** Deselects all of the options. */
-  deselectAll() {
-    this._setAllOptionsSelected(false);
+  /** Deselects all of the options. Returns the options that changed as a result. */
+  deselectAll(): MatListOption[] {
+    return this._setAllOptionsSelected(false);
   }
 
   /** Sets the focused option of the selection-list. */
@@ -672,7 +672,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
   private _setAllOptionsSelected(
     isSelected: boolean,
     skipDisabled?: boolean,
-    isUserInput?: boolean) {
+    isUserInput?: boolean): MatListOption[] {
     // Keep track of whether anything changed, because we only want to
     // emit the changed event when something actually changed.
     const changedOptions: MatListOption[] = [];
@@ -690,6 +690,8 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
         this._emitChangeEvent(changedOptions);
       }
     }
+
+    return changedOptions;
   }
 
   /**
