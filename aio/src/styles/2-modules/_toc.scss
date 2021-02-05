@@ -200,9 +200,12 @@ aio-toc.embedded {
     .toc-heading {
       margin: 0 0 8px;
     }
+
+    &.collapsed {
+      .secondary {
+        display: none;
+      }
+    }
   }
 
-  > div.collapsed li.secondary {
-    display: none;
-  }
 }
