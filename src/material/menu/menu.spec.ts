@@ -987,6 +987,21 @@ describe('MatMenu', () => {
         .toBe(false);
   });
 
+  it('should be able to move focus inside the `open` event', fakeAsync(() => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+
+    fixture.componentInstance.trigger.menuOpened.subscribe(() => {
+      (document.querySelectorAll('.mat-menu-panel [mat-menu-item]')[3] as HTMLElement).focus();
+    });
+    fixture.componentInstance.trigger.openMenu();
+    fixture.detectChanges();
+    tick(500);
+
+    const items = document.querySelectorAll('.mat-menu-panel [mat-menu-item]');
+    expect(document.activeElement).toBe(items[3], 'Expected fourth item to be focused');
+  }));
+
   describe('lazy rendering', () => {
     it('should be able to render the menu content lazily', fakeAsync(() => {
       const fixture = createComponent(SimpleLazyMenu);
