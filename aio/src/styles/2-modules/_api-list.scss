@@ -86,8 +86,24 @@ aio-api-list {
 
   /* LAYOUT */
 
-  .docs-content {
+  .api-list-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    max-width: 1100px;
+    padding: 16px 16px 16px 0;
     position: relative;
+
+    @media handheld and (max-width: $phone-breakpoint),
+    screen and (max-device-width: $phone-breakpoint),
+    screen and (max-width: $tablet-breakpoint) {
+      padding: 24px 0 0;
+    }
+
+    h2 {
+      margin-top: 16px;
+      margin-bottom: 16px;
+    }
 
     /* API CLASS LIST */
     .api-list {
@@ -132,29 +148,6 @@ aio-api-list {
           }
         }
       }
-    }
-  }
-
-  .l-content-small {
-    padding: 16px;
-    margin: 0;
-
-    @media handheld and (max-width: $phone-breakpoint),
-    screen and (max-device-width: $phone-breakpoint),
-    screen and (max-width: $tablet-breakpoint) {
-      padding: 24px 0 0;
-    }
-  }
-
-  .api-list-container {
-    display: flex;
-    flex-direction: column;
-    margin: 0 auto;
-    padding-left: 0;
-
-    h2 {
-      margin-top: 16px;
-      margin-bottom: 16px;
     }
   }
 }
