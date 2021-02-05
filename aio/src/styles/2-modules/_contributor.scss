@@ -1,4 +1,11 @@
 aio-contributor-list {
+  .contributor-group {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
   @media handheld and (max-width: 480px), screen and (max-width: 900px) {
     .grid-fluid {
       margin-left: 20px;
@@ -8,13 +15,6 @@ aio-contributor-list {
       width: auto;
     }
   }
-}
-
-.contributor-group {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 aio-contributor {
