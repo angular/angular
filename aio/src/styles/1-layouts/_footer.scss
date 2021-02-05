@@ -49,6 +49,10 @@ footer {
     font-weight: 400;
     margin: 8px 0 12px;
     color: $white;
+
+    @media (max-width: 600px) {
+      @include font-size(14);
+    }
   }
 
   p {
@@ -89,25 +93,19 @@ footer {
     }
   }
 
-  @media (max-width: 600px) {
-    h3 {
-      @include font-size(14);
-    }
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: url("/assets/images/logos/angular/angular_whiteTransparent_withMargin.png")
+        top 0 left 0 repeat,
+      url("/assets/images/logos/angular/angular_whiteTransparent_withMargin.png")
+        top 80px left 160px repeat;
+    opacity: 0.05;
+    background-size: 320px auto;
   }
-}
-
-footer::after {
-  content: "";
-  position: absolute;
-  z-index: -1;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: url("/assets/images/logos/angular/angular_whiteTransparent_withMargin.png")
-      top 0 left 0 repeat,
-    url("/assets/images/logos/angular/angular_whiteTransparent_withMargin.png")
-      top 80px left 160px repeat;
-  opacity: 0.05;
-  background-size: 320px auto;
 }
