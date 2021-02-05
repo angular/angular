@@ -19,10 +19,6 @@ aio-nav-menu {
   ul, a {
     margin: 0;
   }
-
-  aio-nav-item div a {
-    padding-left: 6px;
-  }
 }
 
 mat-sidenav.mat-sidenav.sidenav {
@@ -51,8 +47,7 @@ mat-sidenav-container.sidenav-container {
   }
 }
 
-mat-sidenav-container.sidenav-container.mat-drawer-container.mat-sidenav-container,
-mat-sidenav-container .sidenav-content {
+mat-sidenav-container.sidenav-container.mat-drawer-container.mat-sidenav-container {
   background-color: $white;
 }
 
@@ -176,18 +171,6 @@ button.vertical-menu-item {
 
   &.expanded > .mat-icon {
     @include rotate(90deg);
-  }
-}
-
-aio-nav-menu.top-menu {
-  padding: 24px 0 0;
-
-  aio-nav-item:last-child div {
-    border-bottom: 1px solid rgba($mediumgray, 0.5);
-  }
-
-  aio-nav-item:first-child div {
-    border-top: 1px solid rgba($mediumgray, 0.5);
   }
 }
 
