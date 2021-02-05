@@ -65,7 +65,6 @@ aio-api-list {
 
 .l-content-small {
   padding: 16px;
-  max-width: 1100px;
   margin: 0;
 
   @media handheld and (max-width: $phone-breakpoint),
@@ -213,80 +212,6 @@ aio-api-list {
   }
 }
 
-.docs-content .h2-api-docs,
-.docs-content .h2-api-docs:first-of-type {
-  @include font-size(18);
-  @include line-height(24);
-  margin-top: 0;
-}
-
-.code-links {
-  a {
-    code, .api-doc-code {
-      color: #1E88E5 !important;
-    }
-  }
-}
-
-.openParens {
-  margin-top: 15px;
-}
-
-.endParens {
-  margin-bottom: 20px !important;
-}
-
-p {
-  &.selector {
-    margin: 0;
-  }
-
-  &.location-badge {
-    margin: 0 0 16px 16px !important;
-  }
-
-  .api-doc-code {
-    border-bottom: 0;
-
-    :hover {
-      border-bottom: none;
-    }
-  }
-}
-
-.row-margin {
-  margin-bottom: 36px;
-  h2 {
-    @include line-height(28);
-  }
-}
-
-.code-margin {
-  margin-bottom: 8px;
-}
-
-.no-bg {
-  background: none;
-  padding: 0;
-}
-
-.no-bg-with-indent {
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 16px;
-  margin-top: 6px;
-  margin-bottom: 0;
-  background: none;
-}
-
-.code-background {
-  padding: 0 5px 0;
-
-  span.pln {
-    color: #1E88E5 !important;
-  }
-}
-
 .code-anchor {
   cursor: pointer;
   text-decoration: none;
@@ -294,37 +219,5 @@ p {
 
   &:hover {
     text-decoration: underline;
-  }
-}
-
-.api-doc-code {
-  @include font-size(14);
-  color: #1a2326;
-
-  // the last .pln (white space) creates additional spacing between sections of the api doc. Remove it.
-  &.no-pln {
-    .pln:last-child {
-      display: none;
-    }
-  }
-}
-
-@media screen and (max-width: 600px) {
-  .docs-content {
-    // Overrides display flex from angular material.
-    // This was added because Safari doesn't play nice with layout="column".
-    // Look of API doc in Chrome and Firefox remains the same, and is fixed for Safari.
-    .layout-xs-column {
-      display: block !important;
-    }
-  }
-
-  .api-doc-code {
-    @include font-size(12);
-  }
-
-  p.location-badge {
-    position: relative;
-    @include font-size(11);
   }
 }
