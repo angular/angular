@@ -61,7 +61,6 @@
     }
 
     .presskit-image-container {
-
       @media(max-width: 599px) {
         text-align: center;
       }
@@ -72,13 +71,13 @@
         margin-bottom: 8px * 2;
       }
     }
-  }
 
-  .presskit-row:first-child {
-    margin-top: 0;
+    &:first-child {
+      margin-top: 0;
 
-    @media(max-width: 599px) {
-      margin-top: 48px;
+      @media(max-width: 599px) {
+        margin-top: 48px;
+      }
     }
   }
 }
