@@ -5,13 +5,54 @@ $hamburgerShownMargin: 0 8px 0 0;
 $hamburgerHiddenMargin: 0 16px 0 -64px;
 
 // DOCS PAGE / STANDARD: TOPNAV TOOLBAR FIXED
-mat-toolbar.mat-toolbar {
+mat-toolbar.app-toolbar {
   position: fixed;
   top: 0;
   right: 0;
   left: 0;
   z-index: 10;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+
+  // HOME PAGE OVERRIDE: TOPNAV TOOLBAR
+  aio-shell.page-home & {
+    background-color: $blue;
+
+    @media (min-width: 481px) {
+      &:not(.transitioning) {
+        background-color: transparent;
+        transition: background-color 0.2s linear;
+      }
+    }
+  }
+
+  // MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
+  aio-shell.page-home &,
+  aio-shell.page-features &,
+  aio-shell.page-events &,
+  aio-shell.page-resources & {
+    box-shadow: none;
+
+    // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
+    @media (min-width: 481px) {
+      position: absolute;
+    }
+  }
+
+  // DOCS PAGES OVERRIDE: HAMBURGER
+  aio-shell.folder-api &,
+  aio-shell.folder-cli &,
+  aio-shell.folder-docs &,
+  aio-shell.folder-guide &,
+  aio-shell.folder-errors &,
+  aio-shell.folder-start &,
+  aio-shell.folder-tutorial & {
+    @media (min-width: $showTopMenuWidth) {
+      .hamburger {
+        // Hamburger shown on non-marketing pages even on large screens.
+        margin: $hamburgerShownMargin;
+      }
+    }
+  }
 
   mat-toolbar-row {
     padding: 0 16px 0 0;
@@ -20,51 +61,44 @@ mat-toolbar.mat-toolbar {
   mat-icon {
     color: $white;
   }
-}
 
-// HOME PAGE OVERRIDE: TOPNAV TOOLBAR
-aio-shell.page-home mat-toolbar.mat-toolbar {
-  background-color: $blue;
+  // EXTERNAL LINK ICONS
+  .toolbar-external-icons-container {
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0; // This is required for the icons to be displayed correctly in IE11.
+    height: 100%;
 
-  @media (min-width: 481px) {
-    &:not(.transitioning) {
-      background-color: transparent;
-      transition: background-color 0.2s linear;
-    }
-  }
-}
+    a {
+      display: flex;
+      align-items: center;
+      padding: 24px;
+      margin: 0 -16px;
 
-// MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
-aio-shell.page-home mat-toolbar.mat-toolbar,
-aio-shell.page-features mat-toolbar.mat-toolbar,
-aio-shell.page-events mat-toolbar.mat-toolbar,
-aio-shell.page-resources mat-toolbar.mat-toolbar {
-  box-shadow: none;
+      &:focus {
+        // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
+        outline: 1px solid $focus-outline-ondark;
+        outline-offset: -16px;
+      }
 
-  // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
-  @media (min-width: 481px) {
-    position: absolute;
-  }
-}
+      @media screen and (max-width: 480px) {
+        margin: 0 0 0 8px;
+        padding: 0;
+      }
 
-// DOCS PAGES OVERRIDE: HAMBURGER
-aio-shell.folder-api mat-toolbar.mat-toolbar,
-aio-shell.folder-cli mat-toolbar.mat-toolbar,
-aio-shell.folder-docs mat-toolbar.mat-toolbar,
-aio-shell.folder-guide mat-toolbar.mat-toolbar,
-aio-shell.folder-errors mat-toolbar.mat-toolbar,
-aio-shell.folder-start mat-toolbar.mat-toolbar,
-aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
-  @media (min-width: $showTopMenuWidth) {
-    .hamburger.mat-button {
-      // Hamburger shown on non-marketing pages even on large screens.
-      margin: $hamburgerShownMargin;
+      &:hover {
+        opacity: 0.8;
+      }
+
+      img {
+        height: 24px;
+      }
     }
   }
 }
 
 // HAMBURGER BUTTON
-.hamburger.mat-button {
+.hamburger {
   height: 100%;
   margin: $hamburgerShownMargin;
   padding: 0;
@@ -236,42 +270,6 @@ aio-search-box.search-container {
 
     @media (max-width: 480px) {
       width: 150px;
-    }
-  }
-}
-
-// EXTERNAL LINK ICONS
-.app-toolbar {
-  .toolbar-external-icons-container {
-    display: flex;
-    flex-direction: row;
-    flex-shrink: 0; // This is required for the icons to be displayed correctly in IE11.
-    height: 100%;
-
-    a {
-      display: flex;
-      align-items: center;
-      padding: 24px;
-      margin: 0 -16px;
-
-      &:focus {
-        // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-        outline: 1px solid $focus-outline-ondark;
-        outline-offset: -16px;
-      }
-
-      @media screen and (max-width: 480px) {
-        margin: 0 0 0 8px;
-        padding: 0;
-      }
-
-      &:hover {
-        opacity: 0.8;
-      }
-
-      img {
-        height: 24px;
-      }
     }
   }
 }
