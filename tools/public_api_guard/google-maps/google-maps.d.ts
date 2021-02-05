@@ -220,10 +220,9 @@ export declare class MapMarker implements OnInit, OnChanges, OnDestroy, MapAncho
     static ɵfac: i0.ɵɵFactoryDef<MapMarker, never>;
 }
 
-export declare class MapMarkerClusterer implements OnInit, AfterContentInit, OnDestroy {
+export declare class MapMarkerClusterer implements OnInit, AfterContentInit, OnChanges, OnDestroy {
     _markers: QueryList<MapMarker>;
-    get ariaLabelFn(): AriaLabelFn;
-    set ariaLabelFn(ariaLabelFn: AriaLabelFn);
+    ariaLabelFn: AriaLabelFn;
     set averageCenter(averageCenter: boolean);
     batchSize?: number;
     set batchSizeIE(batchSizeIE: number);
@@ -266,6 +265,7 @@ export declare class MapMarkerClusterer implements OnInit, AfterContentInit, OnD
     getZIndex(): number;
     getZoomOnClick(): boolean;
     ngAfterContentInit(): void;
+    ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MapMarkerClusterer, "map-marker-clusterer", ["mapMarkerClusterer"], { "ariaLabelFn": "ariaLabelFn"; "averageCenter": "averageCenter"; "batchSize": "batchSize"; "batchSizeIE": "batchSizeIE"; "calculator": "calculator"; "clusterClass": "clusterClass"; "enableRetinaIcons": "enableRetinaIcons"; "gridSize": "gridSize"; "ignoreHidden": "ignoreHidden"; "imageExtension": "imageExtension"; "imagePath": "imagePath"; "imageSizes": "imageSizes"; "maxZoom": "maxZoom"; "minimumClusterSize": "minimumClusterSize"; "styles": "styles"; "title": "title"; "zIndex": "zIndex"; "zoomOnClick": "zoomOnClick"; }, { "clusteringbegin": "clusteringbegin"; "clusteringend": "clusteringend"; }, ["_markers"], ["*"]>;
