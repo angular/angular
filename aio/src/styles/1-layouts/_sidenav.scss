@@ -3,24 +3,6 @@
   transition: none;
 }
 
-aio-nav-menu {
-  display: block;
-  margin: 0 auto;
-  max-width: 268px;
-
-  &:first-of-type {
-    margin-top: 16px;
-  }
-
-  &:last-of-type {
-    margin-bottom: 16px;
-  }
-
-  ul, a {
-    margin: 0;
-  }
-}
-
 mat-sidenav-container.sidenav-container {
   background-color: $white;
   min-height: 100%;
@@ -72,119 +54,139 @@ mat-sidenav-container.sidenav-container {
   }
 }
 
-.vertical-menu-item {
-  box-sizing: border-box;
-  color: $darkgray;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  overflow-wrap: break-word;
-  padding: 8px;
-  text-decoration: none;
-  text-align: left;
-  width: 100%;
-  word-wrap: break-word;
+aio-nav-menu {
+  display: block;
+  margin: 0 auto;
+  max-width: 268px;
 
-  &:hover {
-    background-color: $lightgray;
-    color: $blue;
-    text-shadow: 0 0 5px $white;
+  &:first-of-type {
+    margin-top: 16px;
   }
 
-  &:focus {
-    outline: $focus-outline-onlight auto 2px;
+  &:last-of-type {
+    margin-bottom: 16px;
   }
 
-  &.selected {
-    color: $darkblue;
+  ul, a {
+    margin: 0;
   }
 
-  span {
-    padding-right: 32px;
-  }
+  aio-nav-item {
+    .vertical-menu-item {
+      box-sizing: border-box;
+      color: $darkgray;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      overflow-wrap: break-word;
+      padding: 8px;
+      text-decoration: none;
+      text-align: left;
+      width: 100%;
+      word-wrap: break-word;
 
-  //icons _within_ nav
-  .mat-icon {
-    height: 24px;
-    width: 24px;
-  }
-}
+      &:hover {
+        background-color: $lightgray;
+        color: $blue;
+        text-shadow: 0 0 5px $white;
+      }
 
-button.vertical-menu-item {
-  border: none;
-  background-color: transparent;
-  margin: 0;
-  width: 100%;
-}
+      &:focus {
+        outline: $focus-outline-onlight auto 2px;
+      }
 
-.heading-children {
-  &.expanded {
-    visibility: visible;
-    opacity: 1;
-    padding-left: 0;
-    max-height: 4000px; // Arbitrary max-height. Can increase if needed. Must have measurement to transition height.
-    transition: visibility 500ms, opacity 500ms, max-height 500ms;
-    transition-timing-function: ease-in-out;
-  }
+      &.selected {
+        color: $darkblue;
+      }
 
-  &.collapsed {
-    overflow: hidden;  // Needed to prevent unnecessary sidenav scrollbar.
-    visibility: hidden;
-    padding-left: 0;
-    opacity: 0;
-    max-height: 1px; // Must have measurement to transition height.
-    transition: visibility 275ms, opacity 275ms, max-height 280ms;
-    transition-timing-function: ease-out;
-  }
+      span {
+        padding-right: 32px;
+      }
 
-  .no-animations &.expanded,
-  .no-animations &.collapsed {
-    transition: none !important;
-  }
-}
+      //icons _within_ nav
+      .mat-icon {
+        height: 24px;
+        width: 24px;
+      }
+    }
 
-.level-1 {
-  font-family: $main-font;
-  @include font-size(16);
-  @include line-height(28);
-  font-weight: 400;
-  padding-left: 20px;
-  margin: 0;
-  transition: background-color 0.2s;
-}
+    button.vertical-menu-item {
+      border: none;
+      background-color: transparent;
+      margin: 0;
+      width: 100%;
+    }
 
-.level-2 {
-  font-family: $main-font;
-  @include font-size(14);
-  @include line-height(24);
-  font-weight: 400;
-  margin: 0;
-  padding-left: 36px;
-}
+    .heading-children {
+      &.expanded {
+        visibility: visible;
+        opacity: 1;
+        padding-left: 0;
+        max-height: 4000px; // Arbitrary max-height. Can increase if needed. Must have measurement to transition height.
+        transition: visibility 500ms, opacity 500ms, max-height 500ms;
+        transition-timing-function: ease-in-out;
+      }
 
-.level-3 {
-  font-family: $main-font;
-  @include font-size(14);
-  @include line-height(24);
-  margin: 0;
-  padding-left: 44px;
-}
+      &.collapsed {
+        overflow: hidden;  // Needed to prevent unnecessary sidenav scrollbar.
+        visibility: hidden;
+        padding-left: 0;
+        opacity: 0;
+        max-height: 1px; // Must have measurement to transition height.
+        transition: visibility 275ms, opacity 275ms, max-height 280ms;
+        transition-timing-function: ease-out;
+      }
 
-.level-4 {
-  font-family: $main-font;
-  @include font-size(14);
-  @include line-height(24);
-  margin: 0;
-  padding-left: 52px;
-}
+      .no-animations &.expanded,
+      .no-animations &.collapsed {
+        transition: none !important;
+      }
+    }
 
-.level-1, .level-2, .level-3 {
-  &.collapsed > .mat-icon {
-    @include rotate(0deg);
-  }
+    .level-1 {
+      font-family: $main-font;
+      @include font-size(16);
+      @include line-height(28);
+      font-weight: 400;
+      padding-left: 20px;
+      margin: 0;
+      transition: background-color 0.2s;
+    }
 
-  &.expanded > .mat-icon {
-    @include rotate(90deg);
+    .level-2 {
+      font-family: $main-font;
+      @include font-size(14);
+      @include line-height(24);
+      font-weight: 400;
+      margin: 0;
+      padding-left: 36px;
+    }
+
+    .level-3 {
+      font-family: $main-font;
+      @include font-size(14);
+      @include line-height(24);
+      margin: 0;
+      padding-left: 44px;
+    }
+
+    .level-4 {
+      font-family: $main-font;
+      @include font-size(14);
+      @include line-height(24);
+      margin: 0;
+      padding-left: 52px;
+    }
+
+    .level-1, .level-2, .level-3 {
+      &.collapsed > .mat-icon {
+        @include rotate(0deg);
+      }
+
+      &.expanded > .mat-icon {
+        @include rotate(90deg);
+      }
+    }
   }
 }
