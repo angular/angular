@@ -21,8 +21,6 @@
     white-space: nowrap;
 
     .symbol {
-      margin-right: 8px;
-
       &.runtime {
         background: $green-500;
       }
@@ -34,11 +32,11 @@
 
     .symbol.runtime:before {
       content: "R";
-    }  
-    
+    }
+
     .symbol.compiler:before {
       content: "C";
-    }  
+    }
 
     a {
       color: $blue-grey-600;

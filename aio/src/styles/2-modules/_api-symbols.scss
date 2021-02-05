@@ -1,0 +1,28 @@
+/* API SYMBOLS */
+
+/* SYMBOL CLASS */
+
+.symbol {
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba($black, .24);
+  color: $white;
+  display: inline-block;
+  @include font-size(10);
+  font-weight: 600;
+  @include line-height(16);
+  margin-right: 8px;
+  text-align: center;
+  width: 16px;
+
+  // SYMBOL TYPES
+  // Symbol mapping variables in *constants*
+  @each $name, $symbol in $api-symbols {
+    &.#{$name} {
+      background: map-get($symbol, background);
+
+      &:before {
+        content: map-get($symbol, content);
+      }
+    }
+  }
+}
