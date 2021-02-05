@@ -1,8 +1,8 @@
 .api-header label {
   border-radius: 4px;
-  padding: 4px 16px;
+  padding: 2px 10px;
   display: inline;
-  @include font-size(14);
+  @include font-size(12);
   color: $white;
   margin-right: 8px;
   font-weight: 500;
@@ -10,7 +10,25 @@
 
   @media screen and (max-width: 600px) {
     display: block;
-    margin: 8px 0;
+    margin: 4px 0;
+  }
+
+  &.api-status-label {
+    background-color: $mediumgray;
+
+    &.deprecated, &.security, &.impure-pipe {
+      background-color: $brightred;
+    }
+  }
+
+  &.api-type-label {
+    background-color: $accentblue;
+
+    @each $name, $symbol in $api-symbols {
+      &.#{$name} {
+        background: map-get($symbol, background);
+      }
+    }
   }
 
   &.page-label {
@@ -33,35 +51,5 @@
     background-color: $darkgray;
     color: $white;
     text-transform: none;
-  }
-}
-
-.api-header label {
-
-  // The API badges should be a little smaller
-  padding: 2px 10px;
-  @include font-size(12);
-
-  @media screen and (max-width: 600px) {
-    margin: 4px 0;
-  }
-
-  &.api-status-label {
-    background-color: $mediumgray;
-
-    &.deprecated, &.security, &.impure-pipe {
-      background-color: $brightred;
-    }
-  }
-
-  &.api-type-label {
-    background-color: $accentblue;
-
-    @each $name, $symbol in $api-symbols {
-      &.#{$name} {
-        background: map-get($symbol, background);
-      }
-    }
-
   }
 }
