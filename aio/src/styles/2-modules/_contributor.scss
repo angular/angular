@@ -1,11 +1,5 @@
 aio-contributor-list {
-  @media handheld and (max-width: 480px), screen and (max-width: 480px), screen and (max-width: 900px) {
-    .grid-fluid {
-      width: auto;
-    }
-  }
-
-  @media handheld and (max-width: 480px), screen and (max-width: 480px), screen and (max-width: 900px) {
+  @media handheld and (max-width: 480px), screen and (max-width: 900px) {
     .grid-fluid {
       margin-left: 20px;
       margin-right: 20px;
@@ -89,7 +83,7 @@ aio-contributor {
     }
   }
 
-  div.contributor-card {
+  .contributor-card {
     width: 250px;
     height: 270px;
     display: flex;
@@ -137,11 +131,11 @@ aio-contributor {
         @include line-height(14);
         text-align: left;
       }
-
     }
 
     &.flipped {
       transform:rotateY(180deg);
+
       .card-front {
         display: none;
       }
@@ -160,17 +154,6 @@ aio-contributor {
     margin: 8px auto;
     border: 2px solid $lightgray;
     transition: all .2s ease-in-out;
-  }
-
-  section {
-    @include font-size(14);
-    font-weight: 500;
-    padding: 8px;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-transform: uppercase;
   }
 
   p {
