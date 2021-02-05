@@ -101,6 +101,7 @@ export class GoogleMapsDemoComponent {
 - [`MapTrafficLayer`](./map-traffic-layer/README.md)
 - [`MapTransitLayer`](./map-transit-layer/README.md)
 - [`MapBicyclingLayer`](./map-bicycling-layer/README.md)
+- [`MapDirectionsRenderer`](./map-directions-renderer/README.md)
 
 ## The Options Input
 

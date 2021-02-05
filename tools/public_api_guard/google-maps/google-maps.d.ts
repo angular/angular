@@ -52,7 +52,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
 export declare class GoogleMapsModule {
     static ɵinj: i0.ɵɵInjectorDef<GoogleMapsModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapBaseLayer, typeof i3.MapBicyclingLayer, typeof i4.MapCircle, typeof i5.MapGroundOverlay, typeof i6.MapInfoWindow, typeof i7.MapKmlLayer, typeof i8.MapMarker, typeof i9.MapMarkerClusterer, typeof i10.MapPolygon, typeof i11.MapPolyline, typeof i12.MapRectangle, typeof i13.MapTrafficLayer, typeof i14.MapTransitLayer], never, [typeof i1.GoogleMap, typeof i2.MapBaseLayer, typeof i3.MapBicyclingLayer, typeof i4.MapCircle, typeof i5.MapGroundOverlay, typeof i6.MapInfoWindow, typeof i7.MapKmlLayer, typeof i8.MapMarker, typeof i9.MapMarkerClusterer, typeof i10.MapPolygon, typeof i11.MapPolyline, typeof i12.MapRectangle, typeof i13.MapTrafficLayer, typeof i14.MapTransitLayer]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<GoogleMapsModule, [typeof i1.GoogleMap, typeof i2.MapBaseLayer, typeof i3.MapBicyclingLayer, typeof i4.MapCircle, typeof i5.MapDirectionsRenderer, typeof i6.MapGroundOverlay, typeof i7.MapInfoWindow, typeof i8.MapKmlLayer, typeof i9.MapMarker, typeof i10.MapMarkerClusterer, typeof i11.MapPolygon, typeof i12.MapPolyline, typeof i13.MapRectangle, typeof i14.MapTrafficLayer, typeof i15.MapTransitLayer], never, [typeof i1.GoogleMap, typeof i2.MapBaseLayer, typeof i3.MapBicyclingLayer, typeof i4.MapCircle, typeof i5.MapDirectionsRenderer, typeof i6.MapGroundOverlay, typeof i7.MapInfoWindow, typeof i8.MapKmlLayer, typeof i9.MapMarker, typeof i10.MapMarkerClusterer, typeof i11.MapPolygon, typeof i12.MapPolyline, typeof i13.MapRectangle, typeof i14.MapTrafficLayer, typeof i15.MapTransitLayer]>;
 }
 
 export interface MapAnchorPoint {
@@ -110,6 +110,29 @@ export declare class MapCircle implements OnInit, OnDestroy {
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapCircle, "map-circle", ["mapCircle"], { "options": "options"; "center": "center"; "radius": "radius"; }, { "centerChanged": "centerChanged"; "circleClick": "circleClick"; "circleDblclick": "circleDblclick"; "circleDrag": "circleDrag"; "circleDragend": "circleDragend"; "circleDragstart": "circleDragstart"; "circleMousedown": "circleMousedown"; "circleMousemove": "circleMousemove"; "circleMouseout": "circleMouseout"; "circleMouseover": "circleMouseover"; "circleMouseup": "circleMouseup"; "radiusChanged": "radiusChanged"; "circleRightclick": "circleRightclick"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MapCircle, never>;
+}
+
+export declare class MapDirectionsRenderer implements OnInit, OnChanges, OnDestroy {
+    set directions(directions: google.maps.DirectionsResult);
+    directionsChanged: Observable<void>;
+    directionsRenderer?: google.maps.DirectionsRenderer;
+    set options(options: google.maps.DirectionsRendererOptions);
+    constructor(_googleMap: GoogleMap, _ngZone: NgZone);
+    getDirections(): google.maps.DirectionsResult;
+    getPanel(): Node;
+    getRouteIndex(): number;
+    ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
+    ngOnInit(): void;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MapDirectionsRenderer, "map-directions-renderer", ["mapDirectionsRenderer"], { "directions": "directions"; "options": "options"; }, { "directionsChanged": "directionsChanged"; }, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MapDirectionsRenderer, never>;
+}
+
+export declare class MapDirectionsService {
+    constructor(_ngZone: NgZone);
+    route(request: google.maps.DirectionsRequest): Observable<MapDirectionsResponse>;
+    static ɵfac: i0.ɵɵFactoryDef<MapDirectionsService, never>;
+    static ɵprov: i0.ɵɵInjectableDef<MapDirectionsService>;
 }
 
 export declare class MapGroundOverlay implements OnInit, OnDestroy {

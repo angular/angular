@@ -12,6 +12,7 @@ import {GoogleMap} from './google-map/google-map';
 import {MapBaseLayer} from './map-base-layer';
 import {MapBicyclingLayer} from './map-bicycling-layer/map-bicycling-layer';
 import {MapCircle} from './map-circle/map-circle';
+import {MapDirectionsRenderer} from './map-directions-renderer/map-directions-renderer';
 import {MapGroundOverlay} from './map-ground-overlay/map-ground-overlay';
 import {MapInfoWindow} from './map-info-window/map-info-window';
 import {MapKmlLayer} from './map-kml-layer/map-kml-layer';
@@ -28,6 +29,7 @@ const COMPONENTS = [
   MapBaseLayer,
   MapBicyclingLayer,
   MapCircle,
+  MapDirectionsRenderer,
   MapGroundOverlay,
   MapInfoWindow,
   MapKmlLayer,

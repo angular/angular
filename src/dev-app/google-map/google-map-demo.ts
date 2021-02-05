@@ -9,6 +9,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {
   MapCircle,
+  MapDirectionsService,
   MapInfoWindow,
   MapMarker,
   MapPolygon,
@@ -39,7 +40,7 @@ const CIRCLE_RADIUS = 500000;
 @Component({
   selector: 'google-map-demo',
   templateUrl: 'google-map-demo.html',
-  styleUrls: ['google-map-demo.css']
+  styleUrls: ['google-map-demo.css'],
 })
 export class GoogleMapDemo {
   @ViewChild(MapInfoWindow) infoWindow: MapInfoWindow;
@@ -97,6 +98,10 @@ export class GoogleMapDemo {
 
   markerClustererImagePath =
       'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m';
+
+  directionsResult?: google.maps.DirectionsResult;
+
+  constructor(private readonly _mapDirectionsService: MapDirectionsService) {}
 
   handleClick(event: google.maps.MapMouseEvent) {
     this.markerPositions.push(event.latLng.toJSON());
@@ -189,5 +194,18 @@ export class GoogleMapDemo {
 
   toggleBicyclingLayerDisplay() {
     this.isBicyclingLayerDisplayed = !this.isBicyclingLayerDisplayed;
+  }
+
+  calculateDirections() {
+    if (this.markerPositions.length >= 2) {
+      const request: google.maps.DirectionsRequest = {
+        destination: this.markerPositions[1],
+        origin: this.markerPositions[0],
+        travelMode: google.maps.TravelMode.DRIVING,
+      };
+      this._mapDirectionsService.route(request).subscribe(response => {
+        this.directionsResult = response.result;
+      });
+    }
   }
 }

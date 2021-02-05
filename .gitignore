@@ -43,3 +43,4 @@ testem.log
 *.log
 .ng-dev.user*
 .husky/_
+/src/dev-app/google-maps-api-key.txt

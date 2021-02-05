@@ -121,6 +121,13 @@ create_system_config(
     output_name = "system-config.js",
 )
 
+# File group for static files that are listed in the gitignore file that contain
+# secrets like API keys.
+filegroup(
+    name = "environment-secret-assets",
+    srcs = glob(["*-api-key.txt"]),
+)
+
 # File group for all static files which are needed to serve the dev-app. These files are
 # used in the devserver as runfiles and will be copied into the static web package that can
 # be deployed on static hosting services (like firebase).
@@ -129,6 +136,7 @@ filegroup(
     srcs = [
         "favicon.ico",
         "index.html",
+        ":environment-secret-assets",
         ":system-config",
         ":theme",
         "//src/dev-app/icon:icon_demo_assets",

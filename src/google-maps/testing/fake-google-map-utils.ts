@@ -28,6 +28,8 @@ export interface TestingWindow extends Window {
       TrafficLayer?: jasmine.Spy;
       TransitLayer?: jasmine.Spy;
       BicyclingLayer?: jasmine.Spy;
+      DirectionsRenderer?: jasmine.Spy;
+      DirectionsService?: jasmine.Spy;
     };
   };
   MarkerClusterer?: jasmine.Spy;
@@ -443,4 +445,58 @@ export function createMarkerClustererConstructorSpy(
   const testingWindow: TestingWindow = window;
   testingWindow['MarkerClusterer'] = markerClustererConstructorSpy;
   return markerClustererConstructorSpy;
+}
+
+/** Creates a jasmine.SpyObj for DirectionsRenderer */
+export function createDirectionsRendererSpy(options: google.maps.DirectionsRendererOptions):
+    jasmine.SpyObj<google.maps.DirectionsRenderer> {
+  const directionsRendererSpy = jasmine.createSpyObj('google.maps.DirectionsRenderer',
+      ['addListener', 'getDirections', 'getPanel', 'getRouteIndex', 'setDirections', 'setMap',
+      'setOptions']);
+  directionsRendererSpy.addListener.and.returnValue({ remove: () => {} });
+  return directionsRendererSpy;
+}
+
+/** Creates a jasmine.Spy to watch for the constructor of a DirectionsRenderer */
+export function createDirectionsRendererConstructorSpy(
+    directionsRendererSpy: jasmine.SpyObj<google.maps.DirectionsRenderer>): jasmine.Spy {
+  const directionsRendererConstructorSpy = jasmine.createSpy('DirectionsRenderer constructor',
+      (_options: google.maps.DirectionsRendererOptions) => {
+    return directionsRendererSpy;
+  });
+  const testingWindow: TestingWindow = window;
+  if (testingWindow.google && testingWindow.google.maps) {
+    testingWindow.google.maps['DirectionsRenderer'] = directionsRendererConstructorSpy;
+  } else {
+    testingWindow.google = {
+      maps: {
+        'DirectionsRenderer': directionsRendererConstructorSpy,
+      },
+    };
+  }
+  return directionsRendererConstructorSpy;
+}
+
+/** Creates a jasmine.SpyObj for the DirectionsService */
+export function createDirectionsServiceSpy(): jasmine.SpyObj<google.maps.DirectionsService> {
+  const directionsServiceSpy = jasmine.createSpyObj('google.maps.DirectionsService', ['route']);
+  return directionsServiceSpy;
+}
+
+/** Creates a jasmine.Spy to watch for the constructor of the DirectionsService */
+export function createDirectionsServiceConstructorSpy(
+    directionsServiceSpy: jasmine.SpyObj<google.maps.DirectionsService>): jasmine.Spy {
+  const directionsServiceConstructorSpy =
+      jasmine.createSpy('DirectionsService constructor', () => directionsServiceSpy);
+  const testingWindow: TestingWindow = window;
+  if (testingWindow.google && testingWindow.google.maps) {
+    testingWindow.google.maps['DirectionsService'] = directionsServiceConstructorSpy;
+  } else {
+    testingWindow.google = {
+      maps: {
+        'DirectionsService': directionsServiceConstructorSpy,
+      },
+    };
+  }
+  return directionsServiceConstructorSpy;
 }

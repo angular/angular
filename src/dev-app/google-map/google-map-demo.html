@@ -30,6 +30,9 @@
     <map-traffic-layer *ngIf="isTrafficLayerDisplayed"></map-traffic-layer>
     <map-transit-layer *ngIf="isTransitLayerDisplayed"></map-transit-layer>
     <map-bicycling-layer *ngIf="isBicyclingLayerDisplayed"></map-bicycling-layer>
+    <map-directions-renderer *ngIf="directionsResult"
+                             [directions]="directionsResult"></map-directions-renderer>
+
   </google-map>
 
   <p><label>Latitude:</label> {{display?.lat}}</p>
@@ -148,6 +151,12 @@
       Toggle Bicycling Layer
       <input type="checkbox" (click)="toggleBicyclingLayerDisplay()">
     </label>
+  </div>
+
+  <div>
+    <button mat-button (click)="calculateDirections()">
+      Calculate directions between first two markers
+    </button>
   </div>
 
 </div>
