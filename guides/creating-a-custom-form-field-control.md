@@ -72,7 +72,7 @@ export class MyTelInput {
 }
 ```
 
-### Providing our component as a MatFormFieldControl
+## Providing our component as a MatFormFieldControl
 
 The first step is to provide our new component as an implementation of the `MatFormFieldControl`
 interface that the `<mat-form-field>` knows how to work with. To do this, we will have our class
@@ -91,7 +91,7 @@ export class MyTelInput implements MatFormFieldControl<MyTel> {
 }
 ```
 
-This sets up our component so it can work with `<mat-form-field>`, but now we need to implement the
+This sets up our component, so it can work with `<mat-form-field>`, but now we need to implement the
 various methods and properties declared by the interface we just implemented. To learn more about
 the `MatFormFieldControl` interface, see the
 [form field API documentation](https://material.angular.io/components/form-field/api).
@@ -185,7 +185,7 @@ constructor(
 
 Note that if your component implements `ControlValueAccessor`, it may already be set up to provide
 `NG_VALUE_ACCESSOR` (in the `providers` part of the component's decorator, or possibly in a module
-declaration). If so you may get a *cannot instantiate cyclic dependency* error.
+declaration). If so, you may get a *cannot instantiate cyclic dependency* error.
 
 To resolve this, remove the `NG_VALUE_ACCESSOR` provider and instead set the value accessor directly:
 
@@ -224,7 +224,7 @@ For additional information about `ControlValueAccessor` see the [API docs](https
 
 #### `focused`
 
-This property indicates whether or not the form field control should be considered to be in a
+This property indicates whether the form field control should be considered to be in a
 focused state. When it is in a focused state, the form field is displayed with a solid color
 underline. For the purposes of our component, we want to consider it focused if any of the part
 inputs are focused. We can use the `FocusMonitor` from `@angular/cdk` to easily check this. We also
@@ -250,7 +250,7 @@ ngOnDestroy() {
 #### `empty`
 
 This property indicates whether the form field control is empty. For our control, we'll consider it
-empty if all of the parts are empty.
+empty if all the parts are empty.
 
 ```ts
 get empty() {
@@ -263,7 +263,7 @@ get empty() {
 
 This property is used to indicate whether the label should be in the floating position. We'll
 use the same logic as `matInput` and float the placeholder when the input is focused or non-empty.
-Since the placeholder will be overlapping our control when when it's not floating, we should hide
+Since the placeholder will be overlapping our control when it's not floating, we should hide
 the `–` characters when it's not floating.
 
 ```ts
@@ -329,7 +329,7 @@ errorState = false;
 #### `controlType`
 
 This property allows us to specify a unique string for the type of control in form field. The
-`<mat-form-field>` will add an additional class based on this type that can be used to easily apply
+`<mat-form-field>` will add a class based on this type that can be used to easily apply
 special styles to a `<mat-form-field>` that contains a specific type of control. In this example
 we'll use `example-tel-input` as our control type which will result in the form field adding the
 class `mat-form-field-type-example-tel-input`.
@@ -422,7 +422,7 @@ export class MyTelInput implements MatFormFieldControl<MyTel> {
 ### Trying it out
 
 Now that we've fully implemented the interface, we're ready to try our component out! All we need to
-do is place it inside of a `<mat-form-field>`
+do is place it inside a `<mat-form-field>`
 
 ```html
 <mat-form-field>
@@ -430,7 +430,7 @@ do is place it inside of a `<mat-form-field>`
 </mat-form-field>
 ```
 
-We also get all of the features that come with `<mat-form-field>` such as floating placeholder,
+We also get all the features that come with `<mat-form-field>` such as floating placeholder,
 prefix, suffix, hints, and errors (if we've given the form field an `NgControl` and correctly report
 the error state).
 

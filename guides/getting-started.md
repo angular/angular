@@ -1,6 +1,6 @@
 # Getting Started with Angular Material
 
-This guide explains how to setup your Angular project to begin using Angular Material. It includes information on prerequisites, installing Angular Material, and optionally displaying a sample material component in your application to verify your setup.
+This guide explains how to set up your Angular project to begin using Angular Material. It includes information on prerequisites, installing Angular Material, and optionally displaying a sample material component in your application to verify your setup.
 
 *Angular Resources*
 
@@ -8,9 +8,9 @@ If you are new to Angular or getting started with a new Angular application, see
 
 For existing applications, follow the steps below to begin using Angular Material.
 
-### Install Angular Material
+## Install Angular Material
 
-Use the Angular CLI's install [schematic](https://material.angular.io/guide/schematics) to set up your Angular Material project by running the following command:
+Use the Angular CLI's installation [schematic](https://material.angular.io/guide/schematics) to set up your Angular Material project by running the following command:
 
 ```bash
 ng add @angular/material
@@ -71,8 +71,8 @@ Run your local dev server:
 ng serve
 ```
 
-and point your browser to [http://localhost:4200](http://localhost:4200)
+Then point your browser to [http://localhost:4200](http://localhost:4200)
 
 You should see the material slider component on the page.
 
-In addition to the install schematic, Angular Material comes with [several schematics](https://material.angular.io/guide/schematics) (like nav, table, address-form, etc.) that can be used to easily generate pre-built components in your application.
+In addition to the installation schematic, Angular Material comes with [several schematics](https://material.angular.io/guide/schematics) (like nav, table, address-form, etc.) that can be used to easily generate pre-built components in your application.

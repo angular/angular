@@ -100,7 +100,7 @@ In the `app.component.css` file we can now style the stepper however we want:
 
 ## Using our new custom stepper component
 
-Now we are ready to use our new custom stepper component and fill it with steps. Therefore we can, for example, add it to our `app.component.html` and define some steps:
+Now we are ready to use our new custom stepper component and fill it with steps. Therefore, we can, for example, add it to our `app.component.html` and define some steps:
 
 **app.component.html**
 

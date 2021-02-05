@@ -1,3 +1,5 @@
+# Setting Element Elevation
+
 Angular Material's elevation classes and mixins allow you to add separation between elements along
 the z-axis. All material design elements have resting elevations. In addition, some elements may
 change their elevation in response to user interaction. The
@@ -7,7 +9,7 @@ explains how to best use elevation.
 Angular Material provides two ways to control the elevation of elements: predefined CSS classes
 and mixins.
 
-### Predefined CSS classes
+## Predefined CSS classes
 
 The easiest way to add elevation to an element is to simply add one of the predefined CSS classes
 `mat-elevation-z#` where `#` is the elevation number you want, 0-24. Dynamic elevation can be
@@ -19,7 +21,7 @@ achieved by switching elevation classes:
 
 <!-- example(elevation-overview) -->
 
-### Mixins
+## Mixins
 
 Elevations can also be added in CSS via the `mat-elevation` mixin, which takes a number 0-24
 indicating the elevation of the element as well as optional arguments for the elevation shadow's

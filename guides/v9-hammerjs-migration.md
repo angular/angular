@@ -4,10 +4,10 @@ Angular Material, as of version 9, no longer requires HammerJS for any component
 previously depended on HammerJS no longer provide a [`HAMMER_GESTURE_CONFIG`][1] that will
 enable use of HammerJS events in templates.
 
-Additionally the `GestureConfig` export from `@angular/material/core` has been marked as
+Additionally, the `GestureConfig` export from `@angular/material/core` has been marked as
 deprecated and will be removed in version 10.
 
-### Why is a migration needed?
+## Why is a migration needed?
 
 Since HammerJS previously was a requirement for a few Angular Material components, projects might
 have installed `HammerJS` exclusively for Angular Material. Since HammerJS is no longer needed when
@@ -19,7 +19,7 @@ modules to set up the HammerJS event plugin. Since this is no longer the case in
 such projects need to manually configure the HammerJS event plugin in order to continue using
 these HammerJS events.
 
-### What does the migration do?
+## What does the migration do?
 
 The migration automatically removes HammerJS from your project if HammerJS is not used.
 
@@ -38,7 +38,7 @@ deprecated Angular Material `GestureConfig`, the migration will print a warning 
 ambiguous usage. The migration cannot migrate your project automatically and manual changes
 are required. Read more [in the dedicated section](#the-migration-reported-ambiguous-usage-what-should-i-do).
 
-### How does the schematic remove HammerJS?
+## How does the schematic remove HammerJS?
 
 HammerJS can be set up in many ways. The migration handles the most common cases, covering
 approaches recommended by Angular Material in the past. The migration performs the following steps:
@@ -64,7 +64,7 @@ The migration cannot automatically remove HammerJS from tests. Please manually c
 the test setup and resolve any test issues. Read more in a
 [dedicated section for test migration](#how-to-migrate-my-tests).
 
-### How do I migrate references to the deprecated `GestureConfig`?
+## How do I migrate references to the deprecated `GestureConfig`?
 
 The `GestureConfig` can be consumed in multiple ways. The migration covers the most common cases.
 The most common case is that an `NgModule` in your application directly provides `GestureConfig`:
@@ -94,7 +94,7 @@ in combination with a different custom gesture config. These patterns cannot be 
 automatically, but the migration will report such patterns and ask you to perform manual cleanup.
 
 <a name="test-migration"></a>
-### How to migrate my tests?
+## How to migrate my tests?
 
 Components in your project might use Angular Material components which previously depended
 upon HammerJS. There might be unit tests for these components which also test gesture functionality
@@ -116,11 +116,11 @@ import 'hammerjs';
 ```
 
 <a name="what-to-do-ambiguous-usage"></a>
-### The migration reported ambiguous usage. What should I do?
+## The migration reported ambiguous usage. What should I do?
 
 **Case 1**: It detected that a HammerJS event provided by the deprecated `GestureConfig` is
 used in a component template. This is because the migration relies on static analysis to detect
-event bindings and can never guarantee that a event binding is bound to the Hammer gesture
+event bindings and can never guarantee that an event binding is bound to the Hammer gesture
 plugin, or to an actual `@Output`. For example:
 
 ```html

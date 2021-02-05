@@ -1,8 +1,10 @@
-### Theming your custom component with Angular Material's theming system
+# Theming your custom component with Angular Material's theming system
+
 In order to style your own components with Angular Material's tooling, the component's styles must
 be defined with Sass.
 
-#### 1. Define all color and typography styles in a "theme file" for the component
+## 1. Define all color and typography styles in a "theme file" for the component
+
 First, create a Sass mixin that accepts an Angular Material color configuration and
 outputs the color-specific styles for the component. A color configuration is a Sass map.
 
@@ -70,12 +72,14 @@ individual theming systems (`color` and `typography`).
 See the [typography guide](https://material.angular.io/guide/typography) for more information on
 typographic customization.
 
-#### 2. Define all remaining styles in a normal component stylesheet.
+## 2. Define all remaining styles in a normal component stylesheet
+
 Define all styles unaffected by the theme in a separate file referenced directly in the component's
 `styleUrl`.  This generally includes everything except for color and typography styles.
 
 
-#### 3. Include the theme mixin in your application
+## 3. Include the theme mixin in your application
+
 Use the Sass `@include` keyword to include a component's theme mixin wherever you're already
 including Angular Material's built-in theme mixins. 
 
@@ -104,7 +108,8 @@ $theme: mat-light-theme((
 ```
 
 
-#### Note: using the `mat-color` function to extract colors from a palette
+## Note: using the `mat-color` function to extract colors from a palette
+
 You can consume the theming functions and Material Design color palettes from
 `@angular/material/theming`. The `mat-color` Sass function extracts a specific color from a palette.
 For example:

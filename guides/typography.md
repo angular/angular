@@ -1,6 +1,6 @@
 # Angular Material typography
 
-### What is typography?
+## What is typography?
 Typography is a way of arranging type to make text legible, readable, and appealing when displayed.
 Angular Material's typography is based on the guidelines from the [Material Design spec][1] and is
 arranged into typography levels. Each level has a `font-size`, `line-height` and `font-weight`. The
@@ -26,7 +26,8 @@ available levels are:
 
 The typography levels are collected into a typography config which is used to generate the CSS.
 
-### Usage
+## Usage
+
 To get started, you first include the `Roboto` font with the 300, 400 and 500 weights.
 You can host it yourself or include it from [Google Fonts][2]:
 
@@ -56,7 +57,8 @@ descendant native elements.
 </section>
 ```
 
-### Customization
+## Customization
+
 Typography customization is an extension of Angular Material's Sass-based theming. Similar to
 creating a custom theme, you can create a custom **typography configuration**.
 
@@ -105,7 +107,8 @@ For more details about the typography functions and default config, see the
 [source](https://github.com/angular/components/blob/master/src/material/core/typography/_typography.scss).
 
 
-### Material typography in your custom CSS
+## Material typography in your custom CSS
+
 Angular Material includes typography utility mixins and functions that you can use to customize your
 own components:
 

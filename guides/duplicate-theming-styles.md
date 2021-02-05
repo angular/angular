@@ -63,7 +63,7 @@ extract the configuration for the color system from the theme.
 }
 ```
 
-#### Disabling duplication warnings
+## Disabling duplication warnings
 
 If your application intentionally duplicates styles, a global Sass variable can be
 set to disable duplication warnings from Angular Material. For example:
