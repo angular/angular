@@ -1,15 +1,23 @@
 code-example,
 code-tabs {
-    clear: both;
-    display: block;
+  clear: both;
+  display: block;
 
-    ol {
-      list-style: decimal;
-    }
+  code {
+    overflow: auto;
+  }
+
+  ol {
+    list-style: decimal;
+  }
+
+  .mat-card {
+    padding: 0;
+    border-radius: 5px;
+  }
 }
 
 code-example {
-
   &:not(.no-box) {
     background-color: rgba($backgroundgray, 0.2);
     border: 0.5px solid $lightgray;
@@ -22,6 +30,7 @@ code-example {
     pre {
       margin: 0;
     }
+
     code {
       background-color: transparent;
     }
@@ -30,34 +39,44 @@ code-example {
   code {
     overflow: auto;
   }
-}
 
-code-example, code-tabs {
-  .mat-card {
-    padding: 0;
-    border-radius: 5px;
+  // TERMINAL / SHELL TEXT STYLES
+  &.code-shell, &[language=sh], &[language=bash] {
+    background-color: $darkgray;
   }
-  code {
-    overflow: auto;
+
+  header {
+    background-color: $accentblue;
+    border-radius: 5px 5px 0 0;
+    color: $offwhite;
+    @include font-size(16);
+    padding: 8px 16px;
   }
 }
 
 code-tabs {
   margin: 16px 0;
-}
 
-// TERMINAL / SHELL TEXT STYLES
+  .code-tab-group {
+    .mat-tab-label {
+      &:hover {
+        background: rgba(black, 0.04);
+      }
+    }
 
-code-example.code-shell, code-example[language=sh], code-example[language=bash] {
-  background-color: $darkgray;
-}
+    .mat-tab-body {
+      overflow-y: hidden;
 
-code-example header {
-  background-color: $accentblue;
-  border-radius: 5px 5px 0 0;
-  color: $offwhite;
-  @include font-size(16);
-  padding: 8px 16px;
+      .mat-tab-body-content {
+        height: auto;
+        transform: none;
+
+        .fadeIn {
+          animation: opacity 2s ease-in;
+        }
+      }
+    }
+  }
 }
 
 code-example.avoid header,
@@ -73,24 +92,20 @@ code-tabs.avoidFile mat-tab-body {
   border: 0.5px solid $anti-pattern;
 }
 
-code-tabs .mat-tab-body-wrapper mat-tab-body .mat-tab-body {
-  overflow-y: hidden;
-}
-
-code-tabs mat-tab-body-content .fadeIn {
-  animation: opacity 2s ease-in;
-}
-
-aio-code pre {
+aio-code {
+  pre {
     display: flex;
     min-height: 32px;
     margin: 16px 24px;
     white-space: pre-wrap;
     align-items: center;
 
-    code span {
-      @include line-height(24);
+    code {
+      span {
+        @include line-height(24);
+      }
     }
+  }
 }
 
 
@@ -115,28 +130,24 @@ aio-code pre {
   }
 }
 
-.lang-sh .copy-button, .lang-bash .copy-button {
-  color: $mediumgray;
-  &:hover {
-    color: $lightgray;
+.lang-sh, .lang-bash {
+  .copy-button {
+    color: $mediumgray;
+
+    &:hover {
+      color: $lightgray;
+    }
   }
 }
 
-.code-tab-group .mat-tab-label {
-  &:hover {
-    background: rgba(black, 0.04);
+.sidenav-content {
+  code {
+    a {
+      color: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+    }
   }
-}
-
-.code-tab-group .mat-tab-body-content {
-  height: auto;
-  transform: none;
-}
-
-.sidenav-content code a {
-  color: inherit;
-  font-size: inherit;
-  font-weight: inherit;
 }
 
 /* PRETTY PRINTING STYLES for prettify.js. */
@@ -194,8 +205,10 @@ ol.linenums {
 
 /* SHELL / TERMINAL CODE BLOCKS */
 
-code-example.code-shell, code-example[language=sh], code-example[language=bash] {
-  .pnk, .blk, .pln, .otl, .kwd, .typ, .tag, .str, .atv, .atn, .com, .lit, .pun, .dec {
-    color: $codegreen;
+code-example {
+  &.code-shell, &[language=sh], &[language=bash] {
+    .pnk, .blk, .pln, .otl, .kwd, .typ, .tag, .str, .atv, .atn, .com, .lit, .pun, .dec {
+      color: $codegreen;
+    }
   }
 }
