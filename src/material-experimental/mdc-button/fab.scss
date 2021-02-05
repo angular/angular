@@ -1,4 +1,5 @@
 @import '@material/fab/mixins.import';
+@import '@material/fab/variables.import';
 @import '@material/button/variables.import';
 @import '@material/theme/variables.import';
 @import '../mdc-helpers/mdc-helpers';
@@ -22,11 +23,31 @@
   //   <span class="mdc-fab__icon material-icons">favorite</span>
   // ```
   // However, Angular Material expects a `mat-icon` instead. The following
-  // will extend the `mdc-fab__icon` styling to the mat icon. Note that
-  // the extended styles inherently only match icons that nest themselves in
-  // a parent `mdc-fab`.
+  // mixin will style the icons appropriately.
   .mat-icon {
-    @extend .mdc-fab__icon;
+    @include mdc-fab-icon_();
+  }
+}
+
+.mat-mdc-extended-fab {
+  @include mdc-fab-extended_();
+
+  .mat-icon {
+    @include mdc-fab-extended-icon-padding(
+                    $mdc-fab-extended-icon-padding,
+                    $mdc-fab-extended-label-padding
+    );
+  }
+
+  // For Extended FAB with text label followed by icon.
+  // We are checking for the a button class because white this is a FAB it
+  // uses the same template as button.
+  .mdc-button__label + .mat-icon {
+    @include mdc-fab-extended-icon-padding(
+                    $mdc-fab-extended-icon-padding,
+                    $mdc-fab-extended-label-padding,
+                    $is-icon-at-end: true
+    );
   }
 }
 

@@ -94,6 +94,22 @@ describe('MDC-based MatButton', () => {
     });
   });
 
+  describe('button[mat-fab] extended', () => {
+    it('should be extended', () => {
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+      const extendedFabButtonDebugEl = fixture.debugElement.query(By.css('.extended-fab-test'))!;
+
+      expect(extendedFabButtonDebugEl.nativeElement.classList.contains('mat-mdc-extended-fab'))
+        .toBeFalse();
+
+      fixture.componentInstance.extended = true;
+
+      fixture.detectChanges();
+      expect(extendedFabButtonDebugEl.nativeElement.classList).toContain('mat-mdc-extended-fab');
+    });
+  });
+
   // Regular button tests
   describe('button[mat-button]', () => {
     it('should handle a click on the button', () => {
@@ -281,6 +297,7 @@ describe('MDC-based MatButton', () => {
       Link
     </a>
     <button mat-fab>Fab Button</button>
+    <button mat-fab [extended]="extended" class="extended-fab-test">Extended</button>
     <button mat-mini-fab>Mini Fab Button</button>
   `
 })
@@ -290,6 +307,7 @@ class TestApp {
   rippleDisabled: boolean = false;
   buttonColor: ThemePalette;
   tabIndex: number;
+  extended: boolean = false;
 
   increment() {
     this.clickCount++;
