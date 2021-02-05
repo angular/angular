@@ -98,6 +98,23 @@ a.filter-button {
   }
 }
 
+.group-buttons {
+  margin: 32px auto;
+
+  a.selected {
+    background-color: $blue;
+    color: $white;
+  }
+
+  @media (max-width: 480px) {
+    .filter-button.button {
+      font-size: 1.2rem;
+      padding: 0;
+      margin: 0;
+    }
+  }
+}
+
 [mat-button], [mat-raised-button], [mat-button], [mat-raised-button] {
   text-transform: uppercase;
 }

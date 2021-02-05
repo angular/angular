@@ -16,25 +16,6 @@ aio-contributor-list {
   }
 }
 
-.group-buttons {
-  margin: 32px auto;
-
-  @media (max-width: 480px) {
-    .filter-button.button {
-      font-size: 1.2rem;
-      padding: 0;
-      margin: 0;
-    }
-  }
-
-  a {
-    &.selected {
-      background-color: $blue;
-      color: $white;
-    }
-  }
-}
-
 .contributor-group {
   display: flex;
   flex-direction: row;
