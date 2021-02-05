@@ -7,7 +7,14 @@
  */
 
 import {NgModule} from '@angular/core';
-import {HeaderRowOutlet, DataRowOutlet, CdkTable, FooterRowOutlet, NoDataRowOutlet} from './table';
+import {
+  HeaderRowOutlet,
+  DataRowOutlet,
+  CdkTable,
+  CdkRecycleRows,
+  FooterRowOutlet,
+  NoDataRowOutlet,
+} from './table';
 import {
   CdkCellOutlet, CdkFooterRow, CdkFooterRowDef, CdkHeaderRow, CdkHeaderRowDef, CdkRow,
   CdkRowDef,
@@ -41,6 +48,7 @@ const EXPORTED_DECLARATIONS = [
   FooterRowOutlet,
   CdkTextColumn,
   CdkNoDataRow,
+  CdkRecycleRows,
   NoDataRowOutlet,
 ];
 

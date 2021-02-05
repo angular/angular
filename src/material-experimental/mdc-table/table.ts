@@ -6,14 +6,36 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Directive,
+  OnInit,
+  ViewEncapsulation
+} from '@angular/core';
 import {
   CDK_TABLE_TEMPLATE,
   CdkTable,
   _CoalescedStyleScheduler,
   _COALESCED_STYLE_SCHEDULER,
 } from '@angular/cdk/table';
-import {_DisposeViewRepeaterStrategy, _VIEW_REPEATER_STRATEGY} from '@angular/cdk/collections';
+import {
+  _DisposeViewRepeaterStrategy,
+  _RecycleViewRepeaterStrategy,
+  _VIEW_REPEATER_STRATEGY
+} from '@angular/cdk/collections';
+
+/**
+ * Enables the recycle view repeater strategy, which reduces rendering latency. Not compatible with
+ * tables that animate rows.
+ */
+@Directive({
+  selector: 'mat-table[recycleRows], table[mat-table][recycleRows]',
+  providers: [
+    {provide: _VIEW_REPEATER_STRATEGY, useClass: _RecycleViewRepeaterStrategy},
+  ],
+})
+export class MatRecycleRows {}
 
 @Component({
   selector: 'mat-table, table[mat-table]',

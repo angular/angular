@@ -12,6 +12,7 @@ import {
   CollectionViewer,
   DataSource,
   _DisposeViewRepeaterStrategy,
+  _RecycleViewRepeaterStrategy,
   isDataSource,
   _VIEW_REPEATER_STRATEGY,
   _ViewRepeater,
@@ -81,6 +82,19 @@ import {
 } from './table-errors';
 import {STICKY_POSITIONING_LISTENER, StickyPositioningListener} from './sticky-position-listener';
 import {CDK_TABLE} from './tokens';
+
+
+/**
+ * Enables the recycle view repeater strategy, which reduces rendering latency. Not compatible with
+ * tables that animate rows.
+ */
+@Directive({
+  selector: 'cdk-table[recycleRows], table[cdk-table][recycleRows]',
+  providers: [
+    {provide: _VIEW_REPEATER_STRATEGY, useClass: _RecycleViewRepeaterStrategy},
+  ],
+})
+export class CdkRecycleRows {}
 
 /** Interface used to provide an outlet for rows to be inserted into. */
 export interface RowOutlet {

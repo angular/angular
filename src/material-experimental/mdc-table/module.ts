@@ -8,7 +8,7 @@
 
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material-experimental/mdc-core';
-import {MatTable} from './table';
+import {MatRecycleRows, MatTable} from './table';
 import {CdkTableModule} from '@angular/cdk/table';
 import {
   MatCell,
@@ -33,6 +33,7 @@ import {MatTextColumn} from './text-column';
 const EXPORTED_DECLARATIONS = [
   // Table
   MatTable,
+  MatRecycleRows,
 
   // Template defs
   MatHeaderCellDef,

@@ -40,6 +40,7 @@ import {
 import {TableTextColumnExample} from './table-text-column/table-text-column-example';
 import {TableWrappedExample, WrapperTable} from './table-wrapped/table-wrapped-example';
 import {TableReorderableExample} from './table-reorderable/table-reorderable-example';
+import {TableRecycleRowsExample} from './table-recycle-rows/table-recycle-rows-example';
 import {TableHarnessExample} from './table-harness/table-harness-example';
 
 export {
@@ -54,7 +55,8 @@ export {
   TableStickyFooterExample,   TableStickyHeaderExample,
   TableTextColumnExample,     TableTextColumnAdvancedExample,
   TableWrappedExample,        WrapperTable,
-  TableReorderableExample,    TableHarnessExample,
+  TableReorderableExample,    TableRecycleRowsExample,
+  TableHarnessExample,
 };
 
 const EXAMPLES = [
@@ -69,7 +71,8 @@ const EXAMPLES = [
   TableStickyFooterExample,   TableStickyHeaderExample,
   TableTextColumnExample,     TableTextColumnAdvancedExample,
   TableWrappedExample,        WrapperTable,
-  TableReorderableExample,    TableHarnessExample,
+  TableReorderableExample,    TableRecycleRowsExample,
+  TableHarnessExample,
 ];
 
 @NgModule({

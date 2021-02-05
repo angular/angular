@@ -5,17 +5,19 @@ import {CdkTableBasicExample} from './cdk-table-basic/cdk-table-basic-example';
 import {
   CdkTableFixedLayoutExample,
 } from './cdk-table-fixed-layout/cdk-table-fixed-layout-example';
-
+import {CdkTableRecycleRowsExample} from './cdk-table-recycle-rows/cdk-table-recycle-rows-example';
 export {
   CdkTableBasicExample,
   CdkTableFlexBasicExample,
   CdkTableFixedLayoutExample,
+  CdkTableRecycleRowsExample,
 };
 
 const EXAMPLES = [
   CdkTableBasicExample,
   CdkTableFlexBasicExample,
   CdkTableFixedLayoutExample,
+  CdkTableRecycleRowsExample,
 ];
 
 @NgModule({

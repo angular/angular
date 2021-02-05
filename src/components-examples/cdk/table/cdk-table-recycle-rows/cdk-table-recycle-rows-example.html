@@ -1,0 +1,28 @@
+<table class="example-table" cdk-table recycleRows [dataSource]="dataSource">
+  <!-- Position Column -->
+  <ng-container cdkColumnDef="position">
+    <th class="example-row" cdk-header-cell *cdkHeaderCellDef> No. </th>
+    <td cdk-cell *cdkCellDef="let element"> {{element.position}} </td>
+  </ng-container>
+
+  <!-- Name Column -->
+  <ng-container cdkColumnDef="name">
+    <th class="example-row" cdk-header-cell *cdkHeaderCellDef> Name </th>
+    <td cdk-cell *cdkCellDef="let element"> {{element.name}} </td>
+  </ng-container>
+
+  <!-- Weight Column -->
+  <ng-container cdkColumnDef="weight">
+    <th class="example-row" cdk-header-cell *cdkHeaderCellDef> Weight </th>
+    <td cdk-cell *cdkCellDef="let element"> {{element.weight}} </td>
+  </ng-container>
+
+  <!-- Symbol Column -->
+  <ng-container cdkColumnDef="symbol">
+    <th class="example-row" cdk-header-cell *cdkHeaderCellDef> Symbol </th>
+    <td cdk-cell *cdkCellDef="let element"> {{element.symbol}} </td>
+  </ng-container>
+
+  <tr cdk-header-row *cdkHeaderRowDef="displayedColumns"></tr>
+  <tr cdk-row *cdkRowDef="let row; columns: displayedColumns;"></tr>
+</table>
