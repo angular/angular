@@ -21,21 +21,8 @@ aio-nav-menu {
   }
 }
 
-mat-sidenav.mat-sidenav.sidenav {
-  position: fixed;
-  top: 64px;
-  bottom: 0;
-  left: 0;
-  min-width: 260px;
-  background-color: $superlightgray;
-  border-right: 1px solid $lightgray;
-
-  &.collapsed {
-    top: 56px;
-  }
-}
-
 mat-sidenav-container.sidenav-container {
+  background-color: $white;
   min-height: 100%;
   height: auto !important;
   max-width: 100%;
@@ -45,14 +32,44 @@ mat-sidenav-container.sidenav-container {
   &.has-floating-toc {
     max-width: 82%;
   }
-}
 
-mat-sidenav-container.sidenav-container.mat-drawer-container.mat-sidenav-container {
-  background-color: $white;
-}
+  .sidenav-content {
+    height: auto;
+  }
 
-mat-sidenav-container div.mat-sidenav-content {
-  height: auto;
+  mat-sidenav.sidenav {
+    position: fixed;
+    top: 64px;
+    bottom: 0;
+    left: 0;
+    min-width: 260px;
+    background-color: $superlightgray;
+    border-right: 1px solid $lightgray;
+
+    &.collapsed {
+      top: 56px;
+    }
+
+    // Angular Version Selector
+    .doc-version {
+      padding: 8px;
+      border-top: 1px solid $lightgray;
+
+      select {
+        outline: none;
+        width: 100%;
+        background: rgba($lightgray, 0.5);
+        height: 32px;
+        border: 1px solid $lightgray;
+        color: $darkgray;
+
+        option {
+          font-family: $main-font;
+          @include font-size(14);
+        }
+      }
+    }
+  }
 }
 
 .vertical-menu-item {
@@ -120,12 +137,10 @@ button.vertical-menu-item {
     transition: visibility 275ms, opacity 275ms, max-height 280ms;
     transition-timing-function: ease-out;
   }
-}
 
-.no-animations {
-  .heading-children.expanded,
-  .heading-children.collapsed {
-    transition: none! important;
+  .no-animations &.expanded,
+  .no-animations &.collapsed {
+    transition: none !important;
   }
 }
 
@@ -171,25 +186,5 @@ button.vertical-menu-item {
 
   &.expanded > .mat-icon {
     @include rotate(90deg);
-  }
-}
-
-// Angular Version Selector
-mat-sidenav .doc-version {
-  padding: 8px;
-  border-top: 1px solid $lightgray;
-
-  select {
-    outline: none;
-    width: 100%;
-    background: rgba($lightgray, 0.5);
-    height: 32px;
-    border: 1px solid $lightgray;
-    color: $darkgray;
-
-    option {
-      font-family: $main-font;
-      @include font-size(14);
-    }
   }
 }
