@@ -1,23 +1,18 @@
-/* API EDIT ICON */
-#api {
-  .api-filter .material-icons {
-    right: 48px;
-  }
-}
-
 /* API LIST STYLES */
 
 aio-api-list {
-  div.form-search i.material-icons {
-    width: 20px;
-    pointer-events: none;
-  }
+  .form-search {
+    .material-icons {
+      width: 20px;
+      pointer-events: none;
+    }
 
-  .form-search input {
-    width: 182px;
+    input {
+      width: 182px;
 
-    @media screen and (max-width: 600px) {
-      width: 100%;
+      @media screen and (max-width: 600px) {
+        width: 100%;
+      }
     }
   }
 
@@ -43,6 +38,19 @@ aio-api-list {
     margin: 16px auto;
   }
 
+  /* API FILTER MENU */
+  aio-select {
+    width: 200px;
+
+    @media screen and (max-width: 600px) {
+      width: 100%;
+    }
+
+    .symbol {
+      margin-right: 8px;
+    }
+  }
+
   .form-select-menu,
   .form-search {
     margin: 8px;
@@ -52,8 +60,19 @@ aio-api-list {
     }
   }
 
-  aio-select:first-child .form-select-menu {
-    margin-left: 0;
+  aio-select:first-child {
+    .form-select-menu {
+      margin-left: 0;
+    }
+  }
+
+  .form-search {
+    float: left;
+  }
+
+  /* API SEARCH ICON */
+  .material-icons {
+    right: 48px;
   }
 }
 
@@ -61,6 +80,55 @@ aio-api-list {
 
 .docs-content {
   position: relative;
+
+  /* API CLASS LIST */
+  .api-list {
+    list-style: none;
+    margin: 0 0 32px -8px;
+    padding: 0;
+    overflow: hidden;
+
+    @media screen and (max-width: 600px) {
+      margin: 0 0 0 -8px;
+    }
+
+    li {
+      @include font-size(14);
+      margin: 8px 0;
+      @include line-height(14);
+      padding: 0;
+      float: left;
+      width: 33%;
+      overflow: hidden;
+      min-width: 220px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+
+      .symbol {
+        margin-right: 8px;
+      }
+
+      a {
+        color: $blue-grey-600;
+        display: inline-block;
+        @include line-height(16);
+        padding: 0 16px 0;
+        text-decoration: none;
+        transition: all .3s;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover {
+          background: $blue-grey-50;
+          color: $blue-500;
+        }
+
+        &.deprecated-api-item {
+          text-decoration: line-through;
+        }
+      }
+    }
+  }
 }
 
 .l-content-small {
@@ -135,78 +203,6 @@ aio-api-list {
 
       &:before {
         content: map-get($symbol, content);
-      }
-    }
-  }
-}
-
-/* API HOMEE PAGE */
-
-/* API FILTER MENU */
-
-.api-filter {
-  aio-select {
-    width: 200px;
-
-    @media screen and (max-width: 600px) {
-      width: 100%;
-    }
-
-    .symbol {
-      margin-right: 8px;
-    }
-  }
-
-  .form-search {
-    float: left;
-  }
-}
-
-/* API CLASS LIST */
-
-.docs-content .api-list {
-  list-style: none;
-  margin: 0 0 32px -8px;
-  padding: 0;
-  overflow: hidden;
-
-  @media screen and (max-width: 600px) {
-    margin: 0 0 0 -8px;
-  }
-
-  li {
-    @include font-size(14);
-    margin: 8px 0;
-    @include line-height(14);
-    padding: 0;
-    float: left;
-    width: 33%;
-    overflow: hidden;
-    min-width: 220px;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-
-    .symbol {
-      margin-right: 8px;
-    }
-
-    a {
-      color: $blue-grey-600;
-      display: inline-block;
-      @include line-height(16);
-      padding: 0 16px 0;
-      text-decoration: none;
-      transition: all .3s;
-      overflow: hidden;
-      text-overflow: ellipsis;
-
-      &:hover {
-        background: $blue-grey-50;
-        color: $blue-500;
-      }
-
-      &.deprecated-api-item {
-        text-decoration: line-through;
       }
     }
   }
