@@ -64,4 +64,16 @@ export class OpenBuffer {
   getDefinitionAndBoundSpan(): ts.DefinitionInfoAndBoundSpan|undefined {
     return this.ngLS.getDefinitionAndBoundSpan(this.scriptInfo.fileName, this._cursor);
   }
+
+  getCompletionsAtPosition(options?: ts.GetCompletionsAtPositionOptions):
+      ts.WithMetadata<ts.CompletionInfo>|undefined {
+    return this.ngLS.getCompletionsAtPosition(this.scriptInfo.fileName, this._cursor, options);
+  }
+
+  getCompletionEntryDetails(
+      entryName: string, formatOptions?: ts.FormatCodeOptions|ts.FormatCodeSettings,
+      preferences?: ts.UserPreferences): ts.CompletionEntryDetails|undefined {
+    return this.ngLS.getCompletionEntryDetails(
+        this.scriptInfo.fileName, this._cursor, entryName, formatOptions, preferences);
+  }
 }

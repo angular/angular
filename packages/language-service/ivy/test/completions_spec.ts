@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import * as ts from 'typescript';
 import {DisplayInfoKind, unsafeCastDisplayInfoKindToScriptElementKind} from '../display_parts';
-import {LanguageService} from '../language_service';
 
-import {extractCursorInfo, LanguageServiceTestEnvironment} from './env';
+import {LanguageServiceTestEnv, OpenBuffer} from '../testing';
 
 const DIR_WITH_INPUT = {
   'Dir': `
@@ -99,40 +97,43 @@ describe('completions', () => {
 
   describe('in the global scope', () => {
     it('should be able to complete an interpolation', () => {
-      const {ngLS, fileName, cursor} = setup('{{ti¦}}', `title!: string; hero!: number;`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup('{{ti}}', `title!: string; hero!: number;`);
+      templateFile.moveCursorToText('{{ti¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
     });
 
     it('should be able to complete an empty interpolation', () => {
-      const {ngLS, fileName, cursor} = setup('{{ ¦ }}', `title!: string; hero!: number;`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup('{{  }}', `title!: string; hero!52: number;`);
+      templateFile.moveCursorToText('{{ ¦ }}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
     });
 
     it('should be able to complete a property binding', () => {
-      const {ngLS, fileName, cursor} =
-          setup('<h1 [model]="ti¦"></h1>', `title!: string; hero!: number;`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup('<h1 [model]="ti"></h1>', `title!: string; hero!: number;`);
+      templateFile.moveCursorToText('"ti¦');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
     });
 
     it('should be able to complete an empty property binding', () => {
-      const {ngLS, fileName, cursor} =
-          setup('<h1 [model]="¦"></h1>', `title!: string; hero!: number;`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup('<h1 [model]=""></h1>', `title!: string; hero!: number;`);
+      templateFile.moveCursorToText('[model]="¦"');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title', 'hero']);
     });
 
     it('should be able to retrieve details for completions', () => {
-      const {ngLS, fileName, cursor} = setup('{{ti¦}}', `
+      const {templateFile} = setup('{{ti}}', `
         /** This is the title of the 'AppCmp' Component. */
         title!: string;
         /** This comment should not appear in the output of this test. */
         hero!: number;
       `);
-      const details = ngLS.getCompletionEntryDetails(
-          fileName, cursor, 'title', /* formatOptions */ undefined,
+      templateFile.moveCursorToText('{{ti¦}}');
+      const details = templateFile.getCompletionEntryDetails(
+          'title', /* formatOptions */ undefined,
           /* preferences */ undefined)!;
       expect(details).toBeDefined();
       expect(toText(details.displayParts)).toEqual('(property) AppCmp.title: string');
@@ -141,54 +142,60 @@ describe('completions', () => {
     });
 
     it('should return reference completions when available', () => {
-      const {ngLS, fileName, cursor} = setup(`<div #todo></div>{{t¦}}`, `title!: string;`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`<div #todo></div>{{t}}`, `title!: string;`);
+      templateFile.moveCursorToText('{{t¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
       expectContain(completions, DisplayInfoKind.REFERENCE, ['todo']);
     });
 
     it('should return variable completions when available', () => {
-      const {ngLS, fileName, cursor} = setup(
+      const {templateFile} = setup(
           `<div *ngFor="let hero of heroes">
-            {{h¦}}
+            {{h}}
           </div>
         `,
           `heroes!: {name: string}[];`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      templateFile.moveCursorToText('{{h¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['heroes']);
       expectContain(completions, DisplayInfoKind.VARIABLE, ['hero']);
     });
 
     it('should return completions inside an event binding', () => {
-      const {ngLS, fileName, cursor} = setup(`<button (click)='t¦'></button>`, `title!: string;`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`<button (click)='t'></button>`, `title!: string;`);
+      templateFile.moveCursorToText(`(click)='t¦'`);
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
     });
 
     it('should return completions inside an empty event binding', () => {
-      const {ngLS, fileName, cursor} = setup(`<button (click)='¦'></button>`, `title!: string;`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`<button (click)=''></button>`, `title!: string;`);
+      templateFile.moveCursorToText(`(click)='¦'`);
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
     });
 
     it('should return completions inside the RHS of a two-way binding', () => {
-      const {ngLS, fileName, cursor} = setup(`<h1 [(model)]="t¦"></h1>`, `title!: string;`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`<h1 [(model)]="t"></h1>`, `title!: string;`);
+      templateFile.moveCursorToText('[(model)]="t¦"');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
     });
 
     it('should return completions inside an empty RHS of a two-way binding', () => {
-      const {ngLS, fileName, cursor} = setup(`<h1 [(model)]="¦"></h1>`, `title!: string;`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`<h1 [(model)]=""></h1>`, `title!: string;`);
+      templateFile.moveCursorToText('[(model)]="¦"');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
     });
   });
 
   describe('in an expression scope', () => {
     it('should return completions in a property access expression', () => {
-      const {ngLS, fileName, cursor} =
-          setup(`{{name.f¦}}`, `name!: {first: string; last: string;};`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`{{name.f}}`, `name!: {first: string; last: string;};`);
+      templateFile.moveCursorToText('{{name.f¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectAll(completions, {
         first: ts.ScriptElementKind.memberVariableElement,
         last: ts.ScriptElementKind.memberVariableElement,
@@ -196,9 +203,9 @@ describe('completions', () => {
     });
 
     it('should return completions in an empty property access expression', () => {
-      const {ngLS, fileName, cursor} =
-          setup(`{{name.¦}}`, `name!: {first: string; last: string;};`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`{{name.}}`, `name!: {first: string; last: string;};`);
+      templateFile.moveCursorToText('{{name.¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectAll(completions, {
         first: ts.ScriptElementKind.memberVariableElement,
         last: ts.ScriptElementKind.memberVariableElement,
@@ -206,9 +213,10 @@ describe('completions', () => {
     });
 
     it('should return completions in a property write expression', () => {
-      const {ngLS, fileName, cursor} = setup(
-          `<button (click)="name.fi¦ = 'test"></button>`, `name!: {first: string; last: string;};`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(
+          `<button (click)="name.fi = 'test"></button>`, `name!: {first: string; last: string;};`);
+      templateFile.moveCursorToText('name.fi¦');
+      const completions = templateFile.getCompletionsAtPosition();
       expectAll(completions, {
         first: ts.ScriptElementKind.memberVariableElement,
         last: ts.ScriptElementKind.memberVariableElement,
@@ -216,9 +224,9 @@ describe('completions', () => {
     });
 
     it('should return completions in a method call expression', () => {
-      const {ngLS, fileName, cursor} =
-          setup(`{{name.f¦()}}`, `name!: {first: string; full(): string;};`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`{{name.f()}}`, `name!: {first: string; full(): string;};`);
+      templateFile.moveCursorToText('{{name.f¦()}}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectAll(completions, {
         first: ts.ScriptElementKind.memberVariableElement,
         full: ts.ScriptElementKind.memberFunctionElement,
@@ -226,9 +234,9 @@ describe('completions', () => {
     });
 
     it('should return completions in an empty method call expression', () => {
-      const {ngLS, fileName, cursor} =
-          setup(`{{name.¦()}}`, `name!: {first: string; full(): string;};`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`{{name.()}}`, `name!: {first: string; full(): string;};`);
+      templateFile.moveCursorToText('{{name.¦()}}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectAll(completions, {
         first: ts.ScriptElementKind.memberVariableElement,
         full: ts.ScriptElementKind.memberFunctionElement,
@@ -236,9 +244,9 @@ describe('completions', () => {
     });
 
     it('should return completions in a safe property navigation context', () => {
-      const {ngLS, fileName, cursor} =
-          setup(`{{name?.f¦}}`, `name?: {first: string; last: string;};`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`{{name?.f}}`, `name?: {first: string; last: string;};`);
+      templateFile.moveCursorToText('{{name?.f¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectAll(completions, {
         first: ts.ScriptElementKind.memberVariableElement,
         last: ts.ScriptElementKind.memberVariableElement,
@@ -246,9 +254,9 @@ describe('completions', () => {
     });
 
     it('should return completions in an empty safe property navigation context', () => {
-      const {ngLS, fileName, cursor} =
-          setup(`{{name?.¦}}`, `name?: {first: string; last: string;};`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`{{name?.}}`, `name?: {first: string; last: string;};`);
+      templateFile.moveCursorToText('{{name?.¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectAll(completions, {
         first: ts.ScriptElementKind.memberVariableElement,
         last: ts.ScriptElementKind.memberVariableElement,
@@ -256,9 +264,9 @@ describe('completions', () => {
     });
 
     it('should return completions in a safe method call context', () => {
-      const {ngLS, fileName, cursor} =
-          setup(`{{name?.f¦()}}`, `name!: {first: string; full(): string;};`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`{{name?.f()}}`, `name!: {first: string; full(): string;};`);
+      templateFile.moveCursorToText('{{name?.f¦()}}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectAll(completions, {
         first: ts.ScriptElementKind.memberVariableElement,
         full: ts.ScriptElementKind.memberFunctionElement,
@@ -266,9 +274,9 @@ describe('completions', () => {
     });
 
     it('should return completions in an empty safe method call context', () => {
-      const {ngLS, fileName, cursor} =
-          setup(`{{name?.¦()}}`, `name!: {first: string; full(): string;};`);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`{{name?.()}}`, `name!: {first: string; full(): string;};`);
+      templateFile.moveCursorToText('{{name?.¦()}}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectAll(completions, {
         first: ts.ScriptElementKind.memberVariableElement,
         full: ts.ScriptElementKind.memberFunctionElement,
@@ -278,8 +286,9 @@ describe('completions', () => {
 
   describe('element tag scope', () => {
     it('should return DOM completions', () => {
-      const {ngLS, fileName, cursor} = setup(`<div¦>`, '');
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`<div>`, '');
+      templateFile.moveCursorToText('<div¦>');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ELEMENT),
           ['div', 'span']);
@@ -293,14 +302,14 @@ describe('completions', () => {
             export class OtherDir {}
           `,
       };
-      const {ngLS, fileName, cursor} = setup(`<div¦>`, '', OTHER_DIR);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`<div>`, '', OTHER_DIR);
+      templateFile.moveCursorToText('<div¦>');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
           ['other-dir']);
 
-      const details =
-          ngLS.getCompletionEntryDetails(fileName, cursor, 'other-dir', undefined, undefined)!;
+      const details = templateFile.getCompletionEntryDetails('other-dir')!;
       expect(details).toBeDefined();
       expect(ts.displayPartsToString(details.displayParts))
           .toEqual('(directive) AppModule.OtherDir');
@@ -315,15 +324,15 @@ describe('completions', () => {
             export class OtherCmp {}
           `,
       };
-      const {ngLS, fileName, cursor} = setup(`<div¦>`, '', OTHER_CMP);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`<div>`, '', OTHER_CMP);
+      templateFile.moveCursorToText('<div¦>');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.COMPONENT),
           ['other-cmp']);
 
 
-      const details =
-          ngLS.getCompletionEntryDetails(fileName, cursor, 'other-cmp', undefined, undefined)!;
+      const details = templateFile.getCompletionEntryDetails('other-cmp')!;
       expect(details).toBeDefined();
       expect(ts.displayPartsToString(details.displayParts))
           .toEqual('(component) AppModule.OtherCmp');
@@ -333,10 +342,10 @@ describe('completions', () => {
     describe('element attribute scope', () => {
       describe('dom completions', () => {
         it('should return completions for a new element attribute', () => {
-          const {ngLS, fileName, cursor} = setup(`<input ¦>`, '');
+          const {templateFile} = setup(`<input >`, '');
+          templateFile.moveCursorToText('<input ¦>');
 
-          const completions =
-              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          const completions = templateFile.getCompletionsAtPosition();
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
               ['value']);
@@ -346,24 +355,24 @@ describe('completions', () => {
         });
 
         it('should return completions for a partial attribute', () => {
-          const {ngLS, fileName, cursor, text} = setup(`<input val¦>`, '');
+          const {templateFile} = setup(`<input val>`, '');
+          templateFile.moveCursorToText('<input val¦>');
 
-          const completions =
-              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          const completions = templateFile.getCompletionsAtPosition();
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
               ['value']);
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
               ['[value]']);
-          expectReplacementText(completions, text, 'val');
+          expectReplacementText(completions, templateFile.contents, 'val');
         });
 
         it('should return completions for a partial property binding', () => {
-          const {ngLS, fileName, cursor, text} = setup(`<input [val¦]>`, '');
+          const {templateFile} = setup(`<input [val]>`, '');
+          templateFile.moveCursorToText('[val¦]');
 
-          const completions =
-              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          const completions = templateFile.getCompletionsAtPosition();
           expectDoesNotContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
               ['value']);
@@ -373,16 +382,16 @@ describe('completions', () => {
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
               ['value']);
-          expectReplacementText(completions, text, 'val');
+          expectReplacementText(completions, templateFile.contents, 'val');
         });
       });
 
       describe('directive present', () => {
         it('should return directive input completions for a new attribute', () => {
-          const {ngLS, fileName, cursor, text} = setup(`<input dir ¦>`, '', DIR_WITH_INPUT);
+          const {templateFile} = setup(`<input dir >`, '', DIR_WITH_INPUT);
+          templateFile.moveCursorToText('dir ¦>');
 
-          const completions =
-              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          const completions = templateFile.getCompletionsAtPosition();
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
               ['[myInput]']);
@@ -392,10 +401,10 @@ describe('completions', () => {
         });
 
         it('should return directive input completions for a partial attribute', () => {
-          const {ngLS, fileName, cursor, text} = setup(`<input dir my¦>`, '', DIR_WITH_INPUT);
+          const {templateFile} = setup(`<input dir my>`, '', DIR_WITH_INPUT);
+          templateFile.moveCursorToText('my¦>');
 
-          const completions =
-              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          const completions = templateFile.getCompletionsAtPosition();
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
               ['[myInput]']);
@@ -405,10 +414,10 @@ describe('completions', () => {
         });
 
         it('should return input completions for a partial property binding', () => {
-          const {ngLS, fileName, cursor, text} = setup(`<input dir [my¦]>`, '', DIR_WITH_INPUT);
+          const {templateFile} = setup(`<input dir [my]>`, '', DIR_WITH_INPUT);
+          templateFile.moveCursorToText('[my¦]');
 
-          const completions =
-              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          const completions = templateFile.getCompletionsAtPosition();
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
               ['myInput']);
@@ -417,10 +426,10 @@ describe('completions', () => {
 
       describe('structural directive present', () => {
         it('should return structural directive completions for an empty attribute', () => {
-          const {ngLS, fileName, cursor, text} = setup(`<li ¦>`, '', NG_FOR_DIR);
+          const {templateFile} = setup(`<li >`, '', NG_FOR_DIR);
+          templateFile.moveCursorToText('<li ¦>');
 
-          const completions =
-              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          const completions = templateFile.getCompletionsAtPosition();
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
               ['*ngFor']);
@@ -428,49 +437,49 @@ describe('completions', () => {
 
         it('should return structural directive completions for an existing non-structural attribute',
            () => {
-             const {ngLS, fileName, cursor, text} = setup(`<li ng¦>`, '', NG_FOR_DIR);
+             const {templateFile} = setup(`<li ng>`, '', NG_FOR_DIR);
+             templateFile.moveCursorToText('<li ng¦>');
 
-             const completions =
-                 ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+             const completions = templateFile.getCompletionsAtPosition();
              expectContain(
                  completions,
                  unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
                  ['*ngFor']);
-             expectReplacementText(completions, text, 'ng');
+             expectReplacementText(completions, templateFile.contents, 'ng');
            });
 
         it('should return structural directive completions for an existing structural attribute',
            () => {
-             const {ngLS, fileName, cursor, text} = setup(`<li *ng¦>`, '', NG_FOR_DIR);
+             const {templateFile} = setup(`<li *ng>`, '', NG_FOR_DIR);
+             templateFile.moveCursorToText('*ng¦>');
 
-             const completions =
-                 ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+             const completions = templateFile.getCompletionsAtPosition();
              expectContain(
                  completions,
                  unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
                  ['ngFor']);
-             expectReplacementText(completions, text, 'ng');
+             expectReplacementText(completions, templateFile.contents, 'ng');
            });
 
         it('should return structural directive completions for just the structural marker', () => {
-          const {ngLS, fileName, cursor, text} = setup(`<li *¦>`, '', NG_FOR_DIR);
+          const {templateFile} = setup(`<li *>`, '', NG_FOR_DIR);
+          templateFile.moveCursorToText('*¦>');
 
-          const completions =
-              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          const completions = templateFile.getCompletionsAtPosition();
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.DIRECTIVE),
               ['ngFor']);
           // The completion should not try to overwrite the '*'.
-          expectReplacementText(completions, text, '');
+          expectReplacementText(completions, templateFile.contents, '');
         });
       });
 
       describe('directive not present', () => {
         it('should return input completions for a new attribute', () => {
-          const {ngLS, fileName, cursor, text} = setup(`<input ¦>`, '', DIR_WITH_SELECTED_INPUT);
+          const {templateFile} = setup(`<input >`, '', DIR_WITH_SELECTED_INPUT);
+          templateFile.moveCursorToText('¦>');
 
-          const completions =
-              ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+          const completions = templateFile.getCompletionsAtPosition();
           // This context should generate two completions:
           //  * `[myInput]` as a property
           //  * `myInput` as an attribute
@@ -484,10 +493,10 @@ describe('completions', () => {
       });
 
       it('should return input completions for a partial attribute', () => {
-        const {ngLS, fileName, cursor, text} = setup(`<input my¦>`, '', DIR_WITH_SELECTED_INPUT);
+        const {templateFile} = setup(`<input my>`, '', DIR_WITH_SELECTED_INPUT);
+        templateFile.moveCursorToText('my¦>');
 
-        const completions =
-            ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+        const completions = templateFile.getCompletionsAtPosition();
         // This context should generate two completions:
         //  * `[myInput]` as a property
         //  * `myInput` as an attribute
@@ -497,50 +506,49 @@ describe('completions', () => {
         expectContain(
             completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
             ['myInput']);
-        expectReplacementText(completions, text, 'my');
+        expectReplacementText(completions, templateFile.contents, 'my');
       });
 
       it('should return input completions for a partial property binding', () => {
-        const {ngLS, fileName, cursor, text} = setup(`<input [my¦]>`, '', DIR_WITH_SELECTED_INPUT);
+        const {templateFile} = setup(`<input [my]>`, '', DIR_WITH_SELECTED_INPUT);
+        templateFile.moveCursorToText('[my¦');
 
-        const completions =
-            ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+        const completions = templateFile.getCompletionsAtPosition();
         // This context should generate two completions:
         //  * `[myInput]` as a property
         //  * `myInput` as an attribute
         expectContain(
             completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
             ['myInput']);
-        expectReplacementText(completions, text, 'my');
+        expectReplacementText(completions, templateFile.contents, 'my');
       });
 
       it('should return output completions for an empty binding', () => {
-        const {ngLS, fileName, cursor, text} = setup(`<input dir ¦>`, '', DIR_WITH_OUTPUT);
+        const {templateFile} = setup(`<input dir >`, '', DIR_WITH_OUTPUT);
+        templateFile.moveCursorToText('¦>');
 
-        const completions =
-            ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+        const completions = templateFile.getCompletionsAtPosition();
         expectContain(
             completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
             ['(myOutput)']);
       });
 
       it('should return output completions for a partial event binding', () => {
-        const {ngLS, fileName, cursor, text} = setup(`<input dir (my¦)>`, '', DIR_WITH_OUTPUT);
+        const {templateFile} = setup(`<input dir (my)>`, '', DIR_WITH_OUTPUT);
+        templateFile.moveCursorToText('(my¦)');
 
-        const completions =
-            ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+        const completions = templateFile.getCompletionsAtPosition();
         expectContain(
             completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
             ['myOutput']);
-        expectReplacementText(completions, text, 'my');
+        expectReplacementText(completions, templateFile.contents, 'my');
       });
 
       it('should return completions inside an LHS of a partially complete two-way binding', () => {
-        const {ngLS, fileName, cursor, text} =
-            setup(`<h1 dir [(mod¦)]></h1>`, ``, DIR_WITH_TWO_WAY_BINDING);
-        const completions =
-            ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
-        expectReplacementText(completions, text, 'mod');
+        const {templateFile} = setup(`<h1 dir [(mod)]></h1>`, ``, DIR_WITH_TWO_WAY_BINDING);
+        templateFile.moveCursorToText('[(mod¦)]');
+        const completions = templateFile.getCompletionsAtPosition();
+        expectReplacementText(completions, templateFile.contents, 'mod');
 
         expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['model']);
 
@@ -560,26 +568,29 @@ describe('completions', () => {
 
   describe('pipe scope', () => {
     it('should complete a pipe binding', () => {
-      const {ngLS, fileName, cursor, text} = setup(`{{ foo | some¦ }}`, '', SOME_PIPE);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`{{ foo | some¦ }}`, '', SOME_PIPE);
+      templateFile.moveCursorToText('some¦');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PIPE),
           ['somePipe']);
-      expectReplacementText(completions, text, 'some');
+      expectReplacementText(completions, templateFile.contents, 'some');
     });
 
     it('should complete an empty pipe binding', () => {
-      const {ngLS, fileName, cursor, text} = setup(`{{foo | ¦}}`, '', SOME_PIPE);
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`{{foo | }}`, '', SOME_PIPE);
+      templateFile.moveCursorToText('{{foo | ¦}}');
+      const completions = templateFile.getCompletionsAtPosition();
       expectContain(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PIPE),
           ['somePipe']);
-      expectReplacementText(completions, text, '');
+      expectReplacementText(completions, templateFile.contents, '');
     });
 
     it('should not return extraneous completions', () => {
-      const {ngLS, fileName, cursor, text} = setup(`{{ foo | some¦ }}`, '');
-      const completions = ngLS.getCompletionsAtPosition(fileName, cursor, /* options */ undefined);
+      const {templateFile} = setup(`{{ foo | some }}`, '');
+      templateFile.moveCursorToText('{{ foo | some¦ }}');
+      const completions = templateFile.getCompletionsAtPosition();
       expect(completions?.entries.length).toBe(0);
     });
   });
@@ -632,27 +643,16 @@ function toText(displayParts?: ts.SymbolDisplayPart[]): string {
 }
 
 function setup(
-    templateWithCursor: string, classContents: string,
-    otherDeclarations: {[name: string]: string} = {}): {
-  env: LanguageServiceTestEnvironment,
-  fileName: AbsoluteFsPath,
-  AppCmp: ts.ClassDeclaration,
-  ngLS: LanguageService,
-  cursor: number,
-  text: string,
+    template: string, classContents: string, otherDeclarations: {[name: string]: string} = {}): {
+  templateFile: OpenBuffer,
 } {
-  const codePath = absoluteFrom('/test.ts');
-  const templatePath = absoluteFrom('/test.html');
-
   const decls = ['AppCmp', ...Object.keys(otherDeclarations)];
 
   const otherDirectiveClassDecls = Object.values(otherDeclarations).join('\n\n');
 
-  const {cursor, text: templateWithoutCursor} = extractCursorInfo(templateWithCursor);
-  const env = LanguageServiceTestEnvironment.setup([
-    {
-      name: codePath,
-      contents: `
+  const env = LanguageServiceTestEnv.setup();
+  const project = env.addProject('test', {
+    'test.ts': `
         import {Component, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
 
         @Component({
@@ -670,19 +670,7 @@ function setup(
         })
         export class AppModule {}
         `,
-      isRoot: true,
-    },
-    {
-      name: templatePath,
-      contents: templateWithoutCursor,
-    }
-  ]);
-  return {
-    env,
-    fileName: templatePath,
-    AppCmp: env.getClass(codePath, 'AppCmp'),
-    ngLS: env.ngLS,
-    text: templateWithoutCursor,
-    cursor,
-  };
+    'test.html': template,
+  });
+  return {templateFile: project.openFile('test.html')};
 }
