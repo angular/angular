@@ -1,9 +1,8 @@
-.resources-container {
-  position: relative;
-}
-
-
 aio-resource-list {
+  .resources-container {
+    position: relative;
+  }
+
   .shadow-1 {
     transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 1px 4px 0 rgba($black, 0.37);
