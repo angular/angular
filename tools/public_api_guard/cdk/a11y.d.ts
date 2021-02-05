@@ -140,12 +140,12 @@ export declare class FocusTrap {
     constructor(_element: HTMLElement, _checker: InteractivityChecker, _ngZone: NgZone, _document: Document, deferAnchors?: boolean);
     attachAnchors(): boolean;
     destroy(): void;
-    focusFirstTabbableElement(): boolean;
-    focusFirstTabbableElementWhenReady(): Promise<boolean>;
-    focusInitialElement(): boolean;
-    focusInitialElementWhenReady(): Promise<boolean>;
-    focusLastTabbableElement(): boolean;
-    focusLastTabbableElementWhenReady(): Promise<boolean>;
+    focusFirstTabbableElement(options?: FocusOptions): boolean;
+    focusFirstTabbableElementWhenReady(options?: FocusOptions): Promise<boolean>;
+    focusInitialElement(options?: FocusOptions): boolean;
+    focusInitialElementWhenReady(options?: FocusOptions): Promise<boolean>;
+    focusLastTabbableElement(options?: FocusOptions): boolean;
+    focusLastTabbableElementWhenReady(options?: FocusOptions): Promise<boolean>;
     hasAttached(): boolean;
     protected toggleAnchors(enabled: boolean): void;
 }

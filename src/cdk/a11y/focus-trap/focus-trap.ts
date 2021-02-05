@@ -132,9 +132,9 @@ export class FocusTrap {
    * @returns Returns a promise that resolves with a boolean, depending
    * on whether focus was moved successfully.
    */
-  focusInitialElementWhenReady(): Promise<boolean> {
+  focusInitialElementWhenReady(options?: FocusOptions): Promise<boolean> {
     return new Promise<boolean>(resolve => {
-      this._executeOnStable(() => resolve(this.focusInitialElement()));
+      this._executeOnStable(() => resolve(this.focusInitialElement(options)));
     });
   }
 
@@ -144,9 +144,9 @@ export class FocusTrap {
    * @returns Returns a promise that resolves with a boolean, depending
    * on whether focus was moved successfully.
    */
-  focusFirstTabbableElementWhenReady(): Promise<boolean> {
+  focusFirstTabbableElementWhenReady(options?: FocusOptions): Promise<boolean> {
     return new Promise<boolean>(resolve => {
-      this._executeOnStable(() => resolve(this.focusFirstTabbableElement()));
+      this._executeOnStable(() => resolve(this.focusFirstTabbableElement(options)));
     });
   }
 
@@ -156,9 +156,9 @@ export class FocusTrap {
    * @returns Returns a promise that resolves with a boolean, depending
    * on whether focus was moved successfully.
    */
-  focusLastTabbableElementWhenReady(): Promise<boolean> {
+  focusLastTabbableElementWhenReady(options?: FocusOptions): Promise<boolean> {
     return new Promise<boolean>(resolve => {
-      this._executeOnStable(() => resolve(this.focusLastTabbableElement()));
+      this._executeOnStable(() => resolve(this.focusLastTabbableElement(options)));
     });
   }
 
@@ -197,7 +197,7 @@ export class FocusTrap {
    * Focuses the element that should be focused when the focus trap is initialized.
    * @returns Whether focus was moved successfully.
    */
-  focusInitialElement(): boolean {
+  focusInitialElement(options?: FocusOptions): boolean {
     // Contains the deprecated version of selector, for temporary backwards comparability.
     const redirectToElement = this._element.querySelector(`[cdk-focus-initial], ` +
                                                           `[cdkFocusInitial]`) as HTMLElement;
@@ -219,26 +219,26 @@ export class FocusTrap {
 
       if (!this._checker.isFocusable(redirectToElement)) {
         const focusableChild = this._getFirstTabbableElement(redirectToElement) as HTMLElement;
-        focusableChild?.focus();
+        focusableChild?.focus(options);
         return !!focusableChild;
       }
 
-      redirectToElement.focus();
+      redirectToElement.focus(options);
       return true;
     }
 
-    return this.focusFirstTabbableElement();
+    return this.focusFirstTabbableElement(options);
   }
 
   /**
    * Focuses the first tabbable element within the focus trap region.
    * @returns Whether focus was moved successfully.
    */
-  focusFirstTabbableElement(): boolean {
+  focusFirstTabbableElement(options?: FocusOptions): boolean {
     const redirectToElement = this._getRegionBoundary('start');
 
     if (redirectToElement) {
-      redirectToElement.focus();
+      redirectToElement.focus(options);
     }
 
     return !!redirectToElement;
@@ -248,11 +248,11 @@ export class FocusTrap {
    * Focuses the last tabbable element within the focus trap region.
    * @returns Whether focus was moved successfully.
    */
-  focusLastTabbableElement(): boolean {
+  focusLastTabbableElement(options?: FocusOptions): boolean {
     const redirectToElement = this._getRegionBoundary('end');
 
     if (redirectToElement) {
-      redirectToElement.focus();
+      redirectToElement.focus(options);
     }
 
     return !!redirectToElement;

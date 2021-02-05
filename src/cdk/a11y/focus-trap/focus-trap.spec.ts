@@ -129,6 +129,14 @@ describe('FocusTrap', () => {
       expect(document.activeElement!.id).toBe('middle');
     });
 
+    it('should be able to pass in focus options to initial focusable element', () => {
+      const options = {preventScroll: true};
+      const spy = spyOn(fixture.nativeElement.querySelector('#middle'), 'focus').and.callThrough();
+
+      focusTrapInstance.focusInitialElement(options);
+      expect(spy).toHaveBeenCalledWith(options);
+    });
+
     it('should be able to prioritize the first focus target', () => {
       // Because we can't mimic a real tab press focus change in a unit test, just call the
       // focus event handler directly.
@@ -136,11 +144,27 @@ describe('FocusTrap', () => {
       expect(document.activeElement!.id).toBe('first');
     });
 
+    it('should be able to pass in focus options to first focusable element', () => {
+      const options = {preventScroll: true};
+      const spy = spyOn(fixture.nativeElement.querySelector('#first'), 'focus').and.callThrough();
+
+      focusTrapInstance.focusFirstTabbableElement(options);
+      expect(spy).toHaveBeenCalledWith(options);
+    });
+
     it('should be able to prioritize the last focus target', () => {
       // Because we can't mimic a real tab press focus change in a unit test, just call the
       // focus event handler directly.
       focusTrapInstance.focusLastTabbableElement();
       expect(document.activeElement!.id).toBe('last');
+    });
+
+    it('should be able to pass in focus options to last focusable element', () => {
+      const options = {preventScroll: true};
+      const spy = spyOn(fixture.nativeElement.querySelector('#last'), 'focus').and.callThrough();
+
+      focusTrapInstance.focusLastTabbableElement(options);
+      expect(spy).toHaveBeenCalledWith(options);
     });
 
     it('should warn if the initial focus target is not focusable', () => {
