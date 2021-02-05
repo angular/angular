@@ -27,7 +27,7 @@ code-example {
   }
 
   &.no-box {
-    pre {
+    pre.prettyprint {
       margin: 0;
     }
 
@@ -93,7 +93,8 @@ code-tabs.avoidFile mat-tab-body {
 }
 
 aio-code {
-  pre {
+  pre.prettyprint {
+    position: relative;
     display: flex;
     min-height: 32px;
     margin: 16px 24px;
@@ -104,38 +105,50 @@ aio-code {
       span {
         @include line-height(24);
       }
+
+      ol.linenums {
+        margin: 0;
+        font-family: $main-font;
+        color: #B3B6B7;
+
+        li {
+          margin: 0;
+          font-family: $code-font;
+          font-size: 90%;
+          @include line-height(24);
+        }
+      }
+
+      .code-missing {
+        color: $darkred;
+      }
     }
-  }
-}
 
+    .copy-button {
+      position: absolute;
+      top: -7px;
+      right: -19px;
+      padding: 0;
+      overflow: visible; // This is required for the button to be displayed correctly in IE11.
 
-.code-missing {
-  color: $darkred;
-}
+      color: $blue-grey-200;
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
 
+      &:hover {
+        color: $mediumgray;
+      }
+    }
 
-.copy-button {
-  position: absolute;
-  top: -7px;
-  right: -19px;
-  padding: 0;
-  overflow: visible; // This is required for the button to be displayed correctly in IE11.
+    &.lang-sh, &.lang-bash {
+      .copy-button {
+        color: $mediumgray;
 
-  color: $blue-grey-200;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  &:hover {
-    color: $mediumgray;
-  }
-}
-
-.lang-sh, .lang-bash {
-  .copy-button {
-    color: $mediumgray;
-
-    &:hover {
-      color: $lightgray;
+        &:hover {
+          color: $lightgray;
+        }
+      }
     }
   }
 }
@@ -151,24 +164,6 @@ aio-code {
 }
 
 /* PRETTY PRINTING STYLES for prettify.js. */
-
-.prettyprint {
-  position: relative;
-}
-
-/* Specify class=linenums on a pre to get line numbering */
-ol.linenums {
-  margin: 0;
-  font-family: $main-font;
-  color: #B3B6B7;
-
-  li {
-    margin: 0;
-    font-family: $code-font;
-    font-size: 90%;
-    @include line-height(24);
-  }
-}
 
 /* The following class|color styles are derived from https://github.com/google/code-prettify/blob/master/src/prettify.css*/
 
