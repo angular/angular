@@ -1,7 +1,7 @@
 $notificationHeight: 56px;
 
 // we need to override some of the toolbar styling
-.mat-toolbar mat-toolbar-row.notification-container {
+.app-toolbar mat-toolbar-row.notification-container {
   padding: 0;
   height: auto;
   overflow: hidden;
