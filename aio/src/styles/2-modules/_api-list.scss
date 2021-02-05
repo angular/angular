@@ -45,10 +45,6 @@ aio-api-list {
     @media screen and (max-width: 600px) {
       width: 100%;
     }
-
-    .symbol {
-      margin-right: 8px;
-    }
   }
 
   .form-select-menu,
@@ -103,10 +99,6 @@ aio-api-list {
       min-width: 220px;
       text-overflow: ellipsis;
       white-space: nowrap;
-
-      .symbol {
-        margin-right: 8px;
-      }
 
       a {
         color: $blue-grey-600;
@@ -177,34 +169,6 @@ aio-api-list {
     position: absolute;
     top: 12px;
     z-index: $layer-1;
-  }
-}
-
-/* API SYMBOLS */
-
-/* SYMBOL CLASS */
-
-.symbol {
-  border-radius: 2px;
-  box-shadow: 0 1px 2px rgba($black, .24);
-  color: $white;
-  display: inline-block;
-  @include font-size(10);
-  font-weight: 600;
-  @include line-height(16);
-  text-align: center;
-  width: 16px;
-
-  // SYMBOL TYPES
-  // Symbol mapping variables in *constants*
-  @each $name, $symbol in $api-symbols {
-    &.#{$name} {
-      background: map-get($symbol, background);
-
-      &:before {
-        content: map-get($symbol, content);
-      }
-    }
   }
 }
 
