@@ -36,7 +36,7 @@
       }
     }
 
-    .mat-mdc-tab-group {
+    .mat-mdc-tab-group, .mat-mdc-tab-nav-bar {
       &.mat-background-primary {
         @include _mat-mdc-tabs-background(primary, on-primary);
       }
