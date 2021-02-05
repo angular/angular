@@ -21,12 +21,14 @@ import {SidenavOpenCloseExample} from './sidenav-open-close/sidenav-open-close-e
 import {SidenavOverviewExample} from './sidenav-overview/sidenav-overview-example';
 import {SidenavPositionExample} from './sidenav-position/sidenav-position-example';
 import {SidenavResponsiveExample} from './sidenav-responsive/sidenav-responsive-example';
+import {SidenavHarnessExample} from './sidenav-harness/sidenav-harness-example';
 
 export {
   SidenavAutosizeExample,
   SidenavBackdropExample,
   SidenavDisableCloseExample,
   SidenavDrawerOverviewExample,
+  SidenavHarnessExample,
   SidenavFixedExample,
   SidenavModeExample,
   SidenavOpenCloseExample,
@@ -40,6 +42,7 @@ const EXAMPLES = [
   SidenavBackdropExample,
   SidenavDisableCloseExample,
   SidenavDrawerOverviewExample,
+  SidenavHarnessExample,
   SidenavFixedExample,
   SidenavModeExample,
   SidenavOpenCloseExample,

@@ -1,10 +1,13 @@
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ng_module", "ng_test_library", "ng_web_test_suite")
 
 package(default_visibility = ["//visibility:public"])
 
 ng_module(
     name = "sidenav",
-    srcs = glob(["**/*.ts"]),
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
     assets = glob([
         "**/*.html",
         "**/*.css",
@@ -12,6 +15,8 @@ ng_module(
     module_name = "@angular/components-examples/material/sidenav",
     deps = [
         "//src/cdk/layout",
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
         "//src/material/button",
         "//src/material/checkbox",
         "//src/material/icon",
@@ -21,6 +26,9 @@ ng_module(
         "//src/material/sidenav",
         "//src/material/toolbar",
         "@npm//@angular/forms",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+        "@npm//@types/jasmine",
     ],
 )
 
@@ -31,4 +39,24 @@ filegroup(
         "**/*.css",
         "**/*.ts",
     ]),
+)
+
+ng_test_library(
+    name = "unit_tests_lib",
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":sidenav",
+        "//src/cdk/testing",
+        "//src/cdk/testing/testbed",
+        "//src/material/sidenav",
+        "//src/material/sidenav/testing",
+        "@npm//@angular/platform-browser",
+        "@npm//@angular/platform-browser-dynamic",
+    ],
+)
+
+ng_web_test_suite(
+    name = "unit_tests",
+    exclude_init_script = True,
+    deps = [":unit_tests_lib"],
 )
