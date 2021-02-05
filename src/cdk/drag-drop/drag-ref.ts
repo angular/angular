@@ -1353,7 +1353,7 @@ export class DragRef<T = any> {
    */
   private _getShadowRoot(): ShadowRoot | null {
     if (this._cachedShadowRoot === undefined) {
-      this._cachedShadowRoot = _getShadowRoot(this._rootElement) as ShadowRoot | null;
+      this._cachedShadowRoot = _getShadowRoot(this._rootElement);
     }
 
     return this._cachedShadowRoot;

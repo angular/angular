@@ -923,7 +923,7 @@ export class DropListRef<T = any> {
    */
   private _getShadowRoot(): DocumentOrShadowRoot {
     if (!this._cachedShadowRoot) {
-      const shadowRoot = _getShadowRoot(coerceElement(this.element)) as ShadowRoot | null;
+      const shadowRoot = _getShadowRoot(coerceElement(this.element));
       this._cachedShadowRoot = shadowRoot || this._document;
     }
 

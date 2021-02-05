@@ -69,7 +69,7 @@ export const FOCUS_MONITOR_DEFAULT_OPTIONS =
 type MonitoredElementInfo = {
   checkChildren: boolean,
   subject: Subject<FocusOrigin>,
-  rootNode: HTMLElement|Document
+  rootNode: HTMLElement|ShadowRoot|Document
 };
 
 /**
@@ -118,7 +118,7 @@ export class FocusMonitor implements OnDestroy {
    * handlers differently from the rest of the events, because the browser won't emit events
    * to the document when focus moves inside of a shadow root.
    */
-  private _rootNodeFocusListenerCount = new Map<HTMLElement|Document, number>();
+  private _rootNodeFocusListenerCount = new Map<HTMLElement|Document|ShadowRoot, number>();
 
   /**
    * The specified detection mode, used for attributing the origin of a focus
@@ -235,7 +235,7 @@ export class FocusMonitor implements OnDestroy {
     // If the element is inside the shadow DOM, we need to bind our focus/blur listeners to
     // the shadow root, rather than the `document`, because the browser won't emit focus events
     // to the `document`, if focus is moving within the same shadow root.
-    const rootNode = (_getShadowRoot(nativeElement) as HTMLElement|null) || this._getDocument();
+    const rootNode = _getShadowRoot(nativeElement) || this._getDocument();
     const cachedInfo = this._elementInfo.get(nativeElement);
 
     // Check if we're already monitoring this element.
