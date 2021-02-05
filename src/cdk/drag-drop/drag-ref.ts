@@ -629,6 +629,9 @@ export class DragRef<T = any> {
         // being dragged. This can happen while we're waiting for the drop animation to finish
         // and can cause errors, because some elements might still be moving around.
         if (!container || (!container.isDragging() && !container.isReceiving())) {
+          // Prevent the default action as soon as the dragging sequence is considered as
+          // "started" since waiting for the next event can allow the device to begin scrolling.
+          event.preventDefault();
           this._hasStartedDragging = true;
           this._ngZone.run(() => this._startDragSequence(event));
         }

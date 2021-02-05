@@ -318,8 +318,10 @@ describe('CdkDrag', () => {
           dispatchTouchEvent(fixture.componentInstance.dragElement.nativeElement, 'touchstart');
           fixture.detectChanges();
 
-          dispatchTouchEvent(document, 'touchmove');
-          expect(dispatchTouchEvent(document, 'touchmove').defaultPrevented).toBe(true);
+          expect(dispatchTouchEvent(document, 'touchmove').defaultPrevented)
+              .toBe(true, 'Expected initial touchmove to be prevented.');
+          expect(dispatchTouchEvent(document, 'touchmove').defaultPrevented)
+              .toBe(true, 'Expected subsequent touchmose to be prevented.');
 
           dispatchTouchEvent(document, 'touchend');
           fixture.detectChanges();
