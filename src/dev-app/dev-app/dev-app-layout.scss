@@ -41,6 +41,9 @@ body {
       justify-content: space-between;
       align-items: center;
       width: 100%;
+
+      // Avoids horizontal scrollbars on smaller screens.
+      overflow: hidden;
     }
   }
 
@@ -60,4 +63,9 @@ body {
 .demo-container {
   min-width: 100%;
   min-height: 100%;
+}
+
+.demo-main {
+  // Removes extra space on top of toolbar on IE.
+  display: block;
 }

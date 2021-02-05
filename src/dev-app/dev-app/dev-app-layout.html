@@ -29,7 +29,7 @@
     be one level above the density class in the DOM. At the same time, we want the density to apply
     to the toolbar while always keeping it in LTR at the same time.
    -->
-  <main [attr.dir]="dir.value" [ngClass]="getDensityClass()">
+  <main [attr.dir]="dir.value" [ngClass]="getDensityClass()" class="demo-main">
     <!-- The toolbar should always be in the LTR direction -->
     <mat-toolbar color="primary" dir="ltr">
       <button mat-icon-button (click)="start.open('mouse')">
