@@ -174,7 +174,7 @@ export class MaxValidator extends AbstractValidatorDirective implements OnChange
    * @description
    * Tracks changes to the max bound to this directive.
    */
-  @Input() max!: string;
+  @Input() max!: string|number;
   /** @internal */
   inputName = 'max';
   /** @internal */
@@ -234,7 +234,7 @@ export class MinValidator extends AbstractValidatorDirective implements OnChange
    * @description
    * Tracks changes to the min bound to this directive.
    */
-  @Input() min!: string;
+  @Input() min!: string|number;
   /** @internal */
   inputName = 'min';
   /** @internal */

@@ -1755,6 +1755,45 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            expect(minValidateFnSpy).not.toHaveBeenCalled();
          }));
 
+      ['number', 'string'].forEach((inputType: string) => {
+        it(`should validate min and max when constraints are represented using a ${inputType}`,
+           fakeAsync(() => {
+             const fixture = initTest(NgModelMinMaxValidator);
+
+             fixture.componentInstance.min = inputType === 'string' ? '5' : 5;
+             fixture.componentInstance.max = inputType === 'string' ? '10' : 10;
+
+             fixture.detectChanges();
+             tick();
+
+             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const form = fixture.debugElement.children[0].injector.get(NgForm);
+
+             input.value = '';
+             dispatchEvent(input, 'input');
+             fixture.detectChanges();
+             expect(form.valid).toEqual(true);
+             expect(form.controls.min_max.errors).toBeNull();
+
+             input.value = 11;
+             dispatchEvent(input, 'input');
+             fixture.detectChanges();
+             expect(form.valid).toEqual(false);
+             expect(form.controls.min_max.errors).toEqual({max: {max: 10, actual: 11}});
+
+             input.value = 4;
+             dispatchEvent(input, 'input');
+             fixture.detectChanges();
+             expect(form.valid).toEqual(false);
+             expect(form.controls.min_max.errors).toEqual({min: {min: 5, actual: 4}});
+
+             input.value = 9;
+             dispatchEvent(input, 'input');
+             fixture.detectChanges();
+             expect(form.valid).toEqual(true);
+             expect(form.controls.min_max.errors).toBeNull();
+           }));
+      });
       it('should validate min and max', fakeAsync(() => {
            const fixture = initTest(NgModelMinMaxValidator);
            fixture.componentInstance.min = 5;
@@ -2319,8 +2358,8 @@ class NgModelMinValidator {
     <form><input name="min_max" type="number" ngModel [min]="min" [max]="max"></form>`
 })
 class NgModelMinMaxValidator {
-  min!: number;
-  max!: number;
+  min!: number|string;
+  max!: number|string;
 }
 
 @Directive({selector: '[myDir]'})

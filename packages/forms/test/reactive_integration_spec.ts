@@ -2478,6 +2478,43 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             expect(maxValidateFnSpy).toHaveBeenCalled();
           });
 
+          it('should run min/max validation when constraints are represented as strings', () => {
+            const fixture = initTest(getComponent(dir));
+            const control = new FormControl(5);
+
+            // Run tests when min and max are defined as strings.
+            fixture.componentInstance.min = '1';
+            fixture.componentInstance.max = '10';
+
+            fixture.componentInstance.control = control;
+            fixture.componentInstance.form = new FormGroup({'pin': control});
+            fixture.detectChanges();
+
+            const input = fixture.debugElement.query(By.css('input')).nativeElement;
+            const form = fixture.componentInstance.form;
+
+            expect(input.value).toEqual('5');
+            expect(form.valid).toBeTruthy();
+            expect(form.controls.pin.errors).toBeNull();
+
+            input.value = 2;  // inside [1, 10] range
+            dispatchEvent(input, 'input');
+            expect(form.value).toEqual({pin: 2});
+            expect(form.valid).toBeTruthy();
+            expect(form.controls.pin.errors).toBeNull();
+
+            input.value = -2;  // outside [1, 10] range
+            dispatchEvent(input, 'input');
+            expect(form.value).toEqual({pin: -2});
+            expect(form.valid).toBeFalse();
+            expect(form.controls.pin.errors).toEqual({min: {min: 1, actual: -2}});
+
+            input.value = 20;  // outside [1, 10] range
+            dispatchEvent(input, 'input');
+            expect(form.valid).toBeFalse();
+            expect(form.controls.pin.errors).toEqual({max: {max: 10, actual: 20}});
+          });
+
           it('should run min/max validation for negative values', () => {
             const fixture = initTest(getComponent(dir));
             const control = new FormControl(-30);
@@ -4640,8 +4677,8 @@ class NgForFormControlWithValidators {
 class MinMaxFormControlNameComp {
   control!: FormControl;
   form!: FormGroup;
-  min: number = 1;
-  max: number = 10;
+  min: number|string = 1;
+  max: number|string = 10;
 }
 
 @Component({
@@ -4654,6 +4691,6 @@ class MinMaxFormControlNameComp {
 class MinMaxFormControlComp {
   control!: FormControl;
   form!: FormGroup;
-  min: number = 1;
-  max: number = 10;
+  min: number|string = 1;
+  max: number|string = 10;
 }

@@ -338,7 +338,7 @@ export declare class MaxLengthValidator implements Validator, OnChanges {
 }
 
 export declare class MaxValidator extends AbstractValidatorDirective implements OnChanges {
-    max: string;
+    max: string | number;
     ngOnChanges(changes: SimpleChanges): void;
 }
 
@@ -350,7 +350,7 @@ export declare class MinLengthValidator implements Validator, OnChanges {
 }
 
 export declare class MinValidator extends AbstractValidatorDirective implements OnChanges {
-    min: string;
+    min: string | number;
     ngOnChanges(changes: SimpleChanges): void;
 }
 
