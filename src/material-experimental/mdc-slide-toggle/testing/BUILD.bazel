@@ -10,7 +10,6 @@ ts_library(
     ),
     module_name = "@angular/material-experimental/mdc-slide-toggle/testing",
     deps = [
-        "//src/cdk/coercion",
         "//src/cdk/testing",
         "//src/material/slide-toggle/testing",
     ],

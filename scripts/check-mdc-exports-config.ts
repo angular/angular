@@ -72,6 +72,10 @@ export const config = {
       // Private module used to provide some common functionality.
       '_MatSlideToggleRequiredValidatorModule'
     ],
+    'mdc-slide-toggle/testing': [
+      // Private base class that is only exported for MDC.
+      '_MatSlideToggleHarnessBase'
+    ],
     'mdc-snack-bar': [
       // Private interface used to ensure consistency for MDC package.
       '_SnackBarContainer'
