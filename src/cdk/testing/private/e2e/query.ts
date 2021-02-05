@@ -7,7 +7,6 @@
  */
 
 import {browser, by, element, ElementFinder} from 'protractor';
-import {Point} from './actions';
 
 /**
  * Normalizes either turning a selector into an
@@ -42,3 +41,5 @@ export async function getScrollPosition(): Promise<Point> {
 }
 
 export type FinderResult = ElementFinder | string;
+
+export interface Point { x: number; y: number; }

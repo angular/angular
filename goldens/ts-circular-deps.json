@@ -27,9 +27,5 @@
   [
     "src/cdk/scrolling/virtual-scroll-strategy.ts",
     "src/cdk/scrolling/virtual-scroll-viewport.ts"
-  ],
-  [
-    "src/cdk/testing/private/e2e/actions.ts",
-    "src/cdk/testing/private/e2e/query.ts"
   ]
 ]

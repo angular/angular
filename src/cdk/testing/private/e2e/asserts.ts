@@ -7,8 +7,7 @@
  */
 
 import {browser} from 'protractor';
-import {getElement, FinderResult, waitForElement} from './query';
-import {Point} from './actions';
+import {getElement, FinderResult, waitForElement, Point} from './query';
 
 /**
  * Asserts that an element exists.
