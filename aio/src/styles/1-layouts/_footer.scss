@@ -43,10 +43,6 @@ footer {
     }
   }
 
-  a.action {
-    cursor: pointer;
-  }
-
   h3 {
     @include font-size(16);
     text-transform: uppercase;
