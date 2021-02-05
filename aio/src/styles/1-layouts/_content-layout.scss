@@ -39,11 +39,3 @@ aio-menu {
     display: none;
   }
 }
-
-#guide-change-log h2::before {
-  content: "";
-  display: block;
-  height: 1px;
-  margin: 24px 0px;
-  background: $lightgray;
-}
