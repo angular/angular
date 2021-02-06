@@ -1,0 +1,13 @@
+@mixin marketing-layout-theme($theme) {
+    $primary: map-get($theme, primary);
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $is-dark-theme: map-get($theme, is-dark);  
+
+    .background-sky {
+        background-color: mat-color($primary, default);
+        background: linear-gradient(145deg, mat-color($primary, 900), mat-color($primary, 400));
+        color: mat-color($foreground, text);
+      }
+}
+  
