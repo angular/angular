@@ -183,11 +183,6 @@ section#intro {
 }
 
 // ANGULAR LINE
-.background-sky {
-  background-color: $blue;
-  background: $bluegradient;
-  color: $white;
-}
 
 .home-row .card {
   @include card(70%, auto);
