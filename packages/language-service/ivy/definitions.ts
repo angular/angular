@@ -48,7 +48,7 @@ export class DefinitionBuilder {
     const definitions: ts.DefinitionInfo[] = [];
     for (const definitionMeta of definitionMetas) {
       // The `$event` of event handlers would point to the $event parameter in the shim file, as in
-      // `_outputHelper(_t3["x"]).subscribe(function ($event): any { $event }) ;`
+      // `_t3["x"].subscribe(function ($event): any { $event }) ;`
       // If we wanted to return something for this, it would be more appropriate for something like
       // `getTypeDefinition`.
       if (isDollarEvent(definitionMeta.node)) {

@@ -666,7 +666,7 @@ describe('type check blocks', () => {
       const TEMPLATE = `<div dir (dirOutput)="foo($event)"></div>`;
       const block = tcb(TEMPLATE, DIRECTIVES);
       expect(block).toContain(
-          '_outputHelper(_t1["outputField"]).subscribe(function ($event): any { (ctx).foo($event); });');
+          '_t1["outputField"].subscribe(function ($event): any { (ctx).foo($event); });');
     });
 
     it('should emit a listener function with AnimationEvent for animation events', () => {
@@ -828,7 +828,7 @@ describe('type check blocks', () => {
       it('should check types of directive outputs when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain(
-            '_outputHelper(_t1["outputField"]).subscribe(function ($event): any { (ctx).foo($event); });');
+            '_t1["outputField"].subscribe(function ($event): any { (ctx).foo($event); });');
         expect(block).toContain(
             '_t2.addEventListener("nonDirOutput", function ($event): any { (ctx).foo($event); });');
       });
@@ -865,7 +865,7 @@ describe('type check blocks', () => {
       it('should check types of DOM events when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain(
-            '_outputHelper(_t1["outputField"]).subscribe(function ($event): any { (ctx).foo($event); });');
+            '_t1["outputField"].subscribe(function ($event): any { (ctx).foo($event); });');
         expect(block).toContain(
             '_t2.addEventListener("nonDirOutput", function ($event): any { (ctx).foo($event); });');
       });
@@ -875,7 +875,7 @@ describe('type check blocks', () => {
         // Note that directive outputs are still checked, that is controlled by
         // `checkTypeOfOutputEvents`
         expect(block).toContain(
-            '_outputHelper(_t1["outputField"]).subscribe(function ($event): any { (ctx).foo($event); });');
+            '_t1["outputField"].subscribe(function ($event): any { (ctx).foo($event); });');
         expect(block).toContain('function ($event: any): any { (ctx).foo($event); }');
       });
     });

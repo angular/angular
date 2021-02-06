@@ -593,10 +593,6 @@ class FakeEnvironment /* implements Environment */ {
     return ts.createParen(ts.createAsExpression(ts.createNull(), this.referenceType(ref)));
   }
 
-  declareOutputHelper(): ts.Expression {
-    return ts.createIdentifier('_outputHelper');
-  }
-
   reference(ref: Reference<ClassDeclaration<ts.ClassDeclaration>>): ts.Expression {
     return ref.node.name;
   }
