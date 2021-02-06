@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SearchResultsComponent } from './search-results/search-results.component';
 import { SelectComponent } from './select/select.component';
+import { ThemePickerComponent } from './theme-picker/theme-picker.component';
 
 @NgModule({
   imports: [
@@ -9,11 +10,13 @@ import { SelectComponent } from './select/select.component';
   ],
   exports: [
     SearchResultsComponent,
-    SelectComponent
+    SelectComponent,
+    ThemePickerComponent
   ],
   declarations: [
     SearchResultsComponent,
-    SelectComponent
+    SelectComponent,
+    ThemePickerComponent
   ]
 })
 export class SharedModule {}
