@@ -874,17 +874,8 @@ export class TcbDirectiveOutputsOp extends TcbOp {
         // For strict checking of directive events, generate a call to the `subscribe` method
         // on the directive's output field to let type information flow into the handler function's
         // `$event` parameter.
-        //
-        // Note that the `EventEmitter<T>` type from '@angular/core' that is typically used for
-        // outputs has a typings deficiency in its `subscribe` method. The generic type `T` is not
-        // carried into the handler function, which is vital for inference of the type of `$event`.
-        // As a workaround, the directive's field is passed into a helper function that has a
-        // specially crafted set of signatures, to effectively cast `EventEmitter<T>` to something
-        // that has a `subscribe` method that properly carries the `T` into the handler function.
         const handler = tcbCreateEventHandler(output, this.tcb, this.scope, EventParamType.Infer);
-        const outputHelper =
-            ts.createCall(this.tcb.env.declareOutputHelper(), undefined, [outputField]);
-        const subscribeFn = ts.createPropertyAccess(outputHelper, 'subscribe');
+        const subscribeFn = ts.createPropertyAccess(outputField, 'subscribe');
         const call = ts.createCall(subscribeFn, /* typeArguments */ undefined, [handler]);
         addParseSpanInfo(call, output.sourceSpan);
         this.scope.addStatement(ts.createExpressionStatement(call));
