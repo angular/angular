@@ -371,7 +371,7 @@ The following route guards are available in Angular:
 * [`Resolve`](api/router/Resolve)
 * [`CanLoad`](api/router/CanLoad)
 
-To use route guards, consider using component-less routes as this facilitates guarding child routes.
+To use route guards, consider using [component-less routes](api/router/Route#componentless-routes) as this facilitates guarding child routes.
 
 Create a service for your guard:
 
