@@ -43,6 +43,9 @@
   {% endif %}
 
   <h2>{% if doc.isPrimaryPackage %}Primary entry{% else %}Entry{% endif %} point exports</h2>
+  {% if not doc.hasPublicExports %}
+    <p><i>No public exports.</i></p>
+  {% endif %}
   {% include "includes/deprecation.html" %}
   {$ listItems(doc.ngmodules, 'NgModules') $}
   {$ listItems(doc.classes, 'Classes') $}
