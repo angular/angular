@@ -19,7 +19,7 @@ export class HeroesComponent implements OnInit {
   heroes = HEROES;
   // #enddocregion component
   // #docregion on-select
-  selectedHero: Hero;
+  selectedHero: Hero | undefined;
  // #enddocregion on-select
 
   constructor() { }
