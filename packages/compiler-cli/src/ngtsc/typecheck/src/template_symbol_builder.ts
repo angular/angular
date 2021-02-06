@@ -174,7 +174,7 @@ export class SymbolBuilder {
     }
 
     // Outputs in the TCB look like one of the two:
-    // * _outputHelper(_t1["outputField"]).subscribe(handler);
+    // * _t1["outputField"].subscribe(handler);
     // * _t1.addEventListener(handler);
     // Even with strict null checks disabled, we still produce the access as a separate statement
     // so that it can be found here.

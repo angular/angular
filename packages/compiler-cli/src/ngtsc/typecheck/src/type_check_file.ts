@@ -56,9 +56,6 @@ export class TypeCheckFile extends Environment {
         '\n\n';
     const printer = ts.createPrinter();
     source += '\n';
-    for (const stmt of this.helperStatements) {
-      source += printer.printNode(ts.EmitHint.Unspecified, stmt, this.contextFile) + '\n';
-    }
     for (const stmt of this.pipeInstStatements) {
       source += printer.printNode(ts.EmitHint.Unspecified, stmt, this.contextFile) + '\n';
     }
