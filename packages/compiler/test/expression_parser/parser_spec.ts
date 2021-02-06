@@ -371,6 +371,39 @@ describe('parser', () => {
       expect(unparseWithSpan(ast)).toContain(['a.b = c', 'a.b = c']);
       expect(unparseWithSpan(ast)).toContain(['a.b = c', '[nameSpan] b']);
     });
+
+    it('should include parenthesis in spans', () => {
+      // When a LHS expression is parenthesized, the parenthesis on the left used to be
+      // excluded from the span. This test verifies that the parenthesis are properly included
+      // in the span for both LHS and RHS expressions.
+      // https://github.com/angular/angular/issues/40721
+      expectSpan('(foo) && (bar)');
+      expectSpan('(foo) || (bar)');
+      expectSpan('(foo) == (bar)');
+      expectSpan('(foo) === (bar)');
+      expectSpan('(foo) != (bar)');
+      expectSpan('(foo) !== (bar)');
+      expectSpan('(foo) > (bar)');
+      expectSpan('(foo) >= (bar)');
+      expectSpan('(foo) < (bar)');
+      expectSpan('(foo) <= (bar)');
+      expectSpan('(foo) + (bar)');
+      expectSpan('(foo) - (bar)');
+      expectSpan('(foo) * (bar)');
+      expectSpan('(foo) / (bar)');
+      expectSpan('(foo) % (bar)');
+      expectSpan('(foo) | pipe');
+      expectSpan('(foo)()');
+      expectSpan('(foo).bar');
+      expectSpan('(foo)?.bar');
+      expectSpan('(foo).bar = (baz)');
+      expectSpan('(foo | pipe) == false');
+      expectSpan('(((foo) && bar) || baz) === true');
+
+      function expectSpan(input: string) {
+        expect(unparseWithSpan(parseBinding(input))).toContain([jasmine.any(String), input]);
+      }
+    });
   });
 
   describe('general error handling', () => {
