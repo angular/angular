@@ -137,6 +137,17 @@ export interface UpdatedStateData {
   newValue: any;
 }
 
+export interface Route {
+  name: string;
+  hash: string | null;
+  path: string;
+  specificity: string | null;
+  handler: string;
+  data: any;
+  children?: Array<Route>;
+  isAux: boolean;
+}
+
 export type Topic = keyof Events;
 
 export interface Events {
@@ -152,6 +163,8 @@ export interface Events {
   nestedProperties: (position: DirectivePosition, data: Properties, path: string[]) => void;
 
   setSelectedComponent: (position: ElementPosition) => void;
+  getRouter: () => void;
+  updateRouterTree: (routes: Route[]) => void;
 
   componentTreeDirty: () => void;
   getLatestComponentExplorerView: (query?: ComponentExplorerViewQuery) => void;

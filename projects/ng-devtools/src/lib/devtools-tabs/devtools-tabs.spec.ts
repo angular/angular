@@ -8,17 +8,20 @@ describe('DevtoolsTabsComponent', () => {
   let applicationEnvironmentMock: ApplicationEnvironment;
   let comp: DevToolsTabsComponent;
   let mockThemeService: any;
+  let mockDialogService: any;
 
   beforeEach(() => {
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
     applicationEnvironmentMock = jasmine.createSpyObj('applicationEnvironment', ['environment']);
     mockThemeService = {};
+    mockDialogService = jasmine.createSpyObj('dialog', ['open']);
 
     comp = new DevToolsTabsComponent(
       new TabUpdate(),
       mockThemeService as any,
       messageBusMock,
-      applicationEnvironmentMock
+      applicationEnvironmentMock,
+      mockDialogService as any
     );
   });
 

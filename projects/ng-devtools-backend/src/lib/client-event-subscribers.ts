@@ -8,8 +8,10 @@ import {
   ComponentType,
   ProfilerFrame,
   ComponentExplorerViewQuery,
+  Route,
 } from 'protocol';
 import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
+import { parseRoutes } from './router-tree';
 import { start as startProfiling, stop as stopProfiling } from './hooks/capture';
 import { serializeDirectiveState } from './state-serializer/state-serializer';
 import { ComponentInspector } from './component-inspector/component-inspector';
@@ -38,6 +40,7 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
   messageBus.on('setSelectedComponent', selectedComponentCallback);
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
+  messageBus.on('getRouter', getRouterCallback(messageBus));
 
   messageBus.on('updateState', updateState);
 
@@ -91,6 +94,7 @@ const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) 
 };
 
 const checkForAngularCallback = (messageBus: MessageBus<Events>) => () => checkForAngular(messageBus);
+const getRouterCallback = (messageBus: MessageBus<Events>) => () => getRouter(messageBus);
 
 const startProfilingCallback = (messageBus: MessageBus<Events>) => () =>
   startProfiling((frame: ProfilerFrame) => {
@@ -135,6 +139,15 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
 //
 // Subscribe Helpers
 //
+const getRouter = (messageBus: MessageBus<Events>) => {
+  const node = queryDirectiveForest([0], initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest());
+  let routes: Route[] = [];
+  if (node?.component?.instance.router) {
+    routes = [parseRoutes(node?.component?.instance.router)];
+  }
+  messageBus.emit('updateRouterTree', [routes]);
+};
+
 const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
   const ngVersion = getAngularVersion();
   const appIsIvy = appIsAngularIvy();

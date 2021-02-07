@@ -7,22 +7,29 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { DirectiveExplorerModule } from './directive-explorer/directive-explorer.module';
 import { ProfilerModule } from './profiler/profiler.module';
+import { RouterTreeModule } from './router-tree/router-tree.module';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { TabUpdate } from './tab-update';
+import { FormsModule } from '@angular/forms';
+import { RouterConfirmDialogComponent } from './router-tree/router-confirm-dialog/router-confirm-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
-  declarations: [DevToolsTabsComponent],
+  declarations: [DevToolsTabsComponent, RouterConfirmDialogComponent],
   imports: [
     MatTabsModule,
     MatIconModule,
     DirectiveExplorerModule,
     ProfilerModule,
+    RouterTreeModule,
     CommonModule,
     MatMenuModule,
     MatButtonModule,
     MatSlideToggleModule,
+    MatDialogModule,
+    FormsModule,
   ],
   providers: [TabUpdate],
   exports: [DevToolsTabsComponent],

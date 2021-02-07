@@ -1,0 +1,9 @@
+<mat-dialog-content class="mat-typography">
+  <p>
+    Router Tree would close on disabling.
+  </p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close color="primary">Cancel</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial color="warn">OK</button>
+</mat-dialog-actions>
