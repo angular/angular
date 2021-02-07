@@ -97,5 +97,11 @@ import {HttpParams} from '@angular/common/http/src/params';
         expect(body.toString()).toBe('a=&c=3');
       });
     });
+    describe('reservedCharacterstoString', () => {
+      it('should stringify string params contains reserved characters', () => {
+        const body = new HttpParams({fromObject: {a: '@:$,;+=?/'}});
+        expect(body.toString()).toBe('a=%40%3A%24%2C%3B%2B%3D%3F%2F');
+      });
+    });
   });
 }
