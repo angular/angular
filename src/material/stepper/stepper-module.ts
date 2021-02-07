@@ -19,6 +19,7 @@ import {MatHorizontalStepper, MatStep, MatStepper, MatVerticalStepper} from './s
 import {MatStepperNext, MatStepperPrevious} from './stepper-button';
 import {MatStepperIcon} from './stepper-icon';
 import {MAT_STEPPER_INTL_PROVIDER} from './stepper-intl';
+import {MatStepContent} from './step-content';
 
 
 @NgModule({
@@ -42,6 +43,7 @@ import {MAT_STEPPER_INTL_PROVIDER} from './stepper-intl';
     MatStepperPrevious,
     MatStepHeader,
     MatStepperIcon,
+    MatStepContent,
   ],
   declarations: [
     MatHorizontalStepper,
@@ -53,6 +55,7 @@ import {MAT_STEPPER_INTL_PROVIDER} from './stepper-intl';
     MatStepperPrevious,
     MatStepHeader,
     MatStepperIcon,
+    MatStepContent,
   ],
   providers: [MAT_STEPPER_INTL_PROVIDER, ErrorStateMatcher],
 })

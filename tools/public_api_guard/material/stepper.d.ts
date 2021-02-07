@@ -16,13 +16,24 @@ export declare class MatHorizontalStepper extends MatStepper {
     static ɵfac: i0.ɵɵFactoryDef<MatHorizontalStepper, never>;
 }
 
-export declare class MatStep extends CdkStep implements ErrorStateMatcher {
+export declare class MatStep extends CdkStep implements ErrorStateMatcher, AfterContentInit, OnDestroy {
+    _lazyContent: MatStepContent;
+    _portal: TemplatePortal;
     color: ThemePalette;
     stepLabel: MatStepLabel;
-    constructor(stepper: MatStepper, _errorStateMatcher: ErrorStateMatcher, stepperOptions?: StepperOptions);
+    constructor(stepper: MatStepper, _errorStateMatcher: ErrorStateMatcher, stepperOptions?: StepperOptions, _viewContainerRef?: ViewContainerRef | undefined);
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatStep, "mat-step", ["matStep"], { "color": "color"; }, {}, ["stepLabel"], ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatStep, [null, { skipSelf: true; }, { optional: true; }]>;
+    ngAfterContentInit(): void;
+    ngOnDestroy(): void;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatStep, "mat-step", ["matStep"], { "color": "color"; }, {}, ["stepLabel", "_lazyContent"], ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatStep, [null, { skipSelf: true; }, { optional: true; }, null]>;
+}
+
+export declare class MatStepContent {
+    _template: TemplateRef<any>;
+    constructor(_template: TemplateRef<any>);
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatStepContent, "ng-template[matStepContent]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatStepContent, never>;
 }
 
 export declare class MatStepHeader extends _MatStepHeaderMixinBase implements AfterViewInit, OnDestroy, CanColor {
@@ -105,7 +116,7 @@ export declare class MatStepperIntl {
 
 export declare class MatStepperModule {
     static ɵinj: i0.ɵɵInjectorDef<MatStepperModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatStepperModule, [typeof i1.MatHorizontalStepper, typeof i1.MatVerticalStepper, typeof i1.MatStep, typeof i2.MatStepLabel, typeof i1.MatStepper, typeof i3.MatStepperNext, typeof i3.MatStepperPrevious, typeof i4.MatStepHeader, typeof i5.MatStepperIcon], [typeof i6.MatCommonModule, typeof i7.CommonModule, typeof i8.PortalModule, typeof i9.MatButtonModule, typeof i10.CdkStepperModule, typeof i11.MatIconModule, typeof i6.MatRippleModule], [typeof i6.MatCommonModule, typeof i1.MatHorizontalStepper, typeof i1.MatVerticalStepper, typeof i1.MatStep, typeof i2.MatStepLabel, typeof i1.MatStepper, typeof i3.MatStepperNext, typeof i3.MatStepperPrevious, typeof i4.MatStepHeader, typeof i5.MatStepperIcon]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatStepperModule, [typeof i1.MatHorizontalStepper, typeof i1.MatVerticalStepper, typeof i1.MatStep, typeof i2.MatStepLabel, typeof i1.MatStepper, typeof i3.MatStepperNext, typeof i3.MatStepperPrevious, typeof i4.MatStepHeader, typeof i5.MatStepperIcon, typeof i6.MatStepContent], [typeof i7.MatCommonModule, typeof i8.CommonModule, typeof i9.PortalModule, typeof i10.MatButtonModule, typeof i11.CdkStepperModule, typeof i12.MatIconModule, typeof i7.MatRippleModule], [typeof i7.MatCommonModule, typeof i1.MatHorizontalStepper, typeof i1.MatVerticalStepper, typeof i1.MatStep, typeof i2.MatStepLabel, typeof i1.MatStepper, typeof i3.MatStepperNext, typeof i3.MatStepperPrevious, typeof i4.MatStepHeader, typeof i5.MatStepperIcon, typeof i6.MatStepContent]>;
 }
 
 export declare class MatStepperNext extends CdkStepperNext {

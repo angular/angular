@@ -1302,6 +1302,44 @@ describe('MatStepper', () => {
       expect(stepper.selectedIndex).toBe(1);
       expect(stepper.selected).toBeTruthy();
     });
+
+  describe('stepper with lazy content', () => {
+    it('should render the content of the selected step on init', () => {
+      const fixture = createComponent(StepperWithLazyContent);
+      const element = fixture.nativeElement;
+      fixture.componentInstance.selectedIndex = 1;
+      fixture.detectChanges();
+
+      expect(element.textContent).not.toContain('Step 1 content');
+      expect(element.textContent).toContain('Step 2 content');
+      expect(element.textContent).not.toContain('Step 3 content');
+    });
+
+    it('should render the content of steps when the user navigates to them', () => {
+      const fixture = createComponent(StepperWithLazyContent);
+      const element = fixture.nativeElement;
+      fixture.componentInstance.selectedIndex = 0;
+      fixture.detectChanges();
+
+      expect(element.textContent).toContain('Step 1 content');
+      expect(element.textContent).not.toContain('Step 2 content');
+      expect(element.textContent).not.toContain('Step 3 content');
+
+      fixture.componentInstance.selectedIndex = 1;
+      fixture.detectChanges();
+
+      expect(element.textContent).toContain('Step 1 content');
+      expect(element.textContent).toContain('Step 2 content');
+      expect(element.textContent).not.toContain('Step 3 content');
+
+      fixture.componentInstance.selectedIndex = 2;
+      fixture.detectChanges();
+
+      expect(element.textContent).toContain('Step 1 content');
+      expect(element.textContent).toContain('Step 2 content');
+      expect(element.textContent).toContain('Step 3 content');
+    });
+  });
 });
 
 /** Asserts that keyboard interaction works correctly. */
@@ -1825,4 +1863,27 @@ class NestedSteppers {
 })
 class StepperWithStaticOutOfBoundsIndex {
   @ViewChild(MatStepper) stepper: MatStepper;
+}
+
+
+@Component({
+  template: `
+    <mat-vertical-stepper [selectedIndex]="selectedIndex">
+      <mat-step>
+        <ng-template matStepLabel>Step 1</ng-template>
+        <ng-template matStepContent>Step 1 content</ng-template>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Step 2</ng-template>
+        <ng-template matStepContent>Step 2 content</ng-template>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Step 3</ng-template>
+        <ng-template matStepContent>Step 3 content</ng-template>
+      </mat-step>
+    </mat-vertical-stepper>
+  `
+})
+class StepperWithLazyContent {
+  selectedIndex = 0;
 }

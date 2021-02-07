@@ -14,6 +14,7 @@ import {StepperOverviewExample} from './stepper-overview/stepper-overview-exampl
 import {StepperStatesExample} from './stepper-states/stepper-states-example';
 import {StepperVerticalExample} from './stepper-vertical/stepper-vertical-example';
 import {StepperHarnessExample} from './stepper-harness/stepper-harness-example';
+import {StepperLazyContentExample} from './stepper-lazy-content/stepper-lazy-content-example';
 
 export {
   StepperEditableExample,
@@ -24,6 +25,7 @@ export {
   StepperOverviewExample,
   StepperStatesExample,
   StepperVerticalExample,
+  StepperLazyContentExample,
 };
 
 const EXAMPLES = [
@@ -35,6 +37,7 @@ const EXAMPLES = [
   StepperOverviewExample,
   StepperStatesExample,
   StepperVerticalExample,
+  StepperLazyContentExample,
 ];
 
 @NgModule({

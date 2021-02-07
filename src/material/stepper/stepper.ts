@@ -29,24 +29,28 @@ import {
   forwardRef,
   Inject,
   Input,
+  OnDestroy,
   Optional,
   Output,
   QueryList,
   SkipSelf,
   TemplateRef,
   ViewChildren,
+  ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
 import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
 import {DOCUMENT} from '@angular/common';
 import {ErrorStateMatcher, ThemePalette} from '@angular/material/core';
-import {Subject} from 'rxjs';
-import {takeUntil, distinctUntilChanged} from 'rxjs/operators';
+import {TemplatePortal} from '@angular/cdk/portal';
+import {Subject, Subscription} from 'rxjs';
+import {takeUntil, distinctUntilChanged, map, startWith, switchMap} from 'rxjs/operators';
 
 import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
 import {matStepperAnimations} from './stepper-animations';
 import {MatStepperIcon, MatStepperIconContext} from './stepper-icon';
+import {MatStepContent} from './step-content';
 
 @Component({
   selector: 'mat-step',
@@ -59,18 +63,48 @@ import {MatStepperIcon, MatStepperIconContext} from './stepper-icon';
   exportAs: 'matStep',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatStep extends CdkStep implements ErrorStateMatcher {
+export class MatStep extends CdkStep implements ErrorStateMatcher, AfterContentInit, OnDestroy {
+  private _isSelected = Subscription.EMPTY;
+
   /** Content for step label given by `<ng-template matStepLabel>`. */
   @ContentChild(MatStepLabel) stepLabel: MatStepLabel;
 
   /** Theme color for the particular step. */
   @Input() color: ThemePalette;
 
+  /** Content that will be rendered lazily. */
+  @ContentChild(MatStepContent, {static: false}) _lazyContent: MatStepContent;
+
+  /** Currently-attached portal containing the lazy content. */
+  _portal: TemplatePortal;
+
   /** @breaking-change 8.0.0 remove the `?` after `stepperOptions` */
+  /** @breaking-change 9.0.0 _viewContainerRef parameter to become required. */
   constructor(@Inject(forwardRef(() => MatStepper)) stepper: MatStepper,
               @SkipSelf() private _errorStateMatcher: ErrorStateMatcher,
-              @Optional() @Inject(STEPPER_GLOBAL_OPTIONS) stepperOptions?: StepperOptions) {
+              @Optional() @Inject(STEPPER_GLOBAL_OPTIONS) stepperOptions?: StepperOptions,
+              private _viewContainerRef?: ViewContainerRef) {
     super(stepper, stepperOptions);
+  }
+
+  ngAfterContentInit() {
+    /** @breaking-change 9.0.0 Null check for _viewContainerRef to be removed. */
+    if (this._viewContainerRef) {
+      this._isSelected = this._stepper.steps.changes.pipe(switchMap(() => {
+        return this._stepper.selectionChange.pipe(
+          map(event => event.selectedStep === this),
+          startWith(this._stepper.selected === this)
+        );
+      })).subscribe(isSelected => {
+        if (isSelected && this._lazyContent && !this._portal) {
+          this._portal = new TemplatePortal(this._lazyContent._template, this._viewContainerRef!);
+        }
+      });
+    }
+  }
+
+  ngOnDestroy() {
+    this._isSelected.unsubscribe();
   }
 
   /** Custom error state matcher that additionally checks for validity of interacted form. */

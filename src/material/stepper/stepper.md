@@ -180,6 +180,13 @@ will not affect steppers marked as `linear`.
 
 <!-- example(stepper-errors) -->
 
+### Lazy rendering
+By default, the stepper will render all of it's content when it's initialized. If you have some
+content that you want to want to defer until the particular step is opened, you can put it inside
+an `ng-template` with the `matStepContent` attribute.
+
+<!-- example(stepper-lazy-content) -->
+
 ### Keyboard interaction
 - <kbd>LEFT_ARROW</kbd>: Focuses the previous step header
 - <kbd>RIGHT_ARROW</kbd>: Focuses the next step header
