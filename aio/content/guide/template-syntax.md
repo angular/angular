@@ -1,14 +1,14 @@
-# Template syntax
+# Sintaxis de la plantilla
 
-In Angular, a *template* is a chunk of HTML.
-Within a template, you can use special syntax to leverage many of Angular's features.
+En Angular, una *plantilla* es un fragmento de HTML.
+Dentro de una plantilla, puedes usar una sintaxis especial para aprovechar muchas de las características de Angular.
 
 
-## Prerequisites
+## Prerrequisitos
 
-Before learning template syntax, you should be familiar with the following:
+Antes de aprender la sintaxis de la plantilla, debes estar familiarizado con lo siguiente:
 
-* [Angular concepts](guide/architecture)
+* [Conceptos de Angular](guide/architecture)
 * JavaScript
 * HTML
 * CSS
@@ -20,54 +20,55 @@ In Angular, the component plays the part of the controller/viewmodel, and the te
 
 <hr />
 
-Each Angular template in your app is a section of HTML that you can include as a part of the page that the browser displays.
-An Angular HTML template renders a view, or user interface, in the browser, just like regular HTML, but with a lot more functionality.
+Cada plantilla Angular de tu aplicación es una sección de HTML que puedes incluir como parte de la página que muestra el navegador.
+Una plantilla HTML Angular muestra una vista, o interfaz de usuario, en el navegador, como HTML normal, pero con mucha más funcionalidad.
 
-When you generate an Angular app with the Angular CLI, the `app.component.html` file is the default template containing placeholder HTML.
+Cuando generas una aplicación Angular con Angular CLI, el archivo `app.component.html` es la plantilla predeterminada que contiene HTML de marcador de posición.
 
-The template syntax guides show you how you can control the UX/UI by coordinating data between the class and the template.
+Las guías de sintaxis de la plantilla te muestran cómo puedes controlar la UX/UI coordinando los datos entre la clase y la plantilla.
+
 
 <div class="is-helpful alert">
 
-Most of the Template Syntax guides have dedicated working example apps that demonstrate the individual topic of each guide.
-To see all of them working together in one app, see the comprehensive <live-example title="Template Syntax Live Code"></live-example>.
+La mayoría de las guías de sintaxis de plantillas tienen aplicaciones de ejemplo de trabajo dedicadas que demuestran el tema individual de cada guía.
+Para verlos a todos trabajando juntos en una aplicación, consulta al completo<live-example title="Template Syntax Live Code"></live-example>.
 
 </div>
 
 
-## Empower your HTML
+## Potencia tu HTML
 
-With special Angular syntax in your templates, you can extend the HTML vocabulary of your apps.
-For example, Angular helps you get and set DOM (Document Object Model) values dynamically with features such as built-in template functions, variables, event listening, and data binding.
+Con una sintaxis Angular especial en tus plantillas, puedes ampliar el vocabulario HTML de tus aplicaciones.
+Por ejemplo, Angular te ayuda a obtener y establecer valores DOM (Document Object Model) dinámicamente con características como funciones de plantilla integradas, variables, escucha de eventos y enlace de datos.
 
-Almost all HTML syntax is valid template syntax.
-However, because an Angular template is part of an overall webpage, and not the entire page, you don't need to include elements such as `<html>`, `<body>`, or `<base>`.
-You can focus exclusively on the part of the page you are developing.
+Casi toda la sintaxis HTML es una sintaxis de plantilla válida.
+Sin embargo, debido a que una plantilla Angular es parte de una página web general, y no de toda la página, no es necesario incluir elementos como `<html>`, `<body>` o `<base>`.
+Puedes centrarte exclusivamente en la parte de la página que estás desarrollando.
 
 
 <div class="alert is-important">
 
-To eliminate the risk of script injection attacks, Angular does not support the `<script>` element in templates.
-Angular ignores the `<script>` tag and outputs a warning to the browser console.
-For more information, see the [Security](guide/security) page.
+Para eliminar el riesgo de ataques de inyección de scripts, Angular no admite el elemento `<script>` en las plantillas.
+Angular ignora la etiqueta `<script>` y envía una advertencia a la consola del navegador.
+Para obtener más información, consulta la página [Seguridad](guide/security).
 
 </div>
 
 <hr />
 
-## More on template syntax
+## Más sobre la sintaxis de la plantilla
 
-You may also be interested in the following:
+También te puede interesar lo siguiente:
 
-* [Interpolation](guide/interpolation)&mdash;learn how to use interpolation and expressions in HTML.
-* [Template statements](guide/template-statements)&mdash;respond to events in your templates.
-* [Binding syntax](guide/binding-syntax)&mdash;use binding to coordinate values in your app.
-* [Property binding](guide/property-binding)&mdash;set properties of target elements or directive `@Input()` decorators.
-* [Attribute, class, and style bindings](guide/attribute-binding)&mdash;set the value of attributes, classes, and styles.
-* [Event binding](guide/event-binding)&mdash;listen for events and your HTML.
-* [Two-way binding](guide/two-way-binding)&mdash;share data between a class and its template.
-* [Built-in directives](guide/built-in-directives)&mdash;listen to and modify the behavior and layout of HTML.
-* [Template reference variables](guide/template-reference-variables)&mdash;use special variables to reference a DOM element within a template.
-* [Inputs and Outputs](guide/inputs-outputs)&mdash;share data between the parent context and child directives or components
-* [Template expression operators](guide/template-expression-operators)&mdash;learn about the pipe operator, `|`, and protect against `null` or `undefined` values in your HTML.
-* [SVG in templates](guide/svg-in-templates)&mdash;dynamically generate interactive graphics.
+* [Interpolación](guide/interpolation)&mdash;aprende a utilizar la interpolación y las expresiones en HTML.
+* [Declaraciones de plantilla](guide/template-statements)&mdash;responde a eventos en sus plantillas.
+* [Sintaxis de enlace](guide/binding-syntax)&mdash;utiliza el enlace para coordinar valores en su aplicación.
+* [Vinculación de propiedad](guide/property-binding)&mdash;establece las propiedades de los elementos de destino o los decoradores de la directiva `@Input ()`.
+* [Vinculaciones de atributos, clases y estilos](guide/attribute-binding)&mdash;establece el valor de atributos, clases y estilos.
+* [Enlace de eventos](guide/event-binding)&mdash;escucha los eventos y tu HTML.
+* [Enlace bidireccional](guide/two-way-binding)&mdash;comparte datos entre una clase y su plantilla.
+* [Directivas integradas](guide/built-in-directives)&mdash;escucha y modifica el comportamiento y el diseño del HTML.
+* [Variables de referencia de plantilla](guide/template-reference-variables)&mdash;usa variables especiales para hacer referencia a un elemento DOM dentro de una plantilla.
+* [Entradas y salidas](guide/inputs-outputs)&mdash;comparte datos entre el contexto principal y las directivas o componentes secundarios
+* [Operadores de expresión de plantilla](guide/template-expression-operators)&mdash;aprende sobre el operador de tubería, `|`, y protégete contra valores `nulos` o` indefinidos` en tu HTML.
+* [SVG en plantillas](guide/svg-in-templates)&mdash;genera gráficos interactivos de forma dinámica.
