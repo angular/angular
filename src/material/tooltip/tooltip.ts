@@ -12,6 +12,7 @@ import {BooleanInput, coerceBooleanProperty, NumberInput} from '@angular/cdk/coe
 import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {BreakpointObserver, Breakpoints, BreakpointState} from '@angular/cdk/layout';
 import {
+  ConnectedPosition,
   FlexibleConnectedPositionStrategy,
   HorizontalConnectionPos,
   OriginConnectionPosition,
@@ -22,7 +23,7 @@ import {
   VerticalConnectionPos,
 } from '@angular/cdk/overlay';
 import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
-import {ComponentPortal} from '@angular/cdk/portal';
+import {ComponentPortal, ComponentType} from '@angular/cdk/portal';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   ChangeDetectionStrategy,
@@ -123,30 +124,23 @@ export function MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY(): MatTooltipDefaultOptions 
   };
 }
 
-/**
- * Directive that attaches a material design tooltip to the host element. Animates the showing and
- * hiding of a tooltip provided position (defaults to below the element).
- *
- * https://material.io/design/components/tooltips.html
- */
-@Directive({
-  selector: '[matTooltip]',
-  exportAs: 'matTooltip',
-  host: {
-    'class': 'mat-tooltip-trigger'
-  }
-})
-export class MatTooltip implements OnDestroy, AfterViewInit {
-  _overlayRef: OverlayRef | null;
-  _tooltipInstance: TooltipComponent | null;
 
-  private _portal: ComponentPortal<TooltipComponent>;
+@Directive()
+export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implements OnDestroy,
+  AfterViewInit {
+  _overlayRef: OverlayRef | null;
+  _tooltipInstance: T | null;
+
+  private _portal: ComponentPortal<T>;
   private _position: TooltipPosition = 'below';
   private _disabled: boolean = false;
   private _tooltipClass: string|string[]|Set<string>|{[key: string]: any};
   private _scrollStrategy: () => ScrollStrategy;
   private _viewInitialized = false;
   private _pointerExitEventsInitialized = false;
+  protected abstract readonly _tooltipComponent: ComponentType<T>;
+  protected abstract readonly _transformOriginSelector: string;
+  protected _viewportMargin = 8;
 
   /** Allows the user to define the position of the tooltip relative to the parent element */
   @Input('matTooltipPosition')
@@ -267,10 +261,9 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
     private _platform: Platform,
     private _ariaDescriber: AriaDescriber,
     private _focusMonitor: FocusMonitor,
-    @Inject(MAT_TOOLTIP_SCROLL_STRATEGY) scrollStrategy: any,
-    @Optional() private _dir: Directionality,
-    @Optional() @Inject(MAT_TOOLTIP_DEFAULT_OPTIONS)
-      private _defaultOptions: MatTooltipDefaultOptions,
+    scrollStrategy: any,
+    protected _dir: Directionality,
+    private _defaultOptions: MatTooltipDefaultOptions,
 
     /** @breaking-change 11.0.0 _document argument to become required. */
     @Inject(DOCUMENT) _document: any) {
@@ -345,7 +338,8 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
 
     const overlayRef = this._createOverlay();
     this._detach();
-    this._portal = this._portal || new ComponentPortal(TooltipComponent, this._viewContainerRef);
+    this._portal = this._portal ||
+       new ComponentPortal(this._tooltipComponent, this._viewContainerRef);
     this._tooltipInstance = overlayRef.attach(this._portal).instance;
     this._tooltipInstance.afterHidden()
       .pipe(takeUntil(this._destroyed))
@@ -396,9 +390,9 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
     // Create connected position strategy that listens for scroll events to reposition.
     const strategy = this._overlay.position()
                          .flexibleConnectedTo(this._elementRef)
-                         .withTransformOriginOn('.mat-tooltip')
+                         .withTransformOriginOn(this._transformOriginSelector)
                          .withFlexibleDimensions(false)
-                         .withViewportMargin(8)
+                         .withViewportMargin(this._viewportMargin)
                          .withScrollableContainers(scrollableAncestors);
 
     strategy.positionChanges.pipe(takeUntil(this._destroyed)).subscribe(change => {
@@ -444,9 +438,14 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
     const overlay = this._getOverlayPosition();
 
     position.withPositions([
-      {...origin.main, ...overlay.main},
-      {...origin.fallback, ...overlay.fallback}
+      this._addOffset({...origin.main, ...overlay.main}),
+      this._addOffset({...origin.fallback, ...overlay.fallback})
     ]);
+  }
+
+  /** Adds the configured offset to a position. Used as a hook for child classes. */
+  protected _addOffset(position: ConnectedPosition): ConnectedPosition {
+    return position;
   }
 
   /**
@@ -682,26 +681,45 @@ export class MatTooltip implements OnDestroy, AfterViewInit {
 }
 
 /**
- * Internal component that wraps the tooltip's content.
- * @docs-private
+ * Directive that attaches a material design tooltip to the host element. Animates the showing and
+ * hiding of a tooltip provided position (defaults to below the element).
+ *
+ * https://material.io/design/components/tooltips.html
  */
-@Component({
-  selector: 'mat-tooltip-component',
-  templateUrl: 'tooltip.html',
-  styleUrls: ['tooltip.css'],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [matTooltipAnimations.tooltipState],
+@Directive({
+  selector: '[matTooltip]',
+  exportAs: 'matTooltip',
   host: {
-    // Forces the element to have a layout in IE and Edge. This fixes issues where the element
-    // won't be rendered if the animations are disabled or there is no web animations polyfill.
-    '[style.zoom]': '_visibility === "visible" ? 1 : null',
-    '(body:click)': 'this._handleBodyInteraction()',
-    '(body:auxclick)': 'this._handleBodyInteraction()',
-    'aria-hidden': 'true',
+    'class': 'mat-tooltip-trigger'
   }
 })
-export class TooltipComponent implements OnDestroy {
+export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
+  protected readonly _tooltipComponent = TooltipComponent;
+  protected readonly _transformOriginSelector = '.mat-tooltip';
+
+  constructor(
+    overlay: Overlay,
+    elementRef: ElementRef<HTMLElement>,
+    scrollDispatcher: ScrollDispatcher,
+    viewContainerRef: ViewContainerRef,
+    ngZone: NgZone,
+    platform: Platform,
+    ariaDescriber: AriaDescriber,
+    focusMonitor: FocusMonitor,
+    @Inject(MAT_TOOLTIP_SCROLL_STRATEGY) scrollStrategy: any,
+    @Optional() dir: Directionality,
+    @Optional() @Inject(MAT_TOOLTIP_DEFAULT_OPTIONS) defaultOptions: MatTooltipDefaultOptions,
+
+    /** @breaking-change 11.0.0 _document argument to become required. */
+    @Inject(DOCUMENT) _document: any) {
+
+    super(overlay, elementRef, scrollDispatcher, viewContainerRef, ngZone, platform, ariaDescriber,
+      focusMonitor, scrollStrategy, dir, defaultOptions, _document);
+  }
+}
+
+@Directive()
+export abstract class _TooltipComponentBase implements OnDestroy {
   /** Message to display in the tooltip */
   message: string;
 
@@ -723,12 +741,7 @@ export class TooltipComponent implements OnDestroy {
   /** Subject for notifying that the tooltip has been hidden from the view */
   private readonly _onHide: Subject<void> = new Subject();
 
-  /** Stream that emits whether the user has a handset-sized display.  */
-  _isHandset: Observable<BreakpointState> = this._breakpointObserver.observe(Breakpoints.Handset);
-
-  constructor(
-    private _changeDetectorRef: ChangeDetectorRef,
-    private _breakpointObserver: BreakpointObserver) {}
+  constructor(private _changeDetectorRef: ChangeDetectorRef) {}
 
   /**
    * Shows the tooltip with an animation originating from the provided origin
@@ -822,5 +835,36 @@ export class TooltipComponent implements OnDestroy {
    */
   _markForCheck(): void {
     this._changeDetectorRef.markForCheck();
+  }
+}
+
+/**
+ * Internal component that wraps the tooltip's content.
+ * @docs-private
+ */
+@Component({
+  selector: 'mat-tooltip-component',
+  templateUrl: 'tooltip.html',
+  styleUrls: ['tooltip.css'],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [matTooltipAnimations.tooltipState],
+  host: {
+    // Forces the element to have a layout in IE and Edge. This fixes issues where the element
+    // won't be rendered if the animations are disabled or there is no web animations polyfill.
+    '[style.zoom]': '_visibility === "visible" ? 1 : null',
+    '(body:click)': 'this._handleBodyInteraction()',
+    '(body:auxclick)': 'this._handleBodyInteraction()',
+    'aria-hidden': 'true',
+  }
+})
+export class TooltipComponent extends _TooltipComponentBase {
+  /** Stream that emits whether the user has a handset-sized display.  */
+  _isHandset: Observable<BreakpointState> = this._breakpointObserver.observe(Breakpoints.Handset);
+
+  constructor(
+    changeDetectorRef: ChangeDetectorRef,
+    private _breakpointObserver: BreakpointObserver) {
+    super(changeDetectorRef);
   }
 }

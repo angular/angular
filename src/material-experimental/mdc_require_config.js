@@ -33,6 +33,7 @@ require.config({
     '@material/tab-scroller': '/base/npm/node_modules/@material/tab-scroller/dist/mdc.tabScroller',
     '@material/data-table': '/base/npm/node_modules/@material/data-table/dist/mdc.dataTable',
     '@material/textfield': '/base/npm/node_modules/@material/textfield/dist/mdc.textfield',
+    '@material/tooltip': '/base/npm/node_modules/@material/tooltip/dist/mdc.tooltip',
     '@material/top-app-bar': '/base/npm/node_modules/@material/top-app-bar/dist/mdc.topAppBar',
   }
 });

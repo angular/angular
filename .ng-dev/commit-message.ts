@@ -64,6 +64,7 @@ export const commitMessage: CommitMessageConfig = {
     'material-experimental/mdc-snack-bar',
     'material-experimental/mdc-table',
     'material-experimental/mdc-tabs',
+    'material-experimental/mdc-tooltip',
     'material-experimental/mdc-theming',
     'material-experimental/mdc-typography',
     'material-experimental/menubar',

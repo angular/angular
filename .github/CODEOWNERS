@@ -117,6 +117,7 @@
 /src/material-experimental/mdc-slide-toggle/**     @crisbeto
 /src/material-experimental/mdc-slider/**           @devversion
 /src/material-experimental/mdc-tabs/**             @crisbeto
+/src/material-experimental/mdc-tooltip/**          @crisbeto
 /src/material-experimental/mdc-sidenav/**          @crisbeto
 /src/material-experimental/mdc-table/**            @andrewseguin
 /src/material-experimental/mdc-theming/**          @mmalerba
@@ -197,6 +198,7 @@
 /src/dev-app/mdc-slider/**                         @devversion
 /src/dev-app/mdc-table/**                          @andrewseguin
 /src/dev-app/mdc-tabs/**                           @crisbeto
+/src/dev-app/mdc-tooltip/**                        @crisbeto
 /src/dev-app/menu/**                               @crisbeto
 /src/dev-app/menubar/**                            @jelbourn @andy9775
 /src/dev-app/overlay/**                            @jelbourn @crisbeto

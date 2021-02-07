@@ -13,6 +13,7 @@
 @import '../mdc-snack-bar/snack-bar-theme';
 @import '../mdc-tabs/tabs-theme';
 @import '../mdc-table/table-theme';
+@import '../mdc-tooltip/tooltip-theme';
 @import '../mdc-paginator/paginator-theme';
 @import '../mdc-progress-bar/progress-bar-theme';
 @import '../mdc-progress-spinner/progress-spinner-theme';
@@ -46,5 +47,6 @@
     @include mat-mdc-form-field-theme($theme-or-color-config);
     @include mat-mdc-input-theme($theme-or-color-config);
     @include mat-mdc-tabs-theme($theme-or-color-config);
+    @include mat-mdc-tooltip-theme($theme-or-color-config);
   }
 }

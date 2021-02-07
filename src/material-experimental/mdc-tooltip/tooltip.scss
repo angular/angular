@@ -1,0 +1,14 @@
+@use '@material/tooltip/tooltip';
+
+// Only include the structural styles, because we handle the animation ourselves.
+@include tooltip.core-styles($query: structure);
+
+.mat-mdc-tooltip {
+  // We don't use MDC's positioning so this has to be static.
+  position: static;
+
+  // The overlay reference updates the pointer-events style property directly on the HTMLElement
+  // depending on the state of the overlay. For tooltips the overlay panel should never enable
+  // pointer events. To overwrite the inline CSS from the overlay reference `!important` is needed.
+  pointer-events: none !important;
+}

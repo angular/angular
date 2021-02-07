@@ -112,6 +112,7 @@ export const DEV_APP_ROUTES: Routes = [
   {path: 'mdc-slider', loadChildren: 'mdc-slider/mdc-slider-demo-module#MdcSliderDemoModule'},
   {path: 'mdc-table', loadChildren: 'mdc-table/mdc-table-demo-module#MdcTableDemoModule'},
   {path: 'mdc-tabs', loadChildren: 'mdc-tabs/mdc-tabs-demo-module#MdcTabsDemoModule'},
+  {path: 'mdc-tooltip', loadChildren: 'mdc-tooltip/mdc-tooltip-demo-module#MdcTooltipDemoModule'},
   {path: 'menu', loadChildren: 'menu/menu-demo-module#MenuDemoModule'},
   {path: 'paginator', loadChildren: 'paginator/paginator-demo-module#PaginatorDemoModule'},
   {path: 'platform', loadChildren: 'platform/platform-demo-module#PlatformDemoModule'},

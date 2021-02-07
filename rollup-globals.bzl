@@ -67,6 +67,7 @@ ROLLUP_GLOBALS = {
     "@material/tab-indicator": "mdc.tabIndicator",
     "@material/tab-scroller": "mdc.tabScroller",
     "@material/textfield": "mdc.textfield",
+    "@material/tooltip": "mdc.tooltip",
     "@material/top-app-bar": "mdc.topAppBar",
 
     # Third-party libraries.

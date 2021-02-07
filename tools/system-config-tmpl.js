@@ -66,6 +66,7 @@ var pathMapping = {
   '@material/tab-indicator': 'node:@material/tab-indicator/dist/mdc.tabIndicator.js',
   '@material/tab-scroller': 'node:@material/tab-scroller/dist/mdc.tabScroller.js',
   '@material/textfield': 'node:@material/textfield/dist/mdc.textfield.js',
+  '@material/tooltip': 'node:@material/tooltip/dist/mdc.tooltip.js',
   '@material/top-app-bar': 'node:@material/top-app-bar/dist/mdc.topAppBar.js'
 };
 

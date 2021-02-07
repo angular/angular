@@ -1,0 +1,8 @@
+<div
+  class="mdc-tooltip mdc-tooltip--shown mat-mdc-tooltip"
+  [ngClass]="tooltipClass"
+  [@state]="_visibility"
+  (@state.start)="_animationStart()"
+  (@state.done)="_animationDone($event)">
+  <div class="mdc-tooltip__surface">{{message}}</div>
+</div>
