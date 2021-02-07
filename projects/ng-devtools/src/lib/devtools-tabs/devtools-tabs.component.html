@@ -34,11 +34,22 @@
     (toggleInspector)="toggleInspector()"
   ></ng-directive-explorer>
   <ng-profiler [ngClass]="{ hidden: activeTab !== 'Profiler' }"></ng-profiler>
+  <ng-router-tree #routerTree [ngClass]="{ hidden: activeTab !== 'Router Tree' }"></ng-router-tree>
 </div>
 
 <mat-menu #menu="matMenu" class="options-menu">
   <mat-slide-toggle (change)="toggleTimingAPI($event)" class="menu-toggle-button" (click)="$event.stopPropagation()">
     Enable timing API
+  </mat-slide-toggle>
+  <br />
+  <br />
+  <mat-slide-toggle
+    [(ngModel)]="routerTreeEnabled"
+    (change)="toggleRouterTree($event)"
+    class="menu-toggle-button"
+    (click)="$event.stopPropagation()"
+  >
+    Enable Router Tree
   </mat-slide-toggle>
   <br />
   <br />

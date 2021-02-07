@@ -20,7 +20,7 @@ import { createCustomElement } from '@angular/elements';
         children: [
           {
             path: '',
-            loadChildren: () => import('./todo/app.module').then(m => m.AppModule),
+            loadChildren: () => import('./todo/app.module').then((m) => m.AppModule),
           },
         ],
       },
