@@ -42,11 +42,11 @@ describe('Validators', () => {
     });
 
     it('should not error on null', () => {
-      expect(Validators.min(2)(new FormControl(null))).toBeNull();
+      expect(Validators.min(2)(new FormControl<any>(null))).toBeNull();
     });
 
     it('should not error on undefined', () => {
-      expect(Validators.min(2)(new FormControl(undefined))).toBeNull();
+      expect(Validators.min(2)(new FormControl<any>(undefined))).toBeNull();
     });
 
     it('should return null if NaN after parsing', () => {
@@ -94,11 +94,11 @@ describe('Validators', () => {
     });
 
     it('should not error on null', () => {
-      expect(Validators.max(2)(new FormControl(null))).toBeNull();
+      expect(Validators.max(2)(new FormControl<any>(null))).toBeNull();
     });
 
     it('should not error on undefined', () => {
-      expect(Validators.max(2)(new FormControl(undefined))).toBeNull();
+      expect(Validators.max(2)(new FormControl<any>(undefined))).toBeNull();
     });
 
     it('should return null if NaN after parsing', () => {
@@ -171,10 +171,10 @@ describe('Validators', () => {
 
   describe('requiredTrue', () => {
     it('should error on false',
-       () => expect(Validators.requiredTrue(new FormControl(false))).toEqual({'required': true}));
+       () => expect(Validators.requiredTrue(new FormControl<boolean>(false))).toEqual({'required': true}));
 
     it('should not error on true',
-       () => expect(Validators.requiredTrue(new FormControl(true))).toBeNull());
+       () => expect(Validators.requiredTrue(new FormControl<boolean>(true))).toBeNull());
   });
 
   describe('email', () => {
@@ -182,7 +182,7 @@ describe('Validators', () => {
        () => expect(Validators.email(new FormControl(''))).toBeNull());
 
     it('should not error on null',
-       () => expect(Validators.email(new FormControl(null))).toBeNull());
+       () => expect(Validators.email(new FormControl<string>(null))).toBeNull());
 
     it('should error on invalid email',
        () => expect(Validators.email(new FormControl('some text'))).toEqual({'email': true}));
@@ -197,11 +197,11 @@ describe('Validators', () => {
     });
 
     it('should not error on null', () => {
-      expect(Validators.minLength(2)(new FormControl(null))).toBeNull();
+      expect(Validators.minLength(2)(new FormControl<string>(null))).toBeNull();
     });
 
     it('should not error on undefined', () => {
-      expect(Validators.minLength(2)(new FormControl(undefined))).toBeNull();
+      expect(Validators.minLength(2)(new FormControl<string>(undefined))).toBeNull();
     });
 
     it('should not error on valid strings', () => {
@@ -227,23 +227,23 @@ describe('Validators', () => {
     });
 
     it('should always return null with numeric values', () => {
-      expect(Validators.minLength(1)(new FormControl(0))).toBeNull();
-      expect(Validators.minLength(1)(new FormControl(1))).toBeNull();
-      expect(Validators.minLength(1)(new FormControl(-1))).toBeNull();
-      expect(Validators.minLength(1)(new FormControl(+1))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl<any>(0))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl<any>(1))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl<any>(-1))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl<any>(+1))).toBeNull();
     });
 
     it('should trigger validation for an object that contains numeric length property', () => {
       const value = {length: 5, someValue: [1, 2, 3, 4, 5]};
-      expect(Validators.minLength(1)(new FormControl(value))).toBeNull();
-      expect(Validators.minLength(10)(new FormControl(value))).toEqual({
+      expect(Validators.minLength(1)(new FormControl<any>(value))).toBeNull();
+      expect(Validators.minLength(10)(new FormControl<any>(value))).toEqual({
         'minlength': {'requiredLength': 10, 'actualLength': 5}
       });
     });
 
     it('should return null when passing a boolean', () => {
-      expect(Validators.minLength(1)(new FormControl(true))).toBeNull();
-      expect(Validators.minLength(1)(new FormControl(false))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl<any>(true))).toBeNull();
+      expect(Validators.minLength(1)(new FormControl<any>(false))).toBeNull();
     });
   });
 
@@ -253,11 +253,11 @@ describe('Validators', () => {
     });
 
     it('should not error on null', () => {
-      expect(Validators.maxLength(2)(new FormControl(null))).toBeNull();
+      expect(Validators.maxLength(2)(new FormControl<any>(null))).toBeNull();
     });
 
     it('should not error on undefined', () => {
-      expect(Validators.maxLength(2)(new FormControl(undefined))).toBeNull();
+      expect(Validators.maxLength(2)(new FormControl<any>(undefined))).toBeNull();
     });
 
     it('should not error on valid strings', () => {
@@ -283,23 +283,23 @@ describe('Validators', () => {
     });
 
     it('should always return null with numeric values', () => {
-      expect(Validators.maxLength(1)(new FormControl(0))).toBeNull();
-      expect(Validators.maxLength(1)(new FormControl(1))).toBeNull();
-      expect(Validators.maxLength(1)(new FormControl(-1))).toBeNull();
-      expect(Validators.maxLength(1)(new FormControl(+1))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl<any>(0))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl<any>(1))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl<any>(-1))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl<any>(+1))).toBeNull();
     });
 
     it('should trigger validation for an object that contains numeric length property', () => {
       const value = {length: 5, someValue: [1, 2, 3, 4, 5]};
-      expect(Validators.maxLength(10)(new FormControl(value))).toBeNull();
-      expect(Validators.maxLength(1)(new FormControl(value))).toEqual({
+      expect(Validators.maxLength(10)(new FormControl<any>(value))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl<any>(value))).toEqual({
         'maxlength': {'requiredLength': 1, 'actualLength': 5}
       });
     });
 
     it('should return null when passing a boolean', () => {
-      expect(Validators.maxLength(1)(new FormControl(true))).toBeNull();
-      expect(Validators.maxLength(1)(new FormControl(false))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl<any>(true))).toBeNull();
+      expect(Validators.maxLength(1)(new FormControl<any>(false))).toBeNull();
     });
   });
 
@@ -309,15 +309,15 @@ describe('Validators', () => {
     });
 
     it('should not error on null', () => {
-      expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(null))).toBeNull();
+      expect(Validators.pattern('[a-zA-Z ]+')(new FormControl<any>(null))).toBeNull();
     });
 
     it('should not error on undefined', () => {
-      expect(Validators.pattern('[a-zA-Z ]+')(new FormControl(undefined))).toBeNull();
+      expect(Validators.pattern('[a-zA-Z ]+')(new FormControl<any>(undefined))).toBeNull();
     });
 
     it('should not error on null value and "null" pattern', () => {
-      expect(Validators.pattern('null')(new FormControl(null))).toBeNull();
+      expect(Validators.pattern('null')(new FormControl<any>(null))).toBeNull();
     });
 
     it('should not error on valid strings',
@@ -413,7 +413,7 @@ describe('Validators', () => {
          }));
 
       it('should normalize and evaluate async validator-directives correctly', fakeAsync(() => {
-           const normalizedValidators = normalizeValidators<AsyncValidatorFn>(
+           const normalizedValidators = normalizeValidators<any, AsyncValidatorFn>(
                [new AsyncValidatorDirective('expected', {'one': true})]);
            const validatorFn = Validators.composeAsync(normalizedValidators)!;
 
@@ -476,7 +476,7 @@ describe('Validators', () => {
       });
 
       it('should normalize and evaluate async validator-directives correctly', () => {
-        const normalizedValidators = normalizeValidators<AsyncValidatorFn>(
+        const normalizedValidators = normalizeValidators<any, AsyncValidatorFn>(
             [new AsyncValidatorDirective('expected', {'one': true})]);
         const validatorFn = Validators.composeAsync(normalizedValidators)!;
 
