@@ -7,6 +7,11 @@ $mat-menu-vertical-padding: 8px !default;
 $mat-menu-border-radius: 4px !default;
 $mat-menu-submenu-indicator-size: 10px !default;
 
+// Prevent rendering mat-menu as it can affect the flex layout.
+mat-menu {
+  display: none;
+}
+
 .mat-menu-panel {
   @include mat-menu-base();
   max-height: calc(100vh - #{$mat-menu-item-height});

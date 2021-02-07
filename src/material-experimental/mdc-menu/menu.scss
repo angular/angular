@@ -9,6 +9,11 @@
 
 @include mdc-menu-surface-core-styles($query: structure);
 
+// Prevent rendering mat-menu as it can affect the flex layout.
+mat-menu {
+  display: none;
+}
+
 .mat-mdc-menu-content {
   // Note that we include this private mixin, because the public
   // one adds a bunch of styles that we aren't using for the menu.
