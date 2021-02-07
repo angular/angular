@@ -24,3 +24,4 @@ export {MapPolyline} from './map-polyline/map-polyline';
 export {MapRectangle} from './map-rectangle/map-rectangle';
 export {MapTrafficLayer} from './map-traffic-layer/map-traffic-layer';
 export {MapTransitLayer} from './map-transit-layer/map-transit-layer';
+export {MapHeatmapLayer, HeatmapData} from './map-heatmap-layer/map-heatmap-layer';

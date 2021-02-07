@@ -30,6 +30,10 @@ export interface TestingWindow extends Window {
       BicyclingLayer?: jasmine.Spy;
       DirectionsRenderer?: jasmine.Spy;
       DirectionsService?: jasmine.Spy;
+      LatLng?: jasmine.Spy;
+      visualization?: {
+        HeatmapLayer?: jasmine.Spy;
+      }
     };
   };
   MarkerClusterer?: jasmine.Spy;
@@ -499,4 +503,62 @@ export function createDirectionsServiceConstructorSpy(
     };
   }
   return directionsServiceConstructorSpy;
+}
+
+/** Creates a jasmine.SpyObj for a `google.maps.visualization.HeatmapLayer`. */
+export function createHeatmapLayerSpy(): jasmine.SpyObj<google.maps.visualization.HeatmapLayer> {
+  const heatmapLayerSpy = jasmine.createSpyObj('google.maps.visualization.HeatmapLayer', [
+    'setMap', 'setOptions', 'setData', 'getData'
+  ]);
+  return heatmapLayerSpy;
+}
+
+/**
+ * Creates a jasmine.Spy to watch for the constructor
+ * of a `google.maps.visualization.HeatmapLayer`.
+ */
+export function createHeatmapLayerConstructorSpy(
+    heatmapLayerSpy: jasmine.SpyObj<google.maps.visualization.HeatmapLayer>): jasmine.Spy {
+  const heatmapLayerConstructorSpy = jasmine.createSpy('HeatmapLayer constructor', () => {
+    return heatmapLayerSpy;
+  });
+  const testingWindow: TestingWindow = window;
+  if (testingWindow.google && testingWindow.google.maps) {
+    if (!testingWindow.google.maps.visualization) {
+      testingWindow.google.maps.visualization = {};
+    }
+    testingWindow.google.maps.visualization['HeatmapLayer'] = heatmapLayerConstructorSpy;
+  } else {
+    testingWindow.google = {
+      maps: {
+        visualization: {
+          'HeatmapLayer': heatmapLayerConstructorSpy,
+        }
+      },
+    };
+  }
+  return heatmapLayerConstructorSpy;
+}
+
+
+/** Creates a jasmine.SpyObj for a google.maps.LatLng. */
+export function createLatLngSpy(): jasmine.SpyObj<google.maps.LatLng> {
+  return jasmine.createSpyObj('google.maps.LatLng', ['equals', 'lat', 'lng']);
+}
+
+/** Creates a jasmine.Spy to watch for the constructor of a google.maps.LatLng */
+export function createLatLngConstructorSpy(
+  latLngSpy: jasmine.SpyObj<google.maps.LatLng>): jasmine.Spy {
+  const latLngConstructorSpy = jasmine.createSpy('LatLng constructor', () => latLngSpy);
+  const testingWindow: TestingWindow = window;
+  if (testingWindow.google && testingWindow.google.maps) {
+    testingWindow.google.maps['LatLng'] = latLngConstructorSpy;
+  } else {
+    testingWindow.google = {
+      maps: {
+        'LatLng': latLngConstructorSpy,
+      },
+    };
+  }
+  return latLngConstructorSpy;
 }

@@ -23,6 +23,7 @@ import {MapPolyline} from './map-polyline/map-polyline';
 import {MapRectangle} from './map-rectangle/map-rectangle';
 import {MapTrafficLayer} from './map-traffic-layer/map-traffic-layer';
 import {MapTransitLayer} from './map-transit-layer/map-transit-layer';
+import {MapHeatmapLayer} from './map-heatmap-layer/map-heatmap-layer';
 
 const COMPONENTS = [
   GoogleMap,
@@ -40,6 +41,7 @@ const COMPONENTS = [
   MapRectangle,
   MapTrafficLayer,
   MapTransitLayer,
+  MapHeatmapLayer,
 ];
 
 @NgModule({

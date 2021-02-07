@@ -58,6 +58,10 @@ export class GoogleMapDemo {
   polylineOptions:
       google.maps.PolylineOptions = {path: POLYLINE_PATH, strokeColor: 'grey', strokeOpacity: 0.8};
 
+  heatmapData = this._getHeatmapData(5, 1);
+  heatmapOptions = {radius: 50};
+  isHeatmapDisplayed = false;
+
   isPolygonDisplayed = false;
   polygonOptions:
       google.maps.PolygonOptions = {paths: POLYGON_PATH, strokeColor: 'grey', strokeOpacity: 0.8};
@@ -207,5 +211,21 @@ export class GoogleMapDemo {
         this.directionsResult = response.result;
       });
     }
+  }
+
+  toggleHeatmapLayerDisplay() {
+    this.isHeatmapDisplayed = !this.isHeatmapDisplayed;
+  }
+
+  private _getHeatmapData(offset: number, increment: number) {
+    const result: google.maps.LatLngLiteral[] = [];
+
+    for (let lat = this.center.lat - offset; lat < this.center.lat + offset; lat += increment) {
+      for (let lng = this.center.lng - offset; lng < this.center.lng + offset; lng += increment) {
+        result.push({lat, lng});
+      }
+    }
+
+    return result;
   }
 }

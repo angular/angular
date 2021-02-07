@@ -42,9 +42,9 @@
       var iframe = document.getElementById('google-maps-api-key');
       var googleMapsScript = document.createElement('script');
       var googleMapsApiKey = iframe.contentDocument.body.textContent;
-      var googleMapsUrl = 'https://maps.googleapis.com/maps/api/js';
+      var googleMapsUrl = 'https://maps.googleapis.com/maps/api/js?libraries=visualization';
       if (googleMapsApiKey !== 'Page not found') {
-        googleMapsUrl = googleMapsUrl + '?key=' + googleMapsApiKey;
+        googleMapsUrl = googleMapsUrl + '&key=' + googleMapsApiKey;
       }
       googleMapsScript.src = googleMapsUrl;
       document.body.appendChild(googleMapsScript);

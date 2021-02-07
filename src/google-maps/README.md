@@ -19,14 +19,23 @@ To install, run `npm install @angular/google-maps`.
 <!doctype html>
 <head>
   ...
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY">
-  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
 </head>
+```
+
+**Note:**
+If you're using the `<map-heatmap-layer>` directive, you also have to include the `visualization`
+library when loading the Google Maps API. To do so, you can add `&libraries=visualization` to the
+script URL:
+
+```html
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=visualization"></script>
 ```
 
 ## Lazy Loading the API
 
-The API can be loaded when the component is actually used by using the Angular HttpClient jsonp method to make sure that the component doesn't load until after the API has loaded.
+The API can be loaded when the component is actually used by using the Angular HttpClient jsonp
+method to make sure that the component doesn't load until after the API has loaded.
 
 ```typescript
 // google-maps-demo.module.ts
@@ -102,10 +111,14 @@ export class GoogleMapsDemoComponent {
 - [`MapTransitLayer`](./map-transit-layer/README.md)
 - [`MapBicyclingLayer`](./map-bicycling-layer/README.md)
 - [`MapDirectionsRenderer`](./map-directions-renderer/README.md)
+- [`MapHeatmapLayer`](./map-heatmap-layer/README.md)
 
 ## The Options Input
 
-The Google Maps components implement all of the options for their respective objects from the Google Maps JavaScript API through an `options` input, but they also have specific inputs for some of the most common options. For example, the Google Maps component could have its options set either in with a google.maps.MapOptions object:
+The Google Maps components implement all of the options for their respective objects from the
+Google Maps JavaScript API through an `options` input, but they also have specific inputs for some
+of the most common options. For example, the Google Maps component could have its options set either
+in with a google.maps.MapOptions object:
 
 ```html
 <google-map [options]="options"></google-map>
@@ -130,4 +143,5 @@ center: google.maps.LatLngLiteral = {lat: 40, lng: -20};
 zoom = 4;
 ```
 
-Not every option has its own input. See the API for each component to see if the option has a dedicated input or if it should be set in the options input.
+Not every option has its own input. See the API for each component to see if the option has a
+dedicated input or if it should be set in the options input.

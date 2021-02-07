@@ -426,6 +426,11 @@
     <map-traffic-layer></map-traffic-layer>
     <map-transit-layer></map-transit-layer>
     <map-bicycling-layer></map-bicycling-layer>
+    <map-heatmap-layer [data]="[
+      {lat: 37.782, lng: -122.447},
+      {lat: 37.782, lng: -122.445},
+      {lat: 37.782, lng: -122.443}
+    ]"></map-heatmap-layer>
 
     <map-marker-clusterer imagePath="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m">
       <map-marker [position]="{lat: 24, lng: 12}"></map-marker>

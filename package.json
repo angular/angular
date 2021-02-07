@@ -59,7 +59,7 @@
     "@angular/elements": "^11.1.0",
     "@angular/forms": "^11.1.0",
     "@angular/platform-browser": "^11.1.0",
-    "@types/googlemaps": "^3.43.0",
+    "@types/googlemaps": "^3.43.1",
     "@types/youtube": "^0.0.40",
     "@webcomponents/custom-elements": "^1.1.0",
     "core-js-bundle": "^3.8.2",
