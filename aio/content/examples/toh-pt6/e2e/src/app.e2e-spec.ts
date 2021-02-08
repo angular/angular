@@ -53,7 +53,7 @@ describe('Tutorial part 6', () => {
 
       appDashboardHref: navElts.get(0),
       appDashboard: element(by.css('app-root app-dashboard')),
-      topHeroes: element.all(by.css('app-root app-dashboard > div h4')),
+      topHeroes: element.all(by.css('app-root app-dashboard > div a')),
 
       appHeroesHref: navElts.get(1),
       appHeroes: element(by.css('app-root app-heroes')),
@@ -176,7 +176,7 @@ describe('Tutorial part 6', () => {
       const numHeroes = heroesBefore.length;
 
       await element(by.css('input')).sendKeys(addedHeroName);
-      await element(by.buttonText('add')).click();
+      await element(by.buttonText('Add hero')).click();
 
       const page = getPageElts();
       const heroesAfter = await toHeroArray(page.allHeroes);
@@ -195,18 +195,18 @@ describe('Tutorial part 6', () => {
         // Inherited styles from styles.css
         expect(await button.getCssValue('font-family')).toBe('Arial, sans-serif');
         expect(await button.getCssValue('border')).toContain('none');
-        expect(await button.getCssValue('padding')).toBe('5px 10px');
+        expect(await button.getCssValue('padding')).toBe('1px 10px 3px');
         expect(await button.getCssValue('border-radius')).toBe('4px');
         // Styles defined in heroes.component.css
-        expect(await button.getCssValue('left')).toBe('194px');
-        expect(await button.getCssValue('top')).toBe('-32px');
+        expect(await button.getCssValue('left')).toBe('210px');
+        expect(await button.getCssValue('top')).toBe('5px');
       }
 
-      const addButton = element(by.buttonText('add'));
+      const addButton = element(by.buttonText('Add hero'));
       // Inherited styles from styles.css
       expect(await addButton.getCssValue('font-family')).toBe('Arial, sans-serif');
       expect(await addButton.getCssValue('border')).toContain('none');
-      expect(await addButton.getCssValue('padding')).toBe('5px 10px');
+      expect(await addButton.getCssValue('padding')).toBe('8px 24px');
       expect(await addButton.getCssValue('border-radius')).toBe('4px');
     });
 
