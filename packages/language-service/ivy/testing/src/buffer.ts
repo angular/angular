@@ -80,4 +80,8 @@ export class OpenBuffer {
   getTcb() {
     return this.ngLS.getTcb(this.scriptInfo.fileName, this._cursor);
   }
+
+  getQuickInfoAtPosition() {
+    return this.ngLS.getQuickInfoAtPosition(this.scriptInfo.fileName, this._cursor);
+  }
 }
