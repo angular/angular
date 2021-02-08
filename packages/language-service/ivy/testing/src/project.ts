@@ -8,6 +8,7 @@
 
 import {StrictTemplateOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import { OptimizeFor } from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {LanguageService} from '../../language_service';
 import {OpenBuffer} from './buffer';
@@ -118,5 +119,39 @@ export class Project {
 
     diagnostics.push(...this.ngLS.getSemanticDiagnostics(fileName));
     return diagnostics;
+  }
+
+  expectNoSourceDiagnostics(): void {
+    const program = this.tsLS.getProgram();
+    if (program === undefined) {
+      throw new Error(`Expected to get a ts.Program`);
+    }
+
+    const ngCompiler = this.ngLS.compilerFactory.getOrCreate();
+
+    for (const sf of program.getSourceFiles()) {
+      if (sf.isDeclarationFile || sf.fileName.endsWith('.ngtypecheck.ts')) {
+        continue;
+      }
+
+      const syntactic = program.getSyntacticDiagnostics(sf);
+      expect(syntactic.map(diag => diag.messageText)).toEqual([]);
+      if (syntactic.length > 0) {
+        continue;
+      }
+
+      const semantic = program.getSemanticDiagnostics(sf);
+      expect(semantic.map(diag => diag.messageText)).toEqual([]);
+      if (semantic.length > 0) {
+        continue;
+      }
+
+      // It's more efficient to optimize for WholeProgram since we call this with every file in the
+      // program.
+      const ngDiagnostics = ngCompiler.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+      expect(ngDiagnostics.map(diag => diag.messageText)).toEqual([]);
+    }
+
+    this.ngLS.compilerFactory.registerLastKnownProgram();
   }
 }

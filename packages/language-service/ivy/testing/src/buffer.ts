@@ -76,4 +76,8 @@ export class OpenBuffer {
     return this.ngLS.getCompletionEntryDetails(
         this.scriptInfo.fileName, this._cursor, entryName, formatOptions, preferences);
   }
+
+  getTcb() {
+    return this.ngLS.getTcb(this.scriptInfo.fileName, this._cursor);
+  }
 }
