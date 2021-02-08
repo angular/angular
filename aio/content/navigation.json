@@ -55,6 +55,10 @@
       "title": "Getting Started",
       "tooltip": "Set up your environment and learn basic concepts",
       "children": [
+        { "url": "guide/what-is-angular",
+          "title": "What is Angular?",
+          "tooltip": "A brief description of the Angular platform."
+        },
         {
           "title": "Try it",
           "tooltip": "Examine and work with a ready-made sample app, with no setup.",
