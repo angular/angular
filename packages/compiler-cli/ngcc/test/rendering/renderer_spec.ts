@@ -276,7 +276,7 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
              const addImportsSpy = testFormatter.addImports as jasmine.Spy;
              expect(addImportsSpy.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
              expect(addImportsSpy.calls.first().args[1]).toEqual([
-               {specifier: '@angular/core', qualifier: 'ɵngcc0'}
+               {specifier: '@angular/core', qualifier: jasmine.objectContaining({text: 'ɵngcc0'})}
              ]);
            });
 
@@ -693,7 +693,7 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
                   `function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵngcc0.setClassMetadata(`);
           const addImportsSpy = testFormatter.addImports as jasmine.Spy;
           expect(addImportsSpy.calls.first().args[1]).toEqual([
-            {specifier: './r3_symbols', qualifier: 'ɵngcc0'}
+            {specifier: './r3_symbols', qualifier: jasmine.objectContaining({text: 'ɵngcc0'})}
           ]);
         });
 
