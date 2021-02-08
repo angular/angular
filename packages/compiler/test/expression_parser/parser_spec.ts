@@ -397,6 +397,8 @@ describe('parser', () => {
       expectSpan('(foo).bar');
       expectSpan('(foo)?.bar');
       expectSpan('(foo).bar = (baz)');
+      expectSpan('(foo | pipe) == false');
+      expectSpan('(((foo) && bar) || baz) === true');
 
       function expectSpan(input: string) {
         expect(unparseWithSpan(parseBinding(input))).toContain([jasmine.any(String), input]);
