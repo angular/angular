@@ -6,102 +6,100 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {extractCursorInfo, LanguageServiceTestEnvironment} from './env';
-import {assertFileNames, createModuleWithDeclarations, humanizeDocumentSpanLike} from './test_utils';
+import {assertFileNames, createModuleAndProjectWithDeclarations, humanizeDocumentSpanLike, LanguageServiceTestEnv, OpenBuffer} from '../testing';
 
 describe('definitions', () => {
   it('gets definition for template reference in overridden template', () => {
     initMockFileSystem('Native');
-    const templateFile = {contents: '', name: absoluteFrom('/app.html')};
-    const appFile = {
-      name: absoluteFrom('/app.ts'),
-      contents: `
+    const files = {
+      'app.html': '',
+      'app.ts': `
         import {Component} from '@angular/core';
 
         @Component({templateUrl: '/app.html'})
         export class AppCmp {}
       `,
     };
+    const env = LanguageServiceTestEnv.setup();
 
-    const env = createModuleWithDeclarations([appFile], [templateFile]);
-    const {cursor} = env.updateFileWithCursor(
-        absoluteFrom('/app.html'), '<input #myInput /> {{myIn¦put.value}}');
-    env.expectNoSourceDiagnostics();
-    const {definitions} = env.ngLS.getDefinitionAndBoundSpan(absoluteFrom('/app.html'), cursor)!;
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    template.contents = '<input #myInput /> {{myInput.value}}';
+    project.expectNoSourceDiagnostics();
+
+    template.moveCursorToText('{{myIn¦put.value}}');
+    const {definitions} = getDefinitionsAndAssertBoundSpan(env, template);
     expect(definitions![0].name).toEqual('myInput');
     assertFileNames(Array.from(definitions!), ['app.html']);
   });
 
   it('returns the pipe class as definition when checkTypeOfPipes is false', () => {
     initMockFileSystem('Native');
-    const {cursor, text} = extractCursorInfo('{{"1/1/2020" | dat¦e}}');
-    const templateFile = {contents: text, name: absoluteFrom('/app.html')};
-    const appFile = {
-      name: absoluteFrom('/app.ts'),
-      contents: `
+    const files = {
+      'app.ts': `
         import {Component, NgModule} from '@angular/core';
         import {CommonModule} from '@angular/common';
 
         @Component({templateUrl: 'app.html'})
         export class AppCmp {}
       `,
+      'app.html': '{{"1/1/2020" | date}}'
     };
     // checkTypeOfPipes is set to false when strict templates is false
-    const env = createModuleWithDeclarations([appFile], [templateFile], {strictTemplates: false});
-    const {textSpan, definitions} =
-        getDefinitionsAndAssertBoundSpan(env, absoluteFrom('/app.html'), cursor);
-    expect(text.substr(textSpan.start, textSpan.length)).toEqual('date');
+    const env = LanguageServiceTestEnv.setup();
+    const project =
+        createModuleAndProjectWithDeclarations(env, 'test', files, {strictTemplates: false});
+    const template = project.openFile('app.html');
+    project.expectNoSourceDiagnostics();
+    template.moveCursorToText('da¦te');
 
-    expect(definitions.length).toEqual(1);
-    const [def] = definitions;
+    const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(template.contents.substr(textSpan.start, textSpan.length)).toEqual('date');
+    expect(definitions!.length).toEqual(1);
+    const [def] = definitions!;
     expect(def.textSpan).toContain('DatePipe');
     expect(def.contextSpan).toContain('DatePipe');
   });
 
   it('gets definitions for all inputs when attribute matches more than one', () => {
     initMockFileSystem('Native');
-    const {cursor, text} = extractCursorInfo('<div dir inpu¦tA="abc"></div>');
-    const templateFile = {contents: text, name: absoluteFrom('/app.html')};
-    const dirFile = {
-      name: absoluteFrom('/dir.ts'),
-      contents: `
+    const files = {
+      'app.ts': `
+        import {Component, NgModule} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({templateUrl: 'app.html'})
+        export class AppCmp {}
+      `,
+      'app.html': '<div dir inputA="abc"></div>',
+      'dir.ts': `
       import {Directive, Input} from '@angular/core';
 
       @Directive({selector: '[dir]'})
       export class MyDir {
         @Input() inputA!: any;
       }`,
-    };
-    const dirFile2 = {
-      name: absoluteFrom('/dir2.ts'),
-      contents: `
+      'dir2.ts': `
       import {Directive, Input} from '@angular/core';
 
       @Directive({selector: '[dir]'})
       export class MyDir2 {
         @Input() inputA!: any;
-      }`,
-    };
-    const appFile = {
-      name: absoluteFrom('/app.ts'),
-      contents: `
-        import {Component, NgModule} from '@angular/core';
-        import {CommonModule} from '@angular/common';
+      }`
 
-        @Component({templateUrl: 'app.html'})
-        export class AppCmp {}
-      `
     };
-    const env = createModuleWithDeclarations([appFile, dirFile, dirFile2], [templateFile]);
-    const {textSpan, definitions} =
-        getDefinitionsAndAssertBoundSpan(env, absoluteFrom('/app.html'), cursor);
-    expect(text.substr(textSpan.start, textSpan.length)).toEqual('inputA');
+    const env = LanguageServiceTestEnv.setup();
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    template.moveCursorToText('inpu¦tA="abc"');
 
-    expect(definitions.length).toEqual(2);
-    const [def, def2] = definitions;
+    const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(template.contents.substr(textSpan.start, textSpan.length)).toEqual('inputA');
+
+    expect(definitions!.length).toEqual(2);
+    const [def, def2] = definitions!;
     expect(def.textSpan).toContain('inputA');
     expect(def2.textSpan).toContain('inputA');
     // TODO(atscott): investigate why the text span includes more than just 'inputA'
@@ -111,31 +109,23 @@ describe('definitions', () => {
 
   it('gets definitions for all outputs when attribute matches more than one', () => {
     initMockFileSystem('Native');
-    const {cursor, text} = extractCursorInfo('<div dir (someEv¦ent)="doSomething()"></div>');
-    const templateFile = {contents: text, name: absoluteFrom('/app.html')};
-    const dirFile = {
-      name: absoluteFrom('/dir.ts'),
-      contents: `
+    const files = {
+      'app.html': '<div dir (someEvent)="doSomething()"></div>',
+      'dir.ts': `
       import {Directive, Output, EventEmitter} from '@angular/core';
 
       @Directive({selector: '[dir]'})
       export class MyDir {
         @Output() someEvent = new EventEmitter<void>();
       }`,
-    };
-    const dirFile2 = {
-      name: absoluteFrom('/dir2.ts'),
-      contents: `
+      'dir2.ts': `
       import {Directive, Output, EventEmitter} from '@angular/core';
 
       @Directive({selector: '[dir]'})
       export class MyDir2 {
         @Output() someEvent = new EventEmitter<void>();
       }`,
-    };
-    const appFile = {
-      name: absoluteFrom('/app.ts'),
-      contents: `
+      'app.ts': `
         import {Component, NgModule} from '@angular/core';
         import {CommonModule} from '@angular/common';
 
@@ -145,10 +135,13 @@ describe('definitions', () => {
         }
       `
     };
-    const env = createModuleWithDeclarations([appFile, dirFile, dirFile2], [templateFile]);
-    const {textSpan, definitions} =
-        getDefinitionsAndAssertBoundSpan(env, absoluteFrom('/app.html'), cursor);
-    expect(text.substr(textSpan.start, textSpan.length)).toEqual('someEvent');
+    const env = LanguageServiceTestEnv.setup();
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const template = project.openFile('app.html');
+    template.moveCursorToText('(someEv¦ent)');
+
+    const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, template);
+    expect(template.contents.substr(textSpan.start, textSpan.length)).toEqual('someEvent');
 
     expect(definitions.length).toEqual(2);
     const [def, def2] = definitions;
@@ -159,10 +152,9 @@ describe('definitions', () => {
     assertFileNames([def, def2], ['dir2.ts', 'dir.ts']);
   });
 
-  function getDefinitionsAndAssertBoundSpan(
-      env: LanguageServiceTestEnvironment, fileName: AbsoluteFsPath, cursor: number) {
+  function getDefinitionsAndAssertBoundSpan(env: LanguageServiceTestEnv, file: OpenBuffer) {
     env.expectNoSourceDiagnostics();
-    const definitionAndBoundSpan = env.ngLS.getDefinitionAndBoundSpan(fileName, cursor);
+    const definitionAndBoundSpan = file.getDefinitionAndBoundSpan();
     const {textSpan, definitions} = definitionAndBoundSpan!;
     expect(definitions).toBeTruthy();
     return {textSpan, definitions: definitions!.map(d => humanizeDocumentSpanLike(d, env))};
