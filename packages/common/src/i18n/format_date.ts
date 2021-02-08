@@ -102,10 +102,10 @@ export function formatDate(
 }
 
 /**
- * Return a date with full year instead of converting it to 19{yearProvided}.
- * See: https://github.com/angular/angular/issues/40377
+ * Create a new Date object with the given date value, and the time set to midnight.
  *
  * We cannot use `new Date(year, month, date)` because it maps years between 0 and 99 to 1900-1999.
+ * See: https://github.com/angular/angular/issues/40377
  *
  * Note that this function returns a Date object whose time is midnight in the current locale's
  * timezone. In the future we might want to change this to be midnight in UTC, but this would be a
@@ -113,20 +113,21 @@ export function formatDate(
  */
 function createDate(year: number, month: number, date: number): Date {
   // The `newDate` is set to midnight (UTC) on January 1st 1970.
-  // In PST this will be December 31st 1969 at 4pm.
-  // In GMT this will be January 1st 1970 at 1am.
-  // (Note that they even have different years, dates and months.)
+  // - In PST this will be December 31st 1969 at 4pm.
+  // - In GMT this will be January 1st 1970 at 1am.
+  // Note that they even have different years, dates and months!
   const newDate = new Date(0);
 
-  // `setFullYear()` allows years like 1901 to be set correctly. This function does not
-  // change the internal time of the date. Consider calling `setFullYear(2019, 8, 20)` (September
-  // 20, 2019). In PST this will now be September 20, 2019 at 4pm In GMT this will now be September
-  // 20, 2019 at 1am
+  // `setFullYear()` allows years like 0001 to be set correctly. This function does not
+  // change the internal time of the date.
+  // Consider calling `setFullYear(2019, 8, 20)` (September 20, 2019).
+  // - In PST this will now be September 20, 2019 at 4pm
+  // - In GMT this will now be September 20, 2019 at 1am
 
   newDate.setFullYear(year, month, date);
   // We want the final date to be at local midnight, so we reset the time.
-  // In PST this will now be September 20, 2019 at 12am
-  // In GMT this will now be September 20, 2019 at 12am
+  // - In PST this will now be September 20, 2019 at 12am
+  // - In GMT this will now be September 20, 2019 at 12am
   newDate.setHours(0, 0, 0);
 
   return newDate;
