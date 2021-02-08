@@ -89,7 +89,7 @@ export function unwrapMessagePartsFromLocalizeCall(
   // If there is no call to `__makeTemplateObject(...)`, then `raw` must be the same as `cooked`.
   let raw = cooked;
 
-  // Check for cached call of the form `x || x = __makeTemplateObject(...)`
+  // Check for a memoized form: `x || x = ...`
   if (cooked.isLogicalExpression() && cooked.node.operator === '||' &&
       cooked.get('left').isIdentifier()) {
     const right = cooked.get('right');
@@ -105,15 +105,22 @@ export function unwrapMessagePartsFromLocalizeCall(
         // This is a minified sequence expression, where the first two expressions in the sequence
         // are assignments of the cooked and raw arrays respectively.
         const [first, second] = expressions;
-        if (first.isAssignmentExpression() && second.isAssignmentExpression()) {
+        if (first.isAssignmentExpression()) {
           cooked = first.get('right');
           if (!cooked.isExpression()) {
             throw new BabelParseError(
                 first.node, 'Unexpected cooked value, expected an expression.');
           }
-          raw = second.get('right');
-          if (!raw.isExpression()) {
-            throw new BabelParseError(second.node, 'Unexpected raw value, expected an expression.');
+          if (second.isAssignmentExpression()) {
+            raw = second.get('right');
+            if (!raw.isExpression()) {
+              throw new BabelParseError(
+                  second.node, 'Unexpected raw value, expected an expression.');
+            }
+          } else {
+            // If the second expression is not an assignment then it is probably code to take a copy
+            // of the cooked array. For example: `raw || (raw=cooked.slice(0))`.
+            raw = cooked;
           }
         }
       }
