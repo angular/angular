@@ -84,4 +84,8 @@ export class OpenBuffer {
   getQuickInfoAtPosition() {
     return this.ngLS.getQuickInfoAtPosition(this.scriptInfo.fileName, this._cursor);
   }
+
+  getTypeDefinitionAtPosition() {
+    return this.ngLS.getTypeDefinitionAtPosition(this.scriptInfo.fileName, this._cursor);
+  }
 }
