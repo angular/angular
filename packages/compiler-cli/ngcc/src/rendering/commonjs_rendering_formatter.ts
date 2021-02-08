@@ -39,7 +39,7 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
 
     const insertionPoint = this.findEndOfImports(file);
     const renderedImports =
-        imports.map(i => `var ${i.qualifier} = require('${i.specifier}');\n`).join('');
+        imports.map(i => `var ${i.qualifier.text} = require('${i.specifier}');\n`).join('');
     output.appendLeft(insertionPoint, renderedImports);
   }
 
