@@ -48,6 +48,7 @@ describe('validate-commit-message.js', () => {
     it('should be valid', () => {
       expectValidationResult(validateCommitMessage('feat(packaging): something'), VALID);
       expectValidationResult(validateCommitMessage('fix(packaging): something'), VALID);
+      expectValidationResult(validateCommitMessage('style: add missing semicolons'), VALID);
       expectValidationResult(validateCommitMessage('fixup! fix(packaging): something'), VALID);
       expectValidationResult(validateCommitMessage('squash! fix(packaging): something'), VALID);
       expectValidationResult(validateCommitMessage('Revert: "fix(packaging): something"'), VALID);

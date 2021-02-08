@@ -87,6 +87,11 @@ export const COMMIT_TYPES: {[key: string]: CommitType} = {
     description: 'A release point in the repository',
     scope: ScopeRequirement.Forbidden,
   },
+  style: {
+    name: 'style',
+    description: 'Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc)',
+    scope: ScopeRequirement.Required,
+  },
   test: {
     name: 'test',
     description: 'Improvements or corrections made to the project\'s test suite',
