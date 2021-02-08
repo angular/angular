@@ -8,7 +8,7 @@
 import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {LanguageServiceTestEnv} from './env';
-import {Project, ProjectFiles} from './project';
+import {Project, ProjectFiles, TestableOptions} from './project';
 
 /**
  * Given a text snippet which contains exactly one cursor symbol ('¦'), extract both the offset of
@@ -67,7 +67,7 @@ function getFirstClassDeclaration(declaration: string) {
 
 export function createModuleAndProjectWithDeclarations(
     env: LanguageServiceTestEnv, projectName: string, projectFiles: ProjectFiles,
-    options: any = {}): Project {
+    options: TestableOptions = {}): Project {
   const externalClasses: string[] = [];
   const externalImports: string[] = [];
   for (const [fileName, fileContents] of Object.entries(projectFiles)) {
@@ -90,5 +90,28 @@ export function createModuleAndProjectWithDeclarations(
         export class AppModule {}
       `;
   projectFiles['app-module.ts'] = moduleContents;
-  return env.addProject(projectName, projectFiles);
+  return env.addProject(projectName, projectFiles, options);
+}
+
+export function humanizeDocumentSpanLike<T extends ts.DocumentSpan>(
+    item: T, env: LanguageServiceTestEnv): T&Stringy<ts.DocumentSpan> {
+  return {
+    ...item,
+    textSpan: env.getTextFromTsSpan(item.fileName, item.textSpan),
+    contextSpan: item.contextSpan ? env.getTextFromTsSpan(item.fileName, item.contextSpan) :
+                                    undefined,
+    originalTextSpan: item.originalTextSpan ?
+        env.getTextFromTsSpan(item.fileName, item.originalTextSpan) :
+        undefined,
+    originalContextSpan: item.originalContextSpan ?
+        env.getTextFromTsSpan(item.fileName, item.originalContextSpan) :
+        undefined,
+  };
+}
+type Stringy<T> = {
+  [P in keyof T]: string;
+};
+
+export function getText(contents: string, textSpan: ts.TextSpan) {
+  return contents.substr(textSpan.start, textSpan.length);
 }
