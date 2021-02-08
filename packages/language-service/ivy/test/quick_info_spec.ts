@@ -6,18 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {initMockFileSystem, TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
 import * as ts from 'typescript/lib/tsserverlibrary';
+import {extractCursorInfo, LanguageServiceTestEnv, Project} from '../testing';
 
-import {LanguageServiceTestEnvironment} from './env';
-
-function quickInfoSkeleton(): TestFile[] {
-  return [
-    {
-      name: absoluteFrom('/app.ts'),
-      contents: `
+function quickInfoSkeleton(): {[fileName: string]: string} {
+  return {
+    'app.ts': `
         import {Component, Directive, EventEmitter, Input, NgModule, Output, Pipe, PipeTransform} from '@angular/core';
         import {CommonModule} from '@angular/common';
 
@@ -92,22 +88,19 @@ function quickInfoSkeleton(): TestFile[] {
         })
         export class AppModule {}
       `,
-      isRoot: true,
-    },
-    {
-      name: absoluteFrom('/app.html'),
-      contents: `Will be overridden`,
-    }
-  ];
+    'app.html': `Will be overridden`,
+  };
 }
 
 describe('quick info', () => {
-  let env: LanguageServiceTestEnvironment;
+  let env: LanguageServiceTestEnv;
+  let project: Project;
 
   describe('strict templates (happy path)', () => {
     beforeEach(() => {
       initMockFileSystem('Native');
-      env = LanguageServiceTestEnvironment.setup(quickInfoSkeleton());
+      env = LanguageServiceTestEnv.setup();
+      project = env.addProject('test', quickInfoSkeleton());
     });
 
     describe('elements', () => {
@@ -476,9 +469,10 @@ describe('quick info', () => {
       });
 
       it('should provide documentation', () => {
-        const {cursor} =
-            env.updateFileWithCursor(absoluteFrom('/app.html'), `<div>{{¦title}}</div>`);
-        const quickInfo = env.ngLS.getQuickInfoAtPosition(absoluteFrom('/app.html'), cursor);
+        const template = project.openFile('app.html');
+        template.contents = `<div>{{title}}</div>`;
+        template.moveCursorToText('{{¦title}}');
+        const quickInfo = template.getQuickInfoAtPosition();
         const documentation = toText(quickInfo!.documentation);
         expect(documentation).toBe('This is the title of the `AppCmp` Component.');
       });
@@ -486,10 +480,13 @@ describe('quick info', () => {
   });
 
   describe('non-strict compiler options', () => {
-    it('should find input binding on text attribute when strictAttributeTypes is false', () => {
+    beforeEach(() => {
       initMockFileSystem('Native');
-      env =
-          LanguageServiceTestEnvironment.setup(quickInfoSkeleton(), {strictAttributeTypes: false});
+      env = LanguageServiceTestEnv.setup();
+    });
+
+    it('should find input binding on text attribute when strictAttributeTypes is false', () => {
+      project = env.addProject('test', quickInfoSkeleton(), {strictAttributeTypes: false});
       expectQuickInfo({
         templateOverride: `<test-comp tcN¦ame="title"></test-comp>`,
         expectedSpanText: 'tcName',
@@ -498,9 +495,7 @@ describe('quick info', () => {
     });
 
     it('can still get quick info when strictOutputEventTypes is false', () => {
-      initMockFileSystem('Native');
-      env = LanguageServiceTestEnvironment.setup(
-          quickInfoSkeleton(), {strictOutputEventTypes: false});
+      project = env.addProject('test', quickInfoSkeleton(), {strictOutputEventTypes: false});
       expectQuickInfo({
         templateOverride: `<test-comp (te¦st)="myClick($event)"></test-comp>`,
         expectedSpanText: 'test',
@@ -509,9 +504,8 @@ describe('quick info', () => {
     });
 
     it('should work for pipes even if checkTypeOfPipes is false', () => {
-      initMockFileSystem('Native');
       // checkTypeOfPipes is set to false when strict templates is false
-      env = LanguageServiceTestEnvironment.setup(quickInfoSkeleton(), {strictTemplates: false});
+      project = env.addProject('test', quickInfoSkeleton(), {strictTemplates: false});
       const templateOverride = `<p>The hero's birthday is {{birthday | da¦te: "MM/dd/yy"}}</p>`;
       expectQuickInfo(
           {templateOverride, expectedSpanText: 'date', expectedDisplayString: '(pipe) DatePipe'});
@@ -522,10 +516,13 @@ describe('quick info', () => {
       {templateOverride, expectedSpanText, expectedDisplayString}:
           {templateOverride: string, expectedSpanText: string, expectedDisplayString: string}):
       ts.QuickInfo {
-    const {cursor, text} = env.updateFileWithCursor(absoluteFrom('/app.html'), templateOverride);
+    const {text} = extractCursorInfo(templateOverride);
+    const template = project.openFile('app.html');
+    template.contents = text;
     env.expectNoSourceDiagnostics();
-    env.expectNoTemplateDiagnostics(absoluteFrom('/app.ts'), 'AppCmp');
-    const quickInfo = env.ngLS.getQuickInfoAtPosition(absoluteFrom('/app.html'), cursor);
+
+    template.moveCursorToText(templateOverride);
+    const quickInfo = template.getQuickInfoAtPosition();
     expect(quickInfo).toBeTruthy();
     const {textSpan, displayParts} = quickInfo!;
     expect(text.substring(textSpan.start, textSpan.start + textSpan.length))
