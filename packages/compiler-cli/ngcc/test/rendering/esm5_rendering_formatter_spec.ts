@@ -188,8 +188,8 @@ export { F };
         renderer.addImports(
             output,
             [
-              {specifier: '@angular/core', qualifier: 'i0'},
-              {specifier: '@angular/common', qualifier: 'i1'}
+              {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
+              {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
             ],
             sourceFile);
         expect(output.toString()).toContain(`/* A copyright notice */
@@ -263,7 +263,8 @@ var A = (function() {`);
         const file = getSourceFileOrError(program, _('/node_modules/test-package/some/file.js'));
         const output = new MagicString(PROGRAM.contents);
         renderer.addConstants(output, 'var x = 3;', file);
-        renderer.addImports(output, [{specifier: '@angular/core', qualifier: 'i0'}], file);
+        renderer.addImports(
+            output, [{specifier: '@angular/core', qualifier: ts.createIdentifier('i0')}], file);
         expect(output.toString()).toContain(`
 import {Directive} from '@angular/core';
 import * as i0 from '@angular/core';

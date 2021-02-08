@@ -225,7 +225,7 @@ function renderFactoryParameters(
   }
 
   const parameters = factoryFunction.parameters;
-  const parameterString = imports.map(i => i.qualifier).join(',');
+  const parameterString = imports.map(i => i.qualifier.text).join(',');
   if (parameters.length > 0) {
     const injectionPoint = parameters[0].getFullStart();
     output.appendLeft(injectionPoint, parameterString + ',');

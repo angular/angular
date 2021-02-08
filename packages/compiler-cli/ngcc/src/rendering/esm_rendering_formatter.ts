@@ -42,7 +42,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
 
     const insertionPoint = this.findEndOfImports(sf);
     const renderedImports =
-        imports.map(i => `import * as ${i.qualifier} from '${i.specifier}';\n`).join('');
+        imports.map(i => `import * as ${i.qualifier.text} from '${i.specifier}';\n`).join('');
     output.appendLeft(insertionPoint, renderedImports);
   }
 

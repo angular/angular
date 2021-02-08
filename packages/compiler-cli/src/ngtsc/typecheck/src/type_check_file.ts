@@ -51,7 +51,7 @@ export class TypeCheckFile extends Environment {
 
   render(): string {
     let source: string = this.importManager.getAllImports(this.contextFile.fileName)
-                             .map(i => `import * as ${i.qualifier} from '${i.specifier}';`)
+                             .map(i => `import * as ${i.qualifier.text} from '${i.specifier}';`)
                              .join('\n') +
         '\n\n';
     const printer = ts.createPrinter();
