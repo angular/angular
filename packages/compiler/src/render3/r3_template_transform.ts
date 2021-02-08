@@ -459,7 +459,7 @@ class HtmlAstToIvyAst implements html.Visitor {
     } else if (identifier.length === 0) {
       this.reportError(`Reference does not have a name`, sourceSpan);
     } else if (references.some(reference => reference.name === identifier)) {
-      this.reportError(`Reference "#${identifier}" is defined several times`, sourceSpan);
+      this.reportError(`Reference "#${identifier}" is defined more than once`, sourceSpan);
     }
 
     references.push(new t.Reference(identifier, value, sourceSpan, keySpan, valueSpan));
