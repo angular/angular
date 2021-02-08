@@ -102,4 +102,38 @@ describe('perform_compile', () => {
       annotateForClosureCompiler: false,
     }));
   });
+
+  it('should merge tsconfig "angularCompilerOptions" when extends point to node package', () => {
+    support.writeFiles({
+      'tsconfig-level-1.json': `{
+          "extends": "@angular-ru/tsconfig",
+          "angularCompilerOptions": {
+            "enableIvy": false
+          }
+        }
+      `,
+      'node_modules/@angular-ru/tsconfig/tsconfig.json': `{
+          "compilerOptions": {
+            "strict": true
+          },
+          "angularCompilerOptions": {
+            "skipMetadataEmit": true
+          }
+        }
+      `,
+      'node_modules/@angular-ru/tsconfig/package.json': `{
+        "name": "@angular-ru/tsconfig",
+        "version": "0.0.0",
+        "main": "./tsconfig.json"
+      }
+    `,
+    });
+
+    const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
+    expect(options).toEqual(jasmine.objectContaining({
+      strict: true,
+      skipMetadataEmit: true,
+      enableIvy: false,
+    }));
+  });
 });

@@ -9,7 +9,7 @@
 import {isSyntaxError, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, getFileSystem, ReadonlyFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, ReadonlyFileSystem, relative, resolve} from '../src/ngtsc/file_system';
 import {NgCompilerOptions} from './ngtsc/core/api';
 
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
@@ -137,6 +137,8 @@ export function readConfiguration(
     project: string, existingOptions?: api.CompilerOptions,
     host: ConfigurationHost = getFileSystem()): ParsedConfiguration {
   try {
+    const fs = getFileSystem();
+
     const readConfigFile = (configFile: string) =>
         ts.readConfigFile(configFile, file => host.readFile(host.resolve(file)));
     const readAngularCompilerOptions =
@@ -150,20 +152,14 @@ export function readConfiguration(
 
           // we are only interested into merging 'angularCompilerOptions' as
           // other options like 'compilerOptions' are merged by TS
-          let existingNgCompilerOptions: NgCompilerOptions;
-          if (parentOptions && config.angularCompilerOptions) {
-            existingNgCompilerOptions = {...config.angularCompilerOptions, ...parentOptions};
-          } else {
-            existingNgCompilerOptions = parentOptions || config.angularCompilerOptions;
-          }
+          const existingNgCompilerOptions = {...config.angularCompilerOptions, ...parentOptions};
 
-          if (config.extends) {
-            let extendedConfigPath = host.resolve(host.dirname(configFile), config.extends);
-            extendedConfigPath = host.extname(extendedConfigPath) ?
-                extendedConfigPath :
-                absoluteFrom(`${extendedConfigPath}.json`);
+          if (config.extends && typeof config.extends === 'string') {
+            const extendedConfigPath = getExtendedConfigPath(
+                configFile, config.extends, host, fs,
+            );
 
-            if (host.exists(extendedConfigPath)) {
+            if (extendedConfigPath !== null) {
               // Call readAngularCompilerOptions recursively to merge NG Compiler options
               return readAngularCompilerOptions(extendedConfigPath, existingNgCompilerOptions);
             }
@@ -171,13 +167,6 @@ export function readConfiguration(
 
           return existingNgCompilerOptions;
         };
-
-    const parseConfigHost = {
-      useCaseSensitiveFileNames: true,
-      fileExists: host.exists.bind(host),
-      readDirectory: ts.sys.readDirectory,
-      readFile: ts.sys.readFile
-    };
 
     const {projectFile, basePath} = calcProjectFileAndBasePath(project, host);
     const configFileName = host.resolve(host.pwd(), projectFile);
@@ -191,13 +180,14 @@ export function readConfiguration(
         emitFlags: api.EmitFlags.Default
       };
     }
-    const existingCompilerOptions = {
+    const existingCompilerOptions: api.CompilerOptions = {
       genDir: basePath,
       basePath,
       ...readAngularCompilerOptions(configFileName),
       ...existingOptions,
     };
 
+    const parseConfigHost = createParseConfigHost(host, fs);
     const {options, errors, fileNames: rootNames, projectReferences} =
         ts.parseJsonConfigFileContent(
             config, parseConfigHost, basePath, existingCompilerOptions, configFileName);
@@ -227,6 +217,47 @@ export function readConfiguration(
   }
 }
 
+function createParseConfigHost(host: ConfigurationHost, fs = getFileSystem()): ts.ParseConfigHost {
+  return {
+    fileExists: host.exists.bind(host),
+    readDirectory: ts.sys.readDirectory,
+    readFile: host.readFile.bind(host),
+    useCaseSensitiveFileNames: fs.isCaseSensitive(),
+  };
+}
+
+function getExtendedConfigPath(
+    configFile: string, extendsValue: string, host: ConfigurationHost,
+    fs: FileSystem): AbsoluteFsPath|null {
+  let extendedConfigPath: AbsoluteFsPath|null = null;
+
+  if (extendsValue.startsWith('.') || fs.isRooted(extendsValue)) {
+    extendedConfigPath = host.resolve(host.dirname(configFile), extendsValue);
+    extendedConfigPath = host.extname(extendedConfigPath) ?
+        extendedConfigPath :
+        absoluteFrom(`${extendedConfigPath}.json`);
+  } else {
+    const parseConfigHost = createParseConfigHost(host, fs);
+
+    // Path isn't a rooted or relative path, resolve like a module.
+    const {
+      resolvedModule,
+    } =
+        ts.nodeModuleNameResolver(
+            extendsValue, configFile,
+            {moduleResolution: ts.ModuleResolutionKind.NodeJs, resolveJsonModule: true},
+            parseConfigHost);
+    if (resolvedModule) {
+      extendedConfigPath = absoluteFrom(resolvedModule.resolvedFileName);
+    }
+  }
+
+  if (extendedConfigPath !== null && host.exists(extendedConfigPath)) {
+    return extendedConfigPath;
+  }
+
+  return null;
+}
 export interface PerformCompilationResult {
   diagnostics: Diagnostics;
   program?: api.Program;
