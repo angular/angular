@@ -12,7 +12,7 @@ import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {MockServerHost} from './host';
-import {Project, ProjectFiles} from './project';
+import {Project, ProjectFiles, TestableOptions} from './project';
 
 /**
  * Testing environment for the Angular Language Service, which creates an in-memory tsserver
@@ -48,12 +48,12 @@ export class LanguageServiceTestEnv {
 
   constructor(private host: MockServerHost, private projectService: ts.server.ProjectService) {}
 
-  addProject(name: string, files: ProjectFiles): Project {
+  addProject(name: string, files: ProjectFiles, options: TestableOptions = {}): Project {
     if (this.projects.has(name)) {
       throw new Error(`Project ${name} is already defined`);
     }
 
-    const project = Project.initialize(name, this.projectService, files);
+    const project = Project.initialize(name, this.projectService, files, options);
     this.projects.set(name, project);
     return project;
   }
@@ -64,6 +64,12 @@ export class LanguageServiceTestEnv {
       return null;
     }
     return scriptInfo.getSnapshot().getText(span.start, span.start + span.length);
+  }
+
+  expectNoSourceDiagnostics(): void {
+    for (const project of this.projects.values()) {
+      project.expectNoSourceDiagnostics();
+    }
   }
 }
 

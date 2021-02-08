@@ -8,7 +8,7 @@
 
 import {StrictTemplateOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-import { OptimizeFor } from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {LanguageService} from '../../language_service';
 import {OpenBuffer} from './buffer';
@@ -44,6 +44,7 @@ function writeTsconfig(
           null, 2));
 }
 
+export type TestableOptions = StrictTemplateOptions;
 
 export class Project {
   private tsProject: ts.server.Project;
@@ -52,7 +53,8 @@ export class Project {
   private buffers = new Map<string, OpenBuffer>();
 
   static initialize(
-      projectName: string, projectService: ts.server.ProjectService, files: ProjectFiles): Project {
+      projectName: string, projectService: ts.server.ProjectService, files: ProjectFiles,
+      options: TestableOptions = {}): Project {
     const fs = getFileSystem();
     const tsConfigPath = absoluteFrom(`/${projectName}/tsconfig.json`);
 
@@ -68,7 +70,7 @@ export class Project {
       }
     }
 
-    writeTsconfig(fs, tsConfigPath, entryFiles, {});
+    writeTsconfig(fs, tsConfigPath, entryFiles, options);
 
     // Ensure the project is live in the ProjectService.
     projectService.openClientFile(entryFiles[0]);
