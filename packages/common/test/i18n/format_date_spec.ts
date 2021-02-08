@@ -345,13 +345,33 @@ describe('Format date', () => {
           .toEqual('10:14 AM');
       expect(formatDate('2017-06-13T10:14:39+0000', 'h:mm a', ɵDEFAULT_LOCALE_ID, '+0000'))
           .toEqual('10:14 AM');
-      expect(formatDate('2019-09-20', `MMM d, y, h:mm:ss a 'UTC'ZZZZZ`, ɵDEFAULT_LOCALE_ID, '-7'))
-          .toEqual('Sep 19, 2019, 5:00:00 PM UTC-07:00');
-      expect(formatDate('2021-01-22', 'yyyy-MM-dd - HH:mm:ss Z', ɵDEFAULT_LOCALE_ID, '+0000'))
-          .toEqual('2021-01-22 - 00:00:00 +0000');
-      expect(formatDate('2021-01-22', 'yyyy-MM-dd - HH:mm:ss Z', ɵDEFAULT_LOCALE_ID))
-          .toEqual('2021-01-22 - 00:00:00 +0000');
     });
+
+    // The following test is disabled because backwards compatibility requires that date-only ISO
+    // strings are parsed with the local timezone.
+
+    // it('should create UTC date objects when an ISO string is passed with no time components',
+    //    () => {
+    //      expect(formatDate('2019-09-20', `MMM d, y, h:mm:ss a ZZZZZ`, ɵDEFAULT_LOCALE_ID))
+    //          .toEqual('Sep 20, 2019, 12:00:00 AM Z');
+    //    });
+
+    // This test is to ensure backward compatibility for parsing date-only ISO strings.
+    it('should create local timezone date objects when an ISO string is passed with no time components',
+       () => {
+         // Dates created with individual components are evaluated against the local timezone. See
+         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#Individual_date_and_time_component_values
+         const localDate = new Date(2019, 8, 20, 0, 0, 0, 0);
+         expect(formatDate('2019-09-20', `MMM d, y, h:mm:ss a ZZZZZ`, ɵDEFAULT_LOCALE_ID))
+             .toEqual(formatDate(localDate, `MMM d, y, h:mm:ss a ZZZZZ`, ɵDEFAULT_LOCALE_ID));
+       });
+
+    it('should create local timezone date objects when an ISO string is passed with time components',
+       () => {
+         const localDate = new Date(2019, 8, 20, 0, 0, 0, 0);
+         expect(formatDate('2019-09-20T00:00:00', `MMM d, y, h:mm:ss a ZZZZZ`, ɵDEFAULT_LOCALE_ID))
+             .toEqual(formatDate(localDate, `MMM d, y, h:mm:ss a ZZZZZ`, ɵDEFAULT_LOCALE_ID));
+       });
 
     it('should remove bidi control characters',
        () => expect(formatDate(date, 'MM/dd/yyyy', ɵDEFAULT_LOCALE_ID)!.length).toEqual(10));

@@ -108,6 +108,7 @@ export function formatDate(
 function createDate(year: number, month: number, date: number): Date {
   const newDate = new Date(0);
   newDate.setFullYear(year, month, date);
+  newDate.setHours(0, 0, 0);
   return newDate;
 }
 
