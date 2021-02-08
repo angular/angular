@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {extractCursorInfo} from './env';
-import {createModuleWithDeclarations} from './test_utils';
+import {createModuleAndProjectWithDeclarations, LanguageServiceTestEnv} from '../testing';
 
 describe('get typecheck block', () => {
   beforeEach(() => {
@@ -18,20 +16,24 @@ describe('get typecheck block', () => {
   });
 
   it('should find the typecheck block for an inline template', () => {
-    const {text, cursor} = extractCursorInfo(`
+    const files = {
+      'app.ts': `
       import {Component} from '@angular/core';
 
       @Component({
-        template: '<div>{{ my¦Prop }}</div>',
+        template: '<div>{{ myProp }}</div>',
       })
       export class AppCmp {
         myProp!: string;
-      }`);
-    const appFi = absoluteFrom('/app.ts');
-    const env = createModuleWithDeclarations([{name: appFi, contents: text}]);
+      }`
+    };
+    const env = LanguageServiceTestEnv.setup();
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    project.expectNoSourceDiagnostics();
 
-    env.expectNoSourceDiagnostics();
-    const result = env.ngLS.getTcb(appFi, cursor);
+    const appFile = project.openFile('app.ts');
+    appFile.moveCursorToText('{{ my¦Prop }}');
+    const result = appFile.getTcb();
     if (result === undefined) {
       fail('Expected a valid TCB response');
       return;
@@ -43,12 +45,8 @@ describe('get typecheck block', () => {
   });
 
   it('should find the typecheck block for an external template', () => {
-    const {text, cursor} = extractCursorInfo(`<div>{{ my¦Prop }}</div>`);
-    const templateFi = absoluteFrom('/app.html');
-    const env = createModuleWithDeclarations(
-        [{
-          name: absoluteFrom('/app.ts'),
-          contents: `
+    const files = {
+      'app.ts': `
             import {Component} from '@angular/core';
 
             @Component({
@@ -57,11 +55,15 @@ describe('get typecheck block', () => {
             export class AppCmp {
               myProp!: string;
             }`,
-        }],
-        [{name: templateFi, contents: text}]);
+      'app.html': '<div>{{ myProp }}</div>'
+    };
+    const env = LanguageServiceTestEnv.setup();
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    project.expectNoSourceDiagnostics();
 
-    env.expectNoSourceDiagnostics();
-    const result = env.ngLS.getTcb(templateFi, cursor);
+    const htmlFile = project.openFile('app.html');
+    htmlFile.moveCursorToText('{{ my¦Prop }}');
+    const result = htmlFile.getTcb();
     if (result === undefined) {
       fail('Expected a valid TCB response');
       return;
@@ -73,20 +75,24 @@ describe('get typecheck block', () => {
   });
 
   it('should not find typecheck blocks outside a template', () => {
-    const {text, cursor} = extractCursorInfo(`
+    const files = {
+      'app.ts': `
       import {Component} from '@angular/core';
 
       @Component({
         template: '<div>{{ myProp }}</div>',
       })
       export class AppCmp {
-        my¦Prop!: string;
-      }`);
-    const appFi = absoluteFrom('/app.ts');
-    const env = createModuleWithDeclarations([{name: appFi, contents: text}]);
+        myProp!: string;
+      }`
+    };
+    const env = LanguageServiceTestEnv.setup();
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    project.expectNoSourceDiagnostics();
 
-    env.expectNoSourceDiagnostics();
-    const result = env.ngLS.getTcb(appFi, cursor);
+    const appFile = project.openFile('app.ts');
+    appFile.moveCursorToText('my¦Prop!: string;');
+    const result = appFile.getTcb();
     expect(result).toBeUndefined();
   });
 });
