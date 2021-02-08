@@ -6,21 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {initMockFileSystem, TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {LanguageServiceTestEnvironment} from './env';
-import {humanizeDocumentSpanLike} from './test_utils';
+import {extractCursorInfo, humanizeDocumentSpanLike, LanguageServiceTestEnv, Project} from '../testing';
 
 describe('type definitions', () => {
-  let env: LanguageServiceTestEnvironment;
+  let env: LanguageServiceTestEnv;
 
   it('returns the pipe class as definition when checkTypeOfPipes is false', () => {
     initMockFileSystem('Native');
-    const testFiles: TestFile[] = [
-      {
-        name: absoluteFrom('/app.ts'),
-        contents: `
+    const files = {
+      'app.ts': `
         import {Component, NgModule} from '@angular/core';
         import {CommonModule} from '@angular/common';
 
@@ -30,17 +26,13 @@ describe('type definitions', () => {
         @NgModule({declarations: [AppCmp], imports: [CommonModule]})
         export class AppModule {}
       `,
-        isRoot: true
-      },
-      {
-        name: absoluteFrom('/app.html'),
-        contents: `Will be overridden`,
-      }
-    ];
+      'app.html': `Will be overridden`,
+    };
     // checkTypeOfPipes is set to false when strict templates is false
-    env = LanguageServiceTestEnvironment.setup(testFiles, {strictTemplates: false});
+    env = LanguageServiceTestEnv.setup();
+    const project = env.addProject('test', files, {strictTemplates: false});
     const definitions =
-        getTypeDefinitionsAndAssertBoundSpan({templateOverride: '{{"1/1/2020" | dat¦e}}'});
+        getTypeDefinitionsAndAssertBoundSpan(project, {templateOverride: '{{"1/1/2020" | dat¦e}}'});
     expect(definitions!.length).toEqual(1);
 
     const [def] = definitions;
@@ -48,14 +40,17 @@ describe('type definitions', () => {
     expect(def.contextSpan).toContain('DatePipe');
   });
 
-  function getTypeDefinitionsAndAssertBoundSpan({templateOverride}: {templateOverride: string}) {
-    const {cursor, text} = env.updateFileWithCursor(absoluteFrom('/app.html'), templateOverride);
+  function getTypeDefinitionsAndAssertBoundSpan(
+      project: Project, {templateOverride}: {templateOverride: string}) {
+    const {text} = extractCursorInfo(templateOverride);
+    const template = project.openFile('app.html');
+    template.contents = text;
     env.expectNoSourceDiagnostics();
-    env.expectNoTemplateDiagnostics(absoluteFrom('/app.ts'), 'AppCmp');
-    const defs = env.ngLS.getTypeDefinitionAtPosition(absoluteFrom('/app.html'), cursor);
+    project.expectNoTemplateDiagnostics('app.ts', 'AppCmp');
+
+    template.moveCursorToText(templateOverride);
+    const defs = template.getTypeDefinitionAtPosition();
     expect(defs).toBeTruthy();
-    const overrides = new Map<string, string>();
-    overrides.set(absoluteFrom('/app.html'), text);
-    return defs!.map(d => humanizeDocumentSpanLike(d, env, overrides));
+    return defs!.map(d => humanizeDocumentSpanLike(d, env));
   }
 });

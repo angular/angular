@@ -7,8 +7,8 @@
  */
 
 import {StrictTemplateOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {LanguageService} from '../../language_service';
 import {OpenBuffer} from './buffer';
@@ -156,4 +156,31 @@ export class Project {
 
     this.ngLS.compilerFactory.registerLastKnownProgram();
   }
+
+  expectNoTemplateDiagnostics(projectFileName: string, className: string): void {
+    const program = this.tsLS.getProgram();
+    if (program === undefined) {
+      throw new Error(`Expected to get a ts.Program`);
+    }
+    const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+    const sf = getSourceFileOrError(program, fileName);
+    const component = getClassOrError(sf, className);
+
+    const diags = this.getTemplateTypeChecker().getDiagnosticsForComponent(component);
+    this.ngLS.compilerFactory.registerLastKnownProgram();
+    expect(diags.map(diag => diag.messageText)).toEqual([]);
+  }
+
+  getTemplateTypeChecker(): TemplateTypeChecker {
+    return this.ngLS.compilerFactory.getOrCreate().getTemplateTypeChecker();
+  }
+}
+
+function getClassOrError(sf: ts.SourceFile, name: string): ts.ClassDeclaration {
+  for (const stmt of sf.statements) {
+    if (ts.isClassDeclaration(stmt) && stmt.name !== undefined && stmt.name.text === name) {
+      return stmt;
+    }
+  }
+  throw new Error(`Class ${name} not found in file: ${sf.fileName}: ${sf.text}`);
 }
