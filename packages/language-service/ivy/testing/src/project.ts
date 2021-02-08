@@ -98,9 +98,14 @@ export class Project {
   openFile(projectFileName: string): OpenBuffer {
     if (!this.buffers.has(projectFileName)) {
       const fileName = absoluteFrom(`/${this.name}/${projectFileName}`);
+      let scriptInfo = this.tsProject.getScriptInfo(fileName);
       this.projectService.openClientFile(fileName);
+      // Mark the project as dirty because the act of opening a file may result in the version
+      // changing since TypeScript will `switchToScriptVersionCache` when a file is opened.
+      // Note that this emulates what we have to do in the server/extension as well.
+      this.tsProject.markAsDirty();
 
-      const scriptInfo = this.tsProject.getScriptInfo(fileName);
+      scriptInfo = this.tsProject.getScriptInfo(fileName);
       if (scriptInfo === undefined) {
         throw new Error(
             `Unable to open ScriptInfo for ${projectFileName} in project ${this.tsConfigPath}`);

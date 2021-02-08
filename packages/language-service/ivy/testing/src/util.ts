@@ -45,6 +45,11 @@ export function assertFileNames(refs: Array<{fileName: string}>, expectedFileNam
   expect(new Set(actualFileNames)).toEqual(new Set(expectedFileNames));
 }
 
+export function assertTextSpans(items: Array<{textSpan: string}>, expectedTextSpans: string[]) {
+  const actualSpans = items.map(item => item.textSpan);
+  expect(new Set(actualSpans)).toEqual(new Set(expectedTextSpans));
+}
+
 /**
  * Returns whether the given `ts.Diagnostic` is of a type only produced by the Angular compiler (as
  * opposed to being an upstream TypeScript diagnostic).
