@@ -88,4 +88,16 @@ export class OpenBuffer {
   getTypeDefinitionAtPosition() {
     return this.ngLS.getTypeDefinitionAtPosition(this.scriptInfo.fileName, this._cursor);
   }
+
+  getReferencesAtPosition() {
+    return this.ngLS.getReferencesAtPosition(this.scriptInfo.fileName, this._cursor);
+  }
+
+  fineRenameLocations() {
+    return this.ngLS.findRenameLocations(this.scriptInfo.fileName, this._cursor);
+  }
+
+  getRenameInfo() {
+    return this.ngLS.getRenameInfo(this.scriptInfo.fileName, this._cursor);
+  }
 }

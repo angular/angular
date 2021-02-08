@@ -392,6 +392,11 @@ export class ReferencesAndRenameBuilder {
       ...shimDocumentSpan,
       fileName: templateUrl,
       textSpan: toTextSpan(span),
+      // Specifically clear other text span values because we do not have enough knowledge to
+      // convert these to spans in the template.
+      contextSpan: undefined,
+      originalContextSpan: undefined,
+      originalTextSpan: undefined,
     };
   }
 }
