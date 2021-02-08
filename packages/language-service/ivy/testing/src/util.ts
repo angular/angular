@@ -5,6 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
+import {LanguageServiceTestEnv} from './env';
+import {Project, ProjectFiles} from './project';
 
 /**
  * Given a text snippet which contains exactly one cursor symbol ('¦'), extract both the offset of
@@ -51,4 +55,40 @@ export function assertFileNames(refs: Array<{fileName: string}>, expectedFileNam
 export function isNgSpecificDiagnostic(diag: ts.Diagnostic): boolean {
   // Angular-specific diagnostics use a negative code space.
   return diag.code < 0;
+}
+
+function getFirstClassDeclaration(declaration: string) {
+  const matches = declaration.match(/(?:export class )(\w+)(?:\s|\{)/);
+  if (matches === null || matches.length !== 2) {
+    throw new Error(`Did not find exactly one exported class in: ${declaration}`);
+  }
+  return matches[1].trim();
+}
+
+export function createModuleAndProjectWithDeclarations(
+    env: LanguageServiceTestEnv, projectName: string, projectFiles: ProjectFiles,
+    options: any = {}): Project {
+  const externalClasses: string[] = [];
+  const externalImports: string[] = [];
+  for (const [fileName, fileContents] of Object.entries(projectFiles)) {
+    if (!fileName.endsWith('.ts')) {
+      continue;
+    }
+    const className = getFirstClassDeclaration(fileContents);
+    externalClasses.push(className);
+    externalImports.push(`import {${className}} from './${fileName.replace('.ts', '')}';`);
+  }
+  const moduleContents = `
+        import {NgModule} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+        ${externalImports.join('\n')}
+
+        @NgModule({
+          declarations: [${externalClasses.join(',')}],
+          imports: [CommonModule],
+        })
+        export class AppModule {}
+      `;
+  projectFiles['app-module.ts'] = moduleContents;
+  return env.addProject(projectName, projectFiles);
 }
