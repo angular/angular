@@ -550,10 +550,12 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     if (!this.datepickerInput && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Attempted to open an MatDatepicker with no associated input.');
     }
-    if (this._document) {
-      this._focusedElementBeforeOpen = this._document.activeElement;
-    }
 
+    // If the `activeElement` is inside a shadow root, `document.activeElement` will
+    // point to the shadow root so we have to descend into it ourselves.
+    const activeElement: HTMLElement|null = this._document?.activeElement;
+    this._focusedElementBeforeOpen =
+      activeElement?.shadowRoot?.activeElement as HTMLElement || activeElement;
     this.touchUi ? this._openAsDialog() : this._openAsPopup();
     this._opened = true;
     this.openedStream.emit();

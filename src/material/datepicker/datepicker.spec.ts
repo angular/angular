@@ -9,7 +9,7 @@ import {
   dispatchKeyboardEvent,
   dispatchMouseEvent,
 } from '@angular/cdk/testing/private';
-import {Component, Type, ViewChild, Provider, Directive} from '@angular/core';
+import {Component, Type, ViewChild, Provider, Directive, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {
   FormControl,
@@ -27,6 +27,7 @@ import {
 import {MatFormField, MatFormFieldModule} from '@angular/material/form-field';
 import {DEC, JAN, JUL, JUN, SEP} from '@angular/material/testing';
 import {By} from '@angular/platform-browser';
+import {_supportsShadowDom} from '@angular/cdk/platform';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MAT_DIALOG_DEFAULT_OPTIONS, MatDialogConfig} from '@angular/material/dialog';
@@ -1137,6 +1138,33 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
 
         expect(document.activeElement).toBe(toggle, 'Expected focus to be restored to toggle.');
+      });
+
+      it('should restore focus when placed inside a shadow root', () => {
+        if (!_supportsShadowDom()) {
+          return;
+        }
+
+        fixture.destroy();
+        TestBed.resetTestingModule();
+        fixture = createComponent(DatepickerWithToggleInShadowDom, [MatNativeDateModule]);
+        fixture.detectChanges();
+        testComponent = fixture.componentInstance;
+
+        const toggle = fixture.debugElement.query(By.css('button'))!.nativeElement;
+        fixture.componentInstance.touchUI = false;
+        fixture.detectChanges();
+
+        toggle.focus();
+        spyOn(toggle, 'focus').and.callThrough();
+        fixture.componentInstance.datepicker.open();
+        fixture.detectChanges();
+        fixture.componentInstance.datepicker.close();
+        fixture.detectChanges();
+
+        // We have to assert by looking at the `focus` method, because
+        // `document.activeElement` will return the shadow root.
+        expect(toggle.focus).toHaveBeenCalled();
       });
 
       it('should allow for focus restoration to be disabled', () => {
@@ -2350,6 +2378,17 @@ class DatepickerWithToggle {
   restoreFocus = true;
   ariaLabel: string;
 }
+
+
+@Component({
+  encapsulation: ViewEncapsulation.ShadowDom,
+  template: `
+    <input [matDatepicker]="d">
+    <mat-datepicker-toggle [for]="d" [aria-label]="ariaLabel"></mat-datepicker-toggle>
+    <mat-datepicker #d [touchUi]="touchUI" [restoreFocus]="restoreFocus"></mat-datepicker>
+  `,
+})
+class DatepickerWithToggleInShadowDom extends DatepickerWithToggle {}
 
 
 @Component({
