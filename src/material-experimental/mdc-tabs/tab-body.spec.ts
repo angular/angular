@@ -5,7 +5,9 @@ import {AfterContentInit, Component, TemplateRef, ViewChild, ViewContainerRef} f
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatRippleModule} from '@angular/material-experimental/mdc-core';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {CdkScrollable, ScrollingModule} from '@angular/cdk/scrolling';
 import {MatTabBody, MatTabBodyPortal} from './tab-body';
+import {By} from '@angular/platform-browser';
 import {Subject} from 'rxjs';
 
 
@@ -177,6 +179,33 @@ describe('MDC-based MatTabBody', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.tabBody._position).toBe('left');
+  });
+
+  it('should mark the tab body content as a scrollable container', () => {
+    TestBed
+      .resetTestingModule()
+      .configureTestingModule({
+        imports: [
+          CommonModule,
+          PortalModule,
+          MatRippleModule,
+          NoopAnimationsModule,
+          ScrollingModule
+        ],
+        declarations: [
+          MatTabBody,
+          MatTabBodyPortal,
+          SimpleTabBodyApp,
+        ]
+      })
+      .compileComponents();
+
+    const fixture = TestBed.createComponent(SimpleTabBodyApp);
+    const tabBodyContent = fixture.nativeElement.querySelector('.mat-mdc-tab-body-content');
+    const scrollable = fixture.debugElement.query(By.directive(CdkScrollable));
+
+    expect(scrollable).toBeTruthy();
+    expect(scrollable.nativeElement).toBe(tabBodyContent);
   });
 });
 

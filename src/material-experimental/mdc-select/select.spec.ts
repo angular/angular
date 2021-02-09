@@ -3742,6 +3742,32 @@ describe('MDC-based MatSelect', () => {
       }).not.toThrow();
     }));
 
+    it('should be able to programmatically set an array with duplicate values', fakeAsync(() => {
+      testInstance.foods = [
+        { value: 'steak-0', viewValue: 'Steak' },
+        { value: 'pizza-1', viewValue: 'Pizza' },
+        { value: 'pizza-1', viewValue: 'Pizza' },
+        { value: 'pizza-1', viewValue: 'Pizza' },
+        { value: 'pizza-1', viewValue: 'Pizza' },
+        { value: 'pizza-1', viewValue: 'Pizza' },
+      ];
+      fixture.detectChanges();
+      testInstance.control.setValue(['steak-0', 'pizza-1', 'pizza-1', 'pizza-1']);
+      fixture.detectChanges();
+
+      trigger.click();
+      fixture.detectChanges();
+
+      const optionNodes = Array.from(overlayContainerElement.querySelectorAll('mat-option'));
+      const optionInstances = testInstance.options.toArray();
+
+      expect(optionNodes.map(node => node.classList.contains('mdc-list-item--selected')))
+        .toEqual([true, true, true, true, false, false]);
+
+      expect(optionInstances.map(instance => instance.selected))
+        .toEqual([true, true, true, true, false, false]);
+    }));
+
   });
 
   it('should be able to provide default values through an injection token', fakeAsync(() => {

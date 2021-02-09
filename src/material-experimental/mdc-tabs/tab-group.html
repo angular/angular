@@ -21,7 +21,8 @@
        [class.mdc-tab--active]="selectedIndex == i"
        [disabled]="tab.disabled"
        [fitInkBarToContent]="fitInkBarToContent"
-       (click)="_handleClick(tab, tabHeader, i)">
+       (click)="_handleClick(tab, tabHeader, i)"
+       (cdkFocusChange)="_tabFocusChanged($event, i)">
     <span class="mdc-tab__ripple"></span>
 
     <!-- Needs to be a separate element, because we can't put
