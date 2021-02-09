@@ -70,7 +70,7 @@ We work toward a regular schedule of releases, so that you can plan and coordina
 
 <div class="alert is-helpful">
 
-Disclaimer: Dates are offered as general guidance and will be adjusted by us when necessary to ensure delivery of a high-quality platform.
+Dates are offered as general guidance and are subject to change.
 
 </div>
 
@@ -90,7 +90,13 @@ This cadence of releases gives eager developers access to new features as soon a
 {@a support}
 ## Support policy and schedule
 
-All of our major releases are supported for 18 months.
+<div class="alert is-helpful">
+
+Dates are offered as general guidance and are subject to change.
+
+</div>
+
+All major releases are typically supported for 18 months.
 
 * 6 months of *active support*, during which regularly-scheduled updates and patches are released.
 
