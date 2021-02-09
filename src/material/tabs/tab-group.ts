@@ -31,6 +31,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
+import {FocusOrigin} from '@angular/cdk/a11y';
 import {
   CanColor,
   CanColorCtor,
@@ -371,6 +372,13 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
       return null;
     }
     return this.selectedIndex === idx ? 0 : -1;
+  }
+
+  /** Callback for when the focused state of a tab has changed. */
+  _tabFocusChanged(focusOrigin: FocusOrigin, index: number) {
+    if (focusOrigin) {
+      this._tabHeader.focusIndex = index;
+    }
   }
 
   static ngAcceptInputType_dynamicHeight: BooleanInput;

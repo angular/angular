@@ -17,7 +17,8 @@
        [class.mat-tab-label-active]="selectedIndex == i"
        [disabled]="tab.disabled"
        [matRippleDisabled]="tab.disabled || disableRipple"
-       (click)="_handleClick(tab, tabHeader, i)">
+       (click)="_handleClick(tab, tabHeader, i)"
+       (cdkFocusChange)="_tabFocusChanged($event, i)">
 
 
     <div class="mat-tab-label-content">

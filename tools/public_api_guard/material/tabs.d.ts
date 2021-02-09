@@ -58,6 +58,7 @@ export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase imp
     _handleClick(tab: MatTab, tabHeader: MatTabGroupBaseHeader, index: number): void;
     _removeTabBodyWrapperHeight(): void;
     _setTabBodyWrapperHeight(tabHeight: number): void;
+    _tabFocusChanged(focusOrigin: FocusOrigin, index: number): void;
     ngAfterContentChecked(): void;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;

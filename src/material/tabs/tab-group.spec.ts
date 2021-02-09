@@ -298,6 +298,25 @@ describe('MatTabGroup', () => {
       expect(tabLabelNativeElements.every(el => el.classList.contains('mat-focus-indicator')))
         .toBe(true);
     });
+
+    it('should emit focusChange when a tab receives focus', () => {
+      spyOn(fixture.componentInstance, 'handleFocus');
+      fixture.detectChanges();
+
+      const tabLabels = fixture.debugElement.queryAll(By.css('.mat-tab-label'));
+
+      expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(0);
+
+      // In order to verify that the `focusChange` event also fires with the correct
+      // index, we focus the second tab before testing the keyboard navigation.
+      dispatchFakeEvent(tabLabels[1].nativeElement, 'focus');
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(1);
+      expect(fixture.componentInstance.handleFocus)
+        .toHaveBeenCalledWith(jasmine.objectContaining({index: 1}));
+    });
+
   });
 
   describe('aria labelling', () => {
