@@ -25,12 +25,6 @@
 <body>
   <dev-app>Loading...</dev-app>
 
-  <!-- This iframe loads the hidden Google Maps API Key. -->
-  <iframe id="google-maps-api-key"
-          src="google-maps-api-key.txt"
-          style="display:none;"
-          onload="loadGoogleMapsScript()"></iframe>
-
   <script src="core-js-bundle/index.js"></script>
   <script src="zone.js/dist/zone.js"></script>
   <script src="systemjs/dist/system.js"></script>
@@ -38,17 +32,12 @@
   <script src="https://www.youtube.com/iframe_api"></script>
   <script src="https://unpkg.com/@googlemaps/markerclustererplus/dist/index.min.js"></script>
   <script>
-    function loadGoogleMapsScript() {
-      var iframe = document.getElementById('google-maps-api-key');
-      var googleMapsScript = document.createElement('script');
-      var googleMapsApiKey = iframe.contentDocument.body.textContent;
-      var googleMapsUrl = 'https://maps.googleapis.com/maps/api/js?libraries=visualization';
-      if (googleMapsApiKey !== 'Page not found') {
-        googleMapsUrl = googleMapsUrl + '&key=' + googleMapsApiKey;
-      }
-      googleMapsScript.src = googleMapsUrl;
-      document.body.appendChild(googleMapsScript);
-    }
+    (function loadGoogleMaps(key) {
+      var script = document.createElement('script');
+      script.src = 'https://maps.googleapis.com/maps/api/js?libraries=visualization' +
+        (key ? '&key=' + key : '');
+      document.body.appendChild(script);
+    })(window.DEV_APP_VARIABLES.GOOGLE_MAPS_KEY);
   </script>
   <script>
     System.config({
