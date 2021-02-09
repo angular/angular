@@ -83,9 +83,9 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
                             }, {});
 
   const compilerOpts: ng.AngularCompilerOptions = {
+    ...userOverrides,
     ...config['angularCompilerOptions'],
     ...tsOptions,
-    ...userOverrides,
   };
 
   // These are options passed through from the `ng_module` rule which aren't supported
