@@ -4,6 +4,7 @@
         params: {animationDuration: animationDuration}
      }"
      (@translateTab.start)="_onTranslateTabStarted($event)"
-     (@translateTab.done)="_translateTabComplete.next($event)">
+     (@translateTab.done)="_translateTabComplete.next($event)"
+     cdkScrollable>
   <ng-template matTabBodyHost></ng-template>
 </div>
