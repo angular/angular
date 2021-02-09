@@ -32,6 +32,11 @@
   // placeholder, the alignment should be inherited here.
   text-align: inherit;
 
+  // It's common for developers to set `box-sizing: border-box` on every element on the page.
+  // Reset it to `content-box` since all of our styles are written with it in mind. `border-box`
+  // can also cause unnecessary scrollbars on auto-resizing textareas (see #21560).
+  box-sizing: content-box;
+
   // Undo the red box-shadow glow added by Firefox on invalid inputs.
   // See https://developer.mozilla.org/en-US/docs/Web/CSS/:-moz-ui-invalid
   &:-moz-ui-invalid {
