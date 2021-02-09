@@ -26,12 +26,24 @@ export class MatTooltipHarness extends ComponentHarness {
 
   /** Shows the tooltip. */
   async show(): Promise<void> {
-    return (await this.host()).hover();
+    const host = await this.host();
+
+    // We need to dispatch both `touchstart` and a hover event, because the tooltip binds
+    // different events depending on the device. The `changedTouches` is there in case the
+    // element has ripples.
+    // @breaking-change 12.0.0 Remove null assertion from `dispatchEvent`.
+    await host.dispatchEvent?.('touchstart', {changedTouches: []});
+    await host.hover();
   }
 
   /** Hides the tooltip. */
   async hide(): Promise<void> {
     const host = await this.host();
+
+    // We need to dispatch both `touchstart` and a hover event, because
+    // the tooltip binds different events depending on the device.
+    // @breaking-change 12.0.0 Remove null assertion from `dispatchEvent`.
+    await host.dispatchEvent?.('touchend');
     await host.mouseAway();
     await this.forceStabilize(); // Needed in order to flush the `hide` animation.
   }
