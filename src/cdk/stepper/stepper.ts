@@ -297,6 +297,14 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
         throw Error('cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.');
       }
 
+      const selectedStep = this.selected;
+
+      if (selectedStep) {
+        // TODO: this should really be called something like `visited` instead. Just because
+        // the user has seen the step doesn't guarantee that they've interacted with it.
+        selectedStep.interacted = true;
+      }
+
       if (this._selectedIndex !== newIndex && !this._anyControlsInvalidOrPending(newIndex) &&
           (newIndex >= this._selectedIndex || this.steps.toArray()[newIndex].editable)) {
         this._updateSelectedItemIndex(index);
@@ -500,12 +508,8 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
   }
 
   private _anyControlsInvalidOrPending(index: number): boolean {
-    const steps = this.steps.toArray();
-
-    steps[this._selectedIndex].interacted = true;
-
     if (this._linear && index >= 0) {
-      return steps.slice(0, index).some(step => {
+      return this.steps.toArray().slice(0, index).some(step => {
         const control = step.stepControl;
         const isIncomplete =
             control ? (control.invalid || control.pending || !step.interacted) : !step.completed;
