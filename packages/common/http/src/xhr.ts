@@ -312,6 +312,7 @@ export class HttpXhrBackend implements HttpBackend {
       xhr.addEventListener('load', onLoad);
       xhr.addEventListener('error', onError);
       xhr.addEventListener('timeout', onError);
+      xhr.addEventListener('abort', onError);
 
       // Progress events are only enabled if requested.
       if (req.reportProgress) {
@@ -333,6 +334,7 @@ export class HttpXhrBackend implements HttpBackend {
       return () => {
         // On a cancellation, remove all registered event listeners.
         xhr.removeEventListener('error', onError);
+        xhr.removeEventListener('abort', onError);
         xhr.removeEventListener('load', onLoad);
         xhr.removeEventListener('timeout', onError);
         if (req.reportProgress) {
