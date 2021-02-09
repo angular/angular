@@ -50,7 +50,7 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
   }
 
   const {bazelOpts, options: tsOptions, files, config} = parsedOptions;
-  const {errors: userErrors, options} = ng.readConfiguration(project);
+  const {errors: userErrors, options: userOptions} = ng.readConfiguration(project);
 
   if (userErrors?.length) {
     console.error(ng.formatDiagnostics(userErrors));
@@ -74,13 +74,18 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
     'createExternalSymbolFactoryReexports',
   ]);
 
-  const overrides =
-      Object.entries(options).filter(([key]) => allowedNgCompilerOptionsOverrides.has(key));
+  const userOverrides = Object.entries(userOptions)
+                            .filter(([key]) => allowedNgCompilerOptionsOverrides.has(key))
+                            .reduce((obj, [key, value]) => {
+                              obj[key] = value;
+
+                              return obj;
+                            }, {});
 
   const compilerOpts: ng.AngularCompilerOptions = {
     ...config['angularCompilerOptions'],
     ...tsOptions,
-    ...overrides,
+    ...userOverrides,
   };
 
   // These are options passed through from the `ng_module` rule which aren't supported
