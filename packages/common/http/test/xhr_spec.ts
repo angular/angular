@@ -147,6 +147,17 @@ const XSSI_PREFIX = ')]}\'\n';
       });
       factory.mock.mockErrorEvent(new Error('blah'));
     });
+    it('emits timeout if the request times out', done => {
+      backend.handle(TEST_POST).subscribe({
+        error: (error: HttpErrorResponse) => {
+          expect(error instanceof HttpErrorResponse).toBeTrue();
+          expect(error.error instanceof Error).toBeTrue();
+          expect(error.url).toBe('/test');
+          done();
+        },
+      });
+      factory.mock.mockTimeoutEvent(new Error('timeout'));
+    });
     it('avoids abort a request when fetch operation is completed', done => {
       const abort = jasmine.createSpy('abort');
 
