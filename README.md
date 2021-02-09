@@ -38,7 +38,7 @@
 <hr>
 
 ## Documentation
-
+NOTE: AngularJS will go in January 2022
 Get started with Angular, learn the fundamentals and explore advanced topics on our documentation website.
 
 - [Getting Started][quickstart]
