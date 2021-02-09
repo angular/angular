@@ -26,9 +26,11 @@
 // and the subscript wrapper.
 .mat-mdc-form-field {
   display: inline-flex;
-  // this container contains the text-field and the subscript. The subscript
+  // This container contains the text-field and the subscript. The subscript
   // should be displayed below the text-field. Hence the column direction.
   flex-direction: column;
+  // This allows the form-field to shrink down when used inside flex or grid layouts.
+  min-width: 0;
 }
 
 // Container that contains the prefixes, infix and suffixes. These elements should
