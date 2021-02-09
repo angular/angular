@@ -369,14 +369,14 @@ export function crossEnvironmentSpecs(
     it('should be able to right click at a specific position within an element', async () => {
       const clickTest = await harness.clickTest();
       const contextmenuTestResult = await harness.contextmenuTestResult();
-      await clickTest.rightClick!(50, 50);
+      await clickTest.rightClick(50, 50);
       expect(await contextmenuTestResult.text()).toBe('50-50-2');
     });
 
     it('should be able to right click with modifiers', async () => {
       const clickTest = await harness.clickTest();
       const modifiersResult = await harness.clickModifiersResult();
-      await clickTest.rightClick!(50, 50, {alt: true, control: true});
+      await clickTest.rightClick(50, 50, {alt: true, control: true});
       expect(await modifiersResult.text()).toBe('-alt-control-');
     });
 
@@ -455,8 +455,7 @@ export function crossEnvironmentSpecs(
     it('should be able to set the value of an input', async () => {
       const input = await harness.input();
 
-      // @breaking-change 11.0.0 Remove non-null assertion once `setInputValue` is required.
-      await input.setInputValue!('hello');
+      await input.setInputValue('hello');
       expect(await input.getProperty('value')).toBe('hello');
     });
 
@@ -467,8 +466,7 @@ export function crossEnvironmentSpecs(
         harness.singleSelectChangeEventCounter()
       ]);
 
-      // @breaking-change 12.0.0 Remove non-null assertion once `setSelectValue` is required.
-      await select.selectOptions!(2);
+      await select.selectOptions(2);
       expect(await value.text()).toBe('Select: three');
       expect(await changeEventCounter.text()).toBe('Change events: 1');
     });
@@ -480,8 +478,7 @@ export function crossEnvironmentSpecs(
         harness.multiSelectChangeEventCounter()
       ]);
 
-      // @breaking-change 12.0.0 Remove non-null assertion once `setSelectValue` is required.
-      await select.selectOptions!(0, 2);
+      await select.selectOptions(0, 2);
       expect(await value.text()).toBe('Multi-select: one,three');
       expect(await changeEventCounter.text()).toBe('Change events: 2');
     });
@@ -503,16 +500,14 @@ export function crossEnvironmentSpecs(
     it('should dispatch a basic custom event', async () => {
       const target = await harness.customEventBasic();
 
-      // @breaking-change 12.0.0 Remove non-null assertion once `dispatchEvent` is required.
-      await target.dispatchEvent!('myCustomEvent');
+      await target.dispatchEvent('myCustomEvent');
       expect(await target.text()).toBe('Basic event: 1');
     });
 
     it('should dispatch a custom event with attached data', async () => {
       const target = await harness.customEventObject();
 
-      // @breaking-change 12.0.0 Remove non-null assertion once `dispatchEvent` is required.
-      await target.dispatchEvent!('myCustomEvent', {message: 'Hello', value: 1337});
+      await target.dispatchEvent('myCustomEvent', {message: 'Hello', value: 1337});
       expect(await target.text()).toBe('Event with object: {"message":"Hello","value":1337}');
     });
 

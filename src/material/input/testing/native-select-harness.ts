@@ -95,12 +95,6 @@ export class MatNativeSelectHarness extends MatFormFieldControlHarness {
       parallel(() => options.slice(0, isMultiple ? undefined : 1).map(option => option.getIndex()))
     ]);
 
-    // @breaking-change 12.0.0 Error can be removed once `selectOptions` is a required method.
-    if (!host.selectOptions) {
-      throw Error('TestElement implementation does not support the selectOptions ' +
-                  'method which is required for this function.');
-    }
-
     await host.selectOptions(...optionIndexes);
   }
 }

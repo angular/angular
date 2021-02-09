@@ -154,7 +154,7 @@ export interface TestElement {
     click(modifiers?: ModifierKeys): Promise<void>;
     click(location: 'center', modifiers?: ModifierKeys): Promise<void>;
     click(relativeX: number, relativeY: number, modifiers?: ModifierKeys): Promise<void>;
-    dispatchEvent?(name: string, data?: Record<string, EventData>): Promise<void>;
+    dispatchEvent(name: string, data?: Record<string, EventData>): Promise<void>;
     focus(): Promise<void>;
     getAttribute(name: string): Promise<string | null>;
     getCssValue(property: string): Promise<string>;
@@ -165,11 +165,11 @@ export interface TestElement {
     isFocused(): Promise<boolean>;
     matchesSelector(selector: string): Promise<boolean>;
     mouseAway(): Promise<void>;
-    rightClick?(relativeX: number, relativeY: number, modifiers?: ModifierKeys): Promise<void>;
-    selectOptions?(...optionIndexes: number[]): Promise<void>;
+    rightClick(relativeX: number, relativeY: number, modifiers?: ModifierKeys): Promise<void>;
+    selectOptions(...optionIndexes: number[]): Promise<void>;
     sendKeys(...keys: (string | TestKey)[]): Promise<void>;
     sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
-    setInputValue?(value: string): Promise<void>;
+    setInputValue(value: string): Promise<void>;
     text(options?: TextOptions): Promise<string>;
 }
 
