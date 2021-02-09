@@ -173,6 +173,13 @@ const XSSI_PREFIX = ')]}\'\n';
       factory.mock.abort = abort;
       factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Done');
     });
+    it('emits an error when browser cancels a request', done => {
+      backend.handle(TEST_POST).subscribe(undefined, (err: HttpErrorResponse) => {
+        expect(err instanceof HttpErrorResponse).toBe(true);
+        done();
+      });
+      factory.mock.mockAbortEvent();
+    });
     describe('progress events', () => {
       it('are emitted for download progress', done => {
         backend.handle(TEST_POST.clone({reportProgress: true}))
