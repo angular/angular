@@ -40,7 +40,7 @@ export declare class GoogleMap implements OnChanges, OnInit, OnDestroy {
     getStreetView(): google.maps.StreetViewPanorama;
     getTilt(): number;
     getZoom(): number;
-    ngOnChanges(): void;
+    ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
     panBy(x: number, y: number): void;

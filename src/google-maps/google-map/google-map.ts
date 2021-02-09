@@ -22,10 +22,10 @@ import {
   Inject,
   PLATFORM_ID,
   NgZone,
+  SimpleChanges,
 } from '@angular/core';
 import {isPlatformBrowser} from '@angular/common';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {map, shareReplay, take, takeUntil} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 import {MapEventManager} from '../map-event-manager';
 
 interface GoogleMapsWindow extends Window {
@@ -57,13 +57,6 @@ export const DEFAULT_WIDTH = '500px';
 })
 export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   private _eventManager: MapEventManager = new MapEventManager(this._ngZone);
-  private _googleMapChanges: Observable<google.maps.Map>;
-
-  private readonly _options = new BehaviorSubject<google.maps.MapOptions>(DEFAULT_OPTIONS);
-  private readonly _center =
-      new BehaviorSubject<google.maps.LatLngLiteral|google.maps.LatLng|undefined>(undefined);
-  private readonly _zoom = new BehaviorSubject<number|undefined>(undefined);
-  private readonly _destroy = new Subject<void>();
   private _mapEl: HTMLElement;
 
   /**
@@ -90,16 +83,21 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
   @Input()
   set center(center: google.maps.LatLngLiteral|google.maps.LatLng) {
-    this._center.next(center);
+    this._center = center;
   }
+  private _center: google.maps.LatLngLiteral|google.maps.LatLng;
+
   @Input()
   set zoom(zoom: number) {
-    this._zoom.next(zoom);
+    this._zoom = zoom;
   }
+  private _zoom: number;
+
   @Input()
   set options(options: google.maps.MapOptions) {
-    this._options.next(options || DEFAULT_OPTIONS);
+    this._options = options || DEFAULT_OPTIONS;
   }
+  private _options = DEFAULT_OPTIONS;
 
   /**
    * See
@@ -246,10 +244,30 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
     }
   }
 
-  ngOnChanges() {
-    this._setSize();
-    if (this.googleMap && this.mapTypeId) {
-      this.googleMap.setMapTypeId(this.mapTypeId);
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['height'] || changes['width']) {
+      this._setSize();
+    }
+
+    const googleMap = this.googleMap;
+
+    if (googleMap) {
+      if (changes['options'] && this._options) {
+        googleMap.setOptions(this._options);
+      }
+
+      if (changes['center'] && this._center) {
+        googleMap.setCenter(this._center);
+      }
+
+      // Note that the zoom can be zero.
+      if (changes['zoom'] && this._zoom != null) {
+        googleMap.setZoom(this._zoom);
+      }
+
+      if (changes['mapTypeId'] && this.mapTypeId) {
+        googleMap.setMapTypeId(this.mapTypeId);
+      }
     }
   }
 
@@ -258,22 +276,19 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
     if (this._isBrowser) {
       this._mapEl = this._elementRef.nativeElement.querySelector('.map-container')!;
       this._setSize();
-      this._googleMapChanges = this._initializeMap(this._combineOptions());
-      this._googleMapChanges.subscribe((googleMap: google.maps.Map) => {
-        this.googleMap = googleMap;
-        this._eventManager.setTarget(this.googleMap);
-      });
 
-      this._watchForOptionsChanges();
-      this._watchForCenterChanges();
-      this._watchForZoomChanges();
+      // Create the object outside the zone so its events don't trigger change detection.
+      // We'll bring it back in inside the `MapEventManager` only for the events that the
+      // user has subscribed to.
+      this._ngZone.runOutsideAngular(() => {
+        this.googleMap = new google.maps.Map(this._mapEl, this._combineOptions());
+      });
+      this._eventManager.setTarget(this.googleMap);
     }
   }
 
   ngOnDestroy() {
     this._eventManager.destroy();
-    this._destroy.next();
-    this._destroy.complete();
   }
 
   /**
@@ -443,60 +458,16 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
   }
 
   /** Combines the center and zoom and the other map options into a single object */
-  private _combineOptions(): Observable<google.maps.MapOptions> {
-    return combineLatest([this._options, this._center, this._zoom])
-        .pipe(map(([options, center, zoom]) => {
-          const combinedOptions: google.maps.MapOptions = {
-            ...options,
-            // It's important that we set **some** kind of `center` and `zoom`, otherwise
-            // Google Maps will render a blank rectangle which looks broken.
-            center: center || options.center || DEFAULT_OPTIONS.center,
-            zoom: zoom ?? options.zoom ?? DEFAULT_OPTIONS.zoom,
-            mapTypeId: this.mapTypeId
-          };
-          return combinedOptions;
-        }));
-  }
-
-  private _initializeMap(optionsChanges: Observable<google.maps.MapOptions>):
-      Observable<google.maps.Map> {
-    return optionsChanges.pipe(
-        take(1),
-        map(options => {
-          // Create the object outside the zone so its events don't trigger change detection.
-          // We'll bring it back in inside the `MapEventManager` only for the events that the
-          // user has subscribed to.
-          return this._ngZone.runOutsideAngular(() => new google.maps.Map(this._mapEl, options));
-        }),
-        shareReplay(1));
-  }
-
-  private _watchForOptionsChanges() {
-    combineLatest([this._googleMapChanges, this._options])
-        .pipe(takeUntil(this._destroy))
-        .subscribe(([googleMap, options]) => {
-          googleMap.setOptions(options);
-        });
-  }
-
-  private _watchForCenterChanges() {
-    combineLatest([this._googleMapChanges, this._center])
-        .pipe(takeUntil(this._destroy))
-        .subscribe(([googleMap, center]) => {
-          if (center) {
-            googleMap.setCenter(center);
-          }
-        });
-  }
-
-  private _watchForZoomChanges() {
-    combineLatest([this._googleMapChanges, this._zoom])
-        .pipe(takeUntil(this._destroy))
-        .subscribe(([googleMap, zoom]) => {
-          if (zoom !== undefined) {
-            googleMap.setZoom(zoom);
-          }
-        });
+  private _combineOptions(): google.maps.MapOptions {
+    const options = this._options;
+    return {
+      ...options,
+      // It's important that we set **some** kind of `center` and `zoom`, otherwise
+      // Google Maps will render a blank rectangle which looks broken.
+      center: this._center || options.center || DEFAULT_OPTIONS.center,
+      zoom: this._zoom ?? options.zoom ?? DEFAULT_OPTIONS.zoom,
+      mapTypeId: this.mapTypeId
+    };
   }
 
   /** Asserts that the map has been initialized. */
