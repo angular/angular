@@ -35,7 +35,7 @@ $mat-form-field-standard-padding-top: 0.75em !default;
 
     @include cdk-high-contrast(active, off) {
       height: 0;
-      border-top: $height;
+      border-top: solid $height;
     }
   }
 
