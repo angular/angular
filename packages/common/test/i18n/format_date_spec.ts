@@ -9,6 +9,7 @@ import localeAr from '@angular/common/locales/ar';
 import localeDe from '@angular/common/locales/de';
 import localeEn from '@angular/common/locales/en';
 import localeEnExtra from '@angular/common/locales/extra/en';
+import localeFi from '@angular/common/locales/fi';
 import localeHu from '@angular/common/locales/hu';
 import localeSr from '@angular/common/locales/sr';
 import localeTh from '@angular/common/locales/th';
@@ -78,6 +79,7 @@ describe('Format date', () => {
       ɵregisterLocaleData(localeSr);
       ɵregisterLocaleData(localeTh);
       ɵregisterLocaleData(localeAr);
+      ɵregisterLocaleData(localeFi);
     });
 
     afterAll(() => ɵunregisterLocaleData());
@@ -116,6 +118,12 @@ describe('Format date', () => {
         W: '3',
         d: '15',
         dd: '15',
+        c: '1',
+        cc: '1',
+        ccc: 'Mon',
+        cccc: 'Monday',
+        ccccc: 'M',
+        cccccc: 'Mo',
         E: 'Mon',
         EE: 'Mon',
         EEE: 'Mon',
@@ -178,6 +186,12 @@ describe('Format date', () => {
         W: '1',
         d: '1',
         dd: '01',
+        c: '4',
+        cc: '4',
+        ccc: 'Thu',
+        cccc: 'Thursday',
+        ccccc: 'T',
+        cccccc: 'Th',
         E: 'Thu',
         EE: 'Thu',
         EEE: 'Thu',
@@ -426,6 +440,11 @@ describe('Format date', () => {
       expect(formatDate('0100-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0100');
       expect(formatDate('0001-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0001');
       expect(formatDate('0000-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0000');
+    });
+
+    // https://github.com/angular/angular/issues/26922
+    it('should support fullDate in finnish, which uses standalone week day', () => {
+      expect(formatDate(date, 'fullDate', 'fi')).toMatch('maanantai 15. kesäkuuta 2015');
     });
   });
 });

@@ -13,7 +13,7 @@ export const ISO8601_DATE_REGEX =
 //    1        2       3         4          5          6          7          8  9     10      11
 const NAMED_FORMATS: {[localeId: string]: {[format: string]: string}} = {};
 const DATE_FORMATS_SPLIT =
-    /((?:[^GyYMLwWdEabBhHmsSzZO']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|Y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
+    /((?:[^BEGHLMOSWYZabcdhmswyz']+)|(?:'(?:[^']|'')*')|(?:G{1,5}|y{1,4}|Y{1,4}|M{1,5}|L{1,5}|w{1,2}|W{1}|d{1,2}|E{1,6}|c{1,6}|a{1,5}|b{1,5}|B{1,5}|h{1,2}|H{1,2}|m{1,2}|s{1,2}|S{1,3}|z{1,4}|Z{1,5}|O{1,4}))([\s\S]*)/;
 
 enum ZoneWidth {
   Short,
@@ -445,7 +445,7 @@ const DATE_FORMATS: {[format: string]: DateFormatter} = {};
 // Based on CLDR formats:
 // See complete list: http://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
 // See also explanations: http://cldr.unicode.org/translation/date-time
-// TODO(ocombe): support all missing cldr formats: Y, U, Q, D, F, e, c, j, J, C, A, v, V, X, x
+// TODO(ocombe): support all missing cldr formats: U, Q, D, F, e, j, J, C, A, v, V, X, x
 function getDateFormatter(format: string): DateFormatter|null {
   if (DATE_FORMATS[format]) {
     return DATE_FORMATS[format];
@@ -555,6 +555,26 @@ function getDateFormatter(format: string): DateFormatter|null {
       break;
     case 'dd':
       formatter = dateGetter(DateType.Date, 2);
+      break;
+
+    // Day of the Week StandAlone (1, 1, Mon, Monday, M, Mo)
+    case 'c':
+    case 'cc':
+      formatter = dateGetter(DateType.Day, 1);
+      break;
+    case 'ccc':
+      formatter =
+          dateStrGetter(TranslationType.Days, TranslationWidth.Abbreviated, FormStyle.Standalone);
+      break;
+    case 'cccc':
+      formatter = dateStrGetter(TranslationType.Days, TranslationWidth.Wide, FormStyle.Standalone);
+      break;
+    case 'ccccc':
+      formatter =
+          dateStrGetter(TranslationType.Days, TranslationWidth.Narrow, FormStyle.Standalone);
+      break;
+    case 'cccccc':
+      formatter = dateStrGetter(TranslationType.Days, TranslationWidth.Short, FormStyle.Standalone);
       break;
 
     // Day of the Week
