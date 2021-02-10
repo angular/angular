@@ -9,7 +9,7 @@
 import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {CycleAnalyzer, ImportGraph} from '../../cycles';
+import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
@@ -73,6 +73,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       /* i18nNormalizeLineEndingsInICUs */ undefined,
       moduleResolver,
       cycleAnalyzer,
+      CycleHandlingStrategy.UseRemoteScoping,
       refEmitter,
       NOOP_DEFAULT_IMPORT_RECORDER,
       /* depTracker */ null,

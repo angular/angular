@@ -52,6 +52,11 @@ export enum ErrorCode {
 
   SYMBOL_NOT_EXPORTED = 3001,
   SYMBOL_EXPORTED_UNDER_DIFFERENT_NAME = 3002,
+  /**
+   * Raised when a relationship between directives and/or pipes would cause a cyclic import to be
+   * created that cannot be handled, such as in partial compilation mode.
+   */
+  IMPORT_CYCLE_DETECTED = 3003,
 
   CONFIG_FLAT_MODULE_NO_INDEX = 4001,
   CONFIG_STRICT_TEMPLATES_IMPLIES_FULL_TEMPLATE_TYPECHECK = 4002,
@@ -192,6 +197,7 @@ export const ERROR_DETAILS_PAGE_BASE_URL = 'https://angular.io/errors';
  */
 export const COMPILER_ERRORS_WITH_GUIDES = new Set([
   ErrorCode.DECORATOR_ARG_NOT_LITERAL,
+  ErrorCode.IMPORT_CYCLE_DETECTED,
   ErrorCode.PARAM_MISSING_TOKEN,
   ErrorCode.SCHEMA_INVALID_ELEMENT,
   ErrorCode.SCHEMA_INVALID_ATTRIBUTE,
