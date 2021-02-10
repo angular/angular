@@ -10,7 +10,7 @@ import {Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from '../../annotations';
-import {CycleAnalyzer, ImportGraph} from '../../cycles';
+import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, ngErrorCode} from '../../diagnostics';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {LogicalFileSystem, resolve} from '../../file_system';
@@ -985,6 +985,16 @@ export class NgCompiler {
     const defaultImportTracker = new DefaultImportTracker();
     const resourceRegistry = new ResourceRegistry();
 
+    const compilationMode =
+        this.options.compilationMode === 'partial' ? CompilationMode.PARTIAL : CompilationMode.FULL;
+
+    // Cycles are handled in full compilation mode by "remote scoping".
+    // "Remote scoping" does not work well with tree shaking for libraries.
+    // So in partial compilation mode, when building a library, a cycle will cause an error.
+    const cycleHandlingStrategy = compilationMode === CompilationMode.FULL ?
+        CycleHandlingStrategy.UseRemoteScoping :
+        CycleHandlingStrategy.Error;
+
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
       new ComponentDecoratorHandler(
@@ -994,8 +1004,8 @@ export class NgCompiler {
           this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
           this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
-          refEmitter, defaultImportTracker, this.incrementalDriver.depGraph, injectableRegistry,
-          this.closureCompilerEnabled),
+          cycleHandlingStrategy, refEmitter, defaultImportTracker, this.incrementalDriver.depGraph,
+          injectableRegistry, this.closureCompilerEnabled),
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
       // clang-format off
@@ -1022,8 +1032,6 @@ export class NgCompiler {
           this.closureCompilerEnabled, injectableRegistry, this.options.i18nInLocale),
     ];
 
-    const compilationMode =
-        this.options.compilationMode === 'partial' ? CompilationMode.PARTIAL : CompilationMode.FULL;
     const traitCompiler = new TraitCompiler(
         handlers, reflector, this.perfRecorder, this.incrementalDriver,
         this.options.compileNonExportedClasses !== false, compilationMode, dtsTransforms);

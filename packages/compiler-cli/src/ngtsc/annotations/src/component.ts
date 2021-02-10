@@ -9,9 +9,9 @@
 import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ComponentDef, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {CycleAnalyzer} from '../../cycles';
-import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {absoluteFrom, AbsoluteFsPath, relative} from '../../file_system';
+import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../cycles';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
+import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {IndexingContext} from '../../indexer';
@@ -127,7 +127,8 @@ export class ComponentDecoratorHandler implements
       private enableI18nLegacyMessageIdFormat: boolean, private usePoisonedData: boolean,
       private i18nNormalizeLineEndingsInICUs: boolean|undefined,
       private moduleResolver: ModuleResolver, private cycleAnalyzer: CycleAnalyzer,
-      private refEmitter: ReferenceEmitter, private defaultImportRecorder: DefaultImportRecorder,
+      private cycleHandlingStrategy: CycleHandlingStrategy, private refEmitter: ReferenceEmitter,
+      private defaultImportRecorder: DefaultImportRecorder,
       private depTracker: DependencyTracker|null,
       private injectableRegistry: InjectableClassRegistry,
       private annotateForClosureCompiler: boolean) {}
@@ -546,10 +547,12 @@ export class ComponentDecoratorHandler implements
           inputs: directive.inputs.propertyNames,
           outputs: directive.outputs.propertyNames,
           exportAs: directive.exportAs,
+          isComponent: directive.isComponent,
         };
       });
 
-      const usedPipes: {ref: Reference, pipeName: string, expression: Expression}[] = [];
+      type UsedPipe = {ref: Reference, pipeName: string, expression: Expression};
+      const usedPipes: UsedPipe[] = [];
       for (const pipeName of bound.getUsedPipes()) {
         if (!pipes.has(pipeName)) {
           continue;
@@ -564,10 +567,22 @@ export class ComponentDecoratorHandler implements
 
       // Scan through the directives/pipes actually used in the template and check whether any
       // import which needs to be generated would create a cycle.
-      const cycleDetected = usedDirectives.some(dir => this._isCyclicImport(dir.type, context)) ||
-          usedPipes.some(pipe => this._isCyclicImport(pipe.expression, context));
+      const cyclesFromDirectives = new Map<UsedDirective, Cycle>();
+      for (const usedDirective of usedDirectives) {
+        const cycle = this._checkForCyclicImport(usedDirective.ref, usedDirective.type, context);
+        if (cycle !== null) {
+          cyclesFromDirectives.set(usedDirective, cycle);
+        }
+      }
+      const cyclesFromPipes = new Map<UsedPipe, Cycle>();
+      for (const usedPipe of usedPipes) {
+        const cycle = this._checkForCyclicImport(usedPipe.ref, usedPipe.expression, context);
+        if (cycle !== null) {
+          cyclesFromPipes.set(usedPipe, cycle);
+        }
+      }
 
-      if (!cycleDetected) {
+      if (cyclesFromDirectives.size === 0 && cyclesFromPipes.size === 0) {
         // No cycle was detected. Record the imports that need to be created in the cycle detector
         // so that future cyclic import checks consider their production.
         for (const {type} of usedDirectives) {
@@ -592,11 +607,28 @@ export class ComponentDecoratorHandler implements
             DeclarationListEmitMode.Closure :
             DeclarationListEmitMode.Direct;
       } else {
-        // Declaring the directiveDefs/pipeDefs arrays directly would require imports that would
-        // create a cycle. Instead, mark this component as requiring remote scoping, so that the
-        // NgModule file will take care of setting the directives for the component.
-        this.scopeRegistry.setComponentRemoteScope(
-            node, usedDirectives.map(dir => dir.ref), usedPipes.map(pipe => pipe.ref));
+        if (this.cycleHandlingStrategy === CycleHandlingStrategy.UseRemoteScoping) {
+          // Declaring the directiveDefs/pipeDefs arrays directly would require imports that would
+          // create a cycle. Instead, mark this component as requiring remote scoping, so that the
+          // NgModule file will take care of setting the directives for the component.
+          this.scopeRegistry.setComponentRemoteScope(
+              node, usedDirectives.map(dir => dir.ref), usedPipes.map(pipe => pipe.ref));
+        } else {
+          // We are not able to handle this cycle so throw an error.
+          const relatedMessages: ts.DiagnosticRelatedInformation[] = [];
+          for (const [dir, cycle] of cyclesFromDirectives) {
+            relatedMessages.push(
+                makeCyclicImportInfo(dir.ref, dir.isComponent ? 'component' : 'directive', cycle));
+          }
+          for (const [pipe, cycle] of cyclesFromPipes) {
+            relatedMessages.push(makeCyclicImportInfo(pipe.ref, 'pipe', cycle));
+          }
+          throw new FatalDiagnosticError(
+              ErrorCode.IMPORT_CYCLE_DETECTED, node,
+              'One or more import cycles would need to be created to compile this component, ' +
+                  'which is not supported by the current compiler configuration.',
+              relatedMessages);
+        }
       }
     }
 
@@ -1052,14 +1084,20 @@ export class ComponentDecoratorHandler implements
     return this.moduleResolver.resolveModule(expr.value.moduleName!, origin.fileName);
   }
 
-  private _isCyclicImport(expr: Expression, origin: ts.SourceFile): boolean {
-    const imported = this._expressionToImportedFile(expr, origin);
-    if (imported === null) {
-      return false;
+  /**
+   * Check whether adding an import from `origin` to the source-file corresponding to `expr` would
+   * create a cyclic import.
+   *
+   * @returns a `Cycle` object if a cycle would be created, otherwise `null`.
+   */
+  private _checkForCyclicImport(ref: Reference, expr: Expression, origin: ts.SourceFile): Cycle
+      |null {
+    const importedFile = this._expressionToImportedFile(expr, origin);
+    if (importedFile === null) {
+      return null;
     }
-
     // Check whether the import is legal.
-    return this.cycleAnalyzer.wouldCreateCycle(origin, imported);
+    return this.cycleAnalyzer.wouldCreateCycle(origin, importedFile);
   }
 
   private _recordSyntheticImport(expr: Expression, origin: ts.SourceFile): void {
@@ -1219,3 +1257,15 @@ interface ExternalTemplateDeclaration extends CommonTemplateDeclaration {
  * record without needing to parse the original decorator again.
  */
 type TemplateDeclaration = InlineTemplateDeclaration|ExternalTemplateDeclaration;
+
+/**
+ * Generate a diagnostic related information object that describes a potential cyclic import path.
+ */
+function makeCyclicImportInfo(
+    ref: Reference, type: string, cycle: Cycle): ts.DiagnosticRelatedInformation {
+  const name = ref.debugName || '(unknown)';
+  const path = cycle.getPath().map(sf => sf.fileName).join(' -> ');
+  const message =
+      `The ${type} '${name}' is used in the template but importing it would create a cycle: `;
+  return makeRelatedInformation(ref.node, message + path);
+}

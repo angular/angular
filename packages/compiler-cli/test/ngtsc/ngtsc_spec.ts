@@ -4774,6 +4774,53 @@ runInEachFileSystem(os => {
         const jsContents = env.getContents('test.js');
         expect(jsContents).not.toMatch(/i\d\.ɵɵsetComponentScope\([^)]*OtherComponent[^)]*\)/);
       });
+
+      it('should detect a simple cycle and fatally error if doing partial-compilation', () => {
+        env.tsconfig({
+          compilationMode: 'partial',
+        });
+
+        env.write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+        import {NormalComponent} from './cyclic';
+
+        @Component({
+          selector: 'cyclic-component',
+          template: 'Importing this causes a cycle',
+        })
+        export class CyclicComponent {}
+
+        @NgModule({
+          declarations: [NormalComponent, CyclicComponent],
+        })
+        export class Module {}
+      `);
+
+        env.write('cyclic.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'normal-component',
+          template: '<cyclic-component></cyclic-component>',
+        })
+        export class NormalComponent {}
+      `);
+
+        const diagnostics = env.driveDiagnostics();
+        expect(diagnostics.length).toEqual(1);
+        const error = diagnostics[0];
+        expect(error.code).toBe(ngErrorCode(ErrorCode.IMPORT_CYCLE_DETECTED));
+        expect(error.messageText)
+            .toEqual(
+                'One or more import cycles would need to be created to compile this component, ' +
+                'which is not supported by the current compiler configuration.');
+        const _abs = absoluteFrom;
+        expect(error.relatedInformation?.map(diag => diag.messageText)).toEqual([
+          `The component 'CyclicComponent' is used in the template ` +
+              `but importing it would create a cycle: ` +
+              `${_abs('/cyclic.ts')} -> ${_abs('/test.ts')} -> ${_abs('/cyclic.ts')}`,
+        ]);
+      });
     });
 
     describe('local refs', () => {
