@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {PathManipulation} from '../../file_system';
+import {getFileSystem, PathManipulation} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {makeProgram} from '../../testing';
 
@@ -55,4 +55,9 @@ export function makeProgramFromGraph(fs: PathManipulation, graph: string): {
     };
   });
   return makeProgram(files);
+}
+
+export function importPath(files: ts.SourceFile[]): string {
+  const fs = getFileSystem();
+  return files.map(sf => fs.basename(sf.fileName).replace('.ts', '')).join(',');
 }

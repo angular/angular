@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
-import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
+import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../../src/ngtsc/cycles';
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
 import {absoluteFromSourceFile, LogicalFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
@@ -101,8 +101,9 @@ export class DecorationAnalyzer {
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
         /* usePoisonedData */ false,
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
-        this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER, NOOP_DEPENDENCY_TRACKER,
-        this.injectableRegistry, !!this.compilerOptions.annotateForClosureCompiler),
+        CycleHandlingStrategy.UseRemoteScoping, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
+        NOOP_DEPENDENCY_TRACKER, this.injectableRegistry,
+        !!this.compilerOptions.annotateForClosureCompiler),
     // See the note in ngtsc about why this cast is needed.
     // clang-format off
     new DirectiveDecoratorHandler(
