@@ -53,11 +53,5 @@
     "ts-node": {
       "optional": true
     }
-  },
-  "bazelWorkspaces": {
-    "npm_angular_dev_infra_private": {
-      "version": "0.0.0-PLACEHOLDER",
-      "rootPath": "."
-    }
   }
 }
