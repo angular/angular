@@ -1067,7 +1067,7 @@ describe('MatInput with forms', () => {
     let fixture: ComponentFixture<MatInputWithFormErrorMessages>;
     let testComponent: MatInputWithFormErrorMessages;
     let containerEl: HTMLElement;
-    let inputEl: HTMLElement;
+    let inputEl: HTMLInputElement;
 
     beforeEach(fakeAsync(() => {
       fixture = createComponent(MatInputWithFormErrorMessages);
@@ -1088,6 +1088,7 @@ describe('MatInput with forms', () => {
       expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
       expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
 
+      inputEl.value = 'not valid';
       testComponent.formControl.markAsTouched();
       fixture.detectChanges();
       flush();
@@ -1105,6 +1106,7 @@ describe('MatInput with forms', () => {
       expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
       expect(containerEl.querySelectorAll('mat-error').length).toBe(0, 'Expected no error message');
 
+      inputEl.value = 'not valid';
       dispatchFakeEvent(fixture.debugElement.query(By.css('form'))!.nativeElement, 'submit');
       fixture.detectChanges();
       flush();
@@ -1137,6 +1139,7 @@ describe('MatInput with forms', () => {
       expect(component.formGroupDirective.submitted)
         .toBe(false, 'Expected form not to have been submitted');
 
+      inputEl.value = 'not valid';
       dispatchFakeEvent(groupFixture.debugElement.query(By.css('form'))!.nativeElement, 'submit');
       groupFixture.detectChanges();
       flush();
@@ -1163,7 +1166,7 @@ describe('MatInput with forms', () => {
       expect(containerEl.querySelectorAll('mat-hint').length)
         .toBe(0, 'Expected no hints to be shown.');
 
-      testComponent.formControl.setValue('something');
+      testComponent.formControl.setValue('valid value');
       fixture.detectChanges();
       flush();
 
@@ -1215,6 +1218,26 @@ describe('MatInput with forms', () => {
       expect(errorIds).toBeTruthy('errors should be shown');
       expect(describedBy).toBe(errorIds);
     }));
+
+    it('should not set `aria-invalid` to true if the input is empty', fakeAsync(() => {
+      // Submit the form since it's the one that triggers the default error state matcher.
+      dispatchFakeEvent(fixture.nativeElement.querySelector('form'), 'submit');
+      fixture.detectChanges();
+      flush();
+
+      expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
+      expect(inputEl.value).toBeFalsy();
+      expect(inputEl.getAttribute('aria-invalid'))
+          .toBe('false', 'Expected aria-invalid to be set to "false".');
+
+      inputEl.value = 'not valid';
+      fixture.detectChanges();
+
+      expect(testComponent.formControl.invalid).toBe(true, 'Expected form control to be invalid');
+      expect(inputEl.getAttribute('aria-invalid'))
+          .toBe('true', 'Expected aria-invalid to be set to "true".');
+    }));
+
   });
 
   describe('custom error behavior', () => {
@@ -2005,7 +2028,7 @@ class MatInputMissingMatInputTestController {}
 })
 class MatInputWithFormErrorMessages {
   @ViewChild('form') form: NgForm;
-  formControl = new FormControl('', Validators.required);
+  formControl = new FormControl('', [Validators.required, Validators.pattern(/valid value/)]);
   renderError = true;
 }
 
@@ -2024,7 +2047,7 @@ class MatInputWithFormErrorMessages {
 })
 class MatInputWithCustomErrorStateMatcher {
   formGroup = new FormGroup({
-    name: new FormControl('', Validators.required)
+    name: new FormControl('', [Validators.required, Validators.pattern(/valid value/)])
   });
 
   errorState = false;
@@ -2048,7 +2071,7 @@ class MatInputWithCustomErrorStateMatcher {
 class MatInputWithFormGroupErrorMessages {
   @ViewChild(FormGroupDirective) formGroupDirective: FormGroupDirective;
   formGroup = new FormGroup({
-    name: new FormControl('', Validators.required)
+    name: new FormControl('', [Validators.required, Validators.pattern(/valid value/)])
   });
 }
 

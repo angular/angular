@@ -84,8 +84,10 @@ const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
     '[disabled]': 'disabled',
     '[required]': 'required',
     '[attr.readonly]': 'readonly && !_isNativeSelect || null',
-    '[attr.aria-invalid]': 'errorState',
-    '[attr.aria-required]': 'required.toString()',
+    // Only mark the input as invalid for assistive technology if it has a value since the
+    // state usually overlaps with `aria-required` when the input is empty and can be redundant.
+    '[attr.aria-invalid]': 'errorState && !empty',
+    '[attr.aria-required]': 'required',
   },
   providers: [{provide: MatFormFieldControl, useExisting: MatInput}],
 })
