@@ -131,7 +131,8 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static min(min: number): ValidatorFn<FormControl<number>|FormControl<string>|FormControl<number|string>> {
+  static min(min: number):
+      ValidatorFn<FormControl<number>|FormControl<string>|FormControl<number|string>> {
     return (control): ValidationErrors|null => {
       if (isEmptyInputValue(control.value) || isEmptyInputValue(min)) {
         return null;  // don't validate empty values to allow optional controls
@@ -165,7 +166,8 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static max(max: number): ValidatorFn<FormControl<number>|FormControl<string>|FormControl<number|string>> {
+  static max(max: number):
+      ValidatorFn<FormControl<number>|FormControl<string>|FormControl<number|string>> {
     return (control): ValidationErrors|null => {
       if (isEmptyInputValue(control.value) || isEmptyInputValue(max)) {
         return null;  // don't validate empty values to allow optional controls
@@ -299,7 +301,8 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static minLength(minLength: number): ValidatorFn<FormControl<string>|FormControl<any[]>|FormArray<any>> {
+  static minLength(minLength: number):
+      ValidatorFn<FormControl<string>|FormControl<any[]>|FormArray<any>> {
     return (control): ValidationErrors|null => {
       if (isEmptyInputValue(control.value) || !hasValidLength(control.value)) {
         // don't validate empty values to allow optional controls
@@ -340,7 +343,8 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static maxLength(maxLength: number): ValidatorFn<FormControl<string>|FormControl<any[]>|FormArray<any>> {
+  static maxLength(maxLength: number):
+      ValidatorFn<FormControl<string>|FormControl<any[]>|FormArray<any>> {
     return (control): ValidationErrors|null => {
       return hasValidLength(control.value) && control.value!.length > maxLength ?
           {'maxlength': {'requiredLength': maxLength, 'actualLength': control.value!.length}} :

@@ -9,7 +9,7 @@
 import {Injectable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
-import {AbstractControl, AbstractControlOptions, FormSection, FormArray, FormControl, FormControlState, FormGroup, FormHooks} from './model';
+import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormControlState, FormGroup, FormHooks, FormSection} from './model';
 
 function isAbstractControlOptions<T extends AbstractControl>(
     options: AbstractControlOptions<T>|{[key: string]: any}): options is AbstractControlOptions<T> {
@@ -151,8 +151,8 @@ export class FormBuilder {
    * submit')
    */
   section<T extends {[key: string]: AbstractControl | FormControlConfig<any>}>(
-      controlsConfig: T,
-      options?: AbstractControlOptions<FormSection<ConfigToForm<T>>>|null): FormSection<ConfigToForm<T>>;
+      controlsConfig: T, options?: AbstractControlOptions<FormSection<ConfigToForm<T>>>|null):
+      FormSection<ConfigToForm<T>>;
   /**
    * @description
    * Construct a new `FormSection` instance.
@@ -161,10 +161,11 @@ export class FormBuilder {
    * Use the `FormBuilder#section` overload with `AbstractControlOptions` instead.
    * Note that `AbstractControlOptions` expects `validators` and `asyncValidators` to be valid
    * validators. If you have custom validators, make sure their validation function parameter is
-   * `AbstractControl` and not a sub-class, such as `FormSection`. These functions will be called with
-   * an object of type `AbstractControl` and that cannot be automatically downcast to a subclass, so
-   * TypeScript sees this as an error. For example, change the `(section: FormSection) =>
-   * ValidationErrors|null` signature to be `(section: AbstractControl) => ValidationErrors|null`.
+   * `AbstractControl` and not a sub-class, such as `FormSection`. These functions will be called
+   * with an object of type `AbstractControl` and that cannot be automatically downcast to a
+   * subclass, so TypeScript sees this as an error. For example, change the `(section: FormSection)
+   * => ValidationErrors|null` signature to be `(section: AbstractControl) =>
+   * ValidationErrors|null`.
    *
    * @param controlsConfig A collection of child controls. The key for each child is the name
    * under which it is registered.
@@ -178,7 +179,7 @@ export class FormBuilder {
    */
   section<T extends {[key: string]: AbstractControl | FormControlConfig<any>}>(
       controlsConfig: T, options: {[key: string]: any}): FormSection<ConfigToForm<T>>;
-      section(
+  section(
       controlsConfig: {[key: string]: any},
       options: AbstractControlOptions<FormSection<any>>|{[key: string]: any}|null = null) {
     return new FormSection(this._reduceControls(controlsConfig), this._normalizeOptions(options));
@@ -286,7 +287,9 @@ export class FormBuilder {
 
   /** @internal */
   _createControl<T extends AbstractControl>(controlConfig: T): T;
+  /** @internal */
   _createControl<T>(controlConfig: FormControlConfig<T>): FormControl<T>;
+  /** @internal */
   _createControl<T>(controlConfig: AbstractControl|FormControlConfig<T>) {
     if (controlConfig instanceof FormControl || controlConfig instanceof FormGroup ||
         controlConfig instanceof FormArray || controlConfig instanceof FormSection) {

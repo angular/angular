@@ -138,7 +138,7 @@ function isOptionsObj<T extends AbstractControl>(
       typeof validatorOrOpts === 'object';
 }
 
-export type FormControlState<T> = [T|null|{value: T | null, disabled: boolean}][0];
+export type FormControlState<T> = [T | null | {value: T | null, disabled: boolean}][0];
 
 export type StateType<T> =
     T extends FormArray<infer U>? StateType<U>[] : T extends FormControl<infer V>?
@@ -756,27 +756,33 @@ export abstract class AbstractControl {
   protected _getComposedValidator(): ValidatorFn|null {
     return this._composedValidatorFn;
   }
+  /** @internal */
   protected _setComposedValidator(validatorFn: ValidatorFn|null) {
     this._rawValidators = this._composedValidatorFn = validatorFn;
   }
 
+  /** @internal */
   protected _getComposedAsyncValidator(): AsyncValidatorFn|null {
     return this._composedAsyncValidatorFn;
   }
+  /** @internal */
   protected _setComposedAsyncValidator(asyncValidatorFn: AsyncValidatorFn|null) {
     this._rawAsyncValidators = this._composedAsyncValidatorFn = asyncValidatorFn;
   }
 
+  /** @internal */
   protected _setValidators(newValidator: ValidatorFn|ValidatorFn[]|null): void {
     this._rawValidators = newValidator;
     this._composedValidatorFn = coerceToValidator(newValidator);
   }
 
+  /** @internal */
   protected _setAsyncValidators(newValidator: AsyncValidatorFn|AsyncValidatorFn[]|null): void {
     this._rawAsyncValidators = newValidator;
     this._composedAsyncValidatorFn = coerceToAsyncValidator(newValidator);
   }
 
+  /** @internal */
   _updateTreeValidity(opts: {emitEvent?: boolean} = {emitEvent: true}) {
     this._forEachChild((ctrl: AbstractControl) => ctrl._updateTreeValidity(opts));
     this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
@@ -1322,7 +1328,8 @@ export class FormControl<T = any> extends AbstractControl {
    * When false, no events are emitted.
    *
    */
-  reset(formState: FormControlState<T> = null, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+  reset(formState: FormControlState<T> = null, options: {onlySelf?: boolean,
+                                                         emitEvent?: boolean} = {}): void {
     this._applyFormState(formState);
     this.markAsPristine(options);
     this.markAsUntouched(options);
@@ -2491,7 +2498,8 @@ export class FormArray<T extends AbstractControl = any> extends AbstractControl 
  *
  * @publicApi
  */
-export class FormSection<T extends {[K in keyof T]: AbstractControl} = any> extends AbstractControl {
+export class FormSection<T extends {[K in keyof T]: AbstractControl} = any> extends
+    AbstractControl {
   /**
    * * For an enabled `FormSection`, the values of enabled controls as an object
    * with a key-value pair for each member of the form.
@@ -2515,8 +2523,8 @@ export class FormSection<T extends {[K in keyof T]: AbstractControl} = any> exte
    */
   constructor(
       public controls: T,
-      validatorOrOpts?: ValidatorFn<FormSection<T>>|ValidatorFn<FormSection<T>>[]|AbstractControlOptions<FormSection<T>>|
-      null,
+      validatorOrOpts?: ValidatorFn<FormSection<T>>|ValidatorFn<FormSection<T>>[]|
+      AbstractControlOptions<FormSection<T>>|null,
       asyncValidator?: AsyncValidatorFn<FormSection<T>>|AsyncValidatorFn<FormSection<T>>[]|null) {
     super(pickValidators(validatorOrOpts), pickAsyncValidators(asyncValidator, validatorOrOpts));
     this._initObservables();
@@ -2568,7 +2576,8 @@ export class FormSection<T extends {[K in keyof T]: AbstractControl} = any> exte
    * `updateValueAndValidity()` for the new validation to take effect.
    *
    */
-  setValidators(newValidator: ValidatorFn<FormSection<T>>|ValidatorFn<FormSection<T>>[]|null): void {
+  setValidators(newValidator: ValidatorFn<FormSection<T>>|ValidatorFn<FormSection<T>>[]|
+                null): void {
     this._setValidators(newValidator);
   }
 
@@ -2580,8 +2589,8 @@ export class FormSection<T extends {[K in keyof T]: AbstractControl} = any> exte
    * `updateValueAndValidity()` for the new validation to take effect.
    *
    */
-  setAsyncValidators(newValidator: AsyncValidatorFn<FormSection<T>>|AsyncValidatorFn<FormSection<T>>[]|
-                     null): void {
+  setAsyncValidators(newValidator: AsyncValidatorFn<FormSection<T>>|
+                     AsyncValidatorFn<FormSection<T>>[]|null): void {
     this._setAsyncValidators(newValidator);
   }
 

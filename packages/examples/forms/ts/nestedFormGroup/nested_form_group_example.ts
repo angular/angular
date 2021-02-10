@@ -31,8 +31,8 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 export class NestedFormGroupComp {
   form = new FormGroup({
     name: new FormGroup({
-      first: new FormControl('Nancy', Validators.minLength(2)),
-      last: new FormControl('Drew', Validators.required)
+      first: new FormControl<string>('Nancy', Validators.minLength(2)),
+      last: new FormControl<string>('Drew', Validators.required)
     }),
     email: new FormControl()
   });

@@ -171,7 +171,9 @@ describe('Validators', () => {
 
   describe('requiredTrue', () => {
     it('should error on false',
-       () => expect(Validators.requiredTrue(new FormControl<boolean>(false))).toEqual({'required': true}));
+       () => expect(Validators.requiredTrue(new FormControl<boolean>(false))).toEqual({
+         'required': true
+       }));
 
     it('should not error on true',
        () => expect(Validators.requiredTrue(new FormControl<boolean>(true))).toBeNull());

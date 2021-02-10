@@ -27,7 +27,7 @@ import {FormControl, FormGroup, Validators} from '@angular/forms';
 })
 export class SimpleFormGroup {
   form = new FormGroup({
-    first: new FormControl('Nancy', Validators.minLength(2)),
+    first: new FormControl<string>('Nancy', Validators.minLength(2)),
     last: new FormControl('Drew'),
   });
 

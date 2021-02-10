@@ -940,7 +940,7 @@ describe('FormArray', () => {
 
     it('should compile with properly typed validator', () => {
       const validatorFn = (control: FormArray<FormControl<string>>) => null;
-      const a = new FormArray([new FormControl('test')], {validators: validatorFn });
+      const a = new FormArray([new FormControl('test')], {validators: validatorFn});
 
       expect(a.valid).toBe(true);
     });
