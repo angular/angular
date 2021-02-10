@@ -3,9 +3,9 @@ const commonjs = require('rollup-plugin-commonjs');
 
 // Parse the stamp file produced by Bazel from the version control system
 let version = '<unknown>';
-if (bazel_stamp_file) {
+if (bazel_version_file) {
   const versionTag = require('fs')
-                         .readFileSync(bazel_stamp_file, {encoding: 'utf-8'})
+                         .readFileSync(bazel_version_file, {encoding: 'utf-8'})
                          .split('\n')
                          .find(s => s.startsWith('BUILD_SCM_VERSION'));
   // Don't assume BUILD_SCM_VERSION exists
