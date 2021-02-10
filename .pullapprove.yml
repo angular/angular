@@ -682,7 +682,10 @@ groups:
       - *can-be-global-approved
       - *can-be-global-docs-approved
       - >
-        contains_any_globs(files.exclude('packages/compiler-cli/**'), [
+        contains_any_globs(
+          files.exclude('packages/compiler-cli/**'),
+          files.exclude('packages/language-service/**'),
+          [
           'packages/**/testing/**',
           'aio/content/guide/testing.md',
           'aio/content/guide/test-debugging.md',
