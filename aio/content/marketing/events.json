@@ -1,5 +1,18 @@
 [
   {
+    "name": "ng-conf",
+    "location": "Online",
+    "linkUrl": "https://www.2021.ng-conf.org/",
+    "date": {
+      "start": "2021-04-22",
+      "end": "2021-04-23"
+    },
+    "workshopsDate": {
+      "start": "2021-04-12",
+      "end": "2021-04-15"
+    }
+  },
+  {
     "name": "Angular Global Summit",
     "location": "Online",
     "linkUrl": "https://angular.geekle.us/",
