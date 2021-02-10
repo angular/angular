@@ -40,6 +40,7 @@ import {
   TOOLTIP_PANEL_CLASS,
   MAT_TOOLTIP_DEFAULT_OPTIONS,
   TooltipTouchGestures,
+  TooltipPosition,
 } from './index';
 
 
@@ -747,6 +748,80 @@ describe('MatTooltip', () => {
       tick(500);
 
       expect(overlayRef.detach).not.toHaveBeenCalled();
+    }));
+
+    it('should set a class on the overlay panel that reflects the position', fakeAsync(() => {
+      // Move the element so that the primary position is always used.
+      buttonElement.style.position = 'fixed';
+      buttonElement.style.top = buttonElement.style.left = '200px';
+
+      fixture.componentInstance.message = 'hi';
+      fixture.detectChanges();
+      setPositionAndShow('below');
+
+      const classList = tooltipDirective._overlayRef!.overlayElement.classList;
+      expect(classList).toContain('mat-tooltip-panel-below');
+
+      setPositionAndShow('above');
+      expect(classList).not.toContain('mat-tooltip-panel-below');
+      expect(classList).toContain('mat-tooltip-panel-above');
+
+      setPositionAndShow('left');
+      expect(classList).not.toContain('mat-tooltip-panel-above');
+      expect(classList).toContain('mat-tooltip-panel-left');
+
+      setPositionAndShow('right');
+      expect(classList).not.toContain('mat-tooltip-panel-left');
+      expect(classList).toContain('mat-tooltip-panel-right');
+
+      function setPositionAndShow(position: TooltipPosition) {
+        tooltipDirective.hide(0);
+        fixture.detectChanges();
+        tick(0);
+        tooltipDirective.position = position;
+        tooltipDirective.show(0);
+        fixture.detectChanges();
+        tick(0);
+        fixture.detectChanges();
+        tick(500);
+      }
+    }));
+
+    it('should account for RTL when setting the tooltip position class', fakeAsync(() => {
+      // Move the element so that the primary position is always used.
+      buttonElement.style.position = 'fixed';
+      buttonElement.style.top = buttonElement.style.left = '200px';
+      fixture.componentInstance.message = 'hi';
+      fixture.detectChanges();
+
+      dir.value = 'ltr';
+      tooltipDirective.position = 'after';
+      tooltipDirective.show(0);
+      fixture.detectChanges();
+      tick(0);
+      fixture.detectChanges();
+      tick(500);
+
+      const classList = tooltipDirective._overlayRef!.overlayElement.classList;
+      expect(classList).not.toContain('mat-tooltip-panel-after');
+      expect(classList).not.toContain('mat-tooltip-panel-before');
+      expect(classList).not.toContain('mat-tooltip-panel-left');
+      expect(classList).toContain('mat-tooltip-panel-right');
+
+      tooltipDirective.hide(0);
+      fixture.detectChanges();
+      tick(0);
+      dir.value = 'rtl';
+      tooltipDirective.show(0);
+      fixture.detectChanges();
+      tick(0);
+      fixture.detectChanges();
+      tick(500);
+
+      expect(classList).not.toContain('mat-tooltip-panel-after');
+      expect(classList).not.toContain('mat-tooltip-panel-before');
+      expect(classList).not.toContain('mat-tooltip-panel-right');
+      expect(classList).toContain('mat-tooltip-panel-left');
     }));
 
   });

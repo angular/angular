@@ -14,11 +14,16 @@ the positions `before` and `after` should be used instead of `left` and `right`,
 | Position  | Description                                                                          |
 |-----------|--------------------------------------------------------------------------------------|
 | `above`   | Always display above the element                                                     |
-| `below `  | Always display beneath the element                                                   |
+| `below`   | Always display beneath the element                                                   |
 | `left`    | Always display to the left of the element                                            |
 | `right`   | Always display to the right of the element                                           |
 | `before`  | Display to the left in left-to-right layout and to the right in right-to-left layout |
-| `after`   | Display to the right in left-to-right layout and to the left in right-to-left layout|
+| `after`   | Display to the right in left-to-right layout and to the left in right-to-left layout |
+
+Based on the position in which the tooltip is shown, the `.mat-tooltip-panel` element will receive a
+CSS class that can be used for style (e.g. to add an arrow). The possible classes are
+`mat-tooltip-panel-above`, `mat-tooltip-panel-below`, `mat-tooltip-panel-left`,
+`mat-tooltip-panel-right`.
 
 <!-- example(tooltip-position) -->
 
