@@ -113,17 +113,17 @@ describe('MatTooltip', () => {
 
       fixture.detectChanges();
 
-      // wait till animation has finished
+      // Wait until the animation has finished.
       tick(500);
 
-      // Make sure tooltip is shown to the user and animation has finished
+      // Make sure tooltip is shown to the user and animation has finished.
       const tooltipElement = overlayContainerElement.querySelector('.mat-tooltip') as HTMLElement;
       expect(tooltipElement instanceof HTMLElement).toBe(true);
       expect(tooltipElement.style.transform).toBe('scale(1)');
 
       expect(overlayContainerElement.textContent).toContain(initialTooltipMessage);
 
-      // After hide called, a timeout delay is created that will to hide the tooltip.
+      // After hide is called, a timeout delay is created that will to hide the tooltip.
       const tooltipDelay = 1000;
       tooltipDirective.hide(tooltipDelay);
       expect(tooltipDirective._isTooltipVisible()).toBe(true);
@@ -822,6 +822,33 @@ describe('MatTooltip', () => {
       expect(classList).not.toContain('mat-tooltip-panel-before');
       expect(classList).not.toContain('mat-tooltip-panel-right');
       expect(classList).toContain('mat-tooltip-panel-left');
+    }));
+
+    it('should clear the show timeout on destroy', fakeAsync(() => {
+      assertTooltipInstance(tooltipDirective, false);
+
+      tooltipDirective.show(1000);
+      fixture.detectChanges();
+
+      // Note that we aren't asserting anything, but `fakeAsync` will
+      // throw if we have any timers by the end of the test.
+      fixture.destroy();
+    }));
+
+    it('should clear the hide timeout on destroy', fakeAsync(() => {
+      assertTooltipInstance(tooltipDirective, false);
+
+      tooltipDirective.show();
+      tick(0);
+      fixture.detectChanges();
+      tick(500);
+
+      tooltipDirective.hide(1000);
+      fixture.detectChanges();
+
+      // Note that we aren't asserting anything, but `fakeAsync` will
+      // throw if we have any timers by the end of the test.
+      fixture.destroy();
     }));
 
   });

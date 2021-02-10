@@ -45,8 +45,8 @@ export declare abstract class _MatTooltipBase<T extends _TooltipComponentBase> i
 }
 
 export declare abstract class _TooltipComponentBase implements OnDestroy {
-    _hideTimeoutId: number | null;
-    _showTimeoutId: number | null;
+    _hideTimeoutId: number | undefined;
+    _showTimeoutId: number | undefined;
     _visibility: TooltipVisibility;
     message: string;
     tooltipClass: string | string[] | Set<string> | {

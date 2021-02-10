@@ -825,6 +825,33 @@ describe('MDC-based MatTooltip', () => {
       expect(classList).toContain('mat-tooltip-panel-left');
     }));
 
+    it('should clear the show timeout on destroy', fakeAsync(() => {
+      assertTooltipInstance(tooltipDirective, false);
+
+      tooltipDirective.show(1000);
+      fixture.detectChanges();
+
+      // Note that we aren't asserting anything, but `fakeAsync` will
+      // throw if we have any timers by the end of the test.
+      fixture.destroy();
+    }));
+
+    it('should clear the hide timeout on destroy', fakeAsync(() => {
+      assertTooltipInstance(tooltipDirective, false);
+
+      tooltipDirective.show();
+      tick(0);
+      fixture.detectChanges();
+      tick(500);
+
+      tooltipDirective.hide(1000);
+      fixture.detectChanges();
+
+      // Note that we aren't asserting anything, but `fakeAsync` will
+      // throw if we have any timers by the end of the test.
+      fixture.destroy();
+    }));
+
   });
 
   describe('fallback positions', () => {
