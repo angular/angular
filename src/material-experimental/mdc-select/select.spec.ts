@@ -3768,6 +3768,30 @@ describe('MDC-based MatSelect', () => {
         .toEqual([true, true, true, true, false, false]);
     }));
 
+    it('should update the option selected state if the same array is mutated and passed back in',
+      fakeAsync(() => {
+        const value: string[] = [];
+        trigger.click();
+        testInstance.control.setValue(value);
+        fixture.detectChanges();
+
+        const optionNodes =
+            Array.from<HTMLElement>(overlayContainerElement.querySelectorAll('mat-option'));
+        const optionInstances = testInstance.options.toArray();
+
+        expect(optionNodes.some(option => {
+          return option.classList.contains('mdc-list-item--selected');
+        })).toBe(false);
+        expect(optionInstances.some(option => option.selected)).toBe(false);
+
+        value.push('eggs-5');
+        testInstance.control.setValue(value);
+        fixture.detectChanges();
+
+        expect(optionNodes[5].classList).toContain('mdc-list-item--selected');
+        expect(optionInstances[5].selected).toBe(true);
+      }));
+
   });
 
   it('should be able to provide default values through an injection token', fakeAsync(() => {

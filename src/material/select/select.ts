@@ -402,7 +402,8 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
   @Input()
   get value(): any { return this._value; }
   set value(newValue: any) {
-    if (newValue !== this._value) {
+    // Always re-assign an array, because it might have been mutated.
+    if (newValue !== this._value || (this._multiple && Array.isArray(newValue))) {
       if (this.options) {
         this._setSelectionByValue(newValue);
       }
