@@ -390,7 +390,7 @@ There are several options that can be used to fine-tune the optimization of an a
 </tr>
 <tr>
 <td><code>styles</code></td>
-<td>Enables optimization of the scripts output.</td>
+<td>Enables optimization of the styles output.</td>
 <td><code>boolean|<a href="#styles-optimization-options">Styles optimization options</a></code></td>
 <td><code>true</code></td>
 </tr>
