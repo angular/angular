@@ -1,3 +1,35 @@
+# 11.2.0 "gingham-grape" (2021-02-10)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** not blocking initial move event ([#21752](https://github.com/angular/components/issues/21752)) ([518f1d0f587a1a03cad144a78d8f9a3ff8e337ea](https://github.com/angular/components/commit/518f1d0f587a1a03cad144a78d8f9a3ff8e337ea)), closes [#21382](https://github.com/angular/components/issues/21382) [#21749](https://github.com/angular/components/issues/21749) |
+| bug fix |  **platform:** adjust return type for _getShadowRoot ([#21798](https://github.com/angular/components/issues/21798)) ([c222618ab64a48dca3a52aba4ee5283b9a091892](https://github.com/angular/components/commit/c222618ab64a48dca3a52aba4ee5283b9a091892)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **form-field:** focus indication not working for standard appearance in high contrast mode ([#21805](https://github.com/angular/components/issues/21805)) ([fdce96da53df011b3b369551e5e8ef5f1801af38](https://github.com/angular/components/commit/fdce96da53df011b3b369551e5e8ef5f1801af38)), closes [#21780](https://github.com/angular/components/issues/21780) |
+| bug fix |  **input:** uncessary scroll bar on auto-resize textarea in some cases ([#21619](https://github.com/angular/components/issues/21619)) ([210c7e0af4d71ae3ba001b0317962a51bf0507f9](https://github.com/angular/components/commit/210c7e0af4d71ae3ba001b0317962a51bf0507f9)), closes [#21560](https://github.com/angular/components/issues/21560) |
+| bug fix |  **menu:** prevent mat-menu from affecting flex layout ([#21246](https://github.com/angular/components/issues/21246)) ([1c16d912deca517193c88d1ef7984bc3bc178c94](https://github.com/angular/components/commit/1c16d912deca517193c88d1ef7984bc3bc178c94)) |
+| bug fix |  **menu:** unable to move focus from inside opened event ([#20968](https://github.com/angular/components/issues/20968)) ([564f9ec8ba039a65af7d6b09083232dfb907c170](https://github.com/angular/components/commit/564f9ec8ba039a65af7d6b09083232dfb907c170)), closes [#20965](https://github.com/angular/components/issues/20965) |
+| bug fix |  **select:** not marking options as selected correctly when setting value with duplicates ([#13361](https://github.com/angular/components/issues/13361)) ([4083b101c8cc58d8a4397d04aad0d684b79cda9f](https://github.com/angular/components/commit/4083b101c8cc58d8a4397d04aad0d684b79cda9f)), closes [#13179](https://github.com/angular/components/issues/13179) |
+| bug fix |  **stepper:** last step not being marked as interacted ([#17976](https://github.com/angular/components/issues/17976)) ([c0e2195d9ef536f0f72b6dfa7d3efa18b02b053d](https://github.com/angular/components/commit/c0e2195d9ef536f0f72b6dfa7d3efa18b02b053d)), closes [#17974](https://github.com/angular/components/issues/17974) |
+| bug fix |  **tabs:** focusChange not being emitted when tabbing into a tab header ([#15094](https://github.com/angular/components/issues/15094)) ([b62e24860a089e46d79f9d4bd16169e2583e50cf](https://github.com/angular/components/commit/b62e24860a089e46d79f9d4bd16169e2583e50cf)), closes [#14142](https://github.com/angular/components/issues/14142) |
+| bug fix |  **tabs:** mark tab body as a scrollable container ([#16344](https://github.com/angular/components/issues/16344)) ([e0782e6e818047e83fb9ad2a0c9e935ba4ba7ac6](https://github.com/angular/components/commit/e0782e6e818047e83fb9ad2a0c9e935ba4ba7ac6)), closes [#8405](https://github.com/angular/components/issues/8405) |
+| bug fix |  **tabs:** strong focus indicator not visible when tab header has a background ([#21402](https://github.com/angular/components/issues/21402)) ([8e6b2c5c4a3a0bb2445171036d2ff0d86b19d63e](https://github.com/angular/components/commit/8e6b2c5c4a3a0bb2445171036d2ff0d86b19d63e)) |
+| bug fix |  **tooltip:** handle touch devices in test harness ([#21220](https://github.com/angular/components/issues/21220)) ([f9114260dde303ee4d3da356c5141698f517a92d](https://github.com/angular/components/commit/f9114260dde303ee4d3da356c5141698f517a92d)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-tabs:** support backgroundColor on nav bar ([#21746](https://github.com/angular/components/issues/21746)) ([9f3e3e4d53cb4be2b266d65a4b0ec47ae9b1081d](https://github.com/angular/components/commit/9f3e3e4d53cb4be2b266d65a4b0ec47ae9b1081d)) |
+| feature |  **mdc-button:** add extended fab ([#21585](https://github.com/angular/components/issues/21585)) ([ea7bddae7f398fdb882730683ac28a64f08c4705](https://github.com/angular/components/commit/ea7bddae7f398fdb882730683ac28a64f08c4705)) |
+
+
 # 11.2.0-rc.0 "sandstone-pyramid" (2021-02-03)
 
 ### cdk
