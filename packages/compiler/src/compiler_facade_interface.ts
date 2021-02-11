@@ -29,6 +29,8 @@ export interface ExportedCompilerFacade {
 export interface CompilerFacade {
   compilePipe(angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3PipeMetadataFacade):
       any;
+  compilePipeDeclaration(
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, declaration: R3DeclarePipeFacade): any;
   compileInjectable(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3InjectableMetadataFacade): any;
   compileInjector(
@@ -253,6 +255,12 @@ export interface R3DeclareQueryMetadataFacade {
   read?: OpaqueValue;
   static?: boolean;
   emitDistinctChangesOnly?: boolean;
+}
+
+export interface R3DeclarePipeFacade {
+  type: Function;
+  name: string;
+  pure?: boolean;
 }
 
 export interface ParseSourceSpan {

@@ -17,6 +17,7 @@ import {LinkerEnvironment} from '../../../src/file_linker/linker_environment';
 import {PartialComponentLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_directive_linker_1';
 import {PartialLinkerSelector} from '../../../src/file_linker/partial_linkers/partial_linker_selector';
+import {PartialPipeLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_pipe_linker_1';
 
 describe('PartialLinkerSelector', () => {
   const options: LinkerOptions = {
@@ -42,6 +43,7 @@ describe('PartialLinkerSelector', () => {
              environment, fs.resolve('/some/path/to/file.js'), 'some file contents');
          expect(selector.supportsDeclaration('ɵɵngDeclareDirective')).toBe(true);
          expect(selector.supportsDeclaration('ɵɵngDeclareComponent')).toBe(true);
+         expect(selector.supportsDeclaration('ɵɵngDeclarePipe')).toBe(true);
          expect(selector.supportsDeclaration('$foo')).toBe(false);
        });
 
@@ -60,6 +62,8 @@ describe('PartialLinkerSelector', () => {
           .toBeInstanceOf(PartialDirectiveLinkerVersion1);
       expect(selector.getLinker('ɵɵngDeclareComponent', '0.0.0-PLACEHOLDER'))
           .toBeInstanceOf(PartialComponentLinkerVersion1);
+      expect(selector.getLinker('ɵɵngDeclarePipe', '0.0.0-PLACEHOLDER'))
+          .toBeInstanceOf(PartialPipeLinkerVersion1);
     });
 
     it('should return the linker that matches the name and valid full version', () => {

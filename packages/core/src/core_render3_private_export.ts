@@ -273,6 +273,7 @@ export {
 export {
   ɵɵngDeclareComponent,
   ɵɵngDeclareDirective,
+  ɵɵngDeclarePipe,
 } from './render3/jit/partial';
 export {
   compilePipe as ɵcompilePipe,
