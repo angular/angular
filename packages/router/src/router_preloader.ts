@@ -126,8 +126,7 @@ export class RouterPreloader implements OnDestroy {
 
   private preloadConfig(ngModule: NgModuleRef<any>, route: Route): Observable<void> {
     return this.preloadingStrategy.preload(route, () => {
-      const loaded$ = route._loadedConfig ? of(route._loadedConfig) :
-                                            this.loader.load(ngModule.injector, route);
+      const loaded$ = this.loader.load(ngModule.injector, route);
       return loaded$.pipe(mergeMap((config: LoadedRouterConfig) => {
         route._loadedConfig = config;
         return this.processRoutes(config.module, config.routes);

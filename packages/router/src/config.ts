@@ -483,11 +483,6 @@ export interface Route {
    * @internal
    */
   _loadedConfig?: LoadedRouterConfig;
-  /**
-   * Filled for routes with `loadChildren` during load
-   * @internal
-   */
-  _loader$?: Observable<LoadedRouterConfig>;
 }
 
 export class LoadedRouterConfig {
