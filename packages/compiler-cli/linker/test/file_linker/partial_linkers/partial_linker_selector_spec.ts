@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {PartialPipeLinkerVersion1} from '@angular/compiler-cli/linker/src/file_linker/partial_linkers/partial_pipe_linker_1';
 import * as ts from 'typescript';
 
 import {LinkerOptions} from '../../..';
@@ -18,6 +17,7 @@ import {LinkerEnvironment} from '../../../src/file_linker/linker_environment';
 import {PartialComponentLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_directive_linker_1';
 import {PartialLinkerSelector} from '../../../src/file_linker/partial_linkers/partial_linker_selector';
+import {PartialPipeLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_pipe_linker_1';
 
 describe('PartialLinkerSelector', () => {
   const options: LinkerOptions = {

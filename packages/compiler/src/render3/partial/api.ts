@@ -280,6 +280,7 @@ export interface R3DeclarePipeMetadata extends R3PartialDeclaration {
    * The name to use in templates to refer to this pipe.
    */
   name: string;
+
   /**
    * Whether this pipe is "pure".
    *
