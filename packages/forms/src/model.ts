@@ -1450,22 +1450,34 @@ export class FormGroup extends AbstractControl {
    *
    * @param name The control name to add to the collection
    * @param control Provides the control for the given name
+   * @param options Specifies whether this FormGroup instance should emit events after a new
+   *     control is added.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * added. When false, no events are emitted.
    */
-  addControl(name: string, control: AbstractControl): void {
+  addControl(name: string, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
     this.registerControl(name, control);
-    this.updateValueAndValidity();
+    this.updateValueAndValidity({emitEvent: options.emitEvent});
     this._onCollectionChange();
   }
 
   /**
    * Remove a control from this group.
    *
+   * This method also updates the value and validity of the control.
+   *
    * @param name The control name to remove from the collection
+   * @param options Specifies whether this FormGroup instance should emit events after a
+   *     control is removed.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * removed. When false, no events are emitted.
    */
-  removeControl(name: string): void {
+  removeControl(name: string, options: {emitEvent?: boolean} = {}): void {
     if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
     delete (this.controls[name]);
-    this.updateValueAndValidity();
+    this.updateValueAndValidity({emitEvent: options.emitEvent});
     this._onCollectionChange();
   }
 
@@ -1474,12 +1486,17 @@ export class FormGroup extends AbstractControl {
    *
    * @param name The control name to replace in the collection
    * @param control Provides the control for the given name
+   * @param options Specifies whether this FormGroup instance should emit events after an
+   *     existing control is replaced.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * replaced with a new one. When false, no events are emitted.
    */
-  setControl(name: string, control: AbstractControl): void {
+  setControl(name: string, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
     if (this.controls[name]) this.controls[name]._registerOnCollectionChange(() => {});
     delete (this.controls[name]);
     if (control) this.registerControl(name, control);
-    this.updateValueAndValidity();
+    this.updateValueAndValidity({emitEvent: options.emitEvent});
     this._onCollectionChange();
   }
 
@@ -1876,11 +1893,16 @@ export class FormArray extends AbstractControl {
    * Insert a new `AbstractControl` at the end of the array.
    *
    * @param control Form control to be inserted
+   * @param options Specifies whether this FormArray instance should emit events after a new
+   *     control is added.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * inserted. When false, no events are emitted.
    */
-  push(control: AbstractControl): void {
+  push(control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
     this.controls.push(control);
     this._registerControl(control);
-    this.updateValueAndValidity();
+    this.updateValueAndValidity({emitEvent: options.emitEvent});
     this._onCollectionChange();
   }
 
@@ -1889,23 +1911,33 @@ export class FormArray extends AbstractControl {
    *
    * @param index Index in the array to insert the control
    * @param control Form control to be inserted
+   * @param options Specifies whether this FormArray instance should emit events after a new
+   *     control is inserted.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * inserted. When false, no events are emitted.
    */
-  insert(index: number, control: AbstractControl): void {
+  insert(index: number, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
     this.controls.splice(index, 0, control);
 
     this._registerControl(control);
-    this.updateValueAndValidity();
+    this.updateValueAndValidity({emitEvent: options.emitEvent});
   }
 
   /**
    * Remove the control at the given `index` in the array.
    *
    * @param index Index in the array to remove the control
+   * @param options Specifies whether this FormArray instance should emit events after a
+   *     control is removed.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * removed. When false, no events are emitted.
    */
-  removeAt(index: number): void {
+  removeAt(index: number, options: {emitEvent?: boolean} = {}): void {
     if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
     this.controls.splice(index, 1);
-    this.updateValueAndValidity();
+    this.updateValueAndValidity({emitEvent: options.emitEvent});
   }
 
   /**
@@ -1913,8 +1945,13 @@ export class FormArray extends AbstractControl {
    *
    * @param index Index in the array to replace the control
    * @param control The `AbstractControl` control to replace the existing control
+   * @param options Specifies whether this FormArray instance should emit events after an
+   *     existing control is replaced with a new one.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when the control is
+   * replaced with a new one. When false, no events are emitted.
    */
-  setControl(index: number, control: AbstractControl): void {
+  setControl(index: number, control: AbstractControl, options: {emitEvent?: boolean} = {}): void {
     if (this.controls[index]) this.controls[index]._registerOnCollectionChange(() => {});
     this.controls.splice(index, 1);
 
@@ -1923,7 +1960,7 @@ export class FormArray extends AbstractControl {
       this._registerControl(control);
     }
 
-    this.updateValueAndValidity();
+    this.updateValueAndValidity({emitEvent: options.emitEvent});
     this._onCollectionChange();
   }
 
@@ -2095,6 +2132,12 @@ export class FormArray extends AbstractControl {
   /**
    * Remove all controls in the `FormArray`.
    *
+   * @param options Specifies whether this FormArray instance should emit events after all
+   *     controls are removed.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges` observables emit events with the latest status and value when all controls
+   * in this FormArray instance are removed. When false, no events are emitted.
+   *
    * @usageNotes
    * ### Remove all elements from a FormArray
    *
@@ -2122,11 +2165,11 @@ export class FormArray extends AbstractControl {
    * }
    * ```
    */
-  clear(): void {
+  clear(options: {emitEvent?: boolean} = {}): void {
     if (this.controls.length < 1) return;
     this._forEachChild((control: AbstractControl) => control._registerOnCollectionChange(() => {}));
     this.controls.splice(0);
-    this.updateValueAndValidity();
+    this.updateValueAndValidity({emitEvent: options.emitEvent});
   }
 
   /** @internal */
