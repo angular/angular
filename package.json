@@ -166,7 +166,7 @@
     "@types/cli-progress": "^3.4.2",
     "@types/minimist": "^1.2.0",
     "@yarnpkg/lockfile": "^1.1.0",
-    "browserstacktunnel-wrapper": "2.0.1",
+    "browserstacktunnel-wrapper": "^2.0.4",
     "check-side-effects": "0.0.23",
     "clang-format": "^1.4.0",
     "cldr": "4.10.0",
