@@ -861,6 +861,30 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
   function flushMicrotasks(): void {
     _getFakeAsyncZoneSpec().flushMicrotasks();
   }
-  (Zone as any)[api.symbol('fakeAsyncTest')] =
-      {resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, flush, fakeAsync};
+
+  let autoFakeAsyncEnabled = false;
+
+  function isAutoFakeAsyncEnabled() {
+    return autoFakeAsyncEnabled;
+  }
+
+  function enableAutoFakeAsync() {
+    autoFakeAsyncEnabled = true;
+  }
+
+  function disableAutoFakeAsync() {
+    autoFakeAsyncEnabled = false;
+  }
+
+  (Zone as any)[api.symbol('fakeAsyncTest')] = {
+    resetFakeAsyncZone,
+    flushMicrotasks,
+    discardPeriodicTasks,
+    tick,
+    flush,
+    fakeAsync,
+    isAutoFakeAsyncEnabled,
+    enableAutoFakeAsync,
+    disableAutoFakeAsync
+  };
 }, true);

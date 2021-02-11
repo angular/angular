@@ -195,9 +195,10 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
     const testProxyZoneSpec = queueRunner.testProxyZoneSpec!;
     const testProxyZone = queueRunner.testProxyZone!;
     let lastDelegate;
-    if (isClockInstalled && enableAutoFakeAsyncWhenClockPatched) {
+    const fakeAsyncModule = (Zone as any)[Zone.__symbol__('fakeAsyncTest')];
+    if ((isClockInstalled && enableAutoFakeAsyncWhenClockPatched) ||
+        (fakeAsyncModule && fakeAsyncModule.isAutoFakeAsyncEnabled())) {
       // auto run a fakeAsync
-      const fakeAsyncModule = (Zone as any)[Zone.__symbol__('fakeAsyncTest')];
       if (fakeAsyncModule && typeof fakeAsyncModule.fakeAsync === 'function') {
         testBody = fakeAsyncModule.fakeAsync(testBody);
       }
