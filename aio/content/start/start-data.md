@@ -66,7 +66,7 @@ This section walks you through using the `CartService` to add a product to the c
 
     The `addToCart()` method does the following:
     * Takes the current `product` as an argument.
-    * Uses the `CartService` `addToCart()` method to add the product the cart.
+    * Uses the `CartService` `addToCart()` method to add the product to the cart.
     * Displays a message that you've added a product to the cart.
 
 1. In `product-details.component.html`, add a button with the label **Buy**, and bind the `click()` event to the `addToCart()` method.
