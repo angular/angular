@@ -25,7 +25,15 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "./bundles/platform-server-shims.umd.js",
+    "./bundles/platform-server-shims.umd.min.js",
+    "./esm2015/shims/src/shims.js",
+    "./fesm2015/shims.js",
+    "./__ivy_ngcc__/bundles/platform-server-shims.umd.js",
+    "./__ivy_ngcc__/esm2015/shims/src/shims.js",
+    "./__ivy_ngcc__/fesm2015/shims.js"
+  ],
   "engines": {
     "node": ">=8.0"
   },
