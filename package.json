@@ -175,7 +175,7 @@
     "cli-progress": "^3.7.0",
     "conventional-changelog": "^2.0.3",
     "entities": "1.1.1",
-    "firebase-tools": "^7.11.0",
+    "firebase-tools": "^9.3.0",
     "firefox-profile": "1.0.3",
     "glob": "7.1.2",
     "gulp": "^4.0.2",
