@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {PartialPipeLinkerVersion1} from '@angular/compiler-cli/linker/src/file_linker/partial_linkers/partial_pipe_linker_1';
 import * as ts from 'typescript';
 
 import {LinkerOptions} from '../../..';
@@ -42,6 +43,7 @@ describe('PartialLinkerSelector', () => {
              environment, fs.resolve('/some/path/to/file.js'), 'some file contents');
          expect(selector.supportsDeclaration('ɵɵngDeclareDirective')).toBe(true);
          expect(selector.supportsDeclaration('ɵɵngDeclareComponent')).toBe(true);
+         expect(selector.supportsDeclaration('ɵɵngDeclarePipe')).toBe(true);
          expect(selector.supportsDeclaration('$foo')).toBe(false);
        });
 
@@ -60,6 +62,8 @@ describe('PartialLinkerSelector', () => {
           .toBeInstanceOf(PartialDirectiveLinkerVersion1);
       expect(selector.getLinker('ɵɵngDeclareComponent', '0.0.0-PLACEHOLDER'))
           .toBeInstanceOf(PartialComponentLinkerVersion1);
+      expect(selector.getLinker('ɵɵngDeclarePipe', '0.0.0-PLACEHOLDER'))
+          .toBeInstanceOf(PartialPipeLinkerVersion1);
     });
 
     it('should return the linker that matches the name and valid full version', () => {

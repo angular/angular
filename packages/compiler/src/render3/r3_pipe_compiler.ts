@@ -15,6 +15,7 @@ import {error, OutputContext} from '../util';
 import {compileFactoryFunction, dependenciesFromGlobalMetadata, R3DependencyMetadata, R3FactoryTarget} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
 import {R3Reference, typeWithParameters, wrapReference} from './util';
+import {R3PipeDef} from './view/api';
 
 export interface R3PipeMetadata {
   /**
@@ -57,7 +58,7 @@ export interface R3PipeMetadata {
   pure: boolean;
 }
 
-export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
+export function compilePipeFromMetadata(metadata: R3PipeMetadata): R3PipeDef {
   const definitionMapValues: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
   // e.g. `name: 'myPipe'`
@@ -70,12 +71,16 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
   definitionMapValues.push({key: 'pure', value: o.literal(metadata.pure), quoted: false});
 
   const expression = o.importExpr(R3.definePipe).callFn([o.literalMap(definitionMapValues)]);
-  const type = new o.ExpressionType(o.importExpr(R3.PipeDefWithMeta, [
+  const type = createPipeType(metadata);
+
+  return {expression, type};
+}
+
+export function createPipeType(metadata: R3PipeMetadata): o.Type {
+  return new o.ExpressionType(o.importExpr(R3.PipeDefWithMeta, [
     typeWithParameters(metadata.type.type, metadata.typeArgumentCount),
     new o.ExpressionType(new o.LiteralExpr(metadata.pipeName)),
   ]));
-
-  return {expression, type};
 }
 
 /**

@@ -346,7 +346,7 @@ export class PercentPipe {
     transform() { }
 }
 PercentPipe.ɵfac = function PercentPipe_Factory(t) { return new (t || PercentPipe)(); };
-PercentPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "percent", type: PercentPipe, pure: true });
+PercentPipe.ɵpipe = i0.ɵɵngDeclarePipe({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PercentPipe, name: "percent" });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(PercentPipe, [{
         type: Pipe,
         args: [{ name: 'percent' }]
@@ -364,7 +364,7 @@ AppModule.ɵinj = i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t)
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.js.map
  ****************************************************************************************************/
-{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;8DAAP,OAAO;6EAAP,OAAO,gDAFR,qCAAqC,yEAMpC,WAAW;uFAJX,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;sEADH,WAAW;6DAAX,WAAW;uFAAX,WAAW;cADvB,IAAI;eAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBATT,OAAO,EAIP,WAAW;uFAKX,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
+{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;8DAAP,OAAO;6EAAP,OAAO,gDAFR,qCAAqC,yEAMpC,WAAW;uFAJX,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;sEADH,WAAW;2FAAX,WAAW;uFAAX,WAAW;cADvB,IAAI;eAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBATT,OAAO,EAIP,WAAW;uFAKX,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.d.ts
  ****************************************************************************************************/
@@ -404,7 +404,7 @@ export class PercentPipe {
     transform() { }
 }
 PercentPipe.ɵfac = function PercentPipe_Factory(t) { return new (t || PercentPipe)(); };
-PercentPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "percent", type: PercentPipe, pure: true });
+PercentPipe.ɵpipe = i0.ɵɵngDeclarePipe({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PercentPipe, name: "percent" });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(PercentPipe, [{
         type: Pipe,
         args: [{ name: 'percent' }]
@@ -422,7 +422,7 @@ AppModule.ɵinj = i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t)
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.js.map
  ****************************************************************************************************/
-{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;8DAAP,OAAO;6EAAP,OAAO,gDAFR,qCAAqC,yEAMpC,WAAW;uFAJX,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;sEADH,WAAW;6DAAX,WAAW;uFAAX,WAAW;cADvB,IAAI;eAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBATT,OAAO,EAIP,WAAW;uFAKX,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
+{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;8DAAP,OAAO;6EAAP,OAAO,gDAFR,qCAAqC,yEAMpC,WAAW;uFAJX,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;sEADH,WAAW;2FAAX,WAAW;uFAAX,WAAW;cADvB,IAAI;eAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;6CAAT,SAAS;iGAAT,SAAS;wFAAT,SAAS,mBATT,OAAO,EAIP,WAAW;uFAKX,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.d.ts
  ****************************************************************************************************/

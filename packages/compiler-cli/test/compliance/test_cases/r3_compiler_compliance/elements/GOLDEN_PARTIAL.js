@@ -318,7 +318,7 @@ export class PipePipe {
     transform(v, a, a2) { }
 }
 PipePipe.ɵfac = function PipePipe_Factory(t) { return new (t || PipePipe)(); };
-PipePipe.ɵpipe = i0.ɵɵdefinePipe({ name: "pipe", type: PipePipe, pure: true });
+PipePipe.ɵpipe = i0.ɵɵngDeclarePipe({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: PipePipe, name: "pipe" });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(PipePipe, [{
         type: Pipe,
         args: [{ name: 'pipe' }]
