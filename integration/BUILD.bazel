@@ -33,6 +33,7 @@ INTEGRATION_TESTS = {
             "no-ivy-aot",
         ],
     },
+    "cli-elements-universal": {},
     "cli-hello-world": {"commands": "payload_size_tracking"},
     "cli-hello-world-ivy-compat": {"commands": "payload_size_tracking"},
     "cli-hello-world-ivy-i18n": {
