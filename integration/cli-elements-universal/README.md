@@ -1,28 +1,13 @@
 # CliElementsUniversal
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.0-rc.1.
-Support for Angular Elements was added with `ng add @angular/elements` and for SSR with `ng add @nguniversal/express-engine`.
+This project tests the integration of Angular Elements (`@angular/elements`) with SSR (via `@angular/platform-server`).
 
-## Development server
+The project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.1.4.
+Support for Angular Elements was added with `ng add @angular/elements` and for SSR with `ng generate app-shell`.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+What this project tests is that an app can be successfully SSR'd even when it uses `@angular/elements`, which relies on certain DOM built-ins being available as soon as it is imported.
+This is tested by generating the [app-shell](https://angular.io/guide/app-shell) (using `ng run cli-elements-universal:app-shell:production`) and then verifying that the `index.html` file was generated correctly.
+(See, the `test-ssr` script in [package.json](./package.json).)
 
-## Code scaffolding
-
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
-
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+NOTE:
+Currently, `domino` (the server-side DOM implementation used by `@angular/platform-server`) does not support [Web Components](https://developer.mozilla.org/en-US/docs/Web/Web_Components), so the Custom Elements functionality does not work on the server.
