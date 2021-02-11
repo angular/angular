@@ -152,3 +152,40 @@ export function flushMicrotasks(): void {
   }
   throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
 }
+
+/**
+ * Enable automatically go into the `fakeAsync()` test.
+ *
+ * describe('Auto go into fakeAsync()', () => {
+ *   beforeAll(() => enableAutoFakeAsync());
+ *   beforeAll(() => disableAutoFakeAsync());
+ *
+ *   it('test1 in fakeAsync()', () => { // don't need to call fakeAsync() here
+ *     let counter = 0;
+ *     setTimeout(() => counter ++, 100);
+ *     tick(100);
+ *     expect(counter).toBe(1);
+ *   });
+ * });
+ *
+ * @publicApi
+ */
+export function enableAutoFakeAsync(): void {
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.enableAutoFakeAsync();
+  }
+  throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
+}
+
+/**
+ * Disable automatically go into the `fakeAsync()` test.
+ * This is the default behavior.
+ *
+ * @publicApi
+ */
+export function disableAutoFakeAsync(): void {
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.disableAutoFakeAsync();
+  }
+  throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
+}

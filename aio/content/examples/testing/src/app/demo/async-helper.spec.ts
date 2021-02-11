@@ -1,5 +1,5 @@
 // tslint:disable-next-line:no-unused-variable
-import { fakeAsync, tick, waitForAsync } from '@angular/core/testing';
+import { fakeAsync, tick, waitForAsync, enableAutoFakeAsync, disableAutoFakeAsync } from '@angular/core/testing';
 import { interval, of } from 'rxjs';
 import { delay, take } from 'rxjs/operators';
 
@@ -174,6 +174,26 @@ describe('Angular async helper', () => {
     });
   });
   // #enddocregion fake-async-test-clock
+
+  // #docregion auto-fake-async
+  describe('use jasmine.clock()', () => {
+    beforeAll(() => {
+      enableAutoFakeAsync();
+    });
+    afterAll(() => {
+      disableAutoFakeAsync();
+    });
+    it('should auto enter fakeAsync', () => {
+      // is in fakeAsync now, don't need to call fakeAsync(testFn)
+      let called = false;
+      setTimeout(() => {
+        called = true;
+      }, 100);
+      tick(100);
+      expect(called).toBe(true);
+    });
+  });
+  // #enddocregion auto-fake-async
 
   describe('test jsonp', () => {
     function jsonp(url: string, callback: () => void) {

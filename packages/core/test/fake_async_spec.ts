@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick} from '@angular/core/testing';
+import {disableAutoFakeAsync, discardPeriodicTasks, enableAutoFakeAsync, fakeAsync, flush, flushMicrotasks, tick} from '@angular/core/testing';
 import {beforeEach, describe, inject, it, Log} from '@angular/core/testing/src/testing_internal';
 import {EventManager} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -430,6 +430,26 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
         });
       }))();
       expect(state).toEqual('works');
+    });
+  });
+
+  describe('Auto fakeAsync()', () => {
+    let FakeAsyncTestZoneSpec = (Zone as any)['FakeAsyncTestZoneSpec'];
+    beforeAll(() => enableAutoFakeAsync());
+    afterAll(() => disableAutoFakeAsync());
+
+    it('should auto go into FakeAsyncTestZone', () => {
+      expect(Zone.current.get('FakeAsyncTestZoneSpec') instanceof FakeAsyncTestZoneSpec).toBe(true);
+    });
+
+    it('should auto become fakeAsync() test', () => {
+      let t = 0;
+      setTimeout(() => {
+        t = t + 1;
+      }, 100);
+      expect(t).toBe(0);
+      tick(100);
+      expect(t).toBe(1);
     });
   });
 }

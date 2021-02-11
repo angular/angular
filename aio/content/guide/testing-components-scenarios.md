@@ -461,6 +461,17 @@ import 'zone.js/dist/zone-testing';
   region="fake-async-test-clock">
 </code-example>
 
+#### Automatically become fakeAsync() test
+
+When using `jasmine.clock()`, the test case becomes `fakeAsync()` automatically, the same
+functionality can be also achieved by using `enableAutoFakeAsync()` and `disableAutoFakeAsync()` API.  Angular automatically runs tests that are run after
+`enableAutoFakeAsync()` is called inside a `fakeAsync()` method until `disableAutoFakeAsync()` is called. `fakeAsync()` is not needed and throws an error if nested.
+
+<code-example
+  path="testing/src/app/demo/async-helper.spec.ts"
+  region="auto-fake-async">
+</code-example>
+
 #### Using the RxJS scheduler inside fakeAsync()
 
 You can also use RxJS scheduler in `fakeAsync()` just like using `setTimeout()` or `setInterval()`, but you need to import `zone.js/dist/zone-patch-rxjs-fake-async` to patch RxJS scheduler.
