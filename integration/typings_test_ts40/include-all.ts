@@ -27,6 +27,7 @@ import * as platformBrowserDynamicTesting from '@angular/platform-browser-dynami
 import * as platformBrowserAnimations from '@angular/platform-browser/animations';
 import * as platformBrowserTesting from '@angular/platform-browser/testing';
 import * as platformServer from '@angular/platform-server';
+import * as platformServerInit from '@angular/platform-server/init';
 import * as platformServerTesting from '@angular/platform-server/testing';
 import * as router from '@angular/router';
 import * as routerTesting from '@angular/router/testing';
@@ -56,6 +57,7 @@ export default {
   platformBrowserDynamicTesting,
   platformBrowserAnimations,
   platformServer,
+  platformServerInit,
   platformServerTesting,
   router,
   routerTesting,

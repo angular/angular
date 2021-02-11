@@ -107,6 +107,7 @@ module.exports =
             'platform-browser-dynamic/index.ts',
             'platform-browser-dynamic/testing/index.ts',
             'platform-server/index.ts',
+            'platform-server/init/index.ts',
             'platform-server/testing/index.ts',
             'platform-webworker/index.ts',
             'platform-webworker-dynamic/index.ts',

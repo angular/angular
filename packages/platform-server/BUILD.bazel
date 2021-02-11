@@ -30,6 +30,7 @@ ng_package(
     name = "npm_package",
     srcs = [
         "package.json",
+        "//packages/platform-server/init:package.json",
         "//packages/platform-server/testing:package.json",
     ],
     entry_point = ":index.ts",
@@ -44,6 +45,7 @@ ng_package(
     ],
     deps = [
         ":platform-server",
+        "//packages/platform-server/init",
         "//packages/platform-server/testing",
     ],
 )

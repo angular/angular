@@ -105,6 +105,7 @@ WELL_KNOWN_GLOBALS = {p: _global_name(p) for p in [
     "@angular/forms",
     "@angular/core/testing",
     "@angular/core",
+    "@angular/platform-server/init",
     "@angular/platform-server/testing",
     "@angular/platform-server",
     "@angular/common/testing",

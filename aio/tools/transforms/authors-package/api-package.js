@@ -18,7 +18,7 @@ const packageMap = {
   forms: ['forms/index.ts'],
   'platform-browser': ['platform-browser/index.ts', 'platform-browser/animations/index.ts', 'platform-browser/testing/index.ts'],
   'platform-browser-dynamic': ['platform-browser-dynamic/index.ts', 'platform-browser-dynamic/testing/index.ts'],
-  'platform-server': ['platform-server/index.ts', 'platform-server/testing/index.ts'],
+  'platform-server': ['platform-server/index.ts', 'platform-server/init/index.ts', 'platform-server/testing/index.ts'],
   router: ['router/index.ts', 'router/testing/index.ts', 'router/upgrade/index.ts'],
   'service-worker': ['service-worker/index.ts'],
   upgrade: ['upgrade/index.ts', 'upgrade/static/index.ts', 'upgrade/static/testing/index.ts']
