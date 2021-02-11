@@ -72,7 +72,7 @@ HostBindingComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER"
 class MyForwardPipe {
 }
 MyForwardPipe.ɵfac = function MyForwardPipe_Factory(t) { return new (t || MyForwardPipe)(); };
-MyForwardPipe.ɵpipe = i0.ɵɵdefinePipe({ name: "my_forward_pipe", type: MyForwardPipe, pure: true });
+MyForwardPipe.ɵpipe = i0.ɵɵngDeclarePipe({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyForwardPipe, name: "my_forward_pipe" });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyForwardPipe, [{
         type: Pipe,
         args: [{ name: 'my_forward_pipe' }]

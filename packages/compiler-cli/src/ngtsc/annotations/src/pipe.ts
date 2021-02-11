@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compilePipeFromMetadata, Identifiers, R3FactoryTarget, R3PipeMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclarePipeFromMetadata, compilePipeFromMetadata, Identifiers, R3FactoryTarget, R3PipeDef, R3PipeMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -134,10 +134,18 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
   }
 
   compileFull(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): CompileResult[] {
-    const meta = analysis.meta;
-    const res = compilePipeFromMetadata(meta);
+    const res = compilePipeFromMetadata(analysis.meta);
+    return this.compilePipe(analysis, res);
+  }
+
+  compilePartial(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): CompileResult[] {
+    const res = compileDeclarePipeFromMetadata(analysis.meta);
+    return this.compilePipe(analysis, res);
+  }
+
+  private compilePipe(analysis: Readonly<PipeHandlerData>, def: R3PipeDef) {
     const factoryRes = compileNgFactoryDefField({
-      ...meta,
+      ...analysis.meta,
       injectFn: Identifiers.directiveInject,
       target: R3FactoryTarget.Pipe,
     });
@@ -147,9 +155,9 @@ export class PipeDecoratorHandler implements DecoratorHandler<Decorator, PipeHan
     return [
       factoryRes, {
         name: 'ɵpipe',
-        initializer: res.expression,
+        initializer: def.expression,
         statements: [],
-        type: res.type,
+        type: def.type,
       }
     ];
   }
