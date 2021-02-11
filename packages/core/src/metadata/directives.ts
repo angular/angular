@@ -533,7 +533,7 @@ export interface Component extends Directive {
   encapsulation?: ViewEncapsulation;
 
   /**
-   * Overrides the default encapsulation start and end delimiters (`{{` and `}}`)
+   * Overrides the default interpolation start and end delimiters (`{{` and `}}`)
    */
   interpolation?: [string, string];
 
