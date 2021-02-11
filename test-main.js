@@ -64,7 +64,7 @@ System.config({
     '@angular/platform-browser': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser-dynamic/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-browser-dynamic': {main: 'index.js', defaultExtension: 'js'},
-    '@angular/platform-server/shims': {main: 'index.js', defaultExtension: 'js'},
+    '@angular/platform-server/init': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-server/testing': {main: 'index.js', defaultExtension: 'js'},
     '@angular/platform-server': {main: 'index.js', defaultExtension: 'js'},
     '@angular/private/testing': {main: 'index.js', defaultExtension: 'js'},

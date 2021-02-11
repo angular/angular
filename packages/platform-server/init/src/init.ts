@@ -9,9 +9,9 @@
 /**
  * @module
  * @description
- * Entry point for all shimming APIs of the platform-server package.
+ * Entry point for all initialization APIs of the platform-server package.
  */
 
-import {init} from './init';
+import {applyShims} from './shims';
 
-init();
+applyShims();

@@ -5,7 +5,7 @@ package(default_visibility = ["//visibility:public"])
 exports_files(["package.json"])
 
 ng_module(
-    name = "shims",
+    name = "init",
     srcs = glob(
         [
             "*.ts",

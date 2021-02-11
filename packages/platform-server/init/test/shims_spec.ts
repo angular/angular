@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {init} from '../src/init';
+import {applyShims} from '../src/shims';
 
-describe('init()', () => {
+describe('applyShims()', () => {
   if (isBrowser) return;  // NODE only
 
   const domino = require('domino');
@@ -28,14 +28,14 @@ describe('init()', () => {
   it('should load `domino.impl` onto `global`', () => {
     expect(global).not.toEqual(jasmine.objectContaining(domino.impl));
 
-    init();
+    applyShims();
     expect(global).toEqual(jasmine.objectContaining(domino.impl));
   });
 
   it('should define `KeyboardEvent` on `global`', () => {
     expect((global as any).KeyboardEvent).not.toBe((domino.impl as any).Event);
 
-    init();
+    applyShims();
     expect((global as any).KeyboardEvent).toBe((domino.impl as any).Event);
   });
 });

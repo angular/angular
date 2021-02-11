@@ -3,8 +3,8 @@ load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
 
 circular_dependency_test(
     name = "circular_deps_test",
-    entry_point = "angular/packages/platform-server/shims/index.js",
-    deps = ["//packages/platform-server/shims"],
+    entry_point = "angular/packages/platform-server/init/index.js",
+    deps = ["//packages/platform-server/init"],
 )
 
 ts_library(
@@ -12,7 +12,7 @@ ts_library(
     testonly = True,
     srcs = glob(["**/*.ts"]),
     deps = [
-        "//packages/platform-server/shims",
+        "//packages/platform-server/init",
     ],
 )
 
