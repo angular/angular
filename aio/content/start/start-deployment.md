@@ -78,7 +78,7 @@ You can go deeper by studying more of Angular's features, engaging with the vibr
 
 For a more in-depth tutorial that leads you through building an application locally and exploring many of Angular's most popular features, see [Tour of Heroes](tutorial).
 
-To explore Angular's foundational concepts, see the guides in the Main Concepts section such as [Angular Components Overview](guide/component-overview) or [Template syntax](guide/template-syntax).
+To explore Angular's foundational concepts, see the guides in the Understanding Angular section such as [Angular Components Overview](guide/component-overview) or [Template syntax](guide/template-syntax).
 
 ### Joining the community
 
