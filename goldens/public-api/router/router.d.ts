@@ -92,7 +92,7 @@ export declare class ChildActivationStart {
 export declare class ChildrenOutletContexts {
     getContext(childName: string): OutletContext | null;
     getOrCreateContext(childName: string): OutletContext;
-    onChildOutletCreated(childName: string, outlet: RouterOutlet): void;
+    onChildOutletCreated(childName: string, outlet: RouterOutletContract): void;
     onChildOutletDestroyed(childName: string): void;
     onOutletDeactivated(): Map<string, OutletContext>;
     onOutletReAttached(contexts: Map<string, OutletContext>): void;
@@ -234,7 +234,7 @@ export declare class NoPreloading implements PreloadingStrategy {
 export declare class OutletContext {
     attachRef: ComponentRef<any> | null;
     children: ChildrenOutletContexts;
-    outlet: RouterOutlet | null;
+    outlet: RouterOutletContract | null;
     resolver: ComponentFactoryResolver | null;
     route: ActivatedRoute | null;
 }
@@ -434,7 +434,7 @@ export declare class RouterModule {
     static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule>;
 }
 
-export declare class RouterOutlet implements OnDestroy, OnInit {
+export declare class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     activateEvents: EventEmitter<any>;
     get activatedRoute(): ActivatedRoute;
     get activatedRouteData(): Data;
@@ -448,6 +448,17 @@ export declare class RouterOutlet implements OnDestroy, OnInit {
     detach(): ComponentRef<any>;
     ngOnDestroy(): void;
     ngOnInit(): void;
+}
+
+export declare interface RouterOutletContract {
+    activatedRoute: ActivatedRoute | null;
+    activatedRouteData: Data;
+    component: Object | null;
+    isActivated: boolean;
+    activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
+    attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
+    deactivate(): void;
+    detach(): ComponentRef<unknown>;
 }
 
 export declare class RouterPreloader implements OnDestroy {
