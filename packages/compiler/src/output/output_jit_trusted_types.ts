@@ -93,9 +93,7 @@ function trustedScriptFromString(script: string): TrustedScript|string {
 }
 
 /**
- * Unsafely call the Function constructor with the given string arguments. It
- * is only available in development mode, and should be stripped out of
- * production code.
+ * Unsafely call the Function constructor with the given string arguments.
  * @security This is a security-sensitive function; any use of this function
  * must go through security review. In particular, it must be assured that it
  * is only called from the JIT compiler, as use in other code can lead to XSS
@@ -113,7 +111,7 @@ export function newTrustedFunctionForJIT(...args: string[]): Function {
   // below, where the Chromium bug is also referenced:
   // https://github.com/w3c/webappsec-trusted-types/wiki/Trusted-Types-for-function-constructor
   const fnArgs = args.slice(0, -1).join(',');
-  const fnBody = args.pop()!.toString();
+  const fnBody = args[args.length - 1];
   const body = `(function anonymous(${fnArgs}
 ) { ${fnBody}
 })`;
@@ -122,6 +120,13 @@ export function newTrustedFunctionForJIT(...args: string[]): Function {
   // being stripped out of JS binaries even if not used. The global['eval']
   // indirection fixes that.
   const fn = global['eval'](trustedScriptFromString(body) as string) as Function;
+  if (fn.bind === undefined) {
+    // Workaround for a browser bug that only exists in Chrome 83, where passing
+    // a TrustedScript to eval just returns the TrustedScript back without
+    // evaluating it. In that case, fall back to the most straightforward
+    // implementation:
+    return new Function(...args);
+  }
 
   // To completely mimic the behavior of calling "new Function", two more
   // things need to happen:
