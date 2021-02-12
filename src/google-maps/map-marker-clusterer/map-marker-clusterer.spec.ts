@@ -116,6 +116,44 @@ describe('MapMarkerClusterer', () => {
     });
   });
 
+  it('sets marker clusterer options', () => {
+    fixture.detectChanges();
+    const options: MarkerClustererOptions = {
+      enableRetinaIcons: true,
+      gridSize: 1337,
+      ignoreHidden: true,
+      imageExtension: 'png'
+    };
+    fixture.componentInstance.options = options;
+    fixture.detectChanges();
+    expect(markerClustererSpy.setOptions).toHaveBeenCalledWith(jasmine.objectContaining(options));
+  });
+
+  it('gives precedence to specific inputs over options', () => {
+    fixture.detectChanges();
+    const options: MarkerClustererOptions = {
+      enableRetinaIcons: true,
+      gridSize: 1337,
+      ignoreHidden: true,
+      imageExtension: 'png'
+    };
+    const expectedOptions: MarkerClustererOptions = {
+      enableRetinaIcons: false,
+      gridSize: 42,
+      ignoreHidden: false,
+      imageExtension: 'jpeg'
+    };
+    fixture.componentInstance.enableRetinaIcons = expectedOptions.enableRetinaIcons;
+    fixture.componentInstance.gridSize = expectedOptions.gridSize;
+    fixture.componentInstance.ignoreHidden = expectedOptions.ignoreHidden;
+    fixture.componentInstance.imageExtension = expectedOptions.imageExtension;
+    fixture.componentInstance.options = options;
+    fixture.detectChanges();
+
+    expect(markerClustererSpy.setOptions)
+        .toHaveBeenCalledWith(jasmine.objectContaining(expectedOptions));
+  });
+
   it('sets Google Maps Markers in the MarkerClusterer', () => {
     fixture.detectChanges();
 
@@ -246,6 +284,7 @@ describe('MapMarkerClusterer', () => {
                                      [title]="title"
                                      [zIndex]="zIndex"
                                      [zoomOnClick]="zoomOnClick"
+                                     [options]="options"
                                      (clusteringbegin)="onClusteringBegin()">
                  <map-marker *ngIf="state === 'state1'"></map-marker>
                  <map-marker *ngIf="state === 'state1' || state === 'state2'"></map-marker>
@@ -274,6 +313,7 @@ class TestApp {
   title?: string;
   zIndex?: number;
   zoomOnClick?: boolean;
+  options?: MarkerClustererOptions;
 
   state = 'state1';
 

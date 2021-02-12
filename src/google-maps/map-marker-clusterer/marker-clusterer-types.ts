@@ -77,6 +77,8 @@ declare class MarkerClusterer {
   setValues(values: any): void;
   setZIndex(zIndex: number): void;
   setZoomOnClick(zoomOnClick: boolean): void;
+  // Note: This one doesn't appear in the docs page, but it exists at runtime.
+  setOptions(options: MarkerClustererOptions): void;
   unbind(key: string): void;
   unbindAll(): void;
   static CALCULATOR(markers: google.maps.Marker[], numStyles: number): ClusterIconInfo;

@@ -32,6 +32,9 @@ import {GoogleMap} from '../google-map/google-map';
 import {MapEventManager} from '../map-event-manager';
 import {MapMarker} from '../map-marker/map-marker';
 
+/** Default options for a clusterer. */
+const DEFAULT_CLUSTERER_OPTIONS: MarkerClustererOptions = {};
+
 /**
  * Angular component for implementing a Google Maps Marker Clusterer.
  *
@@ -153,6 +156,12 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnChanges, 
   }
   private _zoomOnClick: boolean;
 
+  @Input()
+  set options(options: MarkerClustererOptions) {
+    this._options = options;
+  }
+  private _options: MarkerClustererOptions;
+
   /**
    * See
    * googlemaps.github.io/v3-utility-library/modules/
@@ -212,6 +221,9 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnChanges, 
     } = this;
 
     if (clusterer) {
+      if (changes['options']) {
+        clusterer.setOptions(this._combineOptions());
+      }
       if (changes['ariaLabelFn']) {
         clusterer.ariaLabelFn = ariaLabelFn;
       }
@@ -376,25 +388,27 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnChanges, 
   }
 
   private _combineOptions(): MarkerClustererOptions {
+    const options = this._options || DEFAULT_CLUSTERER_OPTIONS;
     return {
-      ariaLabelFn: this.ariaLabelFn,
-      averageCenter: this._averageCenter,
-      batchSize: this.batchSize,
-      batchSizeIE: this._batchSizeIE,
-      calculator: this._calculator,
-      clusterClass: this._clusterClass,
-      enableRetinaIcons: this._enableRetinaIcons,
-      gridSize: this._gridSize,
-      ignoreHidden: this._ignoreHidden,
-      imageExtension: this._imageExtension,
-      imagePath: this._imagePath,
-      imageSizes: this._imageSizes,
-      maxZoom: this._maxZoom,
-      minimumClusterSize: this._minimumClusterSize,
-      styles: this._styles,
-      title: this._title,
-      zIndex: this._zIndex,
-      zoomOnClick: this._zoomOnClick,
+      ...options,
+      ariaLabelFn: this.ariaLabelFn ?? options.ariaLabelFn,
+      averageCenter: this._averageCenter ?? options.averageCenter,
+      batchSize: this.batchSize ?? options.batchSize,
+      batchSizeIE: this._batchSizeIE ?? options.batchSizeIE,
+      calculator: this._calculator ?? options.calculator,
+      clusterClass: this._clusterClass ?? options.clusterClass,
+      enableRetinaIcons: this._enableRetinaIcons ?? options.enableRetinaIcons,
+      gridSize: this._gridSize ?? options.gridSize,
+      ignoreHidden: this._ignoreHidden ?? options.ignoreHidden,
+      imageExtension: this._imageExtension ?? options.imageExtension,
+      imagePath: this._imagePath ?? options.imagePath,
+      imageSizes: this._imageSizes ?? options.imageSizes,
+      maxZoom: this._maxZoom ?? options.maxZoom,
+      minimumClusterSize: this._minimumClusterSize ?? options.minimumClusterSize,
+      styles: this._styles ?? options.styles,
+      title: this._title ?? options.title,
+      zIndex: this._zIndex ?? options.zIndex,
+      zoomOnClick: this._zoomOnClick ?? options.zoomOnClick,
     };
   }
 

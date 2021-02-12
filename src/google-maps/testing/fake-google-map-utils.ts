@@ -434,9 +434,9 @@ export function createMarkerClustererSpy(): jasmine.SpyObj<MarkerClusterer> {
     'setCalculator', 'setClusterClass', 'setEnableRetinaIcons', 'setGridSize',
     'setIgnoreHidden', 'setImageExtension', 'setImagePath', 'setImageSizes', 'setMap',
     'setMaxZoom', 'setMinimumClusterSize', 'setStyles', 'setTitle', 'setZIndex',
-    'setZoomOnClick',
+    'setZoomOnClick', 'setOptions',
   ]);
-  markerClustererSpy.addListener.and.returnValue({ remove: () => { } });
+  markerClustererSpy.addListener.and.returnValue({remove: () => {}});
   return markerClustererSpy;
 }
 
