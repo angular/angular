@@ -1,18 +1,26 @@
 /* Global Styles */
-h1 {
-  color: #369;
+* {
   font-family: Arial, Helvetica, sans-serif;
+}
+h1 {
+  color: #264D73;
   font-size: 250%;
 }
 h2, h3 {
   color: #444;
-  font-family: Arial, Helvetica, sans-serif;
   font-weight: lighter;
 }
 body {
-  margin: 2em;
+  padding: .5em;
+  max-width: 1000px;
+  margin: auto;
 }
-body, input[text], button {
+@media (min-width: 600px) {
+  body {
+    padding: 2em;
+  }
+}
+body, input[text] {
   color: #333;
   font-family: Cambria, Georgia, serif;
 }
@@ -20,12 +28,12 @@ a {
   cursor: pointer;
 }
 button {
-  font-family: Arial, sans-serif;
   background-color: #eee;
   border: none;
   padding: 5px 10px;
   border-radius: 4px;
   cursor: pointer;
+  color: black;
 }
 button:hover {
   background-color: #cfd8dc;
@@ -43,21 +51,16 @@ nav a {
   margin-right: 10px;
   margin-top: 10px;
   display: inline-block;
-  background-color: #eee;
+  background-color: #e8e8e8;
+  color: #3d3d3d;
   border-radius: 4px;
 }
-nav a:visited, a:link {
-  color: #607D8B;
-}
+
 nav a:hover {
-  color: #039be5;
-  background-color: #CFD8DC;
+  color: white;
+  background-color:  #42545C;
 }
 nav a.active {
-  color: #039be5;
-}
-
-/* everywhere else */
-* {
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: black;
+  color: white;
 }

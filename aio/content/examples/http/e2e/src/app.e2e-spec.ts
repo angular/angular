@@ -29,6 +29,26 @@ const checkLogForMessage = async (message: string) => {
 };
 
 describe('Http Tests', () => {
+  // It seems that currently Chrome/ChromeDriver fail to click a button that is just outside the
+  // viewport (or maybe only partially inside the viewport) - at least in headless mode.
+  // Possible solutions:
+  // 1. Click the element via JavaScript (with something like
+  //    `browser.executeScript('arguments[0].click', elem)`).
+  // 2. Manually scroll the element into view before clicking:
+  //    https://stackoverflow.com/questions/47776774/element-is-not-clickable-at-point-in-headless-mode-but-when-we-remove-headless
+  // 3. Explicitly set the window size to a bigger size:
+  //    https://stackoverflow.com/questions/62003082/elementnotinteractableexception-element-not-interactable-element-has-zero-size
+  //
+  // Since the default 800x600 window size in headless mode (as used on CI) causes the
+  // `<app-config>` buttons to be in a position that trigger the above issue, we explicitly set the
+  // window size to 1920x1080 when in headless mode.
+  beforeAll(async () => {
+    const config = await browser.getProcessedConfig();
+    if (config.capabilities?.chromeOptions?.args?.includes('--headless')) {
+      browser.driver.manage().window().setSize(1920, 1080);
+    }
+  });
+
   beforeEach(() => browser.get(''));
 
   describe('Heroes', () => {
