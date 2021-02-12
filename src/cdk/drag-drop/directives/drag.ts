@@ -50,7 +50,7 @@ import {CDK_DRAG_HANDLE, CdkDragHandle} from './drag-handle';
 import {CDK_DRAG_PLACEHOLDER, CdkDragPlaceholder} from './drag-placeholder';
 import {CDK_DRAG_PREVIEW, CdkDragPreview} from './drag-preview';
 import {CDK_DRAG_PARENT} from '../drag-parent';
-import {DragRef, Point} from '../drag-ref';
+import {DragRef, Point, PreviewContainer} from '../drag-ref';
 import {CDK_DROP_LIST, CdkDropListInternal as CdkDropList} from './drop-list';
 import {DragDrop} from '../drag-drop';
 import {CDK_DRAG_CONFIG, DragDropConfig, DragStartDelay, DragAxis} from './config';
@@ -139,6 +139,21 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
 
   /** Class to be added to the preview element. */
   @Input('cdkDragPreviewClass') previewClass: string | string[];
+
+  /**
+   * Configures the place into which the preview of the item will be inserted. Can be configured
+   * globally through `CDK_DROP_LIST`. Possible values:
+   * - `global` - Preview will be inserted at the bottom of the `<body>`. The advantage is that
+   * you don't have to worry about `overflow: hidden` or `z-index`, but the item won't retain
+   * its inherited styles.
+   * - `parent` - Preview will be inserted into the parent of the drag item. The advantage is that
+   * inherited styles will be preserved, but it may be clipped by `overflow: hidden` or not be
+   * visible due to `z-index`. Furthermore, the preview is going to have an effect over selectors
+   * like `:nth-child` and some flexbox configurations.
+   * - `ElementRef<HTMLElement> | HTMLElement` - Preview will be inserted into a specific element.
+   * Same advantages and disadvantages as `parent`.
+   */
+  @Input('cdkDragPreviewContainer') previewContainer: PreviewContainer;
 
   /** Emits when the user starts dragging the item. */
   @Output('cdkDragStarted') started: EventEmitter<CdkDragStart> = new EventEmitter<CdkDragStart>();
@@ -396,7 +411,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
         ref
           .withBoundaryElement(this._getBoundaryElement())
           .withPlaceholderTemplate(placeholder)
-          .withPreviewTemplate(preview);
+          .withPreviewTemplate(preview)
+          .withPreviewContainer(this.previewContainer || 'global');
 
         if (dir) {
           ref.withDirection(dir.value);
@@ -481,8 +497,8 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   /** Assigns the default input values based on a provided config object. */
   private _assignDefaults(config: DragDropConfig) {
     const {
-      lockAxis, dragStartDelay, constrainPosition, previewClass,
-      boundaryElement, draggingDisabled, rootElementSelector
+      lockAxis, dragStartDelay, constrainPosition, previewClass, boundaryElement, draggingDisabled,
+      rootElementSelector, previewContainer
     } = config;
 
     this.disabled = draggingDisabled == null ? false : draggingDisabled;
@@ -506,6 +522,10 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
 
     if (rootElementSelector) {
       this.rootElementSelector = rootElementSelector;
+    }
+
+    if (previewContainer) {
+      this.previewContainer = previewContainer;
     }
   }
 

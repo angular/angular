@@ -128,6 +128,19 @@ to be applied.
 
 <!-- example(cdk-drag-drop-custom-preview) -->
 
+### Drag preview insertion point
+By default, the preview of a `cdkDrag` will be inserted into the `<body>` of the page in order to
+avoid issues with `z-index` and `overflow: hidden`. This may not be desireable in some cases,
+because the preview won't retain its inherited styles. You can control where the preview is inserted
+using the `cdkDrawPreviewContainer` input. The possible values are:
+
+| Value             | Description             | Advantages             | Disadvantages             |
+|-------------------|-------------------------|------------------------|---------------------------|
+| `global` | Default value. Preview is inserted into the `<body>` or the closest shadow root. | Preview won't be affected by `z-index` or `overflow: hidden`. It also won't affect `:nth-child` selectors and flex layouts. | Doesn't retain inherited styles.
+| `parent` | Preview is inserted inside the parent of the item that is being dragged. | Preview inherits the same styles as the dragged item. | Preview may be clipped by `overflow: hidden` or be placed under other elements due to `z-index`. Furthermore, it can affect `:nth-child` selectors and some flex layouts.
+| `ElementRef` or `HTMLElement` | Preview will be inserted into the specified element. | Preview inherits styles from the specified container element. | Preview may be clipped by `overflow: hidden` or be placed under other elements due to `z-index`. Furthermore, it can affect `:nth-child` selectors and some flex layouts.
+
+
 ### Customizing the drag placeholder
 While a `cdkDrag` element is being dragged, the CDK will create a placeholder element that will
 show where it will be placed when it's dropped. By default the placeholder is a clone of the element

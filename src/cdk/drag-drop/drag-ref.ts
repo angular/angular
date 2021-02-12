@@ -84,6 +84,20 @@ export interface Point {
 }
 
 /**
+ * Possible places into which the preview of a drag item can be inserted.
+ * - `global` - Preview will be inserted at the bottom of the `<body>`. The advantage is that
+ * you don't have to worry about `overflow: hidden` or `z-index`, but the item won't retain
+ * its inherited styles.
+ * - `parent` - Preview will be inserted into the parent of the drag item. The advantage is that
+ * inherited styles will be preserved, but it may be clipped by `overflow: hidden` or not be
+ * visible due to `z-index`. Furthermore, the preview is going to have an effect over selectors
+ * like `:nth-child` and some flexbox configurations.
+ * - `ElementRef<HTMLElement> | HTMLElement` - Preview will be inserted into a specific element.
+ * Same advantages and disadvantages as `parent`.
+ */
+export type PreviewContainer = 'global' | 'parent' | ElementRef<HTMLElement> | HTMLElement;
+
+/**
  * Reference to a draggable item. Used to manipulate or dispose of the item.
  */
 export class DragRef<T = any> {
@@ -92,6 +106,9 @@ export class DragRef<T = any> {
 
   /** Reference to the view of the preview element. */
   private _previewRef: EmbeddedViewRef<any> | null;
+
+  /** Container into which to insert the preview. */
+  private _previewContainer: PreviewContainer | undefined;
 
   /** Reference to the view of the placeholder element. */
   private _placeholderRef: EmbeddedViewRef<any> | null;
@@ -542,6 +559,15 @@ export class DragRef<T = any> {
     return this;
   }
 
+  /**
+   * Sets the container into which to insert the preview element.
+   * @param value Container into which to insert the preview.
+   */
+  withPreviewContainer(value: PreviewContainer): this {
+    this._previewContainer = value;
+    return this;
+  }
+
   /** Updates the item's sort order based on the last-known pointer position. */
   _sortFromLastPointerPosition() {
     const position = this._lastKnownPointerPosition;
@@ -762,7 +788,7 @@ export class DragRef<T = any> {
 
     if (dropContainer) {
       const element = this._rootElement;
-      const parent = element.parentNode!;
+      const parent = element.parentNode as HTMLElement;
       const preview = this._preview = this._createPreviewElement();
       const placeholder = this._placeholder = this._createPlaceholderElement();
       const anchor = this._anchor = this._anchor || this._document.createComment('');
@@ -778,7 +804,7 @@ export class DragRef<T = any> {
       // from the DOM completely, because iOS will stop firing all subsequent events in the chain.
       toggleVisibility(element, false);
       this._document.body.appendChild(parent.replaceChild(placeholder, element));
-      getPreviewInsertionPoint(this._document, shadowRoot).appendChild(preview);
+      this._getPreviewInsertionPoint(parent, shadowRoot).appendChild(preview);
       this.started.next({source: this}); // Emit before notifying the container.
       dropContainer.start();
       this._initialContainer = dropContainer;
@@ -1361,6 +1387,32 @@ export class DragRef<T = any> {
 
     return this._cachedShadowRoot;
   }
+
+  /** Gets the element into which the drag preview should be inserted. */
+  private _getPreviewInsertionPoint(initialParent: HTMLElement,
+                                    shadowRoot: ShadowRoot | null): HTMLElement {
+    const previewContainer = this._previewContainer || 'global';
+
+    if (previewContainer === 'parent') {
+      return initialParent;
+    }
+
+    if (previewContainer === 'global') {
+      const documentRef = this._document;
+
+      // We can't use the body if the user is in fullscreen mode,
+      // because the preview will render under the fullscreen element.
+      // TODO(crisbeto): dedupe this with the `FullscreenOverlayContainer` eventually.
+      return shadowRoot ||
+             documentRef.fullscreenElement ||
+             (documentRef as any).webkitFullscreenElement ||
+             (documentRef as any).mozFullScreenElement ||
+             (documentRef as any).msFullscreenElement ||
+             documentRef.body;
+    }
+
+    return coerceElement(previewContainer);
+  }
 }
 
 /**
@@ -1395,19 +1447,6 @@ function isTouchEvent(event: MouseEvent | TouchEvent): event is TouchEvent {
   // as fast as possible. Since we only bind mouse events and touch events, we can assume
   // that if the event's name starts with `t`, it's a touch event.
   return event.type[0] === 't';
-}
-
-/** Gets the element into which the drag preview should be inserted. */
-function getPreviewInsertionPoint(documentRef: any, shadowRoot: ShadowRoot | null): HTMLElement {
-  // We can't use the body if the user is in fullscreen mode,
-  // because the preview will render under the fullscreen element.
-  // TODO(crisbeto): dedupe this with the `FullscreenOverlayContainer` eventually.
-  return shadowRoot ||
-         documentRef.fullscreenElement ||
-         documentRef.webkitFullscreenElement ||
-         documentRef.mozFullScreenElement ||
-         documentRef.msFullscreenElement ||
-         documentRef.body;
 }
 
 /**

@@ -43,7 +43,7 @@
   justify-content: space-between;
   box-sizing: border-box;
 
-  .cdk-drop-list-dragging &:not(.cdk-drag-placeholder) {
+  .cdk-drop-list-dragging &:not(.cdk-drag-placeholder):not(.cdk-drag-preview) {
     transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
 

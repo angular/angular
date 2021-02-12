@@ -29,7 +29,7 @@ import {of as observableOf} from 'rxjs';
 
 import {DragDropModule} from '../drag-drop-module';
 import {CdkDragDrop, CdkDragEnter, CdkDragStart} from '../drag-events';
-import {Point, DragRef} from '../drag-ref';
+import {Point, DragRef, PreviewContainer} from '../drag-ref';
 import {extendStyles} from '../drag-styling';
 import {moveItemInArray} from '../drag-utils';
 
@@ -1235,7 +1235,8 @@ describe('CdkDrag', () => {
         constrainPosition: () => ({x: 1337, y: 42}),
         previewClass: 'custom-preview-class',
         boundaryElement: '.boundary',
-        rootElementSelector: '.root'
+        rootElementSelector: '.root',
+        previewContainer: 'parent'
       };
 
       const fixture = createComponent(PlainStandaloneDraggable, [{
@@ -1251,6 +1252,7 @@ describe('CdkDrag', () => {
       expect(drag.previewClass).toBe('custom-preview-class');
       expect(drag.boundaryElement).toBe('.boundary');
       expect(drag.rootElementSelector).toBe('.root');
+      expect(drag.previewContainer).toBe('parent');
     }));
 
     it('should not throw if touches and changedTouches are empty', fakeAsync(() => {
@@ -2578,6 +2580,47 @@ describe('CdkDrag', () => {
       flush();
 
       expect(placeholder.parentNode).toBeFalsy('Expected placeholder to be removed from the DOM');
+    }));
+
+    it('should insert the preview into the `body` if previewContainer is set to `global`',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZone);
+        fixture.componentInstance.previewContainer = 'global';
+        fixture.detectChanges();
+        const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+        startDraggingViaMouse(fixture, item);
+        const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+        expect(preview.parentNode).toBe(document.body);
+      }));
+
+    it('should insert the preview into the parent node if previewContainer is set to `parent`',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZone);
+        fixture.componentInstance.previewContainer = 'parent';
+        fixture.detectChanges();
+        const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+        const list = fixture.nativeElement.querySelector('.drop-list');
+
+        startDraggingViaMouse(fixture, item);
+        const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+        expect(list).toBeTruthy();
+        expect(preview.parentNode).toBe(list);
+      }));
+
+    it('should insert the preview into a particular element, if specified', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+      const previewContainer = fixture.componentInstance.alternatePreviewContainer;
+
+      expect(previewContainer).toBeTruthy();
+      fixture.componentInstance.previewContainer = previewContainer;
+      fixture.detectChanges();
+
+      startDraggingViaMouse(fixture, item);
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+      expect(preview.parentNode).toBe(previewContainer.nativeElement);
     }));
 
     it('should remove the id from the placeholder', fakeAsync(() => {
@@ -5789,17 +5832,21 @@ const DROP_ZONE_FIXTURE_TEMPLATE = `
       [cdkDragData]="item"
       [cdkDragBoundary]="boundarySelector"
       [cdkDragPreviewClass]="previewClass"
+      [cdkDragPreviewContainer]="previewContainer"
       [style.height.px]="item.height"
       [style.margin-bottom.px]="item.margin"
       (cdkDragStarted)="startedSpy($event)"
       style="width: 100%; background: red;">{{item.value}}</div>
   </div>
+
+  <div #alternatePreviewContainer></div>
 `;
 
 @Component({template: DROP_ZONE_FIXTURE_TEMPLATE})
 class DraggableInDropZone implements AfterViewInit {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   @ViewChild(CdkDropList) dropInstance: CdkDropList;
+  @ViewChild('alternatePreviewContainer') alternatePreviewContainer: ElementRef<HTMLElement>;
   items = [
     {value: 'Zero', height: ITEM_HEIGHT, margin: 0},
     {value: 'One', height: ITEM_HEIGHT, margin: 0},
@@ -5814,6 +5861,7 @@ class DraggableInDropZone implements AfterViewInit {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
   });
   startedSpy = jasmine.createSpy('started spy');
+  previewContainer: PreviewContainer = 'global';
 
   constructor(protected _elementRef: ElementRef) {}
 

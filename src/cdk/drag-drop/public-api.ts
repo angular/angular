@@ -7,7 +7,7 @@
  */
 
 export {DragDrop} from './drag-drop';
-export {DragRef, DragRefConfig, Point} from './drag-ref';
+export {DragRef, DragRefConfig, Point, PreviewContainer} from './drag-ref';
 export {DropListRef} from './drop-list-ref';
 export {CDK_DRAG_PARENT} from './drag-parent';
 
