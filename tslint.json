@@ -100,7 +100,7 @@
     "no-namespace": true,
     "jsdoc-format": [true, "check-multiline-start"],
     "no-duplicate-imports": true,
-    "await-promise": true,
+    "await-promise": [true, "PromiseLike"],
     "array-type": [true, "array"],
 
     // Codelyzer
