@@ -61,9 +61,14 @@ be included in the pre-built CSS mixin and will need to be explicitly included.
     color: (
       primary: $my-primary, 
       accent: $my-accent
-    )
+    ),
+    // Using `mat-mdc-typography-config` rather than `mat-typography-config` generates a typography
+    // config directly from the official Material Design styles. This includes using `rem`-based
+    // measurements rather than `px`-based ones as the spec recommends. 
+    typography: mat-mdc-typography-config(),
+    // The density level to use in this theme, defaults to 0 if not specified.
+    density: 0
   ));
 
   @include angular-material-mdc-theme($my-theme);
-  @include angular-material-mdc-typography();
 ```

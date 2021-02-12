@@ -96,7 +96,9 @@ $candy-app-theme: mat-light-theme((
     primary: $candy-app-primary,
     accent: $candy-app-accent,
     warn: $candy-app-warn,  
-  )
+  ),
+  typography: mat-typography-config(),
+  density: 0, // Defaults to 0 if omitted, but shown for completeness.
 ));
 
 // Include theme styles for core and each component used in your app.
@@ -155,7 +157,8 @@ $candy-app-theme:   mat-light-theme((
   color: (
     primary: $candy-app-primary,
     accent: $candy-app-accent,
-  )
+  ),
+  typography: mat-typography-config()
 ));
 
 // Include the default theme styles (color and default density)
@@ -242,7 +245,8 @@ $candy-app-theme:   mat-light-theme((
   color: (
     primary: $candy-app-primary,
     accent: $candy-app-accent,
-  )
+  ),
+  typography: mat-typography-config()
 ));
 
 // Include the theme styles for only specified components.

@@ -67,10 +67,12 @@ creating a custom theme, you can create a custom **typography configuration**.
 
 // Define a custom typography config that overrides the font-family as well as the
 // `headlines` and `body-1` levels.
-$custom-typography: mat-typography-config(
-  $font-family: 'Roboto, monospace',
-  $headline: mat-typography-level(32px, 48px, 700),
-  $body-1: mat-typography-level(16px, 24px, 500)
+$custom-typography-theme: (
+    typography: mat-typography-config(
+        $font-family: 'Roboto, monospace', 
+        $headline: mat-typography-level(32px, 48px, 700),
+        $body-1: mat-typography-level(16px, 24px, 500)
+    )
 );
 ```
 
@@ -86,13 +88,13 @@ different Sass mixins.
 
 ```scss
 // Override typography CSS classes (e.g., mat-h1, mat-display-1, mat-typography, etc.).
-@include mat-base-typography($custom-typography);
+@include mat-base-typography($custom-typography-theme);
 
 // Override typography for a specific Angular Material components.
-@include mat-checkbox-typography($custom-typography);
+@include mat-checkbox-typography($custom-typography-theme);
 
 // Override typography for all Angular Material, including mat-base-typography and all components.
-@include angular-material-typography($custom-typography);
+@include angular-material-typography($custom-typography-theme);
 ```
 
 If you're using Material's theming, you can also pass in your typography config to the
@@ -100,7 +102,7 @@ If you're using Material's theming, you can also pass in your typography config 
 
 ```scss
 // Override the typography in the core CSS.
-@include mat-core($custom-typography);
+@include mat-core($custom-typography-theme);
 ```
 
 For more details about the typography functions and default config, see the
