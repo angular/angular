@@ -81,7 +81,7 @@ That's the only change you should make to the `HeroDetailComponent` class.
 There are no more properties. There's no presentation logic.
 This component simply receives a hero object through its `hero` property and displays it.
 
-You may get this error: `Property 'contact' has no initializer and is not definitely assigned in the constructor.ts(2564)`.
+You may get this error: `Property 'hero' has no initializer and is not definitely assigned in the constructor.ts(2564)`.
 It is likely that you use a version of Typescript >= 2.7. To resolve this, simply put an exclamation mark after the variable name like this:
   ```ts
   @Input() hero!: Hero;
