@@ -86,6 +86,8 @@ It is likely that you use a version of Typescript >= 2.7. To resolve this, simpl
   ```ts
   @Input() hero!: Hero;
   ```
+More information [here](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html#strict-class-initialization).
+
 
 ## Show the `HeroDetailComponent`
 
