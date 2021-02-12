@@ -83,7 +83,7 @@
     "@angular/router": "^12.0.0-next.0",
     "@axe-core/webdriverjs": "^4.1.0",
     "@bazel/bazelisk": "^1.4.0",
-    "@bazel/buildifier": "^3.5.0",
+    "@bazel/buildifier": "^4.0.0",
     "@bazel/ibazel": "^0.14.0",
     "@bazel/jasmine": "^2.3.2",
     "@bazel/karma": "^2.3.2",
