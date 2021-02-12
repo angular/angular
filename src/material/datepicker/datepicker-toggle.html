@@ -6,8 +6,7 @@
   [attr.aria-label]="ariaLabel || _intl.openCalendarLabel"
   [attr.tabindex]="disabled ? -1 : tabIndex"
   [disabled]="disabled"
-  [disableRipple]="disableRipple"
-  (click)="_open($event)">
+  [disableRipple]="disableRipple">
 
   <svg
     *ngIf="!_customIcon"

@@ -47,6 +47,10 @@ export class MatDatepickerToggleIcon {}
     '[class.mat-warn]': 'datepicker && datepicker.color === "warn"',
     // Used by the test harness to tie this toggle to its datepicker.
     '[attr.data-mat-calendar]': 'datepicker ? datepicker.id : null',
+    // Bind the `click` on the host, rather than the inner `button`, so that we can call
+    // `stopPropagation` on it without affecting the user's `click` handlers. We need to stop
+    // it so that the input doesn't get focused automatically by the form field (See #21836).
+    '(click)': '_open($event)',
   },
   exportAs: 'matDatepickerToggle',
   encapsulation: ViewEncapsulation.None,
