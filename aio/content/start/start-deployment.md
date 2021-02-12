@@ -27,6 +27,8 @@ A best practice is to run your project locally before you deploy it. To run your
     ```sh
     ng new my-project-name
     ```
+    
+    This command displays a series of configuration prompts. For this tutorial, accept the default settings for each prompt.
 
 1. In your newly CLI-generated application, replace the `/src` folder with the `/src` folder from your `StackBlitz` download.
 
