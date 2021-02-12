@@ -98,6 +98,10 @@ export const config = {
       '_MatTooltipBase',
       '_TooltipComponentBase'
     ],
+    'mdc-tooltip/testing': [
+      // Private symbols that are only exported for MDC.
+      '_MatTooltipHarnessBase'
+    ],
     'mdc-checkbox/testing': [
       // Private symbols that are only exported for MDC.
       '_MatCheckboxHarnessBase'
