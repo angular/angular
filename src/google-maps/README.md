@@ -113,6 +113,11 @@ export class GoogleMapsDemoComponent {
 - [`MapDirectionsRenderer`](./map-directions-renderer/README.md)
 - [`MapHeatmapLayer`](./map-heatmap-layer/README.md)
 
+## Services
+
+- [`MapGeocoder`](./map-geocoder/README.md)
+
+
 ## The Options Input
 
 The Google Maps components implement all of the options for their respective objects from the

@@ -130,11 +130,28 @@ export declare class MapDirectionsRenderer implements OnInit, OnChanges, OnDestr
     static ɵfac: i0.ɵɵFactoryDef<MapDirectionsRenderer, never>;
 }
 
+export interface MapDirectionsResponse {
+    result?: google.maps.DirectionsResult;
+    status: google.maps.DirectionsStatus;
+}
+
 export declare class MapDirectionsService {
     constructor(_ngZone: NgZone);
     route(request: google.maps.DirectionsRequest): Observable<MapDirectionsResponse>;
     static ɵfac: i0.ɵɵFactoryDef<MapDirectionsService, never>;
     static ɵprov: i0.ɵɵInjectableDef<MapDirectionsService>;
+}
+
+export declare class MapGeocoder {
+    constructor(_ngZone: NgZone);
+    geocode(request: google.maps.GeocoderRequest): Observable<MapGeocoderResponse>;
+    static ɵfac: i0.ɵɵFactoryDef<MapGeocoder, never>;
+    static ɵprov: i0.ɵɵInjectableDef<MapGeocoder>;
+}
+
+export interface MapGeocoderResponse {
+    results: google.maps.GeocoderResult[];
+    status: google.maps.GeocoderStatus;
 }
 
 export declare class MapGroundOverlay implements OnInit, OnDestroy {

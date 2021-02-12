@@ -34,6 +34,7 @@ export interface TestingWindow extends Window {
       visualization?: {
         HeatmapLayer?: jasmine.Spy;
       }
+      Geocoder?: jasmine.Spy;
     };
   };
   MarkerClusterer?: jasmine.Spy;
@@ -561,4 +562,26 @@ export function createLatLngConstructorSpy(
     };
   }
   return latLngConstructorSpy;
+}
+
+/** Creates a jasmine.SpyObj for the Geocoder */
+export function createGeocoderSpy(): jasmine.SpyObj<google.maps.Geocoder> {
+  return jasmine.createSpyObj('google.maps.Geocoder', ['geocode']);
+}
+
+/** Creates a jasmine.Spy to watch for the constructor of the Geocoder. */
+export function createGeocoderConstructorSpy(
+    geocoderSpy: jasmine.SpyObj<google.maps.Geocoder>): jasmine.Spy {
+  const geocoderConstructorSpy = jasmine.createSpy('Geocoder constructor', () => geocoderSpy);
+  const testingWindow: TestingWindow = window;
+  if (testingWindow.google && testingWindow.google.maps) {
+    testingWindow.google.maps['Geocoder'] = geocoderConstructorSpy;
+  } else {
+    testingWindow.google = {
+      maps: {
+        'Geocoder': geocoderConstructorSpy,
+      },
+    };
+  }
+  return geocoderConstructorSpy;
 }
