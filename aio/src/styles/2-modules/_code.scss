@@ -109,13 +109,17 @@ aio-code {
       ol.linenums {
         margin: 0;
         font-family: $main-font;
-        color: #B3B6B7;
+        color: lighten($mediumgray, 25%);
 
         li {
           margin: 0;
           font-family: $code-font;
           font-size: 90%;
           @include line-height(24);
+
+          &::marker {
+            color: lighten($mediumgray, 25%);
+          }
         }
       }
 
