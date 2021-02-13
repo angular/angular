@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { PropertyTabBodyComponent } from './property-tab-body/property-tab-body.component';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ComponentMetadataComponent } from './property-tab-header/component-metadata/component-metadata.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -15,7 +16,7 @@ import { ComponentMetadataComponent } from './property-tab-header/component-meta
     PropertyTabBodyComponent,
     ComponentMetadataComponent,
   ],
-  imports: [PropertyViewModule, CommonModule, MatButtonModule, MatExpansionModule],
+  imports: [PropertyViewModule, CommonModule, MatButtonModule, MatExpansionModule, MatIconModule],
   exports: [PropertyTabComponent],
 })
 export class PropertyTabModule {}
