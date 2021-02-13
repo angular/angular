@@ -9,7 +9,7 @@
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 import {_sanitizeHtml} from '../../src/sanitization/html_sanitizer';
-import {isDOMParserAvailable} from '../../src/sanitization/inert_body';
+import {isDOMParserAvailable, isTemplateElementAvailable} from '../../src/sanitization/inert_body';
 
 function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
   return _sanitizeHtml(defaultDoc, unsafeHtmlInput).toString();
@@ -87,6 +87,13 @@ function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
     it('supports sanitizing escaped entities', () => {
       expect(sanitizeHtml(defaultDoc, '&#128640;')).toEqual('&#128640;');
       expect(logMsgs).toEqual([]);
+    });
+
+    it('supports table rows and cells without a containing table element', () => {
+      expect(sanitizeHtml(defaultDoc, '<tr><td>Hello {{ world }}!</td></tr>'))
+          .toEqual(
+              isTemplateElementAvailable(defaultDoc) ? '<tr><td>Hello {{ world }}!</td></tr>' :
+                                                       'Hello {{ world }}!');
     });
 
     it('does not warn when just re-encoding text', () => {
@@ -237,12 +244,8 @@ function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
        () => {
          expect(sanitizeHtml(
                     defaultDoc, '<svg><p><style><img src="</style><img src=x onerror=alert(1)//">'))
-             .toEqual(
-                 isDOMParserAvailable() ?
-                     // PlatformBrowser output
-                     '<p><img src="x"></p>' :
-                     // PlatformServer output
-                     '<p></p>');
+             // PlatformServer and Firefox also strip the `<img>` tag
+             .toMatch(/^<p>(<img src="x">)?<\/p>$/);
        });
 
     if (browserDetection.isWebkit) {
@@ -255,6 +258,9 @@ function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
 
     if (isDOMParserAvailable()) {
       it('should work even if DOMParser returns a null body', () => {
+        // To trigger the DOMParser we need to first disable using an HTML `<template>` element.
+        spyOn(window.document, 'createElement').and.callFake(createMockCreateElement());
+
         // Simulate `DOMParser.parseFromString()` returning a null body.
         // See https://github.com/angular/angular/issues/39834
         spyOn(window.DOMParser.prototype, 'parseFromString').and.returnValue({body: null} as any);
@@ -262,4 +268,19 @@ function sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): string {
       });
     }
   });
+}
+
+/**
+ * Create a mock `document.createElement()` method that returns a fake object instead of
+ * `HTMLTemplateElement` and otherwise delegates through to the original.
+ */
+function createMockCreateElement() {
+  const createElement = window.document.createElement;
+  return (tagName: string, options: any) => {
+    if (tagName === 'template') {
+      return {} as HTMLTemplateElement;
+    } else {
+      return createElement.call(window.document, tagName, options);
+    }
+  };
 }

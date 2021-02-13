@@ -11,13 +11,29 @@ import {trustedHTMLFromString} from '../util/security/trusted_types';
 /**
  * This helper is used to get hold of an inert tree of DOM elements containing dirty HTML
  * that needs sanitizing.
- * Depending upon browser support we use one of two strategies for doing this.
- * Default: DOMParser strategy
- * Fallback: InertDocument strategy
+ *
+ * Depending upon browser support we use the first of the following strategies that is available:
+ *
+ * 1. InertDocument using `<template>` element
+ * 2. DOMParser
+ * 3. InertDocument using
  */
 export function getInertElementHelper(defaultDoc: Document): InertElementHelper {
-  const inertDocumentHelper = new InertDocumentHelper(defaultDoc);
-  return isDOMParserAvailable() ? new DOMParserHelper(inertDocumentHelper) : inertDocumentHelper;
+  if (isTemplateElementAvailable(defaultDoc)) {
+    // If `<template>` is available use that in an inertDocument since it supports HTML fragments,
+    // which DOMParser does not.
+    return new InertTemplateHelper(defaultDoc);
+  } else {
+    const inertDocumentHelper = new InertDocumentHelper(defaultDoc);
+    if (isDOMParserAvailable()) {
+      // No `<template>` then use DOMParser if it is available
+      return new InertDOMParserHelper(inertDocumentHelper);
+    } else {
+      // No DOMParser so use the inertDocument which will fallback to not using `<template>` since
+      // it is not available.
+      return inertDocumentHelper;
+    }
+  }
 }
 
 export interface InertElementHelper {
@@ -28,10 +44,32 @@ export interface InertElementHelper {
 }
 
 /**
- * Uses DOMParser to create and fill an inert element.
- * This is the default strategy used in browsers that support it.
+ * Use an HTML5 `<template>` element on an inert DOM element.
+ *
+ * This is the default strategy if the browser supports it.
  */
-class DOMParserHelper implements InertElementHelper {
+class InertTemplateHelper implements InertElementHelper {
+  protected inertDocument: Document;
+
+  constructor(protected defaultDoc: Document) {
+    this.inertDocument = this.defaultDoc.implementation.createHTMLDocument('sanitization-inert');
+  }
+
+  getInertElement(html: string): HTMLElement|null {
+    // Prefer using <template> element if supported.
+    const templateEl = this.inertDocument.createElement('template');
+    templateEl.innerHTML = trustedHTMLFromString(html) as string;
+    return templateEl;
+  }
+}
+
+/**
+ * Use DOMParser to create and fill an inert body element.
+ *
+ * This is the strategy used in browsers that support it, where `<template>` element is not
+ * supported.
+ */
+class InertDOMParserHelper implements InertElementHelper {
   constructor(private inertDocumentHelper: InertElementHelper) {}
 
   getInertElement(html: string): HTMLElement|null {
@@ -59,15 +97,14 @@ class DOMParserHelper implements InertElementHelper {
 }
 
 /**
- * Use an HTML5 `template` element, if supported, or an inert body element created via
- * `createHtmlDocument` to create and fill an inert DOM element.
- * This is the fallback strategy if the browser does not support DOMParser.
+ * Use an inert body element created via `createHtmlDocument` to create and fill an inert DOM
+ * element.
+ *
+ * This is the fallback strategy if the browser does not support `<template>` nor `DOMParser`.
  */
-class InertDocumentHelper implements InertElementHelper {
-  private inertDocument: Document;
-
-  constructor(private defaultDoc: Document) {
-    this.inertDocument = this.defaultDoc.implementation.createHTMLDocument('sanitization-inert');
+class InertDocumentHelper extends InertTemplateHelper {
+  constructor(defaultDoc: Document) {
+    super(defaultDoc);
 
     if (this.inertDocument.body == null) {
       // usually there should be only one body element in the document, but IE doesn't have any, so
@@ -80,13 +117,6 @@ class InertDocumentHelper implements InertElementHelper {
   }
 
   getInertElement(html: string): HTMLElement|null {
-    // Prefer using <template> element if supported.
-    const templateEl = this.inertDocument.createElement('template');
-    if ('content' in templateEl) {
-      templateEl.innerHTML = trustedHTMLFromString(html) as string;
-      return templateEl;
-    }
-
     // Note that previously we used to do something like `this.inertDocument.body.innerHTML = html`
     // and we returned the inert `body` node. This was changed, because IE seems to treat setting
     // `innerHTML` on an inserted element differently, compared to one that hasn't been inserted
@@ -146,4 +176,8 @@ export function isDOMParserAvailable() {
   } catch {
     return false;
   }
+}
+
+export function isTemplateElementAvailable(doc: Document): boolean {
+  return 'content' in doc.createElement('template');
 }
