@@ -13,11 +13,11 @@ describe('Testing the Todo app Demo', () => {
   });
 
   it('should contain the "Components" tab', () => {
-    cy.get('.mat-tab-label-content').contains('Components');
+    cy.get('.mat-tab-links').contains('Components');
   });
 
   it('should contain the "Profiler" tab', () => {
-    cy.get('.mat-tab-label-content').contains('Profiler');
+    cy.get('.mat-tab-links').contains('Profiler');
   });
 
   it('should contain "app-root" and "app-todo-demo" in the component tree', () => {

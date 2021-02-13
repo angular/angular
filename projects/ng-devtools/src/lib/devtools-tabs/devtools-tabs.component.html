@@ -1,36 +1,43 @@
-<mat-tab-group color="accent" (selectedIndexChange)="tabUpdate.notify()" animationDuration="0ms">
-  <mat-tab label="Components">
-    <ng-directive-explorer (toggleInspector)="toggleInspector()"></ng-directive-explorer>
-  </mat-tab>
-  <mat-tab label="Profiler">
-    <ng-profiler></ng-profiler>
-  </mat-tab>
-</mat-tab-group>
+<nav #navBar mat-tab-nav-bar [color]="'accent'">
+  <div id="nav-buttons">
+    <button mat-icon-button color="primary" (click)="toggleInspector()">
+      <mat-icon>
+        drag_indicator
+      </mat-icon>
+    </button>
+    <button mat-icon-button color="primary" (click)="refresh()">
+      <mat-icon>
+        refresh
+      </mat-icon>
+    </button>
+    <button mat-icon-button color="primary" [matMenuTriggerFor]="menu">
+      <mat-icon>
+        settings
+      </mat-icon>
+    </button>
+  </div>
+  <a class="mat-tab-link" mat-tab-link *ngFor="let tab of tabs" (click)="onTabChange(tab)" [active]="activeTab === tab">
+    {{ tab }}
+  </a>
+  <section *ngIf="angularVersion" id="app-angular-version">
+    Angular version:
+    <span id="version-number">
+      {{ angularVersion }}
+    </span>
+    <ng-container *ngIf="latestSHA; let sha"> | DevTools SHA: {{ sha }} </ng-container>
+  </section>
+</nav>
 
-<div id="nav-buttons">
-  <button mat-icon-button color="primary" (click)="toggleInspector()">
-    <mat-icon>
-      drag_indicator
-    </mat-icon>
-  </button>
-  <button mat-icon-button color="primary" (click)="refresh()">
-    <mat-icon>
-      refresh
-    </mat-icon>
-  </button>
-  <button mat-icon-button color="primary" [matMenuTriggerFor]="menu">
-    <mat-icon>
-      settings
-    </mat-icon>
-  </button>
+<div class="tab-content">
+  <ng-directive-explorer
+    [ngClass]="{ hidden: activeTab !== 'Components' }"
+    (toggleInspector)="toggleInspector()"
+  ></ng-directive-explorer>
+  <ng-profiler [ngClass]="{ hidden: activeTab !== 'Profiler' }"></ng-profiler>
 </div>
 
 <mat-menu #menu="matMenu" class="options-menu">
-  <mat-slide-toggle 
-    (change)="toggleTimingAPI($event)" 
-    class="menu-toggle-button" 
-    (click)="$event.stopPropagation()"
-  >
+  <mat-slide-toggle (change)="toggleTimingAPI($event)" class="menu-toggle-button" (click)="$event.stopPropagation()">
     Enable timing API
   </mat-slide-toggle>
   <br />
@@ -44,11 +51,3 @@
     Dark Mode
   </mat-slide-toggle>
 </mat-menu>
-
-<section *ngIf="angularVersion" id="app-angular-version">
-  Angular version:
-    <span id="version-number">
-      {{ angularVersion }}
-    </span>
-  <ng-container *ngIf="latestSHA; let sha"> | DevTools SHA: {{ sha }} </ng-container>
-</section>

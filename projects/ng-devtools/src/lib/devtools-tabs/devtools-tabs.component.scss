@@ -5,29 +5,27 @@
   display: block;
 }
 
-mat-tab-group {
-  width: 100%;
-  height: 100%;
-  display: block;
+.hidden {
+  display: none;
+}
+
+.tab-content {
+  height: calc(100% - 50px);
 }
 
 #nav-buttons {
   display: flex;
-  position: absolute;
-  top: 0px;
-  left: 0px;
 }
 
 #app-angular-version {
-  position: absolute;
-  top: 8px;
-  right: 10px;
+  align-self: center;
+  margin-left: auto;
+  margin-right: 8px;
   font-size: 0.8em;
   font-weight: bold;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
-  z-index: 999;
 }
 
 #version-number {
@@ -40,51 +38,28 @@ mat-tab-group {
   user-select: text;
 }
 
-::ng-deep {
-  .mat-icon-button {
-    height: 30px !important;
-    width: 30px !important;
-    line-height: 30px !important;
-    margin-right: 5px !important;
-  }
-
-  .mat-tab-body-wrapper {
-    height: calc(100% - 31px);
-  }
-
-  .mat-tab-header {
-    height: 30px;
-  }
-
-  .mat-tab-label-container {
-    margin-left: 125px;
-  }
-
-  mat-tab-header {
-    .mat-tab-label {
-      min-width: unset;
-      line-height: 30px;
-      height: 30px;
-      font-size: 13px;
-      padding: 0px 10px;
-    }
-  }
+button.mat-icon-button {
+  height: 30px;
+  width: 30px;
+  line-height: 30px;
+  margin-right: 5px;
 }
 
-.menu {
-  position: absolute;
-  left: 60px;
-  top: -3px;
-  font-size: 1.5em;
-  outline: none;
-  width: 13px;
-  height: 33px;
-  padding: 0;
+.mat-tab-link {
+  min-width: unset;
+  line-height: 30px;
+  height: 30px;
+  font-size: 13px;
+  padding: 0px 10px;
 }
 
 ::ng-deep {
   .options-menu {
     padding: 1rem 1.25rem;
+  }
+
+  body.dark-theme .menu-toggle-button {
+    color: white;
   }
 }
 
@@ -100,11 +75,7 @@ mat-tab-group {
   }
 }
 
-::ng-deep body.dark-theme .menu-toggle-button {
-  color: white;
-}
-
-@media only screen and (max-width: 525px) {
+@media only screen and (max-width: 700px) {
   #app-angular-version {
     max-width: 135px;
   }
