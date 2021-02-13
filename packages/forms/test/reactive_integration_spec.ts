@@ -663,6 +663,189 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
           expect(input.nativeElement.getAttribute('disabled')).toBe(null);
         });
       });
+
+      describe('dynamic change of FormGroup and FormArray shapes', () => {
+        it('should handle FormControl and FormGroup swap', () => {
+          @Component({
+            template: `
+              <form [formGroup]="form">
+                <input formControlName="name" id="standalone-id" *ngIf="!showAsGroup">
+                <ng-container formGroupName="name" *ngIf="showAsGroup">
+                  <input formControlName="control" id="inside-group-id">
+                </ng-container>
+              </form>
+            `
+          })
+          class App {
+            showAsGroup = false;
+            form!: FormGroup;
+
+            useStandaloneControl() {
+              this.showAsGroup = false;
+              this.form = new FormGroup({
+                name: new FormControl('standalone'),
+              });
+            }
+
+            useControlInsideGroup() {
+              this.showAsGroup = true;
+              this.form = new FormGroup({
+                name: new FormGroup({
+                  control: new FormControl('inside-group'),
+                })
+              });
+            }
+          }
+
+          const fixture = initTest(App);
+          fixture.componentInstance.useStandaloneControl();
+          fixture.detectChanges();
+
+          let input = fixture.nativeElement.querySelector('input');
+          expect(input.id).toBe('standalone-id');
+          expect(input.value).toBe('standalone');
+
+          // Replace `FormControl` with `FormGroup` at the same location
+          // in data model and trigger change detection.
+          fixture.componentInstance.useControlInsideGroup();
+          fixture.detectChanges();
+
+          input = fixture.nativeElement.querySelector('input');
+          expect(input.id).toBe('inside-group-id');
+          expect(input.value).toBe('inside-group');
+
+          // Swap `FormGroup` with `FormControl` back at the same location
+          // in data model and trigger change detection.
+          fixture.componentInstance.useStandaloneControl();
+          fixture.detectChanges();
+
+          input = fixture.nativeElement.querySelector('input');
+          expect(input.id).toBe('standalone-id');
+          expect(input.value).toBe('standalone');
+        });
+
+        it('should handle FormControl and FormArray swap', () => {
+          @Component({
+            template: `
+              <form [formGroup]="form">
+                <input formControlName="name" id="standalone-id" *ngIf="!showAsArray">
+                <ng-container formArrayName="name" *ngIf="showAsArray">
+                  <input formControlName="0" id="inside-array-id">
+                </ng-container>
+              </form>
+            `
+          })
+          class App {
+            showAsArray = false;
+            form!: FormGroup;
+
+            useStandaloneControl() {
+              this.showAsArray = false;
+              this.form = new FormGroup({
+                name: new FormControl('standalone'),
+              });
+            }
+
+            useControlInsideArray() {
+              this.showAsArray = true;
+              this.form = new FormGroup({
+                name: new FormArray([
+                  new FormControl('inside-array')  //
+                ])
+              });
+            }
+          }
+
+          const fixture = initTest(App);
+          fixture.componentInstance.useStandaloneControl();
+          fixture.detectChanges();
+
+          let input = fixture.nativeElement.querySelector('input');
+          expect(input.id).toBe('standalone-id');
+          expect(input.value).toBe('standalone');
+
+          // Replace `FormControl` with `FormArray` at the same location
+          // in data model and trigger change detection.
+          fixture.componentInstance.useControlInsideArray();
+          fixture.detectChanges();
+
+          input = fixture.nativeElement.querySelector('input');
+          expect(input.id).toBe('inside-array-id');
+          expect(input.value).toBe('inside-array');
+
+          // Swap `FormArray` with `FormControl` back at the same location
+          // in data model and trigger change detection.
+          fixture.componentInstance.useStandaloneControl();
+          fixture.detectChanges();
+
+          input = fixture.nativeElement.querySelector('input');
+          expect(input.id).toBe('standalone-id');
+          expect(input.value).toBe('standalone');
+        });
+
+        it('should handle FormGroup and FormArray swap', () => {
+          @Component({
+            template: `
+              <form [formGroup]="form">
+                <ng-container formGroupName="name" *ngIf="!showAsArray">
+                  <input formControlName="control" id="inside-group-id">
+                </ng-container>
+                <ng-container formArrayName="name" *ngIf="showAsArray">
+                  <input formControlName="0" id="inside-array-id">
+                </ng-container>
+              </form>
+            `
+          })
+          class App {
+            showAsArray = false;
+            form!: FormGroup;
+
+            useControlInsideGroup() {
+              this.showAsArray = false;
+              this.form = new FormGroup({
+                name: new FormGroup({
+                  control: new FormControl('inside-group'),
+                })
+              });
+            }
+
+            useControlInsideArray() {
+              this.showAsArray = true;
+              this.form = new FormGroup({
+                name: new FormArray([
+                  new FormControl('inside-array')  //
+                ])
+              });
+            }
+          }
+
+          const fixture = initTest(App);
+          fixture.componentInstance.useControlInsideGroup();
+          fixture.detectChanges();
+
+          let input = fixture.nativeElement.querySelector('input');
+          expect(input.id).toBe('inside-group-id');
+          expect(input.value).toBe('inside-group');
+
+          // Replace `FormGroup` with `FormArray` at the same location
+          // in data model and trigger change detection.
+          fixture.componentInstance.useControlInsideArray();
+          fixture.detectChanges();
+
+          input = fixture.nativeElement.querySelector('input');
+          expect(input.id).toBe('inside-array-id');
+          expect(input.value).toBe('inside-array');
+
+          // Swap `FormArray` with `FormGroup` back at the same location
+          // in data model and trigger change detection.
+          fixture.componentInstance.useControlInsideGroup();
+          fixture.detectChanges();
+
+          input = fixture.nativeElement.querySelector('input');
+          expect(input.id).toBe('inside-group-id');
+          expect(input.value).toBe('inside-group');
+        });
+      });
     });
 
     describe('user input', () => {
