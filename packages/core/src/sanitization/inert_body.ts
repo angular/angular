@@ -42,7 +42,7 @@ class DOMParserHelper implements InertBodyHelper {
     html = '<body><remove></remove>' + html;
     try {
       const body = new window.DOMParser()
-                       .parseFromString(trustedHTMLFromString(html) as string, 'text/html')
+                       .parseFromString(trustedHTMLFromString(html) as string, 'application/xml')
                        .body as HTMLBodyElement;
       if (body === null) {
         // In some browsers (e.g. Mozilla/5.0 iPad AppleWebKit Mobile) the `body` property only
@@ -142,7 +142,7 @@ class InertDocumentHelper implements InertBodyHelper {
 export function isDOMParserAvailable() {
   try {
     return !!new window.DOMParser().parseFromString(
-        trustedHTMLFromString('') as string, 'text/html');
+        trustedHTMLFromString('') as string, 'application/xml');
   } catch {
     return false;
   }
