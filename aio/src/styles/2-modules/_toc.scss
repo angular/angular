@@ -1,3 +1,20 @@
+$tocItemLineHeight: 24;
+$tocItemTopPadding: 9;
+$tocMarkerRailSize: 1;
+$tocMarkerSize: 6;
+
+@mixin tocMarker($color) {
+  background: $color;
+  border-radius: 50%;
+  content: '';
+  height: #{$tocMarkerSize}px;
+  left: -#{($tocMarkerSize - $tocMarkerRailSize) / 2}px;
+  position: absolute;
+  top: calc(#{$tocItemTopPadding}px + #{$tocItemLineHeight / 2}px - #{$tocMarkerSize / 2}px);
+  top: calc(#{$tocItemTopPadding}px + #{$tocItemLineHeight / 2 / 10}rem - #{$tocMarkerSize / 2}px);
+  width: #{$tocMarkerSize}px;
+}
+
 .toc-container {
   width: 18%;
   position: fixed;
@@ -106,7 +123,8 @@ aio-toc {
 
       li {
         box-sizing: border-box;
-        padding: 9px 0 9px 12px;
+        @include line-height($tocItemLineHeight);
+        padding: #{$tocItemTopPadding}px 0 #{$tocItemTopPadding}px 12px;
         position: relative;
         transition: all 0.3s ease-in-out;
 
@@ -128,7 +146,7 @@ aio-toc {
           color: lighten($darkgray, 10);
           overflow: visible;
           @include font-size(14);
-          @include line-height(24);
+          line-height: inherit;
           display: table-cell;
         }
 
@@ -142,24 +160,17 @@ aio-toc {
           * {
             color: $blue;
             font-weight: 500;
+          }
 
-            &:before {
-              content: '';
-              border-radius: 50%;
-              left: -3px;
-              top: 14px;
-              background: $blue;
-              position: absolute;
-              width: 6px;
-              height: 6px;
-            }
+          a:before {
+            @include tocMarker($blue);
           }
         }
       }
 
       &:not(.embedded) li {
         &:before {
-          border-left: 1px solid $lightgray;
+          border-left: #{$tocMarkerRailSize}px solid $lightgray;
           bottom: 0;
           content: '';
           left: 0;
@@ -168,22 +179,19 @@ aio-toc {
         }
 
         &:first-child:before {
-          top: 15px;
+          top: calc(#{$tocItemTopPadding}px + #{$tocItemLineHeight / 2}px - #{$tocMarkerSize / 2}px);
+          top: calc(#{$tocItemTopPadding}px + #{$tocItemLineHeight / 2 / 10}rem - #{$tocMarkerSize / 2}px);
         }
 
         &:last-child:before {
-          bottom: calc(100% - 15px);
+          bottom: calc(100% - (#{$tocItemTopPadding}px + #{$tocItemLineHeight / 2}px + #{$tocMarkerSize / 2}px));
+          bottom: calc(100% - (#{$tocItemTopPadding}px + #{$tocItemLineHeight / 2 / 10}rem + #{$tocMarkerSize / 2}px));
         }
 
-        &:not(.active):hover a:before {
-          content: '';
-          border-radius: 50%;
-          left: -3px;
-          top: 14px;
-          background: $lightgray;
-          position: absolute;
-          width: 6px;
-          height: 6px;
+        &:not(.active):hover {
+          a:before {
+            @include tocMarker($lightgray);
+          }
         }
       }
     }
