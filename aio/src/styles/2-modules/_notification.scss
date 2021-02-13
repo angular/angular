@@ -88,7 +88,7 @@ aio-notification {
   }
 
   .search-results {
-    padding-top: 68px + $notificationHeight;
+    padding-top: $notificationHeight;
   }
 
   &.page-home, &.page-resources, &.page-events, &.page-features, &.page-presskit, &.page-contribute  {
