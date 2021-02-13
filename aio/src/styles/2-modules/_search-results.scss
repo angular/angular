@@ -41,8 +41,11 @@ aio-search-results {
 
         .search-result-item {
           @include font-size(14);
+          @include line-height(24);
           color: $lightgray;
+          display: inline-block;
           font-weight: normal;
+          padding: 0.6rem 0;
 
           &a {
             text-decoration: none;
