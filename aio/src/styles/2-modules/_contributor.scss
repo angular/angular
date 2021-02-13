@@ -57,6 +57,7 @@ aio-contributor {
 
     .info-item {
       color: $white;
+      display: flex;
       @include font-size(14);
       font-weight: 500;
       margin: 8px;
