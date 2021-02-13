@@ -28,7 +28,7 @@ mat-sidenav-container.sidenav-container {
     background-color: $superlightgray;
     border-right: 1px solid $lightgray;
 
-    &.collapsed {
+    @media (max-width: 599px) {
       top: 56px;
     }
 
