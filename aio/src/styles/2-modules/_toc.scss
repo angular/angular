@@ -106,7 +106,7 @@ aio-toc {
 
       li {
         box-sizing: border-box;
-        padding: 7px 0 7px 12px;
+        padding: 9px 0 9px 12px;
         position: relative;
         transition: all 0.3s ease-in-out;
 
@@ -128,7 +128,7 @@ aio-toc {
           color: lighten($darkgray, 10);
           overflow: visible;
           @include font-size(14);
-          @include line-height(28);
+          @include line-height(24);
           display: table-cell;
         }
 
