@@ -69,6 +69,14 @@ aio-notification {
 // Here are all the hacks to make the content and sidebars the right height
 // when the notification is visible
 .aio-notification-show {
+  .toc-container {
+    top: 76px + $notificationHeight;
+  }
+
+  .search-results {
+    padding-top: $notificationHeight;
+  }
+
   mat-sidenav-container.sidenav-container {
     .sidenav-content {
       padding-top: 80px + $notificationHeight;
@@ -83,17 +91,11 @@ aio-notification {
     }
   }
 
-  .toc-container {
-    top: 76px + $notificationHeight;
-  }
-
-  .search-results {
-    padding-top: $notificationHeight;
-  }
-
   &.page-home, &.page-resources, &.page-events, &.page-features, &.page-presskit, &.page-contribute  {
-    .sidenav-content {
-      padding-top: $notificationHeight;
+    mat-sidenav-container.sidenav-container {
+      .sidenav-content {
+        padding-top: $notificationHeight;
+      }
     }
   }
 }
