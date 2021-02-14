@@ -9,7 +9,7 @@ import '../../util/ng_dev_mode';
 import '../../util/ng_i18n_closure_mode';
 
 import {getTemplateContent, SRCSET_ATTRS, URI_ATTRS, VALID_ATTRS, VALID_ELEMENTS} from '../../sanitization/html_sanitizer';
-import {getInertBodyHelper} from '../../sanitization/inert_body';
+import {getInertElementHelper} from '../../sanitization/inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from '../../sanitization/url_sanitizer';
 import {assertDefined, assertEqual, assertGreaterThanOrEqual, assertOneOf, assertString} from '../../util/assert';
 import {CharCode} from '../../util/char_code';
@@ -557,10 +557,10 @@ export function parseIcuCase(
   tIcu.remove.push(remove);
   tIcu.update.push(update);
 
-  const inertBodyHelper = getInertBodyHelper(getDocument());
-  const inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeCaseHtml);
-  ngDevMode && assertDefined(inertBodyElement, 'Unable to generate inert body element');
-  const inertRootNode = getTemplateContent(inertBodyElement!) as Element || inertBodyElement;
+  const inertElementHelper = getInertElementHelper(getDocument());
+  const inertElement = inertElementHelper.getInertElement(unsafeCaseHtml);
+  ngDevMode && assertDefined(inertElement, 'Unable to generate inert element.');
+  const inertRootNode = getTemplateContent(inertElement!) as Element || inertElement;
   if (inertRootNode) {
     return walkIcuTree(
         tView, tIcu, lView, updateOpCodes, create, remove, update, inertRootNode, parentIdx,

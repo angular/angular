@@ -15,26 +15,26 @@ import {trustedHTMLFromString} from '../util/security/trusted_types';
  * Default: DOMParser strategy
  * Fallback: InertDocument strategy
  */
-export function getInertBodyHelper(defaultDoc: Document): InertBodyHelper {
+export function getInertElementHelper(defaultDoc: Document): InertElementHelper {
   const inertDocumentHelper = new InertDocumentHelper(defaultDoc);
   return isDOMParserAvailable() ? new DOMParserHelper(inertDocumentHelper) : inertDocumentHelper;
 }
 
-export interface InertBodyHelper {
+export interface InertElementHelper {
   /**
    * Get an inert DOM element containing DOM created from the dirty HTML string provided.
    */
-  getInertBodyElement: (html: string) => HTMLElement | null;
+  getInertElement: (html: string) => HTMLElement | null;
 }
 
 /**
- * Uses DOMParser to create and fill an inert body element.
+ * Uses DOMParser to create and fill an inert element.
  * This is the default strategy used in browsers that support it.
  */
-class DOMParserHelper implements InertBodyHelper {
-  constructor(private inertDocumentHelper: InertBodyHelper) {}
+class DOMParserHelper implements InertElementHelper {
+  constructor(private inertDocumentHelper: InertElementHelper) {}
 
-  getInertBodyElement(html: string): HTMLElement|null {
+  getInertElement(html: string): HTMLElement|null {
     // We add these extra elements to ensure that the rest of the content is parsed as expected
     // e.g. leading whitespace is maintained and tags like `<meta>` do not get hoisted to the
     // `<head>` tag. Note that the `<body>` tag is closed implicitly to prevent unclosed tags
@@ -48,7 +48,7 @@ class DOMParserHelper implements InertBodyHelper {
         // In some browsers (e.g. Mozilla/5.0 iPad AppleWebKit Mobile) the `body` property only
         // becomes available in the following tick of the JS engine. In that case we fall back to
         // the `inertDocumentHelper` instead.
-        return this.inertDocumentHelper.getInertBodyElement(html);
+        return this.inertDocumentHelper.getInertElement(html);
       }
       body.removeChild(body.firstChild!);
       return body;
@@ -63,7 +63,7 @@ class DOMParserHelper implements InertBodyHelper {
  * `createHtmlDocument` to create and fill an inert DOM element.
  * This is the fallback strategy if the browser does not support DOMParser.
  */
-class InertDocumentHelper implements InertBodyHelper {
+class InertDocumentHelper implements InertElementHelper {
   private inertDocument: Document;
 
   constructor(private defaultDoc: Document) {
@@ -79,7 +79,7 @@ class InertDocumentHelper implements InertBodyHelper {
     }
   }
 
-  getInertBodyElement(html: string): HTMLElement|null {
+  getInertElement(html: string): HTMLElement|null {
     // Prefer using <template> element if supported.
     const templateEl = this.inertDocument.createElement('template');
     if ('content' in templateEl) {

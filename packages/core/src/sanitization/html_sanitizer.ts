@@ -8,7 +8,7 @@
 
 import {TrustedHTML} from '../util/security/trusted_type_defs';
 import {trustedHTMLFromString} from '../util/security/trusted_types';
-import {getInertBodyHelper, InertBodyHelper} from './inert_body';
+import {getInertElementHelper, InertElementHelper} from './inert_body';
 import {_sanitizeUrl, sanitizeSrcset} from './url_sanitizer';
 
 function tagSet(tags: string): {[k: string]: boolean} {
@@ -237,19 +237,19 @@ function encodeEntities(value: string) {
       .replace(/>/g, '&gt;');
 }
 
-let inertBodyHelper: InertBodyHelper;
+let inertElementHelper: InertElementHelper;
 
 /**
  * Sanitizes the given unsafe, untrusted HTML fragment, and returns HTML text that is safe to add to
  * the DOM in a browser environment.
  */
 export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): TrustedHTML|string {
-  let inertBodyElement: HTMLElement|null = null;
+  let inertElement: HTMLElement|null = null;
   try {
-    inertBodyHelper = inertBodyHelper || getInertBodyHelper(defaultDoc);
+    inertElementHelper = inertElementHelper || getInertElementHelper(defaultDoc);
     // Make sure unsafeHtml is actually a string (TypeScript types are not enforced at runtime).
     let unsafeHtml = unsafeHtmlInput ? String(unsafeHtmlInput) : '';
-    inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
+    inertElement = inertElementHelper.getInertElement(unsafeHtml);
 
     // mXSS protection. Repeatedly parse the document to make sure it stabilizes, so that a browser
     // trying to auto-correct incorrect HTML cannot cause formerly inert HTML to become dangerous.
@@ -263,13 +263,13 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
       mXSSAttempts--;
 
       unsafeHtml = parsedHtml;
-      parsedHtml = inertBodyElement!.innerHTML;
-      inertBodyElement = inertBodyHelper.getInertBodyElement(unsafeHtml);
+      parsedHtml = inertElement!.innerHTML;
+      inertElement = inertElementHelper.getInertElement(unsafeHtml);
     } while (unsafeHtml !== parsedHtml);
 
     const sanitizer = new SanitizingHtmlSerializer();
-    const safeHtml = sanitizer.sanitizeChildren(
-        getTemplateContent(inertBodyElement!) as Element || inertBodyElement);
+    const safeHtml =
+        sanitizer.sanitizeChildren(getTemplateContent(inertElement!) as Element || inertElement);
     if ((typeof ngDevMode === 'undefined' || ngDevMode) && sanitizer.sanitizedSomething) {
       console.warn(
           'WARNING: sanitizing HTML stripped some content, see https://g.co/ng/security#xss');
@@ -278,8 +278,8 @@ export function _sanitizeHtml(defaultDoc: any, unsafeHtmlInput: string): Trusted
     return trustedHTMLFromString(safeHtml);
   } finally {
     // In case anything goes wrong, clear out inertElement to reset the entire DOM structure.
-    if (inertBodyElement) {
-      const parent = getTemplateContent(inertBodyElement) || inertBodyElement;
+    if (inertElement) {
+      const parent = getTemplateContent(inertElement) || inertElement;
       while (parent.firstChild) {
         parent.removeChild(parent.firstChild);
       }
