@@ -100,7 +100,7 @@ See [Angular CLI Builders](guide/cli-builder).
 ### Default Architect builders and targets
 
 Angular defines default builders for use with specific CLI commands, or with the general `ng run` command.
-The JSON schemas that the define the options and defaults for each of these default builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/8.0.x/packages/angular/cli/lib/config/schema.json) package.
+The JSON schemas that define the options and defaults for each of these default builders are collected in the [`@angular-devkit/build-angular`](https://github.com/angular/angular-cli/blob/master/packages/angular/cli/lib/config/schema.json) package.
 The schemas configure options for the following builders.
 
 * app-shell
