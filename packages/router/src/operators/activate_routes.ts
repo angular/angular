@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgZone} from '@angular/core';
 import {MonoTypeOperatorFunction} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -19,12 +20,24 @@ import {forEach} from '../utils/collection';
 import {nodeChildrenAsMap, TreeNode} from '../utils/tree';
 
 export const activateRoutes =
-    (rootContexts: ChildrenOutletContexts, routeReuseStrategy: RouteReuseStrategy,
+    (ngZone: NgZone, rootContexts: ChildrenOutletContexts, routeReuseStrategy: RouteReuseStrategy,
      forwardEvent: (evt: Event) => void): MonoTypeOperatorFunction<NavigationTransition> =>
         map(t => {
-          new ActivateRoutes(
-              routeReuseStrategy, t.targetRouterState!, t.currentRouterState, forwardEvent)
-              .activate(rootContexts);
+          const activateRoutes = new ActivateRoutes(
+              routeReuseStrategy, t.targetRouterState!, t.currentRouterState, forwardEvent);
+
+          if (NgZone.isInAngularZone()) {
+            activateRoutes.activate(rootContexts);
+          } else {
+            // https://github.com/angular/angular/issues/37223
+            // The below method is invoked within Angular zone since guards or
+            // resolves might leave Angular zone via `zone.runOutsideAngular(...)`.
+            // Thus, routes will be activated outside Angular zone and change detection
+            // will not work properly.
+            ngZone.run(() => {
+              activateRoutes.activate(rootContexts);
+            });
+          }
           return t;
         });
 

@@ -389,6 +389,7 @@ export class Router {
   private configLoader: RouterConfigLoader;
   private ngModule: NgModuleRef<any>;
   private console: Console;
+  private ngZone: NgZone;
   private isNgZoneEnabled: boolean = false;
 
   /**
@@ -491,8 +492,8 @@ export class Router {
 
     this.ngModule = injector.get(NgModuleRef);
     this.console = injector.get(Console);
-    const ngZone = injector.get(NgZone);
-    this.isNgZoneEnabled = ngZone instanceof NgZone && NgZone.isInAngularZone();
+    this.ngZone = injector.get(NgZone);
+    this.isNgZoneEnabled = this.ngZone instanceof NgZone && NgZone.isInAngularZone();
 
     this.resetConfig(config);
     this.currentUrlTree = createEmptyUrlTree();
@@ -795,7 +796,7 @@ export class Router {
                      }),
 
                      activateRoutes(
-                         this.rootContexts, this.routeReuseStrategy,
+                         this.ngZone, this.rootContexts, this.routeReuseStrategy,
                          (evt: Event) => this.triggerEvent(evt)),
 
                      tap({

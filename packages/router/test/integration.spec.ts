@@ -5853,6 +5853,83 @@ describe('Integration', () => {
          expect(fixture).toContainComponent(Tool2Component, '(e)');
        }));
   });
+
+  describe('Route activation within Angular zone', () => {
+    const dezone = (ngZone: NgZone) => <T>(source: Observable<T>) =>
+        new Observable<T>(observer => ngZone.runOutsideAngular(() => source.subscribe(observer)));
+
+    @Component({template: '<router-outlet></router-outlet>'})
+    class Parent {
+    }
+
+    @Component({template: '<button (click)="handleClick()">Handle click</button>'})
+    class Child {
+      clickWasHandledWithinNgZone!: boolean;
+      handleClick() {
+        this.clickWasHandledWithinNgZone = NgZone.isInAngularZone();
+      }
+    }
+
+    @NgModule({
+      imports: [RouterModule],
+      declarations: [Parent, Child],
+      entryComponents: [Parent, Child],
+    })
+    class TestModule {
+    }
+
+    it('should activate component within Angular zone when guard leaves zone', fakeAsync(() => {
+         @Injectable()
+         class AsyncGuard implements CanActivate {
+           constructor(private ngZone: NgZone) {}
+
+           canActivate(): Observable<boolean> {
+             return of(true).pipe(dezone(this.ngZone));
+           }
+         }
+
+         TestBed.configureTestingModule({imports: [TestModule], providers: [AsyncGuard]});
+
+         const router = TestBed.inject(Router);
+
+         router.resetConfig([
+           {path: 'a', component: Child, canActivate: [AsyncGuard]},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         router.navigateByUrl('/a');
+         advance(fixture);
+         const child = fixture.debugElement.query(By.directive(Child));
+         child.nativeElement.querySelector('button').click();
+         expect(child.componentInstance.clickWasHandledWithinNgZone).toEqual(true);
+       }));
+
+    it('should activate component within Angular zone when resolver leaves zone', fakeAsync(() => {
+         @Injectable()
+         class AsyncResolver implements Resolve<boolean> {
+           constructor(private ngZone: NgZone) {}
+
+           resolve(): Observable<boolean> {
+             return of(true).pipe(dezone(this.ngZone));
+           }
+         }
+
+         TestBed.configureTestingModule({imports: [TestModule], providers: [AsyncResolver]});
+
+         const router = TestBed.inject(Router);
+
+         router.resetConfig([
+           {path: 'a', component: Child, resolve: [AsyncResolver]},
+         ]);
+
+         const fixture = createRoot(router, RootCmp);
+         router.navigateByUrl('/a');
+         advance(fixture);
+         const child = fixture.debugElement.query(By.directive(Child));
+         child.nativeElement.querySelector('button').click();
+         expect(child.componentInstance.clickWasHandledWithinNgZone).toEqual(true);
+       }));
+  });
 });
 
 describe('Testing router options', () => {
