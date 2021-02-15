@@ -131,7 +131,7 @@ describe('Angular async helper', () => {
 
     // #docregion fake-async-test-rxjs
     it('should get Date diff correctly in fakeAsync with rxjs scheduler', fakeAsync(() => {
-         // need to add `import 'zone.js/dist/zone-patch-rxjs-fake-async'
+         // need to add `import 'zone.js/plugins/zone-patch-rxjs-fake-async'
          // to patch rxjs scheduler
          let result = null;
          of('hello').pipe(delay(1000)).subscribe(v => {
@@ -156,7 +156,7 @@ describe('Angular async helper', () => {
   // #docregion fake-async-test-clock
   describe('use jasmine.clock()', () => {
     // need to config __zone_symbol__fakeAsyncPatchLock flag
-    // before loading zone.js/dist/zone-testing
+    // before loading zone.js/testing
     beforeEach(() => {
       jasmine.clock().install();
     });
@@ -180,7 +180,7 @@ describe('Angular async helper', () => {
       // do a jsonp call which is not zone aware
     }
     // need to config __zone_symbol__supportWaitUnResolvedChainedPromise flag
-    // before loading zone.js/dist/zone-testing
+    // before loading zone.js/testing
     it('should wait until promise.then is called', waitForAsync(() => {
          let finished = false;
          new Promise((res, rej) => {

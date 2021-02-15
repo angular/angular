@@ -371,7 +371,7 @@ value becomes available. The test must become _asynchronous_.
 
 #### Async test with _fakeAsync()_
 
-To use `fakeAsync()` functionality, you must import `zone.js/dist/zone-testing` in your test setup file.
+To use `fakeAsync()` functionality, you must import `zone.js/testing` in your test setup file.
 If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
 
 The following test confirms the expected behavior when the service returns an `ErrorObservable`.
@@ -453,7 +453,7 @@ If you use the Angular CLI, configure this flag in `src/test.ts`.
 
 ```
 (window as any)['__zone_symbol__fakeAsyncPatchLock'] = true;
-import 'zone.js/dist/zone-testing';
+import 'zone.js/testing';
 ```
 
 <code-example
@@ -463,7 +463,7 @@ import 'zone.js/dist/zone-testing';
 
 #### Using the RxJS scheduler inside fakeAsync()
 
-You can also use RxJS scheduler in `fakeAsync()` just like using `setTimeout()` or `setInterval()`, but you need to import `zone.js/dist/zone-patch-rxjs-fake-async` to patch RxJS scheduler.
+You can also use RxJS scheduler in `fakeAsync()` just like using `setTimeout()` or `setInterval()`, but you need to import `zone.js/plugins/zone-patch-rxjs-fake-async` to patch RxJS scheduler.
 <code-example
   path="testing/src/app/demo/async-helper.spec.ts"
   region="fake-async-test-rxjs">
@@ -583,7 +583,7 @@ Then you can assert that the quote element displays the expected text.
 
 #### Async test with _waitForAsync()_
 
-To use `waitForAsync()` functionality, you must import `zone.js/dist/zone-testing` in your test setup file.
+To use `waitForAsync()` functionality, you must import `zone.js/testing` in your test setup file.
 If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
 
 <div class="alert is-helpful">

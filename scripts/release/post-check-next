@@ -7,7 +7,7 @@
 mkdir tmp
 cd tmp
 npm init -y
-npm install typescript@~3.8.3 rxjs@^6.5.3 zone.js@~0.11.3 @bazel/typescript@^1.0.0 rollup@^1.20.0 rollup-plugin-commonjs@^9.0.0 rollup-plugin-node-resolve@^4.2.0 rollup-plugin-sourcemaps@0.4.0 @angular/{animations,bazel,common,compiler,compiler-cli,core,elements,forms,language-service,localize,platform-browser,platform-browser-dynamic,platform-server,router,service-worker,upgrade}@next --save
+npm install typescript@~3.8.3 rxjs@^6.5.3 zone.js@~0.11.4 @bazel/typescript@^1.0.0 rollup@^1.20.0 rollup-plugin-commonjs@^9.0.0 rollup-plugin-node-resolve@^4.2.0 rollup-plugin-sourcemaps@0.4.0 @angular/{animations,bazel,common,compiler,compiler-cli,core,elements,forms,language-service,localize,platform-browser,platform-browser-dynamic,platform-server,router,service-worker,upgrade}@next --save
 cd ..
 rm -rf tmp
 

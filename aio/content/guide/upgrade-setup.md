@@ -308,7 +308,7 @@ So when IE is refreshed (manually or automatically by `ng serve`), sometimes the
 
 ## Appendix: Test using `fakeAsync()/waitForAsync()`
 
-If you use the `fakeAsync()/waitForAsync()` helper function to run unit tests (for details, read the [Testing guide](guide/testing-components-scenarios#fake-async)), you need to import `zone.js/dist/zone-testing` in your test setup file.
+If you use the `fakeAsync()/waitForAsync()` helper function to run unit tests (for details, read the [Testing guide](guide/testing-components-scenarios#fake-async)), you need to import `zone.js/testing` in your test setup file.
 
 <div class="alert is-important">
 If you create project with `Angular/CLI`, it is already imported in `src/test.ts`.
@@ -317,12 +317,12 @@ If you create project with `Angular/CLI`, it is already imported in `src/test.ts
 And in the earlier versions of `Angular`, the following files were imported or added in your html file:
 
 ```
-import 'zone.js/dist/long-stack-trace-zone';
-import 'zone.js/dist/proxy';
-import 'zone.js/dist/sync-test';
-import 'zone.js/dist/jasmine-patch';
-import 'zone.js/dist/async-test';
-import 'zone.js/dist/fake-async-test';
+import 'zone.js/plugins/long-stack-trace-zone';
+import 'zone.js/plugins/proxy';
+import 'zone.js/plugins/sync-test';
+import 'zone.js/plugins/jasmine-patch';
+import 'zone.js/plugins/async-test';
+import 'zone.js/plugins/fake-async-test';
 ```
 
 You can still load those files separately, but the order is important, you must import `proxy` before `sync-test`, `async-test`, `fake-async-test` and `jasmine-patch`. And you also need to import `sync-test` before `jasmine-patch`, so it is recommended to just import `zone-testing` instead of loading those separated files.
