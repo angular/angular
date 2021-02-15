@@ -13,7 +13,7 @@ before loading zone.js.
     __Zone_disable_blocking = true; // Zone will not patch alert/prompt/confirm
     __Zone_disable_PromiseRejectionEvent = true; // Zone will not patch PromiseRejectionEventHandler
   </script>
-  <script src="../dist/zone.js"></script>
+  <script src="../bundles/zone.umd.js"></script>
 ```
 
 Below is the full list of currently supported modules.
