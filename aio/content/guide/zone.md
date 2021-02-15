@@ -352,7 +352,7 @@ If you are using the Angular CLI, this step is done automatically, and you will 
 /***************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-import 'zone.js/dist/zone';  // Included with Angular CLI.
+import 'zone.js';  // Included with Angular CLI.
 ```
 
 Before importing the  `zone.js` package, you can set the following configurations:
@@ -380,7 +380,7 @@ Next, import `zone-flags` before you import `zone.js` in the `polyfills.ts`:
  * Zone JS is required by default for Angular.
  */
 import `./zone-flags`;
-import 'zone.js/dist/zone';  // Included with Angular CLI.
+import 'zone.js';  // Included with Angular CLI.
 ```
 
 For more information about what you can configure, see the [Zone.js](https://github.com/angular/angular/tree/master/packages/zone.js) documentation.
@@ -406,7 +406,7 @@ To remove Zone.js, make the following changes.
   /***************************************************************************************************
    * Zone JS is required by default for Angular itself.
    */
-  // import 'zone.js/dist/zone';  // Included with Angular CLI.
+  // import 'zone.js';  // Included with Angular CLI.
   ```
 
 2. Bootstrap Angular with the `noop` zone in `src/main.ts`:
