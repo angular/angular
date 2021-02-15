@@ -75,8 +75,7 @@ function _extractId(valueString: string): string {
  * ```
  *
  * **Note:** We listen to the 'change' event because 'input' events aren't fired
- * for selects in Firefox and IE:
- * https://bugzilla.mozilla.org/show_bug.cgi?id=1024350
+ * for selects in IE:
  * https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4660045/
  *
  * @ngModule ReactiveFormsModule
