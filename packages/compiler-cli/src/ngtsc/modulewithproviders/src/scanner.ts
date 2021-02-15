@@ -101,7 +101,7 @@ export class ModuleWithProvidersScanner {
 
     const ngModuleExpr =
         this.emitter.emit(ngModule, decl.getSourceFile(), ImportFlags.ForceNewImport);
-    const ngModuleType = new ExpressionType(ngModuleExpr);
+    const ngModuleType = new ExpressionType(ngModuleExpr.expression);
     const mwpNgType = new ExpressionType(
         new ExternalExpr(Identifiers.ModuleWithProviders), [/* modifiers */], [ngModuleType]);
 

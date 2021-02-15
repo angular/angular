@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {UnifiedModulesHost} from '../../core/api';
 import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, relative, toRelativeImport} from '../../file_system';
 import {stripExtension} from '../../file_system/src/util';
-import {DeclarationNode, isConcreteDeclaration, ReflectionHost} from '../../reflection';
+import {DeclarationNode, ReflectionHost} from '../../reflection';
 import {getSourceFile, isDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript';
 
 import {findExportedNameOfNode} from './find_export';
@@ -52,6 +52,36 @@ export enum ImportFlags {
 }
 
 /**
+ * An emitter strategy has the ability to indicate which `ts.SourceFile` is being imported by the
+ * expression that it has generated. This information is useful for consumers of the emitted
+ * reference that would otherwise have to perform a relatively expensive module resolution step,
+ * e.g. for cyclic import analysis. In cases the emitter is unable to definitively determine the
+ * imported source file or a computation would be required to actually determine the imported
+ * source file, then `'unknown'` should be returned. If the generated expression does not represent
+ * an import then `null` should be used.
+ */
+export type ImportedFile = ts.SourceFile|'unknown'|null;
+
+/**
+ * Represents the emitted expression of a `Reference` that is valid in the source file it was
+ * emitted from.
+ */
+export interface EmittedReference {
+  /**
+   * The expression that refers to `Reference`.
+   */
+  expression: Expression;
+
+  /**
+   * The `ts.SourceFile` that is imported by `expression`. This is not necessarily the source file
+   * of the `Reference`'s declaration node, as the reference may have been rewritten through an
+   * alias export. It could also be `null` if `expression` is a local identifier, or `'unknown'` if
+   * the exact source file that is being imported is not known to the emitter.
+   */
+  importedFile: ImportedFile;
+}
+
+/**
  * A particular strategy for generating an expression which refers to a `Reference`.
  *
  * There are many potential ways a given `Reference` could be referred to in the context of a given
@@ -71,9 +101,10 @@ export interface ReferenceEmitStrategy {
    * @param ref the `Reference` for which to generate an expression
    * @param context the source file in which the `Expression` must be valid
    * @param importFlags a flag which controls whether imports should be generated or not
-   * @returns an `Expression` which refers to the `Reference`, or `null` if none can be generated
+   * @returns an `EmittedReference` which refers to the `Reference`, or `null` if none can be
+   *   generated
    */
-  emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags): Expression|null;
+  emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags): EmittedReference|null;
 }
 
 /**
@@ -85,8 +116,8 @@ export interface ReferenceEmitStrategy {
 export class ReferenceEmitter {
   constructor(private strategies: ReferenceEmitStrategy[]) {}
 
-  emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags = ImportFlags.None):
-      Expression {
+  emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags = ImportFlags.None):
+      EmittedReference {
     for (const strategy of this.strategies) {
       const emitted = strategy.emit(ref, context, importFlags);
       if (emitted !== null) {
@@ -103,7 +134,7 @@ export class ReferenceEmitter {
  * such identifiers are available.
  */
 export class LocalIdentifierStrategy implements ReferenceEmitStrategy {
-  emit(ref: Reference<ts.Node>, context: ts.SourceFile, importFlags: ImportFlags): Expression|null {
+  emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags): EmittedReference|null {
     const refSf = getSourceFile(ref.node);
 
     // If the emitter has specified ForceNewImport, then LocalIdentifierStrategy should not use a
@@ -118,18 +149,39 @@ export class LocalIdentifierStrategy implements ReferenceEmitStrategy {
     // such a case, the reference's `identities` property would be `[foo]`, which would result in an
     // invalid emission of a free-standing `foo` identifier, rather than `exports.foo`.
     if (!isDeclaration(ref.node) && refSf === context) {
-      return new WrappedNodeExpr(ref.node);
+      return {
+        expression: new WrappedNodeExpr(ref.node),
+        importedFile: null,
+      };
     }
 
     // A Reference can have multiple identities in different files, so it may already have an
     // Identifier in the requested context file.
     const identifier = ref.getIdentityIn(context);
     if (identifier !== null) {
-      return new WrappedNodeExpr(identifier);
+      return {
+        expression: new WrappedNodeExpr(identifier),
+        importedFile: null,
+      };
     } else {
       return null;
     }
   }
+}
+
+/**
+ * Represents the exported declarations from a module source file.
+ */
+interface ModuleExports {
+  /**
+   * The source file of the module.
+   */
+  module: ts.SourceFile;
+
+  /**
+   * The map of declarations to their exported name.
+   */
+  exportMap: Map<DeclarationNode, string>;
 }
 
 /**
@@ -146,13 +198,13 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
    * A cache of the exports of specific modules, because resolving a module to its exports is a
    * costly operation.
    */
-  private moduleExportsCache = new Map<string, Map<DeclarationNode, string>|null>();
+  private moduleExportsCache = new Map<string, ModuleExports|null>();
 
   constructor(
       protected program: ts.Program, protected checker: ts.TypeChecker,
       protected moduleResolver: ModuleResolver, private reflectionHost: ReflectionHost) {}
 
-  emit(ref: Reference<ts.Node>, context: ts.SourceFile, importFlags: ImportFlags): Expression|null {
+  emit(ref: Reference, context: ts.SourceFile, importFlags: ImportFlags): EmittedReference|null {
     if (ref.bestGuessOwningModule === null) {
       // There is no module name available for this Reference, meaning it was arrived at via a
       // relative path.
@@ -168,38 +220,30 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
 
     // Try to find the exported name of the declaration, if one is available.
     const {specifier, resolutionContext} = ref.bestGuessOwningModule;
-    const symbolName = this.resolveImportName(specifier, ref.node, resolutionContext);
-    if (symbolName === null) {
+    const exports = this.getExportsOfModule(specifier, resolutionContext);
+    if (exports === null || !exports.exportMap.has(ref.node)) {
       // TODO(alxhub): make this error a ts.Diagnostic pointing at whatever caused this import to be
       // triggered.
       throw new Error(`Symbol ${ref.debugName} declared in ${
           getSourceFile(ref.node).fileName} is not exported from ${specifier} (import into ${
           context.fileName})`);
     }
+    const symbolName = exports.exportMap.get(ref.node)!;
 
-    return new ExternalExpr(new ExternalReference(specifier, symbolName));
+    return {
+      expression: new ExternalExpr(new ExternalReference(specifier, symbolName)),
+      importedFile: exports.module,
+    };
   }
 
-  private resolveImportName(moduleName: string, target: DeclarationNode, fromFile: string): string
-      |null {
-    const exports = this.getExportsOfModule(moduleName, fromFile);
-    if (exports !== null && exports.has(target)) {
-      return exports.get(target)!;
-    } else {
-      return null;
-    }
-  }
-
-  private getExportsOfModule(moduleName: string, fromFile: string):
-      Map<DeclarationNode, string>|null {
+  private getExportsOfModule(moduleName: string, fromFile: string): ModuleExports|null {
     if (!this.moduleExportsCache.has(moduleName)) {
       this.moduleExportsCache.set(moduleName, this.enumerateExportsOfModule(moduleName, fromFile));
     }
     return this.moduleExportsCache.get(moduleName)!;
   }
 
-  protected enumerateExportsOfModule(specifier: string, fromFile: string):
-      Map<DeclarationNode, string>|null {
+  protected enumerateExportsOfModule(specifier: string, fromFile: string): ModuleExports|null {
     // First, resolve the module specifier to its entry point, and get the ts.Symbol for it.
     const entryPointFile = this.moduleResolver.resolveModule(specifier, fromFile);
     if (entryPointFile === null) {
@@ -214,7 +258,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
     exports.forEach((declaration, name) => {
       exportMap.set(declaration.node, name);
     });
-    return exportMap;
+    return {module: entryPointFile, exportMap};
   }
 }
 
@@ -229,7 +273,7 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
 export class LogicalProjectStrategy implements ReferenceEmitStrategy {
   constructor(private reflector: ReflectionHost, private logicalFs: LogicalFileSystem) {}
 
-  emit(ref: Reference<ts.Node>, context: ts.SourceFile): Expression|null {
+  emit(ref: Reference, context: ts.SourceFile): EmittedReference|null {
     const destSf = getSourceFile(ref.node);
 
     // Compute the relative path from the importing file to the file being imported. This is done
@@ -260,7 +304,10 @@ export class LogicalProjectStrategy implements ReferenceEmitStrategy {
     // With both files expressed as LogicalProjectPaths, getting the module specifier as a relative
     // path is now straightforward.
     const moduleName = LogicalProjectPath.relativePathBetween(originPath, destPath);
-    return new ExternalExpr({moduleName, name});
+    return {
+      expression: new ExternalExpr({moduleName, name}),
+      importedFile: destSf,
+    };
   }
 }
 
@@ -273,14 +320,14 @@ export class LogicalProjectStrategy implements ReferenceEmitStrategy {
 export class RelativePathStrategy implements ReferenceEmitStrategy {
   constructor(private reflector: ReflectionHost) {}
 
-  emit(ref: Reference<ts.Node>, context: ts.SourceFile): Expression|null {
+  emit(ref: Reference, context: ts.SourceFile): EmittedReference|null {
     const destSf = getSourceFile(ref.node);
     const relativePath =
         relative(dirname(absoluteFromSourceFile(context)), absoluteFromSourceFile(destSf));
     const moduleName = toRelativeImport(stripExtension(relativePath));
 
     const name = findExportedNameOfNode(ref.node, destSf, this.reflector);
-    return new ExternalExpr({moduleName, name});
+    return {expression: new ExternalExpr({moduleName, name}), importedFile: destSf};
   }
 }
 
@@ -291,7 +338,7 @@ export class RelativePathStrategy implements ReferenceEmitStrategy {
 export class UnifiedModulesStrategy implements ReferenceEmitStrategy {
   constructor(private reflector: ReflectionHost, private unifiedModulesHost: UnifiedModulesHost) {}
 
-  emit(ref: Reference<ts.Node>, context: ts.SourceFile): Expression|null {
+  emit(ref: Reference, context: ts.SourceFile): EmittedReference|null {
     const destSf = getSourceFile(ref.node);
     const name = findExportedNameOfNode(ref.node, destSf, this.reflector);
     if (name === null) {
@@ -301,6 +348,9 @@ export class UnifiedModulesStrategy implements ReferenceEmitStrategy {
     const moduleName =
         this.unifiedModulesHost.fileNameToModuleName(destSf.fileName, context.fileName);
 
-    return new ExternalExpr({moduleName, name});
+    return {
+      expression: new ExternalExpr({moduleName, name}),
+      importedFile: destSf,
+    };
   }
 }

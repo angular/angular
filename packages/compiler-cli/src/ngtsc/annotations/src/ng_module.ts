@@ -418,7 +418,7 @@ export class NgModuleDecoratorHandler implements
       const context = getSourceFile(node);
       for (const exportRef of analysis.exports) {
         if (isNgModule(exportRef.node, scope.compilation)) {
-          data.injectorImports.push(this.refEmitter.emit(exportRef, context));
+          data.injectorImports.push(this.refEmitter.emit(exportRef, context).expression);
         }
       }
 
@@ -466,12 +466,12 @@ export class NgModuleDecoratorHandler implements
     for (const decl of analysis.declarations) {
       const remoteScope = this.scopeRegistry.getRemoteScope(decl.node);
       if (remoteScope !== null) {
-        const directives =
-            remoteScope.directives.map(directive => this.refEmitter.emit(directive, context));
-        const pipes = remoteScope.pipes.map(pipe => this.refEmitter.emit(pipe, context));
+        const directives = remoteScope.directives.map(
+            directive => this.refEmitter.emit(directive, context).expression);
+        const pipes = remoteScope.pipes.map(pipe => this.refEmitter.emit(pipe, context).expression);
         const directiveArray = new LiteralArrayExpr(directives);
         const pipesArray = new LiteralArrayExpr(pipes);
-        const declExpr = this.refEmitter.emit(decl, context)!;
+        const declExpr = this.refEmitter.emit(decl, context).expression;
         const setComponentScope = new ExternalExpr(R3Identifiers.setComponentScope);
         const callExpr =
             new InvokeFunctionExpr(setComponentScope, [declExpr, directiveArray, pipesArray]);

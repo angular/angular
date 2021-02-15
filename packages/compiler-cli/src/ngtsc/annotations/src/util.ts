@@ -267,13 +267,12 @@ function createUnsuitableInjectionTokenError(
 export function toR3Reference(
     valueRef: Reference, typeRef: Reference, valueContext: ts.SourceFile,
     typeContext: ts.SourceFile, refEmitter: ReferenceEmitter): R3Reference {
-  const value = refEmitter.emit(valueRef, valueContext);
-  const type = refEmitter.emit(
-      typeRef, typeContext, ImportFlags.ForceNewImport | ImportFlags.AllowTypeImports);
-  if (value === null || type === null) {
-    throw new Error(`Could not refer to ${ts.SyntaxKind[valueRef.node.kind]}`);
-  }
-  return {value, type};
+  return {
+    value: refEmitter.emit(valueRef, valueContext).expression,
+    type: refEmitter
+              .emit(typeRef, typeContext, ImportFlags.ForceNewImport | ImportFlags.AllowTypeImports)
+              .expression,
+  };
 }
 
 export function isAngularCore(decorator: Decorator): decorator is Decorator&{import: Import} {
