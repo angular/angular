@@ -10,11 +10,10 @@ import {Expression, ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {UnifiedModulesHost} from '../../core/api';
-import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
+import {ClassDeclaration, ReflectionHost} from '../../reflection';
 
-import {ImportFlags, ReferenceEmitStrategy} from './emitter';
+import {EmittedReference, ImportFlags, ReferenceEmitStrategy} from './emitter';
 import {Reference} from './references';
-
 
 
 // Escape anything that isn't alphanumeric, '/' or '_'.
@@ -213,11 +212,11 @@ export class PrivateExportAliasingHost implements AliasingHost {
  * directive or pipe, if it exists.
  */
 export class AliasStrategy implements ReferenceEmitStrategy {
-  emit(ref: Reference<ts.Node>, context: ts.SourceFile, importMode: ImportFlags): Expression|null {
-    if (importMode & ImportFlags.NoAliasing) {
+  emit(ref: Reference, context: ts.SourceFile, importMode: ImportFlags): EmittedReference|null {
+    if (importMode & ImportFlags.NoAliasing || ref.alias === null) {
       return null;
     }
 
-    return ref.alias;
+    return {expression: ref.alias, importedFile: 'unknown'};
   }
 }

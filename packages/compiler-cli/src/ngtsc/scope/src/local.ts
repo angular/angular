@@ -511,7 +511,8 @@ export class LocalModuleScopeRegistry implements MetadataRegistry, ComponentScop
             asAlias: exportName,
           });
         } else {
-          const expr = this.refEmitter.emit(exportRef.cloneWithNoIdentifiers(), sourceFile);
+          const expr =
+              this.refEmitter.emit(exportRef.cloneWithNoIdentifiers(), sourceFile).expression;
           if (!(expr instanceof ExternalExpr) || expr.value.moduleName === null ||
               expr.value.name === null) {
             throw new Error('Expected ExternalExpr');

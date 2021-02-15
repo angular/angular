@@ -123,7 +123,7 @@ export class Environment {
     const ngExpr = this.refEmitter.emit(ref, this.contextFile, ImportFlags.NoAliasing);
 
     // Use `translateExpression` to convert the `Expression` into a `ts.Expression`.
-    return translateExpression(ngExpr, this.importManager);
+    return translateExpression(ngExpr.expression, this.importManager);
   }
 
   /**
@@ -137,7 +137,7 @@ export class Environment {
 
     // Create an `ExpressionType` from the `Expression` and translate it via `translateType`.
     // TODO(alxhub): support references to types with generic arguments in a clean way.
-    return translateType(new ExpressionType(ngExpr), this.importManager);
+    return translateType(new ExpressionType(ngExpr.expression), this.importManager);
   }
 
   private emitTypeParameters(declaration: ClassDeclaration<ts.ClassDeclaration>):
