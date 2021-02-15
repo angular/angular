@@ -8,8 +8,6 @@
 
 import * as ts from 'typescript';
 
-import {ModuleResolver} from '../../imports';
-
 /**
  * A cached graph of imports in the `ts.Program`.
  *
@@ -19,7 +17,7 @@ import {ModuleResolver} from '../../imports';
 export class ImportGraph {
   private map = new Map<ts.SourceFile, Set<ts.SourceFile>>();
 
-  constructor(private resolver: ModuleResolver) {}
+  constructor(private checker: ts.TypeChecker) {}
 
   /**
    * List the direct (not transitive) imports of a given `ts.SourceFile`.
@@ -102,25 +100,30 @@ export class ImportGraph {
 
   private scanImports(sf: ts.SourceFile): Set<ts.SourceFile> {
     const imports = new Set<ts.SourceFile>();
-    // Look through the source file for import statements.
-    sf.statements.forEach(stmt => {
-      if ((ts.isImportDeclaration(stmt) || ts.isExportDeclaration(stmt)) &&
-          stmt.moduleSpecifier !== undefined && ts.isStringLiteral(stmt.moduleSpecifier)) {
-        // Resolve the module to a file, and check whether that file is in the ts.Program.
-        const moduleName = stmt.moduleSpecifier.text;
-        const moduleFile = this.resolver.resolveModule(moduleName, sf.fileName);
-        if (moduleFile !== null && isLocalFile(moduleFile)) {
-          // Record this local import.
-          imports.add(moduleFile);
-        }
+    // Look through the source file for import and export statements.
+    for (const stmt of sf.statements) {
+      if ((!ts.isImportDeclaration(stmt) && !ts.isExportDeclaration(stmt)) ||
+          stmt.moduleSpecifier === undefined) {
+        continue;
       }
-    });
+
+      const symbol = this.checker.getSymbolAtLocation(stmt.moduleSpecifier);
+      if (symbol === undefined || symbol.valueDeclaration === undefined) {
+        // No symbol could be found to skip over this import/export.
+        continue;
+      }
+      const moduleFile = symbol.valueDeclaration;
+      if (ts.isSourceFile(moduleFile) && isLocalFile(moduleFile)) {
+        // Record this local import.
+        imports.add(moduleFile);
+      }
+    }
     return imports;
   }
 }
 
 function isLocalFile(sf: ts.SourceFile): boolean {
-  return !sf.fileName.endsWith('.d.ts');
+  return !sf.isDeclarationFile;
 }
 
 /**

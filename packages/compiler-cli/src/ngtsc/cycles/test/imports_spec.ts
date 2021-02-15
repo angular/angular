@@ -8,7 +8,6 @@
 import * as ts from 'typescript';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {ModuleResolver} from '../../imports';
 import {ImportGraph} from '../src/imports';
 import {importPath, makeProgramFromGraph} from './util';
 
@@ -84,12 +83,10 @@ runInEachFileSystem(() => {
   });
 
   function makeImportGraph(graph: string): {program: ts.Program, graph: ImportGraph} {
-    const {program, options, host} = makeProgramFromGraph(getFileSystem(), graph);
-    const moduleResolver =
-        new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
+    const {program} = makeProgramFromGraph(getFileSystem(), graph);
     return {
       program,
-      graph: new ImportGraph(moduleResolver),
+      graph: new ImportGraph(program.getTypeChecker()),
     };
   }
 

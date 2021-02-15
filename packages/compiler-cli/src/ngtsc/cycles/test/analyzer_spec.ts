@@ -8,7 +8,6 @@
 import * as ts from 'typescript';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {ModuleResolver} from '../../imports';
 import {Cycle, CycleAnalyzer} from '../src/analyzer';
 import {ImportGraph} from '../src/imports';
 import {importPath, makeProgramFromGraph} from './util';
@@ -73,12 +72,10 @@ runInEachFileSystem(() => {
   });
 
   function makeAnalyzer(graph: string): {program: ts.Program, analyzer: CycleAnalyzer} {
-    const {program, options, host} = makeProgramFromGraph(getFileSystem(), graph);
-    const moduleResolver =
-        new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
+    const {program} = makeProgramFromGraph(getFileSystem(), graph);
     return {
       program,
-      analyzer: new CycleAnalyzer(new ImportGraph(moduleResolver)),
+      analyzer: new CycleAnalyzer(new ImportGraph(program.getTypeChecker())),
     };
   }
 });
