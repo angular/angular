@@ -17,8 +17,8 @@ Usage:
 
 ```
 <script src="webcomponents-lite.js"></script>
-<script src="node_modules/zone.js/dist/zone.js"></script>
-<script src="node_modules/zone.js/dist/webapis-shadydom.js"></script>
+<script src="node_modules/zone.js/bundles/zone.umd.js"></script>
+<script src="node_modules/zone.js/bundles/webapis-shadydom.umd.js"></script>
 ```
 
 ## Currently supported non standard node APIs
