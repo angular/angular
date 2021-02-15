@@ -322,7 +322,7 @@ export class NgCompiler {
     this.moduleResolver =
         new ModuleResolver(tsProgram, this.options, this.adapter, moduleResolutionCache);
     this.resourceManager = new AdapterResourceLoader(adapter, this.options);
-    this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(this.moduleResolver));
+    this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(tsProgram.getTypeChecker()));
     this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, tsProgram);
 
     this.ignoreForDiagnostics =
