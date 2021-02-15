@@ -72,11 +72,14 @@ runInEachFileSystem(() => {
         resolutionContext: context.fileName,
       });
       const emitted = strategy.emit(reference, context, ImportFlags.None);
-      if (!(emitted instanceof ExternalExpr)) {
+      if (emitted === null) {
+        return fail('Reference should be emitted');
+      }
+      if (!(emitted.expression instanceof ExternalExpr)) {
         return fail('Reference should be emitted as ExternalExpr');
       }
-      expect(emitted.value.name).toEqual('Bar');
-      expect(emitted.value.moduleName).toEqual('external');
+      expect(emitted.expression.value.name).toEqual('Bar');
+      expect(emitted.expression.value.moduleName).toEqual('external');
     });
 
     it('should throw when generating an import to a type-only declaration when not allowed', () => {
@@ -121,11 +124,14 @@ runInEachFileSystem(() => {
       const reference =
           new Reference(decl, {specifier: 'external', resolutionContext: context.fileName});
       const emitted = strategy.emit(reference, context, ImportFlags.AllowTypeImports);
-      if (!(emitted instanceof ExternalExpr)) {
+      if (emitted === null) {
+        return fail('Reference should be emitted');
+      }
+      if (!(emitted.expression instanceof ExternalExpr)) {
         return fail('Reference should be emitted as ExternalExpr');
       }
-      expect(emitted.value.name).toEqual('Foo');
-      expect(emitted.value.moduleName).toEqual('external');
+      expect(emitted.expression.value.name).toEqual('Foo');
+      expect(emitted.expression.value.moduleName).toEqual('external');
     });
   });
 
@@ -165,7 +171,7 @@ runInEachFileSystem(() => {
       expect(ref).not.toBeNull();
 
       // Expect the prefixed name from the TestHost.
-      expect((ref! as ExternalExpr).value.name).toEqual('testFoo');
+      expect((ref!.expression as ExternalExpr).value.name).toEqual('testFoo');
     });
   });
 });

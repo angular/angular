@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {absoluteFrom, relative} from '../../file_system';
-import {DefaultImportRecorder, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
+import {DefaultImportRecorder, ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
 import {extractSemanticTypeParameters, isArrayEqual, isReferenceEqual, SemanticDepGraphUpdater, SemanticReference, SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
@@ -628,11 +628,14 @@ export class ComponentDecoratorHandler implements
       const bound = binder.bind({template: metadata.template.nodes});
 
       // The BoundTarget knows which directives and pipes matched the template.
-      type UsedDirective = R3UsedDirectiveMetadata&{ref: Reference<ClassDeclaration>};
+      type UsedDirective =
+          R3UsedDirectiveMetadata&{ref: Reference<ClassDeclaration>, importedFile: ImportedFile};
       const usedDirectives: UsedDirective[] = bound.getUsedDirectives().map(directive => {
+        const type = this.refEmitter.emit(directive.ref, context);
         return {
           ref: directive.ref,
-          type: this.refEmitter.emit(directive.ref, context),
+          type: type.expression,
+          importedFile: type.importedFile,
           selector: directive.selector,
           inputs: directive.inputs.propertyNames,
           outputs: directive.outputs.propertyNames,
@@ -640,17 +643,25 @@ export class ComponentDecoratorHandler implements
           isComponent: directive.isComponent,
         };
       });
-      type UsedPipe = {ref: Reference<ClassDeclaration>, pipeName: string, expression: Expression};
+
+      type UsedPipe = {
+        ref: Reference<ClassDeclaration>,
+        pipeName: string,
+        expression: Expression,
+        importedFile: ImportedFile,
+      };
       const usedPipes: UsedPipe[] = [];
       for (const pipeName of bound.getUsedPipes()) {
         if (!pipes.has(pipeName)) {
           continue;
         }
         const pipe = pipes.get(pipeName)!;
+        const type = this.refEmitter.emit(pipe, context);
         usedPipes.push({
           ref: pipe,
           pipeName,
-          expression: this.refEmitter.emit(pipe, context),
+          expression: type.expression,
+          importedFile: type.importedFile,
         });
       }
       if (this.semanticDepGraphUpdater !== null) {
@@ -665,14 +676,16 @@ export class ComponentDecoratorHandler implements
       // import which needs to be generated would create a cycle.
       const cyclesFromDirectives = new Map<UsedDirective, Cycle>();
       for (const usedDirective of usedDirectives) {
-        const cycle = this._checkForCyclicImport(usedDirective.ref, usedDirective.type, context);
+        const cycle =
+            this._checkForCyclicImport(usedDirective.importedFile, usedDirective.type, context);
         if (cycle !== null) {
           cyclesFromDirectives.set(usedDirective, cycle);
         }
       }
       const cyclesFromPipes = new Map<UsedPipe, Cycle>();
       for (const usedPipe of usedPipes) {
-        const cycle = this._checkForCyclicImport(usedPipe.ref, usedPipe.expression, context);
+        const cycle =
+            this._checkForCyclicImport(usedPipe.importedFile, usedPipe.expression, context);
         if (cycle !== null) {
           cyclesFromPipes.set(usedPipe, cycle);
         }
@@ -682,11 +695,11 @@ export class ComponentDecoratorHandler implements
       if (!cycleDetected) {
         // No cycle was detected. Record the imports that need to be created in the cycle detector
         // so that future cyclic import checks consider their production.
-        for (const {type} of usedDirectives) {
-          this._recordSyntheticImport(type, context);
+        for (const {type, importedFile} of usedDirectives) {
+          this._recordSyntheticImport(importedFile, type, context);
         }
-        for (const {expression} of usedPipes) {
-          this._recordSyntheticImport(expression, context);
+        for (const {expression, importedFile} of usedPipes) {
+          this._recordSyntheticImport(importedFile, expression, context);
         }
 
         // Check whether the directive/pipe arrays in ɵcmp need to be wrapped in closures.
@@ -1189,7 +1202,17 @@ export class ComponentDecoratorHandler implements
     }
   }
 
-  private _expressionToImportedFile(expr: Expression, origin: ts.SourceFile): ts.SourceFile|null {
+  private _resolveImportedFile(importedFile: ImportedFile, expr: Expression, origin: ts.SourceFile):
+      ts.SourceFile|null {
+    // If `importedFile` is not 'unknown' then it accurately reflects the source file that is
+    // being imported.
+    if (importedFile !== 'unknown') {
+      return importedFile;
+    }
+
+    // Otherwise `expr` has to be inspected to determine the file that is being imported. If `expr`
+    // is not an `ExternalExpr` then it does not correspond with an import, so return null in that
+    // case.
     if (!(expr instanceof ExternalExpr)) {
       return null;
     }
@@ -1204,18 +1227,19 @@ export class ComponentDecoratorHandler implements
    *
    * @returns a `Cycle` object if a cycle would be created, otherwise `null`.
    */
-  private _checkForCyclicImport(ref: Reference, expr: Expression, origin: ts.SourceFile): Cycle
-      |null {
-    const importedFile = this._expressionToImportedFile(expr, origin);
-    if (importedFile === null) {
+  private _checkForCyclicImport(
+      importedFile: ImportedFile, expr: Expression, origin: ts.SourceFile): Cycle|null {
+    const imported = this._resolveImportedFile(importedFile, expr, origin);
+    if (imported === null) {
       return null;
     }
     // Check whether the import is legal.
-    return this.cycleAnalyzer.wouldCreateCycle(origin, importedFile);
+    return this.cycleAnalyzer.wouldCreateCycle(origin, imported);
   }
 
-  private _recordSyntheticImport(expr: Expression, origin: ts.SourceFile): void {
-    const imported = this._expressionToImportedFile(expr, origin);
+  private _recordSyntheticImport(
+      importedFile: ImportedFile, expr: Expression, origin: ts.SourceFile): void {
+    const imported = this._resolveImportedFile(importedFile, expr, origin);
     if (imported === null) {
       return;
     }
