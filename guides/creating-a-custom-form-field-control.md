@@ -202,7 +202,7 @@ To resolve this, remove the `NG_VALUE_ACCESSOR` provider and instead set the val
     // },
   ],
 })
-export class MyTelInput implements MatFormFieldControl<MyTel> {
+export class MyTelInput implements MatFormFieldControl<MyTel>, ControlValueAccessor {
   constructor(
     ...,
     @Optional() @Self() public ngControl: NgControl,
