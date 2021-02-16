@@ -2,7 +2,7 @@ var createTestPackage = require('../../helpers/test-package');
 var Dgeni = require('dgeni');
 
 describe('autoLinkCode post-processor', () => {
-  let processor, autoLinkCode, aliasMap, filterPipes;
+  let processor, autoLinkCode, aliasMap, filterPipes, log;
 
   beforeEach(() => {
     const testPackage = createTestPackage('angular-base-package');
@@ -15,6 +15,7 @@ describe('autoLinkCode post-processor', () => {
     processor.docTypes = ['test-doc'];
     processor.plugins = [autoLinkCode];
     filterPipes = injector.get('filterPipes');
+    log = injector.get('log');
   });
 
   it('should insert an anchor into every code item that matches the id of an API doc', () => {
@@ -126,19 +127,9 @@ describe('autoLinkCode post-processor', () => {
     expect(doc.renderedContent).toEqual('<code>MyClass</code>');
   });
 
-  it('should ignore code items that match an API doc but have no path set',
-     () => {
-       aliasMap.addDoc(
-           {docType: 'class', id: 'MyClass', aliases: ['MyClass'], path: ''});
-       const doc = {docType: 'test-doc', renderedContent: '<code>MyClass</code>'};
-       processor.$process([doc]);
-       expect(doc.renderedContent).toEqual('<code>MyClass</code>');
-     });
-
   it('should ignore documents when the `docType` is set to `member` and the keyword doesn\'t include `.`',
      () => {
-       aliasMap.addDoc(
-           {docType: 'member', id: 'MyEnum', aliases: ['MyEnum'], path: 'a/b/c'});
+       aliasMap.addDoc({docType: 'member', id: 'MyEnum', aliases: ['MyEnum'], path: 'a/b/c'});
        const doc = {docType: 'test-doc', renderedContent: '<code>MyEnum</code>'};
        processor.$process([doc]);
        expect(doc.renderedContent).toEqual('<code>MyEnum</code>');
@@ -192,5 +183,26 @@ describe('autoLinkCode post-processor', () => {
     const doc = {docType: 'test-doc', renderedContent: '<code language="bash">MyClass</code>'};
     processor.$process([doc]);
     expect(doc.renderedContent).toEqual('<code language="bash">MyClass</code>');
+  });
+
+  it('should record a warning if the autolinked doc has no `path` and `failOnMissingDocPath` is false',
+     () => {
+       aliasMap.addDoc({docType: 'class', id: 'MyClass', aliases: ['MyClass']});
+       const doc = {docType: 'test-doc', renderedContent: '<code>MyClass</code>'};
+       autoLinkCode.failOnMissingDocPath = false;
+       processor.$process([doc]);
+
+       expect(log.warn).toHaveBeenCalledWith(`
+      autoLinkCode: Doc path is empty for "MyClass" - link will not be generated for "MyClass".
+      Please make sure if the doc should be public. If not, it should probably not be referenced in the docs. - doc (test-doc) `);
+     });
+
+  it('should fail if the autolinked doc has no `path` and `failOnMissingDocPath` is true', () => {
+    aliasMap.addDoc({docType: 'class', id: 'MyClass', aliases: ['MyClass']});
+    const doc = {docType: 'test-doc', renderedContent: '<code>MyClass</code>'};
+    autoLinkCode.failOnMissingDocPath = true;
+    expect(() => processor.$process([doc])).toThrowError(`
+      autoLinkCode: Doc path is empty for "MyClass" - link will not be generated for "MyClass".
+      Please make sure if the doc should be public. If not, it should probably not be referenced in the docs. - doc (test-doc) `);
   });
 });

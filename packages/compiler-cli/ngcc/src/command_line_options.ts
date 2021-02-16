@@ -8,7 +8,7 @@
  */
 import * as yargs from 'yargs';
 
-import {resolve, setFileSystem, NodeJSFileSystem} from '../../src/ngtsc/file_system';
+import {setFileSystem, NodeJSFileSystem} from '../../src/ngtsc/file_system';
 import {ConsoleLogger, LogLevel} from '../../src/ngtsc/logging';
 import {NgccOptions} from './ngcc_options';
 
@@ -115,9 +115,10 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
     process.exit(1);
   }
 
-  setFileSystem(new NodeJSFileSystem());
+  const fs = new NodeJSFileSystem();
+  setFileSystem(fs);
 
-  const baseSourcePath = resolve(options.s || './node_modules');
+  const baseSourcePath = fs.resolve(options.s || './node_modules');
   const propertiesToConsider = options.p;
   const targetEntryPointPath = options.t;
   const compileAllFormats = !options['first-only'];

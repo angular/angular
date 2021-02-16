@@ -18,8 +18,7 @@ declare type INTERIM_VALUES = typeof INITIAL_VALUE | boolean | UrlTree;
 export function prioritizedGuardValue():
     OperatorFunction<Observable<boolean|UrlTree>[], boolean|UrlTree> {
   return switchMap(obs => {
-    return combineLatest(
-               ...obs.map(o => o.pipe(take(1), startWith(INITIAL_VALUE as INTERIM_VALUES))))
+    return combineLatest(obs.map(o => o.pipe(take(1), startWith(INITIAL_VALUE as INTERIM_VALUES))))
                .pipe(
                    scan(
                        (acc: INTERIM_VALUES, list: INTERIM_VALUES[]) => {

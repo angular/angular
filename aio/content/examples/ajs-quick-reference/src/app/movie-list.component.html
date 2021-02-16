@@ -67,9 +67,7 @@
         <td>{{movie.hero}}</td>
         <td>{{movie.releaseDate | date}}</td>
         <td>{{movie.mpaa | uppercase}}</td>
-  <!-- #docregion currency -->
         <td>{{movie.price | currency:'USD':true}}</td>
-  <!-- #enddocregion currency -->
         <td>{{movie.starRating | number:'1.1-2'}}</td>
         <td>{{movie.approvalRating | percent: '1.0-0'}}</td>
       </tr>

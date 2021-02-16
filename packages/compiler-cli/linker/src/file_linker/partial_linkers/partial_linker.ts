@@ -5,8 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ConstantPool} from '@angular/compiler';
+import {ConstantPool, R3PartialDeclaration} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
+
 import {AstObject} from '../../ast/ast_value';
 
 /**
@@ -15,8 +16,11 @@ import {AstObject} from '../../ast/ast_value';
 export interface PartialLinker<TExpression> {
   /**
    * Link the partial declaration `metaObj` information to generate a full definition expression.
+   *
+   * @param metaObj An object that fits one of the `R3DeclareDirectiveMetadata` or
+   *     `R3DeclareComponentMetadata` interfaces.
    */
   linkPartialDeclaration(
-      sourceUrl: string, code: string, constantPool: ConstantPool,
-      metaObj: AstObject<TExpression>): o.Expression;
+      constantPool: ConstantPool,
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression;
 }

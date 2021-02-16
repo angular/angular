@@ -90,7 +90,10 @@ export const CUSTOM_ELEMENTS_SCHEMA: any = false;
 export const NO_ERRORS_SCHEMA: any = false;
 
 export class EventEmitter<T> {
-  subscribe(generatorOrNext?: any, error?: any, complete?: any): unknown {
+  subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void):
+      unknown;
+  subscribe(observerOrNext?: any, error?: any, complete?: any): unknown;
+  subscribe(observerOrNext?: any, error?: any, complete?: any): unknown {
     return null;
   }
 }
@@ -105,4 +108,8 @@ export class NgZone {}
 
 export interface PipeTransform {
   transform(value: any, ...args: any[]): any;
+}
+
+export interface OnDestroy {
+  ngOnDestroy(): void;
 }

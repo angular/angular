@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
-import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
+import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
 import {DirectiveMeta, MetadataReader, NgModuleMeta, PipeMeta} from './api';
 import {ClassPropertyMapping} from './property_mapping';
@@ -77,6 +77,19 @@ export class DtsMetadataReader implements MetadataReader {
       return null;
     }
 
+    const isComponent = def.name === 'ɵcmp';
+
+    const ctorParams = this.reflector.getConstructorParameters(clazz);
+
+    // A directive is considered to be structural if:
+    // 1) it's a directive, not a component, and
+    // 2) it injects `TemplateRef`
+    const isStructural = !isComponent && ctorParams !== null && ctorParams.some(param => {
+      return param.typeValueReference.kind === TypeValueReferenceKind.IMPORTED &&
+          param.typeValueReference.moduleName === '@angular/core' &&
+          param.typeValueReference.importedName === 'TemplateRef';
+    });
+
     const inputs =
         ClassPropertyMapping.fromMappedObject(readStringMapType(def.type.typeArguments[3]));
     const outputs =
@@ -84,7 +97,7 @@ export class DtsMetadataReader implements MetadataReader {
     return {
       ref,
       name: clazz.name.text,
-      isComponent: def.name === 'ɵcmp',
+      isComponent,
       selector: readStringType(def.type.typeArguments[1]),
       exportAs: readStringArrayType(def.type.typeArguments[2]),
       inputs,
@@ -92,6 +105,8 @@ export class DtsMetadataReader implements MetadataReader {
       queries: readStringArrayType(def.type.typeArguments[5]),
       ...extractDirectiveTypeCheckMeta(clazz, inputs, this.reflector),
       baseClass: readBaseClass(clazz, this.checker, this.reflector),
+      isPoisoned: false,
+      isStructural,
     };
   }
 

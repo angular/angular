@@ -114,7 +114,7 @@ describe('ScrollService', () => {
 
   it('should not break when cookies are disabled in the browser', () => {
     expect(() => {
-      const originalSessionStorage = Object.getOwnPropertyDescriptor(window, 'sessionStorage')!;
+      const originalSessionStorage = Object.getOwnPropertyDescriptor(window, 'sessionStorage') as PropertyDescriptor;
 
       try {
         // Simulate `window.sessionStorage` being inaccessible, when cookies are disabled.

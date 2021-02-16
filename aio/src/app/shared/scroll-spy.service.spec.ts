@@ -235,7 +235,7 @@ describe('ScrollSpyService', () => {
 
     it('should remember and emit the last active item to new subscribers', () => {
       const items = [{index: 1}, {index: 2}, {index: 3}] as ScrollItem[];
-      let lastActiveItem: ScrollItem|null;
+      let lastActiveItem = null as unknown as ScrollItem|null;
 
       const info = scrollSpyService.spyOn([]);
       const spiedElemGroup = getSpiedElemGroups()[0];
@@ -247,12 +247,12 @@ describe('ScrollSpyService', () => {
       spiedElemGroup.activeScrollItem.next(items[1]);
       info.active.subscribe(item => lastActiveItem = item);
 
-      expect(lastActiveItem!).toBe(items[1]);
+      expect(lastActiveItem).toBe(items[1]);
 
       spiedElemGroup.activeScrollItem.next(null);
       info.active.subscribe(item => lastActiveItem = item);
 
-      expect(lastActiveItem!).toBeNull();
+      expect(lastActiveItem).toBeNull();
     });
 
     it('should only emit distinct values on `active`', () => {

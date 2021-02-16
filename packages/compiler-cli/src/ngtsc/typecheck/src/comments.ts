@@ -43,6 +43,7 @@ export enum CommentTriviaType {
 export enum ExpressionIdentifier {
   DIRECTIVE = 'DIR',
   COMPONENT_COMPLETION = 'COMPCOMP',
+  EVENT_PARAMETER = 'EP',
 }
 
 /** Tags the node with the given expression identifier. */
@@ -53,7 +54,7 @@ export function addExpressionIdentifier(node: ts.Node, identifier: ExpressionIde
       /* hasTrailingNewLine */ false);
 }
 
-const IGNORE_MARKER = `${CommentTriviaType.DIAGNOSTIC}:ignore`;
+const IGNORE_FOR_DIAGNOSTICS_MARKER = `${CommentTriviaType.DIAGNOSTIC}:ignore`;
 
 /**
  * Tag the `ts.Node` with an indication that any errors arising from the evaluation of the node
@@ -61,17 +62,18 @@ const IGNORE_MARKER = `${CommentTriviaType.DIAGNOSTIC}:ignore`;
  */
 export function markIgnoreDiagnostics(node: ts.Node): void {
   ts.addSyntheticTrailingComment(
-      node, ts.SyntaxKind.MultiLineCommentTrivia, IGNORE_MARKER, /* hasTrailingNewLine */ false);
+      node, ts.SyntaxKind.MultiLineCommentTrivia, IGNORE_FOR_DIAGNOSTICS_MARKER,
+      /* hasTrailingNewLine */ false);
 }
 
 /** Returns true if the node has a marker that indicates diagnostics errors should be ignored.  */
-export function hasIgnoreMarker(node: ts.Node, sourceFile: ts.SourceFile): boolean {
+export function hasIgnoreForDiagnosticsMarker(node: ts.Node, sourceFile: ts.SourceFile): boolean {
   return ts.forEachTrailingCommentRange(sourceFile.text, node.getEnd(), (pos, end, kind) => {
     if (kind !== ts.SyntaxKind.MultiLineCommentTrivia) {
       return null;
     }
     const commentText = sourceFile.text.substring(pos + 2, end - 2);
-    return commentText === IGNORE_MARKER;
+    return commentText === IGNORE_FOR_DIAGNOSTICS_MARKER;
   }) === true;
 }
 

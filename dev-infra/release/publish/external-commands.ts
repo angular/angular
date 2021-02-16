@@ -64,7 +64,7 @@ export async function invokeReleaseBuildCommand(): Promise<BuiltPackage[]> {
     info(green('  ✓   Built release output for all packages.'));
     // The `ng-dev release build` command prints a JSON array to stdout
     // that represents the built release packages and their output paths.
-    return JSON.parse(stdout.trim());
+    return JSON.parse(stdout.trim()) as BuiltPackage[];
   } catch (e) {
     spinner.stop();
     error(e);

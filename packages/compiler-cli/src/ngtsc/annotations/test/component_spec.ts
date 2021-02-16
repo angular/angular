@@ -5,6 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {ConstantPool} from '@angular/compiler';
+import * as ts from 'typescript';
+
 import {CycleAnalyzer, ImportGraph} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFrom} from '../../file_system';
@@ -13,7 +17,7 @@ import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '..
 import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
-import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
+import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
 import {ResourceLoader} from '../src/api';
 import {ComponentDecoratorHandler} from '../src/component';
@@ -48,16 +52,33 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
   const refEmitter = new ReferenceEmitter([]);
   const injectableRegistry = new InjectableClassRegistry(reflectionHost);
   const resourceRegistry = new ResourceRegistry();
+  const typeCheckScopeRegistry = new TypeCheckScopeRegistry(scopeRegistry, metaReader);
 
   const handler = new ComponentDecoratorHandler(
-      reflectionHost, evaluator, metaRegistry, metaReader, scopeRegistry, scopeRegistry,
+      reflectionHost,
+      evaluator,
+      metaRegistry,
+      metaReader,
+      scopeRegistry,
+      scopeRegistry,
+      typeCheckScopeRegistry,
       resourceRegistry,
-      /* isCore */ false, new StubResourceLoader(), /* rootDirs */['/'],
-      /* defaultPreserveWhitespaces */ false, /* i18nUseExternalIds */ true,
+      /* isCore */ false,
+      new StubResourceLoader(),
+      /* rootDirs */['/'],
+      /* defaultPreserveWhitespaces */ false,
+      /* i18nUseExternalIds */ true,
       /* enableI18nLegacyMessageIdFormat */ false,
-      /* i18nNormalizeLineEndingsInICUs */ undefined, moduleResolver, cycleAnalyzer, refEmitter,
-      NOOP_DEFAULT_IMPORT_RECORDER, /* depTracker */ null, injectableRegistry,
-      /* annotateForClosureCompiler */ false);
+      /* usePoisonedData */ false,
+      /* i18nNormalizeLineEndingsInICUs */ undefined,
+      moduleResolver,
+      cycleAnalyzer,
+      refEmitter,
+      NOOP_DEFAULT_IMPORT_RECORDER,
+      /* depTracker */ null,
+      injectableRegistry,
+      /* annotateForClosureCompiler */ false,
+  );
   return {reflectionHost, handler};
 }
 
@@ -198,6 +219,38 @@ runInEachFileSystem(() => {
       }
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       expect(analysis?.resources.styles.size).toBe(3);
+    });
+
+    it('does not emit a program with template parse errors', () => {
+      const template = '{{x ? y }}';
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+          @Component({
+            template: '${template}',
+          }) class TestCmp {}
+      `
+        },
+      ]);
+
+      const {reflectionHost, handler} = setup(program, options, host);
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      const resolution = handler.resolve(TestCmp, analysis!);
+
+      const compileResult =
+          handler.compileFull(TestCmp, analysis!, resolution.data!, new ConstantPool());
+      expect(compileResult).toEqual([]);
     });
   });
 

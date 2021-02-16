@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
+import {ParseSpan, TmplAstBoundEvent} from '@angular/compiler';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 
-import {isTemplateNode, isTemplateNodeWithKeyAndValue} from './utils';
+import {isTemplateNodeWithKeyAndValue, isWithin, isWithinKeyValue} from './utils';
 
 /**
  * Contextual information for a target position within the template.
@@ -22,21 +22,115 @@ export interface TemplateTarget {
   position: number;
 
   /**
-   * The template node (or AST expression) closest to the search position.
+   * The template (or AST expression) node or nodes closest to the search position.
    */
-  node: t.Node|e.AST;
+  context: TargetContext;
 
   /**
    * The `t.Template` which contains the found node or expression (or `null` if in the root
    * template).
    */
-  context: t.Template|null;
+  template: t.Template|null;
 
   /**
    * The immediate parent node of the targeted node.
    */
   parent: t.Node|e.AST|null;
 }
+
+/**
+ * A node or nodes targeted at a given position in the template, including potential contextual
+ * information about the specific aspect of the node being referenced.
+ *
+ * Some nodes have multiple interior contexts. For example, `t.Element` nodes have both a tag name
+ * as well as a body, and a given position definitively points to one or the other. `TargetNode`
+ * captures the node itself, as well as this additional contextual disambiguation.
+ */
+export type TargetContext = SingleNodeTarget|MultiNodeTarget;
+
+/** Contexts which logically target only a single node in the template AST. */
+export type SingleNodeTarget = RawExpression|RawTemplateNode|ElementInBodyContext|
+    ElementInTagContext|AttributeInKeyContext|AttributeInValueContext;
+
+/**
+ * Contexts which logically target multiple nodes in the template AST, which cannot be
+ * disambiguated given a single position because they are all equally relavent. For example, in the
+ * banana-in-a-box syntax `[(ngModel)]="formValues.person"`, the position in the template for the
+ * key `ngModel` refers to both the bound event `ngModelChange` and the input `ngModel`.
+ */
+export type MultiNodeTarget = TwoWayBindingContext;
+
+/**
+ * Differentiates the various kinds of `TargetNode`s.
+ */
+export enum TargetNodeKind {
+  RawExpression,
+  RawTemplateNode,
+  ElementInTagContext,
+  ElementInBodyContext,
+  AttributeInKeyContext,
+  AttributeInValueContext,
+  TwoWayBindingContext,
+}
+
+/**
+ * An `e.AST` expression that's targeted at a given position, with no additional context.
+ */
+export interface RawExpression {
+  kind: TargetNodeKind.RawExpression;
+  node: e.AST;
+}
+
+/**
+ * A `t.Node` template node that's targeted at a given position, with no additional context.
+ */
+export interface RawTemplateNode {
+  kind: TargetNodeKind.RawTemplateNode;
+  node: t.Node;
+}
+
+/**
+ * A `t.Element` (or `t.Template`) element node that's targeted, where the given position is within
+ * the tag name.
+ */
+export interface ElementInTagContext {
+  kind: TargetNodeKind.ElementInTagContext;
+  node: t.Element|t.Template;
+}
+
+/**
+ * A `t.Element` (or `t.Template`) element node that's targeted, where the given position is within
+ * the element body.
+ */
+export interface ElementInBodyContext {
+  kind: TargetNodeKind.ElementInBodyContext;
+  node: t.Element|t.Template;
+}
+
+export interface AttributeInKeyContext {
+  kind: TargetNodeKind.AttributeInKeyContext;
+  node: t.TextAttribute|t.BoundAttribute|t.BoundEvent;
+}
+
+export interface AttributeInValueContext {
+  kind: TargetNodeKind.AttributeInValueContext;
+  node: t.TextAttribute|t.BoundAttribute|t.BoundEvent;
+}
+
+/**
+ * A `t.BoundAttribute` and `t.BoundEvent` pair that are targeted, where the given position is
+ * within the key span of both.
+ */
+export interface TwoWayBindingContext {
+  kind: TargetNodeKind.TwoWayBindingContext;
+  nodes: [t.BoundAttribute, t.BoundEvent];
+}
+
+/**
+ * This special marker is added to the path when the cursor is within the sourceSpan but not the key
+ * or value span of a node with key/value spans.
+ */
+const OUTSIDE_K_V_MARKER = new e.AST(new ParseSpan(-1, -1), new e.AbsoluteSourceSpan(-1, -1));
 
 /**
  * Return the template AST node or expression AST node that most accurately
@@ -52,17 +146,6 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
   }
 
   const candidate = path[path.length - 1];
-  if (isTemplateNodeWithKeyAndValue(candidate)) {
-    const {keySpan, valueSpan} = candidate;
-    const isWithinKeyValue =
-        isWithin(position, keySpan) || (valueSpan && isWithin(position, valueSpan));
-    if (!isWithinKeyValue) {
-      // If cursor is within source span but not within key span or value span,
-      // do not return the node.
-      return null;
-    }
-  }
-
   // Walk up the result nodes to find the nearest `t.Template` which contains the targeted node.
   let context: t.Template|null = null;
   for (let i = path.length - 2; i >= 0; i--) {
@@ -73,12 +156,71 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
     }
   }
 
+  // Given the candidate node, determine the full targeted context.
+  let nodeInContext: TargetContext;
+  if (candidate instanceof e.AST) {
+    nodeInContext = {
+      kind: TargetNodeKind.RawExpression,
+      node: candidate,
+    };
+  } else if (candidate instanceof t.Element) {
+    // Elements have two contexts: the tag context (position is within the element tag) or the
+    // element body context (position is outside of the tag name, but still in the element).
+
+    // Calculate the end of the element tag name. Any position beyond this is in the element body.
+    const tagEndPos =
+        candidate.sourceSpan.start.offset + 1 /* '<' element open */ + candidate.name.length;
+    if (position > tagEndPos) {
+      // Position is within the element body
+      nodeInContext = {
+        kind: TargetNodeKind.ElementInBodyContext,
+        node: candidate,
+      };
+    } else {
+      nodeInContext = {
+        kind: TargetNodeKind.ElementInTagContext,
+        node: candidate,
+      };
+    }
+  } else if (
+      (candidate instanceof t.BoundAttribute || candidate instanceof t.BoundEvent ||
+       candidate instanceof t.TextAttribute) &&
+      candidate.keySpan !== undefined) {
+    const previousCandidate = path[path.length - 2];
+    if (candidate instanceof t.BoundEvent && previousCandidate instanceof t.BoundAttribute &&
+        candidate.name === previousCandidate.name + 'Change') {
+      const boundAttribute: t.BoundAttribute = previousCandidate;
+      const boundEvent: t.BoundEvent = candidate;
+      nodeInContext = {
+        kind: TargetNodeKind.TwoWayBindingContext,
+        nodes: [boundAttribute, boundEvent],
+      };
+    } else if (isWithin(position, candidate.keySpan)) {
+      nodeInContext = {
+        kind: TargetNodeKind.AttributeInKeyContext,
+        node: candidate,
+      };
+    } else {
+      nodeInContext = {
+        kind: TargetNodeKind.AttributeInValueContext,
+        node: candidate,
+      };
+    }
+  } else {
+    nodeInContext = {
+      kind: TargetNodeKind.RawTemplateNode,
+      node: candidate,
+    };
+  }
+
   let parent: t.Node|e.AST|null = null;
-  if (path.length >= 2) {
+  if (nodeInContext.kind === TargetNodeKind.TwoWayBindingContext && path.length >= 3) {
+    parent = path[path.length - 3];
+  } else if (path.length >= 2) {
     parent = path[path.length - 2];
   }
 
-  return {position, node: candidate, context, parent};
+  return {position, context: nodeInContext, template: context, parent};
 }
 
 /**
@@ -94,7 +236,22 @@ class TemplateTargetVisitor implements t.Visitor {
   static visitTemplate(template: t.Node[], position: number): Array<t.Node|e.AST> {
     const visitor = new TemplateTargetVisitor(position);
     visitor.visitAll(template);
-    return visitor.path;
+    const {path} = visitor;
+
+    const strictPath = path.filter(v => v !== OUTSIDE_K_V_MARKER);
+    const candidate = strictPath[strictPath.length - 1];
+    const matchedASourceSpanButNotAKvSpan = path.some(v => v === OUTSIDE_K_V_MARKER);
+    if (matchedASourceSpanButNotAKvSpan &&
+        (candidate instanceof t.Template || candidate instanceof t.Element)) {
+      // Template nodes with key and value spans are always defined on a `t.Template` or
+      // `t.Element`. If we found a node on a template with a `sourceSpan` that includes the cursor,
+      // it is possible that we are outside the k/v spans (i.e. in-between them). If this is the
+      // case and we do not have any other candidate matches on the `t.Element` or `t.Template`, we
+      // want to return no results. Otherwise, the `t.Element`/`t.Template` result is incorrect for
+      // that cursor position.
+      return [];
+    }
+    return strictPath;
   }
 
   // Position must be absolute in the source file.
@@ -102,41 +259,62 @@ class TemplateTargetVisitor implements t.Visitor {
 
   visit(node: t.Node) {
     const {start, end} = getSpanIncludingEndTag(node);
-    if (isWithin(this.position, {start, end})) {
-      const length = end - start;
-      const last: t.Node|e.AST|undefined = this.path[this.path.length - 1];
-      if (last) {
-        const {start, end} = isTemplateNode(last) ? getSpanIncludingEndTag(last) : last.sourceSpan;
-        const lastLength = end - start;
-        if (length > lastLength) {
-          // The current node has a span that is larger than the last node found
-          // so we do not descend into it. This typically means we have found
-          // a candidate in one of the root nodes so we do not need to visit
-          // other root nodes.
-          return;
-        }
-      }
+    if (!isWithin(this.position, {start, end})) {
+      return;
+    }
+
+    const last: t.Node|e.AST|undefined = this.path[this.path.length - 1];
+    const withinKeySpanOfLastNode =
+        last && isTemplateNodeWithKeyAndValue(last) && isWithin(this.position, last.keySpan);
+    const withinKeySpanOfCurrentNode =
+        isTemplateNodeWithKeyAndValue(node) && isWithin(this.position, node.keySpan);
+    if (withinKeySpanOfLastNode && !withinKeySpanOfCurrentNode) {
+      // We've already identified that we are within a `keySpan` of a node.
+      // Unless we are _also_ in the `keySpan` of the current node (happens with two way bindings),
+      // we should stop processing nodes at this point to prevent matching any other nodes. This can
+      // happen when the end span of a different node touches the start of the keySpan for the
+      // candidate node. Because our `isWithin` logic is inclusive on both ends, we can match both
+      // nodes.
+      return;
+    }
+    if (isTemplateNodeWithKeyAndValue(node) && !isWithinKeyValue(this.position, node)) {
+      // If cursor is within source span but not within key span or value span,
+      // do not return the node.
+      this.path.push(OUTSIDE_K_V_MARKER);
+    } else {
       this.path.push(node);
       node.visit(this);
     }
   }
 
   visitElement(element: t.Element) {
+    this.visitElementOrTemplate(element);
+  }
+
+
+  visitTemplate(template: t.Template) {
+    this.visitElementOrTemplate(template);
+  }
+
+  visitElementOrTemplate(element: t.Template|t.Element) {
     this.visitAll(element.attributes);
     this.visitAll(element.inputs);
     this.visitAll(element.outputs);
+    if (element instanceof t.Template) {
+      this.visitAll(element.templateAttrs);
+    }
     this.visitAll(element.references);
-    this.visitAll(element.children);
-  }
+    if (element instanceof t.Template) {
+      this.visitAll(element.variables);
+    }
 
-  visitTemplate(template: t.Template) {
-    this.visitAll(template.attributes);
-    this.visitAll(template.inputs);
-    this.visitAll(template.outputs);
-    this.visitAll(template.templateAttrs);
-    this.visitAll(template.references);
-    this.visitAll(template.variables);
-    this.visitAll(template.children);
+    // If we get here and have not found a candidate node on the element itself, proceed with
+    // looking for a more specific node on the element children.
+    if (this.path[this.path.length - 1] !== element) {
+      return;
+    }
+
+    this.visitAll(element.children);
   }
 
   visitContent(content: t.Content) {
@@ -161,17 +339,20 @@ class TemplateTargetVisitor implements t.Visitor {
   }
 
   visitBoundEvent(event: t.BoundEvent) {
-    const isTwoWayBinding =
-        this.path.some(n => n instanceof t.BoundAttribute && event.name === n.name + 'Change');
-    if (isTwoWayBinding) {
-      // For two-way binding aka banana-in-a-box, there are two matches:
-      // BoundAttribute and BoundEvent. Both have the same spans. We choose to
-      // return BoundAttribute because it matches the identifier name verbatim.
-      // TODO: For operations like go to definition, ideally we want to return
-      // both.
-      this.path.pop();  // remove bound event from the AST path
+    // An event binding with no value (e.g. `(event|)`) parses to a `BoundEvent` with a
+    // `LiteralPrimitive` handler with value `'ERROR'`, as opposed to a property binding with no
+    // value which has an `EmptyExpr` as its value. This is a synthetic node created by the binding
+    // parser, and is not suitable to use for Language Service analysis. Skip it.
+    //
+    // TODO(alxhub): modify the parser to generate an `EmptyExpr` instead.
+    let handler: e.AST = event.handler;
+    if (handler instanceof e.ASTWithSource) {
+      handler = handler.ast;
+    }
+    if (handler instanceof e.LiteralPrimitive && handler.value === 'ERROR') {
       return;
     }
+
     const visitor = new ExpressionVisitor(this.position);
     visitor.visit(event.handler, this.path);
   }
@@ -237,18 +418,4 @@ function getSpanIncludingEndTag(ast: t.Node) {
     result.end = ast.endSourceSpan.end.offset;
   }
   return result;
-}
-
-function isWithin(position: number, span: AbsoluteSourceSpan|ParseSourceSpan): boolean {
-  let start: number, end: number;
-  if (span instanceof ParseSourceSpan) {
-    start = span.start.offset;
-    end = span.end.offset;
-  } else {
-    start = span.start;
-    end = span.end;
-  }
-  // Note both start and end are inclusive because we want to match conditions
-  // like ¦start and end¦ where ¦ is the cursor.
-  return start <= position && position <= end;
 }

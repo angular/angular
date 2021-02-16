@@ -29,7 +29,7 @@ export class MockBody implements Body {
   }
 
   async json(): Promise<any> {
-    return JSON.parse(this.getBody());
+    return JSON.parse(this.getBody()) as any;
   }
 
   async text(): Promise<string> {

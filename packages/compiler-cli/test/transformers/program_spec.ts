@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 
 import {formatDiagnostics} from '../../src/perform_compile';
 import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
-import {createSrcToOutPathMapper} from '../../src/transformers/program';
+import {createSrcToOutPathMapper, resetTempProgramHandlerForTest, setTempProgramHandlerForTest} from '../../src/transformers/program';
 import {StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
 import {expectNoDiagnosticsInProgram, setup, stripAnsi, TestSupport} from '../test_support';
 
@@ -297,6 +297,17 @@ describe('ng program', () => {
     describe(
         'verify that program structure is reused within tsc in order to speed up incremental compilation',
         () => {
+          afterEach(resetTempProgramHandlerForTest);
+
+          function captureStructureReuse(compile: () => void): StructureIsReused|null {
+            let structureReuse: StructureIsReused|null = null;
+            setTempProgramHandlerForTest(program => {
+              structureReuse = tsStructureIsReused(program);
+            });
+            compile();
+            return structureReuse;
+          }
+
           it('should reuse the old ts program completely if nothing changed', () => {
             testSupport.writeFiles({'src/index.ts': createModuleAndCompSource('main')});
             const host = createWatchModeHost();
@@ -304,8 +315,9 @@ describe('ng program', () => {
             // and therefore changes the structure again
             const p1 = compile(undefined, undefined, undefined, host).program;
             const p2 = compile(p1, undefined, undefined, host).program;
-            compile(p2, undefined, undefined, host);
-            expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
+            const structureReuse =
+                captureStructureReuse(() => compile(p2, undefined, undefined, host));
+            expect(structureReuse).toBe(StructureIsReused.Completely);
           });
 
           it('should reuse the old ts program completely if a template or a ts file changed',
@@ -328,8 +340,9 @@ describe('ng program', () => {
                  'src/main.html': `Another template`,
                  'src/util.ts': `export const x = 2`,
                });
-               compile(p2, undefined, undefined, host);
-               expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
+               const structureReuse =
+                   captureStructureReuse(() => compile(p2, undefined, undefined, host));
+               expect(structureReuse).toBe(StructureIsReused.Completely);
              });
 
           it('should not reuse the old ts program if an import changed', () => {
@@ -348,8 +361,9 @@ describe('ng program', () => {
             const p2 = compile(p1, undefined, undefined, host).program;
             testSupport.writeFiles(
                 {'src/util.ts': `import {Injectable} from '@angular/core'; export const x = 1;`});
-            compile(p2, undefined, undefined, host);
-            expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
+            const structureReuse =
+                captureStructureReuse(() => compile(p2, undefined, undefined, host));
+            expect(structureReuse).toBe(StructureIsReused.SafeModules);
           });
         });
   });

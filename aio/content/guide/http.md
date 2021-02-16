@@ -12,7 +12,7 @@ The HTTP client service offers the following major features.
 
 ##### Prerequisites
 
-Before working with the `HTTPClientModule`, you should have a basic understanding of the following:
+Before working with the `HttpClientModule`, you should have a basic understanding of the following:
 
 * TypeScript programming
 * Usage of the HTTP protocol
@@ -52,7 +52,7 @@ You can run the <live-example></live-example> that accompanies this guide.
 
 The sample app does not require a data server.
 It relies on the
-[Angular _in-memory-web-api_](https://github.com/angular/in-memory-web-api/blob/master/README.md),
+[Angular _in-memory-web-api_](https://github.com/angular/angular/tree/master/packages/misc/angular-in-memory-web-api),
 which replaces the _HttpClient_ module's `HttpBackend`.
 The replacement service simulates the behavior of a REST-like backend.
 
@@ -62,7 +62,7 @@ Look at the `AppModule` _imports_ to see how it is configured.
 
 ## Requesting data from a server
 
-Use the [`HTTPClient.get()`](api/common/http/HttpClient#get) method to fetch data from a server.
+Use the [`HttpClient.get()`](api/common/http/HttpClient#get) method to fetch data from a server.
 The asynchronous method sends an HTTP request, and returns an Observable that emits the requested data when the response is received.
 The return type varies based on the `observe` and `responseType` values that you pass to the call.
 
@@ -995,7 +995,7 @@ consider moving it to a utility function or into the `PackageSearchService` itse
 ## Security: XSRF protection
 
 [Cross-Site Request Forgery (XSRF or CSRF)](https://en.wikipedia.org/wiki/Cross-site_request_forgery) is an attack technique by which the attacker can trick an authenticated user into unknowingly executing actions on your website.
-`HttpClient` supports a [common mechanism](https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-Header_Token) used to prevent XSRF attacks.
+`HttpClient` supports a [common mechanism](https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-header_token) used to prevent XSRF attacks.
 When performing HTTP requests, an interceptor reads a token from a cookie, by default `XSRF-TOKEN`, and sets it as an HTTP header, `X-XSRF-TOKEN`.
 Since only code that runs on your domain could read the cookie, the backend can be certain that the HTTP request came from your client application and not an attacker.
 
@@ -1085,7 +1085,7 @@ Now you can write a test that expects a GET Request to occur and provides a mock
 <code-example
   path="http/src/testing/http-client.spec.ts"
   region="get-test"
-  header="app/testing/http-client.spec.ts(httpClient.get)">
+  header="app/testing/http-client.spec.ts (HttpClient.get)">
 </code-example>
 
 The last step, verifying that no requests remain outstanding, is common enough for you to move it into an `afterEach()` step:

@@ -109,26 +109,27 @@ export class ActivateRoutes {
   private deactivateRouteAndOutlet(
       route: TreeNode<ActivatedRoute>, parentContexts: ChildrenOutletContexts): void {
     const context = parentContexts.getContext(route.value.outlet);
+    // The context could be `null` if we are on a componentless route but there may still be
+    // children that need deactivating.
+    const contexts = context && route.value.component ? context.children : parentContexts;
+    const children: {[outletName: string]: TreeNode<ActivatedRoute>} = nodeChildrenAsMap(route);
 
-    if (context) {
-      const children: {[outletName: string]: any} = nodeChildrenAsMap(route);
-      const contexts = route.value.component ? context.children : parentContexts;
+    for (const childOutlet of Object.keys(children)) {
+      this.deactivateRouteAndItsChildren(children[childOutlet], contexts);
+    }
 
-      forEach(children, (v: any, k: string) => this.deactivateRouteAndItsChildren(v, contexts));
-
-      if (context.outlet) {
-        // Destroy the component
-        context.outlet.deactivate();
-        // Destroy the contexts for all the outlets that were in the component
-        context.children.onOutletDeactivated();
-      }
+    if (context && context.outlet) {
+      // Destroy the component
+      context.outlet.deactivate();
+      // Destroy the contexts for all the outlets that were in the component
+      context.children.onOutletDeactivated();
     }
   }
 
   private activateChildRoutes(
       futureNode: TreeNode<ActivatedRoute>, currNode: TreeNode<ActivatedRoute>|null,
       contexts: ChildrenOutletContexts): void {
-    const children: {[outlet: string]: any} = nodeChildrenAsMap(currNode);
+    const children: {[outlet: string]: TreeNode<ActivatedRoute>} = nodeChildrenAsMap(currNode);
     futureNode.children.forEach(c => {
       this.activateRoutes(c, children[c.value.outlet], contexts);
       this.forwardEvent(new ActivationEnd(c.value.snapshot));

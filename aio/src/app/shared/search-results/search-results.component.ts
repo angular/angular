@@ -98,10 +98,10 @@ function splitPages(allPages: SearchResult[]) {
     }
   });
   while (priorityPages.length < 5 && pages.length) {
-    priorityPages.push(pages.shift()!);
+    priorityPages.push(pages.shift() as SearchResult);
   }
   while (priorityPages.length < 5 && deprecated.length) {
-    priorityPages.push(deprecated.shift()!);
+    priorityPages.push(deprecated.shift() as SearchResult);
   }
   pages.sort(compareResults);
 

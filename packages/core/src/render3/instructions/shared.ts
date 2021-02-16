@@ -13,6 +13,7 @@ import {ViewEncapsulation} from '../../metadata/view';
 import {validateAgainstEventAttributes, validateAgainstEventProperties} from '../../sanitization/sanitization';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {assertDefined, assertDomNode, assertEqual, assertGreaterThanOrEqual, assertIndexInRange, assertNotEqual, assertNotSame, assertSame, assertString} from '../../util/assert';
+import {escapeCommentText} from '../../util/dom';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../../util/ng_reflect';
@@ -752,14 +753,26 @@ export function locateHostElement(
  * On the first template pass, saves in TView:
  * - Cleanup function
  * - Index of context we just saved in LView.cleanupInstances
+ *
+ * This function can also be used to store instance specific cleanup fns. In that case the `context`
+ * is `null` and the function is store in `LView` (rather than it `TView`).
  */
 export function storeCleanupWithContext(
     tView: TView, lView: LView, context: any, cleanupFn: Function): void {
-  const lCleanup = getLCleanup(lView);
-  lCleanup.push(context);
+  const lCleanup = getOrCreateLViewCleanup(lView);
+  if (context === null) {
+    // If context is null that this is instance specific callback. These callbacks can only be
+    // inserted after template shared instances. For this reason in ngDevMode we freeze the TView.
+    if (ngDevMode) {
+      Object.freeze(getOrCreateTViewCleanup(tView));
+    }
+    lCleanup.push(cleanupFn);
+  } else {
+    lCleanup.push(context);
 
-  if (tView.firstCreatePass) {
-    getTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
+    if (tView.firstCreatePass) {
+      getOrCreateTViewCleanup(tView).push(cleanupFn, lCleanup.length - 1);
+    }
   }
 }
 
@@ -1031,7 +1044,8 @@ function setNgReflectProperty(
           (element as RElement).setAttribute(attrName, debugValue);
     }
   } else {
-    const textContent = `bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`;
+    const textContent =
+        escapeCommentText(`bindings=${JSON.stringify({[attrName]: debugValue}, null, 2)}`);
     if (isProceduralRenderer(renderer)) {
       renderer.setValue((element as RComment), textContent);
     } else {
@@ -1992,12 +2006,12 @@ export function storePropertyBindingMetadata(
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
 
-export function getLCleanup(view: LView): any[] {
+export function getOrCreateLViewCleanup(view: LView): any[] {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return view[CLEANUP] || (view[CLEANUP] = ngDevMode ? new LCleanup() : []);
 }
 
-function getTViewCleanup(tView: TView): any[] {
+export function getOrCreateTViewCleanup(tView: TView): any[] {
   return tView.cleanup || (tView.cleanup = ngDevMode ? new TCleanup() : []);
 }
 

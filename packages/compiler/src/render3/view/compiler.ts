@@ -22,12 +22,12 @@ import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {error, OutputContext} from '../../util';
 import {BoundEvent} from '../r3_ast';
-import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget, R3ResolvedDependencyType} from '../r3_factory';
+import {compileFactoryFunction, R3FactoryTarget} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
-import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
+import {DeclarationListEmitMode, R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
 import {asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getQueryPredicate, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
@@ -123,9 +123,7 @@ export function compileDirectiveFromMetadata(
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
-
-  const typeParams = createDirectiveTypeParams(meta);
-  const type = o.expressionType(o.importExpr(R3.DirectiveDefWithMeta, typeParams));
+  const type = createDirectiveType(meta);
 
   return {expression, type};
 }
@@ -161,8 +159,8 @@ export function compileComponentFromMetadata(
 
   if (meta.directives.length > 0) {
     const matcher = new SelectorMatcher();
-    for (const {selector, expression} of meta.directives) {
-      matcher.addSelectables(CssSelector.parse(selector), expression);
+    for (const {selector, type} of meta.directives) {
+      matcher.addSelectables(CssSelector.parse(selector), type);
     }
     directiveMatcher = matcher;
   }
@@ -215,19 +213,15 @@ export function compileComponentFromMetadata(
 
   // e.g. `directives: [MyDirective]`
   if (directivesUsed.size) {
-    let directivesExpr: o.Expression = o.literalArr(Array.from(directivesUsed));
-    if (meta.wrapDirectivesAndPipesInClosure) {
-      directivesExpr = o.fn([], [new o.ReturnStatement(directivesExpr)]);
-    }
+    const directivesList = o.literalArr(Array.from(directivesUsed));
+    const directivesExpr = compileDeclarationList(directivesList, meta.declarationListEmitMode);
     definitionMap.set('directives', directivesExpr);
   }
 
   // e.g. `pipes: [MyPipe]`
   if (pipesUsed.size) {
-    let pipesExpr: o.Expression = o.literalArr(Array.from(pipesUsed));
-    if (meta.wrapDirectivesAndPipesInClosure) {
-      pipesExpr = o.fn([], [new o.ReturnStatement(pipesExpr)]);
-    }
+    const pipesList = o.literalArr(Array.from(pipesUsed));
+    const pipesExpr = compileDeclarationList(pipesList, meta.declarationListEmitMode);
     definitionMap.set('pipes', pipesExpr);
   }
 
@@ -264,13 +258,39 @@ export function compileComponentFromMetadata(
   }
 
   const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
-
-
-  const typeParams = createDirectiveTypeParams(meta);
-  typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
-  const type = o.expressionType(o.importExpr(R3.ComponentDefWithMeta, typeParams));
+  const type = createComponentType(meta);
 
   return {expression, type};
+}
+
+/**
+ * Creates the type specification from the component meta. This type is inserted into .d.ts files
+ * to be consumed by upstream compilations.
+ */
+export function createComponentType(meta: R3ComponentMetadata): o.Type {
+  const typeParams = createDirectiveTypeParams(meta);
+  typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
+  return o.expressionType(o.importExpr(R3.ComponentDefWithMeta, typeParams));
+}
+
+/**
+ * Compiles the array literal of declarations into an expression according to the provided emit
+ * mode.
+ */
+function compileDeclarationList(
+    list: o.LiteralArrayExpr, mode: DeclarationListEmitMode): o.Expression {
+  switch (mode) {
+    case DeclarationListEmitMode.Direct:
+      // directives: [MyDir],
+      return list;
+    case DeclarationListEmitMode.Closure:
+      // directives: function () { return [MyDir]; }
+      return o.fn([], [new o.ReturnStatement(list)]);
+    case DeclarationListEmitMode.ClosureResolved:
+      // directives: function () { return [MyDir].map(ng.resolveForwardRef); }
+      const resolvedList = list.callMethod('map', [o.importExpr(R3.resolveForwardRef)]);
+      return o.fn([], [new o.ReturnStatement(resolvedList)]);
+  }
 }
 
 /**
@@ -331,7 +351,7 @@ export function compileComponentFromRender2(
     directives: [],
     pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
     viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
-    wrapDirectivesAndPipesInClosure: false,
+    declarationListEmitMode: DeclarationListEmitMode.Direct,
     styles: (summary.template && summary.template.styles) || EMPTY_ARRAY,
     encapsulation:
         (summary.template && summary.template.encapsulation) || core.ViewEncapsulation.Emulated,
@@ -384,6 +404,7 @@ function queriesFromGlobalMetadata(
       predicate: selectorsFromGlobalMetadata(query.selectors, outputCtx),
       descendants: query.descendants,
       read,
+      emitDistinctChangesOnly: !!query.emitDistinctChangesOnly,
       static: !!query.static
     };
   });
@@ -415,11 +436,52 @@ function selectorsFromGlobalMetadata(
 }
 
 function prepareQueryParams(query: R3QueryMetadata, constantPool: ConstantPool): o.Expression[] {
-  const parameters = [getQueryPredicate(query, constantPool), o.literal(query.descendants)];
+  const parameters = [getQueryPredicate(query, constantPool), o.literal(toQueryFlags(query))];
   if (query.read) {
     parameters.push(query.read);
   }
   return parameters;
+}
+
+/**
+ * A set of flags to be used with Queries.
+ *
+ * NOTE: Ensure changes here are in sync with `packages/core/src/render3/interfaces/query.ts`
+ */
+export const enum QueryFlags {
+  /**
+   * No flags
+   */
+  none = 0b0000,
+
+  /**
+   * Whether or not the query should descend into children.
+   */
+  descendants = 0b0001,
+
+  /**
+   * The query can be computed statically and hence can be assigned eagerly.
+   *
+   * NOTE: Backwards compatibility with ViewEngine.
+   */
+  isStatic = 0b0010,
+
+  /**
+   * If the `QueryList` should fire change event only if actual change to query was computed (vs old
+   * behavior where the change was fired whenever the query was recomputed, even if the recomputed
+   * query resulted in the same list.)
+   */
+  emitDistinctChangesOnly = 0b0100,
+}
+
+/**
+ * Translates query flags into `TQueryFlags` type in packages/core/src/render3/interfaces/query.ts
+ * @param query
+ */
+function toQueryFlags(query: R3QueryMetadata): number {
+  return (query.descendants ? QueryFlags.descendants : QueryFlags.none) |
+      (query.static ? QueryFlags.isStatic : QueryFlags.none) |
+      (query.emitDistinctChangesOnly ? QueryFlags.emitDistinctChangesOnly : QueryFlags.none);
 }
 
 function convertAttributesToExpressions(attributes: {[name: string]: o.Expression}):
@@ -440,11 +502,9 @@ function createContentQueriesFunction(
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
   for (const query of queries) {
-    const queryInstruction = query.static ? R3.staticContentQuery : R3.contentQuery;
-
     // creation, e.g. r3.contentQuery(dirIndex, somePredicate, true, null);
     createStatements.push(
-        o.importExpr(queryInstruction)
+        o.importExpr(R3.contentQuery)
             .callFn([o.variable('dirIndex'), ...prepareQueryParams(query, constantPool) as any])
             .toStmt());
 
@@ -507,6 +567,15 @@ export function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
   ];
 }
 
+/**
+ * Creates the type specification from the directive meta. This type is inserted into .d.ts files
+ * to be consumed by upstream compilations.
+ */
+export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
+  const typeParams = createDirectiveTypeParams(meta);
+  return o.expressionType(o.importExpr(R3.DirectiveDefWithMeta, typeParams));
+}
+
 // Define and update any view queries
 function createViewQueriesFunction(
     viewQueries: R3QueryMetadata[], constantPool: ConstantPool, name?: string): o.Expression {
@@ -515,11 +584,9 @@ function createViewQueriesFunction(
   const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
 
   viewQueries.forEach((query: R3QueryMetadata) => {
-    const queryInstruction = query.static ? R3.staticViewQuery : R3.viewQuery;
-
     // creation, e.g. r3.viewQuery(somePredicate, true);
     const queryDefinition =
-        o.importExpr(queryInstruction).callFn(prepareQueryParams(query, constantPool));
+        o.importExpr(R3.viewQuery).callFn(prepareQueryParams(query, constantPool));
     createStatements.push(queryDefinition.toStmt());
 
     // update, e.g. (r3.queryRefresh(tmp = r3.loadQuery()) && (ctx.someDir = tmp));

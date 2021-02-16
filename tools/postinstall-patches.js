@@ -45,13 +45,6 @@ sed('-i', '(\'response\' in xhr)', '(\'response\' in (xhr as any))',
     'node_modules/rxjs/src/observable/dom/AjaxObservable.ts');
 */
 
-// make chrome 74 work on OSX with karma under bazel
-// remove when we update to the next @bazel/karma release
-log('\n# patch: @bazel/karma 0.29.0 to disable chrome sandbox for OSX');
-sed('-i', 'process.platform !== \'linux\'',
-    'process.platform !== \'linux\' && process.platform !== \'darwin\'',
-    'node_modules/@bazel/karma/karma.conf.js');
-
 // Workaround https://github.com/bazelbuild/rules_nodejs/issues/1033
 // TypeScript doesn't understand typings without "declare module" unless
 // they are actually resolved by the @types default mechanism

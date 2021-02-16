@@ -5,16 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
 import {XmbTranslationSerializer} from '../../../src/extract/translation_files/xmb_translation_serializer';
 
-import {mockMessage} from './mock_message';
+import {location, mockMessage} from './mock_message';
 
 runInEachFileSystem(() => {
-  let fs: FileSystem;
+  let fs: PathManipulation;
   beforeEach(() => fs = getFileSystem());
   describe('XmbTranslationSerializer', () => {
     [false, true].forEach(useLegacyIds => {
@@ -84,6 +84,54 @@ runInEachFileSystem(() => {
           ].join('\n'));
         });
       });
+    });
+  });
+
+  describe('renderFile()', () => {
+    it('should consistently order serialized messages by location', () => {
+      const messages: ɵParsedMessage[] = [
+        mockMessage('1', ['message-1'], [], {location: location('/root/c-1.ts', 5, 10, 5, 12)}),
+        mockMessage('2', ['message-1'], [], {location: location('/root/c-2.ts', 5, 10, 5, 12)}),
+        mockMessage('1', ['message-1'], [], {location: location('/root/b-1.ts', 8, 0, 10, 12)}),
+        mockMessage('2', ['message-1'], [], {location: location('/root/b-2.ts', 8, 0, 10, 12)}),
+        mockMessage('1', ['message-1'], [], {location: location('/root/a-1.ts', 5, 10, 5, 12)}),
+        mockMessage('2', ['message-1'], [], {location: location('/root/a-2.ts', 5, 10, 5, 12)}),
+        mockMessage('1', ['message-1'], [], {location: location('/root/b-1.ts', 5, 10, 5, 12)}),
+        mockMessage('2', ['message-1'], [], {location: location('/root/b-2.ts', 5, 10, 5, 12)}),
+        mockMessage('1', ['message-1'], [], {location: location('/root/b-1.ts', 5, 20, 5, 12)}),
+        mockMessage('2', ['message-1'], [], {location: location('/root/b-2.ts', 5, 20, 5, 12)}),
+      ];
+      const serializer = new XmbTranslationSerializer(absoluteFrom('/root'), false);
+      const output = serializer.serialize(messages);
+      expect(output.split('\n')).toEqual([
+        '<?xml version="1.0" encoding="UTF-8" ?>',
+        '<!DOCTYPE messagebundle [',
+        '<!ELEMENT messagebundle (msg)*>',
+        '<!ATTLIST messagebundle class CDATA #IMPLIED>',
+        '',
+        '<!ELEMENT msg (#PCDATA|ph|source)*>',
+        '<!ATTLIST msg id CDATA #IMPLIED>',
+        '<!ATTLIST msg seq CDATA #IMPLIED>',
+        '<!ATTLIST msg name CDATA #IMPLIED>',
+        '<!ATTLIST msg desc CDATA #IMPLIED>',
+        '<!ATTLIST msg meaning CDATA #IMPLIED>',
+        '<!ATTLIST msg obsolete (obsolete) #IMPLIED>',
+        '<!ATTLIST msg xml:space (default|preserve) "default">',
+        '<!ATTLIST msg is_hidden CDATA #IMPLIED>',
+        '',
+        '<!ELEMENT source (#PCDATA)>',
+        '',
+        '<!ELEMENT ph (#PCDATA|ex)*>',
+        '<!ATTLIST ph name CDATA #REQUIRED>',
+        '',
+        '<!ELEMENT ex (#PCDATA)>',
+        ']>',
+        '<messagebundle>',
+        '  <msg id="1"><source>a-1.ts:5</source>message-1</msg>',
+        '  <msg id="2"><source>a-2.ts:5</source>message-1</msg>',
+        '</messagebundle>',
+        '',
+      ]);
     });
   });
 });

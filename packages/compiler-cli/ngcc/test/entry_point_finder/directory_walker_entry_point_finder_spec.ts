@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relative} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
@@ -114,7 +114,7 @@ runInEachFileSystem(() => {
         loadTestFiles(createPackage(basePath, 'some-package'));
         spyOn(config, 'getPackageConfig')
             .and.returnValue(
-                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some-package'), {
+                new ProcessedNgccPackageConfig(fs, _Abs('/project/node_modules/some-package'), {
                   entryPoints: {
                     '.': {ignore: true},
                   },
@@ -137,7 +137,7 @@ runInEachFileSystem(() => {
         ]);
         spyOn(config, 'getPackageConfig')
             .and.returnValue(
-                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some-package'), {
+                new ProcessedNgccPackageConfig(fs, _Abs('/project/node_modules/some-package'), {
                   entryPoints: {
                     './sub-entry-point-1': {ignore: true},
                   },
@@ -210,7 +210,7 @@ runInEachFileSystem(() => {
 
         // Modify the manifest to prove that we use it to find the entry-points
         const manifestPath = _Abs('/sub_entry_points/node_modules/__ngcc_entry_points__.json');
-        const manifestFile: EntryPointManifestFile = JSON.parse(fs.readFile(manifestPath));
+        const manifestFile = JSON.parse(fs.readFile(manifestPath)) as EntryPointManifestFile;
         manifestFile.entryPointPaths.pop();
         fs.writeFile(manifestPath, JSON.stringify(manifestFile));
 
@@ -457,7 +457,7 @@ runInEachFileSystem(() => {
       function dumpEntryPointPaths(
           basePath: AbsoluteFsPath, entryPoints: EntryPoint[]): [string, string][] {
         return entryPoints.map(
-            x => [relative(basePath, x.packagePath), relative(basePath, x.path)]);
+            x => [fs.relative(basePath, x.packagePath), fs.relative(basePath, x.path)]);
       }
     });
   });

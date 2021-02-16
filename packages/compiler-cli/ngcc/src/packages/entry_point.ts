@@ -5,11 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {relative} from 'canonical-path';
-import {basename} from 'path';
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, FileSystem, join, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {parseStatementForUmdModule} from '../host/umd_host';
 import {resolveFileWithPostfixes} from '../utils';
@@ -130,10 +128,10 @@ export type GetEntryPointResult =
  *   entry-point.
  */
 export function getEntryPointInfo(
-    fs: FileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
+    fs: ReadonlyFileSystem, config: NgccConfiguration, logger: Logger, packagePath: AbsoluteFsPath,
     entryPointPath: AbsoluteFsPath): GetEntryPointResult {
-  const packagePackageJsonPath = resolve(packagePath, 'package.json');
-  const entryPointPackageJsonPath = resolve(entryPointPath, 'package.json');
+  const packagePackageJsonPath = fs.resolve(packagePath, 'package.json');
+  const entryPointPackageJsonPath = fs.resolve(entryPointPath, 'package.json');
   const loadedPackagePackageJson = loadPackageJson(fs, packagePackageJsonPath);
   const loadedEntryPointPackageJson = (packagePackageJsonPath === entryPointPackageJsonPath) ?
       loadedPackagePackageJson :
@@ -163,7 +161,7 @@ export function getEntryPointInfo(
     return IGNORED_ENTRY_POINT;
   } else {
     entryPointPackageJson = mergeConfigAndPackageJson(
-        loadedEntryPointPackageJson, entryPointConfig, packagePath, entryPointPath);
+        fs, loadedEntryPointPackageJson, entryPointConfig, packagePath, entryPointPath);
   }
 
   const typings = entryPointPackageJson.typings || entryPointPackageJson.types ||
@@ -176,7 +174,8 @@ export function getEntryPointInfo(
   // An entry-point is assumed to be compiled by Angular if there is either:
   // * a `metadata.json` file next to the typings entry-point
   // * a custom config for this entry-point
-  const metadataPath = resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
+  const metadataPath =
+      fs.resolve(entryPointPath, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
   const compiledByAngular = entryPointConfig !== undefined || fs.exists(metadataPath);
 
   const entryPointInfo: EntryPoint = {
@@ -185,7 +184,7 @@ export function getEntryPointInfo(
     packageName,
     packagePath,
     packageJson: entryPointPackageJson,
-    typings: resolve(entryPointPath, typings),
+    typings: fs.resolve(entryPointPath, typings),
     compiledByAngular,
     ignoreMissingDependencies:
         entryPointConfig !== undefined ? !!entryPointConfig.ignoreMissingDependencies : false,
@@ -208,8 +207,8 @@ export function isEntryPoint(result: GetEntryPointResult): result is EntryPoint 
  * @returns An entry-point format or `undefined` if none match the given property.
  */
 export function getEntryPointFormat(
-    fs: FileSystem, entryPoint: EntryPoint, property: EntryPointJsonProperty): EntryPointFormat|
-    undefined {
+    fs: ReadonlyFileSystem, entryPoint: EntryPoint,
+    property: EntryPointJsonProperty): EntryPointFormat|undefined {
   switch (property) {
     case 'fesm2015':
       return 'esm2015';
@@ -226,13 +225,13 @@ export function getEntryPointFormat(
       if (typeof browserFile !== 'string') {
         return undefined;
       }
-      return sniffModuleFormat(fs, join(entryPoint.path, browserFile));
+      return sniffModuleFormat(fs, fs.join(entryPoint.path, browserFile));
     case 'main':
       const mainFile = entryPoint.packageJson['main'];
       if (mainFile === undefined) {
         return undefined;
       }
-      return sniffModuleFormat(fs, join(entryPoint.path, mainFile));
+      return sniffModuleFormat(fs, fs.join(entryPoint.path, mainFile));
     case 'module':
       const moduleFilePath = entryPoint.packageJson['module'];
       // As of version 10, the `module` property in `package.json` should point to
@@ -254,17 +253,17 @@ export function getEntryPointFormat(
  * @param packageJsonPath the absolute path to the `package.json` file.
  * @returns JSON from the `package.json` file if it is valid, `null` otherwise.
  */
-function loadPackageJson(fs: FileSystem, packageJsonPath: AbsoluteFsPath): EntryPointPackageJson|
-    null {
+function loadPackageJson(
+    fs: ReadonlyFileSystem, packageJsonPath: AbsoluteFsPath): EntryPointPackageJson|null {
   try {
-    return JSON.parse(fs.readFile(packageJsonPath));
+    return JSON.parse(fs.readFile(packageJsonPath)) as EntryPointPackageJson;
   } catch {
     return null;
   }
 }
 
-function sniffModuleFormat(fs: FileSystem, sourceFilePath: AbsoluteFsPath): EntryPointFormat|
-    undefined {
+function sniffModuleFormat(
+    fs: ReadonlyFileSystem, sourceFilePath: AbsoluteFsPath): EntryPointFormat|undefined {
   const resolvedPath = resolveFileWithPostfixes(fs, sourceFilePath, ['', '.js', '/index.js']);
   if (resolvedPath === null) {
     return undefined;
@@ -285,18 +284,19 @@ function sniffModuleFormat(fs: FileSystem, sourceFilePath: AbsoluteFsPath): Entr
 }
 
 function mergeConfigAndPackageJson(
-    entryPointPackageJson: EntryPointPackageJson|null, entryPointConfig: NgccEntryPointConfig,
-    packagePath: AbsoluteFsPath, entryPointPath: AbsoluteFsPath): EntryPointPackageJson {
+    fs: PathManipulation, entryPointPackageJson: EntryPointPackageJson|null,
+    entryPointConfig: NgccEntryPointConfig, packagePath: AbsoluteFsPath,
+    entryPointPath: AbsoluteFsPath): EntryPointPackageJson {
   if (entryPointPackageJson !== null) {
     return {...entryPointPackageJson, ...entryPointConfig.override};
   } else {
-    const name = `${basename(packagePath)}/${relative(packagePath, entryPointPath)}`;
+    const name = `${fs.basename(packagePath)}/${fs.relative(packagePath, entryPointPath)}`;
     return {name, ...entryPointConfig.override};
   }
 }
 
 function guessTypingsFromPackageJson(
-    fs: FileSystem, entryPointPath: AbsoluteFsPath,
+    fs: ReadonlyFileSystem, entryPointPath: AbsoluteFsPath,
     entryPointPackageJson: EntryPointPackageJson): AbsoluteFsPath|null {
   for (const prop of SUPPORTED_FORMAT_PROPERTIES) {
     const field = entryPointPackageJson[prop];
@@ -305,7 +305,7 @@ function guessTypingsFromPackageJson(
       continue;
     }
     const relativeTypingsPath = field.replace(/\.js$/, '.d.ts');
-    const typingsPath = resolve(entryPointPath, relativeTypingsPath);
+    const typingsPath = fs.resolve(entryPointPath, relativeTypingsPath);
     if (fs.exists(typingsPath)) {
       return typingsPath;
     }
@@ -321,14 +321,15 @@ function guessTypingsFromPackageJson(
  * - The version is read off of the `version` property of the package's `package.json` file (if
  *   available).
  *
- * @param fs The `FileSystem` instance to use for parsing `packagePath` (if needed).
+ * @param fs The file-system to use for processing `packagePath`.
  * @param packagePath the absolute path to the package.
  * @param packagePackageJson the parsed `package.json` of the package (if available).
  * @param entryPointPackageJson the parsed `package.json` of an entry-point (if available).
  * @returns the computed name and version of the package.
  */
 function getPackageNameAndVersion(
-    fs: FileSystem, packagePath: AbsoluteFsPath, packagePackageJson: EntryPointPackageJson|null,
+    fs: PathManipulation, packagePath: AbsoluteFsPath,
+    packagePackageJson: EntryPointPackageJson|null,
     entryPointPackageJson: EntryPointPackageJson|
     null): {packageName: string, packageVersion: string|null} {
   let packageName: string;

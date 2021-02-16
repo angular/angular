@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 
 /**
  * A cache that holds on to source files that can be shared for processing all entry-points in a
@@ -29,7 +29,7 @@ import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
 export class SharedFileCache {
   private sfCache = new Map<AbsoluteFsPath, ts.SourceFile>();
 
-  constructor(private fs: FileSystem) {}
+  constructor(private fs: ReadonlyFileSystem) {}
 
   /**
    * Loads a `ts.SourceFile` if the provided `fileName` is deemed appropriate to be cached. To
@@ -95,7 +95,7 @@ const DEFAULT_LIB_PATTERN = ['node_modules', 'typescript', 'lib', /^lib\..+\.d\.
  * @param absPath The path for which to determine if it corresponds with a default library file.
  * @param fs The filesystem to use for inspecting the path.
  */
-export function isDefaultLibrary(absPath: AbsoluteFsPath, fs: FileSystem): boolean {
+export function isDefaultLibrary(absPath: AbsoluteFsPath, fs: ReadonlyFileSystem): boolean {
   return isFile(absPath, DEFAULT_LIB_PATTERN, fs);
 }
 
@@ -109,7 +109,7 @@ const ANGULAR_DTS_PATTERN = ['node_modules', '@angular', /./, /\.d\.ts$/];
  * @param absPath The path for which to determine if it corresponds with an @angular .d.ts file.
  * @param fs The filesystem to use for inspecting the path.
  */
-export function isAngularDts(absPath: AbsoluteFsPath, fs: FileSystem): boolean {
+export function isAngularDts(absPath: AbsoluteFsPath, fs: ReadonlyFileSystem): boolean {
   return isFile(absPath, ANGULAR_DTS_PATTERN, fs);
 }
 
@@ -122,7 +122,7 @@ export function isAngularDts(absPath: AbsoluteFsPath, fs: FileSystem): boolean {
  * @param fs The filesystem to use for inspecting the path.
  */
 function isFile(
-    path: AbsoluteFsPath, segments: ReadonlyArray<string|RegExp>, fs: FileSystem): boolean {
+    path: AbsoluteFsPath, segments: ReadonlyArray<string|RegExp>, fs: ReadonlyFileSystem): boolean {
   for (let i = segments.length - 1; i >= 0; i--) {
     const pattern = segments[i];
     const segment = fs.basename(path);
@@ -147,7 +147,7 @@ function isFile(
 export class EntryPointFileCache {
   private readonly sfCache = new Map<AbsoluteFsPath, ts.SourceFile>();
 
-  constructor(private fs: FileSystem, private sharedFileCache: SharedFileCache) {}
+  constructor(private fs: ReadonlyFileSystem, private sharedFileCache: SharedFileCache) {}
 
   /**
    * Returns and caches a parsed `ts.SourceFile` for the provided `fileName`. If the `fileName` is
@@ -178,7 +178,7 @@ export class EntryPointFileCache {
   }
 }
 
-function readFile(absPath: AbsoluteFsPath, fs: FileSystem): string|undefined {
+function readFile(absPath: AbsoluteFsPath, fs: ReadonlyFileSystem): string|undefined {
   if (!fs.exists(absPath) || !fs.stat(absPath).isFile()) {
     return undefined;
   }
@@ -190,7 +190,7 @@ function readFile(absPath: AbsoluteFsPath, fs: FileSystem): string|undefined {
  *
  * @param fs The filesystem to use for path operations.
  */
-export function createModuleResolutionCache(fs: FileSystem): ts.ModuleResolutionCache {
+export function createModuleResolutionCache(fs: ReadonlyFileSystem): ts.ModuleResolutionCache {
   return ts.createModuleResolutionCache(fs.pwd(), fileName => {
     return fs.isCaseSensitive() ? fileName : fileName.toLowerCase();
   });

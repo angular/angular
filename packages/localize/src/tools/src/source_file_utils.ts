@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵisMissingTranslationError, ɵmakeTemplateObject, ɵParsedTranslation, ɵSourceLocation, ɵtranslate} from '@angular/localize';
 import {NodePath} from '@babel/traverse';
 import * as t from '@babel/types';
@@ -74,7 +74,7 @@ export function buildLocalizeReplacement(
  */
 export function unwrapMessagePartsFromLocalizeCall(
     call: NodePath<t.CallExpression>,
-    fs: FileSystem = getFileSystem(),
+    fs: PathManipulation = getFileSystem(),
     ): [TemplateStringsArray, (ɵSourceLocation | undefined)[]] {
   let cooked = call.get('arguments')[0];
 
@@ -89,7 +89,7 @@ export function unwrapMessagePartsFromLocalizeCall(
   // If there is no call to `__makeTemplateObject(...)`, then `raw` must be the same as `cooked`.
   let raw = cooked;
 
-  // Check for cached call of the form `x || x = __makeTemplateObject(...)`
+  // Check for a memoized form: `x || x = ...`
   if (cooked.isLogicalExpression() && cooked.node.operator === '||' &&
       cooked.get('left').isIdentifier()) {
     const right = cooked.get('right');
@@ -105,15 +105,22 @@ export function unwrapMessagePartsFromLocalizeCall(
         // This is a minified sequence expression, where the first two expressions in the sequence
         // are assignments of the cooked and raw arrays respectively.
         const [first, second] = expressions;
-        if (first.isAssignmentExpression() && second.isAssignmentExpression()) {
+        if (first.isAssignmentExpression()) {
           cooked = first.get('right');
           if (!cooked.isExpression()) {
             throw new BabelParseError(
                 first.node, 'Unexpected cooked value, expected an expression.');
           }
-          raw = second.get('right');
-          if (!raw.isExpression()) {
-            throw new BabelParseError(second.node, 'Unexpected raw value, expected an expression.');
+          if (second.isAssignmentExpression()) {
+            raw = second.get('right');
+            if (!raw.isExpression()) {
+              throw new BabelParseError(
+                  second.node, 'Unexpected raw value, expected an expression.');
+            }
+          } else {
+            // If the second expression is not an assignment then it is probably code to take a copy
+            // of the cooked array. For example: `raw || (raw=cooked.slice(0))`.
+            raw = cooked;
           }
         }
       }
@@ -160,7 +167,7 @@ export function unwrapMessagePartsFromLocalizeCall(
  */
 export function unwrapSubstitutionsFromLocalizeCall(
     call: NodePath<t.CallExpression>,
-    fs: FileSystem = getFileSystem()): [t.Expression[], (ɵSourceLocation | undefined)[]] {
+    fs: PathManipulation = getFileSystem()): [t.Expression[], (ɵSourceLocation | undefined)[]] {
   const expressions = call.get('arguments').splice(1);
   if (!isArrayOfExpressions(expressions)) {
     const badExpression = expressions.find(expression => !expression.isExpression())!;
@@ -182,8 +189,8 @@ export function unwrapSubstitutionsFromLocalizeCall(
  * @publicApi used by CLI
  */
 export function unwrapMessagePartsFromTemplateLiteral(
-    elements: NodePath<t.TemplateElement>[],
-    fs: FileSystem = getFileSystem()): [TemplateStringsArray, (ɵSourceLocation | undefined)[]] {
+    elements: NodePath<t.TemplateElement>[], fs: PathManipulation = getFileSystem()):
+    [TemplateStringsArray, (ɵSourceLocation | undefined)[]] {
   const cooked = elements.map(q => {
     if (q.node.value.cooked === undefined) {
       throw new BabelParseError(
@@ -207,7 +214,7 @@ export function unwrapMessagePartsFromTemplateLiteral(
  */
 export function unwrapExpressionsFromTemplateLiteral(
     quasi: NodePath<t.TemplateLiteral>,
-    fs: FileSystem = getFileSystem()): [t.Expression[], (ɵSourceLocation | undefined)[]] {
+    fs: PathManipulation = getFileSystem()): [t.Expression[], (ɵSourceLocation | undefined)[]] {
   return [quasi.node.expressions, quasi.get('expressions').map(e => getLocation(fs, e))];
 }
 
@@ -235,7 +242,7 @@ export function wrapInParensIfNecessary(expression: t.Expression): t.Expression 
  */
 export function unwrapStringLiteralArray(
     array: NodePath<t.Expression>,
-    fs: FileSystem = getFileSystem()): [string[], (ɵSourceLocation | undefined)[]] {
+    fs: PathManipulation = getFileSystem()): [string[], (ɵSourceLocation | undefined)[]] {
   if (!isStringLiteralArray(array.node)) {
     throw new BabelParseError(
         array.node, 'Unexpected messageParts for `$localize` (expected an array of strings).');
@@ -400,7 +407,7 @@ export function buildCodeFrameError(path: NodePath, e: BabelParseError): string 
 }
 
 export function getLocation(
-    fs: FileSystem, startPath: NodePath, endPath?: NodePath): ɵSourceLocation|undefined {
+    fs: PathManipulation, startPath: NodePath, endPath?: NodePath): ɵSourceLocation|undefined {
   const startLocation = startPath.node.loc;
   const file = getFileFromPath(fs, startPath);
   if (!startLocation || !file) {
@@ -425,7 +432,7 @@ export function serializeLocationPosition(location: ɵSourceLocation): string {
   return `${location.start.line + 1}${endLineString}`;
 }
 
-function getFileFromPath(fs: FileSystem, path: NodePath|undefined): AbsoluteFsPath|null {
+function getFileFromPath(fs: PathManipulation, path: NodePath|undefined): AbsoluteFsPath|null {
   const opts = path?.hub.file.opts;
   return opts?.filename ?
       fs.resolve(opts.generatorOpts.sourceRoot ?? opts.cwd, fs.relative(opts.cwd, opts.filename)) :

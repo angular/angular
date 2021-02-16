@@ -8,6 +8,7 @@
 
 import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {TypeCheckingConfig} from '../api';
 
 import {addParseSpanInfo, wrapForDiagnostics, wrapForTypeChecker} from './diagnostics';
@@ -164,7 +165,7 @@ class AstTranslator implements AstVisitor {
     const left = ts.createElementAccess(receiver, this.translate(ast.key));
     // TODO(joost): annotate `left` with the span of the element access, which is not currently
     //  available on `ast`.
-    const right = this.translate(ast.value);
+    const right = wrapForTypeChecker(this.translate(ast.value));
     const node = wrapForDiagnostics(ts.createBinary(left, ts.SyntaxKind.EqualsToken, right));
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
@@ -255,14 +256,11 @@ class AstTranslator implements AstVisitor {
     //     ^     nameSpan
     const leftWithPath = wrapForDiagnostics(left);
     addParseSpanInfo(leftWithPath, ast.sourceSpan);
-    let right = this.translate(ast.value);
     // The right needs to be wrapped in parens as well or we cannot accurately match its
     // span to just the RHS. For example, the span in `e = $event /*0,10*/` is ambiguous.
     // It could refer to either the whole binary expression or just the RHS.
     // We should instead generate `e = ($event /*0,10*/)` so we know the span 0,10 matches RHS.
-    if (!ts.isParenthesizedExpression(right)) {
-      right = wrapForTypeChecker(right);
-    }
+    const right = wrapForTypeChecker(this.translate(ast.value));
     const node =
         wrapForDiagnostics(ts.createBinary(leftWithPath, ts.SyntaxKind.EqualsToken, right));
     addParseSpanInfo(node, ast.sourceSpan);
@@ -309,6 +307,7 @@ class AstTranslator implements AstVisitor {
       // "a?.b" becomes (null as any ? a!.b : undefined)
       // The type of this expression is (typeof a!.b) | undefined, which is exactly as desired.
       const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
+      addParseSpanInfo(expr, ast.nameSpan);
       node = ts.createParen(ts.createConditional(NULL_AS_ANY, expr, UNDEFINED));
     } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
       // Emulate a View Engine bug where 'any' is inferred for the left-hand side of the safe
@@ -322,6 +321,7 @@ class AstTranslator implements AstVisitor {
       // result is still inferred as `any`.
       // "a?.b" becomes (a!.b as any)
       const expr = ts.createPropertyAccess(ts.createNonNullExpression(receiver), ast.name);
+      addParseSpanInfo(expr, ast.nameSpan);
       node = tsCastToAny(expr);
     }
     addParseSpanInfo(node, ast.sourceSpan);

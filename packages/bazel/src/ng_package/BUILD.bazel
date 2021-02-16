@@ -32,6 +32,9 @@ nodejs_binary(
         # END-DEV-ONLY
         "//:node_modules/rollup/dist/bin/rollup"
     ),
+    # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+    # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+    templated_args = ["--bazel_patch_module_resolver"],
 )
 
 exports_files([
@@ -46,7 +49,6 @@ load("@npm//@bazel/typescript:index.bzl", "ts_library")
 ts_library(
     name = "lib",
     srcs = glob(["*.ts"]),
-    node_modules = "@npm//typescript:typescript__typings",
     tsconfig = ":tsconfig.json",
     deps = [
         "@npm//@types/node",
@@ -70,5 +72,8 @@ nodejs_binary(
         "@npm//shelljs",
     ],
     entry_point = ":packager.ts",
+    # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+    # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+    templated_args = ["--bazel_patch_module_resolver"],
 )
 # END-DEV-ONLY

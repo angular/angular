@@ -78,7 +78,7 @@ export class CustomIconRegistry extends MatIconRegistry {
     // SECURITY: the source for the SVG icons is provided in code by trusted developers
     div.innerHTML = svgIcon.svgSource;
 
-    const svgElement = div.querySelector('svg')!;
+    const svgElement = div.querySelector('svg') as SVGElement;
     nsIconMap[svgIcon.name] = svgElement;
 
     return svgElement;

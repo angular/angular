@@ -207,9 +207,12 @@ export declare class FormBuilder {
     control(formState: any, validatorOrOpts?: ValidatorFn | ValidatorFn[] | AbstractControlOptions | null, asyncValidator?: AsyncValidatorFn | AsyncValidatorFn[] | null): FormControl;
     group(controlsConfig: {
         [key: string]: any;
-    }, options?: AbstractControlOptions | {
+    }, options?: AbstractControlOptions | null): FormGroup;
+    /** @deprecated */ group(controlsConfig: {
         [key: string]: any;
-    } | null): FormGroup;
+    }, options: {
+        [key: string]: any;
+    }): FormGroup;
 }
 
 export declare class FormControl extends AbstractControl {
@@ -234,7 +237,7 @@ export declare class FormControl extends AbstractControl {
     }): void;
 }
 
-export declare class FormControlDirective extends NgControl implements OnChanges {
+export declare class FormControlDirective extends NgControl implements OnChanges, OnDestroy {
     get control(): FormControl;
     form: FormControl;
     set isDisabled(isDisabled: boolean);
@@ -244,6 +247,7 @@ export declare class FormControlDirective extends NgControl implements OnChanges
     viewModel: any;
     constructor(validators: (Validator | ValidatorFn)[], asyncValidators: (AsyncValidator | AsyncValidatorFn)[], valueAccessors: ControlValueAccessor[], _ngModelWarningConfig: string | null);
     ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
     viewToModelUpdate(newValue: any): void;
 }
 
@@ -292,7 +296,7 @@ export declare class FormGroup extends AbstractControl {
     }): void;
 }
 
-export declare class FormGroupDirective extends ControlContainer implements Form, OnChanges {
+export declare class FormGroupDirective extends ControlContainer implements Form, OnChanges, OnDestroy {
     get control(): FormGroup;
     directives: FormControlName[];
     form: FormGroup;
@@ -308,6 +312,7 @@ export declare class FormGroupDirective extends ControlContainer implements Form
     getFormArray(dir: FormArrayName): FormArray;
     getFormGroup(dir: FormGroupName): FormGroup;
     ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
     onReset(): void;
     onSubmit($event: Event): boolean;
     removeControl(dir: FormControlName): void;
@@ -332,11 +337,21 @@ export declare class MaxLengthValidator implements Validator, OnChanges {
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
+export declare class MaxValidator extends AbstractValidatorDirective implements OnChanges {
+    max: string | number;
+    ngOnChanges(changes: SimpleChanges): void;
+}
+
 export declare class MinLengthValidator implements Validator, OnChanges {
     minlength: string | number;
     ngOnChanges(changes: SimpleChanges): void;
     registerOnValidatorChange(fn: () => void): void;
     validate(control: AbstractControl): ValidationErrors | null;
+}
+
+export declare class MinValidator extends AbstractValidatorDirective implements OnChanges {
+    min: string | number;
+    ngOnChanges(changes: SimpleChanges): void;
 }
 
 export declare const NG_ASYNC_VALIDATORS: InjectionToken<(Function | Validator)[]>;

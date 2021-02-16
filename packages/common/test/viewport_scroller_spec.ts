@@ -10,19 +10,17 @@ import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {BrowserViewportScroller, ViewportScroller} from '../src/viewport_scroller';
 
 describe('BrowserViewportScroller', () => {
-  let scroller: ViewportScroller;
-  let documentSpy: any;
-  let windowSpy: any;
-
-  beforeEach(() => {
-    windowSpy =
-        jasmine.createSpyObj('window', ['history', 'scrollTo', 'pageXOffset', 'pageYOffset']);
-    windowSpy.history.scrollRestoration = 'auto';
-    documentSpy = jasmine.createSpyObj('document', ['getElementById', 'getElementsByName']);
-    scroller = new BrowserViewportScroller(documentSpy, windowSpy, null!);
-  });
-
   describe('setHistoryScrollRestoration', () => {
+    let scroller: ViewportScroller;
+    let windowSpy: any;
+
+    beforeEach(() => {
+      windowSpy =
+          jasmine.createSpyObj('window', ['history', 'scrollTo', 'pageXOffset', 'pageYOffset']);
+      windowSpy.history.scrollRestoration = 'auto';
+      scroller = new BrowserViewportScroller(document, windowSpy);
+    });
+
     function createNonWritableScrollRestoration() {
       Object.defineProperty(windowSpy.history, 'scrollRestoration', {
         value: 'auto',
@@ -43,34 +41,47 @@ describe('BrowserViewportScroller', () => {
   });
 
   describe('scrollToAnchor', () => {
+    // Testing scroll behavior does not make sense outside a browser
+    if (isNode) return;
     const anchor = 'anchor';
-    const el = document.createElement('a');
+    let tallItem: HTMLDivElement;
+    let el: HTMLAnchorElement;
+    let scroller: BrowserViewportScroller;
 
-    it('should only call getElementById when an element is found by id', () => {
-      documentSpy.getElementById.and.returnValue(el);
-      spyOn<any>(scroller, 'scrollToElement');
-      scroller.scrollToAnchor(anchor);
-      expect(documentSpy.getElementById).toHaveBeenCalledWith(anchor);
-      expect(documentSpy.getElementsByName).not.toHaveBeenCalled();
-      expect((scroller as any).scrollToElement).toHaveBeenCalledWith(el);
+    beforeEach(() => {
+      scroller = new BrowserViewportScroller(document, window);
+      scroller.scrollToPosition([0, 0]);
+
+      tallItem = document.createElement('div');
+      tallItem.style.height = '3000px';
+      document.body.appendChild(tallItem);
+
+      el = document.createElement('a');
+      el.innerText = 'some link';
+      el.href = '#';
+      document.body.appendChild(el);
     });
 
-    it('should call getElementById and getElementsByName when an element is found by name', () => {
-      documentSpy.getElementsByName.and.returnValue([el]);
-      spyOn<any>(scroller, 'scrollToElement');
-      scroller.scrollToAnchor(anchor);
-      expect(documentSpy.getElementById).toHaveBeenCalledWith(anchor);
-      expect(documentSpy.getElementsByName).toHaveBeenCalledWith(anchor);
-      expect((scroller as any).scrollToElement).toHaveBeenCalledWith(el);
+    afterEach(() => {
+      document.body.removeChild(tallItem);
+      document.body.removeChild(el);
     });
 
-    it('should not call scrollToElement when an element is not found by its id or its name', () => {
-      documentSpy.getElementsByName.and.returnValue([]);
-      spyOn<any>(scroller, 'scrollToElement');
+    it('should scroll when element with matching id is found', () => {
+      el.id = anchor;
       scroller.scrollToAnchor(anchor);
-      expect(documentSpy.getElementById).toHaveBeenCalledWith(anchor);
-      expect(documentSpy.getElementsByName).toHaveBeenCalledWith(anchor);
-      expect((scroller as any).scrollToElement).not.toHaveBeenCalled();
+      expect(scroller.getScrollPosition()[1]).not.toEqual(0);
+    });
+
+    it('should scroll when anchor with matching name is found', () => {
+      el.name = anchor;
+      scroller.scrollToAnchor(anchor);
+      expect(scroller.getScrollPosition()[1]).not.toEqual(0);
+    });
+
+    it('should not scroll when no matching element is found', () => {
+      scroller.scrollToAnchor(anchor);
+      expect(scroller.getScrollPosition()[1]).toEqual(0);
     });
   });
 });

@@ -16,6 +16,7 @@ import {NgModuleRef} from '../linker/ng_module_factory';
 import {Renderer2, RendererFactory2} from '../render/api';
 import {RendererStyleFlags2, RendererType2} from '../render/api_flags';
 import {Sanitizer} from '../sanitization/sanitizer';
+import {escapeCommentText} from '../util/dom';
 import {isDevMode} from '../util/is_dev_mode';
 import {normalizeDebugBindingName, normalizeDebugBindingValue} from '../util/ng_reflect';
 
@@ -448,7 +449,8 @@ function debugCheckAndUpdateNode(
       const el = asElementData(view, elDef.nodeIndex).renderElement;
       if (!elDef.element!.name) {
         // a comment.
-        view.renderer.setValue(el, `bindings=${JSON.stringify(bindingValues, null, 2)}`);
+        view.renderer.setValue(
+            el, escapeCommentText(`bindings=${JSON.stringify(bindingValues, null, 2)}`));
       } else {
         // a regular element.
         for (let attr in bindingValues) {
@@ -727,7 +729,7 @@ export class DebugRenderer2 implements Renderer2 {
   }
 
   createComment(value: string): any {
-    const comment = this.delegate.createComment(value);
+    const comment = this.delegate.createComment(escapeCommentText(value));
     const debugCtx = this.createDebugContext(comment);
     if (debugCtx) {
       indexDebugNode(new DebugNode__PRE_R3__(comment, null, debugCtx));

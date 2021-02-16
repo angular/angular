@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, join, PathSegment, relative, relativeFrom} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, PathSegment, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
@@ -25,8 +25,8 @@ import {TracingEntryPointFinder} from './tracing_entry_point_finder';
  */
 export class TargetedEntryPointFinder extends TracingEntryPointFinder {
   constructor(
-      fs: FileSystem, config: NgccConfiguration, logger: Logger, resolver: DependencyResolver,
-      basePath: AbsoluteFsPath, pathMappings: PathMappings|undefined,
+      fs: ReadonlyFileSystem, config: NgccConfiguration, logger: Logger,
+      resolver: DependencyResolver, basePath: AbsoluteFsPath, pathMappings: PathMappings|undefined,
       private targetPath: AbsoluteFsPath) {
     super(fs, config, logger, resolver, basePath, pathMappings);
   }
@@ -119,7 +119,7 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
   private computePackagePath(entryPointPath: AbsoluteFsPath): AbsoluteFsPath {
     // First try the main basePath, to avoid having to compute the other basePaths from the paths
     // mappings, which can be computationally intensive.
-    if (entryPointPath.startsWith(this.basePath)) {
+    if (this.isPathContainedBy(this.basePath, entryPointPath)) {
       const packagePath = this.computePackagePathFromContainingPath(entryPointPath, this.basePath);
       if (packagePath !== null) {
         return packagePath;
@@ -129,7 +129,7 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
     // The main `basePath` didn't work out so now we try the `basePaths` computed from the paths
     // mappings in `tsconfig.json`.
     for (const basePath of this.getBasePaths()) {
-      if (entryPointPath.startsWith(basePath)) {
+      if (this.isPathContainedBy(basePath, entryPointPath)) {
         const packagePath = this.computePackagePathFromContainingPath(entryPointPath, basePath);
         if (packagePath !== null) {
           return packagePath;
@@ -147,6 +147,18 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
     return this.computePackagePathFromNearestNodeModules(entryPointPath);
   }
 
+  /**
+   * Compute whether the `test` path is contained within the `base` path.
+   *
+   * Note that this doesn't use a simple `startsWith()` since that would result in a false positive
+   * for `test` paths such as `a/b/c-x` when the `base` path is `a/b/c`.
+   *
+   * Since `fs.relative()` can be quite expensive we check the fast possibilities first.
+   */
+  private isPathContainedBy(base: AbsoluteFsPath, test: AbsoluteFsPath): boolean {
+    return test === base ||
+        (test.startsWith(base) && !this.fs.relative(base, test).startsWith('..'));
+  }
 
   /**
    * Search down to the `entryPointPath` from the `containingPath` for the first `package.json` that
@@ -162,14 +174,14 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
   private computePackagePathFromContainingPath(
       entryPointPath: AbsoluteFsPath, containingPath: AbsoluteFsPath): AbsoluteFsPath|null {
     let packagePath = containingPath;
-    const segments = this.splitPath(relative(containingPath, entryPointPath));
-    let nodeModulesIndex = segments.lastIndexOf(relativeFrom('node_modules'));
+    const segments = this.splitPath(this.fs.relative(containingPath, entryPointPath));
+    let nodeModulesIndex = segments.lastIndexOf('node_modules' as PathSegment);
 
     // If there are no `node_modules` in the relative path between the `basePath` and the
     // `entryPointPath` then just try the `basePath` as the `packagePath`.
     // (This can be the case with path-mapped entry-points.)
     if (nodeModulesIndex === -1) {
-      if (this.fs.exists(join(packagePath, 'package.json'))) {
+      if (this.fs.exists(this.fs.join(packagePath, 'package.json'))) {
         return packagePath;
       }
     }
@@ -177,7 +189,7 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
     // Start the search at the deepest nested `node_modules` folder that is below the `basePath`
     // but above the `entryPointPath`, if there are any.
     while (nodeModulesIndex >= 0) {
-      packagePath = join(packagePath, segments.shift()!);
+      packagePath = this.fs.join(packagePath, segments.shift()!);
       nodeModulesIndex--;
     }
 
@@ -185,8 +197,8 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
     // initial candidate `packagePath` is either a `node_modules` folder or the `basePath` with
     // no `package.json`.
     for (const segment of segments) {
-      packagePath = join(packagePath, segment);
-      if (this.fs.exists(join(packagePath, 'package.json'))) {
+      packagePath = this.fs.join(packagePath, segment);
+      if (this.fs.exists(this.fs.join(packagePath, 'package.json'))) {
         return packagePath;
       }
     }
@@ -207,12 +219,12 @@ export class TargetedEntryPointFinder extends TracingEntryPointFinder {
       containerPath = this.fs.dirname(containerPath);
     }
 
-    if (this.fs.exists(join(packagePath, 'package.json'))) {
+    if (this.fs.exists(this.fs.join(packagePath, 'package.json'))) {
       // The directory directly below `node_modules` is a package - use it
       return packagePath;
     } else if (
         this.fs.basename(packagePath).startsWith('@') &&
-        this.fs.exists(join(scopedPackagePath, 'package.json'))) {
+        this.fs.exists(this.fs.join(scopedPackagePath, 'package.json'))) {
       // The directory directly below the `node_modules` is a scope and the directory directly
       // below that is a scoped package - use it
       return scopedPackagePath;

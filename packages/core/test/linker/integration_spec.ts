@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, SkipSelf, ViewRef, ɵivyEnabled as ivyEnabled} from '@angular/core';
+import {Compiler, ComponentFactory, ComponentRef, ErrorHandler, EventEmitter, Host, Inject, Injectable, InjectionToken, Injector, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, SkipSelf, ViewChild, ViewRef, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {ChangeDetectionStrategy, ChangeDetectorRef, PipeTransform} from '@angular/core/src/change_detection/change_detection';
 import {getDebugContext} from '@angular/core/src/errors';
 import {ComponentFactoryResolver} from '@angular/core/src/linker/component_factory_resolver';
@@ -1639,6 +1639,159 @@ function declareTests(config?: {useJit: boolean}) {
       fixture.componentInstance.ctxBoolProp = false;
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText('');
+    });
+
+
+    describe('moving embedded views of projectable nodes in a dynamic component', () => {
+      @Component({selector: 'menu-item', template: ''})
+      class DynamicMenuItem {
+        @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
+        itemContent!: string;
+      }
+
+      @NgModule({
+        declarations: [DynamicMenuItem],
+        entryComponents: [DynamicMenuItem],
+      })
+      class DynamicMenuItemModule {
+      }
+
+      @Component({selector: 'test', template: `<ng-container #menuItemsContainer></ng-container>`})
+      class TestCmp {
+        constructor(public cfr: ComponentFactoryResolver) {}
+        @ViewChild('menuItemsContainer', {static: true, read: ViewContainerRef})
+        menuItemsContainer!: ViewContainerRef;
+      }
+
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          declarations: [TestCmp],
+          imports: [DynamicMenuItemModule],
+        });
+      });
+
+      const createElWithContent = (content: string, tagName = 'span') => {
+        const element = document.createElement(tagName);
+        element.textContent = content;
+        return element;
+      };
+
+      it('should support moving embedded views of projectable nodes', () => {
+        TestBed.overrideTemplate(
+            DynamicMenuItem, `<ng-template #templateRef><ng-content></ng-content></ng-template>`);
+
+        const fixture = TestBed.createComponent(TestCmp);
+        const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
+        const dynamicCmptFactory =
+            fixture.componentInstance.cfr.resolveComponentFactory(DynamicMenuItem);
+
+        const cmptRefWithAa =
+            dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Aa')]]);
+        const cmptRefWithBb =
+            dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Bb')]]);
+        const cmptRefWithCc =
+            dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Cc')]]);
+
+        menuItemsContainer.insert(cmptRefWithAa.instance.templateRef.createEmbeddedView({}));
+        menuItemsContainer.insert(cmptRefWithBb.instance.templateRef.createEmbeddedView({}));
+        menuItemsContainer.insert(cmptRefWithCc.instance.templateRef.createEmbeddedView({}));
+
+        menuItemsContainer.move(menuItemsContainer.get(0)!, 1);
+        expect(fixture.nativeElement.textContent).toBe('BbAaCc');
+        menuItemsContainer.move(menuItemsContainer.get(2)!, 1);
+        expect(fixture.nativeElement.textContent).toBe('BbCcAa');
+      });
+
+      it('should support moving embedded views of projectable nodes in multiple slots', () => {
+        TestBed.overrideTemplate(
+            DynamicMenuItem,
+            `<ng-template #templateRef><ng-content select="span"></ng-content><ng-content select="button"></ng-content></ng-template>`);
+
+        const fixture = TestBed.createComponent(TestCmp);
+        const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
+        const dynamicCmptFactory =
+            fixture.componentInstance.cfr.resolveComponentFactory(DynamicMenuItem);
+
+        const cmptRefWithAa = dynamicCmptFactory.create(
+            Injector.NULL, [[createElWithContent('A')], [createElWithContent('a', 'button')]]);
+        const cmptRefWithBb = dynamicCmptFactory.create(
+            Injector.NULL, [[createElWithContent('B')], [createElWithContent('b', 'button')]]);
+        const cmptRefWithCc = dynamicCmptFactory.create(
+            Injector.NULL, [[createElWithContent('C')], [createElWithContent('c', 'button')]]);
+
+        menuItemsContainer.insert(cmptRefWithAa.instance.templateRef.createEmbeddedView({}));
+        menuItemsContainer.insert(cmptRefWithBb.instance.templateRef.createEmbeddedView({}));
+        menuItemsContainer.insert(cmptRefWithCc.instance.templateRef.createEmbeddedView({}));
+
+        menuItemsContainer.move(menuItemsContainer.get(0)!, 1);
+        expect(fixture.nativeElement.textContent).toBe('BbAaCc');
+        menuItemsContainer.move(menuItemsContainer.get(2)!, 1);
+        expect(fixture.nativeElement.textContent).toBe('BbCcAa');
+      });
+
+      it('should support moving embedded views of projectable nodes in multiple slots and interpolations',
+         () => {
+           TestBed.overrideTemplate(
+               DynamicMenuItem,
+               `<ng-template #templateRef><ng-content select="span"></ng-content>{{itemContent}}<ng-content select="button"></ng-content></ng-template>`);
+
+           TestBed.configureTestingModule(
+               {declarations: [TestCmp], imports: [DynamicMenuItemModule]});
+
+           const fixture = TestBed.createComponent(TestCmp);
+           const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
+           const dynamicCmptFactory =
+               fixture.componentInstance.cfr.resolveComponentFactory(DynamicMenuItem);
+
+           const cmptRefWithAa = dynamicCmptFactory.create(
+               Injector.NULL, [[createElWithContent('A')], [createElWithContent('a', 'button')]]);
+           const cmptRefWithBb = dynamicCmptFactory.create(
+               Injector.NULL, [[createElWithContent('B')], [createElWithContent('b', 'button')]]);
+           const cmptRefWithCc = dynamicCmptFactory.create(
+               Injector.NULL, [[createElWithContent('C')], [createElWithContent('c', 'button')]]);
+
+           menuItemsContainer.insert(cmptRefWithAa.instance.templateRef.createEmbeddedView({}));
+           menuItemsContainer.insert(cmptRefWithBb.instance.templateRef.createEmbeddedView({}));
+           menuItemsContainer.insert(cmptRefWithCc.instance.templateRef.createEmbeddedView({}));
+
+           cmptRefWithAa.instance.itemContent = '0';
+           cmptRefWithBb.instance.itemContent = '1';
+           cmptRefWithCc.instance.itemContent = '2';
+
+           fixture.detectChanges();
+
+           menuItemsContainer.move(menuItemsContainer.get(0)!, 1);
+           expect(fixture.nativeElement.textContent).toBe('B1bA0aC2c');
+           menuItemsContainer.move(menuItemsContainer.get(2)!, 1);
+           expect(fixture.nativeElement.textContent).toBe('B1bC2cA0a');
+         });
+
+      it('should support moving embedded views with empty projectable slots', () => {
+        TestBed.overrideTemplate(
+            DynamicMenuItem, `<ng-template #templateRef><ng-content></ng-content></ng-template>`);
+
+        const fixture = TestBed.createComponent(TestCmp);
+        const menuItemsContainer = fixture.componentInstance.menuItemsContainer;
+        const dynamicCmptFactory =
+            fixture.componentInstance.cfr.resolveComponentFactory(DynamicMenuItem);
+
+        const cmptRefWithAa = dynamicCmptFactory.create(Injector.NULL, [[]]);
+        const cmptRefWithBb =
+            dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Bb')]]);
+        const cmptRefWithCc =
+            dynamicCmptFactory.create(Injector.NULL, [[createElWithContent('Cc')]]);
+
+        menuItemsContainer.insert(cmptRefWithAa.instance.templateRef.createEmbeddedView({}));
+        menuItemsContainer.insert(cmptRefWithBb.instance.templateRef.createEmbeddedView({}));
+        menuItemsContainer.insert(cmptRefWithCc.instance.templateRef.createEmbeddedView({}));
+
+        menuItemsContainer.move(menuItemsContainer.get(0)!, 1);  // [ Bb, NULL, Cc]
+        expect(fixture.nativeElement.textContent).toBe('BbCc');
+        menuItemsContainer.move(menuItemsContainer.get(2)!, 1);  // [ Bb, Cc, NULL]
+        expect(fixture.nativeElement.textContent).toBe('BbCc');
+        menuItemsContainer.move(menuItemsContainer.get(0)!, 1);  // [ Cc, Bb, NULL]
+        expect(fixture.nativeElement.textContent).toBe('CcBb');
+      });
     });
 
     describe('Property bindings', () => {

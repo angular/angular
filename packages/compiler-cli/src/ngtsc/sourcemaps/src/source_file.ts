@@ -8,9 +8,9 @@
 import {removeComments, removeMapFileComments} from 'convert-source-map';
 import {decode, encode, SourceMapMappings, SourceMapSegment} from 'sourcemap-codec';
 
-import {AbsoluteFsPath, FileSystem} from '../../file_system';
+import {AbsoluteFsPath, PathManipulation} from '../../file_system';
 
-import {RawSourceMap} from './raw_source_map';
+import {RawSourceMap, SourceMapInfo} from './raw_source_map';
 import {compareSegments, offsetSegment, SegmentMarker} from './segment_marker';
 
 export function removeSourceMapComments(contents: string): string {
@@ -33,13 +33,11 @@ export class SourceFile {
       readonly sourcePath: AbsoluteFsPath,
       /** The contents of this source file. */
       readonly contents: string,
-      /** The raw source map (if any) associated with this source file. */
-      readonly rawMap: RawSourceMap|null,
-      /** Whether this source file's source map was inline or external. */
-      readonly inline: boolean,
+      /** The raw source map (if any) referenced by this source file. */
+      readonly rawMap: SourceMapInfo|null,
       /** Any source files referenced by the raw source map associated with this source file. */
       readonly sources: (SourceFile|null)[],
-      private fs: FileSystem,
+      private fs: PathManipulation,
   ) {
     this.contents = removeSourceMapComments(contents);
     this.startOfLinePositions = computeStartOfLinePositions(this.contents);
@@ -50,13 +48,19 @@ export class SourceFile {
    * Render the raw source map generated from the flattened mappings.
    */
   renderFlattenedSourceMap(): RawSourceMap {
-    const sources: SourceFile[] = [];
-    const names: string[] = [];
-
+    const sources = new IndexedMap<string, string>();
+    const names = new IndexedSet<string>();
     const mappings: SourceMapMappings = [];
+    const sourcePathDir = this.fs.dirname(this.sourcePath);
+    // Computing the relative path can be expensive, and we are likely to have the same path for
+    // many (if not all!) mappings.
+    const relativeSourcePathCache =
+        new Cache<string, string>(input => this.fs.relative(sourcePathDir, input));
 
     for (const mapping of this.flattenedMappings) {
-      const sourceIndex = findIndexOrAdd(sources, mapping.originalSource);
+      const sourceIndex = sources.set(
+          relativeSourcePathCache.get(mapping.originalSource.sourcePath),
+          mapping.originalSource.contents);
       const mappingArray: SourceMapSegment = [
         mapping.generatedSegment.column,
         sourceIndex,
@@ -64,7 +68,7 @@ export class SourceFile {
         mapping.originalSegment.column,
       ];
       if (mapping.name !== undefined) {
-        const nameIndex = findIndexOrAdd(names, mapping.name);
+        const nameIndex = names.add(mapping.name);
         mappingArray.push(nameIndex);
       }
 
@@ -77,14 +81,13 @@ export class SourceFile {
       mappings[line].push(mappingArray);
     }
 
-    const sourcePathDir = this.fs.dirname(this.sourcePath);
     const sourceMap: RawSourceMap = {
       version: 3,
       file: this.fs.relative(sourcePathDir, this.sourcePath),
-      sources: sources.map(sf => this.fs.relative(sourcePathDir, sf.sourcePath)),
-      names,
+      sources: sources.keys,
+      names: names.values,
       mappings: encode(mappings),
-      sourcesContent: sources.map(sf => sf.contents),
+      sourcesContent: sources.values,
     };
     return sourceMap;
   }
@@ -136,7 +139,8 @@ export class SourceFile {
    * source files with no transitive source maps.
    */
   private flattenMappings(): Mapping[] {
-    const mappings = parseMappings(this.rawMap, this.sources, this.startOfLinePositions);
+    const mappings =
+        parseMappings(this.rawMap && this.rawMap.map, this.sources, this.startOfLinePositions);
     ensureOriginalSegmentLinks(mappings);
     const flattenedMappings: Mapping[] = [];
     for (let mappingIndex = 0; mappingIndex < mappings.length; mappingIndex++) {
@@ -259,23 +263,6 @@ export interface Mapping {
   readonly name?: string;
 }
 
-/**
- * Find the index of `item` in the `items` array.
- * If it is not found, then push `item` to the end of the array and return its new index.
- *
- * @param items the collection in which to look for `item`.
- * @param item the item to look for.
- * @returns the index of the `item` in the `items` array.
- */
-function findIndexOrAdd<T>(items: T[], item: T): number {
-  const itemIndex = items.indexOf(item);
-  if (itemIndex > -1) {
-    return itemIndex;
-  } else {
-    items.push(item);
-    return items.length - 1;
-  }
-}
 
 
 /**
@@ -446,5 +433,98 @@ export function computeStartOfLinePositions(str: string) {
 }
 
 function computeLineLengths(str: string): number[] {
-  return (str.split(/\r?\n/)).map(s => s.length);
+  return (str.split(/\n/)).map(s => s.length);
+}
+
+/**
+ * A collection of mappings between `keys` and `values` stored in the order in which the keys are
+ * first seen.
+ *
+ * The difference between this and a standard `Map` is that when you add a key-value pair the index
+ * of the `key` is returned.
+ */
+class IndexedMap<K, V> {
+  private map = new Map<K, number>();
+
+  /**
+   * An array of keys added to this map.
+   *
+   * This array is guaranteed to be in the order of the first time the key was added to the map.
+   */
+  readonly keys: K[] = [];
+
+  /**
+   * An array of values added to this map.
+   *
+   * This array is guaranteed to be in the order of the first time the associated key was added to
+   * the map.
+   */
+  readonly values: V[] = [];
+
+  /**
+   * Associate the `value` with the `key` and return the index of the key in the collection.
+   *
+   * If the `key` already exists then the `value` is not set and the index of that `key` is
+   * returned; otherwise the `key` and `value` are stored and the index of the new `key` is
+   * returned.
+   *
+   * @param key the key to associated with the `value`.
+   * @param value the value to associated with the `key`.
+   * @returns the index of the `key` in the `keys` array.
+   */
+  set(key: K, value: V): number {
+    if (this.map.has(key)) {
+      return this.map.get(key)!;
+    }
+    const index = this.values.push(value) - 1;
+    this.keys.push(key);
+    this.map.set(key, index);
+    return index;
+  }
+}
+
+/**
+ * A collection of `values` stored in the order in which they were added.
+ *
+ * The difference between this and a standard `Set` is that when you add a value the index of that
+ * item is returned.
+ */
+class IndexedSet<V> {
+  private map = new Map<V, number>();
+
+  /**
+   * An array of values added to this set.
+   * This array is guaranteed to be in the order of the first time the value was added to the set.
+   */
+  readonly values: V[] = [];
+
+  /**
+   * Add the `value` to the `values` array, if it doesn't already exist; returning the index of the
+   * `value` in the `values` array.
+   *
+   * If the `value` already exists then the index of that `value` is returned, otherwise the new
+   * `value` is stored and the new index returned.
+   *
+   * @param value the value to add to the set.
+   * @returns the index of the `value` in the `values` array.
+   */
+  add(value: V): number {
+    if (this.map.has(value)) {
+      return this.map.get(value)!;
+    }
+    const index = this.values.push(value) - 1;
+    this.map.set(value, index);
+    return index;
+  }
+}
+
+class Cache<Input, Cached> {
+  private map = new Map<Input, Cached>();
+  constructor(private computeFn: (input: Input) => Cached) {}
+  get(input: Input): Cached {
+    if (!this.map.has(input)) {
+      this.map.set(input, this.computeFn(input));
+    }
+    return this.map.get(input)!;
+  }
 }

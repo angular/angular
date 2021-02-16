@@ -180,6 +180,15 @@ describe('InjectorDef-based createInjector()', () => {
 
   class ChildService extends ServiceWithDep {}
 
+  abstract class AbstractService {
+    static ɵprov = ɵɵdefineInjectable({
+      token: AbstractService,
+      providedIn: null,
+      factory: () => new AbstractServiceImpl(),
+    });
+  }
+  class AbstractServiceImpl extends AbstractService {}
+
   class Module {
     static ɵinj = ɵɵdefineInjector({
       factory: () => new Module(),
@@ -200,9 +209,16 @@ describe('InjectorDef-based createInjector()', () => {
             CircularB,
             {provide: STATIC_TOKEN, useClass: StaticService, deps: [Service]},
             InjectorWithDep,
+            AbstractService,
           ],
     });
   }
+
+  const ABSTRACT_SERVICE_TOKEN_WITH_FACTORY =
+      new InjectionToken<AbstractService>('ABSTRACT_SERVICE_TOKEN', {
+        providedIn: Module,
+        factory: () => ɵɵinject(AbstractService),
+      });
 
   class OtherModule {
     static ɵinj = ɵɵdefineInjector({
@@ -455,6 +471,18 @@ describe('InjectorDef-based createInjector()', () => {
   it('should not crash when importing something that has no ɵinj', () => {
     injector = createInjector(ImportsNotAModule);
     expect(injector.get(ImportsNotAModule)).toBeDefined();
+  });
+
+  it('injects an abstract class', () => {
+    const instance = injector.get(AbstractService);
+    expect(instance instanceof AbstractServiceImpl).toBeTruthy();
+    expect(injector.get(AbstractService)).toBe(instance);
+  });
+
+  it('injects an abstract class in an InjectionToken factory', () => {
+    const instance = injector.get(ABSTRACT_SERVICE_TOKEN_WITH_FACTORY);
+    expect(instance instanceof AbstractServiceImpl).toBeTruthy();
+    expect(injector.get(ABSTRACT_SERVICE_TOKEN_WITH_FACTORY)).toBe(instance);
   });
 
   describe('error handling', () => {

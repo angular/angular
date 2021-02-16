@@ -135,9 +135,6 @@ export {
 } from './interfaces/node';
 export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
 export {
-  ɵɵngDeclareDirective,
-} from './jit/partial';
-export {
   setClassMetadata,
 } from './metadata';
 export {NgModuleFactory, NgModuleRef} from './ng_module_ref';
@@ -165,9 +162,6 @@ export {
   ɵɵcontentQuery,
   ɵɵloadQuery,
   ɵɵqueryRefresh,
-  ɵɵstaticContentQuery
-,
-  ɵɵstaticViewQuery,
   ɵɵviewQuery} from './query';
 export {
   ɵɵdisableBindings,

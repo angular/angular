@@ -1671,7 +1671,7 @@ describe('ngc transformer command-line', () => {
         const config = readCommandLineAndConfiguration(['-p', basePath]);
         const compile = watchMode(config.project, config.options, errorSpy);
 
-        return new Promise(resolve => {
+        return new Promise<void>(resolve => {
           compile.ready(() => {
             cb();
 

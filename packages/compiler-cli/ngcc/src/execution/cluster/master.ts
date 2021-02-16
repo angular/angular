@@ -10,7 +10,7 @@
 
 import * as cluster from 'cluster';
 
-import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, PathManipulation} from '../../../../src/ngtsc/file_system';
 import {Logger} from '../../../../src/ngtsc/logging';
 import {FileWriter} from '../../writing/file_writer';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
@@ -35,7 +35,7 @@ export class ClusterMaster {
   private remainingRespawnAttempts = 3;
 
   constructor(
-      private maxWorkerCount: number, private fileSystem: FileSystem, private logger: Logger,
+      private maxWorkerCount: number, private fileSystem: PathManipulation, private logger: Logger,
       private fileWriter: FileWriter, private pkgJsonUpdater: PackageJsonUpdater,
       analyzeEntryPoints: AnalyzeEntryPointsFn,
       createTaskCompletedCallback: CreateTaskCompletedCallback) {

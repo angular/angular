@@ -14,6 +14,6 @@ if [[ -z "${extension_repo}" ]]; then
 fi
 
 yarn bazel build --config=release //packages/language-service:npm_package
-pushd "${extension_repo}/server"
+pushd "${extension_repo}"
 yarn add @angular/language-service@file:"${bazel_bin}/packages/language-service/npm_package"
 popd

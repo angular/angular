@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname, relative} from 'canonical-path';
+import {PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
@@ -24,8 +24,8 @@ import {stripExtension} from './utils';
  * wrapper function for AMD, CommonJS and global module formats.
  */
 export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
-  constructor(protected commonJsHost: NgccReflectionHost, isCore: boolean) {
-    super(commonJsHost, isCore);
+  constructor(fs: PathManipulation, protected commonJsHost: NgccReflectionHost, isCore: boolean) {
+    super(fs, commonJsHost, isCore);
   }
 
   /**
@@ -39,7 +39,7 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
 
     const insertionPoint = this.findEndOfImports(file);
     const renderedImports =
-        imports.map(i => `var ${i.qualifier} = require('${i.specifier}');\n`).join('');
+        imports.map(i => `var ${i.qualifier.text} = require('${i.specifier}');\n`).join('');
     output.appendLeft(insertionPoint, renderedImports);
   }
 
@@ -51,7 +51,7 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
       importManager: ImportManager, file: ts.SourceFile): void {
     exports.forEach(e => {
       const basePath = stripExtension(e.from);
-      const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
+      const relativePath = './' + this.fs.relative(this.fs.dirname(entryPointBasePath), basePath);
       const namedImport = entryPointBasePath !== basePath ?
           importManager.generateNamedImport(relativePath, e.identifier) :
           {symbol: e.identifier, moduleImport: null};

@@ -516,7 +516,13 @@ export function resolveProvidersRequiringFactory(
       }
     }
 
-    if (tokenClass !== null && reflector.isClass(tokenClass.node)) {
+    // TODO(alxhub): there was a bug where `getConstructorParameters` would return `null` for a
+    // class in a .d.ts file, always, even if the class had a constructor. This was fixed for
+    // `getConstructorParameters`, but that fix causes more classes to be recognized here as needing
+    // provider checks, which is a breaking change in g3. Avoid this breakage for now by skipping
+    // classes from .d.ts files here directly, until g3 can be cleaned up.
+    if (tokenClass !== null && !tokenClass.node.getSourceFile().isDeclarationFile &&
+        reflector.isClass(tokenClass.node)) {
       const constructorParameters = reflector.getConstructorParameters(tokenClass.node);
 
       // Note that we only want to capture providers with a non-trivial constructor,

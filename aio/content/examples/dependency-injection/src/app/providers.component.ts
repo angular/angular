@@ -19,9 +19,9 @@ const template = '{{log}}';
 @Component({
   selector: 'provider-1',
   template,
-  // #docregion providers-1, providers-logger
+  // #docregion providers-logger
   providers: [Logger]
-  // #enddocregion providers-1, providers-logger
+  // #enddocregion providers-logger
 })
 export class Provider1Component {
   log: string;
@@ -114,11 +114,9 @@ export class OldLogger {
   selector: 'provider-6a',
   template,
   providers:
-    // #docregion providers-6a
     [ NewLogger,
       // Not aliased! Creates two instances of `NewLogger`
       { provide: OldLogger, useClass: NewLogger}]
-    // #enddocregion providers-6a
 })
 export class Provider6aComponent {
   log: string;
@@ -193,9 +191,7 @@ export class Provider8Component {
   // must be true else this component would have blown up at runtime
   log = 'Hero service injected successfully via heroServiceProvider';
 
-  // #docregion provider-8-ctor
   constructor(heroService: HeroService) { }
-  // #enddocregion provider-8-ctor
 }
 
 /////////////////
@@ -221,9 +217,7 @@ export class Provider9Component implements OnInit {
    constructor(private config: AppConfig){ }
    // #enddocregion provider-9-ctor-interface
    */
-  // #docregion provider-9-ctor
   constructor(@Inject(APP_CONFIG) private config: AppConfig) { }
-  // #enddocregion provider-9-ctor
 
   ngOnInit() {
      this.log = 'APP_CONFIG Application title is ' + this.config.title;
@@ -233,9 +227,7 @@ export class Provider9Component implements OnInit {
 //////////////////////////////////////////
 // Sample providers 1 to 7 illustrate a required logger dependency.
 // Optional logger, can be null
-// #docregion import-optional
 import { Optional } from '@angular/core';
-// #enddocregion import-optional
 
 const someMessage = 'Hello from the injected logger';
 
@@ -246,13 +238,11 @@ const someMessage = 'Hello from the injected logger';
 })
 export class Provider10Component implements OnInit {
   log: string;
-  // #docregion provider-10-ctor
   constructor(@Optional() private logger?: Logger) {
     if (this.logger) {
       this.logger.log(someMessage);
     }
   }
-  // #enddocregion provider-10-ctor
 
   ngOnInit() {
     this.log = this.logger ? this.logger.logs[0] : 'Optional logger was not available';

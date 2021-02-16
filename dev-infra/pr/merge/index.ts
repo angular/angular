@@ -14,7 +14,7 @@ import {GITHUB_TOKEN_GENERATE_URL} from '../../utils/git/github-urls';
 import {GitClient} from '../../utils/git/index';
 
 import {loadAndValidateConfig, MergeConfigWithRemote} from './config';
-import {MergeResult, MergeStatus, PullRequestMergeTask} from './task';
+import {MergeResult, MergeStatus, PullRequestMergeTask, PullRequestMergeTaskFlags} from './task';
 
 /**
  * Merges a given pull request based on labels configured in the given merge configuration.
@@ -30,13 +30,12 @@ import {MergeResult, MergeStatus, PullRequestMergeTask} from './task';
  * @param config Configuration for merging pull requests.
  */
 export async function mergePullRequest(
-    prNumber: number, githubToken: string, projectRoot: string = getRepoBaseDir(),
-    config?: MergeConfigWithRemote) {
+    prNumber: number, githubToken: string, flags: PullRequestMergeTaskFlags) {
   // Set the environment variable to skip all git commit hooks triggered by husky. We are unable to
   // rely on `--no-verify` as some hooks still run, notably the `prepare-commit-msg` hook.
-  process.env['HUSKY_SKIP_HOOKS'] = '1';
+  process.env['HUSKY'] = '0';
 
-  const api = await createPullRequestMergeTask(githubToken, projectRoot, config);
+  const api = await createPullRequestMergeTask(githubToken, flags);
 
   // Perform the merge. Force mode can be activated through a command line flag.
   // Alternatively, if the merge fails with non-fatal failures, the script
@@ -128,13 +127,8 @@ export async function mergePullRequest(
  * and optional explicit configuration. An explicit configuration can be specified
  * when the merge script is used outside of a `ng-dev` configured repository.
  */
-async function createPullRequestMergeTask(
-    githubToken: string, projectRoot: string, explicitConfig?: MergeConfigWithRemote) {
-  if (explicitConfig !== undefined) {
-    const git = new GitClient(githubToken, {github: explicitConfig.remote}, projectRoot);
-    return new PullRequestMergeTask(explicitConfig, git);
-  }
-
+async function createPullRequestMergeTask(githubToken: string, flags: PullRequestMergeTaskFlags) {
+  const projectRoot = getRepoBaseDir();
   const devInfraConfig = getConfig();
   const git = new GitClient(githubToken, devInfraConfig, projectRoot);
   const {config, errors} = await loadAndValidateConfig(devInfraConfig, git.github);
@@ -150,5 +144,5 @@ async function createPullRequestMergeTask(
   config!.remote = devInfraConfig.github;
   // We can cast this to a merge config with remote because we always set the
   // remote above.
-  return new PullRequestMergeTask(config! as MergeConfigWithRemote, git);
+  return new PullRequestMergeTask(config! as MergeConfigWithRemote, git, flags);
 }

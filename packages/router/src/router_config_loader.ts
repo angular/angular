@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
+import {Compiler, InjectFlags, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoader} from '@angular/core';
 import {from, Observable, of} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
@@ -41,8 +41,13 @@ export class RouterConfigLoader {
 
       const module = factory.create(parentInjector);
 
+      // When loading a module that doesn't provide `RouterModule.forChild()` preloader will get
+      // stuck in an infinite loop. The child module's Injector will look to its parent `Injector`
+      // when it doesn't find any ROUTES so it will return routes for it's parent module instead.
       return new LoadedRouterConfig(
-          flatten(module.injector.get(ROUTES)).map(standardizeConfig), module);
+          flatten(module.injector.get(ROUTES, undefined, InjectFlags.Self | InjectFlags.Optional))
+              .map(standardizeConfig),
+          module);
     }));
   }
 

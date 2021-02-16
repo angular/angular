@@ -303,7 +303,7 @@ For the full list, see the [Zone Module document](https://github.com/angular/ang
 Therefore in those asynchronous APIs, you don't need to trigger change detection manually.
 
 There are still some third party APIs that Zone does not handle.
-In those cases, the `NgZone` service provides a [`run()`](api/core/NgZone#run) method that allows you to execute a function inside the angular zone.
+In those cases, the `NgZone` service provides a [`run()`](api/core/NgZone#run) method that allows you to execute a function inside the Angular zone.
 This function, and all asynchronous operations in that function, trigger change detection automatically at the correct time.
 
 ```typescript
@@ -311,7 +311,7 @@ export class AppComponent implements OnInit {
   constructor(private ngZone: NgZone) {}
   ngOnInit() {
     // New async API is not handled by Zone, so you need to
-    // use ngZone.run() to make the asynchronous operation in the angular zone
+    // use ngZone.run() to make the asynchronous operation in the Angular zone
     // and trigger change detection automatically.
     this.ngZone.run(() => {
       someNewAsyncAPI(() => {
@@ -322,7 +322,7 @@ export class AppComponent implements OnInit {
 }
 ```
 
-By default, all asynchronous operations are inside the angular zone, which triggers change detection automatically.
+By default, all asynchronous operations are inside the Angular zone, which triggers change detection automatically.
 Another common case is when you don't want to trigger change detection.
 In that situation, you can use another `NgZone` method: [`runOutsideAngular()`](api/core/NgZone#runoutsideangular).
 
@@ -360,7 +360,7 @@ Before importing the  `zone.js` package, you can set the following configuration
 - You can disable some asynchronous API monkey patching for better performance.
 For example, you can disable the `requestAnimationFrame()` monkey patch, so the callback of `requestAnimationFrame()` will not trigger change detection.
 This is useful if, in your application, the callback of the `requestAnimationFrame()` will not update any data.
-- You can specify that certain DOM events do not run inside the angular zone; for example, to prevent a `mousemove` or `scroll` event to trigger change detection.
+- You can specify that certain DOM events do not run inside the Angular zone; for example, to prevent a `mousemove` or `scroll` event to trigger change detection.
 
 There are several other settings you can change.
 To make these changes, you need to create a `zone-flags.ts` file, such as the following.

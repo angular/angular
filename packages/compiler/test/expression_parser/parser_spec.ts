@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ASTWithSource, BindingPipe, Interpolation, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
+import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {IvyParser, Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -106,6 +106,7 @@ describe('parser', () => {
         checkAction('[]');
         checkAction('[].length');
         checkAction('[1, 2].length');
+        checkAction('[1, 2,]', '[1, 2]');
       });
 
       it('should parse map', () => {
@@ -313,6 +314,13 @@ describe('parser', () => {
     it('should report when encountering interpolation', () => {
       expectActionError('{{a()}}', 'Got interpolation ({{}}) where expression was expected');
     });
+
+    it('should not report interpolation inside a string', () => {
+      expect(parseAction(`"{{a()}}"`).errors).toEqual([]);
+      expect(parseAction(`'{{a()}}'`).errors).toEqual([]);
+      expect(parseAction(`"{{a('\\"')}}"`).errors).toEqual([]);
+      expect(parseAction(`'{{a("\\'")}}'`).errors).toEqual([]);
+    });
   });
 
   describe('parse spans', () => {
@@ -362,6 +370,39 @@ describe('parser', () => {
       const ast = parseAction('a.b = c');
       expect(unparseWithSpan(ast)).toContain(['a.b = c', 'a.b = c']);
       expect(unparseWithSpan(ast)).toContain(['a.b = c', '[nameSpan] b']);
+    });
+
+    it('should include parenthesis in spans', () => {
+      // When a LHS expression is parenthesized, the parenthesis on the left used to be
+      // excluded from the span. This test verifies that the parenthesis are properly included
+      // in the span for both LHS and RHS expressions.
+      // https://github.com/angular/angular/issues/40721
+      expectSpan('(foo) && (bar)');
+      expectSpan('(foo) || (bar)');
+      expectSpan('(foo) == (bar)');
+      expectSpan('(foo) === (bar)');
+      expectSpan('(foo) != (bar)');
+      expectSpan('(foo) !== (bar)');
+      expectSpan('(foo) > (bar)');
+      expectSpan('(foo) >= (bar)');
+      expectSpan('(foo) < (bar)');
+      expectSpan('(foo) <= (bar)');
+      expectSpan('(foo) + (bar)');
+      expectSpan('(foo) - (bar)');
+      expectSpan('(foo) * (bar)');
+      expectSpan('(foo) / (bar)');
+      expectSpan('(foo) % (bar)');
+      expectSpan('(foo) | pipe');
+      expectSpan('(foo)()');
+      expectSpan('(foo).bar');
+      expectSpan('(foo)?.bar');
+      expectSpan('(foo).bar = (baz)');
+      expectSpan('(foo | pipe) == false');
+      expectSpan('(((foo) && bar) || baz) === true');
+
+      function expectSpan(input: string) {
+        expect(unparseWithSpan(parseBinding(input))).toContain([jasmine.any(String), input]);
+      }
     });
   });
 
@@ -439,6 +480,17 @@ describe('parser', () => {
             expectBindingError(input, err);
           });
         }
+
+        it('should parse an incomplete pipe with a source span that includes trailing whitespace',
+           () => {
+             const bindingText = 'foo | ';
+             const binding = parseBinding(bindingText).ast as BindingPipe;
+
+             // The sourceSpan should include all characters of the input.
+             expect(rawSpan(binding.sourceSpan)).toEqual([0, bindingText.length]);
+             // The nameSpan should be positioned at the end of the input.
+             expect(rawSpan(binding.nameSpan)).toEqual([bindingText.length, bindingText.length]);
+           });
       });
 
       it('should only allow identifier or keyword as formatter names', () => {
@@ -483,6 +535,13 @@ describe('parser', () => {
 
     it('should report when encountering interpolation', () => {
       expectBindingError('{{a.b}}', 'Got interpolation ({{}}) where expression was expected');
+    });
+
+    it('should not report interpolation inside a string', () => {
+      expect(parseBinding(`"{{exp}}"`).errors).toEqual([]);
+      expect(parseBinding(`'{{exp}}'`).errors).toEqual([]);
+      expect(parseBinding(`'{{\\"}}'`).errors).toEqual([]);
+      expect(parseBinding(`'{{\\'}}'`).errors).toEqual([]);
     });
 
     it('should parse conditional expression', () => {
@@ -779,6 +838,14 @@ describe('parser', () => {
         ]);
       });
 
+      it('should report unexpected token when encountering interpolation', () => {
+        const attr = '*ngIf="name && {{name}}"';
+
+        expectParseTemplateBindingsError(
+            attr,
+            'Parser Error: Unexpected token {, expected identifier, keyword, or string at column 10 in [name && {{name}}] in foo.html');
+      });
+
       it('should map variable declaration via "as"', () => {
         const attr =
             '*ngFor="let item; of items | slice:0:1 as collection, trackBy: func; index as i"';
@@ -829,6 +896,37 @@ describe('parser', () => {
       expect(ast.expressions[0].name).toEqual('a');
     });
 
+    it('should parse interpolation inside quotes', () => {
+      const ast = parseInterpolation('"{{a}}"')!.ast as Interpolation;
+      expect(ast.strings).toEqual(['"', '"']);
+      expect(ast.expressions.length).toEqual(1);
+      expect(ast.expressions[0].name).toEqual('a');
+    });
+
+    it('should parse interpolation with interpolation characters inside quotes', () => {
+      checkInterpolation('{{"{{a}}"}}', '{{ "{{a}}" }}');
+      checkInterpolation('{{"{{"}}', '{{ "{{" }}');
+      checkInterpolation('{{"}}"}}', '{{ "}}" }}');
+      checkInterpolation('{{"{"}}', '{{ "{" }}');
+      checkInterpolation('{{"}"}}', '{{ "}" }}');
+    });
+
+    it('should parse interpolation with escaped quotes', () => {
+      checkInterpolation(`{{'It\\'s just Angular'}}`, `{{ "It's just Angular" }}`);
+      checkInterpolation(`{{'It\\'s {{ just Angular'}}`, `{{ "It's {{ just Angular" }}`);
+      checkInterpolation(`{{'It\\'s }} just Angular'}}`, `{{ "It's }} just Angular" }}`);
+    });
+
+    it('should parse interpolation with escaped backslashes', () => {
+      checkInterpolation(`{{foo.split('\\\\')}}`, `{{ foo.split("\\") }}`);
+      checkInterpolation(`{{foo.split('\\\\\\\\')}}`, `{{ foo.split("\\\\") }}`);
+      checkInterpolation(`{{foo.split('\\\\\\\\\\\\')}}`, `{{ foo.split("\\\\\\") }}`);
+    });
+
+    it('should not parse interpolation with mismatching quotes', () => {
+      expect(parseInterpolation(`{{ "{{a}}' }}`)).toBeNull();
+    });
+
     it('should parse prefix/suffix with multiple interpolation', () => {
       const originalExp = 'before {{ a }} middle {{ b }} after';
       const ast = parseInterpolation(originalExp)!.ast;
@@ -843,6 +941,12 @@ describe('parser', () => {
       expectError(
           parseInterpolation('foo {{  }}')!,
           'Parser Error: Blank expressions are not allowed in interpolated strings');
+    });
+
+    it('should produce an empty expression ast for empty interpolations', () => {
+      const parsed = parseInterpolation('{{}}')!.ast as Interpolation;
+      expect(parsed.expressions.length).toBe(1);
+      expect(parsed.expressions[0]).toBeAnInstanceOf(EmptyExpr);
     });
 
     it('should parse conditional expression', () => {
@@ -886,6 +990,10 @@ describe('parser', () => {
       it('should retain // in nested, unterminated strings', () => {
         checkInterpolation(`{{ "a\'b\`" //comment}}`, `{{ "a\'b\`" }}`);
       });
+
+      it('should ignore quotes inside a comment', () => {
+        checkInterpolation(`"{{name // " }}"`, `"{{ name }}"`);
+      });
     });
   });
 
@@ -906,6 +1014,13 @@ describe('parser', () => {
       expectError(
           validate(parseSimpleBinding('{{exp}}')),
           'Got interpolation ({{}}) where expression was expected');
+    });
+
+    it('should not report interpolation inside a string', () => {
+      expect(parseSimpleBinding(`"{{exp}}"`).errors).toEqual([]);
+      expect(parseSimpleBinding(`'{{exp}}'`).errors).toEqual([]);
+      expect(parseSimpleBinding(`'{{\\"}}'`).errors).toEqual([]);
+      expect(parseSimpleBinding(`'{{\\'}}'`).errors).toEqual([]);
     });
 
     it('should report when encountering field write', () => {
@@ -1026,17 +1141,25 @@ function parseBinding(text: string, location: any = null, offset: number = 0): A
 }
 
 function parseTemplateBindings(attribute: string, templateUrl = 'foo.html'): TemplateBinding[] {
-  const match = attribute.match(/^\*(.+)="(.*)"$/);
-  expect(match).toBeTruthy(`failed to extract key and value from ${attribute}`);
-  const [_, key, value] = match;
-  const absKeyOffset = 1;  // skip the * prefix
-  const absValueOffset = attribute.indexOf('=') + '="'.length;
-  const parser = createParser();
-  const result =
-      parser.parseTemplateBindings(key, value, templateUrl, absKeyOffset, absValueOffset);
+  const result = _parseTemplateBindings(attribute, templateUrl);
   expect(result.errors).toEqual([]);
   expect(result.warnings).toEqual([]);
   return result.templateBindings;
+}
+
+function expectParseTemplateBindingsError(attribute: string, error: string) {
+  const result = _parseTemplateBindings(attribute, 'foo.html');
+  expect(result.errors[0].message).toEqual(error);
+}
+
+function _parseTemplateBindings(attribute: string, templateUrl: string) {
+  const match = attribute.match(/^\*(.+)="(.*)"$/);
+  expect(match).toBeTruthy(`failed to extract key and value from ${attribute}`);
+  const [_, key, value] = match!;
+  const absKeyOffset = 1;  // skip the * prefix
+  const absValueOffset = attribute.indexOf('=') + '="'.length;
+  const parser = createParser();
+  return parser.parseTemplateBindings(key, value, templateUrl, absKeyOffset, absValueOffset);
 }
 
 function parseInterpolation(text: string, location: any = null, offset: number = 0): ASTWithSource|
@@ -1058,8 +1181,11 @@ function parseSimpleBindingIvy(
 }
 
 function checkInterpolation(exp: string, expected?: string) {
-  const ast = parseInterpolation(exp)!;
+  const ast = parseInterpolation(exp);
   if (expected == null) expected = exp;
+  if (ast === null) {
+    throw Error(`Failed to parse expression "${exp}"`);
+  }
   expect(unparse(ast)).toEqual(expected);
   validate(ast);
 }
@@ -1103,4 +1229,8 @@ function expectBindingError(text: string, message: string) {
 function checkActionWithError(text: string, expected: string, error: string) {
   checkAction(text, expected);
   expectActionError(text, error);
+}
+
+function rawSpan(span: AbsoluteSourceSpan): [number, number] {
+  return [span.start, span.end];
 }

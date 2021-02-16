@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {FileSystem} from '../../../src/ngtsc/file_system';
-import {compileTest} from '../test_helpers/compile_test';
+import {CompileResult, compileTest} from '../test_helpers/compile_test';
 import {ComplianceTest} from '../test_helpers/get_compliance_tests';
 import {runTests} from '../test_helpers/test_runner';
 
@@ -18,6 +18,6 @@ runTests('full compile', compileTests);
  * @param fs The mock file-system where the input files can be found.
  * @param test The compliance test whose input files should be compiled.
  */
-function compileTests(fs: FileSystem, test: ComplianceTest): void {
-  compileTest(fs, test.inputFiles, test.compilerOptions, test.angularCompilerOptions);
+function compileTests(fs: FileSystem, test: ComplianceTest): CompileResult {
+  return compileTest(fs, test.inputFiles, test.compilerOptions, test.angularCompilerOptions);
 }

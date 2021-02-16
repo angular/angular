@@ -7,6 +7,7 @@
  */
 
 import * as tss from 'typescript/lib/tsserverlibrary';
+import {NgLanguageService} from '../api';
 
 import {createLanguageService} from './language_service';
 import {TypeScriptServiceHost} from './typescript_host';
@@ -29,11 +30,19 @@ export function getExternalFiles(project: tss.server.Project): string[] {
     return [];
   }
   const ngLsHost = PROJECT_MAP.get(project);
-  ngLsHost?.getAnalyzedModules();
-  return ngLsHost?.getExternalTemplates() || [];
+  if (ngLsHost === undefined) {
+    return [];
+  }
+  ngLsHost.getAnalyzedModules();
+  return ngLsHost.getExternalTemplates().filter(fileName => {
+    // TODO(kyliau): Remove this when the following PR lands on the version of
+    // TypeScript used in this repo.
+    // https://github.com/microsoft/TypeScript/pull/41737
+    return project.fileExists(fileName);
+  });
 }
 
-export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
+export function create(info: tss.server.PluginCreateInfo): NgLanguageService {
   const {languageService: tsLS, languageServiceHost: tsLSHost, config, project} = info;
   // This plugin could operate under two different modes:
   // 1. TS + Angular
@@ -115,6 +124,28 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
     return undefined;
   }
 
+  function getReferencesAtPosition(fileName: string, position: number) {
+    // Not implemented in VE Language Service
+    return undefined;
+  }
+
+  function findRenameLocations(
+      fileName: string, position: number, findInStrings: boolean, findInComments: boolean,
+      providePrefixAndSuffixTextForRename?: boolean): readonly ts.RenameLocation[]|undefined {
+    // not implemented in VE Language Service
+    return undefined;
+  }
+
+  function getTcb(fileName: string, position: number) {
+    // Not implemented in VE Language Service
+    return undefined;
+  }
+
+  function getComponentLocationsForTemplate(fileName: string) {
+    // Not implemented in VE Language Service
+    return [];
+  }
+
   return {
     // First clone the original TS language service
     ...tsLS,
@@ -125,5 +156,9 @@ export function create(info: tss.server.PluginCreateInfo): tss.LanguageService {
     getDefinitionAtPosition,
     getDefinitionAndBoundSpan,
     getTypeDefinitionAtPosition,
+    getReferencesAtPosition,
+    findRenameLocations,
+    getTcb,
+    getComponentLocationsForTemplate,
   };
 }

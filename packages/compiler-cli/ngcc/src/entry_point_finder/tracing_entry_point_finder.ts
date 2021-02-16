@@ -5,9 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
-
 import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 import {DependencyResolver, SortedEntryPointsInfo} from '../dependencies/dependency_resolver';
 import {NgccConfiguration} from '../packages/configuration';
@@ -36,9 +35,9 @@ export abstract class TracingEntryPointFinder implements EntryPointFinder {
   private basePaths: AbsoluteFsPath[]|null = null;
 
   constructor(
-      protected fs: FileSystem, protected config: NgccConfiguration, protected logger: Logger,
-      protected resolver: DependencyResolver, protected basePath: AbsoluteFsPath,
-      protected pathMappings: PathMappings|undefined) {}
+      protected fs: ReadonlyFileSystem, protected config: NgccConfiguration,
+      protected logger: Logger, protected resolver: DependencyResolver,
+      protected basePath: AbsoluteFsPath, protected pathMappings: PathMappings|undefined) {}
 
   /**
    * Search for Angular package entry-points.

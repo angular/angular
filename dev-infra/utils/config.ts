@@ -100,7 +100,7 @@ function validateCommonConfig(config: Partial<NgDevConfig>) {
  * configuration file cannot be read.
  */
 function readConfigFile(configPath: string, returnEmptyObjectOnError = false): object {
-  // If the the `.ts` extension has not been set up already, and a TypeScript based
+  // If the `.ts` extension has not been set up already, and a TypeScript based
   // version of the given configuration seems to exist, set up `ts-node` if available.
   if (require.extensions['.ts'] === undefined && existsSync(`${configPath}.ts`) &&
       isTsNodeAvailable()) {

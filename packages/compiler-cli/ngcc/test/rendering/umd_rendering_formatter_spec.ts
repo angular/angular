@@ -34,7 +34,7 @@ function setup(file: TestFile) {
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
   const switchMarkerAnalyses =
       new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath).analyzeProgram(src.program);
-  const renderer = new UmdRenderingFormatter(host, false);
+  const renderer = new UmdRenderingFormatter(fs, host, false);
   const importManager = new ImportManager(new NoopImportRewriter(), 'i');
   return {
     decorationAnalyses,
@@ -200,8 +200,8 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
         renderer.addImports(
             output,
             [
-              {specifier: '@angular/core', qualifier: 'i0'},
-              {specifier: '@angular/common', qualifier: 'i1'}
+              {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
+              {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
             ],
             file);
         expect(output.toString())
@@ -217,8 +217,8 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
         renderer.addImports(
             output,
             [
-              {specifier: '@angular/core', qualifier: 'i0'},
-              {specifier: '@angular/common', qualifier: 'i1'}
+              {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
+              {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
             ],
             file);
         expect(output.toString())
@@ -233,8 +233,8 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
         renderer.addImports(
             output,
             [
-              {specifier: '@angular/core', qualifier: 'i0'},
-              {specifier: '@angular/common', qualifier: 'i1'}
+              {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
+              {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
             ],
             file);
         expect(output.toString())
@@ -249,10 +249,12 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
         renderer.addImports(
             output,
             [
-              {specifier: '@ngrx/store', qualifier: 'i0'},
-              {specifier: '@angular/platform-browser-dynamic', qualifier: 'i1'},
-              {specifier: '@angular/common/testing', qualifier: 'i2'},
-              {specifier: '@angular-foo/package', qualifier: 'i3'}
+              {specifier: '@ngrx/store', qualifier: ts.createIdentifier('i0')}, {
+                specifier: '@angular/platform-browser-dynamic',
+                qualifier: ts.createIdentifier('i1')
+              },
+              {specifier: '@angular/common/testing', qualifier: ts.createIdentifier('i2')},
+              {specifier: '@angular-foo/package', qualifier: ts.createIdentifier('i3')}
             ],
             file);
         expect(output.toString())
@@ -270,8 +272,8 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
            renderer.addImports(
                output,
                [
-                 {specifier: '@angular/core', qualifier: 'i0'},
-                 {specifier: '@angular/common', qualifier: 'i1'}
+                 {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
+                 {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
                ],
                file);
            expect(output.toString())
@@ -287,8 +289,8 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
            renderer.addImports(
                output,
                [
-                 {specifier: '@angular/core', qualifier: 'i0'},
-                 {specifier: '@angular/common', qualifier: 'i1'}
+                 {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
+                 {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
                ],
                file);
            expect(output.toString())
@@ -315,8 +317,8 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
         renderer.addImports(
             output,
             [
-              {specifier: '@angular/core', qualifier: 'i0'},
-              {specifier: '@angular/common', qualifier: 'i1'}
+              {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
+              {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
             ],
             file);
         const outputSrc = output.toString();
@@ -361,8 +363,8 @@ typeof define === 'function' && define.amd ? define('file', ['exports','/tslib',
         renderer.addImports(
             output,
             [
-              {specifier: '@angular/core', qualifier: 'i0'},
-              {specifier: '@angular/common', qualifier: 'i1'}
+              {specifier: '@angular/core', qualifier: ts.createIdentifier('i0')},
+              {specifier: '@angular/common', qualifier: ts.createIdentifier('i1')}
             ],
             file);
         const outputSrc = output.toString();

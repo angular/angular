@@ -12,7 +12,7 @@ import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 import {FormatOptions} from '../../../src/extract/translation_files/format_options';
 import {Xliff2TranslationSerializer} from '../../../src/extract/translation_files/xliff2_translation_serializer';
 
-import {mockMessage} from './mock_message';
+import {location, mockMessage} from './mock_message';
 import {toAttributes} from './utils';
 
 runInEachFileSystem(() => {
@@ -88,35 +88,9 @@ runInEachFileSystem(() => {
               `<?xml version="1.0" encoding="UTF-8" ?>`,
               `<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="xx">`,
               `  <file id="ngi18n" original="ng.template"${toAttributes(options)}>`,
-              `    <unit id="${useLegacyIds ? '615790887472569365' : '12345'}">`,
-              `      <notes>`,
-              `        <note category="location">file.ts:6</note>`,
-              `        <note category="meaning">some meaning</note>`,
-              `      </notes>`,
-              `      <segment>`,
-              `        <source>a<ph id="0" equiv="PH"/>b<ph id="1" equiv="PH_1"/>c</source>`,
-              `      </segment>`,
-              `    </unit>`,
               `    <unit id="someId">`,
               `      <segment>`,
               `        <source>a<ph id="0" equiv="PH" disp="placeholder + 1"/>b<ph id="1" equiv="PH_1"/>c</source>`,
-              `      </segment>`,
-              `    </unit>`,
-              `    <unit id="67890">`,
-              `      <notes>`,
-              `        <note category="location">file.ts:3,4</note>`,
-              `        <note category="description">some description</note>`,
-              `      </notes>`,
-              `      <segment>`,
-              `        <source>a<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"></pc>c</source>`,
-              `      </segment>`,
-              `    </unit>`,
-              `    <unit id="location-only">`,
-              `      <notes>`,
-              `        <note category="location">file.ts:3,4</note>`,
-              `      </notes>`,
-              `      <segment>`,
-              `        <source>a<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"></pc>c</source>`,
               `      </segment>`,
               `    </unit>`,
               `    <unit id="13579">`,
@@ -152,6 +126,32 @@ runInEachFileSystem(() => {
               `    <unit id="100001">`,
               `      <segment>`,
               `        <source>{VAR_PLURAL, plural, one {<pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt">something bold</pc>} other {pre <pc id="1" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other">middle</pc> post}}</source>`,
+              `      </segment>`,
+              `    </unit>`,
+              `    <unit id="67890">`,
+              `      <notes>`,
+              `        <note category="location">file.ts:3,4</note>`,
+              `        <note category="description">some description</note>`,
+              `      </notes>`,
+              `      <segment>`,
+              `        <source>a<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"></pc>c</source>`,
+              `      </segment>`,
+              `    </unit>`,
+              `    <unit id="location-only">`,
+              `      <notes>`,
+              `        <note category="location">file.ts:3,4</note>`,
+              `      </notes>`,
+              `      <segment>`,
+              `        <source>a<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other"></pc>c</source>`,
+              `      </segment>`,
+              `    </unit>`,
+              `    <unit id="${useLegacyIds ? '615790887472569365' : '12345'}">`,
+              `      <notes>`,
+              `        <note category="location">file.ts:6</note>`,
+              `        <note category="meaning">some meaning</note>`,
+              `      </notes>`,
+              `      <segment>`,
+              `        <source>a<ph id="0" equiv="PH"/>b<ph id="1" equiv="PH_1"/>c</source>`,
               `      </segment>`,
               `    </unit>`,
               `  </file>`,
@@ -302,6 +302,57 @@ runInEachFileSystem(() => {
             );
           });
         });
+      });
+    });
+
+    describe('renderFile()', () => {
+      it('should consistently order serialized messages by location', () => {
+        const messages: ɵParsedMessage[] = [
+          mockMessage('1', ['message-1'], [], {location: location('/root/c-1.ts', 5, 10, 5, 12)}),
+          mockMessage('2', ['message-1'], [], {location: location('/root/c-2.ts', 5, 10, 5, 12)}),
+          mockMessage('1', ['message-1'], [], {location: location('/root/b-1.ts', 8, 0, 10, 12)}),
+          mockMessage('2', ['message-1'], [], {location: location('/root/b-2.ts', 8, 0, 10, 12)}),
+          mockMessage('1', ['message-1'], [], {location: location('/root/a-1.ts', 5, 10, 5, 12)}),
+          mockMessage('2', ['message-1'], [], {location: location('/root/a-2.ts', 5, 10, 5, 12)}),
+          mockMessage('1', ['message-1'], [], {location: location('/root/b-1.ts', 5, 10, 5, 12)}),
+          mockMessage('2', ['message-1'], [], {location: location('/root/b-2.ts', 5, 10, 5, 12)}),
+          mockMessage('1', ['message-1'], [], {location: location('/root/b-1.ts', 5, 20, 5, 12)}),
+          mockMessage('2', ['message-1'], [], {location: location('/root/b-2.ts', 5, 20, 5, 12)}),
+        ];
+        const serializer = new Xliff2TranslationSerializer('xx', absoluteFrom('/root'), false, {});
+        const output = serializer.serialize(messages);
+        expect(output.split('\n')).toEqual([
+          '<?xml version="1.0" encoding="UTF-8" ?>',
+          '<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="xx">',
+          '  <file id="ngi18n" original="ng.template">',
+          '    <unit id="1">',
+          '      <notes>',
+          '        <note category="location">a-1.ts:6</note>',
+          '        <note category="location">b-1.ts:6</note>',
+          '        <note category="location">b-1.ts:6</note>',
+          '        <note category="location">b-1.ts:9,11</note>',
+          '        <note category="location">c-1.ts:6</note>',
+          '      </notes>',
+          '      <segment>',
+          '        <source>message-1</source>',
+          '      </segment>',
+          '    </unit>',
+          '    <unit id="2">',
+          '      <notes>',
+          '        <note category="location">a-2.ts:6</note>',
+          '        <note category="location">b-2.ts:6</note>',
+          '        <note category="location">b-2.ts:6</note>',
+          '        <note category="location">b-2.ts:9,11</note>',
+          '        <note category="location">c-2.ts:6</note>',
+          '      </notes>',
+          '      <segment>',
+          '        <source>message-1</source>',
+          '      </segment>',
+          '    </unit>',
+          '  </file>',
+          '</xliff>',
+          '',
+        ]);
       });
     });
   });

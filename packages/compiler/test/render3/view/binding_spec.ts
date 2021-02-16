@@ -38,6 +38,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
     inputs: new IdentityInputMapping(['ngForOf']),
     outputs: new IdentityInputMapping([]),
     isComponent: false,
+    isStructural: true,
     selector: '[ngFor][ngForOf]',
   });
   matcher.addSelectables(CssSelector.parse('[dir]'), {
@@ -46,6 +47,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
     inputs: new IdentityInputMapping([]),
     outputs: new IdentityInputMapping([]),
     isComponent: false,
+    isStructural: false,
     selector: '[dir]'
   });
   matcher.addSelectables(CssSelector.parse('[hasOutput]'), {
@@ -54,6 +56,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
     inputs: new IdentityInputMapping([]),
     outputs: new IdentityInputMapping(['outputBinding']),
     isComponent: false,
+    isStructural: false,
     selector: '[hasOutput]'
   });
   matcher.addSelectables(CssSelector.parse('[hasInput]'), {
@@ -62,6 +65,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
     inputs: new IdentityInputMapping(['inputBinding']),
     outputs: new IdentityInputMapping([]),
     isComponent: false,
+    isStructural: false,
     selector: '[hasInput]'
   });
   return matcher;
@@ -107,6 +111,7 @@ describe('t2 binding', () => {
       inputs: new IdentityInputMapping([]),
       outputs: new IdentityInputMapping([]),
       isComponent: false,
+      isStructural: false,
       selector: 'text[dir]'
     });
     const binder = new R3TargetBinder(matcher);

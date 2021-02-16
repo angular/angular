@@ -83,7 +83,7 @@ export async function execTimed(description: string, func: () => Promise<void>) 
 }
 
 export async function nextTick(delay = 1) {
-  return new Promise((res, rej) => {
+  return new Promise<void>((res, rej) => {
     setTimeout(() => {
       res();
     }, delay);

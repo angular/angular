@@ -35,7 +35,7 @@ function buildZoneJsPackage(destPath) {
   console.info(`${scriptPath}:`);
   console.info('  Building zone.js npm package');
   console.info('##############################');
-  exec(`${bazelCmd} build //packages/zone.js:npm_package`);
+  exec(`${bazelCmd} run //packages/zone.js:npm_package.pack`);
 
   // Create the output directory.
   const absDestPath = resolve(baseDir, destPath);
@@ -45,10 +45,6 @@ function buildZoneJsPackage(destPath) {
   // scripts/tests.
   const buildOutputDir = `${bazelBin}/packages/zone.js/npm_package`;
   const distTargetDir = `${absDestPath}/zone.js`;
-
-  // Also create an archive so we can test the package itself.
-  // Currently, the `npm_package.pack` rule does not work on Windows, so run `npm pack` directly.
-  exec(`npm pack ${buildOutputDir}`, false, {cwd: baseDir});
 
   console.info(`# Copy npm_package artifacts to ${distTargetDir}`);
   rm('-rf', distTargetDir);

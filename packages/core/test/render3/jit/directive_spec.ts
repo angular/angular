@@ -51,13 +51,15 @@ describe('jit directive helper functions', () => {
         isViewQuery: false,
         read: undefined,
         static: false,
+        emitDistinctChangesOnly: false,
       })).toEqual({
         propertyName: 'propName',
         predicate: ['localRef'],
         descendants: false,
         first: false,
         read: null,
-        static: false
+        static: false,
+        emitDistinctChangesOnly: false,
       });
     });
 
@@ -69,13 +71,15 @@ describe('jit directive helper functions', () => {
         isViewQuery: true,
         read: undefined,
         static: false,
+        emitDistinctChangesOnly: false,
       })).toEqual({
         propertyName: 'propName',
         predicate: ['foo', 'bar', 'baz'],
         descendants: true,
         first: true,
         read: null,
-        static: false
+        static: false,
+        emitDistinctChangesOnly: false,
       });
     });
 
@@ -88,7 +92,8 @@ describe('jit directive helper functions', () => {
         first: true,
         isViewQuery: true,
         read: Directive,
-        static: false
+        static: false,
+        emitDistinctChangesOnly: false,
       });
 
       expect(converted.predicate).toEqual(Directive);

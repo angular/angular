@@ -38,7 +38,7 @@ When you generate a new library, the workspace configuration file, `angular.json
     "prefix": "lib",
     "architect": {
       "build": {
-        "builder": "@angular-devkit/build-ng-packagr:build",
+        "builder": "@angular-devkit/build-angular:ng-packagr",
         ...
 </code-example>
 

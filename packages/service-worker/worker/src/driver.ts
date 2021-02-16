@@ -25,7 +25,8 @@ type ClientAssignments = {
   [id: string]: ManifestHash
 };
 
-const IDLE_THRESHOLD = 5000;
+const IDLE_DELAY = 5000;
+const MAX_IDLE_DELAY = 30000;
 
 const SUPPORTED_CONFIG_VERSION = 1;
 
@@ -167,7 +168,7 @@ export class Driver implements Debuggable, UpdateSource {
     this.debugger = new DebugHandler(this, this.adapter);
 
     // The IdleScheduler will execute idle tasks after a given delay.
-    this.idle = new IdleScheduler(this.adapter, IDLE_THRESHOLD, this.debugger);
+    this.idle = new IdleScheduler(this.adapter, IDLE_DELAY, MAX_IDLE_DELAY, this.debugger);
   }
 
   /**
@@ -423,48 +424,43 @@ export class Driver implements Debuggable, UpdateSource {
     // Decide which version of the app to use to serve this request. This is asynchronous as in
     // some cases, a record will need to be written to disk about the assignment that is made.
     const appVersion = await this.assignVersion(event);
-
-    // Bail out
-    if (appVersion === null) {
-      event.waitUntil(this.idle.trigger());
-      return this.safeFetch(event.request);
-    }
-
     let res: Response|null = null;
-    try {
-      // Handle the request. First try the AppVersion. If that doesn't work, fall back on the
-      // network.
-      res = await appVersion.handleFetch(event.request, event);
-    } catch (err) {
-      if (err.isUnrecoverableState) {
-        await this.notifyClientsAboutUnrecoverableState(appVersion, err.message);
-      }
-      if (err.isCritical) {
-        // Something went wrong with the activation of this version.
-        await this.versionFailed(appVersion, err);
 
-        event.waitUntil(this.idle.trigger());
+    try {
+      if (appVersion !== null) {
+        try {
+          // Handle the request. First try the AppVersion. If that doesn't work, fall back on the
+          // network.
+          res = await appVersion.handleFetch(event.request, event);
+        } catch (err) {
+          if (err.isUnrecoverableState) {
+            await this.notifyClientsAboutUnrecoverableState(appVersion, err.message);
+          }
+          if (err.isCritical) {
+            // Something went wrong with the activation of this version.
+            await this.versionFailed(appVersion, err);
+            return this.safeFetch(event.request);
+          }
+          throw err;
+        }
+      }
+
+      // The response will be `null` only if no `AppVersion` can be assigned to the request or if
+      // the assigned `AppVersion`'s manifest doesn't specify what to do about the request.
+      // In that case, just fall back on the network.
+      if (res === null) {
         return this.safeFetch(event.request);
       }
-      throw err;
-    }
 
-
-    // The AppVersion will only return null if the manifest doesn't specify what to do about this
-    // request. In that case, just fall back on the network.
-    if (res === null) {
+      // The `AppVersion` returned a usable response, so return it.
+      return res;
+    } finally {
+      // Trigger the idle scheduling system. The Promise returned by `trigger()` will resolve after
+      // a specific amount of time has passed. If `trigger()` hasn't been called again by then (e.g.
+      // on a subsequent request), the idle task queue will be drained and the `Promise` won't
+      // be resolved until that operation is complete as well.
       event.waitUntil(this.idle.trigger());
-      return this.safeFetch(event.request);
     }
-
-    // Trigger the idle scheduling system. The Promise returned by trigger() will resolve after
-    // a specific amount of time has passed. If trigger() hasn't been called again by then (e.g.
-    // on a subsequent request), the idle task queue will be drained and the Promise won't resolve
-    // until that operation is complete as well.
-    event.waitUntil(this.idle.trigger());
-
-    // The AppVersion returned a usable response, so return it.
-    return res;
   }
 
   /**
@@ -722,18 +718,11 @@ export class Driver implements Debuggable, UpdateSource {
   }
 
   private async deleteAllCaches(): Promise<void> {
-    await (await this.scope.caches.keys())
-        // The Chrome debugger is not able to render the syntax properly when the
-        // code contains backticks. This is a known issue in Chrome and they have an
-        // open [issue](https://bugs.chromium.org/p/chromium/issues/detail?id=659515) for that.
-        // As a work-around for the time being, we can use \\ ` at the end of the line.
-        .filter(key => key.startsWith(`${this.adapter.cacheNamePrefix}:`))  // `
-        .reduce(async (previous, key) => {
-          await Promise.all([
-            previous,
-            this.scope.caches.delete(key),
-          ]);
-        }, Promise.resolve());
+    const cacheNames = await this.scope.caches.keys();
+    const ownCacheNames =
+        cacheNames.filter(name => name.startsWith(`${this.adapter.cacheNamePrefix}:`));
+
+    await Promise.all(ownCacheNames.map(name => this.scope.caches.delete(name)));
   }
 
   /**
@@ -1026,10 +1015,10 @@ export class Driver implements Debuggable, UpdateSource {
                                 .filter(([clientId, hash]) => hash === brokenHash)
                                 .map(([clientId]) => clientId);
 
-    affectedClients.forEach(async clientId => {
+    await Promise.all(affectedClients.map(async clientId => {
       const client = await this.scope.clients.get(clientId);
       client.postMessage({type: 'UNRECOVERABLE_STATE', reason});
-    });
+    }));
   }
 
   async notifyClientsAboutUpdate(next: AppVersion): Promise<void> {
@@ -1037,9 +1026,7 @@ export class Driver implements Debuggable, UpdateSource {
 
     const clients = await this.scope.clients.matchAll();
 
-    await clients.reduce(async (previous, client) => {
-      await previous;
-
+    await Promise.all(clients.map(async client => {
       // Firstly, determine which version this client is on.
       const version = this.clientVersionMap.get(client.id);
       if (version === undefined) {
@@ -1062,7 +1049,7 @@ export class Driver implements Debuggable, UpdateSource {
       };
 
       client.postMessage(notice);
-    }, Promise.resolve());
+    }));
   }
 
   async broadcast(msg: Object): Promise<void> {

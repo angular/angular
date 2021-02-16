@@ -5,13 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedTranslation} from '@angular/localize';
 import {NodePath, PluginObj} from '@babel/core';
 import {CallExpression} from '@babel/types';
 
 import {Diagnostics} from '../../diagnostics';
-
 import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLocalize, translate, TranslatePluginOptions, unwrapMessagePartsFromLocalizeCall, unwrapSubstitutionsFromLocalizeCall} from '../../source_file_utils';
 
 /**
@@ -23,7 +22,7 @@ import {buildCodeFrameError, buildLocalizeReplacement, isBabelParseError, isLoca
 export function makeEs5TranslatePlugin(
     diagnostics: Diagnostics, translations: Record<string, ɵParsedTranslation>,
     {missingTranslation = 'error', localizeName = '$localize'}: TranslatePluginOptions = {},
-    fs: FileSystem = getFileSystem()): PluginObj {
+    fs: PathManipulation = getFileSystem()): PluginObj {
   return {
     visitor: {
       CallExpression(callPath: NodePath<CallExpression>) {

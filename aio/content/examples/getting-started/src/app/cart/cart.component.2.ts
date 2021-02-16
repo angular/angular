@@ -9,10 +9,10 @@ import { CartService } from '../cart.service';
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css']
 })
-// #docregion inject-cart, items, submit
+// #docregion inject-cart, items
 export class CartComponent {
 // #enddocregion inject-cart
-  items;
+  items = this.cartService.getItems();
 // #docregion inject-cart
 
   constructor(

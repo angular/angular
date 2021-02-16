@@ -8,6 +8,8 @@
 
 import {NgModuleRef} from '@angular/core';
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ActivatedRouteSnapshot} from '@angular/router';
+import {TreeNode} from '@angular/router/src/utils/tree';
 import {Observable, of} from 'rxjs';
 import {delay, tap} from 'rxjs/operators';
 
@@ -504,10 +506,11 @@ describe('applyRedirects', () => {
              [{path: '', loadChildren: 'root'}, {path: '', loadChildren: 'aux', outlet: 'popup'}];
 
          applyRedirects(testModule.injector, <any>loader, serializer, tree(''), config).subscribe();
-         expect(loadCalls).toBe(2);
+         expect(loadCalls).toBe(1);
          tick(100);
          expect(loaded).toEqual(['root']);
-         tick(100);
+         expect(loadCalls).toBe(2);
+         tick(200);
          expect(loaded).toEqual(['root', 'aux']);
        }));
 
@@ -560,9 +563,8 @@ describe('applyRedirects', () => {
          applyRedirects(testModule.injector, <any>loader, serializer, tree('(popup:modal)'), config)
              .subscribe();
          tick(auxDelay);
-         expect(loaded).toEqual(['aux']);
          tick(rootDelay);
-         expect(loaded).toEqual(['aux', 'root']);
+         expect(loaded.sort()).toEqual(['aux', 'root'].sort());
        }));
   });
 
@@ -678,6 +680,108 @@ describe('applyRedirects', () => {
             'a/b', (t: UrlTree) => {
               expectTreeToBe(t, 'a/b');
             });
+      });
+    });
+
+    describe('aux split after empty path parent', () => {
+      it('should work with non-empty auxiliary path', () => {
+        checkRedirect(
+            [{
+              path: '',
+              children: [
+                {path: 'a', component: ComponentA},
+                {path: 'c', component: ComponentC, outlet: 'aux'},
+                {path: 'b', redirectTo: 'c', outlet: 'aux'}
+              ]
+            }],
+            '(aux:b)', (t: UrlTree) => {
+              expectTreeToBe(t, '(aux:c)');
+            });
+      });
+
+      it('should work with empty auxiliary path', () => {
+        checkRedirect(
+            [{
+              path: '',
+              children: [
+                {path: 'a', component: ComponentA},
+                {path: 'c', component: ComponentC, outlet: 'aux'},
+                {path: '', redirectTo: 'c', outlet: 'aux'}
+              ]
+            }],
+            '', (t: UrlTree) => {
+              expectTreeToBe(t, '(aux:c)');
+            });
+      });
+
+      it('should work with empty auxiliary path and matching primary', () => {
+        checkRedirect(
+            [{
+              path: '',
+              children: [
+                {path: 'a', component: ComponentA},
+                {path: 'c', component: ComponentC, outlet: 'aux'},
+                {path: '', redirectTo: 'c', outlet: 'aux'}
+              ]
+            }],
+            'a', (t: UrlTree) => {
+              expect(t.toString()).toEqual('/a(aux:c)');
+            });
+      });
+
+      it('should work with aux outlets adjacent to and children of empty path at once', () => {
+        checkRedirect(
+            [
+              {
+                path: '',
+                component: ComponentA,
+                children: [{path: 'b', outlet: 'b', component: ComponentB}]
+              },
+              {path: 'c', outlet: 'c', component: ComponentC}
+            ],
+            '(b:b//c:c)', (t: UrlTree) => {
+              expect(t.toString()).toEqual('/(b:b//c:c)');
+            });
+      });
+
+
+      it('should work with children outlets within two levels of empty parents', () => {
+        checkRedirect(
+            [{
+              path: '',
+              component: ComponentA,
+              children: [{
+                path: '',
+                component: ComponentB,
+                children: [
+                  {path: 'd', outlet: 'aux', redirectTo: 'c'},
+                  {path: 'c', outlet: 'aux', component: ComponentC}
+                ]
+              }]
+            }],
+            '(aux:d)', (t: UrlTree) => {
+              expect(t.toString()).toEqual('/(aux:c)');
+            });
+      });
+
+      it('does not persist a primary segment beyond the boundary of a named outlet match', () => {
+        const config: Routes = [
+          {
+            path: '',
+            component: ComponentA,
+            outlet: 'aux',
+            children: [{path: 'b', component: ComponentB, redirectTo: '/c'}]
+          },
+          {path: 'c', component: ComponentC}
+        ];
+        applyRedirects(testModule.injector, null!, serializer, tree('/b'), config)
+            .subscribe(
+                (_) => {
+                  throw 'Should not be reached';
+                },
+                e => {
+                  expect(e.message).toEqual(`Cannot match any routes. URL Segment: 'b'`);
+                });
       });
     });
 
@@ -844,7 +948,8 @@ describe('applyRedirects', () => {
             {
               path: '',
               children: [
-                {path: '', component: ComponentA, outlet: 'aux'},
+                {path: '', outlet: 'aux', redirectTo: 'b'},
+                {path: 'b', component: ComponentA, outlet: 'aux'},
                 {path: '', redirectTo: 'b', pathMatch: 'full'},
                 {path: 'b', component: ComponentB},
               ],
@@ -852,12 +957,39 @@ describe('applyRedirects', () => {
           ])
           .subscribe(
               (tree: UrlTree) => {
-                expect(tree.toString()).toEqual('/b');
+                expect(tree.toString()).toEqual('/b(aux:b)');
+                expect(tree.root.children['primary'].toString()).toEqual('b');
+                expect(tree.root.children['aux']).toBeDefined();
+                expect(tree.root.children['aux'].toString()).toEqual('b');
               },
               () => {
                 fail('should not be reached');
               });
     });
+
+    it('should prevent empty named outlets from appearing in leaves, resulting in odd tree url',
+       () => {
+         applyRedirects(
+             testModule.injector, null!, serializer, tree(''),
+             [
+               {
+                 path: '',
+                 children: [
+                   {path: '', component: ComponentA, outlet: 'aux'},
+                   {path: '', redirectTo: 'b', pathMatch: 'full'},
+                   {path: 'b', component: ComponentB},
+                 ],
+               },
+             ])
+             .subscribe(
+                 (tree: UrlTree) => {
+                   expect(tree.toString()).toEqual('/b');
+                 },
+                 () => {
+                   fail('should not be reached');
+                 });
+       });
+
 
     it('should work when entry point is named outlet', () => {
       applyRedirects(

@@ -111,7 +111,7 @@ export class RendererAnimationPlayer implements AnimationPlayer {
   }
 
   getPosition(): number {
-    return 0;
+    return this._renderer.engine.players[+this.id]?.getPosition() ?? 0;
   }
 
   public totalTime = 0;

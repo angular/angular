@@ -219,7 +219,7 @@ describe('LocalModuleScopeRegistry', () => {
       rawDeclarations: null,
     });
 
-    expect(scopeRegistry.getScopeOfModule(ModuleA.node)).toBe('error');
+    expect(scopeRegistry.getScopeOfModule(ModuleA.node)!.compilation.isPoisoned).toBeTrue();
 
     // ModuleA should have associated diagnostics as it exports `Dir` without declaring it.
     expect(scopeRegistry.getDiagnosticsOfModule(ModuleA.node)).not.toBeNull();
@@ -248,6 +248,8 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
     undeclaredInputFields: new Set<string>(),
     isGeneric: false,
     baseClass: null,
+    isPoisoned: false,
+    isStructural: false,
   };
 }
 

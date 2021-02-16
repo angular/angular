@@ -172,6 +172,7 @@ groups:
       request: 0 # Do not request any reviews from the reviewer group
       required: 1 # Require that all PRs have approval from at least one of the users in the group
       author_value: 0 # The author of the PR cannot provide an approval for themself
+      reviewed_for: ignored # All reviews apply to this group whether noted via Reviewed-for or not
     reviewers:
       users:
          - aikidave                # Dave Shevitz
@@ -208,6 +209,7 @@ groups:
          - pkozlowski-opensource   # Pawel Kozlowski
          - Splaktar                # Michael Prentice
          - StephenFluin            # Stephen Fluin
+         - twerske                 # Emma Twersky
 
   # =========================================================
   #  Framework: Animations
@@ -306,11 +308,9 @@ groups:
         contains_any_globs(files.exclude("packages/core/schematics/**"), [
           'packages/core/**',
           'packages/examples/core/**',
-          'packages/common/**',
           'packages/platform-browser/**',
           'packages/examples/platform-browser/**',
           'packages/platform-browser-dynamic/**',
-          'packages/examples/common/**',
           'packages/docs/**',
           'aio/content/guide/accessibility.md',
           'aio/content/examples/accessibility/**',
@@ -436,6 +436,30 @@ groups:
 
 
   # =========================================================
+  #  Framework: Common
+  # =========================================================
+  fw-common:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files.exclude("packages/core/schematics/**"), [
+          'packages/common/**',
+          'packages/examples/common/**',
+          ])
+    reviewers:
+      users:
+        - alxhub
+        - AndrewKushnir
+        - atscott
+        - ~kara # do not request reviews from Kara, but allow her to approve PRs
+        - mhevery
+        - jessicajaniuk
+        # OOO as of 2020-09-28 - pkozlowski-opensource
+
+
+  # =========================================================
   #  Framework: Http
   # =========================================================
   fw-http:
@@ -455,6 +479,7 @@ groups:
       users:
         - alxhub
         - IgorMinar
+        - petebacondarwin
 
 
   # =========================================================
@@ -657,7 +682,7 @@ groups:
       - *can-be-global-approved
       - *can-be-global-docs-approved
       - >
-        contains_any_globs(files.exclude('packages/compiler-cli/**'), [
+        contains_any_globs(files.exclude('packages/compiler-cli/**').exclude('packages/language-service/**'), [
           'packages/**/testing/**',
           'aio/content/guide/testing.md',
           'aio/content/guide/test-debugging.md',
@@ -778,8 +803,8 @@ groups:
           ])
     reviewers:
       users:
-        - ayazhafiz
         - kyliau
+        - atscott
 
 
   # =========================================================
@@ -853,6 +878,25 @@ groups:
 
 
   # =========================================================
+  #  Docs: Contributors
+  # =========================================================
+  docs-contributors:
+    <<: *defaults
+    conditions:
+      - *can-be-global-approved
+      - *can-be-global-docs-approved
+      - >
+        contains_any_globs(files, [
+          'aio/content/marketing/contributors.json',
+          'aio/content/images/bios/**',
+          ])
+    reviewers:
+      users:
+        - mgechev
+        - twerske
+
+
+  # =========================================================
   #  Docs: Gettings Started & Tutorial
   # =========================================================
   docs-getting-started-and-tutorial:
@@ -894,10 +938,9 @@ groups:
       - *can-be-global-approved
       - *can-be-global-docs-approved
       - >
-        contains_any_globs(files, [
+        contains_any_globs(files.exclude("aio/content/marketing/contributors.json"), [
           'aio/content/guide/roadmap.md',
           'aio/content/marketing/**',
-          'aio/content/images/bios/**',
           'aio/content/images/marketing/**',
           'aio/content/file-not-found.md',
           'aio/content/license.md',
@@ -907,6 +950,7 @@ groups:
       users:
         - aikidave
         - IgorMinar
+        - mgechev
         - StephenFluin
 
   # =========================================================
@@ -1123,19 +1167,7 @@ groups:
           '.vscode/**',
           '.yarn/**',
           'dev-infra/**',
-          'docs/BAZEL.md',
-          'docs/CARETAKER.md',
-          'docs/CODING_STANDARDS.md',
-          'docs/COMMITTER.md',
-          'docs/DEBUG.md',
-          'docs/DEBUG_COMPONENTS_REPO_IVY.md',
-          'docs/DEVELOPER.md',
-          'docs/FIXUP_COMMITS.md',
-          'docs/GITHUB_PROCESS.md',
-          'docs/PR_REVIEW.md',
-          'docs/SAVED_REPLIES.md',
-          'docs/TOOLS.md',
-          'docs/TRIAGE_AND_LABELS.md',
+          'docs/*.md',
           'docs/images/**',
           'goldens/*',
           'modules/*',
@@ -1188,6 +1220,7 @@ groups:
           'goldens/public-api/**',
           'CHANGELOG.md',
           'docs/NAMING.md',
+          'aio/content/errors/*.md',
           'aio/content/guide/glossary.md',
           'aio/content/guide/styleguide.md',
           'aio/content/examples/styleguide/**',
@@ -1201,6 +1234,7 @@ groups:
         - atscott
         - jelbourn
         - petebacondarwin
+        - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
       request: 4 # Request reviews from four people
@@ -1229,6 +1263,7 @@ groups:
         - atscott
         - jelbourn
         - petebacondarwin
+        - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
     reviews:
       request: 4 # Request reviews from four people
@@ -1257,6 +1292,7 @@ groups:
         - atscott
         - jelbourn
         - petebacondarwin
+        - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
 
 

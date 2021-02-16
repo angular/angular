@@ -12,7 +12,7 @@ Try this <live-example title="Reactive Forms in Stackblitz">Reactive Forms live-
 
 Before going further into reactive forms, you should have a basic understanding of the following:
 
-* TypeScript programming.
+* [TypeScript](https://www.typescriptlang.org/ "The TypeScript language") programming.
 * Angular app-design fundamentals, as described in [Angular Concepts](guide/architecture "Introduction to Angular concepts.").
 * The form-design concepts that are presented in [Introduction to Forms](guide/forms-overview "Overview of Angular forms.").
 

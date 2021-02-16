@@ -50,7 +50,7 @@ import {Injector, JsonFileReporter, MeasureValues, Options, SampleDescription} f
                  [mv(0, 0, {'a': 3, 'b': 6}), mv(1, 1, {'a': 5, 'b': 9})]);
          const regExp = /somePath\/someId_\d+\.json/;
          expect(loggedFile['filename'].match(regExp) != null).toBe(true);
-         const parsedContent = JSON.parse(loggedFile['content']);
+         const parsedContent = JSON.parse(loggedFile['content']) as {[key: string]: any};
          expect(parsedContent).toEqual({
            'description': {
              'id': 'someId',

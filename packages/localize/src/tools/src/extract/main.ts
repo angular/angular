@@ -6,7 +6,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {setFileSystem, NodeJSFileSystem, AbsoluteFsPath, FileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {setFileSystem, NodeJSFileSystem, AbsoluteFsPath, FileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ConsoleLogger, Logger, LogLevel} from '@angular/compiler-cli/src/ngtsc/logging';
 import {ɵParsedMessage} from '@angular/localize';
 import * as glob from 'glob';
@@ -17,6 +17,7 @@ import {DiagnosticHandlingStrategy} from '../diagnostics';
 import {checkDuplicateMessages} from './duplicates';
 import {MessageExtractor} from './extraction';
 import {TranslationSerializer} from './translation_files/translation_serializer';
+import {ArbTranslationSerializer} from './translation_files/arb_translation_serializer';
 import {SimpleJsonTranslationSerializer} from './translation_files/json_translation_serializer';
 import {Xliff1TranslationSerializer} from './translation_files/xliff1_translation_serializer';
 import {Xliff2TranslationSerializer} from './translation_files/xliff2_translation_serializer';
@@ -213,7 +214,7 @@ export function extractTranslations({
 
 export function getSerializer(
     format: string, sourceLocale: string, rootPath: AbsoluteFsPath, useLegacyIds: boolean,
-    formatOptions: FormatOptions = {}, fs: FileSystem): TranslationSerializer {
+    formatOptions: FormatOptions = {}, fs: PathManipulation): TranslationSerializer {
   switch (format) {
     case 'xlf':
     case 'xlif':
@@ -229,6 +230,8 @@ export function getSerializer(
       return new XmbTranslationSerializer(rootPath, useLegacyIds, fs);
     case 'json':
       return new SimpleJsonTranslationSerializer(sourceLocale);
+    case 'arb':
+      return new ArbTranslationSerializer(sourceLocale, rootPath, fs);
   }
   throw new Error(`No translation serializer can handle the provided format: ${format}`);
 }

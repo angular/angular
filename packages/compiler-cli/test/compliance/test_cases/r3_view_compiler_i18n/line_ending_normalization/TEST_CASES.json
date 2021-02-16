@@ -1,0 +1,185 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should normalize line breaks for non-legacy messages in 'inline templates' where i18nNormalizeLineEndingsInICUs is true",
+      "inputFiles": [
+        "inline_template_non_legacy_normalized.ts"
+      ],
+      "angularCompilerOptions": {
+        "i18nNormalizeLineEndingsInICUs": true,
+        "enableI18nLegacyMessageIdFormat": false
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "inline_template_non_legacy_normalized.js",
+              "expected": "inline_template_non_legacy.js"
+            }
+          ],
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should normalize line breaks for non-legacy messages in 'inline templates' where i18nNormalizeLineEndingsInICUs is false",
+      "inputFiles": [
+        "inline_template_non_legacy_non_normalized.ts"
+      ],
+      "angularCompilerOptions": {
+        "i18nNormalizeLineEndingsInICUs": false,
+        "enableI18nLegacyMessageIdFormat": false
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "inline_template_non_legacy_non_normalized.js",
+              "expected": "inline_template_non_legacy.js"
+            }
+          ],
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should normalize line breaks for non-legacy messages in 'external templates' where i18nNormalizeLineEndingsInICUs is true",
+      "inputFiles": [
+        "external_template_non_legacy_normalized.ts"
+      ],
+      "angularCompilerOptions": {
+        "i18nNormalizeLineEndingsInICUs": true,
+        "enableI18nLegacyMessageIdFormat": false
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "external_template_non_legacy_normalized.js",
+              "expected": "external_template_non_legacy.js"
+            }
+          ],
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should normalize line breaks for non-legacy messages in 'external templates' where i18nNormalizeLineEndingsInICUs is false",
+      "inputFiles": [
+        "external_template_non_legacy_non_normalized.ts"
+      ],
+      "angularCompilerOptions": {
+        "i18nNormalizeLineEndingsInICUs": false,
+        "enableI18nLegacyMessageIdFormat": false
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "external_template_non_legacy_non_normalized.js",
+              "expected": "external_template_non_legacy.js"
+            }
+          ],
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should compute normalized legacy ids for messages in inline templates where i18nNormalizeLineEndingsInICUs is true",
+      "inputFiles": [
+        "inline_template_legacy_normalized.ts"
+      ],
+      "angularCompilerOptions": {
+        "i18nNormalizeLineEndingsInICUs": true,
+        "enableI18nLegacyMessageIdFormat": true
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "inline_template_legacy_normalized.js",
+              "expected": "inline_template_legacy.js"
+            }
+          ],
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should compute normalized legacy ids for messages in inline templates where i18nNormalizeLineEndingsInICUs is false",
+      "inputFiles": [
+        "inline_template_legacy_non_normalized.ts"
+      ],
+      "angularCompilerOptions": {
+        "i18nNormalizeLineEndingsInICUs": false,
+        "enableI18nLegacyMessageIdFormat": true
+      },
+      "expectations": [
+        {
+          "files": [
+            {
+              "generated": "inline_template_legacy_non_normalized.js",
+              "expected": "inline_template_legacy.js"
+            }
+          ],
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should compute normalized legacy ids for messages in external templates where i18nNormalizeLineEndingsInICUs is true",
+      "inputFiles": [
+        "external_template_legacy_normalized.ts"
+      ],
+      "angularCompilerOptions": {
+        "i18nNormalizeLineEndingsInICUs": true,
+        "enableI18nLegacyMessageIdFormat": true
+      },
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should compute non-normalized legacy ids for messages in external templates where i18nNormalizeLineEndingsInICUs is false",
+      "inputFiles": [
+        "external_template_legacy_non_normalized.ts"
+      ],
+      "angularCompilerOptions": {
+        "i18nNormalizeLineEndingsInICUs": false,
+        "enableI18nLegacyMessageIdFormat": true
+      },
+      "expectations": [
+        {
+          "extraChecks": [
+            "verifyPlaceholdersIntegrity",
+            "verifyUniqueConsts"
+          ]
+        }
+      ]
+    }
+  ]
+}

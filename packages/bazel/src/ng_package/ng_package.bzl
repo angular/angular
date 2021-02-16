@@ -105,6 +105,7 @@ WELL_KNOWN_GLOBALS = {p: _global_name(p) for p in [
     "@angular/forms",
     "@angular/core/testing",
     "@angular/core",
+    "@angular/platform-server/init",
     "@angular/platform-server/testing",
     "@angular/platform-server",
     "@angular/common/testing",
@@ -331,7 +332,7 @@ def _filter_out_generated_files(files, extension, package_path = None):
     files_list = files.to_list() if type(files) == _DEPSET_TYPE else files
     for file in files_list:
         # If the "package_path" parameter has been specified, filter out files
-        # that do not start with the the specified package path.
+        # that do not start with the specified package path.
         if package_path and not file.short_path.startswith(package_path):
             continue
 
@@ -811,3 +812,23 @@ ng_package = rule(
 """
 ng_package produces an npm-ready package from an Angular library.
 """
+
+def ng_package_macro(name, **kwargs):
+    ng_package(
+        name = name,
+        **kwargs
+    )
+    native.alias(
+        name = name + ".pack",
+        actual = select({
+            "@bazel_tools//src/conditions:host_windows": name + ".pack.bat",
+            "//conditions:default": name + ".pack.sh",
+        }),
+    )
+    native.alias(
+        name = name + ".publish",
+        actual = select({
+            "@bazel_tools//src/conditions:host_windows": name + ".publish.bat",
+            "//conditions:default": name + ".publish.sh",
+        }),
+    )

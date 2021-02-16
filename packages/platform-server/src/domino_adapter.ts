@@ -14,8 +14,8 @@ function _notImplemented(methodName: string) {
   return new Error('This method is not implemented in DominoAdapter: ' + methodName);
 }
 
-function setDomTypes() {
-  // Make all Domino types available as types in the global env.
+export function setDomTypes() {
+  // Make all Domino types available in the global env.
   Object.assign(global, domino.impl);
   (global as any)['KeyboardEvent'] = domino.impl.Event;
 }

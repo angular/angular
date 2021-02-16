@@ -145,7 +145,9 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   ngOnChanges(changes: SimpleChanges) {
     if (!this._added) this._setUpControl();
     if (isPropertyUpdated(changes, this.viewModel)) {
-      _ngModelWarning('formControlName', FormControlName, this, this._ngModelWarningConfig);
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        _ngModelWarning('formControlName', FormControlName, this, this._ngModelWarningConfig);
+      }
       this.viewModel = this.model;
       this.formDirective.updateModel(this, this.model);
     }

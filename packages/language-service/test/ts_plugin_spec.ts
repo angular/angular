@@ -21,6 +21,7 @@ const mockProject = {
     },
   },
   hasRoots: () => true,
+  fileExists: () => true,
 } as any;
 
 describe('plugin', () => {
@@ -57,8 +58,8 @@ describe('plugin', () => {
     const compilerDiags = tsLS.getCompilerOptionsDiagnostics();
     expect(compilerDiags).toEqual([]);
     const sourceFiles = program.getSourceFiles().filter(f => !f.fileName.endsWith('.d.ts'));
-    // there are three .ts files in the test project
-    expect(sourceFiles.length).toBe(3);
+    // there are four .ts files in the test project
+    expect(sourceFiles.length).toBe(4);
     for (const {fileName} of sourceFiles) {
       const syntacticDiags = tsLS.getSyntacticDiagnostics(fileName);
       expect(syntacticDiags).toEqual([]);
@@ -132,9 +133,16 @@ describe('plugin', () => {
 
   it('should return external templates when getExternalFiles() is called', () => {
     const externalTemplates = getExternalFiles(mockProject);
-    expect(externalTemplates).toEqual([
+    expect(new Set(externalTemplates)).toEqual(new Set([
       '/app/test.ng',
-    ]);
+      '/app/#inner/inner.html',
+    ]));
+  });
+
+  it('should not return external template that does not exist', () => {
+    spyOn(mockProject, 'fileExists').and.returnValue(false);
+    const externalTemplates = getExternalFiles(mockProject);
+    expect(externalTemplates.length).toBe(0);
   });
 });
 

@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {forwardRef, resolveForwardRef} from '../../di/forward_ref';
 import {ɵɵinject, ɵɵinvalidFactoryDep} from '../../di/injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../../di/interface/defs';
 import * as sanitization from '../../sanitization/sanitization';
 import * as r3 from '../index';
-import * as partial from './partial';
-
 
 
 /**
@@ -99,8 +98,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵpipe': r3.ɵɵpipe,
        'ɵɵqueryRefresh': r3.ɵɵqueryRefresh,
        'ɵɵviewQuery': r3.ɵɵviewQuery,
-       'ɵɵstaticViewQuery': r3.ɵɵstaticViewQuery,
-       'ɵɵstaticContentQuery': r3.ɵɵstaticContentQuery,
        'ɵɵloadQuery': r3.ɵɵloadQuery,
        'ɵɵcontentQuery': r3.ɵɵcontentQuery,
        'ɵɵreference': r3.ɵɵreference,
@@ -168,8 +165,8 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵsanitizeUrl': sanitization.ɵɵsanitizeUrl,
        'ɵɵsanitizeUrlOrResourceUrl': sanitization.ɵɵsanitizeUrlOrResourceUrl,
        'ɵɵtrustConstantHtml': sanitization.ɵɵtrustConstantHtml,
-       'ɵɵtrustConstantScript': sanitization.ɵɵtrustConstantScript,
        'ɵɵtrustConstantResourceUrl': sanitization.ɵɵtrustConstantResourceUrl,
 
-       'ɵɵngDeclareDirective': partial.ɵɵngDeclareDirective,
+       'forwardRef': forwardRef,
+       'resolveForwardRef': resolveForwardRef,
      }))();

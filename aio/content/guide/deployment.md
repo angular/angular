@@ -106,18 +106,36 @@ This is the simplest production-ready deployment of your application.
 
 {@a deploy-to-github}
 
-### Deploy to GitHub pages
+### Deploy to GitHub Pages
 
-Another simple way to deploy your Angular app is to use [GitHub Pages](https://help.github.com/articles/what-is-github-pages/).
+To deploy your Angular application to [GitHub Pages](https://help.github.com/articles/what-is-github-pages/), complete the following steps:
 
-1. You need to [create a GitHub account](https://github.com/join) if you don't have one, and then [create a repository](https://help.github.com/articles/create-a-repo/) for your project.
-Make a note of the user name and project name in GitHub.
+1. [Create a GitHub repository](https://help.github.com/articles/create-a-repo/) for your project.
 
-1. Build your project using Github project name, with the Angular CLI command [`ng build`](cli/build) and the options shown here:
+1. Configure `git` in your local project by adding a remote that specifies the GitHub repo you created in previous step.
+  GitHub provides these commands when you create the repo so that you can copy and paste them at your command prompt.
+  The commands should be similar to the following, though GitHub fills in your project-specific settings for you:
+
+  ```sh
+  git remote add origin https://github.com/your-username/your-project-name.git
+  git branch -M main
+  git push -u origin main
+  ```
+  When you paste these commands from GitHub, they run automatically.
+
+1. Create and check out a `git` branch named `gh-pages`.
+
+  ```sh
+  git checkout -b gh-pages
+  ```
+
+1. Build your project using the Github project name, with the Angular CLI command [`ng build`](cli/build) and the following options, where `your_project_name` is the name of the project that you gave the GitHub repository in step 1.
+
+  Be sure to include the slashes on either side of your project name as in `/your_project_name/`.
 
   <code-example language="none" class="code-shell">
 
-    ng build --prod --output-path docs --base-href /&lt;project_name&gt;/
+    ng build --prod --output-path docs --base-href /your_project_name/
 
   </code-example>
 
@@ -125,9 +143,12 @@ Make a note of the user name and project name in GitHub.
 
 1. Commit your changes and push.
 
-1. On the GitHub project page, configure it to [publish from the docs folder](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch).
+1. On the GitHub project page, go to Settings and scroll down to the GitHub Pages section to configure the site to [publish from the docs folder](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch).
 
-You can see your deployed page at `https://<user_name>.github.io/<project_name>/`.
+1. Click Save.
+
+1. Click on the GitHub Pages link at the top of the GitHub Pages section to see your deployed application.
+The format of the link is `https://<user_name>.github.io/<project_name>/`.
 
 <div class="alert is-helpful">
 
@@ -135,10 +156,7 @@ Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpa
 
 </div>
 
-<hr>
-
 {@a server-configuration}
-
 ## Server configuration
 
 This section covers changes you may have to make to the server or to files deployed on the server.
@@ -278,10 +296,7 @@ The server must be configured to accept the application's requests.
 Read about how to enable CORS for specific servers at
 <a href="https://enable-cors.org/server.html" title="Enabling CORS server">enable-cors.org</a>.
 
-<hr>
-
 {@a optimize}
-
 ## Production optimizations
 
 The `--prod` _meta-flag_ engages the following build optimization features.
@@ -582,10 +597,9 @@ If your Browserslist configuration includes support for any legacy browsers, the
 
 ## Local development in older browsers
 
-In Angular CLI version 8 and higher, differential loading is enabled by default for the `ng build` command.
+Differential loading is not enabled by default for application projects that were generated with Angular CLI 10 and above.
 The `ng serve`, `ng test`, and `ng e2e` commands, however, generate a single ES2015 build which cannot run in older browsers that don't support the modules, such as IE 11.
 
-If you want to run ES5 code during development, you could disable differential loading completely.
 To maintain the benefits of differential loading, however, a better option is to define multiple configurations for `ng serve`, `ng e2e`, and `ng test`.
 
 {@a differential-serve}

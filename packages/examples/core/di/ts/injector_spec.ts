@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {inject, InjectFlags, InjectionToken, Injector, Type, ɵsetCurrentInjector as setCurrentInjector} from '@angular/core';
+import {AbstractType, inject, InjectFlags, InjectionToken, Injector, Type, ɵsetCurrentInjector as setCurrentInjector} from '@angular/core';
 
 class MockRootScopeInjector implements Injector {
   constructor(readonly parent: Injector) {}
 
   get<T>(
-      token: Type<T>|InjectionToken<T>, defaultValue?: any,
+      token: Type<T>|AbstractType<T>|InjectionToken<T>, defaultValue?: any,
       flags: InjectFlags = InjectFlags.Default): T {
     if ((token as any).ɵprov && (token as any).ɵprov.providedIn === 'root') {
       const old = setCurrentInjector(this);

@@ -21,6 +21,31 @@ export function addAllToArray(items: any[], arr: any[]) {
 }
 
 /**
+ * Determines if the contents of two arrays is identical
+ *
+ * @param a first array
+ * @param b second array
+ * @param identityAccessor Optional function for extracting stable object identity from a value in
+ *     the array.
+ */
+export function arrayEquals<T>(a: T[], b: T[], identityAccessor?: (value: T) => unknown): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    let valueA = a[i];
+    let valueB = b[i];
+    if (identityAccessor) {
+      valueA = identityAccessor(valueA) as any;
+      valueB = identityAccessor(valueB) as any;
+    }
+    if (valueB !== valueA) {
+      return false;
+    }
+  }
+  return true;
+}
+
+
+/**
  * Flattens an array.
  */
 export function flatten(list: any[], dst?: any[]): any[] {

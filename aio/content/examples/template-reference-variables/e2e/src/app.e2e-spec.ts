@@ -1,11 +1,10 @@
-import { browser, element, by } from 'protractor';
-import { logging } from 'selenium-webdriver';
+import { browser, element, by, logging } from 'protractor';
 
 describe('Template-reference-variables-example', () => {
   beforeEach(() => browser.get(''));
 
   // helper function used to test what's logged to the console
-  async function logChecker(button, contents) {
+  async function logChecker(contents) {
     const logs = await browser
       .manage()
       .logs()
@@ -14,8 +13,8 @@ describe('Template-reference-variables-example', () => {
     expect(messages.length).toBeGreaterThan(0);
   }
 
-  it('should display Template reference variables', () => {
-    expect(element(by.css('h1')).getText()).toEqual(
+  it('should display Template reference variables', async () => {
+    expect(await element(by.css('h1')).getText()).toEqual(
       'Template reference variables'
     );
   });
@@ -26,7 +25,7 @@ describe('Template-reference-variables-example', () => {
     await phoneInput.sendKeys('123');
     await callButton.click();
     const contents = 'Calling 123 ...';
-    await logChecker(callButton, contents);
+    await logChecker(contents);
   });
 
   it('should log a Faxing 123 ... message', async () => {
@@ -35,12 +34,12 @@ describe('Template-reference-variables-example', () => {
     await faxInput.sendKeys('123');
     await faxButton.click();
     const contents = 'Faxing 123 ...';
-    await logChecker(faxButton, contents);
+    await logChecker(contents);
   });
 
-  it('should display a disabled button', () => {
+  it('should display a disabled button', async () => {
     const disabledButton = element.all(by.css('button')).get(2);
-    expect(disabledButton.isEnabled()).toBe(false);
+    expect(await disabledButton.isEnabled()).toBe(false);
   });
 
   it('should submit form', async () => {
@@ -48,8 +47,7 @@ describe('Template-reference-variables-example', () => {
     const nameInput = element.all(by.css('input')).get(2);
     await nameInput.sendKeys('123');
     await submitButton.click();
-    expect(element.all(by.css('div > p')).get(2).getText()).toEqual('Submitted. Form value is {"name":"123"}');
+    expect(await element.all(by.css('div > p')).get(2).getText()).toEqual('Submitted. Form value is {"name":"123"}');
   });
-
 
 });

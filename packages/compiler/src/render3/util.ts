@@ -7,6 +7,7 @@
  */
 
 import {StaticSymbol} from '../aot/static_symbol';
+import {escapeIdentifier} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {OutputContext} from '../util';
 
@@ -84,18 +85,31 @@ export function getSyntheticPropertyName(name: string) {
   return name;
 }
 
+export function getSafePropertyAccessString(accessor: string, name: string): string {
+  const escapedName = escapeIdentifier(name, false, false);
+  return escapedName !== name ? `${accessor}[${escapedName}]` : `${accessor}.${name}`;
+}
+
 export function prepareSyntheticListenerFunctionName(name: string, phase: string) {
   return `animation_${name}_${phase}`;
 }
 
 export function jitOnlyGuardedExpression(expr: o.Expression): o.Expression {
-  const ngJitMode = new o.ExternalExpr({name: 'ngJitMode', moduleName: null});
-  const jitFlagNotDefined = new o.BinaryOperatorExpr(
-      o.BinaryOperator.Identical, new o.TypeofExpr(ngJitMode), o.literal('undefined'));
-  const jitFlagUndefinedOrTrue = new o.BinaryOperatorExpr(
-      o.BinaryOperator.Or, jitFlagNotDefined, ngJitMode, /* type */ undefined,
+  return guardedExpression('ngJitMode', expr);
+}
+
+export function devOnlyGuardedExpression(expr: o.Expression): o.Expression {
+  return guardedExpression('ngDevMode', expr);
+}
+
+export function guardedExpression(guard: string, expr: o.Expression): o.Expression {
+  const guardExpr = new o.ExternalExpr({name: guard, moduleName: null});
+  const guardNotDefined = new o.BinaryOperatorExpr(
+      o.BinaryOperator.Identical, new o.TypeofExpr(guardExpr), o.literal('undefined'));
+  const guardUndefinedOrTrue = new o.BinaryOperatorExpr(
+      o.BinaryOperator.Or, guardNotDefined, guardExpr, /* type */ undefined,
       /* sourceSpan */ undefined, true);
-  return new o.BinaryOperatorExpr(o.BinaryOperator.And, jitFlagUndefinedOrTrue, expr);
+  return new o.BinaryOperatorExpr(o.BinaryOperator.And, guardUndefinedOrTrue, expr);
 }
 
 export function wrapReference(value: any): R3Reference {

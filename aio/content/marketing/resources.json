@@ -34,6 +34,16 @@
             "desc": "Peer-reviewed Angular articles and tutorials.",
             "url": "https://indepth.dev/angular/",
             "title": "Angular inDepth"
+          },
+          "angular-nation": {
+            "desc": "Angular Nation is a free private network created for Angular developers to network, collaborate, and ask questions.",
+            "url": "https://www.angularnation.net/",
+            "title": "Angular Nation"
+          },
+          "angular-builders": {
+            "desc": "A collection of Angular builders for your Angular projects",
+            "url": "https://angular-builders.dev/",
+            "title": "Angular Builders"
           }
         }
       },
@@ -190,6 +200,13 @@
       "Tooling": {
         "order": 2,
         "resources": {
+          "ub": {
+            "desc": "UI Bakery is a low code platform to generate Angular applications.",
+            "logo": "",
+            "rev": true,
+            "title": "UI Bakery",
+            "url": "https://uibakery.io/"
+          },
           "a1": {
             "desc": "A Google Chrome Dev Tools extension for debugging Angular applications.",
             "logo": "https://augury.angular.io/images/augury-logo.svg",
@@ -229,6 +246,12 @@
             "desc": "UI development environment for building, testing, and documenting Angular applications.",
             "title": "Angular Playground",
             "url": "https://angularplayground.it/"
+          },
+          "angular-prerender": {
+            "desc": "A command line tool to prerender Angular Apps that uses Angular Universal but also supports Scully plugins.",
+            "logo": "https://repository-images.githubusercontent.com/142886533/bd323700-e8ff-11e9-9645-75bc009ee359",
+            "title": "angular-prerender",
+            "url": "https://github.com/chrisguttandin/angular-prerender"
           },
           "nx": {
             "desc": "Nx (Nrwl Extensions for Angular) is an open source toolkit built on top of Angular CLI to help enterprise teams develop Angular at scale.",
@@ -446,6 +469,11 @@
             "desc": "NGX Skeleton Loader is a lightweight and A11Y friendly solution for blazing fast loading skeletons that automatically adapt to your Angular apps.",
             "title": "NGX Skeleton Loader",
             "url": "https://www.npmjs.com/package/ngx-skeleton-loader"
+          },
+          "taiga-ui": {
+            "desc": "Taiga UI is fully-treeshakable Angular UI Kit consisting of multiple base libraries and several add-ons. We have 130+ components, 100+ directives, dozens of tokens, utils and tools. They are easily customizable and well engineered.",
+            "title": "Taiga UI",
+            "url": "https://taiga-ui.dev"
           }
         }
       }
@@ -519,6 +547,17 @@
             "desc": "Practical journey with Angular framework, ES6, TypeScript, webpack and Angular CLI.",
             "title": "Developing with Angular",
             "url": "https://leanpub.com/developing-with-angular"
+          },
+          "reactive-state-for-angular-with-ngrx": {
+            "desc": "Learn how to build a Reactive Application with Ngrx and Angular",
+            "title": "Reactive State for Angular with NgRx",
+            "url": "https://bpbonline.com/products/reactive-state-for-angular-with-ngrx"
+          },
+          "ngrx-reactive-state-management": {
+            "title": "NgRx: Reactive State Management for Angular",
+            "desc": "Comprehensive learning resource on building Angular apps with NgRx",
+            "url": "https://gumroad.com/l/angular-ngrx-book",
+            "logo": ""
           }
         }
       },
@@ -601,6 +640,11 @@
             "desc": "Online courses providing in-depth coverage of the Angular ecosystem, AngularJS, Angular and TypeScript, with functional code samples and a full-featured seed environment. Get a deep understanding of Angular and TypeScript from foundation to functional application, then move on to advanced topics with Todd Motto and collaborators.",
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
+          },
+          "angular-pro-screencast": {
+            "desc": "Youtube Channel. Online videos in English and Russian providing in-depth coverage of the Angular advanced topics.",
+            "title": "Angular Pro Screencast",
+            "url": "https://www.youtube.com/playlist?list=PLLf-VBOaoVk1E9fTBZdq1CfnRa2TtL_Kb"
           },
           "willh-angular-zero": {
             "desc": "Online video course in Chinese for newbies who need to learning from the scratch in Chinese.  It's covering Angular, Angular CLI, TypeScript, VSCode, and some must known knowledge of Angular development.",
@@ -743,6 +787,12 @@
             "logo": "https://angular.de/assets/img/angular-de-logo.svg",
             "title": "Angular.de (German)",
             "url": "https://angular.de/"
+          },
+          "AngularArchitects": {
+            "desc": "In-depth training and consulting with focus on enterprise-scale Angular applications and architecture (remote, on-site company trainings, and public workshops). We also blog about these topics on a regular basis.",
+            "rev": true,
+            "title": "Angular Architects (German and English)",
+            "url": "https://www.angulararchitects.io/"
           }
         }
       }

@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModuleFactory, NgModuleRef, StaticProvider} from '@angular/core';
+import {Injector, NgModuleFactory, NgModuleRef, PlatformRef, StaticProvider} from '@angular/core';
 import {platformBrowser} from '@angular/platform-browser';
 
 import {IInjectorService, IProvideService, module_ as angularModule} from '../../src/common/src/angular1';
 import {$INJECTOR, $PROVIDE, DOWNGRADED_MODULE_COUNT_KEY, INJECTOR_KEY, LAZY_MODULE_REF, UPGRADE_APP_TYPE_KEY, UPGRADE_MODULE_NAME} from '../../src/common/src/constants';
-import {getDowngradedModuleCount, isFunction, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util';
+import {destroyApp, getDowngradedModuleCount, isFunction, LazyModuleRef, UpgradeAppType} from '../../src/common/src/util';
 
 import {angular1Providers, setTempInjectorRef} from './angular1_providers';
 import {NgAdapterInjector} from './util';
@@ -166,6 +166,13 @@ export function downgradeModule<T>(moduleFactoryOrBootstrapFn: NgModuleFactory<T
                 promise: bootstrapFn(angular1Providers).then(ref => {
                   injector = result.injector = new NgAdapterInjector(ref.injector);
                   injector.get($INJECTOR);
+
+                  // Destroy the AngularJS app once the Angular `PlatformRef` is destroyed.
+                  // This does not happen in a typical SPA scenario, but it might be useful for
+                  // other use-cases where disposing of an Angular/AngularJS app is necessary
+                  // (such as Hot Module Replacement (HMR)).
+                  // See https://github.com/angular/angular/issues/39935.
+                  injector.get(PlatformRef).onDestroy(() => destroyApp($injector));
 
                   return injector;
                 })

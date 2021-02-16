@@ -21,7 +21,12 @@ exports.config = {
     },
   },
   directConnect: true,
-  SELENIUM_PROMISE_MANAGER: false,
+  // Keep the Selenium Promise Manager enabled to avoid flakiness on CI.
+  // See https://github.com/angular/angular/issues/39872 for more details.
+  //
+  // TODO(gkalpak): Set this back to `false` to align with CLI-generated apps when the flakiness is
+  //                fixed in the future.
+  SELENIUM_PROMISE_MANAGER: true,
   baseUrl: 'http://localhost:4200/',
   framework: 'jasmine',
   jasmineNodeOpts: {

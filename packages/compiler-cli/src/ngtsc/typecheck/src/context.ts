@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, ParseSourceFile, R3TargetBinder, SchemaMetadata, TmplAstNode} from '@angular/compiler';
+import {BoundTarget, ParseError, ParseSourceFile, R3TargetBinder, SchemaMetadata, TemplateParseError, TmplAstNode} from '@angular/compiler';
+import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
@@ -14,7 +15,7 @@ import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {ComponentToShimMappingStrategy, TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
-import {TemplateDiagnostic} from '../diagnostics';
+import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
 
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
@@ -64,6 +65,11 @@ export interface TemplateData {
    * template nodes.
    */
   boundTarget: BoundTarget<TypeCheckableDirectiveMeta>;
+
+  /**
+   * Errors found while parsing them template, which have been converted to diagnostics.
+   */
+  templateDiagnostics: TemplateDiagnostic[];
 }
 
 /**
@@ -133,12 +139,6 @@ export interface TypeCheckingHost {
   shouldCheckComponent(node: ts.ClassDeclaration): boolean;
 
   /**
-   * Check if the given component has had its template overridden, and retrieve the new template
-   * nodes if so.
-   */
-  getTemplateOverride(sfPath: AbsoluteFsPath, node: ts.ClassDeclaration): TmplAstNode[]|null;
-
-  /**
    * Report data from a shim generated from the given input file path.
    */
   recordShimData(sfPath: AbsoluteFsPath, data: ShimTypeCheckingData): void;
@@ -194,35 +194,35 @@ export class TypeCheckContextImpl implements TypeCheckContext {
   private typeCtorPending = new Set<ts.ClassDeclaration>();
 
   /**
-   * Record a template for the given component `node`, with a `SelectorMatcher` for directive
-   * matching.
+   * Register a template to potentially be type-checked.
    *
-   * @param node class of the node being recorded.
-   * @param template AST nodes of the template being recorded.
-   * @param matcher `SelectorMatcher` which tracks directives that are in scope for this template.
+   * Implements `TypeCheckContext.addTemplate`.
    */
   addTemplate(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       binder: R3TargetBinder<TypeCheckableDirectiveMeta>, template: TmplAstNode[],
       pipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
-      schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping,
-      file: ParseSourceFile): void {
+      schemas: SchemaMetadata[], sourceMapping: TemplateSourceMapping, file: ParseSourceFile,
+      parseErrors: ParseError[]|null): void {
     if (!this.host.shouldCheckComponent(ref.node)) {
       return;
     }
 
-    const sfPath = absoluteFromSourceFile(ref.node.getSourceFile());
-    const overrideTemplate = this.host.getTemplateOverride(sfPath, ref.node);
-    if (overrideTemplate !== null) {
-      template = overrideTemplate;
+    const fileData = this.dataForFile(ref.node.getSourceFile());
+    const shimData = this.pendingShimForComponent(ref.node);
+    const templateId = fileData.sourceManager.getTemplateId(ref.node);
+
+    const templateDiagnostics: TemplateDiagnostic[] = [];
+
+    if (parseErrors !== null) {
+      templateDiagnostics.push(
+          ...this.getTemplateDiagnostics(parseErrors, templateId, sourceMapping));
     }
 
     // Accumulate a list of any directives which could not have type constructors generated due to
     // unsupported inlining operations.
     let missingInlines: ClassDeclaration[] = [];
 
-    const fileData = this.dataForFile(ref.node.getSourceFile());
-    const shimData = this.pendingShimForComponent(ref.node);
     const boundTarget = binder.bind({template});
 
     // Get all of the directives used in the template and record type constructors for all of them.
@@ -251,13 +251,14 @@ export class TypeCheckContextImpl implements TypeCheckContext {
         });
       }
     }
-    const templateId = fileData.sourceManager.getTemplateId(ref.node);
+
     shimData.templates.set(templateId, {
       template,
       boundTarget,
+      templateDiagnostics,
     });
 
-    const tcbRequiresInline = requiresInlineTypeCheckBlock(ref.node);
+    const tcbRequiresInline = requiresInlineTypeCheckBlock(ref.node, pipes);
 
     // If inlining is not supported, but is required for either the TCB or one of its directive
     // dependencies, then exit here with an error.
@@ -354,7 +355,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
     // Write out the imports that need to be added to the beginning of the file.
     let imports = importManager.getAllImports(sf.fileName)
-                      .map(i => `import * as ${i.qualifier} from '${i.specifier}';`)
+                      .map(i => `import * as ${i.qualifier.text} from '${i.specifier}';`)
                       .join('\n');
     code = imports + '\n' + code;
 
@@ -434,6 +435,26 @@ export class TypeCheckContextImpl implements TypeCheckContext {
     }
 
     return this.fileMap.get(sfPath)!;
+  }
+
+  private getTemplateDiagnostics(
+      parseErrors: ParseError[], templateId: TemplateId,
+      sourceMapping: TemplateSourceMapping): TemplateDiagnostic[] {
+    return parseErrors.map(error => {
+      const span = error.span;
+
+      if (span.start.offset === span.end.offset) {
+        // Template errors can contain zero-length spans, if the error occurs at a single point.
+        // However, TypeScript does not handle displaying a zero-length diagnostic very well, so
+        // increase the ending offset by 1 for such errors, to ensure the position is shown in the
+        // diagnostic.
+        span.end.offset++;
+      }
+
+      return makeTemplateDiagnostic(
+          templateId, sourceMapping, span, ts.DiagnosticCategory.Error,
+          ngErrorCode(ErrorCode.TEMPLATE_PARSE_ERROR), error.msg);
+    });
   }
 }
 

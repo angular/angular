@@ -54,13 +54,13 @@ You can then click "Go to definition" or press F12 to go directly to the definit
 ## Angular Language Service in your editor
 
 Angular Language Service is currently available as an extension for [Visual Studio Code](https://code.visualstudio.com/),
-[WebStorm](https://www.jetbrains.com/webstorm), and [Sublime Text](https://www.sublimetext.com/).
+[WebStorm](https://www.jetbrains.com/webstorm), [Sublime Text](https://www.sublimetext.com/) and [Eclipse IDE](https://www.eclipse.org/eclipseide/).
 
 ### Visual Studio Code
 
-In [Visual Studio Code](https://code.visualstudio.com/), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template). You can open the marketplace from the editor using the Extensions icon on the left menu pane, or use VS Quick Open (⌘+P on Mac, CTRL+P on Windows) and type "? ext".
+In [Visual Studio Code](https://code.visualstudio.com/), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template). You can open the marketplace from the editor using the Extensions icon on the left menu pane, or use VS Quick Open (⌘+P on Mac, CTRL+P on Windows) and type "? ext". In the marketplace, search for Angular Language Service extension, and click the **Install** button.
 
-In the marketplace, search for Angular Language Service extension, and click the **Install** button.
+The Visual Studio Code integration with the Angular language service is maintained and distributed by the Angular team.
 
 ### WebStorm
 
@@ -103,7 +103,9 @@ npm install --save-dev @angular/language-service
 
 This allows the Angular Language Service to provide diagnostics and completions in `.ts` files.
 
+### Eclipse IDE
 
+Either directly install the "Eclipse IDE for Web and JavaScript developers" package which comes with the Angular Language Server included, or from other Eclipse IDE packages, use Help > Eclipse Marketplace to find and install [Eclipse Wild Web Developer](https://marketplace.eclipse.org/content/wild-web-developer-html-css-javascript-typescript-nodejs-angular-json-yaml-kubernetes-xml).
 
 
 ## How the Language Service works
@@ -122,8 +124,6 @@ If you have an interpolation of `{{data.---}}` inside a `div` and need the compl
 The HTML AST can only tell the compiler that there is some text with the characters "`{{data.---}}`".
 That's when the template parser produces an expression AST, which resides within the template AST.
 The Angular Language Services then looks at `data.---` within its context, asks the TypeScript Language Service what the members of `data` are, and returns the list of possibilities.
-
-<hr>
 
 ## More information
 

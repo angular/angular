@@ -617,7 +617,8 @@ describe('di', () => {
 
           TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
           expect(() => TestBed.createComponent(MyComp))
-              .toThrowError('NG0200: Circular dependency in DI detected for DirectiveA');
+              .toThrowError(
+                  'NG0200: Circular dependency in DI detected for DirectiveA. Find more at https://angular.io/errors/NG0200');
         });
 
     onlyInIvy('Ivy has different error message for circular dependency')
@@ -633,7 +634,8 @@ describe('di', () => {
 
           TestBed.configureTestingModule({declarations: [DirectiveA, DirectiveB, MyComp]});
           expect(() => TestBed.createComponent(MyComp))
-              .toThrowError('NG0200: Circular dependency in DI detected for DirectiveA');
+              .toThrowError(
+                  'NG0200: Circular dependency in DI detected for DirectiveA. Find more at https://angular.io/errors/NG0200');
         });
 
     describe('flags', () => {
@@ -1779,7 +1781,8 @@ describe('di', () => {
 
               TestBed.configureTestingModule({declarations: [DirectiveString, MyComp, MyApp]});
               expect(() => TestBed.createComponent(MyApp))
-                  .toThrowError('NG0201: No provider for String found in NodeInjector');
+                  .toThrowError(
+                      'NG0201: No provider for String found in NodeInjector. Find more at https://angular.io/errors/NG0201');
             });
 
         onlyInIvy('Ivy has different error message when dependency is not found')
@@ -1859,7 +1862,8 @@ describe('di', () => {
 
               TestBed.configureTestingModule({declarations: [DirectiveComp, MyComp, MyApp]});
               expect(() => TestBed.createComponent(MyApp))
-                  .toThrowError('NG0201: No provider for MyApp found in NodeInjector');
+                  .toThrowError(
+                      'NG0201: No provider for MyApp found in NodeInjector. Find more at https://angular.io/errors/NG0201');
             });
 
         describe('regression', () => {
@@ -2801,6 +2805,106 @@ describe('di', () => {
       fixture.detectChanges();
       expect(fixture.componentInstance.myComp.token).toBe('token with factory');
     });
+  });
+
+  it('should be able to use Host in `useFactory` dependency config', () => {
+    // Scenario:
+    // ---------
+    // <root (provides token A)>
+    //   <comp (provides token B via useFactory(@Host() @Inject(A))></comp>
+    // </root>
+    @Component({
+      selector: 'root',
+      template: '<comp></comp>',
+      viewProviders: [{
+        provide: 'A',
+        useValue: 'A from Root',
+      }]
+    })
+    class Root {
+    }
+
+    @Component({
+      selector: 'comp',
+      template: '{{ token }}',
+      viewProviders: [{
+        provide: 'B',
+        deps: [[new Inject('A'), new Host()]],
+        useFactory: (token: string) => `${token} (processed by useFactory)`,
+      }]
+    })
+    class Comp {
+      constructor(@Inject('B') readonly token: string) {}
+    }
+
+    @Component({
+      template: `<root></root>`,
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [Root, Comp, App]});
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('A from Root (processed by useFactory)');
+  });
+
+  it('should not lookup outside of the host element when Host is used in `useFactory`', () => {
+    // Scenario:
+    // ---------
+    // <root (provides token A)>
+    //   <intermediate>
+    //     <comp (provides token B via useFactory(@Host() @Inject(A))></comp>
+    //   </intermediate>
+    // </root>
+    @Component({
+      selector: 'root',
+      template: '<intermediate></intermediate>',
+      viewProviders: [{
+        provide: 'A',
+        useValue: 'A from Root',
+      }]
+    })
+    class Root {
+    }
+
+    @Component({
+      selector: 'intermediate',
+      template: '<comp></comp>',
+    })
+    class Intermediate {
+    }
+
+    @Component({
+      selector: 'comp',
+      template: '{{ token }}',
+      viewProviders: [{
+        provide: 'B',
+        deps: [[new Inject('A'), new Host(), new Optional()]],
+        useFactory: (token: string) =>
+            token ? `${token} (processed by useFactory)` : 'No token A found',
+      }]
+    })
+    class Comp {
+      constructor(@Inject('B') readonly token: string) {}
+    }
+
+    @Component({
+      template: `<root></root>`,
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [Root, Comp, App, Intermediate]});
+
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    // Making sure that the `@Host` takes effect and token `A` becomes unavailable in DI since it's
+    // defined one level up from the Comp's host view.
+    expect(fixture.nativeElement.textContent).toBe('No token A found');
   });
 
   it('should not cause cyclic dependency if same token is requested in deps with @SkipSelf', () => {

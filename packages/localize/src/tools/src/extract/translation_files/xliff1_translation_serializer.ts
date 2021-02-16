@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵParsedMessage, ɵSourceLocation} from '@angular/localize';
 
 import {FormatOptions, validateOptions} from './format_options';
@@ -29,12 +29,12 @@ const LEGACY_XLIFF_MESSAGE_LENGTH = 40;
 export class Xliff1TranslationSerializer implements TranslationSerializer {
   constructor(
       private sourceLocale: string, private basePath: AbsoluteFsPath, private useLegacyIds: boolean,
-      private formatOptions: FormatOptions = {}, private fs: FileSystem = getFileSystem()) {
+      private formatOptions: FormatOptions = {}, private fs: PathManipulation = getFileSystem()) {
     validateOptions('Xliff1TranslationSerializer', [['xml:space', ['preserve']]], formatOptions);
   }
 
   serialize(messages: ɵParsedMessage[]): string {
-    const messageMap = consolidateMessages(messages, message => this.getMessageId(message));
+    const messageGroups = consolidateMessages(messages, message => this.getMessageId(message));
     const xml = new XmlFile();
     xml.startTag('xliff', {'version': '1.2', 'xmlns': 'urn:oasis:names:tc:xliff:document:1.2'});
     // NOTE: the `original` property is set to the legacy `ng2.template` value for backward
@@ -51,8 +51,9 @@ export class Xliff1TranslationSerializer implements TranslationSerializer {
       ...this.formatOptions,
     });
     xml.startTag('body');
-    for (const [id, duplicateMessages] of messageMap.entries()) {
+    for (const duplicateMessages of messageGroups) {
       const message = duplicateMessages[0];
+      const id = this.getMessageId(message);
 
       xml.startTag('trans-unit', {id, datatype: 'html'});
       xml.startTag('source', {}, {preserveWhitespace: true});

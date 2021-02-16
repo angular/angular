@@ -6,8 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {PluginObj, transformSync} from '@babel/core';
+import * as ts from 'typescript';
 
+import {needsLinking} from '../../../linker';
 import {createEs2015LinkerPlugin} from '../../../linker/babel';
+import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {compileFiles, CompileFn, setCompileFn} from '../mock_compile';
 
 /**
@@ -19,14 +23,27 @@ import {compileFiles, CompileFn, setCompileFn} from '../mock_compile';
  * This should produce the same output as the full AOT compilation
  */
 const linkedCompile: CompileFn = (data, angularFiles, options) => {
-  const compiledFiles = compileFiles(data, angularFiles, {...options, compilationMode: 'partial'});
+  if (options !== undefined && options.target !== undefined &&
+      options.target < ts.ScriptTarget.ES2015) {
+    pending('ES5 is not supported in the partial compilation tests');
+    throw new Error('ES5 is not supported in the partial compilation tests');
+  }
 
+  const compiledFiles = compileFiles(data, angularFiles, {...options, compilationMode: 'partial'});
+  const fileSystem = new MockFileSystemNative();
+  const logger = new MockLogger();
   const linkerPlugin = createEs2015LinkerPlugin({
-    enableI18nLegacyMessageIdFormat: options?.enableI18nLegacyMessageIdFormat,
-    i18nNormalizeLineEndingsInICUs: options?.i18nNormalizeLineEndingsInICUs,
+    fileSystem,
+    logger,
+    // enableI18nLegacyMessageIdFormat defaults to false in `compileFiles`.
+    enableI18nLegacyMessageIdFormat: false,
+    ...options,
   });
 
-  const source = compiledFiles.map(file => applyLinker(file, linkerPlugin)).join('\n');
+  const source =
+      compiledFiles
+          .map(file => applyLinker({path: file.fileName, source: file.source}, linkerPlugin))
+          .join('\n');
 
   return {source};
 };
@@ -34,16 +51,16 @@ const linkedCompile: CompileFn = (data, angularFiles, options) => {
 /**
  * Runs the provided code through the Babel linker plugin, if the file has the .js extension.
  *
- * @param file The file name and its source to be transformed using the linker.
+ * @param file The absolute file path and its source to be transformed using the linker.
  * @param linkerPlugin The linker plugin to apply.
  * @returns The file's source content, which has been transformed using the linker if necessary.
  */
-function applyLinker(file: {fileName: string; source: string}, linkerPlugin: PluginObj): string {
-  if (!file.fileName.endsWith('.js')) {
+function applyLinker(file: {path: string; source: string}, linkerPlugin: PluginObj): string {
+  if (!file.path.endsWith('.js') || !needsLinking(file.path, file.source)) {
     return file.source;
   }
   const result = transformSync(file.source, {
-    filename: file.fileName,
+    filename: file.path,
     plugins: [linkerPlugin],
     parserOpts: {sourceType: 'unambiguous'},
   });

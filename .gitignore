@@ -19,6 +19,7 @@ pubspec.lock
 .vscode/settings.json
 .vscode/tasks.json
 *.swo
+*.swp
 modules/.settings
 modules/.vscode
 .vimrc

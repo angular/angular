@@ -156,14 +156,14 @@ An Angular component requires a template defined using `template` or `templateUr
 
 You can declare component styles uses for its template in one of two ways: by referencing an external file, or directly within the component.
 
-To declare the styles for a component in a separate file, add a `stylesUrls` property to the `@Component` decorator.
+To declare the styles for a component in a separate file, add a `styleUrls` property to the `@Component` decorator.
 
 <code-example
     path="component-overview/src/app/component-overview/component-overview.component.ts"
     region="decorator">
 </code-example>
 
-To select the styles within the component, add a `styles` property to the `@Component` decorator that contains the styles you want to use.
+To declare the styles within the component, add a `styles` property to the `@Component` decorator that contains the styles you want to use.
 
 <code-example
     path="component-overview/src/app/component-overview/component-overview.component.3.ts"

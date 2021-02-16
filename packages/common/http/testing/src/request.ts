@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpErrorResponse, HttpEvent, HttpHeaders, HttpRequest, HttpResponse} from '@angular/common/http';
+import {HttpErrorResponse, HttpEvent, HttpHeaders, HttpRequest, HttpResponse, HttpStatusCode} from '@angular/common/http';
 import {Observer} from 'rxjs';
 
 /**
@@ -56,10 +56,10 @@ export class TestRequest {
         (opts.headers instanceof HttpHeaders) ? opts.headers : new HttpHeaders(opts.headers);
     body = _maybeConvertBody(this.request.responseType, body);
     let statusText: string|undefined = opts.statusText;
-    let status: number = opts.status !== undefined ? opts.status : 200;
+    let status: number = opts.status !== undefined ? opts.status : HttpStatusCode.Ok;
     if (opts.status === undefined) {
       if (body === null) {
-        status = 204;
+        status = HttpStatusCode.NoContent;
         statusText = statusText || 'No Content';
       } else {
         statusText = statusText || 'OK';

@@ -10,7 +10,7 @@
 import {readFileSync} from 'fs';
 import * as os from 'os';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, join} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {Folder, MockFileSystem, runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {loadStandardTestFiles, loadTestFiles} from '../../../src/ngtsc/testing';
@@ -63,7 +63,7 @@ runInEachFileSystem(() => {
     function setupAngularCoreEsm5() {
       const pkgPath = _('/node_modules/@angular/core');
       const pkgJsonPath = fs.join(pkgPath, 'package.json');
-      const pkgJson = JSON.parse(fs.readFile(pkgJsonPath));
+      const pkgJson = JSON.parse(fs.readFile(pkgJsonPath)) as EntryPointPackageJson;
 
       fs.ensureDir(fs.join(pkgPath, 'fesm5'));
       fs.writeFile(
@@ -181,7 +181,8 @@ runInEachFileSystem(() => {
       const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`)).replace(/\s+/g, ' ');
       expect(jsContents)
           .toContain(
-              '/*@__PURE__*/ (function () { ɵngcc0.ɵsetClassMetadata(FooDirective, ' +
+              '(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ' +
+              'ɵngcc0.ɵsetClassMetadata(FooDirective, ' +
               '[{ type: Directive, args: [{ selector: \'[foo]\' }] }], ' +
               'function () { return []; }, ' +
               '{ bar: [{ type: Input }] }); })();');
@@ -1016,7 +1017,7 @@ runInEachFileSystem(() => {
 
     function markPropertiesAsProcessed(packagePath: string, properties: EntryPointJsonProperty[]) {
       const basePath = _('/node_modules');
-      const targetPackageJsonPath = join(basePath, packagePath, 'package.json');
+      const targetPackageJsonPath = fs.join(basePath, packagePath, 'package.json');
       const targetPackage = loadPackage(packagePath);
       markAsProcessed(
           pkgJsonUpdater, targetPackage, targetPackageJsonPath, ['typings', ...properties]);
@@ -1389,12 +1390,13 @@ runInEachFileSystem(() => {
             {basePath: '/node_modules', propertiesToConsider: ['main'], logger: new MockLogger()});
         // Check that common/testing ES5 was processed
         let commonTesting =
-            JSON.parse(fs.readFile(_('/node_modules/@angular/common/testing/package.json')));
+            JSON.parse(fs.readFile(_('/node_modules/@angular/common/testing/package.json'))) as
+            EntryPointPackageJson;
         expect(hasBeenProcessed(commonTesting, 'main')).toBe(true);
         expect(hasBeenProcessed(commonTesting, 'esm2015')).toBe(false);
         // Modify the manifest to test that is has no effect
-        let manifest: EntryPointManifestFile =
-            JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json')));
+        let manifest = JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json'))) as
+            EntryPointManifestFile;
         manifest.entryPointPaths =
             manifest.entryPointPaths.filter(paths => paths[1] !== '@angular/common/testing');
         fs.writeFile(_('/node_modules/__ngcc_entry_points__.json'), JSON.stringify(manifest));
@@ -1408,12 +1410,14 @@ runInEachFileSystem(() => {
         });
         // Check that common/testing ES2015 is now processed, despite the manifest not listing it
         commonTesting =
-            JSON.parse(fs.readFile(_('/node_modules/@angular/common/testing/package.json')));
+            JSON.parse(fs.readFile(_('/node_modules/@angular/common/testing/package.json'))) as
+            EntryPointPackageJson;
         expect(hasBeenProcessed(commonTesting, 'main')).toBe(true);
         expect(hasBeenProcessed(commonTesting, 'esm2015')).toBe(true);
         // Check that the newly computed manifest has written to disk, containing the path that we
         // had removed earlier.
-        manifest = JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json')));
+        manifest = JSON.parse(fs.readFile(_('/node_modules/__ngcc_entry_points__.json'))) as
+            EntryPointManifestFile;
         expect(manifest.entryPointPaths).toContain([
           '@angular/common',
           '@angular/common/testing',
@@ -2247,7 +2251,8 @@ runInEachFileSystem(() => {
 
     function loadPackage(
         packageName: string, basePath: AbsoluteFsPath = _('/node_modules')): EntryPointPackageJson {
-      return JSON.parse(fs.readFile(fs.resolve(basePath, packageName, 'package.json')));
+      return JSON.parse(fs.readFile(fs.resolve(basePath, packageName, 'package.json'))) as
+          EntryPointPackageJson;
     }
 
     function initMockFileSystem(fs: FileSystem, testFiles: Folder) {

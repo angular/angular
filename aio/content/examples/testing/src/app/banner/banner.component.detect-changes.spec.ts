@@ -1,8 +1,6 @@
 // #docplaster
 // #docregion
-// #docregion import-async
 import { async } from '@angular/core/testing';
-// #enddocregion import-async
 // #docregion import-ComponentFixtureAutoDetect
 import { ComponentFixtureAutoDetect } from '@angular/core/testing';
 // #enddocregion import-ComponentFixtureAutoDetect

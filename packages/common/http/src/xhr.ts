@@ -12,7 +12,8 @@ import {Observable, Observer} from 'rxjs';
 import {HttpBackend} from './backend';
 import {HttpHeaders} from './headers';
 import {HttpRequest} from './request';
-import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpJsonParseError, HttpResponse, HttpUploadProgressEvent} from './response';
+import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpJsonParseError, HttpResponse, HttpStatusCode, HttpUploadProgressEvent} from './response';
+
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
 
@@ -142,7 +143,7 @@ export class HttpXhrBackend implements HttpBackend {
         }
 
         // Read status and normalize an IE9 bug (https://bugs.jquery.com/ticket/1450).
-        const status: number = xhr.status === 1223 ? 204 : xhr.status;
+        const status: number = xhr.status === 1223 ? HttpStatusCode.NoContent : xhr.status;
         const statusText = xhr.statusText || 'OK';
 
         // Parse headers from XMLHttpRequest - this step is lazy.
@@ -168,14 +169,14 @@ export class HttpXhrBackend implements HttpBackend {
         // The body will be read out if present.
         let body: any|null = null;
 
-        if (status !== 204) {
+        if (status !== HttpStatusCode.NoContent) {
           // Use XMLHttpRequest.response if set, responseText otherwise.
           body = (typeof xhr.response === 'undefined') ? xhr.responseText : xhr.response;
         }
 
         // Normalize another potential bug (this one comes from CORS).
         if (status === 0) {
-          status = !!body ? 200 : 0;
+          status = !!body ? HttpStatusCode.Ok : 0;
         }
 
         // ok determines whether the response will be transmitted on the event or
@@ -310,6 +311,8 @@ export class HttpXhrBackend implements HttpBackend {
       // By default, register for load and error events.
       xhr.addEventListener('load', onLoad);
       xhr.addEventListener('error', onError);
+      xhr.addEventListener('timeout', onError);
+      xhr.addEventListener('abort', onError);
 
       // Progress events are only enabled if requested.
       if (req.reportProgress) {
@@ -331,7 +334,9 @@ export class HttpXhrBackend implements HttpBackend {
       return () => {
         // On a cancellation, remove all registered event listeners.
         xhr.removeEventListener('error', onError);
+        xhr.removeEventListener('abort', onError);
         xhr.removeEventListener('load', onLoad);
+        xhr.removeEventListener('timeout', onError);
         if (req.reportProgress) {
           xhr.removeEventListener('progress', onDownProgress);
           if (reqBody !== null && xhr.upload) {

@@ -11,7 +11,7 @@ import {absoluteFrom, FileSystem, getFileSystem} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
 import {MockLogger} from '../../logging/testing';
 import {RawSourceMap} from '../src/raw_source_map';
-import {SourceFileLoader as SourceFileLoader} from '../src/source_file_loader';
+import {SourceFileLoader} from '../src/source_file_loader';
 
 runInEachFileSystem(() => {
   describe('SourceFileLoader', () => {
@@ -34,7 +34,7 @@ runInEachFileSystem(() => {
         }
         expect(sourceFile.contents).toEqual('some inline content');
         expect(sourceFile.sourcePath).toEqual(_('/foo/src/index.js'));
-        expect(sourceFile.rawMap).toEqual(null);
+        expect(sourceFile.rawMap).toBe(null);
         expect(sourceFile.sources).toEqual([]);
       });
 
@@ -47,7 +47,7 @@ runInEachFileSystem(() => {
         }
         expect(sourceFile.contents).toEqual('some external content');
         expect(sourceFile.sourcePath).toEqual(_('/foo/src/index.js'));
-        expect(sourceFile.rawMap).toEqual(null);
+        expect(sourceFile.rawMap).toBe(null);
         expect(sourceFile.sources).toEqual([]);
       });
 
@@ -60,7 +60,10 @@ runInEachFileSystem(() => {
         if (sourceFile === null) {
           return fail('Expected source file to be defined');
         }
-        expect(sourceFile.rawMap).toEqual(sourceMap);
+        if (sourceFile.rawMap === null) {
+          return fail('Expected source map to be defined');
+        }
+        expect(sourceFile.rawMap.map).toEqual(sourceMap);
       });
 
       it('should only read source-map comments from the last line of a file', () => {
@@ -76,7 +79,10 @@ runInEachFileSystem(() => {
         if (sourceFile === null) {
           return fail('Expected source file to be defined');
         }
-        expect(sourceFile.rawMap).toEqual(sourceMap);
+        if (sourceFile.rawMap === null) {
+          return fail('Expected source map to be defined');
+        }
+        expect(sourceFile.rawMap.map).toEqual(sourceMap);
       });
 
       for (const eolMarker of ['\n', '\r\n']) {
@@ -97,7 +103,10 @@ runInEachFileSystem(() => {
              if (sourceFile === null) {
                return fail('Expected source file to be defined');
              }
-             expect(sourceFile.rawMap).toEqual(sourceMap);
+             if (sourceFile.rawMap === null) {
+               return fail('Expected source map to be defined');
+             }
+             expect(sourceFile.rawMap.map).toEqual(sourceMap);
            });
       }
 
@@ -121,7 +130,10 @@ runInEachFileSystem(() => {
         if (sourceFile === null) {
           return fail('Expected source file to be defined');
         }
-        expect(sourceFile.rawMap).toEqual(sourceMap);
+        if (sourceFile.rawMap === null) {
+          return fail('Expected source map to be defined');
+        }
+        expect(sourceFile.rawMap.map).toEqual(sourceMap);
       });
 
       it('should load a file with an implied source map', () => {
@@ -132,7 +144,10 @@ runInEachFileSystem(() => {
         if (sourceFile === null) {
           return fail('Expected source file to be defined');
         }
-        expect(sourceFile.rawMap).toEqual(sourceMap);
+        if (sourceFile.rawMap === null) {
+          return fail('Expected source map to be defined');
+        }
+        expect(sourceFile.rawMap.map).toEqual(sourceMap);
       });
 
       it('should handle missing implied source-map file', () => {
@@ -177,29 +192,32 @@ runInEachFileSystem(() => {
 
            expect(sourceFile.contents).toEqual('index content');
            expect(sourceFile.sourcePath).toEqual(_('/foo/src/index.js'));
-           expect(sourceFile.rawMap).toEqual(indexSourceMap);
+           if (sourceFile.rawMap === null) {
+             return fail('Expected source map to be defined');
+           }
+           expect(sourceFile.rawMap.map).toEqual(indexSourceMap);
 
            expect(sourceFile.sources.length).toEqual(3);
 
            expect(sourceFile.sources[0]!.contents).toEqual('x content');
            expect(sourceFile.sources[0]!.sourcePath).toEqual(_('/foo/src/x.js'));
-           expect(sourceFile.sources[0]!.rawMap).toEqual(null);
+           expect(sourceFile.sources[0]!.rawMap).toBe(null);
            expect(sourceFile.sources[0]!.sources).toEqual([]);
 
 
            expect(sourceFile.sources[1]!.contents).toEqual('y content');
            expect(sourceFile.sources[1]!.sourcePath).toEqual(_('/foo/src/y.js'));
-           expect(sourceFile.sources[1]!.rawMap).toEqual(ySourceMap);
+           expect(sourceFile.sources[1]!.rawMap!.map).toEqual(ySourceMap);
 
            expect(sourceFile.sources[1]!.sources.length).toEqual(1);
            expect(sourceFile.sources[1]!.sources[0]!.contents).toEqual('a content');
            expect(sourceFile.sources[1]!.sources[0]!.sourcePath).toEqual(_('/foo/src/a.js'));
-           expect(sourceFile.sources[1]!.sources[0]!.rawMap).toEqual(null);
+           expect(sourceFile.sources[1]!.sources[0]!.rawMap).toBe(null);
            expect(sourceFile.sources[1]!.sources[0]!.sources).toEqual([]);
 
            expect(sourceFile.sources[2]!.contents).toEqual('z content');
            expect(sourceFile.sources[2]!.sourcePath).toEqual(_('/foo/src/z.js'));
-           expect(sourceFile.sources[2]!.rawMap).toEqual(null);
+           expect(sourceFile.sources[2]!.rawMap).toBe(null);
            expect(sourceFile.sources[2]!.sources).toEqual([]);
          });
 
@@ -217,7 +235,10 @@ runInEachFileSystem(() => {
 
         expect(sourceFile.contents).toEqual('index content');
         expect(sourceFile.sourcePath).toEqual(_('/foo/src/index.js'));
-        expect(sourceFile.rawMap).toEqual(indexSourceMap);
+        if (sourceFile.rawMap === null) {
+          return fail('Expected source map to be defined');
+        }
+        expect(sourceFile.rawMap.map).toEqual(indexSourceMap);
         expect(sourceFile.sources.length).toEqual(1);
         expect(sourceFile.sources[0]).toBe(null);
       });
@@ -225,6 +246,10 @@ runInEachFileSystem(() => {
 
     it('should log a warning if there is a cyclic dependency in source files loaded from disk',
        () => {
+         // a.js -> a.js.map -> b.js -> b.js.map -> c.js -> c.js.map -> (external) a.js
+         //                                                             ^^^^^^^^^^^^^^^
+         // c.js.map incorrectly links to a.js, creating a cycle
+
          fs.ensureDir(_('/foo/src'));
 
          const aMap = createRawSourceMap({file: 'a.js', sources: ['b.js']});
@@ -248,7 +273,10 @@ runInEachFileSystem(() => {
          expect(sourceFile).not.toBe(null!);
          expect(sourceFile.contents).toEqual('a content\n');
          expect(sourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
-         expect(sourceFile.rawMap).toEqual(aMap);
+         if (sourceFile.rawMap === null) {
+           return fail('Expected source map to be defined');
+         }
+         expect(sourceFile.rawMap.map).toEqual(aMap);
          expect(sourceFile.sources.length).toEqual(1);
 
          expect(logger.logs.warn[0][0])
@@ -259,64 +287,118 @@ runInEachFileSystem(() => {
 
     it('should log a warning if there is a cyclic dependency in source maps loaded from disk',
        () => {
+         // a.js -> a.js.map -> b.js -> a.js.map -> c.js
+         //                             ^^^^^^^^
+         // b.js incorrectly links to a.js.map, creating a cycle
+
          fs.ensureDir(_('/foo/src'));
-
-         // Create a self-referencing source-map
-         const aMap = createRawSourceMap({
-           file: 'a.js',
-           sources: ['a.js'],
-           sourcesContent: ['inline a.js content\n//# sourceMappingURL=a.js.map']
-         });
-         const aMapPath = _('/foo/src/a.js.map');
-         fs.writeFile(aMapPath, JSON.stringify(aMap));
-
          const aPath = _('/foo/src/a.js');
          fs.writeFile(aPath, 'a.js content\n//# sourceMappingURL=a.js.map');
 
-         const sourceFile = registry.loadSourceFile(aPath)!;
-         expect(sourceFile).not.toBe(null!);
+         const aMap = createRawSourceMap({file: 'a.js', sources: ['b.js']});
+         const aMapPath = _('/foo/src/a.js.map');
+         fs.writeFile(aMapPath, JSON.stringify(aMap));
+
+         const bPath = _('/foo/src/b.js');
+         fs.writeFile(bPath, 'b.js content\n//# sourceMappingURL=a.js.map');
+
+         const sourceFile = registry.loadSourceFile(aPath);
+         if (sourceFile === null) {
+           return fail('Expected source file to be defined');
+         }
          expect(sourceFile.contents).toEqual('a.js content\n');
          expect(sourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
-         expect(sourceFile.rawMap).toEqual(aMap);
+         if (sourceFile.rawMap === null) {
+           return fail('Expected source map to be defined');
+         }
+         expect(sourceFile.rawMap.map).toEqual(aMap);
          expect(sourceFile.sources.length).toEqual(1);
 
          expect(logger.logs.warn[0][0])
              .toContain(
                  `Circular source file mapping dependency: ` +
-                 `${aPath} -> ${aMapPath} -> ${aMapPath}`);
-
-         const innerSourceFile = sourceFile.sources[0]!;
-         expect(innerSourceFile).not.toBe(null!);
-         expect(innerSourceFile.contents).toEqual('inline a.js content\n');
-         expect(innerSourceFile.sourcePath).toEqual(_('/foo/src/a.js'));
-         expect(innerSourceFile.rawMap).toEqual(null);
+                 `${aPath} -> ${aMapPath} -> ${bPath} -> ${aMapPath}`);
+         const innerSourceFile = sourceFile.sources[0];
+         if (innerSourceFile === null) {
+           return fail('Expected source file to be defined');
+         }
+         expect(innerSourceFile.contents).toEqual('b.js content\n');
+         expect(innerSourceFile.sourcePath).toEqual(_('/foo/src/b.js'));
+         // The source-map from b.js was not loaded as it would have caused a cycle
+         expect(innerSourceFile.rawMap).toBe(null);
          expect(innerSourceFile.sources.length).toEqual(0);
        });
 
-    it('should not fail if there is a cyclic dependency in filenames of inline sources', () => {
+    it('should not fail if the filename of an inline source looks like a cyclic dependency', () => {
+      // a.js -> (inline) a.js.map -> (inline) a.js
+      //                              ^^^^^^^^^^^^^
+      // a.js loads despite same name as previous file because it is inline
+
       fs.ensureDir(_('/foo/src'));
-
       const aPath = _('/foo/src/a.js');
-      fs.writeFile(
-          aPath,
-          'a content\n' +
-              fromObject(createRawSourceMap({file: 'a.js', sources: ['b.js']})).toComment());
+      const aMap = createRawSourceMap(
+          {file: 'a.js', sources: ['a.js'], sourcesContent: ['inline original a.js content']});
+      fs.writeFile(aPath, 'a content\n' + fromObject(aMap).toComment());
 
-      const bPath = _('/foo/src/b.js');
-      fs.writeFile(bPath, 'b content');
-      fs.writeFile(
-          _('/foo/src/b.js.map'),
-          JSON.stringify(createRawSourceMap({file: 'b.js', sources: ['c.js']})));
+      const sourceFile = registry.loadSourceFile(aPath);
+      if (sourceFile === null) {
+        return fail('Expected source file to be defined');
+      }
+      expect(sourceFile.sources.length).toEqual(1);
+      expect(sourceFile.sources[0]!.contents).toEqual('inline original a.js content');
+      expect(sourceFile.sources[0]!.sourcePath).toEqual(aPath);
+      expect(sourceFile.sources[0]!.rawMap).toBe(null);
+      expect(sourceFile.sources[0]!.sources).toEqual([]);
 
-      const cPath = _('/foo/src/c.js');
-      fs.writeFile(cPath, 'c content');
-      fs.writeFile(
-          _('/foo/src/c.js.map'),
-          JSON.stringify(createRawSourceMap(
-              {file: 'c.js', sources: ['a.js'], sourcesContent: ['inline a.js content']})));
-
-      expect(() => registry.loadSourceFile(aPath)).not.toThrow();
+      expect(logger.logs.warn.length).toEqual(0);
     });
+
+    it('should not load source-maps (after the initial map) from disk if the source file was inline',
+       () => {
+         // a.js -> (initial) a.js.map -> b.js -> b.js.map -> (inline) c.js -> c.js.map
+         //                                                                    ^^^^^^^^
+         // c.js.map is not loaded because the referencing source file (c.js) was inline
+
+         fs.ensureDir(_('/foo/src'));
+
+         const aPath = _('/foo/src/a.js');
+         fs.writeFile(aPath, 'a.js content\n//# sourceMappingURL=a.js.map');
+         const aMapPath = _('/foo/src/a.js.map');
+         const aMap = createRawSourceMap({file: 'a.js', sources: ['b.js']});
+         fs.writeFile(aMapPath, JSON.stringify(aMap));
+
+         const bPath = _('/foo/src/b.js');
+         fs.writeFile(bPath, 'b.js content\n//# sourceMappingURL=b.js.map');
+         const bMapPath = _('/foo/src/b.js.map');
+         const bMap = createRawSourceMap({
+           file: 'b.js',
+           sources: ['c.js'],
+           sourcesContent: ['c content\n//# sourceMappingURL=c.js.map']
+         });
+         fs.writeFile(bMapPath, JSON.stringify(bMap));
+
+         const cMapPath = _('/foo/src/c.js.map');
+         const cMap = createRawSourceMap({file: 'c.js', sources: ['d.js']});
+         fs.writeFile(cMapPath, JSON.stringify(cMap));
+
+         const sourceFile = registry.loadSourceFile(aPath);
+         if (sourceFile === null) {
+           return fail('Expected source file to be defined');
+         }
+         const bSource = sourceFile.sources[0];
+         if (!bSource) {
+           return fail('Expected source file to be defined');
+         }
+         const cSource = bSource.sources[0];
+         if (!cSource) {
+           return fail('Expected source file to be defined');
+         }
+         // External c.js.map never gets loaded because c.js was inline source
+         expect(cSource.rawMap).toBe(null);
+         expect(cSource.sources).toEqual([]);
+
+         expect(logger.logs.warn.length).toEqual(0);
+       });
 
     for (const {scheme, mappedPath} of
              [{scheme: 'WEBPACK://', mappedPath: '/foo/src/index.ts'},
@@ -342,7 +424,7 @@ runInEachFileSystem(() => {
         }
         expect(originalSource.contents).toEqual('original content');
         expect(originalSource.sourcePath).toEqual(_(mappedPath));
-        expect(originalSource.rawMap).toEqual(null);
+        expect(originalSource.rawMap).toBe(null);
         expect(originalSource.sources).toEqual([]);
       });
 
@@ -366,7 +448,7 @@ runInEachFileSystem(() => {
         }
         expect(originalSource.contents).toEqual('original content');
         expect(originalSource.sourcePath).toEqual(_(mappedPath));
-        expect(originalSource.rawMap).toEqual(null);
+        expect(originalSource.rawMap).toBe(null);
         expect(originalSource.sources).toEqual([]);
       });
     }

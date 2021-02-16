@@ -9,7 +9,12 @@ ts_library(
     ]),
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/sourcemaps",
         "//packages/compiler-cli/src/ngtsc/translator",
+        "@npm//@types/semver",
+        "@npm//semver",
         "@npm//typescript",
     ],
 )

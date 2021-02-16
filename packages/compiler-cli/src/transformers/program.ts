@@ -48,6 +48,17 @@ const LOWER_FIELDS = ['useValue', 'useFactory', 'data', 'id', 'loadChildren'];
  */
 const R3_LOWER_FIELDS = [...LOWER_FIELDS, 'providers', 'imports', 'exports'];
 
+/**
+ * Installs a handler for testing purposes to allow inspection of the temporary program.
+ */
+let tempProgramHandlerForTest: ((program: ts.Program) => void)|null = null;
+export function setTempProgramHandlerForTest(handler: (program: ts.Program) => void): void {
+  tempProgramHandlerForTest = handler;
+}
+export function resetTempProgramHandlerForTest(): void {
+  tempProgramHandlerForTest = null;
+}
+
 const emptyModules: NgAnalyzedModules = {
   ngModules: [],
   ngModuleByPipeOrDirective: new Map(),
@@ -618,6 +629,9 @@ class AngularCompilerProgram implements Program {
     }
 
     const tmpProgram = ts.createProgram(rootNames, this.options, this.hostAdapter, oldTsProgram);
+    if (tempProgramHandlerForTest !== null) {
+      tempProgramHandlerForTest(tmpProgram);
+    }
     const sourceFiles: string[] = [];
     const tsFiles: string[] = [];
     tmpProgram.getSourceFiles().forEach(sf => {
@@ -654,7 +668,10 @@ class AngularCompilerProgram implements Program {
     // - we cache all the files in the hostAdapter
     // - new new stubs use the exactly same imports/exports as the old once (we assert that in
     // hostAdapter.updateGeneratedFile).
-    if (tsStructureIsReused(tmpProgram) !== StructureIsReused.Completely) {
+    // TS 4.1+ stores the reuse state in the new program
+    const checkReuseProgram =
+        (ts.versionMajorMinor as string) === '4.0' ? tmpProgram : this._tsProgram;
+    if (tsStructureIsReused(checkReuseProgram) !== StructureIsReused.Completely) {
       throw new Error(`Internal Error: The structure of the program changed during codegen.`);
     }
   }

@@ -8,8 +8,8 @@
 
 import {Injector, Type} from '@angular/core';
 
-import {IInjectorService, INgModelController} from './angular1';
-import {DOWNGRADED_MODULE_COUNT_KEY, UPGRADE_APP_TYPE_KEY} from './constants';
+import {element as angularElement, IAugmentedJQuery, IInjectorService, INgModelController, IRootScopeService} from './angular1';
+import {$ROOT_ELEMENT, $ROOT_SCOPE, DOWNGRADED_MODULE_COUNT_KEY, UPGRADE_APP_TYPE_KEY} from './constants';
 
 const DIRECTIVE_PREFIX_REGEXP = /^(?:x|data)[:\-_]/i;
 const DIRECTIVE_SPECIAL_CHARS_REGEXP = /[:\-_]+(.)/g;
@@ -25,8 +25,44 @@ export function onError(e: any) {
   throw e;
 }
 
+/**
+ * Clean the jqLite/jQuery data on the element and all its descendants.
+ * Equivalent to how jqLite/jQuery invoke `cleanData()` on an Element when removed:
+ *   https://github.com/angular/angular.js/blob/2e72ea13fa98bebf6ed4b5e3c45eaf5f990ed16f/src/jqLite.js#L349-L355
+ *   https://github.com/jquery/jquery/blob/6984d1747623dbc5e87fd6c261a5b6b1628c107c/src/manipulation.js#L182
+ *
+ * NOTE:
+ * `cleanData()` will also invoke the AngularJS `$destroy` DOM event on the element:
+ *   https://github.com/angular/angular.js/blob/2e72ea13fa98bebf6ed4b5e3c45eaf5f990ed16f/src/Angular.js#L1932-L1945
+ *
+ * @param node The DOM node whose data needs to be cleaned.
+ */
+export function cleanData(node: Node): void {
+  angularElement.cleanData([node]);
+  if (isParentNode(node)) {
+    angularElement.cleanData(node.querySelectorAll('*'));
+  }
+}
+
 export function controllerKey(name: string): string {
   return '$' + name + 'Controller';
+}
+
+/**
+ * Destroy an AngularJS app given the app `$injector`.
+ *
+ * NOTE: Destroying an app is not officially supported by AngularJS, but try to do our best by
+ *       destroying `$rootScope` and clean the jqLite/jQuery data on `$rootElement` and all
+ *       descendants.
+ *
+ * @param $injector The `$injector` of the AngularJS app to destroy.
+ */
+export function destroyApp($injector: IInjectorService): void {
+  const $rootElement: IAugmentedJQuery = $injector.get($ROOT_ELEMENT);
+  const $rootScope: IRootScopeService = $injector.get($ROOT_SCOPE);
+
+  $rootScope.$destroy();
+  cleanData($rootElement[0]);
 }
 
 export function directiveNormalize(name: string): string {
@@ -51,6 +87,10 @@ export function getUpgradeAppType($injector: IInjectorService): UpgradeAppType {
 
 export function isFunction(value: any): value is Function {
   return typeof value === 'function';
+}
+
+function isParentNode(node: Node|ParentNode): node is ParentNode {
+  return isFunction((node as unknown as ParentNode).querySelectorAll);
 }
 
 export function validateInjectionKey(
@@ -97,7 +137,7 @@ export function validateInjectionKey(
 export class Deferred<R> {
   promise: Promise<R>;
   // TODO(issue/24571): remove '!'.
-  resolve!: (value?: R|PromiseLike<R>) => void;
+  resolve!: (value: R|PromiseLike<R>) => void;
   // TODO(issue/24571): remove '!'.
   reject!: (error?: any) => void;
 

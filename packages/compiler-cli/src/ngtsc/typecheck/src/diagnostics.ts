@@ -91,7 +91,8 @@ export function translateDiagnostic(
   if (diagnostic.file === undefined || diagnostic.start === undefined) {
     return null;
   }
-  const fullMapping = getTemplateMapping(diagnostic.file, diagnostic.start, resolver);
+  const fullMapping = getTemplateMapping(
+      diagnostic.file, diagnostic.start, resolver, /*isDiagnosticsRequest*/ true);
   if (fullMapping === null) {
     return null;
   }

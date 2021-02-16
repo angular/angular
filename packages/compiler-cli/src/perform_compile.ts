@@ -9,7 +9,8 @@
 import {isSyntaxError, Position} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, ReadonlyFileSystem, relative, resolve} from '../src/ngtsc/file_system';
+import {NgCompilerOptions} from './ngtsc/core/api';
 
 import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
@@ -109,10 +110,8 @@ export function formatDiagnostics(
 }
 
 /** Used to read configuration files. */
-// TODO(ayazhafiz): split FileSystem into a ReadonlyFileSystem and make this a
-// subset of that.
-export type ConfigurationHost =
-    Pick<FileSystem, 'readFile'|'exists'|'lstat'|'resolve'|'join'|'dirname'|'extname'|'pwd'>;
+export type ConfigurationHost = Pick<
+    ReadonlyFileSystem, 'readFile'|'exists'|'lstat'|'resolve'|'join'|'dirname'|'extname'|'pwd'>;
 
 export interface ParsedConfiguration {
   project: string;
@@ -134,58 +133,44 @@ export function calcProjectFileAndBasePath(
   return {projectFile, basePath};
 }
 
-export function createNgCompilerOptions(
-    basePath: string, config: any, tsOptions: ts.CompilerOptions): api.CompilerOptions {
-  // enableIvy `ngtsc` is an alias for `true`.
-  const {angularCompilerOptions = {}} = config;
-  const {enableIvy} = angularCompilerOptions;
-  angularCompilerOptions.enableIvy = enableIvy !== false && enableIvy !== 'tsc';
-
-  return {...tsOptions, ...angularCompilerOptions, genDir: basePath, basePath};
-}
-
 export function readConfiguration(
-    project: string, existingOptions?: ts.CompilerOptions,
+    project: string, existingOptions?: api.CompilerOptions,
     host: ConfigurationHost = getFileSystem()): ParsedConfiguration {
   try {
-    const {projectFile, basePath} = calcProjectFileAndBasePath(project, host);
+    const fs = getFileSystem();
 
-    const readExtendedConfigFile =
-        (configFile: string, existingConfig?: any): {config?: any, error?: ts.Diagnostic} => {
-          const {config, error} =
-              ts.readConfigFile(configFile, file => host.readFile(host.resolve(file)));
+    const readConfigFile = (configFile: string) =>
+        ts.readConfigFile(configFile, file => host.readFile(host.resolve(file)));
+    const readAngularCompilerOptions =
+        (configFile: string, parentOptions: NgCompilerOptions = {}): NgCompilerOptions => {
+          const {config, error} = readConfigFile(configFile);
 
           if (error) {
-            return {error};
+            // Errors are handled later on by 'parseJsonConfigFileContent'
+            return parentOptions;
           }
 
           // we are only interested into merging 'angularCompilerOptions' as
           // other options like 'compilerOptions' are merged by TS
-          const baseConfig = existingConfig || config;
-          if (existingConfig) {
-            baseConfig.angularCompilerOptions = {
-              ...config.angularCompilerOptions,
-              ...baseConfig.angularCompilerOptions
-            };
-          }
+          const existingNgCompilerOptions = {...config.angularCompilerOptions, ...parentOptions};
 
-          if (config.extends) {
-            let extendedConfigPath = host.resolve(host.dirname(configFile), config.extends);
-            extendedConfigPath = host.extname(extendedConfigPath) ?
-                extendedConfigPath :
-                absoluteFrom(`${extendedConfigPath}.json`);
+          if (config.extends && typeof config.extends === 'string') {
+            const extendedConfigPath = getExtendedConfigPath(
+                configFile, config.extends, host, fs,
+            );
 
-            if (host.exists(extendedConfigPath)) {
-              // Call read config recursively as TypeScript only merges CompilerOptions
-              return readExtendedConfigFile(extendedConfigPath, baseConfig);
+            if (extendedConfigPath !== null) {
+              // Call readAngularCompilerOptions recursively to merge NG Compiler options
+              return readAngularCompilerOptions(extendedConfigPath, existingNgCompilerOptions);
             }
           }
 
-          return {config: baseConfig};
+          return existingNgCompilerOptions;
         };
 
-    const {config, error} = readExtendedConfigFile(projectFile);
-
+    const {projectFile, basePath} = calcProjectFileAndBasePath(project, host);
+    const configFileName = host.resolve(host.pwd(), projectFile);
+    const {config, error} = readConfigFile(projectFile);
     if (error) {
       return {
         project,
@@ -195,19 +180,21 @@ export function readConfiguration(
         emitFlags: api.EmitFlags.Default
       };
     }
-    const parseConfigHost = {
-      useCaseSensitiveFileNames: true,
-      fileExists: host.exists.bind(host),
-      readDirectory: ts.sys.readDirectory,
-      readFile: ts.sys.readFile
+    const existingCompilerOptions: api.CompilerOptions = {
+      genDir: basePath,
+      basePath,
+      ...readAngularCompilerOptions(configFileName),
+      ...existingOptions,
     };
-    const configFileName = host.resolve(host.pwd(), projectFile);
-    const parsed = ts.parseJsonConfigFileContent(
-        config, parseConfigHost, basePath, existingOptions, configFileName);
-    const rootNames = parsed.fileNames;
-    const projectReferences = parsed.projectReferences;
 
-    const options = createNgCompilerOptions(basePath, config, parsed.options);
+    const parseConfigHost = createParseConfigHost(host, fs);
+    const {options, errors, fileNames: rootNames, projectReferences} =
+        ts.parseJsonConfigFileContent(
+            config, parseConfigHost, basePath, existingCompilerOptions, configFileName);
+
+    // Coerce to boolean as `enableIvy` can be `ngtsc|true|false|undefined` here.
+    options.enableIvy = !!(options.enableIvy ?? true);
+
     let emitFlags = api.EmitFlags.Default;
     if (!(options.skipMetadataEmit || options.flatModuleOutFile)) {
       emitFlags |= api.EmitFlags.Metadata;
@@ -215,14 +202,7 @@ export function readConfiguration(
     if (options.skipTemplateCodegen) {
       emitFlags = emitFlags & ~api.EmitFlags.Codegen;
     }
-    return {
-      project: projectFile,
-      rootNames,
-      projectReferences,
-      options,
-      errors: parsed.errors,
-      emitFlags
-    };
+    return {project: projectFile, rootNames, projectReferences, options, errors, emitFlags};
   } catch (e) {
     const errors: ts.Diagnostic[] = [{
       category: ts.DiagnosticCategory.Error,
@@ -237,6 +217,47 @@ export function readConfiguration(
   }
 }
 
+function createParseConfigHost(host: ConfigurationHost, fs = getFileSystem()): ts.ParseConfigHost {
+  return {
+    fileExists: host.exists.bind(host),
+    readDirectory: ts.sys.readDirectory,
+    readFile: host.readFile.bind(host),
+    useCaseSensitiveFileNames: fs.isCaseSensitive(),
+  };
+}
+
+function getExtendedConfigPath(
+    configFile: string, extendsValue: string, host: ConfigurationHost,
+    fs: FileSystem): AbsoluteFsPath|null {
+  let extendedConfigPath: AbsoluteFsPath|null = null;
+
+  if (extendsValue.startsWith('.') || fs.isRooted(extendsValue)) {
+    extendedConfigPath = host.resolve(host.dirname(configFile), extendsValue);
+    extendedConfigPath = host.extname(extendedConfigPath) ?
+        extendedConfigPath :
+        absoluteFrom(`${extendedConfigPath}.json`);
+  } else {
+    const parseConfigHost = createParseConfigHost(host, fs);
+
+    // Path isn't a rooted or relative path, resolve like a module.
+    const {
+      resolvedModule,
+    } =
+        ts.nodeModuleNameResolver(
+            extendsValue, configFile,
+            {moduleResolution: ts.ModuleResolutionKind.NodeJs, resolveJsonModule: true},
+            parseConfigHost);
+    if (resolvedModule) {
+      extendedConfigPath = absoluteFrom(resolvedModule.resolvedFileName);
+    }
+  }
+
+  if (extendedConfigPath !== null && host.exists(extendedConfigPath)) {
+    return extendedConfigPath;
+  }
+
+  return null;
+}
 export interface PerformCompilationResult {
   diagnostics: Diagnostics;
   program?: api.Program;

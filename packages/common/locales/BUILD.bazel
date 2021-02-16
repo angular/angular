@@ -23,7 +23,7 @@ pkg_npm(
         # dependencies in case require was called.
         # We don't actually import anything in the locale code so we can
         # null out the require reference passed into the module.
-        "factory\(require, exports\)": "factory(null, exports)",
+        "factory\\(require, exports\\)": "factory(null, exports)",
     },
     deps = [":locales"],
 )

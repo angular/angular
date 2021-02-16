@@ -46,13 +46,12 @@
   border-radius: 4px 0 0 4px;
 }
 button {
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   background-color: #eee;
   border: none;
   padding: 5px 10px;
   border-radius: 4px;
   cursor: pointer;
-  cursor: hand;
 }
 button:hover {
   background-color: #cfd8dc;

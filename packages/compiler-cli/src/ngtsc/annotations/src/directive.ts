@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DependencyMetadata, R3DirectiveDef, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, getSafePropertyAccessString, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DependencyMetadata, R3DirectiveDef, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, R3ResolvedDependencyType, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {emitDistinctChangesOnlyDefaultValue} from '@angular/compiler/src/core';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -41,6 +42,8 @@ export interface DirectiveHandlerData {
   providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
   inputs: ClassPropertyMapping;
   outputs: ClassPropertyMapping;
+  isPoisoned: boolean;
+  isStructural: boolean;
 }
 
 export class DirectiveDecoratorHandler implements
@@ -106,7 +109,9 @@ export class DirectiveDecoratorHandler implements
             this.annotateForClosureCompiler),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
         typeCheckMeta: extractDirectiveTypeCheckMeta(node, directiveResult.inputs, this.reflector),
-        providersRequiringFactory
+        providersRequiringFactory,
+        isPoisoned: false,
+        isStructural: directiveResult.isStructural,
       }
     };
   }
@@ -126,6 +131,8 @@ export class DirectiveDecoratorHandler implements
       isComponent: false,
       baseClass: analysis.baseClass,
       ...analysis.typeCheckMeta,
+      isPoisoned: analysis.isPoisoned,
+      isStructural: analysis.isStructural,
     });
 
     this.injectableRegistry.registerInjectable(node);
@@ -223,6 +230,7 @@ export function extractDirectiveMetadata(
   metadata: R3DirectiveMetadata,
   inputs: ClassPropertyMapping,
   outputs: ClassPropertyMapping,
+  isStructural: boolean;
 }|undefined {
   let directive: Map<string, ts.Expression>;
   if (decorator === null || decorator.args === null || decorator.args.length === 0) {
@@ -349,6 +357,17 @@ export function extractDirectiveMetadata(
     ctorDeps = unwrapConstructorDependencies(rawCtorDeps);
   }
 
+  const isStructural = ctorDeps !== null && ctorDeps !== 'invalid' && ctorDeps.some(dep => {
+    if (dep.resolved !== R3ResolvedDependencyType.Token || !(dep.token instanceof ExternalExpr)) {
+      return false;
+    }
+    if (dep.token.value.moduleName !== '@angular/core' || dep.token.value.name !== 'TemplateRef') {
+      return false;
+    }
+
+    return true;
+  });
+
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
   const type = wrapTypeReference(reflector, clazz);
@@ -383,6 +402,7 @@ export function extractDirectiveMetadata(
     metadata,
     inputs,
     outputs,
+    isStructural,
   };
 }
 
@@ -417,6 +437,7 @@ export function extractQueryMetadata(
   let read: Expression|null = null;
   // The default value for descendants is true for every decorator except @ContentChildren.
   let descendants: boolean = name !== 'ContentChildren';
+  let emitDistinctChangesOnly: boolean = emitDistinctChangesOnlyDefaultValue;
   if (args.length === 2) {
     const optionsExpr = unwrapExpression(args[1]);
     if (!ts.isObjectLiteralExpression(optionsExpr)) {
@@ -437,6 +458,17 @@ export function extractQueryMetadata(
             descendantsExpr, descendantsValue, `@${name} options.descendants must be a boolean`);
       }
       descendants = descendantsValue;
+    }
+
+    if (options.has('emitDistinctChangesOnly')) {
+      const emitDistinctChangesOnlyExpr = options.get('emitDistinctChangesOnly')!;
+      const emitDistinctChangesOnlyValue = evaluator.evaluate(emitDistinctChangesOnlyExpr);
+      if (typeof emitDistinctChangesOnlyValue !== 'boolean') {
+        throw createValueHasWrongTypeError(
+            emitDistinctChangesOnlyExpr, emitDistinctChangesOnlyValue,
+            `@${name} options.emitDistinctChangesOnlys must be a boolean`);
+      }
+      emitDistinctChangesOnly = emitDistinctChangesOnlyValue;
     }
 
     if (options.has('static')) {
@@ -461,6 +493,7 @@ export function extractQueryMetadata(
     descendants,
     read,
     static: isStatic,
+    emitDistinctChangesOnly,
   };
 }
 
@@ -719,7 +752,11 @@ export function extractHostBindings(
             hostPropertyName = resolved;
           }
 
-          bindings.properties[hostPropertyName] = member.name;
+          // Since this is a decorator, we know that the value is a class member. Always access it
+          // through `this` so that further down the line it can't be confused for a literal value
+          // (e.g. if there's a property called `true`). There is no size penalty, because all
+          // values (except literals) are converted to `ctx.propName` eventually.
+          bindings.properties[hostPropertyName] = getSafePropertyAccessString('this', member.name);
         });
       });
 

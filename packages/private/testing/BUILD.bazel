@@ -30,5 +30,5 @@ ng_module(
 genrule(
     name = "angular_ivy_enabled",
     outs = ["src/angular_ivy_enabled.ts"],
-    cmd = "echo export const ivyEnabled = \"'True'.toString() == '$(angular_ivy_enabled)'\"\; > $@",
+    cmd = "echo export const ivyEnabled = \"'True'.toString() == '$(angular_ivy_enabled)'\" > $@",
 )

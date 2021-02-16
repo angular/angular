@@ -5,6 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {R3PartialDeclaration} from '@angular/compiler';
+import {AbsoluteFsPath} from '../../../src/ngtsc/file_system';
 import {AstObject} from '../ast/ast_value';
 import {DeclarationScope} from './declaration_scope';
 import {EmitScope} from './emit_scopes/emit_scope';
@@ -18,12 +20,15 @@ export const NO_STATEMENTS: Readonly<any[]> = [] as const;
  * This class is responsible for linking all the partial declarations found in a single file.
  */
 export class FileLinker<TConstantScope, TStatement, TExpression> {
-  private linkerSelector = new PartialLinkerSelector<TExpression>();
+  private linkerSelector: PartialLinkerSelector<TStatement, TExpression>;
   private emitScopes = new Map<TConstantScope, EmitScope<TStatement, TExpression>>();
 
   constructor(
       private linkerEnvironment: LinkerEnvironment<TStatement, TExpression>,
-      private sourceUrl: string, readonly code: string) {}
+      sourceUrl: AbsoluteFsPath, code: string) {
+    this.linkerSelector =
+        new PartialLinkerSelector<TStatement, TExpression>(this.linkerEnvironment, sourceUrl, code);
+  }
 
   /**
    * Return true if the given callee name matches a partial declaration that can be linked.
@@ -40,7 +45,8 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
    *
    * @param declarationFn the name of the function used to declare the partial declaration - e.g.
    *     `ɵɵngDeclareDirective`.
-   * @param args the arguments passed to the declaration function.
+   * @param args the arguments passed to the declaration function, should be a single object that
+   *     corresponds to the `R3DeclareDirectiveMetadata` or `R3DeclareComponentMetadata` interfaces.
    * @param declarationScope the scope that contains this call to the declaration function.
    */
   linkPartialDeclaration(
@@ -52,14 +58,14 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
               args.length}.`);
     }
 
-    const metaObj = AstObject.parse(args[0], this.linkerEnvironment.host);
+    const metaObj =
+        AstObject.parse<R3PartialDeclaration, TExpression>(args[0], this.linkerEnvironment.host);
     const ngImport = metaObj.getNode('ngImport');
     const emitScope = this.getEmitScope(ngImport, declarationScope);
 
-    const version = metaObj.getNumber('version');
+    const version = metaObj.getString('version');
     const linker = this.linkerSelector.getLinker(declarationFn, version);
-    const definition =
-        linker.linkPartialDeclaration(this.sourceUrl, this.code, emitScope.constantPool, metaObj);
+    const definition = linker.linkPartialDeclaration(emitScope.constantPool, metaObj);
 
     return emitScope.translateDefinition(definition);
   }
@@ -83,11 +89,13 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
     const constantScope = declarationScope.getConstantScopeRef(ngImport);
     if (constantScope === null) {
       // There is no constant scope so we will emit extra statements into the definition IIFE.
-      return new IifeEmitScope(ngImport, this.linkerEnvironment);
+      return new IifeEmitScope(
+          ngImport, this.linkerEnvironment.translator, this.linkerEnvironment.factory);
     }
 
     if (!this.emitScopes.has(constantScope)) {
-      this.emitScopes.set(constantScope, new EmitScope(ngImport, this.linkerEnvironment));
+      this.emitScopes.set(
+          constantScope, new EmitScope(ngImport, this.linkerEnvironment.translator));
     }
     return this.emitScopes.get(constantScope)!;
   }

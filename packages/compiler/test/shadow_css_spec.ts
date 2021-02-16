@@ -10,7 +10,7 @@ import {CssRule, processRules, ShadowCss} from '@angular/compiler/src/shadow_css
 import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
 
 {
-  describe('ShadowCss', function() {
+  describe('ShadowCss', () => {
     function s(css: string, contentAttr: string, hostAttr: string = '') {
       const shadowCss = new ShadowCss();
       const shim = shadowCss.shimCssText(css, contentAttr, hostAttr);
@@ -110,6 +110,15 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(s('one[attr="va lue"] {}', 'contenta')).toEqual('one[attr="va lue"][contenta] {}');
       expect(s('one[attr] {}', 'contenta')).toEqual('one[attr][contenta] {}');
       expect(s('[is="one"] {}', 'contenta')).toEqual('[is="one"][contenta] {}');
+    });
+
+    it('should handle escaped sequences in selectors', () => {
+      expect(s('one\\/two {}', 'contenta')).toEqual('one\\/two[contenta] {}');
+      expect(s('one\\:two {}', 'contenta')).toEqual('one\\:two[contenta] {}');
+      expect(s('one\\\\:two {}', 'contenta')).toEqual('one\\\\[contenta]:two {}');
+      expect(s('.one\\:two {}', 'contenta')).toEqual('.one\\:two[contenta] {}');
+      expect(s('.one\\:two .three\\:four {}', 'contenta'))
+          .toEqual('.one\\:two[contenta] .three\\:four[contenta] {}');
     });
 
     describe((':host'), () => {

@@ -1473,4 +1473,63 @@ describe('host bindings', () => {
               /Attempted to set attribute `dynamic` on a container node. Host bindings are not valid on ng-container or ng-template./);
     });
   });
+
+  onlyInIvy('VE does not support this').describe('host bindings on edge case properties', () => {
+    it('should handle host bindings with the same name as a primitive value', () => {
+      @Directive({
+        selector: '[dir]',
+        host: {
+          '[class.a]': 'true',
+          '[class.b]': 'false',
+        }
+      })
+      class MyDirective {
+        @HostBinding('class.c') true: any;
+        @HostBinding('class.d') false: any;
+      }
+
+      @Component({template: '<span dir></span>'})
+      class MyApp {
+        @ViewChild(MyDirective) dir!: MyDirective;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyApp, MyDirective]});
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+      const span = fixture.nativeElement.querySelector('span');
+      expect(span.className).toBe('a');
+
+      fixture.componentInstance.dir.true = 1;
+      fixture.componentInstance.dir.false = 2;
+      fixture.detectChanges();
+
+      expect(span.className).toBe('a c d');
+    });
+
+    it('should handle host bindings with quoted names', () => {
+      @Directive({selector: '[dir]'})
+      class MyDirective {
+        @HostBinding('class.a') 'is-a': any;
+        @HostBinding('class.b') 'is-"b"': any = true;
+        @HostBinding('class.c') '"is-c"': any;
+      }
+
+      @Component({template: '<span dir></span>'})
+      class MyApp {
+        @ViewChild(MyDirective) dir!: MyDirective;
+      }
+
+      TestBed.configureTestingModule({declarations: [MyApp, MyDirective]});
+      const fixture = TestBed.createComponent(MyApp);
+      fixture.detectChanges();
+      const span = fixture.nativeElement.querySelector('span');
+      expect(span.className).toBe('b');
+
+      fixture.componentInstance.dir['is-a'] = 1;
+      fixture.componentInstance.dir['"is-c"'] = 2;
+      fixture.detectChanges();
+
+      expect(span.className).toBe('b a c');
+    });
+  });
 });

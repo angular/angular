@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, getFileSystem, isRoot, resolve} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem, PathManipulation} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {PathMappings} from '../path_mappings';
 
@@ -34,7 +34,7 @@ export function getBasePaths(
   const fs = getFileSystem();
   const basePaths = [sourceDirectory];
   if (pathMappings) {
-    const baseUrl = resolve(pathMappings.baseUrl);
+    const baseUrl = fs.resolve(pathMappings.baseUrl);
     if (fs.isRoot(baseUrl)) {
       logger.warn(
           `The provided pathMappings baseUrl is the root path ${baseUrl}.\n` +
@@ -58,7 +58,7 @@ export function getBasePaths(
     }));
   }
 
-  const dedupedBasePaths = dedupePaths(basePaths);
+  const dedupedBasePaths = dedupePaths(fs, basePaths);
 
   // We want to ensure that the `sourceDirectory` is included when it is a node_modules folder.
   // Otherwise our entry-point finding algorithm would fail to walk that folder.
@@ -103,10 +103,10 @@ export function trackDuration<T = void>(task: () => T extends Promise<unknown>? 
  * (Note that we do not get `d` even though `d/e` and `d/f` share a base directory, since `d` is not
  * one of the base paths.)
  */
-export function dedupePaths(paths: AbsoluteFsPath[]): AbsoluteFsPath[] {
+function dedupePaths(fs: PathManipulation, paths: AbsoluteFsPath[]): AbsoluteFsPath[] {
   const root: Node = {children: new Map()};
   for (const path of paths) {
-    addPath(root, path);
+    addPath(fs, root, path);
   }
   return flattenTree(root);
 }
@@ -114,9 +114,9 @@ export function dedupePaths(paths: AbsoluteFsPath[]): AbsoluteFsPath[] {
 /**
  * Add a path (defined by the `segments`) to the current `node` in the tree.
  */
-function addPath(root: Node, path: AbsoluteFsPath): void {
+function addPath(fs: PathManipulation, root: Node, path: AbsoluteFsPath): void {
   let node = root;
-  if (!isRoot(path)) {
+  if (!fs.isRoot(path)) {
     const segments = path.split('/');
     for (let index = 0; index < segments.length; index++) {
       if (isLeaf(node)) {

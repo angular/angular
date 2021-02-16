@@ -236,7 +236,7 @@ export function provideRoutes(routes: Routes): any {
  * The following values have been [deprecated](guide/releases#deprecation-practices) since v11,
  * and should not be used for new applications.
  *
- * * 'enabled' - This option is 1:1 replaceable with `enabledNonBlocking`.
+ * * 'enabled' - This option is 1:1 replaceable with `enabledBlocking`.
  *
  * @see `forRoot()`
  *
@@ -360,7 +360,15 @@ export interface ExtraOptions {
    * Defines how the router merges parameters, data, and resolved data from parent to child
    * routes. By default ('emptyOnly'), inherits parent parameters only for
    * path-less or component-less routes.
+   *
    * Set to 'always' to enable unconditional inheritance of parent parameters.
+   *
+   * Note that when dealing with matrix parameters, "parent" refers to the parent `Route`
+   * config which does not necessarily mean the "URL segment to the left". When the `Route` `path`
+   * contains multiple segments, the matrix parameters must appear on the last segment. For example,
+   * matrix parameters for `{path: 'a/b', component: MyComp}` should appear as `a/b;foo=bar` and not
+   * `a;foo=bar/b`.
+   *
    */
   paramsInheritanceStrategy?: 'emptyOnly'|'always';
 
@@ -403,7 +411,9 @@ export interface ExtraOptions {
    * ];
    * ```
    *
-   * From the `ContainerComponent`, this will not work:
+   * From the `ContainerComponent`, you should be able to navigate to `AComponent` using
+   * the following `routerLink`, but it will not work if `relativeLinkResolution` is set
+   * to `'legacy'`:
    *
    * `<a [routerLink]="['./a']">Link to A</a>`
    *
@@ -411,7 +421,8 @@ export interface ExtraOptions {
    *
    * `<a [routerLink]="['../a']">Link to A</a>`
    *
-   * In other words, you're required to use `../` rather than `./`.
+   * In other words, you're required to use `../` rather than `./` when the relative link
+   * resolution is set to `'legacy'`.
    *
    * The default in v11 is `corrected`.
    */

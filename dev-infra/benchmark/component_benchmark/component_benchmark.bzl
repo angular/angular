@@ -1,6 +1,7 @@
 load("//dev-infra/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", "ng_rollup_bundle")
 load("//tools:defaults.bzl", "ng_module")
-load("@npm//@bazel/typescript:index.bzl", "ts_devserver", "ts_library")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("@npm//@bazel/concatjs:index.bzl", "concatjs_devserver")
 load(":benchmark_test.bzl", "benchmark_test")
 
 def copy_default_file(origin, destination):
@@ -113,7 +114,7 @@ def component_benchmark(
         tsconfig = "//dev-infra/benchmark/component_benchmark:tsconfig-e2e.json",
     )
 
-    # Bundle the application (needed by ts_devserver).
+    # Bundle the application (needed by concatjs_devserver).
     ng_rollup_bundle(
         name = app_main,
         entry_point = entry_point,
@@ -130,7 +131,7 @@ def component_benchmark(
     )
 
     # The server for our application.
-    ts_devserver(
+    concatjs_devserver(
         name = server,
         bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
         port = 4200,

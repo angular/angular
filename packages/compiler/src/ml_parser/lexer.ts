@@ -550,7 +550,7 @@ class _Tokenizer {
       throw e;
     }
 
-    const contentTokenType = this._getTagDefinition(tagName).contentType;
+    const contentTokenType = this._getTagDefinition(tagName).getContentType(prefix);
 
     if (contentTokenType === TagContentType.RAW_TEXT) {
       this._consumeRawTextWithTagClose(prefix, tagName, false);
@@ -560,7 +560,7 @@ class _Tokenizer {
   }
 
   private _consumeRawTextWithTagClose(prefix: string, tagName: string, decodeEntities: boolean) {
-    const textToken = this._consumeRawText(decodeEntities, () => {
+    this._consumeRawText(decodeEntities, () => {
       if (!this._attemptCharCode(chars.$LT)) return false;
       if (!this._attemptCharCode(chars.$SLASH)) return false;
       this._attemptCharCodeUntilFn(isNotWhitespace);

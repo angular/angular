@@ -296,7 +296,7 @@ function createNewSegmentGroup(
     // if we start with an object literal, we need to reuse the path part from the segment
     if (i === 0 && isMatrixParams(commands[0])) {
       const p = segmentGroup.segments[startIndex];
-      paths.push(new UrlSegment(p.path, commands[0]));
+      paths.push(new UrlSegment(p.path, stringify(commands[0])));
       i++;
       continue;
     }

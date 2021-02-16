@@ -135,6 +135,7 @@ ts_library(
         ":test_utils",
         "//packages/compiler",
         "//packages/compiler-cli",
+        "@npm//typescript",
     ],
 )
 

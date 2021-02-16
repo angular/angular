@@ -7,9 +7,9 @@
  */
 
 import {HttpRequest} from '@angular/common/http/src/request';
-import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpResponse, HttpResponseBase, HttpUploadProgressEvent} from '@angular/common/http/src/response';
+import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpResponse, HttpResponseBase, HttpStatusCode, HttpUploadProgressEvent} from '@angular/common/http/src/response';
 import {HttpXhrBackend} from '@angular/common/http/src/xhr';
-import {ddescribe, describe, fit, it} from '@angular/core/testing/src/testing_internal';
+import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {Observable} from 'rxjs';
 import {toArray} from 'rxjs/operators';
 
@@ -78,39 +78,42 @@ const XSSI_PREFIX = ')]}\'\n';
     });
     it('handles a text response', () => {
       const events = trackEvents(backend.handle(TEST_POST));
-      factory.mock.mockFlush(200, 'OK', 'some response');
+      factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'some response');
       expect(events.length).toBe(2);
       expect(events[1].type).toBe(HttpEventType.Response);
       expect(events[1] instanceof HttpResponse).toBeTruthy();
       const res = events[1] as HttpResponse<string>;
       expect(res.body).toBe('some response');
-      expect(res.status).toBe(200);
+      expect(res.status).toBe(HttpStatusCode.Ok);
       expect(res.statusText).toBe('OK');
     });
     it('handles a json response', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
-      factory.mock.mockFlush(200, 'OK', JSON.stringify({data: 'some data'}));
+      factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', JSON.stringify({data: 'some data'}));
       expect(events.length).toBe(2);
       const res = events[1] as HttpResponse<{data: string}>;
       expect(res.body!.data).toBe('some data');
     });
     it('handles a blank json response', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
-      factory.mock.mockFlush(200, 'OK', '');
+      factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', '');
       expect(events.length).toBe(2);
       const res = events[1] as HttpResponse<{data: string}>;
       expect(res.body).toBeNull();
     });
     it('handles a json error response', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
-      factory.mock.mockFlush(500, 'Error', JSON.stringify({data: 'some data'}));
+      factory.mock.mockFlush(
+          HttpStatusCode.InternalServerError, 'Error', JSON.stringify({data: 'some data'}));
       expect(events.length).toBe(2);
       const res = events[1] as any as HttpErrorResponse;
       expect(res.error!.data).toBe('some data');
     });
     it('handles a json error response with XSSI prefix', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
-      factory.mock.mockFlush(500, 'Error', XSSI_PREFIX + JSON.stringify({data: 'some data'}));
+      factory.mock.mockFlush(
+          HttpStatusCode.InternalServerError, 'Error',
+          XSSI_PREFIX + JSON.stringify({data: 'some data'}));
       expect(events.length).toBe(2);
       const res = events[1] as any as HttpErrorResponse;
       expect(res.error!.data).toBe('some data');
@@ -118,14 +121,15 @@ const XSSI_PREFIX = ')]}\'\n';
     it('handles a json string response', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
       expect(factory.mock.responseType).toEqual('text');
-      factory.mock.mockFlush(200, 'OK', JSON.stringify('this is a string'));
+      factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', JSON.stringify('this is a string'));
       expect(events.length).toBe(2);
       const res = events[1] as HttpResponse<string>;
       expect(res.body).toEqual('this is a string');
     });
     it('handles a json response with an XSSI prefix', () => {
       const events = trackEvents(backend.handle(TEST_POST.clone({responseType: 'json'})));
-      factory.mock.mockFlush(200, 'OK', XSSI_PREFIX + JSON.stringify({data: 'some data'}));
+      factory.mock.mockFlush(
+          HttpStatusCode.Ok, 'OK', XSSI_PREFIX + JSON.stringify({data: 'some data'}));
       expect(events.length).toBe(2);
       const res = events[1] as HttpResponse<{data: string}>;
       expect(res.body!.data).toBe('some data');
@@ -136,7 +140,7 @@ const XSSI_PREFIX = ')]}\'\n';
         expect(err.error).toBe('this is the error');
         done();
       });
-      factory.mock.mockFlush(400, 'Bad Request', 'this is the error');
+      factory.mock.mockFlush(HttpStatusCode.BadRequest, 'Bad Request', 'this is the error');
     });
     it('emits real errors via the error path', done => {
       backend.handle(TEST_POST).subscribe(undefined, (err: HttpErrorResponse) => {
@@ -147,6 +151,17 @@ const XSSI_PREFIX = ')]}\'\n';
       });
       factory.mock.mockErrorEvent(new Error('blah'));
     });
+    it('emits timeout if the request times out', done => {
+      backend.handle(TEST_POST).subscribe({
+        error: (error: HttpErrorResponse) => {
+          expect(error instanceof HttpErrorResponse).toBeTrue();
+          expect(error.error instanceof Error).toBeTrue();
+          expect(error.url).toBe('/test');
+          done();
+        },
+      });
+      factory.mock.mockTimeoutEvent(new Error('timeout'));
+    });
     it('avoids abort a request when fetch operation is completed', done => {
       const abort = jasmine.createSpy('abort');
 
@@ -156,7 +171,14 @@ const XSSI_PREFIX = ')]}\'\n';
       });
 
       factory.mock.abort = abort;
-      factory.mock.mockFlush(200, 'OK', 'Done');
+      factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Done');
+    });
+    it('emits an error when browser cancels a request', done => {
+      backend.handle(TEST_POST).subscribe(undefined, (err: HttpErrorResponse) => {
+        expect(err instanceof HttpErrorResponse).toBe(true);
+        done();
+      });
+      factory.mock.mockAbortEvent();
     });
     describe('progress events', () => {
       it('are emitted for download progress', done => {
@@ -187,7 +209,7 @@ const XSSI_PREFIX = ')]}\'\n';
         factory.mock.mockDownloadProgressEvent(100, 300);
         factory.mock.responseText = 'download';
         factory.mock.mockDownloadProgressEvent(200, 300);
-        factory.mock.mockFlush(200, 'OK', 'downloaded');
+        factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'downloaded');
       });
       it('are emitted for upload progress', done => {
         backend.handle(TEST_POST.clone({reportProgress: true}))
@@ -211,7 +233,7 @@ const XSSI_PREFIX = ')]}\'\n';
             });
         factory.mock.mockUploadProgressEvent(100, 300);
         factory.mock.mockUploadProgressEvent(200, 300);
-        factory.mock.mockFlush(200, 'OK', 'Done');
+        factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Done');
       });
       it('are emitted when both upload and download progress are available', done => {
         backend.handle(TEST_POST.clone({reportProgress: true}))
@@ -228,7 +250,7 @@ const XSSI_PREFIX = ')]}\'\n';
             });
         factory.mock.mockUploadProgressEvent(100, 300);
         factory.mock.mockDownloadProgressEvent(200, 300);
-        factory.mock.mockFlush(200, 'OK', 'Done');
+        factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Done');
       });
       it('are emitted even if length is not computable', done => {
         backend.handle(TEST_POST.clone({reportProgress: true}))
@@ -245,7 +267,7 @@ const XSSI_PREFIX = ')]}\'\n';
             });
         factory.mock.mockUploadProgressEvent(100);
         factory.mock.mockDownloadProgressEvent(200);
-        factory.mock.mockFlush(200, 'OK', 'Done');
+        factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Done');
       });
       it('include ResponseHeader with headers and status', done => {
         backend.handle(TEST_POST.clone({reportProgress: true}))
@@ -264,7 +286,7 @@ const XSSI_PREFIX = ')]}\'\n';
             });
         factory.mock.mockResponseHeaders = 'Test: Test header\nContent-Type: text/plain\n';
         factory.mock.mockDownloadProgressEvent(200);
-        factory.mock.mockFlush(200, 'OK', 'Done');
+        factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Done');
       });
       it('are unsubscribed along with the main request', () => {
         const sub = backend.handle(TEST_POST.clone({reportProgress: true})).subscribe();
@@ -282,16 +304,16 @@ const XSSI_PREFIX = ')]}\'\n';
                           event.type === HttpEventType.ResponseHeader)
                   .map(event => event as HttpResponseBase)
                   .forEach(event => {
-                    expect(event.status).toBe(203);
+                    expect(event.status).toBe(HttpStatusCode.NonAuthoritativeInformation);
                     expect(event.headers.get('Test')).toEqual('This is a test');
                   });
               done();
             });
         factory.mock.mockResponseHeaders = 'Test: This is a test\n';
-        factory.mock.status = 203;
+        factory.mock.status = HttpStatusCode.NonAuthoritativeInformation;
         factory.mock.mockDownloadProgressEvent(100, 300);
         factory.mock.mockResponseHeaders = 'Test: should never be read\n';
-        factory.mock.mockFlush(203, 'OK', 'Testing 1 2 3');
+        factory.mock.mockFlush(HttpStatusCode.NonAuthoritativeInformation, 'OK', 'Testing 1 2 3');
       });
     });
     describe('gets response URL', () => {
@@ -304,7 +326,7 @@ const XSSI_PREFIX = ')]}\'\n';
           done();
         });
         factory.mock.responseURL = '/response/url';
-        factory.mock.mockFlush(200, 'OK', 'Test');
+        factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Test');
       });
       it('from X-Request-URL header if XHR.responseURL is not present', done => {
         backend.handle(TEST_POST).pipe(toArray()).subscribe(events => {
@@ -315,7 +337,7 @@ const XSSI_PREFIX = ')]}\'\n';
           done();
         });
         factory.mock.mockResponseHeaders = 'X-Request-URL: /response/url\n';
-        factory.mock.mockFlush(200, 'OK', 'Test');
+        factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Test');
       });
       it('falls back on Request.url if neither are available', done => {
         backend.handle(TEST_POST).pipe(toArray()).subscribe(events => {
@@ -325,7 +347,7 @@ const XSSI_PREFIX = ')]}\'\n';
           expect(response.url).toBe('/test');
           done();
         });
-        factory.mock.mockFlush(200, 'OK', 'Test');
+        factory.mock.mockFlush(HttpStatusCode.Ok, 'OK', 'Test');
       });
     });
     describe('corrects for quirks', () => {
@@ -334,7 +356,7 @@ const XSSI_PREFIX = ')]}\'\n';
           expect(events.length).toBe(2);
           expect(events[1].type).toBe(HttpEventType.Response);
           const response = events[1] as HttpResponse<string>;
-          expect(response.status).toBe(204);
+          expect(response.status).toBe(HttpStatusCode.NoContent);
           done();
         });
         factory.mock.mockFlush(1223, 'IE Special Status', 'Test');
@@ -344,7 +366,7 @@ const XSSI_PREFIX = ')]}\'\n';
           expect(events.length).toBe(2);
           expect(events[1].type).toBe(HttpEventType.Response);
           const response = events[1] as HttpResponse<string>;
-          expect(response.status).toBe(200);
+          expect(response.status).toBe(HttpStatusCode.Ok);
           done();
         });
         factory.mock.mockFlush(0, 'CORS 0 status', 'Test');

@@ -336,7 +336,7 @@ export class NgModuleDecoratorHandler implements
       injectorImports: [],
     };
 
-    if (scope !== null && scope !== 'error') {
+    if (scope !== null && !scope.compilation.isPoisoned) {
       // Using the scope information, extend the injector's imports using the modules that are
       // specified as module exports.
       const context = getSourceFile(node);
@@ -361,7 +361,8 @@ export class NgModuleDecoratorHandler implements
       return {diagnostics};
     }
 
-    if (scope === null || scope === 'error' || scope.reexports === null) {
+    if (scope === null || scope.compilation.isPoisoned || scope.exported.isPoisoned ||
+        scope.reexports === null) {
       return {data};
     } else {
       return {

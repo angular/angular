@@ -66,7 +66,7 @@ class TestRenderingFormatter implements RenderingFormatter {
   printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string {
     const node = translateStatement(
         stmt, importManager,
-        {downlevelLocalizedStrings: this.isEs5, downlevelVariableDeclarations: this.isEs5});
+        {downlevelTaggedTemplates: this.isEs5, downlevelVariableDeclarations: this.isEs5});
     const code = this.printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
 
     return `// TRANSPILED\n${code}`;
@@ -254,7 +254,7 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
 
         const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
         expect(addAdjacentStatementsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
-/*@__PURE__*/ (function () { ɵngcc0.ɵsetClassMetadata(A, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵngcc0.ɵsetClassMetadata(A, [{
         type: Component,
         args: [{ selector: 'a', template: '{{ person!.name }}' }]
     }], null, null); })();`);
@@ -276,7 +276,7 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
              const addImportsSpy = testFormatter.addImports as jasmine.Spy;
              expect(addImportsSpy.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
              expect(addImportsSpy.calls.first().args[1]).toEqual([
-               {specifier: '@angular/core', qualifier: 'ɵngcc0'}
+               {specifier: '@angular/core', qualifier: jasmine.objectContaining({text: 'ɵngcc0'})}
              ]);
            });
 
@@ -321,7 +321,7 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
                  .toEqual(jasmine.objectContaining(
                      {name: 'A', decorators: [jasmine.objectContaining({name: 'Directive'})]}));
              expect(addAdjacentStatementsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
-/*@__PURE__*/ (function () { ɵngcc0.ɵsetClassMetadata(A, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵngcc0.ɵsetClassMetadata(A, [{
         type: Directive,
         args: [{ selector: '[a]' }]
     }], null, null); })();`);
@@ -570,7 +570,7 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
 UndecoratedBase.ɵfac = function UndecoratedBase_Factory(t) { return new (t || UndecoratedBase)(); };
 // TRANSPILED
 UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, viewQuery: function UndecoratedBase_Query(rf, ctx) { if (rf & 1) {
-        ɵngcc0.ɵɵstaticViewQuery(_c0, true);
+        ɵngcc0.ɵɵviewQuery(_c0, 3);
     } if (rf & 2) {
         let _t;
         ɵngcc0.ɵɵqueryRefresh(_t = ɵngcc0.ɵɵloadQuery()) && (ctx.test = _t.first);
@@ -641,7 +641,8 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
              expect(sourceFile.contents)
                  .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('file.js.map'));
              expect(mapFile.path).toEqual(_('/node_modules/test-package/src/file.js.map'));
-             expect(JSON.parse(mapFile.contents)).toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());
+             expect(JSON.parse(mapFile.contents) as any)
+                 .toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());
            });
 
 
@@ -688,10 +689,11 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
           expect(addAdjacentStatementsSpy.calls.first().args[2])
-              .toContain(`/*@__PURE__*/ (function () { ɵngcc0.setClassMetadata(`);
+              .toContain(
+                  `function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵngcc0.setClassMetadata(`);
           const addImportsSpy = testFormatter.addImports as jasmine.Spy;
           expect(addImportsSpy.calls.first().args[1]).toEqual([
-            {specifier: './r3_symbols', qualifier: 'ɵngcc0'}
+            {specifier: './r3_symbols', qualifier: jasmine.objectContaining({text: 'ɵngcc0'})}
           ]);
         });
 
@@ -713,7 +715,8 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
           expect(addAdjacentStatementsSpy.calls.first().args[2])
-              .toContain(`/*@__PURE__*/ (function () { setClassMetadata(`);
+              .toContain(
+                  `function () { (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(`);
           const addImportsSpy = testFormatter.addImports as jasmine.Spy;
           expect(addImportsSpy.calls.first().args[1]).toEqual([]);
         });

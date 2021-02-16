@@ -1,6 +1,4 @@
-// #docregion imports
 import { Component, Output, EventEmitter } from '@angular/core';
-// #enddocregion imports
 
 @Component({
   selector: 'app-item-output',

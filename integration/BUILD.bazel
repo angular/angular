@@ -4,7 +4,7 @@ load(":angular_integration_test.bzl", "angular_integration_test")
 # cases the tests are able to select a random free port.
 #
 # Where `ng e2e` is used we pass `ng e2e --port 0` which prompts the cli
-# to select a random free port for the the e2e test. The protractor.conf is
+# to select a random free port for the e2e test. The protractor.conf is
 # automatically updated to use this port.
 #
 # Karma automatically finds a free port so no effort is needed there.
@@ -33,6 +33,7 @@ INTEGRATION_TESTS = {
             "no-ivy-aot",
         ],
     },
+    "cli-elements-universal": {},
     "cli-hello-world": {"commands": "payload_size_tracking"},
     "cli-hello-world-ivy-compat": {"commands": "payload_size_tracking"},
     "cli-hello-world-ivy-i18n": {
@@ -61,7 +62,7 @@ INTEGRATION_TESTS = {
     },
     "hello_world__systemjs_umd": {
         # Special case for `hello_world__systemjs_umd` test as we want to pin
-        # `systems` at version 0.20.2 and not link to the the root @npm//systemjs
+        # `systems` at version 0.20.2 and not link to the root @npm//systemjs
         # which is stuck at 0.18.10 and can't be updated to 0.20.2 without
         # breaking the legacy saucelabs job.
         "pinned_npm_packages": ["systemjs"],
@@ -83,6 +84,12 @@ INTEGRATION_TESTS = {
     "typings_test_ts40": {
         # Special case for `typings_test_ts40` test as we want to pin
         # `typescript` at version 4.0.x for that test and not link to the
+        # root @npm//typescript package.
+        "pinned_npm_packages": ["typescript"],
+    },
+    "typings_test_ts41": {
+        # Special case for `typings_test_ts41` test as we want to pin
+        # `typescript` at version 4.1.x for that test and not link to the
         # root @npm//typescript package.
         "pinned_npm_packages": ["typescript"],
     },

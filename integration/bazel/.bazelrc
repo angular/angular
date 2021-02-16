@@ -22,7 +22,3 @@ build --define=enable_legacy_rollup_rule=1
 
 # Don't create symlinks
 build --symlink_prefix=/
-
-# Turn on managed directories feature in Bazel
-# This allows us to avoid installing a second copy of node_modules
-common --experimental_allow_incremental_repository_updates

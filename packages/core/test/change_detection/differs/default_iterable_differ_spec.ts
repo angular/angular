@@ -561,6 +561,65 @@ class ComplexItem {
         }));
       });
 
+      it('should keep the order of duplicates', () => {
+        const l1 = [
+          new ComplexItem('a', 'blue'),
+          new ComplexItem('b', 'yellow'),
+          new ComplexItem('c', 'orange'),
+          new ComplexItem('a', 'red'),
+        ];
+        differ.check(l1);
+
+        const l2 = [
+          new ComplexItem('b', 'yellow'),
+          new ComplexItem('a', 'blue'),
+          new ComplexItem('c', 'orange'),
+          new ComplexItem('a', 'red'),
+        ];
+        differ.check(l2);
+
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
+          collection: [
+            '{id: b, color: yellow}[1->0]', '{id: a, color: blue}[0->1]', '{id: c, color: orange}',
+            '{id: a, color: red}'
+          ],
+          identityChanges: [
+            '{id: b, color: yellow}[1->0]', '{id: a, color: blue}[0->1]', '{id: c, color: orange}',
+            '{id: a, color: red}'
+          ],
+          previous: [
+            '{id: a, color: blue}[0->1]', '{id: b, color: yellow}[1->0]', '{id: c, color: orange}',
+            '{id: a, color: red}'
+          ],
+          moves: ['{id: b, color: yellow}[1->0]', '{id: a, color: blue}[0->1]'],
+        }));
+      });
+
+      it('should not have identity changed', () => {
+        const l1 = [
+          new ComplexItem('a', 'blue'),
+          new ComplexItem('b', 'yellow'),
+          new ComplexItem('c', 'orange'),
+          new ComplexItem('a', 'red'),
+        ];
+        differ.check(l1);
+
+        const l2 = [l1[1], l1[0], l1[2], l1[3]];
+        differ.check(l2);
+
+        expect(iterableDifferToString(differ)).toEqual(iterableChangesAsString({
+          collection: [
+            '{id: b, color: yellow}[1->0]', '{id: a, color: blue}[0->1]', '{id: c, color: orange}',
+            '{id: a, color: red}'
+          ],
+          previous: [
+            '{id: a, color: blue}[0->1]', '{id: b, color: yellow}[1->0]', '{id: c, color: orange}',
+            '{id: a, color: red}'
+          ],
+          moves: ['{id: b, color: yellow}[1->0]', '{id: a, color: blue}[0->1]'],
+        }));
+      });
+
       it('should track removals normally', () => {
         const l = buildItemList(['a', 'b', 'c']);
         differ.check(l);

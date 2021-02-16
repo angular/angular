@@ -18,8 +18,6 @@ To get the most out of property binding, you should be familiar with the followi
 * [Basics of templates](guide/glossary#template)
 * [Binding syntax](guide/binding-syntax)
 
-<hr />
-
 ## Understanding the flow of data
 
 Property binding moves a value in one direction, from a component's property into a target element property.
@@ -45,7 +43,7 @@ In most cases, the target name is the name of a property, even when it appears t
 In this example, `src` is the name of the `<img>` element property.
 
 The brackets, `[]`, cause Angular to evaluate the right-hand side of the assignment as a dynamic expression.
-Without the brackets, Angular treats the the right-hand side as a string literal and sets the property to that static value.
+Without the brackets, Angular treats the right-hand side as a string literal and sets the property to that static value.
 
 <code-example path="property-binding/src/app/app.component.html" region="no-evaluation" header="src/app.component.html"></code-example>
 
@@ -195,8 +193,6 @@ The following binding pairs do the same thing.
 
 You can use either form when rendering data values as strings, though interpolation is preferable for readability.
 However, when setting an element property to a non-string data value, you must use property binding.
-
-<hr />
 
 ## What's next
 

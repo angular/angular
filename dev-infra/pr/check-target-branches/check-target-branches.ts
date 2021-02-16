@@ -9,10 +9,10 @@
 import {getConfig} from '../../utils/config';
 import {error, info, red} from '../../utils/console';
 import {GitClient} from '../../utils/git/index';
-import {loadAndValidateConfig} from '../merge/config';
-import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest} from '../merge/target-label';
+import {loadAndValidateConfig, TargetLabel} from '../merge/config';
+import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest, InvalidTargetLabelError} from '../merge/target-label';
 
-export async function checkTargetBranchesForPr(prNumber: number, jsonOutput = false) {
+export async function getTargetBranchesForPr(prNumber: number) {
   /** The ng-dev configuration. */
   const config = getConfig();
   /** Repo owner and name for the github repository. */
@@ -31,21 +31,28 @@ export async function checkTargetBranchesForPr(prNumber: number, jsonOutput = fa
   /** The branch targetted via the Github UI. */
   const githubTargetBranch = prData.base.ref;
   /** The active label which is being used for targetting the PR. */
-  const targetLabel = getTargetLabelFromPullRequest(mergeConfig!, labels);
-  if (targetLabel === null) {
-    error(red(`No target label was found on pr #${prNumber}`));
-    process.exitCode = 1;
-    return;
+  let targetLabel: TargetLabel;
+
+  try {
+    targetLabel = getTargetLabelFromPullRequest(mergeConfig!, labels);
+  } catch (e) {
+    if (e instanceof InvalidTargetLabelError) {
+      error(red(e.failureMessage));
+      process.exitCode = 1;
+      return;
+    }
+    throw e;
   }
   /** The target branches based on the target label and branch targetted in the Github UI. */
-  const targets = await getBranchesFromTargetLabel(targetLabel, githubTargetBranch);
+  return await getBranchesFromTargetLabel(targetLabel, githubTargetBranch);
+}
 
-  // When requested, print a json output to stdout, rather than using standard ng-dev logging.
-  if (jsonOutput) {
-    process.stdout.write(JSON.stringify(targets));
+
+export async function printTargetBranchesForPr(prNumber: number) {
+  const targets = await getTargetBranchesForPr(prNumber);
+  if (targets === undefined) {
     return;
   }
-
   info.group(`PR #${prNumber} will merge into:`);
   targets.forEach(target => info(`- ${target}`));
   info.groupEnd();

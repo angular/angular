@@ -307,7 +307,7 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
       addViewToContainer(tView, lContainer[T_HOST], renderer, lView, parentRNode, beforeNode);
     }
 
-    (viewRef as R3ViewRef<any>).attachToViewContainerRef(this);
+    (viewRef as R3ViewRef<any>).attachToViewContainerRef();
     addToArray(getOrCreateViewRefs(lContainer), adjustedIdx, viewRef);
 
     return viewRef;

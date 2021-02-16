@@ -35,7 +35,8 @@ export declare class UpgradeModule {
     ngZone: NgZone;
     constructor(
     injector: Injector,
-    ngZone: NgZone);
+    ngZone: NgZone,
+    platformRef: PlatformRef);
     bootstrap(element: Element, modules?: string[], config?: any): void;
 }
 

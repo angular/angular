@@ -134,6 +134,10 @@ export interface IterableDifferFactory {
   create<V>(trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
 }
 
+export function defaultIterableDiffersFactory() {
+  return new IterableDiffers([new DefaultIterableDifferFactory()]);
+}
+
 /**
  * A repository of different iterable diffing strategies used by NgFor, NgClass, and others.
  *
@@ -141,11 +145,8 @@ export interface IterableDifferFactory {
  */
 export class IterableDiffers {
   /** @nocollapse */
-  static ɵprov = ɵɵdefineInjectable({
-    token: IterableDiffers,
-    providedIn: 'root',
-    factory: () => new IterableDiffers([new DefaultIterableDifferFactory()])
-  });
+  static ɵprov = ɵɵdefineInjectable(
+      {token: IterableDiffers, providedIn: 'root', factory: defaultIterableDiffersFactory});
 
   /**
    * @deprecated v4.0.0 - Should be private
@@ -187,14 +188,11 @@ export class IterableDiffers {
   static extend(factories: IterableDifferFactory[]): StaticProvider {
     return {
       provide: IterableDiffers,
-      useFactory: (parent: IterableDiffers) => {
-        if (!parent) {
-          // Typically would occur when calling IterableDiffers.extend inside of dependencies passed
-          // to
-          // bootstrap(), which would override default pipes instead of extending them.
-          throw new Error('Cannot extend IterableDiffers without a parent injector');
-        }
-        return IterableDiffers.create(factories, parent);
+      useFactory: (parent: IterableDiffers|null) => {
+        // if parent is null, it means that we are in the root injector and we have just overridden
+        // the default injection mechanism for IterableDiffers, in such a case just assume
+        // `defaultIterableDiffersFactory`.
+        return IterableDiffers.create(factories, parent || defaultIterableDiffersFactory());
       },
       // Dependency technically isn't optional, but we can provide a better error message this way.
       deps: [[IterableDiffers, new SkipSelf(), new Optional()]]

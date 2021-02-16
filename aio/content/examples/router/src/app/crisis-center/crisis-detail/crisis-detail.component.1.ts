@@ -1,5 +1,3 @@
-// #docplaster
-// #docregion
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { Observable } from 'rxjs';
@@ -25,7 +23,6 @@ export class CrisisDetailComponent implements OnInit {
     public dialogService: DialogService
   ) {}
 
-  // #docregion ngOnInit
   ngOnInit() {
     this.route.paramMap
       .pipe(
@@ -40,7 +37,6 @@ export class CrisisDetailComponent implements OnInit {
         }
       });
   }
-  // #enddocregion ngOnInit
 
   cancel() {
     this.gotoCrises();

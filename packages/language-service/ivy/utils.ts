@@ -5,12 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteSourceSpan, CssSelector, ParseSourceSpan, SelectorMatcher} from '@angular/compiler';
+import {AbsoluteSourceSpan, CssSelector, ParseSourceSpan, SelectorMatcher, TmplAstBoundEvent} from '@angular/compiler';
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
+import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {isExternalResource} from '@angular/compiler-cli/src/ngtsc/metadata';
 import {DeclarationNode} from '@angular/compiler-cli/src/ngtsc/reflection';
-import {DirectiveSymbol} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
-import {Diagnostic as ngDiagnostic, isNgDiagnostic} from '@angular/compiler-cli/src/transformers/api';
+import {DirectiveSymbol, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as e from '@angular/compiler/src/expression_parser/ast';  // e for expression AST
 import * as t from '@angular/compiler/src/render3/r3_ast';         // t for template AST
 import * as ts from 'typescript';
@@ -33,9 +33,9 @@ export function getTextSpanOfNode(node: t.Node|e.AST): ts.TextSpan {
   }
 }
 
-export function toTextSpan(span: AbsoluteSourceSpan|ParseSourceSpan): ts.TextSpan {
+export function toTextSpan(span: AbsoluteSourceSpan|ParseSourceSpan|e.ParseSpan): ts.TextSpan {
   let start: number, end: number;
-  if (span instanceof AbsoluteSourceSpan) {
+  if (span instanceof AbsoluteSourceSpan || span instanceof e.ParseSpan) {
     start = span.start;
     end = span.end;
   } else {
@@ -52,6 +52,26 @@ interface NodeWithKeyAndValue extends t.Node {
 
 export function isTemplateNodeWithKeyAndValue(node: t.Node|e.AST): node is NodeWithKeyAndValue {
   return isTemplateNode(node) && node.hasOwnProperty('keySpan');
+}
+
+export function isWithinKey(position: number, node: NodeWithKeyAndValue): boolean {
+  let {keySpan, valueSpan} = node;
+  if (valueSpan === undefined && node instanceof TmplAstBoundEvent) {
+    valueSpan = node.handlerSpan;
+  }
+  const isWithinKeyValue =
+      isWithin(position, keySpan) || !!(valueSpan && isWithin(position, valueSpan));
+  return isWithinKeyValue;
+}
+
+export function isWithinKeyValue(position: number, node: NodeWithKeyAndValue): boolean {
+  let {keySpan, valueSpan} = node;
+  if (valueSpan === undefined && node instanceof TmplAstBoundEvent) {
+    valueSpan = node.handlerSpan;
+  }
+  const isWithinKeyValue =
+      isWithin(position, keySpan) || !!(valueSpan && isWithin(position, valueSpan));
+  return isWithinKeyValue;
 }
 
 export function isTemplateNode(node: t.Node|e.AST): node is t.Node {
@@ -210,6 +230,13 @@ export function getDirectiveMatchesForElementTag(
   return difference(allDirectiveMatches, matchesWithoutElement);
 }
 
+
+export function makeElementSelector(element: t.Element|t.Template): string {
+  const attributes = getAttributes(element);
+  const allAttrs = attributes.map(toAttributeString);
+  return getNodeName(element) + allAttrs.join('');
+}
+
 /**
  * Given an attribute name, determines which directives match because the attribute is present. We
  * find which directives are applied because of this attribute by elimination: compare the directive
@@ -305,4 +332,46 @@ export function isTypeScriptFile(fileName: string): boolean {
 
 export function isExternalTemplate(fileName: string): boolean {
   return !isTypeScriptFile(fileName);
+}
+
+export function isWithin(position: number, span: AbsoluteSourceSpan|ParseSourceSpan): boolean {
+  let start: number, end: number;
+  if (span instanceof ParseSourceSpan) {
+    start = span.start.offset;
+    end = span.end.offset;
+  } else {
+    start = span.start;
+    end = span.end;
+  }
+  // Note both start and end are inclusive because we want to match conditions
+  // like ¦start and end¦ where ¦ is the cursor.
+  return start <= position && position <= end;
+}
+
+/**
+ * For a given location in a shim file, retrieves the corresponding file url for the template and
+ * the span in the template.
+ */
+export function getTemplateLocationFromShimLocation(
+    templateTypeChecker: TemplateTypeChecker, shimPath: AbsoluteFsPath,
+    positionInShimFile: number): {templateUrl: AbsoluteFsPath, span: ParseSourceSpan}|null {
+  const mapping =
+      templateTypeChecker.getTemplateMappingAtShimLocation({shimPath, positionInShimFile});
+  if (mapping === null) {
+    return null;
+  }
+  const {templateSourceMapping, span} = mapping;
+
+  let templateUrl: AbsoluteFsPath;
+  if (templateSourceMapping.type === 'direct') {
+    templateUrl = absoluteFromSourceFile(templateSourceMapping.node.getSourceFile());
+  } else if (templateSourceMapping.type === 'external') {
+    templateUrl = absoluteFrom(templateSourceMapping.templateUrl);
+  } else {
+    // This includes indirect mappings, which are difficult to map directly to the code
+    // location. Diagnostics similarly return a synthetic template string for this case rather
+    // than a real location.
+    return null;
+  }
+  return {templateUrl, span};
 }

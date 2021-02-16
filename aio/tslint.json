@@ -61,8 +61,7 @@
       true,
       "ignore-params"
     ],
-    // TODO(gkalpak): Fix the code and enable this to align with CLI. (Failures: 59)
-    // "no-non-null-assertion": true,
+    "no-non-null-assertion": true,
     "no-redundant-jsdoc": true,
     "no-switch-case-fall-through": true,
     "no-var-requires": false,

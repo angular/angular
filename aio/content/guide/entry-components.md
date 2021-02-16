@@ -1,5 +1,12 @@
 # Entry components
 
+<div class="alert is-helpful">
+
+Entry components have been deprecated with the [Ivy rendering engine](https://angular.io/guide/ivy). 
+For more information, see [entryComponents deprecation](https://angular.io/guide/deprecations#entrycomponents-and-analyze_for_entry_components-no-longer-required) in the [Deprecated APIs and features](https://angular.io/guide/deprecations).
+
+</div>
+
 An entry component is any component that Angular loads imperatively, (which means you’re not referencing it in the template), by type. You specify an entry component by bootstrapping it in an NgModule, or including it in a routing definition.
 
 <div class="alert is-helpful">
@@ -99,8 +106,6 @@ If a component isn't an _entry component_ and isn't found in a template,
 the tree shaker will throw it away. So, it's best to add only the components that are truly entry components to help keep your app
 as trim as possible.
 
-
-<hr />
 
 ## More on Angular modules
 

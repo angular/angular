@@ -140,11 +140,9 @@ export class UrlTree {
  */
 export class UrlSegmentGroup {
   /** @internal */
-  // TODO(issue/24571): remove '!'.
-  _sourceSegment!: UrlSegmentGroup;
+  _sourceSegment?: UrlSegmentGroup;
   /** @internal */
-  // TODO(issue/24571): remove '!'.
-  _segmentIndexShift!: number;
+  _segmentIndexShift?: number;
   /** The parent node in the url tree */
   parent: UrlSegmentGroup|null = null;
 
@@ -524,15 +522,15 @@ class UrlParser {
     return new UrlSegment(decode(path), this.parseMatrixParams());
   }
 
-  private parseMatrixParams(): {[key: string]: any} {
-    const params: {[key: string]: any} = {};
+  private parseMatrixParams(): {[key: string]: string} {
+    const params: {[key: string]: string} = {};
     while (this.consumeOptional(';')) {
       this.parseParam(params);
     }
     return params;
   }
 
-  private parseParam(params: {[key: string]: any}): void {
+  private parseParam(params: {[key: string]: string}): void {
     const key = matchSegments(this.remaining);
     if (!key) {
       return;

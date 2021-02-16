@@ -261,4 +261,35 @@ describe('RouterPreloader', () => {
              expect(c[0]._loadedConfig!.routes[0].component).toBe(configs[0].component);
            })));
   });
+
+  describe(
+      'should work with lazy loaded modules that don\'t provide RouterModule.forChild()', () => {
+        @NgModule({
+          declarations: [LazyLoadedCmp],
+          imports: [RouterModule.forChild([{path: 'LoadedModule1', component: LazyLoadedCmp}])]
+        })
+        class LoadedModule {
+        }
+
+        @NgModule({})
+        class EmptyModule {
+        }
+
+        beforeEach(() => {
+          TestBed.configureTestingModule({
+            imports: [RouterTestingModule.withRoutes(
+                [{path: 'lazyEmptyModule', loadChildren: 'expected2'}])],
+            providers: [{provide: PreloadingStrategy, useExisting: PreloadAllModules}]
+          });
+        });
+
+        it('should work',
+           fakeAsync(inject(
+               [NgModuleFactoryLoader, RouterPreloader],
+               (loader: SpyNgModuleFactoryLoader, preloader: RouterPreloader) => {
+                 loader.stubbedModules = {expected2: EmptyModule};
+
+                 preloader.preload().subscribe();
+               })));
+      });
 });

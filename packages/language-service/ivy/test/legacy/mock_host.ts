@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {join} from 'path';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
@@ -68,11 +69,11 @@ export class MockConfigFileFs implements
   private configOverwrites = new Map<string, string>();
   private configFileWatchers = new Map<string, MockWatcher>();
 
-  overwriteConfigFile(configFile: string, contents: string) {
+  overwriteConfigFile(configFile: string, contents: {angularCompilerOptions?: NgCompilerOptions}) {
     if (!configFile.endsWith('.json')) {
       throw new Error(`${configFile} is not a configuration file.`);
     }
-    this.configOverwrites.set(configFile, contents);
+    this.configOverwrites.set(configFile, JSON.stringify(contents));
     this.configFileWatchers.get(configFile)?.changed();
   }
 
@@ -98,8 +99,11 @@ export class MockConfigFileFs implements
   }
 
   clear() {
+    for (const [fileName, watcher] of this.configFileWatchers) {
+      this.configOverwrites.delete(fileName);
+      watcher.changed();
+    }
     this.configOverwrites.clear();
-    this.configFileWatchers.clear();
   }
 }
 
@@ -243,9 +247,9 @@ export class MockService {
     }
     const newScriptInfo = this.ps.getOrCreateScriptInfoForNormalizedPath(
         ts.server.toNormalizedPath(fileName),
-        true,                    // openedByClient
-        '',                      // fileContent
-        ts.ScriptKind.External,  // scriptKind
+        true,                   // openedByClient
+        '',                     // fileContent
+        ts.ScriptKind.Unknown,  // scriptKind
     );
     if (!newScriptInfo) {
       throw new Error(`Failed to create new script info for ${fileName}`);

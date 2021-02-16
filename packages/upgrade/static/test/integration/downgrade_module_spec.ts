@@ -1187,6 +1187,69 @@ withEachNg1Version(() => {
            });
          }));
 
+      it('should properly run cleanup when a downgraded component is destroyed',
+         waitForAsync(() => {
+           let destroyed = false;
+
+           @Component({selector: 'ng2', template: '<ul><li>test1</li><li>test2</li></ul>'})
+           class Ng2Component implements OnDestroy {
+             ngOnDestroy() {
+               destroyed = true;
+             }
+           }
+
+           @NgModule({
+             declarations: [Ng2Component],
+             entryComponents: [Ng2Component],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular.module_('ng1', [lazyModuleName])
+                   .directive(
+                       'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
+
+           const element = html('<div><div ng-if="!hideNg2"><ng2></ng2></div></div>');
+           const $injector = angular.bootstrap(element, [ng1Module.name]);
+           const $rootScope = $injector.get($ROOT_SCOPE) as angular.IRootScopeService;
+
+           setTimeout(() => {  // Wait for the module to be bootstrapped.
+             const ng2Element = angular.element(element.querySelector('ng2') as Element);
+             const ng2Descendants =
+                 Array.from(element.querySelectorAll('ng2 li')).map(angular.element);
+             let ng2ElementDestroyed = false;
+             let ng2DescendantsDestroyed = [false, false];
+
+             ng2Element.data!('test', 42);
+             ng2Descendants.forEach((elem, i) => elem.data!('test', i));
+             ng2Element.on!('$destroy', () => ng2ElementDestroyed = true);
+             ng2Descendants.forEach(
+                 (elem, i) => elem.on!('$destroy', () => ng2DescendantsDestroyed[i] = true));
+
+             expect(element.textContent).toBe('test1test2');
+             expect(destroyed).toBe(false);
+             expect(ng2Element.data!('test')).toBe(42);
+             ng2Descendants.forEach((elem, i) => expect(elem.data!('test')).toBe(i));
+             expect(ng2ElementDestroyed).toBe(false);
+             expect(ng2DescendantsDestroyed).toEqual([false, false]);
+
+             $rootScope.$apply('hideNg2 = true');
+
+             expect(element.textContent).toBe('');
+             expect(destroyed).toBe(true);
+             expect(ng2Element.data!('test')).toBeUndefined();
+             ng2Descendants.forEach(elem => expect(elem.data!('test')).toBeUndefined());
+             expect(ng2ElementDestroyed).toBe(true);
+             expect(ng2DescendantsDestroyed).toEqual([true, true]);
+           });
+         }));
+
       it('should only retrieve the Angular zone once (and cache it for later use)',
          fakeAsync(() => {
            let count = 0;
@@ -1288,6 +1351,68 @@ withEachNg1Version(() => {
 
            // Wait for the module to be bootstrapped.
            setTimeout(() => expect($injectorFromNg2).toBe($injectorFromNg1));
+         }));
+
+      it('should destroy the AngularJS app when `PlatformRef` is destroyed', waitForAsync(() => {
+           @Component({selector: 'ng2', template: '<span>NG2</span>'})
+           class Ng2Component {
+           }
+
+           @NgModule({
+             declarations: [Ng2Component],
+             entryComponents: [Ng2Component],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           const bootstrapFn = (extraProviders: StaticProvider[]) =>
+               platformBrowserDynamic(extraProviders).bootstrapModule(Ng2Module);
+           const lazyModuleName = downgradeModule<Ng2Module>(bootstrapFn);
+           const ng1Module =
+               angular.module_('ng1', [lazyModuleName])
+                   .component('ng1', {template: '<ng2></ng2>'})
+                   .directive(
+                       'ng2', downgradeComponent({component: Ng2Component, propagateDigest}));
+
+           const element = html('<div><ng1></ng1></div>');
+           const $injector = angular.bootstrap(element, [ng1Module.name]);
+
+           setTimeout(() => {  // Wait for the module to be bootstrapped.
+             const $rootScope: angular.IRootScopeService = $injector.get($ROOT_SCOPE);
+             const rootScopeDestroySpy = spyOn($rootScope, '$destroy');
+
+             const appElem = angular.element(element);
+             const ng1Elem = angular.element(element.querySelector('ng1') as Element);
+             const ng2Elem = angular.element(element.querySelector('ng2') as Element);
+             const ng2ChildElem = angular.element(element.querySelector('ng2 span') as Element);
+
+             // Attach data to all elements.
+             appElem.data!('testData', 1);
+             ng1Elem.data!('testData', 2);
+             ng2Elem.data!('testData', 3);
+             ng2ChildElem.data!('testData', 4);
+
+             // Verify data can be retrieved.
+             expect(appElem.data!('testData')).toBe(1);
+             expect(ng1Elem.data!('testData')).toBe(2);
+             expect(ng2Elem.data!('testData')).toBe(3);
+             expect(ng2ChildElem.data!('testData')).toBe(4);
+
+             expect(rootScopeDestroySpy).not.toHaveBeenCalled();
+
+             // Destroy `PlatformRef`.
+             getPlatform()?.destroy();
+
+             // Verify `$rootScope` has been destroyed and data has been cleaned up.
+             expect(rootScopeDestroySpy).toHaveBeenCalled();
+
+             expect(appElem.data!('testData')).toBeUndefined();
+             expect(ng1Elem.data!('testData')).toBeUndefined();
+             expect(ng2Elem.data!('testData')).toBeUndefined();
+             expect(ng2ChildElem.data!('testData')).toBeUndefined();
+           });
          }));
 
       describe('(common error)', () => {

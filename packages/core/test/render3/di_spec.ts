@@ -107,7 +107,9 @@ describe('di', () => {
           (DirA as any)['__NG_ELEMENT_ID__'] = 1;
           (DirC as any)['__NG_ELEMENT_ID__'] = 257;
           new ComponentFixture(App);
-        }).toThrowError('NG0201: No provider for DirB found in NodeInjector');
+        })
+            .toThrowError(
+                'NG0201: No provider for DirB found in NodeInjector. Find more at https://angular.io/errors/NG0201');
       });
     });
   });
@@ -180,6 +182,9 @@ describe('di', () => {
       class Dir231 {
         /** @internal */ static __NG_ELEMENT_ID__ = 231;
       }
+      class Dir260 {
+        /** @internal */ static __NG_ELEMENT_ID__ = 260;
+      }
 
       it('should add values', () => {
         bloomAdd(0, mockTView, Dir0);
@@ -198,6 +203,8 @@ describe('di', () => {
         expect(bloomState()).toEqual([0, 64, 32, 16, 8, 4, 2, 1]);
         bloomAdd(0, mockTView, Dir231);
         expect(bloomState()).toEqual([128, 64, 32, 16, 8, 4, 2, 1]);
+        bloomAdd(0, mockTView, Dir260);
+        expect(bloomState()).toEqual([128, 64, 32, 16, 8, 4, 2, 17 /* 1 + 2^(260-256) */]);
       });
 
       it('should query values', () => {
@@ -209,6 +216,7 @@ describe('di', () => {
         bloomAdd(0, mockTView, Dir165);
         bloomAdd(0, mockTView, Dir198);
         bloomAdd(0, mockTView, Dir231);
+        bloomAdd(0, mockTView, Dir260);
 
         expect(bloomHasToken(bloomHash(Dir0) as number, 0, mockTView.data)).toEqual(true);
         expect(bloomHasToken(bloomHash(Dir1) as number, 0, mockTView.data)).toEqual(false);
@@ -219,6 +227,7 @@ describe('di', () => {
         expect(bloomHasToken(bloomHash(Dir165) as number, 0, mockTView.data)).toEqual(true);
         expect(bloomHasToken(bloomHash(Dir198) as number, 0, mockTView.data)).toEqual(true);
         expect(bloomHasToken(bloomHash(Dir231) as number, 0, mockTView.data)).toEqual(true);
+        expect(bloomHasToken(bloomHash(Dir260) as number, 0, mockTView.data)).toEqual(true);
       });
     });
   });

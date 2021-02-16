@@ -29,27 +29,9 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
 
   function scheduleTask(task: Task) {
     const data = <TimerOptions>task.data;
-    function timer(this: unknown) {
-      try {
-        task.invoke.apply(this, arguments);
-      } finally {
-        // issue-934, task will be cancelled
-        // even it is a periodic task such as
-        // setInterval
-        if (!(task.data && task.data.isPeriodic)) {
-          if (typeof data.handleId === 'number') {
-            // in non-nodejs env, we remove timerId
-            // from local cache
-            delete tasksByHandleId[data.handleId];
-          } else if (data.handleId) {
-            // Node returns complex objects as handleIds
-            // we remove task reference from timer object
-            (data.handleId as any)[taskSymbol] = null;
-          }
-        }
-      }
-    }
-    data.args[0] = timer;
+    data.args[0] = function() {
+      return task.invoke.apply(this, arguments);
+    };
     data.handleId = setNative!.apply(window, data.args);
     return task;
   }
@@ -66,6 +48,32 @@ export function patchTimer(window: any, setName: string, cancelName: string, nam
             delay: (nameSuffix === 'Timeout' || nameSuffix === 'Interval') ? args[1] || 0 :
                                                                              undefined,
             args: args
+          };
+          const callback = args[0];
+          args[0] = function timer(this: unknown) {
+            try {
+              return callback.apply(this, arguments);
+            } finally {
+              // issue-934, task will be cancelled
+              // even it is a periodic task such as
+              // setInterval
+
+              // https://github.com/angular/angular/issues/40387
+              // Cleanup tasksByHandleId should be handled before scheduleTask
+              // Since some zoneSpec may intercept and doesn't trigger
+              // scheduleFn(scheduleTask) provided here.
+              if (!(options.isPeriodic)) {
+                if (typeof options.handleId === 'number') {
+                  // in non-nodejs env, we remove timerId
+                  // from local cache
+                  delete tasksByHandleId[options.handleId];
+                } else if (options.handleId) {
+                  // Node returns complex objects as handleIds
+                  // we remove task reference from timer object
+                  (options.handleId as any)[taskSymbol] = null;
+                }
+              }
+            }
           };
           const task =
               scheduleMacroTaskWithCurrentZone(setName, args[0], options, scheduleTask, clearTask);

@@ -218,7 +218,8 @@ The `Tree` methods give you access to the complete file tree in your workspace, 
 
 ### Get the project configuration
 
-1. To determine the destination project, use the `Tree.read()` method to read the contents of the workspace configuration file, `angular.json`, at the root of the workspace.
+1. To determine the destination project, use the `workspaces.readWorkspace` method to read the contents of the workspace configuration file, `angular.json`.
+   To use `workspaces.readWorkspace` you need to create a `workspaces.WorkspaceHost` from the `Tree`.
    Add the following code to your factory function.
 
 <code-example header="projects/my-lib/schematics/my-service/index.ts (Schema Import)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" region="workspace">
@@ -226,9 +227,7 @@ The `Tree` methods give you access to the complete file tree in your workspace, 
 
   * Be sure to check that the context exists and throw the appropriate error.
 
-  * After reading the contents into a string, parse the configuration into a JSON object, typed to the `WorkspaceSchema`.
-
-1. The `WorkspaceSchema` contains all the properties of the workspace configuration, including a `defaultProject` value for determining which project to use if not provided.
+1. The `WorkspaceDefinition`, `extensions` property includes a `defaultProject` value for determining which project to use if not provided.
    We will use that value as a fallback, if no project is explicitly specified in the `ng generate` command.
 
 <code-example header="projects/my-lib/schematics/my-service/index.ts (Default Project)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.ts" region="project-fallback">

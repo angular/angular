@@ -18,6 +18,7 @@ import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {createComponentDecorator} from '../../src/migrations/utils';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {makeTestEntryPointBundle} from '../helpers/utils';
+import {getTraitDiagnostics} from '../host/util';
 
 runInEachFileSystem(() => {
   describe('NgccTraitCompiler', () => {
@@ -233,12 +234,13 @@ runInEachFileSystem(() => {
 
         const record = compiler.recordFor(mockClazz)!;
         const migratedTrait = record.traits[0];
-        if (migratedTrait.state !== TraitState.ERRORED) {
+        const diagnostics = getTraitDiagnostics(migratedTrait);
+        if (diagnostics === null) {
           return fail('Expected migrated class trait to be in an error state');
         }
 
-        expect(migratedTrait.diagnostics.length).toBe(1);
-        expect(migratedTrait.diagnostics[0].messageText).toEqual(`test diagnostic`);
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].messageText).toEqual(`test diagnostic`);
       });
     });
 

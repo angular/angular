@@ -9,11 +9,13 @@ import {PluginObj} from '@babel/core';
 import {NodePath} from '@babel/traverse';
 import * as t from '@babel/types';
 
-import {FileLinker, isFatalLinkerError, LinkerEnvironment, LinkerOptions} from '../../../linker';
+import {FileLinker, isFatalLinkerError, LinkerEnvironment} from '../../../linker';
 
 import {BabelAstFactory} from './ast/babel_ast_factory';
 import {BabelAstHost} from './ast/babel_ast_host';
 import {BabelDeclarationScope, ConstantScopePath} from './babel_declaration_scope';
+import {LinkerPluginOptions} from './linker_plugin_options';
+
 
 /**
  * Create a Babel plugin that visits the program, identifying and linking partial declarations.
@@ -21,11 +23,9 @@ import {BabelDeclarationScope, ConstantScopePath} from './babel_declaration_scop
  * The plugin delegates most of its work to a generic `FileLinker` for each file (`t.Program` in
  * Babel) that is visited.
  */
-export function createEs2015LinkerPlugin(options: Partial<LinkerOptions> = {}): PluginObj {
+export function createEs2015LinkerPlugin({fileSystem, logger, ...options}: LinkerPluginOptions):
+    PluginObj {
   let fileLinker: FileLinker<ConstantScopePath, t.Statement, t.Expression>|null = null;
-
-  const linkerEnvironment = LinkerEnvironment.create<t.Statement, t.Expression>(
-      new BabelAstHost(), new BabelAstFactory(), options);
 
   return {
     visitor: {
@@ -36,8 +36,19 @@ export function createEs2015LinkerPlugin(options: Partial<LinkerOptions> = {}): 
          */
         enter(path: NodePath<t.Program>): void {
           assertNull(fileLinker);
+          // Babel can be configured with a `filename` or `relativeFilename` (or both, or neither) -
+          // possibly relative to the optional `cwd` path.
           const file: BabelFile = path.hub.file;
-          fileLinker = new FileLinker(linkerEnvironment, file.opts.filename ?? '', file.code);
+          const filename = file.opts.filename ?? file.opts.filenameRelative;
+          if (!filename) {
+            throw new Error(
+                'No filename (nor filenameRelative) provided by Babel. This is required for the linking of partially compiled directives and components.');
+          }
+          const sourceUrl = fileSystem.resolve(file.opts.cwd ?? '.', filename);
+
+          const linkerEnvironment = LinkerEnvironment.create<t.Statement, t.Expression>(
+              fileSystem, logger, new BabelAstHost(), new BabelAstFactory(sourceUrl), options);
+          fileLinker = new FileLinker(linkerEnvironment, sourceUrl, file.code);
         },
 
         /**
@@ -58,14 +69,15 @@ export function createEs2015LinkerPlugin(options: Partial<LinkerOptions> = {}): 
        * with the results of linking the declaration.
        */
       CallExpression(call: NodePath<t.CallExpression>): void {
-        try {
-          assertNotNull(fileLinker);
+        if (fileLinker === null) {
+          // Any statements that are inserted upon program exit will be visited outside of an active
+          // linker context. These call expressions are known not to contain partial declarations,
+          // so it's safe to skip visiting those call expressions.
+          return;
+        }
 
-          const callee = call.node.callee;
-          if (!t.isExpression(callee)) {
-            return;
-          }
-          const calleeName = linkerEnvironment.host.getSymbolName(callee);
+        try {
+          const calleeName = getCalleeName(call);
           if (calleeName === null) {
             return;
           }
@@ -121,6 +133,17 @@ function insertIntoProgram(program: NodePath<t.Program>, statements: t.Statement
   }
 }
 
+function getCalleeName(call: NodePath<t.CallExpression>): string|null {
+  const callee = call.node.callee;
+  if (t.isIdentifier(callee)) {
+    return callee.name;
+  } else if (t.isMemberExpression(callee) && t.isIdentifier(callee.property)) {
+    return callee.property.name;
+  } else {
+    return null;
+  }
+}
+
 /**
  * Return true if all the `nodes` are Babel expressions.
  */
@@ -161,7 +184,11 @@ function buildCodeFrameError(file: BabelFile, message: string, node: t.Node): st
  */
 interface BabelFile {
   code: string;
-  opts: {filename?: string;};
+  opts: {
+    filename?: string,
+    filenameRelative?: string,
+    cwd?: string,
+  };
 
   buildCodeFrameError(node: t.Node, message: string): Error;
 }

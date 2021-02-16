@@ -33,6 +33,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/shims",
         "//packages/compiler-cli/src/ngtsc/translator",
         "//packages/compiler-cli/src/ngtsc/typecheck",
+        "//packages/compiler-cli/src/ngtsc/typecheck/api",
         "@npm//@bazel/typescript",
         "@npm//@types/node",
         "@npm//chokidar",
@@ -60,6 +61,8 @@ pkg_npm(
     ],
     deps = [
         ":compiler-cli",
+        "//packages/compiler-cli/linker",
+        "//packages/compiler-cli/linker/babel",
         "//packages/compiler-cli/ngcc",
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/logging/testing",

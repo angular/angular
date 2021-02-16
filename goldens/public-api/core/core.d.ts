@@ -174,10 +174,12 @@ export declare type ContentChildren = Query;
 export declare interface ContentChildrenDecorator {
     (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         descendants?: boolean;
+        emitDistinctChangesOnly?: boolean;
         read?: any;
     }): any;
     new (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         descendants?: boolean;
+        emitDistinctChangesOnly?: boolean;
         read?: any;
     }): Query;
 }
@@ -312,7 +314,8 @@ export declare class ErrorHandler {
 export declare interface EventEmitter<T> extends Subject<T> {
     new (isAsync?: boolean): EventEmitter<T>;
     emit(value?: T): void;
-    subscribe(generatorOrNext?: any, error?: any, complete?: any): Subscription;
+    subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void): Subscription;
+    subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription;
 }
 
 export declare const EventEmitter: {
@@ -445,7 +448,7 @@ export declare class InjectionToken<T> {
 }
 
 export declare abstract class Injector {
-    abstract get<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    abstract get<T>(token: Type<T> | AbstractType<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
     static THROW_IF_NOT_FOUND: {};
@@ -676,8 +679,8 @@ export declare function ɵɵdefineInjectable<T>(opts: {
 }): never;
 
 /** @codeGenApi */
-export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>): T;
-export declare function ɵɵinject<T>(token: Type<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
+export declare function ɵɵinject<T>(token: Type<T> | AbstractType<T> | InjectionToken<T>): T;
+export declare function ɵɵinject<T>(token: Type<T> | AbstractType<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
 
 /** @codeGenApi */
 export declare interface ɵɵInjectableDef<T> {
@@ -734,6 +737,7 @@ export declare type Provider = TypeProvider | ValueProvider | ClassProvider | Co
 
 export declare interface Query {
     descendants: boolean;
+    emitDistinctChangesOnly: boolean;
     first: boolean;
     isViewQuery: boolean;
     read: any;
@@ -746,12 +750,12 @@ export declare abstract class Query {
 
 export declare class QueryList<T> implements Iterable<T> {
     [Symbol.iterator]: () => Iterator<T>;
-    readonly changes: Observable<any>;
+    get changes(): Observable<any>;
     readonly dirty = true;
     readonly first: T;
     readonly last: T;
     readonly length: number;
-    constructor();
+    constructor(_emitDistinctChangesOnly?: boolean);
     destroy(): void;
     filter(fn: (item: T, index: number, array: T[]) => boolean): T[];
     find(fn: (item: T, index: number, array: T[]) => boolean): T | undefined;
@@ -760,7 +764,7 @@ export declare class QueryList<T> implements Iterable<T> {
     map<U>(fn: (item: T, index: number, array: T[]) => U): U[];
     notifyOnChanges(): void;
     reduce<U>(fn: (prevValue: U, curValue: T, curIndex: number, array: T[]) => U, init: U): U;
-    reset(resultsTree: Array<T | any[]>): void;
+    reset(resultsTree: Array<T | any[]>, identityAccessor?: (value: T) => unknown): void;
     setDirty(): void;
     some(fn: (value: T, index: number, array: T[]) => boolean): boolean;
     toArray(): T[];
@@ -838,11 +842,11 @@ export declare interface RendererType2 {
 }
 
 export declare class ResolvedReflectiveFactory {
-    dependencies: ɵangular_packages_core_core_d[];
+    dependencies: ɵangular_packages_core_core_e[];
     factory: Function;
     constructor(
     factory: Function,
-    dependencies: ɵangular_packages_core_core_d[]);
+    dependencies: ɵangular_packages_core_core_e[]);
 }
 
 export declare interface ResolvedReflectiveProvider {
@@ -1010,9 +1014,11 @@ export declare type ViewChildren = Query;
 export declare interface ViewChildrenDecorator {
     (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         read?: any;
+        emitDistinctChangesOnly?: boolean;
     }): any;
     new (selector: Type<any> | InjectionToken<unknown> | Function | string, opts?: {
         read?: any;
+        emitDistinctChangesOnly?: boolean;
     }): ViewChildren;
 }
 

@@ -12,14 +12,16 @@ import * as ts from 'typescript';
 import * as api from '../transformers/api';
 import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
-import {NgCompiler, NgCompilerHost} from './core';
+import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, NgCompilerHost} from './core';
 import {NgCompilerOptions} from './core/api';
+import {absoluteFrom, AbsoluteFsPath} from './file_system';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
 import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
 import {DeclarationNode} from './reflection';
 import {retagAllTsFiles, untagAllTsFiles} from './shims';
 import {ReusedProgramStrategy} from './typecheck';
+import {OptimizeFor} from './typecheck/api';
 
 
 
@@ -96,11 +98,34 @@ export class NgtscProgram implements api.Program {
     this.incrementalStrategy = oldProgram !== undefined ?
         oldProgram.incrementalStrategy.toNextBuildStrategy() :
         new TrackedIncrementalBuildStrategy();
+    const modifiedResourceFiles = new Set<AbsoluteFsPath>();
+    if (this.host.getModifiedResourceFiles !== undefined) {
+      const strings = this.host.getModifiedResourceFiles();
+      if (strings !== undefined) {
+        for (const fileString of strings) {
+          modifiedResourceFiles.add(absoluteFrom(fileString));
+        }
+      }
+    }
+
+    let ticket: CompilationTicket;
+    if (oldProgram === undefined) {
+      ticket = freshCompilationTicket(
+          this.tsProgram, options, this.incrementalStrategy, reusedProgramStrategy,
+          /* enableTemplateTypeChecker */ false, /* usePoisonedData */ false);
+    } else {
+      ticket = incrementalFromCompilerTicket(
+          oldProgram.compiler,
+          this.tsProgram,
+          this.incrementalStrategy,
+          reusedProgramStrategy,
+          modifiedResourceFiles,
+      );
+    }
+
 
     // Create the NgCompiler which will drive the rest of the compilation.
-    this.compiler = new NgCompiler(
-        this.host, options, this.tsProgram, reusedProgramStrategy, this.incrementalStrategy,
-        /** enableTemplateTypeChecker */ false, reuseProgram, this.perfRecorder);
+    this.compiler = NgCompiler.fromTicket(ticket, this.host, this.perfRecorder);
   }
 
   getTsProgram(): ts.Program {
@@ -181,7 +206,9 @@ export class NgtscProgram implements api.Program {
       }
     }
 
-    const diagnostics = this.compiler.getDiagnostics(sf);
+    const diagnostics = sf === undefined ?
+        this.compiler.getDiagnostics() :
+        this.compiler.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
     this.reuseTsProgram = this.compiler.getNextProgram();
     return diagnostics;
   }

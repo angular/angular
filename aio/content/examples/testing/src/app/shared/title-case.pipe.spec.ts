@@ -2,7 +2,7 @@
 // #docregion
 import { TitleCasePipe } from './title-case.pipe';
 
-// #docregion excerpt, mini-excerpt
+// #docregion excerpt
 describe('TitleCasePipe', () => {
   // This pipe is a pure, stateless function so no need for BeforeEach
   const pipe = new TitleCasePipe();
@@ -10,7 +10,6 @@ describe('TitleCasePipe', () => {
   it('transforms "abc" to "Abc"', () => {
     expect(pipe.transform('abc')).toBe('Abc');
   });
-// #enddocregion mini-excerpt
 
   it('transforms "abc def" to "Abc Def"', () => {
     expect(pipe.transform('abc def')).toBe('Abc Def');
@@ -29,6 +28,6 @@ describe('TitleCasePipe', () => {
   it('transforms "   abc   def" to "   Abc   Def" (preserves spaces) ', () => {
     expect(pipe.transform('   abc   def')).toBe('   Abc   Def');
   });
-// #docregion excerpt, mini-excerpt
+// #docregion excerpt
 });
-// #enddocregion excerpt, mini-excerpt
+// #enddocregion excerpt

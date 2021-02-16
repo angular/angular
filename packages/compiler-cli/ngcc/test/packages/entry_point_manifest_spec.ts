@@ -225,7 +225,7 @@ runInEachFileSystem(() => {
 
         spyOn(config, 'getPackageConfig')
             .and.returnValue(
-                new ProcessedNgccPackageConfig(_Abs('/project/node_modules/some_package'), {
+                new ProcessedNgccPackageConfig(fs, _Abs('/project/node_modules/some_package'), {
                   entryPoints: {
                     './ignored_entry_point': {ignore: true},
                   },
@@ -265,16 +265,18 @@ runInEachFileSystem(() => {
       it('should write the ngcc version', () => {
         fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
         manifest.writeEntryPointManifest(_Abs('/project/node_modules'), []);
-        const file: EntryPointManifestFile =
-            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json')));
+        const file =
+            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json'))) as
+            EntryPointManifestFile;
         expect(file.ngccVersion).toEqual(NGCC_VERSION);
       });
 
       it('should write a hash of the yarn.lock file', () => {
         fs.writeFile(_Abs('/project/yarn.lock'), 'LOCK FILE CONTENTS');
         manifest.writeEntryPointManifest(_Abs('/project/node_modules'), []);
-        const file: EntryPointManifestFile =
-            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json')));
+        const file =
+            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json'))) as
+            EntryPointManifestFile;
         expect(file.lockFileHash)
             .toEqual(createHash('md5').update('LOCK FILE CONTENTS').digest('hex'));
       });
@@ -282,8 +284,9 @@ runInEachFileSystem(() => {
       it('should write a hash of the package-lock.json file', () => {
         fs.writeFile(_Abs('/project/package-lock.json'), 'LOCK FILE CONTENTS');
         manifest.writeEntryPointManifest(_Abs('/project/node_modules'), []);
-        const file: EntryPointManifestFile =
-            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json')));
+        const file =
+            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json'))) as
+            EntryPointManifestFile;
         expect(file.lockFileHash)
             .toEqual(createHash('md5').update('LOCK FILE CONTENTS').digest('hex'));
       });
@@ -291,8 +294,9 @@ runInEachFileSystem(() => {
       it('should write a hash of the project config', () => {
         fs.writeFile(_Abs('/project/package-lock.json'), 'LOCK FILE CONTENTS');
         manifest.writeEntryPointManifest(_Abs('/project/node_modules'), []);
-        const file: EntryPointManifestFile =
-            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json')));
+        const file =
+            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json'))) as
+            EntryPointManifestFile;
         expect(file.configFileHash).toEqual(config.hash);
       });
 
@@ -329,8 +333,9 @@ runInEachFileSystem(() => {
           }
         };
         manifest.writeEntryPointManifest(_Abs('/project/node_modules'), [entryPoint1, entryPoint2]);
-        const file: EntryPointManifestFile =
-            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json')));
+        const file =
+            JSON.parse(fs.readFile(_Abs('/project/node_modules/__ngcc_entry_points__.json'))) as
+            EntryPointManifestFile;
         expect(file.entryPointPaths).toEqual([
           [
             'package-1',

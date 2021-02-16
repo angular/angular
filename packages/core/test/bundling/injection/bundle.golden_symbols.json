@@ -12,9 +12,6 @@
     "name": "INJECTOR_SCOPE"
   },
   {
-    "name": "Inject"
-  },
-  {
     "name": "InjectFlags"
   },
   {
@@ -48,19 +45,10 @@
     "name": "NullInjector"
   },
   {
-    "name": "Optional"
-  },
-  {
     "name": "R3Injector"
   },
   {
     "name": "ScopedService"
-  },
-  {
-    "name": "Self"
-  },
-  {
-    "name": "SkipSelf"
   },
   {
     "name": "THROW_IF_NOT_FOUND"
@@ -109,9 +97,6 @@
   },
   {
     "name": "isValueProvider"
-  },
-  {
-    "name": "makeParamDecorator"
   },
   {
     "name": "makeRecord"

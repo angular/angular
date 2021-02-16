@@ -5,7 +5,7 @@ import { trigger, transition, state, animate, style, AnimationEvent } from '@ang
 // #docregion component, events1
 @Component({
   selector: 'app-open-close',
-// #docregion trigger, trigger-wildcard1, trigger-transition
+// #docregion trigger-wildcard1, trigger-transition
   animations: [
     trigger('openClose', [
 // #docregion state1
@@ -33,7 +33,7 @@ import { trigger, transition, state, animate, style, AnimationEvent } from '@ang
       transition('closed => open', [
         animate('0.5s')
       ]),
-// #enddocregion transition2, trigger, component
+// #enddocregion transition2, component
 // #docregion trigger-wildcard1
       transition('* => closed', [
         animate('1s')
@@ -54,15 +54,14 @@ import { trigger, transition, state, animate, style, AnimationEvent } from '@ang
         ),
       ]),
 // #enddocregion transition4
-// #docregion transition3
       transition('* => *', [
         animate('1s')
       ]),
-// #enddocregion transition3, trigger-transition
-// #docregion trigger, component, trigger-wildcard1, events1
+// #enddocregion trigger-transition
+// #docregion component, trigger-wildcard1, events1
     ]),
   ],
-// #enddocregion trigger, trigger-wildcard1
+// #enddocregion trigger-wildcard1
   templateUrl: 'open-close.component.html',
   styleUrls: ['open-close.component.css']
 })

@@ -11,7 +11,7 @@ import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
-import {trustedHTMLFromString, trustedScriptFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
+import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
 import {trustedHTMLFromStringBypass, trustedScriptFromStringBypass, trustedScriptURLFromStringBypass} from '../util/security/trusted_types_bypass';
 
 import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
@@ -145,8 +145,10 @@ export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
 }
 
 /**
- * Promotes the given constant string to a TrustedHTML.
- * @param html constant string containing trusted HTML.
+ * A template tag function for promoting the associated constant literal to a
+ * TrustedHTML. Interpolation is explicitly not allowed.
+ *
+ * @param html constant template literal containing trusted HTML.
  * @returns TrustedHTML wrapping `html`.
  *
  * @security This is a security-sensitive function and should only be used to
@@ -155,28 +157,24 @@ export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
  *
  * @codeGenApi
  */
-export function ɵɵtrustConstantHtml(html: string): TrustedHTML|string {
-  return trustedHTMLFromString(html);
+export function ɵɵtrustConstantHtml(html: TemplateStringsArray): TrustedHTML|string {
+  // The following runtime check ensures that the function was called as a
+  // template tag (e.g. ɵɵtrustConstantHtml`content`), without any interpolation
+  // (e.g. not ɵɵtrustConstantHtml`content ${variable}`). A TemplateStringsArray
+  // is an array with a `raw` property that is also an array. The associated
+  // template literal has no interpolation if and only if the length of the
+  // TemplateStringsArray is 1.
+  if (ngDevMode && (!Array.isArray(html) || !Array.isArray(html.raw) || html.length !== 1)) {
+    throw new Error(`Unexpected interpolation in trusted HTML constant: ${html.join('?')}`);
+  }
+  return trustedHTMLFromString(html[0]);
 }
 
 /**
- * Promotes the given constant string to a TrustedScript.
- * @param script constant string containing a trusted script.
- * @returns TrustedScript wrapping `script`.
+ * A template tag function for promoting the associated constant literal to a
+ * TrustedScriptURL. Interpolation is explicitly not allowed.
  *
- * @security This is a security-sensitive function and should only be used to
- * convert constant values of attributes and properties found in
- * application-provided Angular templates to TrustedScript.
- *
- * @codeGenApi
- */
-export function ɵɵtrustConstantScript(script: string): TrustedScript|string {
-  return trustedScriptFromString(script);
-}
-
-/**
- * Promotes the given constant string to a TrustedScriptURL.
- * @param url constant string containing a trusted script URL.
+ * @param url constant template literal containing a trusted script URL.
  * @returns TrustedScriptURL wrapping `url`.
  *
  * @security This is a security-sensitive function and should only be used to
@@ -185,8 +183,17 @@ export function ɵɵtrustConstantScript(script: string): TrustedScript|string {
  *
  * @codeGenApi
  */
-export function ɵɵtrustConstantResourceUrl(url: string): TrustedScriptURL|string {
-  return trustedScriptURLFromString(url);
+export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): TrustedScriptURL|string {
+  // The following runtime check ensures that the function was called as a
+  // template tag (e.g. ɵɵtrustConstantResourceUrl`content`), without any
+  // interpolation (e.g. not ɵɵtrustConstantResourceUrl`content ${variable}`). A
+  // TemplateStringsArray is an array with a `raw` property that is also an
+  // array. The associated template literal has no interpolation if and only if
+  // the length of the TemplateStringsArray is 1.
+  if (ngDevMode && (!Array.isArray(url) || !Array.isArray(url.raw) || url.length !== 1)) {
+    throw new Error(`Unexpected interpolation in trusted URL constant: ${url.join('?')}`);
+  }
+  return trustedScriptURLFromString(url[0]);
 }
 
 /**

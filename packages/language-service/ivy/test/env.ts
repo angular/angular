@@ -11,7 +11,7 @@ import {StrictTemplateOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {MockFileSystem, TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '@angular/compiler-cli/src/ngtsc/testing';
-import {TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {LanguageService} from '../language_service';
@@ -47,7 +47,9 @@ function writeTsconfig(
 export type TestableOptions = StrictTemplateOptions;
 
 export class LanguageServiceTestEnvironment {
-  private constructor(private tsLS: ts.LanguageService, readonly ngLS: LanguageService) {}
+  private constructor(
+      readonly tsLS: ts.LanguageService, readonly ngLS: LanguageService,
+      readonly projectService: ts.server.ProjectService, readonly host: MockServerHost) {}
 
   static setup(files: TestFile[], options: TestableOptions = {}): LanguageServiceTestEnvironment {
     const fs = getFileSystem();
@@ -97,7 +99,7 @@ export class LanguageServiceTestEnvironment {
     const tsLS = project.getLanguageService();
 
     const ngLS = new LanguageService(project, tsLS);
-    return new LanguageServiceTestEnvironment(tsLS, ngLS);
+    return new LanguageServiceTestEnvironment(tsLS, ngLS, projectService, host);
   }
 
   getClass(fileName: AbsoluteFsPath, className: string): ts.ClassDeclaration {
@@ -109,22 +111,23 @@ export class LanguageServiceTestEnvironment {
     return getClassOrError(sf, className);
   }
 
-  overrideTemplateWithCursor(fileName: AbsoluteFsPath, className: string, contents: string):
-      {cursor: number, nodes: TmplAstNode[], component: ts.ClassDeclaration, text: string} {
-    const program = this.tsLS.getProgram();
-    if (program === undefined) {
-      throw new Error(`Expected to get a ts.Program`);
-    }
-    const sf = getSourceFileOrError(program, fileName);
-    const component = getClassOrError(sf, className);
-
-    const ngCompiler = this.ngLS.compilerFactory.getOrCreate();
-    const templateTypeChecker = ngCompiler.getTemplateTypeChecker();
-
+  updateFileWithCursor(fileName: AbsoluteFsPath, contents: string): {cursor: number, text: string} {
     const {cursor, text} = extractCursorInfo(contents);
+    this.updateFile(fileName, text);
+    return {cursor, text};
+  }
 
-    const {nodes} = templateTypeChecker.overrideComponentTemplate(component, text);
-    return {cursor, nodes, component, text};
+  updateFile(fileName: AbsoluteFsPath, contents: string): void {
+    const normalFileName = ts.server.toNormalizedPath(fileName);
+    const scriptInfo =
+        this.projectService.getOrCreateScriptInfoForNormalizedPath(normalFileName, true, '');
+    if (scriptInfo === undefined) {
+      throw new Error(`Could not find a file named ${fileName}`);
+    }
+
+    // Get the current contents to find the length
+    const len = scriptInfo.getSnapshot().getLength();
+    scriptInfo.editContent(0, len, contents);
   }
 
   expectNoSourceDiagnostics(): void {
@@ -152,7 +155,9 @@ export class LanguageServiceTestEnvironment {
         continue;
       }
 
-      const ngDiagnostics = ngCompiler.getDiagnostics(sf);
+      // It's more efficient to optimize for WholeProgram since we call this with every file in the
+      // program.
+      const ngDiagnostics = ngCompiler.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
       expect(ngDiagnostics.map(diag => diag.messageText)).toEqual([]);
     }
 
@@ -206,10 +211,10 @@ function getClassOrError(sf: ts.SourceFile, name: string): ts.ClassDeclaration {
   throw new Error(`Class ${name} not found in file: ${sf.fileName}: ${sf.text}`);
 }
 
-function extractCursorInfo(textWithCursor: string): {cursor: number, text: string} {
+export function extractCursorInfo(textWithCursor: string): {cursor: number, text: string} {
   const cursor = textWithCursor.indexOf('¦');
-  if (cursor === -1) {
-    throw new Error(`Expected to find cursor symbol '¦'`);
+  if (cursor === -1 || textWithCursor.indexOf('¦', cursor + 1) !== -1) {
+    throw new Error(`Expected to find exactly one cursor symbol '¦'`);
   }
 
   return {

@@ -57,7 +57,6 @@ describe('DashboardComponent (shallow)', () => {
 
 /** Add TestBed providers, compile, and create DashboardComponent */
 function compileAndCreate() {
-  // #docregion compile-and-create-body
   beforeEach(waitForAsync(() => {
     // #docregion router-spy
     const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
@@ -78,7 +77,6 @@ function compileAndCreate() {
           // getHeroes spy returns observable of test heroes
           heroServiceSpy.getHeroes.and.returnValue(asyncData(getTestHeroes()));
         });
-    // #enddocregion compile-and-create-body
   }));
 }
 

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {COMPILER_OPTIONS, Component, destroyPlatform, NgModule, ViewEncapsulation} from '@angular/core';
+import {ApplicationRef, COMPILER_OPTIONS, Component, destroyPlatform, NgModule, NgZone, TestabilityRegistry, ViewEncapsulation} from '@angular/core';
+import {expect} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {onlyInIvy, withBody} from '@angular/private/testing';
@@ -150,6 +151,97 @@ describe('bootstrap', () => {
          expect(document.body.innerHTML).toContain('a b');
          ngModuleRef.destroy();
        }));
+
+    describe('ApplicationRef cleanup', () => {
+      it('should cleanup ApplicationRef when Injector is destroyed',
+         withBody('<my-app></my-app>', async () => {
+           const TestModule = createComponentAndModule();
+
+           const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
+           const appRef = ngModuleRef.injector.get(ApplicationRef);
+           const testabilityRegistry = ngModuleRef.injector.get(TestabilityRegistry);
+
+           expect(appRef.components.length).toBe(1);
+           expect(testabilityRegistry.getAllRootElements().length).toBe(1);
+
+           ngModuleRef.destroy();  // also destroys an Injector instance.
+
+           expect(appRef.components.length).toBe(0);
+           expect(testabilityRegistry.getAllRootElements().length).toBe(0);
+         }));
+
+      it('should cleanup ApplicationRef when ComponentRef is destroyed',
+         withBody('<my-app></my-app>', async () => {
+           const TestModule = createComponentAndModule();
+
+           const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
+           const appRef = ngModuleRef.injector.get(ApplicationRef);
+           const testabilityRegistry = ngModuleRef.injector.get(TestabilityRegistry);
+           const componentRef = appRef.components[0];
+
+           expect(appRef.components.length).toBe(1);
+           expect(testabilityRegistry.getAllRootElements().length).toBe(1);
+
+           componentRef.destroy();
+
+           expect(appRef.components.length).toBe(0);
+           expect(testabilityRegistry.getAllRootElements().length).toBe(0);
+         }));
+
+      it('should not throw in case ComponentRef is destroyed and Injector is destroyed after that',
+         withBody('<my-app></my-app>', async () => {
+           const TestModule = createComponentAndModule();
+
+           const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
+           const appRef = ngModuleRef.injector.get(ApplicationRef);
+           const testabilityRegistry = ngModuleRef.injector.get(TestabilityRegistry);
+           const componentRef = appRef.components[0];
+
+           expect(appRef.components.length).toBe(1);
+           expect(testabilityRegistry.getAllRootElements().length).toBe(1);
+
+           componentRef.destroy();
+           ngModuleRef.destroy();  // also destroys an Injector instance.
+
+           expect(appRef.components.length).toBe(0);
+           expect(testabilityRegistry.getAllRootElements().length).toBe(0);
+         }));
+
+      it('should not throw in case Injector is destroyed and ComponentRef is destroyed after that',
+         withBody('<my-app></my-app>', async () => {
+           const TestModule = createComponentAndModule();
+
+           const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
+           const appRef = ngModuleRef.injector.get(ApplicationRef);
+           const testabilityRegistry = ngModuleRef.injector.get(TestabilityRegistry);
+           const componentRef = appRef.components[0];
+
+           expect(appRef.components.length).toBe(1);
+           expect(testabilityRegistry.getAllRootElements().length).toBe(1);
+
+           ngModuleRef.destroy();  // also destroys an Injector instance.
+           componentRef.destroy();
+
+           expect(appRef.components.length).toBe(0);
+           expect(testabilityRegistry.getAllRootElements().length).toBe(0);
+         }));
+    });
+
+    describe('PlatformRef cleanup', () => {
+      it('should unsubscribe from `onError` when Injector is destroyed',
+         withBody('<my-app></my-app>', async () => {
+           const TestModule = createComponentAndModule();
+
+           const ngModuleRef = await platformBrowserDynamic().bootstrapModule(TestModule);
+           const ngZone = ngModuleRef.injector.get(NgZone);
+
+           expect(ngZone.onError.observers.length).toBe(1);
+
+           ngModuleRef.destroy();
+
+           expect(ngZone.onError.observers.length).toBe(0);
+         }));
+    });
 
     onlyInIvy('options cannot be changed in Ivy').describe('changing bootstrap options', () => {
       beforeEach(() => {

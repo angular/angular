@@ -15,6 +15,7 @@ export const $INJECTOR = '$injector';
 export const $INTERVAL = '$interval';
 export const $PARSE = '$parse';
 export const $PROVIDE = '$provide';
+export const $ROOT_ELEMENT = '$rootElement';
 export const $ROOT_SCOPE = '$rootScope';
 export const $SCOPE = '$scope';
 export const $TEMPLATE_CACHE = '$templateCache';

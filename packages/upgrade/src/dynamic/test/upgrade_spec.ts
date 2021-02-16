@@ -86,7 +86,7 @@ withEachNg1Version(() => {
            });
          }));
 
-      it('supports the compilerOptions argument', waitForAsync(() => {
+      it('should support the compilerOptions argument', waitForAsync(() => {
            const platformRef = platformBrowserDynamic();
            spyOn(platformRef, 'bootstrapModule').and.callThrough();
            spyOn(platformRef, 'bootstrapModuleFactory').and.callThrough();
@@ -118,6 +118,64 @@ withEachNg1Version(() => {
                      jasmine.any(NgModuleFactory),
                      jasmine.objectContaining({ngZone: jasmine.any(NgZone), providers: []}));
              ref.dispose();
+           });
+         }));
+
+      it('should destroy the AngularJS app when `PlatformRef` is destroyed', waitForAsync(() => {
+           const platformRef = platformBrowserDynamic();
+           const adapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+           const ng1Module = angular.module_('ng1', []);
+
+           @Component({selector: 'ng2', template: '<span>NG2</span>'})
+           class Ng2Component {
+           }
+
+           @NgModule({
+             declarations: [Ng2Component],
+             imports: [BrowserModule],
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           ng1Module.component('ng1', {template: '<ng2></ng2>'});
+           ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+           const element = html('<div><ng1></ng1></div>');
+
+           adapter.bootstrap(element, [ng1Module.name]).ready(ref => {
+             const $rootScope: angular.IRootScopeService = ref.ng1Injector.get($ROOT_SCOPE);
+             const rootScopeDestroySpy = spyOn($rootScope, '$destroy');
+
+             const appElem = angular.element(element);
+             const ng1Elem = angular.element(element.querySelector('ng1') as Element);
+             const ng2Elem = angular.element(element.querySelector('ng2') as Element);
+             const ng2ChildElem = angular.element(element.querySelector('ng2 span') as Element);
+
+             // Attach data to all elements.
+             appElem.data!('testData', 1);
+             ng1Elem.data!('testData', 2);
+             ng2Elem.data!('testData', 3);
+             ng2ChildElem.data!('testData', 4);
+
+             // Verify data can be retrieved.
+             expect(appElem.data!('testData')).toBe(1);
+             expect(ng1Elem.data!('testData')).toBe(2);
+             expect(ng2Elem.data!('testData')).toBe(3);
+             expect(ng2ChildElem.data!('testData')).toBe(4);
+
+             expect(rootScopeDestroySpy).not.toHaveBeenCalled();
+
+             // Destroy `PlatformRef`.
+             platformRef.destroy();
+
+             // Verify `$rootScope` has been destroyed and data has been cleaned up.
+             expect(rootScopeDestroySpy).toHaveBeenCalled();
+
+             expect(appElem.data!('testData')).toBeUndefined();
+             expect(ng1Elem.data!('testData')).toBeUndefined();
+             expect(ng2Elem.data!('testData')).toBeUndefined();
+             expect(ng2ChildElem.data!('testData')).toBeUndefined();
            });
          }));
     });
@@ -665,23 +723,16 @@ withEachNg1Version(() => {
       it('should properly run cleanup when ng1 directive is destroyed', waitForAsync(() => {
            const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
            const ng1Module = angular.module_('ng1', []);
-           const onDestroyed: EventEmitter<string> = new EventEmitter<string>();
+           let ng2ComponentDestroyed = false;
 
-           ng1Module.directive('ng1', () => {
-             return {
-               template: '<div ng-if="!destroyIt"><ng2></ng2></div>',
-               controller: function($rootScope: any, $timeout: Function) {
-                 $timeout(() => {
-                   $rootScope.destroyIt = true;
-                 });
-               }
-             };
-           });
+           ng1Module.directive('ng1', () => ({
+                                        template: '<div ng-if="!destroyIt"><ng2></ng2></div>',
+                                      }));
 
-           @Component({selector: 'ng2', template: 'test'})
+           @Component({selector: 'ng2', template: '<ul><li>test1</li><li>test2</li></ul>'})
            class Ng2 {
              ngOnDestroy() {
-               onDestroyed.emit('destroyed');
+               ng2ComponentDestroyed = true;
              }
            }
 
@@ -695,9 +746,35 @@ withEachNg1Version(() => {
            ng1Module.directive('ng2', adapter.downgradeNg2Component(Ng2));
            const element = html('<ng1></ng1>');
            adapter.bootstrap(element, ['ng1']).ready((ref) => {
-             onDestroyed.subscribe(() => {
-               ref.dispose();
-             });
+             const ng2Element = angular.element(element.querySelector('ng2') as Element);
+             const ng2Descendants =
+                 Array.from(element.querySelectorAll('ng2 li')).map(angular.element);
+             let ng2ElementDestroyed = false;
+             let ng2DescendantsDestroyed = ng2Descendants.map(() => false);
+
+             ng2Element.data!('test', 42);
+             ng2Descendants.forEach((elem, i) => elem.data!('test', i));
+             ng2Element.on!('$destroy', () => ng2ElementDestroyed = true);
+             ng2Descendants.forEach(
+                 (elem, i) => elem.on!('$destroy', () => ng2DescendantsDestroyed[i] = true));
+
+             expect(element.textContent).toBe('test1test2');
+             expect(ng2Element.data!('test')).toBe(42);
+             ng2Descendants.forEach((elem, i) => expect(elem.data!('test')).toBe(i));
+             expect(ng2ElementDestroyed).toBe(false);
+             expect(ng2DescendantsDestroyed).toEqual([false, false]);
+             expect(ng2ComponentDestroyed).toBe(false);
+
+             ref.ng1RootScope.$apply('destroyIt = true');
+
+             expect(element.textContent).toBe('');
+             expect(ng2Element.data!('test')).toBeUndefined();
+             ng2Descendants.forEach(elem => expect(elem.data!('test')).toBeUndefined());
+             expect(ng2ElementDestroyed).toBe(true);
+             expect(ng2DescendantsDestroyed).toEqual([true, true]);
+             expect(ng2ComponentDestroyed).toBe(true);
+
+             ref.dispose();
            });
          }));
 

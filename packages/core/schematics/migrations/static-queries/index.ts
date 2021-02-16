@@ -9,7 +9,6 @@
 import {logging} from '@angular-devkit/core';
 import {Rule, SchematicContext, SchematicsException, Tree} from '@angular-devkit/schematics';
 import {relative} from 'path';
-import {from} from 'rxjs';
 import * as ts from 'typescript';
 
 import {NgComponentTemplateVisitor} from '../../utils/ng_component_template';
@@ -41,11 +40,7 @@ interface AnalyzedProject {
 
 /** Entry point for the V8 static-query migration. */
 export default function(): Rule {
-  return (tree: Tree, context: SchematicContext) => {
-    // We need to cast the returned "Observable" to "any" as there is a
-    // RxJS version mismatch that breaks the TS compilation.
-    return from(runMigration(tree, context).then(() => tree)) as any;
-  };
+  return runMigration;
 }
 
 /** Runs the V8 migration static-query migration for all determined TypeScript projects. */

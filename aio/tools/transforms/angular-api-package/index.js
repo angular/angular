@@ -17,7 +17,6 @@ module.exports =
         // Register the processors
         .processor(require('./processors/mergeParameterInfo'))
         .processor(require('./processors/processPseudoClasses'))
-        .processor(require('./processors/splitDescription'))
         .processor(require('./processors/convertPrivateClassesToInterfaces'))
         .processor(require('./processors/generateApiListDoc'))
         .processor(require('./processors/addNotYetDocumentedProperty'))
@@ -102,15 +101,13 @@ module.exports =
             'core/testing/index.ts',
             'elements/index.ts',
             'forms/index.ts',
-            // Current plan for Angular v8 is to hide documentation for the @angular/http package
-            // 'http/index.ts',
-            // 'http/testing/index.ts',
             'platform-browser/index.ts',
             'platform-browser/animations/index.ts',
             'platform-browser/testing/index.ts',
             'platform-browser-dynamic/index.ts',
             'platform-browser-dynamic/testing/index.ts',
             'platform-server/index.ts',
+            'platform-server/init/index.ts',
             'platform-server/testing/index.ts',
             'platform-webworker/index.ts',
             'platform-webworker-dynamic/index.ts',

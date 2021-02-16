@@ -1,83 +1,61 @@
 .card-container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin: 16px 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 16px 0;
 
-    .docs-card {
-      @include card(194px, 30%);
-      max-width: 340px;
-      min-width: 262px;
-      margin: 24px 8px;
-      padding-bottom: 48px;
-      position: relative;
+  .docs-card {
+    @include card(194px, 35%);
+    max-width: 340px;
+    min-width: 300px;
+    margin: 24px 16px;
+    padding-bottom: 48px;
+    position: relative;
 
-      @media screen and (max-width: 600px) {
-        width: 100%;
-        margin: 8px auto;
-        max-width: none;
-      }
+    @media screen and (max-width: 600px) {
+      width: 100%;
+      margin: 8px auto;
+      max-width: none;
+    }
 
-      &:hover {
-        text-decoration: none;
+    section {
+      color: $blue;
+      @include font-size(20);
+      @include line-height(24);
+      margin: 0;
+      padding: 32px 0 24px;
+      text-transform: none;
+      text-align: center;
+    }
 
-        section {
-          color: $blue;
-        }
+    p {
+      color: $darkgray;
+      @include font-size(13);
+      @include line-height(24);
+      padding: 0 16px;
+      margin: 0;
+      text-align: center;
+    }
 
-        p {
-          color: $darkgray;
-          padding: 0 16px;
-        }
+    .card-footer {
+      color: $darkblue;
+      background-color: rgba($blue, 0.1);
+      bottom: 0;
+      border-top: 0.5px solid $lightgray;
+      box-sizing: border-box;
+      @include line-height(48);
+      left: 0;
+      position: absolute;
+      right: 0;
+      text-align: right;
 
-        .card-footer {
-          @include line-height(32);
-          padding: 8px 16px;
-          background-color: rgba($blue, 0.1);
-          color: $blue;
-        }
-      }
-
-      section {
-        color: $deepgray;
-        @include font-size(20);
-        @include line-height(24);
-        margin: 0;
-        padding: 32px 0 24px;
-        text-transform: none;
-        text-align: center;
-      }
-
-      p {
-        color: $darkgray;
-        @include font-size(13);
-        @include line-height(24);
-        padding: 0 16px;
-        margin: 0;
-        text-align: center;
-      }
-
-      .card-footer {
-        bottom: 0;
-        border-top: 0.5px solid $lightgray;
-        box-sizing: border-box;
-        @include line-height(48);
-        left: 0;
-        position: absolute;
-        right: 0;
-        text-align: right;
+      a {
         color: $mediumgray;
-
-        a {
-          color: $mediumgray;
-          @include font-size(13);
-        }
-      }
-
-      .card-footer.center {
-        text-align: center;
+        @include font-size(13);
       }
     }
+  }
 }
 
 .card-section {
@@ -107,5 +85,4 @@
   button {
     text-align: center;
   }
-
 }

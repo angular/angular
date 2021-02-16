@@ -175,7 +175,6 @@ describe('Angular async helper', () => {
   });
   // #enddocregion fake-async-test-clock
 
-  // #docregion async-test-promise-then
   describe('test jsonp', () => {
     function jsonp(url: string, callback: () => void) {
       // do a jsonp call which is not zone aware
@@ -197,5 +196,4 @@ describe('Angular async helper', () => {
          });
        }));
   });
-  // #enddocregion async-test-promise-then
 });

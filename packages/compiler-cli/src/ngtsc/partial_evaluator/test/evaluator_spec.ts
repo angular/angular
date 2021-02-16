@@ -991,4 +991,5 @@ const fakeDepTracker: DependencyTracker = {
   addResourceDependency: () => undefined,
   addTransitiveDependency: () => undefined,
   addTransitiveResources: () => undefined,
+  recordDependencyAnalysisFailure: () => undefined,
 };

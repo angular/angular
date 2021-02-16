@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵmakeTemplateObject} from '@angular/localize';
 import {NodePath, TransformOptions, transformSync} from '@babel/core';
@@ -16,7 +16,7 @@ import {Expression, Identifier, TaggedTemplateExpression, ExpressionStatement, C
 import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, getLocation} from '../src/source_file_utils';
 
 runInEachFileSystem(() => {
-  let fs: FileSystem;
+  let fs: PathManipulation;
   beforeEach(() => fs = getFileSystem());
   describe('utils', () => {
     describe('isNamedIdentifier()', () => {
@@ -128,6 +128,104 @@ runInEachFileSystem(() => {
                end: {line: 0, column: 67},
                file: absoluteFrom('/test/file.js'),
                text: `'c'`,
+             },
+           ]);
+         });
+
+      it('should return an array of string literals and locations from a (Babel helper) downleveled tagged template',
+         () => {
+           let localizeCall = getLocalizeCall(
+               `$localize(babelHelpers.taggedTemplateLiteral(['a', 'b\\t', 'c'], ['a', 'b\\\\t', 'c']), 1, 2)`);
+           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
+           expect(parts).toEqual(['a', 'b\t', 'c']);
+           expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
+           expect(locations).toEqual([
+             {
+               start: {line: 0, column: 65},
+               end: {line: 0, column: 68},
+               file: absoluteFrom('/test/file.js'),
+               text: `'a'`,
+             },
+             {
+               start: {line: 0, column: 70},
+               end: {line: 0, column: 76},
+               file: absoluteFrom('/test/file.js'),
+               text: `'b\\\\t'`,
+             },
+             {
+               start: {line: 0, column: 78},
+               end: {line: 0, column: 81},
+               file: absoluteFrom('/test/file.js'),
+               text: `'c'`,
+             },
+           ]);
+         });
+
+      it('should return an array of string literals and locations from a memoized downleveled tagged template',
+         () => {
+           let localizeCall = getLocalizeCall(`
+                var _templateObject;
+                $localize(_templateObject || (_templateObject = __makeTemplateObject(['a', 'b\\t', 'c'], ['a', 'b\\\\t', 'c'])), 1, 2)`);
+           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
+           expect(parts).toEqual(['a', 'b\t', 'c']);
+           expect(parts.raw).toEqual(['a', 'b\\t', 'c']);
+           expect(locations).toEqual([
+             {
+               start: {line: 2, column: 105},
+               end: {line: 2, column: 108},
+               file: absoluteFrom('/test/file.js'),
+               text: `'a'`,
+             },
+             {
+               start: {line: 2, column: 110},
+               end: {line: 2, column: 116},
+               file: absoluteFrom('/test/file.js'),
+               text: `'b\\\\t'`,
+             },
+             {
+               start: {line: 2, column: 118},
+               end: {line: 2, column: 121},
+               file: absoluteFrom('/test/file.js'),
+               text: `'c'`,
+             },
+           ]);
+         });
+
+      it('should return an array of string literals and locations from a memoized (inlined Babel helper) downleveled tagged template',
+         () => {
+           let localizeCall = getLocalizeCall(`
+              var e,t,n;
+              $localize(e ||
+                (
+                  t=["a","b\t","c"],
+                  n || (n=t.slice(0)),
+                  e = Object.freeze(
+                    Object.defineProperties(t, { raw: { value: Object.freeze(n) } })
+                  )
+                ),
+                1,2
+              )`);
+           const [parts, locations] = unwrapMessagePartsFromLocalizeCall(localizeCall, fs);
+           expect(parts).toEqual(['a', 'b\t', 'c']);
+           expect(parts.raw).toEqual(['a', 'b\t', 'c']);
+           expect(locations).toEqual([
+             {
+               start: {line: 4, column: 21},
+               end: {line: 4, column: 24},
+               file: absoluteFrom('/test/file.js'),
+               text: `"a"`,
+             },
+             {
+               start: {line: 4, column: 25},
+               end: {line: 4, column: 29},
+               file: absoluteFrom('/test/file.js'),
+               text: `"b\t"`,
+             },
+             {
+               start: {line: 4, column: 30},
+               end: {line: 4, column: 33},
+               file: absoluteFrom('/test/file.js'),
+               text: `"c"`,
              },
            ]);
          });

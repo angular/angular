@@ -783,58 +783,6 @@ describe('i18n support in the template compiler', () => {
       verify(input, output);
     });
 
-    it('should correctly bind to context in nested template', () => {
-      const input = `
-        <div *ngFor="let outer of items">
-          <div i18n-title="m|d" title="different scope {{ outer | uppercase }}"></div>
-        </div>
-      `;
-
-      const i18n_0 = i18nMsg(
-          'different scope {$interpolation}', [['interpolation', String.raw`\uFFFD0\uFFFD`]],
-          {meaning: 'm', desc: 'd'});
-
-      const output = String.raw`
-        function MyComponent_div_0_Template(rf, ctx) {
-          if (rf & 1) {
-            $r3$.ɵɵelementStart(0, "div");
-            $r3$.ɵɵelementStart(1, "div", 1);
-            $r3$.ɵɵpipe(2, "uppercase");
-            $r3$.ɵɵi18nAttributes(3, 2);
-            $r3$.ɵɵelementEnd();
-            $r3$.ɵɵelementEnd();
-          }
-          if (rf & 2) {
-            const $outer_r1$ = ctx.$implicit;
-            $r3$.ɵɵadvance(1);
-            $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 1, $outer_r1$));
-            $r3$.ɵɵi18nApply(3);
-          }
-        }
-        …
-        decls: 1,
-        vars: 1,
-        consts: function() {
-          ${i18n_0}
-          return [
-            [${AttributeMarker.Template}, "ngFor", "ngForOf"],
-            [${AttributeMarker.I18n}, "title"],
-            ["title", $i18n_0$]
-          ];
-        },
-        template: function MyComponent_Template(rf, ctx) {
-          if (rf & 1) {
-            $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 4, 3, "div", 0);
-          }
-          if (rf & 2) {
-            $r3$.ɵɵproperty("ngForOf", ctx.items);
-          }
-        }
-      `;
-
-      verify(input, output);
-    });
-
     it('should work correctly when placed on i18n root node', () => {
       const input = `
         <div i18n i18n-title="m|d" title="Element title">Some content</div>
@@ -3374,61 +3322,6 @@ $` + String.raw`{$I18N_4$}:ICU:\`;
 
       verify(
           input, output, {skipIdBasedCheck: true, compilerOptions: {target: ts.ScriptTarget.ES5}});
-    });
-  });
-
-  describe('errors', () => {
-    const verifyNestedSectionsError = (errorThrown: any, expectedErrorText: string) => {
-      expect(errorThrown.ngParseErrors.length).toBe(1);
-      const msg = errorThrown.ngParseErrors[0].toString();
-      expect(msg).toContain(
-          'Cannot mark an element as translatable inside of a translatable section. Please remove the nested i18n marker.');
-      expect(msg).toContain(expectedErrorText);
-      expect(msg).toMatch(/app\/spec\.ts\@\d+\:\d+/);
-    };
-
-    it('should throw on nested i18n sections', () => {
-      const files = getAppFilesWithTemplate(`
-        <div i18n>
-          <div i18n>Some content</div>
-        </div>
-      `);
-      try {
-        compile(files, angularFiles);
-      } catch (error) {
-        verifyNestedSectionsError(error, '[ERROR ->]<div i18n>Some content</div>');
-      }
-    });
-
-    it('should throw on nested i18n sections with tags in between', () => {
-      const files = getAppFilesWithTemplate(`
-        <div i18n>
-          <div>
-            <div i18n>Some content</div>
-          </div>
-        </div>
-      `);
-      try {
-        compile(files, angularFiles);
-      } catch (error) {
-        verifyNestedSectionsError(error, '[ERROR ->]<div i18n>Some content</div>');
-      }
-    });
-
-    it('should throw on nested i18n sections represented with <ng-container>s', () => {
-      const files = getAppFilesWithTemplate(`
-        <ng-container i18n>
-          <div>
-            <ng-container i18n>Some content</ng-container>
-          </div>
-        </ng-container>
-      `);
-      try {
-        compile(files, angularFiles);
-      } catch (error) {
-        verifyNestedSectionsError(
-            error, '[ERROR ->]<ng-container i18n>Some content</ng-container>');
-      }
     });
   });
 

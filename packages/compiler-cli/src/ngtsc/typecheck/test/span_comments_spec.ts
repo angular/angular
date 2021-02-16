@@ -91,7 +91,7 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `<div (click)='a.b.c = d'></div>`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '(((((((ctx).a /*14,15*/) /*14,15*/).b /*16,17*/) /*14,17*/).c /*18,19*/) /*14,23*/ = ((ctx).d /*22,23*/) /*22,23*/) /*14,23*/');
+              '(((((((ctx).a /*14,15*/) /*14,15*/).b /*16,17*/) /*14,17*/).c /*18,19*/) /*14,23*/ = (((ctx).d /*22,23*/) /*22,23*/)) /*14,23*/');
     });
 
     it('should $event property writes', () => {
@@ -110,13 +110,14 @@ describe('type check blocks diagnostics', () => {
       const TEMPLATE = `<div (click)="a[b] = c"></div>`;
       expect(tcbWithSpans(TEMPLATE))
           .toContain(
-              '((((ctx).a /*14,15*/) /*14,15*/)[((ctx).b /*16,17*/) /*16,17*/] = ((ctx).c /*21,22*/) /*21,22*/) /*14,22*/');
+              '((((ctx).a /*14,15*/) /*14,15*/)[((ctx).b /*16,17*/) /*16,17*/] = (((ctx).c /*21,22*/) /*21,22*/)) /*14,22*/');
     });
 
     it('should annotate safe property access', () => {
       const TEMPLATE = `{{ a?.b }}`;
       expect(tcbWithSpans(TEMPLATE))
-          .toContain('((null as any) ? (((ctx).a /*3,4*/) /*3,4*/)!.b : undefined) /*3,7*/');
+          .toContain(
+              '((null as any) ? (((ctx).a /*3,4*/) /*3,4*/)!.b /*6,7*/ : undefined) /*3,7*/');
     });
 
     it('should annotate safe method calls', () => {
@@ -147,7 +148,7 @@ describe('type check blocks diagnostics', () => {
       }];
       const block = tcbWithSpans(TEMPLATE, PIPES);
       expect(block).toContain(
-          '((null as TestPipe).transform(((ctx).a /*3,4*/) /*3,4*/, ((ctx).b /*12,13*/) /*12,13*/) /*3,13*/);');
+          '((null as TestPipe).transform /*7,11*/(((ctx).a /*3,4*/) /*3,4*/, ((ctx).b /*12,13*/) /*12,13*/) /*3,13*/);');
     });
 
     describe('attaching multiple comments for multiple references', () => {

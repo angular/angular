@@ -24,6 +24,7 @@ import {mapLiteral} from '../../output/map_util';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
+import {isTrustedTypesSink} from '../../schema/trusted_types_sinks';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {error, partitionArray} from '../../util';
@@ -107,15 +108,31 @@ export function prepareEventListenerParameters(
 }
 
 // Collects information needed to generate `consts` field of the ComponentDef.
-// When a constant requires some pre-processing, the `prepareStatements` section
-// contains corresponding statements.
 export interface ComponentDefConsts {
+  /**
+   * When a constant requires some pre-processing (e.g. i18n translation block that includes
+   * goog.getMsg and $localize calls), the `prepareStatements` section contains corresponding
+   * statements.
+   */
   prepareStatements: o.Statement[];
+
+  /**
+   * Actual expressions that represent constants.
+   */
   constExpressions: o.Expression[];
+
+  /**
+   * Cache to avoid generating duplicated i18n translation blocks.
+   */
+  i18nVarRefsCache: Map<i18n.I18nMeta, o.ReadVarExpr>;
 }
 
 function createComponentDefConsts(): ComponentDefConsts {
-  return {prepareStatements: [], constExpressions: []};
+  return {
+    prepareStatements: [],
+    constExpressions: [],
+    i18nVarRefsCache: new Map(),
+  };
 }
 
 export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
@@ -1299,7 +1316,20 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       // Note that static i18n attributes aren't in the i18n array,
       // because they're treated in the same way as regular attributes.
       if (attr.i18n) {
-        attrExprs.push(o.literal(attr.name), this.i18nTranslate(attr.i18n as i18n.Message));
+        // When i18n attributes are present on elements with structural directives
+        // (e.g. `<div *ngIf title="Hello" i18n-title>`), we want to avoid generating
+        // duplicate i18n translation blocks for `ɵɵtemplate` and `ɵɵelement` instruction
+        // attributes. So we do a cache lookup to see if suitable i18n translation block
+        // already exists.
+        const {i18nVarRefsCache} = this._constants;
+        let i18nVarRef: o.ReadVarExpr;
+        if (i18nVarRefsCache.has(attr.i18n)) {
+          i18nVarRef = i18nVarRefsCache.get(attr.i18n)!;
+        } else {
+          i18nVarRef = this.i18nTranslate(attr.i18n as i18n.Message);
+          i18nVarRefsCache.set(attr.i18n, i18nVarRef);
+        }
+        attrExprs.push(o.literal(attr.name), i18nVarRef);
       } else {
         attrExprs.push(
             ...getAttributeNameLiterals(attr.name), trustedConstAttribute(elementName, attr));
@@ -1974,6 +2004,10 @@ export interface ParseTemplateOptions {
    */
   preserveWhitespaces?: boolean;
   /**
+   * Preserve original line endings instead of normalizing '\r\n' endings to '\n'.
+   */
+  preserveLineEndings?: boolean;
+  /**
    * How to parse interpolation markers.
    */
   interpolationConfig?: InterpolationConfig;
@@ -2031,6 +2065,11 @@ export interface ParseTemplateOptions {
    * The default is `false`, but this will be switched in a future major release.
    */
   i18nNormalizeLineEndingsInICUs?: boolean;
+
+  /**
+   * Whether the template was inline.
+   */
+  isInline?: boolean;
 }
 
 /**
@@ -2043,6 +2082,7 @@ export interface ParseTemplateOptions {
 export function parseTemplate(
     template: string, templateUrl: string, options: ParseTemplateOptions = {}): ParsedTemplate {
   const {interpolationConfig, preserveWhitespaces, enableI18nLegacyMessageIdFormat} = options;
+  const isInline = options.isInline ?? false;
   const bindingParser = makeBindingParser(interpolationConfig);
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(
@@ -2056,6 +2096,8 @@ export function parseTemplate(
       interpolationConfig,
       preserveWhitespaces,
       template,
+      templateUrl,
+      isInline,
       errors: parseResult.errors,
       nodes: [],
       styleUrls: [],
@@ -2073,7 +2115,24 @@ export function parseTemplate(
   const i18nMetaVisitor = new I18nMetaVisitor(
       interpolationConfig, /* keepI18nAttrs */ !preserveWhitespaces,
       enableI18nLegacyMessageIdFormat);
-  rootNodes = html.visitAll(i18nMetaVisitor, rootNodes);
+  const i18nMetaResult = i18nMetaVisitor.visitAllWithErrors(rootNodes);
+
+  if (i18nMetaResult.errors && i18nMetaResult.errors.length > 0) {
+    return {
+      interpolationConfig,
+      preserveWhitespaces,
+      template,
+      templateUrl,
+      isInline,
+      errors: i18nMetaResult.errors,
+      nodes: [],
+      styleUrls: [],
+      styles: [],
+      ngContentSelectors: []
+    };
+  }
+
+  rootNodes = i18nMetaResult.rootNodes;
 
   if (!preserveWhitespaces) {
     rootNodes = html.visitAll(new WhitespaceVisitor(), rootNodes);
@@ -2096,6 +2155,8 @@ export function parseTemplate(
     preserveWhitespaces,
     errors: errors.length > 0 ? errors : null,
     template,
+    templateUrl,
+    isInline,
     nodes,
     styleUrls,
     styles,
@@ -2136,15 +2197,24 @@ export function resolveSanitizationFn(context: core.SecurityContext, isAttribute
 
 function trustedConstAttribute(tagName: string, attr: t.TextAttribute): o.Expression {
   const value = asLiteral(attr.value);
-  switch (elementRegistry.securityContext(tagName, attr.name, /* isAttribute */ true)) {
-    case core.SecurityContext.HTML:
-      return o.importExpr(R3.trustConstantHtml).callFn([value], attr.valueSpan);
-    case core.SecurityContext.SCRIPT:
-      return o.importExpr(R3.trustConstantScript).callFn([value], attr.valueSpan);
-    case core.SecurityContext.RESOURCE_URL:
-      return o.importExpr(R3.trustConstantResourceUrl).callFn([value], attr.valueSpan);
-    default:
-      return value;
+  if (isTrustedTypesSink(tagName, attr.name)) {
+    switch (elementRegistry.securityContext(tagName, attr.name, /* isAttribute */ true)) {
+      case core.SecurityContext.HTML:
+        return o.taggedTemplate(
+            o.importExpr(R3.trustConstantHtml),
+            new o.TemplateLiteral([new o.TemplateLiteralElement(attr.value)], []), undefined,
+            attr.valueSpan);
+      // NB: no SecurityContext.SCRIPT here, as the corresponding tags are stripped by the compiler.
+      case core.SecurityContext.RESOURCE_URL:
+        return o.taggedTemplate(
+            o.importExpr(R3.trustConstantResourceUrl),
+            new o.TemplateLiteral([new o.TemplateLiteralElement(attr.value)], []), undefined,
+            attr.valueSpan);
+      default:
+        return value;
+    }
+  } else {
+    return value;
   }
 }
 
@@ -2250,12 +2320,26 @@ export interface ParsedTemplate {
   interpolationConfig?: InterpolationConfig;
 
   /**
-   * The string contents of the template.
+   * The string contents of the template, or an expression that represents the string/template
+   * literal as it occurs in the source.
    *
    * This is the "logical" template string, after expansion of any escaped characters (for inline
    * templates). This may differ from the actual template bytes as they appear in the .ts file.
    */
-  template: string;
+  template: string|o.Expression;
+
+  /**
+   * A full path to the file which contains the template.
+   *
+   * This can be either the original .ts file if the template is inline, or the .html file if an
+   * external file was used.
+   */
+  templateUrl: string;
+
+  /**
+   * Whether the template was inline (using `template`) or external (using `templateUrl`).
+   */
+  isInline: boolean;
 
   /**
    * Any errors from parsing the template the first time.

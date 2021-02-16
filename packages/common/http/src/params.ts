@@ -210,6 +210,26 @@ export class HttpParams {
   }
 
   /**
+   * Constructs a new body with appended values for the given parameter name.
+   * @param params parameters and values
+   * @return A new body with the new value.
+   */
+  appendAll(params: {[param: string]: string|string[]}): HttpParams {
+    const updates: Update[] = [];
+    Object.keys(params).forEach(param => {
+      const value = params[param];
+      if (Array.isArray(value)) {
+        value.forEach(_value => {
+          updates.push({param, value: _value, op: 'a'});
+        });
+      } else {
+        updates.push({param, value, op: 'a'});
+      }
+    });
+    return this.clone(updates);
+  }
+
+  /**
    * Replaces the value for a parameter.
    * @param param The parameter name.
    * @param value The new value.
@@ -251,10 +271,10 @@ export class HttpParams {
         .join('&');
   }
 
-  private clone(update: Update): HttpParams {
+  private clone(update: Update|Update[]): HttpParams {
     const clone = new HttpParams({encoder: this.encoder} as HttpParamsOptions);
     clone.cloneFrom = this.cloneFrom || this;
-    clone.updates = (this.updates || []).concat([update]);
+    clone.updates = (this.updates || []).concat(update);
     return clone;
   }
 

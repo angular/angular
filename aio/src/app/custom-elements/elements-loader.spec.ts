@@ -194,7 +194,7 @@ describe('ElementsLoader', () => {
       expect(definedSpy).not.toHaveBeenCalled();
     }));
 
-    it('should fail if defining the the custom element fails', fakeAsync(() => {
+    it('should fail if defining the custom element fails', fakeAsync(() => {
       let state = 'pending';
       elementsLoader.loadCustomElement('element-b-selector').catch(e => state = `rejected: ${e}`);
       flushMicrotasks();
@@ -304,6 +304,6 @@ class FakeModuleFactory extends NgModuleFactory<any> {
 
 function returnPromisesFromSpy(spy: jasmine.Spy): Deferred[] {
   const deferreds: Deferred[] = [];
-  spy.and.callFake(() => new Promise((resolve, reject) => deferreds.push({resolve, reject})));
+  spy.and.callFake(() => new Promise<void>((resolve, reject) => deferreds.push({resolve, reject})));
   return deferreds;
 }

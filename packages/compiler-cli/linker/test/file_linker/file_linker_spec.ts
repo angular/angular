@@ -8,6 +8,8 @@
 import * as o from '@angular/compiler/src/output/output_ast';
 import * as ts from 'typescript';
 
+import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {TypeScriptAstFactory} from '../../../src/ngtsc/translator';
 import {AstHost} from '../../src/ast/ast_host';
 import {TypeScriptAstHost} from '../../src/ast/typescript/typescript_ast_host';
@@ -16,6 +18,7 @@ import {FileLinker} from '../../src/file_linker/file_linker';
 import {LinkerEnvironment} from '../../src/file_linker/linker_environment';
 import {DEFAULT_LINKER_OPTIONS} from '../../src/file_linker/linker_options';
 import {PartialDirectiveLinkerVersion1} from '../../src/file_linker/partial_linkers/partial_directive_linker_1';
+
 import {generate} from './helpers';
 
 describe('FileLinker', () => {
@@ -38,7 +41,7 @@ describe('FileLinker', () => {
   describe('linkPartialDeclaration()', () => {
     it('should throw an error if the function name is not recognised', () => {
       const {fileLinker} = createFileLinker();
-      const version = factory.createLiteral(1);
+      const version = factory.createLiteral('0.0.0-PLACEHOLDER');
       const ngImport = factory.createIdentifier('core');
       const declarationArg = factory.createObjectLiteral([
         {propertyName: 'version', quoted: false, value: version},
@@ -80,7 +83,7 @@ describe('FileLinker', () => {
                              .and.returnValue(o.literal('compilation result'));
 
       const ngImport = factory.createIdentifier('core');
-      const version = factory.createLiteral(1);
+      const version = factory.createLiteral('0.0.0-PLACEHOLDER');
       const declarationArg = factory.createObjectLiteral([
         {propertyName: 'ngImport', quoted: false, value: ngImport},
         {propertyName: 'version', quoted: false, value: version},
@@ -91,7 +94,7 @@ describe('FileLinker', () => {
 
       expect(compilationResult).toEqual(factory.createLiteral('compilation result'));
       expect(compileSpy).toHaveBeenCalled();
-      expect(compileSpy.calls.mostRecent().args[3].getNode('ngImport')).toBe(ngImport);
+      expect(compileSpy.calls.mostRecent().args[1].getNode('ngImport')).toBe(ngImport);
     });
   });
 
@@ -104,7 +107,7 @@ describe('FileLinker', () => {
       // constant statements.
       const declarationArg = factory.createObjectLiteral([
         {propertyName: 'ngImport', quoted: false, value: factory.createIdentifier('core')},
-        {propertyName: 'version', quoted: false, value: factory.createLiteral(1)},
+        {propertyName: 'version', quoted: false, value: factory.createLiteral('0.0.0-PLACEHOLDER')},
       ]);
 
       const replacement = fileLinker.linkPartialDeclaration(
@@ -127,7 +130,11 @@ describe('FileLinker', () => {
          // statements to be emitted in an IIFE rather than added to the shared constant scope.
          const declarationArg = factory.createObjectLiteral([
            {propertyName: 'ngImport', quoted: false, value: factory.createLiteral('not-a-module')},
-           {propertyName: 'version', quoted: false, value: factory.createLiteral(1)},
+           {
+             propertyName: 'version',
+             quoted: false,
+             value: factory.createLiteral('0.0.0-PLACEHOLDER')
+           },
          ]);
 
          const replacement = fileLinker.linkPartialDeclaration(
@@ -144,10 +151,12 @@ describe('FileLinker', () => {
     host: AstHost<ts.Expression>,
     fileLinker: FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression>
   } {
+    const fs = new MockFileSystemNative();
+    const logger = new MockLogger();
     const linkerEnvironment = LinkerEnvironment.create<ts.Statement, ts.Expression>(
-        new TypeScriptAstHost(), new TypeScriptAstFactory(), DEFAULT_LINKER_OPTIONS);
+        fs, logger, new TypeScriptAstHost(), new TypeScriptAstFactory(), DEFAULT_LINKER_OPTIONS);
     const fileLinker = new FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression>(
-        linkerEnvironment, 'test.js', '// test code');
+        linkerEnvironment, fs.resolve('/test.js'), '// test code');
     return {host: linkerEnvironment.host, fileLinker};
   }
 });
@@ -181,7 +190,7 @@ class MockConstantScopeRef {
 function spyOnLinkPartialDeclarationWithConstants(replacement: o.Expression) {
   let callCount = 0;
   spyOn(PartialDirectiveLinkerVersion1.prototype, 'linkPartialDeclaration')
-      .and.callFake(((sourceUrl, code, constantPool) => {
+      .and.callFake((constantPool => {
                       const constArray = o.literalArr([o.literal(++callCount)]);
                       // We have to add the constant twice or it will not create a shared statement
                       constantPool.getConstLiteral(constArray);

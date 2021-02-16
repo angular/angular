@@ -16,6 +16,7 @@ import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml
 import * as a from '../../../src/render3/r3_ast';
 import {htmlAstToRender3Ast, Render3ParseResult} from '../../../src/render3/r3_template_transform';
 import {I18nMetaVisitor} from '../../../src/render3/view/i18n/meta';
+import {LEADING_TRIVIA_CHARS} from '../../../src/render3/view/template';
 import {BindingParser} from '../../../src/template_parser/binding_parser';
 import {MockSchemaRegistry} from '../../../testing';
 
@@ -78,15 +79,18 @@ export function toStringExpression(expr: e.AST): string {
 
 // Parse an html string to IVY specific info
 export function parseR3(
-    input: string, options: {preserveWhitespaces?: boolean, leadingTriviaChars?: string[]} = {}):
-    Render3ParseResult {
+    input: string,
+    options: {preserveWhitespaces?: boolean,
+              leadingTriviaChars?: string[],
+              ignoreError?: boolean} = {}): Render3ParseResult {
   const htmlParser = new HtmlParser();
 
-  const parseResult = htmlParser.parse(
-      input, 'path:://to/template',
-      {tokenizeExpansionForms: true, leadingTriviaChars: options.leadingTriviaChars});
+  const parseResult = htmlParser.parse(input, 'path:://to/template', {
+    tokenizeExpansionForms: true,
+    leadingTriviaChars: options.leadingTriviaChars ?? LEADING_TRIVIA_CHARS,
+  });
 
-  if (parseResult.errors.length > 0) {
+  if (parseResult.errors.length > 0 && !options.ignoreError) {
     const msg = parseResult.errors.map(e => e.toString()).join('\n');
     throw new Error(msg);
   }
@@ -105,7 +109,7 @@ export function parseR3(
       new BindingParser(expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, null, []);
   const r3Result = htmlAstToRender3Ast(htmlNodes, bindingParser);
 
-  if (r3Result.errors.length > 0) {
+  if (r3Result.errors.length > 0 && !options.ignoreError) {
     const msg = r3Result.errors.map(e => e.toString()).join('\n');
     throw new Error(msg);
   }

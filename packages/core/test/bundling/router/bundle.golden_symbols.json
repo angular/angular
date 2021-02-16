@@ -729,9 +729,6 @@
     "name": "SecurityContext"
   },
   {
-    "name": "Self"
-  },
-  {
     "name": "ShadowDomRenderer"
   },
   {
@@ -969,6 +966,9 @@
     "name": "applyView"
   },
   {
+    "name": "attachInjectFlag"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -1122,7 +1122,13 @@
     "name": "defaultIterableDiffers"
   },
   {
+    "name": "defaultIterableDiffersFactory"
+  },
+  {
     "name": "defaultKeyValueDiffers"
+  },
+  {
+    "name": "defaultKeyValueDiffersFactory"
   },
   {
     "name": "defaultMalformedUriErrorHandler"
@@ -1230,12 +1236,6 @@
     "name": "findPath"
   },
   {
-    "name": "fireActivationStart"
-  },
-  {
-    "name": "fireChildActivationStart"
-  },
-  {
     "name": "first"
   },
   {
@@ -1329,9 +1329,6 @@
     "name": "getInjectorIndex"
   },
   {
-    "name": "getLCleanup"
-  },
-  {
     "name": "getLView"
   },
   {
@@ -1362,6 +1359,9 @@
     "name": "getOrCreateInjectable"
   },
   {
+    "name": "getOrCreateLViewCleanup"
+  },
+  {
     "name": "getOrCreateNodeInjectorForNode"
   },
   {
@@ -1369,6 +1369,9 @@
   },
   {
     "name": "getOrCreateTNode"
+  },
+  {
+    "name": "getOrCreateTViewCleanup"
   },
   {
     "name": "getOrCreateViewRefs"
@@ -1399,6 +1402,9 @@
   },
   {
     "name": "getPreviousIndex"
+  },
+  {
+    "name": "getProjectionNodes"
   },
   {
     "name": "getPromiseCtor"
@@ -1444,6 +1450,9 @@
   },
   {
     "name": "handleError"
+  },
+  {
+    "name": "hasEmptyPathConfig"
   },
   {
     "name": "hasParentInjector"
@@ -1530,13 +1539,13 @@
     "name": "isDirectiveHost"
   },
   {
-    "name": "isEmptyPathRedirect"
-  },
-  {
     "name": "isFunction"
   },
   {
     "name": "isFunction"
+  },
+  {
+    "name": "isImmediateMatch"
   },
   {
     "name": "isInCheckNoChangesMode"
@@ -1635,9 +1644,6 @@
     "name": "map"
   },
   {
-    "name": "mapChildrenIntoArray"
-  },
-  {
     "name": "markAsComponentHost"
   },
   {
@@ -1671,9 +1677,6 @@
     "name": "mergeMap"
   },
   {
-    "name": "mergeTrivialChildren"
-  },
-  {
     "name": "modules"
   },
   {
@@ -1695,6 +1698,9 @@
     "name": "navigationCancelingError"
   },
   {
+    "name": "newObservableError"
+  },
+  {
     "name": "nextBindingIndex"
   },
   {
@@ -1702,6 +1708,12 @@
   },
   {
     "name": "ngOnChangesSetInput"
+  },
+  {
+    "name": "noLeftoversInUrl"
+  },
+  {
+    "name": "noMatch"
   },
   {
     "name": "noMatch"
@@ -1815,16 +1827,13 @@
     "name": "routerNgProbeToken"
   },
   {
-    "name": "runCanActivate"
-  },
-  {
-    "name": "runCanActivateChild"
-  },
-  {
     "name": "rxSubscriber"
   },
   {
     "name": "saveNameToExportMap"
+  },
+  {
+    "name": "scan"
   },
   {
     "name": "scheduleArray"
@@ -1899,7 +1908,13 @@
     "name": "shouldSearchParent"
   },
   {
+    "name": "sortByMatchingOutlets"
+  },
+  {
     "name": "split"
+  },
+  {
+    "name": "squashSegmentGroup"
   },
   {
     "name": "standardizeConfig"
@@ -1969,6 +1984,9 @@
   },
   {
     "name": "u"
+  },
+  {
+    "name": "unwrapElementRef"
   },
   {
     "name": "unwrapRNode"

@@ -9,7 +9,7 @@ import {Statement} from '@angular/compiler';
 import MagicString from 'magic-string';
 import * as ts from 'typescript';
 
-import {absoluteFromSourceFile, AbsoluteFsPath, dirname, relative, toRelativeImport} from '../../../src/ngtsc/file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath, PathManipulation, toRelativeImport} from '../../../src/ngtsc/file_system';
 import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
@@ -28,7 +28,9 @@ import {stripExtension} from './utils';
 export class EsmRenderingFormatter implements RenderingFormatter {
   protected printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
 
-  constructor(protected host: NgccReflectionHost, protected isCore: boolean) {}
+  constructor(
+      protected fs: PathManipulation, protected host: NgccReflectionHost,
+      protected isCore: boolean) {}
 
   /**
    *  Add the imports at the top of the file, after any imports that are already there.
@@ -40,7 +42,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
 
     const insertionPoint = this.findEndOfImports(sf);
     const renderedImports =
-        imports.map(i => `import * as ${i.qualifier} from '${i.specifier}';\n`).join('');
+        imports.map(i => `import * as ${i.qualifier.text} from '${i.specifier}';\n`).join('');
     output.appendLeft(insertionPoint, renderedImports);
   }
 
@@ -57,7 +59,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
 
       if (from) {
         const basePath = stripExtension(from);
-        const relativePath = relative(dirname(entryPointBasePath), basePath);
+        const relativePath = this.fs.relative(this.fs.dirname(entryPointBasePath), basePath);
         const relativeImport = toRelativeImport(relativePath);
         exportFrom = entryPointBasePath !== basePath ? ` from '${relativeImport}'` : '';
       }
@@ -171,7 +173,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
   }
 
   /**
-   * Rewrite the the IVY switch markers to indicate we are in IVY mode.
+   * Rewrite the IVY switch markers to indicate we are in IVY mode.
    */
   rewriteSwitchableDeclarations(
       outputText: MagicString, sourceFile: ts.SourceFile,
@@ -198,7 +200,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
       const ngModuleName = info.ngModule.node.name.text;
       const declarationFile = absoluteFromSourceFile(info.declaration.getSourceFile());
       const ngModuleFile = absoluteFromSourceFile(info.ngModule.node.getSourceFile());
-      const relativePath = relative(dirname(declarationFile), ngModuleFile);
+      const relativePath = this.fs.relative(this.fs.dirname(declarationFile), ngModuleFile);
       const relativeImport = toRelativeImport(relativePath);
       const importPath = info.ngModule.ownedByModuleGuess ||
           (declarationFile !== ngModuleFile ? stripExtension(relativeImport) : null);

@@ -81,6 +81,9 @@ export interface UrlCreationOptions {
    *    }
    *  }
    * ```
+   *
+   * A value of `null` or `undefined` indicates that the navigation commands should be applied
+   * relative to the root.
    */
   relativeTo?: ActivatedRoute|null;
 
@@ -374,6 +377,7 @@ export class Router {
   private navigations: Observable<NavigationTransition>;
   private lastSuccessfulNavigation: Navigation|null = null;
   private currentNavigation: Navigation|null = null;
+  private disposed = false;
 
   private locationSubscription?: SubscriptionLike;
   /**
@@ -488,7 +492,7 @@ export class Router {
     this.ngModule = injector.get(NgModuleRef);
     this.console = injector.get(Console);
     const ngZone = injector.get(NgZone);
-    this.isNgZoneEnabled = ngZone instanceof NgZone;
+    this.isNgZoneEnabled = ngZone instanceof NgZone && NgZone.isInAngularZone();
 
     this.resetConfig(config);
     this.currentUrlTree = createEmptyUrlTree();
@@ -570,12 +574,11 @@ export class Router {
                                if (transition !== this.transitions.getValue()) {
                                  return EMPTY;
                                }
-                               return [t];
-                             }),
 
-                             // This delay is required to match old behavior that forced navigation
-                             // to always be async
-                             switchMap(t => Promise.resolve(t)),
+                               // This delay is required to match old behavior that forced
+                               // navigation to always be async
+                               return Promise.resolve(t);
+                             }),
 
                              // ApplyRedirects
                              applyRedirects(
@@ -606,10 +609,8 @@ export class Router {
                                  }
                                  this.browserUrlTree = t.urlAfterRedirects;
                                }
-                             }),
 
-                             // Fire RoutesRecognized
-                             tap(t => {
+                               // Fire RoutesRecognized
                                const routesRecognized = new RoutesRecognized(
                                    t.id, this.serializeUrl(t.extractedUrl),
                                    this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!);
@@ -689,9 +690,7 @@ export class Router {
                          error.url = t.guardsResult;
                          throw error;
                        }
-                     }),
 
-                     tap(t => {
                        const guardsEnd = new GuardsCheckEnd(
                            t.id, this.serializeUrl(t.extractedUrl),
                            this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot!,
@@ -821,7 +820,7 @@ export class Router {
                          // navigation completes, there will be nothing in
                          // history.state.navigationId. This can cause sync problems with AngularJS
                          // sync code which looks for a value here in order to determine whether or
-                         // not to handle a given popstate event or to leave it to the Angualr
+                         // not to handle a given popstate event or to leave it to the Angular
                          // router.
                          this.resetUrlToCurrentUrlTree();
                          const navCancel = new NavigationCancel(
@@ -872,7 +871,7 @@ export class Router {
                                replaceUrl: this.urlUpdateStrategy === 'eager'
                              };
 
-                             return this.scheduleNavigation(
+                             this.scheduleNavigation(
                                  mergedTree, 'imperative', null, extras,
                                  {resolve: t.resolve, reject: t.reject, promise: t.promise});
                            }, 0);
@@ -1045,10 +1044,12 @@ export class Router {
 
   /** Disposes of the router. */
   dispose(): void {
+    this.transitions.complete();
     if (this.locationSubscription) {
       this.locationSubscription.unsubscribe();
       this.locationSubscription = undefined;
     }
+    this.disposed = true;
   }
 
   /**
@@ -1094,6 +1095,9 @@ export class Router {
    *
    * // navigate to /team/44/user/22
    * router.createUrlTree(['../../team/44/user/22'], {relativeTo: route});
+   *
+   * Note that a value of `null` or `undefined` for `relativeTo` indicates that the
+   * tree should be created relative to the root.
    * ```
    */
   createUrlTree(commands: any[], navigationExtras: UrlCreationOptions = {}): UrlTree {
@@ -1250,6 +1254,9 @@ export class Router {
       rawUrl: UrlTree, source: NavigationTrigger, restoredState: RestoredState|null,
       extras: NavigationExtras,
       priorPromise?: {resolve: any, reject: any, promise: Promise<boolean>}): Promise<boolean> {
+    if (this.disposed) {
+      return Promise.resolve(false);
+    }
     // * Imperative navigations (router.navigate) might trigger additional navigations to the same
     //   URL via a popstate event and the locationChangeListener. We should skip these duplicate
     //   navs. Duplicates may also be triggered by attempts to sync AngularJS and Angular router

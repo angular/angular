@@ -19,10 +19,7 @@ Before creating a route, you should be familiar with the following:
 For an introduction to Angular with a ready-made app, see [Getting Started](start).
 For a more in-depth experience of building an Angular app, see the [Tour of Heroes](tutorial) tutorial. Both guide you through using component classes and templates.
 
-<hr />
-
 {@a basics}
-
 ## Generate an app with routing enabled
 
 The following command uses the Angular CLI to generate a basic Angular app with an app routing module, called `AppRoutingModule`, which is an NgModule where you can configure your routes.
@@ -374,7 +371,7 @@ The following route guards are available in Angular:
 * [`Resolve`](api/router/Resolve)
 * [`CanLoad`](api/router/CanLoad)
 
-To use route guards, consider using component-less routes as this facilitates guarding child routes.
+To use route guards, consider using [component-less routes](api/router/Route#componentless-routes) as this facilitates guarding child routes.
 
 Create a service for your guard:
 

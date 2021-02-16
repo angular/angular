@@ -55,8 +55,7 @@ button {
   padding: 5px 10px;
   border-radius: 4px;
   cursor: pointer;
-  cursor: hand;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
 }
 
 button:hover {

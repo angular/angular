@@ -7,7 +7,7 @@
  */
 
 import {Type} from '@angular/core';
-import {MonoTypeOperatorFunction, Observable} from 'rxjs';
+import {MonoTypeOperatorFunction} from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
 
 import {Route} from '../config';
@@ -19,11 +19,9 @@ export function recognize(
     rootComponentType: Type<any>|null, config: Route[], serializer: (url: UrlTree) => string,
     paramsInheritanceStrategy: 'emptyOnly'|'always',
     relativeLinkResolution: 'legacy'|'corrected'): MonoTypeOperatorFunction<NavigationTransition> {
-  return function(source: Observable<NavigationTransition>) {
-    return source.pipe(mergeMap(
-        t => recognizeFn(
-                 rootComponentType, config, t.urlAfterRedirects, serializer(t.urlAfterRedirects),
-                 paramsInheritanceStrategy, relativeLinkResolution)
-                 .pipe(map(targetSnapshot => ({...t, targetSnapshot})))));
-  };
+  return mergeMap(
+      t => recognizeFn(
+               rootComponentType, config, t.urlAfterRedirects, serializer(t.urlAfterRedirects),
+               paramsInheritanceStrategy, relativeLinkResolution)
+               .pipe(map(targetSnapshot => ({...t, targetSnapshot}))));
 }

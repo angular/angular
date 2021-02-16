@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "rollup_bundle", "ts_library")
-load("@npm//@bazel/karma:index.bzl", "karma_web_test_suite")
+load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
 
 def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, test_entry_point):
     ts_library(
@@ -32,7 +32,7 @@ def karma_test_prepare(name, env_srcs, env_deps, env_entry_point, test_srcs, tes
         silent = True,
         sourcemap = "false",
         entry_point = test_entry_point,
-        config_file = "//packages/zone.js:rollup-es5.config.js",
+        config_file = "//packages/zone.js:rollup.config.js",
         deps = [
             ":" + name + "_test",
             "@npm//rollup-plugin-commonjs",
@@ -79,6 +79,7 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
             tags = ["zone_karma_test"],
             runtime_deps = [
                 "@npm//karma-browserstack-launcher",
+                "@npm//karma-sauce-launcher",
             ],
         )
 
@@ -110,5 +111,6 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                 visibility = ["//:__pkg__"],
                 runtime_deps = [
                     "@npm//karma-browserstack-launcher",
+                    "@npm//karma-sauce-launcher",
                 ],
             )

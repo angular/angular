@@ -485,12 +485,14 @@ class SafeSelector {
   constructor(selector: string) {
     // Replaces attribute selectors with placeholders.
     // The WS in [attr="va lue"] would otherwise be interpreted as a selector separator.
-    selector = selector.replace(/(\[[^\]]*\])/g, (_, keep) => {
-      const replaceBy = `__ph-${this.index}__`;
-      this.placeholders.push(keep);
-      this.index++;
-      return replaceBy;
-    });
+    selector = this._escapeRegexMatches(selector, /(\[[^\]]*\])/g);
+
+    // CSS allows for certain special characters to be used in selectors if they're escaped.
+    // E.g. `.foo:blue` won't match a class called `foo:blue`, because the colon denotes a
+    // pseudo-class, but writing `.foo\:blue` will match, because the colon was escaped.
+    // Replace all escape sequences (`\` followed by a character) with a placeholder so
+    // that our handling of pseudo-selectors doesn't mess with them.
+    selector = this._escapeRegexMatches(selector, /(\\.)/g);
 
     // Replaces the expression in `:nth-child(2n + 1)` with a placeholder.
     // WS and "+" would otherwise be interpreted as selector separators.
@@ -503,11 +505,24 @@ class SafeSelector {
   }
 
   restore(content: string): string {
-    return content.replace(/__ph-(\d+)__/g, (ph, index) => this.placeholders[+index]);
+    return content.replace(/__ph-(\d+)__/g, (_ph, index) => this.placeholders[+index]);
   }
 
   content(): string {
     return this._content;
+  }
+
+  /**
+   * Replaces all of the substrings that match a regex within a
+   * special string (e.g. `__ph-0__`, `__ph-1__`, etc).
+   */
+  private _escapeRegexMatches(content: string, pattern: RegExp): string {
+    return content.replace(pattern, (_, keep) => {
+      const replaceBy = `__ph-${this.index}__`;
+      this.placeholders.push(keep);
+      this.index++;
+      return replaceBy;
+    });
   }
 }
 

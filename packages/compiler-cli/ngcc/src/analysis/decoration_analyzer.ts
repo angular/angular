@@ -12,11 +12,11 @@ import {ParsedConfiguration} from '../../..';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ReferencesRegistry, ResourceLoader} from '../../../src/ngtsc/annotations';
 import {CycleAnalyzer, ImportGraph} from '../../../src/ngtsc/cycles';
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
-import {absoluteFrom, absoluteFromSourceFile, dirname, FileSystem, LogicalFileSystem, resolve} from '../../../src/ngtsc/file_system';
+import {absoluteFromSourceFile, LogicalFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
-import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../../src/ngtsc/scope';
+import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../src/ngtsc/scope';
 import {DecoratorHandler} from '../../../src/ngtsc/transform';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {Migration} from '../migrations/migration';
@@ -36,16 +36,16 @@ import {isWithinPackage, NOOP_DEPENDENCY_TRACKER} from './util';
  * Simple class that resolves and loads files directly from the filesystem.
  */
 class NgccResourceLoader implements ResourceLoader {
-  constructor(private fs: FileSystem) {}
+  constructor(private fs: ReadonlyFileSystem) {}
   canPreload = false;
   preload(): undefined|Promise<void> {
     throw new Error('Not implemented.');
   }
   load(url: string): string {
-    return this.fs.readFile(resolve(url));
+    return this.fs.readFile(this.fs.resolve(url));
   }
   resolve(url: string, containingFile: string): string {
-    return resolve(dirname(absoluteFrom(containingFile)), url);
+    return this.fs.resolve(this.fs.dirname(containingFile), url);
   }
 }
 
@@ -91,12 +91,15 @@ export class DecorationAnalyzer {
   importGraph = new ImportGraph(this.moduleResolver);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
   injectableRegistry = new InjectableClassRegistry(this.reflectionHost);
+  typeCheckScopeRegistry = new TypeCheckScopeRegistry(this.scopeRegistry, this.fullMetaReader);
   handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,
-        this.scopeRegistry, this.scopeRegistry, new ResourceRegistry(), this.isCore,
-        this.resourceManager, this.rootDirs, !!this.compilerOptions.preserveWhitespaces,
+        this.scopeRegistry, this.scopeRegistry, this.typeCheckScopeRegistry, new ResourceRegistry(),
+        this.isCore, this.resourceManager, this.rootDirs,
+        !!this.compilerOptions.preserveWhitespaces,
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
+        /* usePoisonedData */ false,
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
         this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER, NOOP_DEPENDENCY_TRACKER,
         this.injectableRegistry, !!this.compilerOptions.annotateForClosureCompiler),
@@ -136,7 +139,7 @@ export class DecorationAnalyzer {
   ];
 
   constructor(
-      private fs: FileSystem, private bundle: EntryPointBundle,
+      private fs: ReadonlyFileSystem, private bundle: EntryPointBundle,
       private reflectionHost: NgccReflectionHost, private referencesRegistry: ReferencesRegistry,
       private diagnosticHandler: (error: ts.Diagnostic) => void = () => {},
       private tsConfig: ParsedConfiguration|null = null) {}

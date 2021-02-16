@@ -165,7 +165,6 @@ export {
   ɵɵnamespaceMathML,
   ɵɵnamespaceSVG,
   ɵɵnextContext,
-  ɵɵngDeclareDirective,
   ɵɵNgOnChangesFeature,
   ɵɵpipe,
   ɵɵpipeBind1,
@@ -207,8 +206,6 @@ export {
 
   ɵɵsetComponentScope,
   ɵɵsetNgModuleScope,
-  ɵɵstaticContentQuery,
-  ɵɵstaticViewQuery,
   ɵɵstyleMap,
   ɵɵstyleMapInterpolate1,
   ɵɵstyleMapInterpolate2,
@@ -274,6 +271,11 @@ export {
   transitiveScopesFor as ɵtransitiveScopesFor,
 } from './render3/jit/module';
 export {
+  ɵɵngDeclareComponent,
+  ɵɵngDeclareDirective,
+  ɵɵngDeclarePipe,
+} from './render3/jit/partial';
+export {
   compilePipe as ɵcompilePipe,
 } from './render3/jit/pipe';
 export {
@@ -296,7 +298,6 @@ export {
   ɵɵsanitizeUrlOrResourceUrl,
   ɵɵtrustConstantHtml,
   ɵɵtrustConstantResourceUrl,
-  ɵɵtrustConstantScript,
 } from './sanitization/sanitization';
 export {
   noSideEffects as ɵnoSideEffects,

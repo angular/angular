@@ -229,13 +229,26 @@ export class Identifiers {
   static templateRefExtractor:
       o.ExternalReference = {name: 'ɵɵtemplateRefExtractor', moduleName: CORE};
 
+  static forwardRef: o.ExternalReference = {name: 'forwardRef', moduleName: CORE};
+  static resolveForwardRef: o.ExternalReference = {name: 'resolveForwardRef', moduleName: CORE};
+
   static resolveWindow: o.ExternalReference = {name: 'ɵɵresolveWindow', moduleName: CORE};
   static resolveDocument: o.ExternalReference = {name: 'ɵɵresolveDocument', moduleName: CORE};
   static resolveBody: o.ExternalReference = {name: 'ɵɵresolveBody', moduleName: CORE};
 
   static defineComponent: o.ExternalReference = {name: 'ɵɵdefineComponent', moduleName: CORE};
+  static declareComponent: o.ExternalReference = {name: 'ɵɵngDeclareComponent', moduleName: CORE};
 
   static setComponentScope: o.ExternalReference = {name: 'ɵɵsetComponentScope', moduleName: CORE};
+
+  static ChangeDetectionStrategy: o.ExternalReference = {
+    name: 'ChangeDetectionStrategy',
+    moduleName: CORE,
+  };
+  static ViewEncapsulation: o.ExternalReference = {
+    name: 'ViewEncapsulation',
+    moduleName: CORE,
+  };
 
   static ComponentDefWithMeta: o.ExternalReference = {
     name: 'ɵɵComponentDefWithMeta',
@@ -281,11 +294,10 @@ export class Identifiers {
   static PipeDefWithMeta: o.ExternalReference = {name: 'ɵɵPipeDefWithMeta', moduleName: CORE};
 
   static definePipe: o.ExternalReference = {name: 'ɵɵdefinePipe', moduleName: CORE};
+  static declarePipe: o.ExternalReference = {name: 'ɵɵngDeclarePipe', moduleName: CORE};
 
   static queryRefresh: o.ExternalReference = {name: 'ɵɵqueryRefresh', moduleName: CORE};
   static viewQuery: o.ExternalReference = {name: 'ɵɵviewQuery', moduleName: CORE};
-  static staticViewQuery: o.ExternalReference = {name: 'ɵɵstaticViewQuery', moduleName: CORE};
-  static staticContentQuery: o.ExternalReference = {name: 'ɵɵstaticContentQuery', moduleName: CORE};
   static loadQuery: o.ExternalReference = {name: 'ɵɵloadQuery', moduleName: CORE};
   static contentQuery: o.ExternalReference = {name: 'ɵɵcontentQuery', moduleName: CORE};
 
@@ -321,8 +333,6 @@ export class Identifiers {
   static sanitizeUrlOrResourceUrl:
       o.ExternalReference = {name: 'ɵɵsanitizeUrlOrResourceUrl', moduleName: CORE};
   static trustConstantHtml: o.ExternalReference = {name: 'ɵɵtrustConstantHtml', moduleName: CORE};
-  static trustConstantScript:
-      o.ExternalReference = {name: 'ɵɵtrustConstantScript', moduleName: CORE};
   static trustConstantResourceUrl:
       o.ExternalReference = {name: 'ɵɵtrustConstantResourceUrl', moduleName: CORE};
 }

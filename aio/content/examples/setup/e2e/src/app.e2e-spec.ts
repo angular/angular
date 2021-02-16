@@ -4,12 +4,10 @@ describe('QuickStart E2E Tests', () => {
 
   const expectedMsg = 'Hello Angular';
 
-  beforeEach(() => {
-    browser.get('');
-  });
+  beforeEach(() => browser.get(''));
 
-  it(`should display: ${expectedMsg}`, () => {
-    expect(element(by.css('h1')).getText()).toEqual(expectedMsg);
+  it(`should display: ${expectedMsg}`, async () => {
+    expect(await element(by.css('h1')).getText()).toEqual(expectedMsg);
   });
 
 });

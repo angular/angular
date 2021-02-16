@@ -222,6 +222,9 @@
     "name": "assertTemplate"
   },
   {
+    "name": "attachInjectFlag"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -280,6 +283,9 @@
   },
   {
     "name": "defaultErrorLogger"
+  },
+  {
+    "name": "defaultIterableDiffersFactory"
   },
   {
     "name": "defaultScheduler"
@@ -375,9 +381,6 @@
     "name": "getInjectorIndex"
   },
   {
-    "name": "getLCleanup"
-  },
-  {
     "name": "getLView"
   },
   {
@@ -400,6 +403,9 @@
   },
   {
     "name": "getOrCreateInjectable"
+  },
+  {
+    "name": "getOrCreateLViewCleanup"
   },
   {
     "name": "getOrCreateNodeInjectorForNode"
@@ -430,6 +436,9 @@
   },
   {
     "name": "getPreviousIndex"
+  },
+  {
+    "name": "getProjectionNodes"
   },
   {
     "name": "getSelectedIndex"

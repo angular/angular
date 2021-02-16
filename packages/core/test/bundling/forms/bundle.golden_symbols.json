@@ -567,9 +567,6 @@
     "name": "SelectMultipleControlValueAccessor"
   },
   {
-    "name": "Self"
-  },
-  {
     "name": "ShadowDomRenderer"
   },
   {
@@ -741,6 +738,9 @@
     "name": "applyView"
   },
   {
+    "name": "attachInjectFlag"
+  },
+  {
     "name": "attachPatchData"
   },
   {
@@ -766,6 +766,9 @@
   },
   {
     "name": "classIndexOf"
+  },
+  {
+    "name": "cleanUpControl"
   },
   {
     "name": "cleanUpValidators"
@@ -855,7 +858,13 @@
     "name": "defaultIterableDiffers"
   },
   {
+    "name": "defaultIterableDiffersFactory"
+  },
+  {
     "name": "defaultKeyValueDiffers"
+  },
+  {
+    "name": "defaultKeyValueDiffersFactory"
   },
   {
     "name": "defaultScheduler"
@@ -1014,9 +1023,6 @@
     "name": "getInjectorIndex"
   },
   {
-    "name": "getLCleanup"
-  },
-  {
     "name": "getLView"
   },
   {
@@ -1045,6 +1051,9 @@
   },
   {
     "name": "getOrCreateInjectable"
+  },
+  {
+    "name": "getOrCreateLViewCleanup"
   },
   {
     "name": "getOrCreateNodeInjectorForNode"
@@ -1078,6 +1087,9 @@
   },
   {
     "name": "getPreviousIndex"
+  },
+  {
+    "name": "getProjectionNodes"
   },
   {
     "name": "getPromiseCtor"

@@ -120,16 +120,17 @@ export class BindingParser {
 
   parseInterpolation(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     const sourceInfo = sourceSpan.start.toString();
+    const absoluteOffset = sourceSpan.fullStart.offset;
 
     try {
       const ast = this._exprParser.parseInterpolation(
-          value, sourceInfo, sourceSpan.start.offset, this._interpolationConfig)!;
+          value, sourceInfo, absoluteOffset, this._interpolationConfig)!;
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
-      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, sourceSpan.start.offset);
+      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
     }
   }
 
@@ -140,16 +141,17 @@ export class BindingParser {
    */
   parseInterpolationExpression(expression: string, sourceSpan: ParseSourceSpan): ASTWithSource {
     const sourceInfo = sourceSpan.start.toString();
+    const absoluteOffset = sourceSpan.start.offset;
 
     try {
-      const ast = this._exprParser.parseInterpolationExpression(
-          expression, sourceInfo, sourceSpan.start.offset);
+      const ast =
+          this._exprParser.parseInterpolationExpression(expression, sourceInfo, absoluteOffset);
       if (ast) this._reportExpressionParserErrors(ast.errors, sourceSpan);
       this._checkPipes(ast, sourceSpan);
       return ast;
     } catch (e) {
       this._reportError(`${e}`, sourceSpan);
-      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, sourceSpan.start.offset);
+      return this._exprParser.wrapLiteralPrimitive('ERROR', sourceInfo, absoluteOffset);
     }
   }
 
@@ -244,6 +246,10 @@ export class BindingParser {
       targetProps: ParsedProperty[], keySpan?: ParseSourceSpan) {
     if (isAnimationLabel(name)) {
       name = name.substring(1);
+      if (keySpan !== undefined) {
+        keySpan = moveParseSourceSpan(
+            keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));
+      }
       if (value) {
         this._reportError(
             `Assigning animation triggers via @prop="exp" attributes with an expression is invalid.` +
@@ -274,9 +280,19 @@ export class BindingParser {
     if (name.startsWith(ANIMATE_PROP_PREFIX)) {
       isAnimationProp = true;
       name = name.substring(ANIMATE_PROP_PREFIX.length);
+      if (keySpan !== undefined) {
+        keySpan = moveParseSourceSpan(
+            keySpan,
+            new AbsoluteSourceSpan(
+                keySpan.start.offset + ANIMATE_PROP_PREFIX.length, keySpan.end.offset));
+      }
     } else if (isAnimationLabel(name)) {
       isAnimationProp = true;
       name = name.substring(1);
+      if (keySpan !== undefined) {
+        keySpan = moveParseSourceSpan(
+            keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));
+      }
     }
 
     if (isAnimationProp) {
@@ -424,6 +440,10 @@ export class BindingParser {
 
     if (isAnimationLabel(name)) {
       name = name.substr(1);
+      if (keySpan !== undefined) {
+        keySpan = moveParseSourceSpan(
+            keySpan, new AbsoluteSourceSpan(keySpan.start.offset + 1, keySpan.end.offset));
+      }
       this._parseAnimationEvent(name, expression, sourceSpan, handlerSpan, targetEvents, keySpan);
     } else {
       this._parseRegularEvent(
@@ -443,21 +463,19 @@ export class BindingParser {
     const matches = splitAtPeriod(name, [name, '']);
     const eventName = matches[0];
     const phase = matches[1].toLowerCase();
-    if (phase) {
-      switch (phase) {
-        case 'start':
-        case 'done':
-          const ast = this._parseAction(expression, handlerSpan);
-          targetEvents.push(new ParsedEvent(
-              eventName, phase, ParsedEventType.Animation, ast, sourceSpan, handlerSpan, keySpan));
-          break;
+    const ast = this._parseAction(expression, handlerSpan);
+    targetEvents.push(new ParsedEvent(
+        eventName, phase, ParsedEventType.Animation, ast, sourceSpan, handlerSpan, keySpan));
 
-        default:
-          this._reportError(
-              `The provided animation output phase value "${phase}" for "@${
-                  eventName}" is not supported (use start or done)`,
-              sourceSpan);
-          break;
+    if (eventName.length === 0) {
+      this._reportError(`Animation event name is missing in binding`, sourceSpan);
+    }
+    if (phase) {
+      if (phase !== 'start' && phase !== 'done') {
+        this._reportError(
+            `The provided animation output phase value "${phase}" for "@${
+                eventName}" is not supported (use start or done)`,
+            sourceSpan);
       }
     } else {
       this._reportError(

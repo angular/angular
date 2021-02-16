@@ -169,6 +169,7 @@ export interface CompileQueryMetadata {
   propertyName: string;
   read: CompileTokenMetadata;
   static?: boolean;
+  emitDistinctChangesOnly?: boolean;
 }
 
 /**

@@ -82,7 +82,8 @@ export abstract class ReleaseAction {
   /** Updates the version in the project top-level `package.json` file. */
   protected async updateProjectVersion(newVersion: semver.SemVer) {
     const pkgJsonPath = join(this.projectDir, packageJsonPath);
-    const pkgJson = JSON.parse(await fs.readFile(pkgJsonPath, 'utf8'));
+    const pkgJson =
+        JSON.parse(await fs.readFile(pkgJsonPath, 'utf8')) as {version: string, [key: string]: any};
     pkgJson.version = newVersion.format();
     // Write the `package.json` file. Note that we add a trailing new line
     // to avoid unnecessary diff. IDEs usually add a trailing new line.
@@ -282,6 +283,15 @@ export abstract class ReleaseAction {
       title,
     });
 
+    // Add labels to the newly created PR if provided in the configuration.
+    if (this.config.releasePrLabels !== undefined) {
+      await this.git.github.issues.addLabels({
+        ...this.git.remoteParams,
+        issue_number: data.number,
+        labels: this.config.releasePrLabels,
+      });
+    }
+
     info(green(`  ✓   Created pull request #${data.number} in ${repoSlug}.`));
     return {
       id: data.number,
@@ -441,7 +451,7 @@ export abstract class ReleaseAction {
     }
 
     // Create a cherry-pick pull request that should be merged by the caretaker.
-    const {url} = await this.pushChangesToForkAndCreatePullRequest(
+    const {url, id} = await this.pushChangesToForkAndCreatePullRequest(
         nextBranch, `changelog-cherry-pick-${newVersion}`, commitMessage,
         `Cherry-picks the changelog from the "${stagingBranch}" branch to the next ` +
             `branch (${nextBranch}).`);
@@ -450,6 +460,10 @@ export abstract class ReleaseAction {
         `  ✓   Pull request for cherry-picking the changelog into "${nextBranch}" ` +
         'has been created.'));
     info(yellow(`      Please ask team members to review: ${url}.`));
+
+    // Wait for the Pull Request to be merged.
+    await this.waitForPullRequestToBeMerged(id);
+
     return true;
   }
 
@@ -503,6 +517,9 @@ export abstract class ReleaseAction {
     await invokeYarnInstallCommand(this.projectDir);
     const builtPackages = await invokeReleaseBuildCommand();
 
+    // Verify the packages built are the correct version.
+    await this._verifyPackageVersions(newVersion, builtPackages);
+
     // Create a Github release for the new version.
     await this._createGithubReleaseForVersion(newVersion, versionBumpCommitSha);
 
@@ -536,5 +553,20 @@ export abstract class ReleaseAction {
     const {data} =
         await this.git.github.repos.getCommit({...this.git.remoteParams, ref: commitSha});
     return data.commit.message.startsWith(getCommitMessageForRelease(version));
+  }
+
+  /** Verify the version of each generated package exact matches the specified version. */
+  private async _verifyPackageVersions(version: semver.SemVer, packages: BuiltPackage[]) {
+    for (const pkg of packages) {
+      const {version: packageJsonVersion} =
+          JSON.parse(await fs.readFile(join(pkg.outputPath, 'package.json'), 'utf8')) as
+          {version: string, [key: string]: any};
+      if (version.compare(packageJsonVersion) !== 0) {
+        error(red('The built package version does not match the version being released.'));
+        error(`  Release Version:   ${version.version}`);
+        error(`  Generated Version: ${packageJsonVersion}`);
+        throw new FatalReleaseActionError();
+      }
+    }
   }
 }
