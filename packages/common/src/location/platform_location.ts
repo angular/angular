@@ -40,8 +40,14 @@ import {DOCUMENT} from '../dom_tokens';
 export abstract class PlatformLocation {
   abstract getBaseHrefFromDOM(): string;
   abstract getState(): unknown;
-  abstract onPopState(fn: LocationChangeListener): void;
-  abstract onHashChange(fn: LocationChangeListener): void;
+  /**
+   * Returns a function that, when executed, removes the `popstate` event handler.
+   */
+  abstract onPopState(fn: LocationChangeListener): VoidFunction;
+  /**
+   * Returns a function that, when executed, removes the `hashchange` event handler.
+   */
+  abstract onHashChange(fn: LocationChangeListener): VoidFunction;
 
   abstract get href(): string;
   abstract get protocol(): string;
@@ -122,12 +128,16 @@ export class BrowserPlatformLocation extends PlatformLocation {
     return getDOM().getBaseHref(this._doc)!;
   }
 
-  onPopState(fn: LocationChangeListener): void {
-    getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('popstate', fn, false);
+  onPopState(fn: LocationChangeListener): VoidFunction {
+    const window = getDOM().getGlobalEventTarget(this._doc, 'window');
+    window.addEventListener('popstate', fn, false);
+    return () => window.removeEventListener('popstate', fn);
   }
 
-  onHashChange(fn: LocationChangeListener): void {
-    getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('hashchange', fn, false);
+  onHashChange(fn: LocationChangeListener): VoidFunction {
+    const window = getDOM().getGlobalEventTarget(this._doc, 'window');
+    window.addEventListener('hashchange', fn, false);
+    return () => window.removeEventListener('hashchange', fn);
   }
 
   get href(): string {

@@ -153,13 +153,15 @@ export class MockPlatformLocation implements PlatformLocation {
     return this.baseHref;
   }
 
-  onPopState(fn: LocationChangeListener): void {
+  onPopState(fn: LocationChangeListener): VoidFunction {
     // No-op: a state stack is not implemented, so
     // no events will ever come.
+    return () => {};
   }
 
-  onHashChange(fn: LocationChangeListener): void {
-    this.hashUpdate.subscribe(fn);
+  onHashChange(fn: LocationChangeListener): VoidFunction {
+    const subscription = this.hashUpdate.subscribe(fn);
+    return () => subscription.unsubscribe();
   }
 
   get href(): string {
