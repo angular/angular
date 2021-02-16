@@ -1,5 +1,5 @@
 import {FocusMonitor} from '@angular/cdk/a11y';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   Component,
   ElementRef,
@@ -224,6 +224,6 @@ export class MyTelInput
     this.onChange(this.value);
   }
 
-  static ngAcceptInputType_disabled: boolean | string | null | undefined;
-  static ngAcceptInputType_required: boolean | string | null | undefined;
+  static ngAcceptInputType_disabled: BooleanInput;
+  static ngAcceptInputType_required: BooleanInput;
 }
