@@ -235,7 +235,7 @@ focused = false;
 
 constructor(fb: FormBuilder, private fm: FocusMonitor, private elRef: ElementRef<HTMLElement>) {
   ...
-  fm.monitor(elRef.nativeElement, true).subscribe(origin => {
+  fm.monitor(elRef, true).subscribe(origin => {
     this.focused = !!origin;
     this.stateChanges.next();
   });
@@ -243,7 +243,7 @@ constructor(fb: FormBuilder, private fm: FocusMonitor, private elRef: ElementRef
 
 ngOnDestroy() {
   ...
-  this.fm.stopMonitoring(this.elRef.nativeElement);
+  this.fm.stopMonitoring(this.elRef);
 }
 ```
 
