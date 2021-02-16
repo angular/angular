@@ -621,8 +621,7 @@ export class ApplicationRef {
 
   /** @internal */
   constructor(
-      private _zone: NgZone, private _console: Console, private _injector: Injector,
-      private _exceptionHandler: ErrorHandler,
+      private _zone: NgZone, private _injector: Injector, private _exceptionHandler: ErrorHandler,
       private _componentFactoryResolver: ComponentFactoryResolver,
       private _initStatus: ApplicationInitStatus) {
     this._onMicrotaskEmptySubscription = this._zone.onMicrotaskEmpty.subscribe({
@@ -734,8 +733,11 @@ export class ApplicationRef {
     });
 
     this._loadComponent(compRef);
-    if (isDevMode()) {
-      this._console.log(
+    // Note that we have still left the `isDevMode()` condition in order to avoid
+    // creating a breaking change for projects that still use the View Engine.
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && isDevMode()) {
+      const _console = this._injector.get(Console);
+      _console.log(
           `Angular is running in development mode. Call enableProdMode() to enable production mode.`);
     }
     return compRef;
