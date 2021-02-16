@@ -18,6 +18,7 @@ import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, Inj
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../../src/ngtsc/scope';
 import {DecoratorHandler} from '../../../src/ngtsc/transform';
+import {UndecoratedClassesFeatureScanner} from '../../../src/ngtsc/undecorated_classes';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {Migration} from '../migrations/migration';
 import {MissingInjectableMigration} from '../migrations/missing_injectable_migration';
@@ -92,6 +93,9 @@ export class DecorationAnalyzer {
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
   injectableRegistry = new InjectableClassRegistry(this.reflectionHost);
   typeCheckScopeRegistry = new TypeCheckScopeRegistry(this.scopeRegistry, this.fullMetaReader);
+  undecoratedClassesFeatureScanner = new UndecoratedClassesFeatureScanner(
+      this.reflectionHost, this.evaluator, this.injectableRegistry, this.fullMetaReader,
+      this.isCore);
   handlers: DecoratorHandler<unknown, unknown, unknown>[] = [
     new ComponentDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.fullMetaReader,
@@ -102,7 +106,8 @@ export class DecorationAnalyzer {
         /* usePoisonedData */ false,
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
         this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER, NOOP_DEPENDENCY_TRACKER,
-        this.injectableRegistry, !!this.compilerOptions.annotateForClosureCompiler),
+        this.injectableRegistry, !!this.compilerOptions.annotateForClosureCompiler,
+        this.undecoratedClassesFeatureScanner),
     // See the note in ngtsc about why this cast is needed.
     // clang-format off
     new DirectiveDecoratorHandler(
@@ -113,7 +118,8 @@ export class DecorationAnalyzer {
         // version 10, undecorated classes that use Angular features are no longer handled
         // in ngtsc, but we want to ensure compatibility in ngcc for outdated libraries that
         // have not migrated to explicit decorators. See: https://hackmd.io/@alx/ryfYYuvzH.
-        /* compileUndecoratedClassesWithAngularFeatures */ true
+        /* compileUndecoratedClassesWithAngularFeatures */ true,
+        this.undecoratedClassesFeatureScanner,
     ) as DecoratorHandler<unknown, unknown, unknown>,
     // clang-format on
     // Pipe handler must be before injectable handler in list so pipe factories are printed
@@ -210,6 +216,7 @@ export class DecorationAnalyzer {
 
   protected reportDiagnostics() {
     this.compiler.diagnostics.forEach(this.diagnosticHandler);
+    this.undecoratedClassesFeatureScanner.computeDiagnostics().forEach(this.diagnosticHandler);
   }
 
   protected compileFile(sourceFile: ts.SourceFile): CompiledFile {

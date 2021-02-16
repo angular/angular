@@ -235,14 +235,17 @@ runInEachFileSystem(() => {
       ]);
 
       expect(errors.length).toBe(1);
-      expect(errors[0].messageText)
+      const error = errors[0];
+      expect(error.messageText)
           .toBe(
-              `The directive DerivedClass inherits its constructor ` +
-              `from BaseClass, but the latter does not have an Angular ` +
-              `decorator of its own. Dependency injection will not be ` +
-              `able to resolve the parameters of BaseClass's ` +
-              `constructor. Either add a @Directive decorator to ` +
-              `BaseClass, or add an explicit constructor to DerivedClass.`);
+              'Cannot use Angular features in an undecorated class. Please add an explicit ' +
+              '@Directive decorator.');
+      expect(error.relatedInformation).toBeDefined();
+      expect(error.relatedInformation!.length).toBe(1);
+      expect(error.relatedInformation![0].messageText)
+          .toBe(
+              'Inherits constructor that uses dependency injection. Either decorate BaseClass, ' +
+              'or add an explicit constructor to DerivedClass.');
     });
   });
 

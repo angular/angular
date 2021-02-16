@@ -12,27 +12,22 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {DefaultImportRecorder, Reference} from '../../imports';
+import {readBaseClass} from '../../inheritance/src/base_class';
 import {ClassPropertyMapping, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {extractDirectiveTypeCheckMeta} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
+import {DetectedAngularFeature} from '../../undecorated_classes/src/features';
+import {UndecoratedClassesFeatureScanner} from '../../undecorated_classes/src/scanner';
 
-import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic} from './diagnostics';
+import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
 import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {createSourceSpan, findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
+import {createSourceSpan, findAngularDecorator, getConstructorDependencies, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
-const FIELD_DECORATORS = [
-  'Input', 'Output', 'ViewChild', 'ViewChildren', 'ContentChild', 'ContentChildren', 'HostBinding',
-  'HostListener'
-];
-const LIFECYCLE_HOOKS = new Set([
-  'ngOnChanges', 'ngOnInit', 'ngOnDestroy', 'ngDoCheck', 'ngAfterViewInit', 'ngAfterViewChecked',
-  'ngAfterContentInit', 'ngAfterContentChecked'
-]);
 
 export interface DirectiveHandlerData {
   baseClass: Reference<ClassDeclaration>|'dynamic'|null;
@@ -46,43 +41,64 @@ export interface DirectiveHandlerData {
   isStructural: boolean;
 }
 
+export interface DirectiveDetectMetadata {
+  decorator: Decorator|null;
+  detectedAngularFeature: null|DetectedAngularFeature;
+}
+
 export class DirectiveDecoratorHandler implements
-    DecoratorHandler<Decorator|null, DirectiveHandlerData, unknown> {
+    DecoratorHandler<DirectiveDetectMetadata, DirectiveHandlerData, unknown> {
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private metaReader: MetadataReader, private defaultImportRecorder: DefaultImportRecorder,
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
       private annotateForClosureCompiler: boolean,
-      private compileUndecoratedClassesWithAngularFeatures: boolean) {}
+      private compileUndecoratedClassesWithAngularFeatures: boolean,
+      private undecoratedClassesFeatureScanner: UndecoratedClassesFeatureScanner) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = DirectiveDecoratorHandler.name;
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null):
-      DetectResult<Decorator|null>|undefined {
+      DetectResult<DirectiveDetectMetadata>|undefined {
     // If a class is undecorated but uses Angular features, we detect it as an
     // abstract directive. This is an unsupported pattern as of v10, but we want
     // to still detect these patterns so that we can report diagnostics, or compile
     // them for backwards compatibility in ngcc.
     if (!decorators) {
-      const angularField = this.findClassFieldWithAngularFeatures(node);
-      return angularField ? {trigger: angularField.node, decorator: null, metadata: null} :
-                            undefined;
+      const detectedAngularFeature =
+          this.undecoratedClassesFeatureScanner.detectAngularFeatureInClass(node);
+      return detectedAngularFeature === null ? undefined : {
+        trigger: detectedAngularFeature.trigger,
+        decorator: null,
+        metadata: {decorator: null, detectedAngularFeature}
+      };
     } else {
       const decorator = findAngularDecorator(decorators, 'Directive', this.isCore);
-      return decorator ? {trigger: decorator.node, decorator, metadata: decorator} : undefined;
+      return decorator === undefined ? undefined : {
+        trigger: decorator.node,
+        decorator,
+        metadata: {
+          decorator,
+          detectedAngularFeature: null,
+        }
+      };
     }
   }
 
-  analyze(node: ClassDeclaration, decorator: Readonly<Decorator|null>, flags = HandlerFlags.NONE):
+  analyze(node: ClassDeclaration, metadata: DirectiveDetectMetadata, flags = HandlerFlags.NONE):
       AnalysisOutput<DirectiveHandlerData> {
+    const {decorator, detectedAngularFeature} = metadata;
     // Skip processing of the class declaration if compilation of undecorated classes
     // with Angular features is disabled. Previously in ngtsc, such classes have always
     // been processed, but we want to enforce a consistent decorator mental model.
     // See: https://v9.angular.io/guide/migration-undecorated-classes.
-    if (this.compileUndecoratedClassesWithAngularFeatures === false && decorator === null) {
-      return {diagnostics: [getUndecoratedClassWithAngularFeaturesDiagnostic(node)]};
+    if (this.compileUndecoratedClassesWithAngularFeatures === false &&
+        detectedAngularFeature !== null) {
+      this.undecoratedClassesFeatureScanner.captureUndecoratedAngularClass(
+          node, detectedAngularFeature);
+      return {};
     }
 
     const directiveResult = extractDirectiveMetadata(
@@ -141,6 +157,8 @@ export class DirectiveDecoratorHandler implements
   resolve(node: ClassDeclaration, analysis: DirectiveHandlerData): ResolveResult<unknown> {
     const diagnostics: ts.Diagnostic[] = [];
 
+    this.undecoratedClassesFeatureScanner.checkDirectiveForInheritedConstructor(node);
+
     if (analysis.providersRequiringFactory !== null &&
         analysis.meta.providers instanceof WrappedNodeExpr) {
       const providerDiagnostics = getProviderDiagnostics(
@@ -191,27 +209,6 @@ export class DirectiveDecoratorHandler implements
         type,
       }
     ];
-  }
-
-  /**
-   * Checks if a given class uses Angular features and returns the TypeScript node
-   * that indicated the usage. Classes are considered using Angular features if they
-   * contain class members that are either decorated with a known Angular decorator,
-   * or if they correspond to a known Angular lifecycle hook.
-   */
-  private findClassFieldWithAngularFeatures(node: ClassDeclaration): ClassMember|undefined {
-    return this.reflector.getMembersOfClass(node).find(member => {
-      if (!member.isStatic && member.kind === ClassMemberKind.Method &&
-          LIFECYCLE_HOOKS.has(member.name)) {
-        return true;
-      }
-      if (member.decorators) {
-        return member.decorators.some(
-            decorator => FIELD_DECORATORS.some(
-                decoratorName => isAngularDecorator(decorator, decoratorName, this.isCore)));
-      }
-      return false;
-    });
   }
 }
 
