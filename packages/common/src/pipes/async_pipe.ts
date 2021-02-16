@@ -12,14 +12,15 @@ import {Subscribable, Unsubscribable} from 'rxjs';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
 interface SubscriptionStrategy<T> {
-  createSubscription(async: Subscribable<T> | Promise<T>, updateLatestValue: (value: T) => void): Unsubscribable
-      |Promise<void>;
+  createSubscription(async: Subscribable<T>|Promise<T>, updateLatestValue: (value: T) => void):
+      Unsubscribable|Promise<void>;
   dispose(subscription: Unsubscribable|Promise<void>): void;
   onDestroy(subscription: Unsubscribable|Promise<void>): void;
 }
 
 class SubscribableStrategy<T> implements SubscriptionStrategy<T> {
-  createSubscription(async: Subscribable<T>, updateLatestValue: (value: T) => void): Unsubscribable {
+  createSubscription(async: Subscribable<T>, updateLatestValue: (value: T) => void):
+      Unsubscribable {
     return async.subscribe({
       next: updateLatestValue,
       error: (e: any) => {
@@ -140,7 +141,7 @@ export class AsyncPipe<T> implements OnDestroy, PipeTransform {
     this._obj = null;
   }
 
-  private _updateLatestValue(async: Subscribable<T> | Promise<T> | EventEmitter<T>, value: T): void {
+  private _updateLatestValue(async: Subscribable<T>|Promise<T>|EventEmitter<T>, value: T): void {
     if (async === this._obj) {
       this._latestValue = value;
       this._ref.markForCheck();
