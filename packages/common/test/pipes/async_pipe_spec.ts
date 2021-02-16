@@ -17,7 +17,7 @@ import {SpyChangeDetectorRef} from '../spies';
   describe('AsyncPipe', () => {
     describe('Observable', () => {
       let emitter: EventEmitter<any>;
-      let pipe: AsyncPipe;
+      let pipe: AsyncPipe<any>;
       let ref: any;
       const message = {};
 
@@ -115,7 +115,7 @@ import {SpyChangeDetectorRef} from '../spies';
 
     describe('Promise', () => {
       const message = {};
-      let pipe: AsyncPipe;
+      let pipe: AsyncPipe<any>;
       let resolve: (result: any) => void;
       let reject: (error: any) => void;
       let promise: Promise<any>;

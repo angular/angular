@@ -10,15 +10,17 @@ import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, ɵisObs
 import {Observable, SubscriptionLike} from 'rxjs';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
-interface SubscriptionStrategy {
-  createSubscription(async: Observable<any>|Promise<any>, updateLatestValue: any): SubscriptionLike
-      |Promise<any>;
-  dispose(subscription: SubscriptionLike|Promise<any>): void;
-  onDestroy(subscription: SubscriptionLike|Promise<any>): void;
+interface SubscriptionStrategy<T> {
+  createSubscription(
+      async: Observable<T>|Promise<T>|EventEmitter<T>,
+      updateLatestValue: (value: T) => void): SubscriptionLike|Promise<void>;
+  dispose(subscription: SubscriptionLike|Promise<void>): void;
+  onDestroy(subscription: SubscriptionLike|Promise<void>): void;
 }
 
-class ObservableStrategy implements SubscriptionStrategy {
-  createSubscription(async: Observable<any>, updateLatestValue: any): SubscriptionLike {
+class ObservableStrategy<T> implements SubscriptionStrategy<T> {
+  createSubscription(async: Observable<T>, updateLatestValue: (value: T) => void):
+      SubscriptionLike {
     return async.subscribe({
       next: updateLatestValue,
       error: (e: any) => {
@@ -36,8 +38,8 @@ class ObservableStrategy implements SubscriptionStrategy {
   }
 }
 
-class PromiseStrategy implements SubscriptionStrategy {
-  createSubscription(async: Promise<any>, updateLatestValue: (v: any) => any): Promise<any> {
+class PromiseStrategy<T> implements SubscriptionStrategy<T> {
+  createSubscription(async: Promise<T>, updateLatestValue: (v: T) => void): Promise<void> {
     return async.then(updateLatestValue, e => {
       throw e;
     });
@@ -79,12 +81,12 @@ const _observableStrategy = new ObservableStrategy();
  * @publicApi
  */
 @Pipe({name: 'async', pure: false})
-export class AsyncPipe implements OnDestroy, PipeTransform {
-  private _latestValue: any = null;
+export class AsyncPipe<T> implements OnDestroy, PipeTransform {
+  private _latestValue: T|null = null;
 
-  private _subscription: SubscriptionLike|Promise<any>|null = null;
-  private _obj: Observable<any>|Promise<any>|EventEmitter<any>|null = null;
-  private _strategy: SubscriptionStrategy = null!;
+  private _subscription: SubscriptionLike|Promise<void>|null = null;
+  private _obj: Observable<T>|Promise<T>|EventEmitter<T>|null = null;
+  private _strategy: SubscriptionStrategy<T> = null!;
 
   constructor(private _ref: ChangeDetectorRef) {}
 
@@ -94,10 +96,10 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     }
   }
 
-  transform<T>(obj: Observable<T>|Promise<T>): T|null;
-  transform<T>(obj: null|undefined): null;
-  transform<T>(obj: Observable<T>|Promise<T>|null|undefined): T|null;
-  transform<T>(obj: Observable<T>|Promise<T>|null|undefined): T|null {
+  transform(obj: Observable<T>|Promise<T>): T|null;
+  transform(obj: null|undefined): null;
+  transform(obj: Observable<T>|Promise<T>|null|undefined): T|null;
+  transform(obj: Observable<T>|Promise<T>|null|undefined): T|null {
     if (!this._obj) {
       if (obj) {
         this._subscribe(obj);
@@ -113,14 +115,14 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     return this._latestValue;
   }
 
-  private _subscribe(obj: Observable<any>|Promise<any>|EventEmitter<any>): void {
+  private _subscribe(obj: Observable<T>|Promise<T>|EventEmitter<T>): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
-    this._subscription = this._strategy.createSubscription(
-        obj, (value: Object) => this._updateLatestValue(obj, value));
+    this._subscription =
+        this._strategy.createSubscription(obj, (value) => this._updateLatestValue(obj, value));
   }
 
-  private _selectStrategy(obj: Observable<any>|Promise<any>|EventEmitter<any>): any {
+  private _selectStrategy(obj: Observable<T>|Promise<T>|EventEmitter<T>): any {
     if (ɵisPromise(obj)) {
       return _promiseStrategy;
     }
@@ -139,7 +141,7 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     this._obj = null;
   }
 
-  private _updateLatestValue(async: any, value: Object): void {
+  private _updateLatestValue(async: any, value: T): void {
     if (async === this._obj) {
       this._latestValue = value;
       this._ref.markForCheck();
