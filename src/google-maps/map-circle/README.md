@@ -17,7 +17,7 @@ export class GoogleMapDemo {
   zoom = 4;
 
   circleCenter: google.maps.LatLngLiteral = {lat: 10, lng: 15};
-  radius: 3;
+  radius = 3;
 }
 ```
 
