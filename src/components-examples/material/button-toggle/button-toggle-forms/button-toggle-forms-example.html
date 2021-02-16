@@ -1,0 +1,20 @@
+<section>
+  <h4>Button Toggle inside of a Template-driven form</h4>
+  <mat-button-toggle-group [(ngModel)]="fontStyle" aria-label="Font Style">
+    <mat-button-toggle value="bold">Bold</mat-button-toggle>
+    <mat-button-toggle value="italic">Italic</mat-button-toggle>
+    <mat-button-toggle value="underline">Underline</mat-button-toggle>
+  </mat-button-toggle-group>
+  <p>Chosen value is {{fontStyle}}</p>
+</section>
+
+<section>
+  <h4>Button Toggle inside of a Reactive form</h4>
+  <mat-button-toggle-group [formControl]="fontStyleControl" aria-label="Font Style">
+    <mat-button-toggle value="bold">Bold</mat-button-toggle>
+    <mat-button-toggle value="italic">Italic</mat-button-toggle>
+    <mat-button-toggle value="underline">Underline</mat-button-toggle>
+  </mat-button-toggle-group>
+  <p>Chosen value is {{fontStyleControl.value}}</p>
+</section>
+

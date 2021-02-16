@@ -22,6 +22,10 @@ be configured globally using the `MAT_BUTTON_TOGGLE_DEFAULT_OPTIONS` injection t
 
 <!-- example(button-toggle-appearance) -->
 
+### Use with `@angular/forms`
+`<mat-button-toggle-group>` is compatible with `@angular/forms` and supports both `FormsModule`
+and `ReactiveFormsModule`.
+
 ### Accessibility
 The button-toggles internally use native `button` elements with `aria-pressed` to convey
 their toggled state. The button-toggle-group surrounding the individual buttons applies
