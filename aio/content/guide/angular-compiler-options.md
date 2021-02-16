@@ -123,7 +123,7 @@ to the generated flat module index instead of the library index file.
 
 Produces only one `.metadata.json` file, which contains all the metadata necessary
 for symbols exported from the library index. In the generated `.ngfactory.js` files, the flat
-module index is used to import symbols that includes both the public API from the library index
+module index is used to import symbols that include both the public API from the library index
 as well as shrowded internal symbols.
 
 By default the `.ts` file supplied in the `files` field is assumed to be the library index.
