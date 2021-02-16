@@ -34,7 +34,7 @@ Then, you set the attribute value with an expression that resolves to a string.
 
 <div class="alert is-helpful">
 
-When the expression resolves to `null`, Angular removes the attribute altogether.
+When the expression resolves to `null` or `undefined`, Angular removes the attribute altogether.
 
 </div>
 
