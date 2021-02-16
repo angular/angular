@@ -33,8 +33,8 @@ export declare class MockPlatformLocation implements PlatformLocation {
     forward(): void;
     getBaseHrefFromDOM(): string;
     getState(): unknown;
-    onHashChange(fn: LocationChangeListener): void;
-    onPopState(fn: LocationChangeListener): void;
+    onHashChange(fn: LocationChangeListener): VoidFunction;
+    onPopState(fn: LocationChangeListener): VoidFunction;
     pushState(state: any, title: string, newUrl: string): void;
     replaceState(state: any, title: string, newUrl: string): void;
 }

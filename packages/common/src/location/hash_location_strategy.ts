@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, Optional} from '@angular/core';
+import {Inject, Injectable, OnDestroy, Optional} from '@angular/core';
+
 import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
 import {LocationChangeListener, PlatformLocation} from './platform_location';
 import {joinWithSlash, normalizeQueryParams} from './util';
@@ -32,8 +33,10 @@ import {joinWithSlash, normalizeQueryParams} from './util';
  * @publicApi
  */
 @Injectable()
-export class HashLocationStrategy extends LocationStrategy {
+export class HashLocationStrategy extends LocationStrategy implements OnDestroy {
   private _baseHref: string = '';
+  private _removeListenerFns: (() => void)[] = [];
+
   constructor(
       private _platformLocation: PlatformLocation,
       @Optional() @Inject(APP_BASE_HREF) _baseHref?: string) {
@@ -43,9 +46,15 @@ export class HashLocationStrategy extends LocationStrategy {
     }
   }
 
+  ngOnDestroy(): void {
+    while (this._removeListenerFns.length) {
+      this._removeListenerFns.pop()!();
+    }
+  }
+
   onPopState(fn: LocationChangeListener): void {
-    this._platformLocation.onPopState(fn);
-    this._platformLocation.onHashChange(fn);
+    this._removeListenerFns.push(
+        this._platformLocation.onPopState(fn), this._platformLocation.onHashChange(fn));
   }
 
   getBaseHref(): string {
