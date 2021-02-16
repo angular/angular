@@ -226,7 +226,7 @@ export class MapCircle implements OnInit, OnDestroy {
 
   /**
    * @see
-   * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.getCenter
+   * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.getRadius
    */
   getRadius(): number {
     this._assertInitialized();
