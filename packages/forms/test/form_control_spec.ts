@@ -24,13 +24,13 @@ function syncValidator(_: any /** TODO #9100 */): any /** TODO #9100 */ {
 
 describe('FormControl', () => {
   it('should default the value to null', () => {
-    const c = new FormControl();
+    const c = new FormControl<any>();
     expect(c.value).toBe(null);
   });
 
   describe('markAllAsTouched', () => {
     it('should mark only the control itself as touched', () => {
-      const control = new FormControl('');
+      const control = new FormControl<any>('');
       expect(control.touched).toBe(false);
       control.markAllAsTouched();
       expect(control.touched).toBe(true);
@@ -39,7 +39,7 @@ describe('FormControl', () => {
 
   describe('boxed values', () => {
     it('should support valid boxed values on creation', () => {
-      const c = new FormControl({value: 'some val', disabled: true}, null!, null!);
+      const c = new FormControl<any>({value: 'some val', disabled: true}, null!, null!);
       expect(c.disabled).toBe(true);
       expect(c.value).toBe('some val');
       expect(c.status).toBe('DISABLED');
@@ -47,26 +47,26 @@ describe('FormControl', () => {
 
     it('should not treat objects as boxed values when `disabled` field is present, but `value` is missing',
        () => {
-         const c = new FormControl({disabled: true});
+         const c = new FormControl<any>({disabled: true});
          expect(c.value).toEqual({disabled: true});
          expect(c.disabled).toBe(false);
        });
 
     it('should honor boxed value with disabled control when validating', () => {
-      const c = new FormControl({value: '', disabled: true}, Validators.required);
+      const c = new FormControl<any>({value: '', disabled: true}, Validators.required);
       expect(c.disabled).toBe(true);
       expect(c.valid).toBe(false);
       expect(c.status).toBe('DISABLED');
     });
 
     it('should not treat objects as boxed values if they have more than two props', () => {
-      const c = new FormControl({value: '', disabled: true, test: 'test'}, null!, null!);
+      const c = new FormControl<any>({value: '', disabled: true, test: 'test'}, null!, null!);
       expect(c.value).toEqual({value: '', disabled: true, test: 'test'});
       expect(c.disabled).toBe(false);
     });
 
     it('should not treat objects as boxed values if disabled is missing', () => {
-      const c = new FormControl({value: '', test: 'test'}, null!, null!);
+      const c = new FormControl<any>({value: '', test: 'test'}, null!, null!);
       expect(c.value).toEqual({value: '', test: 'test'});
       expect(c.disabled).toBe(false);
     });
@@ -74,40 +74,41 @@ describe('FormControl', () => {
 
   describe('updateOn', () => {
     it('should default to on change', () => {
-      const c = new FormControl('');
+      const c = new FormControl<any>('');
       expect(c.updateOn).toEqual('change');
     });
 
     it('should default to on change with an options obj', () => {
-      const c = new FormControl('', {validators: Validators.required});
+      const c = new FormControl<any>('', {validators: Validators.required});
       expect(c.updateOn).toEqual('change');
     });
 
     it('should set updateOn when updating on blur', () => {
-      const c = new FormControl('', {updateOn: 'blur'});
+      const c = new FormControl<any>('', {updateOn: 'blur'});
       expect(c.updateOn).toEqual('blur');
     });
 
     describe('in groups and arrays', () => {
       it('should default to group updateOn when not set in control', () => {
-        const g =
-            new FormGroup({one: new FormControl(), two: new FormControl()}, {updateOn: 'blur'});
+        const g = new FormGroup<any>(
+            {one: new FormControl<any>(), two: new FormControl<any>()}, {updateOn: 'blur'});
 
         expect(g.get('one')!.updateOn).toEqual('blur');
         expect(g.get('two')!.updateOn).toEqual('blur');
       });
 
       it('should default to array updateOn when not set in control', () => {
-        const a = new FormArray([new FormControl(), new FormControl()], {updateOn: 'blur'});
+        const a =
+            new FormArray([new FormControl<any>(), new FormControl<any>()], {updateOn: 'blur'});
 
         expect(a.get([0])!.updateOn).toEqual('blur');
         expect(a.get([1])!.updateOn).toEqual('blur');
       });
 
       it('should set updateOn with nested groups', () => {
-        const g = new FormGroup(
+        const g = new FormGroup<any>(
             {
-              group: new FormGroup({one: new FormControl(), two: new FormControl()}),
+              group: new FormGroup<any>({one: new FormControl<any>(), two: new FormControl<any>()}),
             },
             {updateOn: 'blur'});
 
@@ -117,9 +118,9 @@ describe('FormControl', () => {
       });
 
       it('should set updateOn with nested arrays', () => {
-        const g = new FormGroup(
+        const g = new FormGroup<any>(
             {
-              arr: new FormArray([new FormControl(), new FormControl()]),
+              arr: new FormArray([new FormControl<any>(), new FormControl<any>()]),
             },
             {updateOn: 'blur'});
 
@@ -129,8 +130,8 @@ describe('FormControl', () => {
       });
 
       it('should allow control updateOn to override group updateOn', () => {
-        const g = new FormGroup(
-            {one: new FormControl('', {updateOn: 'change'}), two: new FormControl()},
+        const g = new FormGroup<any>(
+            {one: new FormControl<any>('', {updateOn: 'change'}), two: new FormControl<any>()},
             {updateOn: 'blur'});
 
         expect(g.get('one')!.updateOn).toEqual('change');
@@ -138,12 +139,12 @@ describe('FormControl', () => {
       });
 
       it('should set updateOn with complex setup', () => {
-        const g = new FormGroup({
-          group: new FormGroup(
-              {one: new FormControl('', {updateOn: 'change'}), two: new FormControl()},
+        const g = new FormGroup<any>({
+          group: new FormGroup<any>(
+              {one: new FormControl<any>('', {updateOn: 'change'}), two: new FormControl<any>()},
               {updateOn: 'blur'}),
-          groupTwo: new FormGroup({one: new FormControl()}, {updateOn: 'submit'}),
-          three: new FormControl()
+          groupTwo: new FormGroup<any>({one: new FormControl<any>()}, {updateOn: 'submit'}),
+          three: new FormControl<any>()
         });
 
         expect(g.get('group.one')!.updateOn).toEqual('change');
@@ -156,18 +157,18 @@ describe('FormControl', () => {
 
   describe('validator', () => {
     it('should run validator with the initial value', () => {
-      const c = new FormControl('value', Validators.required);
+      const c = new FormControl<any>('value', Validators.required);
       expect(c.valid).toEqual(true);
     });
 
     it('should rerun the validator when the value changes', () => {
-      const c = new FormControl('value', Validators.required);
+      const c = new FormControl<any>('value', Validators.required);
       c.setValue(null);
       expect(c.valid).toEqual(false);
     });
 
     it('should support arrays of validator functions if passed', () => {
-      const c = new FormControl('value', [Validators.required, Validators.minLength(3)]);
+      const c = new FormControl<any>('value', [Validators.required, Validators.minLength(3)]);
       c.setValue('a');
       expect(c.valid).toEqual(false);
 
@@ -176,7 +177,7 @@ describe('FormControl', () => {
     });
 
     it('should support single validator from options obj', () => {
-      const c = new FormControl(null, {validators: Validators.required});
+      const c = new FormControl<any>(null, {validators: Validators.required});
       expect(c.valid).toEqual(false);
       expect(c.errors).toEqual({required: true});
 
@@ -185,7 +186,8 @@ describe('FormControl', () => {
     });
 
     it('should support multiple validators from options obj', () => {
-      const c = new FormControl(null, {validators: [Validators.required, Validators.minLength(3)]});
+      const c =
+          new FormControl<any>(null, {validators: [Validators.required, Validators.minLength(3)]});
       expect(c.valid).toEqual(false);
       expect(c.errors).toEqual({required: true});
 
@@ -198,22 +200,22 @@ describe('FormControl', () => {
     });
 
     it('should support a null validators value', () => {
-      const c = new FormControl(null, {validators: null});
+      const c = new FormControl<any>(null, {validators: null});
       expect(c.valid).toEqual(true);
     });
 
     it('should support an empty options obj', () => {
-      const c = new FormControl(null, {});
+      const c = new FormControl<any>(null, {});
       expect(c.valid).toEqual(true);
     });
 
     it('should return errors', () => {
-      const c = new FormControl(null, Validators.required);
+      const c = new FormControl<any>(null, Validators.required);
       expect(c.errors).toEqual({'required': true});
     });
 
     it('should set single validator', () => {
-      const c = new FormControl(null);
+      const c = new FormControl<any>(null);
       expect(c.valid).toEqual(true);
 
       c.setValidators(Validators.required);
@@ -226,7 +228,7 @@ describe('FormControl', () => {
     });
 
     it('should set multiple validators from array', () => {
-      const c = new FormControl('');
+      const c = new FormControl<any>('');
       expect(c.valid).toEqual(true);
 
       c.setValidators([Validators.minLength(5), Validators.required]);
@@ -242,7 +244,7 @@ describe('FormControl', () => {
     });
 
     it('should override validators using `setValidators` function', () => {
-      const c = new FormControl('');
+      const c = new FormControl<any>('');
       expect(c.valid).toEqual(true);
 
       c.setValidators([Validators.minLength(5), Validators.required]);
@@ -267,7 +269,7 @@ describe('FormControl', () => {
     });
 
     it('should override validators by setting `control.validator` field value', () => {
-      const c = new FormControl('');
+      const c = new FormControl<any>('');
       expect(c.valid).toEqual(true);
 
       // Define new set of validators, overriding previously applied ones.
@@ -293,7 +295,7 @@ describe('FormControl', () => {
     });
 
     it('should clear validators', () => {
-      const c = new FormControl('', Validators.required);
+      const c = new FormControl<any>('', Validators.required);
       expect(c.valid).toEqual(false);
 
       c.clearValidators();
@@ -304,7 +306,7 @@ describe('FormControl', () => {
     });
 
     it('should add after clearing', () => {
-      const c = new FormControl('', Validators.required);
+      const c = new FormControl<any>('', Validators.required);
       expect(c.valid).toEqual(false);
 
       c.clearValidators();
@@ -317,7 +319,7 @@ describe('FormControl', () => {
 
   describe('asyncValidator', () => {
     it('should run validator with the initial value', fakeAsync(() => {
-         const c = new FormControl('value', null!, asyncValidator('expected'));
+         const c = new FormControl<any>('value', null!, asyncValidator('expected'));
          tick();
 
          expect(c.valid).toEqual(false);
@@ -325,7 +327,7 @@ describe('FormControl', () => {
        }));
 
     it('should support validators returning observables', fakeAsync(() => {
-         const c = new FormControl('value', null!, asyncValidatorReturningObservable);
+         const c = new FormControl<any>('value', null!, asyncValidatorReturningObservable);
          tick();
 
          expect(c.valid).toEqual(false);
@@ -333,7 +335,7 @@ describe('FormControl', () => {
        }));
 
     it('should rerun the validator when the value changes', fakeAsync(() => {
-         const c = new FormControl('value', null!, asyncValidator('expected'));
+         const c = new FormControl<any>('value', null!, asyncValidator('expected'));
 
          c.setValue('expected');
          tick();
@@ -342,7 +344,7 @@ describe('FormControl', () => {
        }));
 
     it('should run the async validator only when the sync validator passes', fakeAsync(() => {
-         const c = new FormControl('', Validators.required, asyncValidator('expected'));
+         const c = new FormControl<any>('', Validators.required, asyncValidator('expected'));
          tick();
 
          expect(c.errors).toEqual({'required': true});
@@ -354,7 +356,7 @@ describe('FormControl', () => {
        }));
 
     it('should mark the control as pending while running the async validation', fakeAsync(() => {
-         const c = new FormControl('', null!, asyncValidator('expected'));
+         const c = new FormControl<any>('', null!, asyncValidator('expected'));
 
          expect(c.pending).toEqual(true);
 
@@ -364,8 +366,8 @@ describe('FormControl', () => {
        }));
 
     it('should only use the latest async validation run', fakeAsync(() => {
-         const c =
-             new FormControl('', null!, asyncValidator('expected', {'long': 200, 'expected': 100}));
+         const c = new FormControl<any>(
+             '', null!, asyncValidator('expected', {'long': 200, 'expected': 100}));
 
          c.setValue('long');
          c.setValue('expected');
@@ -376,8 +378,8 @@ describe('FormControl', () => {
        }));
 
     it('should support arrays of async validator functions if passed', fakeAsync(() => {
-         const c =
-             new FormControl('value', null!, [asyncValidator('expected'), otherAsyncValidator]);
+         const c = new FormControl<any>(
+             'value', null!, [asyncValidator('expected'), otherAsyncValidator]);
          tick();
 
          expect(c.errors).toEqual({'async': true, 'other': true});
@@ -385,7 +387,7 @@ describe('FormControl', () => {
 
 
     it('should support a single async validator from options obj', fakeAsync(() => {
-         const c = new FormControl('value', {asyncValidators: asyncValidator('expected')});
+         const c = new FormControl<any>('value', {asyncValidators: asyncValidator('expected')});
          expect(c.pending).toEqual(true);
          tick();
 
@@ -394,7 +396,7 @@ describe('FormControl', () => {
        }));
 
     it('should support multiple async validators from options obj', fakeAsync(() => {
-         const c = new FormControl(
+         const c = new FormControl<any>(
              'value', {asyncValidators: [asyncValidator('expected'), otherAsyncValidator]});
          expect(c.pending).toEqual(true);
          tick();
@@ -404,7 +406,7 @@ describe('FormControl', () => {
        }));
 
     it('should support a mix of validators from options obj', fakeAsync(() => {
-         const c = new FormControl(
+         const c = new FormControl<any>(
              '', {validators: Validators.required, asyncValidators: asyncValidator('expected')});
          tick();
          expect(c.errors).toEqual({required: true});
@@ -418,7 +420,7 @@ describe('FormControl', () => {
        }));
 
     it('should add single async validator', fakeAsync(() => {
-         const c = new FormControl('value', null!);
+         const c = new FormControl<any>('value', null!);
 
          c.setAsyncValidators(asyncValidator('expected'));
          expect(c.asyncValidator).not.toEqual(null);
@@ -430,7 +432,7 @@ describe('FormControl', () => {
        }));
 
     it('should add async validator from array', fakeAsync(() => {
-         const c = new FormControl('value', null!);
+         const c = new FormControl<any>('value', null!);
 
          c.setAsyncValidators([asyncValidator('expected')]);
          expect(c.asyncValidator).not.toEqual(null);
@@ -442,7 +444,7 @@ describe('FormControl', () => {
        }));
 
     it('should override validators using `setAsyncValidators` function', fakeAsync(() => {
-         const c = new FormControl('');
+         const c = new FormControl<any>('');
          expect(c.valid).toEqual(true);
 
          c.setAsyncValidators([asyncValidator('expected')]);
@@ -469,7 +471,7 @@ describe('FormControl', () => {
 
     it('should override validators by setting `control.asyncValidator` field value',
        fakeAsync(() => {
-         const c = new FormControl('');
+         const c = new FormControl<any>('');
          expect(c.valid).toEqual(true);
 
          c.asyncValidator = Validators.composeAsync([asyncValidator('expected')]);
@@ -495,7 +497,7 @@ describe('FormControl', () => {
        }));
 
     it('should clear async validators', fakeAsync(() => {
-         const c = new FormControl('value', [asyncValidator('expected'), otherAsyncValidator]);
+         const c = new FormControl<any>('value', [asyncValidator('expected'), otherAsyncValidator]);
 
          c.clearValidators();
 
@@ -504,7 +506,7 @@ describe('FormControl', () => {
 
     it('should not change validity state if control is disabled while async validating',
        fakeAsync(() => {
-         const c = new FormControl('value', [asyncValidator('expected')]);
+         const c = new FormControl<any>('value', [asyncValidator('expected')]);
          c.disable();
          tick();
          expect(c.status).toEqual('DISABLED');
@@ -513,12 +515,12 @@ describe('FormControl', () => {
 
   describe('dirty', () => {
     it('should be false after creating a control', () => {
-      const c = new FormControl('value');
+      const c = new FormControl<any>('value');
       expect(c.dirty).toEqual(false);
     });
 
     it('should be true after changing the value of the control', () => {
-      const c = new FormControl('value');
+      const c = new FormControl<any>('value');
       c.markAsDirty();
       expect(c.dirty).toEqual(true);
     });
@@ -526,22 +528,22 @@ describe('FormControl', () => {
 
   describe('touched', () => {
     it('should be false after creating a control', () => {
-      const c = new FormControl('value');
+      const c = new FormControl<any>('value');
       expect(c.touched).toEqual(false);
     });
 
     it('should be true after markAsTouched runs', () => {
-      const c = new FormControl('value');
+      const c = new FormControl<any>('value');
       c.markAsTouched();
       expect(c.touched).toEqual(true);
     });
   });
 
   describe('setValue', () => {
-    let g: FormGroup, c: FormControl;
+    let g: FormGroup<any>, c: FormControl<any>;
     beforeEach(() => {
-      c = new FormControl('oldValue');
-      g = new FormGroup({'one': c});
+      c = new FormControl<any>('oldValue');
+      g = new FormGroup<any>({'one': c});
     });
 
     it('should set the value of the control', () => {
@@ -596,7 +598,7 @@ describe('FormControl', () => {
        }));
 
     it('should work on a disabled control', () => {
-      g.addControl('two', new FormControl('two'));
+      g.addControl('two', new FormControl<any>('two'));
       c.disable();
       c.setValue('new value');
       expect(c.value).toEqual('new value');
@@ -605,10 +607,10 @@ describe('FormControl', () => {
   });
 
   describe('patchValue', () => {
-    let g: FormGroup, c: FormControl;
+    let g: FormGroup<any>, c: FormControl<any>;
     beforeEach(() => {
-      c = new FormControl('oldValue');
-      g = new FormGroup({'one': c});
+      c = new FormControl<any>('oldValue');
+      g = new FormGroup<any>({'one': c});
     });
 
     it('should set the value of the control', () => {
@@ -664,7 +666,7 @@ describe('FormControl', () => {
        }));
 
     it('should patch value on a disabled control', () => {
-      g.addControl('two', new FormControl('two'));
+      g.addControl('two', new FormControl<any>('two'));
       c.disable();
 
       c.patchValue('new value');
@@ -674,10 +676,10 @@ describe('FormControl', () => {
   });
 
   describe('reset()', () => {
-    let c: FormControl;
+    let c: FormControl<any>;
 
     beforeEach(() => {
-      c = new FormControl('initial value');
+      c = new FormControl<any>('initial value');
     });
 
     it('should reset to a specific value if passed', () => {
@@ -689,7 +691,7 @@ describe('FormControl', () => {
     });
 
     it('should not set the parent when explicitly specified', () => {
-      const g = new FormGroup({'one': c});
+      const g = new FormGroup<any>({'one': c});
       c.patchValue('newValue', {onlySelf: true});
       expect(g.value).toEqual({'one': 'initial value'});
     });
@@ -711,7 +713,7 @@ describe('FormControl', () => {
     });
 
     it('should update the value of any parent controls with passed value', () => {
-      const g = new FormGroup({'one': c});
+      const g = new FormGroup<any>({'one': c});
       c.setValue('new value');
       expect(g.value).toEqual({'one': 'new value'});
 
@@ -720,7 +722,7 @@ describe('FormControl', () => {
     });
 
     it('should update the value of any parent controls with null value', () => {
-      const g = new FormGroup({'one': c});
+      const g = new FormGroup<any>({'one': c});
       c.setValue('new value');
       expect(g.value).toEqual({'one': 'new value'});
 
@@ -737,7 +739,7 @@ describe('FormControl', () => {
     });
 
     it('should set the parent pristine state if all pristine', () => {
-      const g = new FormGroup({'one': c});
+      const g = new FormGroup<any>({'one': c});
       c.markAsDirty();
       expect(g.pristine).toBe(false);
 
@@ -746,8 +748,8 @@ describe('FormControl', () => {
     });
 
     it('should not set the parent pristine state if it has other dirty controls', () => {
-      const c2 = new FormControl('two');
-      const g = new FormGroup({'one': c, 'two': c2});
+      const c2 = new FormControl<any>('two');
+      const g = new FormGroup<any>({'one': c, 'two': c2});
       c.markAsDirty();
       c2.markAsDirty();
 
@@ -764,7 +766,7 @@ describe('FormControl', () => {
     });
 
     it('should set the parent untouched state if all untouched', () => {
-      const g = new FormGroup({'one': c});
+      const g = new FormGroup<any>({'one': c});
       c.markAsTouched();
       expect(g.untouched).toBe(false);
 
@@ -773,8 +775,8 @@ describe('FormControl', () => {
     });
 
     it('should not set the parent untouched state if other touched controls', () => {
-      const c2 = new FormControl('two');
-      const g = new FormGroup({'one': c, 'two': c2});
+      const c2 = new FormControl<any>('two');
+      const g = new FormGroup<any>({'one': c, 'two': c2});
       c.markAsTouched();
       c2.markAsTouched();
 
@@ -797,11 +799,11 @@ describe('FormControl', () => {
     });
 
     describe('reset() events', () => {
-      let g: FormGroup, c2: FormControl, logger: any[];
+      let g: FormGroup<any>, c2: FormControl<any>, logger: any[];
 
       beforeEach(() => {
-        c2 = new FormControl('two');
-        g = new FormGroup({'one': c, 'two': c2});
+        c2 = new FormControl<any>('two');
+        g = new FormGroup<any>({'one': c, 'two': c2});
         logger = [];
       });
 
@@ -851,10 +853,10 @@ describe('FormControl', () => {
   });
 
   describe('valueChanges & statusChanges', () => {
-    let c: FormControl;
+    let c: FormControl<any>;
 
     beforeEach(() => {
-      c = new FormControl('old', Validators.required);
+      c = new FormControl<any>('old', Validators.required);
     });
 
     it('should fire an event after the value has been updated',
@@ -882,7 +884,7 @@ describe('FormControl', () => {
        }));
 
     it('should fire an event after the status has been updated to pending', fakeAsync(() => {
-         const c = new FormControl('old', Validators.required, asyncValidator('expected'));
+         const c = new FormControl<any>('old', Validators.required, asyncValidator('expected'));
 
          const log: any[] /** TODO #9100 */ = [];
          c.valueChanges.subscribe({next: (value: any) => log.push(`value: '${value}'`)});
@@ -936,7 +938,7 @@ describe('FormControl', () => {
 
   describe('setErrors', () => {
     it('should set errors on a control', () => {
-      const c = new FormControl('someValue');
+      const c = new FormControl<any>('someValue');
 
       c.setErrors({'someError': true});
 
@@ -945,7 +947,7 @@ describe('FormControl', () => {
     });
 
     it('should reset the errors and validity when the value changes', () => {
-      const c = new FormControl('someValue', Validators.required);
+      const c = new FormControl<any>('someValue', Validators.required);
 
       c.setErrors({'someError': true});
       c.setValue('');
@@ -954,8 +956,8 @@ describe('FormControl', () => {
     });
 
     it('should update the parent group\'s validity', () => {
-      const c = new FormControl('someValue');
-      const g = new FormGroup({'one': c});
+      const c = new FormControl<any>('someValue');
+      const g = new FormGroup<any>({'one': c});
 
       expect(g.valid).toEqual(true);
 
@@ -965,8 +967,8 @@ describe('FormControl', () => {
     });
 
     it('should not reset parent\'s errors', () => {
-      const c = new FormControl('someValue');
-      const g = new FormGroup({'one': c});
+      const c = new FormControl<any>('someValue');
+      const g = new FormGroup<any>({'one': c});
 
       g.setErrors({'someGroupError': true});
       c.setErrors({'someError': true});
@@ -975,8 +977,8 @@ describe('FormControl', () => {
     });
 
     it('should reset errors when updating a value', () => {
-      const c = new FormControl('oldValue');
-      const g = new FormGroup({'one': c});
+      const c = new FormControl<any>('oldValue');
+      const g = new FormGroup<any>({'one': c});
 
       g.setErrors({'someGroupError': true});
       c.setErrors({'someError': true});
@@ -990,7 +992,7 @@ describe('FormControl', () => {
 
   describe('disable() & enable()', () => {
     it('should mark the control as disabled', () => {
-      const c = new FormControl(null);
+      const c = new FormControl<any>(null);
       expect(c.disabled).toBe(false);
       expect(c.valid).toBe(true);
 
@@ -1004,7 +1006,7 @@ describe('FormControl', () => {
     });
 
     it('should set the control status as disabled', () => {
-      const c = new FormControl(null);
+      const c = new FormControl<any>(null);
       expect(c.status).toEqual('VALID');
 
       c.disable();
@@ -1015,7 +1017,7 @@ describe('FormControl', () => {
     });
 
     it('should retain the original value when disabled', () => {
-      const c = new FormControl('some value');
+      const c = new FormControl<any>('some value');
       expect(c.value).toEqual('some value');
 
       c.disable();
@@ -1026,8 +1028,8 @@ describe('FormControl', () => {
     });
 
     it('should keep the disabled control in the group, but return false for contains()', () => {
-      const c = new FormControl('');
-      const g = new FormGroup({'one': c});
+      const c = new FormControl<any>('');
+      const g = new FormGroup<any>({'one': c});
 
       expect(g.get('one')).toBeDefined();
       expect(g.contains('one')).toBe(true);
@@ -1038,9 +1040,9 @@ describe('FormControl', () => {
     });
 
     it('should mark the parent group disabled if all controls are disabled', () => {
-      const c = new FormControl();
-      const c2 = new FormControl();
-      const g = new FormGroup({'one': c, 'two': c2});
+      const c = new FormControl<any>();
+      const c2 = new FormControl<any>();
+      const g = new FormGroup<any>({'one': c, 'two': c2});
       expect(g.enabled).toBe(true);
 
       c.disable();
@@ -1054,9 +1056,9 @@ describe('FormControl', () => {
     });
 
     it('should update the parent group value when child control status changes', () => {
-      const c = new FormControl('one');
-      const c2 = new FormControl('two');
-      const g = new FormGroup({'one': c, 'two': c2});
+      const c = new FormControl<any>('one');
+      const c2 = new FormControl<any>('two');
+      const g = new FormGroup<any>({'one': c, 'two': c2});
       expect(g.value).toEqual({'one': 'one', 'two': 'two'});
 
       c.disable();
@@ -1070,8 +1072,8 @@ describe('FormControl', () => {
     });
 
     it('should mark the parent array disabled if all controls are disabled', () => {
-      const c = new FormControl();
-      const c2 = new FormControl();
+      const c = new FormControl<any>();
+      const c2 = new FormControl<any>();
       const a = new FormArray([c, c2]);
       expect(a.enabled).toBe(true);
 
@@ -1086,8 +1088,8 @@ describe('FormControl', () => {
     });
 
     it('should update the parent array value when child control status changes', () => {
-      const c = new FormControl('one');
-      const c2 = new FormControl('two');
+      const c = new FormControl<any>('one');
+      const c2 = new FormControl<any>('two');
       const a = new FormArray([c, c2]);
       expect(a.value).toEqual(['one', 'two']);
 
@@ -1102,8 +1104,8 @@ describe('FormControl', () => {
     });
 
     it('should ignore disabled array controls when determining dirtiness', () => {
-      const c = new FormControl('one');
-      const c2 = new FormControl('two');
+      const c = new FormControl<any>('one');
+      const c2 = new FormControl<any>('two');
       const a = new FormArray([c, c2]);
       c.markAsDirty();
       expect(a.dirty).toBe(true);
@@ -1117,8 +1119,8 @@ describe('FormControl', () => {
     });
 
     it('should not make a dirty array not dirty when disabling controls', () => {
-      const c = new FormControl('one');
-      const c2 = new FormControl('two');
+      const c = new FormControl<any>('one');
+      const c2 = new FormControl<any>('two');
       const a = new FormArray([c, c2]);
 
       a.markAsDirty();
@@ -1133,9 +1135,9 @@ describe('FormControl', () => {
     });
 
     it('should ignore disabled controls in validation', () => {
-      const c = new FormControl(null, Validators.required);
-      const c2 = new FormControl(null);
-      const g = new FormGroup({one: c, two: c2});
+      const c = new FormControl<any>(null, Validators.required);
+      const c2 = new FormControl<any>(null);
+      const g = new FormGroup<any>({one: c, two: c2});
       expect(g.valid).toBe(false);
 
       c.disable();
@@ -1146,9 +1148,9 @@ describe('FormControl', () => {
     });
 
     it('should ignore disabled controls when serializing value in a group', () => {
-      const c = new FormControl('one');
-      const c2 = new FormControl('two');
-      const g = new FormGroup({one: c, two: c2});
+      const c = new FormControl<any>('one');
+      const c2 = new FormControl<any>('two');
+      const g = new FormGroup<any>({one: c, two: c2});
       expect(g.value).toEqual({one: 'one', two: 'two'});
 
       c.disable();
@@ -1159,8 +1161,8 @@ describe('FormControl', () => {
     });
 
     it('should ignore disabled controls when serializing value in an array', () => {
-      const c = new FormControl('one');
-      const c2 = new FormControl('two');
+      const c = new FormControl<any>('one');
+      const c2 = new FormControl<any>('two');
       const a = new FormArray([c, c2]);
       expect(a.value).toEqual(['one', 'two']);
 
@@ -1172,9 +1174,9 @@ describe('FormControl', () => {
     });
 
     it('should ignore disabled controls when determining dirtiness', () => {
-      const c = new FormControl('one');
-      const c2 = new FormControl('two');
-      const g = new FormGroup({one: c, two: c2});
+      const c = new FormControl<any>('one');
+      const c2 = new FormControl<any>('two');
+      const g = new FormGroup<any>({one: c, two: c2});
       c.markAsDirty();
       expect(g.dirty).toBe(true);
 
@@ -1187,9 +1189,9 @@ describe('FormControl', () => {
     });
 
     it('should not make a dirty group not dirty when disabling controls', () => {
-      const c = new FormControl('one');
-      const c2 = new FormControl('two');
-      const g = new FormGroup({one: c, two: c2});
+      const c = new FormControl<any>('one');
+      const c2 = new FormControl<any>('two');
+      const g = new FormGroup<any>({one: c, two: c2});
 
       g.markAsDirty();
       expect(g.dirty).toBe(true);
@@ -1203,9 +1205,9 @@ describe('FormControl', () => {
     });
 
     it('should ignore disabled controls when determining touched state', () => {
-      const c = new FormControl('one');
-      const c2 = new FormControl('two');
-      const g = new FormGroup({one: c, two: c2});
+      const c = new FormControl<any>('one');
+      const c2 = new FormControl<any>('two');
+      const g = new FormGroup<any>({one: c, two: c2});
       c.markAsTouched();
       expect(g.touched).toBe(true);
 
@@ -1219,7 +1221,7 @@ describe('FormControl', () => {
 
     it('should not run validators on disabled controls', () => {
       const validator = jasmine.createSpy('validator');
-      const c = new FormControl('', validator);
+      const c = new FormControl<any>('', validator);
       expect(validator.calls.count()).toEqual(1);
 
       c.disable();
@@ -1234,7 +1236,7 @@ describe('FormControl', () => {
 
     describe('disabled errors', () => {
       it('should clear out the errors when disabled', () => {
-        const c = new FormControl('', Validators.required);
+        const c = new FormControl<any>('', Validators.required);
         expect(c.errors).toEqual({required: true});
 
         c.disable();
@@ -1245,7 +1247,7 @@ describe('FormControl', () => {
       });
 
       it('should clear out async errors when disabled', fakeAsync(() => {
-           const c = new FormControl('', null!, asyncValidator('expected'));
+           const c = new FormControl<any>('', null!, asyncValidator('expected'));
            tick();
            expect(c.errors).toEqual({'async': true});
 
@@ -1260,13 +1262,13 @@ describe('FormControl', () => {
 
     describe('disabled events', () => {
       let logger: string[];
-      let c: FormControl;
-      let g: FormGroup;
+      let c: FormControl<any>;
+      let g: FormGroup<any>;
 
       beforeEach(() => {
         logger = [];
-        c = new FormControl('', Validators.required);
-        g = new FormGroup({one: c});
+        c = new FormControl<any>('', Validators.required);
+        g = new FormGroup<any>({one: c});
       });
 
       it('should emit a statusChange event when disabled status changes', () => {
@@ -1288,7 +1290,7 @@ describe('FormControl', () => {
       });
 
       it('should throw when sync validator passed into async validator param', () => {
-        const fn = () => new FormControl('', syncValidator, syncValidator);
+        const fn = () => new FormControl<any>('', syncValidator, syncValidator);
         // test for the specific error since without the error check it would still throw an error
         // but
         // not a meaningful one
@@ -1317,10 +1319,10 @@ describe('FormControl', () => {
     });
   });
   describe('pending', () => {
-    let c: FormControl;
+    let c: FormControl<any>;
 
     beforeEach(() => {
-      c = new FormControl('value');
+      c = new FormControl<any>('value');
     });
 
     it('should be false after creating a control', () => {

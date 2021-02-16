@@ -262,8 +262,9 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
       it('should strip named controls that are not found', () => {
         const fixture = initTest(NestedFormGroupComp, LoginIsEmptyValidator);
-        const form = new FormGroup({
-          'signin': new FormGroup({'login': new FormControl(''), 'password': new FormControl('')})
+        const form = new FormGroup<any>({
+          'signin':
+              new FormGroup<any>({'login': new FormControl(''), 'password': new FormControl('')})
         });
         fixture.componentInstance.form = form;
         fixture.detectChanges();
@@ -1092,8 +1093,8 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
 
         it('should set initial value and validity on init', () => {
           const fixture = initTest(FormControlComp);
-          const control =
-              new FormControl('Nancy', {validators: Validators.maxLength(3), updateOn: 'blur'});
+          const control = new FormControl<string>(
+              'Nancy', {validators: Validators.maxLength(3), updateOn: 'blur'});
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
@@ -1935,7 +1936,7 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
     describe('validations', () => {
       it('required validator should validate checkbox', () => {
         const fixture = initTest(FormControlCheckboxRequiredValidator);
-        const control = new FormControl(false, Validators.requiredTrue);
+        const control = new FormControl<boolean>(false, Validators.requiredTrue);
         fixture.componentInstance.control = control;
         fixture.detectChanges();
 

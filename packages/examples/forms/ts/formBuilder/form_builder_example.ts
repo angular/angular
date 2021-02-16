@@ -31,9 +31,9 @@ export class FormBuilderComp {
   form: FormGroup;
 
   constructor(@Inject(FormBuilder) fb: FormBuilder) {
-    this.form = fb.group(
+    this.form = fb.group<any>(
         {
-          name: fb.group({
+          name: fb.group<any>({
             first: ['Nancy', Validators.minLength(2)],
             last: 'Drew',
           }),

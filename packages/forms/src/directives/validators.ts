@@ -9,7 +9,7 @@
 import {Directive, forwardRef, Input, OnChanges, SimpleChanges, StaticProvider} from '@angular/core';
 import {Observable} from 'rxjs';
 
-import {AbstractControl} from '../model';
+import {AbstractControl, FormControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
 
 
@@ -48,7 +48,7 @@ export type ValidationErrors = {
  *
  * @publicApi
  */
-export interface Validator {
+export interface Validator<T extends AbstractControl = any> {
   /**
    * @description
    * Method that performs synchronous validation against the provided control.
@@ -58,7 +58,7 @@ export interface Validator {
    * @returns A map of validation errors if validation fails,
    * otherwise null.
    */
-  validate(control: AbstractControl): ValidationErrors|null;
+  validate(control: T): ValidationErrors|null;
 
   /**
    * @description
@@ -280,7 +280,7 @@ export class MinValidator extends AbstractValidatorDirective implements OnChange
  *
  * @publicApi
  */
-export interface AsyncValidator extends Validator {
+export interface AsyncValidator<T extends AbstractControl = any> extends Validator<T> {
   /**
    * @description
    * Method that performs async validation against the provided control.
@@ -290,8 +290,7 @@ export interface AsyncValidator extends Validator {
    * @returns A promise or observable that resolves a map of validation errors
    * if validation fails, otherwise null.
    */
-  validate(control: AbstractControl):
-      Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
+  validate(control: T): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
 
 /**
@@ -410,7 +409,7 @@ export class CheckboxRequiredValidator extends RequiredValidator {
    * Returns the validation result if enabled, otherwise null.
    * @nodoc
    */
-  validate(control: AbstractControl): ValidationErrors|null {
+  validate(control: FormControl<boolean>): ValidationErrors|null {
     return this.required ? Validators.requiredTrue(control) : null;
   }
 }
@@ -471,7 +470,7 @@ export class EmailValidator implements Validator {
    * Returns the validation result if enabled, otherwise null.
    * @nodoc
    */
-  validate(control: AbstractControl): ValidationErrors|null {
+  validate(control: FormControl<string>): ValidationErrors|null {
     return this._enabled ? Validators.email(control) : null;
   }
 
@@ -491,8 +490,8 @@ export class EmailValidator implements Validator {
  *
  * @publicApi
  */
-export interface ValidatorFn {
-  (control: AbstractControl): ValidationErrors|null;
+export interface ValidatorFn<T extends AbstractControl = any> {
+  (control: T): ValidationErrors|null;
 }
 
 /**
@@ -502,8 +501,8 @@ export interface ValidatorFn {
  *
  * @publicApi
  */
-export interface AsyncValidatorFn {
-  (control: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
+export interface AsyncValidatorFn<T extends AbstractControl = any> {
+  (control: T): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
 
 /**

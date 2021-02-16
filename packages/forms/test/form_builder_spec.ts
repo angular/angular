@@ -92,11 +92,17 @@ describe('Form Builder', () => {
     expect(g.asyncValidator).toBe(asyncValidator);
   });
 
+  it('should create groups with children of different types when generic type is `any`', () => {
+    const g = b.group<any>({one: 'value', two: b.array<any>(['other value'])});
+
+    expect(g.value).toEqual({one: 'value', two: ['other value']});
+  });
+
   it('should create control arrays', () => {
     const c = b.control('three');
     const e = b.control(null);
     const f = b.control(undefined);
-    const a = b.array(
+    const a = b.array<any>(
         ['one', ['two', syncValidator], c, b.array(['four']), e, f], syncValidator, asyncValidator);
 
     expect(a.value).toEqual(['one', 'two', 'three', ['four'], null, null]);
