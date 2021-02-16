@@ -56,7 +56,7 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
   private _title: string;
 
   /**
-   * Title of the marker. See:
+   * Position of the marker. See:
    * developers.google.com/maps/documentation/javascript/reference/marker#MarkerOptions.position
    */
   @Input()
