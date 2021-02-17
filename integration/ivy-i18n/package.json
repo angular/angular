@@ -31,28 +31,27 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/angular/packages/animations/npm_package_archive.tar.gz",
-    "@angular/common": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/angular/packages/common/npm_package_archive.tar.gz",
-    "@angular/compiler": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/angular/packages/compiler/npm_package_archive.tar.gz",
-    "@angular/core": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/angular/packages/core/npm_package_archive.tar.gz",
-    "@angular/forms": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/angular/packages/forms/npm_package_archive.tar.gz",
-    "@angular/localize": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/angular/packages/localize/npm_package_archive.tar.gz",
-    "@angular/platform-browser": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/angular/packages/platform-browser/npm_package_archive.tar.gz",
-    "@angular/platform-browser-dynamic": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/angular/packages/platform-browser-dynamic/npm_package_archive.tar.gz",
-    "@angular/router": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/angular/packages/router/npm_package_archive.tar.gz",
-    "core-js": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/npm/core-js_archive.tar.gz",
-    "rxjs": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/npm/rxjs_archive.tar.gz",
-    "tslib": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/npm/tslib_archive.tar.gz",
-    "zone.js": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/angular/packages/zone.js/npm_package_archive.tar.gz"
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/forms": "file:../../dist/packages-dist/forms",
+    "@angular/localize": "file:../../dist/packages-dist/localize",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/router": "file:../../dist/packages-dist/router",
+    "rxjs": "file:../../node_modules/rxjs",
+    "tslib": "file:../../node_modules/tslib",
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/npm/angular-devkit_build-angular_archive.tar.gz",
-    "@angular/cli": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/npm/angular_cli_archive.tar.gz",
-    "@angular/compiler-cli": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/angular/packages/compiler-cli/npm_package_archive.tar.gz",
-    "@angular/language-service": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/angular/packages/language-service/npm_package_archive.tar.gz",
-    "@types/jasmine": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/npm/types_jasmine_archive.tar.gz",
-    "@types/jasminewd2": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/npm/types_jasminewd2_archive.tar.gz",
-    "@types/node": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/npm/types_node_archive.tar.gz",
+    "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@angular/language-service": "file:../../dist/packages-dist/language-service",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
+    "@types/node": "file:../../node_modules/@types/node",
     "codelyzer": "5.2.0",
     "jasmine-core": "3.5.0",
     "jasmine-spec-reporter": "4.2.1",
@@ -62,15 +61,15 @@
     "karma-jasmine": "2.0.1",
     "karma-jasmine-html-reporter": "1.4.2",
     "npm-run-all": "4.1.5",
-    "protractor": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/npm/protractor_archive.tar.gz",
-    "puppeteer": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/npm/puppeteer_archive.tar.gz",
+    "protractor": "file:../../node_modules/protractor",
+    "puppeteer": "file:../../node_modules/puppeteer",
     "serve": "11.2.0",
     "ts-node": "8.3.0",
     "tslint": "5.18.0",
-    "typescript": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/npm/typescript_archive.tar.gz"
+    "typescript": "file:../../node_modules/typescript"
   },
   "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
   "resolutions": {
-    "**/webdriver-manager": "file:/private/var/tmp/_bazel_pete/f9acfb7f019473a10a34c8c30adc55ea/execroot/angular/bazel-out/darwin-fastbuild/bin/integration/ivy-i18n_test.debug.sh.runfiles/npm/webdriver-manager_archive.tar.gz"
+    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
   }
 }
