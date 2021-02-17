@@ -31,9 +31,6 @@ yarn_install(
     name = "npm",
     manual_build_file_contents = npm_package_archives(),
     package_json = "//:package.json",
-    # TODO(josephperrott): Correct usage of transitive dependencies to reenable strict_visibility
-    # See: https://github.com/bazelbuild/rules_nodejs/wiki#strict_visibility-on-yarn_install-and-npm_install-now-defaults-true-2199
-    strict_visibility = False,
     yarn_lock = "//:yarn.lock",
 )
 
