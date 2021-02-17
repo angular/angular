@@ -58,9 +58,9 @@ export class MessageExtractor {
         code: false,
         ast: false
       });
-    }
-    if (this.useSourceMaps) {
-      this.updateSourceLocations(filename, sourceCode, messages);
+      if (this.useSourceMaps && messages.length > 0) {
+        this.updateSourceLocations(filename, sourceCode, messages);
+      }
     }
     return messages;
   }
