@@ -207,7 +207,7 @@
   "// 5": "Ensure a single version of webdriver-manager so it is hoisted as the integration tests depend on it being found at ../../node_modules/webdriver-manager",
   "resolutions": {
     "**/graceful-fs": "4.2.4",
-    "**/webdriver-manager": "12.1.7"
+    "**/webdriver-manager": "12.1.8"
   },
   "cldr-data-coverage": "full"
 }
