@@ -59,14 +59,6 @@ export class BrowserDetection {
     return this.isAndroid || this.isIE || this.isIOS7;
   }
 
-  // The Intl API is only natively supported in Chrome, Firefox, IE11 and Edge.
-  // This detector is needed in tests to make the difference between:
-  // 1) IE11/Edge: they have a native Intl API, but with some discrepancies
-  // 2) IE9/IE10: they use the polyfill, and so no discrepancies
-  get supportsNativeIntlApi(): boolean {
-    return !!(<any>global).Intl && (<any>global).Intl !== (<any>global).IntlPolyfill;
-  }
-
   get isChromeDesktop(): boolean {
     return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Mobile Safari') == -1 &&
         this._ua.indexOf('Edge') == -1;
