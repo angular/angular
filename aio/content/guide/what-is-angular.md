@@ -24,7 +24,7 @@ This section explains the core ideas behind Angular. Understanding these ideas c
 {@a components}
 ### Components
 
-Components are the building blocks that compose an application. A component includes a TypeScript class with a`@Component()` decorator, an HTML template, and styles. The `@Component()` decorator specifies the following Angular-specific information:
+Components are the building blocks that compose an application. A component includes a TypeScript class with a `@Component()` decorator, an HTML template, and styles. The `@Component()` decorator specifies the following Angular-specific information:
 
 * A CSS selector that defines how the component is used in a template. HTML elements in your template that match this selector become instances of the component.
 * An HTML template that instructs Angular how to render the component.
@@ -144,7 +144,7 @@ The Angular CLI is the fastest, easiest, and recommended way to develop Angular 
 </tr>
 <tr>
 <td><a href="cli/serve">ng serve</a></td>
-<td>Builds and serves your application, rebuilding on file changes</td>
+<td>Builds and serves your application, rebuilding on file changes.</td>
 </tr>
 <tr>
 <td><a href="cli/generate">ng generate</a></td>
