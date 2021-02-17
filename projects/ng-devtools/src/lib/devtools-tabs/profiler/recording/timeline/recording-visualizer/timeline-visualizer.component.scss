@@ -2,6 +2,12 @@
   height: calc(100% - 2 * 60px);
   display: block;
   overflow: auto;
+
+  ::ng-deep {
+    .as-split-gutter-icon {
+      display: none;
+    }
+  }
 }
 
 .selected-entry {
