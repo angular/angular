@@ -73,9 +73,9 @@ export class HttpUrlEncodingCodec implements HttpParameterCodec {
 function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, string[]> {
   const map = new Map<string, string[]>();
   if (rawParams.length > 0) {
-    // The `window.location.search` can be used while creating an instance of the `HttpParams` class (e.g.
-    // `new HttpParams({ fromString: window.location.search })`). The `window.location.search` may start with
-    // the `?` char, so we strip it if it's present.
+    // The `window.location.search` can be used while creating an instance of the `HttpParams` class
+    // (e.g. `new HttpParams({ fromString: window.location.search })`). The `window.location.search`
+    // may start with the `?` char, so we strip it if it's present.
     const params: string[] = rawParams.replace(/^\?/, '').split('&');
     params.forEach((param: string) => {
       const eqIdx = param.indexOf('=');
