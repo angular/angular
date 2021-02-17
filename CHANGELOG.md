@@ -1,3 +1,39 @@
+<a name="12.0.0-next.1"></a>
+# 12.0.0-next.1 (2021-02-17)
+
+
+### Bug Fixes
+
+* **compiler-cli:** `readConfiguration` existing options should override options in tsconfig ([#40694](https://github.com/angular/angular/issues/40694)) ([b7c4d07](https://github.com/angular/angular/commit/b7c4d07e81277f7aed566e443d1d4e1395c5a2f4))
+* **compiler-cli:** extend `angularCompilerOptions` in tsconfig from node ([#40694](https://github.com/angular/angular/issues/40694)) ([5eb1954](https://github.com/angular/angular/commit/5eb195416bf73f2fa59de52531724d8d19392975)), closes [#36715](https://github.com/angular/angular/issues/36715)
+
+
+### Features
+
+* **common:** support ICU standard "stand alone day of week" with `DatePipe` ([#40766](https://github.com/angular/angular/issues/40766)) ([c56ecab](https://github.com/angular/angular/commit/c56ecab515c28d2ad45c630080bfbf549675528a)), closes [#26922](https://github.com/angular/angular/issues/26922)
+* **forms:** add `emitEvent` option for AbstractControl-based class methods ([#31031](https://github.com/angular/angular/issues/31031)) ([4ec045e](https://github.com/angular/angular/commit/4ec045e12b7614b901d4ef643988b86f09dfeee5)), closes [#29662](https://github.com/angular/angular/issues/29662)
+* **platform-server:** allow shimming the global env sooner ([#40559](https://github.com/angular/angular/issues/40559)) ([43ecf8a](https://github.com/angular/angular/commit/43ecf8a77bc7e92d3c635b450de904732e938e64)), closes [#24551](https://github.com/angular/angular/issues/24551) [#39950](https://github.com/angular/angular/issues/39950) [#39950](https://github.com/angular/angular/issues/39950)
+
+
+### BREAKING CHANGES
+
+* **forms:** The `emitEvent` option was added to the following `FormArray` and `FormGroup` methods:
+
+* FormGroup.addControl
+* FormGroup.removeControl
+* FormGroup.setControl
+* FormArray.push
+* FormArray.insert
+* FormArray.removeAt
+* FormArray.setControl
+* FormArray.clear
+
+If your app has custom classes that extend `FormArray` or `FormGroup` classes and override the
+above-mentioned methods, you may need to update your implementation to take the new options into
+account and make sure that overrides are compatible from a types perspective.
+
+
+
 <a name="11.2.1"></a>
 ## 11.2.1 (2021-02-17)
 
