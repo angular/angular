@@ -1,4 +1,4 @@
-# Hooking into the component lifecycle
+# Lifecycle hooks
 
 A component instance has a lifecycle that starts when Angular instantiates the component class and renders the component view along with its child views.
 The lifecycle continues with change detection, as Angular checks to see when data-bound properties change, and updates both the view and the component instance as needed.
