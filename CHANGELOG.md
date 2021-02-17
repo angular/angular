@@ -1,3 +1,29 @@
+## 11.2.1 "lye-lie" (2021-02-17)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** destroyed items not being cleaned up correctly ([#21821](https://github.com/angular/components/issues/21821)) ([a30f2df6268ebaff639a63b512e1c2b8874cd831](https://github.com/angular/components/commit/a30f2df6268ebaff639a63b512e1c2b8874cd831)), closes [#21818](https://github.com/angular/components/issues/21818) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** avoid interfering with external click listener ([#21856](https://github.com/angular/components/issues/21856)) ([e60a02bd278025646ae4ee7e6af90c6936b7cb97](https://github.com/angular/components/commit/e60a02bd278025646ae4ee7e6af90c6936b7cb97)), closes [#21836](https://github.com/angular/components/issues/21836) |
+| bug fix |  **input:** only set as aria-invalid if the input isn't empty ([#21609](https://github.com/angular/components/issues/21609)) ([008bf7a246b20f9709c0f82dfb51c3e58a695b07](https://github.com/angular/components/commit/008bf7a246b20f9709c0f82dfb51c3e58a695b07)), closes [#18140](https://github.com/angular/components/issues/18140) |
+| bug fix |  **select:** value not updated if the same array is updated and re-assigned ([#21625](https://github.com/angular/components/issues/21625)) ([0a002e527acc05dc34e994850e75f0c49b5657b9](https://github.com/angular/components/commit/0a002e527acc05dc34e994850e75f0c49b5657b9)), closes [#21583](https://github.com/angular/components/issues/21583) |
+| bug fix |  **stepper:** don't allow focus inside a hidden element ([#21842](https://github.com/angular/components/issues/21842)) ([3f9688528d4434d767f60ce5f7579390ccbec39f](https://github.com/angular/components/commit/3f9688528d4434d767f60ce5f7579390ccbec39f)), closes [#21831](https://github.com/angular/components/issues/21831) |
+| bug fix |  **theming:** change to update comments in theming ([#21824](https://github.com/angular/components/issues/21824)) ([03386fc713f313e68fd89f01ed00764fcbaeaf2a](https://github.com/angular/components/commit/03386fc713f313e68fd89f01ed00764fcbaeaf2a)), closes [angular#21803](https://github.com/angular/issues/21803) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  correct minor typo in the code ([#21915](https://github.com/angular/components/issues/21915)) ([e1dd9f3058f6fc2f80acfc3a1c5131683ece3678](https://github.com/angular/components/commit/e1dd9f3058f6fc2f80acfc3a1c5131683ece3678)) |
+| bug fix |  correct minor typo in the code ([#21917](https://github.com/angular/components/issues/21917)) ([bd7c3519e1d5bfb8bf9bff89ad0343d178259028](https://github.com/angular/components/commit/bd7c3519e1d5bfb8bf9bff89ad0343d178259028)) |
+
+
 # 11.2.0 "gingham-grape" (2021-02-10)
 
 ### cdk
