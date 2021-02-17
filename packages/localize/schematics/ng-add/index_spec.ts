@@ -22,7 +22,7 @@ describe('ng-add schematic', () => {
       `/***************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-import 'zone.js/dist/zone';`;
+import 'zone.js';`;
   const mainServerContent = `import { enableProdMode } from '@angular/core';
 import { environment } from './environments/environment';
 if (environment.production) {
