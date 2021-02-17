@@ -22,6 +22,10 @@
     "lite-server": "2.2.2",
     "protractor": "file:../../node_modules/protractor"
   },
+  "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
+  "resolutions": {
+    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
+  },
   "scripts": {
     "test": "./test.sh"
   }
