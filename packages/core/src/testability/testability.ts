@@ -199,7 +199,7 @@ export class Testability implements PublicTestability {
     if (updateCb && !this.taskTrackingZone) {
       throw new Error(
           'Task tracking zone is required when passing an update callback to ' +
-          'whenStable(). Is "zone.js/dist/task-tracking.js" loaded?');
+          'whenStable(). Is "zone.js/plugins/task-tracking" loaded?');
     }
     // These arguments are 'Function' above to keep the public API simple.
     this.addCallback(doneCb as DoneCallback, timeout, updateCb as UpdateCallback);

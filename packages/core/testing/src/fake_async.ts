@@ -10,7 +10,7 @@ const fakeAsyncTestModule = _Zone && _Zone[_Zone.__symbol__('fakeAsyncTest')];
 
 const fakeAsyncTestModuleNotLoadedErrorMessage =
     `zone-testing.js is needed for the fakeAsync() test helper but could not be found.
-        Please make sure that your environment includes zone.js/dist/zone-testing.js`;
+        Please make sure that your environment includes zone.js/testing`;
 
 /**
  * Clears out the shared fake async zone for a test.
