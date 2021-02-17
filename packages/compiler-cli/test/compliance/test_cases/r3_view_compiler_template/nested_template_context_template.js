@@ -3,8 +3,8 @@ function MyComponent_ul_0_li_1_div_1_Template(rf, ctx) {
     const $s$ = $i0$.ɵɵgetCurrentView();
     $i0$.ɵɵelementStart(0, "div", 2);
     $i0$.ɵɵlistener("click", function MyComponent_ul_0_li_1_div_1_Template_div_click_0_listener(){
-      $i0$.ɵɵrestoreView($s$);
-      const $inner$ = ctx.$implicit;
+      const $sr$ = $i0$.ɵɵrestoreView($s$);
+      const $inner$ = $sr$.$implicit;
       const $middle$ = $i0$.ɵɵnextContext().$implicit;
       const $outer$ = $i0$.ɵɵnextContext().$implicit;
       const $myComp$ = $i0$.ɵɵnextContext();

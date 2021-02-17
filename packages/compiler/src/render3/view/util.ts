@@ -45,6 +45,9 @@ export const IMPLICIT_REFERENCE = '$implicit';
 /** Non bindable attribute name **/
 export const NON_BINDABLE_ATTR = 'ngNonBindable';
 
+/** Name for the variable keeping track of the context returned by `ɵɵrestoreView`. */
+export const RESTORED_VIEW_CONTEXT_NAME = 'restoredCtx';
+
 /**
  * Creates an allocator for a temporary variable.
  *
