@@ -66,12 +66,12 @@ export interface RouterOutletContract {
    * This is similar to `deactivate`, but the activated component should _not_ be destroyed.
    * Instead, it is returned so that it can be reattached later via the `attach` method.
    */
-  detach(): ComponentRef<any>;
+  detach(): ComponentRef<unknown>;
 
   /**
    * Called when the `RouteReuseStrategy` instructs to re-attach a previously detached subtree.
    */
-  attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;
+  attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
 }
 
 /**

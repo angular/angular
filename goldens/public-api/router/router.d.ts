@@ -456,9 +456,9 @@ export declare interface RouterOutletContract {
     component: Object | null;
     isActivated: boolean;
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
-    attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;
+    attach(ref: ComponentRef<unknown>, activatedRoute: ActivatedRoute): void;
     deactivate(): void;
-    detach(): ComponentRef<any>;
+    detach(): ComponentRef<unknown>;
 }
 
 export declare class RouterPreloader implements OnDestroy {
