@@ -12,6 +12,7 @@ import {Observable} from 'rxjs';
 import {delay} from 'rxjs/operators';
 
 import {isNode, patchMacroTask, zoneSymbol} from '../../lib/common/utils';
+import {loadFakeAsyncXHR} from '../../lib/zone-spec/fake-async-xhr';
 import {ifEnvSupports} from '../test-util';
 
 function supportNode() {
@@ -828,26 +829,41 @@ describe('FakeAsyncTestZoneSpec', () => {
     });
   });
 
-  describe(
-      'XHRs', ifEnvSupports('XMLHttpRequest', () => {
-        it('should throw an exception if an XHR is initiated in the zone', () => {
-          expect(() => {
-            fakeAsyncTestZone.run(() => {
-              let finished = false;
-              let req = new XMLHttpRequest();
+  describe('XHRs', ifEnvSupports('XMLHttpRequest', () => {
+             const xhrPatch = loadFakeAsyncXHR(typeof window === 'undefined' ? global : window);
 
-              req.onreadystatechange = () => {
-                if (req.readyState === XMLHttpRequest.DONE) {
-                  finished = true;
-                }
-              };
+             it('should get response with XMLHttpRequest', () => {
+               try {
+                 xhrPatch.fakeXHR(undefined as any);
+                 fakeAsyncTestZone.run(() => {
+                   testZoneSpec.registerNonTimerMacroTaskHandler(
+                       'XMLHttpRequest.send', (data: any, taskDone: () => void) => {
+                         setTimeout(() => {
+                           data.responseText = 'response';
+                           data.triggerEvent('load');
+                           taskDone();
+                         }, 100);
+                       });
+                   let finished = false;
+                   let req = new XMLHttpRequest();
 
-              req.open('GET', '/test', true);
-              req.send();
-            });
-          }).toThrowError('Cannot make XHRs from within a fake async test. Request URL: /test');
-        });
-      }));
+                   req.onload = () => {
+                     finished = true;
+                   };
+
+                   req.open('GET', '/test', true);
+                   req.send();
+                   expect(req.responseText as any).toEqual(undefined);
+                   expect(finished).toBe(false);
+                   testZoneSpec.tick(100);
+                   expect(req.responseText).toEqual('response');
+                   expect(finished).toBe(true);
+                 });
+               } finally {
+                 xhrPatch.restoreXHR();
+               }
+             });
+           }));
 
   describe('node process', ifEnvSupports(supportNode, () => {
              it('should be able to schedule microTask with additional arguments', () => {

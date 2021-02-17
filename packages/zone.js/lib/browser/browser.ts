@@ -91,16 +91,10 @@ Zone.__load_patch('customElements', (global: any, Zone: ZoneType, api: _ZonePriv
   patchCustomElements(global, api);
 });
 
-Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
+Zone.__load_patch('XHR', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   // Treat XMLHttpRequest as a macrotask.
+  api.patchXHR = patchXHR;
   patchXHR(global);
-
-  const XHR_TASK = zoneSymbol('xhrTask');
-  const XHR_SYNC = zoneSymbol('xhrSync');
-  const XHR_LISTENER = zoneSymbol('xhrListener');
-  const XHR_SCHEDULED = zoneSymbol('xhrScheduled');
-  const XHR_URL = zoneSymbol('xhrURL');
-  const XHR_ERROR_BEFORE_SCHEDULED = zoneSymbol('xhrErrorBeforeScheduled');
 
   interface XHROptions extends TaskData {
     target: any;
@@ -110,6 +104,13 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
   }
 
   function patchXHR(window: any) {
+    const XHR_TASK = zoneSymbol('xhrTask');
+    const XHR_SYNC = zoneSymbol('xhrSync');
+    const XHR_LISTENER = zoneSymbol('xhrListener');
+    const XHR_SCHEDULED = zoneSymbol('xhrScheduled');
+    const XHR_URL = zoneSymbol('xhrURL');
+    const XHR_ERROR_BEFORE_SCHEDULED = zoneSymbol('xhrErrorBeforeScheduled');
+
     const XMLHttpRequest = window['XMLHttpRequest'];
     if (!XMLHttpRequest) {
       // XMLHttpRequest is not available in service worker

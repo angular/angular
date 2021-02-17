@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {loadFakeAsyncXHR, supportedSources as supportedXHRSources} from './fake-async-xhr';
+
 (function(global: any) {
 interface ScheduledFunction {
   endTime: number;
@@ -319,6 +321,10 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
 
   pendingPeriodicTimers: number[] = [];
   pendingTimers: number[] = [];
+  pendingNonTimerTasks: Task[] = [];
+  supportedNonTimerTaskSources = supportedXHRSources.concat(supportedFileReaderSources);
+  onNonTimerMacroTaskHandlers:
+      {source: string, handler: (data: any, taskDone: () => void) => void}[] = [];
 
   private patchDateLocked = false;
 
@@ -416,6 +422,40 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
   private _clearInterval(id: number): void {
     FakeAsyncTestZoneSpec._removeTimer(this.pendingPeriodicTimers, id);
     this._scheduler.removeScheduledFunctionWithId(id);
+  }
+
+  private scheduleNonTimerMacroTask(task: Task) {
+    this.pendingNonTimerTasks.push(task);
+    this.handleNonTimerMacroTasks();
+  }
+
+  registerNonTimerMacroTaskHandler(
+      source: string, handler: (data: any, taskDone: () => void) => void) {
+    this.onNonTimerMacroTaskHandlers.push({source, handler});
+  }
+
+  private removeNonTimerMacroTask(task: Task) {
+    for (let i = 0; i < this.pendingNonTimerTasks.length; i++) {
+      if (this.pendingNonTimerTasks[i] === task) {
+        this.pendingNonTimerTasks.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  private handleNonTimerMacroTasks() {
+    this.onNonTimerMacroTaskHandlers.forEach(taskHandler => {
+      const pendingNonTimerTasks = this.pendingNonTimerTasks.slice();
+      pendingNonTimerTasks.forEach(task => {
+        if (task.source === taskHandler.source) {
+          const data = task.data as {done?: () => void};
+          taskHandler.handler(data, () => {
+            data.done && data.done.call(data);
+            this.removeNonTimerMacroTask(task);
+          });
+        }
+      });
+    });
   }
 
   private _resetLastErrorAndThrow(): void {
@@ -603,10 +643,6 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
                 task.invoke, task.data!['delay']!,
                 Array.prototype.slice.call((task.data as any)['args'], 2));
             break;
-          case 'XMLHttpRequest.send':
-            throw new Error(
-                'Cannot make XHRs from within a fake async test. Request URL: ' +
-                (task.data as any)['url']);
           case 'requestAnimationFrame':
           case 'webkitRequestAnimationFrame':
           case 'mozRequestAnimationFrame':
@@ -633,8 +669,13 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
                 task.data!['handleId'] = this._setTimeout(task.invoke, delay, callbackArgs);
               }
               break;
+            } else if (!!this.supportedNonTimerTaskSources.find(name => name === task.source)) {
+              task = delegate.scheduleTask(target, task);
+              this.scheduleNonTimerMacroTask(task);
+              break;
+            } else {
+              throw new Error(`${task.source} is not supported in fakeAsync().`);
             }
-            throw new Error('Unknown macroTask scheduled in fake async test: ' + task.source);
         }
         break;
       case 'eventTask':
@@ -705,6 +746,7 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
 })(typeof window === 'object' && window || typeof self === 'object' && self || global);
 
 Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
+  const xhrPatch = loadFakeAsyncXHR(global);
   const FakeAsyncTestZoneSpec = Zone && (Zone as any)['FakeAsyncTestZoneSpec'];
   type ProxyZoneSpecType = {
     setDelegate(delegateSpec: ZoneSpec): void; getDelegate(): ZoneSpec; resetDelegate(): void;
@@ -776,10 +818,12 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
         const lastProxyZoneSpec = proxyZoneSpec.getDelegate();
         proxyZoneSpec.setDelegate(_fakeAsyncTestZoneSpec);
         _fakeAsyncTestZoneSpec.lockDatePatch();
+        xhrPatch.fakeXHR(api);
         try {
           res = fn.apply(this, args);
           flushMicrotasks();
         } finally {
+          xhrPatch.restoreXHR();
           proxyZoneSpec.setDelegate(lastProxyZoneSpec);
         }
 
@@ -861,6 +905,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
   function flushMicrotasks(): void {
     _getFakeAsyncZoneSpec().flushMicrotasks();
   }
+
   (Zone as any)[api.symbol('fakeAsyncTest')] =
       {resetFakeAsyncZone, flushMicrotasks, discardPeriodicTasks, tick, flush, fakeAsync};
 }, true);

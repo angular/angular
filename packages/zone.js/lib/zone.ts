@@ -362,6 +362,7 @@ interface _ZonePrivate {
   patchCallbacks:
       (api: _ZonePrivate, target: any, targetName: string, method: string,
        callbacks: string[]) => void;
+  patchXHR: (global: any) => void;
   getGlobalObjects: () => {
     globalSources: any, zoneSymbolEventNames: any, eventNames: string[], isBrowser: boolean,
         isMix: boolean, isNode: boolean, TRUE_STR: string, FALSE_STR: string,
@@ -1428,7 +1429,8 @@ const Zone: ZoneType = (function(global: any) {
     filterProperties: () => [],
     attachOriginToPatched: () => noop,
     _redefineProperty: () => noop,
-    patchCallbacks: () => noop
+    patchCallbacks: () => noop,
+    patchXHR: () => noop
   };
   let _currentZoneFrame: _ZoneFrame = {parent: null, zone: new Zone(null, null)};
   let _currentTask: Task|null = null;
