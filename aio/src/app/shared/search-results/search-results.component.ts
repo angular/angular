@@ -30,7 +30,7 @@ export class SearchResultsComponent implements OnChanges {
 
   readonly defaultArea = 'other';
   searchState: SearchState = SearchState.InProgress;
-  readonly topLevelFolders = ['api', 'cli', 'guide', 'start', 'tutorial'];
+  readonly topLevelFolders = ['api', 'cli', 'errors', 'guide', 'start', 'tutorial'];
   searchAreas: SearchArea[] = [];
 
   ngOnChanges() {
