@@ -170,7 +170,7 @@ class SomeComponent {
         appRef.attachView(fixture.componentRef.hostView);
         appRef.tick();
         expect(fixture.componentInstance.reenterErr.message)
-            .toBe('ApplicationRef.tick is called recursively');
+            .toBe('NG0404: ApplicationRef.tick is called recursively');
       });
 
       describe('APP_BOOTSTRAP_LISTENER', () => {
@@ -208,7 +208,8 @@ class SomeComponent {
                  createRootEl();
                  expect(() => ref.bootstrap(SomeComponent))
                      .toThrowError(
-                         'Cannot bootstrap as there are still asynchronous initializers running. Bootstrap components in the `ngDoBootstrap` method of the root module.');
+                         'NG0406: Cannot bootstrap as there are still asynchronous initializers running. ' +
+                         'Bootstrap components in the `ngDoBootstrap` method of the root module.');
                })));
       });
     });
@@ -277,7 +278,8 @@ class SomeComponent {
            return defaultPlatform.bootstrapModule(EmptyModule)
                .then(() => fail('expecting error'), (error) => {
                  expect(error.message)
-                     .toEqual('No ErrorHandler. Is platform module (BrowserModule) included?');
+                     .toEqual(
+                         'NG0402: No ErrorHandler. Is platform module (BrowserModule) included?');
                });
          }));
 
@@ -303,8 +305,9 @@ class SomeComponent {
          waitForAsync(() => {
            defaultPlatform.bootstrapModule(createModule({ngDoBootstrap: false}))
                .then(() => expect(false).toBe(true), (e) => {
-                 const expectedErrMsg =
-                     `The module MyModule was bootstrapped, but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. Please define one of these.`;
+                 const expectedErrMsg = `NG0401: The module MyModule was bootstrapped, ` +
+                     `but it does not declare "@NgModule.bootstrap" components nor a "ngDoBootstrap" method. ` +
+                     `Please define one of these.`;
                  expect(e.message).toEqual(expectedErrMsg);
                  expect(mockConsole.res[0].join('#')).toEqual('ERROR#Error: ' + expectedErrMsg);
                });

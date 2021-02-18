@@ -28,6 +28,15 @@ export const enum RuntimeErrorCode {
   UNKNOWN_BINDING = '303',
   UNKNOWN_ELEMENT = '304',
 
+  // Bootstrap Errors
+  MULTIPLE_PLATFORMS_NOT_ALLOWED = '400',
+  BOOTSTRAP_DECLARATION_MISSING = '401',
+  ERROR_HANDLER_MISSING = '402',
+  PLATFORM_MISSING = '403',
+  RECURSIVE_TICK_CALL = '404',
+  PLATFORM_ALREADY_DESTROYED = '405',
+  ASYNC_INITIALIZERS_NOT_COMPLETED = '406',
+
   // Styling Errors
 
   // Declarations Errors
@@ -38,7 +47,7 @@ export const enum RuntimeErrorCode {
 }
 
 export class RuntimeError extends Error {
-  constructor(public code: RuntimeErrorCode, message: string) {
+  constructor(public code: RuntimeErrorCode, message?: string) {
     super(formatRuntimeError(code, message));
   }
 }
@@ -57,10 +66,11 @@ export const RUNTIME_ERRORS_WITH_GUIDES = new Set([
 /* tslint:enable:no-toplevel-property-access */
 
 /** Called to format a runtime error */
-export function formatRuntimeError(code: RuntimeErrorCode, message: string): string {
-  const fullCode = code ? `NG0${code}: ` : '';
+export function formatRuntimeError(code: RuntimeErrorCode, message?: string): string {
+  const fullCode = code ? `NG0${code}` : '';
 
-  let errorMessage = `${fullCode}${message}`;
+  // If the message is not provided (or it's an empty string), just output the error code.
+  let errorMessage = message ? `${fullCode}: ${message}` : fullCode;
 
   // Some runtime errors are still thrown without `ngDevMode` (for example
   // `throwProviderNotFoundError`), so we add `ngDevMode` check here to avoid pulling
