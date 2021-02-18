@@ -106,6 +106,7 @@ section#intro {
       width: 400px;
       height: 400px;
       margin-bottom: 8px;
+      max-width: none;
       padding: 0;
       filter: drop-shadow(0 2px 2px rgba($black, 0.24));
 
@@ -295,25 +296,6 @@ aio-shell {
     }
   }
 
-  &.page-home, &.page-resources, &.page-events, &.page-features {
-
-    .content img {
-      @media (max-width: 1300px) {
-        max-width: none;
-      }
-    }
-
-    .feature-section img {
-      max-width: 70px;
-    }
-
-    @media (max-width: 600px) {
-      mat-sidenav-container.sidenav-container {
-        padding-top: 0;
-      }
-    }
-  }
-
   .cta-bar .hero-cta {
     color: $blue;
   }
@@ -391,23 +373,12 @@ div[layout=row]{
   }
 
   .promo-img-container {
-
-    img {
-      max-width: 90% !important;
-    }
-
     p {
       margin: 0 20px;
     }
 
     img {
-      max-width: 90%;
-
-
-      @media (max-width: 599px) {
-        max-width: 100%;
-        float: initial !important;
-      }
+      max-width: 90% !important;
     }
   }
 }
@@ -440,9 +411,10 @@ div[layout=row]{
       display: none;
     }
   }
-}
-.page-features .marketing-banner {
-  margin-bottom: 20px;
+
+  .page-features & {
+    margin-bottom: 20px;
+  }
 }
 
 .events-container{
