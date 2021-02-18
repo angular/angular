@@ -39,13 +39,7 @@ mat-toolbar.app-toolbar {
   }
 
   // DOCS PAGES OVERRIDE: HAMBURGER
-  aio-shell.folder-api &,
-  aio-shell.folder-cli &,
-  aio-shell.folder-docs &,
-  aio-shell.folder-guide &,
-  aio-shell.folder-errors &,
-  aio-shell.folder-start &,
-  aio-shell.folder-tutorial & {
+  @include docs-pages($nestParentSelector: true) {
     @media (min-width: $showTopMenuWidth) {
       .hamburger {
         // Hamburger shown on non-marketing pages even on large screens.

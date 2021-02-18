@@ -206,18 +206,11 @@ code {
   }
 }
 
-// The following css rule adds an icon to external links in the docs area.
-// The following `folder-*` classes are applied to the `doc-viewer`component when it is displaying docs for these areas of the documentation.
-// We add the icon to all external links which are identified as absolute links (those that start with `http` or https`).
-// For more info see PR #36601
-
-.folder-api,
-.folder-cli,
-.folder-docs,
-.folder-errors,
-.folder-guide,
-.folder-start,
-.folder-tutorial {
+// The following css rule adds an icon to external links in the docs area, based on the classes that are applied to the
+// `doc-viewer` component when it is displaying docs for the different areas of the documentation.
+// We add the icon to all external links which are identified as absolute links (those that start with `http:` or https:`).
+// For more info see PR #36601.
+@include docs-pages {
   aio-doc-viewer{
     a {
       &[href^="http:"]::after,
