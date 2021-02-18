@@ -1120,10 +1120,10 @@ export class Router {
   }
 
   /**
-   * Navigates to a view using an absolute route path.
+   * Navigates to a view using a relative route path.
    *
-   * @param url An absolute path for a defined route. The function does not apply any delta to the
-   *     current URL.
+   * @param url A relative path for a defined route.
+   *
    * @param extras An object containing properties that modify the navigation strategy.
    *
    * @returns A Promise that resolves to 'true' when navigation succeeds,
@@ -1131,7 +1131,7 @@ export class Router {
    *
    * @usageNotes
    *
-   * The following calls request navigation to an absolute path.
+   * The following calls request navigation to a relative path.
    *
    * ```
    * router.navigateByUrl("/team/33/user/11");
