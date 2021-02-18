@@ -125,3 +125,60 @@
     }
   }
 }
+
+/**
+ * Define some styles for docs (i.e. non-marketing) pages.
+ *
+ * Example SCSS:
+ * ```scss
+ * .foo {
+ *   @include docsPages {
+ *     .bar {
+ *       color: orange;
+ *     }
+ *   }
+ * }
+ *
+ * .baz {
+ *   @include docsPages($nestParentSelector: true) {
+ *     .qux {
+ *       color: orange;
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * Output CSS:
+ * ```css
+ * .foo .folder-api .bar, .foo .folder-cli .bar, ... {
+ *   color: orange;
+ * }
+ *
+ * .folder-api .baz .qux, .folder-cli .baz .qux, ... {
+ *   color: orange;
+ * }
+ * ```
+ *
+ * @param {boolean} nestParentSelector - If true, the parent selector (&) is nested inside the docs pages selectors.
+ */
+@mixin docsPages($nestParentSelector: false) {
+  $selectors: (
+    '.folder-api',
+    '.folder-cli',
+    '.folder-docs',
+    '.folder-errors',
+    '.folder-guide',
+    '.folder-start',
+    '.folder-tutorial',
+  );
+
+  @if $nestParentSelector and & {
+    @at-root #{selector-nest(#{$selectors}, &)} {
+      @content;
+    }
+  } @else {
+    #{$selectors} {
+      @content;
+    }
+  }
+}
