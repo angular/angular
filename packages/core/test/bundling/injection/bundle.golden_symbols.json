@@ -48,6 +48,9 @@
     "name": "R3Injector"
   },
   {
+    "name": "RuntimeError"
+  },
+  {
     "name": "ScopedService"
   },
   {
