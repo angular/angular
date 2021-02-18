@@ -7,7 +7,7 @@
  */
 
 import {EventEmitter} from '@angular/core';
-import {Observable} from 'rxjs';
+import {Observable, Subscription} from 'rxjs';
 
 import {removeListItem} from './directives/shared';
 import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from './directives/validators';
@@ -175,7 +175,7 @@ export abstract class AbstractControl {
   _updateOn!: FormHooks;
 
   private _parent: FormGroup|FormArray|null = null;
-  private _asyncValidationSubscription: any;
+  private _asyncValidationSubscription: Subscription|null = null;
 
   /**
    * Contains the result of merging synchronous validators into a single validator function
@@ -731,7 +731,7 @@ export abstract class AbstractControl {
     this._updateValue();
 
     if (this.enabled) {
-      this._cancelExistingSubscription();
+      this._cancelRunningAsyncValidation(true /** force */);
       (this as {errors: ValidationErrors | null}).errors = this._runValidator();
       (this as {status: string}).status = this._calculateStatus();
 
@@ -747,6 +747,32 @@ export abstract class AbstractControl {
 
     if (this._parent && !opts.onlySelf) {
       this._parent.updateValueAndValidity(opts);
+    }
+  }
+
+  /**
+   * @param force Flag that determines whether running async validation should be stopped in case
+   * there are existing async validators attached to a given control.
+   * @internal
+   */
+  _cancelRunningAsyncValidation(force: boolean): void {
+    if (this._asyncValidationSubscription === null) return;
+
+    // The `_cancelRunningAsyncValidation()` method is called in 2 places:
+    // 1) when the `updateValueAndValidity()` method is called
+    // 2) when the `cleanUpValidators()` function is called
+    // The `updateValueAndValidity()` forcibly cancels the current subscription since the
+    // value has been updated and we have to run asynchronous validators again.
+    // The `cleanUpValidators()` may cancel the existing subscription when the view is removed
+    // but it doesn't pass the `force` flag, that means that the current subscription may be
+    // cancelled only if there are no asynchronous validators. This can happen when *all* async
+    // validators were added to a control by that directive and removing the directive caused async
+    // validators list to become empty.
+    if (force ||
+        (Array.isArray(this._rawAsyncValidators) && this._rawAsyncValidators.length === 0)) {
+      this._asyncValidationSubscription.unsubscribe();
+      this._asyncValidationSubscription = null;
+      this._hasOwnPendingAsyncValidator = false;
     }
   }
 
@@ -776,13 +802,6 @@ export abstract class AbstractControl {
         // necessary that we have updated the `_hasOwnPendingAsyncValidator` boolean flag first.
         this.setErrors(errors, {emitEvent});
       });
-    }
-  }
-
-  private _cancelExistingSubscription(): void {
-    if (this._asyncValidationSubscription) {
-      this._asyncValidationSubscription.unsubscribe();
-      this._hasOwnPendingAsyncValidator = false;
     }
   }
 

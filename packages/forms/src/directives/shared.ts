@@ -201,6 +201,7 @@ export function cleanUpValidators(
         if (updatedAsyncValidators.length !== asyncValidators.length) {
           isControlUpdated = true;
           control.setAsyncValidators(updatedAsyncValidators);
+          control._cancelRunningAsyncValidation(false /** force */);
         }
       }
     }

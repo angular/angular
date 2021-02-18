@@ -7,13 +7,13 @@
  */
 
 import {ɵgetDOM as getDOM} from '@angular/common';
-import {Component, Directive, forwardRef, Input, NgModule, OnDestroy, Type} from '@angular/core';
+import {Component, Directive, forwardRef, Input, OnDestroy, Type} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {expect} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, DefaultValueAccessor, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, MaxValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, ControlValueAccessor, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, MaxValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, ReactiveFormsModule, Validator, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
-import {merge, NEVER, of, Subscription, timer} from 'rxjs';
+import {merge, NEVER, Observable, of, Subscription, timer} from 'rxjs';
 import {map, tap} from 'rxjs/operators';
 
 import {MyInput, MyInputForm} from './value_accessor_integration_spec';
@@ -2936,10 +2936,10 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
       }
 
       // Init a test with a predefined set of validator and value accessor classes.
-      function initCleanupTest(component: Type<any>) {
+      function initCleanupTest<T>(component: Type<T>, ...directives: Type<any>[]) {
         const fixture = initTest(
             component, ViewValidatorA, AsyncViewValidatorA, ViewValidatorB, AsyncViewValidatorB,
-            ViewValidatorC, AsyncViewValidatorC, ValueAccessorA, ValueAccessorB);
+            ViewValidatorC, AsyncViewValidatorC, ValueAccessorA, ValueAccessorB, ...directives);
         fixture.detectChanges();
         return fixture;
       }
@@ -4357,6 +4357,390 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
         expect(() => {
           fixture.destroy();
         }).not.toThrow();
+      });
+
+      describe('cleanup of async validation subscription', () => {
+        const logger: string[] = [];
+
+        afterEach(() => {
+          logger.length = 0;
+        });
+
+        @Directive({
+          selector: '[app-async-validator]',
+          providers: [{
+            provide: NG_ASYNC_VALIDATORS,
+            multi: true,
+            useExisting: forwardRef(() => AppAsyncValidator)
+          }]
+        })
+        class AppAsyncValidator implements AsyncValidator {
+          validate() {
+            logger.push('validation started');
+            return new Observable<null>(() => {
+              // Note that we intentionally do not call `observer.next` and `observer.complete`
+              // so the subscription will be in non-closed status.
+              return () => {
+                logger.push('validation cancelled');
+              };
+            });
+          }
+        }
+
+        describe('complete cleanup of async validation subscription', () => {
+          describe('FormGroup', () => {
+            it('should cleanup async validation subscription when the FormGroup directive is destroyed',
+               () => {
+                 // Scenario:
+                 // ---------
+                 // [formGroup] *ngIf
+
+                 const group = new FormGroup({});
+
+                 @Component({
+                   selector: 'app',
+                   template: '<div *ngIf="visible" [formGroup]="group" app-async-validator></div>'
+                 })
+                 class App {
+                   visible = true;
+                   group = group;
+                 }
+
+                 const fixture = initCleanupTest(App, AppAsyncValidator);
+
+                 fixture.componentInstance.visible = false;
+                 fixture.detectChanges();
+
+                 expect(logger).toEqual(['validation started', 'validation cancelled']);
+               });
+
+            it('should clean async validation subscription only when the last FormGroup directive is destroyed',
+               () => {
+                 // Scenario:
+                 // ---------
+                 // [formGroup] *ngIf
+                 // [formGroup] *ngIf
+
+                 const group = new FormGroup({});
+
+                 @Component({
+                   selector: 'app',
+                   template: `
+                   <div *ngIf="visibleA" [formGroup]="group" app-async-validator></div>
+                   <div *ngIf="visibleB" [formGroup]="group" app-async-validator></div>
+                 `
+                 })
+                 class App {
+                   visibleA = true;
+                   visibleB = true;
+                   group = group;
+                 }
+
+                 const fixture = initCleanupTest(App, AppAsyncValidator);
+
+                 fixture.componentInstance.visibleA = false;
+                 fixture.detectChanges();
+
+                 // Async validation cancellation was called forcibly from the
+                 // `updateValueAndValidity()` method.
+                 expect(logger).toEqual([
+                   'validation started', 'validation cancelled', 'validation started',
+                   'validation started'
+                 ]);
+
+                 fixture.componentInstance.visibleB = false;
+                 fixture.detectChanges();
+
+                 expect(logger).toEqual([
+                   'validation started', 'validation cancelled', 'validation started',
+                   'validation started', 'validation cancelled', 'validation cancelled'
+                 ]);
+               });
+          });
+
+          describe('FormControl', () => {
+            it('should cleanup async validation subscription when the FormControlDirective is destroyed',
+               () => {
+                 // Scenario:
+                 // ---------
+                 // [formControl] *ngIf
+
+                 const control = new FormControl();
+
+                 @Component({
+                   selector: 'app',
+                   template: '<input *ngIf="visible" [formControl]="control" app-async-validator />'
+                 })
+                 class App {
+                   visible = true;
+                   control = control;
+                 }
+
+                 const fixture = initCleanupTest(App, AppAsyncValidator);
+
+                 fixture.componentInstance.visible = false;
+                 fixture.detectChanges();
+
+                 expect(logger).toEqual(['validation started', 'validation cancelled']);
+               });
+
+            it('should cleanup async validation subscription only when the last FormControl directive is destroyed',
+               () => {
+                 // Scenario:
+                 // ---------
+                 // [formControl] *ngIf
+                 // [formControl] *ngIf
+
+                 const control = new FormControl();
+
+                 @Component({
+                   selector: 'app',
+                   template: `
+                    <input *ngIf="visibleA" [formControl]="control" app-async-validator />
+                    <input *ngIf="visibleB" [formControl]="control" app-async-validator />
+                  `
+                 })
+                 class App {
+                   visibleA = true;
+                   visibleB = true;
+                   control = control;
+                 }
+
+                 const fixture = initCleanupTest(App, AppAsyncValidator);
+
+                 fixture.componentInstance.visibleA = false;
+                 fixture.detectChanges();
+
+                 // Async validation cancellation was called forcibly from the
+                 // `updateValueAndValidity()` method.
+                 expect(logger).toEqual([
+                   'validation started', 'validation cancelled', 'validation started',
+                   'validation started'
+                 ]);
+
+                 fixture.componentInstance.visibleB = false;
+                 fixture.detectChanges();
+
+                 expect(logger).toEqual([
+                   'validation started', 'validation cancelled', 'validation started',
+                   'validation started', 'validation cancelled', 'validation cancelled'
+                 ]);
+               });
+          });
+
+          describe('FormArray', () => {
+            it('should cleanup async validation subscription when the FormArray directive is destroyed',
+               () => {
+                 // Scenario:
+                 // ---------
+                 // [formGroup]
+                 //   formArrayName *ngIf
+                 //     [formControlName]
+
+                 const group = new FormGroup({
+                   cities: new FormArray([
+                     new FormControl(),
+                     new FormControl(),
+                   ])
+                 });
+
+                 @Component({
+                   selector: 'app',
+                   template: `
+                  <ng-container [formGroup]="group">
+                    <div *ngIf="visible" formArrayName="cities" app-async-validator>
+                      <input *ngFor="let id of ids" [formControlName]="id" />
+                    </div>
+                  </ng-container>
+                 `
+                 })
+                 class App {
+                   visible = true;
+                   group = group;
+                   ids = [0, 1];
+                 }
+
+                 const fixture = initCleanupTest(App, AppAsyncValidator);
+
+                 // Async validation was cancelled 2 times since 2 controls have been added
+                 // and `updateValueAndValidity()` has been called.
+                 // `FormArray` is also a control, that's why there're 5 logs.
+                 expect(logger).toEqual([
+                   'validation started', 'validation cancelled', 'validation started',
+                   'validation cancelled', 'validation started'
+                 ]);
+
+                 fixture.componentInstance.visible = false;
+                 fixture.detectChanges();
+
+                 expect(logger).toEqual([
+                   'validation started', 'validation cancelled', 'validation started',
+                   'validation cancelled', 'validation started', 'validation cancelled'
+                 ]);
+               });
+          });
+        });
+
+        // Tests below should be revisited as a part of
+        // https://github.com/angular/angular/issues/40943, currently we just verify that we are not
+        // cancelling async validation altogether if there are own control validators.
+        describe('partial cleanup (async validation subscription retained)', () => {
+          describe('FormGroup', () => {
+            it('should not cleanup async validation subscription when the FormGroup has own async validator function',
+               () => {
+                 // Scenario:
+                 // ---------
+                 // [formGroup] *ngIf
+
+                 const ownLogger: string[] = [];
+
+                 const group = new FormGroup({}, {
+                   asyncValidators: () => {
+                     ownLogger.push('validation started');
+                     return new Observable(() => {
+                       return () => {
+                         ownLogger.push('validation cancelled');
+                       };
+                     });
+                   }
+                 });
+
+                 @Component({
+                   selector: 'app',
+                   template: '<div *ngIf="visible" [formGroup]="group" app-async-validator></div>'
+                 })
+                 class App {
+                   visible = true;
+                   group = group;
+                 }
+
+                 const fixture = initCleanupTest(App, AppAsyncValidator);
+
+                 fixture.componentInstance.visible = false;
+                 fixture.detectChanges();
+
+                 // Async validation cancellation was called forcibly from the
+                 // `updateValueAndValidity()` method.
+                 expect(ownLogger).toEqual(
+                     ['validation started', 'validation cancelled', 'validation started']);
+
+                 // It doesn't unsubscribe from the observable since FormGroup has its
+                 // own validator function (which gets combined into a single validator function in
+                 // AbstractControl), so we can not unsubscribe without stopping own async
+                 // validator. See https://github.com/angular/angular/issues/40943 for additional
+                 // info.
+                 expect(logger).toEqual(['validation started']);
+               });
+          });
+
+          describe('FormControl', () => {
+            it('should not cleanup async validation subscription when the FormControl has own async validator function',
+               () => {
+                 // Scenario:
+                 // ---------
+                 // [formControl] *ngIf
+
+                 const ownLogger: string[] = [];
+
+                 const control = new FormControl(null, {
+                   asyncValidators: () => {
+                     ownLogger.push('validation started');
+                     return new Observable(() => {
+                       return () => {
+                         ownLogger.push('validation cancelled');
+                       };
+                     });
+                   }
+                 });
+
+                 @Component({
+                   selector: 'app',
+                   template: '<input *ngIf="visible" [formControl]="control" app-async-validator />'
+                 })
+                 class App {
+                   visible = true;
+                   control = control;
+                 }
+
+                 const fixture = initCleanupTest(App, AppAsyncValidator);
+
+                 fixture.componentInstance.visible = false;
+                 fixture.detectChanges();
+
+                 // Async validation cancellation was called forcibly from the
+                 // `updateValueAndValidity()` method.
+                 expect(ownLogger).toEqual(
+                     ['validation started', 'validation cancelled', 'validation started']);
+
+                 expect(logger).toEqual(['validation started']);
+               });
+          });
+
+          describe('FormArray', () => {
+            it('should not cleanup async validation subscription when the FormArray has own async validator function',
+               () => {
+                 // Scenario:
+                 // ---------
+                 // [formGroup]
+                 //   formArrayName *ngIf
+                 //     [formControlName]
+
+                 const ownLogger: string[] = [];
+
+                 const cities = new FormArray(
+                     [
+                       new FormControl(),
+                       new FormControl(),
+                     ],
+                     {
+                       asyncValidators: () => {
+                         ownLogger.push('validation started');
+                         return new Observable(() => {
+                           return () => {
+                             ownLogger.push('validation cancelled');
+                           };
+                         });
+                       }
+                     });
+
+                 const group = new FormGroup({cities});
+
+                 @Component({
+                   selector: 'app',
+                   template: `
+                    <ng-container [formGroup]="group">
+                      <div *ngIf="visible" formArrayName="cities" app-async-validator>
+                        <input *ngFor="let id of ids" [formControlName]="id" />
+                      </div>
+                    </ng-container>
+                   `
+                 })
+                 class App {
+                   visible = true;
+                   group = group;
+                   ids = [0, 1];
+                 }
+
+                 const fixture = initCleanupTest(App, AppAsyncValidator);
+
+                 expect(ownLogger).toEqual([
+                   'validation started', 'validation cancelled', 'validation started',
+                   'validation cancelled', 'validation started', 'validation cancelled',
+                   'validation started', 'validation cancelled', 'validation started'
+                 ]);
+
+                 fixture.componentInstance.visible = false;
+                 fixture.detectChanges();
+
+                 expect(ownLogger).toEqual([
+                   'validation started', 'validation cancelled', 'validation started',
+                   'validation cancelled', 'validation started', 'validation cancelled',
+                   'validation started', 'validation cancelled', 'validation started',
+                   'validation cancelled', 'validation started'
+                 ]);
+               });
+          });
+        });
       });
     });
   });
