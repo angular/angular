@@ -261,7 +261,13 @@ section#intro {
 }
 
 aio-shell {
-  &.page-resources, &.page-events, &.page-features, &.page-presskit, &.page-contribute {
+  &.page-about,
+  &.page-contribute,
+  &.page-events,
+  &.page-features,
+  &.page-home,
+  &.page-presskit,
+  &.page-resources {
     .sidenav-content {
       padding: 0 0 3rem;
     }
@@ -269,11 +275,14 @@ aio-shell {
 
   &.page-home {
     .sidenav-content {
-      padding: 0;
+      padding-bottom: 0;
     }
   }
 
-  &.page-home, &.page-resources, &.page-contribute {
+  &.page-about,
+  &.page-contribute,
+  &.page-home,
+  &.page-resources {
     article {
       padding: 32px;
 
