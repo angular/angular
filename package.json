@@ -63,7 +63,7 @@
     "@types/youtube": "^0.0.40",
     "@webcomponents/custom-elements": "^1.1.0",
     "core-js-bundle": "^3.8.2",
-    "material-components-web": "10.0.0-canary.d29ec2862.0",
+    "material-components-web": "10.0.0",
     "rxjs": "^6.5.3",
     "rxjs-tslint-rules": "^4.33.1",
     "systemjs": "0.19.43",
