@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {loadFakeAsyncFileReader, supportedSources as supportedFileReaderSources} from './fake-async-file-reader';
 import {loadFakeAsyncXHR, supportedSources as supportedXHRSources} from './fake-async-xhr';
 
 (function(global: any) {
@@ -747,6 +748,7 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
 
 Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const xhrPatch = loadFakeAsyncXHR(global);
+  const fileReaderPatch = loadFakeAsyncFileReader(global);
   const FakeAsyncTestZoneSpec = Zone && (Zone as any)['FakeAsyncTestZoneSpec'];
   type ProxyZoneSpecType = {
     setDelegate(delegateSpec: ZoneSpec): void; getDelegate(): ZoneSpec; resetDelegate(): void;
@@ -819,11 +821,13 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
         proxyZoneSpec.setDelegate(_fakeAsyncTestZoneSpec);
         _fakeAsyncTestZoneSpec.lockDatePatch();
         xhrPatch.fakeXHR(api);
+        fileReaderPatch.fakeFileReader(api);
         try {
           res = fn.apply(this, args);
           flushMicrotasks();
         } finally {
           xhrPatch.restoreXHR();
+          fileReaderPatch.restoreFileReader();
           proxyZoneSpec.setDelegate(lastProxyZoneSpec);
         }
 

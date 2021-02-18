@@ -12,6 +12,7 @@ import {Observable} from 'rxjs';
 import {delay} from 'rxjs/operators';
 
 import {isNode, patchMacroTask, zoneSymbol} from '../../lib/common/utils';
+import {loadFakeAsyncFileReader} from '../../lib/zone-spec/fake-async-file-reader';
 import {loadFakeAsyncXHR} from '../../lib/zone-spec/fake-async-xhr';
 import {ifEnvSupports} from '../test-util';
 
@@ -861,6 +862,41 @@ describe('FakeAsyncTestZoneSpec', () => {
                  });
                } finally {
                  xhrPatch.restoreXHR();
+               }
+             });
+           }));
+
+  describe('FileReader', ifEnvSupports('FileReader', () => {
+             const fileReaderPatch =
+                 loadFakeAsyncFileReader(typeof window === 'undefined' ? global : window);
+             it('should get result with FileReader', () => {
+               try {
+                 fileReaderPatch.fakeFileReader(undefined as any);
+                 fakeAsyncTestZone.run(() => {
+                   testZoneSpec.registerNonTimerMacroTaskHandler(
+                       'FileReader.readAsText', (data: any, taskDone: () => void) => {
+                         setTimeout(() => {
+                           data.result = 'blob';
+                           data.triggerEvent('load');
+                           taskDone();
+                         }, 100);
+                       });
+                   let finished = false;
+                   let reader = new FileReader();
+
+                   reader.onload = () => {
+                     finished = true;
+                   };
+
+                   reader.readAsText(new Blob(['Hello World!']));
+                   expect(reader.result as any).toEqual(undefined);
+                   expect(finished).toBe(false);
+                   testZoneSpec.tick(100);
+                   expect(reader.result).toEqual('blob');
+                   expect(finished).toBe(true);
+                 });
+               } finally {
+                 fileReaderPatch.restoreFileReader();
                }
              });
            }));

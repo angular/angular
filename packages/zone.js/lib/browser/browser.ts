@@ -81,12 +81,16 @@ Zone.__load_patch('IntersectionObserver', (global: any, Zone: ZoneType, api: _Zo
 });
 
 Zone.__load_patch('FileReader', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-  const FileReader = global['FileReader'];
-  FileReader && FileReader.prototype &&
-      patchMacroTaskWithEvent(
-          'FileReader', FileReader.prototype,
-          ['readAsArrayBuffer', 'readAsBinaryString', 'readAsDataURL', 'readAsText'], 'abort',
-          'loadend');
+  patchFileReader(global);
+  function patchFileReader(window: any) {
+    const FileReader = window['FileReader'];
+    FileReader && FileReader.prototype &&
+        patchMacroTaskWithEvent(
+            'FileReader', FileReader.prototype,
+            ['readAsArrayBuffer', 'readAsBinaryString', 'readAsDataURL', 'readAsText'], 'abort',
+            'loadend');
+  };
+  api.patchFileReader = patchFileReader;
 });
 
 Zone.__load_patch('on_property', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
