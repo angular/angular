@@ -62,7 +62,8 @@
 
 @mixin mat-mdc-paginator-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
-  $height: mat-private-density-prop-value($mat-paginator-density-config, $density-scale, height);
+  $height: mat-private-density-prop-value(
+      $mat-mdc-paginator-density-config, $density-scale, height);
 
   @include mat-private-density-legacy-compatibility() {
     .mat-mdc-paginator-container {

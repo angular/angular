@@ -31,7 +31,7 @@ ng_module(
 
 sass_library(
     name = "table_scss_lib",
-    srcs = ["_table-theme.scss"],
+    srcs = glob(["**/_*.scss"]),
     deps = ["//src/material/core:core_scss_lib"],
 )
 

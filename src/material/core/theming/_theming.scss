@@ -1,4 +1,5 @@
 @import 'palette';
+@import '../density/private/compatibility';
 
 // Whether duplication warnings should be disabled. Warnings enabled by default.
 $mat-theme-ignore-duplication-warnings: false !default;

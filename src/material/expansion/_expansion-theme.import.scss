@@ -1,0 +1,6 @@
+@forward 'expansion-theme';
+@forward '../core/theming/palette';
+@forward '../core/theming/theming';
+@forward '../core/typography/typography-utils';
+@forward './expansion-variables';
+@forward './expansion-mixins';
