@@ -20,8 +20,8 @@ ng_module(
     deps = [
         "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-select",
+        "//src/material-experimental/mdc-tooltip",
         "//src/material/paginator",
-        "//src/material/tooltip",
         "@npm//@angular/common",
         "@npm//@angular/core",
         "@npm//@angular/forms",  # TODO(jelbourn): transitive dep via generated code
@@ -69,6 +69,7 @@ ng_web_test_suite(
         "@npm//:node_modules/@material/textfield/dist/mdc.textfield.js",
         "@npm//:node_modules/@material/line-ripple/dist/mdc.lineRipple.js",
         "@npm//:node_modules/@material/notched-outline/dist/mdc.notchedOutline.js",
+        "@npm//:node_modules/@material/tooltip/dist/mdc.tooltip.js",
         "@npm//:node_modules/@material/ripple/dist/mdc.ripple.js",
         "@npm//:node_modules/@material/dom/dist/mdc.dom.js",
     ],
