@@ -100,7 +100,7 @@
   }
 }
 
-@mixin deployTheme($mainColor, $gradientTargetColor) {
+@mixin deploy-theme($mainColor, $gradientTargetColor) {
   .mat-toolbar.mat-primary, footer {
     background: linear-gradient(145deg, $mainColor, $gradientTargetColor);
   }

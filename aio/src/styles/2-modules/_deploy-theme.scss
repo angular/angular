@@ -1,11 +1,11 @@
 aio-shell.mode-archive {
-  @include deployTheme(#263238, #78909C);
+  @include deploy-theme(#263238, #78909C);
 }
 
 aio-shell.mode-next {
-  @include deployTheme(#DD0031, #C3002F);
+  @include deploy-theme(#DD0031, #C3002F);
 }
 
 aio-shell.mode-rc {
-  @include deployTheme(#DDA302, #C3A300);
+  @include deploy-theme(#DDA302, #C3A300);
 }
