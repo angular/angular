@@ -15,6 +15,7 @@ import {patchTimer} from '../common/timers';
 import {patchClass, patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, zoneSymbol,} from '../common/utils';
 
 import {patchCustomElements} from './custom-elements';
+import {patchMacroTaskWithEvent} from './event-macrotask';
 import {eventTargetPatch, patchEvent} from './event-target';
 import {propertyDescriptorPatch} from './property-descriptor';
 
@@ -80,7 +81,12 @@ Zone.__load_patch('IntersectionObserver', (global: any, Zone: ZoneType, api: _Zo
 });
 
 Zone.__load_patch('FileReader', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-  patchClass('FileReader');
+  const FileReader = global['FileReader'];
+  FileReader && FileReader.prototype &&
+      patchMacroTaskWithEvent(
+          'FileReader', FileReader.prototype,
+          ['readAsArrayBuffer', 'readAsBinaryString', 'readAsDataURL', 'readAsText'], 'abort',
+          'loadend');
 });
 
 Zone.__load_patch('on_property', (global: any, Zone: ZoneType, api: _ZonePrivate) => {

@@ -320,6 +320,10 @@ export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
         XMLHttpRequestEventTarget && XMLHttpRequestEventTarget.prototype, XMLHttpRequestEventNames,
         ignoreProperties);
   }
+  const FileReader = _global['FileReader'];
+  if (FileReader) {
+    patchFilteredProperties(FileReader.prototype, XMLHttpRequestEventNames, ignoreProperties);
+  }
   if (typeof IDBIndex !== 'undefined') {
     patchFilteredProperties(IDBIndex.prototype, IDBIndexEventNames, ignoreProperties);
     patchFilteredProperties(IDBRequest.prototype, IDBIndexEventNames, ignoreProperties);
