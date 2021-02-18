@@ -14,7 +14,7 @@ mat-toolbar.app-toolbar {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
 
   // HOME PAGE OVERRIDE: TOPNAV TOOLBAR
-  aio-shell.page-home & {
+  .page-home & {
     background-color: $blue;
 
     @media (min-width: 481px) {
@@ -26,10 +26,13 @@ mat-toolbar.app-toolbar {
   }
 
   // MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
-  aio-shell.page-home &,
-  aio-shell.page-features &,
-  aio-shell.page-events &,
-  aio-shell.page-resources & {
+  .page-about &,
+  .page-contribute &,
+  .page-events &,
+  .page-features &,
+  .page-home &,
+  .page-presskit &,
+  .page-resources & {
     box-shadow: none;
 
     // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
