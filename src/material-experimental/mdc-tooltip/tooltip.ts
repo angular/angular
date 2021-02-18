@@ -62,8 +62,6 @@ export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
     @Inject(MAT_TOOLTIP_SCROLL_STRATEGY) scrollStrategy: any,
     @Optional() dir: Directionality,
     @Optional() @Inject(MAT_TOOLTIP_DEFAULT_OPTIONS) defaultOptions: MatTooltipDefaultOptions,
-
-    /** @breaking-change 11.0.0 _document argument to become required. */
     @Inject(DOCUMENT) _document: any) {
 
     super(overlay, elementRef, scrollDispatcher, viewContainerRef, ngZone, platform, ariaDescriber,
