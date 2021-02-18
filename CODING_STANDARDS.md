@@ -208,7 +208,7 @@ specific error being caught and why it cannot be prevented.
 * Except for `@Input` properties, use `is` and `has` prefixes for boolean properties / methods.
 
 ##### Observables
-* Don't suffix observables with `$`. 
+* Don't suffix observables with `$`.
 
 ##### Classes
 Classes should be named based on what they're responsible for. Names should capture what the code
@@ -333,7 +333,7 @@ The latter is equivalent for the component, but makes it easier override when ne
 #### Support styles for Windows high-contrast mode
 This is a low-effort task that makes a big difference for low-vision users. Example:
 ```css
-@media screen and (-ms-high-contrast: active) {
+@include cdk-high-contrast(active, off) {
   .unicorn-motocycle {
     border: 1px solid #fff !important;
   }
