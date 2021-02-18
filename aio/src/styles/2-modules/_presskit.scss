@@ -18,6 +18,10 @@
     margin: 48px 0;
     width: 100%;
 
+    &:first-child {
+      margin-top: 0;
+    }
+
     .presskit-inner {
       display: flex;
       align-items: center;
@@ -69,14 +73,6 @@
         height: 128px;
         width: auto;
         margin-bottom: 8px * 2;
-      }
-    }
-
-    &:first-child {
-      margin-top: 0;
-
-      @media(max-width: 599px) {
-        margin-top: 48px;
       }
     }
   }
