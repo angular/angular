@@ -7,7 +7,6 @@
 
   .file {
     display: block;
-    font-family: $main-font;
     @include letter-spacing(0.3);
     @include line-height(32);
     color: $darkgray;
