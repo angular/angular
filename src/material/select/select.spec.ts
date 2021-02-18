@@ -1129,7 +1129,7 @@ describe('MatSelect', () => {
 
         it('should set the `aria-labelledby` attribute', fakeAsync(() => {
           let group = groups[0];
-          let label = group.querySelector('label')!;
+          let label = group.querySelector('span')!;
 
           expect(label.getAttribute('id')).toBeTruthy('Expected label to have an id.');
           expect(group.getAttribute('aria-labelledby'))
