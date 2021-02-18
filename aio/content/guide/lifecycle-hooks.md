@@ -344,7 +344,7 @@ The following examples demonstrate the call sequence and relative frequency of t
 
 ### Sequence and frequency of all lifecycle events
 
-To show how Angular calls the hooks in the expected order, the `PeekABooComponent` demonstrates all of the hooks in one component.
+To show how Angular calls the hooks in the expected order, the `PeekABooComponent` demonstrates all of the hooks in one example.
 
 In practice you would rarely, if ever, implement all of the interfaces the way this demo does.
 
@@ -354,9 +354,11 @@ The following snapshot reflects the state of the log after the user clicked the 
   <img src="generated/images/guide/lifecycle-hooks/peek-a-boo.png" alt="Peek-a-boo">
 </div>
 
-The sequence of log messages follows the prescribed hook calling order:
-`OnChanges`, `OnInit`, `DoCheck`&nbsp;(3x), `AfterContentInit`, `AfterContentChecked`&nbsp;(3x),
-`AfterViewInit`, `AfterViewChecked`&nbsp;(3x), and `OnDestroy`.
+The sequence of log messages beginning at #2 displays the prescribed hook calling order.
+
+Note that `DoCheck` as well as the subsequent `AfterContentChecked` and `AfterViewInit` appear more than once.
+This is due to the fact that even though the `DoCheck` hook exists in the child component,
+it is called in every change detection cycle _anywhere on the page_.
 
 <div class="alert is-helpful">
 
