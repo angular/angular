@@ -6,16 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HarnessPredicate} from '@angular/cdk/testing';
 import {
-  ComponentHarness,
-  ComponentHarnessConstructor,
-  HarnessPredicate,
-  HarnessQuery,
-  parallel,
-  TestElement
-} from '@angular/cdk/testing';
-import {FormFieldHarnessFilters} from '@angular/material/form-field/testing';
-import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
+  FormFieldHarnessFilters,
+  _MatFormFieldHarnessBase,
+} from '@angular/material/form-field/testing';
 import {MatInputHarness} from '@angular/material-experimental/mdc-input/testing';
 import {MatSelectHarness} from '@angular/material-experimental/mdc-select/testing';
 
@@ -25,7 +20,7 @@ import {MatSelectHarness} from '@angular/material-experimental/mdc-select/testin
 export type FormFieldControlHarness = MatInputHarness|MatSelectHarness;
 
 /** Harness for interacting with a MDC-based form-field's in tests. */
-export class MatFormFieldHarness extends ComponentHarness {
+export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldControlHarness> {
   static hostSelector = '.mat-mdc-form-field';
 
   /**
@@ -36,24 +31,20 @@ export class MatFormFieldHarness extends ComponentHarness {
    */
   static with(options: FormFieldHarnessFilters = {}): HarnessPredicate<MatFormFieldHarness> {
     return new HarnessPredicate(MatFormFieldHarness, options)
-        .addOption(
-            'floatingLabelText', options.floatingLabelText,
+        .addOption('floatingLabelText', options.floatingLabelText,
             async (harness, text) => HarnessPredicate.stringMatches(await harness.getLabel(), text))
-        .addOption(
-            'hasErrors', options.hasErrors,
+        .addOption('hasErrors', options.hasErrors,
             async (harness, hasErrors) => await harness.hasErrors() === hasErrors);
   }
 
+  protected _prefixContainer = this.locatorForOptional('.mat-mdc-form-field-prefix');
+  protected _suffixContainer = this.locatorForOptional('.mat-mdc-form-field-suffix');
+  protected _label = this.locatorForOptional('.mdc-floating-label');
+  protected _errors = this.locatorForAll('.mat-mdc-form-field-error');
+  protected _hints = this.locatorForAll('.mat-mdc-form-field-hint');
+  protected _inputControl = this.locatorForOptional(MatInputHarness);
+  protected _selectControl = this.locatorForOptional(MatSelectHarness);
   private _mdcTextField = this.locatorFor('.mat-mdc-text-field-wrapper');
-
-  private _prefixContainer = this.locatorForOptional('.mat-mdc-form-field-prefix');
-  private _suffixContainer = this.locatorForOptional('.mat-mdc-form-field-suffix');
-  private _label = this.locatorForOptional('.mdc-floating-label');
-  private _errors = this.locatorForAll('.mat-mdc-form-field-error');
-  private _hints = this.locatorForAll('.mat-mdc-form-field-hint');
-
-  private _inputControl = this.locatorForOptional(MatInputHarness);
-  private _selectControl = this.locatorForOptional(MatSelectHarness);
 
   /** Gets the appearance of the form-field. */
   async getAppearance(): Promise<'fill'|'outline'> {
@@ -64,186 +55,14 @@ export class MatFormFieldHarness extends ComponentHarness {
     return 'fill';
   }
 
-  /**
-   * Gets the harness of the control that is bound to the form-field. Only
-   * default controls such as "MatInputHarness" and "MatSelectHarness" are
-   * supported.
-   */
-  async getControl(): Promise<FormFieldControlHarness|null>;
-
-  /**
-   * Gets the harness of the control that is bound to the form-field. Searches
-   * for a control that matches the specified harness type.
-   */
-  async getControl<X extends MatFormFieldControlHarness>(type: ComponentHarnessConstructor<X>):
-      Promise<X|null>;
-
-  /**
-   * Gets the harness of the control that is bound to the form-field. Searches
-   * for a control that matches the specified harness predicate.
-   */
-  async getControl<X extends MatFormFieldControlHarness>(type: HarnessPredicate<X>):
-      Promise<X|null>;
-
-  // Implementation of the "getControl" method overload signatures.
-  async getControl<X extends MatFormFieldControlHarness>(type?: HarnessQuery<X>) {
-    if (type) {
-      return this.locatorForOptional(type)();
-    }
-    const hostEl = await this.host();
-    const [isInput, isSelect] = await parallel(() => [
-      hostEl.hasClass('mat-mdc-form-field-type-mat-input'),
-      hostEl.hasClass('mat-mdc-form-field-type-mat-select'),
-    ]);
-    if (isInput) {
-      return this._inputControl();
-    } else if (isSelect) {
-      return this._selectControl();
-    }
-    return null;
-  }
-
   /** Whether the form-field has a label. */
   async hasLabel(): Promise<boolean> {
     return (await this._label()) !== null;
-  }
-
-  /** Gets the label of the form-field. */
-  async getLabel(): Promise<string|null> {
-    const labelEl = await this._label();
-    return labelEl ? labelEl.text() : null;
-  }
-
-  /** Whether the form-field has errors. */
-  async hasErrors(): Promise<boolean> {
-    return (await this.getTextErrors()).length > 0;
   }
 
   /** Whether the label is currently floating. */
   async isLabelFloating(): Promise<boolean> {
     const labelEl = await this._label();
     return labelEl !== null ? await labelEl.hasClass('mdc-floating-label--float-above') : false;
-  }
-
-  /** Whether the form-field is disabled. */
-  async isDisabled(): Promise<boolean> {
-    return (await this.host()).hasClass('mat-form-field-disabled');
-  }
-
-  /** Whether the form-field is currently autofilled. */
-  async isAutofilled(): Promise<boolean> {
-    return (await this.host()).hasClass('mat-form-field-autofilled');
-  }
-
-  /** Gets the theme color of the form-field. */
-  async getThemeColor(): Promise<'primary'|'accent'|'warn'> {
-    const hostEl = await this.host();
-    const [isAccent, isWarn] =
-        await parallel(() => [hostEl.hasClass('mat-accent'), hostEl.hasClass('mat-warn')]);
-    if (isAccent) {
-      return 'accent';
-    } else if (isWarn) {
-      return 'warn';
-    }
-    return 'primary';
-  }
-
-  /** Gets error messages which are currently displayed in the form-field. */
-  async getTextErrors(): Promise<string[]> {
-    const errors = await this._errors();
-    return parallel(() => errors.map(e => e.text()));
-  }
-
-  /** Gets hint messages which are currently displayed in the form-field. */
-  async getTextHints(): Promise<string[]> {
-    const hints = await this._hints();
-    return parallel(() => hints.map(e => e.text()));
-  }
-
-  /**
-   * Gets a reference to the container element which contains all projected
-   * prefixes of the form-field.
-   * @deprecated Use `getPrefixText` instead.
-   * @breaking-change 11.0.0
-   */
-  async getHarnessLoaderForPrefix(): Promise<TestElement|null> {
-    return this._prefixContainer();
-  }
-
-  /** Gets the text inside the prefix element. */
-  async getPrefixText(): Promise<string> {
-    const prefix = await this._prefixContainer();
-    return prefix ? prefix.text() : '';
-  }
-
-  /**
-   * Gets a reference to the container element which contains all projected
-   * suffixes of the form-field.
-   * @deprecated Use `getSuffixText` instead.
-   * @breaking-change 11.0.0
-   */
-  async getHarnessLoaderForSuffix(): Promise<TestElement|null> {
-    return this._suffixContainer();
-  }
-
-  /** Gets the text inside the suffix element. */
-  async getSuffixText(): Promise<string> {
-    const suffix = await this._suffixContainer();
-    return suffix ? suffix.text() : '';
-  }
-
-  /**
-   * Whether the form control has been touched. Returns "null"
-   * if no form control is set up.
-   */
-  async isControlTouched(): Promise<boolean|null> {
-    if (!await this._hasFormControl()) {
-      return null;
-    }
-    return (await this.host()).hasClass('ng-touched');
-  }
-
-  /**
-   * Whether the form control is dirty. Returns "null"
-   * if no form control is set up.
-   */
-  async isControlDirty(): Promise<boolean|null> {
-    if (!await this._hasFormControl()) {
-      return null;
-    }
-    return (await this.host()).hasClass('ng-dirty');
-  }
-
-  /**
-   * Whether the form control is valid. Returns "null"
-   * if no form control is set up.
-   */
-  async isControlValid(): Promise<boolean|null> {
-    if (!await this._hasFormControl()) {
-      return null;
-    }
-    return (await this.host()).hasClass('ng-valid');
-  }
-
-  /**
-   * Whether the form control is pending validation. Returns "null"
-   * if no form control is set up.
-   */
-  async isControlPending(): Promise<boolean|null> {
-    if (!await this._hasFormControl()) {
-      return null;
-    }
-    return (await this.host()).hasClass('ng-pending');
-  }
-
-  /** Checks whether the form-field control has set up a form control. */
-  private async _hasFormControl(): Promise<boolean> {
-    const hostEl = await this.host();
-    // If no form "NgControl" is bound to the form-field control, the form-field
-    // is not able to forward any control status classes. Therefore if either the
-    // "ng-touched" or "ng-untouched" class is set, we know that it has a form control
-    const [isTouched, isUntouched] =
-        await parallel(() => [hostEl.hasClass('ng-touched'), hostEl.hasClass('ng-untouched')]);
-    return isTouched || isUntouched;
   }
 }
