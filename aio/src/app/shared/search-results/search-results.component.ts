@@ -28,9 +28,15 @@ export class SearchResultsComponent implements OnChanges {
   @Output()
   resultSelected = new EventEmitter<SearchResult>();
 
-  readonly defaultArea = 'other';
   searchState: SearchState = SearchState.InProgress;
-  readonly topLevelFolders = ['api', 'cli', 'errors', 'guide', 'start', 'tutorial'];
+  readonly defaultFolder = 'other';
+  readonly topLevelFolders = ['api', 'cli', 'docs', 'errors', 'guide', 'start', 'tutorial'];
+  readonly folderToAreaOverrides: Record<string, string> = {
+    docs: 'guides',
+    guide: 'guides',
+    start: 'tutorials',
+    tutorial: 'tutorials',
+  };
   searchAreas: SearchArea[] = [];
 
   ngOnChanges() {
@@ -59,7 +65,7 @@ export class SearchResultsComponent implements OnChanges {
     const searchAreaMap: { [key: string]: SearchResult[] } = {};
     search.results.forEach(result => {
       if (!result.title) { return; } // bad data; should fix
-      const areaName = this.computeAreaName(result) || this.defaultArea;
+      const areaName = this.computeAreaName(result);
       const area = searchAreaMap[areaName] = searchAreaMap[areaName] || [];
       area.push(result);
     });
@@ -75,12 +81,15 @@ export class SearchResultsComponent implements OnChanges {
   }
 
   // Split the search result path and use the top level folder, if there is one, as the area name.
-  private computeAreaName(result: SearchResult) {
-    if (this.topLevelFolders.indexOf(result.path) !== -1) {
-      return result.path;
-    }
-    const [areaName, rest] = result.path.split('/', 2);
-    return rest && areaName;
+  private computeAreaName(result: SearchResult): string {
+    const [firstSegment, rest] = result.path.split('/', 2);
+    const folderName = rest
+        ? firstSegment
+        : (this.topLevelFolders.indexOf(result.path) !== -1)
+            ? result.path
+            : this.defaultFolder;
+
+    return this.folderToAreaOverrides[folderName] ?? folderName;
   }
 }
 

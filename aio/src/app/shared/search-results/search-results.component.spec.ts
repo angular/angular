@@ -71,23 +71,33 @@ describe('SearchResultsComponent', () => {
   });
 
   it('should map the search results into groups based on their containing folder', () => {
-    setSearchResults('', [guideA, apiD, guideB]);
+    const startA =  { path: 'start/a', title: 'Start A', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+    const tutorialA =  { path: 'tutorial/a', title: 'Tutorial A', deprecated: false, keywords: '', titleWords: '', type: '', topics: '' };
+
+    setSearchResults('', [guideA, apiD, guideB, startA, tutorialA]);
     expect(component.searchAreas).toEqual([
       { name: 'api', priorityPages: [apiD], pages: [] },
-      { name: 'guide', priorityPages: [guideA, guideB], pages: [] }
+      { name: 'guides', priorityPages: [guideA, guideB], pages: [] },
+      { name: 'tutorials', priorityPages: [startA, tutorialA], pages: [] },
     ]);
   });
 
   it('should special case results that are top level folders', () => {
     setSearchResults('', [
+      { path: 'docs', title: 'Docs introduction', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
+      { path: 'start', title: 'Getting started', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
       { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
       { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
     ]);
     expect(component.searchAreas).toEqual([
-      { name: 'tutorial', priorityPages: [
+      { name: 'guides', priorityPages: [
+        { path: 'docs', title: 'Docs introduction', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
+      ], pages: [] },
+      { name: 'tutorials', priorityPages: [
+        { path: 'start', title: 'Getting started', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
         { path: 'tutorial', title: 'Tutorial index', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
         { path: 'tutorial/toh-pt1', title: 'Tutorial - part 1', type: '', keywords: '', titleWords: '', deprecated: false, topics: '' },
-      ], pages: [] }
+      ], pages: [] },
     ]);
   });
 
