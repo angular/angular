@@ -18,14 +18,7 @@
     padding: 80px 1rem 1rem;
   }
 
-  .page-about &,
-  .page-contribute &,
-  .page-events &,
-  .page-features &,
-  .page-guide-cheatsheet &,
-  .page-home &,
-  .page-presskit &,
-  .page-resources & {
+  @include marketing-pages($extraSelectors: ('.page-guide-cheatsheet'), $nestParentSelector: true) {
     max-width: none;
   }
 
