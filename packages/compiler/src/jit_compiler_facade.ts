@@ -54,7 +54,8 @@ export class CompilerFacadeImpl implements CompilerFacade {
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
       declaration: R3DeclarePipeFacade): any {
     const meta = convertDeclarePipeFacadeToMetadata(declaration);
-    return compilePipeFromMetadata(meta);
+    const res = compilePipeFromMetadata(meta);
+    return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []);
   }
 
   compileInjectable(
