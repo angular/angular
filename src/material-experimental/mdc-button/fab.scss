@@ -24,7 +24,8 @@
   // ```
   // However, Angular Material expects a `mat-icon` instead. The following
   // mixin will style the icons appropriately.
-  .mat-icon {
+  /* stylelint-disable-next-line selector-class-pattern */
+  .mat-icon, .material-icons {
     @include mdc-fab-icon_();
   }
 }
@@ -32,7 +33,8 @@
 .mat-mdc-extended-fab {
   @include mdc-fab-extended_();
 
-  .mat-icon {
+  /* stylelint-disable-next-line selector-class-pattern */
+  .mat-icon, .material-icons {
     @include mdc-fab-extended-icon-padding(
                     $mdc-fab-extended-icon-padding,
                     $mdc-fab-extended-label-padding
@@ -42,7 +44,8 @@
   // For Extended FAB with text label followed by icon.
   // We are checking for the a button class because white this is a FAB it
   // uses the same template as button.
-  .mdc-button__label + .mat-icon {
+  /* stylelint-disable-next-line selector-class-pattern */
+  .mdc-button__label + .mat-icon, .mdc-button__label + .material-icons {
     @include mdc-fab-extended-icon-padding(
                     $mdc-fab-extended-icon-padding,
                     $mdc-fab-extended-label-padding,
