@@ -92,7 +92,7 @@ aio-notification {
   }
 }
 
-@include marketingPages {
+@include marketing-pages {
   &.aio-notification-show {
     mat-sidenav-container.sidenav-container {
       .sidenav-content {
