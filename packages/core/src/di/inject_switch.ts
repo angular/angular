@@ -7,6 +7,7 @@
  */
 
 import {AbstractType, Type} from '../interface/type';
+import {throwProviderNotFoundError} from '../render3/errors_di';
 import {assertNotEqual} from '../util/assert';
 import {stringify} from '../util/stringify';
 import {InjectionToken} from './injection_token';
@@ -62,7 +63,7 @@ export function injectRootLimpMode<T>(
   }
   if (flags & InjectFlags.Optional) return null;
   if (notFoundValue !== undefined) return notFoundValue;
-  throw new Error(`Injector: NOT_FOUND [${stringify(token)}]`);
+  throwProviderNotFoundError(stringify(token), 'Injector');
 }
 
 
