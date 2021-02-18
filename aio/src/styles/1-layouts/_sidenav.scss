@@ -63,6 +63,7 @@ aio-nav-menu {
       color: $darkgray;
       cursor: pointer;
       display: flex;
+      font-family: $main-font;
       align-items: center;
       justify-content: space-between;
       overflow-wrap: break-word;
@@ -131,7 +132,6 @@ aio-nav-menu {
     }
 
     .level-1 {
-      font-family: $main-font;
       @include font-size(16);
       @include line-height(28);
       font-weight: 400;
@@ -141,7 +141,6 @@ aio-nav-menu {
     }
 
     .level-2 {
-      font-family: $main-font;
       @include font-size(14);
       @include line-height(24);
       font-weight: 400;
@@ -150,7 +149,6 @@ aio-nav-menu {
     }
 
     .level-3 {
-      font-family: $main-font;
       @include font-size(14);
       @include line-height(24);
       margin: 0;
@@ -158,7 +156,6 @@ aio-nav-menu {
     }
 
     .level-4 {
-      font-family: $main-font;
       @include font-size(14);
       @include line-height(24);
       margin: 0;
