@@ -261,49 +261,35 @@ section#intro {
   }
 }
 
-aio-shell {
-  &.page-about,
-  &.page-contribute,
-  &.page-events,
-  &.page-features,
-  &.page-home,
-  &.page-presskit,
-  &.page-resources {
-    .sidenav-content {
-      padding: 0 0 3rem;
-    }
+@include marketing-pages {
+  .sidenav-content {
+    padding: 0 0 3rem;
   }
 
-  &.page-home {
-    .sidenav-content {
-      padding-bottom: 0;
+  article {
+    padding: 3rem;
+
+    @media (max-width: 800px) {
+      padding: 2.2rem;
     }
-  }
-
-  &.page-about,
-  &.page-contribute,
-  &.page-events,
-  &.page-features,
-  &.page-home,
-  &.page-presskit,
-  &.page-resources {
-    article {
-      padding: 3rem;
-
-      @media (max-width: 800px) {
-        padding: 2.2rem;
-      }
-    }
-  }
-
-  .cta-bar .hero-cta {
-    color: $blue;
   }
 }
 
-.cta-bar.announcement-bar {
-  background: none;
-  box-shadow: none;
+.page-home {
+  .sidenav-content {
+    padding-bottom: 0;
+  }
+}
+
+.cta-bar {
+  &.announcement-bar {
+    background: none;
+    box-shadow: none;
+  }
+
+  .hero-cta {
+    color: $blue;
+  }
 }
 
 .text-headline {

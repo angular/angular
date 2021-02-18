@@ -34,14 +34,7 @@ h2 {
   margin-top: 4rem;
   padding-top: 4rem;
 
-  .page-about &,
-  .page-api &,
-  .page-contribute &,
-  .page-events &,
-  .page-features &,
-  .page-home &,
-  .page-presskit &,
-  .page-resources & {
+  @include marketing-pages($extraSelectors: ('.page-api'), $nestParentSelector: true) {
     border-top: 0;
     margin-top: 2rem;
     padding-top: 0;

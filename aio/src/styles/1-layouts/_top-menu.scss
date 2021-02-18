@@ -26,13 +26,7 @@ mat-toolbar.app-toolbar {
   }
 
   // MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
-  .page-about &,
-  .page-contribute &,
-  .page-events &,
-  .page-features &,
-  .page-home &,
-  .page-presskit &,
-  .page-resources & {
+  @include marketing-pages($nestParentSelector: true) {
     box-shadow: none;
 
     // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE

@@ -90,14 +90,10 @@ aio-notification {
       }
     }
   }
+}
 
-  &.page-about,
-  &.page-contribute,
-  &.page-events,
-  &.page-features,
-  &.page-home,
-  &.page-presskit,
-  &.page-resources {
+@include marketing-pages {
+  &.aio-notification-show {
     mat-sidenav-container.sidenav-container {
       .sidenav-content {
         padding-top: $notificationHeight;
