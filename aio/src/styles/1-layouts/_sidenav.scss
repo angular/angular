@@ -36,20 +36,6 @@ mat-sidenav-container.sidenav-container {
     .doc-version {
       padding: 8px;
       border-top: 1px solid $lightgray;
-
-      select {
-        outline: none;
-        width: 100%;
-        background: rgba($lightgray, 0.5);
-        height: 32px;
-        border: 1px solid $lightgray;
-        color: $darkgray;
-
-        option {
-          font-family: $main-font;
-          @include font-size(14);
-        }
-      }
     }
   }
 }
