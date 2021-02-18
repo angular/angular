@@ -281,20 +281,17 @@ aio-shell {
 
   &.page-about,
   &.page-contribute,
+  &.page-events,
+  &.page-features,
   &.page-home,
+  &.page-presskit,
   &.page-resources {
     article {
-      padding: 32px;
+      padding: 3rem;
 
       @media (max-width: 800px) {
-        padding: 24px;
+        padding: 2.2rem;
       }
-    }
-  }
-
-  &.page-features, &.page-events {
-    article {
-      padding: 0 3rem;
     }
   }
 
