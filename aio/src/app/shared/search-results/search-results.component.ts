@@ -29,13 +29,15 @@ export class SearchResultsComponent implements OnChanges {
   resultSelected = new EventEmitter<SearchResult>();
 
   searchState: SearchState = SearchState.InProgress;
-  readonly defaultFolder = 'other';
-  readonly topLevelFolders = ['api', 'cli', 'docs', 'errors', 'guide', 'start', 'tutorial'];
-  readonly folderToAreaOverrides: Record<string, string> = {
-    docs: 'guides',
-    guide: 'guides',
-    start: 'tutorials',
-    tutorial: 'tutorials',
+  readonly defaultArea = 'other';
+  readonly folderToAreaMap: Record<string, string> = {
+      api: 'api',
+      cli: 'cli',
+      docs: 'guides',
+      errors: 'errors',
+      guide: 'guides',
+      start: 'tutorials',
+      tutorial: 'tutorials',
   };
   searchAreas: SearchArea[] = [];
 
@@ -82,14 +84,8 @@ export class SearchResultsComponent implements OnChanges {
 
   // Split the search result path and use the top level folder, if there is one, as the area name.
   private computeAreaName(result: SearchResult): string {
-    const [firstSegment, rest] = result.path.split('/', 2);
-    const folderName = rest
-        ? firstSegment
-        : (this.topLevelFolders.indexOf(result.path) !== -1)
-            ? result.path
-            : this.defaultFolder;
-
-    return this.folderToAreaOverrides[folderName] ?? folderName;
+    const [folder] = result.path.split('/', 1);
+    return this.folderToAreaMap[folder] ?? this.defaultArea;
   }
 }
 
