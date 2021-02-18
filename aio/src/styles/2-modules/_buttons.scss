@@ -1,5 +1,9 @@
 /* Button Styles */
 
+button {
+  font-family: inherit;
+}
+
 .button,
 a.button.mat-button {
   display: inline-block;
