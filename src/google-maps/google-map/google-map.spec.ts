@@ -347,6 +347,18 @@ describe('GoogleMap', () => {
 
     expect(mapSpy.setMapTypeId).toHaveBeenCalledWith('roadmap');
   });
+
+  it('sets mapTypeId through the options', () => {
+    const options = {mapTypeId: 'satellite'};
+    mapSpy = createMapSpy(options);
+    mapConstructorSpy = createMapConstructorSpy(mapSpy).and.callThrough();
+    const fixture = TestBed.createComponent(TestApp);
+    fixture.componentInstance.options = options;
+    fixture.detectChanges();
+
+    expect(mapConstructorSpy.calls.mostRecent()?.args[1].mapTypeId).toBe('satellite');
+  });
+
 });
 
 @Component({

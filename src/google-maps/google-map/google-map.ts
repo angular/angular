@@ -252,8 +252,8 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
     const googleMap = this.googleMap;
 
     if (googleMap) {
-      if (changes['options'] && this._options) {
-        googleMap.setOptions(this._options);
+      if (changes['options']) {
+        googleMap.setOptions(this._combineOptions());
       }
 
       if (changes['center'] && this._center) {
@@ -459,14 +459,14 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
 
   /** Combines the center and zoom and the other map options into a single object */
   private _combineOptions(): google.maps.MapOptions {
-    const options = this._options;
+    const options = this._options || {};
     return {
       ...options,
       // It's important that we set **some** kind of `center` and `zoom`, otherwise
       // Google Maps will render a blank rectangle which looks broken.
       center: this._center || options.center || DEFAULT_OPTIONS.center,
       zoom: this._zoom ?? options.zoom ?? DEFAULT_OPTIONS.zoom,
-      mapTypeId: this.mapTypeId
+      mapTypeId: this.mapTypeId || options.mapTypeId
     };
   }
 
