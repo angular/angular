@@ -126,42 +126,37 @@
   }
 }
 
-/**
- * Define some styles for docs (i.e. non-marketing) pages.
- *
- * Example SCSS:
- * ```scss
- * .foo {
- *   @include docsPages {
- *     .bar {
- *       color: orange;
- *     }
- *   }
- * }
- *
- * .baz {
- *   @include docsPages($nestParentSelector: true) {
- *     .qux {
- *       color: orange;
- *     }
- *   }
- * }
- * ```
- *
- * Output CSS:
- * ```css
- * .foo .folder-api .bar, .foo .folder-cli .bar, ... {
- *   color: orange;
- * }
- *
- * .folder-api .baz .qux, .folder-cli .baz .qux, ... {
- *   color: orange;
- * }
- * ```
- *
- * @param {boolean} nestParentSelector - If true, the parent selector (&) is nested inside the docs pages selectors.
- */
-@mixin docsPages($nestParentSelector: false) {
+/// Define some styles for docs (i.e. non-marketing) pages.
+///
+/// @example scss - Example SCSS:
+///   .foo {
+///     @include docs-pages {
+///       .bar {
+///         color: orange;
+///       }
+///     }
+///   }
+///
+///   .baz {
+///     @include docs-pages($nestParentSelector: true) {
+///       .qux {
+///         color: orange;
+///       }
+///     }
+///   }
+///
+/// @example css - Output CSS:
+///   .foo .folder-api .bar, .foo .folder-cli .bar, ... {
+///     color: orange;
+///   }
+///
+///   .folder-api .baz .qux, .folder-cli .baz .qux, ... {
+///     color: orange;
+///   }
+///
+/// @param {boolean} $nestParentSelector
+///   If true, the parent selector (`&`) is nested inside the docs pages selectors.
+@mixin docs-pages($nestParentSelector: false) {
   $selectors: (
     '.folder-api',
     '.folder-cli',

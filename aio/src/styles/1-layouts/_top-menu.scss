@@ -39,7 +39,7 @@ mat-toolbar.app-toolbar {
   }
 
   // DOCS PAGES OVERRIDE: HAMBURGER
-  @include docsPages($nestParentSelector: true) {
+  @include docs-pages($nestParentSelector: true) {
     @media (min-width: $showTopMenuWidth) {
       .hamburger {
         // Hamburger shown on non-marketing pages even on large screens.
