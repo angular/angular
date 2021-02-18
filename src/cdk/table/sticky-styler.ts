@@ -48,11 +48,7 @@ export class StickyStyler {
   constructor(private _isNativeHtmlTable: boolean,
               private _stickCellCss: string,
               public direction: Direction,
-              /**
-               * @deprecated `_coalescedStyleScheduler` parameter to become required.
-               * @breaking-change 11.0.0
-               */
-              private _coalescedStyleScheduler?: _CoalescedStyleScheduler,
+              private _coalescedStyleScheduler: _CoalescedStyleScheduler,
               private _isBrowser = true,
               private readonly _needsPositionStickyOnElement = true,
               private readonly _positionListener?: StickyPositioningListener) {
@@ -86,7 +82,7 @@ export class StickyStyler {
     }
 
     // Coalesce with sticky row/column updates (and potentially other changes like column resize).
-    this._scheduleStyleChanges(() => {
+    this._coalescedStyleScheduler.schedule(() => {
       for (const element of elementsToClear) {
         this._removeStickyStyle(element, stickyDirections);
       }
@@ -128,7 +124,7 @@ export class StickyStyler {
     const firstStickyEnd = stickyEndStates.indexOf(true);
 
     // Coalesce with sticky row updates (and potentially other changes like column resize).
-    this._scheduleStyleChanges(() => {
+    this._coalescedStyleScheduler.schedule(() => {
       const isRtl = this.direction === 'rtl';
       const start = isRtl ? 'right' : 'left';
       const end = isRtl ? 'left' : 'right';
@@ -213,7 +209,7 @@ export class StickyStyler {
 
     // Coalesce with other sticky row updates (top/bottom), sticky columns updates
     // (and potentially other changes like column resize).
-    this._scheduleStyleChanges(() => {
+    this._coalescedStyleScheduler.schedule(() => {
       for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
         if (!states[rowIndex]) {
           continue;
@@ -250,7 +246,7 @@ export class StickyStyler {
     const tfoot = tableElement.querySelector('tfoot')!;
 
     // Coalesce with other sticky updates (and potentially other changes like column resize).
-    this._scheduleStyleChanges(() => {
+    this._coalescedStyleScheduler.schedule(() => {
       if (stickyStates.some(state => !state)) {
         this._removeStickyStyle(tfoot, ['bottom']);
       } else {
@@ -391,18 +387,5 @@ export class StickyStyler {
     }
 
     return positions;
-  }
-
-  /**
-   * Schedules styles to be applied when the style scheduler deems appropriate.
-   * @breaking-change 11.0.0 This method can be removed in favor of calling
-   * `CoalescedStyleScheduler.schedule` directly once the scheduler is a required parameter.
-   */
-  private _scheduleStyleChanges(changes: () => void) {
-    if (this._coalescedStyleScheduler) {
-      this._coalescedStyleScheduler.schedule(changes);
-    } else {
-      changes();
-    }
   }
 }
