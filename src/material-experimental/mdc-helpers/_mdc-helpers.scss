@@ -96,12 +96,11 @@ $mat-typography-2018-level-mappings: (
       $mat-typography-2018-level-mappings, $mat-typography-2014-level-mappings);
   $mdc-level: map-get(map-get($mappings, mat-to-mdc), $mat-level);
 
-  @return map-merge(
+  $result-with-nulls: map-merge(
       if($mdc-level,
           map-get($mdc-typography-styles, $mdc-level),
           (
             text-decoration: none,
-            text-transform: none,
             -moz-osx-font-smoothing: grayscale,
             -webkit-font-smoothing: antialiased
           )),
@@ -113,9 +112,19 @@ $mat-typography-2018-level-mappings: (
             letter-spacing: mat-letter-spacing($mat-config, $mat-level),
             font-family: mat-font-family($mat-config, $mat-level),
             // Angular Material doesn't use text-transform, so disable it.
-            text-transform: none,
+            text-transform: null,
           ),
           ()));
+
+  // We need to strip out any keys with a null value. Leaving them in will cause MDC to emit CSS
+  // variables with no fallback value, which breaks some builds.
+  $result: ();
+  @each $property, $value in $result-with-nulls {
+    @if $value != null {
+      $result: map-merge($result, ($property: $value));
+    }
+  }
+  @return $result;
 }
 
 // Converts an Angular Material typography config to an MDC one.
