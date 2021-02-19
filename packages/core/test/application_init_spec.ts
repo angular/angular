@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ApplicationInitStatus} from '@angular/core/src/application_init';
-import {Observable, Subscriber} from 'rxjs';
-
-import {waitForAsync} from '../testing';
+import {EMPTY, Observable, Subscriber} from 'rxjs';
 
 describe('ApplicationInitStatus', () => {
   let status: ApplicationInitStatus;
@@ -26,11 +24,10 @@ describe('ApplicationInitStatus', () => {
       expect(status.done).toBe(true);
     });
 
-    it('should return a promise that resolves immediately for `donePromise`', () => {
+    it('should return a promise that resolves immediately for `donePromise`', async () => {
       runInitializers();
-      status.donePromise.then(() => {
-        expect(status.done).toBe(true);
-      });
+      await status.donePromise;
+      expect(status.done).toBe(true);
     });
   });
 
@@ -48,52 +45,51 @@ describe('ApplicationInitStatus', () => {
       status = new ApplicationInitStatus([() => promise]);
     });
 
-    it('should update the status once all async promise initializers are done', waitForAsync(() => {
-         runInitializers();
+    it('should update the status once all async promise initializers are done', async () => {
+      runInitializers();
 
-         setTimeout(() => {
-           initFnInvoked = true;
-           resolve(null);
-         });
+      setTimeout(() => {
+        initFnInvoked = true;
+        resolve(null);
+      });
 
-         expect(status.done).toBe(false);
-         status.donePromise.then(() => {
-           expect(status.done).toBe(true);
-           expect(initFnInvoked).toBe(true);
-         });
-       }));
+      expect(status.done).toBe(false);
+      await status.donePromise;
+      expect(status.done).toBe(true);
+      expect(initFnInvoked).toBe(true);
+    });
 
-    it('should handle a case when promise is rejected', waitForAsync(() => {
-         runInitializers();
+    it('should handle a case when promise is rejected', async () => {
+      runInitializers();
 
-         setTimeout(() => {
-           initFnInvoked = true;
-           reject();
-         });
+      setTimeout(() => {
+        initFnInvoked = true;
+        reject();
+      });
 
-         expect(status.done).toBe(false);
-         status.donePromise
-             .then(() => fail('`donePromise.then` should not be invoked when promise is rejected'))
-             .catch(() => {
-               expect(status.done).toBe(false);
-               expect(initFnInvoked).toBe(true);
-             });
-       }));
+      expect(status.done).toBe(false);
+      try {
+        await status.donePromise;
+        fail('donePromise should have been rejected when promise is rejected');
+      } catch {
+        expect(status.done).toBe(false);
+        expect(initFnInvoked).toBe(true);
+      }
+    });
   });
 
   describe('with app initializers represented using observables', () => {
     let subscriber: Subscriber<any>;
-    let observable: Observable<any>;
     let initFnInvoked = false;
     beforeEach(() => {
-      observable = new Observable((res) => {
+      const observable = new Observable((res) => {
         subscriber = res;
       });
       status = new ApplicationInitStatus([() => observable]);
     });
 
     it('should update the status once all async observable initializers are completed',
-       waitForAsync(() => {
+       async () => {
          runInitializers();
 
          setTimeout(() => {
@@ -102,63 +98,61 @@ describe('ApplicationInitStatus', () => {
          });
 
          expect(status.done).toBe(false);
-         status.donePromise.then(() => {
-           expect(status.done).toBe(true);
-           expect(initFnInvoked).toBe(true);
-         });
-       }));
+         await status.donePromise;
+         expect(status.done).toBe(true);
+         expect(initFnInvoked).toBe(true);
+       });
 
     it('should update the status once all async observable initializers emitted and completed',
-       waitForAsync(() => {
+       async () => {
          runInitializers();
+
+         subscriber.next('one');
+         subscriber.next('two');
 
          setTimeout(() => {
            initFnInvoked = true;
-           subscriber.next('one');
-           subscriber.next('two');
            subscriber.complete();
          });
 
-         expect(status.done).toBe(false);
-         status.donePromise.then(() => {
-           expect(status.done).toBe(true);
-           expect(initFnInvoked).toBe(true);
-         });
-       }));
+         await status.donePromise;
+         expect(status.done).toBe(true);
+         expect(initFnInvoked).toBe(true);
+       });
 
-    it('should update the status if all async observable initializers are completed before runInitializers',
-       waitForAsync(() => {
-         // Call subscribe to initialize `subscriber`.
-         observable.subscribe(() => {});
-
-         subscriber.complete();
+    it('should update the status if all async observable initializers are completed synchronously',
+       async () => {
+         // Create a status instance using an initializer that returns the `EMPTY` Observable
+         // which completes synchronously upon subscription.
+         status = new ApplicationInitStatus([() => EMPTY]);
 
          runInitializers();
 
+         // Although the Observable completes synchronously, we still queue a promise for
+         // simplicity. This means that the `done` flag will not be `true` immediately, even
+         // though there was not actually any asynchronous activity.
          expect(status.done).toBe(false);
 
-         status.donePromise.then(() => {
-           expect(status.done).toBe(true);
-         });
-       }));
+         await status.donePromise;
+         expect(status.done).toBe(true);
+       });
 
-    it('should handle a case when observable emits an error', waitForAsync(() => {
-         runInitializers();
+    it('should handle a case when observable emits an error', async () => {
+      runInitializers();
 
-         setTimeout(() => {
-           initFnInvoked = true;
-           subscriber.error();
-         });
+      setTimeout(() => {
+        initFnInvoked = true;
+        subscriber.error();
+      });
 
-         expect(status.done).toBe(false);
-         status.donePromise
-             .then(() => {
-               fail('`donePromise.then` should not be invoked when observable emits an error');
-             })
-             .catch(() => {
-               expect(status.done).toBe(false);
-               expect(initFnInvoked).toBe(true);
-             });
-       }));
+      expect(status.done).toBe(false);
+      try {
+        await status.donePromise;
+        fail('donePromise should have been rejected when observable emits an error');
+      } catch {
+        expect(status.done).toBe(false);
+        expect(initFnInvoked).toBe(true);
+      }
+    });
   });
 });
