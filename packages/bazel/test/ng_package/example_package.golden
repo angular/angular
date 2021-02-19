@@ -89,7 +89,7 @@ License: MIT
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -121,7 +121,7 @@ export { }
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -160,7 +160,7 @@ Hello
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -210,7 +210,7 @@ Hello
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 !function(e,o){"object"==typeof exports&&"undefined"!=typeof module?o(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/a11y",["exports","@angular/core"],o):o(((e=e||self).example=e.example||{},e.example.a11y={}),e.ng.core)}(this,(function(e,o){"use strict";
@@ -234,7 +234,7 @@ e.A11yModule=t,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -307,7 +307,7 @@ e.A11yModule=t,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 !function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/imports",["exports","@angular/core"],t):t(((e=e||self).example=e.example||{},e.example.imports={}),e.ng.core)}(this,(function(e,t){"use strict";
@@ -331,7 +331,7 @@ e.MyService=r,e.ɵangular_packages_bazel_test_ng_package_example_imports_imports
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -383,7 +383,7 @@ e.MyService=r,e.ɵangular_packages_bazel_test_ng_package_example_imports_imports
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 !function(e,o){"object"==typeof exports&&"undefined"!=typeof module?o(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/secondary",["exports","@angular/core"],o):o(((e=e||self).example=e.example||{},e.example.secondary={}),e.ng.core)}(this,(function(e,o){"use strict";
@@ -407,7 +407,7 @@ e.SecondaryModule=n,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -457,7 +457,7 @@ e.SecondaryModule=n,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 !function(e,o){"object"==typeof exports&&"undefined"!=typeof module?o(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example",["exports","@angular/core"],o):o((e=e||self).example={},e.ng.core)}(this,(function(e,o){"use strict";
@@ -700,7 +700,7 @@ export const a = 1;
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -727,7 +727,7 @@ export { }
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -766,7 +766,7 @@ export { A11yModule };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -826,7 +826,7 @@ export { MyService, MySecondService as ɵangular_packages_bazel_test_ng_package_
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -866,7 +866,7 @@ export { SecondaryModule, a };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -905,7 +905,7 @@ export { MyModule };
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -942,7 +942,7 @@ export { }
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -987,7 +987,7 @@ export * from './imports/imports';
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
@@ -1009,7 +1009,7 @@ export { }
 
 /**
  * @license Angular v0.0.0
- * (c) 2010-2020 Google LLC. https://angular.io/
+ * (c) 2010-2021 Google LLC. https://angular.io/
  * License: MIT
  */
 
