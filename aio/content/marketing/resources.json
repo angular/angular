@@ -44,6 +44,11 @@
             "desc": "A collection of Angular builders for your Angular projects",
             "url": "https://angular-builders.dev/",
             "title": "Angular Builders"
+          },
+          "butter-cms": {
+            "desc": "Add API Based CMS to your Angular app",
+            "url": "https://github.com/ButterCMS/buttercms-angular-tutorial",
+            "title": "API Based CMS with Butter"
           }
         }
       },
@@ -166,6 +171,12 @@
             "logo": "",
             "title": "ngx-api-utils",
             "url": "https://github.com/ngx-api-utils/ngx-api-utils"
+          },
+          "butter": {
+            "desc": "ButterCMS is a headless CMS that lets you manage content using our dashboard and integrate it into your Angular Application",
+            "logo": "https://buttercms.com/static/v2/images/logo.fb7c1035e94d.svg",
+            "title": "ButterCMS",
+            "url": "https://buttercms.com/docs/api-client/angular"
           }
         }
       },
@@ -568,6 +579,12 @@
             "title": "Testing Angular",
             "desc": "A Guide to Robust Angular Applications (free online book and e-book)",
             "url": "https://molily.de/testing-angular",
+            "logo": ""
+          },
+          "butter-cms": {
+            "title":"How to integrate ButterCMS into Angular 2+ App",
+            "desc": "Integrate a Headless CMS into your Angular App, create blog posts and pages",
+            "url":"https://medium.com/orlyknop/how-to-integrate-buttercms-into-angular-2-app-a1baaa51402",
             "logo": ""
           }
         }
