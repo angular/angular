@@ -424,7 +424,7 @@ There are several options that can be used to fine-tune the optimization of an a
 <td><code>inlineCritical</code></td>
 <td>Extract and inline critical CSS definitions to improve <a href="https://web.dev/first-contentful-paint/">First Contentful Paint.</td>
 <td><code class="no-auto-link">boolean</code></td>
-<td><code>false</code></td>
+<td><code>true</code></td>
 </tr>
 </tbody>
 </table>
