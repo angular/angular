@@ -152,7 +152,7 @@ abstract class LibHeaderToken {
 @Component({
   selector: 'lib-header',
   providers: [
-    {provide: LibHeaderToken, useExisting: LibHeader}
+    {provide: LibHeaderToken, useExisting: LibHeaderComponent}
   ]
   ...,
 })
