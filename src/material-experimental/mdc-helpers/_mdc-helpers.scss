@@ -112,7 +112,7 @@ $mat-typography-2018-level-mappings: (
             letter-spacing: mat-letter-spacing($mat-config, $mat-level),
             font-family: mat-font-family($mat-config, $mat-level),
             // Angular Material doesn't use text-transform, so disable it.
-            text-transform: null,
+            text-transform: none,
           ),
           ()));
 
