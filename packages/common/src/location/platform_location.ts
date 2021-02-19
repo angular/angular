@@ -155,9 +155,19 @@ export class BrowserPlatformLocation extends PlatformLocation {
     this.location.pathname = newPath;
   }
 
+  private prefixWithPathnameIfHashAndNotRootFolder(url: string): string {
+    if (url.startsWith('#')) {
+      const pathname = this.location.pathname;
+      if (pathname !== '/') {
+        return pathname + url;
+      }
+    }
+    return url;
+  }
+
   pushState(state: any, title: string, url: string): void {
     if (supportsState()) {
-      this._history.pushState(state, title, url);
+      this._history.pushState(state, title, this.prefixWithPathnameIfHashAndNotRootFolder(url));
     } else {
       this.location.hash = url;
     }
@@ -165,7 +175,7 @@ export class BrowserPlatformLocation extends PlatformLocation {
 
   replaceState(state: any, title: string, url: string): void {
     if (supportsState()) {
-      this._history.replaceState(state, title, url);
+      this._history.replaceState(state, title, this.prefixWithPathnameIfHashAndNotRootFolder(url));
     } else {
       this.location.hash = url;
     }
