@@ -1,3 +1,5 @@
+@use '@material/button/button';
+
 @import '@material/button/mixins.import';
 @import '@material/button/variables.import';
 @import '@material/ripple/mixins.import';
@@ -10,20 +12,32 @@
 .mat-mdc-button, .mat-mdc-unelevated-button, .mat-mdc-raised-button, .mat-mdc-outlined-button {
   @include mat-private-button-interactive();
   @include mat-private-button-disabled();
+}
 
-  // MDC expects button icons to contain this HTML content:
-  // ```html
-  //   <span class="mdc-button__icon material-icons">favorite</span>
-  // ```
-  // However, Angular Material expects a `mat-icon` instead. The following
-  // will extend the `mdc-button__icon` styling to the mat icon. Note that
-  // the extended styles inherently only match icons that nest themselves in
-  // a parent `mdc-button`.
-  //
-  // TODO(mmalerba): Have MDC create a mixin for this so we don't have to rely on extending their
-  //  class.
+// MDC expects button icons to contain this HTML content:
+// ```html
+//   <span class="mdc-button__icon material-icons">favorite</span>
+// ```
+// However, Angular Material expects a `mat-icon` instead. The following
+// mixins will style the icons appropriately.
+.mat-mdc-button {
   .mat-icon {
-    @extend .mdc-button__icon;
+    @include button.icon();
+  }
+ .mdc-button__label + .mat-icon {
+   @include button.icon-trailing();
+ }
+}
+
+.mat-mdc-unelevated-button, .mat-mdc-raised-button, .mat-mdc-outlined-button {
+  // Icons inside contained buttons have different styles due to increased button padding
+  .mat-icon {
+    @include button.icon();
+    @include button.icon-contained();
+  }
+
+  .mdc-button__label + .mat-icon {
+    @include button.icon-contained-trailing();
   }
 }
 
