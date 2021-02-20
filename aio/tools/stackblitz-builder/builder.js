@@ -5,6 +5,7 @@ const path = require('canonical-path');
 const fs = require('fs-extra');
 const globby = require('globby');
 const jsdom = require('jsdom');
+const json5 = require('json5');
 
 const regionExtractor = require('../transforms/examples-package/services/region-parser');
 
@@ -226,6 +227,18 @@ class StackblitzBuilder {
       postData[`files[${relativeFileName}]`] = content;
     });
 
+    // Stackblitz defaults to ViewEngine unless `"enableIvy": true`
+    // So if there is a tsconfig.json file and there is no `enableIvy` property, we need to
+    // explicitly set it.
+    const tsConfigJSON = postData['files[tsconfig.json]'];
+    if (tsConfigJSON !== undefined) {
+      const tsConfig = json5.parse(tsConfigJSON);
+      if (tsConfig.angularCompilerOptions.enableIvy === undefined) {
+        tsConfig.angularCompilerOptions.enableIvy = true;
+        postData['files[tsconfig.json]'] = JSON.stringify(tsConfig, null, 2);
+      }
+    }
+
     const tags = ['angular', 'example', ...config.tags || []];
     tags.forEach((tag, ix) => postData[`tags[${ix}]`] = tag);
 
@@ -263,7 +276,7 @@ class StackblitzBuilder {
     const config = this._parseConfig(configFileName);
 
     const defaultIncludes = ['**/*.ts', '**/*.js', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png', '**/*.svg'];
-    const boilerplateIncludes = ['src/environments/*.*', 'angular.json', 'src/polyfills.ts'];
+    const boilerplateIncludes = ['src/environments/*.*', 'angular.json', 'src/polyfills.ts', 'tsconfig.json'];
     if (config.files) {
       if (config.files.length > 0) {
         if (config.files[0][0] === '!') {
@@ -288,7 +301,6 @@ class StackblitzBuilder {
 
     const defaultExcludes = [
       '!**/e2e/**/*.*',
-      '!**/tsconfig.json',
       '!**/package.json',
       '!**/example-config.json',
       '!**/tslint.json',
