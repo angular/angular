@@ -1,4 +1,4 @@
-export interface Flyer { canFly: boolean; }
+export interface Flyer { name: string; canFly: boolean; }
 export const HEROES =  [
   {name: 'Windstorm', canFly: true},
   {name: 'Bombasto',  canFly: false},

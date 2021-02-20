@@ -114,6 +114,9 @@ export class AppComponent implements OnInit {
 
   trackById(index: number, item: any): number { return item.id; }
 
+  getValue(target: EventTarget): string {
+    return (target as HTMLInputElement).value;
+  }
 }
 
 

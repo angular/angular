@@ -214,7 +214,11 @@ The next step is to inject the `HttpClient` service into your service so your ap
 
 To get shipping data, from `shipping.json`, You can use the `HttpClient` `get()` method.
 
-1. In `cart.service.ts`, below the `clearCart()` method, define a new `getShippingPrices()` method that uses the `HttpClient` `get()` method.
+1. In `cart.service.ts`, import `Observable` from the `rxjs` package.
+
+    <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.ts" region="get-shipping-import"></code-example>
+
+1. Below the `clearCart()` method, define a new `getShippingPrices()` method that uses the `HttpClient` `get()` method, casting the result to an observable of an array `ShippingPrice` object.
 
     <code-example header="src/app/cart.service.ts" path="getting-started/src/app/cart.service.ts" region="get-shipping"></code-example>
 
