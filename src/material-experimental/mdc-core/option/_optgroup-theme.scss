@@ -13,8 +13,8 @@
       // Since this will usually be rendered in an overlay,
       // we have explicitly set the default color.
       @include mdc-theme-prop(color, text-primary-on-background);
-      @include mdc-list-item-disabled-text-color($mdc-list-text-disabled-color,
-        $query: $mat-theme-styles-query);
+      @include mdc-list-deprecated-item-disabled-text-color(
+        $mdc-list-deprecated-text-disabled-color, $query: $mat-theme-styles-query);
     }
   }
 }

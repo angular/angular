@@ -17,7 +17,7 @@ mat-menu {
 .mat-mdc-menu-content {
   // Note that we include this private mixin, because the public
   // one adds a bunch of styles that we aren't using for the menu.
-  @include mdc-list-base_($query: structure);
+  @include mdc-list-deprecated-base_($query: structure);
 }
 
 .mat-mdc-menu-panel {
@@ -36,21 +36,21 @@ mat-menu {
 
 .mat-mdc-menu-item {
   $height: density.prop-value(
-    $density-config: $mdc-list-single-line-density-config,
-    $density-scale: $mdc-list-single-line-density-scale,
+    $density-config: $mdc-list-deprecated-single-line-density-config,
+    $density-scale: $mdc-list-deprecated-single-line-density-scale,
     $property-name: height,
   );
 
   // Note that we include this private mixin, because the public
   // one adds a bunch of styles that we aren't using for the menu.
-  @include mdc-list-item-base_;
-  @include mdc-list-list-item-padding-variant(
-    $mdc-list-textual-variant-config, $query: $mat-base-styles-query);
+  @include mdc-list-deprecated-item-base_;
+  @include mdc-list-deprecated-list-item-padding-variant(
+    $mdc-list-deprecated-textual-variant-config, $query: $mat-base-styles-query);
 
   // MDC's menu items are `<li>` nodes which don't need resets, however ours
   // can be anything, including buttons, so we need to do the reset ourselves.
   @include mat-button-reset;
-  @include mdc-list-single-line-height($height, $query: $mat-base-styles-query);
+  @include mdc-list-deprecated-single-line-height($height, $query: $mat-base-styles-query);
   cursor: pointer;
   width: 100%;
   text-align: left;
@@ -71,7 +71,7 @@ mat-menu {
   }
 
   .mat-icon {
-    margin-right: $mdc-list-side-padding;
+    margin-right: $mdc-list-deprecated-side-padding;
   }
 
   [dir='rtl'] & {
@@ -79,7 +79,7 @@ mat-menu {
 
     .mat-icon {
       margin-right: 0;
-      margin-left: $mdc-list-side-padding;
+      margin-left: $mdc-list-deprecated-side-padding;
     }
   }
 
@@ -100,7 +100,7 @@ mat-menu {
 
 // Renders out a chevron on menu items that trigger a sub-menu.
 .mat-mdc-menu-item-submenu-trigger {
-  @include mat-menu-item-submenu-trigger($mdc-list-side-padding);
+  @include mat-menu-item-submenu-trigger($mdc-list-deprecated-side-padding);
 }
 
 // Increase specificity because ripple styles are part of the `mat-core` mixin and can

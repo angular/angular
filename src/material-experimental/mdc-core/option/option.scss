@@ -7,17 +7,17 @@
 .mat-mdc-option {
   // Note that we include this private mixin, because the public
   // one adds a bunch of styles that we aren't using for the menu.
-  @include mdc-list-item-base_;
-  @include mdc-list-list-item-padding-variant(
-    $mdc-list-textual-variant-config, $query: $mat-base-styles-query);
-  @include mdc-list-item-disabled-text-opacity($mdc-list-text-disabled-opacity,
-    $query: $mat-base-styles-query);
+  @include mdc-list-deprecated-item-base_;
+  @include mdc-list-deprecated-list-item-padding-variant(
+    $mdc-list-deprecated-textual-variant-config, $query: $mat-base-styles-query);
+  @include mdc-list-deprecated-item-disabled-text-opacity(
+    $mdc-list-deprecated-text-disabled-opacity, $query: $mat-base-styles-query);
   @include user-select(none);
 
   // Set the `min-height` here ourselves, instead of going through
   // the `mdc-list-list-item-height-variant` mixin, because it sets a `height`
   // which doesn't work well with multi-line options.
-  min-height: map-get($mdc-list-textual-variant-config, single-line-height);
+  min-height: map-get($mdc-list-deprecated-textual-variant-config, single-line-height);
 
   // Workaround for https://goo.gl/pFmjJD in IE 11. Adds a pseudo
   // element that will stretch the option to the correct height. See:
@@ -35,20 +35,20 @@
   // Note that we bump the padding here, rather than padding inside the
   // group so that ripples still reach to the edges of the panel.
   .mat-mdc-optgroup &:not(.mat-mdc-option-multiple) {
-    padding-left: $mdc-list-side-padding * 2;
+    padding-left: $mdc-list-deprecated-side-padding * 2;
 
     [dir='rtl'] & {
-      padding-left: $mdc-list-side-padding;
-      padding-right: $mdc-list-side-padding * 2;
+      padding-left: $mdc-list-deprecated-side-padding;
+      padding-right: $mdc-list-deprecated-side-padding * 2;
     }
   }
 
   .mat-pseudo-checkbox {
-    margin-right: $mdc-list-side-padding;
+    margin-right: $mdc-list-deprecated-side-padding;
 
     [dir='rtl'] & {
       margin-right: 0;
-      margin-left: $mdc-list-side-padding;
+      margin-left: $mdc-list-deprecated-side-padding;
     }
   }
 

@@ -11,7 +11,7 @@
   $config: mat-get-color-config($config-or-theme);
   @include mat-using-mdc-theme($config) {
     @include mdc-menu-surface-core-styles($mat-theme-styles-query);
-    @include mdc-list-without-ripple($mat-theme-styles-query);
+    @include mdc-list-deprecated-without-ripple($mat-theme-styles-query);
 
     // MDC doesn't appear to have disabled styling for menu
     // items so we have to grey them out ourselves.
@@ -51,7 +51,7 @@
     .mat-mdc-menu-content {
       // Note that we include this private mixin, because the public
       // one adds a bunch of styles that we aren't using for the menu.
-      @include mdc-list-base_($mat-typography-styles-query);
+      @include mdc-list-deprecated-base_($mat-typography-styles-query);
 
       // MDC uses the `subtitle1` level for list items, but the spec shows `body1` as the correct
       // level.

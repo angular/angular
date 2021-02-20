@@ -6,7 +6,7 @@
   $config: mat-get-color-config($config-or-theme);
   @include mat-using-mdc-theme($config) {
     @include mdc-menu-surface-core-styles($mat-theme-styles-query);
-    @include mdc-list-without-ripple($mat-theme-styles-query);
+    @include mdc-list-deprecated-without-ripple($mat-theme-styles-query);
   }
 }
 
@@ -18,7 +18,7 @@
     .mat-mdc-autocomplete-panel {
       // Note that we include this private mixin, because the public one adds
       // a bunch of styles that we aren't using for the autocomplete panel.
-      @include mdc-list-base_($mat-typography-styles-query);
+      @include mdc-list-deprecated-base_($mat-typography-styles-query);
     }
   }
 }

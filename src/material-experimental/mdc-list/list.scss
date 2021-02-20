@@ -2,7 +2,7 @@
 @import '@material/list/variables.import';
 @import '../mdc-helpers/mdc-helpers';
 
-@include mdc-list-without-ripple($query: $mat-base-styles-query);
+@include mdc-list-deprecated-without-ripple($query: $mat-base-styles-query);
 
 // MDC expects the list element to be a `<ul>`, since we use `<mat-list>` instead we need to
 // explicitly set `display: block`
@@ -48,7 +48,7 @@
   // Styles here come from `$mdc-list-graphic-size_`:
   // https://github.com/material-components/material-components-web/blob/3ca8c4c45a3d2a654ef3cb8fc7525bcde37badf0/packages/mdc-list/_mixins.scss#L538
   $size: 40px;
-  $margin-value: 72px - $mdc-list-side-padding - $size;
+  $margin-value: 72px - $mdc-list-deprecated-side-padding - $size;
 
   width: $size;
   height: $size;

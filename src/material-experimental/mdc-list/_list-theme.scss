@@ -18,7 +18,7 @@
   @include mat-mdc-private-interactive-list-item-state-colors($config);
 
   @include mat-using-mdc-theme($config) {
-    @include mdc-list-without-ripple($query: $mat-theme-styles-query);
+    @include mdc-list-deprecated-without-ripple($query: $mat-theme-styles-query);
 
     .mat-mdc-list-option {
       @include mat-mdc-private-list-option-color-override(primary);
@@ -35,7 +35,7 @@
 @mixin mat-mdc-list-density($config-or-theme) {
   $density-scale: mat-get-density-config($config-or-theme);
   $height: density.prop-value(
-    $density-config: $mdc-list-single-line-density-config,
+    $density-config: $mdc-list-deprecated-single-line-density-config,
     $density-scale: $density-scale,
     $property-name: height,
   );
@@ -45,7 +45,7 @@
   // the styles should actually only affect single-line list items. This has been reported as
   // a bug in the MDC repository: https://github.com/material-components/material-components-web/issues/5737.
   .mat-mdc-list-item-single-line {
-    @include mdc-list-single-line-height($height);
+    @include mdc-list-deprecated-single-line-height($height);
   }
 
   @include mat-mdc-private-list-option-density-styles($density-scale);
@@ -54,7 +54,7 @@
 @mixin mat-mdc-list-typography($config-or-theme) {
   $config: mat-get-typography-config($config-or-theme);
   @include mat-using-mdc-typography($config) {
-    @include mdc-list-without-ripple($query: $mat-typography-styles-query);
+    @include mdc-list-deprecated-without-ripple($query: $mat-typography-styles-query);
     @include mat-mdc-private-list-option-typography-styles();
   }
 }
