@@ -5,6 +5,7 @@ const path = require('canonical-path');
 const fs = require('fs-extra');
 const globby = require('globby');
 const jsdom = require('jsdom');
+const json5 = require('json5');
 
 const regionExtractor = require('../transforms/examples-package/services/region-parser');
 
@@ -225,6 +226,16 @@ class StackblitzBuilder {
 
       postData[`files[${relativeFileName}]`] = content;
     });
+
+    // Grab the angular compiler options from the tsconfig file that AIO is using.
+    // Doing this means that the generated examples match the same ViewEngine/Ivy mode as AIO
+    const aioTsConfigPath = path.resolve(__dirname, '../../tsconfig.json');
+    const {angularCompilerOptions} = json5.parse(fs.readFileSync(aioTsConfigPath, 'utf-8'));
+    // Stackblitz defaults to ViewEngine unless `"enableIvy": true`
+    if (angularCompilerOptions.enableIvy === undefined) {
+      angularCompilerOptions.enableIvy = true;
+    }
+    postData['files[tsconfig.json]'] = JSON.stringify({angularCompilerOptions});
 
     const tags = ['angular', 'example', ...config.tags || []];
     tags.forEach((tag, ix) => postData[`tags[${ix}]`] = tag);
