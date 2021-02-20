@@ -35,4 +35,9 @@ export class PackageSearchComponent implements OnInit {
 
   toggleRefresh() { this.withRefresh = ! this.withRefresh; }
 
+  // #docregion getValue
+  getValue(target: EventTarget): string {
+    return (target as HTMLInputElement).value;
+  }
+  // #enddocregion getValue
 }
