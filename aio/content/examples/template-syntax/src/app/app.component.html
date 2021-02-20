@@ -219,11 +219,9 @@ button</button>
 <app-hero-detail [hero]="currentHero"></app-hero-detail>
 <img bind-src="heroImageUrl">
 
-<!-- ERROR: HeroDetailComponent.hero expects a
-     Hero object, not the string "currentHero" -->
-<div *ngIf="false">
-  <app-hero-detail hero="currentHero"></app-hero-detail>
-</div>
+<!-- ERROR: HeroDetailComponent.hero expects a Hero object, not the string "currentHero" -->
+<!-- <app-hero-detail hero="currentHero"></app-hero-detail> -->
+
 <app-hero-detail prefix="You are my" [hero]="currentHero"></app-hero-detail>
 
 <p><img src="{{heroImageUrl}}"> is the <i>interpolated</i> image.</p>

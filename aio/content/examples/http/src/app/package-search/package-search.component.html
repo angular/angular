@@ -2,7 +2,7 @@
 <h3>Search Npm Packages</h3>
 <p><i>Searches when typing stops. Caches for 30 seconds.</i></p>
 <!-- #docregion search -->
-<input (keyup)="search($event.target.value)" id="name" placeholder="Search"/>
+<input (keyup)="search(getValue($event.target))" id="name" placeholder="Search"/>
 <!-- #enddocregion search -->
 <input type="checkbox" id="refresh" [checked]="withRefresh" (click)="toggleRefresh()">
 <label for="refresh">with refresh</label>
