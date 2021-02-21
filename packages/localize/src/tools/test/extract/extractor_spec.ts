@@ -40,19 +40,19 @@ runInEachFileSystem(() => {
           {
             start: {line: 0, column: 10},
             end: {line: 0, column: 32},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: ':meaning|description:a',
           },
           {
             start: {line: 0, column: 36},
             end: {line: 0, column: 37},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: 'b',
           },
           {
             start: {line: 0, column: 41},
             end: {line: 0, column: 42},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: 'c',
           }
         ],
@@ -63,13 +63,13 @@ runInEachFileSystem(() => {
           PH: {
             start: {line: 0, column: 34},
             end: {line: 0, column: 35},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: '1'
           },
           PH_1: {
             start: {line: 0, column: 39},
             end: {line: 0, column: 40},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: '2'
           }
         },
@@ -77,7 +77,7 @@ runInEachFileSystem(() => {
         location: {
           start: {line: 0, column: 9},
           end: {line: 0, column: 43},
-          file,
+          file: jasmine.stringMatching(/relative\/path\.js$/),
           text: '`:meaning|description:a${1}b${2}c`',
         },
       });
@@ -92,19 +92,19 @@ runInEachFileSystem(() => {
           {
             start: {line: 1, column: 69},
             end: {line: 1, column: 72},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: '"a"',
           },
           {
             start: {line: 1, column: 74},
             end: {line: 1, column: 97},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: '":custom-placeholder:b"',
           },
           {
             start: {line: 1, column: 99},
             end: {line: 1, column: 102},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: '"c"',
           }
         ],
@@ -115,13 +115,13 @@ runInEachFileSystem(() => {
           'custom-placeholder': {
             start: {line: 1, column: 106},
             end: {line: 1, column: 107},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: '1'
           },
           PH_1: {
             start: {line: 1, column: 109},
             end: {line: 1, column: 110},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: '2'
           }
         },
@@ -129,7 +129,7 @@ runInEachFileSystem(() => {
         location: {
           start: {line: 1, column: 10},
           end: {line: 1, column: 107},
-          file,
+          file: jasmine.stringMatching(/relative\/path\.js$/),
           text:
               '__makeTemplateObject(["a", ":custom-placeholder:b", "c"], ["a", ":custom-placeholder:b", "c"])',
         },
@@ -148,13 +148,13 @@ runInEachFileSystem(() => {
           PH: {
             start: {line: 2, column: 26},
             end: {line: 2, column: 27},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: '1'
           },
           PH_1: {
             start: {line: 2, column: 31},
             end: {line: 2, column: 32},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: '2'
           }
         },
@@ -162,19 +162,19 @@ runInEachFileSystem(() => {
           {
             start: {line: 2, column: 10},
             end: {line: 2, column: 24},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: ':@@custom-id:a'
           },
           {
             start: {line: 2, column: 28},
             end: {line: 2, column: 29},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: 'b'
           },
           {
             start: {line: 2, column: 33},
             end: {line: 2, column: 34},
-            file: absoluteFrom('/root/path/relative/path.js'),
+            file: jasmine.stringMatching(/relative\/path\.js$/),
             text: 'c'
           }
         ],
@@ -182,7 +182,7 @@ runInEachFileSystem(() => {
         location: {
           start: {line: 2, column: 9},
           end: {line: 2, column: 35},
-          file,
+          file: jasmine.stringMatching(/relative\/path\.js$/),
           text: '`:@@custom-id:a${1}b${2}c`'
         },
       });

@@ -85,19 +85,19 @@ runInEachFileSystem(() => {
              {
                start: {line: 0, column: 11},
                end: {line: 0, column: 14},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'a'`,
              },
              {
                start: {line: 0, column: 16},
                end: {line: 0, column: 21},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'b\\t'`,
              },
              {
                start: {line: 0, column: 23},
                end: {line: 0, column: 26},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'c'`,
              },
            ]);
@@ -114,19 +114,19 @@ runInEachFileSystem(() => {
              {
                start: {line: 0, column: 51},
                end: {line: 0, column: 54},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'a'`,
              },
              {
                start: {line: 0, column: 56},
                end: {line: 0, column: 62},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'b\\\\t'`,
              },
              {
                start: {line: 0, column: 64},
                end: {line: 0, column: 67},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'c'`,
              },
            ]);
@@ -143,19 +143,19 @@ runInEachFileSystem(() => {
              {
                start: {line: 0, column: 65},
                end: {line: 0, column: 68},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'a'`,
              },
              {
                start: {line: 0, column: 70},
                end: {line: 0, column: 76},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'b\\\\t'`,
              },
              {
                start: {line: 0, column: 78},
                end: {line: 0, column: 81},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'c'`,
              },
            ]);
@@ -173,19 +173,19 @@ runInEachFileSystem(() => {
              {
                start: {line: 2, column: 105},
                end: {line: 2, column: 108},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'a'`,
              },
              {
                start: {line: 2, column: 110},
                end: {line: 2, column: 116},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'b\\\\t'`,
              },
              {
                start: {line: 2, column: 118},
                end: {line: 2, column: 121},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'c'`,
              },
            ]);
@@ -212,19 +212,19 @@ runInEachFileSystem(() => {
              {
                start: {line: 4, column: 21},
                end: {line: 4, column: 24},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `"a"`,
              },
              {
                start: {line: 4, column: 25},
                end: {line: 4, column: 29},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `"b\t"`,
              },
              {
                start: {line: 4, column: 30},
                end: {line: 4, column: 33},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `"c"`,
              },
            ]);
@@ -245,19 +245,19 @@ runInEachFileSystem(() => {
              {
                start: {line: 2, column: 61},
                end: {line: 2, column: 64},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'a'`,
              },
              {
                start: {line: 2, column: 66},
                end: {line: 2, column: 72},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'b\\\\t'`,
              },
              {
                start: {line: 2, column: 74},
                end: {line: 2, column: 77},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: `'c'`,
              },
            ]);
@@ -289,13 +289,13 @@ runInEachFileSystem(() => {
              {
                start: {line: 0, column: 28},
                end: {line: 0, column: 29},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: '1'
              },
              {
                start: {line: 0, column: 31},
                end: {line: 0, column: 32},
-               file: absoluteFrom('/test/file.js'),
+               file: jasmine.stringMatching(/test\/file\.js/),
                text: '2'
              },
            ]);
@@ -310,13 +310,13 @@ runInEachFileSystem(() => {
           {
             start: {line: 0, column: 66},
             end: {line: 0, column: 67},
-            file: absoluteFrom('/test/file.js'),
+            file: jasmine.stringMatching(/test\/file\.js/),
             text: '1'
           },
           {
             start: {line: 0, column: 69},
             end: {line: 0, column: 70},
-            file: absoluteFrom('/test/file.js'),
+            file: jasmine.stringMatching(/test\/file\.js/),
             text: '2'
           },
         ]);
@@ -355,19 +355,19 @@ runInEachFileSystem(() => {
           {
             start: {line: 0, column: 1},
             end: {line: 0, column: 4},
-            file: absoluteFrom('/test/file.js'),
+            file: jasmine.stringMatching(/test\/file\.js/),
             text: `'a'`,
           },
           {
             start: {line: 0, column: 6},
             end: {line: 0, column: 9},
-            file: absoluteFrom('/test/file.js'),
+            file: jasmine.stringMatching(/test\/file\.js/),
             text: `'b'`,
           },
           {
             start: {line: 0, column: 11},
             end: {line: 0, column: 14},
-            file: absoluteFrom('/test/file.js'),
+            file: jasmine.stringMatching(/test\/file\.js/),
             text: `'c'`,
           },
         ]);
@@ -422,7 +422,7 @@ runInEachFileSystem(() => {
         expect(location.start.constructor.name).toEqual('Object');
         expect(location.end).toEqual({line: 0, column: 29});
         expect(location.end?.constructor.name).toEqual('Object');
-        expect(location.file).toEqual(absoluteFrom('/root/src/test.js'));
+        expect(location.file).toMatch(/src\/test\.js/);
       });
 
       it('should return `undefined` if the NodePath has no filename', () => {

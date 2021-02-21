@@ -103,14 +103,14 @@ runInEachFileSystem(() => {
             duplicateMessageHandling: 'ignore',
             fileSystem: fs,
           });
-          expect(fs.readFile(outputPath)).toEqual([
+          expect(fs.readFile(outputPath).split('\n')).toEqual([
             '{',
             '  "@@locale": "en-GB",',
             '  "3291030485717846467": "Hello, {$PH}!",',
             '  "@3291030485717846467": {',
             '    "x-locations": [',
             '      {',
-            '        "file": "test_files/test.js",',
+            jasmine.stringMatching(/"file": ".*test\.js",/),
             '        "start": { "line": "1", "column": "23" },',
             '        "end": { "line": "1", "column": "40" }',
             '      }',
@@ -120,7 +120,7 @@ runInEachFileSystem(() => {
             '  "@8669027859022295761": {',
             '    "x-locations": [',
             '      {',
-            '        "file": "test_files/test.js",',
+            jasmine.stringMatching(/"file": ".*test\.js",/),
             '        "start": { "line": "2", "column": "22" },',
             '        "end": { "line": "2", "column": "80" }',
             '      }',
@@ -130,7 +130,7 @@ runInEachFileSystem(() => {
             '  "@custom-id": {',
             '    "x-locations": [',
             '      {',
-            '        "file": "test_files/test.js",',
+            jasmine.stringMatching(/"file": ".*test\.js",/),
             '        "start": { "line": "3", "column": "29" },',
             '        "end": { "line": "3", "column": "61" }',
             '      }',
@@ -140,7 +140,7 @@ runInEachFileSystem(() => {
             '  "@273296103957933077": {',
             '    "x-locations": [',
             '      {',
-            '        "file": "test_files/test.js",',
+            jasmine.stringMatching(/"file": ".*test\.js",/),
             '        "start": { "line": "5", "column": "13" },',
             '        "end": { "line": "5", "column": "96" }',
             '      }',
@@ -150,7 +150,7 @@ runInEachFileSystem(() => {
             '  "@custom-id-2": {',
             '    "x-locations": [',
             '      {',
-            '        "file": "test_files/test.js",',
+            jasmine.stringMatching(/"file": ".*test\.js",/),
             '        "start": { "line": "7", "column": "13" },',
             '        "end": { "line": "7", "column": "117" }',
             '      }',
@@ -160,14 +160,14 @@ runInEachFileSystem(() => {
             '  "@2932901491976224757": {',
             '    "x-locations": [',
             '      {',
-            '        "file": "test_files/test.js",',
+            jasmine.stringMatching(/"file": ".*test\.js",/),
             '        "start": { "line": "8", "column": "26" },',
             '        "end": { "line": "9", "column": "93" }',
             '      }',
             '    ]',
             '  }',
             '}',
-          ].join('\n'));
+          ]);
         });
 
         it('should extract translations from source code, and write as xmb format', () => {
@@ -183,7 +183,7 @@ runInEachFileSystem(() => {
             duplicateMessageHandling: 'ignore',
             fileSystem: fs,
           });
-          expect(fs.readFile(outputPath)).toEqual([
+          expect(fs.readFile(outputPath).split('\n')).toEqual([
             `<?xml version="1.0" encoding="UTF-8" ?>`,
             `<!DOCTYPE messagebundle [`,
             `<!ELEMENT messagebundle (msg)*>`,
@@ -207,18 +207,24 @@ runInEachFileSystem(() => {
             `<!ELEMENT ex (#PCDATA)>`,
             `]>`,
             `<messagebundle>`,
-            `  <msg id="3291030485717846467"><source>test_files/test.js:1</source>Hello, <ph name="PH"/>!</msg>`,
-            `  <msg id="8669027859022295761"><source>test_files/test.js:2</source>try<ph name="PH"/>me</msg>`,
-            `  <msg id="custom-id"><source>test_files/test.js:3</source>Custom id message</msg>`,
-            `  <msg id="${
+            jasmine.stringMatching(
+                /<msg id="3291030485717846467"><source>.*test\.js:1<\/source>Hello, <ph name="PH"\/>!<\/msg>/),
+            jasmine.stringMatching(
+                /<msg id="8669027859022295761"><source>.*test\.js:2<\/source>try<ph name="PH"\/>me<\/msg>/),
+            jasmine.stringMatching(
+                /<msg id="custom-id"><source>.*test\.js:3<\/source>Custom id message<\/msg>/),
+            jasmine.stringMatching(new RegExp(`  <msg id="${
                 useLegacyIds ?
                     '12345678901234567890' :
-                    '273296103957933077'}"><source>test_files/test.js:5</source>Legacy id message</msg>`,
-            `  <msg id="custom-id-2"><source>test_files/test.js:7</source>Custom and legacy message</msg>`,
-            `  <msg id="2932901491976224757"><source>test_files/test.js:8,10</source>pre<ph name="START_TAG_SPAN"/>` +
-                `inner-pre<ph name="START_BOLD_TEXT"/>bold<ph name="CLOSE_BOLD_TEXT"/>inner-post<ph name="CLOSE_TAG_SPAN"/>post</msg>`,
-            `</messagebundle>\n`,
-          ].join('\n'));
+                    '273296103957933077'}"><source>.*test\\.js:5<\\/source>Legacy id message<\\/msg>`)),
+            jasmine.stringMatching(
+                /<msg id="custom-id-2"><source>.*test\.js:7<\/source>Custom and legacy message<\/msg>/),
+            jasmine.stringMatching(new RegExp(
+                `<msg id="2932901491976224757"><source>.*test.js:8,10<\\/source>pre<ph name="START_TAG_SPAN"\\/>` +
+                `inner-pre<ph name="START_BOLD_TEXT"\\/>bold<ph name="CLOSE_BOLD_TEXT"\\/>inner-post<ph name="CLOSE_TAG_SPAN"\\/>post</msg>`)),
+            `</messagebundle>`,
+            ''
+          ]);
         });
 
         for (const formatOptions of [{}, {'xml:space': 'preserve'}] as FormatOptions[]) {
@@ -238,7 +244,7 @@ runInEachFileSystem(() => {
                  formatOptions,
                  fileSystem: fs,
                });
-               expect(fs.readFile(outputPath)).toEqual([
+               expect(fs.readFile(outputPath).split('\n')).toEqual([
                  `<?xml version="1.0" encoding="UTF-8" ?>`,
                  `<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">`,
                  `  <file source-language="en-CA" datatype="plaintext" original="ng2.template"${
@@ -247,21 +253,21 @@ runInEachFileSystem(() => {
                  `      <trans-unit id="3291030485717846467" datatype="html">`,
                  `        <source>Hello, <x id="PH" equiv-text="name"/>!</source>`,
                  `        <context-group purpose="location">`,
-                 `          <context context-type="sourcefile">test_files/test.js</context>`,
+                 jasmine.stringMatching(/<context context-type="sourcefile">.*test\.js<\/context>/),
                  `          <context context-type="linenumber">2</context>`,
                  `        </context-group>`,
                  `      </trans-unit>`,
                  `      <trans-unit id="8669027859022295761" datatype="html">`,
                  `        <source>try<x id="PH" equiv-text="40 + 2"/>me</source>`,
                  `        <context-group purpose="location">`,
-                 `          <context context-type="sourcefile">test_files/test.js</context>`,
+                 jasmine.stringMatching(/<context context-type="sourcefile">.*test\.js<\/context>/),
                  `          <context context-type="linenumber">3</context>`,
                  `        </context-group>`,
                  `      </trans-unit>`,
                  `      <trans-unit id="custom-id" datatype="html">`,
                  `        <source>Custom id message</source>`,
                  `        <context-group purpose="location">`,
-                 `          <context context-type="sourcefile">test_files/test.js</context>`,
+                 jasmine.stringMatching(/<context context-type="sourcefile">.*test\.js<\/context>/),
                  `          <context context-type="linenumber">4</context>`,
                  `        </context-group>`,
                  `      </trans-unit>`,
@@ -270,14 +276,14 @@ runInEachFileSystem(() => {
                                     '273296103957933077'}" datatype="html">`,
                  `        <source>Legacy id message</source>`,
                  `        <context-group purpose="location">`,
-                 `          <context context-type="sourcefile">test_files/test.js</context>`,
+                 jasmine.stringMatching(/<context context-type="sourcefile">.*test\.js<\/context>/),
                  `          <context context-type="linenumber">6</context>`,
                  `        </context-group>`,
                  `      </trans-unit>`,
                  `      <trans-unit id="custom-id-2" datatype="html">`,
                  `        <source>Custom and legacy message</source>`,
                  `        <context-group purpose="location">`,
-                 `          <context context-type="sourcefile">test_files/test.js</context>`,
+                 jasmine.stringMatching(/<context context-type="sourcefile">.*test\.js<\/context>/),
                  `          <context context-type="linenumber">8</context>`,
                  `        </context-group>`,
                  `      </trans-unit>`,
@@ -286,14 +292,15 @@ runInEachFileSystem(() => {
                      `inner-pre<x id="START_BOLD_TEXT" ctype="x-b" equiv-text="&apos;&lt;b&gt;&apos;"/>bold<x id="CLOSE_BOLD_TEXT" ctype="x-b" equiv-text="&apos;&lt;/b&gt;&apos;"/>` +
                      `inner-post<x id="CLOSE_TAG_SPAN" ctype="x-span" equiv-text="&apos;&lt;/span&gt;&apos;"/>post</source>`,
                  `        <context-group purpose="location">`,
-                 `          <context context-type="sourcefile">test_files/test.js</context>`,
+                 jasmine.stringMatching(/<context context-type="sourcefile">.*test\.js<\/context>/),
                  `          <context context-type="linenumber">9,10</context>`,
                  `        </context-group>`,
                  `      </trans-unit>`,
                  `    </body>`,
                  `  </file>`,
-                 `</xliff>\n`,
-               ].join('\n'));
+                 `</xliff>`,
+                 ''
+               ]);
              });
 
           it('should extract translations from source code, and write as XLIFF 2 format', () => {
@@ -310,13 +317,13 @@ runInEachFileSystem(() => {
               formatOptions,
               fileSystem: fs,
             });
-            expect(fs.readFile(outputPath)).toEqual([
+            expect(fs.readFile(outputPath).split('\n')).toEqual([
               `<?xml version="1.0" encoding="UTF-8" ?>`,
               `<xliff version="2.0" xmlns="urn:oasis:names:tc:xliff:document:2.0" srcLang="en-AU">`,
               `  <file id="ngi18n" original="ng.template"${toAttributes(formatOptions)}>`,
               `    <unit id="3291030485717846467">`,
               `      <notes>`,
-              `        <note category="location">test_files/test.js:2</note>`,
+              jasmine.stringMatching(/<note category="location">.*test\.js:2<\/note>/),
               `      </notes>`,
               `      <segment>`,
               `        <source>Hello, <ph id="0" equiv="PH" disp="name"/>!</source>`,
@@ -324,7 +331,7 @@ runInEachFileSystem(() => {
               `    </unit>`,
               `    <unit id="8669027859022295761">`,
               `      <notes>`,
-              `        <note category="location">test_files/test.js:3</note>`,
+              jasmine.stringMatching(/<note category="location">.*test\.js:3<\/note>/),
               `      </notes>`,
               `      <segment>`,
               `        <source>try<ph id="0" equiv="PH" disp="40 + 2"/>me</source>`,
@@ -332,7 +339,7 @@ runInEachFileSystem(() => {
               `    </unit>`,
               `    <unit id="custom-id">`,
               `      <notes>`,
-              `        <note category="location">test_files/test.js:4</note>`,
+              jasmine.stringMatching(/<note category="location">.*test\.js:4<\/note>/),
               `      </notes>`,
               `      <segment>`,
               `        <source>Custom id message</source>`,
@@ -340,7 +347,7 @@ runInEachFileSystem(() => {
               `    </unit>`,
               `    <unit id="${useLegacyIds ? '12345678901234567890' : '273296103957933077'}">`,
               `      <notes>`,
-              `        <note category="location">test_files/test.js:6</note>`,
+              jasmine.stringMatching(/<note category="location">.*test\.js:6<\/note>/),
               `      </notes>`,
               `      <segment>`,
               `        <source>Legacy id message</source>`,
@@ -348,7 +355,7 @@ runInEachFileSystem(() => {
               `    </unit>`,
               `    <unit id="custom-id-2">`,
               `      <notes>`,
-              `        <note category="location">test_files/test.js:8</note>`,
+              jasmine.stringMatching(/<note category="location">.*test\.js:8<\/note>/),
               `      </notes>`,
               `      <segment>`,
               `        <source>Custom and legacy message</source>`,
@@ -356,7 +363,7 @@ runInEachFileSystem(() => {
               `    </unit>`,
               `    <unit id="2932901491976224757">`,
               `      <notes>`,
-              `        <note category="location">test_files/test.js:9,10</note>`,
+              jasmine.stringMatching(/<note category="location">.*test\.js:9,10<\/note>/),
               `      </notes>`,
               `      <segment>`,
               `        <source>pre<pc id="0" equivStart="START_TAG_SPAN" equivEnd="CLOSE_TAG_SPAN" type="other" dispStart="&apos;&lt;span&gt;&apos;" dispEnd="&apos;&lt;/span&gt;&apos;">` +
@@ -365,8 +372,9 @@ runInEachFileSystem(() => {
               `      </segment>`,
               `    </unit>`,
               `  </file>`,
-              `</xliff>\n`,
-            ].join('\n'));
+              `</xliff>`,
+              ''
+            ]);
           });
         }
       });
@@ -430,12 +438,12 @@ runInEachFileSystem(() => {
                  duplicateMessageHandling: 'error',
                  fileSystem: fs,
                }))
-            .toThrowError(
+            .toThrowError(new RegExp(
                 `Failed to extract messages\n` +
                 `ERRORS:\n` +
                 ` - Duplicate messages with id "message-2":\n` +
-                `   - "message contents" : test_files/duplicate.js:6\n` +
-                `   - "different message contents" : test_files/duplicate.js:7`);
+                `   - "message contents" : .*duplicate.js:6\n` +
+                `   - "different message contents" : .*duplicate.js:7`));
         expect(fs.exists(outputPath)).toBe(false);
       });
 
@@ -452,13 +460,12 @@ runInEachFileSystem(() => {
           duplicateMessageHandling: 'warning',
           fileSystem: fs,
         });
-        expect(logger.logs.warn).toEqual([
-          ['Messages extracted with warnings\n' +
-           `WARNINGS:\n` +
-           ` - Duplicate messages with id "message-2":\n` +
-           `   - "message contents" : test_files/duplicate.js:6\n` +
-           `   - "different message contents" : test_files/duplicate.js:7`]
-        ]);
+        expect(logger.logs.warn).toEqual([[jasmine.stringMatching(new RegExp(
+            'Messages extracted with warnings\n' +
+            `WARNINGS:\n` +
+            ` - Duplicate messages with id "message-2":\n` +
+            `   - "message contents" : .*duplicate.js:6\n` +
+            `   - "different message contents" : .*duplicate.js:7`))]]);
         expect(fs.readFile(outputPath)).toEqual([
           `{`,
           `  "locale": "en-GB",`,

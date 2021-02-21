@@ -18,9 +18,18 @@ runInEachFileSystem(() => {
     it('should error with code-frame information if the first argument to `$localize` is not an array',
        () => {
          const input = '$localize(null, [])';
-         expect(() => transformCode(input))
-             .toThrowError(
-                 'Cannot create property \'message\' on string \'/app/dist/test.js: Unexpected messageParts for `$localize` (expected an array of strings).\n' +
+         let errorMessage: string|undefined;
+
+         try {
+           transformCode(input);
+         } catch (e) {
+           errorMessage = e.message;
+         }
+
+         expect(errorMessage).toMatch(/^Cannot create property 'message' on string '.*test\.js/);
+         expect(errorMessage)
+             .toContain(
+                 'Unexpected messageParts for `$localize` (expected an array of strings).\n' +
                  '> 1 | $localize(null, [])\n' +
                  '    |           ^^^^\'');
        });

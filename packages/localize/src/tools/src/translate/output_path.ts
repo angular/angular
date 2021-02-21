@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {join} from 'path';
+import {posix} from 'path';
 
 /**
  * A function that will return an absolute path to where a file is to be written, given a locale and
@@ -25,6 +25,7 @@ export interface OutputPathFn {
  */
 export function getOutputPathFn(outputFolder: AbsoluteFsPath): OutputPathFn {
   const [pre, post] = outputFolder.split('{{LOCALE}}');
-  return post === undefined ? (_locale, relativePath) => join(pre, relativePath) :
-                              (locale, relativePath) => join(pre + locale + post, relativePath);
+  return post === undefined ?
+      (_locale, relativePath) => posix.join(pre, relativePath) :
+      (locale, relativePath) => posix.join(pre + locale + post, relativePath);
 }
