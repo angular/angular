@@ -19,6 +19,7 @@ import { FlatNode } from './directive-forest/component-data-source';
 import { FlatNode as PropertyFlatNode } from './property-resolver/element-property-resolver';
 import { DirectiveForestComponent } from './directive-forest/directive-forest.component';
 import { constructPathOfKeysToPropertyValue } from './property-resolver/directive-property-resolver';
+import { BreadcrumbsComponent } from './breadcrumbs/breadcrumbs.component';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -61,6 +62,7 @@ export class DirectiveExplorerComponent implements OnInit {
   parents: FlatNode[] | null = null;
 
   @ViewChild(DirectiveForestComponent) directiveForest: DirectiveForestComponent;
+  @ViewChild(BreadcrumbsComponent) breadcrumbs: BreadcrumbsComponent;
 
   constructor(
     private _appOperations: ApplicationOperations,
