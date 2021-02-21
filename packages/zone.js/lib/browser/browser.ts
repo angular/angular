@@ -72,8 +72,35 @@ Zone.__load_patch('EventTarget', (global: any, Zone: ZoneType, api: _ZonePrivate
 });
 
 Zone.__load_patch('MutationObserver', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-  patchClass('MutationObserver');
-  patchClass('WebKitMutationObserver');
+  function patchMutationObserver(global: any, target: string, scheduleMethod: string) {
+    if (global[Zone.__symbol__(target)]) {
+      return;
+    }
+    const OriginalClass = global[Zone.__symbol__(target)] = global[target];
+    global[target] = function() {
+      const args = Array.prototype.slice.call(arguments);
+      const callback: Function = args[0];
+      const wrappedCallback = function(this: unknown, ...callbackArgs: any[]) {
+        const zone: Zone = (this as any)[Zone.__symbol__('zone')] || Zone.current;
+        return zone.scheduleMicroTask(`${target}.${scheduleMethod}`, () => {
+          callback.apply(this, callbackArgs);
+        });
+      };
+      args[0] = wrappedCallback;
+      return new OriginalClass(...args);
+    };
+    global[target][Zone.__symbol__('OriginalDelegate')] = OriginalClass;
+    const proto = global[target].prototype = OriginalClass.prototype;
+    if (proto) {
+      patchMethod(proto, scheduleMethod, delegate => (self: any, args: any[]) => {
+        self[Zone.__symbol__('zone')] = Zone.current;
+        return delegate.apply(self, args);
+      });
+    }
+  }
+
+  patchMutationObserver(global, 'MutationObserver', 'observe');
+  patchMutationObserver(global, 'WebKitMutationObserver', 'observe');
 });
 
 Zone.__load_patch('IntersectionObserver', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
