@@ -2,12 +2,6 @@
   height: 100%;
 
   ::ng-deep {
-    as-split {
-      &.space-for-bread-crumbs {
-        height: calc(100% - 4px);
-      }
-    }
-
     as-split-area {
       overflow-y: hidden;
     }

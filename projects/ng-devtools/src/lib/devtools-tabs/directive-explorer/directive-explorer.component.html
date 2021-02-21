@@ -1,15 +1,34 @@
-<as-split [class.space-for-bread-crumbs]="parents" unit="percent" [direction]="splitDirection" [gutterSize]="9">
+<as-split
+  unit="percent"
+  [direction]="splitDirection"
+  [gutterSize]="9"
+  (dragEnd)="breadcrumbs.updateScrollButtonVisibility$.next()"
+>
   <as-split-area size="60">
-    <ng-directive-forest
-      (selectNode)="handleNodeSelection($event)"
-      (selectDomElement)="handleSelectDomElement($event)"
-      (setParents)="handleSetParents($event)"
-      (highlightComponent)="highlightComponent($event)"
-      (removeComponentHighlight)="removeComponentHighlight()"
-      (toggleInspector)="toggleInspector.emit()"
-      [forest]="forest"
-      [currentSelectedElement]="currentSelectedElement"
-    ></ng-directive-forest>
+    <as-split direction="vertical" [gutterSize]="9" unit="pixel" [disabled]="true">
+      <as-split-area size="*">
+        <ng-directive-forest
+          (selectNode)="handleNodeSelection($event)"
+          (selectDomElement)="handleSelectDomElement($event)"
+          (setParents)="handleSetParents($event)"
+          (highlightComponent)="highlightComponent($event)"
+          (removeComponentHighlight)="removeComponentHighlight()"
+          (toggleInspector)="toggleInspector.emit()"
+          [forest]="forest"
+          [currentSelectedElement]="currentSelectedElement"
+        ></ng-directive-forest>
+      </as-split-area>
+      <as-split-area size="22">
+        <ng-breadcrumbs
+          (mouseLeaveNode)="unhighlight()"
+          (mouseOverNode)="highlight($event)"
+          *ngIf="parents"
+          (handleSelect)="handleSelect($event)"
+          [parents]="parents"
+        >
+        </ng-breadcrumbs>
+      </as-split-area>
+    </as-split>
   </as-split-area>
   <as-split-area size="40" minSize="25">
     <div class="property-tab-wrapper">
@@ -21,10 +40,3 @@
     </div>
   </as-split-area>
 </as-split>
-<ng-breadcrumbs
-  (mouseLeaveNode)="unhighlight()"
-  (mouseOverNode)="highlight($event)"
-  *ngIf="parents"
-  (handleSelect)="handleSelect($event)"
-  [parents]="parents"
-></ng-breadcrumbs>

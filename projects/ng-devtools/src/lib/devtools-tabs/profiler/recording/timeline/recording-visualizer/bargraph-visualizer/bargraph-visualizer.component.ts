@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./bargraph-visualizer.component.scss'],
 })
 export class BargraphVisualizerComponent implements OnInit, OnDestroy {
-  barColor: String;
+  barColor: string;
   profileRecords: BargraphNode[];
 
   @Output() nodeSelect = new EventEmitter<SelectedEntry>();

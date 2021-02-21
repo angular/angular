@@ -35,7 +35,6 @@ describe('DevtoolsTabsComponent', () => {
   });
 
   it('emits inspector event', () => {
-    comp.tabGroup = jasmine.createSpyObj('tabGroup', ['selectedIndex']);
     comp.toggleInspector();
     expect(messageBusMock.emit).toHaveBeenCalledTimes(1);
     expect(messageBusMock.emit).toHaveBeenCalledWith('inspectorStart');
