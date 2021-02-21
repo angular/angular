@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 import { DefaultIterableDiffer } from '@angular/core';
 import { diff } from '../../diffing';
 import { FlatNode, Property } from './element-property-resolver';
-import { arrayify } from './directive-property-resolver';
+import { arrayify } from './arrayify';
 
 const trackBy = (_: number, item: FlatNode) => {
   return `#${item.prop.name}#${item.level}`;
