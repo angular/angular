@@ -46,8 +46,7 @@ describe('animation tests', function() {
           {declarations: [SharedAnimationCmp], imports: [BrowserAnimationsModule]});
 
       const fixture = TestBed.createComponent(SharedAnimationCmp);
-      const cmp = fixture.componentInstance;
-      expect(cmp.animationType).toEqual('BrowserAnimations');
+      expect(fixture.componentInstance.animationType).toEqual('BrowserAnimations');
     });
 
     it('should hint at NoopAnimationsModule being used', () => {
@@ -56,9 +55,20 @@ describe('animation tests', function() {
           {declarations: [SharedAnimationCmp], imports: [NoopAnimationsModule]});
 
       const fixture = TestBed.createComponent(SharedAnimationCmp);
-      const cmp = fixture.componentInstance;
-      expect(cmp.animationType).toEqual('NoopAnimations');
+      expect(fixture.componentInstance.animationType).toEqual('NoopAnimations');
     });
+
+    it('should hint at NoopAnimationsModule being used when BrowserAnimationsModule is provided with disabled animations',
+       () => {
+         TestBed.resetTestingModule();
+         TestBed.configureTestingModule({
+           declarations: [SharedAnimationCmp],
+           imports: [BrowserAnimationsModule.withConfig({disableAnimations: true})]
+         });
+
+         const fixture = TestBed.createComponent(SharedAnimationCmp);
+         expect(fixture.componentInstance.animationType).toEqual('NoopAnimations');
+       });
   });
 
   @Component({template: '<p>template text</p>'})
