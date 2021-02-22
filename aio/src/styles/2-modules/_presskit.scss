@@ -7,6 +7,12 @@
   }
 
   .presskit-section {
+    &:not(:first-child) {
+      border-top: 1px solid $lightgray;
+      margin-top: 4rem;
+      padding-top: 2rem;
+    }
+
     .presskit-icon-group {
       display: flex;
       flex-wrap: wrap;
