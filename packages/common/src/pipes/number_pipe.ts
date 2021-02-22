@@ -19,7 +19,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * Formats a value according to digit options and locale rules.
  * Locale determines group sizing and separator,
- * decimal-point character, and other locale-specific configurations.
+ * decimal point character, and other locale-specific configurations.
  *
  * @see `formatNumber()`
  *
@@ -60,7 +60,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * `locale` will format a value according to locale rules.
  * Locale determines group sizing and separator,
- * decimal-point character, and other locale-specific configurations.
+ * decimal point character, and other locale-specific configurations.
  *
  * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
  *
