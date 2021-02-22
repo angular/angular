@@ -26,6 +26,7 @@ import {DefinitionBuilder} from './definitions';
 import {QuickInfoBuilder} from './quick_info';
 import {ReferencesAndRenameBuilder} from './references';
 import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_target';
+import {findTightestNode, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
 export class LanguageService {
@@ -74,20 +75,24 @@ export class LanguageService {
 
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
-    const compiler = this.compilerFactory.getOrCreate();
-    const results =
-        new DefinitionBuilder(this.tsLS, compiler).getDefinitionAndBoundSpan(fileName, position);
-    this.compilerFactory.registerLastKnownProgram();
-    return results;
+    return this.withCompiler((compiler) => {
+      if (!isInAngularContext(compiler.getNextProgram(), fileName, position)) {
+        return undefined;
+      }
+      return new DefinitionBuilder(this.tsLS, compiler)
+          .getDefinitionAndBoundSpan(fileName, position);
+    });
   }
 
   getTypeDefinitionAtPosition(fileName: string, position: number):
       readonly ts.DefinitionInfo[]|undefined {
-    const compiler = this.compilerFactory.getOrCreate();
-    const results =
-        new DefinitionBuilder(this.tsLS, compiler).getTypeDefinitionsAtPosition(fileName, position);
-    this.compilerFactory.registerLastKnownProgram();
-    return results;
+    return this.withCompiler((compiler) => {
+      if (!isTemplateContext(compiler.getNextProgram(), fileName, position)) {
+        return undefined;
+      }
+      return new DefinitionBuilder(this.tsLS, compiler)
+          .getTypeDefinitionsAtPosition(fileName, position);
+    });
   }
 
   getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
@@ -169,37 +174,51 @@ export class LanguageService {
   getCompletionsAtPosition(
       fileName: string, position: number, options: ts.GetCompletionsAtPositionOptions|undefined):
       ts.WithMetadata<ts.CompletionInfo>|undefined {
-    const builder = this.getCompletionBuilder(fileName, position);
-    if (builder === null) {
-      return undefined;
-    }
-    const result = builder.getCompletionsAtPosition(options);
-    this.compilerFactory.registerLastKnownProgram();
-    return result;
+    return this.withCompiler((compiler) => {
+      if (!isTemplateContext(compiler.getNextProgram(), fileName, position)) {
+        return undefined;
+      }
+
+      const builder = this.getCompletionBuilder(fileName, position);
+      if (builder === null) {
+        return undefined;
+      }
+      return builder.getCompletionsAtPosition(options);
+    });
   }
 
   getCompletionEntryDetails(
       fileName: string, position: number, entryName: string,
       formatOptions: ts.FormatCodeOptions|ts.FormatCodeSettings|undefined,
       preferences: ts.UserPreferences|undefined): ts.CompletionEntryDetails|undefined {
-    const builder = this.getCompletionBuilder(fileName, position);
-    if (builder === null) {
-      return undefined;
-    }
-    const result = builder.getCompletionEntryDetails(entryName, formatOptions, preferences);
-    this.compilerFactory.registerLastKnownProgram();
-    return result;
+    return this.withCompiler((compiler) => {
+      if (!isTemplateContext(compiler.getNextProgram(), fileName, position)) {
+        return undefined;
+      }
+
+      const builder = this.getCompletionBuilder(fileName, position);
+      if (builder === null) {
+        return undefined;
+      }
+      return builder.getCompletionEntryDetails(entryName, formatOptions, preferences);
+    });
   }
 
   getCompletionEntrySymbol(fileName: string, position: number, entryName: string): ts.Symbol
       |undefined {
-    const builder = this.getCompletionBuilder(fileName, position);
-    if (builder === null) {
-      return undefined;
-    }
-    const result = builder.getCompletionEntrySymbol(entryName);
-    this.compilerFactory.registerLastKnownProgram();
-    return result;
+    return this.withCompiler((compiler) => {
+      if (!isTemplateContext(compiler.getNextProgram(), fileName, position)) {
+        return undefined;
+      }
+
+      const builder = this.getCompletionBuilder(fileName, position);
+      if (builder === null) {
+        return undefined;
+      }
+      const result = builder.getCompletionEntrySymbol(entryName);
+      this.compilerFactory.registerLastKnownProgram();
+      return result;
+    });
   }
 
   getComponentLocationsForTemplate(fileName: string): GetComponentLocationsForTemplateResponse {
@@ -431,4 +450,47 @@ function nodeContextFromTarget(target: TargetContext): CompletionNodeContext {
       // No special context is available.
       return CompletionNodeContext.None;
   }
+}
+
+function isTemplateContext(program: ts.Program, fileName: string, position: number): boolean {
+  if (!isTypeScriptFile(fileName)) {
+    // If we aren't in a TS file, we must be in an HTML file, which we treat as template context
+    return true;
+  }
+
+  const node = findTightestNodeAtPosition(program, fileName, position);
+  if (node === undefined) {
+    return false;
+  }
+
+  let asgn = getPropertyAssignmentFromValue(node, 'template');
+  if (asgn === null) {
+    return false;
+  }
+  return getClassDeclFromDecoratorProp(asgn) !== null;
+}
+
+function isInAngularContext(program: ts.Program, fileName: string, position: number) {
+  if (!isTypeScriptFile(fileName)) {
+    return true;
+  }
+
+  const node = findTightestNodeAtPosition(program, fileName, position);
+  if (node === undefined) {
+    return false;
+  }
+
+  const asgn = getPropertyAssignmentFromValue(node, 'template') ??
+      getPropertyAssignmentFromValue(node, 'templateUrl') ??
+      getPropertyAssignmentFromValue(node.parent, 'styleUrls');
+  return asgn !== null && getClassDeclFromDecoratorProp(asgn) !== null;
+}
+
+function findTightestNodeAtPosition(program: ts.Program, fileName: string, position: number) {
+  const sourceFile = program.getSourceFile(fileName);
+  if (sourceFile === undefined) {
+    return undefined;
+  }
+
+  return findTightestNode(sourceFile, position);
 }
