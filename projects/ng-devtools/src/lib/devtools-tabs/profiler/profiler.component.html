@@ -1,18 +1,33 @@
 <div class="profiler-wrapper">
   <mat-card>
-    <mat-icon *ngIf="state === 'idle'" (click)="startRecording()" class="profiler-control start-recording-button">
-      play_circle_outline
-    </mat-icon>
-    <mat-icon *ngIf="state === 'recording'" (click)="stopRecording()" class="profiler-control recording-button">
-      stop_circle
-    </mat-icon>
-    <mat-icon *ngIf="state === 'visualizing'" (click)="discardRecording()" class="profiler-control discard-button">
-      refresh
-    </mat-icon>
+    <button
+      mat-icon-button
+      color="primary"
+      *ngIf="state === 'idle'"
+      (click)="startRecording()"
+      class="profiler-control start-recording-button"
+    >
+      <mat-icon> circle </mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      *ngIf="state === 'recording'"
+      (click)="stopRecording()"
+      class="profiler-control recording-button"
+    >
+      <mat-icon> circle </mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      color="primary"
+      *ngIf="state === 'visualizing'"
+      (click)="discardRecording()"
+      class="profiler-control discard-button"
+    >
+      <mat-icon> not_interested </mat-icon>
+    </button>
     <p class="instructions" [class.hidden]="state !== 'idle'">
-      <span>
-        Click the play button to start a new recording, or upload a json file containing profiler data.
-      </span>
+      <span> Click the play button to start a new recording, or upload a json file containing profiler data. </span>
       <br />
       <span>
         <input type="file" (change)="importProfilerResults($event)" placeholder="Upload file" accept=".json" />

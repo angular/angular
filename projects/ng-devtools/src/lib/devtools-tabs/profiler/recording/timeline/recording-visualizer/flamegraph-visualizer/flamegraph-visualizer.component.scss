@@ -5,33 +5,36 @@
   -webkit-user-select: text;
   -ms-user-select: text;
   user-select: text;
-}
 
-::ng-deep {
-  .level-profile-wrapper {
-    height: 100%;
-    width: 100%;
-    cursor: pointer;
-  }
+  ::ng-deep {
+    .level-profile-wrapper {
+      height: 100%;
+      width: 100%;
+      cursor: pointer;
+    }
 
-  .label {
-    color: #000 !important;
-    font-size: 0.8em !important;
-    opacity: 0.9;
-    padding-left: 2px;
-  }
-}
-
-:host-context(.dark-theme) {
-  .entry-statistics {
-    span {
-      color: #54c9bd;
+    .ngx-fg-label {
+      color: #000000de;
+      font-weight: 500;
+      font-size: 1em;
     }
   }
 
-  ::ng-deep {
-    rect {
-      stroke: #303030;
+  :host-context(.dark-theme) {
+    .entry-statistics {
+      span {
+        color: #54c9bd;
+      }
+    }
+
+    ::ng-deep {
+      .ngx-fg-rect {
+        stroke: #303030;
+      }
+
+      .ngx-fg-label {
+        color: #bcc5ce;
+      }
     }
   }
 }

@@ -5,7 +5,7 @@
   display: flex;
   padding-top: 3px;
   padding-bottom: 3px;
-  opacity: 0.7;
+  opacity: 0.8;
   cursor: pointer;
   transition: opacity 0.3s ease-out, width 0.3s ease;
 }
@@ -33,6 +33,6 @@
 
 :host-context(.dark-theme) {
   .bar span {
-    color: black !important;
+    color: #bcc5ce;
   }
 }

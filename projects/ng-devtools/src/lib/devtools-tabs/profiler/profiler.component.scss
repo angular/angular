@@ -15,13 +15,12 @@
   border-radius: 0;
 }
 
-.profiler-control {
-  padding: 8px;
-  cursor: pointer;
+.mat-icon {
+  font-size: 18px;
+}
 
-  &.start-recording-button {
-    color: #4db675;
-  }
+.profiler-control {
+  cursor: pointer;
 
   &.recording-button {
     color: #d83c34;
