@@ -636,6 +636,7 @@ jobs:
     steps:
       - checkout_and_rebase
       - *restore_cache
+      - *yarn_install_loose_lockfile
       - *setup_bazel_binary
       - *setup_bazel_ci_config
       - *setup_bazel_remote_execution
