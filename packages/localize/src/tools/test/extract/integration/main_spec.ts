@@ -7,15 +7,15 @@
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, setFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {InvalidFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/src/invalid_file_system';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {MockLogger} from '@angular/compiler-cli/src/ngtsc/logging/testing';
 import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
 
 import {extractTranslations} from '../../../src/extract/main';
 import {FormatOptions} from '../../../src/extract/translation_files/format_options';
+import {runInNativeFileSystem} from '../../helpers';
 import {toAttributes} from '../translation_files/utils';
 
-runInEachFileSystem(() => {
+runInNativeFileSystem(() => {
   let fs: FileSystem;
   let logger: MockLogger;
   let rootPath: AbsoluteFsPath;

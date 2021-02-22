@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {absoluteFrom, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {ɵmakeTemplateObject} from '@angular/localize';
 import {NodePath, TransformOptions, transformSync} from '@babel/core';
 import generate from '@babel/generator';
-
 import template from '@babel/template';
 import {Expression, Identifier, TaggedTemplateExpression, ExpressionStatement, CallExpression, isParenthesizedExpression, numericLiteral, binaryExpression, NumericLiteral} from '@babel/types';
-import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, getLocation} from '../src/source_file_utils';
 
-runInEachFileSystem(() => {
+import {isGlobalIdentifier, isNamedIdentifier, isStringLiteralArray, isArrayOfExpressions, unwrapStringLiteralArray, unwrapMessagePartsFromLocalizeCall, wrapInParensIfNecessary, buildLocalizeReplacement, unwrapSubstitutionsFromLocalizeCall, unwrapMessagePartsFromTemplateLiteral, getLocation} from '../src/source_file_utils';
+import {runInNativeFileSystem} from './helpers';
+
+runInNativeFileSystem(() => {
   let fs: PathManipulation;
   beforeEach(() => fs = getFileSystem());
   describe('utils', () => {
@@ -414,7 +414,7 @@ runInEachFileSystem(() => {
       it('should return a plain object containing the start, end and file of a NodePath', () => {
         const taggedTemplate = getTaggedTemplate('const x = $localize `message`;', {
           filename: 'src/test.js',
-          sourceRoot: '/root',
+          sourceRoot: fs.resolve('/project'),
         });
         const location = getLocation(fs, taggedTemplate)!;
         expect(location).toBeDefined();
@@ -422,12 +422,12 @@ runInEachFileSystem(() => {
         expect(location.start.constructor.name).toEqual('Object');
         expect(location.end).toEqual({line: 0, column: 29});
         expect(location.end?.constructor.name).toEqual('Object');
-        expect(location.file).toEqual(absoluteFrom('/root/src/test.js'));
+        expect(location.file).toEqual(fs.resolve('/project/src/test.js'));
       });
 
       it('should return `undefined` if the NodePath has no filename', () => {
         const taggedTemplate = getTaggedTemplate(
-            'const x = $localize ``;', {sourceRoot: '/root', filename: undefined});
+            'const x = $localize ``;', {sourceRoot: fs.resolve('/project'), filename: undefined});
         const location = getLocation(fs, taggedTemplate);
         expect(location).toBeUndefined();
       });
@@ -451,7 +451,8 @@ function getExpressions<T extends Expression>(
   const expressions: NodePath<Expression>[] = [];
   transformSync(code, {
     code: false,
-    filename: '/test/file.js',
+    filename: 'test/file.js',
+    cwd: '/',
     plugins: [{
       visitor: {
         Expression: (path: NodePath<Expression>) => {
@@ -468,7 +469,8 @@ function getLocalizeCall(code: string): NodePath<CallExpression> {
   let callPaths: NodePath<CallExpression>[] = [];
   transformSync(code, {
     code: false,
-    filename: '/test/file.js',
+    filename: 'test/file.js',
+    cwd: '/',
     plugins: [{
       visitor: {
         CallExpression(path) {

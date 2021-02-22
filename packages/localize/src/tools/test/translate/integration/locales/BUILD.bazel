@@ -1,0 +1,13 @@
+package(default_visibility = ["//packages/localize/src/tools/test/translate/integration:__pkg__"])
+
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+
+# Use copy_to_bin since filegroup doesn't seem to work on Windows.
+copy_to_bin(
+    name = "locales",
+    srcs = glob([
+        "**/*.json",
+        "**/*.xlf",
+        "**/*.xtb",
+    ]),
+)

@@ -12,18 +12,17 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/localize/src/tools",
+        "//packages/localize/src/tools/test/helpers",
     ],
 )
 
 jasmine_node_test(
     name = "integration",
     bootstrap = ["//tools/testing:node_no_angular_es5"],
-    data = glob(
-        [
-            "locales/**",
-            "test_files/**",
-        ],
-    ),
+    data = [
+        "//packages/localize/src/tools/test/translate/integration/locales",
+        "//packages/localize/src/tools/test/translate/integration/test_files",
+    ],
     deps = [
         ":test_lib",
         "@npm//glob",

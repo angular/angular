@@ -15,6 +15,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/logging/testing",
         "//packages/localize",
         "//packages/localize/src/tools",
+        "//packages/localize/src/tools/test/helpers",
         "//packages/localize/src/utils",
         "@npm//@babel/core",
         "@npm//@babel/generator",
