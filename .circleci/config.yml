@@ -770,7 +770,7 @@ jobs:
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: yarn bazel test --config=ivy --build_tag_filters=-no-windows --test_tag_filters="-no-ivy-aot,-no-windows,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/...
+          command: yarn bazel test --config=ivy --build_tag_filters=-no-windows --test_tag_filters="-no-ivy-aot,-no-windows,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/... //packages/localize/...
           no_output_timeout: 15m
 
 
