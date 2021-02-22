@@ -7,6 +7,11 @@ body,
   background-color: $white;
 }
 
+.center-layout {
+  margin: 0 auto;
+  max-width: 50em;
+}
+
 .github-links + .content h1 {
   max-width: 90%;
 }
