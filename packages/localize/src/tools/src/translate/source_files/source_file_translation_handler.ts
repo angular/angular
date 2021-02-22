@@ -81,6 +81,7 @@ export class SourceFileTranslationHandler implements TranslationHandler {
         makeEs2015TranslatePlugin(diagnostics, translationBundle.translations, options, this.fs),
         makeEs5TranslatePlugin(diagnostics, translationBundle.translations, options, this.fs),
       ],
+      cwd: sourceRoot,
       filename,
     });
     if (translated && translated.code) {

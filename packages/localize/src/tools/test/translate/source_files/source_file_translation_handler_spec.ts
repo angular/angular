@@ -23,7 +23,7 @@ runInEachFileSystem(() => {
 
     beforeEach(() => {
       fs = getFileSystem();
-      rootPath = absoluteFrom('/root/path');
+      rootPath = absoluteFrom('/src/path');
       filePath = relativeFrom('relative/path.js');
       enTranslationPath = absoluteFrom('/translations/en/relative/path.js');
       enUSTranslationPath = absoluteFrom('/translations/en-US/relative/path.js');

@@ -37,7 +37,7 @@ export function makeEs5TranslatePlugin(
           }
         } catch (e) {
           if (isBabelParseError(e)) {
-            diagnostics.error(buildCodeFrameError(callPath, e));
+            diagnostics.error(buildCodeFrameError(fs, callPath, e));
           } else {
             throw e;
           }

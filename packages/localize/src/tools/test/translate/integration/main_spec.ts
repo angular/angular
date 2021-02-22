@@ -6,15 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {loadTestDirectory} from '@angular/compiler-cli/src/ngtsc/testing';
 import {resolve as realResolve} from 'path';
 
 import {Diagnostics} from '../../../src/diagnostics';
 import {translateFiles} from '../../../src/translate/main';
 import {getOutputPathFn} from '../../../src/translate/output_path';
+import {runInNativeFileSystem} from '../../helpers';
 
-runInEachFileSystem(() => {
+runInNativeFileSystem(() => {
   describe('translateFiles()', () => {
     let fs: FileSystem;
     let testDir: AbsoluteFsPath;
@@ -33,7 +33,7 @@ runInEachFileSystem(() => {
 
     it('should copy non-code files to the destination folders', () => {
       const diagnostics = new Diagnostics();
-      const outputPathFn = getOutputPathFn(fs.resolve(testDir, '{{LOCALE}}'));
+      const outputPathFn = getOutputPathFn(fs, fs.resolve(testDir, '{{LOCALE}}'));
       translateFiles({
         sourceRootPath: testFilesDir,
         sourceFilePaths: ['test-1.txt', 'test-2.txt'],
@@ -69,7 +69,7 @@ runInEachFileSystem(() => {
 
     it('should translate and copy source-code files to the destination folders', () => {
       const diagnostics = new Diagnostics();
-      const outputPathFn = getOutputPathFn(fs.resolve(testDir, '{{LOCALE}}'));
+      const outputPathFn = getOutputPathFn(fs, fs.resolve(testDir, '{{LOCALE}}'));
       translateFiles({
         sourceRootPath: testFilesDir,
         sourceFilePaths: ['test.js'],
@@ -97,7 +97,7 @@ runInEachFileSystem(() => {
 
     it('should translate and copy source-code files overriding the locales', () => {
       const diagnostics = new Diagnostics();
-      const outputPathFn = getOutputPathFn(fs.resolve(testDir, '{{LOCALE}}'));
+      const outputPathFn = getOutputPathFn(fs, fs.resolve(testDir, '{{LOCALE}}'));
       translateFiles({
         sourceRootPath: testFilesDir,
         sourceFilePaths: ['test.js'],
@@ -131,7 +131,7 @@ runInEachFileSystem(() => {
 
     it('should merge translation files, if more than one provided, and translate source-code', () => {
       const diagnostics = new Diagnostics();
-      const outputPathFn = getOutputPathFn(fs.resolve(testDir, '{{LOCALE}}'));
+      const outputPathFn = getOutputPathFn(fs, fs.resolve(testDir, '{{LOCALE}}'));
       translateFiles({
         sourceRootPath: testFilesDir,
         sourceFilePaths: ['test-extra.js'],
@@ -165,7 +165,7 @@ runInEachFileSystem(() => {
 
     it('should transform and/or copy files to the destination folders', () => {
       const diagnostics = new Diagnostics();
-      const outputPathFn = getOutputPathFn(fs.resolve(testDir, '{{LOCALE}}'));
+      const outputPathFn = getOutputPathFn(fs, fs.resolve(testDir, '{{LOCALE}}'));
       translateFiles({
         sourceRootPath: testFilesDir,
         sourceFilePaths: ['test-1.txt', 'test-2.txt', 'test.js'],

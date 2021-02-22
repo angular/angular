@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {ɵisMissingTranslationError, ɵmakeTemplateObject, ɵParsedTranslation, ɵSourceLocation, ɵtranslate} from '@angular/localize';
 import {NodePath} from '@babel/traverse';
 import * as t from '@babel/types';
@@ -400,8 +400,19 @@ export function isBabelParseError(e: any): e is BabelParseError {
   return e.type === 'BabelParseError';
 }
 
-export function buildCodeFrameError(path: NodePath, e: BabelParseError): string {
-  const filename = path.hub.file.opts.filename || '(unknown file)';
+export function buildCodeFrameError(
+    fs: PathManipulation, path: NodePath, e: BabelParseError): string {
+  let filename = path.hub.file.opts.filename;
+  if (filename) {
+    filename = fs.resolve(filename);
+    let cwd = path.hub.file.opts.cwd;
+    if (cwd) {
+      cwd = fs.resolve(cwd);
+      filename = fs.relative(cwd, filename);
+    }
+  } else {
+    filename = '(unknown file)';
+  }
   const message = path.hub.file.buildCodeFrameError(e.node, e.message).message;
   return `${filename}: ${message}`;
 }
@@ -434,9 +445,14 @@ export function serializeLocationPosition(location: ɵSourceLocation): string {
 
 function getFileFromPath(fs: PathManipulation, path: NodePath|undefined): AbsoluteFsPath|null {
   const opts = path?.hub.file.opts;
-  return opts?.filename ?
-      fs.resolve(opts.generatorOpts.sourceRoot ?? opts.cwd, fs.relative(opts.cwd, opts.filename)) :
-      null;
+  const filename = opts?.filename;
+  if (!filename) {
+    return null;
+  }
+  const relativePath = fs.relative(opts.cwd, filename);
+  const root = opts.generatorOpts.sourceRoot ?? opts.cwd;
+  const absPath = fs.resolve(root, relativePath);
+  return absPath;
 }
 
 function getLineAndColumn(loc: {line: number, column: number}): {line: number, column: number} {

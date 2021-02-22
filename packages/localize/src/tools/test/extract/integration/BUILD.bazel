@@ -15,6 +15,7 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/testing",
         "//packages/localize/src/tools",
         "//packages/localize/src/tools/test:test_lib",
+        "//packages/localize/src/tools/test/helpers",
     ],
 )
 
