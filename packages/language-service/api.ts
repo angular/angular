@@ -43,3 +43,8 @@ export interface NgLanguageService extends ts.LanguageService {
   getTcb(fileName: string, position: number): GetTcbResponse|undefined;
   getComponentLocationsForTemplate(fileName: string): GetComponentLocationsForTemplateResponse;
 }
+
+export function isNgLanguageService(ls: ts.LanguageService|
+                                    NgLanguageService): ls is NgLanguageService {
+  return 'getTcb' in ls;
+}

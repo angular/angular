@@ -247,8 +247,8 @@ export class LanguageService {
     });
   }
 
-  getTcb(fileName: string, position: number): GetTcbResponse {
-    return this.withCompiler<GetTcbResponse>(compiler => {
+  getTcb(fileName: string, position: number): GetTcbResponse|undefined {
+    return this.withCompiler<GetTcbResponse|undefined>(compiler => {
       const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
       if (templateInfo === undefined) {
         return undefined;
