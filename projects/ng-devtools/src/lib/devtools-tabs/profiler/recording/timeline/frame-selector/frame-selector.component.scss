@@ -39,16 +39,37 @@
       margin-right: 2.5px;
       margin-top: 2px;
 
+      &:hover {
+        background-color: #ebf1fb;
+      }
+
       &.selected {
-        margin-left: 0.5px;
-        margin-right: 0.5px;
+        margin-left: 0;
+        margin-right: 0;
         margin-top: 0;
-        border: 2px solid #ffc400;
+        padding-left: 0.5px;
+        padding-right: 0.5px;
+
+        background-color: #cfe8fc;
+        border: 2px solid #cfe8fc;
       }
     }
   }
 
   button {
     margin-bottom: 5px;
+  }
+}
+
+:host-context(.dark-theme) {
+  .bar-graph-container .bar-container .frame-bar {
+    &:hover {
+      background-color: #262d36;
+    }
+
+    &.selected {
+      background-color: #073d69;
+      border: 2px solid #073d69;
+    }
   }
 }

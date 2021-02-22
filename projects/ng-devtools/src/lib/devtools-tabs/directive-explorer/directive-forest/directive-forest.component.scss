@@ -65,8 +65,7 @@
     background-color: transparent;
   }
   50% {
-    background-color: #fecf4a;
-    color: #748591;
+    background-color: #cfe8fc;
   }
   100% {
     background-color: transparent;
@@ -124,9 +123,12 @@
 }
 
 :host-context(.dark-theme) {
-  .tree-node,
-  .tree-node .mat-icon {
+  .tree-node {
     color: #5cadd3;
+
+    .mat-icon {
+      color: #bcc5ce;
+    }
 
     .dir-names {
       color: #91adcb;
@@ -141,7 +143,7 @@
     }
 
     &.matched {
-      background-color: #093e69;
+      background-color: #262d36;
 
       &:hover {
         background-color: #073d69;

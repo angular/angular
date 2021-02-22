@@ -11,12 +11,12 @@ body {
 
 // Light theme
 $light-primary: mat-palette($mat-grey, 700, 200);
-$light-accent: mat-palette($mat-teal, 300);
+$light-accent: mat-palette($mat-blue, 800);
 $light-theme: mat-light-theme($light-primary, $light-accent);
 
 // Dark theme
 $dark-primary: mat-palette($mat-blue-grey, 50);
-$dark-accent: mat-palette($mat-purple, 200);
+$dark-accent: mat-palette($mat-blue, 200);
 $mat-dark-theme-background: map-merge(
   $mat-dark-theme-background,
   (

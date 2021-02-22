@@ -62,13 +62,13 @@ export class TimelineComponent implements OnDestroy {
 
   getColorByFrameRate(framerate: number): string {
     if (framerate >= 60) {
-      return '#4db6ac';
+      return '#5cadd3';
     } else if (framerate < 60 && framerate >= 30) {
-      return '#FFBE2F';
+      return '#8a1882';
     } else if (framerate < 30 && framerate >= 15) {
-      return '#ff8d00';
+      return '#9b4807';
     }
-    return '#FF625A';
+    return '#ce271e';
   }
 
   ngOnDestroy(): void {
@@ -114,7 +114,7 @@ export class TimelineComponent implements OnDestroy {
     const backgroundColor = this.getColorByFrameRate(this.estimateFrameRate(record.duration));
 
     const style = {
-      background: `-webkit-linear-gradient(bottom, ${backgroundColor} ${colorPercentage}%, transparent ${colorPercentage}%)`,
+      'background-image': `-webkit-linear-gradient(bottom, ${backgroundColor} ${colorPercentage}%, transparent ${colorPercentage}%)`,
       cursor: 'pointer',
       'min-width': '25px',
       width: '25px',
