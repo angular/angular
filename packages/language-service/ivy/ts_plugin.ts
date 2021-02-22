@@ -130,7 +130,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
     return diagnostics;
   }
 
-  function getTcb(fileName: string, position: number): GetTcbResponse {
+  function getTcb(fileName: string, position: number): GetTcbResponse|undefined {
     return ngLS.getTcb(fileName, position);
   }
 
