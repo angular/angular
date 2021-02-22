@@ -11,15 +11,16 @@ import {Subscribable, Unsubscribable} from 'rxjs';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
-interface SubscriptionStrategy<T> {
-  createSubscription(async: Subscribable<T>|Promise<T>, updateLatestValue: (value: T) => void):
-      Unsubscribable|Promise<void>;
-  dispose(subscription: Unsubscribable|Promise<void>): void;
-  onDestroy(subscription: Unsubscribable|Promise<void>): void;
+interface SubscriptionStrategy {
+  createSubscription(
+      async: Subscribable<Object>|Promise<Object>,
+      updateLatestValue: (value: Object) => void): Unsubscribable|Promise<void>;
+  dispose(subscription: Unsubscribable|Promise<any>): void;
+  onDestroy(subscription: Unsubscribable|Promise<any>): void;
 }
 
-class SubscribableStrategy<T> implements SubscriptionStrategy<T> {
-  createSubscription(async: Subscribable<T>, updateLatestValue: (value: T) => void):
+class SubscribableStrategy implements SubscriptionStrategy {
+  createSubscription(async: Subscribable<Object>, updateLatestValue: (value: Object) => void):
       Unsubscribable {
     return async.subscribe({
       next: updateLatestValue,
@@ -38,16 +39,17 @@ class SubscribableStrategy<T> implements SubscriptionStrategy<T> {
   }
 }
 
-class PromiseStrategy<T> implements SubscriptionStrategy<T> {
-  createSubscription(async: Promise<T>, updateLatestValue: (v: T) => void): Promise<void> {
+class PromiseStrategy implements SubscriptionStrategy {
+  createSubscription(async: Promise<Object>, updateLatestValue: (v: Object) => void):
+      Promise<void> {
     return async.then(updateLatestValue, e => {
       throw e;
     });
   }
 
-  dispose(subscription: Promise<any>): void {}
+  dispose(subscription: Promise<Object>): void {}
 
-  onDestroy(subscription: Promise<any>): void {}
+  onDestroy(subscription: Promise<Object>): void {}
 }
 
 const _promiseStrategy = new PromiseStrategy();
@@ -81,12 +83,12 @@ const _subscribableStrategy = new SubscribableStrategy();
  * @publicApi
  */
 @Pipe({name: 'async', pure: false})
-export class AsyncPipe<T> implements OnDestroy, PipeTransform {
-  private _latestValue: T|null = null;
+export class AsyncPipe implements OnDestroy, PipeTransform {
+  private _latestValue: any = null;
 
-  private _subscription: Unsubscribable|Promise<void>|null = null;
-  private _obj: Subscribable<T>|Promise<T>|EventEmitter<T>|null = null;
-  private _strategy: SubscriptionStrategy<T> = null!;
+  private _subscription: Unsubscribable|Promise<any>|null = null;
+  private _obj: Subscribable<any>|Promise<any>|EventEmitter<any>|null = null;
+  private _strategy: SubscriptionStrategy = null!;
 
   constructor(private _ref: ChangeDetectorRef) {}
 
@@ -96,10 +98,10 @@ export class AsyncPipe<T> implements OnDestroy, PipeTransform {
     }
   }
 
-  transform(obj: Subscribable<T>|Promise<T>): T|null;
-  transform(obj: null|undefined): null;
-  transform(obj: Subscribable<T>|Promise<T>|null|undefined): T|null;
-  transform(obj: Subscribable<T>|Promise<T>|null|undefined): T|null {
+  transform<T>(obj: Subscribable<T>|Promise<T>): T|null;
+  transform<T>(obj: null|undefined): null;
+  transform<T>(obj: Subscribable<T>|Promise<T>|null|undefined): T|null;
+  transform<T>(obj: Subscribable<T>|Promise<T>|null|undefined): T|null {
     if (!this._obj) {
       if (obj) {
         this._subscribe(obj);
@@ -115,14 +117,14 @@ export class AsyncPipe<T> implements OnDestroy, PipeTransform {
     return this._latestValue;
   }
 
-  private _subscribe(obj: Subscribable<T>|Promise<T>|EventEmitter<T>): void {
+  private _subscribe(obj: Subscribable<any>|Promise<any>|EventEmitter<any>): void {
     this._obj = obj;
     this._strategy = this._selectStrategy(obj);
-    this._subscription =
-        this._strategy.createSubscription(obj, (value) => this._updateLatestValue(obj, value));
+    this._subscription = this._strategy.createSubscription(
+        obj, (value: Object) => this._updateLatestValue(obj, value));
   }
 
-  private _selectStrategy(obj: Subscribable<T>|Promise<T>|EventEmitter<T>): any {
+  private _selectStrategy(obj: Subscribable<any>|Promise<any>|EventEmitter<any>): any {
     if (ɵisPromise(obj)) {
       return _promiseStrategy;
     }
@@ -141,7 +143,7 @@ export class AsyncPipe<T> implements OnDestroy, PipeTransform {
     this._obj = null;
   }
 
-  private _updateLatestValue(async: Subscribable<T>|Promise<T>|EventEmitter<T>, value: T): void {
+  private _updateLatestValue(async: any, value: Object): void {
     if (async === this._obj) {
       this._latestValue = value;
       this._ref.markForCheck();

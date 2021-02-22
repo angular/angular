@@ -32,7 +32,7 @@ import {SpyChangeDetectorRef} from '../spies';
 
       let emitter: EventEmitter<any>;
       let subscribable: Subscribable<any>;
-      let pipe: AsyncPipe<any>;
+      let pipe: AsyncPipe;
       let ref: any;
       const message = {};
 
@@ -129,9 +129,19 @@ import {SpyChangeDetectorRef} from '../spies';
       });
     });
 
+    describe('Subscribable', () => {
+      it('should infer the type from the subscribable', () => {
+        const ref = new SpyChangeDetectorRef() as any;
+        const pipe = new AsyncPipe(ref);
+        const emitter = new EventEmitter<{name: 'T'}>();
+        // The following line will fail to compile if the type cannot be inferred.
+        const name = pipe.transform(emitter)?.name;
+      });
+    });
+
     describe('Promise', () => {
       const message = {};
-      let pipe: AsyncPipe<any>;
+      let pipe: AsyncPipe;
       let resolve: (result: any) => void;
       let reject: (error: any) => void;
       let promise: Promise<any>;
