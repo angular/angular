@@ -10,13 +10,16 @@ import {obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
 import {existsSync, readFileSync} from 'fs';
 import {dirname, join} from 'path';
 
+/** Runfiles helper from bazel to resolve file name paths.  */
+const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']!);
+
 describe('flat_module ng_module', () => {
   let packageOutput: string;
   let flatModuleOutFile: string;
 
   beforeAll(() => {
     packageOutput =
-        dirname(require.resolve('angular/packages/bazel/test/ngc-wrapped/flat_module/index.js'));
+        dirname(runfiles.resolve('angular/packages/bazel/test/ngc-wrapped/flat_module/index.js'));
     flatModuleOutFile = join(packageOutput, 'flat_module.js');
   });
 
