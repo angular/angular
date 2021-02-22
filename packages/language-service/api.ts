@@ -31,12 +31,12 @@ export type GetTcbResponse = {
    * code, `selections` is empty.
    */
   selections: ts.TextSpan[],
-}|undefined;
+};
 
 /**
  * `NgLanguageService` describes an instance of an Angular language service,
  * whose API surface is a strict superset of TypeScript's language service.
  */
 export interface NgLanguageService extends ts.LanguageService {
-  getTcb(fileName: string, position: number): GetTcbResponse;
+  getTcb(fileName: string, position: number): GetTcbResponse|undefined;
 }
