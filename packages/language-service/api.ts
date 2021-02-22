@@ -40,3 +40,8 @@ export type GetTcbResponse = {
 export interface NgLanguageService extends ts.LanguageService {
   getTcb(fileName: string, position: number): GetTcbResponse|undefined;
 }
+
+export function isNgLanguageService(ls: ts.LanguageService|
+                                    NgLanguageService): ls is NgLanguageService {
+  return 'getTcb' in ls;
+}
