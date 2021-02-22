@@ -5,10 +5,18 @@ ANGULAR_PACKAGE_VERSION = "^11.0.0 || ^12.0.0-0"
 MDC_PACKAGE_VERSION = "^9.0.0-canary.419e03572.0"
 TSLIB_PACKAGE_VERSION = "^2.0.0"
 
+# Each placer holder is used to stamp versions during the build process, replacing the key with it's
+# value pair. These replacements occur during building of `npm_package` and `ng_package` stamping in
+# the peer dependencies and versions, primarily in `package.json`s.
 VERSION_PLACEHOLDER_REPLACEMENTS = {
+    # Version of `material-components-web`
     "0.0.0-MDC": MDC_PACKAGE_VERSION,
+    # Version of `@angular/core`
     "0.0.0-NG": ANGULAR_PACKAGE_VERSION,
+    # Version of `tslib`
     "0.0.0-TSLIB": TSLIB_PACKAGE_VERSION,
+    # Version of the local package being built, generated via the `--workspace_status_command` flag.
+    "0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}",
 }
 
 # List of default Angular library UMD bundles which are not processed by ngcc.

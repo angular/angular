@@ -3,7 +3,7 @@
 load("@io_bazel_rules_sass//:defs.bzl", _sass_binary = "sass_binary", _sass_library = "sass_library")
 load("@npm//@angular/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("@npm//@bazel/jasmine:index.bzl", _jasmine_node_test = "jasmine_node_test")
-load("@npm//@bazel/karma:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
+load("@npm//@bazel/concatjs:index.bzl", _karma_web_test = "karma_web_test", _karma_web_test_suite = "karma_web_test_suite")
 load("@npm//@bazel/protractor:index.bzl", _protractor_web_test_suite = "protractor_web_test_suite")
 load("@npm//@bazel/typescript:index.bzl", _ts_library = "ts_library")
 load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS", "getAngularUmdTargets")
@@ -165,8 +165,8 @@ def karma_web_test_suite(name, **kwargs):
         kwargs["browsers"] = [
             # Note: when changing the browser names here, also update the "yarn test"
             # script to reflect the new browser names.
-            "@npm_angular_dev_infra_private//browsers/chromium:chromium",
-            "@npm_angular_dev_infra_private//browsers/firefox:firefox",
+            "@npm//@angular/dev-infra-private/browsers/chromium:chromium",
+            "@npm//@angular/dev-infra-private/browsers/firefox:firefox",
         ]
 
     for opt_name in kwargs.keys():
@@ -200,7 +200,7 @@ def karma_web_test_suite(name, **kwargs):
 
 def protractor_web_test_suite(**kwargs):
     _protractor_web_test_suite(
-        browsers = ["@npm_angular_dev_infra_private//browsers/chromium:chromium"],
+        browsers = ["@npm//@angular/dev-infra-private/browsers/chromium:chromium"],
         **kwargs
     )
 

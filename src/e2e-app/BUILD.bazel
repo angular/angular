@@ -1,4 +1,4 @@
-load("@npm//@bazel/typescript:index.bzl", "ts_devserver")
+load("@npm//@bazel/concatjs:index.bzl", "concatjs_devserver")
 load("//:packages.bzl", "getAngularUmdTargets")
 load("//tools:defaults.bzl", "ng_module", "sass_binary")
 
@@ -85,7 +85,7 @@ sass_binary(
     ],
 )
 
-ts_devserver(
+concatjs_devserver(
     name = "devserver",
     testonly = True,
     additional_root_paths = [

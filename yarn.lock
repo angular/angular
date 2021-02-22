@@ -116,9 +116,9 @@
   dependencies:
     tslib "^2.0.0"
 
-"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#71d57c29a10c03d07f889581608e3a2315a1dc7e":
+"@angular/dev-infra-private@https://github.com/angular/dev-infra-private-builds.git#a8dbb0d8cd8de1e86a4ec4ea66b5bd89a47d4876":
   version "0.0.0"
-  resolved "https://github.com/angular/dev-infra-private-builds.git#71d57c29a10c03d07f889581608e3a2315a1dc7e"
+  resolved "https://github.com/angular/dev-infra-private-builds.git#a8dbb0d8cd8de1e86a4ec4ea66b5bd89a47d4876"
   dependencies:
     "@angular/benchpress" "0.2.1"
     "@bazel/buildifier" "^0.29.0"
@@ -134,13 +134,13 @@
     inquirer-autocomplete-prompt "^1.0.2"
     minimatch "^3.0.4"
     multimatch "^4.0.0"
-    node-fetch "^2.6.0"
+    node-fetch "^2.6.1"
     node-uuid "1.4.8"
     ora "^5.0.0"
     protractor "^5.4.2"
     selenium-webdriver "3.5.0"
     semver "^6.3.0"
-    shelljs "^0.8.3"
+    shelljs "^0.8.4"
     ts-node "^8.6.2"
     tslib "^2.0.0"
     typed-graphqlify "^2.3.0"
@@ -677,43 +677,47 @@
   resolved "https://registry.yarnpkg.com/@bazel/buildifier/-/buildifier-4.0.0.tgz#c99fb21295c7e2858fa176c2b950c589217ae8ac"
   integrity sha512-e242AK+shp+5bpAc9l93pmG5YRYRfM0INV3gfbdxNeBxccx1MJUagaiwxqAV+Mw55zk92gsb99f2TAc9tt6C7w==
 
+"@bazel/concatjs@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/concatjs/-/concatjs-3.1.0.tgz#401099b03d47678af2fe4a4fb3f8ca94800ce235"
+  integrity sha512-Jsve0lgOk9fD+KlsqYwrYc8MFsy+olNw+uv2l0Oxo2QMheUDMbcuUWg+AHmc3EOjZGSOJGJ0xw1SAvY7b5YNDQ==
+  dependencies:
+    protobufjs "6.8.8"
+    source-map-support "0.5.9"
+    tsutils "2.27.2"
+
 "@bazel/ibazel@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@bazel/ibazel/-/ibazel-0.14.0.tgz#86fa0002bed2ce1123b7ad98d4dd4623a0d93244"
   integrity sha512-s0gyec6lArcRDwVfIP6xpY8iEaFpzrSpyErSppd3r2O49pOEg7n6HGS/qJ8ncvme56vrDk6crl/kQ6VAdEO+rg==
 
-"@bazel/jasmine@^2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-2.3.2.tgz#ff120008a69a93ea2138c29cc266d7dec58333a9"
-  integrity sha512-GG2xAvYXgoW9SHco8RETuxkBTeLF7RI4rtuvAJdVhwwzsUeGovKROTbHvQEyo1qxmeQjQu0hzKr11VfwZPcCMA==
+"@bazel/jasmine@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/jasmine/-/jasmine-3.1.0.tgz#f71b60194f083cd171bf18089e90df1c16cb0ade"
+  integrity sha512-EPKbBtkqpolVhF9l9QCm8+wbdsRqtFvHgOruk/mkLXpvTmSV+cO//okunEMyeA03BIj1+Ek8Hqk4b4l4lAT4bw==
   dependencies:
     c8 "~7.1.0"
     jasmine-reporters "~2.3.2"
 
-"@bazel/karma@^2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@bazel/karma/-/karma-2.3.2.tgz#4120618f7edd141b155f6f830fd0f04dc748a37c"
-  integrity sha512-+FFpem1Ul/BtqNrom8y1xPIa1cPEZeBvpao8BRLfQt46r7Nk9u11KI8ylNFk+yIQVhFqAD3JBaL3sbLAU7BJ5Q==
+"@bazel/protractor@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-3.1.0.tgz#9d4e2514fa6949c58996b38824409811408924a8"
+  integrity sha512-39ilFP+grfdetXJOfeImNgNksB42vvlMmM/PU4cO5hUpGvDWSVpx9jIJUdr+NySf3M4A+Kizk3NtcO3xMNmwyQ==
 
-"@bazel/protractor@^2.3.2":
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/@bazel/protractor/-/protractor-2.3.3.tgz#44eca70d159d3e5a67654683f81266cc3594ce5a"
-  integrity sha512-06EFGstTshvofjiUd1ZJJepGeTgkLZNZB9Bfb7IhMC/ca1ZaeKB8SRWHhiPw7wN1QojHf4JJ+uhbqDt60m+Xrg==
+"@bazel/rollup@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-3.1.0.tgz#36346f052b2ce3c1e31e5ebb05ed80464548eb00"
+  integrity sha512-lmgPhlR1VsJRsSE83Jlv+WT26Lso0/0FqXknlVuOmvCWFwSUKlriws729fqJZsvV5O2muAgJKuQl/zk+gqGCug==
 
-"@bazel/rollup@^2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@bazel/rollup/-/rollup-2.3.2.tgz#637c9219d75fd40469efe881057b27032aa5896c"
-  integrity sha512-Eyz99eI/rsWDJws3eO2UGAmIoWmZWEzmchIBU30EoVzvQ5wqZciZ2lLOXkUIAosZsijjE1THiqCCf5gJtOmExw==
+"@bazel/terser@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-3.1.0.tgz#5801e83d4ac648fb1a8824a77a1a1f32c3af0c1e"
+  integrity sha512-8oXZwy5G5dbr4zltBzLjfPw4ZARDEysB2E25dCqAo64XJ26ptS+D3/UnE3uZU9KuM/3ka1U+YIpit+f9SqCgTA==
 
-"@bazel/terser@^2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@bazel/terser/-/terser-2.3.2.tgz#30f0b551f43eeafb64cb834d1f2f3e7f2ddef262"
-  integrity sha512-UasdVrMdaOEBwzNTTyWtUTH+ITQtXhV64XG6SdyWY1wWLgcgoUOiFYPN2lgXRZyKNpFezmq+CHJ5pqfYwzN3Rg==
-
-"@bazel/typescript@^2.3.2":
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-2.3.2.tgz#6d49cc064a9323905dcf791fe0e959f75ddf2ade"
-  integrity sha512-O2lZfVGx1Uyc7GzLMyD4uiu1qWxy7xviVTEDPzFGcqZsHMCXMV/fEgMoiD0cI4diHwSWrc7Gm/CG9j/z+SRDzA==
+"@bazel/typescript@3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-3.1.0.tgz#a07999ad7956b8c624604a521e653570bba32025"
+  integrity sha512-sEWuvkUGIDeRhjLENHtJyop7wu4UqKN8h/nSgUwc5gkpWXQiT2wGH5jKVxBqODOBHB+IInEMtAjyRmCT+HbSHA==
   dependencies:
     protobufjs "6.8.8"
     semver "5.6.0"
@@ -8751,7 +8755,7 @@ matchdep@^2.0.0:
     resolve "^1.4.0"
     stack-trace "0.0.10"
 
-material-components-web@^11.0.0-canary.3201cae47.0:
+material-components-web@11.0.0-canary.3201cae47.0:
   version "11.0.0-canary.3201cae47.0"
   resolved "https://registry.yarnpkg.com/material-components-web/-/material-components-web-11.0.0-canary.3201cae47.0.tgz#d24ef1ef4368c6d1fe7bcfb0f9b9e48a9813d934"
   integrity sha512-jkv8MqeQg8YbOwLDvZQAtl2xFhvPAXE3zlzY1g5GYLTfXHRlOz47VVXz+7b1BzJteLP4KQP8ziEhwB9UdekLAg==
@@ -10915,7 +10919,7 @@ redeyed@~2.1.0:
   dependencies:
     esprima "~4.0.0"
 
-reflect-metadata@^0.1.13, reflect-metadata@^0.1.2:
+reflect-metadata@^0.1.13, reflect-metadata@^0.1.2, reflect-metadata@^0.1.3:
   version "0.1.13"
   resolved "https://registry.yarnpkg.com/reflect-metadata/-/reflect-metadata-0.1.13.tgz#67ae3ca57c972a2aa1642b10fe363fe32d49dc08"
   integrity sha512-Ts1Y/anZELhSsjMcU605fU9RE4Oi3p5ORujwbIKXfWa+0Zxs510Qrmrce5/Jowq3cHSZSJqBjypxmHarc+vEWg==
@@ -11714,7 +11718,7 @@ shelljs@0.8.2:
     interpret "^1.0.0"
     rechoir "^0.6.2"
 
-shelljs@^0.8.3:
+shelljs@^0.8.3, shelljs@^0.8.4:
   version "0.8.4"
   resolved "https://registry.yarnpkg.com/shelljs/-/shelljs-0.8.4.tgz#de7684feeb767f8716b326078a8a00875890e3c2"
   integrity sha512-7gk3UZ9kOfPLIAbslLzyWeGiEqx9e3rxwZM0KE6EL8GlGwjym9Mrlx5/p33bWTu9YG6vcS4MBxYZDHYr5lr8BQ==

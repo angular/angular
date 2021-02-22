@@ -8,21 +8,18 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 # Add NodeJS rules
 http_archive(
     name = "build_bazel_rules_nodejs",
-    sha256 = "b3521b29c7cb0c47a1a735cce7e7e811a4f80d8e3720cf3a1b624533e4bb7cb6",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/2.3.2/rules_nodejs-2.3.2.tar.gz"],
+    sha256 = "dd4dc46066e2ce034cba0c81aa3e862b27e8e8d95871f567359f7a534cccb666",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/releases/download/3.1.0/rules_nodejs-3.1.0.tar.gz"],
 )
 
 # Add sass rules
 http_archive(
     name = "io_bazel_rules_sass",
-    # Patch `rules_sass` to work around a bug that causes error messages to be not
-    # printed in worker mode: https://github.com/bazelbuild/rules_sass/issues/96.
-    # TODO(devversion): remove this patch once the Sass Node entry-point returns a `Promise`.
-    patches = ["//tools/postinstall:sass_worker_async.patch"],
-    sha256 = "cf28ff1bcfafb3c97f138bbc8ca9fe386e968ed3faaa9f8e6214abb5e88a2ecd",
-    strip_prefix = "rules_sass-1.29.0",
+    sha256 = "596ab3616d370135e0ecc710e103422e0aa3719f1c970303a0886b70c81ee819",
+    strip_prefix = "rules_sass-1.32.2",
     urls = [
-        "https://github.com/bazelbuild/rules_sass/archive/1.29.0.zip",
+        "https://github.com/bazelbuild/rules_sass/archive/1.32.2.zip",
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_sass/archive/1.32.2.zip",
     ],
 )
 
@@ -32,27 +29,12 @@ load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "node_repos
 check_bazel_version("4.0.0")
 
 node_repositories(
-    node_repositories = {
-        "12.9.1-darwin_amd64": ("node-v12.9.1-darwin-x64.tar.gz", "node-v12.9.1-darwin-x64", "9aaf29d30056e2233fd15dfac56eec12e8342d91bb6c13d54fb5e599383dddb9"),
-        "12.9.1-linux_amd64": ("node-v12.9.1-linux-x64.tar.xz", "node-v12.9.1-linux-x64", "680a1263c9f5f91adadcada549f0a9c29f1b26d09658d2b501c334c3f63719e5"),
-        "12.9.1-windows_amd64": ("node-v12.9.1-win-x64.zip", "node-v12.9.1-win-x64", "6a4e54bda091bd02dbd8ff1b9f6671e036297da012a53891e3834d4bf4bed297"),
-    },
-    node_urls = ["https://nodejs.org/dist/v{version}/{filename}"],
-    node_version = "12.9.1",
-    # We do not need to define a specific yarn version as bazel will respect the .yarnrc file
-    # and run the version of yarn defined at the set-path value.
-    # Since bazel runs yarn from the working directory of the package.json, and our .yarnrc
-    # file is in the same directory, it correctly discovers and respects it.  Additionally,
-    # it ensures that the yarn environment variable to detect if yarn has already followed
-    # the set-path value is reset.
+    node_version = "12.14.1",
+    package_json = ["//:package.json"],
 )
 
 yarn_install(
     name = "npm",
-    # Redirects Yarn `stdout` output to `stderr`. This ensures that stdout is not accidentally
-    # polluted when Bazel runs Yarn. Workaround until the upstream fix is available:
-    # https://github.com/bazelbuild/bazel/pull/10611.
-    args = ["1>&2"],
     # We add the postinstall patches file, and ngcc main fields update script here so
     # that Yarn will rerun whenever one of these files has been modified.
     data = [
@@ -64,19 +46,9 @@ yarn_install(
     yarn_lock = "//:yarn.lock",
 )
 
-# Install all bazel dependencies of the @ngdeps npm packages
-load("@npm//:install_bazel_dependencies.bzl", "install_bazel_dependencies")
+load("@npm//@bazel/protractor:package.bzl", "npm_bazel_protractor_dependencies")
 
-install_bazel_dependencies(
-    # TODO(crisbeto): supress warnings for now so everything works like it has until now.
-    # Eventually we should remove it and re-test everything.
-    suppress_warning = True,
-)
-
-# Fetch transitive dependencies which are needed to use the karma rules.
-load("@npm//@bazel/karma:package.bzl", "npm_bazel_karma_dependencies")
-
-npm_bazel_karma_dependencies()
+npm_bazel_protractor_dependencies()
 
 # Setup web testing. We need to setup a browser because the web testing rules for TypeScript need
 # a reference to a registered browser (ideally that's a hermetic version of a browser)
@@ -130,6 +102,6 @@ rbe_autoconfig(
 # TODO(wagnermaciel): deduplicate browsers - this will load another version of chromium in the
 # repository. We probably want to use the chromium version loaded here (from dev-infra) as that
 # one has RBE improvements.
-load("@npm_angular_dev_infra_private//browsers:browser_repositories.bzl", _dev_infra_browser_repositories = "browser_repositories")
+load("@npm//@angular/dev-infra-private/browsers:browser_repositories.bzl", _dev_infra_browser_repositories = "browser_repositories")
 
 _dev_infra_browser_repositories()

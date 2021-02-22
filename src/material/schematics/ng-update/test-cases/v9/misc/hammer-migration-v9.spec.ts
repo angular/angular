@@ -5,6 +5,11 @@ import {createTestCaseSetup, resolveBazelPath} from '@angular/cdk/schematics/tes
 import {readFileSync} from 'fs';
 import {MIGRATION_PATH} from '../../../../index.spec';
 
+
+interface PackageJson {
+  dependencies: Record<string, string | undefined>;
+}
+
 describe('v9 HammerJS removal', () => {
   const GESTURE_CONFIG_TEMPLATE_PATH = resolveBazelPath(__dirname,
       '../../../migrations/hammer-gestures-v9/gesture-config.template');
@@ -55,11 +60,11 @@ describe('v9 HammerJS removal', () => {
     it('should remove hammerjs from "package.json" file', async () => {
       addPackageToPackageJson(tree, 'hammerjs', '0.0.0');
 
-      expect(JSON.parse(tree.readContent('/package.json')).dependencies['hammerjs']).toBe('0.0.0');
+      expect((JSON.parse(tree.readContent('/package.json')) as PackageJson).dependencies['hammerjs']).toBe('0.0.0');
 
       await runMigration();
 
-      expect(JSON.parse(tree.readContent('/package.json')).dependencies['hammerjs'])
+      expect((JSON.parse(tree.readContent('/package.json')) as PackageJson).dependencies['hammerjs'])
           .toBe(undefined);
 
       // expect that there is a "node-package" install task. The task is
@@ -803,7 +808,7 @@ describe('v9 HammerJS removal', () => {
   it('should not remove hammerjs if test target compilation scope does not contain hammerjs usage',
      async () => {
        addPackageToPackageJson(tree, 'hammerjs', '0.0.0');
-       expect(JSON.parse(tree.readContent('/package.json')).dependencies['hammerjs']).toBe('0.0.0');
+       expect((JSON.parse(tree.readContent('/package.json')) as PackageJson).dependencies['hammerjs']).toBe('0.0.0');
 
        // we simulate a case where a component does not have any tests for. In that case,
        // the test target compilation scope does not include "test.component.ts" and the
@@ -820,14 +825,14 @@ describe('v9 HammerJS removal', () => {
 
        await runMigration();
 
-       expect(JSON.parse(tree.readContent('/package.json')).dependencies['hammerjs']).toBe('0.0.0');
+       expect((JSON.parse(tree.readContent('/package.json')) as PackageJson).dependencies['hammerjs']).toBe('0.0.0');
      });
 
   it('should not remove hammerjs from "package.json" file if used in one project while ' +
       'unused in other project', async () => {
     addPackageToPackageJson(tree, 'hammerjs', '0.0.0');
 
-    expect(JSON.parse(tree.readContent('/package.json')).dependencies['hammerjs']).toBe('0.0.0');
+    expect((JSON.parse(tree.readContent('/package.json')) as PackageJson).dependencies['hammerjs']).toBe('0.0.0');
 
     await runner.runExternalSchematicAsync('@schematics/angular', 'application',
       {name: 'second-project'}, tree).toPromise();
@@ -840,7 +845,7 @@ describe('v9 HammerJS removal', () => {
     await runMigration();
 
     expect(runner.tasks.some(t => t.name === 'node-package')).toBe(false);
-    expect(JSON.parse(tree.readContent('/package.json')).dependencies['hammerjs'])
+    expect((JSON.parse(tree.readContent('/package.json')) as PackageJson).dependencies['hammerjs'])
       .toBe('0.0.0');
   });
 

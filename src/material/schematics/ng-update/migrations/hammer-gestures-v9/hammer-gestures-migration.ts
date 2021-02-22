@@ -59,6 +59,10 @@ interface IdentifierReference {
   isImport: boolean;
 }
 
+interface PackageJson {
+  dependencies: Record<string, string>;
+}
+
 export class HammerGesturesMigration extends DevkitMigration<null> {
   // Only enable this rule if the migration targets v9 or v10 and is running for a non-test
   // target. We cannot migrate test targets since they have a limited scope
@@ -853,7 +857,7 @@ export class HammerGesturesMigration extends DevkitMigration<null> {
       return false;
     }
 
-    const packageJson = JSON.parse(tree.read('/package.json')!.toString('utf8'));
+    const packageJson = JSON.parse(tree.read('/package.json')!.toString('utf8')) as PackageJson;
 
     // We do not handle the case where someone manually added "hammerjs" to the dev dependencies.
     if (packageJson.dependencies && packageJson.dependencies[HAMMER_MODULE_SPECIFIER]) {

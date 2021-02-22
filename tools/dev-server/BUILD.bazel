@@ -29,4 +29,7 @@ nodejs_binary(
         ":dev-server_lib",
     ],
     entry_point = ":main.ts",
+    # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+    # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+    templated_args = ["--bazel_patch_module_resolver"],
 )
