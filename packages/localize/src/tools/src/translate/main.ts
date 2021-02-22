@@ -105,7 +105,7 @@ if (require.main === module) {
   const sourceRootPath = options.r;
   const sourceFilePaths = glob.sync(options.s, {cwd: sourceRootPath, nodir: true});
   const translationFilePaths: (string|string[])[] = convertArraysFromArgs(options.t);
-  const outputPathFn = getOutputPathFn(fs.resolve(options.o));
+  const outputPathFn = getOutputPathFn(fs, fs.resolve(options.o));
   const diagnostics = new Diagnostics();
   const missingTranslation = options.m as DiagnosticHandlingStrategy;
   const duplicateTranslation = options.d as DiagnosticHandlingStrategy;

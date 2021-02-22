@@ -1,6 +1,7 @@
 package(default_visibility = ["//packages/localize/src/tools/test/extract/integration:__pkg__"])
 
 load("@npm//typescript:index.bzl", "tsc")
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
 
 tsc(
     name = "compile_es5",
@@ -44,7 +45,8 @@ tsc(
     data = glob(["src/*.ts"]),
 )
 
-filegroup(
+# Use copy_to_bin since filegroup doesn't seem to work on Windows.
+copy_to_bin(
     name = "test_files",
     srcs = glob([
         "**/*.js",
