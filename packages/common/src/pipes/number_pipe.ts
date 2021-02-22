@@ -29,6 +29,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * The value's decimal representation is specified by the `digitsInfo`
  * parameter, written in the following format:<br>
+ *
  * ```
  * {minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}
  * ```
