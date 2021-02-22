@@ -33,6 +33,8 @@ import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig, TypeCheckingProgra
 import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
 import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
+import {compileUndecoratedClassesWithAngularFeatures} from './config';
+
 /**
  * State information about a compilation which is only generated once some data is requested from
  * the `NgCompiler` (for example, by calling `getDiagnostics`).
@@ -1012,10 +1014,7 @@ export class NgCompiler {
         new DirectiveDecoratorHandler(
             reflector, evaluator, metaRegistry, scopeRegistry, metaReader,
             defaultImportTracker, injectableRegistry, isCore, this.closureCompilerEnabled,
-            // In ngtsc we no longer want to compile undecorated classes with Angular features.
-            // Migrations for these patterns ran as part of `ng update` and we want to ensure
-            // that projects do not regress. See https://hackmd.io/@alx/ryfYYuvzH for more details.
-            /* compileUndecoratedClassesWithAngularFeatures */ false
+            compileUndecoratedClassesWithAngularFeatures,
         ) as Readonly<DecoratorHandler<unknown, unknown, unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
