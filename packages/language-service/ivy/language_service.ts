@@ -96,25 +96,28 @@ export class LanguageService {
   }
 
   getQuickInfoAtPosition(fileName: string, position: number): ts.QuickInfo|undefined {
-    const compiler = this.compilerFactory.getOrCreate();
-    const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
-    if (templateInfo === undefined) {
-      return undefined;
-    }
-    const positionDetails = getTargetAtPosition(templateInfo.template, position);
-    if (positionDetails === null) {
-      return undefined;
-    }
+    return this.withCompiler((compiler) => {
+      if (!isTemplateContext(compiler.getNextProgram(), fileName, position)) {
+        return undefined;
+      }
 
-    // Because we can only show 1 quick info, just use the bound attribute if the target is a two
-    // way binding. We may consider concatenating additional display parts from the other target
-    // nodes or representing the two way binding in some other manner in the future.
-    const node = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
-        positionDetails.context.nodes[0] :
-        positionDetails.context.node;
-    const results = new QuickInfoBuilder(this.tsLS, compiler, templateInfo.component, node).get();
-    this.compilerFactory.registerLastKnownProgram();
-    return results;
+      const templateInfo = getTemplateInfoAtPosition(fileName, position, compiler);
+      if (templateInfo === undefined) {
+        return undefined;
+      }
+      const positionDetails = getTargetAtPosition(templateInfo.template, position);
+      if (positionDetails === null) {
+        return undefined;
+      }
+
+      // Because we can only show 1 quick info, just use the bound attribute if the target is a two
+      // way binding. We may consider concatenating additional display parts from the other target
+      // nodes or representing the two way binding in some other manner in the future.
+      const node = positionDetails.context.kind === TargetNodeKind.TwoWayBindingContext ?
+          positionDetails.context.nodes[0] :
+          positionDetails.context.node;
+      return new QuickInfoBuilder(this.tsLS, compiler, templateInfo.component, node).get();
+    });
   }
 
   getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[]|undefined {
