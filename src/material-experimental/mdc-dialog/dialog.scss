@@ -1,8 +1,8 @@
+@use '../mdc-helpers/mdc-helpers';
+@use './mdc-dialog-structure-overrides';
+@use '../../cdk/a11y/a11y';
 @import '@material/dialog/mixins.import';
 @import '@material/dialog/variables.import';
-@import '../mdc-helpers/mdc-helpers';
-@import './mdc-dialog-structure-overrides';
-@import '../../cdk/a11y/a11y';
 
 // Dialog content max height. This has been copied from the standard dialog
 // and is needed to make the dialog content scrollable.
@@ -11,14 +11,15 @@ $mat-dialog-content-max-height: 65vh !default;
 // don't expose this value as variable.
 $mat-dialog-button-horizontal-margin: 8px !default;
 
-@include mdc-dialog-core-styles($query: $mat-base-styles-query);
-@include mat-mdc-private-dialog-structure-overrides($mat-dialog-content-max-height);
+@include mdc-dialog-core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-dialog-structure-overrides.private-dialog-structure-overrides(
+  $mat-dialog-content-max-height);
 
 // The dialog container is focusable. We remove the default outline shown in browsers.
 .mat-mdc-dialog-container {
   outline: 0;
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }
 }

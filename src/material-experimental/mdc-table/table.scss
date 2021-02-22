@@ -1,10 +1,10 @@
 @use '../../material/core/style/vendor-prefixes';
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/table/table-flex-styles';
 @import '@material/data-table/mixins.import';
-@import '../mdc-helpers/mdc-helpers';
-@import '../../material/table/table-flex-styles';
 
-@include mdc-data-table-core-styles($query: $mat-base-styles-without-animation-query);
-@include mat-private-table-flex-styles();
+@include mdc-data-table-core-styles($query: mdc-helpers.$mat-base-styles-without-animation-query);
+@include table-flex-styles.table-flex-styles();
 
 .mat-mdc-table-sticky {
   // Note that the table can either set this class or an inline style to make something sticky.

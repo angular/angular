@@ -1,10 +1,10 @@
+@use '../../material/core/style/layout-common';
+@use '../../cdk/a11y/a11y';
+@use '../mdc-helpers/mdc-helpers';
 @import '@material/chips/mixins.import';
-@import '../../material/core/style/layout-common';
-@import '../../cdk/a11y/a11y';
-@import '../mdc-helpers/mdc-helpers';
 
-@include mdc-chip-without-ripple($query: $mat-base-styles-query);
-@include mdc-chip-set-core-styles($query: $mat-base-styles-query);
+@include mdc-chip-without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-chip-set-core-styles($query: mdc-helpers.$mat-base-styles-query);
 
 .mat-mdc-chip {
   // MDC uses a pointer cursor
@@ -19,7 +19,7 @@
     }
   }
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: solid 1px;
 
     &:focus {
@@ -31,7 +31,7 @@
 
 // The ripple container should match the bounds of the entire chip.
 .mat-mdc-chip-ripple {
-  @include mat-fill;
+  @include layout-common.fill;
 
   // Disable pointer events for the ripple container and state overlay because the container
   // will overlay the user content and we don't want to disable mouse events on the user content.
@@ -50,7 +50,7 @@
   @include mdc-ripple-target-common($query: structure);
 
   &::after, &::before {
-    @include mat-fill;
+    @include layout-common.fill;
     content: '';
     pointer-events: none;
     opacity: 0;
@@ -95,15 +95,15 @@ input.mat-mdc-chip-input {
 }
 
 // The margin value is set in MDC.
-$mat-mdc-chip-margin: 4px;
+$chip-margin: 4px;
 
 // Don't let the chip margin increase the mat-form-field height.
 .mat-mdc-chip-grid {
-  margin: -$mat-mdc-chip-margin;
+  margin: -$chip-margin;
 
   // Keep the mat-chip-grid height the same even when there are no chips.
   input.mat-mdc-chip-input {
-    margin: $mat-mdc-chip-margin;
+    margin: $chip-margin;
   }
 }
 
@@ -112,7 +112,7 @@ $mat-mdc-chip-margin: 4px;
     transition: none;
   }
 
-  @include cdk-high-contrast(black-on-white, off) {
+  @include a11y.high-contrast(black-on-white, off) {
     // SVG colors won't be changed in high contrast mode and since the checkmark is white
     // by default, it'll blend in with the background in black-on-white mode. Override the color
     // to ensure that it's visible. We need !important, because the theme styles are very specific.

@@ -1,41 +1,45 @@
-@import '../core/style/private';
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:meta';
+@use '../core/style/private';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
 
 
-$mat-datepicker-selected-today-box-shadow-width: 1px;
-$mat-datepicker-selected-fade-amount: 0.6;
-$mat-datepicker-range-fade-amount: 0.2;
-$mat-datepicker-today-fade-amount: 0.2;
-$mat-calendar-body-font-size: 13px !default;
-$mat-calendar-weekday-table-font-size: 11px !default;
+$selected-today-box-shadow-width: 1px;
+$selected-fade-amount: 0.6;
+$range-fade-amount: 0.2;
+$today-fade-amount: 0.2;
+$calendar-body-font-size: 13px !default;
+$calendar-weekday-table-font-size: 11px !default;
 
 @mixin _mat-datepicker-color($palette) {
-  @include mat-date-range-colors(
-    mat-color($palette, default, $mat-datepicker-range-fade-amount));
+  @include date-range-colors(
+    theming.color($palette, default, $range-fade-amount));
 
   .mat-calendar-body-selected {
-    background-color: mat-color($palette);
-    color: mat-color($palette, default-contrast);
+    background-color: theming.color($palette);
+    color: theming.color($palette, default-contrast);
   }
 
   .mat-calendar-body-disabled > .mat-calendar-body-selected {
-    $background: mat-color($palette);
+    $background: theming.color($palette);
 
-    @if (type-of($background) == color) {
-      background-color: fade-out($background, $mat-datepicker-selected-fade-amount);
+    @if (meta.type-of($background) == color) {
+      background-color: color.adjust($background, $alpha: -$selected-fade-amount);
     }
     @else {
       // If we couldn't resolve to background to a color (e.g. it's a CSS variable),
       // fall back to fading the content out via `opacity`.
-      opacity: $mat-datepicker-today-fade-amount;
+      opacity: $today-fade-amount;
     }
   }
 
   .mat-calendar-body-today.mat-calendar-body-selected {
-    box-shadow: inset 0 0 0 $mat-datepicker-selected-today-box-shadow-width
-                mat-color($palette, default-contrast);
+    box-shadow: inset 0 0 0 $selected-today-box-shadow-width
+                theming.color($palette, default-contrast);
   }
 
   .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover,
@@ -43,7 +47,7 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   .cdk-program-focused .mat-calendar-body-active {
     & > .mat-calendar-body-cell-content {
       @include _mat-datepicker-unselected-cell {
-        background-color: mat-color($palette, 0.3);
+        background-color: theming.color($palette, 0.3);
       }
     }
   }
@@ -56,14 +60,14 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   }
 }
 
-@mixin mat-datepicker-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $foreground: map-get($config, foreground);
-  $background: map-get($config, background);
-  $disabled-color: mat-color($foreground, disabled-text);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $foreground: map.get($config, foreground);
+  $background: map.get($config, background);
+  $disabled-color: theming.color($foreground, disabled-text);
 
   .mat-calendar-arrow {
-    border-top-color: mat-color($foreground, icon);
+    border-top-color: theming.color($foreground, icon);
   }
 
   // The prev/next buttons need a bit more specificity to
@@ -71,24 +75,24 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   .mat-datepicker-toggle,
   .mat-datepicker-content .mat-calendar-next-button,
   .mat-datepicker-content .mat-calendar-previous-button {
-    color: mat-color($foreground, icon);
+    color: theming.color($foreground, icon);
   }
 
   .mat-calendar-table-header {
-    color: mat-color($foreground, hint-text);
+    color: theming.color($foreground, hint-text);
   }
 
   .mat-calendar-table-header-divider::after {
-    background: mat-color($foreground, divider);
+    background: theming.color($foreground, divider);
   }
 
   .mat-calendar-body-label {
-    color: mat-color($foreground, secondary-text);
+    color: theming.color($foreground, secondary-text);
   }
 
   .mat-calendar-body-cell-content,
   .mat-date-range-input-separator {
-    color: mat-color($foreground, text);
+    color: theming.color($foreground, text);
     border-color: transparent;
   }
 
@@ -103,13 +107,13 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   }
 
   .mat-calendar-body-in-preview {
-    $divider-color: mat-color($foreground, divider);
+    $divider-color: theming.color($foreground, divider);
 
-    @if type-of($divider-color) == color {
+    @if meta.type-of($divider-color) == color {
       // The divider color is set under the assumption that it'll be used
       // for a solid border, but because we're using a dashed border for the
       // preview range, we need to bump its opacity to ensure that it's visible.
-      color: rgba($divider-color, min(opacity($divider-color) * 2, 1));
+      color: rgba($divider-color, math.min(opacity($divider-color) * 2, 1));
     }
     @else {
       color: $divider-color;
@@ -120,16 +124,16 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     @include _mat-datepicker-unselected-cell {
       // Note: though it's not text, the border is a hint about the fact that this is today's date,
       // so we use the hint color.
-      border-color: mat-color($foreground, hint-text);
+      border-color: theming.color($foreground, hint-text);
     }
   }
 
   .mat-calendar-body-disabled > .mat-calendar-body-today {
     @include _mat-datepicker-unselected-cell {
-      $color: mat-color($foreground, hint-text);
+      $color: theming.color($foreground, hint-text);
 
-      @if (type-of($color) == color) {
-        border-color: fade-out($color, $mat-datepicker-today-fade-amount);
+      @if (meta.type-of($color) == color) {
+        border-color: color.adjust($color, $alpha: -$today-fade-amount);
       }
       @else {
         // If the color didn't resolve to a color value, but something like a CSS variable, we can't
@@ -141,74 +145,74 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     }
   }
 
-  @include _mat-datepicker-color(map-get($config, primary));
+  @include _mat-datepicker-color(map.get($config, primary));
 
   .mat-datepicker-content {
-    @include mat-private-theme-elevation(4, $config);
-    background-color: mat-color($background, card);
-    color: mat-color($foreground, text);
+    @include private.theme-elevation(4, $config);
+    background-color: theming.color($background, card);
+    color: theming.color($foreground, text);
 
     &.mat-accent {
-      @include _mat-datepicker-color(map-get($config, accent));
+      @include _mat-datepicker-color(map.get($config, accent));
     }
 
     &.mat-warn {
-      @include _mat-datepicker-color(map-get($config, warn));
+      @include _mat-datepicker-color(map.get($config, warn));
     }
   }
 
   .mat-datepicker-content-touch {
-    @include mat-private-theme-elevation(0, $config);
+    @include private.theme-elevation(0, $config);
   }
 
   .mat-datepicker-toggle-active {
-    color: mat-color(map-get($config, primary), text);
+    color: theming.color(map.get($config, primary), text);
 
     &.mat-accent {
-      color: mat-color(map-get($config, accent), text);
+      color: theming.color(map.get($config, accent), text);
     }
 
     &.mat-warn {
-      color: mat-color(map-get($config, warn), text);
+      color: theming.color(map.get($config, warn), text);
     }
   }
 
   .mat-date-range-input-inner[disabled] {
-    color: mat-color($foreground, disabled-text);
+    color: theming.color($foreground, disabled-text);
   }
 }
 
-@mixin mat-datepicker-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-calendar {
-    font-family: mat-font-family($config);
+    font-family: typography-utils.font-family($config);
   }
 
   .mat-calendar-body {
-    font-size: $mat-calendar-body-font-size;
+    font-size: $calendar-body-font-size;
   }
 
   .mat-calendar-body-label,
   .mat-calendar-period-button {
     font: {
-      size: mat-font-size($config, button);
-      weight: mat-font-weight($config, button);
+      size: typography-utils.font-size($config, button);
+      weight: typography-utils.font-weight($config, button);
     }
   }
 
   .mat-calendar-table-header th {
     font: {
-      size: $mat-calendar-weekday-table-font-size;
-      weight: mat-font-weight($config, body-1);
+      size: $calendar-weekday-table-font-size;
+      weight: typography-utils.font-weight($config, body-1);
     }
   }
 }
 
-@mixin mat-date-range-colors(
+@mixin date-range-colors(
   $range-color,
-  $comparison-color: rgba(#f9ab00, $mat-datepicker-range-fade-amount),
+  $comparison-color: rgba(#f9ab00, $range-fade-amount),
   $overlap-color: #a8dab5,
-  $overlap-selected-color: darken($overlap-color, 30%)) {
+  $overlap-selected-color: color.adjust($overlap-color, $lightness: -30%)) {
 
   .mat-calendar-body-in-range::before {
     background: $range-color;
@@ -242,21 +246,21 @@ $mat-calendar-weekday-table-font-size: 11px !default;
 
 @mixin _mat-datepicker-density($config-or-theme) {}
 
-@mixin mat-datepicker-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-datepicker') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-datepicker') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-datepicker-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-datepicker-density($density);
     }
     @if $typography != null {
-      @include mat-datepicker-typography($typography);
+      @include typography($typography);
     }
   }
 }

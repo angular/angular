@@ -1,21 +1,21 @@
-@import '../a11y/a11y';
+@use '../a11y/a11y';
 
 // We want overlays to always appear over user content, so set a baseline
 // very high z-index for the overlay container, which is where we create the new
 // stacking context for all overlays.
-$cdk-z-index-overlay-container: 1000 !default;
-$cdk-z-index-overlay: 1000 !default;
-$cdk-z-index-overlay-backdrop: 1000 !default;
+$z-index-overlay-container: 1000 !default;
+$z-index-overlay: 1000 !default;
+$z-index-overlay-backdrop: 1000 !default;
 
 // Background color for all of the backdrops
-$cdk-overlay-dark-backdrop-background: rgba(0, 0, 0, 0.32) !default;
+$dark-backdrop-background: rgba(0, 0, 0, 0.32) !default;
 
 // Default backdrop animation is based on the Material Design swift-ease-out.
 $backdrop-animation-duration: 400ms !default;
 $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
 
 
-@mixin cdk-overlay() {
+@mixin overlay() {
   .cdk-overlay-container, .cdk-global-overlay-wrapper {
     // Disable events from being captured on the overlay container.
     pointer-events: none;
@@ -30,7 +30,7 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
   // The overlay-container is an invisible element which contains all individual overlays.
   .cdk-overlay-container {
     position: fixed;
-    z-index: $cdk-z-index-overlay-container;
+    z-index: $z-index-overlay-container;
 
     &:empty {
       // Hide the element when it doesn't have any child nodes. This doesn't
@@ -46,7 +46,7 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
   .cdk-global-overlay-wrapper {
     display: flex;
     position: absolute;
-    z-index: $cdk-z-index-overlay;
+    z-index: $z-index-overlay;
   }
 
   // A single overlay pane.
@@ -56,7 +56,7 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
     position: absolute;
     pointer-events: auto;
     box-sizing: border-box;
-    z-index: $cdk-z-index-overlay;
+    z-index: $z-index-overlay;
 
     // For connected-position overlays, we set `display: flex` in
     // order to force `max-width` and `max-height` to take effect.
@@ -73,7 +73,7 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
     left: 0;
     right: 0;
 
-    z-index: $cdk-z-index-overlay-backdrop;
+    z-index: $z-index-overlay-backdrop;
     pointer-events: auto;
     -webkit-tap-highlight-color: transparent;
     transition: opacity $backdrop-animation-duration $backdrop-animation-timing-function;
@@ -86,14 +86,14 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
       // to making it opaque using `opacity`. Note that we can't use the `cdk-high-contrast`
       // mixin, because we can't normalize the import path to the _a11y.scss both for the
       // source and when this file is distributed. See #10908.
-      @include cdk-high-contrast(active, off) {
+      @include a11y.high-contrast(active, off) {
         opacity: 0.6;
       }
     }
   }
 
   .cdk-overlay-dark-backdrop {
-    background: $cdk-overlay-dark-backdrop-background;
+    background: $dark-backdrop-background;
   }
 
   .cdk-overlay-transparent-backdrop {
@@ -110,7 +110,7 @@ $backdrop-animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1) !default;
   // overlay element's size to fit within the viewport.
   .cdk-overlay-connected-position-bounding-box {
     position: absolute;
-    z-index: $cdk-z-index-overlay;
+    z-index: $z-index-overlay;
 
     // We use `display: flex` on this element exclusively for centering connected overlays.
     // When *not* centering, a top/left/bottom/right will be set which overrides the normal

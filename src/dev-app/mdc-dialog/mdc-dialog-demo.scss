@@ -1,4 +1,4 @@
-@import '../../material-experimental/mdc-dialog/dialog-legacy-padding';
+@use '../../material-experimental/mdc-dialog/dialog-legacy-padding';
 
 .demo-dialog-card {
   max-width: 600px;
@@ -24,5 +24,5 @@
 }
 
 .demo-dialog-legacy-padding {
-  @include mat-mdc-dialog-legacy-padding();
+  @include dialog-legacy-padding.legacy-padding();
 }

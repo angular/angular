@@ -1,11 +1,11 @@
-@import '../core/style/variables';
-@import '../core/ripple/ripple';
-@import '../core/style/vendor-prefixes';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/variables';
+@use '../core/ripple/ripple';
+@use '../core/style/vendor-prefixes';
+@use '../../cdk/a11y/a11y';
 
 
-$mat-radio-size: $mat-toggle-size !default;
-$mat-radio-ripple-radius: 20px;
+$size: variables.$toggle-size !default;
+$ripple-radius: 20px;
 
 // Top-level host container.
 .mat-radio-button {
@@ -20,7 +20,7 @@ $mat-radio-ripple-radius: 20px;
   // Disable text selection on the label itself, because having text selected
   // will prevent focus from reaching the label. Below we'll re-enable it only
   // for the label's content so that people can still select the text.
-  @include user-select(none);
+  @include vendor-prefixes.user-select(none);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -36,8 +36,8 @@ $mat-radio-ripple-radius: 20px;
   box-sizing: border-box;
   display: inline-block;
   position: relative;
-  width: $mat-radio-size;
-  height: $mat-radio-size;
+  width: $size;
+  height: $size;
   // The radio container is inside of a inline-flex element and may shrink if the label
   // is wide and text-wrapping is enabled.
   flex-shrink: 0;
@@ -47,12 +47,12 @@ $mat-radio-ripple-radius: 20px;
 .mat-radio-outer-circle {
   box-sizing: border-box;
   display: block;
-  height: $mat-radio-size;
+  height: $size;
   left: 0;
   position: absolute;
   top: 0;
   transition: border-color ease 280ms;
-  width: $mat-radio-size;
+  width: $size;
   border: {
     width: 2px;
     style: solid;
@@ -69,12 +69,12 @@ $mat-radio-ripple-radius: 20px;
   border-radius: 50%;
   box-sizing: border-box;
   display: block;
-  height: $mat-radio-size;
+  height: $size;
   left: 0;
   position: absolute;
   top: 0;
   transition: transform ease 280ms, background-color ease 280ms;
-  width: $mat-radio-size;
+  width: $size;
 
   // Note: This starts from 0.001 instead of 0, because transitioning from 0 to 0.5 causes
   // IE to flash the entire circle for a couple of frames, throwing off the entire animation.
@@ -87,10 +87,10 @@ $mat-radio-ripple-radius: 20px;
   .mat-radio-checked & {
     transform: scale(0.5);
 
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       // Since we use a background color to render the circle, it won't be
       // displayed in high contrast mode. Use a border as a fallback.
-      border: solid $mat-radio-size / 2;
+      border: solid $size / 2;
     }
   }
 }
@@ -99,15 +99,15 @@ $mat-radio-ripple-radius: 20px;
 .mat-radio-label-content {
   // Re-enable text selection for the button's content since
   // we disabled it above in the `.mat-radio-label`.
-  @include user-select(auto);
+  @include vendor-prefixes.user-select(auto);
   display: inline-block;
   order: 0;
   line-height: inherit;
-  padding-left: $mat-toggle-padding;
+  padding-left: variables.$toggle-padding;
   padding-right: 0;
 
   [dir='rtl'] & {
-    padding-right: $mat-toggle-padding;
+    padding-right: variables.$toggle-padding;
     padding-left: 0;
   }
 }
@@ -116,11 +116,11 @@ $mat-radio-ripple-radius: 20px;
 .mat-radio-label-content.mat-radio-label-before {
   order: -1;
   padding-left: 0;
-  padding-right: $mat-toggle-padding;
+  padding-right: variables.$toggle-padding;
 
   [dir='rtl'] & {
     padding-right: 0;
-    padding-left: $mat-toggle-padding;
+    padding-left: variables.$toggle-padding;
   }
 }
 
@@ -134,10 +134,10 @@ $mat-radio-ripple-radius: 20px;
 // potentially overwrite the absolute position of the container.
 .mat-radio-button .mat-radio-ripple {
   position: absolute;
-  left: calc(50% - #{$mat-radio-ripple-radius});
-  top: calc(50% - #{$mat-radio-ripple-radius});
-  height: $mat-radio-ripple-radius * 2;
-  width: $mat-radio-ripple-radius * 2;
+  left: calc(50% - #{$ripple-radius});
+  top: calc(50% - #{$ripple-radius});
+  height: $ripple-radius * 2;
+  width: $ripple-radius * 2;
   z-index: 1;
   pointer-events: none;
 
@@ -185,7 +185,7 @@ $mat-radio-ripple-radius: 20px;
   left: 50%;
 }
 
-@include cdk-high-contrast(active, off) {
+@include a11y.high-contrast(active, off) {
   .mat-radio-disabled {
     opacity: 0.5;
   }

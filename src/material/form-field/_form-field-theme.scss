@@ -1,33 +1,34 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/style/form-common';
-@import '../core/typography/typography-utils';
+@use 'sass:map';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/style/form-common';
+@use '../core/typography/typography-utils';
 
-@import './form-field-fill-theme.scss';
-@import './form-field-legacy-theme.scss';
-@import './form-field-outline-theme.scss';
-@import './form-field-standard-theme.scss';
+@use './form-field-fill-theme.scss';
+@use './form-field-legacy-theme.scss';
+@use './form-field-outline-theme.scss';
+@use './form-field-standard-theme.scss';
 
 // Color styles that apply to all appearances of the form-field.
-@mixin mat-form-field-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
-  $is-dark-theme: map-get($config, is-dark);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
+  $is-dark-theme: map.get($config, is-dark);
 
   // Label colors. Required is used for the `*` star shown in the label.
-  $label-color: mat-color($foreground, secondary-text, if($is-dark-theme, 0.7, 0.6));
-  $focused-label-color: mat-color($primary, text);
-  $required-label-color: mat-color($accent, text);
+  $label-color: theming.color($foreground, secondary-text, if($is-dark-theme, 0.7, 0.6));
+  $focused-label-color: theming.color($primary, text);
+  $required-label-color: theming.color($accent, text);
 
   // Underline colors.
-  $underline-color-base: mat-color($foreground, divider, if($is-dark-theme, 1, 0.87));
-  $underline-color-accent: mat-color($accent, text);
-  $underline-color-warn: mat-color($warn, text);
-  $underline-focused-color: mat-color($primary, text);
+  $underline-color-base: theming.color($foreground, divider, if($is-dark-theme, 1, 0.87));
+  $underline-color-accent: theming.color($accent, text);
+  $underline-color-warn: theming.color($warn, text);
+  $underline-focused-color: theming.color($primary, text);
 
   .mat-form-field-label {
     color: $label-color;
@@ -108,31 +109,31 @@
     color: $underline-color-warn;
   }
 
-  @include mat-form-field-legacy-color($config);
-  @include mat-form-field-standard-color($config);
-  @include mat-form-field-fill-color($config);
-  @include mat-form-field-outline-color($config);
+  @include form-field-legacy-theme.legacy-color($config);
+  @include form-field-standard-theme.standard-color($config);
+  @include form-field-fill-theme.fill-color($config);
+  @include form-field-outline-theme.outline-color($config);
 }
 
 // Used to make instances of the _mat-form-field-label-floating mixin negligibly different,
 // and prevent Google's CSS Optimizer from collapsing the declarations. This is needed because some
 // of the selectors contain pseudo-classes not recognized in all browsers. If a browser encounters
 // an unknown pseudo-class it will discard the entire rule set.
-$mat-form-field-dedupe: 0;
+$dedupe: 0;
 
 // Applies a floating label above the form field control itself.
 @mixin _mat-form-field-label-floating($font-scale, $infix-padding, $infix-margin-top) {
-  transform: translateY(-$infix-margin-top - $infix-padding + $mat-form-field-dedupe)
+  transform: translateY(-$infix-margin-top - $infix-padding + $dedupe)
              scale($font-scale);
-  width: 100% / $font-scale + $mat-form-field-dedupe;
+  width: 100% / $font-scale + $dedupe;
 
-  $mat-form-field-dedupe: $mat-form-field-dedupe + 0.00001 !global;
+  $dedupe: $dedupe + 0.00001 !global;
 }
 
-@mixin mat-form-field-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   // The unit-less line-height from the font config.
-  $line-height: mat-line-height($config, input);
+  $line-height: typography-utils.height($config, input);
 
   // The amount to scale the font for the floating label and subscript.
   $subscript-font-scale: 0.75;
@@ -158,7 +159,7 @@ $mat-form-field-dedupe: 0;
   $wrapper-padding-bottom: ($subscript-margin-top + $line-height) * $subscript-font-scale;
 
   .mat-form-field {
-    @include mat-typography-level-to-styles($config, input);
+    @include typography-utils.level-to-styles($config, input);
   }
 
   .mat-form-field-wrapper {
@@ -231,35 +232,35 @@ $mat-form-field-dedupe: 0;
     top: calc(100% - #{$wrapper-padding-bottom / $subscript-font-scale});
   }
 
-  @include mat-form-field-legacy-typography($config);
-  @include mat-form-field-standard-typography($config);
-  @include mat-form-field-fill-typography($config);
-  @include mat-form-field-outline-typography($config);
+  @include form-field-legacy-theme.legacy-typography($config);
+  @include form-field-standard-theme.standard-typography($config);
+  @include form-field-fill-theme.fill-typography($config);
+  @include form-field-outline-theme.outline-typography($config);
 }
 
-@mixin mat-form-field-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
-  @include mat-private-form-field-legacy-density($density-scale);
-  @include mat-private-form-field-standard-density($density-scale);
-  @include mat-private-form-field-fill-density($density-scale);
-  @include mat-private-form-field-outline-density($density-scale);
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+  @include form-field-legacy-theme.form-field-legacy-density($density-scale);
+  @include form-field-standard-theme.form-field-standard-density($density-scale);
+  @include form-field-fill-theme.form-field-fill-density($density-scale);
+  @include form-field-outline-theme.form-field-outline-density($density-scale);
 }
 
-@mixin mat-form-field-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-form-field') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-form-field') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-form-field-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-form-field-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-form-field-typography($typography);
+      @include typography($typography);
     }
   }
 }

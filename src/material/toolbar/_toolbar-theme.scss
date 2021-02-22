@@ -1,9 +1,10 @@
-@import '../core/density/private/compatibility';
-@import '../core/style/variables';
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
-@import './toolbar-variables';
+@use 'sass:map';
+@use '../core/density/private/compatibility';
+@use '../core/style/variables';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
+@use './toolbar-variables';
 
 @mixin _mat-toolbar-height($height) {
   .mat-toolbar-multiple-rows {
@@ -15,8 +16,8 @@
 }
 
 @mixin _mat-toolbar-color($palette) {
-  background: mat-color($palette);
-  color: mat-color($palette, default-contrast);
+  background: theming.color($palette);
+  color: theming.color($palette, default-contrast);
 }
 
 @mixin _mat-toolbar-form-field-overrides {
@@ -39,17 +40,17 @@
   }
 }
 
-@mixin mat-toolbar-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
   .mat-toolbar {
-    background: mat-color($background, app-bar);
-    color: mat-color($foreground, text);
+    background: theming.color($background, app-bar);
+    color: theming.color($foreground, text);
 
     &.mat-primary {
       @include _mat-toolbar-color($primary);
@@ -67,8 +68,8 @@
   }
 }
 
-@mixin mat-toolbar-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-toolbar,
   .mat-toolbar h1,
   .mat-toolbar h2,
@@ -76,46 +77,46 @@
   .mat-toolbar h4,
   .mat-toolbar h5,
   .mat-toolbar h6 {
-    @include mat-typography-level-to-styles($config, title);
+    @include typography-utils.level-to-styles($config, title);
     margin: 0;
   }
 }
 
-@mixin mat-toolbar-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
-  $height-desktop: mat-private-density-prop-value(
-      $mat-toolbar-desktop-density-config, $density-scale, height);
-  $height-mobile: mat-private-density-prop-value(
-      $mat-toolbar-mobile-density-config, $density-scale, height);
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+  $height-desktop: compatibility.density-prop-value(
+      toolbar-variables.$desktop-density-config, $density-scale, height);
+  $height-mobile: compatibility.density-prop-value(
+      toolbar-variables.$mobile-density-config, $density-scale, height);
 
-  @include mat-private-density-legacy-compatibility() {
+  @include compatibility.density-legacy-compatibility() {
     // Set the default height for the toolbar.
     @include _mat-toolbar-height($height-desktop);
 
     // As per specs, toolbars should have a different height in mobile devices. This has been
     // specified in the old guidelines and is still observable in the new specifications by
     // looking at the spec images. See: https://material.io/design/components/app-bars-top.html#anatomy
-    @media ($mat-xsmall) {
+    @media (variables.$xsmall) {
       @include _mat-toolbar-height($height-mobile);
     }
   }
 }
 
-@mixin mat-toolbar-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-toolbar') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-toolbar') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-toolbar-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-toolbar-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-toolbar-typography($typography);
+      @include typography($typography);
     }
   }
 }

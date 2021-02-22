@@ -33,7 +33,7 @@ const plugin = createPlugin(ruleName, (isEnabled: boolean, _options?) => {
     root.walkAtRules(node => {
       // Skip non-mixin atrules and internal mixins.
       if (!node.nodes || node.name !== 'mixin' || node.params.startsWith('_') ||
-          node.params.startsWith('mat-private-') || node.params.startsWith('mat-mdc-private-')) {
+        node.params.startsWith('private-')) {
         return;
       }
 

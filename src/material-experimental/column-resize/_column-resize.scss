@@ -1,16 +1,17 @@
-@import '../../material/core/style/variables';
-@import '../../material/core/style/vendor-prefixes';
-@import '../../material/core/theming/palette';
-@import '../../material/core/theming/theming';
+@use 'sass:map';
+@use '../../material/core/style/variables';
+@use '../../material/core/style/vendor-prefixes';
+@use '../../material/core/theming/palette';
+@use '../../material/core/theming/theming';
 
-@mixin mat-column-resize-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $primary: map-get($config, primary);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $foreground: map.get($config, foreground);
 
-  $non-resizable-hover-divider: mat-color($foreground, divider);
-  $resizable-hover-divider: mat-color($primary, 200);
-  $resizable-active-divider: mat-color($primary, 500);
+  $non-resizable-hover-divider: theming.color($foreground, divider);
+  $resizable-hover-divider: theming.color($primary, 200);
+  $resizable-active-divider: theming.color($primary, 500);
 
   // Required for resizing to work properly.
   .mat-column-resize-table.cdk-column-resize-with-resized-column {
@@ -39,7 +40,8 @@
     bottom: 0;
     position: absolute;
     top: 0;
-    transition: background $swift-ease-in-duration $swift-ease-in-timing-function;
+    transition: background variables.$swift-ease-in-duration
+      variables.$swift-ease-in-timing-function;
     width: 1px;
   }
 
@@ -83,8 +85,9 @@
     background: transparent;
     cursor: col-resize;
     height: 100%;
-    transition: background $swift-ease-in-duration $swift-ease-in-timing-function;
-    @include user-select(none);
+    transition: background variables.$swift-ease-in-duration
+      variables.$swift-ease-in-timing-function;
+    @include vendor-prefixes.user-select(none);
     width: 100%;
 
     &:active {
@@ -97,25 +100,25 @@
   }
 }
 
-@mixin mat-column-resize-typography($config-or-theme) {}
+@mixin typography($config-or-theme) {}
 
-@mixin mat-column-resize-density($config-or-theme) {}
+@mixin density($config-or-theme) {}
 
-@mixin mat-column-resize-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-column-resize') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-column-resize') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-column-resize-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-column-resize-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-column-resize-typography($typography);
+      @include typography($typography);
     }
   }
 }

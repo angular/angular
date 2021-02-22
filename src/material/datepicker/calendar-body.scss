@@ -1,33 +1,33 @@
-@import '../../cdk/a11y/a11y';
+@use '../../cdk/a11y/a11y';
 
-$mat-calendar-body-label-padding-start: 5% !default;
+$calendar-body-label-padding-start: 5% !default;
 // We don't want the label to jump around when we switch between month and year views, so we use
 // the same amount of padding regardless of the number of columns. We align the header label with
 // the one third mark of the first cell, this was chosen somewhat arbitrarily to make it look
 // roughly like the mock. Half way is too far since the cell text is center aligned.
-$mat-calendar-body-label-side-padding: 33% / 7 !default;
-$mat-calendar-body-cell-min-size: 32px !default;
-$mat-calendar-body-cell-content-margin: 5% !default;
-$mat-calendar-body-cell-content-border-width: 1px !default;
-$mat-calendar-body-cell-radius: 999px !default;
-$mat-calendar-body-preview-cell-border: dashed 1px;
+$calendar-body-label-side-padding: 33% / 7 !default;
+$calendar-body-cell-min-size: 32px !default;
+$calendar-body-cell-content-margin: 5% !default;
+$calendar-body-cell-content-border-width: 1px !default;
+$calendar-body-cell-radius: 999px !default;
+$calendar-body-preview-cell-border: dashed 1px;
 
-$mat-calendar-body-min-size: 7 * $mat-calendar-body-cell-min-size !default;
-$mat-calendar-body-cell-content-size: 100% - $mat-calendar-body-cell-content-margin * 2 !default;
+$calendar-body-min-size: 7 * $calendar-body-cell-min-size !default;
+$calendar-body-cell-content-size: 100% - $calendar-body-cell-content-margin * 2 !default;
 
-$mat-calendar-range-end-body-cell-size:
-    $mat-calendar-body-cell-content-size + $mat-calendar-body-cell-content-margin !default;
+$calendar-range-end-body-cell-size:
+    $calendar-body-cell-content-size + $calendar-body-cell-content-margin !default;
 
 .mat-calendar-body {
-  min-width: $mat-calendar-body-min-size;
+  min-width: $calendar-body-min-size;
 }
 
 .mat-calendar-body-label {
   height: 0;
   line-height: 0;
   text-align: left;
-  padding-left: $mat-calendar-body-label-side-padding;
-  padding-right: $mat-calendar-body-label-side-padding;
+  padding-left: $calendar-body-label-side-padding;
+  padding-right: $calendar-body-label-side-padding;
 }
 
 .mat-calendar-body-cell {
@@ -53,14 +53,14 @@ $mat-calendar-range-end-body-cell-size:
 .mat-calendar-body-cell-preview {
   content: '';
   position: absolute;
-  top: $mat-calendar-body-cell-content-margin;
+  top: $calendar-body-cell-content-margin;
   left: 0;
   z-index: 0;
   box-sizing: border-box;
 
   // We want the range background to be slightly shorter than the cell so
   // that there's a gap when the range goes across multiple rows.
-  height: $mat-calendar-body-cell-content-size;
+  height: $calendar-body-cell-content-size;
   width: 100%;
 }
 
@@ -71,25 +71,25 @@ $mat-calendar-range-end-body-cell-size:
 .mat-calendar-body-preview-start .mat-calendar-body-cell-preview {
   // Since the range background isn't a perfect circle, we need to size
   // and offset the start so that it aligns with the main circle.
-  left: $mat-calendar-body-cell-content-margin;
-  width: $mat-calendar-range-end-body-cell-size;
-  border-top-left-radius: $mat-calendar-body-cell-radius;
-  border-bottom-left-radius: $mat-calendar-body-cell-radius;
+  left: $calendar-body-cell-content-margin;
+  width: $calendar-range-end-body-cell-size;
+  border-top-left-radius: $calendar-body-cell-radius;
+  border-bottom-left-radius: $calendar-body-cell-radius;
 
   [dir='rtl'] & {
     left: 0;
     border-radius: 0;
-    border-top-right-radius: $mat-calendar-body-cell-radius;
-    border-bottom-right-radius: $mat-calendar-body-cell-radius;
+    border-top-right-radius: $calendar-body-cell-radius;
+    border-bottom-right-radius: $calendar-body-cell-radius;
   }
 }
 
 @mixin _mat-calendar-body-range-right-radius {
   // Since the range background isn't a perfect circle, we need to
   // resize the end so that it aligns with the main circle.
-  width: $mat-calendar-range-end-body-cell-size;
-  border-top-right-radius: $mat-calendar-body-cell-radius;
-  border-bottom-right-radius: $mat-calendar-body-cell-radius;
+  width: $calendar-range-end-body-cell-size;
+  border-top-right-radius: $calendar-body-cell-radius;
+  border-bottom-right-radius: $calendar-body-cell-radius;
 }
 
 .mat-calendar-body-range-end:not(.mat-calendar-body-in-comparison-range)::before,
@@ -100,10 +100,10 @@ $mat-calendar-range-end-body-cell-size:
   @include _mat-calendar-body-range-right-radius;
 
   [dir='rtl'] & {
-    left: $mat-calendar-body-cell-content-margin;
+    left: $calendar-body-cell-content-margin;
     border-radius: 0;
-    border-top-left-radius: $mat-calendar-body-cell-radius;
-    border-bottom-left-radius: $mat-calendar-body-cell-radius;
+    border-top-left-radius: $calendar-body-cell-radius;
+    border-bottom-left-radius: $calendar-body-cell-radius;
   }
 }
 
@@ -121,30 +121,30 @@ $mat-calendar-range-end-body-cell-size:
   // Note that the RTL selector here is redundant, but we need to keep it in order to
   // raise the specificity since it can be overridden by some of the styles from above.
   &, [dir='rtl'] & {
-    width: $mat-calendar-body-cell-content-size;
+    width: $calendar-body-cell-content-size;
   }
 }
 
 .mat-calendar-body-in-preview .mat-calendar-body-cell-preview {
-  border-top: $mat-calendar-body-preview-cell-border;
-  border-bottom: $mat-calendar-body-preview-cell-border;
+  border-top: $calendar-body-preview-cell-border;
+  border-bottom: $calendar-body-preview-cell-border;
 }
 
 .mat-calendar-body-preview-start .mat-calendar-body-cell-preview {
-  border-left: $mat-calendar-body-preview-cell-border;
+  border-left: $calendar-body-preview-cell-border;
 
   [dir='rtl'] & {
     border-left: 0;
-    border-right: $mat-calendar-body-preview-cell-border;
+    border-right: $calendar-body-preview-cell-border;
   }
 }
 
 .mat-calendar-body-preview-end .mat-calendar-body-cell-preview {
-  border-right: $mat-calendar-body-preview-cell-border;
+  border-right: $calendar-body-preview-cell-border;
 
   [dir='rtl'] & {
     border-right: 0;
-    border-left: $mat-calendar-body-preview-cell-border;
+    border-left: $calendar-body-preview-cell-border;
   }
 }
 
@@ -154,14 +154,14 @@ $mat-calendar-range-end-body-cell-size:
   // Fade out the disabled cells so that they can be distinguished from the enabled ones. Note that
   // ideally we'd use `color: GreyText` here which is what the browser uses for disabled buttons,
   // but we can't because Firefox doesn't recognize it.
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     opacity: 0.5;
   }
 }
 
 .mat-calendar-body-cell-content {
-  top: $mat-calendar-body-cell-content-margin;
-  left: $mat-calendar-body-cell-content-margin;
+  top: $calendar-body-cell-content-margin;
+  left: $calendar-body-cell-content-margin;
   z-index: 1;
 
   display: flex;
@@ -169,17 +169,17 @@ $mat-calendar-range-end-body-cell-size:
   justify-content: center;
 
   box-sizing: border-box;
-  width: $mat-calendar-body-cell-content-size;
-  height: $mat-calendar-body-cell-content-size;
+  width: $calendar-body-cell-content-size;
+  height: $calendar-body-cell-content-size;
 
   // Prevents text being off-center on Android.
   line-height: 1;
 
-  border-width: $mat-calendar-body-cell-content-border-width;
+  border-width: $calendar-body-cell-content-border-width;
   border-style: solid;
 
   // Choosing a value clearly larger than the height ensures we get the correct capsule shape.
-  border-radius: $mat-calendar-body-cell-radius;
+  border-radius: $calendar-body-cell-radius;
 
   // Increase specificity because focus indicator styles are part of the `mat-core` mixin and can
   // potentially overwrite the absolute position of the container.
@@ -187,7 +187,7 @@ $mat-calendar-range-end-body-cell-size:
     position: absolute;
   }
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     border: none;
   }
 }
@@ -198,7 +198,7 @@ $mat-calendar-range-end-body-cell-size:
   overflow: visible;
 }
 
-@include cdk-high-contrast(active, off) {
+@include a11y.high-contrast(active, off) {
   .mat-datepicker-popup:not(:empty),
   .mat-calendar-body-selected {
     outline: solid 1px;

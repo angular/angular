@@ -1,13 +1,13 @@
+@use '../../material/core/style/private';
+@use '../mdc-helpers/mdc-helpers';
+@use './tabs-common';
 @import '@material/tab-indicator/mixins.import';
-@import '../../material/core/style/private';
-@import '../mdc-helpers/mdc-helpers';
-@import './tabs-common';
 
-@include mdc-tab-indicator-core-styles($query: $mat-base-styles-query);
-@include mat-mdc-paginated-tab-header;
+@include mdc-tab-indicator-core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include tabs-common.paginated-tab-header;
 
 .mat-mdc-tab-label-container {
-  @include mat-mdc-paginated-tab-header-container;
+  @include tabs-common.paginated-tab-header-container;
 }
 
 .mat-mdc-tab-header-pagination-disabled {
@@ -17,5 +17,5 @@
 }
 
 .mat-mdc-tab-labels {
-  @include mat-mdc-paginated-tab-header-item-wrapper('.mat-mdc-tab-header');
+  @include tabs-common.paginated-tab-header-item-wrapper('.mat-mdc-tab-header');
 }

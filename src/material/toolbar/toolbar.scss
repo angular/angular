@@ -1,13 +1,13 @@
-@import '../../cdk/a11y/a11y';
+@use '../../cdk/a11y/a11y';
 
-$mat-toolbar-row-padding: 16px !default;
+$row-padding: 16px !default;
 
 /** @deprecated @breaking-change 8.0.0 */
 // TODO: Remove once internal g3 apps no longer depend on this variable. Tracked with: COMP-303.
-$mat-toolbar-height-mobile-portrait: 56px !default;
+$height-mobile-portrait: 56px !default;
 
 .mat-toolbar {
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
@@ -16,7 +16,7 @@ $mat-toolbar-height-mobile-portrait: 56px !default;
   display: flex;
   box-sizing: border-box;
 
-  padding: 0 $mat-toolbar-row-padding;
+  padding: 0 $row-padding;
   width: 100%;
 
   // Flexbox Vertical Alignment

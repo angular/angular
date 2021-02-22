@@ -1,24 +1,24 @@
-@import '../core/style/variables';
-@import '../core/ripple/ripple';
-@import '../core/style/list-common';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/variables';
+@use '../core/ripple/ripple';
+@use '../core/style/list-common';
+@use '../../cdk/a11y/a11y';
 
-$mat-slide-toggle-thumb-size: 20px !default;
-$mat-slide-toggle-bar-border-radius: 8px !default;
-$mat-slide-toggle-height: 24px !default;
-$mat-slide-toggle-spacing: 8px !default;
-$mat-slide-toggle-ripple-radius: 20px !default;
-$mat-slide-toggle-bar-width: 36px !default;
-$mat-slide-toggle-bar-height: 14px !default;
-$mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-toggle-thumb-size;
+$thumb-size: 20px !default;
+$bar-border-radius: 8px !default;
+$height: 24px !default;
+$spacing: 8px !default;
+$ripple-radius: 20px !default;
+$bar-width: 36px !default;
+$bar-height: 14px !default;
+$bar-track-width: $bar-width - $thumb-size;
 
 
 .mat-slide-toggle {
   display: inline-block;
-  height: $mat-slide-toggle-height;
+  height: $height;
   max-width: 100%;
 
-  line-height: $mat-slide-toggle-height;
+  line-height: $height;
   white-space: nowrap;
   outline: none;
 
@@ -26,10 +26,10 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 
   &.mat-checked {
     .mat-slide-toggle-thumb-container {
-      transform: translate3d($mat-slide-toggle-bar-track-width, 0, 0);
+      transform: translate3d($bar-track-width, 0, 0);
 
       [dir='rtl'] & {
-        transform: translate3d(-$mat-slide-toggle-bar-track-width, 0, 0);
+        transform: translate3d(-$bar-track-width, 0, 0);
       }
     }
   }
@@ -56,7 +56,7 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 }
 
 .mat-slide-toggle-content {
-  @include mat-truncate-line();
+  @include list-common.truncate-line();
 }
 
 /* If the label should be placed before the thumb then we just change the orders. */
@@ -68,7 +68,7 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 // Apply the margin for slide-toggles and revert it for RTL toggles with labelPosition before.
 [dir='rtl'] .mat-slide-toggle-label-before .mat-slide-toggle-bar,
 .mat-slide-toggle-bar {
-  margin-right: $mat-slide-toggle-spacing;
+  margin-right: $spacing;
   margin-left: 0;
 }
 
@@ -76,7 +76,7 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 [dir='rtl'],
 .mat-slide-toggle-label-before {
   .mat-slide-toggle-bar {
-    margin-left: $mat-slide-toggle-spacing;
+    margin-left: $spacing;
     margin-right: 0;
   }
 }
@@ -88,18 +88,18 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 
 // The container includes the visual thumb and the ripple container element.
 .mat-slide-toggle-thumb-container {
-  $thumb-bar-vertical-padding: ($mat-slide-toggle-thumb-size - $mat-slide-toggle-bar-height) / 2;
+  $thumb-bar-vertical-padding: ($thumb-size - $bar-height) / 2;
 
   position: absolute;
   z-index: 1;
 
-  width: $mat-slide-toggle-thumb-size;
-  height: $mat-slide-toggle-thumb-size;
+  width: $thumb-size;
+  height: $thumb-size;
   top: -$thumb-bar-vertical-padding;
   left: 0;
 
   transform: translate3d(0, 0, 0);
-  transition: $swift-linear;
+  transition: variables.$swift-linear;
   transition-property: transform;
 
   ._mat-animation-noopable & {
@@ -115,8 +115,8 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 // The visual thumb element that moves inside of the thumb bar.
 // The parent thumb-container container is responsible for the movement of the visual thumb.
 .mat-slide-toggle-thumb {
-  height: $mat-slide-toggle-thumb-size;
-  width: $mat-slide-toggle-thumb-size;
+  height: $thumb-size;
+  width: $thumb-size;
   border-radius: 50%;
 }
 
@@ -125,14 +125,14 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 .mat-slide-toggle-bar {
   position: relative;
 
-  width: $mat-slide-toggle-bar-width;
-  height: $mat-slide-toggle-bar-height;
+  width: $bar-width;
+  height: $bar-height;
 
   // Prevent shrinking of the bar container. It can happen that the content is long enough to
   // shrink the bar and the thumb.
   flex-shrink: 0;
 
-  border-radius: $mat-slide-toggle-bar-border-radius;
+  border-radius: $bar-border-radius;
 }
 
 // The slide toggle shows a visually hidden input inside of the component, which is used
@@ -140,7 +140,7 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 .mat-slide-toggle-input {
   // Move the input to the bottom and in the middle of the thumb.
   // Visual improvement to properly show browser popups when being required.
-  $horizontal-offset: $mat-slide-toggle-thumb-size / 2;
+  $horizontal-offset: $thumb-size / 2;
 
   bottom: 0;
   left: $horizontal-offset;
@@ -153,7 +153,7 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 
 .mat-slide-toggle-bar,
 .mat-slide-toggle-thumb {
-  transition: $swift-linear;
+  transition: variables.$swift-linear;
   transition-property: background-color;
   transition-delay: 50ms;
 
@@ -167,10 +167,10 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 // potentially overwrite the absolute position of the container.
 .mat-slide-toggle .mat-slide-toggle-ripple {
   position: absolute;
-  top: calc(50% - #{$mat-slide-toggle-ripple-radius});
-  left: calc(50% - #{$mat-slide-toggle-ripple-radius});
-  height: $mat-slide-toggle-ripple-radius * 2;
-  width: $mat-slide-toggle-ripple-radius * 2;
+  top: calc(50% - #{$ripple-radius});
+  left: calc(50% - #{$ripple-radius});
+  height: $ripple-radius * 2;
+  width: $ripple-radius * 2;
   z-index: 1;
   pointer-events: none;
 
@@ -217,7 +217,7 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 }
 
 /** Custom styling to make the slide-toggle usable in high contrast mode. */
-@include cdk-high-contrast(active, off) {
+@include a11y.high-contrast(active, off) {
   .mat-slide-toggle-thumb,
   .mat-slide-toggle-bar {
     border: 1px solid;
@@ -228,6 +228,6 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   // because otherwise the opaque thumb element will hide the outline.
   .mat-slide-toggle.cdk-keyboard-focused .mat-slide-toggle-bar {
     outline: 2px dotted;
-    outline-offset: ($mat-slide-toggle-height - $mat-slide-toggle-bar-height) / 2;
+    outline-offset: ($height - $bar-height) / 2;
   }
 }

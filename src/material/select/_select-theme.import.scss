@@ -1,5 +1,11 @@
-@forward 'select-theme';
-@forward '../core/theming/palette';
-@forward '../core/theming/theming';
-@forward '../core/style/form-common';
-@forward '../core/typography/typography-utils';
+@forward '../core/style/form-common.import';
+@forward '../core/style/private.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'select-theme' hide color, theme, typography;
+@forward 'select-theme' as mat-select-* hide mat-select-density;
+
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/style/private';
+@import '../core/style/form-common';
+@import '../core/typography/typography-utils';

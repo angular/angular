@@ -1,29 +1,29 @@
-@import '../core/style/variables';
-@import '../core/style/elevation';
-@import '../core/style/layout-common';
-@import '../core/style/private';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/variables';
+@use '../core/style/elevation';
+@use '../core/style/layout-common';
+@use '../core/style/private';
+@use '../../cdk/a11y/a11y';
 
-$mat-chip-min-height: 32px;
-$mat-chip-vertical-padding: 7px;
-$mat-chip-horizontal-padding: 12px;
+$chip-min-height: 32px;
+$chip-vertical-padding: 7px;
+$chip-horizontal-padding: 12px;
 
-$mat-chip-remove-vertical-padding: 7px;
-$mat-chip-remove-before-margin: 8px;
-$mat-chip-remove-after-padding: 8px;
+$chip-remove-vertical-padding: 7px;
+$chip-remove-before-margin: 8px;
+$chip-remove-after-padding: 8px;
 
-$mat-chip-avatar-vertical-padding: 0;
-$mat-chip-avatar-before-padding: 0;
-$mat-chip-avatar-before-margin: 4px;
-$mat-chip-avatar-after-margin: 8px;
+$chip-avatar-vertical-padding: 0;
+$chip-avatar-before-padding: 0;
+$chip-avatar-before-margin: 4px;
+$chip-avatar-after-margin: 8px;
 
-$mat-chips-chip-margin: 4px;
+$chip-margin: 4px;
 
-$mat-chip-input-width: 150px;
-$mat-chip-input-margin: 4px;
+$chip-input-width: 150px;
+$chip-input-margin: 4px;
 
-$mat-chip-avatar-size: 24px;
-$mat-chip-remove-size: 18px;
+$chip-avatar-size: 24px;
+$chip-remove-size: 18px;
 
 .mat-chip {
   position: relative;
@@ -40,14 +40,14 @@ $mat-chip-remove-size: 18px;
 }
 
 .mat-standard-chip {
-  @include mat-elevation-transition;
-  @include mat-private-animation-noop;
+  @include elevation.transition;
+  @include private.animation-noop;
   display: inline-flex;
-  padding: $mat-chip-vertical-padding $mat-chip-horizontal-padding;
+  padding: $chip-vertical-padding $chip-horizontal-padding;
   border-radius: 16px;
   align-items: center;
   cursor: default;
-  min-height: $mat-chip-min-height;
+  min-height: $chip-min-height;
 
   // Centering the content using flexbox won't work on IE, if we have
   // a `min-height` without setting a `height`. This height won't do
@@ -55,18 +55,18 @@ $mat-chip-remove-size: 18px;
   height: 1px;
 
   .mat-chip-remove.mat-icon {
-    width: $mat-chip-remove-size;
-    height: $mat-chip-remove-size;
+    width: $chip-remove-size;
+    height: $chip-remove-size;
   }
 
   // Overlay used to darken the chip on hover and focus.
   &::after {
-    @include mat-fill;
+    @include layout-common.fill;
     border-radius: inherit;
     opacity: 0;
     content: '';
     pointer-events: none;
-    transition: opacity 200ms $swift-ease-in-out-timing-function;
+    transition: opacity 200ms variables.$swift-ease-in-out-timing-function;
   }
 
   &:hover::after {
@@ -81,7 +81,7 @@ $mat-chip-remove-size: 18px;
     }
   }
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: solid 1px;
 
     &:focus {
@@ -103,68 +103,68 @@ $mat-chip-remove-size: 18px;
 
   &.mat-chip-with-trailing-icon.mat-chip-with-avatar,
   &.mat-chip-with-avatar {
-    padding-top: $mat-chip-avatar-vertical-padding;
-    padding-bottom: $mat-chip-avatar-vertical-padding;
+    padding-top: $chip-avatar-vertical-padding;
+    padding-bottom: $chip-avatar-vertical-padding;
   }
 
   &.mat-chip-with-trailing-icon.mat-chip-with-avatar {
-    padding-right: $mat-chip-remove-after-padding;
-    padding-left: $mat-chip-avatar-before-padding;
+    padding-right: $chip-remove-after-padding;
+    padding-left: $chip-avatar-before-padding;
 
     [dir='rtl'] & {
-      padding-left: $mat-chip-remove-after-padding;
-      padding-right: $mat-chip-avatar-before-padding;
+      padding-left: $chip-remove-after-padding;
+      padding-right: $chip-avatar-before-padding;
     }
   }
 
   &.mat-chip-with-trailing-icon {
-    padding-top: $mat-chip-remove-vertical-padding;
-    padding-bottom: $mat-chip-remove-vertical-padding;
-    padding-right: $mat-chip-remove-after-padding;
-    padding-left: $mat-chip-horizontal-padding;
+    padding-top: $chip-remove-vertical-padding;
+    padding-bottom: $chip-remove-vertical-padding;
+    padding-right: $chip-remove-after-padding;
+    padding-left: $chip-horizontal-padding;
 
     [dir='rtl'] & {
-      padding-left: $mat-chip-remove-after-padding;
-      padding-right: $mat-chip-horizontal-padding;
+      padding-left: $chip-remove-after-padding;
+      padding-right: $chip-horizontal-padding;
     }
   }
 
   &.mat-chip-with-avatar {
-    padding-left: $mat-chip-avatar-before-padding;
-    padding-right: $mat-chip-horizontal-padding;
+    padding-left: $chip-avatar-before-padding;
+    padding-right: $chip-horizontal-padding;
 
     [dir='rtl'] & {
-      padding-right: $mat-chip-avatar-before-padding;
-      padding-left: $mat-chip-horizontal-padding;
+      padding-right: $chip-avatar-before-padding;
+      padding-left: $chip-horizontal-padding;
     }
   }
 
   .mat-chip-avatar {
-    width: $mat-chip-avatar-size;
-    height: $mat-chip-avatar-size;
-    margin-right: $mat-chip-avatar-after-margin;
-    margin-left: $mat-chip-avatar-before-margin;
+    width: $chip-avatar-size;
+    height: $chip-avatar-size;
+    margin-right: $chip-avatar-after-margin;
+    margin-left: $chip-avatar-before-margin;
 
     [dir='rtl'] & {
-      margin-left: $mat-chip-avatar-after-margin;
-      margin-right: $mat-chip-avatar-before-margin;
+      margin-left: $chip-avatar-after-margin;
+      margin-right: $chip-avatar-before-margin;
     }
   }
 
   .mat-chip-remove,
   .mat-chip-trailing-icon {
-    width: $mat-chip-remove-size;
-    height: $mat-chip-remove-size;
+    width: $chip-remove-size;
+    height: $chip-remove-size;
     cursor: pointer;
   }
 
   .mat-chip-remove,
   .mat-chip-trailing-icon {
-    margin-left: $mat-chip-remove-before-margin;
+    margin-left: $chip-remove-before-margin;
     margin-right: 0;
 
     [dir='rtl'] & {
-      margin-right: $mat-chip-remove-before-margin;
+      margin-right: $chip-remove-before-margin;
       margin-left: 0;
     }
   }
@@ -172,7 +172,7 @@ $mat-chip-remove-size: 18px;
 
 // Styles for the chip's dynamically added ripple target.
 .mat-chip-ripple {
-  @include mat-fill;
+  @include layout-common.fill;
 
   // Disable pointer events for the ripple container and focus overlay because the container
   // will overlay the user content and we don't want to disable mouse events on the user content.
@@ -192,11 +192,11 @@ $mat-chip-remove-size: 18px;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  margin: -$mat-chips-chip-margin;
+  margin: -$chip-margin;
 
   input.mat-input-element,
   .mat-standard-chip {
-    margin: $mat-chips-chip-margin;
+    margin: $chip-margin;
   }
 }
 
@@ -222,7 +222,7 @@ $mat-chip-remove-size: 18px;
 }
 
 input.mat-chip-input {
-  width: $mat-chip-input-width;
-  margin: $mat-chip-input-margin;
-  flex: 1 0 $mat-chip-input-width;
+  width: $chip-input-width;
+  margin: $chip-input-margin;
+  flex: 1 0 $chip-input-width;
 }

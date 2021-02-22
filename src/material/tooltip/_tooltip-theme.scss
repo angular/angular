@@ -1,58 +1,59 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
+@use 'sass:map';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
 
-$mat-tooltip-target-height: 22px;
-$mat-tooltip-font-size: 10px;
-$mat-tooltip-vertical-padding: ($mat-tooltip-target-height - $mat-tooltip-font-size) / 2;
+$target-height: 22px;
+$font-size: 10px;
+$vertical-padding: ($target-height - $font-size) / 2;
 
-$mat-tooltip-handset-target-height: 30px;
-$mat-tooltip-handset-font-size: 14px;
-$mat-tooltip-handset-vertical-padding:
-    ($mat-tooltip-handset-target-height - $mat-tooltip-handset-font-size) / 2;
+$handset-target-height: 30px;
+$handset-font-size: 14px;
+$handset-vertical-padding:
+    ($handset-target-height - $handset-font-size) / 2;
 
-@mixin mat-tooltip-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $background: map-get($config, background);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $background: map.get($config, background);
 
   .mat-tooltip {
-    background: mat-color($background, tooltip, 0.9);
+    background: theming.color($background, tooltip, 0.9);
   }
 }
 
-@mixin mat-tooltip-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-tooltip {
-    font-family: mat-font-family($config);
-    font-size: $mat-tooltip-font-size;
-    padding-top: $mat-tooltip-vertical-padding;
-    padding-bottom: $mat-tooltip-vertical-padding;
+    font-family: typography-utils.font-family($config);
+    font-size: $font-size;
+    padding-top: $vertical-padding;
+    padding-bottom: $vertical-padding;
   }
 
   .mat-tooltip-handset {
-    font-size: $mat-tooltip-handset-font-size;
-    padding-top: $mat-tooltip-handset-vertical-padding;
-    padding-bottom: $mat-tooltip-handset-vertical-padding;
+    font-size: $handset-font-size;
+    padding-top: $handset-vertical-padding;
+    padding-bottom: $handset-vertical-padding;
   }
 }
 
 @mixin _mat-tooltip-density($config-or-theme) {}
 
-@mixin mat-tooltip-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-tooltip') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-tooltip') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-tooltip-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-tooltip-density($density);
     }
     @if $typography != null {
-      @include mat-tooltip-typography($typography);
+      @include typography($typography);
     }
   }
 }

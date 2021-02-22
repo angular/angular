@@ -1,13 +1,14 @@
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/theming/theming';
 @import '@material/circular-progress/mixins.import';
-@import '../mdc-helpers/mdc-helpers';
 
 @mixin _mat-mdc-progress-spinner-color($color) {
-  @include mdc-circular-progress-color($color, $query: $mat-theme-styles-query);
+  @include mdc-circular-progress-color($color, $query: mdc-helpers.$mat-theme-styles-query);
 }
 
-@mixin mat-mdc-progress-spinner-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  @include mat-using-mdc-theme($config) {
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  @include mdc-helpers.mat-using-mdc-theme($config) {
     .mat-mdc-progress-spinner {
       @include _mat-mdc-progress-spinner-color(primary);
 
@@ -22,25 +23,25 @@
   }
 }
 
-@mixin mat-mdc-progress-spinner-typography($config-or-theme) {}
+@mixin typography($config-or-theme) {}
 
-@mixin mat-mdc-progress-spinner-density($config-or-theme) {}
+@mixin density($config-or-theme) {}
 
-@mixin mat-mdc-progress-spinner-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-progress-spinner') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-progress-spinner') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-mdc-progress-spinner-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-mdc-progress-spinner-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-mdc-progress-spinner-typography($typography);
+      @include typography($typography);
     }
   }
 }

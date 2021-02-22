@@ -1,4 +1,8 @@
-@forward 'radio-theme';
-@forward '../core/theming/palette';
-@forward '../core/theming/theming';
-@forward '../core/typography/typography-utils';
+@forward '../core/theming/theming.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'radio-theme' hide color, theme, typography;
+@forward 'radio-theme' as mat-radio-* hide mat-radio-color, mat-radio-density;
+
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';

@@ -1,6 +1,14 @@
-@forward 'toolbar-theme';
-@forward '../core/style/variables';
-@forward '../core/theming/palette';
-@forward '../core/theming/theming';
-@forward '../core/typography/typography-utils';
-@forward './toolbar-variables';
+@forward '../core/theming/theming.import';
+@forward '../core/style/variables.import';
+@forward 'toolbar-variables' as mat-toolbar-*;
+@forward '../core/typography/typography-utils.import';
+@forward 'toolbar-theme' hide color, density, theme, typography;
+@forward 'toolbar-theme' as mat-toolbar-* hide mat-toolbar-color, mat-toolbar-form-field-overrides,
+mat-toolbar-height;
+
+@import '../core/density/private/compatibility';
+@import '../core/style/variables';
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';
+@import './toolbar-variables';

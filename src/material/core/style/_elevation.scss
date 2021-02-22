@@ -1,4 +1,7 @@
-@import 'variables';
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:meta';
+@use 'variables';
 
 
 // A collection of mixins and CSS classes that can be used to apply elevation to a material
@@ -32,7 +35,7 @@
 // all of the values between them.
 
 @function _get-umbra-map($color, $opacity) {
-  $shadow-color: if(type-of($color) == color, rgba($color, $opacity * 0.2), $color);
+  $shadow-color: if(meta.type-of($color) == color, rgba($color, $opacity * 0.2), $color);
 
   @return (
     0: '0px 0px 0px 0px #{$shadow-color}',
@@ -64,7 +67,7 @@
 }
 
 @function _get-penumbra-map($color, $opacity) {
-  $shadow-color: if(type-of($color) == color, rgba($color, $opacity * 0.14), $color);
+  $shadow-color: if(meta.type-of($color) == color, rgba($color, $opacity * 0.14), $color);
 
   @return (
     0: '0px 0px 0px 0px #{$shadow-color}',
@@ -96,7 +99,7 @@
 }
 
 @function _get-ambient-map($color, $opacity) {
-  $shadow-color: if(type-of($color) == color, rgba($color, $opacity * 0.12), $color);
+  $shadow-color: if(meta.type-of($color) == color, rgba($color, $opacity * 0.12), $color);
 
   @return (
     0: '0px 0px 0px 0px #{$shadow-color}',
@@ -128,43 +131,43 @@
 }
 
 // The default duration value for elevation transitions.
-$mat-elevation-transition-duration: 280ms !default;
+$transition-duration: 280ms !default;
 
 // The default easing value for elevation transitions.
-$mat-elevation-transition-timing-function: $mat-fast-out-slow-in-timing-function;
+$transition-timing-function: variables.$fast-out-slow-in-timing-function;
 
 // The default color for elevation shadows.
-$mat-elevation-color: black !default;
+$color: black !default;
 
 // The default opacity scaling value for elevation shadows.
-$mat-elevation-opacity: 1 !default;
+$opacity: 1 !default;
 
 // Prefix for elevation-related selectors.
-$mat-elevation-prefix: 'mat-elevation-z';
+$prefix: 'mat-elevation-z';
 
 // Applies the correct css rules to an element to give it the elevation specified by $zValue.
 // The $zValue must be between 0 and 24.
-@mixin mat-elevation($zValue, $color: $mat-elevation-color, $opacity: $mat-elevation-opacity) {
-  @if type-of($zValue) != number or not unitless($zValue) {
+@mixin elevation($zValue, $color: $color, $opacity: $opacity) {
+  @if meta.type-of($zValue) != number or not math.is-unitless($zValue) {
     @error '$zValue must be a unitless number';
   }
   @if $zValue < 0 or $zValue > 24 {
     @error '$zValue must be between 0 and 24';
   }
 
-  box-shadow: #{map-get(_get-umbra-map($color, $opacity), $zValue)},
-              #{map-get(_get-penumbra-map($color, $opacity), $zValue)},
-              #{map-get(_get-ambient-map($color, $opacity), $zValue)};
+  box-shadow: #{map.get(_get-umbra-map($color, $opacity), $zValue)},
+              #{map.get(_get-penumbra-map($color, $opacity), $zValue)},
+              #{map.get(_get-ambient-map($color, $opacity), $zValue)};
 }
 
 // Applies the elevation to an element in a manner that allows
 // consumers to override it via the Material elevation classes.
-@mixin mat-overridable-elevation(
+@mixin overridable-elevation(
     $zValue,
-    $color: $mat-elevation-color,
-    $opacity: $mat-elevation-opacity) {
-  &:not([class*='#{$mat-elevation-prefix}']) {
-    @include mat-elevation($zValue, $color, $opacity);
+    $color: $color,
+    $opacity: $opacity) {
+  &:not([class*='#{$prefix}']) {
+    @include elevation($zValue, $color, $opacity);
   }
 }
 
@@ -175,9 +178,9 @@ $mat-elevation-prefix: 'mat-elevation-z';
 // .foo {
 //   transition: mat-elevation-transition-property-value(), opacity 100ms ease;
 // }
-@function mat-elevation-transition-property-value(
-    $duration: $mat-elevation-transition-duration,
-    $easing: $mat-elevation-transition-timing-function) {
+@function transition-property-value(
+    $duration: $transition-duration,
+    $easing: $transition-timing-function) {
   @return box-shadow #{$duration} #{$easing};
 }
 
@@ -187,8 +190,8 @@ $mat-elevation-prefix: 'mat-elevation-z';
 //
 // NOTE(traviskaufman): Both this mixin and the above function use default parameters so they can
 // be used in the same way by clients.
-@mixin mat-elevation-transition(
-    $duration: $mat-elevation-transition-duration,
-    $easing: $mat-elevation-transition-timing-function) {
-  transition: mat-elevation-transition-property-value($duration, $easing);
+@mixin transition(
+    $duration: $transition-duration,
+    $easing: $transition-timing-function) {
+  transition: transition-property-value($duration, $easing);
 }

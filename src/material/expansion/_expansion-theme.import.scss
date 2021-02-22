@@ -1,6 +1,14 @@
-@forward 'expansion-theme';
-@forward '../core/theming/palette';
-@forward '../core/theming/theming';
-@forward '../core/typography/typography-utils';
-@forward './expansion-variables';
-@forward './expansion-mixins';
+@forward '../core/theming/theming.import';
+@forward '../core/style/private.import';
+@forward 'expansion-variables' as mat-expansion-*;
+@forward '../core/typography/typography-utils.import';
+@forward 'expansion-mixins' as mat-private-*;
+@forward 'expansion-theme' as mat-expansion-*;
+
+@import '../core/density/private/compatibility';
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/style/private';
+@import '../core/typography/typography-utils';
+@import './expansion-variables';
+@import './expansion-mixins';

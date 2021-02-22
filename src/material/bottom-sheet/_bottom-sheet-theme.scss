@@ -1,44 +1,45 @@
-@import '../core/style/private';
-@import '../core/typography/typography-utils';
-@import '../core/theming/palette';
-@import '../core/theming/theming';
+@use 'sass:map';
+@use '../core/style/private';
+@use '../core/typography/typography-utils';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
 
-@mixin mat-bottom-sheet-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
   .mat-bottom-sheet-container {
-    @include mat-private-theme-elevation(16, $config);
-    background: mat-color($background, dialog);
-    color: mat-color($foreground, text);
+    @include private.theme-elevation(16, $config);
+    background: theming.color($background, dialog);
+    color: theming.color($foreground, text);
   }
 }
 
-@mixin mat-bottom-sheet-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-bottom-sheet-container {
-    @include mat-typography-level-to-styles($config, body-1);
+    @include typography-utils.level-to-styles($config, body-1);
   }
 }
 
 @mixin _mat-bottom-sheet-density($config-or-theme) {}
 
-@mixin mat-bottom-sheet-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-bottom-sheet') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-bottom-sheet') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-bottom-sheet-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-bottom-sheet-density($density);
     }
     @if $typography != null {
-      @include mat-bottom-sheet-typography($typography);
+      @include typography($typography);
     }
   }
 }

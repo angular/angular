@@ -1,33 +1,34 @@
-@import '../core/typography/typography-utils';
-@import '../core/theming/theming';
-@import '../core/theming/palette';
-@import '../core/style/private';
+@use 'sass:map';
+@use '../core/typography/typography-utils';
+@use '../core/theming/theming';
+@use '../core/theming/palette';
+@use '../core/style/private';
 
-@mixin mat-snack-bar-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $is-dark-theme: map-get($config, is-dark);
-  $accent: map-get($config, accent);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $is-dark-theme: map.get($config, is-dark);
+  $accent: map.get($config, accent);
 
   .mat-snack-bar-container {
     // Use the primary text on the dark theme, even though the lighter one uses
     // a secondary, because the contrast on the light primary text is poor.
-    color: if($is-dark-theme, $dark-primary-text, $light-secondary-text);
-    background: if($is-dark-theme, map-get($mat-grey, 50), #323232);
+    color: if($is-dark-theme, palette.$dark-primary-text, palette.$light-secondary-text);
+    background: if($is-dark-theme, map.get(palette.$grey, 50), #323232);
 
-    @include mat-private-theme-elevation(6, $config);
+    @include private.theme-elevation(6, $config);
   }
 
   .mat-simple-snackbar-action {
-    color: if($is-dark-theme, inherit, mat-color($accent, text));
+    color: if($is-dark-theme, inherit, theming.color($accent, text));
   }
 }
 
-@mixin mat-snack-bar-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-simple-snackbar {
     font: {
-      family: mat-font-family($config, body-1);
-      size: mat-font-size($config, body-1);
+      family: typography-utils.font-family($config, body-1);
+      size: typography-utils.font-size($config, body-1);
     }
   }
 
@@ -36,28 +37,28 @@
     font: {
       family: inherit;
       size: inherit;
-      weight: mat-font-weight($config, button);
+      weight: typography-utils.font-weight($config, button);
     }
   }
 }
 
 @mixin _mat-snack-bar-density($config-or-theme) {}
 
-@mixin mat-snack-bar-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-snack-bar') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-snack-bar') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-snack-bar-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-snack-bar-density($density);
     }
     @if $typography != null {
-      @include mat-snack-bar-typography($typography);
+      @include typography($typography);
     }
   }
 }

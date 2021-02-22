@@ -1,5 +1,9 @@
+@use 'sass:map';
+@use '../mdc-theming/all-theme';
+@use '../../material/core/theming/theming';
+@use '../../material/core/typography/typography';
+@use '../mdc-helpers/mdc-helpers';
 @import '@material/typography/variables.import';
-@import '../mdc-theming/all-theme';
 
 /// Generates an Angular Material typography config based on values from the official Material
 /// Design spec implementation (MDC Web). All arguments are optional, but may be passed to override
@@ -22,21 +26,21 @@
 /// @param {Map} $button The font settings for the button font level.
 /// @param {Map} $overline The font settings for the overline font level.
 /// @return {Map} A map containing font settings for each of the levels in the Material Design spec.
-@function mat-mdc-typography-config(
+@function config(
   $font-family: $mdc-typography-font-family,
-  $headline-1:  mat-typography-config-level-from-mdc(headline1),
-  $headline-2:  mat-typography-config-level-from-mdc(headline2),
-  $headline-3:  mat-typography-config-level-from-mdc(headline3),
-  $headline-4:  mat-typography-config-level-from-mdc(headline4),
-  $headline-5:  mat-typography-config-level-from-mdc(headline5),
-  $headline-6:  mat-typography-config-level-from-mdc(headline6),
-  $subtitle-1:  mat-typography-config-level-from-mdc(subtitle1),
-  $subtitle-2:  mat-typography-config-level-from-mdc(subtitle2),
-  $body-1:      mat-typography-config-level-from-mdc(body1),
-  $body-2:      mat-typography-config-level-from-mdc(body2),
-  $caption:     mat-typography-config-level-from-mdc(caption),
-  $button:      mat-typography-config-level-from-mdc(button),
-  $overline:    mat-typography-config-level-from-mdc(overline),
+  $headline-1:  mdc-helpers.mat-typography-config-level-from-mdc(headline1),
+  $headline-2:  mdc-helpers.mat-typography-config-level-from-mdc(headline2),
+  $headline-3:  mdc-helpers.mat-typography-config-level-from-mdc(headline3),
+  $headline-4:  mdc-helpers.mat-typography-config-level-from-mdc(headline4),
+  $headline-5:  mdc-helpers.mat-typography-config-level-from-mdc(headline5),
+  $headline-6:  mdc-helpers.mat-typography-config-level-from-mdc(headline6),
+  $subtitle-1:  mdc-helpers.mat-typography-config-level-from-mdc(subtitle1),
+  $subtitle-2:  mdc-helpers.mat-typography-config-level-from-mdc(subtitle2),
+  $body-1:      mdc-helpers.mat-typography-config-level-from-mdc(body1),
+  $body-2:      mdc-helpers.mat-typography-config-level-from-mdc(body2),
+  $caption:     mdc-helpers.mat-typography-config-level-from-mdc(caption),
+  $button:      mdc-helpers.mat-typography-config-level-from-mdc(button),
+  $overline:    mdc-helpers.mat-typography-config-level-from-mdc(overline),
 ) {
   // Declare an initial map with all of the levels.
   $config: (
@@ -58,26 +62,26 @@
   // Loop through the levels and set the `font-family` of the ones that don't have one to the base.
   // Note that Sass can't modify maps in place, which means that we need to merge and re-assign.
   @each $key, $level in $config {
-    @if map-get($level, font-family) == null {
-      $new-level: map-merge($level, (font-family: $font-family));
-      $config: map-merge($config, ($key: $new-level));
+    @if map.get($level, font-family) == null {
+      $new-level: map.merge($level, (font-family: $font-family));
+      $config: map.merge($config, ($key: $new-level));
     }
   }
 
   // Add the base font family to the config.
-  @return map-merge($config, (font-family: $font-family));
+  @return map.merge($config, (font-family: $font-family));
 }
 
 @mixin angular-material-mdc-typography($config-or-theme: null) {
-  $config: if(mat-private-is-theme-object($config-or-theme),
-      mat-get-typography-config($config-or-theme), $config-or-theme);
+  $config: if(theming.is-theme-object($config-or-theme),
+      theming.get-typography-config($config-or-theme), $config-or-theme);
 
   // If no actual color configuration has been specified, create a default one.
   @if $config == null {
-    $config: mat-typography-config();
+    $config: typography.config();
   }
 
-  @include angular-material-mdc-theme((
+  @include all-theme.angular-material-mdc-theme((
     color: null,
     density: null,
     typography: $config,

@@ -1,3 +1,6 @@
+@use 'sass:list';
+@use 'sass:map';
+@use 'sass:meta';
 // Note that this file is called `private`, because the APIs in it aren't public yet.
 // Once they're made available, the code should be moved out into an `index.scss`.
 
@@ -13,11 +16,11 @@ $_mat-density-default-scale: 0 !default;
 
 // Whether density should be generated at root. This will be temporarily set to `true`
 // whenever density styles for legacy themes are generated.
-$mat-private-density-generate-at-root: false;
+$density-generate-at-root: false;
 // Whether density styles should be generated. This will be temporarily set to `false` if
 // duplicate density styles for a legacy theme would be generated. For legacy themes,
 // we always generate the default density **only once** at root.
-$mat-private-density-generate-styles: true;
+$density-generate-styles: true;
 
 // Mixin that can be used to wrap density styles of given components. The mixin will
 // move the density styles to root if the `$mat-private-density-generate-at-root` global variable
@@ -31,36 +34,36 @@ $mat-private-density-generate-styles: true;
 // density styles. This is breaking as it increases specificity of density styles. This mixin
 // provides an API to control generation of density styles so that we can ensure they are only
 // created *once* and at root.
-@mixin mat-private-density-legacy-compatibility() {
-  @if $mat-private-density-generate-styles and $mat-private-density-generate-at-root {
+@mixin density-legacy-compatibility() {
+  @if $density-generate-styles and $density-generate-at-root {
     @at-root {
       @content;
     }
   }
-  @else if $mat-private-density-generate-styles {
+  @else if $density-generate-styles {
     @content;
   }
 }
 
-@function mat-private-density-prop-value($density-config, $density-scale, $property-name) {
-  @if (type-of($density-scale) == 'string' and
-      index($list: $_mat-density-supported-scales, $value: $density-scale) == null) {
+@function density-prop-value($density-config, $density-scale, $property-name) {
+  @if (meta.type-of($density-scale) == 'string' and
+      list.index($list: $_mat-density-supported-scales, $value: $density-scale) == null) {
     @error 'mat-density: Supported density scales #{$_mat-density-supported-scales}, '  +
       'but received #{$density-scale}.';
   }
 
   $value: null;
-  $property-scale-map: map-get($density-config, $property-name);
+  $property-scale-map: map.get($density-config, $property-name);
 
-  @if map-has-key($property-scale-map, $density-scale) {
-    $value: map-get($property-scale-map, $density-scale);
+  @if map.has-key($property-scale-map, $density-scale) {
+    $value: map.get($property-scale-map, $density-scale);
   }
   @else {
-    $value: map-get($property-scale-map, default) + $density-scale * $_mat-density-interval;
+    $value: map.get($property-scale-map, default) + $density-scale * $_mat-density-interval;
   }
 
-  $min-value: map-get($property-scale-map, $_mat-density-minimum-scale);
-  $max-value: map-get($property-scale-map, $_mat-density-maximum-scale);
+  $min-value: map.get($property-scale-map, $_mat-density-minimum-scale);
+  $max-value: map.get($property-scale-map, $_mat-density-maximum-scale);
 
   @if ($value < $min-value or $value > $max-value) {
     @error 'mat-density: #{$property-name} must be between #{$min-value} and ' +

@@ -1,6 +1,6 @@
-@import '../core/style/variables';
-@import '../core/style/vendor-prefixes';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/variables';
+@use '../core/style/vendor-prefixes';
+@use '../../cdk/a11y/a11y';
 
 // The Input element proper.
 .mat-input-element {
@@ -94,10 +94,10 @@
     font-size: 0.75em;
   }
 
-  @include input-placeholder {
+  @include vendor-prefixes.input-placeholder {
     // Prevent users from being able to select the placeholder text. Most of the time this can't
     // happen, however it's possible to do it when clicking on a disabled input (see #13479).
-    @include user-select(none);
+    @include vendor-prefixes.user-select(none);
 
     &:-ms-input-placeholder {
       // fix IE11 not able to focus programmatically with css style -ms-user-select: none
@@ -107,15 +107,15 @@
 
     // Delay the transition until the label has animated about a third of the way through, in
     // order to prevent the placeholder from overlapping for a split second.
-    transition: color $swift-ease-out-duration $swift-ease-out-duration / 3
-      $swift-ease-out-timing-function;
+    transition: color variables.$swift-ease-out-duration variables.$swift-ease-out-duration / 3
+      variables.$swift-ease-out-timing-function;
   }
 
   .mat-form-field-hide-placeholder & {
     // Note that we can't use something like visibility: hidden or
     // display: none, because IE ends up preventing the user from
     // focusing the input altogether.
-    @include input-placeholder {
+    @include vendor-prefixes.input-placeholder {
       // Needs to be !important, because the placeholder will end up inheriting the
       // input color in IE, if the consumer overrides it with a higher specificity.
       color: transparent !important;
@@ -190,7 +190,7 @@ select.mat-input-element {
     // as the background, however this causes it blend in because we've reset the `background`
     // above. We have to add a more specific selector in order to ensure that it gets the
     // `color` from our theme instead.
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       .mat-focused & {
         color: inherit;
       }

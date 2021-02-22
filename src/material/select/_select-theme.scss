@@ -1,75 +1,76 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/style/private';
-@import '../core/style/form-common';
-@import '../core/typography/typography-utils';
+@use 'sass:map';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/style/private';
+@use '../core/style/form-common';
+@use '../core/typography/typography-utils';
 
 
-@mixin mat-select-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $foreground: map-get($config, foreground);
-  $background: map-get($config, background);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $foreground: map.get($config, foreground);
+  $background: map.get($config, background);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
 
   .mat-select-value {
-    color: mat-color($foreground, text);
+    color: theming.color($foreground, text);
   }
 
   .mat-select-placeholder {
-    color: mat-private-control-placeholder-color($config);
+    color: form-common.control-placeholder-color($config);
   }
 
   .mat-select-disabled .mat-select-value {
-    color: mat-color($foreground, disabled-text);
+    color: theming.color($foreground, disabled-text);
   }
 
   .mat-select-arrow {
-    color: mat-color($foreground, secondary-text);
+    color: theming.color($foreground, secondary-text);
   }
 
   .mat-select-panel {
-    background: mat-color($background, card);
-    @include mat-private-theme-overridable-elevation(4, $config);
+    background: theming.color($background, card);
+    @include private.theme-overridable-elevation(4, $config);
 
     .mat-option.mat-selected:not(.mat-option-multiple) {
-      background: mat-color($background, hover, 0.12);
+      background: theming.color($background, hover, 0.12);
     }
   }
 
   .mat-form-field {
     &.mat-focused {
       &.mat-primary .mat-select-arrow {
-        color: mat-color($primary, text);
+        color: theming.color($primary, text);
       }
 
       &.mat-accent .mat-select-arrow {
-        color: mat-color($accent, text);
+        color: theming.color($accent, text);
       }
 
       &.mat-warn .mat-select-arrow {
-        color: mat-color($warn, text);
+        color: theming.color($warn, text);
       }
     }
 
     .mat-select.mat-select-invalid .mat-select-arrow {
-      color: mat-color($warn, text);
+      color: theming.color($warn, text);
     }
 
     .mat-select.mat-select-disabled .mat-select-arrow {
-      color: mat-color($foreground, disabled-text);
+      color: theming.color($foreground, disabled-text);
     }
   }
 }
 
-@mixin mat-select-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   // The unit-less line-height from the font config.
-  $line-height: mat-line-height($config, input);
+  $line-height: typography-utils.height($config, input);
 
   .mat-select {
-    font-family: mat-font-family($config);
+    font-family: typography-utils.font-family($config);
   }
 
   .mat-select-trigger {
@@ -79,21 +80,21 @@
 
 @mixin _mat-select-density($config-or-theme) {}
 
-@mixin mat-select-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-select') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-select') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-select-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-select-density($density);
     }
     @if $typography != null {
-      @include mat-select-typography($typography);
+      @include typography($typography);
     }
   }
 }

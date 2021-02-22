@@ -1,14 +1,15 @@
-@import '../core/style/variables';
-@import '../core/style/private';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/variables';
+@use '../core/style/private';
+@use '../../cdk/a11y/a11y';
 
 
 // Animation config
-$mat-progress-spinner-stroke-rotate-fallback-duration: 10 * 1000ms !default;
-$mat-progress-spinner-stroke-rotate-fallback-ease: cubic-bezier(0.87, 0.03, 0.33, 1) !default;
+$stroke-rotate-fallback-duration: 10 * 1000ms !default;
+$stroke-rotate-fallback-ease: cubic-bezier(0.87, 0.03, 0.33, 1) !default;
 
 $_mat-progress-spinner-default-radius: 45px;
-$_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-default-radius * 2;
+$_mat-progress-spinner-default-circumference:
+  variables.$pi * $_mat-progress-spinner-default-radius * 2;
 
 .mat-progress-spinner {
   display: block;
@@ -28,12 +29,12 @@ $_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-defau
   }
 
   circle {
-    @include mat-private-animation-noop();
+    @include private.animation-noop();
     fill: transparent;
     transform-origin: center;
     transition: stroke-dashoffset 225ms linear;
 
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       // SVG colors aren't inverted automatically in high contrast mode. Set the
       // stroke to currentColor in order to respect the user's color settings.
       stroke: currentColor;
@@ -42,32 +43,32 @@ $_mat-progress-spinner-default-circumference: $pi * $_mat-progress-spinner-defau
 
   &.mat-progress-spinner-indeterminate-animation[mode='indeterminate'] {
     svg {
-      @include mat-private-animation-noop();
-      animation: mat-progress-spinner-linear-rotate $swift-ease-in-out-duration * 4
+      @include private.animation-noop();
+      animation: mat-progress-spinner-linear-rotate variables.$swift-ease-in-out-duration * 4
           linear infinite;
     }
 
     circle {
-      @include mat-private-animation-noop();
+      @include private.animation-noop();
       transition-property: stroke;
       // Note: we multiply the duration by 8, because the animation is spread out in 8 stages.
-      animation-duration: $swift-ease-in-out-duration * 8;
-      animation-timing-function: $ease-in-out-curve-function;
+      animation-duration: variables.$swift-ease-in-out-duration * 8;
+      animation-timing-function: variables.$ease-in-out-curve-function;
       animation-iteration-count: infinite;
     }
   }
 
   &.mat-progress-spinner-indeterminate-fallback-animation[mode='indeterminate'] {
     svg {
-      @include mat-private-animation-noop();
+      @include private.animation-noop();
       animation: mat-progress-spinner-stroke-rotate-fallback
-                 $mat-progress-spinner-stroke-rotate-fallback-duration
-                 $mat-progress-spinner-stroke-rotate-fallback-ease
+                 $stroke-rotate-fallback-duration
+                 $stroke-rotate-fallback-ease
                  infinite;
     }
 
     circle {
-      @include mat-private-animation-noop();
+      @include private.animation-noop();
       transition-property: stroke;
     }
   }

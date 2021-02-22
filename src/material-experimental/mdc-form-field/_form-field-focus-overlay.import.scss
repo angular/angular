@@ -1,2 +1,4 @@
-@forward 'form-field-focus-overlay';
-@forward '../../material/core/style/layout-common';
+@forward '../../material/core/style/layout-common.import';
+@forward 'form-field-focus-overlay' as mat-mdc-*;
+
+@import '../../material/core/style/layout-common';

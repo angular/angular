@@ -1,8 +1,8 @@
-@import './vendor-prefixes';
+@use './vendor-prefixes';
 
 // Mixin overriding default button styles like the gray background, the border, and the outline.
-@mixin mat-button-reset {
-  @include user-select(none);
+@mixin reset {
+  @include vendor-prefixes.user-select(none);
   cursor: pointer;
   outline: none;
   border: none;

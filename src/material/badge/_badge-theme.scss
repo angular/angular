@@ -1,16 +1,19 @@
 // This contains all of the styles for the badge
 // rather than just the color/theme because of
 // no style sheet support for directives.
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
-@import '../../cdk/a11y/a11y';
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:meta';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
+@use '../../cdk/a11y/a11y';
 
-$mat-badge-font-size: 12px;
-$mat-badge-font-weight: 600;
-$mat-badge-default-size: 22px !default;
-$mat-badge-small-size: $mat-badge-default-size - 6;
-$mat-badge-large-size: $mat-badge-default-size + 6;
+$font-size: 12px;
+$font-weight: 600;
+$default-size: 22px !default;
+$small-size: $default-size - 6;
+$large-size: $default-size + 6;
 
 // Mixin for building offset given different sizes
 @mixin _mat-badge-size($size) {
@@ -87,19 +90,19 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
   }
 }
 
-@mixin mat-badge-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $primary: map-get($config, primary);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $primary: map.get($config, primary);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
   .mat-badge-content {
-    color: mat-color($primary, default-contrast);
-    background: mat-color($primary);
+    color: theming.color($primary, default-contrast);
+    background: theming.color($primary);
 
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       outline: solid 1px;
       border-radius: 0;
     }
@@ -107,15 +110,15 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
 
   .mat-badge-accent {
     .mat-badge-content {
-      background: mat-color($accent);
-      color: mat-color($accent, default-contrast);
+      background: theming.color($accent);
+      color: theming.color($accent, default-contrast);
     }
   }
 
   .mat-badge-warn {
     .mat-badge-content {
-      color: mat-color($warn, default-contrast);
-      background: mat-color($warn);
+      color: theming.color($warn, default-contrast);
+      background: theming.color($warn);
     }
   }
 
@@ -131,23 +134,23 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
 
   .mat-badge-disabled {
     .mat-badge-content {
-      $app-background: mat-color($background, 'background');
-      $badge-color: mat-color($foreground, disabled-button);
+      $app-background: theming.color($background, 'background');
+      $badge-color: theming.color($foreground, disabled-button);
 
       // The disabled color usually has some kind of opacity, but because the badge is overlayed
       // on top of something else, it won't look good if it's opaque. If it is a color *type*,
       // we convert it into a solid color by taking the opacity from the rgba value and using
       // the value to determine the percentage of the background to put into foreground when
       // mixing the colors together.
-      @if (type-of($badge-color) == color and type-of($app-background) == color) {
+      @if (meta.type-of($badge-color) == color and meta.type-of($app-background) == color) {
         $badge-opacity: opacity($badge-color);
-        background: mix($app-background, rgba($badge-color, 1), (1 - $badge-opacity) * 100%);
+        background: color.mix($app-background, rgba($badge-color, 1), (1 - $badge-opacity) * 100%);
       }
       @else {
         background: $badge-color;
       }
 
-      color: mat-color($foreground, disabled-text);
+      color: theming.color($foreground, disabled-text);
     }
   }
 
@@ -177,51 +180,51 @@ $mat-badge-large-size: $mat-badge-default-size + 6;
   }
 
   .mat-badge-small {
-    @include _mat-badge-size($mat-badge-small-size);
+    @include _mat-badge-size($small-size);
   }
   .mat-badge-medium {
-    @include _mat-badge-size($mat-badge-default-size);
+    @include _mat-badge-size($default-size);
   }
   .mat-badge-large {
-    @include _mat-badge-size($mat-badge-large-size);
+    @include _mat-badge-size($large-size);
   }
 }
 
-@mixin mat-badge-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-badge-content {
-    font-weight: $mat-badge-font-weight;
-    font-size: $mat-badge-font-size;
-    font-family: mat-font-family($config);
+    font-weight: $font-weight;
+    font-size: $font-size;
+    font-family: typography-utils.font-family($config);
   }
 
   .mat-badge-small .mat-badge-content {
     // Set the font size to 75% of the original.
-    font-size: $mat-badge-font-size * 0.75;
+    font-size: $font-size * 0.75;
   }
 
   .mat-badge-large .mat-badge-content {
-    font-size: $mat-badge-font-size * 2;
+    font-size: $font-size * 2;
   }
 }
 
 @mixin _mat-badge-density($config-or-theme) {}
 
-@mixin mat-badge-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-badge') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-badge') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-badge-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-badge-density($density);
     }
     @if $typography != null {
-      @include mat-badge-typography($typography);
+      @include typography($typography);
     }
   }
 }

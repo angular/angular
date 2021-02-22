@@ -1,16 +1,16 @@
-@import '../core/style/vendor-prefixes';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/vendor-prefixes';
+@use '../../cdk/a11y/a11y';
 
 
-$mat-dialog-padding: 24px !default;
-$mat-dialog-border-radius: 4px !default;
-$mat-dialog-max-height: 65vh !default;
-$mat-dialog-button-margin: 8px !default;
+$padding: 24px !default;
+$border-radius: 4px !default;
+$max-height: 65vh !default;
+$button-margin: 8px !default;
 
 .mat-dialog-container {
   display: block;
-  padding: $mat-dialog-padding;
-  border-radius: $mat-dialog-border-radius;
+  padding: $padding;
+  border-radius: $border-radius;
   box-sizing: border-box;
   overflow: auto;
   outline: 0;
@@ -24,16 +24,16 @@ $mat-dialog-button-margin: 8px !default;
   min-height: inherit;
   max-height: inherit;
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
 
 .mat-dialog-content {
   display: block;
-  margin: 0 $mat-dialog-padding * -1;
-  padding: 0 $mat-dialog-padding;
-  max-height: $mat-dialog-max-height;
+  margin: 0 $padding * -1;
+  padding: 0 $padding;
+  max-height: $max-height;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -55,7 +55,7 @@ $mat-dialog-button-margin: 8px !default;
   box-sizing: content-box;
 
   // Pull the actions down to avoid their padding stacking with the dialog's padding.
-  margin-bottom: -$mat-dialog-padding;
+  margin-bottom: -$padding;
 
   &[align='end'] {
     justify-content: flex-end;
@@ -67,11 +67,11 @@ $mat-dialog-button-margin: 8px !default;
 
   .mat-button-base + .mat-button-base,
   .mat-mdc-button-base + .mat-mdc-button-base {
-    margin-left: $mat-dialog-button-margin;
+    margin-left: $button-margin;
 
     [dir='rtl'] & {
       margin-left: 0;
-      margin-right: $mat-dialog-button-margin;
+      margin-right: $button-margin;
     }
   }
 }

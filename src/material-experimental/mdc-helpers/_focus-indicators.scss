@@ -1,6 +1,8 @@
-@import '../../material/core/theming/theming';
-@import '../../material/core/style/layout-common';
-@import '../../material/core/focus-indicators/focus-indicators';
+@use 'sass:map';
+@use 'sass:meta';
+@use '../../material/core/theming/theming';
+@use '../../material/core/style/layout-common';
+@use '../../material/core/focus-indicators/focus-indicators';
 
 /// Mixin that turns on strong focus indicators.
 ///
@@ -8,7 +10,7 @@
 ///   .my-app {
 ///     @include mat-mdc-strong-focus-indicators($config);
 ///   }
-@mixin mat-mdc-strong-focus-indicators($config: ()) {
+@mixin strong-focus-indicators($config: ()) {
   // Default focus indicator config.
   $default-config: (
     border-style: solid,
@@ -17,14 +19,14 @@
   );
 
   // Merge default config with user config.
-  $config: map-merge($default-config, $config);
-  $border-style: map-get($config, border-style);
-  $border-width: map-get($config, border-width);
-  $border-radius: map-get($config, border-radius);
+  $config: map.merge($default-config, $config);
+  $border-style: map.get($config, border-style);
+  $border-width: map.get($config, border-width);
+  $border-radius: map.get($config, border-radius);
 
   // Base styles for focus indicators.
   .mat-mdc-focus-indicator::before {
-    @include mat-fill();
+    @include layout-common.fill();
     box-sizing: border-box;
     pointer-events: none;
     border: $border-width $border-style transparent;
@@ -94,9 +96,9 @@
   }
 }
 
-@mixin mat-mdc-strong-focus-indicators-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  @include _mat-mdc-strong-focus-indicators-border-color(mat-color(map-get($config, primary)));
+@mixin strong-focus-indicators-color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  @include _mat-mdc-strong-focus-indicators-border-color(theming.color(map.get($config, primary)));
 }
 
 /// Mixin that sets the color of the focus indicators.
@@ -115,16 +117,16 @@
 ///     @include mat-mdc-strong-focus-indicators-theme(#f00);
 ///   }
 /* stylelint-disable-next-line material/theme-mixin-api */
-@mixin mat-mdc-strong-focus-indicators-theme($theme-or-color) {
-  @if type-of($theme-or-color) != 'map' {
+@mixin strong-focus-indicators-theme($theme-or-color) {
+  @if meta.type-of($theme-or-color) != 'map' {
     @include _mat-mdc-strong-focus-indicators-border-color($theme-or-color);
   }
   @else {
-    $theme: mat-private-legacy-get-theme($theme-or-color);
-    @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-strong-focus-indicators') {
-      $color: mat-get-color-config($theme);
+    $theme: theming.legacy-get-theme($theme-or-color);
+    @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-strong-focus-indicators') {
+      $color: theming.get-color-config($theme);
       @if $color != null {
-        @include mat-mdc-strong-focus-indicators-color($color);
+        @include strong-focus-indicators-color($color);
       }
     }
   }

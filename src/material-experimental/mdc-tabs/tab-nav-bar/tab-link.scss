@@ -1,15 +1,15 @@
+@use '../../../material/core/style/variables';
+@use '../../mdc-helpers/mdc-helpers';
+@use '../tabs-common';
 @import '@material/tab/mixins.import';
-@import '../../../material/core/style/variables';
-@import '../../mdc-helpers/mdc-helpers';
-@import '../tabs-common';
 
-@include mdc-tab-without-ripple($query: $mat-base-styles-query);
-@include mdc-tab-indicator-core-styles($query: $mat-base-styles-query);
-@include mat-mdc-tab-ripple;
+@include mdc-tab-without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-tab-indicator-core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include tabs-common.tab-ripple;
 
 // Wraps each link in the header
 .mat-mdc-tab-link {
-  @include mat-mdc-tab;
+  @include tabs-common.tab;
 
   &.mat-mdc-tab-disabled {
     // We use `pointer-events` to make the element unclickable when it's disabled, rather than
@@ -29,7 +29,7 @@
   }
 }
 
-@media ($mat-xsmall) {
+@media (variables.$xsmall) {
   .mat-mdc-tab-link {
     min-width: 72px;
   }

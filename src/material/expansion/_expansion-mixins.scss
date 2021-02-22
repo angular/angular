@@ -1,4 +1,4 @@
-@mixin mat-private-expansion-focus {
+@mixin expansion-focus {
   .mat-expansion-panel {
     & .mat-expansion-panel-header.cdk-keyboard-focused,
     & .mat-expansion-panel-header.cdk-program-focused,

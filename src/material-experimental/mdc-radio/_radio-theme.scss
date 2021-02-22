@@ -1,35 +1,37 @@
-@import '../mdc-helpers/mdc-helpers';
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/theming/theming';
+
 @import '@material/form-field/mixins.import';
 @import '@material/radio/mixins';
 @import '@material/radio/variables';
 @import '@material/theme/functions.import';
 
-@mixin mat-mdc-radio-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
   $orig-mdc-radio-baseline-theme-color: $mdc-radio-baseline-theme-color;
   $orig-mdc-radio-unchecked-color: $mdc-radio-unchecked-color;
   $orig-mdc-radio-disabled-circle-color: $mdc-radio-disabled-circle-color;
 
-  @include mat-using-mdc-theme($config) {
+  @include mdc-helpers.mat-using-mdc-theme($config) {
     $mdc-radio-baseline-theme-color: primary !global;
     $mdc-radio-unchecked-color: rgba(mdc-theme-prop-value(on-surface), 0.54) !global;
     $mdc-radio-disabled-circle-color: rgba(mdc-theme-prop-value(on-surface), 0.38) !global;
 
     .mat-mdc-radio-button {
       &.mat-primary {
-        @include mdc-radio-without-ripple($query: $mat-theme-styles-query);
+        @include mdc-radio-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
       }
 
       &.mat-accent {
         $mdc-radio-baseline-theme-color: secondary !global;
-        @include mdc-radio-without-ripple($query: $mat-theme-styles-query);
+        @include mdc-radio-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
       }
 
       &.mat-warn {
         $mdc-radio-baseline-theme-color: error !global;
-        @include mdc-radio-without-ripple($query: $mat-theme-styles-query);
+        @include mdc-radio-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
       }
     }
   }
@@ -40,36 +42,36 @@
   $mdc-radio-disabled-circle-color: $orig-mdc-radio-disabled-circle-color !global;
 }
 
-@mixin mat-mdc-radio-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
-  @include mat-using-mdc-typography($config) {
-    @include mdc-radio-without-ripple($query: $mat-typography-styles-query);
-    @include mdc-form-field-core-styles($query: $mat-typography-styles-query);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
+  @include mdc-helpers.mat-using-mdc-typography($config) {
+    @include mdc-radio-without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-form-field-core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 
-@mixin mat-mdc-radio-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
   .mat-mdc-radio-button .mdc-radio {
-    @include mdc-radio-density($density-scale, $query: $mat-base-styles-query);
+    @include mdc-radio-density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
   }
 }
 
-@mixin mat-mdc-radio-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-radio') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-radio') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-mdc-radio-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-mdc-radio-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-mdc-radio-typography($typography);
+      @include typography($typography);
     }
   }
 }

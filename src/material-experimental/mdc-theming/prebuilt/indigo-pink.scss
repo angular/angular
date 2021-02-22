@@ -1,16 +1,19 @@
-@import '../all-theme';
-@import '../../mdc-typography/all-typography';
+@use '../all-theme';
+@use '../../mdc-typography/all-typography';
+@use '../../../material/core/core';
+@use '../../../material/core/theming/palette';
+@use '../../../material/core/theming/theming';
 
 // Include non-theme styles for core.
-@include mat-core();
+@include core.core();
 
 // Define a theme.
-$primary: mat-palette($mat-indigo);
-$accent:  mat-palette($mat-pink, A200, A100, A400);
+$primary: theming.palette(palette.$indigo);
+$accent:  theming.palette(palette.$pink, A200, A100, A400);
 
-$theme: mat-light-theme($primary, $accent);
+$theme: theming.light-theme($primary, $accent);
 
 // Include all theme styles for the components.
-@include angular-material-mdc-theme($theme);
-@include angular-material-mdc-typography();
-@include mat-core-theme($theme);
+@include all-theme.angular-material-mdc-theme($theme);
+@include all-typography.angular-material-mdc-typography();
+@include core.theme($theme);

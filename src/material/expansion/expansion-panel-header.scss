@@ -1,7 +1,7 @@
-@import '../core/style/layout-common';
-@import '../../cdk/a11y/a11y';
-@import './expansion-variables';
-@import './expansion-mixins';
+@use '../core/style/layout-common';
+@use '../../cdk/a11y/a11y';
+@use './expansion-variables';
+@use './expansion-mixins';
 
 .mat-expansion-panel-header {
   display: flex;
@@ -9,7 +9,7 @@
   align-items: center;
   padding: 0 24px;
   border-radius: inherit;
-  transition: height $mat-expansion-panel-header-transition;
+  transition: height expansion-variables.$panel-header-transition;
 
   // If the `NoopAnimationsModule` is used, disable the height transition.
   &._mat-animation-noopable {
@@ -80,13 +80,13 @@
   vertical-align: middle;
 }
 
-@include cdk-high-contrast(active, off) {
-  @include mat-private-expansion-focus {
+@include a11y.high-contrast(active, off) {
+  @include expansion-mixins.expansion-focus {
     &::before {
       // These styles are identical to the ones generated for all
       // `.mat-focus-indicator` when strong focus indication is enabled.
       // We have to repeat them, because strong focus is opt-in.
-      @include mat-fill();
+      @include layout-common.fill();
       box-sizing: border-box;
       pointer-events: none;
       border: 3px solid;

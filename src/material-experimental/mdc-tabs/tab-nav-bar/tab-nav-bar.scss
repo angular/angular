@@ -1,14 +1,14 @@
+@use '../tabs-common';
+@use '../../../material/core/style/variables';
+@use '../../mdc-helpers/mdc-helpers';
 @import '@material/tab/mixins.import';
-@import '../tabs-common';
-@import '../../../material/core/style/variables';
-@import '../../mdc-helpers/mdc-helpers';
 
-@include mat-mdc-paginated-tab-header;
+@include tabs-common.paginated-tab-header;
 
 .mat-mdc-tab-links {
-  @include mat-mdc-paginated-tab-header-item-wrapper('.mat-mdc-tab-link-container');
+  @include tabs-common.paginated-tab-header-item-wrapper('.mat-mdc-tab-link-container');
 }
 
 .mat-mdc-tab-link-container {
-  @include mat-mdc-paginated-tab-header-container;
+  @include tabs-common.paginated-tab-header-container;
 }

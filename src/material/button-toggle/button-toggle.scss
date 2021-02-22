@@ -1,13 +1,13 @@
-@import '../core/style/vendor-prefixes';
-@import '../core/style/layout-common';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/vendor-prefixes';
+@use '../core/style/layout-common';
+@use '../../cdk/a11y/a11y';
 
-$mat-button-toggle-standard-padding: 0 12px !default;
-$mat-button-toggle-standard-border-radius: 4px !default;
+$standard-padding: 0 12px !default;
+$standard-border-radius: 4px !default;
 
-$mat-button-toggle-legacy-padding: 0 16px !default;
-$mat-button-toggle-legacy-height: 36px !default;
-$mat-button-toggle-legacy-border-radius: 2px !default;
+$legacy-padding: 0 16px !default;
+$legacy-height: 36px !default;
+$legacy-border-radius: 2px !default;
 
 .mat-button-toggle-standalone,
 .mat-button-toggle-group {
@@ -16,19 +16,19 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
   flex-direction: row;
   white-space: nowrap;
   overflow: hidden;
-  border-radius: $mat-button-toggle-legacy-border-radius;
+  border-radius: $legacy-border-radius;
   -webkit-tap-highlight-color: transparent;
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
 
 .mat-button-toggle-standalone.mat-button-toggle-appearance-standard,
 .mat-button-toggle-group-appearance-standard {
-  border-radius: $mat-button-toggle-standard-border-radius;
+  border-radius: $standard-border-radius;
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: 0;
   }
 }
@@ -57,7 +57,7 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
       opacity: 1;
 
       // In high contrast mode `opacity: 1` will show the overlay as solid so we fall back 0.5.
-      @include cdk-high-contrast(active, off) {
+      @include a11y.high-contrast(active, off) {
         opacity: 0.5;
       }
     }
@@ -77,7 +77,7 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
   &.cdk-keyboard-focused:not(.mat-button-toggle-disabled) .mat-button-toggle-focus-overlay {
     opacity: 0.12;
 
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       opacity: 0.5;
     }
   }
@@ -94,16 +94,16 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
 }
 
 .mat-button-toggle-label-content {
-  @include user-select(none);
+  @include vendor-prefixes.user-select(none);
   display: inline-block;
-  line-height: $mat-button-toggle-legacy-height;
-  padding: $mat-button-toggle-legacy-padding;
+  line-height: $legacy-height;
+  padding: $legacy-padding;
 
   // Prevents IE from shifting the content on click.
   position: relative;
 
   .mat-button-toggle-appearance-standard & {
-    padding: $mat-button-toggle-standard-padding;
+    padding: $standard-padding;
   }
 }
 
@@ -118,22 +118,22 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
   // Disable pointer events to prevent it from hijacking user events.
   pointer-events: none;
   opacity: 0;
-  @include mat-fill;
+  @include layout-common.fill;
 
   .mat-button-toggle-checked & {
-    border-bottom: solid $mat-button-toggle-legacy-height;
+    border-bottom: solid $legacy-height;
 
     // Changing the background color for the selected item won't be visible in high contrast mode.
     // We fall back to using the overlay to draw a brighter, semi-transparent tint on top instead.
     // It uses a border, because the browser will render it using a brighter color.
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       opacity: 0.5;
       height: 0;
     }
   }
 }
 
-@include cdk-high-contrast(active, off) {
+@include a11y.high-contrast(active, off) {
   .mat-button-toggle-checked.mat-button-toggle-appearance-standard
   .mat-button-toggle-focus-overlay {
     // In high contrast mode, we use a border for the checked state because backgrounds
@@ -147,7 +147,7 @@ $mat-button-toggle-legacy-border-radius: 2px !default;
 // Increase specificity because ripple styles are part of the `mat-core` mixin and can
 // potentially overwrite the absolute position of the container.
 .mat-button-toggle .mat-button-toggle-ripple {
-  @include mat-fill;
+  @include layout-common.fill;
 
   // Disable pointer events for the ripple container, because the container will overlay the user
   // content and we don't want to prevent mouse clicks that should toggle the state.

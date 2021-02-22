@@ -1,25 +1,25 @@
-$mat-datepicker-calendar-padding: 8px;
-$mat-datepicker-non-touch-calendar-cell-size: 40px;
-$mat-datepicker-non-touch-calendar-width:
-    $mat-datepicker-non-touch-calendar-cell-size * 7 + $mat-datepicker-calendar-padding * 2;
+$calendar-padding: 8px;
+$non-touch-calendar-cell-size: 40px;
+$non-touch-calendar-width:
+    $non-touch-calendar-cell-size * 7 + $calendar-padding * 2;
 // Based on the natural height of the calendar in a month with 6 rows of dates
 // (largest the calendar will get).
-$mat-datepicker-non-touch-calendar-height: 354px;
+$non-touch-calendar-height: 354px;
 
 // Ideally the calendar would have a constant aspect ratio, no matter its size, and we would base
 // these measurements off the aspect ratio. Unfortunately, the aspect ratio does change a little as
 // the calendar grows, since some of the elements have pixel-based sizes. These numbers have been
 // chosen to minimize extra whitespace at larger sizes, while still ensuring we won't need
 // scrollbars at smaller sizes.
-$mat-datepicker-touch-landscape-width: 64vh;
-$mat-datepicker-touch-landscape-height: 80vh;
-$mat-datepicker-touch-portrait-width: 80vw;
-$mat-datepicker-touch-portrait-height: 100vw;
-$mat-datepicker-touch-portrait-height-with-actions: 115vw;
-$mat-datepicker-touch-min-width: 250px;
-$mat-datepicker-touch-min-height: 312px;
-$mat-datepicker-touch-max-width: 750px;
-$mat-datepicker-touch-max-height: 788px;
+$touch-landscape-width: 64vh;
+$touch-landscape-height: 80vh;
+$touch-portrait-width: 80vw;
+$touch-portrait-height: 100vw;
+$touch-portrait-height-with-actions: 115vw;
+$touch-min-width: 250px;
+$touch-min-height: 312px;
+$touch-max-width: 750px;
+$touch-max-height: 788px;
 
 
 .mat-datepicker-content {
@@ -27,8 +27,8 @@ $mat-datepicker-touch-max-height: 788px;
   border-radius: 4px;
 
   .mat-calendar {
-    width: $mat-datepicker-non-touch-calendar-width;
-    height: $mat-datepicker-non-touch-calendar-height;
+    width: $non-touch-calendar-width;
+    height: $non-touch-calendar-height;
   }
 
   // Note that this selector doesn't technically have to be nested, but we want the slightly
@@ -66,10 +66,10 @@ $mat-datepicker-touch-max-height: 788px;
   margin: -24px;
 
   .mat-datepicker-content-container {
-    min-height: $mat-datepicker-touch-min-height;
-    max-height: $mat-datepicker-touch-max-height;
-    min-width: $mat-datepicker-touch-min-width;
-    max-width: $mat-datepicker-touch-max-width;
+    min-height: $touch-min-height;
+    max-height: $touch-max-height;
+    min-width: $touch-min-width;
+    max-width: $touch-max-width;
   }
 
   .mat-calendar {
@@ -80,20 +80,20 @@ $mat-datepicker-touch-max-height: 788px;
 
 @media all and (orientation: landscape) {
   .mat-datepicker-content-touch .mat-datepicker-content-container {
-    width: $mat-datepicker-touch-landscape-width;
-    height: $mat-datepicker-touch-landscape-height;
+    width: $touch-landscape-width;
+    height: $touch-landscape-height;
   }
 }
 
 @media all and (orientation: portrait) {
   .mat-datepicker-content-touch .mat-datepicker-content-container {
-    width: $mat-datepicker-touch-portrait-width;
-    height: $mat-datepicker-touch-portrait-height;
+    width: $touch-portrait-width;
+    height: $touch-portrait-height;
   }
 
   // The content needs to be a bit taller when actions have
   // been projected so that it doesn't have to scroll.
   .mat-datepicker-content-touch .mat-datepicker-content-container-with-actions {
-    height: $mat-datepicker-touch-portrait-height-with-actions;
+    height: $touch-portrait-height-with-actions;
   }
 }

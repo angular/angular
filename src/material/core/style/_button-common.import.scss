@@ -1,2 +1,4 @@
-@forward 'button-common';
-@forward './vendor-prefixes';
+@forward 'vendor-prefixes';
+@forward 'button-common' as mat-button-*;
+
+@import './vendor-prefixes';

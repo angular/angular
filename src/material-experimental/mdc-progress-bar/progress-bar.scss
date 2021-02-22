@@ -1,7 +1,8 @@
+@use '../mdc-helpers/mdc-helpers';
 @import '@material/linear-progress/mixins.import';
-@import '../mdc-helpers/mdc-helpers';
 
-@include mdc-linear-progress-core-styles($query: $mat-base-styles-without-animation-query);
+@include mdc-linear-progress-core-styles($query:
+  mdc-helpers.$mat-base-styles-without-animation-query);
 
 .mat-mdc-progress-bar {
   // Explicitly set to `block` since the browser defaults custom elements to `inline`.

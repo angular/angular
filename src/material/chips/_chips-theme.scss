@@ -1,9 +1,11 @@
-@import '../core/style/private';
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
+@use 'sass:map';
+@use 'sass:meta';
+@use '../core/style/private';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
 
-$mat-chip-remove-font-size: 18px;
+$chip-remove-font-size: 18px;
 
 @mixin _mat-chip-element-color($foreground, $background) {
   background-color: $background;
@@ -22,39 +24,40 @@ $mat-chip-remove-font-size: 18px;
 // Since we can't perform alpha-blending on a CSS variable,
 // we instead add the opacity directly to the ripple element.
 @mixin _mat-chips-ripple-background($palette, $default-contrast, $opacity) {
-  $background-color: mat-color($palette, $default-contrast, $opacity);
+  $background-color: theming.color($palette, $default-contrast, $opacity);
   background-color: $background-color;
-  @if (type-of($background-color) != color) {
+  @if (meta.type-of($background-color) != color) {
     opacity: $opacity;
   }
 }
 
 @mixin _mat-chip-theme-color($palette) {
-  @include _mat-chip-element-color(mat-color($palette, default-contrast), mat-color($palette));
+  @include _mat-chip-element-color(theming.color($palette, default-contrast),
+    theming.color($palette));
 
   .mat-ripple-element {
     @include _mat-chips-ripple-background($palette, default-contrast, 0.1);
   }
 }
 
-@mixin mat-chips-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $is-dark-theme: map-get($config, is-dark);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $is-dark-theme: map.get($config, is-dark);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
-  $unselected-background: mat-color($background, unselected-chip);
-  $unselected-foreground: mat-color($foreground, text);
+  $unselected-background: theming.color($background, unselected-chip);
+  $unselected-foreground: theming.color($foreground, text);
 
   .mat-chip.mat-standard-chip {
     @include _mat-chip-element-color($unselected-foreground, $unselected-background);
 
     &:not(.mat-chip-disabled) {
       &:active {
-        @include mat-private-theme-elevation(3, $config);
+        @include private.theme-elevation(3, $config);
       }
 
       .mat-chip-remove:hover {
@@ -67,7 +70,7 @@ $mat-chip-remove-font-size: 18px;
     }
 
     &::after {
-      background: map-get($foreground, base);
+      background: map.get($foreground, base);
     }
   }
 
@@ -86,36 +89,36 @@ $mat-chip-remove-font-size: 18px;
   }
 }
 
-@mixin mat-chips-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-chip {
-    font-size: mat-font-size($config, body-2);
-    font-weight: mat-font-weight($config, body-2);
+    font-size: typography-utils.font-size($config, body-2);
+    font-weight: typography-utils.font-weight($config, body-2);
 
     .mat-chip-trailing-icon.mat-icon,
     .mat-chip-remove.mat-icon {
-      font-size: $mat-chip-remove-font-size;
+      font-size: $chip-remove-font-size;
     }
   }
 }
 
 @mixin _mat-chips-density($config-or-theme) {}
 
-@mixin mat-chips-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-chips') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-chips') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-chips-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-chips-density($density);
     }
     @if $typography != null {
-      @include mat-chips-typography($typography);
+      @include typography($typography);
     }
   }
 }

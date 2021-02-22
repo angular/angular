@@ -1,8 +1,8 @@
+@use '../../material/core/style/variables';
+@use '../../material/core/style/vendor-prefixes';
+@use '../../cdk/a11y/a11y';
 @import '@material/menu-surface/mixins.import';
 @import '@material/list/mixins.import';
-@import '../../material/core/style/variables';
-@import '../../material/core/style/vendor-prefixes';
-@import '../../cdk/a11y/a11y';
 
 $mat-select-arrow-size: 5px !default;
 $mat-select-arrow-margin: 4px !default;
@@ -30,7 +30,7 @@ $scale: 0.75 !default;
   box-sizing: border-box;
 
   .mat-mdc-select-disabled & {
-    @include user-select(none);
+    @include vendor-prefixes.user-select(none);
     cursor: default;
   }
 }
@@ -80,7 +80,7 @@ $scale: 0.75 !default;
   // Note that we include this private mixin, because the public
   // one adds a bunch of styles that we aren't using for the menu.
   @include mdc-list-deprecated-base_($query: structure);
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }
 
@@ -100,8 +100,8 @@ $scale: 0.75 !default;
 .mat-mdc-select-placeholder {
   // Delay the transition until the label has animated about a third of the way through, in
   // order to prevent the placeholder from overlapping for a split second.
-  transition: color $swift-ease-out-duration $swift-ease-out-duration / 3
-      $swift-ease-out-timing-function;
+  transition: color variables.$swift-ease-out-duration variables.$swift-ease-out-duration / 3
+      variables.$swift-ease-out-timing-function;
 
   ._mat-animation-noopable & {
     transition: none;

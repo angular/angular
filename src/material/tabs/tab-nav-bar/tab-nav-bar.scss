@@ -1,23 +1,23 @@
-@import '../tabs-common';
-@import '../../core/style/variables';
+@use '../tabs-common';
+@use '../../core/style/variables';
 
-@include paginated-tab-header;
+@include tabs-common.paginated-tab-header;
 
 .mat-tab-links {
-  @include paginated-tab-header-item-wrapper('.mat-tab-link-container');
+  @include tabs-common.paginated-tab-header-item-wrapper('.mat-tab-link-container');
 }
 
 .mat-ink-bar {
-  @include ink-bar;
+  @include tabs-common.ink-bar;
 }
 
 .mat-tab-link-container {
-  @include paginated-tab-header-container;
+  @include tabs-common.paginated-tab-header-container;
 }
 
 // Wraps each link in the header
 .mat-tab-link {
-  @include tab-label;
+  @include tabs-common.tab-label;
   vertical-align: top;
   text-decoration: none;  // Removes anchor underline styling
   position: relative;
@@ -38,7 +38,7 @@
   }
 }
 
-@media ($mat-xsmall) {
+@media (variables.$xsmall) {
   .mat-tab-link {
     min-width: 72px;
   }

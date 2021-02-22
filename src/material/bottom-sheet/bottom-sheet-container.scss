@@ -1,15 +1,15 @@
-@import '../../cdk/a11y/a11y';
+@use '../../cdk/a11y/a11y';
 
 // The bottom sheet minimum width on larger screen sizes is based
 // on increments of the toolbar, according to the spec. See:
 // https://material.io/guidelines/components/bottom-sheets.html#bottom-sheets-specs
 $_mat-bottom-sheet-width-increment: 64px;
-$mat-bottom-sheet-container-vertical-padding: 8px !default;
-$mat-bottom-sheet-container-horizontal-padding: 16px !default;
+$container-vertical-padding: 8px !default;
+$container-horizontal-padding: 16px !default;
 
 .mat-bottom-sheet-container {
-  padding: $mat-bottom-sheet-container-vertical-padding
-           $mat-bottom-sheet-container-horizontal-padding;
+  padding: $container-vertical-padding
+           $container-horizontal-padding;
   min-width: 100vw;
   box-sizing: border-box;
   display: block;
@@ -17,7 +17,7 @@ $mat-bottom-sheet-container-horizontal-padding: 16px !default;
   max-height: 80vh;
   overflow: auto;
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: 1px solid;
   }
 }

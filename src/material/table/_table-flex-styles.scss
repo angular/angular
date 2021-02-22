@@ -1,22 +1,22 @@
 /**
  * Flex-based table structure
  */
-$mat-header-row-height: 56px;
-$mat-row-height: 48px;
-$mat-row-horizontal-padding: 24px;
+$header-row-height: 56px;
+$row-height: 48px;
+$row-horizontal-padding: 24px;
 
 // Only use tag name selectors here since the styles are shared between MDC and non-MDC
-@mixin mat-private-table-flex-styles {
+@mixin table-flex-styles {
   mat-table {
     display: block;
   }
 
   mat-header-row {
-    min-height: $mat-header-row-height;
+    min-height: $header-row-height;
   }
 
   mat-row, mat-footer-row {
-    min-height: $mat-row-height;
+    min-height: $row-height;
   }
 
   mat-row, mat-header-row, mat-footer-row {
@@ -43,20 +43,20 @@ $mat-row-horizontal-padding: 24px;
     // Note: we use `first-of-type`/`last-of-type` here in order to prevent extra
     // elements like ripples or badges from throwing off the layout (see #11165).
     &:first-of-type {
-      padding-left: $mat-row-horizontal-padding;
+      padding-left: $row-horizontal-padding;
 
       [dir='rtl'] &:not(:only-of-type) {
         padding-left: 0;
-        padding-right: $mat-row-horizontal-padding;
+        padding-right: $row-horizontal-padding;
       }
     }
 
     &:last-of-type {
-      padding-right: $mat-row-horizontal-padding;
+      padding-right: $row-horizontal-padding;
 
       [dir='rtl'] &:not(:only-of-type) {
         padding-right: 0;
-        padding-left: $mat-row-horizontal-padding;
+        padding-left: $row-horizontal-padding;
       }
     }
   }

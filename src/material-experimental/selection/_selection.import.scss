@@ -1,2 +1,4 @@
-@forward 'selection';
-@forward '../../material/core/theming/theming';
+@forward '../../material/core/theming/theming.import';
+@forward 'selection' as mat-selection-*;
+
+@import '../../material/core/theming/theming';

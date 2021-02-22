@@ -1,45 +1,46 @@
-@import '../core/style/private';
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
+@use 'sass:map';
+@use '../core/style/private';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
 
 
-@mixin mat-dialog-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
   .mat-dialog-container {
-    @include mat-private-theme-elevation(24, $config);
-    background: mat-color($background, dialog);
-    color: mat-color($foreground, text);
+    @include private.theme-elevation(24, $config);
+    background: theming.color($background, dialog);
+    color: theming.color($foreground, text);
   }
 }
 
-@mixin mat-dialog-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-dialog-title {
-    @include mat-typography-level-to-styles($config, title);
+    @include typography-utils.level-to-styles($config, title);
   }
 }
 
 @mixin _mat-dialog-density($config-or-theme) {}
 
-@mixin mat-dialog-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-dialog') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-dialog') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-dialog-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-dialog-density($density);
     }
     @if $typography != null {
-      @include mat-dialog-typography($typography);
+      @include typography($typography);
     }
   }
 }

@@ -1,16 +1,17 @@
-@import '../mdc-theming/all-theme';
+@use '../mdc-theming/all-theme';
+@use '../../material/core/theming/theming';
 
 @mixin angular-material-mdc-color($config-or-theme) {
   // In case a theme object has been passed instead of a configuration for
   // the color system, extract the color config from the theme object.
-  $config: if(mat-private-is-theme-object($config-or-theme),
-      mat-get-color-config($config-or-theme), $config-or-theme);
+  $config: if(theming.is-theme-object($config-or-theme),
+      theming.get-color-config($config-or-theme), $config-or-theme);
 
   @if $config == null {
     @error 'No color configuration specified.';
   }
 
-  @include angular-material-mdc-theme((
+  @include all-theme.angular-material-mdc-theme((
     color: $config,
     typography: null,
     density: null,

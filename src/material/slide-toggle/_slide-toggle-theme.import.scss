@@ -1,4 +1,11 @@
-@forward 'slide-toggle-theme';
-@forward '../core/theming/palette';
-@forward '../core/theming/theming';
-@forward '../core/typography/typography-utils';
+@forward '../core/style/private.import';
+@forward '../core/theming/theming.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'slide-toggle-theme' hide color, theme, typography;
+@forward 'slide-toggle-theme' as mat-slide-toggle-* hide mat-slide-toggle-checked,
+mat-slide-toggle-density;
+
+@import '../core/style/private';
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';

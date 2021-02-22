@@ -1,50 +1,51 @@
-@import './typography';
-@import '../../autocomplete/autocomplete-theme';
-@import '../../badge/badge-theme';
-@import '../../bottom-sheet/bottom-sheet-theme';
-@import '../../button/button-theme';
-@import '../../button-toggle/button-toggle-theme';
-@import '../../card/card-theme';
-@import '../../checkbox/checkbox-theme';
-@import '../../chips/chips-theme';
-@import '../../divider/divider-theme';
-@import '../../table/table-theme';
-@import '../../datepicker/datepicker-theme';
-@import '../../dialog/dialog-theme';
-@import '../../expansion/expansion-theme';
-@import '../../grid-list/grid-list-theme';
-@import '../../icon/icon-theme';
-@import '../../input/input-theme';
-@import '../../list/list-theme';
-@import '../../menu/menu-theme';
-@import '../../paginator/paginator-theme';
-@import '../../progress-bar/progress-bar-theme';
-@import '../../progress-spinner/progress-spinner-theme';
-@import '../../radio/radio-theme';
-@import '../../select/select-theme';
-@import '../../sidenav/sidenav-theme';
-@import '../../slide-toggle/slide-toggle-theme';
-@import '../../slider/slider-theme';
-@import '../../stepper/stepper-theme';
-@import '../../sort/sort-theme';
-@import '../../tabs/tabs-theme';
-@import '../../toolbar/toolbar-theme';
-@import '../../tooltip/tooltip-theme';
-@import '../../snack-bar/snack-bar-theme';
-@import '../option/option-theme';
-@import '../option/optgroup-theme';
-@import '../../form-field/form-field-theme';
-@import '../../tree/tree-theme';
+@use './typography';
+@use '../../autocomplete/autocomplete-theme';
+@use '../../badge/badge-theme';
+@use '../../bottom-sheet/bottom-sheet-theme';
+@use '../../button/button-theme';
+@use '../../button-toggle/button-toggle-theme';
+@use '../../card/card-theme';
+@use '../../checkbox/checkbox-theme';
+@use '../../chips/chips-theme';
+@use '../../divider/divider-theme';
+@use '../../table/table-theme';
+@use '../../datepicker/datepicker-theme';
+@use '../../dialog/dialog-theme';
+@use '../../expansion/expansion-theme';
+@use '../../grid-list/grid-list-theme';
+@use '../../icon/icon-theme';
+@use '../../input/input-theme';
+@use '../../list/list-theme';
+@use '../../menu/menu-theme';
+@use '../../paginator/paginator-theme';
+@use '../../progress-bar/progress-bar-theme';
+@use '../../progress-spinner/progress-spinner-theme';
+@use '../../radio/radio-theme';
+@use '../../select/select-theme';
+@use '../../sidenav/sidenav-theme';
+@use '../../slide-toggle/slide-toggle-theme';
+@use '../../slider/slider-theme';
+@use '../../stepper/stepper-theme';
+@use '../../sort/sort-theme';
+@use '../../tabs/tabs-theme';
+@use '../../toolbar/toolbar-theme';
+@use '../../tooltip/tooltip-theme';
+@use '../../snack-bar/snack-bar-theme';
+@use '../option/option-theme';
+@use '../option/optgroup-theme';
+@use '../../form-field/form-field-theme';
+@use '../../tree/tree-theme';
+@use '../theming/theming';
 
 
 // Includes all of the typographic styles.
 @mixin angular-material-typography($config-or-theme: null) {
-  $config: if(mat-private-is-theme-object($config-or-theme),
-      mat-get-typography-config($config-or-theme), $config-or-theme);
+  $config: if(theming.is-theme-object($config-or-theme),
+      theming.get-typography-config($config-or-theme), $config-or-theme);
 
   // If no actual color configuration has been specified, create a default one.
   @if not $config {
-    $config: mat-typography-config();
+    $config: typography.config();
   }
 
   // TODO: COMP-309: Do not use individual mixins. Instead, use the all-theme mixin and only
@@ -53,41 +54,41 @@
   // mixin that is transitively loaded by the `all-theme` file, imports `all-typography` which
   // would then load `all-theme` again. This ultimately results a circular dependency.
 
-  @include mat-badge-typography($config);
-  @include mat-base-typography($config);
-  @include mat-autocomplete-typography($config);
-  @include mat-bottom-sheet-typography($config);
-  @include mat-button-typography($config);
-  @include mat-button-toggle-typography($config);
-  @include mat-card-typography($config);
-  @include mat-checkbox-typography($config);
-  @include mat-chips-typography($config);
-  @include mat-divider-typography($config);
-  @include mat-table-typography($config);
-  @include mat-datepicker-typography($config);
-  @include mat-dialog-typography($config);
-  @include mat-expansion-panel-typography($config);
-  @include mat-form-field-typography($config);
-  @include mat-grid-list-typography($config);
-  @include mat-icon-typography($config);
-  @include mat-input-typography($config);
-  @include mat-menu-typography($config);
-  @include mat-paginator-typography($config);
-  @include mat-progress-bar-typography($config);
-  @include mat-progress-spinner-typography($config);
-  @include mat-radio-typography($config);
-  @include mat-select-typography($config);
-  @include mat-sidenav-typography($config);
-  @include mat-slide-toggle-typography($config);
-  @include mat-slider-typography($config);
-  @include mat-stepper-typography($config);
-  @include mat-sort-typography($config);
-  @include mat-tabs-typography($config);
-  @include mat-toolbar-typography($config);
-  @include mat-tooltip-typography($config);
-  @include mat-list-typography($config);
-  @include mat-option-typography($config);
-  @include mat-optgroup-typography($config);
-  @include mat-snack-bar-typography($config);
-  @include mat-tree-typography($config);
+  @include badge-theme.typography($config);
+  @include typography.base-typography($config);
+  @include autocomplete-theme.typography($config);
+  @include bottom-sheet-theme.typography($config);
+  @include button-theme.typography($config);
+  @include button-toggle-theme.typography($config);
+  @include card-theme.typography($config);
+  @include checkbox-theme.typography($config);
+  @include chips-theme.typography($config);
+  @include divider-theme.typography($config);
+  @include table-theme.typography($config);
+  @include datepicker-theme.typography($config);
+  @include dialog-theme.typography($config);
+  @include expansion-theme.panel-typography($config);
+  @include form-field-theme.typography($config);
+  @include grid-list-theme.typography($config);
+  @include icon-theme.typography($config);
+  @include input-theme.typography($config);
+  @include menu-theme.typography($config);
+  @include paginator-theme.typography($config);
+  @include progress-bar-theme.typography($config);
+  @include progress-spinner-theme.typography($config);
+  @include radio-theme.typography($config);
+  @include select-theme.typography($config);
+  @include sidenav-theme.typography($config);
+  @include slide-toggle-theme.typography($config);
+  @include slider-theme.typography($config);
+  @include stepper-theme.typography($config);
+  @include sort-theme.typography($config);
+  @include tabs-theme.typography($config);
+  @include toolbar-theme.typography($config);
+  @include tooltip-theme.typography($config);
+  @include list-theme.typography($config);
+  @include option-theme.typography($config);
+  @include optgroup-theme.typography($config);
+  @include snack-bar-theme.typography($config);
+  @include tree-theme.typography($config);
 }

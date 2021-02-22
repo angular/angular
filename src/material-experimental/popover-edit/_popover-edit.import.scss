@@ -1,6 +1,14 @@
-@forward 'popover-edit';
-@forward '../../cdk/a11y/a11y';
-@forward '../../material/core/style/variables';
-@forward '../../material/core/theming/palette';
-@forward '../../material/core/theming/theming';
-@forward '../../material/core/typography/typography-utils';
+@forward '../../material/core/style/private.import';
+@forward '../../material/core/theming/theming.import';
+@forward '../../cdk/a11y/a11y.import';
+@forward '../../material/core/typography/typography-utils.import';
+@forward 'popover-edit' hide color, density, theme, typography;
+@forward 'popover-edit' as mat-popover-edit-* hide
+mat-popover-edit-mat-edit-hover-content-background;
+
+@import '../../cdk/a11y/a11y';
+@import '../../material/core/style/variables';
+@import '../../material/core/style/private';
+@import '../../material/core/theming/palette';
+@import '../../material/core/theming/theming';
+@import '../../material/core/typography/typography-utils';

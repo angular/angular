@@ -1,14 +1,17 @@
-@import '../all-theme';
+@use '../all-theme';
+@use '../../core';
+@use '../palette';
+@use '../theming';
 
 
 // Include non-theme styles for core.
-@include mat-core();
+@include core.core();
 
 // Define a theme.
-$primary: mat-palette($mat-pink, 700, 500, 900);
-$accent:  mat-palette($mat-blue-grey, A200, A100, A400);
+$primary: theming.palette(palette.$pink, 700, 500, 900);
+$accent:  theming.palette(palette.$blue-grey, A200, A100, A400);
 
-$theme: mat-dark-theme((
+$theme: theming.dark-theme((
   color: (
     primary: $primary,
     accent: $accent
@@ -16,4 +19,4 @@ $theme: mat-dark-theme((
 ));
 
 // Include all theme styles for the components.
-@include angular-material-theme($theme);
+@include all-theme.angular-material-theme($theme);

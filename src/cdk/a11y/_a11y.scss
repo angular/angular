@@ -1,4 +1,4 @@
-@mixin cdk-a11y {
+@mixin a11y {
   .cdk-visually-hidden {
     border: 0;
     clip: rect(0 0 0 0);
@@ -42,7 +42,7 @@
 ///     * `on` - works for `Emulated`, `Native`, and `ShadowDom`
 ///     * `off` - works for `None`
 ///     * `any` - works for all encapsulation modes by emitting the CSS twice (default).
-@mixin cdk-high-contrast($target: active, $encapsulation: 'any') {
+@mixin high-contrast($target: active, $encapsulation: 'any') {
   @if ($target != 'active' and $target != 'black-on-white' and $target != 'white-on-black') {
     @error 'Unknown cdk-high-contrast value "#{$target}" provided. ' +
            'Allowed values are "active", "black-on-white", and "white-on-black"';

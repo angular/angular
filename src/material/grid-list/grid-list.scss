@@ -1,13 +1,13 @@
-@import '../core/style/list-common';
-@import '../core/style/layout-common';
+@use '../core/style/list-common';
+@use '../core/style/layout-common';
 
 
 // height of tile header or footer if it has one line
-$mat-grid-list-one-line-height: 48px;
+$one-line-height: 48px;
 // height of tile header or footer if it has two lines
-$mat-grid-list-two-line-height: 68px;
+$two-line-height: 68px;
 // side padding for text in tile headers and footers
-$mat-grid-list-text-padding: 16px;
+$text-padding: 16px;
 
 .mat-grid-list {
   display: block;
@@ -20,7 +20,7 @@ $mat-grid-list-text-padding: 16px;
   overflow: hidden;
 
   .mat-figure {
-    @include mat-fill;
+    @include layout-common.fill;
     display: flex;
 
     align-items: center;
@@ -34,15 +34,15 @@ $mat-grid-list-text-padding: 16px;
   // Headers & footers
   .mat-grid-tile-header,
   .mat-grid-tile-footer {
-    @include mat-normalize-text();
+    @include list-common.normalize-text();
 
     display: flex;
     align-items: center;
-    height: $mat-grid-list-one-line-height;
+    height: $one-line-height;
     color: #fff;
     background: rgba(0, 0, 0, 0.38);
     overflow: hidden;
-    padding: 0 $mat-grid-list-text-padding;
+    padding: 0 $text-padding;
 
     // Positioning
     position: absolute;
@@ -50,12 +50,12 @@ $mat-grid-list-text-padding: 16px;
     right: 0;
 
     &.mat-2-line {
-      height: $mat-grid-list-two-line-height;
+      height: $two-line-height;
     }
   }
 
   .mat-grid-list-text {
-    @include mat-line-wrapper-base();
+    @include list-common.wrapper-base();
   }
 
   .mat-grid-tile-header {
@@ -67,11 +67,11 @@ $mat-grid-list-text-padding: 16px;
   }
 
   .mat-grid-avatar {
-    padding-right: $mat-grid-list-text-padding;
+    padding-right: $text-padding;
 
     [dir='rtl'] & {
       padding-right: 0;
-      padding-left: $mat-grid-list-text-padding;
+      padding-left: $text-padding;
     }
 
     &:empty {

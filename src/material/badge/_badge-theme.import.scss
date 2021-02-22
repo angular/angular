@@ -1,5 +1,11 @@
-@forward 'badge-theme';
-@forward '../core/theming/palette';
-@forward '../core/theming/theming';
-@forward '../core/typography/typography-utils';
-@forward '../../cdk/a11y/a11y';
+@forward '../core/theming/theming.import';
+@forward '../core/typography/typography-utils.import';
+@forward '../../cdk/a11y/a11y.import';
+@forward 'badge-theme' hide $default-size, $font-size, $font-weight, $large-size, $small-size,
+color, theme, typography;
+@forward 'badge-theme' as mat-badge-* hide mat-badge-density, mat-badge-size;
+
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/typography/typography-utils';
+@import '../../cdk/a11y/a11y';

@@ -1,28 +1,29 @@
-@import '../mdc-helpers/mdc-helpers';
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/theming/theming';
 
-@mixin mat-mdc-sidenav-color($config-or-theme) {}
+@mixin color($config-or-theme) {}
 
-@mixin mat-mdc-sidenav-typography($config-or-theme) {}
+@mixin typography($config-or-theme) {}
 
-@mixin mat-mdc-sidenav-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
 }
 
-@mixin mat-mdc-sidenav-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-sidenav') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-sidenav') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-mdc-sidenav-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-mdc-sidenav-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-mdc-sidenav-typography($typography);
+      @include typography($typography);
     }
   }
 }

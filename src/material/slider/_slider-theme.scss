@@ -1,46 +1,48 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
+@use 'sass:map';
+@use 'sass:meta';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
 
 @mixin _mat-slider-inner-content-theme($palette) {
   .mat-slider-track-fill,
   .mat-slider-thumb,
   .mat-slider-thumb-label {
-    background-color: mat-color($palette);
+    background-color: theming.color($palette);
   }
 
   .mat-slider-thumb-label-text {
-    color: mat-color($palette, default-contrast);
+    color: theming.color($palette, default-contrast);
   }
 
   .mat-slider-focus-ring {
     $opacity: 0.2;
-    $color: mat-color($palette, default, $opacity);
+    $color: theming.color($palette, default, $opacity);
     background-color: $color;
 
     // `mat-color` uses `rgba` for the opacity which won't work with
     // CSS variables so we need to use `opacity` as a fallback.
-    @if (type-of($color) != color) {
+    @if (meta.type-of($color) != color) {
       opacity: $opacity;
     }
   }
 }
 
-@mixin mat-slider-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
-  $mat-slider-off-color: mat-color($foreground, slider-off);
-  $mat-slider-off-focused-color: mat-color($foreground, slider-off-active);
-  $mat-slider-disabled-color: mat-color($foreground, slider-off);
-  $mat-slider-labeled-min-value-thumb-color: mat-color($foreground, slider-min);
-  $mat-slider-labeled-min-value-thumb-label-color: mat-color($foreground, slider-off);
+  $mat-slider-off-color: theming.color($foreground, slider-off);
+  $mat-slider-off-focused-color: theming.color($foreground, slider-off-active);
+  $mat-slider-disabled-color: theming.color($foreground, slider-off);
+  $mat-slider-labeled-min-value-thumb-color: theming.color($foreground, slider-min);
+  $mat-slider-labeled-min-value-thumb-label-color: theming.color($foreground, slider-off);
   $mat-slider-tick-opacity: 0.7;
-  $mat-slider-tick-color: mat-color($foreground, base, $mat-slider-tick-opacity);
+  $mat-slider-tick-color: theming.color($foreground, base, $mat-slider-tick-opacity);
   $mat-slider-tick-size: 2px;
 
   .mat-slider-track-background {
@@ -83,12 +85,12 @@
   .mat-slider-min-value {
     .mat-slider-focus-ring {
       $opacity: 0.12;
-      $color: mat-color($foreground, base, $opacity);
+      $color: theming.color($foreground, base, $opacity);
       background-color: $color;
 
       // `mat-color` uses `rgba` for the opacity which won't work with
       // CSS variables so we need to use `opacity` as a fallback.
-      @if (type-of($color) != color) {
+      @if (meta.type-of($color) != color) {
         opacity: $opacity;
       }
     }
@@ -131,7 +133,7 @@
 
     // `mat-color` uses `rgba` for the opacity which won't work with
     // CSS variables so we need to use `opacity` as a fallback.
-    @if (type-of($mat-slider-tick-color) != color) {
+    @if (meta.type-of($mat-slider-tick-color) != color) {
       opacity: $mat-slider-tick-opacity;
     }
   }
@@ -146,7 +148,7 @@
 
     // `mat-color` uses `rgba` for the opacity which won't work with
     // CSS variables so we need to use `opacity` as a fallback.
-    @if (type-of($mat-slider-tick-color) != color) {
+    @if (meta.type-of($mat-slider-tick-color) != color) {
       opacity: $mat-slider-tick-opacity;
     }
   }
@@ -157,40 +159,40 @@
 
     // `mat-color` uses `rgba` for the opacity which won't work with
     // CSS variables so we need to use `opacity` as a fallback.
-    @if (type-of($mat-slider-tick-color) != color) {
+    @if (meta.type-of($mat-slider-tick-color) != color) {
       opacity: $mat-slider-tick-opacity;
     }
   }
 }
 
-@mixin mat-slider-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-slider-thumb-label-text {
     font: {
-      family: mat-font-family($config);
-      size: mat-font-size($config, caption);
-      weight: mat-font-weight($config, body-2);
+      family: typography-utils.font-family($config);
+      size: typography-utils.font-size($config, caption);
+      weight: typography-utils.font-weight($config, body-2);
     }
   }
 }
 
 @mixin _mat-slider-density($config-or-theme) {}
 
-@mixin mat-slider-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-slider') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-slider') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-slider-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-slider-density($density);
     }
     @if $typography != null {
-      @include mat-slider-typography($typography);
+      @include typography($typography);
     }
   }
 }

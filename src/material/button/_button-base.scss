@@ -1,44 +1,44 @@
-@import '../core/style/variables';
-@import '../core/style/elevation';
-@import '../core/style/button-common';
-@import '../core/style/private';
+@use '../core/style/variables';
+@use '../core/style/elevation';
+@use '../core/style/button-common';
+@use '../core/style/private';
 
 
 // Flat and raised button standards
-$mat-button-padding: 0 16px !default;
-$mat-button-min-width: 64px !default;
-$mat-button-margin: 0 !default;
-$mat-button-line-height: 36px !default;
-$mat-button-border-radius: 4px !default;
-$mat-button-focus-transition: opacity 200ms $swift-ease-in-out-timing-function,
-                              background-color 200ms $swift-ease-in-out-timing-function !default;
+$padding: 0 16px !default;
+$min-width: 64px !default;
+$margin: 0 !default;
+$line-height: 36px !default;
+$border-radius: 4px !default;
+$focus-transition: opacity 200ms variables.$swift-ease-in-out-timing-function,
+                   background-color 200ms variables.$swift-ease-in-out-timing-function !default;
 
 // Stroked button padding is 1px less horizontally than default/flat/raised
 // button's padding.
-$mat-stroked-button-line-height: $mat-button-line-height - 2;
-$mat-stroked-button-padding: 0 15px;
-$mat-stroked-button-border-width: 1px;
+$stroked-button-line-height: $line-height - 2;
+$stroked-button-padding: 0 15px;
+$stroked-button-border-width: 1px;
 
 // Icon Button standards
-$mat-icon-button-size: 40px !default;
-$mat-icon-button-border-radius: 50% !default;
-$mat-icon-button-line-height: 24px !default;
+$button-size: 40px !default;
+$button-border-radius: 50% !default;
+$button-line-height: 24px !default;
 
 // Fab standards
-$mat-fab-border-radius: 50% !default;
-$mat-fab-size: 56px !default;
-$mat-fab-padding: 16px !default;
+$fab-border-radius: 50% !default;
+$fab-size: 56px !default;
+$fab-padding: 16px !default;
 
-$mat-mini-fab-size: 40px !default;
-$mat-mini-fab-padding: 8px !default;
+$mini-fab-size: 40px !default;
+$mini-fab-padding: 8px !default;
 
 // Applies base styles to all button types.
-@mixin mat-button-base {
+@mixin base {
   box-sizing: border-box;
   position: relative;
 
   // Reset browser <button> styles.
-  @include mat-button-reset();
+  @include button-common.reset();
 
   // Make anchors render like buttons.
   display: inline-block;
@@ -48,11 +48,11 @@ $mat-mini-fab-padding: 8px !default;
   text-align: center;
 
   // Sizing.
-  margin: $mat-button-margin;
-  min-width: $mat-button-min-width;
-  line-height: $mat-button-line-height;
-  padding: $mat-button-padding;
-  border-radius: $mat-button-border-radius;
+  margin: $margin;
+  min-width: $min-width;
+  line-height: $line-height;
+  padding: $padding;
+  border-radius: $border-radius;
 
   // Explicitly set the default overflow to `visible`. It is already set
   // on most browsers except on IE11 where it defaults to `hidden`.
@@ -74,26 +74,26 @@ $mat-mini-fab-padding: 8px !default;
 }
 
 // Applies styles to buttons with backgrounds: raised, fab, and mini-fab
-@mixin mat-raised-button {
-  @include mat-button-base;
-  @include mat-private-animation-noop();
+@mixin raised-button {
+  @include base;
+  @include private.animation-noop();
 
   // Force hardware acceleration.
   transform: translate3d(0, 0, 0);
 
   // Animation.
-  transition: background $swift-ease-out-duration $swift-ease-out-timing-function,
-              mat-elevation-transition-property-value();
+  transition: background variables.$swift-ease-out-duration
+    variables.$swift-ease-out-timing-function, elevation.transition-property-value();
 }
 
 // Applies styles to fab and mini-fab button types only
-@mixin mat-fab($size, $padding) {
-  @include mat-raised-button;
+@mixin fab($size, $padding) {
+  @include raised-button;
 
   // Reset the min-width from the button base.
   min-width: 0;
 
-  border-radius: $mat-fab-border-radius;
+  border-radius: $fab-border-radius;
   width: $size;
   height: $size;
   padding: 0;
@@ -103,6 +103,6 @@ $mat-mini-fab-padding: 8px !default;
   .mat-button-wrapper {
     padding: $padding 0;
     display: inline-block;
-    line-height: $mat-icon-button-line-height;
+    line-height: $button-line-height;
   }
 }

@@ -1,4 +1,8 @@
-@forward 'focus-indicators';
-@forward '../../material/core/theming/theming';
-@forward '../../material/core/style/layout-common';
-@forward '../../material/core/focus-indicators/focus-indicators';
+@forward '../../material/core/focus-indicators/focus-indicators.import';
+@forward 'focus-indicators' hide strong-focus-indicators, strong-focus-indicators-color,
+strong-focus-indicators-theme;
+@forward 'focus-indicators' as mat-mdc-* hide mat-mdc-strong-focus-indicators-border-color;
+
+@import '../../material/core/theming/theming';
+@import '../../material/core/style/layout-common';
+@import '../../material/core/focus-indicators/focus-indicators';

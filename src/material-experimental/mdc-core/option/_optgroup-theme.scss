@@ -1,47 +1,47 @@
+@use '../../mdc-helpers/mdc-helpers';
+@use '../../../material/core/theming/theming';
 @import '@material/list/mixins.import';
 @import '@material/list/variables.import';
 @import '@material/theme/functions.import';
 @import '@material/theme/mixins.import';
-@import '../../mdc-helpers/mdc-helpers';
-@import '../../../material/core/theming/theming';
 
-@mixin mat-mdc-optgroup-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
 
-  @include mat-using-mdc-theme($config) {
+  @include mdc-helpers.mat-using-mdc-theme($config) {
     .mat-mdc-optgroup-label {
       // Since this will usually be rendered in an overlay,
       // we have explicitly set the default color.
       @include mdc-theme-prop(color, text-primary-on-background);
       @include mdc-list-deprecated-item-disabled-text-color(
-        $mdc-list-deprecated-text-disabled-color, $query: $mat-theme-styles-query);
+        $mdc-list-deprecated-text-disabled-color, $query: mdc-helpers.$mat-theme-styles-query);
     }
   }
 }
 
-@mixin mat-mdc-optgroup-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
 }
 
-@mixin mat-mdc-optgroup-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
 }
 
-@mixin mat-mdc-optgroup-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-optgroup') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-optgroup') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-mdc-optgroup-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-mdc-optgroup-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-mdc-optgroup-typography($typography);
+      @include typography($typography);
     }
   }
 }

@@ -1,1 +1,4 @@
-@forward 'compatibility';
+@forward 'compatibility' hide $density-generate-at-root, $density-generate-styles,
+density-legacy-compatibility, density-prop-value;
+@forward 'compatibility' as mat-private-* hide $mat-private-default-scale, $mat-private-interval,
+$mat-private-maximum-scale, $mat-private-minimum-scale, $mat-private-supported-scales;

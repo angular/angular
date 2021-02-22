@@ -1,39 +1,40 @@
 @use '@material/density';
+@use './interactive-list-theme';
+@use './list-option-theme';
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/theming/theming';
 @import '@material/list/variables.import';
 @import '@material/list/mixins.import';
 
-@import './interactive-list-theme';
-@import './list-option-theme';
-@import '../mdc-helpers/mdc-helpers';
 
 
 // TODO: implement mat-list[dense] once density system is in master
 
 
-@mixin mat-mdc-list-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
 
   // MDC's state styles are tied in with their ripple. Since we don't use the MDC
   // ripple, we need to add the hover, focus and selected states manually.
-  @include mat-mdc-private-interactive-list-item-state-colors($config);
+  @include interactive-list-theme.private-interactive-list-item-state-colors($config);
 
-  @include mat-using-mdc-theme($config) {
-    @include mdc-list-deprecated-without-ripple($query: $mat-theme-styles-query);
+  @include mdc-helpers.mat-using-mdc-theme($config) {
+    @include mdc-list-deprecated-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
 
     .mat-mdc-list-option {
-      @include mat-mdc-private-list-option-color-override(primary);
+      @include list-option-theme.private-list-option-color-override(primary);
     }
     .mat-mdc-list-option.mat-accent {
-      @include mat-mdc-private-list-option-color-override(secondary);
+      @include list-option-theme.private-list-option-color-override(secondary);
     }
     .mat-mdc-list-option.mat-warn {
-      @include mat-mdc-private-list-option-color-override(error);
+      @include list-option-theme.private-list-option-color-override(error);
     }
   }
 }
 
-@mixin mat-mdc-list-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
   $height: density.prop-value(
     $density-config: $mdc-list-deprecated-single-line-density-config,
     $density-scale: $density-scale,
@@ -48,32 +49,32 @@
     @include mdc-list-deprecated-single-line-height($height);
   }
 
-  @include mat-mdc-private-list-option-density-styles($density-scale);
+  @include list-option-theme.private-list-option-density-styles($density-scale);
 }
 
-@mixin mat-mdc-list-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
-  @include mat-using-mdc-typography($config) {
-    @include mdc-list-deprecated-without-ripple($query: $mat-typography-styles-query);
-    @include mat-mdc-private-list-option-typography-styles();
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
+  @include mdc-helpers.mat-using-mdc-typography($config) {
+    @include mdc-list-deprecated-without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+    @include list-option-theme.private-list-option-typography-styles();
   }
 }
 
-@mixin mat-mdc-list-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-list') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-list') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-mdc-list-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-mdc-list-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-mdc-list-typography($typography);
+      @include typography($typography);
     }
   }
 }

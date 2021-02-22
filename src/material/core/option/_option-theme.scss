@@ -1,78 +1,79 @@
-@import '../theming/palette';
-@import '../theming/theming';
-@import '../typography/typography-utils';
+@use 'sass:map';
+@use '../theming/palette';
+@use '../theming/theming';
+@use '../typography/typography-utils';
 
-@mixin mat-option-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $foreground: map-get($config, foreground);
-  $background: map-get($config, background);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $foreground: map.get($config, foreground);
+  $background: map.get($config, background);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
 
   .mat-option {
-    color: mat-color($foreground, text);
+    color: theming.color($foreground, text);
 
     &:hover:not(.mat-option-disabled),
     &:focus:not(.mat-option-disabled) {
-      background: mat-color($background, hover);
+      background: theming.color($background, hover);
     }
 
     // In multiple mode there is a checkbox to show that the option is selected.
     &.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
-      background: mat-color($background, hover);
+      background: theming.color($background, hover);
     }
 
     &.mat-active {
-      background: mat-color($background, hover);
-      color: mat-color($foreground, text);
+      background: theming.color($background, hover);
+      color: theming.color($foreground, text);
     }
 
     &.mat-option-disabled {
-      color: mat-color($foreground, hint-text);
+      color: theming.color($foreground, hint-text);
     }
   }
 
   .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
-    color: mat-color($primary, text);
+    color: theming.color($primary, text);
   }
 
   .mat-accent .mat-option.mat-selected:not(.mat-option-disabled) {
-    color: mat-color($accent, text);
+    color: theming.color($accent, text);
   }
 
   .mat-warn .mat-option.mat-selected:not(.mat-option-disabled) {
-    color: mat-color($warn, text);
+    color: theming.color($warn, text);
   }
 }
 
-@mixin mat-option-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-option {
     font: {
-      family: mat-font-family($config);
-      size: mat-font-size($config, subheading-2);
+      family: typography-utils.font-family($config);
+      size: typography-utils.font-size($config, subheading-2);
     }
   }
 }
 
 @mixin _mat-option-density($config-or-theme) {}
 
-@mixin mat-option-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-option') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-option') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-option-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-option-density($density);
     }
     @if $typography != null {
-      @include mat-option-typography($typography);
+      @include typography($typography);
     }
   }
 }

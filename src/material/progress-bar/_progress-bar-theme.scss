@@ -1,72 +1,73 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
+@use 'sass:map';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
 
-@mixin mat-progress-bar-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
 
   .mat-progress-bar-background {
-    fill: mat-color($primary, lighter);
+    fill: theming.color($primary, lighter);
   }
 
   .mat-progress-bar-buffer {
-    background-color: mat-color($primary, lighter);
+    background-color: theming.color($primary, lighter);
   }
 
   .mat-progress-bar-fill::after {
-    background-color: mat-color($primary);
+    background-color: theming.color($primary);
   }
 
   .mat-progress-bar.mat-accent {
     .mat-progress-bar-background {
-      fill: mat-color($accent, lighter);
+      fill: theming.color($accent, lighter);
     }
 
     .mat-progress-bar-buffer {
-      background-color: mat-color($accent, lighter);
+      background-color: theming.color($accent, lighter);
     }
 
     .mat-progress-bar-fill::after {
-      background-color: mat-color($accent);
+      background-color: theming.color($accent);
     }
   }
 
   .mat-progress-bar.mat-warn {
     .mat-progress-bar-background {
-      fill: mat-color($warn, lighter);
+      fill: theming.color($warn, lighter);
     }
 
     .mat-progress-bar-buffer {
-      background-color: mat-color($warn, lighter);
+      background-color: theming.color($warn, lighter);
     }
 
     .mat-progress-bar-fill::after {
-      background-color: mat-color($warn);
+      background-color: theming.color($warn);
     }
   }
 }
 
-@mixin mat-progress-bar-typography($config-or-theme) {}
+@mixin typography($config-or-theme) {}
 
 @mixin _mat-progress-bar-density($config-or-theme) {}
 
-@mixin mat-progress-bar-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-progress-bar') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-progress-bar') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-progress-bar-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-progress-bar-density($density);
     }
     @if $typography != null {
-      @include mat-progress-bar-typography($typography);
+      @include typography($typography);
     }
   }
 }

@@ -47,9 +47,13 @@ ALL_THEMING_FILES = [
     # on the `_all-typography` file.
     "_core.scss",
     "color/_all-color.scss",
+    "color/_all-color.import.scss",
     "density/private/_all-density.scss",
+    "density/private/_all-density.import.scss",
     "theming/_all-theme.scss",
+    "theming/_all-theme.import.scss",
     "typography/_all-typography.scss",
+    "typography/_all-typography.import.scss",
 ]
 
 sass_library(

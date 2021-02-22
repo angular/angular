@@ -1,4 +1,10 @@
-@forward 'bottom-sheet-theme';
-@forward '../core/typography/typography-utils';
-@forward '../core/theming/palette';
-@forward '../core/theming/theming';
+@forward '../core/style/private.import';
+@forward '../core/theming/theming.import';
+@forward '../core/typography/typography-utils.import';
+@forward 'bottom-sheet-theme' hide color, theme, typography;
+@forward 'bottom-sheet-theme' as mat-bottom-sheet-* hide mat-bottom-sheet-density;
+
+@import '../core/style/private';
+@import '../core/typography/typography-utils';
+@import '../core/theming/palette';
+@import '../core/theming/theming';

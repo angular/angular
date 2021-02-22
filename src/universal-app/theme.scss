@@ -1,20 +1,23 @@
-@import '../material/core/theming/all-theme';
-@import '../material-experimental/mdc-theming/all-theme';
-@import '../material-experimental/mdc-typography/all-typography';
+@use '../material/core/theming/all-theme' as theming-all-theme;
+@use '../material-experimental/mdc-theming/all-theme';
+@use '../material-experimental/mdc-typography/all-typography';
+@use '../material/core/core';
+@use '../material/core/theming/palette';
+@use '../material/core/theming/theming';
 
 // Plus imports for other components in your app.
 
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // **Be sure that you only ever include this mixin once!**
-@include mat-core();
-@include angular-material-mdc-typography();
+@include core.core();
+@include all-typography.angular-material-mdc-typography();
 
 // Define the default theme (same as the example above).
-$candy-app-primary: mat-palette($mat-indigo);
-$candy-app-accent: mat-palette($mat-pink, A200, A100, A400);
-$candy-app-theme: mat-light-theme($candy-app-primary, $candy-app-accent);
+$candy-app-primary: theming.palette(palette.$indigo);
+$candy-app-accent: theming.palette(palette.$pink, A200, A100, A400);
+$candy-app-theme: theming.light-theme($candy-app-primary, $candy-app-accent);
 
 // Include the default theme styles.
-@include angular-material-theme($candy-app-theme);
-@include angular-material-mdc-theme($candy-app-theme);
+@include theming-all-theme.angular-material-theme($candy-app-theme);
+@include all-theme.angular-material-mdc-theme($candy-app-theme);

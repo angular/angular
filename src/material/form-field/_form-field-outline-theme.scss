@@ -1,26 +1,27 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/style/form-common';
-@import '../core/typography/typography-utils';
+@use 'sass:map';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/style/form-common';
+@use '../core/typography/typography-utils';
 
 
 // Theme styles that only apply to the outline appearance of the form-field.
 
-@mixin mat-form-field-outline-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $foreground: map-get($config, foreground);
-  $is-dark-theme: map-get($config, is-dark);
+@mixin outline-color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $foreground: map.get($config, foreground);
+  $is-dark-theme: map.get($config, is-dark);
 
-  $label-disabled-color: mat-color($foreground, disabled-text);
-  $outline-color: mat-color($foreground, divider, if($is-dark-theme, 0.3, 0.12));
-  $outline-color-hover: mat-color($foreground, divider, if($is-dark-theme, 1, 0.87));
-  $outline-color-primary: mat-color($primary);
-  $outline-color-accent: mat-color($accent);
-  $outline-color-warn: mat-color($warn);
-  $outline-color-disabled: mat-color($foreground, divider, if($is-dark-theme, 0.15, 0.06));
+  $label-disabled-color: theming.color($foreground, disabled-text);
+  $outline-color: theming.color($foreground, divider, if($is-dark-theme, 0.3, 0.12));
+  $outline-color-hover: theming.color($foreground, divider, if($is-dark-theme, 1, 0.87));
+  $outline-color-primary: theming.color($primary);
+  $outline-color-accent: theming.color($accent);
+  $outline-color-warn: theming.color($warn);
+  $outline-color-disabled: theming.color($foreground, divider, if($is-dark-theme, 0.15, 0.06));
 
   .mat-form-field-appearance-outline {
     .mat-form-field-outline {
@@ -68,21 +69,21 @@
 // and prevent Google's CSS Optimizer from collapsing the declarations. This is needed because some
 // of the selectors contain pseudo-classes not recognized in all browsers. If a browser encounters
 // an unknown pseudo-class it will discard the entire rule set.
-$mat-form-field-outline-dedupe: 0;
+$outline-dedupe: 0;
 
 // Applies a floating label above the form field control itself.
 @mixin _mat-form-field-outline-label-floating($font-scale, $infix-padding, $infix-margin-top) {
-  transform: translateY(-$infix-margin-top - $infix-padding + $mat-form-field-outline-dedupe)
+  transform: translateY(-$infix-margin-top - $infix-padding + $outline-dedupe)
   scale($font-scale);
-  width: 100% / $font-scale + $mat-form-field-outline-dedupe;
+  width: 100% / $font-scale + $outline-dedupe;
 
-  $mat-form-field-outline-dedupe: $mat-form-field-outline-dedupe + 0.00001 !global;
+  $outline-dedupe: $outline-dedupe + 0.00001 !global;
 }
 
-@mixin mat-form-field-outline-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin outline-typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   // The unit-less line-height from the font config.
-  $line-height: mat-line-height($config, input);
+  $line-height: typography-utils.height($config, input);
   // The amount to scale the font for the floating label and subscript.
   $subscript-font-scale: 0.75;
   // The padding above and below the infix.
@@ -131,23 +132,23 @@ $mat-form-field-outline-dedupe: 0;
   }
 }
 
-@mixin mat-private-form-field-outline-density($config-or-theme) {}
+@mixin form-field-outline-density($config-or-theme) {}
 
-@mixin mat-form-field-outline-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-form-field-outline') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin outline-theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-form-field-outline') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-form-field-outline-color($color);
+      @include outline-color($color);
     }
     @if $density != null {
-      @include mat-private-form-field-outline-density($density);
+      @include form-field-outline-density($density);
     }
     @if $typography != null {
-      @include mat-form-field-outline-typography($typography);
+      @include outline-typography($typography);
     }
   }
 }

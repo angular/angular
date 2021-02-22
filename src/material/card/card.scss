@@ -1,20 +1,20 @@
-@import '../core/style/variables';
-@import '../core/style/elevation';
-@import '../core/style/private';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/variables';
+@use '../core/style/elevation';
+@use '../core/style/private';
+@use '../../cdk/a11y/a11y';
 
 
-$mat-card-padding: 16px !default;
-$mat-card-border-radius: 4px !default;
-$mat-card-header-size: 40px !default;
+$padding: 16px !default;
+$border-radius: 4px !default;
+$header-size: 40px !default;
 
 .mat-card {
-  @include mat-elevation-transition;
-  @include mat-private-animation-noop();
+  @include elevation.transition;
+  @include private.animation-noop();
   display: block;
   position: relative;
-  padding: $mat-card-padding;
-  border-radius: $mat-card-border-radius;
+  padding: $padding;
+  border-radius: $border-radius;
 
   .mat-divider-horizontal {
     position: absolute;
@@ -37,7 +37,7 @@ $mat-card-header-size: 40px !default;
     }
   }
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
@@ -59,8 +59,8 @@ $mat-card-header-size: 40px !default;
 
 .mat-card-actions {
   @extend %mat-card-section-base;
-  margin-left: -$mat-card-padding / 2;
-  margin-right: -$mat-card-padding / 2;
+  margin-left: -$padding / 2;
+  margin-right: -$padding / 2;
   padding: 8px 0;
 }
 
@@ -70,14 +70,14 @@ $mat-card-header-size: 40px !default;
 }
 
 .mat-card-image {
-  width: calc(100% + #{$mat-card-padding * 2});
-  margin: 0 (-$mat-card-padding) 16px (-$mat-card-padding);
+  width: calc(100% + #{$padding * 2});
+  margin: 0 (-$padding) 16px (-$padding);
 }
 
 .mat-card-footer {
   // The negative margins pulls out the element, countering the padding
   // to get the footer to be flush against the side of the card.
-  $margin: -$mat-card-padding;
+  $margin: -$padding;
 
   display: block;
   margin: 0 $margin $margin $margin;
@@ -103,12 +103,12 @@ $mat-card-header-size: 40px !default;
 }
 
 .mat-card-header-text {
-  margin: 0 $mat-card-padding;
+  margin: 0 $padding;
 }
 
 .mat-card-avatar {
-  height: $mat-card-header-size;
-  width: $mat-card-header-size;
+  height: $header-size;
+  width: $header-size;
   border-radius: 50%;
   flex-shrink: 0;
 
@@ -159,7 +159,7 @@ $mat-card-header-size: 40px !default;
 
 // MEDIA QUERIES
 
-@media ($mat-xsmall) {
+@media (variables.$xsmall) {
   .mat-card-title-group {
     margin: 0;
   }
@@ -188,7 +188,7 @@ $mat-card-header-size: 40px !default;
 // if main image is on top, need to place it flush against top
 // (by stripping card's default padding)
 .mat-card-image:first-child {
-  margin-top: -$mat-card-padding;
+  margin-top: -$padding;
   border-top-left-radius: inherit;
   border-top-right-radius: inherit;
 }

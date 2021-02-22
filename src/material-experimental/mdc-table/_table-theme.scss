@@ -1,10 +1,12 @@
-@import '../mdc-helpers/mdc-helpers';
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/theming/theming';
+
 @import '@material/theme/functions.import';
 @import '@material/data-table/variables.import';
 @import '@material/data-table/mixins.import';
 
-@mixin mat-mdc-table-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
   $orig-mdc-data-table-selected-row-fill-color: $mdc-data-table-selected-row-fill-color;
@@ -17,7 +19,7 @@
   $orig-mdc-data-table-sort-icon-active-color: $mdc-data-table-sort-icon-active-color;
   $orig-mdc-data-table-stroke-color: $mdc-data-table-stroke-color;
 
-  @include mat-using-mdc-theme($config) {
+  @include mdc-helpers.mat-using-mdc-theme($config) {
     $mdc-data-table-selected-row-fill-color: rgba(mdc-theme-prop-value(primary), 0.04) !global;
     $mdc-data-table-divider-color: rgba(mdc-theme-prop-value(on-surface), 0.12) !global;
     $mdc-data-table-row-hover-fill-color: rgba(mdc-theme-prop-value(on-surface), 0.04) !global;
@@ -27,7 +29,7 @@
     $mdc-data-table-sort-icon-active-color: rgba(mdc-theme-prop-value(on-surface), 0.87) !global;
     $mdc-data-table-stroke-color: rgba(mdc-theme-prop-value(on-surface), 0.12) !global;
 
-    @include mdc-data-table-core-styles($query: $mat-theme-styles-query);
+    @include mdc-data-table-core-styles($query: mdc-helpers.$mat-theme-styles-query);
   }
 
   // Restore original values of MDC global variables.
@@ -42,35 +44,35 @@
   $mdc-data-table-stroke-color: $orig-mdc-data-table-stroke-color !global;
 }
 
-@mixin mat-mdc-table-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
-  @include mat-using-mdc-typography($config) {
-    @include mdc-data-table-core-styles($query: $mat-typography-styles-query);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
+  @include mdc-helpers.mat-using-mdc-typography($config) {
+    @include mdc-data-table-core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 
-@mixin mat-mdc-table-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
   .mat-mdc-table {
-    @include mdc-data-table-density($density-scale, $query: $mat-base-styles-query);
+    @include mdc-data-table-density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
   }
 }
 
-@mixin mat-mdc-table-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-table') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-table') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-mdc-table-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-mdc-table-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-mdc-table-typography($typography);
+      @include typography($typography);
     }
   }
 }

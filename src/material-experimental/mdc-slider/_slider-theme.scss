@@ -1,10 +1,11 @@
 // TODO: disabled until we implement the new MDC slider.
 // @import '@material/slider/mixins.import';
-@import '../mdc-helpers/mdc-helpers';
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/theming/theming';
 
-@mixin mat-mdc-slider-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  @include mat-using-mdc-theme($config) {
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  @include mdc-helpers.mat-using-mdc-theme($config) {
     // TODO: disabled until we implement the new MDC slider.
     // @include mdc-slider-core-styles($query: $mat-theme-styles-query);
 
@@ -22,31 +23,31 @@
   }
 }
 
-@mixin mat-mdc-slider-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
-  @include mat-using-mdc-typography($config) {
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
+  @include mdc-helpers.mat-using-mdc-typography($config) {
     // TODO: disabled until we implement the new MDC slider.
     // @include mdc-slider-core-styles($query: $mat-typography-styles-query);
   }
 }
 
-@mixin mat-mdc-slider-density($config-or-theme) {}
+@mixin density($config-or-theme) {}
 
-@mixin mat-mdc-slider-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-slider') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-slider') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-mdc-slider-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-mdc-slider-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-mdc-slider-typography($typography);
+      @include typography($typography);
     }
   }
 }

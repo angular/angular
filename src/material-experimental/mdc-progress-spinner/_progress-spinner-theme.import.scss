@@ -1,2 +1,6 @@
-@forward 'progress-spinner-theme';
+@forward '../mdc-helpers/mdc-helpers.import';
 @forward '../mdc-helpers/mdc-helpers';
+@forward 'progress-spinner-theme' hide color, density, theme, typography;
+@forward 'progress-spinner-theme' as mat-mdc-progress-spinner-* hide mat-mdc-progress-spinner-color;
+
+@import '../mdc-helpers/mdc-helpers';

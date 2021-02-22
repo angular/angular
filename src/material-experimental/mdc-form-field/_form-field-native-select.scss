@@ -1,5 +1,7 @@
-@import '../../material/core/theming/theming';
-@import '../../cdk/a11y/a11y';
+@use 'sass:map';
+@use '../../material/core/theming/theming';
+@use '../../cdk/a11y/a11y';
+@use '../../material/core/theming/palette';
 
 // Width of the Material Design form-field select arrow.
 $mat-form-field-select-arrow-width: 10px;
@@ -10,7 +12,7 @@ $mat-form-field-select-arrow-height: 5px;
 $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-width + 5px;
 
 // Mixin that creates styles for native select controls in a form-field.
-@mixin mat-mdc-private-form-field-native-select() {
+@mixin private-form-field-native-select() {
   // Remove the native select down arrow and ensure that the native appearance
   // does not conflict with the form-field. e.g. Focus indication of the native
   // select is undesired since we handle focus as part of the form-field.
@@ -45,7 +47,7 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
       // as the background, however this causes it blend in because we've reset the `background`
       // above. We have to add a more specific selector in order to ensure that it gets the
       // `color` from our theme instead.
-      @include cdk-high-contrast(active, off) {
+      @include a11y.high-contrast(active, off) {
         .mat-focused & {
           color: inherit;
         }
@@ -90,20 +92,20 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
   }
 }
 
-@mixin mat-mdc-private-form-field-native-select-color($config) {
+@mixin private-form-field-native-select-color($config) {
   select.mat-mdc-input-element {
     // On dark themes we set the native `select` color to some shade of white,
     // however the color propagates to all of the `option` elements, which are
     // always on a white background inside the dropdown, causing them to blend in.
     // Since we can't change background of the dropdown, we need to explicitly
     // reset the color of the options to something dark.
-    @if (map-get($config, is-dark)) {
+    @if (map.get($config, is-dark)) {
       option {
-        color: $dark-primary-text;
+        color: palette.$dark-primary-text;
       }
 
       option:disabled {
-        color: $dark-disabled-text;
+        color: palette.$dark-disabled-text;
       }
     }
   }

@@ -1,22 +1,23 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
-@import '../core/density/private/compatibility';
-@import './stepper-variables';
+@use 'sass:map';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
+@use '../core/density/private/compatibility';
+@use './stepper-variables';
 
-@mixin mat-stepper-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $foreground: map-get($config, foreground);
-  $background: map-get($config, background);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $foreground: map.get($config, foreground);
+  $background: map.get($config, background);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
 
   .mat-step-header {
     &.cdk-keyboard-focused,
     &.cdk-program-focused,
     &:hover {
-      background-color: mat-color($background, hover);
+      background-color: theming.color($background, hover);
     }
 
     // On touch devices the :hover state will linger on the element after a tap.
@@ -32,88 +33,88 @@
     .mat-step-optional {
       // TODO(josephperrott): Update to using a corrected disabled-text contrast
       // instead of secondary-text.
-      color: mat-color($foreground, secondary-text);
+      color: theming.color($foreground, secondary-text);
     }
 
     .mat-step-icon {
       // TODO(josephperrott): Update to using a corrected disabled-text contrast
       // instead of secondary-text.
-      background-color: mat-color($foreground, secondary-text);
-      color: mat-color($primary, default-contrast);
+      background-color: theming.color($foreground, secondary-text);
+      color: theming.color($primary, default-contrast);
     }
 
     .mat-step-icon-selected,
     .mat-step-icon-state-done,
     .mat-step-icon-state-edit {
-      background-color: mat-color($primary);
-      color: mat-color($primary, default-contrast);
+      background-color: theming.color($primary);
+      color: theming.color($primary, default-contrast);
     }
 
     &.mat-accent {
       .mat-step-icon {
-        color: mat-color($accent, default-contrast);
+        color: theming.color($accent, default-contrast);
       }
 
       .mat-step-icon-selected,
       .mat-step-icon-state-done,
       .mat-step-icon-state-edit {
-        background-color: mat-color($accent);
-        color: mat-color($accent, default-contrast);
+        background-color: theming.color($accent);
+        color: theming.color($accent, default-contrast);
       }
     }
 
     &.mat-warn {
       .mat-step-icon {
-        color: mat-color($warn, default-contrast);
+        color: theming.color($warn, default-contrast);
       }
 
       .mat-step-icon-selected,
       .mat-step-icon-state-done,
       .mat-step-icon-state-edit {
-        background-color: mat-color($warn);
-        color: mat-color($warn, default-contrast);
+        background-color: theming.color($warn);
+        color: theming.color($warn, default-contrast);
       }
     }
 
     .mat-step-icon-state-error {
       background-color: transparent;
-      color: mat-color($warn, text);
+      color: theming.color($warn, text);
     }
 
     .mat-step-label.mat-step-label-active {
-      color: mat-color($foreground, text);
+      color: theming.color($foreground, text);
     }
 
     .mat-step-label.mat-step-label-error {
-      color: mat-color($warn, text);
+      color: theming.color($warn, text);
     }
   }
 
   .mat-stepper-horizontal, .mat-stepper-vertical {
-    background-color: mat-color($background, card);
+    background-color: theming.color($background, card);
   }
 
   .mat-stepper-vertical-line::before {
-    border-left-color: mat-color($foreground, divider);
+    border-left-color: theming.color($foreground, divider);
   }
 
   .mat-horizontal-stepper-header::before,
   .mat-horizontal-stepper-header::after,
   .mat-stepper-horizontal-line {
-    border-top-color: mat-color($foreground, divider);
+    border-top-color: theming.color($foreground, divider);
   }
 }
 
-@mixin mat-stepper-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-stepper-vertical, .mat-stepper-horizontal {
-    font-family: mat-font-family($config);
+    font-family: typography-utils.font-family($config);
   }
 
   .mat-step-label {
     font: {
-      size: mat-font-size($config, body-1);
-      weight: mat-font-weight($config, body-1);
+      size: typography-utils.font-size($config, body-1);
+      weight: typography-utils.font-weight($config, body-1);
     };
   }
 
@@ -122,68 +123,69 @@
   }
 
   .mat-step-label-error {
-    font-size: mat-font-size($config, body-2);
+    font-size: typography-utils.font-size($config, body-2);
   }
 
   .mat-step-label-selected {
     font: {
-      size: mat-font-size($config, body-2);
-      weight: mat-font-weight($config, body-2);
+      size: typography-utils.font-size($config, body-2);
+      weight: typography-utils.font-weight($config, body-2);
     };
   }
 }
 
-@mixin mat-stepper-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
-  $height: mat-private-density-prop-value($mat-stepper-density-config, $density-scale, height);
-  $vertical-padding: ($height - $mat-stepper-label-header-height) / 2;
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+  $height: compatibility.density-prop-value(stepper-variables.$density-config, $density-scale,
+    height);
+  $vertical-padding: ($height - stepper-variables.$label-header-height) / 2;
 
-  @include mat-private-density-legacy-compatibility() {
+  @include compatibility.density-legacy-compatibility() {
     .mat-horizontal-stepper-header {
       height: $height;
     }
 
     .mat-stepper-label-position-bottom .mat-horizontal-stepper-header,
     .mat-vertical-stepper-header {
-      padding: $vertical-padding $mat-stepper-side-gap;
+      padding: $vertical-padding stepper-variables.$side-gap;
     }
 
     // Ensures that the vertical lines for the step content exceed into the step
     // headers with a given distance (`$mat-stepper-line-gap`) to the step icon.
     .mat-stepper-vertical-line::before {
-      top: $mat-stepper-line-gap - $vertical-padding;
-      bottom: $mat-stepper-line-gap - $vertical-padding;
+      top: stepper-variables.$line-gap - $vertical-padding;
+      bottom: stepper-variables.$line-gap - $vertical-padding;
     }
 
     // Ensures that the horizontal lines for the step header are centered vertically.
     .mat-stepper-label-position-bottom .mat-horizontal-stepper-header {
       &::after, &::before {
-        top: $vertical-padding + $mat-stepper-label-header-height / 2;
+        top: $vertical-padding + stepper-variables.$label-header-height / 2;
       }
     }
 
     // Ensures that the horizontal line for the step content is aligned centered vertically.
     .mat-stepper-label-position-bottom .mat-stepper-horizontal-line {
-      top: $vertical-padding + $mat-stepper-label-header-height / 2;
+      top: $vertical-padding + stepper-variables.$label-header-height / 2;
     }
   }
 }
 
-@mixin mat-stepper-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-stepper') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-stepper') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-stepper-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-stepper-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-stepper-typography($typography);
+      @include typography($typography);
     }
   }
 }

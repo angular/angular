@@ -1,19 +1,20 @@
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
+@use 'sass:map';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
 
 
-@mixin mat-checkbox-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $is-dark-theme: map-get($config, is-dark);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $is-dark-theme: map.get($config, is-dark);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
 
   // The color of the checkbox's checkmark / mixedmark.
-  $checkbox-mark-color: mat-color($background, background);
+  $checkbox-mark-color: theming.color($background, background);
 
   // NOTE(traviskaufman): While the spec calls for translucent blacks/whites for disabled colors,
   // this does not work well with elements layered on top of one another. To get around this we
@@ -23,7 +24,7 @@
   $disabled-color: if($is-dark-theme, $white-30pct-opacity-on-dark, $black-26pct-opacity-on-light);
 
   .mat-checkbox-frame {
-    border-color: mat-color($foreground, secondary-text);
+    border-color: theming.color($foreground, secondary-text);
   }
 
   .mat-checkbox-checkmark {
@@ -42,15 +43,15 @@
 
   .mat-checkbox-indeterminate, .mat-checkbox-checked {
     &.mat-primary .mat-checkbox-background {
-      background-color: mat-color($primary);
+      background-color: theming.color($primary);
     }
 
     &.mat-accent .mat-checkbox-background {
-      background-color: mat-color($accent);
+      background-color: theming.color($accent);
     }
 
     &.mat-warn .mat-checkbox-background {
-      background-color: mat-color($warn);
+      background-color: theming.color($warn);
     }
   }
 
@@ -69,61 +70,61 @@
     }
 
     .mat-checkbox-label {
-      color: mat-color($foreground, secondary-text);
+      color: theming.color($foreground, secondary-text);
     }
   }
 
   // Switch this to a solid color since we're using `opacity`
   // to control how opaque the ripple should be.
   .mat-checkbox .mat-ripple-element {
-    background-color: map-get(map-get($config, foreground), base);
+    background-color: map.get(map.get($config, foreground), base);
   }
 
   .mat-checkbox-checked:not(.mat-checkbox-disabled),
   .mat-checkbox:active:not(.mat-checkbox-disabled) {
     &.mat-primary .mat-ripple-element {
-      background: mat-color($primary);
+      background: theming.color($primary);
     }
 
     &.mat-accent .mat-ripple-element {
-      background: mat-color($accent);
+      background: theming.color($accent);
     }
 
     &.mat-warn .mat-ripple-element {
-      background: mat-color($warn);
+      background: theming.color($warn);
     }
   }
 }
 
-@mixin mat-checkbox-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-checkbox {
-    font-family: mat-font-family($config);
+    font-family: typography-utils.font-family($config);
   }
 
   // TODO(kara): Remove this style when fixing vertical baseline
   .mat-checkbox-layout .mat-checkbox-label {
-    line-height: mat-line-height($config, body-2);
+    line-height: typography-utils.height($config, body-2);
   }
 }
 
 @mixin _mat-checkbox-density($config-or-theme) {}
 
-@mixin mat-checkbox-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-checkbox') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-checkbox') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-checkbox-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-checkbox-density($density);
     }
     @if $typography != null {
-      @include mat-checkbox-typography($typography);
+      @include typography($typography);
     }
   }
 }

@@ -1,8 +1,9 @@
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/style/layout-common';
 @import '@material/list/mixins.import';
 @import '@material/list/variables.import';
-@import '../mdc-helpers/mdc-helpers';
 
-@include mdc-list-deprecated-without-ripple($query: $mat-base-styles-query);
+@include mdc-list-deprecated-without-ripple($query: mdc-helpers.$mat-base-styles-query);
 
 // MDC expects the list element to be a `<ul>`, since we use `<mat-list>` instead we need to
 // explicitly set `display: block`
@@ -106,7 +107,7 @@
 // MDC's hover and focus state styles are included with their ripple which we don't use.
 // Instead we add the focus, hover and selected styles ourselves using this pseudo-element
 .mat-mdc-list-item-interactive::before {
-  @include mat-fill();
+  @include layout-common.fill();
   content: '';
   opacity: 0;
 }
@@ -121,6 +122,6 @@
 // focus/selected/hover state. Hence, we need to have a separate list-item spanning
 // element that can be used for strong focus indicators.
 .mat-mdc-list-item > .mat-mdc-focus-indicator {
-  @include mat-fill();
+  @include layout-common.fill();
   pointer-events: none;
 }

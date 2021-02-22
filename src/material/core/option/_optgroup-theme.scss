@@ -1,44 +1,45 @@
-@import '../theming/palette';
-@import '../theming/theming';
-@import '../typography/typography-utils';
+@use 'sass:map';
+@use '../theming/palette';
+@use '../theming/theming';
+@use '../typography/typography-utils';
 
-@mixin mat-optgroup-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $foreground: map.get($config, foreground);
 
   .mat-optgroup-label {
-    color: mat-color($foreground, secondary-text);
+    color: theming.color($foreground, secondary-text);
   }
 
   .mat-optgroup-disabled .mat-optgroup-label {
-    color: mat-color($foreground, hint-text);
+    color: theming.color($foreground, hint-text);
   }
 }
 
-@mixin mat-optgroup-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-optgroup-label {
-    @include mat-typography-level-to-styles($config, body-2);
+    @include typography-utils.level-to-styles($config, body-2);
   }
 }
 
 @mixin _mat-optgroup-density($config-or-theme) {}
 
-@mixin mat-optgroup-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-optgroup') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-optgroup') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-optgroup-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-optgroup-density($density);
     }
     @if $typography != null {
-      @include mat-optgroup-typography($typography);
+      @include typography($typography);
     }
   }
 }

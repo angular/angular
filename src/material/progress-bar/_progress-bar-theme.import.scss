@@ -1,3 +1,6 @@
-@forward 'progress-bar-theme';
-@forward '../core/theming/palette';
-@forward '../core/theming/theming';
+@forward '../core/theming/theming.import';
+@forward 'progress-bar-theme' hide color, theme, typography;
+@forward 'progress-bar-theme' as mat-progress-bar-* hide mat-progress-bar-density;
+
+@import '../core/theming/palette';
+@import '../core/theming/theming';

@@ -1,70 +1,71 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/style/private';
-@import '../core/typography/typography-utils';
+@use 'sass:map';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/style/private';
+@use '../core/typography/typography-utils';
 
 
-@mixin mat-card-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
   .mat-card {
-    @include mat-private-theme-overridable-elevation(1, $config);
-    background: mat-color($background, card);
-    color: mat-color($foreground, text);
+    @include private.theme-overridable-elevation(1, $config);
+    background: theming.color($background, card);
+    color: theming.color($foreground, text);
 
     // Needs extra specificity to be able to override the elevation selectors.
     &.mat-card-flat {
-      @include mat-private-theme-overridable-elevation(0, $config);
+      @include private.theme-overridable-elevation(0, $config);
     }
   }
 
   .mat-card-subtitle {
-    color: mat-color($foreground, secondary-text);
+    color: theming.color($foreground, secondary-text);
   }
 }
 
-@mixin mat-card-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-card {
-    font-family: mat-font-family($config);
+    font-family: typography-utils.font-family($config);
   }
 
   .mat-card-title {
     font: {
-      size: mat-font-size($config, headline);
-      weight: mat-font-weight($config, title);
+      size: typography-utils.font-size($config, headline);
+      weight: typography-utils.font-weight($config, title);
     }
   }
 
   .mat-card-header .mat-card-title {
-    font-size: mat-font-size($config, title);
+    font-size: typography-utils.font-size($config, title);
   }
 
   .mat-card-subtitle,
   .mat-card-content {
-    font-size: mat-font-size($config, body-1);
+    font-size: typography-utils.font-size($config, body-1);
   }
 }
 
 @mixin _mat-card-density($config-or-theme) {}
 
-@mixin mat-card-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-card') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-card') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-card-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-card-density($density);
     }
     @if $typography != null {
-      @include mat-card-typography($typography);
+      @include typography($typography);
     }
   }
 }

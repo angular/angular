@@ -1,3 +1,7 @@
-@forward 'form-field-subscript';
 @forward 'form-field-sizing';
+@forward '../mdc-helpers/mdc-helpers.import';
 @forward '../mdc-helpers/mdc-helpers';
+@forward 'form-field-subscript' as mat-mdc-*;
+
+@import 'form-field-sizing';
+@import '../mdc-helpers/mdc-helpers';

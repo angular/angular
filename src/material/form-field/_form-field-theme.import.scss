@@ -1,9 +1,28 @@
-@forward 'form-field-theme';
-@forward '../core/theming/palette';
-@forward '../core/theming/theming';
-@forward '../core/style/form-common';
-@forward '../core/typography/typography-utils';
-@forward './form-field-fill-theme.scss';
-@forward './form-field-legacy-theme.scss';
-@forward './form-field-outline-theme.scss';
-@forward './form-field-standard-theme.scss';
+@forward '../core/style/form-common.import';
+@forward 'form-field-fill-theme' as mat-form-field-* hide mat-form-field-form-field-fill-density;
+@forward 'form-field-fill-theme' as mat-private-* hide $mat-private-fill-dedupe,
+mat-private-fill-color, mat-private-fill-theme, mat-private-fill-typography;
+@forward 'form-field-legacy-theme' as mat-form-field-* hide
+mat-form-field-form-field-legacy-density;
+@forward 'form-field-legacy-theme' as mat-private-* hide $mat-private-legacy-dedupe,
+mat-private-legacy-color, mat-private-legacy-theme, mat-private-legacy-typography;
+@forward 'form-field-outline-theme' as mat-form-field-* hide
+mat-form-field-form-field-outline-density;
+@forward 'form-field-outline-theme' as mat-private-* hide $mat-private-outline-dedupe,
+mat-private-outline-color, mat-private-outline-theme, mat-private-outline-typography;
+@forward '../core/typography/typography-utils.import';
+@forward 'form-field-standard-theme' as mat-form-field-* hide
+mat-form-field-form-field-standard-density;
+@forward 'form-field-standard-theme' as mat-private-* hide mat-private-standard-color,
+mat-private-standard-theme, mat-private-standard-typography;
+@forward 'form-field-theme' hide $dedupe, color, density, theme, typography;
+@forward 'form-field-theme' as mat-form-field-* hide mat-form-field-label-floating;
+
+@import '../core/theming/palette';
+@import '../core/theming/theming';
+@import '../core/style/form-common';
+@import '../core/typography/typography-utils';
+@import './form-field-fill-theme.scss';
+@import './form-field-legacy-theme.scss';
+@import './form-field-outline-theme.scss';
+@import './form-field-standard-theme.scss';

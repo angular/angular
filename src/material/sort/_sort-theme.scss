@@ -1,13 +1,16 @@
-@import '../core/theming/theming';
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:meta';
+@use '../core/theming/theming';
 
-@mixin mat-sort-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
   .mat-sort-header-arrow {
-    $table-background: mat-color($background, 'card');
-    $text-color: mat-color($foreground, secondary-text);
+    $table-background: theming.color($background, 'card');
+    $text-color: theming.color($foreground, secondary-text);
 
     // Because the arrow is made up of multiple elements that are stacked on top of each other,
     // we can't use the semi-transparent color from the theme directly. If the value is a color
@@ -15,9 +18,9 @@
     // using the value to determine the percentage of the background to put into foreground
     // when mixing the colors together. Otherwise, if it resolves to something different
     // (e.g. it resolves to a CSS variable), we use the color directly.
-    @if (type-of($table-background) == color and type-of($text-color) == color) {
+    @if (meta.type-of($table-background) == color and meta.type-of($text-color) == color) {
       $text-opacity: opacity($text-color);
-      color: mix($table-background, rgba($text-color, 1), (1 - $text-opacity) * 100%);
+      color: color.mix($table-background, rgba($text-color, 1), (1 - $text-opacity) * 100%);
     }
     @else {
       color: $text-color;
@@ -25,25 +28,25 @@
   }
 }
 
-@mixin mat-sort-typography($config-or-theme) {}
+@mixin typography($config-or-theme) {}
 
 @mixin _mat-sort-density($config-or-theme) {}
 
-@mixin mat-sort-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-sort') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-sort') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-sort-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-sort-density($density);
     }
     @if $typography != null {
-      @include mat-sort-typography($typography);
+      @include typography($typography);
     }
   }
 }

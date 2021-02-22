@@ -1,3 +1,7 @@
-@forward 'optgroup-theme';
+@forward '../../../material/core/theming/theming.import';
+@forward '../../mdc-helpers/mdc-helpers.import';
 @forward '../../mdc-helpers/mdc-helpers';
-@forward '../../../material/core/theming/theming';
+@forward 'optgroup-theme' as mat-mdc-optgroup-*;
+
+@import '../../mdc-helpers/mdc-helpers';
+@import '../../../material/core/theming/theming';

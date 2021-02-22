@@ -1,15 +1,16 @@
 @use '@material/checkbox/checkbox';
 @use '@material/checkbox/checkbox-theme';
 @use '@material/theme/theme';
+@use 'sass:map';
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/style/_layout-common.scss';
 @import '@material/checkbox/functions.import';
 @import '@material/checkbox/mixins.import';
 @import '@material/form-field/mixins.import';
 @import '@material/ripple/variables.import';
-@import '../mdc-helpers/mdc-helpers';
-@import '../../material/core/style/_layout-common.scss';
 
-@include mdc-checkbox-without-ripple($query: $mat-base-styles-query);
-@include mdc-form-field-core-styles($query: $mat-base-styles-query);
+@include mdc-checkbox-without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-form-field-core-styles($query: mdc-helpers.$mat-base-styles-query);
 
 // TODO(b/175233410): Use ripple element to show focus indicator.
 @mixin _background-focus-styles() {
@@ -44,7 +45,7 @@
   // additional styles to restore the hover state.
   .mdc-checkbox:hover
     .mdc-checkbox__native-control:not([disabled]) ~ .mdc-checkbox__background::before {
-    opacity: map-get($mdc-ripple-dark-ink-opacities, hover);
+    opacity: map.get($mdc-ripple-dark-ink-opacities, hover);
     transform: scale(1);
     transition: mdc-checkbox-transition-enter(opacity, 0, 80ms),
       mdc-checkbox-transition-enter(transform, 0, 80ms);
@@ -54,14 +55,14 @@
   // extra specificity so that the hover styles don't override the focus styles.
   .mdc-checkbox
     .mdc-checkbox__native-control:not([disabled]):focus ~ .mdc-checkbox__background::before {
-    opacity: map-get($mdc-ripple-dark-ink-opacities, hover) +
-      map-get($mdc-ripple-dark-ink-opacities, focus);
+    opacity: map.get($mdc-ripple-dark-ink-opacities, hover) +
+      map.get($mdc-ripple-dark-ink-opacities, focus);
   }
 
   // We use an Angular Material ripple rather than an MDC ripple due to size concerns, so we need to
   // style it appropriately.
   .mat-ripple-element {
-    opacity: map-get($mdc-ripple-dark-ink-opacities, press);
+    opacity: map.get($mdc-ripple-dark-ink-opacities, press);
   }
 
   // Angular Material supports disabling all animations when NoopAnimationsModule is imported.
@@ -85,7 +86,7 @@
 }
 
 .mat-mdc-checkbox-ripple {
-  @include mat-fill();
+  @include layout-common.fill();
 
   // Usually the ripple radius would be specified through the MatRipple input, but
   // since we dynamically adjust the size of the ripple container, we cannot use a

@@ -1,11 +1,11 @@
 // TODO(kara): update vars for desktop when MD team responds
-@import '../core/style/button-common';
-@import '../core/style/menu-common';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/button-common';
+@use '../core/style/menu-common';
+@use '../../cdk/a11y/a11y';
 
-$mat-menu-vertical-padding: 8px !default;
-$mat-menu-border-radius: 4px !default;
-$mat-menu-submenu-indicator-size: 10px !default;
+$vertical-padding: 8px !default;
+$border-radius: 4px !default;
+$submenu-indicator-size: 10px !default;
 
 // Prevent rendering mat-menu as it can affect the flex layout.
 mat-menu {
@@ -13,14 +13,14 @@ mat-menu {
 }
 
 .mat-menu-panel {
-  @include mat-menu-base();
-  max-height: calc(100vh - #{$mat-menu-item-height});
-  border-radius: $mat-menu-border-radius;
+  @include menu-common.base();
+  max-height: calc(100vh - #{menu-common.$item-height});
+  border-radius: $border-radius;
   outline: 0;
 
   // Give the menu a minimum height so that the user can't
   // collapse it to zero when they scroll away.
-  min-height: $mat-menu-item-height + $mat-menu-vertical-padding * 2;
+  min-height: menu-common.$item-height + $vertical-padding * 2;
 
   // Prevent users from interacting with the panel while it's animating. Note that
   // people won't be able to click through it, because the overlay pane will catch the click.
@@ -33,20 +33,20 @@ mat-menu {
     pointer-events: none;
   }
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
 
 // `:not(:empty)` allows for the menu to collapse to 0x0 when it doesn't have content.
 .mat-menu-content:not(:empty) {
-  padding-top: $mat-menu-vertical-padding;
-  padding-bottom: $mat-menu-vertical-padding;
+  padding-top: $vertical-padding;
+  padding-bottom: $vertical-padding;
 }
 
 .mat-menu-item {
-  @include mat-button-reset();
-  @include mat-menu-item-base();
+  @include button-common.reset();
+  @include menu-common.item-base();
   position: relative;
 
   &[disabled] {
@@ -58,7 +58,7 @@ mat-menu {
     pointer-events: none;
   }
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     $outline-width: 1px;
 
     // We need to move the item 1px down, because Firefox seems to have
@@ -74,7 +74,7 @@ mat-menu {
 }
 
 .mat-menu-item-submenu-trigger {
-  @include mat-menu-item-submenu-trigger($mat-menu-side-padding);
+  @include menu-common.item-submenu-trigger(menu-common.$side-padding);
 }
 
 button.mat-menu-item {
@@ -84,5 +84,5 @@ button.mat-menu-item {
 // Increase specificity because ripple styles are part of the `mat-core` mixin and can
 // potentially overwrite the absolute position of the container.
 .mat-menu-item .mat-menu-ripple {
-  @include mat-menu-item-ripple;
+  @include menu-common.item-ripple;
 }

@@ -1,14 +1,15 @@
+@use 'sass:map';
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/style/layout-common';
+@use '../../cdk/a11y/a11y';
 @import '@material/switch/functions.import';
 @import '@material/switch/mixins.import';
 @import '@material/switch/variables.import';
 @import '@material/form-field/mixins.import';
 @import '@material/ripple/variables.import';
-@import '../mdc-helpers/mdc-helpers';
-@import '../../material/core/style/layout-common';
-@import '../../cdk/a11y/a11y';
 
-@include mdc-switch-without-ripple($query: $mat-base-styles-query);
-@include mdc-form-field-core-styles($query: $mat-base-styles-query);
+@include mdc-switch-without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-form-field-core-styles($query: mdc-helpers.$mat-base-styles-query);
 
 .mat-mdc-slide-toggle {
   display: inline-block;
@@ -18,7 +19,7 @@
 
   // The ripple needs extra specificity so the base ripple styling doesn't override its `position`.
   .mat-mdc-slide-toggle-ripple, .mdc-switch__thumb-underlay::after {
-    @include mat-fill;
+    @include layout-common.fill;
     border-radius: 50%;
     // Disable pointer events for the ripple container so that it doesn't eat the mouse events meant
     // for the input. Pointer events can be safely disabled because the ripple trigger element is
@@ -51,19 +52,19 @@
   }
 
   .mdc-switch:hover .mdc-switch__thumb-underlay::after {
-    opacity: map-get($mdc-ripple-dark-ink-opacities, hover);
+    opacity: map.get($mdc-ripple-dark-ink-opacities, hover);
     transition: mdc-switch-transition-enter(opacity, 0, 75ms);
   }
 
   // Needs a little more specificity so the :hover styles don't override it.
   &.mat-mdc-slide-toggle-focused .mdc-switch .mdc-switch__thumb-underlay::after {
-    opacity: map-get($mdc-ripple-dark-ink-opacities, focus);
+    opacity: map.get($mdc-ripple-dark-ink-opacities, focus);
   }
 
   // We use an Angular Material ripple rather than an MDC ripple due to size concerns, so we need to
   // style it appropriately.
   .mat-ripple-element {
-    opacity: map-get($mdc-ripple-dark-ink-opacities, press);
+    opacity: map.get($mdc-ripple-dark-ink-opacities, press);
   }
 
   .mat-ripple {
@@ -82,7 +83,7 @@
 }
 
 
-@include cdk-high-contrast(active, off) {
+@include a11y.high-contrast(active, off) {
   .mat-mdc-slide-toggle-focused {
     .mdc-switch__track {
       // Usually 1px would be enough, but MDC reduces the opacity on the

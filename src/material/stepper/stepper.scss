@@ -1,5 +1,5 @@
-@import '../core/style/variables';
-@import './stepper-variables';
+@use '../core/style/variables';
+@use './stepper-variables';
 
 .mat-stepper-vertical,
 .mat-stepper-horizontal {
@@ -17,12 +17,12 @@
 }
 
 .mat-stepper-horizontal-line {
-  border-top-width: $mat-stepper-line-width;
+  border-top-width: stepper-variables.$line-width;
   border-top-style: solid;
   flex: auto;
   height: 0;
-  margin: 0 $mat-stepper-line-gap - $mat-stepper-side-gap;
-  min-width: $mat-stepper-line-gap + $mat-stepper-side-gap;
+  margin: 0 stepper-variables.$line-gap - stepper-variables.$side-gap;
+  min-width: stepper-variables.$line-gap + stepper-variables.$side-gap;
 
   .mat-stepper-label-position-bottom & {
     margin: 0;
@@ -32,29 +32,29 @@
 }
 
 %mat-header-horizontal-line-label-position-bottom {
-  border-top-width: $mat-stepper-line-width;
+  border-top-width: stepper-variables.$line-width;
   border-top-style: solid;
   content: '';
   display: inline-block;
   height: 0;
   position: absolute;
-  width: calc(50% - #{$mat-stepper-side-gap / 2 + $mat-stepper-line-gap});
+  width: calc(50% - #{stepper-variables.$side-gap / 2 + stepper-variables.$line-gap});
 }
 
 .mat-horizontal-stepper-header {
   display: flex;
-  height: $mat-stepper-header-height;
+  height: stepper-variables.$header-height;
   overflow: hidden;
   align-items: center;
-  padding: 0 $mat-stepper-side-gap;
+  padding: 0 stepper-variables.$side-gap;
 
   .mat-step-icon {
-    margin-right: $mat-stepper-line-gap;
+    margin-right: stepper-variables.$line-gap;
     flex: none;
 
     [dir='rtl'] & {
       margin-right: 0;
-      margin-left: $mat-stepper-line-gap;
+      margin-left: stepper-variables.$line-gap;
     }
   }
 
@@ -89,7 +89,7 @@
     }
 
     & .mat-step-label {
-      padding: $mat-stepper-label-position-bottom-top-gap 0 0 0;
+      padding: stepper-variables.$label-position-bottom-top-gap 0 0 0;
       text-align: center;
       width: 100%;
     }
@@ -101,14 +101,14 @@
   align-items: center;
 
   // We can't use `max-height` here, because it breaks the flexbox centering in IE.
-  height: $mat-stepper-label-header-height;
+  height: stepper-variables.$label-header-height;
 
   .mat-step-icon {
-    margin-right: $mat-vertical-stepper-content-margin - $mat-stepper-side-gap;
+    margin-right: stepper-variables.$vertical-stepper-content-margin - stepper-variables.$side-gap;
 
     [dir='rtl'] & {
       margin-right: 0;
-      margin-left: $mat-vertical-stepper-content-margin - $mat-stepper-side-gap;
+      margin-left: stepper-variables.$vertical-stepper-content-margin - stepper-variables.$side-gap;
     }
   }
 }
@@ -124,17 +124,17 @@
 
 .mat-horizontal-content-container {
   overflow: hidden;
-  padding: 0 $mat-stepper-side-gap $mat-stepper-side-gap $mat-stepper-side-gap;
+  padding: 0 stepper-variables.$side-gap stepper-variables.$side-gap stepper-variables.$side-gap;
 }
 
 .mat-vertical-content-container {
-  margin-left: $mat-vertical-stepper-content-margin;
+  margin-left: stepper-variables.$vertical-stepper-content-margin;
   border: 0;
   position: relative;
 
   [dir='rtl'] & {
     margin-left: 0;
-    margin-right: $mat-vertical-stepper-content-margin;
+    margin-right: stepper-variables.$vertical-stepper-content-margin;
   }
 }
 
@@ -142,7 +142,7 @@
   content: '';
   position: absolute;
   left: 0;
-  border-left-width: $mat-stepper-line-width;
+  border-left-width: stepper-variables.$line-width;
   border-left-style: solid;
 
   [dir='rtl'] & {
@@ -157,7 +157,7 @@
 }
 
 .mat-vertical-content {
-  padding: 0 $mat-stepper-side-gap $mat-stepper-side-gap $mat-stepper-side-gap;
+  padding: 0 stepper-variables.$side-gap stepper-variables.$side-gap stepper-variables.$side-gap;
 }
 
 .mat-step:last-child {

@@ -1,15 +1,15 @@
+@use '../mdc-helpers/mdc-helpers';
+@use '_button-base';
 @import '@material/fab/mixins.import';
 @import '@material/fab/variables.import';
 @import '@material/button/variables.import';
 @import '@material/theme/variables.import';
-@import '../mdc-helpers/mdc-helpers';
-@import '_button-base';
 
-@include mdc-fab-without-ripple($query: $mat-base-styles-query);
+@include mdc-fab-without-ripple($query: mdc-helpers.$mat-base-styles-query);
 
 .mat-mdc-fab, .mat-mdc-mini-fab {
-  @include mat-private-button-interactive();
-  @include mat-private-button-disabled();
+  @include button-base.mat-private-button-interactive();
+  @include button-base.mat-private-button-disabled();
 
   // MDC adds some styles to fab and mini-fab that conflict with some of our focus indicator
   // styles and don't actually do anything. This undoes those conflicting styles.

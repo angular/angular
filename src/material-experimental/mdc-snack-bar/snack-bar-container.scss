@@ -1,8 +1,8 @@
+@use '../mdc-helpers/mdc-helpers';
+@use '../../cdk/a11y/a11y';
 @import '@material/snackbar/mixins.import';
-@import '../mdc-helpers/mdc-helpers';
-@import '../../cdk/a11y/a11y';
 
-@include mdc-snackbar-core-styles($query: $mat-base-styles-query);
+@include mdc-snackbar-core-styles($query: mdc-helpers.$mat-base-styles-query);
 
 // MDC sets the position as fixed and sets the container on the bottom center of the page (or
 // otherwise can be set to be "leading"). Our overlay handles a more advanced configuration
@@ -10,7 +10,7 @@
 .mat-mdc-snack-bar-container {
   position: static;
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     border: solid 1px;
   }
 

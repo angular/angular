@@ -1,30 +1,31 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
+@use 'sass:map';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
 
 @mixin _mat-radio-color($palette) {
   &.mat-radio-checked .mat-radio-outer-circle {
-    border-color: mat-color($palette);
+    border-color: theming.color($palette);
   }
 
   .mat-radio-inner-circle,
   .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
   &.mat-radio-checked .mat-radio-persistent-ripple,
   &:active .mat-radio-persistent-ripple {
-    background-color: mat-color($palette);
+    background-color: theming.color($palette);
   }
 }
 
-@mixin mat-radio-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
   .mat-radio-outer-circle {
-    border-color: mat-color($foreground, secondary-text);
+    border-color: theming.color($foreground, secondary-text);
   }
 
   .mat-radio-button {
@@ -46,51 +47,51 @@
     &.mat-radio-disabled {
       &.mat-radio-checked .mat-radio-outer-circle,
       .mat-radio-outer-circle {
-        border-color: mat-color($foreground, disabled);
+        border-color: theming.color($foreground, disabled);
       }
 
       .mat-radio-ripple .mat-ripple-element,
       .mat-radio-inner-circle {
-        background-color: mat-color($foreground, disabled);
+        background-color: theming.color($foreground, disabled);
       }
 
       .mat-radio-label-content {
-        color: mat-color($foreground, disabled);
+        color: theming.color($foreground, disabled);
       }
     }
 
     // Switch this to a solid color since we're using `opacity`
     // to control how opaque the ripple should be.
     .mat-ripple-element {
-      background-color: map-get($foreground, base);
+      background-color: map.get($foreground, base);
     }
   }
 }
 
-@mixin mat-radio-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-radio-button {
-    font-family: mat-font-family($config);
+    font-family: typography-utils.font-family($config);
   }
 }
 
 @mixin _mat-radio-density($config-or-theme) {}
 
-@mixin mat-radio-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-radio') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-radio') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-radio-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-radio-density($density);
     }
     @if $typography != null {
-      @include mat-radio-typography($typography);
+      @include typography($typography);
     }
   }
 }

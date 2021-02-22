@@ -1,26 +1,27 @@
-@import './elevation';
+@use 'sass:map';
+@use './elevation';
 
-@mixin mat-private-theme-elevation($zValue, $config, $opacity: $mat-elevation-opacity) {
-  $foreground: map-get($config, foreground);
-  $elevation-color: map-get($foreground, elevation);
-  $elevation-color-or-default: if($elevation-color == null, $mat-elevation-color, $elevation-color);
+@mixin theme-elevation($zValue, $config, $opacity: elevation.$opacity) {
+  $foreground: map.get($config, foreground);
+  $elevation-color: map.get($foreground, elevation);
+  $elevation-color-or-default: if($elevation-color == null, elevation.$color, $elevation-color);
 
-  @include mat-elevation($zValue, $elevation-color-or-default, $opacity);
+  @include elevation.elevation($zValue, $elevation-color-or-default, $opacity);
 }
 
-@mixin mat-private-theme-overridable-elevation($zValue, $config, $opacity: $mat-elevation-opacity) {
-  $foreground: map-get($config, foreground);
-  $elevation-color: map-get($foreground, elevation);
-  $elevation-color-or-default: if($elevation-color == null, $mat-elevation-color, $elevation-color);
+@mixin theme-overridable-elevation($zValue, $config, $opacity: elevation.$opacity) {
+  $foreground: map.get($config, foreground);
+  $elevation-color: map.get($foreground, elevation);
+  $elevation-color-or-default: if($elevation-color == null, elevation.$color, $elevation-color);
 
-  @include mat-overridable-elevation($zValue, $elevation-color-or-default, $opacity);
+  @include elevation.overridable-elevation($zValue, $elevation-color-or-default, $opacity);
 }
 
 // If the mat-animation-noop class is present on the components root element,
 // prevent non css animations from running.
 // NOTE: Currently this mixin should only be used with components that do not
 // have any projected content.
-@mixin mat-private-animation-noop() {
+@mixin animation-noop() {
   // @at-root is used to steps outside of the hierarchy of the scss rules. This is
   // done to allow a class to be added to be added to base of the scss nesting
   // context.

@@ -1,2 +1,5 @@
-@forward 'slider-theme';
+@forward '../mdc-helpers/mdc-helpers.import';
 @forward '../mdc-helpers/mdc-helpers';
+@forward 'slider-theme' as mat-mdc-slider-*;
+
+@import '../mdc-helpers/mdc-helpers';

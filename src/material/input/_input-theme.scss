@@ -1,31 +1,32 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/style/form-common';
-@import '../core/typography/typography-utils';
-@import '../core/style/vendor-prefixes';
+@use 'sass:map';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/style/form-common';
+@use '../core/typography/typography-utils';
+@use '../core/style/vendor-prefixes';
 
 
-@mixin mat-input-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $foreground: map.get($config, foreground);
 
   .mat-form-field-type-mat-native-select .mat-form-field-infix::after {
-    color: mat-color($foreground, secondary-text);
+    color: theming.color($foreground, secondary-text);
   }
 
   .mat-input-element:disabled,
   .mat-form-field-type-mat-native-select.mat-form-field-disabled .mat-form-field-infix::after {
-    color: mat-color($foreground, disabled-text);
+    color: theming.color($foreground, disabled-text);
   }
 
   .mat-input-element {
-    caret-color: mat-color($primary, text);
+    caret-color: theming.color($primary, text);
 
-    @include input-placeholder {
-      color: mat-private-control-placeholder-color($config);
+    @include vendor-prefixes.input-placeholder {
+      color: form-common.control-placeholder-color($config);
     }
 
     // On dark themes we set the native `select` color to some shade of white,
@@ -33,35 +34,35 @@
     // always on a white background inside the dropdown, causing them to blend in.
     // Since we can't change background of the dropdown, we need to explicitly
     // reset the color of the options to something dark.
-    @if (map-get($config, is-dark)) {
+    @if (map.get($config, is-dark)) {
       option {
-        color: $dark-primary-text;
+        color: palette.$dark-primary-text;
       }
 
       option:disabled {
-        color: $dark-disabled-text;
+        color: palette.$dark-disabled-text;
       }
     }
   }
 
   .mat-form-field.mat-accent .mat-input-element {
-    caret-color: mat-color($accent, text);
+    caret-color: theming.color($accent, text);
   }
 
   .mat-form-field.mat-warn .mat-input-element,
   .mat-form-field-invalid .mat-input-element {
-    caret-color: mat-color($warn, text);
+    caret-color: theming.color($warn, text);
   }
 
   .mat-form-field-type-mat-native-select.mat-form-field-invalid .mat-form-field-infix::after {
-    color: mat-color($warn, text);
+    color: theming.color($warn, text);
   }
 }
 
-@mixin mat-input-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   // The unit-less line-height from the font config.
-  $line-height: mat-line-height($config, input);
+  $line-height: typography-utils.height($config, input);
 
   // The amount of space between the top of the line and the top of the actual text
   // (as a fraction of the font-size).
@@ -76,21 +77,21 @@
 
 @mixin _mat-input-density($config-or-theme) {}
 
-@mixin mat-input-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-input') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-input') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-input-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-input-density($density);
     }
     @if $typography != null {
-      @include mat-input-typography($typography);
+      @include typography($typography);
     }
   }
 }

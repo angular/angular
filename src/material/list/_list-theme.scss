@@ -1,50 +1,51 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
-@import '../core/style/list-common';
+@use 'sass:map';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
+@use '../core/style/list-common';
 
 
-@mixin mat-list-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
   .mat-list-base {
     .mat-list-item {
-      color: mat-color($foreground, text);
+      color: theming.color($foreground, text);
     }
 
     .mat-list-option {
-      color: mat-color($foreground, text);
+      color: theming.color($foreground, text);
     }
 
     .mat-subheader {
-      color: mat-color($foreground, secondary-text);
+      color: theming.color($foreground, secondary-text);
     }
   }
 
   .mat-list-item-disabled {
-    background-color: mat-color($background, disabled-list-option);
+    background-color: theming.color($background, disabled-list-option);
   }
 
   .mat-list-option,
   .mat-nav-list .mat-list-item,
   .mat-action-list .mat-list-item {
     &:hover, &:focus {
-      background: mat-color($background, 'hover');
+      background: theming.color($background, 'hover');
     }
   }
 
   .mat-list-single-selected-option {
     &, &:hover, &:focus {
-      background: mat-color($background, hover, 0.12);
+      background: theming.color($background, hover, 0.12);
     }
   }
 }
 
-@mixin mat-list-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
-  $font-family: mat-font-family($config);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
+  $font-family: typography-utils.font-family($config);
 
   .mat-list-item {
     font-family: $font-family;
@@ -57,59 +58,59 @@
   // Default list
   .mat-list-base {
     .mat-list-item {
-      font-size: mat-font-size($config, subheading-2);
-      @include mat-line-base(mat-font-size($config, body-1));
+      font-size: typography-utils.font-size($config, subheading-2);
+      @include list-common.base(typography-utils.font-size($config, body-1));
     }
 
     .mat-list-option {
-      font-size: mat-font-size($config, subheading-2);
-      @include mat-line-base(mat-font-size($config, body-1));
+      font-size: typography-utils.font-size($config, subheading-2);
+      @include list-common.base(typography-utils.font-size($config, body-1));
     }
 
     .mat-subheader {
-      font-family: mat-font-family($config, body-2);
-      font-size: mat-font-size($config, body-2);
-      font-weight: mat-font-weight($config, body-2);
+      font-family: typography-utils.font-family($config, body-2);
+      font-size: typography-utils.font-size($config, body-2);
+      font-weight: typography-utils.font-weight($config, body-2);
     }
   }
 
   // Dense list
   .mat-list-base[dense] {
     .mat-list-item {
-      font-size: mat-font-size($config, caption);
-      @include mat-line-base(mat-font-size($config, caption));
+      font-size: typography-utils.font-size($config, caption);
+      @include list-common.base(typography-utils.font-size($config, caption));
     }
 
     .mat-list-option {
-      font-size: mat-font-size($config, caption);
-      @include mat-line-base(mat-font-size($config, caption));
+      font-size: typography-utils.font-size($config, caption);
+      @include list-common.base(typography-utils.font-size($config, caption));
     }
 
     .mat-subheader {
       font-family: $font-family;
-      font-size: mat-font-size($config, caption);
-      font-weight: mat-font-weight($config, body-2);
+      font-size: typography-utils.font-size($config, caption);
+      font-weight: typography-utils.font-weight($config, body-2);
     }
   }
 }
 
 @mixin _mat-list-density($config-or-theme) {}
 
-@mixin mat-list-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-list') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-list') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-list-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-list-density($density);
     }
     @if $typography != null {
-      @include mat-list-typography($typography);
+      @include typography($typography);
     }
   }
 }

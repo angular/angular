@@ -1,23 +1,23 @@
-@import '../core/style/variables';
-@import '../core/style/vendor-prefixes';
+@use '../core/style/variables';
+@use '../core/style/vendor-prefixes';
 
 // Styles that only apply to the outline appearance of the form-field.
 
 // The horizontal padding between the edge of the form field fill box and the start of the text.
-$mat-form-field-outline-side-padding: 0.75em !default;
+$outline-side-padding: 0.75em !default;
 // The scale of the subscript and floating label text w.r.t the value text.
-$mat-form-field-outline-subscript-font-scale: 0.75 !default;
+$outline-subscript-font-scale: 0.75 !default;
 // The amount of overlap between the label and the outline.
-$mat-form-field-outline-label-overlap: 0.25em;
+$outline-label-overlap: 0.25em;
 // The border radius of the outline.
-$mat-form-field-outline-border-radius: 5px;
+$outline-border-radius: 5px;
 // The width of the outline.
-$mat-form-field-outline-width: 1px;
+$outline-width: 1px;
 // The width of the thick outline (used for focus, hover, and error state).
-$mat-form-field-outline-thick-width: 2px;
+$outline-thick-width: 2px;
 // The horizontal padding between the edge of the subscript box and the start of the subscript text.
-$mat-form-field-outline-subscript-padding:
-    $mat-form-field-outline-side-padding / $mat-form-field-outline-subscript-font-scale;
+$outline-subscript-padding:
+    $outline-side-padding / $outline-subscript-font-scale;
 
 
 .mat-form-field-appearance-outline {
@@ -25,24 +25,24 @@ $mat-form-field-outline-subscript-padding:
   // of the top. In order to ensure that the outline appearance aligns nicely with other form-field
   // appearances when center-aligned, we also need to add the same amount of margin to the bottom.
   .mat-form-field-wrapper {
-    margin: $mat-form-field-outline-label-overlap 0;
+    margin: $outline-label-overlap 0;
   }
 
   .mat-form-field-flex {
-    padding: 0 $mat-form-field-outline-side-padding 0 $mat-form-field-outline-side-padding;
-    margin-top: -$mat-form-field-outline-label-overlap;
+    padding: 0 $outline-side-padding 0 $outline-side-padding;
+    margin-top: -$outline-label-overlap;
     position: relative;
   }
 
   .mat-form-field-prefix,
   .mat-form-field-suffix {
-    top: $mat-form-field-outline-label-overlap;
+    top: $outline-label-overlap;
   }
 
   .mat-form-field-outline {
     display: flex;
     position: absolute;
-    top: $mat-form-field-outline-label-overlap;
+    top: $outline-label-overlap;
     left: 0;
     right: 0;
     bottom: 0;
@@ -51,32 +51,32 @@ $mat-form-field-outline-subscript-padding:
 
   .mat-form-field-outline-start,
   .mat-form-field-outline-end {
-    border: $mat-form-field-outline-width solid currentColor;
-    min-width: $mat-form-field-outline-border-radius;
+    border: $outline-width solid currentColor;
+    min-width: $outline-border-radius;
   }
 
   .mat-form-field-outline-start {
-    border-radius: $mat-form-field-outline-border-radius 0 0 $mat-form-field-outline-border-radius;
+    border-radius: $outline-border-radius 0 0 $outline-border-radius;
     border-right-style: none;
 
     [dir='rtl'] & {
       border-right-style: solid;
       border-left-style: none;
-      border-radius: 0 $mat-form-field-outline-border-radius $mat-form-field-outline-border-radius
+      border-radius: 0 $outline-border-radius $outline-border-radius
                      0;
     }
   }
 
   .mat-form-field-outline-end {
-    border-radius: 0 $mat-form-field-outline-border-radius $mat-form-field-outline-border-radius 0;
+    border-radius: 0 $outline-border-radius $outline-border-radius 0;
     border-left-style: none;
     flex-grow: 1;
 
     [dir='rtl'] & {
       border-left-style: solid;
       border-right-style: none;
-      border-radius: $mat-form-field-outline-border-radius 0 0
-                     $mat-form-field-outline-border-radius;
+      border-radius: $outline-border-radius 0 0
+                     $outline-border-radius;
     }
   }
 
@@ -85,7 +85,7 @@ $mat-form-field-outline-subscript-padding:
     // refer to https://github.com/angular/components/issues/10710
     border-radius: 0.000001px;
 
-    border: $mat-form-field-outline-width solid currentColor;
+    border: $outline-width solid currentColor;
     border-left-style: none;
     border-right-style: none;
   }
@@ -102,7 +102,7 @@ $mat-form-field-outline-subscript-padding:
     .mat-form-field-outline-start,
     .mat-form-field-outline-end,
     .mat-form-field-outline-gap {
-      border-width: $mat-form-field-outline-thick-width;
+      border-width: $outline-thick-width;
     }
   }
 
@@ -110,7 +110,7 @@ $mat-form-field-outline-subscript-padding:
   &.mat-form-field-invalid {
     .mat-form-field-outline {
       opacity: 0;
-      transition: opacity 100ms $swift-ease-out-timing-function;
+      transition: opacity 100ms variables.$swift-ease-out-timing-function;
     }
     .mat-form-field-outline-thick {
       opacity: 1;
@@ -120,7 +120,7 @@ $mat-form-field-outline-subscript-padding:
   &:not(.mat-form-field-disabled) .mat-form-field-flex:hover {
     & .mat-form-field-outline {
       opacity: 0;
-      transition: opacity 600ms $swift-ease-out-timing-function;
+      transition: opacity 600ms variables.$swift-ease-out-timing-function;
     }
 
     & .mat-form-field-outline-thick {
@@ -129,7 +129,7 @@ $mat-form-field-outline-subscript-padding:
   }
 
   .mat-form-field-subscript-wrapper {
-    padding: 0 $mat-form-field-outline-subscript-padding;
+    padding: 0 $outline-subscript-padding;
   }
 
   &._mat-animation-noopable {

@@ -1,8 +1,8 @@
+@use '../../cdk/a11y/a11y';
+@use '../mdc-helpers/mdc-helpers';
 @import '@material/menu-surface/mixins.import';
 @import '@material/list/mixins.import';
 @import '@material/list/variables.import';
-@import '../../cdk/a11y/a11y';
-@import '../mdc-helpers/mdc-helpers';
 
 @include mdc-menu-surface-core-styles($query: structure);
 
@@ -20,7 +20,7 @@
   // Note that we include this private mixin, because the public
   // one adds a bunch of styles that we aren't using for the menu.
   @include mdc-list-deprecated-base_($query: structure);
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }
 

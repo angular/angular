@@ -1,21 +1,22 @@
 @use '@material/density';
+@use 'sass:map';
+@use '../../material/core/theming/theming';
+@use 'form-field-sizing';
 @import '@material/textfield/variables.import';
-@import '../../material/core/theming/theming';
-@import 'form-field-sizing';
 
 // Mixin that sets the vertical spacing for the infix container of filled form fields.
 // We need to apply spacing to the infix container because we removed the input padding
 // provided by MDC in order to support arbitrary form-field controls.
 @mixin _mat-mdc-form-field-infix-vertical-spacing-filled($with-label-padding, $no-label-padding) {
   .mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined) .mat-mdc-form-field-infix {
-    padding-top: map-get($with-label-padding, top);
-    padding-bottom: map-get($with-label-padding, bottom);
+    padding-top: map.get($with-label-padding, top);
+    padding-bottom: map.get($with-label-padding, bottom);
   }
 
   .mdc-text-field--no-label:not(.mdc-text-field--outlined):not(.mdc-text-field--textarea)
   .mat-mdc-form-field-infix {
-    padding-top: map-get($no-label-padding, top);
-    padding-bottom: map-get($no-label-padding, bottom);
+    padding-top: map.get($no-label-padding, top);
+    padding-bottom: map.get($no-label-padding, bottom);
   }
 }
 
@@ -24,8 +25,8 @@
 // provided by MDC in order to support arbitrary form-field controls.
 @mixin _mat-mdc-form-field-infix-vertical-spacing-outlined($padding) {
   .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
-    padding-top: map-get($padding, top);
-    padding-bottom: map-get($padding, bottom);
+    padding-top: map.get($padding, top);
+    padding-bottom: map.get($padding, bottom);
   }
 }
 
@@ -36,8 +37,8 @@
 // provide spacing that makes arbitrary controls align as specified in the Material Design
 // specification. In order to support density, we need to adjust the vertical spacing to be
 // based on the density scale.
-@mixin mat-mdc-private-form-field-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
+@mixin private-form-field-density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
   // Height of the form field that is based on the current density scale.
   $height: density.prop-value(
     $density-config: $mdc-text-field-density-config,
@@ -56,13 +57,13 @@
   $vertical-deduction: ($mdc-text-field-height - $height) / 2;
   // Map that describes the padding for form-fields with label.
   $with-label-padding: (
-    top: $mat-form-field-with-label-input-padding-top - $vertical-deduction,
-    bottom: $mat-form-field-with-label-input-padding-bottom - $vertical-deduction,
+    top: form-field-sizing.$mat-form-field-with-label-input-padding-top - $vertical-deduction,
+    bottom: form-field-sizing.$mat-form-field-with-label-input-padding-bottom - $vertical-deduction,
   );
   // Map that describes the padding for form-fields without label.
   $no-label-padding: (
-    top: $mat-form-field-no-label-padding-top - $vertical-deduction,
-    bottom: $mat-form-field-no-label-padding-bottom - $vertical-deduction,
+    top: form-field-sizing.$mat-form-field-no-label-padding-top - $vertical-deduction,
+    bottom: form-field-sizing.$mat-form-field-no-label-padding-bottom - $vertical-deduction,
   );
 
   // We add a minimum height to the infix container in order to ensure that custom controls have

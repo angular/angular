@@ -1,2 +1,5 @@
-@forward 'icon-theme';
-@forward '../core/theming/theming';
+@forward '../core/theming/theming.import';
+@forward 'icon-theme' hide color, theme, typography;
+@forward 'icon-theme' as mat-icon-* hide mat-icon-density;
+
+@import '../core/theming/theming';

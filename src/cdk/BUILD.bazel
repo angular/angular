@@ -23,6 +23,10 @@ rerootedStyles = [file for target in CDK_ENTRYPOINTS_WITH_STYLES for file in [
         target,
     ],
     [
+        "_%s.import.scss" % target,
+        target,
+    ],
+    [
         "%s-prebuilt.css" % target,
         target,
     ],

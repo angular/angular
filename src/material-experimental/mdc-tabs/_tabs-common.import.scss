@@ -1,5 +1,14 @@
-@forward 'tabs-common';
-@forward '../../material/core/style/variables';
-@forward '../../material/core/style/vendor-prefixes';
-@forward '../../cdk/a11y/a11y';
+@forward '../../material/core/style/private.import';
+@forward '../mdc-helpers/mdc-helpers.import';
 @forward '../mdc-helpers/mdc-helpers';
+@forward '../../material/core/style/vendor-prefixes.import';
+@forward '../../cdk/a11y/a11y.import';
+@forward 'tabs-common' hide paginated-tab-header, paginated-tab-header-container,
+paginated-tab-header-item-wrapper, tab, tab-ripple;
+@forward 'tabs-common' as mat-mdc-* hide $mat-mdc-mat-tab-animation-duration;
+
+@import '../../material/core/style/variables';
+@import '../../material/core/style/private';
+@import '../../material/core/style/vendor-prefixes';
+@import '../../cdk/a11y/a11y';
+@import '../mdc-helpers/mdc-helpers';

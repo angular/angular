@@ -1,4 +1,10 @@
-@forward 'core-theme';
-@forward '../../material/core/theming/theming';
-@forward './option/option-theme';
-@forward './option/optgroup-theme';
+@forward '../../material/core/theming/theming.import';
+@forward '../mdc-helpers/mdc-helpers.import';
+@forward '../mdc-helpers/mdc-helpers';
+@forward 'option/option-theme' as mat-mdc-*;
+@forward 'option/optgroup-theme' as mat-mdc-optgroup-*;
+@forward 'core-theme' as mat-mdc-core-*;
+
+@import '../../material/core/theming/theming';
+@import './option/option-theme';
+@import './option/optgroup-theme';

@@ -1,7 +1,8 @@
-@import 'typography-utils';
+@use 'sass:map';
+@use 'typography-utils';
 
 // Represents a typography level from the Material design spec.
-@function mat-typography-level(
+@function level(
   $font-size,
   $line-height: $font-size,
   $font-weight: 400,
@@ -21,22 +22,22 @@
 // Defaults come from https://material.io/guidelines/style/typography.html
 // Note: The spec doesn't mention letter spacing. The values here come from
 // eyeballing it until it looked exactly like the spec examples.
-@function mat-typography-config(
+@function config(
   $font-family:   'Roboto, "Helvetica Neue", sans-serif',
-  $display-4:     mat-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
-  $display-3:     mat-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
-  $display-2:     mat-typography-level(45px, 48px, 400, $letter-spacing: -0.005em),
-  $display-1:     mat-typography-level(34px, 40px, 400),
-  $headline:      mat-typography-level(24px, 32px, 400),
-  $title:         mat-typography-level(20px, 32px, 500),
-  $subheading-2:  mat-typography-level(16px, 28px, 400),
-  $subheading-1:  mat-typography-level(15px, 24px, 400),
-  $body-2:        mat-typography-level(14px, 24px, 500),
-  $body-1:        mat-typography-level(14px, 20px, 400),
-  $caption:       mat-typography-level(12px, 20px, 400),
-  $button:        mat-typography-level(14px, 14px, 500),
+  $display-4:     level(112px, 112px, 300, $letter-spacing: -0.05em),
+  $display-3:     level(56px, 56px, 400, $letter-spacing: -0.02em),
+  $display-2:     level(45px, 48px, 400, $letter-spacing: -0.005em),
+  $display-1:     level(34px, 40px, 400),
+  $headline:      level(24px, 32px, 400),
+  $title:         level(20px, 32px, 500),
+  $subheading-2:  level(16px, 28px, 400),
+  $subheading-1:  level(15px, 24px, 400),
+  $body-2:        level(14px, 24px, 500),
+  $body-1:        level(14px, 20px, 400),
+  $caption:       level(12px, 20px, 400),
+  $button:        level(14px, 14px, 500),
   // Line-height must be unit-less fraction of the font-size.
-  $input:         mat-typography-level(inherit, 1.125, 400)
+  $input:         level(inherit, 1.125, 400)
 ) {
 
   // Declare an initial map with all of the levels.
@@ -59,45 +60,45 @@
   // Loop through the levels and set the `font-family` of the ones that don't have one to the base.
   // Note that Sass can't modify maps in place, which means that we need to merge and re-assign.
   @each $key, $level in $config {
-    @if map-get($level, font-family) == null {
-      $new-level: map-merge($level, (font-family: $font-family));
-      $config: map-merge($config, ($key: $new-level));
+    @if map.get($level, font-family) == null {
+      $new-level: map.merge($level, (font-family: $font-family));
+      $config: map.merge($config, ($key: $new-level));
     }
   }
 
   // Add the base font family to the config.
-  @return map-merge($config, (font-family: $font-family));
+  @return map.merge($config, (font-family: $font-family));
 }
 
 // Whether a config is for the Material Design 2018 typography system.
-@function mat-private-typography-is-2018-config($config) {
-  @return map-get($config, headline-1) != null;
+@function typography-is-2018-config($config) {
+  @return map.get($config, headline-1) != null;
 }
 
 // Whether a config is for the Material Design 2014 typography system.
-@function mat-private-typography-is-2014-config($config) {
-  @return map-get($config, headline) != null;
+@function typography-is-2014-config($config) {
+  @return map.get($config, headline) != null;
 }
 
 // Given a config for either the 2014 or 2018 Material Design typography system,
 // produces a normalized typography config for the 2014 Material Design typography system.
 // 2014 - https://material.io/archive/guidelines/style/typography.html#typography-styles
 // 2018 - https://material.io/design/typography/the-type-system.html#type-scale
-@function mat-private-typography-to-2014-config($config) {
-  @if mat-private-typography-is-2018-config($config) {
-    @return mat-typography-config(
-        $display-4: map-get($config, headline-1),
-        $display-3: map-get($config, headline-2),
-        $display-2: map-get($config, headline-3),
-        $display-1: map-get($config, headline-4),
-        $headline: map-get($config, headline-5),
-        $title: map-get($config, headline-6),
-        $subheading-2: map-get($config, subtitle-1),
-        $subheading-1: map-get($config, subtitle-2),
-        $body-2: map-get($config, body-1),
-        $body-1: map-get($config, body-2),
-        $button: map-get($config, button),
-        $caption: map-get($config, caption),
+@function typography-to-2014-config($config) {
+  @if typography-is-2018-config($config) {
+    @return config(
+        $display-4: map.get($config, headline-1),
+        $display-3: map.get($config, headline-2),
+        $display-2: map.get($config, headline-3),
+        $display-1: map.get($config, headline-4),
+        $headline: map.get($config, headline-5),
+        $title: map.get($config, headline-6),
+        $subheading-2: map.get($config, subtitle-1),
+        $subheading-1: map.get($config, subtitle-2),
+        $body-2: map.get($config, body-1),
+        $body-1: map.get($config, body-2),
+        $button: map.get($config, button),
+        $caption: map.get($config, caption),
     );
   }
   @return $config;
@@ -107,21 +108,21 @@
 // produces a normalized typography config for the 2018 Material Design typography system.
 // 2014 - https://material.io/archive/guidelines/style/typography.html#typography-styles
 // 2018 - https://material.io/design/typography/the-type-system.html#type-scale
-@function mat-private-typography-to-2018-config($config) {
-  @if mat-private-typography-is-2014-config($config) {
+@function typography-to-2018-config($config) {
+  @if typography-is-2014-config($config) {
     @return (
-        headline-1: map-get($config, display-4),
-        headline-2: map-get($config, display-3),
-        headline-3: map-get($config, display-2),
-        headline-4: map-get($config, display-1),
-        headline-5: map-get($config, headline),
-        headline-6: map-get($config, title),
-        subtitle-1: map-get($config, subheading-2),
-        subtitle-2: map-get($config, subheading-1),
-        body-1: map-get($config, body-2),
-        body-2: map-get($config, body-1),
-        button: map-get($config, button),
-        caption: map-get($config, caption),
+        headline-1: map.get($config, display-4),
+        headline-2: map.get($config, display-3),
+        headline-3: map.get($config, display-2),
+        headline-4: map.get($config, display-1),
+        headline-5: map.get($config, headline),
+        headline-6: map.get($config, title),
+        subtitle-1: map.get($config, subheading-2),
+        subtitle-2: map.get($config, subheading-1),
+        body-1: map.get($config, body-2),
+        body-2: map.get($config, body-1),
+        button: map.get($config, button),
+        caption: map.get($config, caption),
     );
   }
   @return $config;
@@ -129,24 +130,24 @@
 
 // Adds the base typography styles, based on a config.
 /* stylelint-disable-next-line material/theme-mixin-api */
-@mixin mat-base-typography($config, $selector: '.mat-typography') {
+@mixin base-typography($config, $selector: '.mat-typography') {
   .mat-h1, .mat-headline, #{$selector} h1 {
-    @include mat-typography-level-to-styles($config, headline);
+    @include typography-utils.level-to-styles($config, headline);
     margin: 0 0 16px;
   }
 
   .mat-h2, .mat-title, #{$selector} h2 {
-    @include mat-typography-level-to-styles($config, title);
+    @include typography-utils.level-to-styles($config, title);
     margin: 0 0 16px;
   }
 
   .mat-h3, .mat-subheading-2, #{$selector} h3 {
-    @include mat-typography-level-to-styles($config, subheading-2);
+    @include typography-utils.level-to-styles($config, subheading-2);
     margin: 0 0 16px;
   }
 
   .mat-h4, .mat-subheading-1, #{$selector} h4 {
-    @include mat-typography-level-to-styles($config, subheading-1);
+    @include typography-utils.level-to-styles($config, subheading-1);
     margin: 0 0 16px;
   }
 
@@ -154,35 +155,35 @@
   // consistency. The font sizes come from the Chrome user agent styles which have h5 at 0.83em
   // and h6 at 0.67em.
   .mat-h5, #{$selector} h5 {
-    @include mat-typography-font-shorthand(
+    @include typography-utils.font-shorthand(
        // calc is used here to support css variables
-      calc(#{mat-font-size($config, body-1)} * 0.83),
-      mat-font-weight($config, body-1),
-      mat-line-height($config, body-1),
-      mat-font-family($config, body-1)
+      calc(#{typography-utils.font-size($config, body-1)} * 0.83),
+      typography-utils.font-weight($config, body-1),
+      typography-utils.height($config, body-1),
+      typography-utils.font-family($config, body-1)
     );
 
     margin: 0 0 12px;
   }
 
   .mat-h6, #{$selector} h6 {
-    @include mat-typography-font-shorthand(
+    @include typography-utils.font-shorthand(
        // calc is used here to support css variables
-      calc(#{mat-font-size($config, body-1)} * 0.67),
-      mat-font-weight($config, body-1),
-      mat-line-height($config, body-1),
-      mat-font-family($config, body-1)
+      calc(#{typography-utils.font-size($config, body-1)} * 0.67),
+      typography-utils.font-weight($config, body-1),
+      typography-utils.height($config, body-1),
+      typography-utils.font-family($config, body-1)
     );
 
     margin: 0 0 12px;
   }
 
   .mat-body-strong, .mat-body-2 {
-    @include mat-typography-level-to-styles($config, body-2);
+    @include typography-utils.level-to-styles($config, body-2);
   }
 
   .mat-body, .mat-body-1, #{$selector} {
-    @include mat-typography-level-to-styles($config, body-1);
+    @include typography-utils.level-to-styles($config, body-1);
 
     p {
       margin: 0 0 12px;
@@ -190,26 +191,26 @@
   }
 
   .mat-small, .mat-caption {
-    @include mat-typography-level-to-styles($config, caption);
+    @include typography-utils.level-to-styles($config, caption);
   }
 
   .mat-display-4, #{$selector} .mat-display-4 {
-    @include mat-typography-level-to-styles($config, display-4);
+    @include typography-utils.level-to-styles($config, display-4);
     margin: 0 0 56px;
   }
 
   .mat-display-3, #{$selector} .mat-display-3 {
-    @include mat-typography-level-to-styles($config, display-3);
+    @include typography-utils.level-to-styles($config, display-3);
     margin: 0 0 64px;
   }
 
   .mat-display-2, #{$selector} .mat-display-2 {
-    @include mat-typography-level-to-styles($config, display-2);
+    @include typography-utils.level-to-styles($config, display-2);
     margin: 0 0 64px;
   }
 
   .mat-display-1, #{$selector} .mat-display-1 {
-    @include mat-typography-level-to-styles($config, display-1);
+    @include typography-utils.level-to-styles($config, display-1);
     margin: 0 0 64px;
   }
 }

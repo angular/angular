@@ -1,26 +1,30 @@
+@use './form-field-sizing';
+@use './form-field-subscript';
+@use './form-field-focus-overlay';
+@use './form-field-native-select';
+@use './mdc-text-field-textarea-overrides';
+@use './mdc-text-field-structure-overrides';
+@use '../mdc-helpers/mdc-helpers';
 @import '@material/textfield/mixins.import';
 
-@import './form-field-sizing';
-@import './form-field-subscript';
-@import './form-field-focus-overlay';
-@import './form-field-native-select';
-@import './mdc-text-field-textarea-overrides';
-@import './mdc-text-field-structure-overrides';
 
 // Base styles for MDC text-field, notched-outline, floating label and line-ripple.
-@include mdc-text-field-without-ripple($query: $mat-base-styles-without-animation-query);
-@include mdc-floating-label-core-styles($query: $mat-base-styles-without-animation-query);
-@include mdc-notched-outline-core-styles($query: $mat-base-styles-without-animation-query);
-@include mdc-line-ripple-core-styles($query: $mat-base-styles-without-animation-query);
+@include mdc-text-field-without-ripple(
+  $query: mdc-helpers.$mat-base-styles-without-animation-query);
+@include mdc-floating-label-core-styles(
+  $query: mdc-helpers.$mat-base-styles-without-animation-query);
+@include mdc-notched-outline-core-styles(
+  $query: mdc-helpers.$mat-base-styles-without-animation-query);
+@include mdc-line-ripple-core-styles($query: mdc-helpers.$mat-base-styles-without-animation-query);
 
 // MDC text-field overwrites.
-@include mat-mdc-private-text-field-textarea-overrides();
-@include mat-mdc-private-text-field-structure-overrides();
+@include mdc-text-field-textarea-overrides.private-text-field-textarea-overrides();
+@include mdc-text-field-structure-overrides.private-text-field-structure-overrides();
 
 // Include the subscript, focus-overlay and native select styles.
-@include mat-mdc-private-form-field-subscript();
-@include mat-mdc-private-form-field-focus-overlay();
-@include mat-mdc-private-form-field-native-select();
+@include form-field-subscript.private-form-field-subscript();
+@include form-field-focus-overlay.private-form-field-focus-overlay();
+@include form-field-native-select.private-form-field-native-select();
 
 // Host element of the form-field. It contains the mdc-text-field wrapper
 // and the subscript wrapper.
@@ -54,7 +58,7 @@
 .mat-mdc-form-field-infix {
   flex: auto;
   min-width: 0;
-  width: $mat-form-field-default-infix-width;
+  width: form-field-sizing.$mat-form-field-default-infix-width;
   // Needed so that the floating label does not overlap with prefixes or suffixes.
   position: relative;
   box-sizing: border-box;

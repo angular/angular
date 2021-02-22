@@ -1,1 +1,10 @@
-@forward 'overlay';
+@forward '../a11y/a11y' as cdk-*;
+@forward 'overlay' hide $dark-backdrop-background, $z-index-overlay, $z-index-overlay-backdrop,
+$z-index-overlay-container, overlay;
+@forward 'overlay' as cdk-* hide $cdk-backdrop-animation-duration,
+$cdk-backdrop-animation-timing-function, $cdk-dark-backdrop-background;
+@forward 'overlay' as cdk-overlay-* hide $cdk-overlay-backdrop-animation-duration,
+$cdk-overlay-backdrop-animation-timing-function, $cdk-overlay-z-index-overlay,
+$cdk-overlay-z-index-overlay-backdrop, $cdk-overlay-z-index-overlay-container, cdk-overlay-overlay;
+
+@import '../a11y/a11y';

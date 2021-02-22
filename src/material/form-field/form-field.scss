@@ -1,16 +1,16 @@
-@import '../core/style/variables';
-@import '../core/style/vendor-prefixes';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/variables';
+@use '../core/style/vendor-prefixes';
+@use '../../cdk/a11y/a11y';
 
 
 // Styles that apply to all appearances of the form-field.
 
 // Min amount of space between start and end hint.
-$mat-form-field-hint-min-space: 1em !default;
+$hint-min-space: 1em !default;
 // Infix stretches to fit the container, but naturally wants to be this wide. We set this in order
 // to have a a consistent natural size for the various types of controls that can go in a form
 // field.
-$mat-form-field-default-infix-width: 180px !default;
+$default-infix-width: 180px !default;
 
 
 .mat-form-field {
@@ -52,13 +52,13 @@ $mat-form-field-default-infix-width: 180px !default;
   position: relative;
   flex: auto;
   min-width: 0;
-  width: $mat-form-field-default-infix-width;
+  width: $default-infix-width;
 
   // In high contrast mode IE/Edge will render all of the borders, even if they're transparent.
   // Since we can't remove the border altogether or replace it with a margin, because it'll throw
   // off the baseline, and we can't use a base64-encoded 1x1 transparent image because of CSP,
   // we work around it by setting a linear gradient that goes from `transparent` to `transparent`.
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     border-image: linear-gradient(transparent, transparent);
   }
 }
@@ -100,9 +100,10 @@ $mat-form-field-default-infix-width: 180px !default;
   overflow: hidden;
 
   transform-origin: 0 0;
-  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
-              color $swift-ease-out-duration $swift-ease-out-timing-function,
-              width $swift-ease-out-duration $swift-ease-out-timing-function;
+  transition: transform variables.$swift-ease-out-duration
+    variables.$swift-ease-out-timing-function, color variables.$swift-ease-out-duration
+    variables.$swift-ease-out-timing-function, width variables.$swift-ease-out-duration
+    variables.$swift-ease-out-timing-function;
 
   // Hide the label initially, and only show it when it's floating or the control is empty.
   display: none;
@@ -177,7 +178,8 @@ $mat-form-field-default-infix-width: 180px !default;
   transform-origin: 50%;
   transform: scaleX(0.5);
   opacity: 0;
-  transition: background-color $swift-ease-in-duration $swift-ease-in-timing-function;
+  transition: background-color variables.$swift-ease-in-duration
+    variables.$swift-ease-in-timing-function;
 }
 
 .mat-form-field.mat-focused,
@@ -187,9 +189,9 @@ $mat-form-field-default-infix-width: 180px !default;
     // Note that we transition this to `none`, rather than `scaleX(1)`, because the scaling
     // seems to cause some rendering artifacts on adjacent form fields (see #21612).
     transform: none;
-    transition: transform 300ms $swift-ease-out-timing-function,
-                opacity 100ms $swift-ease-out-timing-function,
-                background-color 300ms $swift-ease-out-timing-function;
+    transition: transform 300ms variables.$swift-ease-out-timing-function,
+                opacity 100ms variables.$swift-ease-out-timing-function,
+                background-color 300ms variables.$swift-ease-out-timing-function;
   }
 }
 
@@ -219,7 +221,7 @@ $mat-form-field-default-infix-width: 180px !default;
 
 // Spacer used to make sure start and end hints have enough space between them.
 .mat-form-field-hint-spacer {
-  flex: 1 0 $mat-form-field-hint-min-space;
+  flex: 1 0 $hint-min-space;
 }
 
 // Single error message displayed beneath the form field underline.

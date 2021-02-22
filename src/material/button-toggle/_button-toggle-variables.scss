@@ -1,14 +1,14 @@
-$mat-button-toggle-standard-height: 48px !default;
+$standard-height: 48px !default;
 // Minimum height for highest density can vary based on the content that developers
 // project into button-toggle's. We use a minimum of `24px` though because commonly
 // icons or text are displayed. Icons by default have a size of `24px`.
-$mat-button-toggle-standard-minimum-height: 24px !default;
-$mat-button-toggle-standard-maximum-height: $mat-button-toggle-standard-height !default;
+$standard-minimum-height: 24px !default;
+$standard-maximum-height: $standard-height !default;
 
-$mat-button-toggle-standard-density-config: (
+$standard-density-config: (
   height: (
-    default: $mat-button-toggle-standard-height,
-    maximum: $mat-button-toggle-standard-maximum-height,
-    minimum: $mat-button-toggle-standard-minimum-height,
+    default: $standard-height,
+    maximum: $standard-maximum-height,
+    minimum: $standard-minimum-height,
   )
 ) !default;

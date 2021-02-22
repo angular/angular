@@ -1,7 +1,7 @@
 // Media queries
 // TODO(josephperrott): Change $mat-xsmall and $mat-small usages to rely on BreakpointObserver,
-$mat-xsmall: 'max-width: 599px';
-$mat-small: 'max-width: 959px';
+$xsmall: 'max-width: 599px';
+$small: 'max-width: 959px';
 
 // TODO: Revisit all z-indices before beta
 // z-index master list
@@ -13,17 +13,17 @@ $z-index-drawer: 100 !default;
 $pi: 3.14159265;
 
 // Padding between input toggles and their labels
-$mat-toggle-padding: 8px !default;
+$toggle-padding: 8px !default;
 // Width and height of input toggles
-$mat-toggle-size: 20px !default;
+$toggle-size: 20px !default;
 
 // Easing Curves
 // TODO(jelbourn): all of these need to be revisited
 
 // The default animation curves used by material design.
-$mat-linear-out-slow-in-timing-function: cubic-bezier(0, 0, 0.2, 0.1) !default;
-$mat-fast-out-slow-in-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !default;
-$mat-fast-out-linear-in-timing-function: cubic-bezier(0.4, 0, 1, 1) !default;
+$linear-out-slow-in-timing-function: cubic-bezier(0, 0, 0.2, 0.1) !default;
+$fast-out-slow-in-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !default;
+$fast-out-linear-in-timing-function: cubic-bezier(0.4, 0, 1, 1) !default;
 
 $ease-in-out-curve-function: cubic-bezier(0.35, 0, 0.25, 1) !default;
 

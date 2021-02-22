@@ -1,13 +1,13 @@
-$mat-mdc-paginator-height: 56px !default;
+$height: 56px !default;
 // Minimum height for paginator's in the highest density is determined based on how
 // much the paginator can shrink until the content exceeds (i.e. navigation buttons).
-$mat-mdc-paginator-minimum-height: 40px !default;
-$mat-mdc-paginator-maximum-height: $mat-mdc-paginator-height !default;
+$minimum-height: 40px !default;
+$maximum-height: $height !default;
 
-$mat-mdc-paginator-density-config: (
+$density-config: (
   height: (
-    default: $mat-mdc-paginator-height,
-    maximum: $mat-mdc-paginator-maximum-height,
-    minimum: $mat-mdc-paginator-minimum-height,
+    default: $height,
+    maximum: $maximum-height,
+    minimum: $minimum-height,
   )
 ) !default;

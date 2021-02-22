@@ -1,63 +1,64 @@
-@import '../core/density/private/compatibility';
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
-@import  './tree-variables';
+@use 'sass:map';
+@use '../core/density/private/compatibility';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
+@use './tree-variables';
 
-@mixin mat-tree-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
   .mat-tree {
-    background: mat-color($background, 'card');
+    background: theming.color($background, 'card');
   }
 
   .mat-tree-node,
   .mat-nested-tree-node {
-    color: mat-color($foreground, text);
+    color: theming.color($foreground, text);
   }
 }
 
-@mixin mat-tree-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-tree {
-    font-family: mat-font-family($config);
+    font-family: typography-utils.font-family($config);
   }
 
   .mat-tree-node,
   .mat-nested-tree-node {
-    font-weight: mat-font-weight($config, body-1);
-    font-size: mat-font-size($config, body-1);
+    font-weight: typography-utils.font-weight($config, body-1);
+    font-size: typography-utils.font-size($config, body-1);
   }
 }
 
-@mixin mat-tree-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
-  $height: mat-private-density-prop-value($mat-tree-density-config, $density-scale, height);
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+  $height: compatibility.density-prop-value(tree-variables.$density-config, $density-scale, height);
 
-  @include mat-private-density-legacy-compatibility() {
+  @include compatibility.density-legacy-compatibility() {
     .mat-tree-node {
       min-height: $height;
     }
   }
 }
 
-@mixin mat-tree-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-tree') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-tree') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-tree-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-tree-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-tree-typography($typography);
+      @include typography($typography);
     }
   }
 }

@@ -1,28 +1,29 @@
-@import '../core/density/private/compatibility';
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/style/private';
-@import '../core/typography/typography-utils';
-@import './expansion-variables';
-@import './expansion-mixins';
+@use 'sass:map';
+@use '../core/density/private/compatibility';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/style/private';
+@use '../core/typography/typography-utils';
+@use './expansion-variables';
+@use './expansion-mixins';
 
-@mixin mat-expansion-panel-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin panel-color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
   .mat-expansion-panel {
-    @include mat-private-theme-overridable-elevation(2, $config);
-    background: mat-color($background, card);
-    color: mat-color($foreground, text);
+    @include private.theme-overridable-elevation(2, $config);
+    background: theming.color($background, card);
+    color: theming.color($foreground, text);
   }
 
   .mat-action-row {
-    border-top-color: mat-color($foreground, divider);
+    border-top-color: theming.color($foreground, divider);
   }
 
-  @include mat-private-expansion-focus {
-    background: mat-color($background, hover);
+  @include expansion-mixins.expansion-focus {
+    background: theming.color($background, hover);
   }
 
   // Disable the hover on touch devices since it can appear like it is stuck. We can't use
@@ -30,21 +31,21 @@
   @media (hover: none) {
     .mat-expansion-panel:not(.mat-expanded):not([aria-disabled='true'])
       .mat-expansion-panel-header:hover {
-      background: mat-color($background, card);
+      background: theming.color($background, card);
     }
   }
 
   .mat-expansion-panel-header-title {
-    color: mat-color($foreground, text);
+    color: theming.color($foreground, text);
   }
 
   .mat-expansion-panel-header-description,
   .mat-expansion-indicator::after {
-    color: mat-color($foreground, secondary-text);
+    color: theming.color($foreground, secondary-text);
   }
 
   .mat-expansion-panel-header[aria-disabled='true'] {
-    color: mat-color($foreground, disabled-button);
+    color: theming.color($foreground, disabled-button);
 
     .mat-expansion-panel-header-title,
     .mat-expansion-panel-header-description {
@@ -53,29 +54,29 @@
   }
 }
 
-@mixin mat-expansion-panel-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin panel-typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-expansion-panel-header {
     font: {
-      family: mat-font-family($config, subheading-1);
-      size: mat-font-size($config, subheading-1);
-      weight: mat-font-weight($config, subheading-1);
+      family: typography-utils.font-family($config, subheading-1);
+      size: typography-utils.font-size($config, subheading-1);
+      weight: typography-utils.font-weight($config, subheading-1);
     }
   }
 
   .mat-expansion-panel-content {
-    @include mat-typography-level-to-styles($config, body-1);
+    @include typography-utils.level-to-styles($config, body-1);
   }
 }
 
-@mixin mat-expansion-panel-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
-  $expanded-height: mat-private-density-prop-value(
-        $mat-expansion-panel-header-density-config, $density-scale, expanded-height);
-  $collapsed-height: mat-private-density-prop-value(
-      $mat-expansion-panel-header-density-config, $density-scale, collapsed-height);
+@mixin panel-density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
+  $expanded-height: compatibility.density-prop-value(
+        expansion-variables.$panel-header-density-config, $density-scale, expanded-height);
+  $collapsed-height: compatibility.density-prop-value(
+      expansion-variables.$panel-header-density-config, $density-scale, collapsed-height);
 
-  @include mat-private-density-legacy-compatibility() {
+  @include compatibility.density-legacy-compatibility() {
     .mat-expansion-panel-header {
       height: $collapsed-height;
 
@@ -86,21 +87,21 @@
   }
 }
 
-@mixin mat-expansion-panel-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-expansion-panel') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin panel-theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-expansion-panel') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-expansion-panel-color($color);
+      @include panel-color($color);
     }
     @if $density != null {
-      @include mat-expansion-panel-density($density);
+      @include panel-density($density);
     }
     @if $typography != null {
-      @include mat-expansion-panel-typography($typography);
+      @include panel-typography($typography);
     }
   }
 }

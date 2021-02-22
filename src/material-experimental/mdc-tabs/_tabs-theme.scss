@@ -1,20 +1,21 @@
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/theming/theming';
 @import '@material/theme/functions.import';
 @import '@material/theme/mixins.import';
 @import '@material/tab-indicator/mixins.import';
 @import '@material/tab/mixins.import';
 @import '@material/tab/variables.import';
 @import '@material/tab-bar/mixins.import';
-@import '../mdc-helpers/mdc-helpers';
 
-@mixin mat-mdc-tabs-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
   $orig-mdc-tab-text-label-color-active: $mdc-tab-text-label-color-active;
   $orig-mdc-tab-icon-color-active: $mdc-tab-icon-color-active;
   $orig-mdc-tab-text-label-color-default: $mdc-tab-text-label-color-default;
 
-  @include mat-using-mdc-theme($config) {
+  @include mdc-helpers.mat-using-mdc-theme($config) {
     // This value is the same as MDC's default, but MDC defines it once inside
     // a variables file which means that we can't override it with our own palette.
     $mdc-tab-text-label-color-default:
@@ -89,9 +90,9 @@
 }
 
 @mixin _mat-mdc-tabs-palette-styles($color) {
-  @include mdc-tab-without-ripple($query: $mat-theme-styles-query);
-  @include mdc-tab-indicator-underline-color($color, $query: $mat-theme-styles-query);
-  @include mdc-tab-indicator-icon-color($color, $query: $mat-theme-styles-query);
+  @include mdc-tab-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+  @include mdc-tab-indicator-underline-color($color, $query: mdc-helpers.$mat-theme-styles-query);
+  @include mdc-tab-indicator-icon-color($color, $query: mdc-helpers.$mat-theme-styles-query);
 
   .mdc-tab__ripple::before,
   .mat-mdc-tab .mat-ripple-element,
@@ -101,36 +102,36 @@
   }
 }
 
-@mixin mat-mdc-tabs-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
-  @include mat-using-mdc-typography($config) {
-    @include mdc-tab-without-ripple($query: $mat-typography-styles-query);
-    @include mdc-tab-indicator-core-styles($query: $mat-typography-styles-query);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
+  @include mdc-helpers.mat-using-mdc-typography($config) {
+    @include mdc-tab-without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-tab-indicator-core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 
-@mixin mat-mdc-tabs-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
   .mat-mdc-tab-header {
-    @include mdc-tab-bar-density($density-scale, $query: $mat-base-styles-query);
+    @include mdc-tab-bar-density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
   }
 }
 
-@mixin mat-mdc-tabs-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-tabs') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-tabs') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-mdc-tabs-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-mdc-tabs-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-mdc-tabs-typography($typography);
+      @include typography($typography);
     }
   }
 }

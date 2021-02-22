@@ -1,0 +1,5 @@
+@forward '../mdc-helpers/mdc-helpers.import';
+@forward '../mdc-helpers/mdc-helpers';
+@forward 'tooltip-theme' as mat-mdc-tooltip-*;
+
+@import '../mdc-helpers/mdc-helpers';

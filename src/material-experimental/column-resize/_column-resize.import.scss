@@ -1,5 +1,9 @@
-@forward 'column-resize';
-@forward '../../material/core/style/variables';
-@forward '../../material/core/style/vendor-prefixes';
-@forward '../../material/core/theming/palette';
-@forward '../../material/core/theming/theming';
+@forward '../../material/core/style/variables.import';
+@forward '../../material/core/theming/theming.import';
+@forward '../../material/core/style/vendor-prefixes.import';
+@forward 'column-resize' as mat-column-resize-*;
+
+@import '../../material/core/style/variables';
+@import '../../material/core/style/vendor-prefixes';
+@import '../../material/core/theming/palette';
+@import '../../material/core/theming/theming';

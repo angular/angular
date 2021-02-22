@@ -1,10 +1,10 @@
-@import '../style/menu-common';
-@import '../style/vendor-prefixes';
-@import '../style/layout-common';
-@import '../../../cdk/a11y/a11y';
+@use '../style/menu-common';
+@use '../style/vendor-prefixes';
+@use '../style/layout-common';
+@use '../../../cdk/a11y/a11y';
 
 .mat-option {
-  @include mat-menu-item-base();
+  @include menu-common.item-base();
   position: relative;
   cursor: pointer;
   outline: none;
@@ -16,20 +16,20 @@
   -webkit-tap-highlight-color: transparent;
 
   &[aria-disabled='true'] {
-    @include user-select(none);
+    @include vendor-prefixes.user-select(none);
     cursor: default;
   }
 
   .mat-optgroup &:not(.mat-option-multiple) {
-    padding-left: $mat-menu-side-padding * 2;
+    padding-left: menu-common.$side-padding * 2;
 
     [dir='rtl'] & {
-      padding-left: $mat-menu-side-padding;
-      padding-right: $mat-menu-side-padding * 2;
+      padding-left: menu-common.$side-padding;
+      padding-right: menu-common.$side-padding * 2;
     }
   }
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     $high-contrast-border-width: 1px;
 
     // Add a margin to offset the border that we're adding to active option, in order
@@ -68,7 +68,7 @@
 // Increase specificity because ripple styles are part of the `mat-core` mixin and can
 // potentially overwrite the absolute position of the container.
 .mat-option .mat-option-ripple {
-  @include mat-fill;
+  @include layout-common.fill;
 
   // Disable pointer events for the ripple container because the container will overlay the
   // user content and we don't want to disable mouse events on the user content.
@@ -77,7 +77,7 @@
 }
 
 .mat-option-pseudo-checkbox {
-  $margin: $mat-menu-side-padding / 2;
+  $margin: menu-common.$side-padding / 2;
   margin-right: $margin;
 
   [dir='rtl'] & {

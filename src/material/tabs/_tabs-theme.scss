@@ -1,15 +1,16 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
+@use 'sass:map';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
 
-@mixin mat-tabs-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
-  $header-border: 1px solid mat-color($foreground, divider);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
+  $header-border: 1px solid theming.color($foreground, divider);
 
   .mat-tab-nav-bar,
   .mat-tab-header {
@@ -25,19 +26,19 @@
   }
 
   .mat-tab-label, .mat-tab-link {
-    color: mat-color($foreground, text);
+    color: theming.color($foreground, text);
 
     &.mat-tab-disabled {
-      color: mat-color($foreground, disabled-text);
+      color: theming.color($foreground, disabled-text);
     }
   }
 
   .mat-tab-header-pagination-chevron {
-    border-color: mat-color($foreground, text);
+    border-color: theming.color($foreground, text);
   }
 
   .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron {
-    border-color: mat-color($foreground, disabled-text);
+    border-color: theming.color($foreground, disabled-text);
   }
 
   // Remove header border when there is a background color
@@ -81,7 +82,7 @@
 
 @mixin _mat-ink-bar($color, $hue: default) {
   .mat-ink-bar {
-    background-color: mat-color($color, $hue);
+    background-color: theming.color($color, $hue);
   }
 }
 
@@ -91,7 +92,7 @@
     &.cdk-keyboard-focused,
     &.cdk-program-focused {
       &:not(.mat-tab-disabled) {
-        background-color: mat-color($tab-focus-color, lighter, 0.3);
+        background-color: theming.color($tab-focus-color, lighter, 0.3);
       }
     }
   }
@@ -103,15 +104,15 @@
 
   // Set background color for the tab group
   > .mat-tab-header, > .mat-tab-link-container, > .mat-tab-header-pagination {
-    background-color: mat-color($background-color);
+    background-color: theming.color($background-color);
   }
 
   // Set labels to contrast against background
   > .mat-tab-header .mat-tab-label, > .mat-tab-link-container .mat-tab-link {
-    color: mat-color($background-color, default-contrast);
+    color: theming.color($background-color, default-contrast);
 
     &.mat-tab-disabled {
-      color: mat-color($background-color, default-contrast, 0.4);
+      color: theming.color($background-color, default-contrast, 0.4);
     }
   }
 
@@ -119,53 +120,53 @@
   > .mat-tab-header-pagination .mat-tab-header-pagination-chevron,
   > .mat-tab-links .mat-focus-indicator::before,
   > .mat-tab-header .mat-focus-indicator::before {
-    border-color: mat-color($background-color, default-contrast);
+    border-color: theming.color($background-color, default-contrast);
   }
 
   > .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron {
-    border-color: mat-color($background-color, default-contrast, 0.4);
+    border-color: theming.color($background-color, default-contrast, 0.4);
   }
 
   // Set ripples color to be the contrast color of the new background. Otherwise the ripple
   // color will be based on the app background color.
   > .mat-tab-header .mat-ripple-element,
   > .mat-tab-link-container .mat-ripple-element {
-    background-color: mat-color($background-color, default-contrast, 0.12);
+    background-color: theming.color($background-color, default-contrast, 0.12);
   }
 }
 
-@mixin mat-tabs-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-tab-group {
-    font-family: mat-font-family($config);
+    font-family: typography-utils.font-family($config);
   }
 
   .mat-tab-label, .mat-tab-link {
     font: {
-      family: mat-font-family($config, button);
-      size: mat-font-size($config, button);
-      weight: mat-font-weight($config, button);
+      family: typography-utils.font-family($config, button);
+      size: typography-utils.font-size($config, button);
+      weight: typography-utils.font-weight($config, button);
     }
   }
 }
 
 @mixin _mat-tabs-density($config-or-theme) {}
 
-@mixin mat-tabs-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-tabs') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-tabs') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-tabs-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-tabs-density($density);
     }
     @if $typography != null {
-      @include mat-tabs-typography($typography);
+      @include typography($typography);
     }
   }
 }

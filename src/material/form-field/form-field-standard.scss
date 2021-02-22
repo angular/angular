@@ -1,39 +1,39 @@
-@import '../core/style/variables';
-@import '../core/style/vendor-prefixes';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/variables';
+@use '../core/style/vendor-prefixes';
+@use '../../cdk/a11y/a11y';
 
 
 // Styles that only apply to the standard appearance of the form-field.
 
 // The height of the underline.
-$mat-form-field-standard-underline-height: 1px !default;
+$standard-underline-height: 1px !default;
 // The padding between the top of the form field and the label text (used to align the standard
 // form field with the fill and outline appearances).
-$mat-form-field-standard-padding-top: 0.75em !default;
+$standard-padding-top: 0.75em !default;
 
 
 .mat-form-field-appearance-standard {
   .mat-form-field-flex {
-    padding-top: $mat-form-field-standard-padding-top;
+    padding-top: $standard-padding-top;
   }
 
   // The underline is what's shown under the control, its prefix and its suffix.
   // The ripple is the blue animation coming on top of it.
   .mat-form-field-underline {
-    height: $mat-form-field-standard-underline-height;
+    height: $standard-underline-height;
 
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       height: 0;
-      border-top: solid $mat-form-field-standard-underline-height;
+      border-top: solid $standard-underline-height;
     }
   }
 
   .mat-form-field-ripple {
-    $height: $mat-form-field-standard-underline-height * 2;
+    $height: $standard-underline-height * 2;
     bottom: 0;
     height: $height;
 
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       height: 0;
       border-top: solid $height;
     }
@@ -43,7 +43,7 @@ $mat-form-field-standard-padding-top: 0.75em !default;
     background-position: 0;
     background-color: transparent;
 
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       border-top-style: dotted;
       border-top-width: 2px;
     }
@@ -55,7 +55,7 @@ $mat-form-field-standard-padding-top: 0.75em !default;
     .mat-form-field-ripple {
       opacity: 1;
       transform: none;
-      transition: opacity 600ms $swift-ease-out-timing-function;
+      transition: opacity 600ms variables.$swift-ease-out-timing-function;
     }
   }
 

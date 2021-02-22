@@ -1,5 +1,5 @@
 // This mixin ensures an element spans to fill the nearest ancestor with defined positioning.
-@mixin mat-fill {
+@mixin fill {
   top: 0;
   left: 0;
   right: 0;

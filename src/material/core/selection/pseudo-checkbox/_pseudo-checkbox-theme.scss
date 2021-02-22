@@ -1,12 +1,13 @@
-@import '../../theming/theming';
+@use 'sass:map';
+@use '../../theming/theming';
 
-@mixin mat-pseudo-checkbox-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $is-dark-theme: map-get($config, is-dark);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $background: map-get($config, background);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $is-dark-theme: map.get($config, is-dark);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
 
   // NOTE(traviskaufman): While the spec calls for translucent blacks/whites for disabled colors,
   // this does not work well with elements layered on top of one another. To get around this we
@@ -17,10 +18,10 @@
   $colored-box-selector: '.mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-indeterminate';
 
   .mat-pseudo-checkbox {
-    color: mat-color(map-get($config, foreground), secondary-text);
+    color: theming.color(map.get($config, foreground), secondary-text);
 
     &::after {
-      color: mat-color($background, background);
+      color: theming.color($background, background);
     }
   }
 
@@ -30,7 +31,7 @@
 
   .mat-primary .mat-pseudo-checkbox-checked,
   .mat-primary .mat-pseudo-checkbox-indeterminate {
-    background: mat-color(map-get($config, primary));
+    background: theming.color(map.get($config, primary));
   }
 
   // Default to the accent color. Note that the pseudo checkboxes are meant to inherit the
@@ -42,12 +43,12 @@
   .mat-pseudo-checkbox-indeterminate,
   .mat-accent .mat-pseudo-checkbox-checked,
   .mat-accent .mat-pseudo-checkbox-indeterminate {
-    background: mat-color(map-get($config, accent));
+    background: theming.color(map.get($config, accent));
   }
 
   .mat-warn .mat-pseudo-checkbox-checked,
   .mat-warn .mat-pseudo-checkbox-indeterminate {
-    background: mat-color(map-get($config, warn));
+    background: theming.color(map.get($config, warn));
   }
 
   .mat-pseudo-checkbox-checked,
@@ -58,25 +59,25 @@
   }
 }
 
-@mixin mat-pseudo-checkbox-typography($config-or-theme) {}
+@mixin typography($config-or-theme) {}
 
 @mixin _mat-pseudo-checkbox-density($config-or-theme) {}
 
-@mixin mat-pseudo-checkbox-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-pseudo-checkbox') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-pseudo-checkbox') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-pseudo-checkbox-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-pseudo-checkbox-density($density);
     }
     @if $typography != null {
-      @include mat-pseudo-checkbox-typography($typography);
+      @include typography($typography);
     }
   }
 }

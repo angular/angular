@@ -1,2 +1,4 @@
-@forward 'mdc-text-field-textarea-overrides';
 @forward 'form-field-sizing';
+@forward 'mdc-text-field-textarea-overrides' as mat-mdc-*;
+
+@import 'form-field-sizing';

@@ -1,25 +1,25 @@
-@import '../../cdk/a11y/a11y';
+@use '../../cdk/a11y/a11y';
 
-$mat-snack-bar-padding: 14px 16px !default;
-$mat-snack-bar-min-height: 48px !default;
-$mat-snack-bar-min-width: 344px !default;
-$mat-snack-bar-max-width: 33vw !default;
-$mat-snack-bar-spacing-margin: 24px !default;
-$mat-snack-bar-spacing-margin-handset: 8px !default;
+$padding: 14px 16px !default;
+$min-height: 48px !default;
+$min-width: 344px !default;
+$max-width: 33vw !default;
+$spacing-margin: 24px !default;
+$spacing-margin-handset: 8px !default;
 
 
 .mat-snack-bar-container {
   border-radius: 4px;
   box-sizing: border-box;
   display: block;
-  margin: $mat-snack-bar-spacing-margin;
-  max-width: $mat-snack-bar-max-width;
-  min-width: $mat-snack-bar-min-width;
-  padding: $mat-snack-bar-padding;
-  min-height: $mat-snack-bar-min-height;
+  margin: $spacing-margin;
+  max-width: $max-width;
+  min-width: $min-width;
+  padding: $padding;
+  min-height: $min-height;
   transform-origin: center;
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     border: solid 1px;
   }
 }
@@ -32,7 +32,7 @@ $mat-snack-bar-spacing-margin-handset: 8px !default;
   width: 100%;
 
   .mat-snack-bar-container {
-    margin: $mat-snack-bar-spacing-margin-handset;
+    margin: $spacing-margin-handset;
     max-width: 100%;
     min-width: 0;
     width: 100%;

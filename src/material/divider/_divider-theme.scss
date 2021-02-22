@@ -1,38 +1,39 @@
-@import '../core/theming/palette';
-@import '../core/theming/theming';
+@use 'sass:map';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
 
-@mixin mat-divider-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $foreground: map.get($config, foreground);
 
   .mat-divider {
-    border-top-color: mat-color($foreground, divider);
+    border-top-color: theming.color($foreground, divider);
   }
 
   .mat-divider-vertical {
-    border-right-color: mat-color($foreground, divider);
+    border-right-color: theming.color($foreground, divider);
   }
 }
 
-@mixin mat-divider-typography($config-or-theme) {}
+@mixin typography($config-or-theme) {}
 
 @mixin _mat-divider-density($config-or-theme) {}
 
-@mixin mat-divider-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-divider') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-divider') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-divider-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-divider-density($density);
     }
     @if $typography != null {
-      @include mat-divider-typography($typography);
+      @include typography($typography);
     }
   }
 }

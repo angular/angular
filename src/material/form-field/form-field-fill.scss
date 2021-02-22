@@ -1,34 +1,34 @@
-@import '../core/style/variables';
-@import '../core/style/vendor-prefixes';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/variables';
+@use '../core/style/vendor-prefixes';
+@use '../../cdk/a11y/a11y';
 
 // Styles that only apply to the fill appearance of the form-field.
 
 // The border radius for the form field fill box.
-$mat-form-field-fill-border-radius: 4px !default;
+$fill-border-radius: 4px !default;
 // The height of the underline at the bottom of the form field fill box.
-$mat-form-field-fill-underline-height: 1px !default;
+$fill-underline-height: 1px !default;
 // The height of the underline ripple at the bottom of the form field fill box.
-$mat-form-field-fill-underline-ripple-height: 2px !default;
+$fill-underline-ripple-height: 2px !default;
 // The horizontal padding between the edge of the form field fill box and the start of the text.
-$mat-form-field-fill-side-padding: 0.75em !default;
+$fill-side-padding: 0.75em !default;
 // The vertical padding between the edge of the form field fill box and the start of the text as
 // well as between the floating label and the value.
-$mat-form-field-fill-line-spacing: 0.75em !default;
+$fill-line-spacing: 0.75em !default;
 // The scale of the subscript and floating label text w.r.t the value text.
-$mat-form-field-fill-subscript-font-scale: 0.75 !default;
+$fill-subscript-font-scale: 0.75 !default;
 // The horizontal padding between the edge of the subscript box and the start of the subscript text.
-$mat-form-field-fill-subscript-padding:
-    $mat-form-field-fill-side-padding / $mat-form-field-fill-subscript-font-scale;
+$fill-subscript-padding:
+    $fill-side-padding / $fill-subscript-font-scale;
 
 
 .mat-form-field-appearance-fill {
   .mat-form-field-flex {
-    border-radius: $mat-form-field-fill-border-radius $mat-form-field-fill-border-radius 0 0;
-    padding: $mat-form-field-fill-line-spacing $mat-form-field-fill-side-padding 0
-             $mat-form-field-fill-side-padding;
+    border-radius: $fill-border-radius $fill-border-radius 0 0;
+    padding: $fill-line-spacing $fill-side-padding 0
+             $fill-side-padding;
 
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       outline: solid 1px;
     }
   }
@@ -38,17 +38,17 @@ $mat-form-field-fill-subscript-padding:
     display: block;
     position: absolute;
     bottom: 0;
-    height: $mat-form-field-fill-underline-height;
+    height: $fill-underline-height;
     width: 100%;
   }
 
   .mat-form-field-ripple {
     bottom: 0;
-    height: $mat-form-field-fill-underline-ripple-height;
+    height: $fill-underline-ripple-height;
 
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       height: 0;
-      border-top: solid $mat-form-field-fill-underline-ripple-height;
+      border-top: solid $fill-underline-ripple-height;
     }
   }
 
@@ -58,7 +58,7 @@ $mat-form-field-fill-subscript-padding:
     .mat-form-field-ripple {
       opacity: 1;
       transform: none;
-      transition: opacity 600ms $swift-ease-out-timing-function;
+      transition: opacity 600ms variables.$swift-ease-out-timing-function;
     }
   }
 
@@ -69,6 +69,6 @@ $mat-form-field-fill-subscript-padding:
   }
 
   .mat-form-field-subscript-wrapper {
-    padding: 0 $mat-form-field-fill-subscript-padding;
+    padding: 0 $fill-subscript-padding;
   }
 }

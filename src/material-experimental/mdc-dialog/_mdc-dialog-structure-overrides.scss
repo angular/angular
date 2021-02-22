@@ -1,6 +1,6 @@
 // Mixin that can be included to override the default MDC dialog styles to fit
 // our needs. See individual comments for context on why certain styles need to be modified.
-@mixin mat-mdc-private-dialog-structure-overrides($content-max-height) {
+@mixin private-dialog-structure-overrides($content-max-height) {
   // MDC dialog sets max-height and max-width on the `mdc-dialog__surface` element. This
   // element is the parent of the portal outlet. This means that the actual user-content
   // is scrollable, but as per Material Design specification, only the dialog content

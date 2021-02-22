@@ -1,36 +1,37 @@
-@import '../core/style/private';
-@import '../core/theming/palette';
-@import '../core/theming/theming';
-@import '../core/typography/typography-utils';
+@use 'sass:map';
+@use '../core/style/private';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
+@use '../core/typography/typography-utils';
 
 @mixin _mat-slide-toggle-checked($palette, $thumb-checked-hue) {
   &.mat-checked {
     .mat-slide-toggle-thumb {
-      background-color: mat-color($palette, $thumb-checked-hue);
+      background-color: theming.color($palette, $thumb-checked-hue);
     }
 
     .mat-slide-toggle-bar {
       // Opacity is determined from the specs for the selection controls.
       // See: https://material.io/design/components/selection-controls.html#specs
-      background-color: mat-color($palette, $thumb-checked-hue, 0.54);
+      background-color: theming.color($palette, $thumb-checked-hue, 0.54);
     }
 
     .mat-ripple-element {
       // Set no opacity for the ripples because the ripple opacity will be adjusted dynamically
       // based on the type of interaction with the slide-toggle (e.g. for hover, focus)
-      background-color: mat-color($palette, $thumb-checked-hue);
+      background-color: theming.color($palette, $thumb-checked-hue);
     }
   }
 }
 
-@mixin mat-slide-toggle-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $is-dark: map-get($config, is-dark);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $is-dark: map.get($config, is-dark);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
   // Color hues are based on the specs which briefly show the hues that are applied to a switch.
   // The 2018 specs no longer describe how dark switches should look like. Due to the lack of
@@ -41,8 +42,8 @@
   $thumb-unchecked-hue: if($is-dark, 400, 50);
   $thumb-checked-hue: default;
 
-  $bar-unchecked-color: mat-color($foreground, disabled);
-  $ripple-unchecked-color: mat-color($foreground, base);
+  $bar-unchecked-color: theming.color($foreground, disabled);
+  $ripple-unchecked-color: theming.color($foreground, base);
 
   .mat-slide-toggle {
     @include _mat-slide-toggle-checked($accent, $thumb-checked-hue);
@@ -63,8 +64,8 @@
   }
 
   .mat-slide-toggle-thumb {
-    @include mat-private-theme-elevation(1, $config);
-    background-color: mat-color($mat-grey, $thumb-unchecked-hue);
+    @include private.theme-elevation(1, $config);
+    background-color: theming.color(palette.$grey, $thumb-unchecked-hue);
   }
 
   .mat-slide-toggle-bar {
@@ -72,30 +73,30 @@
   }
 }
 
-@mixin mat-slide-toggle-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
   .mat-slide-toggle-content {
-    font-family: mat-font-family($config);
+    font-family: typography-utils.font-family($config);
   }
 }
 
 @mixin _mat-slide-toggle-density($config-or-theme) {}
 
-@mixin mat-slide-toggle-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-slide-toggle') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-slide-toggle') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-slide-toggle-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-slide-toggle-density($density);
     }
     @if $typography != null {
-      @include mat-slide-toggle-typography($typography);
+      @include typography($typography);
     }
   }
 }

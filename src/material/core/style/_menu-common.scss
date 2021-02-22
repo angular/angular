@@ -1,34 +1,34 @@
-@import './variables';
-@import './list-common';
-@import './layout-common';
-@import './vendor-prefixes';
+@use './variables';
+@use './list-common';
+@use './layout-common';
+@use './vendor-prefixes';
 
 /** The mixins below are shared between mat-menu and mat-select */
 
 // menu width must be a multiple of 56px
-$mat-menu-overlay-min-width: 112px !default;   // 56 * 2
-$mat-menu-overlay-max-width: 280px !default;   // 56 * 5
+$overlay-min-width: 112px !default;   // 56 * 2
+$overlay-max-width: 280px !default;   // 56 * 5
 
-$mat-menu-item-height: 48px !default;
-$mat-menu-side-padding: 16px !default;
-$mat-menu-icon-margin: 16px !default;
+$item-height: 48px !default;
+$side-padding: 16px !default;
+$icon-margin: 16px !default;
 
 
-@mixin mat-menu-base() {
-  min-width: $mat-menu-overlay-min-width;
-  max-width: $mat-menu-overlay-max-width;
+@mixin base() {
+  min-width: $overlay-min-width;
+  max-width: $overlay-max-width;
   overflow: auto;
   -webkit-overflow-scrolling: touch;   // for momentum scroll on mobile
 }
 
-@mixin mat-menu-item-base() {
-  @include mat-truncate-line();
+@mixin item-base() {
+  @include list-common.truncate-line();
 
   // Needs to be a block for the ellipsis to work.
   display: block;
-  line-height: $mat-menu-item-height;
-  height: $mat-menu-item-height;
-  padding: 0 $mat-menu-side-padding;
+  line-height: $item-height;
+  height: $item-height;
+  padding: 0 $side-padding;
 
   text-align: left;
   text-decoration: none;   // necessary to reset anchor tags
@@ -45,7 +45,7 @@ $mat-menu-icon-margin: 16px !default;
   }
 
   .mat-icon {
-    margin-right: $mat-menu-icon-margin;
+    margin-right: $icon-margin;
     vertical-align: middle;
 
     svg {
@@ -53,13 +53,13 @@ $mat-menu-icon-margin: 16px !default;
     }
 
     [dir='rtl'] & {
-      margin-left: $mat-menu-icon-margin;
+      margin-left: $icon-margin;
       margin-right: 0;
     }
   }
 }
 
-@mixin mat-menu-item-submenu-trigger($side-padding, $triangle-height: 10px) {
+@mixin item-submenu-trigger($side-padding, $triangle-height: 10px) {
   // Increase the side padding to prevent the indicator from overlapping the text.
   padding-right: $side-padding * 2;
 
@@ -92,8 +92,8 @@ $mat-menu-icon-margin: 16px !default;
   }
 }
 
-@mixin mat-menu-item-ripple() {
-  @include mat-fill;
+@mixin item-ripple() {
+  @include layout-common.fill;
 
   // Prevent any pointer events on the ripple container for a menu item. The ripple container is
   // not the trigger element for the ripples and can be therefore disabled like that. Disabling

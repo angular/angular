@@ -1,4 +1,8 @@
+@forward '../../material/core/theming/theming.import';
+@forward '../../material/core/style/layout-common.import';
+@forward '../../material/core/typography/typography.import';
 @forward 'mdc-helpers';
-@forward '../../material/core/style/layout-common';
-@forward '../../material/core/theming/theming';
-@forward '../../material/core/typography/typography';
+
+@import '../../material/core/style/layout-common';
+@import '../../material/core/theming/theming';
+@import '../../material/core/typography/typography';

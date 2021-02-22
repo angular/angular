@@ -1,28 +1,31 @@
-@import '../core/style/private';
-@import '../core/theming/palette';
-@import '../core/theming/theming';
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:meta';
+@use '../core/style/private';
+@use '../core/theming/palette';
+@use '../core/theming/theming';
 
-@mixin mat-sidenav-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
-  $drawer-background-color: mat-color($background, dialog);
-  $drawer-container-background-color:  mat-color($background, background);
-  $drawer-push-background-color: mat-color($background, dialog);
-  $drawer-side-border: solid 1px mat-color($foreground, divider);
+  $drawer-background-color: theming.color($background, dialog);
+  $drawer-container-background-color:  theming.color($background, background);
+  $drawer-push-background-color: theming.color($background, dialog);
+  $drawer-side-border: solid 1px theming.color($foreground, divider);
 
   .mat-drawer-container {
     background-color: $drawer-container-background-color;
-    color: mat-color($foreground, text);
+    color: theming.color($foreground, text);
   }
 
   .mat-drawer {
     background-color: $drawer-background-color;
-    color: mat-color($foreground, text);
+    color: theming.color($foreground, text);
 
     &.mat-drawer-push {
       background-color: $drawer-push-background-color;
@@ -31,7 +34,7 @@
     &:not(.mat-drawer-side) {
       // The elevation of z-16 is noted in the design specifications.
       // See https://material.io/design/components/navigation-drawer.html
-      @include mat-private-theme-elevation(16, $config);
+      @include private.theme-elevation(16, $config);
     }
   }
 
@@ -56,13 +59,13 @@
 
   .mat-drawer-backdrop.mat-drawer-shown {
     $opacity: 0.6;
-    $backdrop-color: mat-color($background, card, $opacity);
+    $backdrop-color: theming.color($background, card, $opacity);
 
-    @if (type-of($backdrop-color) == color) {
+    @if (meta.type-of($backdrop-color) == color) {
       // We use invert() here to have the darken the background color expected to be used. If the
       // background is light, we use a dark backdrop. If the background is dark,
       // we use a light backdrop.
-      background-color: invert($backdrop-color);
+      background-color: color.invert($backdrop-color);
     }
     @else {
       // If we couldn't resolve the backdrop color to a color value, fall back to using
@@ -73,25 +76,25 @@
   }
 }
 
-@mixin mat-sidenav-typography($config-or-theme) {}
+@mixin typography($config-or-theme) {}
 
 @mixin _mat-sidenav-density($config-or-theme) {}
 
-@mixin mat-sidenav-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-sidenav') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-sidenav') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-sidenav-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-sidenav-density($density);
     }
     @if $typography != null {
-      @include mat-sidenav-typography($typography);
+      @include typography($typography);
     }
   }
 }

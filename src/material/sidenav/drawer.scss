@@ -1,18 +1,18 @@
-@import '../core/style/variables';
-@import '../core/style/layout-common';
-@import '../core/style/vendor-prefixes';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/variables';
+@use '../core/style/layout-common';
+@use '../core/style/vendor-prefixes';
+@use '../../cdk/a11y/a11y';
 
-$mat-drawer-content-z-index: 1;
-$mat-drawer-side-drawer-z-index: 2;
-$mat-drawer-backdrop-z-index: 3;
-$mat-drawer-over-drawer-z-index: 4;
+$drawer-content-z-index: 1;
+$drawer-side-drawer-z-index: 2;
+$drawer-backdrop-z-index: 3;
+$drawer-over-drawer-z-index: 4;
 
 // stylelint-disable max-line-length
 // Mixin that creates a new stacking context.
 // see https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
 // stylelint-enable
-@mixin mat-drawer-stacking-context($z-index: 1) {
+@mixin drawer-stacking-context($z-index: 1) {
   position: relative;
 
   // Use a z-index to create a new stacking context. (We can't use transform because it breaks fixed
@@ -25,7 +25,7 @@ $mat-drawer-over-drawer-z-index: 4;
   // MatDrawerContainer. This creates a new z-index stack so we use low numbered z-indices.
   // We create another stacking context in the '.mat-drawer-content' and in each drawer so that
   // the application content does not get messed up with our own CSS.
-  @include mat-drawer-stacking-context();
+  @include drawer-stacking-context();
 
   box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
@@ -38,7 +38,7 @@ $mat-drawer-over-drawer-z-index: 4;
 
   // TODO(hansl): Update this with a more robust solution.
   &[fullscreen] {
-    @include mat-fill();
+    @include layout-common.fill();
 
     &.mat-drawer-container-has-open {
       overflow: hidden;
@@ -48,7 +48,7 @@ $mat-drawer-over-drawer-z-index: 4;
   // When the consumer explicitly enabled the backdrop,
   // we have to pull the side drawers above it.
   &.mat-drawer-container-explicit-backdrop .mat-drawer-side {
-    z-index: $mat-drawer-backdrop-z-index;
+    z-index: $drawer-backdrop-z-index;
   }
 
   // Note that the `NoopAnimationsModule` is being handled inside of the component code.
@@ -60,13 +60,13 @@ $mat-drawer-over-drawer-z-index: 4;
 }
 
 .mat-drawer-backdrop {
-  @include mat-fill();
+  @include layout-common.fill();
 
   display: block;
 
   // Because of the new stacking context, the z-index stack is new and we can use our own
   // numbers.
-  z-index: $mat-drawer-backdrop-z-index;
+  z-index: $drawer-backdrop-z-index;
 
   // We use 'visibility: hidden | visible' because 'display: none' will not animate any
   // transitions, while visibility will interpolate transitions properly.
@@ -80,19 +80,19 @@ $mat-drawer-over-drawer-z-index: 4;
 
   .mat-drawer-transition & {
     transition: {
-      duration: $swift-ease-out-duration;
-      timing-function: $swift-ease-out-timing-function;
+      duration: variables.$swift-ease-out-duration;
+      timing-function: variables.$swift-ease-out-timing-function;
       property: background-color, visibility;
     }
   }
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     opacity: 0.5;
   }
 }
 
 .mat-drawer-content {
-  @include mat-drawer-stacking-context($mat-drawer-content-z-index);
+  @include drawer-stacking-context($drawer-content-z-index);
 
   display: block;
   height: 100%;
@@ -100,8 +100,8 @@ $mat-drawer-over-drawer-z-index: 4;
 
   .mat-drawer-transition & {
     transition: {
-      duration: $swift-ease-out-duration;
-      timing-function: $swift-ease-out-timing-function;
+      duration: variables.$swift-ease-out-duration;
+      timing-function: variables.$swift-ease-out-timing-function;
       property: transform, margin-left, margin-right;
     }
   }
@@ -110,7 +110,7 @@ $mat-drawer-over-drawer-z-index: 4;
 .mat-drawer {
   $high-contrast-border: solid 1px currentColor;
 
-  @include mat-drawer-stacking-context($mat-drawer-over-drawer-z-index);
+  @include drawer-stacking-context($drawer-over-drawer-z-index);
 
   display: block;
   position: absolute;
@@ -123,20 +123,20 @@ $mat-drawer-over-drawer-z-index: 4;
   transform: translate3d(-100%, 0, 0);
 
   &, [dir='rtl'] &.mat-drawer-end {
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       border-right: $high-contrast-border;
     }
   }
 
   [dir='rtl'] &, &.mat-drawer-end {
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       border-left: $high-contrast-border;
       border-right: none;
     }
   }
 
   &.mat-drawer-side {
-    z-index: $mat-drawer-side-drawer-z-index;
+    z-index: $drawer-side-drawer-z-index;
   }
 
   &.mat-drawer-end {

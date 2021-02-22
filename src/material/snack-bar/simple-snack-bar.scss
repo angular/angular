@@ -1,35 +1,35 @@
-@import '../core/style/variables';
-@import '../core/style/button-common';
-@import '../core/style/list-common';
+@use '../core/style/variables';
+@use '../core/style/button-common';
+@use '../core/style/list-common';
 
-$mat-snack-bar-button-horizontal-margin: 8px !default;
-$mat-snack-bar-button-height: 36px !default;
-$mat-snack-bar-line-height: 20px !default;
+$button-horizontal-margin: 8px !default;
+$button-height: 36px !default;
+$line-height: 20px !default;
 // Button vertical margin is used to ensure that a button height of 36px, when the containing
 // space falls below 36px.
-$mat-snack-bar-button-vertical-margin:
-  -(($mat-snack-bar-button-height - $mat-snack-bar-line-height) / 2);
+$button-vertical-margin:
+  -(($button-height - $line-height) / 2);
 
 .mat-simple-snackbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  line-height: $mat-snack-bar-line-height;
+  line-height: $line-height;
   opacity: 1;
 }
 
 .mat-simple-snackbar-action {
   flex-shrink: 0;
-  margin: $mat-snack-bar-button-vertical-margin $mat-snack-bar-button-horizontal-margin * -1
-          $mat-snack-bar-button-vertical-margin $mat-snack-bar-button-horizontal-margin;
+  margin: $button-vertical-margin $button-horizontal-margin * -1
+          $button-vertical-margin $button-horizontal-margin;
 
   button {
-    max-height: $mat-snack-bar-button-height;
+    max-height: $button-height;
     min-width: 0;
   }
 
   [dir='rtl'] & {
-    margin-left: -$mat-snack-bar-button-horizontal-margin;
-    margin-right: $mat-snack-bar-button-horizontal-margin;
+    margin-left: -$button-horizontal-margin;
+    margin-right: $button-horizontal-margin;
   }
 }

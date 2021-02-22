@@ -1,19 +1,20 @@
+@use 'sass:map';
+@use '../../material/core/style/variables';
+@use '../../material/core/style/private';
+@use '../../material/core/style/vendor-prefixes';
+@use '../../cdk/a11y/a11y';
+@use '../mdc-helpers/mdc-helpers';
 @import '@material/ripple/variables.import';
 @import '@material/tab/variables.import';
 @import '@material/tab/mixins.import';
-@import '../../material/core/style/variables';
-@import '../../material/core/style/private';
-@import '../../material/core/style/vendor-prefixes';
-@import '../../cdk/a11y/a11y';
-@import '../mdc-helpers/mdc-helpers';
 
 $mat-tab-animation-duration: 500ms !default;
 
-@mixin mat-mdc-tab {
+@mixin tab {
   &.mdc-tab {
     // This is usually included by MDC's tab bar, however we don't
     // use it because we implement our own pagination.
-    @include mdc-tab-height($mdc-tab-height, $mat-base-styles-query);
+    @include mdc-tab-height($mdc-tab-height, mdc-helpers.$mat-base-styles-query);
 
     // MDC's tabs stretch to fit the header by default, whereas stretching on our current ones
     // is an opt-in behavior. Also technically we don't need to combine the two classes, but
@@ -37,18 +38,18 @@ $mat-tab-animation-duration: 500ms !default;
 
   // We need to handle the hover and focus indication ourselves, because we don't use MDC's ripple.
   &:hover .mdc-tab__ripple::before {
-    opacity: map-get($mdc-ripple-dark-ink-opacities, hover);
+    opacity: map.get($mdc-ripple-dark-ink-opacities, hover);
   }
 
   &.cdk-program-focused,
   &.cdk-keyboard-focused {
     .mdc-tab__ripple::before {
-      opacity: map-get($mdc-ripple-dark-ink-opacities, focus);
+      opacity: map.get($mdc-ripple-dark-ink-opacities, focus);
     }
 
     // The usual focus indication is color-based so it won't show up in
     // high contrast mode. Add an outline which is a bit more visible.
-    @include cdk-high-contrast {
+    @include a11y.high-contrast {
       $outline-width: 2px;
       outline: dotted $outline-width;
       outline-offset: -$outline-width; // Not supported on IE, but looks better everywhere else.
@@ -56,11 +57,11 @@ $mat-tab-animation-duration: 500ms !default;
   }
 
   .mat-ripple-element {
-    opacity: map-get($mdc-ripple-dark-ink-opacities, press);
+    opacity: map.get($mdc-ripple-dark-ink-opacities, press);
   }
 }
 
-@mixin mat-mdc-tab-ripple {
+@mixin tab-ripple {
   .mat-mdc-tab-ripple {
     position: absolute;
     top: 0;
@@ -73,7 +74,7 @@ $mat-tab-animation-duration: 500ms !default;
 
 // Structural styles for a tab header. Used by both `mat-tab-header` and `mat-tab-nav-bar`.
 // We need this styles on top of MDC's, because MDC doesn't support pagination like ours.
-@mixin mat-mdc-paginated-tab-header {
+@mixin paginated-tab-header {
   .mat-mdc-tab-header {
     display: flex;
     overflow: hidden;
@@ -82,7 +83,7 @@ $mat-tab-animation-duration: 500ms !default;
   }
 
   .mat-mdc-tab-header-pagination {
-    @include user-select(none);
+    @include vendor-prefixes.user-select(none);
     position: relative;
     display: none;
     justify-content: center;
@@ -94,7 +95,7 @@ $mat-tab-animation-duration: 500ms !default;
     touch-action: none;
 
     .mat-ripple-element {
-      opacity: map-get($mdc-ripple-dark-ink-opacities, press);
+      opacity: map.get($mdc-ripple-dark-ink-opacities, press);
     }
 
     .mat-mdc-tab-header-pagination-controls-enabled & {
@@ -151,7 +152,7 @@ $mat-tab-animation-duration: 500ms !default;
 }
 
 // Structural styles for the element that wraps the paginated header items.
-@mixin mat-mdc-paginated-tab-header-item-wrapper($parent) {
+@mixin paginated-tab-header-item-wrapper($parent) {
   display: flex;
   flex: 1 0 auto;
 
@@ -168,7 +169,7 @@ $mat-tab-animation-duration: 500ms !default;
 }
 
 // Structural styles for the element that wraps the paginated container's content.
-@mixin mat-mdc-paginated-tab-header-container {
+@mixin paginated-tab-header-container {
   display: flex;
   flex-grow: 1;
   overflow: hidden;

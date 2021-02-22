@@ -1,41 +1,41 @@
-@import '../core/style/variables';
-@import '../core/style/list-common';
-@import '../core/style/layout-common';
-@import '../divider/divider-offset';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/variables';
+@use '../core/style/list-common';
+@use '../core/style/layout-common';
+@use '../divider/divider-offset';
+@use '../../cdk/a11y/a11y';
 
 
-$mat-list-side-padding: 16px;
-$mat-list-icon-padding: 4px;
-$mat-list-avatar-size: 40px;
+$side-padding: 16px;
+$icon-padding: 4px;
+$avatar-size: 40px;
 
 // Normal list variables
-$mat-list-top-padding: 8px;
+$top-padding: 8px;
 // height for single-line lists
-$mat-list-base-height: 48px;
+$base-height: 48px;
 // height for single-line lists with avatars
-$mat-list-avatar-height: 56px;
+$avatar-height: 56px;
 // spec requires two- and three-line lists be taller
-$mat-list-two-line-height: 72px;
-$mat-list-three-line-height: 88px;
-$mat-list-multi-line-padding: 16px;
-$mat-list-icon-size: 24px;
+$two-line-height: 72px;
+$three-line-height: 88px;
+$multi-line-padding: 16px;
+$icon-size: 24px;
 
 // Dense list variables
-$mat-dense-top-padding: 4px;
-$mat-dense-base-height: 40px;
-$mat-dense-avatar-height: 48px;
-$mat-dense-two-line-height: 60px;
-$mat-dense-three-line-height: 76px;
-$mat-dense-multi-line-padding: 16px;
-$mat-dense-list-icon-size: 20px;
-$mat-dense-avatar-size: 36px;
+$dense-top-padding: 4px;
+$dense-base-height: 40px;
+$dense-avatar-height: 48px;
+$dense-two-line-height: 60px;
+$dense-three-line-height: 76px;
+$dense-multi-line-padding: 16px;
+$dense-list-icon-size: 20px;
+$dense-avatar-size: 36px;
 
-$mat-list-item-inset-divider-offset: 72px;
+$item-inset-divider-offset: 72px;
 
 // This mixin provides all list-item styles, changing font size and height
 // based on whether the list is in dense mode.
-@mixin mat-list-item-base($base-height, $height-with-avatar, $two-line-height,
+@mixin item-base($base-height, $height-with-avatar, $two-line-height,
   $three-line-height, $multi-line-padding, $icon-size, $avatar-size) {
 
   // Prevents the wrapper `mat-list-item-content` from collapsing due to it
@@ -53,7 +53,7 @@ $mat-list-item-inset-divider-offset: 72px;
     flex-direction: row;
     align-items: center;
     box-sizing: border-box;
-    padding: 0 $mat-list-side-padding;
+    padding: 0 $side-padding;
     position: relative;
     height: inherit;
   }
@@ -61,13 +61,13 @@ $mat-list-item-inset-divider-offset: 72px;
   .mat-list-item-content-reverse {
     display: flex;
     align-items: center;
-    padding: 0 $mat-list-side-padding;
+    padding: 0 $side-padding;
     flex-direction: row-reverse;
     justify-content: space-around;
   }
 
   .mat-list-item-ripple {
-    @include mat-fill;
+    @include layout-common.fill;
 
     // Disable pointer events for the ripple container because the container will overlay the
     // user content and we don't want to disable mouse events on the user content.
@@ -100,7 +100,7 @@ $mat-list-item-inset-divider-offset: 72px;
   }
 
   .mat-list-text {
-    @include mat-line-wrapper-base();
+    @include list-common.wrapper-base();
 
     // By default, there will be no padding for the list item text because the padding is already
     // set on the `mat-list-item-content` element. Later, if the list-item detects that there are
@@ -112,10 +112,10 @@ $mat-list-item-inset-divider-offset: 72px;
   &.mat-list-option {
     .mat-list-item-content .mat-list-text {
       padding-right: 0;
-      padding-left: $mat-list-side-padding;
+      padding-left: $side-padding;
 
       [dir='rtl'] & {
-        padding-right: $mat-list-side-padding;
+        padding-right: $side-padding;
         padding-left: 0;
       }
     }
@@ -125,11 +125,11 @@ $mat-list-item-inset-divider-offset: 72px;
     // option, there needs to be a padding for the mat-list-text on the end-side.
     .mat-list-item-content-reverse .mat-list-text {
       padding-left: 0;
-      padding-right: $mat-list-side-padding;
+      padding-right: $side-padding;
 
       [dir='rtl'] & {
         padding-right: 0;
-        padding-left: $mat-list-side-padding;
+        padding-left: $side-padding;
       }
     }
    }
@@ -137,8 +137,8 @@ $mat-list-item-inset-divider-offset: 72px;
   &.mat-list-item-with-avatar.mat-list-option {
     .mat-list-item-content-reverse .mat-list-text,
     .mat-list-item-content .mat-list-text {
-      padding-right: $mat-list-side-padding;
-      padding-left: $mat-list-side-padding;
+      padding-right: $side-padding;
+      padding-left: $side-padding;
     }
   }
 
@@ -153,7 +153,7 @@ $mat-list-item-inset-divider-offset: 72px;
     object-fit: cover;
 
     ~ .mat-divider-inset {
-      @include mat-inset-divider-offset($avatar-size, $mat-list-side-padding);
+      @include divider-offset.inset-divider-offset($avatar-size, $side-padding);
     }
   }
 
@@ -164,11 +164,11 @@ $mat-list-item-inset-divider-offset: 72px;
     font-size: $icon-size;
     box-sizing: content-box;
     border-radius: 50%;
-    padding: $mat-list-icon-padding;
+    padding: $icon-padding;
 
     ~ .mat-divider-inset {
-      @include mat-inset-divider-offset($icon-size + (2 * $mat-list-icon-padding),
-              $mat-list-side-padding);
+      @include divider-offset.inset-divider-offset($icon-size + (2 * $icon-padding),
+              $side-padding);
     }
   }
 
@@ -193,7 +193,7 @@ $mat-list-item-inset-divider-offset: 72px;
 .mat-subheader {
   display: flex;
   box-sizing: border-box;
-  padding: $mat-list-side-padding;
+  padding: $side-padding;
   align-items: center;
 
   // This needs slightly more specificity, because it
@@ -204,9 +204,9 @@ $mat-list-item-inset-divider-offset: 72px;
 }
 
 // This mixin adjusts the heights and padding based on whether the list is in dense mode.
-@mixin mat-subheader-spacing($top-padding, $base-height) {
+@mixin subheader-spacing($top-padding, $base-height) {
   height: $base-height;
-  line-height: $base-height - $mat-list-side-padding * 2;
+  line-height: $base-height - $side-padding * 2;
 
   &:first-child {
     margin-top: -$top-padding;
@@ -214,45 +214,45 @@ $mat-list-item-inset-divider-offset: 72px;
 }
 
 .mat-list-base {
-  padding-top: $mat-list-top-padding;
+  padding-top: $top-padding;
   display: block;
   -webkit-tap-highlight-color: transparent;
 
   .mat-subheader {
-    @include mat-subheader-spacing($mat-list-top-padding, $mat-list-base-height);
+    @include subheader-spacing($top-padding, $base-height);
   }
 
   .mat-list-item, .mat-list-option {
-    @include mat-list-item-base(
-      $mat-list-base-height,
-      $mat-list-avatar-height,
-      $mat-list-two-line-height,
-      $mat-list-three-line-height,
-      $mat-list-multi-line-padding,
-      $mat-list-icon-size,
-      $mat-list-avatar-size
+    @include item-base(
+      $base-height,
+      $avatar-height,
+      $two-line-height,
+      $three-line-height,
+      $multi-line-padding,
+      $icon-size,
+      $avatar-size
     );
   }
 }
 
 
 .mat-list-base[dense] {
-  padding-top: $mat-dense-top-padding;
+  padding-top: $dense-top-padding;
   display: block;
 
   .mat-subheader {
-    @include mat-subheader-spacing($mat-dense-top-padding, $mat-dense-base-height);
+    @include subheader-spacing($dense-top-padding, $dense-base-height);
   }
 
   .mat-list-item, .mat-list-option {
-    @include mat-list-item-base(
-      $mat-dense-base-height,
-      $mat-dense-avatar-height,
-      $mat-dense-two-line-height,
-      $mat-dense-three-line-height,
-      $mat-dense-multi-line-padding,
-      $mat-dense-list-icon-size,
-      $mat-dense-avatar-size
+    @include item-base(
+      $dense-base-height,
+      $dense-avatar-height,
+      $dense-two-line-height,
+      $dense-three-line-height,
+      $dense-multi-line-padding,
+      $dense-list-icon-size,
+      $dense-avatar-size
     );
   }
 }
@@ -305,12 +305,12 @@ mat-action-list {
 
   // Since we can't use a color to indicate that the list
   // item is disabled, we have to use opacity instead.
-  @include cdk-high-contrast {
+  @include a11y.high-contrast {
     opacity: 0.5;
   }
 }
 
-@include cdk-high-contrast(active, off) {
+@include a11y.high-contrast(active, off) {
   .mat-selection-list:focus {
     outline-style: dotted;
   }
@@ -331,7 +331,7 @@ mat-action-list {
     content: '';
     position: absolute;
     top: 50%;
-    right: $mat-list-side-padding;
+    right: $side-padding;
     transform: translateY(-50%);
     width: $size;
     height: 0;
@@ -341,7 +341,7 @@ mat-action-list {
 
   [dir='rtl'] .mat-list-single-selected-option::after {
     right: auto;
-    left: $mat-list-side-padding;
+    left: $side-padding;
   }
 }
 

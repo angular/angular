@@ -1,17 +1,18 @@
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/theming/theming';
 @import '@material/menu-surface/mixins.import';
 @import '@material/list/mixins.import';
 @import '@material/theme/variables.import';
 @import '@material/select/variables.import';
 @import '@material/typography/mixins.import';
-@import '../mdc-helpers/mdc-helpers';
 
 // Gets the color to use for some text that is highlighted while a select has focus.
 @function _get-mdc-focused-text-color($palette) {
   @return rgba(mdc-theme-prop-value($palette), 0.87);
 }
 
-@mixin mat-mdc-select-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
 
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
@@ -21,15 +22,15 @@
   $orig-mdc-select-dropdown-icon-color: $mdc-select-dropdown-icon-color;
   $orig-mdc-select-disabled-dropdown-icon-color: $mdc-select-disabled-dropdown-icon-color;
 
-  @include mat-using-mdc-theme($config) {
+  @include mdc-helpers.mat-using-mdc-theme($config) {
     $mdc-select-ink-color: rgba(mdc-theme-prop-value(on-surface), 0.87) !global;
     $mdc-select-label-color: rgba(mdc-theme-prop-value(on-surface), 0.6) !global;
     $mdc-select-disabled-label-color: rgba(mdc-theme-prop-value(on-surface), 0.38) !global;
     $mdc-select-dropdown-icon-color: rgba(mdc-theme-prop-value(on-surface), 0.54) !global;
     $mdc-select-disabled-dropdown-icon-color: rgba(mdc-theme-prop-value(on-surface), 0.38) !global;
 
-    @include mdc-menu-surface-core-styles($mat-theme-styles-query);
-    @include mdc-list-deprecated-without-ripple($mat-theme-styles-query);
+    @include mdc-menu-surface-core-styles(mdc-helpers.$mat-theme-styles-query);
+    @include mdc-list-deprecated-without-ripple(mdc-helpers.$mat-theme-styles-query);
 
     .mat-mdc-select-value {
       color: $mdc-select-ink-color;
@@ -80,40 +81,40 @@
   $mdc-select-disabled-dropdown-icon-color: $orig-mdc-select-disabled-dropdown-icon-color !global;
 }
 
-@mixin mat-mdc-select-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
-  @include mat-using-mdc-typography($config) {
-    @include mdc-menu-surface-core-styles($mat-typography-styles-query);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
+  @include mdc-helpers.mat-using-mdc-typography($config) {
+    @include mdc-menu-surface-core-styles(mdc-helpers.$mat-typography-styles-query);
 
     .mat-mdc-select-panel {
       // Note that we include this private mixin, because the public one adds
       // a bunch of styles that we aren't using for the select panel.
-      @include mdc-list-deprecated-base_($mat-typography-styles-query);
+      @include mdc-list-deprecated-base_(mdc-helpers.$mat-typography-styles-query);
     }
 
     .mat-mdc-select-value {
-      @include mdc-typography(body1, $query: $mat-typography-styles-query);
+      @include mdc-typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
     }
   }
 }
 
-@mixin mat-mdc-select-density($config-or-theme) {}
+@mixin density($config-or-theme) {}
 
-@mixin mat-mdc-select-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-select') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-select') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-mdc-select-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-mdc-select-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-mdc-select-typography($typography);
+      @include typography($typography);
     }
   }
 }

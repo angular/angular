@@ -1,11 +1,11 @@
 @use '@material/density';
+@use '../../material/core/style/menu-common';
+@use '../../material/core/style/button-common';
+@use '../../cdk/a11y/a11y';
+@use '../mdc-helpers/mdc-helpers';
 @import '@material/menu-surface/mixins.import';
 @import '@material/list/mixins.import';
 @import '@material/list/variables.import';
-@import '../../material/core/style/menu-common';
-@import '../../material/core/style/button-common';
-@import '../../cdk/a11y/a11y';
-@import '../mdc-helpers/mdc-helpers';
 
 @include mdc-menu-surface-core-styles($query: structure);
 
@@ -24,12 +24,12 @@ mat-menu {
   // Include Material's base menu panel styling which contain the `min-width`, `max-width` and some
   // styling to make scrolling smoother. MDC doesn't include the `min-width` and `max-width`, even
   // though they're explicitly defined in spec.
-  @include mat-menu-base;
+  @include menu-common.base;
 
   // The CDK positioning uses flexbox to anchor the element, whereas MDC uses `position: absolute`.
   position: static;
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
@@ -45,12 +45,13 @@ mat-menu {
   // one adds a bunch of styles that we aren't using for the menu.
   @include mdc-list-deprecated-item-base_;
   @include mdc-list-deprecated-list-item-padding-variant(
-    $mdc-list-deprecated-textual-variant-config, $query: $mat-base-styles-query);
+    $mdc-list-deprecated-textual-variant-config, $query: mdc-helpers.$mat-base-styles-query);
 
   // MDC's menu items are `<li>` nodes which don't need resets, however ours
   // can be anything, including buttons, so we need to do the reset ourselves.
-  @include mat-button-reset;
-  @include mdc-list-deprecated-single-line-height($height, $query: $mat-base-styles-query);
+  @include button-common.reset;
+  @include mdc-list-deprecated-single-line-height($height,
+    $query: mdc-helpers.$mat-base-styles-query);
   cursor: pointer;
   width: 100%;
   text-align: left;
@@ -83,7 +84,7 @@ mat-menu {
     }
   }
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     $outline-width: 1px;
 
     // We need to move the item 1px down, because Firefox seems to have
@@ -100,11 +101,11 @@ mat-menu {
 
 // Renders out a chevron on menu items that trigger a sub-menu.
 .mat-mdc-menu-item-submenu-trigger {
-  @include mat-menu-item-submenu-trigger($mdc-list-deprecated-side-padding);
+  @include menu-common.item-submenu-trigger($mdc-list-deprecated-side-padding);
 }
 
 // Increase specificity because ripple styles are part of the `mat-core` mixin and can
 // potentially overwrite the absolute position of the container.
 .mat-mdc-menu-item .mat-mdc-menu-ripple {
-  @include mat-menu-item-ripple;
+  @include menu-common.item-ripple;
 }

@@ -1,25 +1,31 @@
+@use 'sass:color';
+@use 'sass:map';
+@use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/theming/theming';
 @import '@material/chips/mixins.import';
-@import '../mdc-helpers/mdc-helpers';
+
 @import '@material/theme/functions.import';
 
 @mixin _selected-color($color) {
-  @include mdc-chip-fill-color($color, $query: $mat-theme-styles-query);
-  @include mdc-chip-ink-color(text-primary-on-dark, $query: $mat-theme-styles-query);
+  @include mdc-chip-fill-color($color, $query: mdc-helpers.$mat-theme-styles-query);
+  @include mdc-chip-ink-color(text-primary-on-dark, $query: mdc-helpers.$mat-theme-styles-query);
   @include mdc-chip-selected-ink-color-without-ripple_(
                   text-primary-on-dark,
-                  $query: $mat-theme-styles-query
+                  $query: mdc-helpers.$mat-theme-styles-query
   );
-  @include mdc-chip-leading-icon-color(text-primary-on-dark, $query: $mat-theme-styles-query);
-  @include mdc-chip-trailing-icon-color(text-primary-on-dark, $query: $mat-theme-styles-query);
+  @include mdc-chip-leading-icon-color(text-primary-on-dark,
+    $query: mdc-helpers.$mat-theme-styles-query);
+  @include mdc-chip-trailing-icon-color(text-primary-on-dark,
+    $query: mdc-helpers.$mat-theme-styles-query);
 }
 
-@mixin mat-mdc-chips-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $primary: mat-color(map-get($config, primary));
-  $accent: mat-color(map-get($config, accent));
-  $warn: mat-color(map-get($config, warn));
-  $background: map-get($config, background);
-  $unselected-background: mat-color($background, unselected-chip);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: theming.color(map.get($config, primary));
+  $accent: theming.color(map.get($config, accent));
+  $warn: theming.color(map.get($config, warn));
+  $background: map.get($config, background);
+  $unselected-background: theming.color($background, unselected-chip);
 
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
@@ -27,18 +33,18 @@
   $orig-mdc-chips-ink-color-default: $mdc-chips-ink-color-default;
   $orig-mdc-chips-icon-color: $mdc-chips-icon-color;
 
-  @include mat-using-mdc-theme($config) {
+  @include mdc-helpers.mat-using-mdc-theme($config) {
     $mdc-chips-fill-color-default:
-        mix(mdc-theme-prop-value(on-surface), mdc-theme-prop-value(surface), 12%) !global;
+        color.mix(mdc-theme-prop-value(on-surface), mdc-theme-prop-value(surface), 12%) !global;
     $mdc-chips-ink-color-default: rgba(mdc-theme-prop-value(on-surface), 0.87) !global;
     $mdc-chips-icon-color: mdc-theme-prop-value(on-surface) !global;
 
-    @include mdc-chip-set-core-styles($query: $mat-theme-styles-query);
-    @include mdc-chip-without-ripple($query: $mat-theme-styles-query);
+    @include mdc-chip-set-core-styles($query: mdc-helpers.$mat-theme-styles-query);
+    @include mdc-chip-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
 
     .mat-mdc-chip {
       @include mdc-chip-fill-color-accessible($unselected-background,
-        $query: $mat-theme-styles-query);
+        $query: mdc-helpers.$mat-theme-styles-query);
 
       // mdc-chip-fill-color-accessible includes mdc-chip-selected-ink-color which overrides the
       // opacity so selected chips always show a ripple.
@@ -69,36 +75,36 @@
   $mdc-chips-icon-color: $orig-mdc-chips-icon-color !global;
 }
 
-@mixin mat-mdc-chips-typography($config-or-theme) {
-  $config: mat-get-typography-config($config-or-theme);
-  @include mdc-chip-set-core-styles($query: $mat-typography-styles-query);
-  @include mat-using-mdc-typography($config) {
-    @include mdc-chip-without-ripple($query: $mat-typography-styles-query);
+@mixin typography($config-or-theme) {
+  $config: theming.get-typography-config($config-or-theme);
+  @include mdc-chip-set-core-styles($query: mdc-helpers.$mat-typography-styles-query);
+  @include mdc-helpers.mat-using-mdc-typography($config) {
+    @include mdc-chip-without-ripple($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 
-@mixin mat-mdc-chips-density($config-or-theme) {
-  $density-scale: mat-get-density-config($config-or-theme);
+@mixin density($config-or-theme) {
+  $density-scale: theming.get-density-config($config-or-theme);
   .mat-mdc-chip {
-    @include mdc-chip-density($density-scale, $query: $mat-base-styles-query);
+    @include mdc-chip-density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
   }
 }
 
-@mixin mat-mdc-chips-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-mdc-chips') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-chips') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-mdc-chips-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include mat-mdc-chips-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include mat-mdc-chips-typography($typography);
+      @include typography($typography);
     }
   }
 }

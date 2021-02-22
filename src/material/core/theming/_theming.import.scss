@@ -1,2 +1,29 @@
-@forward 'theming';
-@forward 'palette';
+@forward 'palette' hide $amber, $blue, $blue-gray, $blue-grey, $brown, $cyan,
+$dark-theme-background, $dark-theme-foreground, $deep-orange, $deep-purple, $gray, $green, $grey,
+$indigo, $light-blue, $light-green, $light-theme-background, $light-theme-foreground, $lime,
+$orange, $pink, $purple, $red, $teal, $yellow;
+@forward 'palette' as mat-* hide $mat-black-12-opacity, $mat-black-6-opacity, $mat-black-87-opacity,
+$mat-dark-disabled-text, $mat-dark-dividers, $mat-dark-focused, $mat-dark-primary-text,
+$mat-dark-secondary-text, $mat-light-disabled-text, $mat-light-dividers, $mat-light-focused,
+$mat-light-primary-text, $mat-light-secondary-text, $mat-white-12-opacity, $mat-white-6-opacity,
+$mat-white-87-opacity;
+@forward '../density/private/compatibility' as mat-private-*;
+@forward 'theming' hide $theme-ignore-duplication-warnings, check-duplicate-theme-styles, color,
+contrast, create-backwards-compatibility-theme, dark-theme, get-color-config, get-density-config,
+get-typography-config, is-legacy-constructed-theme, is-theme-object, legacy-get-theme, light-theme,
+palette;
+@forward 'theming' as mat-* hide $mat-theme-duplicate-warning, $mat-theme-emitted-color,
+$mat-theme-emitted-density, $mat-theme-emitted-typography, $mat-theme-generate-default-density,
+mat-check-duplicate-theme-styles, mat-create-backwards-compatibility-theme,
+mat-create-dark-color-config, mat-create-light-color-config, mat-is-legacy-constructed-theme,
+mat-is-theme-object, mat-legacy-get-theme, mat-validate-theme;
+@forward 'theming' as mat-private-* hide $mat-private-theme-duplicate-warning,
+$mat-private-theme-emitted-color, $mat-private-theme-emitted-density,
+$mat-private-theme-emitted-typography, $mat-private-theme-generate-default-density,
+$mat-private-theme-ignore-duplication-warnings, mat-private-color, mat-private-contrast,
+mat-private-create-dark-color-config, mat-private-create-light-color-config, mat-private-dark-theme,
+mat-private-get-color-config, mat-private-get-density-config, mat-private-get-typography-config,
+mat-private-light-theme, mat-private-palette, mat-private-validate-theme;
+
+@import 'palette';
+@import '../density/private/compatibility';

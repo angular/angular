@@ -1,4 +1,31 @@
-@forward 'optgroup-theme';
-@forward '../theming/palette';
-@forward '../theming/theming';
-@forward '../typography/typography-utils';
+@forward '../theming/palette' hide $amber, $blue, $blue-gray, $blue-grey, $brown, $cyan,
+$dark-theme-background, $dark-theme-foreground, $deep-orange, $deep-purple, $gray, $green, $grey,
+$indigo, $light-blue, $light-green, $light-theme-background, $light-theme-foreground, $lime,
+$orange, $pink, $purple, $red, $teal, $yellow;
+@forward '../theming/palette' as mat-* hide $mat-black-12-opacity, $mat-black-6-opacity,
+$mat-black-87-opacity, $mat-dark-disabled-text, $mat-dark-dividers, $mat-dark-focused,
+$mat-dark-primary-text, $mat-dark-secondary-text, $mat-light-disabled-text, $mat-light-dividers,
+$mat-light-focused, $mat-light-primary-text, $mat-light-secondary-text, $mat-white-12-opacity,
+$mat-white-6-opacity, $mat-white-87-opacity;
+@forward '../density/private/compatibility' as mat-private-*;
+@forward '../theming/theming' as mat-* hide mat-check-duplicate-theme-styles,
+mat-create-backwards-compatibility-theme, mat-is-legacy-constructed-theme, mat-is-theme-object,
+mat-legacy-get-theme;
+@forward '../theming/theming' as mat-private-* hide $mat-private-theme-ignore-duplication-warnings,
+mat-private-color, mat-private-contrast, mat-private-dark-theme, mat-private-get-color-config,
+mat-private-get-density-config, mat-private-get-typography-config, mat-private-light-theme,
+mat-private-palette;
+@forward '../typography/typography-utils' as mat-* hide mat-font-shorthand, mat-height,
+mat-level-to-styles;
+@forward '../typography/typography-utils' as mat-line-* hide mat-line-font-family,
+mat-line-font-shorthand, mat-line-font-size, mat-line-font-weight, mat-line-letter-spacing,
+mat-line-level-to-styles;
+@forward '../typography/typography-utils' as mat-typography-* hide mat-typography-font-family,
+mat-typography-font-size, mat-typography-font-weight, mat-typography-height,
+mat-typography-letter-spacing;
+@forward 'optgroup-theme' hide color, theme, typography;
+@forward 'optgroup-theme' as mat-optgroup-* hide mat-optgroup-density;
+
+@import '../theming/palette';
+@import '../theming/theming';
+@import '../typography/typography-utils';

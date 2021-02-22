@@ -1,44 +1,44 @@
-@import '../core/style/variables';
-@import '../core/style/vendor-prefixes';
-@import '../../cdk/a11y/a11y';
+@use '../core/style/variables';
+@use '../core/style/vendor-prefixes';
+@use '../../cdk/a11y/a11y';
 
 
 // This refers to the thickness of the slider. On a horizontal slider this is the height, on a
 // vertical slider this is the width.
-$mat-slider-thickness: 48px !default;
-$mat-slider-min-size: 128px !default;
-$mat-slider-padding: 8px !default;
+$thickness: 48px !default;
+$min-size: 128px !default;
+$padding: 8px !default;
 
-$mat-slider-track-thickness: 2px !default;
-$mat-slider-thumb-size: 20px !default;
-$mat-slider-thumb-border-width: 3px !default;
-$mat-slider-thumb-border-width-active: 2px !default;
-$mat-slider-thumb-border-width-disabled: 4px !default;
+$track-thickness: 2px !default;
+$thumb-size: 20px !default;
+$thumb-border-width: 3px !default;
+$thumb-border-width-active: 2px !default;
+$thumb-border-width-disabled: 4px !default;
 
-$mat-slider-thumb-default-scale: 0.7 !default;
-$mat-slider-thumb-focus-scale: 1 !default;
-$mat-slider-thumb-disabled-scale: 0.5 !default;
+$thumb-default-scale: 0.7 !default;
+$thumb-focus-scale: 1 !default;
+$thumb-disabled-scale: 0.5 !default;
 
-$mat-slider-thumb-arrow-gap: 12px !default;
+$thumb-arrow-gap: 12px !default;
 
-$mat-slider-thumb-label-size: 28px !default;
+$thumb-label-size: 28px !default;
 
-$mat-slider-tick-size: 2px !default;
+$tick-size: 2px !default;
 
-$mat-slider-focus-ring-size: 30px !default;
+$focus-ring-size: 30px !default;
 
 
 .mat-slider {
   display: inline-block;
   position: relative;
   box-sizing: border-box;
-  padding: $mat-slider-padding;
+  padding: $padding;
   outline: none;
   vertical-align: middle;
 
   &:not(.mat-slider-disabled):active,
   &.mat-slider-sliding:not(.mat-slider-disabled) {
-    @include cursor-grabbing;
+    @include vendor-prefixes.cursor-grabbing;
   }
 }
 
@@ -56,15 +56,17 @@ $mat-slider-focus-ring-size: 30px !default;
 .mat-slider-track-fill {
   position: absolute;
   transform-origin: 0 0;
-  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
-              background-color $swift-ease-out-duration $swift-ease-out-timing-function;
+  transition:
+    transform variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function,
+    background-color variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function;
 }
 
 .mat-slider-track-background {
   position: absolute;
   transform-origin: 100% 100%;
-  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
-              background-color $swift-ease-out-duration $swift-ease-out-timing-function;
+  transition:
+    transform variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function,
+    background-color variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function;
 }
 
 .mat-slider-ticks-container {
@@ -79,25 +81,28 @@ $mat-slider-focus-ring-size: 30px !default;
   background-clip: content-box;
   box-sizing: border-box;
   opacity: 0;
-  transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
+  transition: opacity variables.$swift-ease-out-duration
+    variables.$swift-ease-out-timing-function;
 }
 
 .mat-slider-thumb-container {
   position: absolute;
   z-index: 1;
-  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function;
+  transition: transform variables.$swift-ease-out-duration
+    variables.$swift-ease-out-timing-function;
 }
 
 .mat-slider-focus-ring {
   position: absolute;
-  width: $mat-slider-focus-ring-size;
-  height: $mat-slider-focus-ring-size;
+  width: $focus-ring-size;
+  height: $focus-ring-size;
   border-radius: 50%;
   transform: scale(0);
   opacity: 0;
-  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
-              background-color $swift-ease-out-duration $swift-ease-out-timing-function,
-              opacity $swift-ease-out-duration $swift-ease-out-timing-function;
+  transition:
+    transform variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function,
+    background-color variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function,
+    opacity variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function;
 
   .mat-slider.cdk-keyboard-focused &,
   .mat-slider.cdk-program-focused & {
@@ -108,7 +113,7 @@ $mat-slider-focus-ring-size: 30px !default;
 
 %_mat-slider-cursor {
   .mat-slider:not(.mat-slider-disabled):not(.mat-slider-sliding) & {
-    @include cursor-grab;
+    @include vendor-prefixes.cursor-grab;
   }
 }
 
@@ -116,17 +121,18 @@ $mat-slider-focus-ring-size: 30px !default;
   @extend %_mat-slider-cursor;
 
   position: absolute;
-  right: -$mat-slider-thumb-size / 2;
-  bottom: -$mat-slider-thumb-size / 2;
+  right: -$thumb-size / 2;
+  bottom: -$thumb-size / 2;
   box-sizing: border-box;
-  width: $mat-slider-thumb-size;
-  height: $mat-slider-thumb-size;
-  border: $mat-slider-thumb-border-width solid transparent;
+  width: $thumb-size;
+  height: $thumb-size;
+  border: $thumb-border-width solid transparent;
   border-radius: 50%;
-  transform: scale($mat-slider-thumb-default-scale);
-  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
-              background-color $swift-ease-out-duration $swift-ease-out-timing-function,
-              border-color $swift-ease-out-duration $swift-ease-out-timing-function;
+  transform: scale($thumb-default-scale);
+  transition:
+    transform variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function,
+    background-color variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function,
+    border-color variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function;
 }
 
 .mat-slider-thumb-label {
@@ -136,14 +142,15 @@ $mat-slider-focus-ring-size: 30px !default;
   align-items: center;
   justify-content: center;
   position: absolute;
-  width: $mat-slider-thumb-label-size;
-  height: $mat-slider-thumb-label-size;
+  width: $thumb-label-size;
+  height: $thumb-label-size;
   border-radius: 50%;
-  transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
-              border-radius  $swift-ease-out-duration $swift-ease-out-timing-function,
-              background-color  $swift-ease-out-duration $swift-ease-out-timing-function;
+  transition:
+    transform variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function,
+    border-radius  variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function,
+    background-color  variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function;
 
-  @include cdk-high-contrast(active, off) {
+  @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }
 }
@@ -151,7 +158,7 @@ $mat-slider-focus-ring-size: 30px !default;
 .mat-slider-thumb-label-text {
   z-index: 1;
   opacity: 0;
-  transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
+  transition: opacity variables.$swift-ease-out-duration variables.$swift-ease-out-timing-function;
 }
 
 
@@ -176,7 +183,8 @@ $mat-slider-focus-ring-size: 30px !default;
     border-width: 0;
     border-style: solid;
     opacity: 0;
-    transition: opacity $swift-ease-out-duration $swift-ease-out-timing-function;
+    transition: opacity variables.$swift-ease-out-duration
+      variables.$swift-ease-out-timing-function;
   }
 
   &.cdk-focused,
@@ -238,8 +246,8 @@ $mat-slider-focus-ring-size: 30px !default;
   &.cdk-touch-focused,
   &.cdk-program-focused {
     .mat-slider-thumb {
-      border-width: $mat-slider-thumb-border-width-active;
-      transform: scale($mat-slider-thumb-focus-scale);
+      border-width: $thumb-border-width-active;
+      transform: scale($thumb-focus-scale);
     }
   }
 }
@@ -253,8 +261,8 @@ $mat-slider-focus-ring-size: 30px !default;
   }
 
   .mat-slider-thumb {
-    border-width: $mat-slider-thumb-border-width-disabled;
-    transform: scale($mat-slider-thumb-disabled-scale);
+    border-width: $thumb-border-width-disabled;
+    transform: scale($thumb-disabled-scale);
   }
 
   .mat-slider-thumb-label {
@@ -265,53 +273,53 @@ $mat-slider-focus-ring-size: 30px !default;
 
 // Horizontal slider.
 .mat-slider-horizontal {
-  height: $mat-slider-thickness;
-  min-width: $mat-slider-min-size;
+  height: $thickness;
+  min-width: $min-size;
 
   .mat-slider-wrapper {
-    height: $mat-slider-track-thickness;
-    top: ($mat-slider-thickness - $mat-slider-track-thickness) / 2;
-    left: $mat-slider-padding;
-    right: $mat-slider-padding;
+    height: $track-thickness;
+    top: ($thickness - $track-thickness) / 2;
+    left: $padding;
+    right: $padding;
   }
 
   .mat-slider-wrapper::after {
-    height: $mat-slider-track-thickness;
-    border-left-width: $mat-slider-tick-size;
+    height: $track-thickness;
+    border-left-width: $tick-size;
     right: 0;
     top: 0;
   }
 
   .mat-slider-track-wrapper {
-    height: $mat-slider-track-thickness;
+    height: $track-thickness;
     width: 100%;
   }
 
   .mat-slider-track-fill {
-    height: $mat-slider-track-thickness;
+    height: $track-thickness;
     width: 100%;
     transform: scaleX(0);
   }
 
   .mat-slider-track-background {
-    height: $mat-slider-track-thickness;
+    height: $track-thickness;
     width: 100%;
     transform: scaleX(1);
   }
 
   .mat-slider-ticks-container {
-    height: $mat-slider-track-thickness;
+    height: $track-thickness;
     width: 100%;
 
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       height: 0;
-      outline: solid $mat-slider-track-thickness;
-      top: $mat-slider-track-thickness / 2;
+      outline: solid $track-thickness;
+      top: $track-thickness / 2;
     }
   }
 
   .mat-slider-ticks {
-    height: $mat-slider-track-thickness;
+    height: $track-thickness;
     width: 100%;
   }
 
@@ -322,14 +330,14 @@ $mat-slider-focus-ring-size: 30px !default;
   }
 
   .mat-slider-focus-ring {
-    top: -$mat-slider-focus-ring-size / 2;
-    right: -$mat-slider-focus-ring-size / 2;
+    top: -$focus-ring-size / 2;
+    right: -$focus-ring-size / 2;
   }
 
   .mat-slider-thumb-label {
-    right: -$mat-slider-thumb-label-size / 2;
-    top: -($mat-slider-thumb-label-size + $mat-slider-thumb-arrow-gap);
-    transform: translateY($mat-slider-thumb-label-size / 2 + $mat-slider-thumb-arrow-gap)
+    right: -$thumb-label-size / 2;
+    top: -($thumb-label-size + $thumb-arrow-gap);
+    transform: translateY($thumb-label-size / 2 + $thumb-arrow-gap)
         scale(0.01)
         rotate(45deg);
   }
@@ -343,7 +351,7 @@ $mat-slider-focus-ring-size: 30px !default;
       transform: rotate(45deg);
     }
 
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       .mat-slider-thumb-label,
       .mat-slider-thumb-label-text {
         transform: none;
@@ -355,58 +363,58 @@ $mat-slider-focus-ring-size: 30px !default;
 
 // Vertical slider.
 .mat-slider-vertical {
-  width: $mat-slider-thickness;
-  min-height: $mat-slider-min-size;
+  width: $thickness;
+  min-height: $min-size;
 
   .mat-slider-wrapper {
-    width: $mat-slider-track-thickness;
-    top: $mat-slider-padding;
-    bottom: $mat-slider-padding;
-    left: ($mat-slider-thickness - $mat-slider-track-thickness) / 2;
+    width: $track-thickness;
+    top: $padding;
+    bottom: $padding;
+    left: ($thickness - $track-thickness) / 2;
   }
 
   .mat-slider-wrapper::after {
-    width: $mat-slider-track-thickness;
-    border-top-width: $mat-slider-tick-size;
+    width: $track-thickness;
+    border-top-width: $tick-size;
     bottom: 0;
     left: 0;
   }
 
   .mat-slider-track-wrapper {
     height: 100%;
-    width: $mat-slider-track-thickness;
+    width: $track-thickness;
   }
 
   .mat-slider-track-fill {
     height: 100%;
-    width: $mat-slider-track-thickness;
+    width: $track-thickness;
     transform: scaleY(0);
   }
 
   .mat-slider-track-background {
     height: 100%;
-    width: $mat-slider-track-thickness;
+    width: $track-thickness;
     transform: scaleY(1);
   }
 
   .mat-slider-ticks-container {
-    width: $mat-slider-track-thickness;
+    width: $track-thickness;
     height: 100%;
 
-    @include cdk-high-contrast(active, off) {
+    @include a11y.high-contrast(active, off) {
       width: 0;
-      outline: solid $mat-slider-track-thickness;
-      left: $mat-slider-track-thickness / 2;
+      outline: solid $track-thickness;
+      left: $track-thickness / 2;
     }
   }
 
   .mat-slider-focus-ring {
-    bottom: -$mat-slider-focus-ring-size / 2;
-    left: -$mat-slider-focus-ring-size / 2;
+    bottom: -$focus-ring-size / 2;
+    left: -$focus-ring-size / 2;
   }
 
   .mat-slider-ticks {
-    width: $mat-slider-track-thickness;
+    width: $track-thickness;
     height: 100%;
   }
 
@@ -417,13 +425,13 @@ $mat-slider-focus-ring-size: 30px !default;
   }
 
   .mat-slider-thumb {
-    @include backface-visibility(hidden);
+    @include vendor-prefixes.backface-visibility(hidden);
   }
 
   .mat-slider-thumb-label {
-    bottom: -$mat-slider-thumb-label-size / 2;
-    left: -($mat-slider-thumb-label-size + $mat-slider-thumb-arrow-gap);
-    transform: translateX($mat-slider-thumb-label-size / 2 + $mat-slider-thumb-arrow-gap)
+    bottom: -$thumb-label-size / 2;
+    left: -($thumb-label-size + $thumb-arrow-gap);
+    transform: translateX($thumb-label-size / 2 + $thumb-arrow-gap)
         scale(0.01)
         rotate(-45deg);
   }

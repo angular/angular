@@ -1,1 +1,5 @@
-@forward 'text-field';
+@forward 'text-field' hide $autofill-color-frame-count, autofill-color, text-field;
+@forward 'text-field' as cdk-* hide $cdk-autofill-color-frame-count, cdk-autofill-color,
+cdk-textarea-autosize-measuring-base;
+@forward 'text-field' as cdk-text-field-* hide cdk-text-field-text-field,
+cdk-text-field-textarea-autosize-measuring-base;

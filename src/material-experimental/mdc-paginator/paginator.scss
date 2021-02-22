@@ -1,22 +1,22 @@
-@import '../mdc-form-field/form-field-theme';
-@import '../../cdk/a11y/a11y';
+@use '../mdc-form-field/form-field-theme';
+@use '../../cdk/a11y/a11y';
 
-$mat-mdc-paginator-padding: 0 8px;
-$mat-mdc-paginator-page-size-margin-right: 8px;
+$padding: 0 8px;
+$page-size-margin-right: 8px;
 
-$mat-mdc-paginator-items-per-page-label-margin: 0 4px;
-$mat-mdc-paginator-selector-margin: 0 4px;
-$mat-mdc-paginator-selector-trigger-width: 84px;
+$items-per-page-label-margin: 0 4px;
+$selector-margin: 0 4px;
+$selector-trigger-width: 84px;
 
-$mat-mdc-paginator-range-label-margin: 0 32px 0 24px;
-$mat-mdc-paginator-button-icon-size: 28px;
+$range-label-margin: 0 32px 0 24px;
+$button-icon-size: 28px;
 
 .mat-mdc-paginator {
   display: block;
 
   // We need the form field to be as narrow as possible in order to fit
   // into the paginator so we always use the densest layout available.
-  @include mat-mdc-form-field-density(minimum);
+  @include form-field-theme.density(minimum);
 
   // This element reserves space for hints and error messages.
   // Hide it since we know that we won't need it.
@@ -41,7 +41,7 @@ $mat-mdc-paginator-button-icon-size: 28px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding: $mat-mdc-paginator-padding;
+  padding: $padding;
   flex-wrap: wrap-reverse;
   width: 100%;
 }
@@ -49,25 +49,25 @@ $mat-mdc-paginator-button-icon-size: 28px;
 .mat-mdc-paginator-page-size {
   display: flex;
   align-items: baseline;
-  margin-right: $mat-mdc-paginator-page-size-margin-right;
+  margin-right: $page-size-margin-right;
 
   [dir='rtl'] & {
     margin-right: 0;
-    margin-left: $mat-mdc-paginator-page-size-margin-right;
+    margin-left: $page-size-margin-right;
   }
 }
 
 .mat-mdc-paginator-page-size-label {
-  margin: $mat-mdc-paginator-items-per-page-label-margin;
+  margin: $items-per-page-label-margin;
 }
 
 .mat-mdc-paginator-page-size-select {
-  margin: $mat-mdc-paginator-selector-margin;
-  width: $mat-mdc-paginator-selector-trigger-width;
+  margin: $selector-margin;
+  width: $selector-trigger-width;
 }
 
 .mat-mdc-paginator-range-label {
-  margin: $mat-mdc-paginator-range-label-margin;
+  margin: $range-label-margin;
 }
 
 .mat-mdc-paginator-range-actions {
@@ -76,14 +76,14 @@ $mat-mdc-paginator-button-icon-size: 28px;
 }
 
 .mat-mdc-paginator-icon {
-  width: $mat-mdc-paginator-button-icon-size;
+  width: $button-icon-size;
 
   [dir='rtl'] & {
     transform: rotate(180deg);
   }
 }
 
-@include cdk-high-contrast(active, off) {
+@include a11y.high-contrast(active, off) {
   // The disabled button icon has to be set explicitly since the selector is too specific.
   .mat-mdc-icon-button[disabled] .mat-mdc-paginator-icon,
   .mat-mdc-paginator-icon {

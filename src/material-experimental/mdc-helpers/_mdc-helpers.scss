@@ -2,13 +2,15 @@
 //  "theming", "typography", "core". Currently splitting it is difficult because of our brittle
 //  gulp-based release build process. We can update this when we switch to bazel.
 
+@use 'sass:map';
+@use '../../material/core/style/layout-common';
+@use '../../material/core/theming/theming';
+@use '../../material/core/typography/typography';
+@use '../../material/core/typography/typography-utils';
 @import '@material/feature-targeting/functions.import';
 @import '@material/theme/functions.import';
 @import '@material/theme/variables.import';
 @import '@material/typography/variables.import';
-@import '../../material/core/style/layout-common';
-@import '../../material/core/theming/theming';
-@import '../../material/core/typography/typography';
 
 // A set of standard queries to use with MDC's queryable mixins.
 $mat-base-styles-query: mdc-feature-without(mdc-feature-any(color, typography));
@@ -92,13 +94,13 @@ $mat-typography-2018-level-mappings: (
 
 // Converts an Angular Material typography level config to an MDC one.
 @function mat-typography-level-config-to-mdc($mat-config, $mat-level) {
-  $mappings: if(mat-private-typography-is-2018-config($mat-config),
+  $mappings: if(typography.typography-is-2018-config($mat-config),
       $mat-typography-2018-level-mappings, $mat-typography-2014-level-mappings);
-  $mdc-level: map-get(map-get($mappings, mat-to-mdc), $mat-level);
+  $mdc-level: map.get(map.get($mappings, mat-to-mdc), $mat-level);
 
-  $result-with-nulls: map-merge(
+  $result-with-nulls: map.merge(
       if($mdc-level,
-          map-get($mdc-typography-styles, $mdc-level),
+          map.get($mdc-typography-styles, $mdc-level),
           (
             text-decoration: none,
             -moz-osx-font-smoothing: grayscale,
@@ -106,11 +108,11 @@ $mat-typography-2018-level-mappings: (
           )),
       if($mat-level,
           (
-            font-size: mat-font-size($mat-config, $mat-level),
-            line-height: mat-line-height($mat-config, $mat-level),
-            font-weight: mat-font-weight($mat-config, $mat-level),
-            letter-spacing: mat-letter-spacing($mat-config, $mat-level),
-            font-family: mat-font-family($mat-config, $mat-level),
+            font-size: typography-utils.font-size($mat-config, $mat-level),
+            line-height: typography-utils.height($mat-config, $mat-level),
+            font-weight: typography-utils.font-weight($mat-config, $mat-level),
+            letter-spacing: typography-utils.letter-spacing($mat-config, $mat-level),
+            font-family: typography-utils.font-family($mat-config, $mat-level),
             // Angular Material doesn't use text-transform, so disable it.
             text-transform: none,
           ),
@@ -121,21 +123,21 @@ $mat-typography-2018-level-mappings: (
   $result: ();
   @each $property, $value in $result-with-nulls {
     @if $value != null {
-      $result: map-merge($result, ($property: $value));
+      $result: map.merge($result, ($property: $value));
     }
   }
   @return $result;
 }
 
 // Converts an Angular Material typography config to an MDC one.
-@function mat-typography-config-to-mdc($mat-config: mat-typography-config()) {
+@function mat-typography-config-to-mdc($mat-config: typography.config()) {
   $mdc-config: ();
 
-  $mappings: if(mat-private-typography-is-2018-config($mat-config),
+  $mappings: if(typography.typography-is-2018-config($mat-config),
       $mat-typography-2018-level-mappings, $mat-typography-2014-level-mappings);
 
-  @each $mdc-level, $mat-level in map-get($mappings, mdc-to-mat) {
-    $mdc-config: map-merge(
+  @each $mdc-level, $mat-level in map.get($mappings, mdc-to-mat) {
+    $mdc-config: map.merge(
         $mdc-config,
         ($mdc-level: mat-typography-level-config-to-mdc($mat-config, $mat-level)));
   }
@@ -145,24 +147,24 @@ $mat-typography-2018-level-mappings: (
 
 // Converts an MDC typography level config to an Angular Material one.
 @function mat-typography-config-level-from-mdc($mdc-level) {
-  $mdc-level-config: map-get($mdc-typography-styles, $mdc-level);
+  $mdc-level-config: map.get($mdc-typography-styles, $mdc-level);
 
-  @return mat-typography-level(
-      map-get($mdc-level-config, font-size),
-      map-get($mdc-level-config, line-height),
-      map-get($mdc-level-config, font-weight),
-      map-get($mdc-level-config, font-family),
-      map-get($mdc-level-config, letter-spacing));
+  @return typography.level(
+      map.get($mdc-level-config, font-size),
+      map.get($mdc-level-config, line-height),
+      map.get($mdc-level-config, font-weight),
+      map.get($mdc-level-config, font-family),
+      map.get($mdc-level-config, letter-spacing));
 }
 
 // Configures MDC's global variables to reflect the given theme, applies the given styles,
 // then resets the global variables to prevent unintended side effects.
 /* stylelint-disable-next-line material/theme-mixin-api */
 @mixin mat-using-mdc-theme($config) {
-  $primary: mat-color(map-get($config, primary));
-  $accent: mat-color(map-get($config, accent));
-  $warn: mat-color(map-get($config, warn));
-  $background-palette: map-get($config, background);
+  $primary: theming.color(map.get($config, primary));
+  $accent: theming.color(map.get($config, accent));
+  $warn: theming.color(map.get($config, warn));
+  $background-palette: map.get($config, background);
 
   // Save the original values.
   $orig-mdc-theme-primary: $mdc-theme-primary;
@@ -183,8 +185,8 @@ $mat-typography-2018-level-mappings: (
   $mdc-theme-secondary: $accent !global;
   $mdc-theme-on-secondary:
       if(mdc-theme-contrast-tone($mdc-theme-secondary) == 'dark', #000, #fff) !global;
-  $mdc-theme-background: mat-color($background-palette, background) !global;
-  $mdc-theme-surface: mat-color($background-palette, card) !global;
+  $mdc-theme-background: theming.color($background-palette, background) !global;
+  $mdc-theme-surface: theming.color($background-palette, card) !global;
   $mdc-theme-on-surface:
       if(mdc-theme-contrast-tone($mdc-theme-surface) == 'dark', #000, #fff) !global;
   $mdc-theme-error: $warn !global;

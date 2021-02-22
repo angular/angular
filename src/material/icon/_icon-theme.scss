@@ -1,47 +1,48 @@
-@import '../core/theming/theming';
+@use 'sass:map';
+@use '../core/theming/theming';
 
-@mixin mat-icon-color($config-or-theme) {
-  $config: mat-get-color-config($config-or-theme);
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
-  $warn: map-get($config, warn);
-  $background: map-get($config, background);
-  $foreground: map-get($config, foreground);
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  $primary: map.get($config, primary);
+  $accent: map.get($config, accent);
+  $warn: map.get($config, warn);
+  $background: map.get($config, background);
+  $foreground: map.get($config, foreground);
 
   .mat-icon {
     &.mat-primary {
-      color: mat-color($primary, text);
+      color: theming.color($primary, text);
     }
 
     &.mat-accent {
-      color: mat-color($accent, text);
+      color: theming.color($accent, text);
     }
 
     &.mat-warn {
-      color: mat-color($warn, text);
+      color: theming.color($warn, text);
     }
   }
 }
 
-@mixin mat-icon-typography($config-or-theme) {}
+@mixin typography($config-or-theme) {}
 
 @mixin _mat-icon-density($config-or-theme) {}
 
-@mixin mat-icon-theme($theme-or-color-config) {
-  $theme: mat-private-legacy-get-theme($theme-or-color-config);
-  @include mat-private-check-duplicate-theme-styles($theme, 'mat-icon') {
-    $color: mat-get-color-config($theme);
-    $density: mat-get-density-config($theme);
-    $typography: mat-get-typography-config($theme);
+@mixin theme($theme-or-color-config) {
+  $theme: theming.legacy-get-theme($theme-or-color-config);
+  @include theming.check-duplicate-theme-styles($theme, 'mat-icon') {
+    $color: theming.get-color-config($theme);
+    $density: theming.get-density-config($theme);
+    $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include mat-icon-color($color);
+      @include color($color);
     }
     @if $density != null {
       @include _mat-icon-density($density);
     }
     @if $typography != null {
-      @include mat-icon-typography($typography);
+      @include typography($typography);
     }
   }
 }

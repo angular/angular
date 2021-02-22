@@ -1,17 +1,18 @@
-@import '../../style/checkbox-common';
-@import '../../style/private';
+@use '../../style/checkbox-common';
+@use '../../style/private';
+@use '../../style/variables';
 
 // Padding inside of a pseudo checkbox.
-$_mat-pseudo-checkbox-padding: $mat-checkbox-border-width * 2;
+$_mat-pseudo-checkbox-padding: checkbox-common.$border-width * 2;
 
 // Size of the checkmark in a pseudo checkbox.
-$_mat-pseudo-checkmark-size: $mat-checkbox-size - (2 * $_mat-pseudo-checkbox-padding);
+$_mat-pseudo-checkmark-size: checkbox-common.$size - (2 * $_mat-pseudo-checkbox-padding);
 
 
 .mat-pseudo-checkbox {
-  width: $mat-checkbox-size;
-  height: $mat-checkbox-size;
-  border: $mat-checkbox-border-width solid;
+  width: checkbox-common.$size;
+  height: checkbox-common.$size;
+  border: checkbox-common.$border-width solid;
   border-radius: 2px;
   cursor: pointer;
   display: inline-block;
@@ -19,24 +20,25 @@ $_mat-pseudo-checkmark-size: $mat-checkbox-size - (2 * $_mat-pseudo-checkbox-pad
   box-sizing: border-box;
   position: relative;
   flex-shrink: 0;
-  transition:
-      border-color $mat-checkbox-transition-duration $mat-linear-out-slow-in-timing-function,
-      background-color $mat-checkbox-transition-duration $mat-linear-out-slow-in-timing-function;
+  transition: border-color checkbox-common.$transition-duration
+    variables.$linear-out-slow-in-timing-function, background-color
+    checkbox-common.$transition-duration variables.$linear-out-slow-in-timing-function;
 
   // Used to render the checkmark/mixedmark inside of the box.
   &::after {
     position: absolute;
     opacity: 0;
     content: '';
-    border-bottom: $mat-checkbox-border-width solid currentColor;
-    transition: opacity $mat-checkbox-transition-duration $mat-linear-out-slow-in-timing-function;
+    border-bottom: checkbox-common.$border-width solid currentColor;
+    transition: opacity checkbox-common.$transition-duration
+      variables.$linear-out-slow-in-timing-function;
   }
 
   &.mat-pseudo-checkbox-checked, &.mat-pseudo-checkbox-indeterminate {
     border-color: transparent;
   }
 
-  @include mat-private-animation-noop {
+  @include private.animation-noop {
     &::after {
       transition: none;
     }
@@ -48,20 +50,20 @@ $_mat-pseudo-checkmark-size: $mat-checkbox-size - (2 * $_mat-pseudo-checkbox-pad
 }
 
 .mat-pseudo-checkbox-indeterminate::after {
-  top: ($mat-checkbox-size - $mat-checkbox-border-width) / 2 - $mat-checkbox-border-width;
-  left: $mat-checkbox-border-width / 2;
-  width: $mat-checkbox-size - 6px;
+  top: (checkbox-common.$size - checkbox-common.$border-width) / 2 - checkbox-common.$border-width;
+  left: checkbox-common.$border-width / 2;
+  width: checkbox-common.$size - 6px;
   opacity: 1;
   border-radius: 2px;
 }
 
 .mat-pseudo-checkbox-checked::after {
-  top: ($mat-checkbox-size / 2) - ($_mat-pseudo-checkmark-size / 4) -
-      ($mat-checkbox-size / 10) - $mat-checkbox-border-width;
-  left: $_mat-pseudo-checkbox-padding - $mat-checkbox-border-width * 1.5;
+  top: (checkbox-common.$size / 2) - ($_mat-pseudo-checkmark-size / 4) -
+      (checkbox-common.$size / 10) - checkbox-common.$border-width;
+  left: $_mat-pseudo-checkbox-padding - checkbox-common.$border-width * 1.5;
   width: $_mat-pseudo-checkmark-size;
-  height: ($_mat-pseudo-checkmark-size - $mat-checkbox-border-width) / 2;
-  border-left: $mat-checkbox-border-width solid currentColor;
+  height: ($_mat-pseudo-checkmark-size - checkbox-common.$border-width) / 2;
+  border-left: checkbox-common.$border-width solid currentColor;
   transform: rotate(-45deg);
   opacity: 1;
   box-sizing: content-box;
