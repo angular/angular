@@ -1,78 +1,60 @@
 .presskit-container {
   padding: 0 32px 32px 32px;
 
-  h2 {
-    color: #37474F;
+  img {
+    height: 128px;
+    width: auto;
   }
 
-  .l-space-left-3 {
-    margin-left: 3 * 8px;
-  }
-
-  .cc-by-anchor {
-    text-decoration: underline;
-    color: grey !important;
-  }
-
-  .presskit-row {
-    margin: 48px 0;
-    width: 100%;
-
-    &:first-child {
-      margin-top: 0;
-    }
-
-    .presskit-inner {
+  .presskit-section {
+    .presskit-icon-group {
       display: flex;
-      align-items: center;
+      flex-wrap: wrap;
 
-      @media(max-width: 599px) {
-        flex-direction: column;
-      }
+      .presskit-icon-item {
+        align-items: center;
+        display: flex;
+        margin: 1rem;
+        width: calc(50% - 2rem);
 
-      h3 {
-        font-weight: 500;
-        margin-top: 0;
-        margin-bottom: 0;
-        color: #455A64;
-
-        @media(max-width: 599px) {
-          padding-bottom: 16px;
-        }
-      }
-
-      .transparent-img-bg {
-        margin-top: 10px;
-        border-radius: 4px;
-        width: 128px;
-        height: 128px;
-        background-color: #34474F;
-      }
-
-      ul {
-        padding: 0;
-        list-style-type: none;
-
-        @media(max-width: 599px) {
-          padding: 0 !important;
-          margin: 0 !important;
+        @media screen and (max-width: 600px) {
+          align-items: flex-start;
+          flex-direction: column;
+          margin-bottom: 2rem;
         }
 
-        li {
-          margin: 0 0 8px 0;
+        .presskit-image-container {
+          flex: none;
+          margin-right: 2rem;
+
+          @media (max-width: 600px) {
+            width: 100%;
+            margin-right: 0;
+          }
+
+          .transparent-img {
+            background-color: $deepgray;
+            border-radius: 50%;
+          }
         }
-      }
-    }
 
-    .presskit-image-container {
-      @media(max-width: 599px) {
-        text-align: center;
-      }
+        .presskit-links-container {
+          list-style-type: none;
+          margin-bottom: 0;
+          padding: 0;
 
-      img {
-        height: 128px;
-        width: auto;
-        margin-bottom: 8px * 2;
+          a {
+            display: flex;
+            align-items: center;
+
+            &:after {
+              font-family: 'Material Icons';
+              content: 'cloud_download';
+              @include font-size(24);
+              margin-left: 0.5rem;
+            }
+          }
+        }
       }
     }
   }
