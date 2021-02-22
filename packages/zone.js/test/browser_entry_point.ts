@@ -18,6 +18,7 @@ import './browser/FileReader.spec';
 // import './browser/geolocation.spec.manual';
 import './browser/HTMLImports.spec';
 import './browser/MutationObserver.spec';
+import './browser/IntersectionObserver.spec';
 import './browser/registerElement.spec';
 import './browser/requestAnimationFrame.spec';
 import './browser/WebSocket.spec';
