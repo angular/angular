@@ -316,6 +316,8 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
 
   private _scheduler: Scheduler = new Scheduler();
   private _microtasks: MicroTaskScheduledFunction[] = [];
+  private _observers: MicroTaskScheduledFunction[] = [];
+  private _observerZone: Zone|null = null;
   private _lastError: Error|null = null;
   private _uncaughtPromiseErrors: {rejection: any}[] =
       (Promise as any)[(Zone as any).__symbol__('uncaughtPromiseErrors')];
@@ -556,6 +558,43 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     }
   }
 
+  flushObservers(callback: () => {}): void {
+    let scheduler: any;
+    if (global[Zone.__symbol__('queueMicrotask')]) {
+      scheduler = global[Zone.__symbol__('queueMicrotask')];
+    } else if (global[Zone.__symbol__('Promise')]) {
+      scheduler = global[Zone.__symbol__('Promise')].resolve()[Zone.__symbol__('then')];
+    } else if (global[Zone.__symbol__('setTimeout')]) {
+      scheduler = global[Zone.__symbol__('setTimeout')];
+    }
+    if (!scheduler) {
+      throw new Error('No scheduler to trigger observer callbacks.');
+    }
+    scheduler(() => {
+      if (this._observers.length === 0) {
+        return;
+      }
+      if (!this._observerZone) {
+        throw new Error('No observers are scheduled in fakeAsync().');
+      }
+      this._observerZone!.run(() => {
+        FakeAsyncTestZoneSpec.assertInZone();
+        const flushErrors = () => {
+          if (this._lastError !== null || this._uncaughtPromiseErrors.length) {
+            // If there is an error stop processing the microtask queue and rethrow the error.
+            this._resetLastErrorAndThrow();
+          }
+        };
+        while (this._observers.length > 0) {
+          let observerTask = this._observers.shift()!;
+          observerTask.func.apply(observerTask.target, observerTask.args);
+        }
+        flushErrors();
+        callback();
+      });
+    });
+  }
+
   flushMicrotasks(): void {
     FakeAsyncTestZoneSpec.assertInZone();
     const flushErrors = () => {
@@ -622,11 +661,17 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
             additionalArgs = Array.prototype.slice.call(args, callbackIndex + 1);
           }
         }
-        this._microtasks.push({
+        const meta = {
           func: task.invoke,
           args: additionalArgs,
           target: task.data && (task.data as any).target
-        });
+        };
+        if (task.source === 'MutationObserver.observe') {
+          this._observerZone = task.zone;
+          this._observers.push(meta);
+        } else {
+          this._microtasks.push(meta);
+        }
         break;
       case 'macroTask':
         switch (task.source) {

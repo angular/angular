@@ -901,6 +901,42 @@ describe('FakeAsyncTestZoneSpec', () => {
              });
            }));
 
+  describe('MutationObserver', ifEnvSupports('MutationObserver', () => {
+             it('should run observe callback as microTask in fakeAsync()', (done: DoneFn) => {
+               fakeAsyncTestZone.run(() => {
+                 const elt = document.createElement('div');
+                 const childZone = Zone.current.fork({name: 'child'});
+                 let mutationList: any;
+                 let obResult: any;
+                 let obZoneName = '';
+                 const ob = new MutationObserver(function(mList, observer) {
+                   mutationList = mList;
+                   obResult = observer;
+                   obZoneName = Zone.current.name;
+                   ob.disconnect();
+                 });
+
+                 childZone.run(function() {
+                   ob.observe(elt, {childList: true});
+                 });
+                 expect(obResult).toBe(undefined);
+                 expect(mutationList).toBe(undefined);
+                 expect(obZoneName).toBe('');
+                 elt.innerHTML = '<p>hey</p>';
+                 testZoneSpec.flushObservers(() => {
+                   expect(obZoneName).toBe('child');
+                   expect(obResult).toBe(ob);
+                   expect(mutationList.length).toBe(1);
+                   expect(mutationList[0].type).toBe('childList');
+                   expect(mutationList[0].target).toBe(elt);
+                   done();
+                   testZoneSpec.flushMicrotasks();
+                 });
+               });
+             });
+           }));
+
+
   describe('node process', ifEnvSupports(supportNode, () => {
              it('should be able to schedule microTask with additional arguments', () => {
                const process = global['process'];
