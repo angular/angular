@@ -172,6 +172,12 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
     });
   }
 
+  protected _updateOrientation() {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
+      throw Error('Updating the orientation of a Material stepper is not supported.');
+    }
+  }
+
   static ngAcceptInputType_editable: BooleanInput;
   static ngAcceptInputType_optional: BooleanInput;
   static ngAcceptInputType_completed: BooleanInput;

@@ -79,6 +79,7 @@ export declare class MatStepper extends CdkStepper implements AfterContentInit {
     color: ThemePalette;
     disableRipple: boolean;
     readonly steps: QueryList<MatStep>;
+    protected _updateOrientation(): void;
     ngAfterContentInit(): void;
     static ngAcceptInputType_completed: BooleanInput;
     static ngAcceptInputType_editable: BooleanInput;

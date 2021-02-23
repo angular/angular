@@ -332,6 +332,17 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
   /** Used to track unique ID for each stepper component. */
   _groupId: number;
 
+  // Note that this isn't an `Input` so it doesn't bleed into the Material stepper.
+  /** Orientation of the stepper. */
+  get orientation(): StepperOrientation { return this._orientation; }
+  set orientation(value: StepperOrientation) {
+    this._updateOrientation(value);
+  }
+
+  /**
+   * @deprecated To be turned into a private property. Use `orientation` instead.
+   * @breaking-change 13.0.0
+   */
   protected _orientation: StepperOrientation = 'horizontal';
 
   constructor(
@@ -437,6 +448,16 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
 
     return step._displayDefaultIndicatorType ? this._getDefaultIndicatorLogic(step, isCurrentStep) :
                                                this._getGuidelineLogic(step, isCurrentStep, state);
+  }
+
+  /** Updates the stepper orientation. */
+  protected _updateOrientation(value: StepperOrientation) {
+    // This is a protected method so that `MatSteppter` can hook into it.
+    this._orientation = value;
+
+    if (this._keyManager) {
+      this._keyManager.withVerticalOrientation(value === 'vertical');
+    }
   }
 
   private _getDefaultIndicatorLogic(step: CdkStep, isCurrentStep: boolean): StepState {

@@ -55,6 +55,8 @@ export declare class CdkStepper implements AfterContentInit, AfterViewInit, OnDe
     _steps: QueryList<CdkStep>;
     get linear(): boolean;
     set linear(value: boolean);
+    get orientation(): StepperOrientation;
+    set orientation(value: StepperOrientation);
     get selected(): CdkStep;
     set selected(step: CdkStep);
     get selectedIndex(): number;
@@ -69,6 +71,7 @@ export declare class CdkStepper implements AfterContentInit, AfterViewInit, OnDe
     _getStepLabelId(i: number): string;
     _onKeydown(event: KeyboardEvent): void;
     _stateChanged(): void;
+    protected _updateOrientation(value: StepperOrientation): void;
     next(): void;
     ngAfterContentInit(): void;
     ngAfterViewInit(): void;

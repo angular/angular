@@ -395,6 +395,14 @@ describe('MatStepper', () => {
           .every(element => element.classList.contains('mat-focus-indicator'))).toBe(true);
     });
 
+    it('should throw when trying to change the orientation of a stepper', () => {
+      const stepperComponent: MatStepper = fixture.debugElement
+          .query(By.css('mat-vertical-stepper'))!.componentInstance;
+
+      expect(() => stepperComponent.orientation = 'horizontal')
+        .toThrowError('Updating the orientation of a Material stepper is not supported.');
+    });
+
   });
 
   describe('basic stepper when attempting to set the selected step too early', () => {
