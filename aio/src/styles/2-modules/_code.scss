@@ -102,6 +102,10 @@ aio-code {
     align-items: center;
 
     code {
+      a {
+        color: inherit;
+      }
+
       span {
         @include line-height(24);
       }
@@ -159,10 +163,17 @@ aio-code {
 .sidenav-content {
   code {
     a {
-      color: inherit;
+      color: $darkblue;
       font-size: inherit;
       font-weight: inherit;
     }
+  }
+
+  :not(h1, h2, h3, h4, h5, h6, pre) > code {
+    background-color: rgba($lightgray, 0.5);
+    border-radius: 4px;
+    color: $deepgray;
+    padding: 4px;
   }
 
   .code-anchor {
