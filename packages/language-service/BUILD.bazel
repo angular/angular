@@ -6,15 +6,17 @@ ts_library(
     name = "api",
     srcs = [
         "api.ts",
+        "index.ts",
     ],
     deps = [
+        "@npm//@types/node",
         "@npm//typescript",
     ],
 )
 
 ts_library(
     name = "language-service",
-    srcs = ["index.ts"] + glob(
+    srcs = glob(
         [
             "src/**/*.ts",
         ],
@@ -54,8 +56,7 @@ pkg_npm(
         "//integration:__pkg__",
     ],
     deps = [
-        ":language-service",
-        "//packages/language-service/ivy",
+        ":api",
         # min bundle is not used at the moment; omit from package to speed up build
         "//packages/language-service/bundles:language-service.js",
         "//packages/language-service/bundles:ivy.js",
