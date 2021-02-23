@@ -227,15 +227,17 @@ class StackblitzBuilder {
       postData[`files[${relativeFileName}]`] = content;
     });
 
-    // Grab the angular compiler options from the tsconfig file that AIO is using.
-    // Doing this means that the generated examples match the same ViewEngine/Ivy mode as AIO
-    const aioTsConfigPath = path.resolve(__dirname, '../../tsconfig.json');
-    const {angularCompilerOptions} = json5.parse(fs.readFileSync(aioTsConfigPath, 'utf-8'));
     // Stackblitz defaults to ViewEngine unless `"enableIvy": true`
-    if (angularCompilerOptions.enableIvy === undefined) {
-      angularCompilerOptions.enableIvy = true;
+    // So if there is a tsconfig.json file and there is no `enableIvy` property, we need to
+    // explicitly set it.
+    const tsConfigJSON = postData['files[tsconfig.json]'];
+    if (tsConfigJSON !== undefined) {
+      const tsConfig = json5.parse(tsConfigJSON);
+      if (tsConfig.angularCompilerOptions.enableIvy === undefined) {
+        tsConfig.angularCompilerOptions.enableIvy = true;
+        postData['files[tsconfig.json]'] = JSON.stringify(tsConfig, null, 2);
+      }
     }
-    postData['files[tsconfig.json]'] = JSON.stringify({angularCompilerOptions});
 
     const tags = ['angular', 'example', ...config.tags || []];
     tags.forEach((tag, ix) => postData[`tags[${ix}]`] = tag);
@@ -299,7 +301,6 @@ class StackblitzBuilder {
 
     const defaultExcludes = [
       '!**/e2e/**/*.*',
-      '!**/tsconfig.json',
       '!**/package.json',
       '!**/example-config.json',
       '!**/tslint.json',
