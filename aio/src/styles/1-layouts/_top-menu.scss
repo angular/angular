@@ -216,7 +216,7 @@ mat-toolbar.app-toolbar {
         color: $mediumgray;
       }
 
-      @include bp(big) {
+      @media (min-width: 1000px) {
         transition: width 0.4s ease-in-out;
 
         &:focus {
