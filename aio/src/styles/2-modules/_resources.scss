@@ -1,14 +1,7 @@
 aio-resource-list {
-  .resources-container {
-    position: relative;
-  }
-
-  .shadow-1 {
+  .showcase {
     transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: 0 1px 4px 0 rgba($black, 0.37);
-  }
-
-  .showcase {
     border-radius: 4px;
     margin-bottom: 8px * 6;
     width: 80%;
@@ -18,7 +11,7 @@ aio-resource-list {
     }
   }
 
-  .c-resource {
+  .resource-item {
     h4 {
       margin: 0;
       @include line-height(24);
@@ -29,19 +22,9 @@ aio-resource-list {
     }
   }
 
-  .h-anchor-offset {
-    display: block;
-    position: relative;
-    top: -20px;
-    visibility: hidden;
-  }
-
-  .l-flex--column {
+  .resources-container {
     display: flex;
     flex-direction: column;
-  }
-
-  .align-items-center {
     align-items: center;
   }
 
@@ -54,11 +37,10 @@ aio-resource-list {
 
   .resource-row-link {
     color: #1a2326;
+    display: flex;
+    flex-direction: column;
     border: transparent solid 1px;
-    margin: 0;
     padding: 16px 23px 16px 23px;
-    position: relative;
-    text-decoration: none;
     transition: all .3s;
 
     &:hover {
