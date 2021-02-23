@@ -4,8 +4,10 @@ button {
   font-family: inherit;
 }
 
-.button,
-a.button.mat-button {
+// This rule overrides some Angular Material styles defined for `.mat-button`
+// (hence we include `.mat-button` in the selector).
+a.button.mat-button,
+.button {
   display: inline-block;
   @include line-height(32);
   padding: 0px 16px;
@@ -87,31 +89,28 @@ a.button.mat-button {
   }
 }
 
-a.filter-button {
-  width: 140px;
-  @include font-size(14);
-  padding: 0px 16px;
-  margin: 8px;
-  @include line-height(48);
-  border: 2px solid $blue;
-  border-radius: 4px;
-
-  &:hover {
-    background-color: $blue;
-    color: $white;
-  }
-}
 
 .group-buttons {
   margin: 32px auto;
 
-  a.selected {
-    background-color: $blue;
-    color: $white;
-  }
+  // This rule overrides some Angular Material styles defined for `.mat-button`
+  // (hence we include `.mat-button` in the selector).
+  a.button.mat-button.filter-button {
+    width: 140px;
+    @include font-size(14);
+    padding: 0px 16px;
+    margin: 8px;
+    @include line-height(48);
+    border: 2px solid $blue;
+    border-radius: 4px;
 
-  @media (max-width: 480px) {
-    .filter-button.button {
+    &.selected,
+    &:hover {
+      background-color: $blue;
+      color: $white;
+    }
+
+    @media (max-width: 480px) {
       font-size: 1.2rem;
       padding: 0;
       margin: 0;
