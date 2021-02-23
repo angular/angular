@@ -138,17 +138,265 @@ describe('Zone', function() {
             hookSpy = jasmine.createSpy('hook');
             eventListenerSpy = jasmine.createSpy('eventListener');
           });
+          const globalEventHandlersEventNames = [
+            'abort',
+            'animationcancel',
+            'animationend',
+            'animationiteration',
+            'auxclick',
+            'beforeinput',
+            'blur',
+            'cancel',
+            'canplay',
+            'canplaythrough',
+            'change',
+            'compositionstart',
+            'compositionupdate',
+            'compositionend',
+            'cuechange',
+            'click',
+            'close',
+            'contextmenu',
+            'curechange',
+            'dblclick',
+            'drag',
+            'dragend',
+            'dragenter',
+            'dragexit',
+            'dragleave',
+            'dragover',
+            'drop',
+            'durationchange',
+            'emptied',
+            'ended',
+            'error',
+            'focus',
+            'focusin',
+            'focusout',
+            'gotpointercapture',
+            'input',
+            'invalid',
+            'keydown',
+            'keypress',
+            'keyup',
+            'load',
+            'loadstart',
+            'loadeddata',
+            'loadedmetadata',
+            'lostpointercapture',
+            'mousedown',
+            'mouseenter',
+            'mouseleave',
+            'mousemove',
+            'mouseout',
+            'mouseover',
+            'mouseup',
+            'mousewheel',
+            'orientationchange',
+            'pause',
+            'play',
+            'playing',
+            'pointercancel',
+            'pointerdown',
+            'pointerenter',
+            'pointerleave',
+            'pointerlockchange',
+            'mozpointerlockchange',
+            'webkitpointerlockerchange',
+            'pointerlockerror',
+            'mozpointerlockerror',
+            'webkitpointerlockerror',
+            'pointermove',
+            'pointout',
+            'pointerover',
+            'pointerup',
+            'progress',
+            'ratechange',
+            'reset',
+            'resize',
+            'scroll',
+            'seeked',
+            'seeking',
+            'select',
+            'selectionchange',
+            'selectstart',
+            'show',
+            'sort',
+            'stalled',
+            'submit',
+            'suspend',
+            'timeupdate',
+            'volumechange',
+            'touchcancel',
+            'touchmove',
+            'touchstart',
+            'touchend',
+            'transitioncancel',
+            'transitionend',
+            'waiting',
+            'wheel'
+          ];
+          const documentEventNames = [
+            'afterscriptexecute', 'beforescriptexecute', 'DOMContentLoaded', 'freeze',
+            'fullscreenchange', 'mozfullscreenchange', 'webkitfullscreenchange',
+            'msfullscreenchange', 'fullscreenerror', 'mozfullscreenerror', 'webkitfullscreenerror',
+            'msfullscreenerror', 'readystatechange', 'visibilitychange', 'resume'
+          ];
+          const windowEventNames = [
+            'absolutedeviceorientation',
+            'afterinput',
+            'afterprint',
+            'appinstalled',
+            'beforeinstallprompt',
+            'beforeprint',
+            'beforeunload',
+            'devicelight',
+            'devicemotion',
+            'deviceorientation',
+            'deviceorientationabsolute',
+            'deviceproximity',
+            'hashchange',
+            'languagechange',
+            'message',
+            'mozbeforepaint',
+            'offline',
+            'online',
+            'paint',
+            'pageshow',
+            'pagehide',
+            'popstate',
+            'rejectionhandled',
+            'storage',
+            'unhandledrejection',
+            'unload',
+            'userproximity',
+            'vrdisplayconnected',
+            'vrdisplaydisconnected',
+            'vrdisplaypresentchange'
+          ];
+          const htmlElementEventNames = [
+            'beforecopy', 'beforecut', 'beforepaste', 'copy', 'cut', 'paste', 'dragstart',
+            'loadend', 'animationstart', 'search', 'transitionrun', 'transitionstart',
+            'webkitanimationend', 'webkitanimationiteration', 'webkitanimationstart',
+            'webkittransitionend'
+          ];
+          const mediaElementEventNames =
+              ['encrypted', 'waitingforkey', 'msneedkey', 'mozinterruptbegin', 'mozinterruptend'];
+          const ieElementEventNames = [
+            'activate',
+            'afterupdate',
+            'ariarequest',
+            'beforeactivate',
+            'beforedeactivate',
+            'beforeeditfocus',
+            'beforeupdate',
+            'cellchange',
+            'controlselect',
+            'dataavailable',
+            'datasetchanged',
+            'datasetcomplete',
+            'errorupdate',
+            'filterchange',
+            'layoutcomplete',
+            'losecapture',
+            'move',
+            'moveend',
+            'movestart',
+            'propertychange',
+            'resizeend',
+            'resizestart',
+            'rowenter',
+            'rowexit',
+            'rowsdelete',
+            'rowsinserted',
+            'command',
+            'compassneedscalibration',
+            'deactivate',
+            'help',
+            'mscontentzoom',
+            'msmanipulationstatechanged',
+            'msgesturechange',
+            'msgesturedoubletap',
+            'msgestureend',
+            'msgesturehold',
+            'msgesturestart',
+            'msgesturetap',
+            'msgotpointercapture',
+            'msinertiastart',
+            'mslostpointercapture',
+            'mspointercancel',
+            'mspointerdown',
+            'mspointerenter',
+            'mspointerhover',
+            'mspointerleave',
+            'mspointermove',
+            'mspointerout',
+            'mspointerover',
+            'mspointerup',
+            'pointerout',
+            'mssitemodejumplistitemremoved',
+            'msthumbnailclick',
+            'stop',
+            'storagecommit'
+          ];
+          const webglEventNames =
+              ['webglcontextrestored', 'webglcontextlost', 'webglcontextcreationerror'];
+          const formEventNames = ['autocomplete', 'autocompleteerror'];
+          const detailEventNames = ['toggle'];
+          const frameEventNames = ['load'];
+          const frameSetEventNames =
+              ['blur', 'error', 'focus', 'load', 'resize', 'scroll', 'messageerror'];
+          const marqueeEventNames = ['bounce', 'finish', 'start'];
 
-          function checkIsOnPropertiesPatched(target: any, ignoredProperties?: string[]) {
-            for (let prop in target) {
+          const XMLHttpRequestEventNames = [
+            'loadstart', 'progress', 'abort', 'error', 'load', 'progress', 'timeout', 'loadend',
+            'readystatechange'
+          ];
+          const IDBIndexEventNames = [
+            'upgradeneeded', 'complete', 'abort', 'success', 'error', 'blocked', 'versionchange',
+            'close'
+          ];
+          const websocketEventNames = ['close', 'error', 'open', 'message'];
+          const workerEventNames = ['error', 'message'];
+
+          const eventNames = globalEventHandlersEventNames.concat(
+              webglEventNames, formEventNames, detailEventNames, documentEventNames,
+              windowEventNames, htmlElementEventNames, ieElementEventNames);
+
+
+          function checkIsOnPropertiesPatched(
+              target: any, shouldPatchedProperties?: string[], ignoredProperties?: string[]) {
+            let checkTargetProps =
+                shouldPatchedProperties && shouldPatchedProperties.map(p => `on${p}`);
+            if (!checkTargetProps) {
+              checkTargetProps = [];
+              for (let prop in target) {
+                checkTargetProps.push(prop);
+              }
+            }
+            for (let i = 0; i < checkTargetProps.length; i++) {
+              const prop = checkTargetProps[i];
               if (ignoredProperties &&
                   ignoredProperties.filter(ignoreProp => ignoreProp === prop).length > 0) {
                 continue;
               }
               if (prop.substr(0, 2) === 'on' && prop.length > 2) {
+                let propExistsOnTarget = false;
+                let checkTarget = target;
+                while (checkTarget && checkTarget !== Object) {
+                  const desc = Object.getOwnPropertyDescriptor(checkTarget, prop);
+                  if (desc && desc.configurable) {
+                    propExistsOnTarget = true;
+                    break;
+                  }
+                  checkTarget = Object.getPrototypeOf(checkTarget);
+                }
+                if (!propExistsOnTarget) {
+                  continue;
+                }
                 target[prop] = noop;
                 if (!target[Zone.__symbol__('ON_PROPERTY' + prop.substr(2))]) {
-                  console.log('onProp is null:', prop);
+                  fail(`${prop} of ${target} is not patched`);
                 } else {
                   target[prop] = null;
                   expect(!target[Zone.__symbol__('ON_PROPERTY' + prop.substr(2))]).toBeTruthy();
@@ -157,7 +405,90 @@ describe('Zone', function() {
             }
           }
 
-          it('should patch all possbile on properties on element', function() {
+          it('should patch all possible on properties on native prototype', function() {
+            function isPropertyPatched(obj: any, prop: string, prototype?: any) {
+              let desc = Object.getOwnPropertyDescriptor(obj, prop);
+              if (!desc && prototype) {
+                // when patch window object, use prototype to check prop exist or not
+                const prototypeDesc = Object.getOwnPropertyDescriptor(prototype, prop);
+                if (prototypeDesc) {
+                  desc = {enumerable: true, configurable: true};
+                }
+              }
+              // if the descriptor not exists or is not configurable
+              // just return
+              if (!desc || !desc.configurable) {
+                return true;
+              }
+
+              const onPropPatchedSymbol = zoneSymbol('on' + prop + 'patched');
+              if (obj.hasOwnProperty(onPropPatchedSymbol) && obj[onPropPatchedSymbol]) {
+                return true;
+              }
+              return false;
+            }
+
+            function isPropertiesPatched(obj: any, properties: string[]|null, prototype?: any) {
+              if (!properties) {
+                return [];
+              }
+              for (let i = 0; i < properties.length; i++) {
+                if (!isPropertyPatched(obj, 'on' + properties[i], prototype)) {
+                  fail(`${properties[i]} is not patched on ${obj}`);
+                }
+              }
+            }
+            isPropertiesPatched(
+                window, eventNames.concat(['messageerror']), Object.getPrototypeOf(window));
+            isPropertiesPatched(Document.prototype, eventNames);
+
+            if (typeof window['SVGElement'] !== 'undefined') {
+              isPropertiesPatched(window['SVGElement'].prototype, eventNames);
+            }
+            isPropertiesPatched(Element.prototype, eventNames);
+            isPropertiesPatched(HTMLElement.prototype, eventNames);
+            isPropertiesPatched(HTMLMediaElement.prototype, mediaElementEventNames);
+            isPropertiesPatched(
+                HTMLFrameSetElement.prototype, windowEventNames.concat(frameSetEventNames));
+            isPropertiesPatched(
+                HTMLBodyElement.prototype, windowEventNames.concat(frameSetEventNames));
+            isPropertiesPatched(HTMLFrameElement.prototype, frameEventNames);
+            isPropertiesPatched(HTMLIFrameElement.prototype, frameEventNames);
+
+            const HTMLMarqueeElement = window['HTMLMarqueeElement'];
+            if (HTMLMarqueeElement) {
+              isPropertiesPatched(HTMLMarqueeElement.prototype, marqueeEventNames);
+            }
+            const Worker = window['Worker'];
+            if (Worker) {
+              isPropertiesPatched(Worker.prototype, workerEventNames);
+            }
+            const XMLHttpRequest = window['XMLHttpRequest'];
+            if (XMLHttpRequest) {
+              // XMLHttpRequest is not available in ServiceWorker, so we need to check here
+              isPropertiesPatched(XMLHttpRequest.prototype, XMLHttpRequestEventNames);
+            }
+            const XMLHttpRequestEventTarget = window['XMLHttpRequestEventTarget'];
+            if (XMLHttpRequestEventTarget) {
+              isPropertiesPatched(
+                  XMLHttpRequestEventTarget && XMLHttpRequestEventTarget.prototype,
+                  XMLHttpRequestEventNames);
+            }
+            if (typeof IDBIndex !== 'undefined') {
+              isPropertiesPatched(IDBIndex.prototype, IDBIndexEventNames);
+              isPropertiesPatched(IDBRequest.prototype, IDBIndexEventNames);
+              isPropertiesPatched(IDBOpenDBRequest.prototype, IDBIndexEventNames);
+              isPropertiesPatched(IDBDatabase.prototype, IDBIndexEventNames);
+              isPropertiesPatched(IDBTransaction.prototype, IDBIndexEventNames);
+              isPropertiesPatched(IDBCursor.prototype, IDBIndexEventNames);
+            }
+            const WebSocket = window['WebSocket'];
+            if (WebSocket) {
+              isPropertiesPatched(WebSocket.prototype, websocketEventNames);
+            }
+          });
+
+          it('should patch all possible on properties on element', function() {
             const htmlElementTagNames: string[] = [
               'a',       'area',     'audio',    'base',   'basefont', 'blockquote', 'br',
               'button',  'canvas',   'caption',  'col',    'colgroup', 'data',       'datalist',
@@ -173,29 +504,60 @@ describe('Zone', function() {
               'video'
             ];
             htmlElementTagNames.forEach(tagName => {
-              checkIsOnPropertiesPatched(document.createElement(tagName), ['onorientationchange']);
+              checkIsOnPropertiesPatched(
+                  document.createElement(tagName), eventNames, ['onorientationchange']);
             });
           });
 
-          it('should patch all possbile on properties on body', function() {
-            checkIsOnPropertiesPatched(document.body, ['onorientationchange']);
+          it('should patch all possible on properties on svg element', function() {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            checkIsOnPropertiesPatched(svg, eventNames);
           });
 
-          it('should patch all possbile on properties on Document', function() {
-            checkIsOnPropertiesPatched(document, ['onorientationchange']);
+          it('should patch all possible on properties on media element', function() {
+            const audio = document.createElement('audio');
+            checkIsOnPropertiesPatched(audio, mediaElementEventNames);
           });
 
-          it('should patch all possbile on properties on Window', function() {
-            checkIsOnPropertiesPatched(window, [
-              'onvrdisplayactivate', 'onvrdisplayblur', 'onvrdisplayconnect',
-              'onvrdisplaydeactivate', 'onvrdisplaydisconnect', 'onvrdisplayfocus',
-              'onvrdisplaypointerrestricted', 'onvrdisplaypointerunrestricted',
-              'onorientationchange', 'onerror'
-            ]);
+          it('should patch all possible on properties on frameset element', function() {
+            const frameset = document.createElement('frameset');
+            checkIsOnPropertiesPatched(frameset, windowEventNames.concat(frameSetEventNames));
           });
 
-          it('should patch all possbile on properties on xhr', function() {
-            checkIsOnPropertiesPatched(new XMLHttpRequest());
+          it('should patch all possible on properties on body', function() {
+            checkIsOnPropertiesPatched(document.body, windowEventNames.concat(frameSetEventNames));
+          });
+
+          it('should patch all possible on properties on Frame', function() {
+            const frame = document.createElement('frame');
+            checkIsOnPropertiesPatched(frame, frameEventNames);
+          });
+
+          it('should patch all possible on properties on marquee element', function() {
+            const marquee = document.createElement('marquee');
+            checkIsOnPropertiesPatched(marquee, marqueeEventNames);
+          });
+
+          it('should patch all possible on properties on Window', function() {
+            checkIsOnPropertiesPatched(window, eventNames.concat(['messageerror']));
+          });
+
+          it('should patch all possible on properties on xhr', function() {
+            checkIsOnPropertiesPatched(new XMLHttpRequest(), XMLHttpRequestEventNames);
+          });
+
+          it('should patch all possible on properties on worker', function() {
+            checkIsOnPropertiesPatched(
+                new Worker('/base/angular/packages/zone.js/test/assets/worker.js'),
+                workerEventNames);
+          });
+
+          it('should patch all possible on properties on websocket', function() {
+            try {
+              checkIsOnPropertiesPatched(new WebSocket('ws://localhost:8001'), websocketEventNames);
+            } catch (e) {
+              console.log('error when creating websocket', e);
+            }
           });
 
           it('should not patch ignored on properties', function() {
@@ -240,6 +602,16 @@ describe('Zone', function() {
               div.dispatchEvent(scrollEvent);
             });
             document.body.removeChild(div);
+          });
+
+          it('property startsWith on but not event listener should still work as expected', () => {
+            (window as any).one_two_three = {foo: 'bar'};
+
+            expect((window as any).one_two_three).toEqual({foo: 'bar'});
+            (window as any).one_two_three = {bar: 'foo'};
+            expect((window as any).one_two_three).toEqual({bar: 'foo'});
+            (window as any).one_two_three = null;
+            expect((window as any).one_two_three).toBeNull();
           });
 
           it('should be able to clear on handler added before load zone.js', function() {
