@@ -3097,6 +3097,7 @@ describe('MDC-based MatSelect', () => {
       const select = fixture.debugElement.nativeElement.querySelector('mat-select');
 
       fixture.detectChanges();
+      select.focus(); // Focus manually since the programmatic click might not do it.
       fixture.debugElement.query(By.css('.mat-mdc-select-trigger'))!.nativeElement.click();
       fixture.detectChanges();
       flush();

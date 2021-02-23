@@ -3163,6 +3163,7 @@ describe('MatSelect', () => {
       const select = fixture.debugElement.nativeElement.querySelector('mat-select');
 
       fixture.detectChanges();
+      select.focus(); // Focus manually since the programmatic click might not do it.
       fixture.debugElement.query(By.css('.mat-select-trigger'))!.nativeElement.click();
       fixture.detectChanges();
       flush();
