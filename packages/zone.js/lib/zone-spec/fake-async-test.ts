@@ -24,6 +24,7 @@ interface MicroTaskScheduledFunction {
   func: Function;
   args?: any[];
   target: any;
+  zone?: Zone;
 }
 
 interface MacroTaskOptions {
@@ -307,6 +308,22 @@ class Scheduler {
   }
 }
 
+let highPriorityScheduler: any;
+if (global[Zone.__symbol__('queueMicrotask')]) {
+  highPriorityScheduler = global[Zone.__symbol__('queueMicrotask')];
+} else if (global[Zone.__symbol__('Promise')]) {
+  highPriorityScheduler = global[Zone.__symbol__('Promise')].resolve()[Zone.__symbol__('then')];
+} else if (global[Zone.__symbol__('setTimeout')]) {
+  highPriorityScheduler = global[Zone.__symbol__('setTimeout')];
+}
+
+let lowPriorityScheduler: any;
+if (global['requestIdleCallback']) {
+  lowPriorityScheduler = global['requestIdleCallback'];
+} else if (global[Zone.__symbol__('setTimeout')]) {
+  lowPriorityScheduler = global[Zone.__symbol__('setTimeout')];
+}
+
 class FakeAsyncTestZoneSpec implements ZoneSpec {
   static assertInZone(): void {
     if (Zone.current.get('FakeAsyncTestZoneSpec') == null) {
@@ -316,8 +333,8 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
 
   private _scheduler: Scheduler = new Scheduler();
   private _microtasks: MicroTaskScheduledFunction[] = [];
-  private _observers: MicroTaskScheduledFunction[] = [];
-  private _observerZone: Zone|null = null;
+  private _highPriorityObservers: MicroTaskScheduledFunction[] = [];
+  private _lowPriorityObservers: MicroTaskScheduledFunction[] = [];
   private _lastError: Error|null = null;
   private _uncaughtPromiseErrors: {rejection: any}[] =
       (Promise as any)[(Zone as any).__symbol__('uncaughtPromiseErrors')];
@@ -558,40 +575,50 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     }
   }
 
+  private _flushObservers(
+      scheduler: (fn: Function) => void, getObservers: () => MicroTaskScheduledFunction[],
+      callback: () => void) {
+    const currZone = Zone.current;
+    scheduler(() => {
+      const observers = getObservers();
+      if (observers.length === 0) {
+        return currZone.run(callback);
+      }
+      const zoneObservers:
+          {[name: string]: {zone: Zone, observers: MicroTaskScheduledFunction[]}} = {};
+      observers.forEach(ob => {
+        let observersByZone = zoneObservers[ob.zone!.name];
+        if (!observersByZone) {
+          observersByZone = zoneObservers[ob.zone!.name] = {zone: ob.zone!, observers: []};
+        }
+        observersByZone.observers.push(ob);
+      });
+      Object.values(zoneObservers).forEach(observersByZone => {
+        observersByZone.zone.run(() => {
+          FakeAsyncTestZoneSpec.assertInZone();
+          const flushErrors = () => {
+            if (this._lastError !== null || this._uncaughtPromiseErrors.length) {
+              // If there is an error stop processing the microtask queue and rethrow the error.
+              this._resetLastErrorAndThrow();
+            }
+          };
+          while (observersByZone.observers.length > 0) {
+            let observerTask = observersByZone.observers.shift()!;
+            observerTask.func.apply(observerTask.target, observerTask.args);
+          }
+          flushErrors();
+        });
+      });
+      currZone.run(callback);
+    });
+  }
+
   flushObservers(callback: () => {}): void {
-    let scheduler: any;
-    if (global[Zone.__symbol__('queueMicrotask')]) {
-      scheduler = global[Zone.__symbol__('queueMicrotask')];
-    } else if (global[Zone.__symbol__('Promise')]) {
-      scheduler = global[Zone.__symbol__('Promise')].resolve()[Zone.__symbol__('then')];
-    } else if (global[Zone.__symbol__('setTimeout')]) {
-      scheduler = global[Zone.__symbol__('setTimeout')];
-    }
-    if (!scheduler) {
+    if (!highPriorityScheduler || !lowPriorityScheduler) {
       throw new Error('No scheduler to trigger observer callbacks.');
     }
-    scheduler(() => {
-      if (this._observers.length === 0) {
-        return;
-      }
-      if (!this._observerZone) {
-        throw new Error('No observers are scheduled in fakeAsync().');
-      }
-      this._observerZone!.run(() => {
-        FakeAsyncTestZoneSpec.assertInZone();
-        const flushErrors = () => {
-          if (this._lastError !== null || this._uncaughtPromiseErrors.length) {
-            // If there is an error stop processing the microtask queue and rethrow the error.
-            this._resetLastErrorAndThrow();
-          }
-        };
-        while (this._observers.length > 0) {
-          let observerTask = this._observers.shift()!;
-          observerTask.func.apply(observerTask.target, observerTask.args);
-        }
-        flushErrors();
-        callback();
-      });
+    this._flushObservers(highPriorityScheduler, () => this._highPriorityObservers, () => {
+      this._flushObservers(lowPriorityScheduler, () => this._lowPriorityObservers, callback);
     });
   }
 
@@ -661,14 +688,17 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
             additionalArgs = Array.prototype.slice.call(args, callbackIndex + 1);
           }
         }
-        const meta = {
+        const meta: MicroTaskScheduledFunction = {
           func: task.invoke,
           args: additionalArgs,
-          target: task.data && (task.data as any).target
+          target: task.data && (task.data as any).target,
         };
         if (task.source === 'MutationObserver.observe') {
-          this._observerZone = task.zone;
-          this._observers.push(meta);
+          meta.zone = task.zone;
+          this._highPriorityObservers.push(meta);
+        } else if (task.source === 'IntersectionObserver.observe') {
+          meta.zone = task.zone;
+          this._lowPriorityObservers.push(meta);
         } else {
           this._microtasks.push(meta);
         }

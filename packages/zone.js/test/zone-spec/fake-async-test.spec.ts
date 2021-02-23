@@ -936,6 +936,40 @@ describe('FakeAsyncTestZoneSpec', () => {
              });
            }));
 
+  describe('IntersectionObserver', ifEnvSupports('IntersectionObserver', () => {
+             let elt: HTMLDivElement;
+
+             beforeEach(function() {
+               elt = document.createElement('div');
+               document.body.appendChild(elt);
+               elt.style.left = '-2000px';
+             });
+
+             afterEach(function() {
+               document.body.removeChild(elt);
+             });
+             it('should run observe callback as microTask in fakeAsync()', (done: DoneFn) => {
+               fakeAsyncTestZone.run(() => {
+                 let observer: any;
+                 let entries: any;
+                 const ob = new IntersectionObserver(function(e, o) {
+                   entries = e;
+                   observer = o;
+                   ob.disconnect();
+                 });
+
+                 ob.observe(elt);
+                 elt.style.left = '0px';
+                 testZoneSpec.flushObservers(() => {
+                   expect(observer).toBe(ob);
+                   expect(entries.length).toBe(1);
+                   expect(entries[0].target).toBe(elt);
+                   done();
+                   testZoneSpec.flushMicrotasks();
+                 });
+               });
+             });
+           }));
 
   describe('node process', ifEnvSupports(supportNode, () => {
              it('should be able to schedule microTask with additional arguments', () => {
