@@ -1,12 +1,9 @@
 // #docplaster
-// #docregion import-http, props
-// #enddocregion props
+// #docregion import-http
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 // #enddocregion import-http
-// #docregion get-shipping-import
-import { Observable } from 'rxjs';
-// #enddocregion get-shipping-import
+
 @Injectable({
   providedIn: 'root'
 })
@@ -38,13 +35,8 @@ export class CartService {
 
 // #docregion get-shipping
   getShippingPrices() {
-    return this.http.get('/assets/shipping.json') as Observable<ShippingPrice[]>;
+    return this.http.get<{type: string, price: number}[]>('/assets/shipping.json');
   }
 // #docregion props, methods, inject-http
 }
 // #enddocregion props, methods, inject-http
-
-export interface ShippingPrice {
-  type: string;
-  price: number;
-}

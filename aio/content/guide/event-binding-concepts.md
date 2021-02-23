@@ -32,7 +32,7 @@ If the event belongs to a directive or component, `$event` has the shape that th
 <div class="alert is-helpful">
 
 The type of `$event.target` is only `EventTarget` in the template.
-In the `getValue()` method the target is cast to an `HTMLInputElement` to allow type-safe access to its `value` property.
+In the `getValue()` method, the target is cast to an `HTMLInputElement` to allow type-safe access to its `value` property.
 
 <code-example path="event-binding/src/app/app.component.ts" region="getValue"></code-example>
 

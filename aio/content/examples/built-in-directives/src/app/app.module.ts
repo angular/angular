@@ -1,4 +1,3 @@
-// #docplaster
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 // #docregion import-forms-module
