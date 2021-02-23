@@ -3,6 +3,12 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 
 // #docregion custom-json-interceptor
+// The JsonParser class acts as a base class for custom parsers and as the DI token.
+@Injectable()
+export abstract class JsonParser {
+  abstract parse(text: string): any;
+}
+
 @Injectable()
 export class CustomJsonInterceptor implements HttpInterceptor {
   constructor(private jsonParser: JsonParser) {}
@@ -30,12 +36,6 @@ export class CustomJsonInterceptor implements HttpInterceptor {
       return event;
     }
   }
-}
-
-// The JsonParser class acts as a base class for custom parsers and as the DI token.
-@Injectable()
-export abstract class JsonParser {
-  abstract parse(text: string): any;
 }
 // #enddocregion custom-json-interceptor
 
