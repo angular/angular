@@ -91,6 +91,7 @@ describe('MatSelect', () => {
    * that we're only compiling the necessary test components for each test in order to speed up
    * overall test time.
    * @param declarations Components to declare for this block
+   * @param providers Additional providers for this block
    */
   function configureMatSelectTestingModule(declarations: any[], providers: Provider[] = []) {
     TestBed.configureTestingModule({
@@ -1088,7 +1089,7 @@ describe('MatSelect', () => {
 
             options[1].click();
             fixture.detectChanges();
-            trigger.click();
+            fixture.componentInstance.select.open();
             fixture.detectChanges();
             flush();
 
@@ -1098,9 +1099,12 @@ describe('MatSelect', () => {
 
             fixture.componentInstance.control.setValue(fixture.componentInstance.foods[7].value);
             fixture.detectChanges();
-            trigger.click();
+            fixture.componentInstance.select.close();
             fixture.detectChanges();
             flush();
+
+            fixture.componentInstance.select.open();
+            fixture.detectChanges();
 
             activeOptions = options.filter(option => option.classList.contains('mat-active'));
             expect(activeOptions).toEqual([options[7]],
