@@ -1,3 +1,5 @@
+export declare const CDK_COPY_TO_CLIPBOARD_CONFIG: InjectionToken<CdkCopyToClipboardConfig>;
+
 export declare class CdkCopyToClipboard implements OnDestroy {
     attempts: number;
     copied: EventEmitter<boolean>;
