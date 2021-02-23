@@ -333,6 +333,8 @@ export declare const STICKY_POSITIONING_LISTENER: InjectionToken<StickyPositioni
 
 export declare type StickyDirection = 'top' | 'bottom' | 'left' | 'right';
 
+export declare type StickyOffset = number | null | undefined;
+
 export interface StickyPositioningListener {
     stickyColumnsUpdated(update: StickyUpdate): void;
     stickyEndColumnsUpdated(update: StickyUpdate): void;
@@ -359,6 +361,7 @@ export declare class StickyStyler {
 
 export interface StickyUpdate {
     elements?: ReadonlyArray<HTMLElement[] | undefined>;
+    offsets?: StickyOffset[];
     sizes: StickySize[];
 }
 

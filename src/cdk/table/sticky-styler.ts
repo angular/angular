@@ -190,12 +190,11 @@ export class StickyStyler {
     const stickyCellHeights: (number|undefined)[] = [];
     const elementsToStick: HTMLElement[][] = [];
     for (let rowIndex = 0, stickyOffset = 0; rowIndex < rows.length; rowIndex++) {
-      stickyOffsets[rowIndex] = stickyOffset;
-
       if (!states[rowIndex]) {
         continue;
       }
 
+      stickyOffsets[rowIndex] = stickyOffset;
       const row = rows[rowIndex];
       elementsToStick[rowIndex] = this._isNativeHtmlTable ?
           Array.from(row.children) as HTMLElement[] : [row];
@@ -224,10 +223,10 @@ export class StickyStyler {
 
       if (position === 'top') {
         this._positionListener?.stickyHeaderRowsUpdated(
-            {sizes: stickyCellHeights, elements: elementsToStick});
+            {sizes: stickyCellHeights, offsets: stickyOffsets, elements: elementsToStick});
       } else {
         this._positionListener?.stickyFooterRowsUpdated(
-            {sizes: stickyCellHeights, elements: elementsToStick});
+            {sizes: stickyCellHeights, offsets: stickyOffsets, elements: elementsToStick});
       }
     });
   }
