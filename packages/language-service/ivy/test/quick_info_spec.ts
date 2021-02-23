@@ -9,7 +9,7 @@
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {extractCursorInfo, LanguageServiceTestEnv, Project} from '../testing';
+import {LanguageServiceTestEnv, Project} from '../testing';
 
 function quickInfoSkeleton(): {[fileName: string]: string} {
   return {
@@ -516,7 +516,7 @@ describe('quick info', () => {
       {templateOverride, expectedSpanText, expectedDisplayString}:
           {templateOverride: string, expectedSpanText: string, expectedDisplayString: string}):
       ts.QuickInfo {
-    const {text} = extractCursorInfo(templateOverride);
+    const text = templateOverride.replace('¦', '');
     const template = project.openFile('app.html');
     template.contents = text;
     env.expectNoSourceDiagnostics();

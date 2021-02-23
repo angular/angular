@@ -9,8 +9,6 @@
 import * as ts from 'typescript/lib/tsserverlibrary';
 import {LanguageService} from '../../language_service';
 
-import {extractCursorInfo} from './util';
-
 /**
  * A file that is currently open in the `ts.Project`, with a cursor position.
  */
@@ -100,4 +98,20 @@ export class OpenBuffer {
   getRenameInfo() {
     return this.ngLS.getRenameInfo(this.scriptInfo.fileName, this._cursor);
   }
+}
+
+/**
+ * Given a text snippet which contains exactly one cursor symbol ('¦'), extract both the offset of
+ * that cursor within the text as well as the text snippet without the cursor.
+ */
+function extractCursorInfo(textWithCursor: string): {cursor: number, text: string} {
+  const cursor = textWithCursor.indexOf('¦');
+  if (cursor === -1 || textWithCursor.indexOf('¦', cursor + 1) !== -1) {
+    throw new Error(`Expected to find exactly one cursor symbol '¦'`);
+  }
+
+  return {
+    cursor,
+    text: textWithCursor.substr(0, cursor) + textWithCursor.substr(cursor + 1),
+  };
 }

@@ -8,7 +8,7 @@
 
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 
-import {extractCursorInfo, humanizeDocumentSpanLike, LanguageServiceTestEnv, Project} from '../testing';
+import {humanizeDocumentSpanLike, LanguageServiceTestEnv, Project} from '../testing';
 
 describe('type definitions', () => {
   let env: LanguageServiceTestEnv;
@@ -42,7 +42,7 @@ describe('type definitions', () => {
 
   function getTypeDefinitionsAndAssertBoundSpan(
       project: Project, {templateOverride}: {templateOverride: string}) {
-    const {text} = extractCursorInfo(templateOverride);
+    const text = templateOverride.replace('¦', '');
     const template = project.openFile('app.html');
     template.contents = text;
     env.expectNoSourceDiagnostics();
