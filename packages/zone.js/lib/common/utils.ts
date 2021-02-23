@@ -207,22 +207,20 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
     if (!target) {
       return;
     }
-    let previousValue = (target as any)[eventNameSymbol];
-    if (previousValue) {
+
+    const previousValue = (target as any)[eventNameSymbol];
+    if (previousValue && typeof previousValue === 'function') {
       target.removeEventListener(eventName, wrapFn);
     }
 
-    // issue #978, when onload handler was added before loading zone.js
-    // we should remove it with originalDescSet
-    if (originalDescSet) {
-      originalDescSet.apply(target, NULL_ON_PROP_VALUE);
-    }
-
+    (target as any)[eventNameSymbol] = newValue;
     if (typeof newValue === 'function') {
-      (target as any)[eventNameSymbol] = newValue;
+      // issue #978, when onload handler was added before loading zone.js
+      // we should remove it with originalDescSet
+      if (originalDescSet) {
+        originalDescSet.apply(target, NULL_ON_PROP_VALUE);
+      }
       target.addEventListener(eventName, wrapFn, false);
-    } else {
-      (target as any)[eventNameSymbol] = null;
     }
   };
 

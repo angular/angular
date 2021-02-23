@@ -4,7 +4,7 @@
       "uncompressed": {
         "runtime": 1083,
         "main": 124282,
-        "polyfills": 37226
+        "polyfills": 33304
       }
     }
   },
@@ -16,7 +16,7 @@
         "main": "Likely there is a missing PURE annotation https://github.com/angular/angular/pull/43344",
         "main": "Tracking issue: https://github.com/angular/angular/issues/43568",
         "main": 20378,
-        "polyfills": 37250
+        "polyfills": 33328
       }
     }
   },
@@ -25,7 +25,7 @@
       "uncompressed": {
         "runtime": 1105,
         "main": 131270,
-        "polyfills": 37248
+        "polyfills": 33326
       }
     }
   },
@@ -34,7 +34,7 @@
       "uncompressed": {
         "runtime": 929,
         "main": 123958,
-        "polyfills": 37933
+        "polyfills": 34010
       }
     }
   },
@@ -43,7 +43,7 @@
       "uncompressed": {
         "runtime": 2835,
         "main": 230780,
-        "polyfills": 37244,
+        "polyfills": 33322,
         "src_app_lazy_lazy_module_ts": 795
       }
     }
@@ -53,7 +53,7 @@
       "uncompressed": {
         "runtime": 1063,
         "main": 155607,
-        "polyfills": 36975
+        "polyfills": 33319
       }
     }
   },
@@ -62,7 +62,7 @@
       "uncompressed": {
         "runtime": 1070,
         "main": 155563,
-        "polyfills": 37242
+        "polyfills": 33284
       }
     }
   },
