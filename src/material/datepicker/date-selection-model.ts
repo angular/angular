@@ -84,18 +84,8 @@ export abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSelection<
   /** Checks whether the current selection is complete. */
   abstract isComplete(): boolean;
 
-  /**
-   * Clones the selection model.
-   * @deprecated To be turned into an abstract method.
-   * @breaking-change 12.0.0
-   */
-  clone(): MatDateSelectionModel<S, D> {
-    if (typeof ngDevMode === 'undefined' || ngDevMode) {
-      throw Error('Not implemented');
-    }
-
-    return null!;
-  }
+  /** Clones the selection model. */
+  abstract clone(): MatDateSelectionModel<S, D>;
 }
 
 /**  A selection model that contains a single date. */

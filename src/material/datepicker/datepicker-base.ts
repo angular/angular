@@ -168,14 +168,9 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
     private _dateAdapter: DateAdapter<D>,
     @Optional() @Inject(MAT_DATE_RANGE_SELECTION_STRATEGY)
         private _rangeSelectionStrategy: MatDateRangeSelectionStrategy<D>,
-    /**
-     * @deprecated `intl` argument to become required.
-     * @breaking-change 12.0.0
-     */
-    intl?: MatDatepickerIntl) {
+    intl: MatDatepickerIntl) {
     super(elementRef);
-    // @breaking-change 12.0.0 Remove fallback for `intl`.
-    this._closeButtonText = intl?.closeCalendarLabel || 'Close calendar';
+    this._closeButtonText = intl.closeCalendarLabel;
   }
 
   ngOnInit() {

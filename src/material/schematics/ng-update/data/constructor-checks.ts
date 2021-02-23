@@ -18,6 +18,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/components/pull/21897',
       changes: ['MatTooltip']
+    },
+    {
+      pr: 'https://github.com/angular/components/pull/21952',
+      changes: ['MatDatepickerContent']
     }
   ],
   [TargetVersion.V11]: [

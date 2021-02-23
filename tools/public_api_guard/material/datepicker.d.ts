@@ -223,8 +223,7 @@ export declare class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>
     comparisonEnd: D | null;
     comparisonStart: D | null;
     datepicker: MatDatepickerBase<any, S, D>;
-    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _globalModel: MatDateSelectionModel<S, D>, _dateAdapter: DateAdapter<D>, _rangeSelectionStrategy: MatDateRangeSelectionStrategy<D>,
-    intl?: MatDatepickerIntl);
+    constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, _globalModel: MatDateSelectionModel<S, D>, _dateAdapter: DateAdapter<D>, _rangeSelectionStrategy: MatDateRangeSelectionStrategy<D>, intl: MatDatepickerIntl);
     _applyPendingSelection(): void;
     _getSelected(): D | DateRange<D> | null;
     _handleUserSelection(event: MatCalendarUserEvent<D | null>): void;
@@ -390,7 +389,7 @@ export declare abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSe
     selection: S, _adapter: DateAdapter<D>);
     protected _isValidDateInstance(date: D): boolean;
     abstract add(date: D | null): void;
-    clone(): MatDateSelectionModel<S, D>;
+    abstract clone(): MatDateSelectionModel<S, D>;
     abstract isComplete(): boolean;
     abstract isValid(): boolean;
     ngOnDestroy(): void;
