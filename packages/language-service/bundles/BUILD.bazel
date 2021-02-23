@@ -3,7 +3,7 @@ load("//dev-infra/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", "ng_rollup_b
 ng_rollup_bundle(
     name = "language-service",
     build_optimizer = False,
-    entry_point = "//packages/language-service:index.ts",
+    entry_point = "//packages/language-service:src/ts_plugin.ts",
     format = "amd",
     globals = {
         "fs": "fs",

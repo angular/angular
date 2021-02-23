@@ -6,5 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as ts from 'typescript/lib/tsserverlibrary';
+import {NgLanguageService, NgLanguageServiceConfig} from './api';
+
 export * from './api';
-export {create, getExternalFiles} from './src/ts_plugin';
+
+interface PluginModule extends ts.server.PluginModule {
+  create(createInfo: ts.server.PluginCreateInfo): NgLanguageService;
+  onConfigurationChanged?(config: NgLanguageServiceConfig): void;
+}
+
+const factory: ts.server.PluginModuleFactory = (tsModule): PluginModule => {
+  let plugin: PluginModule;
+
+  return {
+    create(info: ts.server.PluginCreateInfo): NgLanguageService {
+      const config: NgLanguageServiceConfig = info.config;
+      const bundleName = config.ivy ? 'ivy.js' : 'language-service.js';
+      plugin = require(`./bundles/${bundleName}`)(tsModule);
+      return plugin.create(info);
+    },
+    getExternalFiles(project: ts.server.Project): string[] {
+      return plugin?.getExternalFiles?.(project) ?? [];
+    },
+    onConfigurationChanged(config: NgLanguageServiceConfig): void {
+      plugin?.onConfigurationChanged?.(config);
+    },
+  };
+};
+
+module.exports = factory;

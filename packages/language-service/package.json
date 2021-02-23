@@ -2,7 +2,7 @@
   "name": "@angular/language-service",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - language services",
-  "main": "./bundles/language-service.js",
+  "main": "./index.js",
   "typings": "./index.d.ts",
   "author": "angular",
   "license": "MIT",
