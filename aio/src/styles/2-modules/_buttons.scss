@@ -4,8 +4,10 @@ button {
   font-family: inherit;
 }
 
-.button,
-a.button.mat-button {
+// This rule overrides some Angular Material styles defined for `.mat-button`
+// (hence we include `.mat-button` in the selector).
+a.button.mat-button,
+.button {
   display: inline-block;
   @include line-height(32);
   padding: 0px 16px;
@@ -91,6 +93,8 @@ a.button.mat-button {
 .group-buttons {
   margin: 32px auto;
 
+  // This rule overrides some Angular Material styles defined for `.mat-button`
+  // (hence we include `.mat-button` in the selector).
   a.button.mat-button.filter-button {
     width: 140px;
     @include font-size(14);
