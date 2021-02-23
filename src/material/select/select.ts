@@ -413,7 +413,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
   }
   private _value: any;
 
-  /** Aria label of the select. If not specified, the placeholder will be used as label. */
+  /** Aria label of the select. */
   @Input('aria-label') ariaLabel: string = '';
 
   /** Input that can be used to specify the `aria-labelledby` attribute. */
