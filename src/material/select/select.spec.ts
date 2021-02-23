@@ -2952,7 +2952,7 @@ describe('MatSelect', () => {
 
           expect(fixture.componentInstance.control.value).toBeNull();
           expect(fixture.componentInstance.select.selected).toBeFalsy();
-          expect(formField.classList).not.toContain('mat-formf-field-should-float');
+          expect(formField.classList).not.toContain('mat-form-field-should-float');
           expect(trigger.textContent).not.toContain('Null');
           expect(trigger.textContent).not.toContain('Undefined');
         }));
