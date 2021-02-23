@@ -12,7 +12,7 @@
 
 import {findEventTasks} from '../common/events';
 import {patchTimer} from '../common/timers';
-import {patchClass, patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, zoneSymbol,} from '../common/utils';
+import {patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, zoneSymbol,} from '../common/utils';
 
 import {patchCustomElements} from './custom-elements';
 import {patchMacroTaskWithEvent} from './event-macrotask';

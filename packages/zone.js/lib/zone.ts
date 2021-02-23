@@ -354,7 +354,6 @@ interface _ZonePrivate {
   ObjectGetOwnPropertyDescriptor: (o: any, p: PropertyKey) => PropertyDescriptor | undefined;
   ObjectCreate(o: object|null, properties?: PropertyDescriptorMap&ThisType<any>): any;
   ArraySlice(start?: number, end?: number): any[];
-  patchClass: (className: string) => void;
   wrapWithCurrentZone: (callback: any, source: string) => any;
   filterProperties: (target: any, onProperties: string[], ignoreProperties: any[]) => string[];
   attachOriginToPatched: (target: any, origin: any) => void;
@@ -1425,7 +1424,6 @@ const Zone: ZoneType = (function(global: any) {
     ObjectGetOwnPropertyDescriptor: () => undefined,
     ObjectCreate: () => undefined,
     ArraySlice: () => [],
-    patchClass: () => noop,
     wrapWithCurrentZone: () => noop,
     filterProperties: () => [],
     attachOriginToPatched: () => noop,

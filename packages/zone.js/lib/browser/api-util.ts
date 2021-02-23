@@ -7,7 +7,7 @@
  */
 
 import {globalSources, patchEventPrototype, patchEventTarget, zoneSymbolEventNames} from '../common/events';
-import {ADD_EVENT_LISTENER_STR, ArraySlice, attachOriginToPatched, bindArguments, FALSE_STR, isBrowser, isIEOrEdge, isMix, isNode, ObjectCreate, ObjectDefineProperty, ObjectGetOwnPropertyDescriptor, patchClass, patchMacroTask, patchMethod, patchOnProperties, REMOVE_EVENT_LISTENER_STR, TRUE_STR, wrapWithCurrentZone, ZONE_SYMBOL_PREFIX} from '../common/utils';
+import {ADD_EVENT_LISTENER_STR, ArraySlice, attachOriginToPatched, bindArguments, FALSE_STR, isBrowser, isIEOrEdge, isMix, isNode, ObjectCreate, ObjectDefineProperty, ObjectGetOwnPropertyDescriptor, patchMacroTask, patchMethod, patchOnProperties, REMOVE_EVENT_LISTENER_STR, TRUE_STR, wrapWithCurrentZone, ZONE_SYMBOL_PREFIX} from '../common/utils';
 
 import {patchCallbacks} from './browser-util';
 import {eventNames, filterProperties} from './property-descriptor';
@@ -39,7 +39,6 @@ Zone.__load_patch('util', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   api.ObjectGetOwnPropertyDescriptor = ObjectGetOwnPropertyDescriptor;
   api.ObjectCreate = ObjectCreate;
   api.ArraySlice = ArraySlice;
-  api.patchClass = patchClass;
   api.wrapWithCurrentZone = wrapWithCurrentZone;
   api.filterProperties = filterProperties;
   api.attachOriginToPatched = attachOriginToPatched;
