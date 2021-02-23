@@ -8,6 +8,7 @@ button {
 // (hence we include `.mat-button` in the selector).
 a.button.mat-button,
 .button {
+  color: inherit;
   display: inline-block;
   @include line-height(32);
   padding: 0px 16px;
@@ -91,18 +92,18 @@ a.button.mat-button,
 
 
 .group-buttons {
-  margin: 32px auto;
+  margin: 16px auto 32px;
 
   // This rule overrides some Angular Material styles defined for `.mat-button`
   // (hence we include `.mat-button` in the selector).
   a.button.mat-button.filter-button {
-    width: 140px;
-    @include font-size(14);
-    padding: 0px 16px;
-    margin: 8px;
-    @include line-height(48);
-    border: 2px solid $blue;
+    background-color: rgba($blue, 0.2);
     border-radius: 4px;
+    @include font-size(16);
+    @include line-height(48);
+    margin: 8px;
+    padding: 0px 16px;
+    width: 168px;
 
     &.selected,
     &:hover {
@@ -111,9 +112,8 @@ a.button.mat-button,
     }
 
     @media (max-width: 480px) {
-      font-size: 1.2rem;
-      padding: 0;
-      margin: 0;
+      @include font-size(14);
+      width: auto;
     }
   }
 }
