@@ -131,7 +131,7 @@ export abstract class _MatAutocompleteBase extends _MatAutocompleteMixinBase imp
   /** @docs-private */
   abstract optionGroups: QueryList<_MatOptgroupBase>;
 
-  /** Aria label of the select. If not specified, the placeholder will be used as label. */
+  /** Aria label of the autocomplete. */
   @Input('aria-label') ariaLabel: string;
 
   /** Input that can be used to specify the `aria-labelledby` attribute. */
