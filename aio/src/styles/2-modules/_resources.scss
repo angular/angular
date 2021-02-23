@@ -4,11 +4,7 @@ aio-resource-list {
     box-shadow: 0 1px 4px 0 rgba($black, 0.37);
     border-radius: 4px;
     margin-bottom: 8px * 6;
-    width: 80%;
-
-    @media (max-width: 600px) {
-      width: 100%;
-    }
+    max-width: 50em;
   }
 
   .resource-item {
@@ -32,11 +28,9 @@ aio-resource-list {
     padding: 16px 23px;
     margin: 0;
     background-color: $mist;
-    color: #373E41;
   }
 
   .resource-row-link {
-    color: #1a2326;
     display: flex;
     flex-direction: column;
     border: transparent solid 1px;
@@ -44,9 +38,8 @@ aio-resource-list {
     transition: all .3s;
 
     &:hover {
-      color: #1a2326;
       text-decoration: none;
-      border-color: #2B85E7;
+      border-color: rgba($blue, 0.5);
       border-radius: 4px;
       box-shadow: 0 8px 8px rgba(1, 67, 163, .24), 0 0 8px rgba(1, 67, 163, .12), 0 6px 18px rgba(43, 133, 231, .12);
       transform: translateY(-2px);
