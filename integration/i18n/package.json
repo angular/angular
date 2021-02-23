@@ -29,7 +29,7 @@
   },
   "scripts": {
     "closure": "google-closure-compiler --flagfile closure.conf",
-    "test": "ngc && yarn run closure && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first && npm run test-locale-folder",
+    "test": "ngc && yarn run closure && concurrently \"yarn run serve\" \"yarn run protractor\" --kill-others --success first && yarn test-locale-folder",
     "test-locale-folder": "node test-locale-folder.js",
     "serve": "lite-server -c e2e/browser.config.json",
     "preprotractor": "tsc -p e2e",
