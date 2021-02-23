@@ -5,33 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {absoluteFrom} from '@angular/compiler-cli/src/ngtsc/file_system';
-import {TestFile} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {LanguageServiceTestEnv} from './env';
 import {Project, ProjectFiles, TestableOptions} from './project';
-
-/**
- * Given a text snippet which contains exactly one cursor symbol ('¦'), extract both the offset of
- * that cursor within the text as well as the text snippet without the cursor.
- */
-export function extractCursorInfo(textWithCursor: string): {cursor: number, text: string} {
-  const cursor = textWithCursor.indexOf('¦');
-  if (cursor === -1 || textWithCursor.indexOf('¦', cursor + 1) !== -1) {
-    throw new Error(`Expected to find exactly one cursor symbol '¦'`);
-  }
-
-  return {
-    cursor,
-    text: textWithCursor.substr(0, cursor) + textWithCursor.substr(cursor + 1),
-  };
-}
-
-function last<T>(array: T[]): T {
-  if (array.length === 0) {
-    throw new Error(`last() called on empty array`);
-  }
-  return array[array.length - 1];
-}
 
 /**
  * Expect that a list of objects with a `fileName` property matches a set of expected files by only
@@ -119,4 +94,11 @@ type Stringy<T> = {
 
 export function getText(contents: string, textSpan: ts.TextSpan) {
   return contents.substr(textSpan.start, textSpan.length);
+}
+
+function last<T>(array: T[]): T {
+  if (array.length === 0) {
+    throw new Error(`last() called on empty array`);
+  }
+  return array[array.length - 1];
 }
