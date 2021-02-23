@@ -110,5 +110,16 @@ import {HttpParams} from '@angular/common/http/src/params';
         expect(body.toString()).toBe('a=&c=3');
       });
     });
+
+    describe('percent encoding toString', () => {
+      it('should encode and stringify string params', () => {
+        const body = new HttpParams({fromObject: {a: '@:$,;+=?/', b: '2'}, percentEncoding: true});
+        expect(body.toString()).toBe('a=%40%3A%24%2C%3B%2B%3D%3F%2F&b=2');
+      });
+      it('should stringify array params', () => {
+        const body = new HttpParams({fromObject: {a: '@:$,;+=?/', b: '2'}});
+        expect(body.toString()).toBe('a=@:$,;+=?/&b=2');
+      });
+    });
   });
 }

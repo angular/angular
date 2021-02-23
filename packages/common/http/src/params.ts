@@ -70,6 +70,55 @@ export class HttpUrlEncodingCodec implements HttpParameterCodec {
 }
 
 
+/**
+ * Provides percent encoding and decoding of URL parameter and query-string values.
+ *
+ * Serializes and parses URL parameter keys and values to encode and decode them.
+ * If you pass URL query parameters without encoding,
+ * the query parameters can be misinterpreted at the receiving end.
+ *
+ *
+ * @publicApi
+ */
+export class HttpUrlPercentEncodingCodec implements HttpParameterCodec {
+  /**
+   * Encodes a key name for a URL parameter or query-string.
+   * @param key The key name.
+   * @returns The encoded key name.
+   */
+  encodeKey(key: string): string {
+    return encodeURIComponent(key);
+  }
+
+  /**
+   * Encodes the value of a URL parameter or query-string.
+   * @param value The value.
+   * @returns The encoded value.
+   */
+  encodeValue(value: string): string {
+    return encodeURIComponent(value);
+  }
+
+  /**
+   * Decodes an encoded URL parameter or query-string key.
+   * @param key The encoded key name.
+   * @returns The decoded key name.
+   */
+  decodeKey(key: string): string {
+    return decodeURIComponent(key);
+  }
+
+  /**
+   * Decodes an encoded URL parameter or query-string value.
+   * @param value The encoded value.
+   * @returns The decoded value.
+   */
+  decodeValue(value: string) {
+    return decodeURIComponent(value);
+  }
+}
+
+
 function paramParser(rawParams: string, codec: HttpParameterCodec): Map<string, string[]> {
   const map = new Map<string, string[]>();
   if (rawParams.length > 0) {
@@ -125,6 +174,7 @@ export interface HttpParamsOptions {
 
   /** Encoding codec used to parse and serialize the parameters. */
   encoder?: HttpParameterCodec;
+  percentEncoding?: boolean;
 }
 
 /**
@@ -143,6 +193,9 @@ export class HttpParams {
 
   constructor(options: HttpParamsOptions = {} as HttpParamsOptions) {
     this.encoder = options.encoder || new HttpUrlEncodingCodec();
+    if (!!options.percentEncoding) {
+      this.encoder = new HttpUrlPercentEncodingCodec();
+    }
     if (!!options.fromString) {
       if (!!options.fromObject) {
         throw new Error(`Cannot specify both fromString and fromObject.`);
