@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {loadFakeAsyncFetch, supportedSources as supportedFetchSources} from './fake-async-fetch';
 import {loadFakeAsyncFileReader, supportedSources as supportedFileReaderSources} from './fake-async-file-reader';
 import {loadFakeAsyncXHR, supportedSources as supportedXHRSources} from './fake-async-xhr';
 
@@ -342,7 +343,8 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
   pendingPeriodicTimers: number[] = [];
   pendingTimers: number[] = [];
   pendingNonTimerTasks: Task[] = [];
-  supportedNonTimerTaskSources = supportedXHRSources.concat(supportedFileReaderSources);
+  supportedNonTimerTaskSources =
+      supportedXHRSources.concat(supportedFileReaderSources).concat(supportedFetchSources);
   onNonTimerMacroTaskHandlers:
       {source: string, handler: (data: any, taskDone: () => void) => void}[] = [];
 
@@ -824,6 +826,7 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
 Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const xhrPatch = loadFakeAsyncXHR(global);
   const fileReaderPatch = loadFakeAsyncFileReader(global);
+  const fetchPatch = loadFakeAsyncFetch(global);
   const FakeAsyncTestZoneSpec = Zone && (Zone as any)['FakeAsyncTestZoneSpec'];
   type ProxyZoneSpecType = {
     setDelegate(delegateSpec: ZoneSpec): void; getDelegate(): ZoneSpec; resetDelegate(): void;
@@ -896,6 +899,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
         proxyZoneSpec.setDelegate(_fakeAsyncTestZoneSpec);
         _fakeAsyncTestZoneSpec.lockDatePatch();
         xhrPatch.fakeXHR(api);
+        fetchPatch.fakeFetch();
         fileReaderPatch.fakeFileReader(api);
         try {
           res = fn.apply(this, args);
@@ -903,6 +907,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
         } finally {
           xhrPatch.restoreXHR();
           fileReaderPatch.restoreFileReader();
+          fetchPatch.restoreFetch();
           proxyZoneSpec.setDelegate(lastProxyZoneSpec);
         }
 

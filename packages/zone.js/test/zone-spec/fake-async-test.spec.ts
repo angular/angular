@@ -12,6 +12,7 @@ import {Observable} from 'rxjs';
 import {delay} from 'rxjs/operators';
 
 import {isNode, patchMacroTask, zoneSymbol} from '../../lib/common/utils';
+import {loadFakeAsyncFetch} from '../../lib/zone-spec/fake-async-fetch';
 import {loadFakeAsyncFileReader} from '../../lib/zone-spec/fake-async-file-reader';
 import {loadFakeAsyncXHR} from '../../lib/zone-spec/fake-async-xhr';
 import {ifEnvSupports} from '../test-util';
@@ -968,6 +969,42 @@ describe('FakeAsyncTestZoneSpec', () => {
                    testZoneSpec.flushMicrotasks();
                  });
                });
+             });
+           }));
+
+  describe('fetch', ifEnvSupports('fetch', () => {
+             it('should get response from fetch', () => {
+               const fetchPatch = loadFakeAsyncFetch(global);
+               fetchPatch.fakeFetch();
+               try {
+                 fakeAsyncTestZone.run(() => {
+                   testZoneSpec.registerNonTimerMacroTaskHandler(
+                       'fetch', (data: any, taskDone: () => void) => {
+                         setTimeout(() => {
+                           data.response = new Response('response');
+                           taskDone();
+                         }, 100);
+                       });
+                   let finished = false;
+                   let data: any;
+                   fetch('testUrl')
+                       .then(res => {
+                         finished = true;
+                         return res.text();
+                       })
+                       .then(text => {
+                         data = text;
+                       });
+
+                   expect(data).toEqual(undefined);
+                   expect(finished).toBe(false);
+                   testZoneSpec.tick(100);
+                   expect(data).toEqual('response');
+                   expect(finished).toBe(true);
+                 });
+               } finally {
+                 fetchPatch.restoreFetch();
+               }
              });
            }));
 
