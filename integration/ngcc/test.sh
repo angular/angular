@@ -6,8 +6,6 @@
 # Each statement should be followed by an `assert*` or `exit 1` statement.
 set +e -x
 
-PATH=$PATH:$(npm bin)
-
 function assertFailed {
   if [[ $? -eq 0 ]]; then
     echo "FAIL: $1";
