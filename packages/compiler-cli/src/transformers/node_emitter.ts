@@ -784,7 +784,6 @@ function modifierFromModifier(modifier: StmtModifier): ts.Modifier {
     case StmtModifier.Static:
       return ts.createToken(ts.SyntaxKind.StaticKeyword);
   }
-  return error(`unknown statement modifier`);
 }
 
 function translateModifiers(modifiers: StmtModifier[]|null): ts.Modifier[]|undefined {
