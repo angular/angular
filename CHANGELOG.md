@@ -1,3 +1,12 @@
+## 11.2.3 (2021-02-24)
+
+
+### Performance Improvements
+
+* **language-service:** Skip Angular analysis when quick info requested outside a template ([#40956](https://github.com/angular/angular/issues/40956)) ([0dd1fac](https://github.com/angular/angular/commit/0dd1facc3292aec6b0ca6fd65fc73efae2c194fc))
+
+
+
 ## 11.2.2 (2021-02-22)
 
 
