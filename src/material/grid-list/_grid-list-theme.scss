@@ -1,5 +1,6 @@
 @use '../core/theming/palette';
 @use '../core/theming/theming';
+@use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 @use '../core/style/list-common';
 
@@ -8,7 +9,7 @@
 @mixin color($config-or-theme) {}
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
   .mat-grid-tile-header,
   .mat-grid-tile-footer {
     @include list-common.base(typography-utils.font-size($config, caption));

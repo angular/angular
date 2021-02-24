@@ -3,6 +3,7 @@
 @use '../core/style/variables';
 @use '../core/theming/palette';
 @use '../core/theming/theming';
+@use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 @use './toolbar-variables';
 
@@ -69,7 +70,7 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
   .mat-toolbar,
   .mat-toolbar h1,
   .mat-toolbar h2,

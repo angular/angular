@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use '../theming/palette';
 @use '../theming/theming';
+@use '../typography/typography';
 @use '../typography/typography-utils';
 
 @mixin color($config-or-theme) {
@@ -48,7 +49,7 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
   .mat-option {
     font: {
       family: typography-utils.font-family($config);

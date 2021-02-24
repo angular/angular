@@ -4,6 +4,7 @@
 @use '../../material/core/style/private';
 @use '../../material/core/theming/palette';
 @use '../../material/core/theming/theming';
+@use '../../material/core/typography/typography';
 @use '../../material/core/typography/typography-utils';
 
 @function mat-edit-hover-content-background($direction, $background-color) {
@@ -145,7 +146,7 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
   [mat-edit-title] {
     @include typography-utils.level-to-styles($config, title);
   }

@@ -157,8 +157,10 @@ const plugin = (isEnabled: boolean, _options: never, context: {fix: boolean}) =>
       const expectedProperty = type === 'density' ? '$density-scale' : '$config';
       const expectedValues = [`mat-get-${type}-config($config-or-theme)`];
       if (type === 'typography') {
+        expectedValues.shift();
         expectedValues.unshift(
-            'mat-private-typography-normalized-config(mat-get-typography-config($config-or-theme))'
+            'mat-private-typography-to-2014-config(mat-get-typography-config($config-or-theme))',
+            'mat-get-typography-config($config-or-theme)',
         );
       }
       let configExtractionNode: Declaration|null = null;

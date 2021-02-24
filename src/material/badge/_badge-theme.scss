@@ -6,6 +6,7 @@
 @use 'sass:meta';
 @use '../core/theming/palette';
 @use '../core/theming/theming';
+@use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 @use '../../cdk/a11y/a11y';
 
@@ -191,7 +192,7 @@ $large-size: $default-size + 6;
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
   .mat-badge-content {
     font-weight: $font-weight;
     font-size: $font-size;

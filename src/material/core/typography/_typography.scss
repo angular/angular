@@ -1,5 +1,6 @@
 @use 'sass:map';
 @use 'typography-utils';
+@use '../theming/theming';
 
 // Represents a typography level from the Material design spec.
 @function level(
@@ -84,22 +85,35 @@
 // produces a normalized typography config for the 2014 Material Design typography system.
 // 2014 - https://material.io/archive/guidelines/style/typography.html#typography-styles
 // 2018 - https://material.io/design/typography/the-type-system.html#type-scale
+//
+// Components using this function should be migrated to normalize to the 2018 style config instead.
+// New components should not use this function.
 @function typography-to-2014-config($config) {
-  @if typography-is-2018-config($config) {
-    @return config(
-        $display-4: map.get($config, headline-1),
-        $display-3: map.get($config, headline-2),
-        $display-2: map.get($config, headline-3),
-        $display-1: map.get($config, headline-4),
-        $headline: map.get($config, headline-5),
-        $title: map.get($config, headline-6),
-        $subheading-2: map.get($config, subtitle-1),
-        $subheading-1: map.get($config, subtitle-2),
-        $body-2: map.get($config, body-1),
-        $body-1: map.get($config, body-2),
-        $button: map.get($config, button),
-        $caption: map.get($config, caption),
+  @if $config == null {
+    @return null;
+  }
+  @if not typography-is-2014-config($config) {
+    $args: (
+        display-4: map.get($config, headline-1),
+        display-3: map.get($config, headline-2),
+        display-2: map.get($config, headline-3),
+        display-1: map.get($config, headline-4),
+        headline: map.get($config, headline-5),
+        title: map.get($config, headline-6),
+        subheading-2: map.get($config, subtitle-1),
+        subheading-1: map.get($config, subtitle-2),
+        body-2: map.get($config, body-1),
+        body-1: map.get($config, body-2),
+        button: map.get($config, button),
+        caption: map.get($config, caption),
     );
+    $non-null-args: ();
+    @each $key, $value in $args {
+      @if $value != null {
+        $non-null-args: map.merge($non-null-args, ($key: $value));
+      }
+    }
+    @return config($non-null-args...);
   }
   @return $config;
 }
@@ -109,6 +123,9 @@
 // 2014 - https://material.io/archive/guidelines/style/typography.html#typography-styles
 // 2018 - https://material.io/design/typography/the-type-system.html#type-scale
 @function typography-to-2018-config($config) {
+  @if $config == null {
+    @return null;
+  }
   @if typography-is-2014-config($config) {
     @return (
         headline-1: map.get($config, display-4),
@@ -123,6 +140,9 @@
         body-2: map.get($config, body-1),
         button: map.get($config, button),
         caption: map.get($config, caption),
+        overline: if(map.get($config, overline), map.get($config, overline),
+            level(12px, 32px, 500)
+        )
     );
   }
   @return $config;
@@ -130,7 +150,9 @@
 
 // Adds the base typography styles, based on a config.
 /* stylelint-disable-next-line material/theme-mixin-api */
-@mixin base-typography($config, $selector: '.mat-typography') {
+@mixin base-typography($config-or-theme, $selector: '.mat-typography') {
+  $config: typography-to-2014-config(theming.get-typography-config($config-or-theme));
+
   .mat-h1, .mat-headline, #{$selector} h1 {
     @include typography-utils.level-to-styles($config, headline);
     margin: 0 0 16px;

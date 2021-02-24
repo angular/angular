@@ -2,6 +2,7 @@
 @use 'sass:meta';
 @use '../core/theming/palette';
 @use '../core/theming/theming';
+@use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 
 @mixin _mat-slider-inner-content-theme($palette) {
@@ -166,7 +167,7 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
   .mat-slider-thumb-label-text {
     font: {
       family: typography-utils.font-family($config);

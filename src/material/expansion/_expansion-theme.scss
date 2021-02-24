@@ -3,6 +3,7 @@
 @use '../core/theming/palette';
 @use '../core/theming/theming';
 @use '../core/style/private';
+@use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 @use './expansion-variables';
 @use './expansion-mixins';
@@ -55,7 +56,7 @@
 }
 
 @mixin panel-typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
   .mat-expansion-panel-header {
     font: {
       family: typography-utils.font-family($config, subheading-1);

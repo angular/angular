@@ -3,6 +3,7 @@
 @use '../core/style/private';
 @use '../core/theming/palette';
 @use '../core/theming/theming';
+@use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 
 $chip-remove-font-size: 18px;
@@ -90,7 +91,7 @@ $chip-remove-font-size: 18px;
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
   .mat-chip {
     font-size: typography-utils.font-size($config, body-2);
     font-weight: typography-utils.font-weight($config, body-2);

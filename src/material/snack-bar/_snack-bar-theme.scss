@@ -1,4 +1,5 @@
 @use 'sass:map';
+@use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 @use '../core/theming/theming';
 @use '../core/theming/palette';
@@ -24,7 +25,7 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
   .mat-simple-snackbar {
     font: {
       family: typography-utils.font-family($config, body-1);

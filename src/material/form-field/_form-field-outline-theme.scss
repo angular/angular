@@ -2,6 +2,7 @@
 @use '../core/theming/palette';
 @use '../core/theming/theming';
 @use '../core/style/form-common';
+@use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 
 
@@ -81,7 +82,7 @@ $outline-dedupe: 0;
 }
 
 @mixin outline-typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
   // The unit-less line-height from the font config.
   $line-height: typography-utils.height($config, input);
   // The amount to scale the font for the floating label and subscript.

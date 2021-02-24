@@ -2,6 +2,7 @@
 @use '../core/style/private';
 @use '../core/theming/palette';
 @use '../core/theming/theming';
+@use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 
 @mixin _mat-slide-toggle-checked($palette, $thumb-checked-hue) {
@@ -74,7 +75,7 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
   .mat-slide-toggle-content {
     font-family: typography-utils.font-family($config);
   }
