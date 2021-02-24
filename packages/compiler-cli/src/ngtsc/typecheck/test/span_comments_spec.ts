@@ -6,9 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {initMockFileSystem} from '../../file_system/testing';
 import {tcb, TestDeclaration} from './test_utils';
 
 describe('type check blocks diagnostics', () => {
+  beforeEach(() => initMockFileSystem('Native'));
+
   describe('parse spans', () => {
     it('should annotate unary ops', () => {
       expect(tcbWithSpans('{{ -a }}')).toContain('(-((ctx).a /*4,5*/) /*4,5*/) /*3,5*/');
@@ -146,8 +149,9 @@ describe('type check blocks diagnostics', () => {
         pipeName: 'test',
       }];
       const block = tcbWithSpans(TEMPLATE, PIPES);
+      expect(block).toContain('var _pipe1: i0.TestPipe = null!');
       expect(block).toContain(
-          '((null as TestPipe).transform /*7,11*/(((ctx).a /*3,4*/) /*3,4*/, ((ctx).b /*12,13*/) /*12,13*/) /*3,13*/);');
+          '(_pipe1.transform /*7,11*/(((ctx).a /*3,4*/) /*3,4*/, ((ctx).b /*12,13*/) /*12,13*/) /*3,13*/);');
     });
 
     describe('attaching multiple comments for multiple references', () => {

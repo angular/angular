@@ -49,12 +49,12 @@ export class TypeCheckFile extends Environment {
     this.tcbStatements.push(fn);
   }
 
-  render(): string {
+  render(removeComments: boolean): string {
     let source: string = this.importManager.getAllImports(this.contextFile.fileName)
                              .map(i => `import * as ${i.qualifier.text} from '${i.specifier}';`)
                              .join('\n') +
         '\n\n';
-    const printer = ts.createPrinter();
+    const printer = ts.createPrinter({removeComments});
     source += '\n';
     for (const stmt of this.pipeInstStatements) {
       source += printer.printNode(ts.EmitHint.Unspecified, stmt, this.contextFile) + '\n';

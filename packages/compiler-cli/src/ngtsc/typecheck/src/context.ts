@@ -385,7 +385,8 @@ export class TypeCheckContextImpl implements TypeCheckContext {
           path: pendingShimData.file.fileName,
           templates: pendingShimData.templates,
         });
-        updates.set(pendingShimData.file.fileName, pendingShimData.file.render());
+        updates.set(
+            pendingShimData.file.fileName, pendingShimData.file.render(false /* removeComments */));
       }
     }
 
