@@ -99,6 +99,23 @@ runInEachFileSystem(() => {
       expect(setup.tsConfig?.rootNames).toEqual([]);
       expect((setup.logger as MockLogger).logs.warn).toEqual([]);
     });
+
+    it('should not modify `compileAllFormats` if `typingsOnly` is falsy', () => {
+      let setup = getSharedSetup({...createOptions(), compileAllFormats: true, typingsOnly: false});
+      expect(setup.typingsOnly).toBe(false);
+      expect(setup.compileAllFormats).toBe(true);
+
+      setup = getSharedSetup({...createOptions(), compileAllFormats: true});
+      expect(setup.typingsOnly).toBe(false);
+      expect(setup.compileAllFormats).toBe(true);
+    });
+
+    it('should force `compileAllFormats` to false if `typingsOnly` is true', () => {
+      const setup =
+          getSharedSetup({...createOptions(), compileAllFormats: true, typingsOnly: true});
+      expect(setup.typingsOnly).toBe(true);
+      expect(setup.compileAllFormats).toBe(false);
+    });
   });
 
   describe('getMaxNumberOfWorkers', () => {
