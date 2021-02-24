@@ -124,7 +124,6 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
 
       // The export was not a directive, a pipe, or a module. This is an error.
       // TODO(alxhub): produce a ts.Diagnostic
-      throw new Error(`Exported value ${exportRef.debugName} was not a directive, pipe, or module`);
     }
 
     const exportScope: ExportScope = {

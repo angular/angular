@@ -432,7 +432,6 @@ function selectorsFromGlobalMetadata(
   }
 
   error('Unexpected query form');
-  return o.NULL_EXPR;
 }
 
 function prepareQueryParams(query: R3QueryMetadata, constantPool: ConstantPool): o.Expression[] {

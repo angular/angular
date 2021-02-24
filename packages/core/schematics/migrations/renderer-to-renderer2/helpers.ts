@@ -56,8 +56,6 @@ function getHelperDeclaration(name: HelperFunction): ts.Node {
     case HelperFunction.splitNamespace:
       return getSplitNamespaceHelper();
   }
-
-  throw new Error(`Unsupported helper called "${name}".`);
 }
 
 /** Creates a helper for a custom `any` type during the migration. */
