@@ -102,7 +102,6 @@ function getLViewToClone(type: TViewType, name: string|null): Array<any> {
       }
       return embeddedArray;
   }
-  throw new Error('unreachable code');
 }
 
 function nameSuffix(text: string|null|undefined): string {

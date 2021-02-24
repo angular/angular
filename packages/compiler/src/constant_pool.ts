@@ -252,8 +252,6 @@ export class ConstantPool {
       case DefinitionKind.Pipe:
         return this.pipeDefinitions;
     }
-    error(`Unknown definition kind ${kind}`);
-    return this.componentDefinitions;
   }
 
   public propertyNameOf(kind: DefinitionKind): string {
@@ -267,8 +265,6 @@ export class ConstantPool {
       case DefinitionKind.Pipe:
         return 'ɵpipe';
     }
-    error(`Unknown definition kind ${kind}`);
-    return '<unknown>';
   }
 
   private freshName(): string {
