@@ -14,7 +14,7 @@ ng_module(
         "//packages/compiler",
         "//packages/core",
         "//packages/localize",
-        "//packages/zone.js/lib:zone_d_ts",
+        "//packages/zone.js/lib",
         "@npm//@types/jasmine",
     ],
 )

@@ -118,7 +118,7 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
         clock.tick = function() {
           const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
           if (fakeAsyncZoneSpec) {
-            return fakeAsyncZoneSpec.tick.apply(fakeAsyncZoneSpec, arguments);
+            return fakeAsyncZoneSpec.tick.apply(fakeAsyncZoneSpec, arguments as any);
           }
           return originalTick.apply(this, arguments);
         };
@@ -127,10 +127,10 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
           const fakeAsyncZoneSpec = Zone.current.get('FakeAsyncTestZoneSpec');
           if (fakeAsyncZoneSpec) {
             const dateTime = arguments.length > 0 ? arguments[0] : new Date();
-            return fakeAsyncZoneSpec.setFakeBaseSystemTime.apply(
+            return fakeAsyncZoneSpec.setFakeSystemTime.apply(
                 fakeAsyncZoneSpec,
                 dateTime && typeof dateTime.getTime === 'function' ? [dateTime.getTime()] :
-                                                                     arguments);
+                                                                     arguments as any);
           }
           return originalMockDate.apply(this, arguments);
         };

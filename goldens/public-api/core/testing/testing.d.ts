@@ -34,7 +34,15 @@ export declare function flush(maxTurns?: number): number;
 
 export declare function flushMicrotasks(): void;
 
+export declare function flushOnlyPendingTimers(): void;
+
+export declare function getFakeSystemTime(): void;
+
+export declare function getRealSystemTime(): void;
+
 export declare const getTestBed: () => TestBed;
+
+export declare function getTimerCount(): void;
 
 export declare function inject(tokens: any[], fn: Function): () => any;
 
@@ -49,7 +57,11 @@ export declare type MetadataOverride<T> = {
     set?: Partial<T>;
 };
 
+export declare function removeAllTimers(): void;
+
 export declare function resetFakeAsyncZone(): void;
+
+export declare function setFakeSystemTime(time: number): void;
 
 export declare interface TestBed {
     ngModule: Type<any> | Type<any>[];
@@ -141,6 +153,8 @@ export declare type TestModuleMetadata = {
 export declare function tick(millis?: number, tickOptions?: {
     processNewMacroTasksSynchronously: boolean;
 }): void;
+
+export declare function tickToNext(steps?: number): void;
 
 export declare function waitForAsync(fn: Function): (done: any) => any;
 

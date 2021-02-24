@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, tick} from '@angular/core/testing';
+import {discardAllTasks, discardPeriodicTasks, fakeAsync, flush, flushMicrotasks, flushOnlyPendingTasks, getFakeSystemTime, getRealSystemTime, getTaskCount, setFakeSystemTime, tick, tickToNext} from '@angular/core/testing';
 import {beforeEach, describe, inject, it, Log} from '@angular/core/testing/src/testing_internal';
 import {EventManager} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -432,4 +432,91 @@ const ProxyZoneSpec: {assertPresent: () => void} = (Zone as any)['ProxyZoneSpec'
       expect(state).toEqual('works');
     });
   });
+
+  describe(
+      'util methods inspired from jest',
+      () => {
+
+          it('getFakeSystemTime', fakeAsync(() => {
+               let d = getRealSystemTime();
+               setFakeSystemTime(d);
+               expect(Date.now()).toEqual(d);
+               expect(getFakeSystemTime()).toEqual(d);
+               let j = 0;
+               for (let i = 0; i < 100000; i++) {
+                 j++;
+               }
+               expect(j).toEqual(100000);
+               expect(getRealSystemTime()).not.toEqual(d);
+               d = getRealSystemTime();
+               let timeoutTriggered1 = false;
+               let timeoutTriggered2 = false;
+               setTimeout(() => {
+                 timeoutTriggered1 = true;
+               }, 100);
+               setTimeout(() => {
+                 timeoutTriggered2 = true;
+               }, 200);
+               tick(100);
+               expect(timeoutTriggered1).toBe(true);
+               setFakeSystemTime(d);
+               expect(getFakeSystemTime()).toEqual(d);
+               tick(100);
+               expect(timeoutTriggered2).toBe(true);
+               expect(Date.now()).toEqual(d + 100);
+               expect(getFakeSystemTime()).toEqual(d + 100);
+             }))});
+
+  it('flushOnlyPendingTasks should run all macroTasks and ignore new spawn macroTasks',
+     fakeAsync(() => {
+       const logs: any[] = [];
+       Promise.resolve(1).then(v => logs.push(v));
+       let nestedTimeoutId;
+       setTimeout(() => {
+         logs.push('timeout');
+         nestedTimeoutId = setTimeout(() => {logs.push('new timeout')});
+       });
+       expect(logs).toEqual([]);
+       flushOnlyPendingTasks();
+       expect(logs).toEqual([1, 'timeout']);
+       clearTimeout(nestedTimeoutId);
+     }));
+
+  it('tickToNext() should tick to the next (steps) timeout correctly', fakeAsync(() => {
+       const logs: any[] = [];
+       setTimeout(() => {logs.push('timeout1')}, 100);
+       setTimeout(() => {logs.push('timeout11')}, 100);
+       setTimeout(() => {logs.push('timeout2')}, 200);
+       setTimeout(() => {logs.push('timeout3')}, 300);
+       expect(logs).toEqual([]);
+       tickToNext();
+       expect(logs).toEqual(['timeout1', 'timeout11']);
+       tickToNext(2);
+       expect(logs).toEqual(['timeout1', 'timeout11', 'timeout2', 'timeout3']);
+     }));
+
+  it('discardAllTasks should clear all tasks', fakeAsync(() => {
+       const logs: any[] = [];
+       setTimeout(() => {logs.push('timeout1')}, 100);
+       setTimeout(() => {logs.push('timeout2')}, 200);
+       setInterval(() => {logs.push('interval')}, 100);
+       expect(logs).toEqual([]);
+       discardAllTasks();
+       tick(300);
+       expect(logs).toEqual([]);
+     }));
+
+  it('getTaskCount should get the count of macroTasks correctly', fakeAsync(() => {
+       const logs: any[] = [];
+       setTimeout(() => {logs.push('timeout1')}, 100);
+       setTimeout(() => {logs.push('timeout2')}, 200);
+       setInterval(() => {logs.push('interval')}, 100);
+       Promise.resolve().then(_ => logs.push('promise'));
+       expect(logs).toEqual([]);
+       expect(getTaskCount()).toEqual(4);
+       expect(getTaskCount('macroTask')).toEqual(2);
+       expect(getTaskCount('periodicTask')).toEqual(1);
+       expect(getTaskCount('microTask')).toEqual(1);
+       discardAllTasks();
+     }));
 }
