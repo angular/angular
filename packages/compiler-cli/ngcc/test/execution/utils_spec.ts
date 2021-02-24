@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {DtsProcessing} from '../../src/execution/tasks/api';
 import {computeTaskDependencies, sortTasksByPriority} from '../../src/execution/tasks/utils';
 import {createTasksAndGraph} from './helpers';
 
@@ -16,14 +17,14 @@ describe('execution utils', () => {
            0: [],   // Entry-point #0 does not depend on anything.
            1: [0],  // Entry-point #1 depends on #0.
          });
-         tasks[1].processDts = true;  // Tweak task #1 to also generate typings.
+         tasks[1].processDts = DtsProcessing.Yes;  // Tweak task #1 to also generate typings.
 
          expect(() => computeTaskDependencies(tasks, graph))
              .toThrowError(
                  'Invariant violated: Multiple tasks are assigned generating typings for ' +
                  '\'/path/to/entry/point/0\':\n' +
-                 '  - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
-                 '  - {entryPoint: entry-point-0, formatProperty: prop-1, processDts: true}');
+                 '  - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: Yes}\n' +
+                 '  - {entryPoint: entry-point-0, formatProperty: prop-1, processDts: Yes}');
        });
 
     it('should add non-typings tasks to the dependents of typings tasks', () => {

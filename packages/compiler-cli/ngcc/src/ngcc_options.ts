@@ -43,8 +43,20 @@ export interface SyncNgccOptions {
   propertiesToConsider?: string[];
 
   /**
+   * Whether to only process the typings files for this entry-point.
+   *
+   * This is useful when running ngcc only to provide typings files to downstream tooling such as
+   * the Angular Language Service or ng-packagr. Defaults to `false`.
+   *
+   * If this is set to `true` then `compileAllFormats` is forced to `false`.
+   */
+  typingsOnly?: boolean;
+
+  /**
    * Whether to process all formats specified by (`propertiesToConsider`)  or to stop processing
-   * this entry-point at the first matching format. Defaults to `true`.
+   * this entry-point at the first matching format.
+   *
+   * Defaults to `true`, but is forced to `false` if `typingsOnly` is `true`.
    */
   compileAllFormats?: boolean;
 
@@ -172,6 +184,7 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
     basePath,
     targetEntryPointPath,
     propertiesToConsider = SUPPORTED_FORMAT_PROPERTIES,
+    typingsOnly = false,
     compileAllFormats = true,
     createNewEntryPointFormats = false,
     logger = new ConsoleLogger(LogLevel.info),
@@ -188,12 +201,19 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
     errorOnFailedEntryPoint = true;
   }
 
+  if (typingsOnly) {
+    // If we only want to process the typings then we do not want to waste time trying to process
+    // multiple JS formats.
+    compileAllFormats = false;
+  }
+
   checkForSolutionStyleTsConfig(fileSystem, logger, projectPath, options.tsConfigPath, tsConfig);
 
   return {
     basePath,
     targetEntryPointPath,
     propertiesToConsider,
+    typingsOnly,
     compileAllFormats,
     createNewEntryPointFormats,
     logger,

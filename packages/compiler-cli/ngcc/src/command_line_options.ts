@@ -49,7 +49,14 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
           })
           .option('first-only', {
             describe:
-                'If specified then only the first matching package.json property will be compiled.',
+                'If specified then only the first matching package.json property will be compiled.\n' +
+                'This option is overridden by `--typings-only`.',
+            type: 'boolean',
+          })
+          .option('typings-only', {
+            describe:
+                'If specified then only the typings files are processed, and no JS source files will be modified.\n' +
+                'Setting this option will force `--first-only` to be set, since only one format is needed to process the typings',
             type: 'boolean',
           })
           .option('create-ivy-entry-points', {
@@ -122,6 +129,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
   const propertiesToConsider = options.p;
   const targetEntryPointPath = options.t;
   const compileAllFormats = !options['first-only'];
+  const typingsOnly = options['typings-only'];
   const createNewEntryPointFormats = options['create-ivy-entry-points'];
   const logLevel = options.l as keyof typeof LogLevel | undefined;
   const enableI18nLegacyMessageIdFormat = options['legacy-message-ids'];
@@ -139,6 +147,7 @@ export function parseCommandLineOptions(args: string[]): NgccOptions {
     basePath: baseSourcePath,
     propertiesToConsider,
     targetEntryPointPath,
+    typingsOnly,
     compileAllFormats,
     createNewEntryPointFormats,
     logger,

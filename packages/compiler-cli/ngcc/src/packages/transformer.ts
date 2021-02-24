@@ -17,6 +17,7 @@ import {NgccReferencesRegistry} from '../analysis/ngcc_references_registry';
 import {ExportInfo, PrivateDeclarationsAnalyzer} from '../analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyses, SwitchMarkerAnalyzer} from '../analysis/switch_marker_analyzer';
 import {CompiledFile} from '../analysis/types';
+import {DtsProcessing} from '../execution/tasks/api';
 import {CommonJsReflectionHost} from '../host/commonjs_host';
 import {DelegatingReflectionHost} from '../host/delegating_host';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
@@ -92,12 +93,16 @@ export class Transformer {
     }
 
     // Transform the source files and source maps.
-    const srcFormatter = this.getRenderingFormatter(ngccReflectionHost, bundle);
+    let renderedFiles: FileToWrite[] = [];
 
-    const renderer =
-        new Renderer(reflectionHost, srcFormatter, this.fs, this.logger, bundle, this.tsConfig);
-    let renderedFiles = renderer.renderProgram(
-        decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+    if (bundle.dtsProcessing !== DtsProcessing.Only) {
+      // Render the transformed JavaScript files only if we are not doing "typings-only" processing.
+      const srcFormatter = this.getRenderingFormatter(ngccReflectionHost, bundle);
+      const renderer =
+          new Renderer(reflectionHost, srcFormatter, this.fs, this.logger, bundle, this.tsConfig);
+      renderedFiles = renderer.renderProgram(
+          decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+    }
 
     if (bundle.dts) {
       const dtsFormatter = new EsmRenderingFormatter(this.fs, reflectionHost, bundle.isCore);

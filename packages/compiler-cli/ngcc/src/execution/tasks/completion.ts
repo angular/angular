@@ -11,7 +11,7 @@ import {markAsProcessed} from '../../packages/build_marker';
 import {getEntryPointFormat, PackageJsonFormatProperties} from '../../packages/entry_point';
 import {PackageJsonUpdater} from '../../writing/package_json_updater';
 
-import {Task, TaskCompletedCallback, TaskProcessingOutcome, TaskQueue} from './api';
+import {DtsProcessing, Task, TaskCompletedCallback, TaskProcessingOutcome, TaskQueue} from './api';
 
 /**
  * A function that can handle a specific outcome of a task completion.
@@ -53,7 +53,7 @@ export function createMarkAsProcessedHandler(
     const packageJsonPath = fs.resolve(entryPoint.path, 'package.json');
     const propsToMarkAsProcessed: PackageJsonFormatProperties[] =
         [...formatPropertiesToMarkAsProcessed];
-    if (processDts) {
+    if (processDts !== DtsProcessing.No) {
       propsToMarkAsProcessed.push('typings');
     }
     markAsProcessed(
@@ -66,11 +66,7 @@ export function createMarkAsProcessedHandler(
  */
 export function createThrowErrorHandler(fs: ReadonlyFileSystem): TaskCompletedHandler {
   return (task: Task, message: string|null): void => {
-    const format = getEntryPointFormat(fs, task.entryPoint, task.formatProperty);
-    throw new Error(
-        `Failed to compile entry-point ${task.entryPoint.name} (${task.formatProperty} as ${
-            format})` +
-        (message !== null ? ` due to ${message}` : ''));
+    throw new Error(createErrorMessage(fs, task, message));
   };
 }
 
@@ -81,10 +77,14 @@ export function createLogErrorHandler(
     logger: Logger, fs: ReadonlyFileSystem, taskQueue: TaskQueue): TaskCompletedHandler {
   return (task: Task, message: string|null): void => {
     taskQueue.markAsFailed(task);
-    const format = getEntryPointFormat(fs, task.entryPoint, task.formatProperty);
-    logger.error(
-        `Failed to compile entry-point ${task.entryPoint.name} (${task.formatProperty} as ${
-            format})` +
-        (message !== null ? ` due to ${message}` : ''));
+    logger.error(createErrorMessage(fs, task, message));
   };
+}
+
+function createErrorMessage(fs: ReadonlyFileSystem, task: Task, message: string|null): string {
+  const jsFormat =
+      `${task.formatProperty} as ${getEntryPointFormat(fs, task.entryPoint, task.formatProperty)}`;
+  const format = task.typingsOnly ? `typings only using ${jsFormat}` : jsFormat;
+  message = message !== null ? ` due to ${message}` : '';
+  return `Failed to compile entry-point ${task.entryPoint.name} (${format})` + message;
 }
