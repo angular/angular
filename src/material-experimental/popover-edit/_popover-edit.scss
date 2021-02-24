@@ -79,7 +79,7 @@
   }
 
   .mat-edit-pane {
-    @include private.theme-elevation(2, $config);
+    @include private.private-theme-elevation(2, $config);
     background: $background-color;
     color: theming.color($foreground, text);
     display: block;
@@ -146,7 +146,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
   [mat-edit-title] {
     @include typography-utils.level-to-styles($config, title);
   }
@@ -156,8 +157,8 @@
 @mixin density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
-  @include theming.check-duplicate-theme-styles($theme, 'mat-popover-edit') {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-popover-edit') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
     $typography: theming.get-typography-config($theme);

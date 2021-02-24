@@ -4,11 +4,11 @@
 
 // Mixin that renders all of the core styles that depend on the theme.
 @mixin theme($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
   // Wrap the sub-theme includes in the duplicate theme styles mixin. This ensures that
   // there won't be multiple warnings. e.g. if `mat-mdc-core-theme` reports a warning, then
   // the imported themes (such as `mat-ripple-theme`) should not report again.
-  @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-core') {
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-core') {
     @include option-theme.option-theme($theme);
     @include optgroup-theme.theme($theme);
   }

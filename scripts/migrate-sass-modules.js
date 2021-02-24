@@ -27,7 +27,7 @@ const materialPrefixes = [
   'mat-pseudo-checkbox-',
   'mat-elevation-',
   'mat-optgroup-',
-  'mat-private-'
+  'mat-expansion-panel-'
 ];
 const mdcPrefixes = [
   ...getPrefixes('material-experimental', 'mat'),

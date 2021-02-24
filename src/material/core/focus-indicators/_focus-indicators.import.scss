@@ -7,22 +7,12 @@ $mat-black-87-opacity, $mat-dark-disabled-text, $mat-dark-dividers, $mat-dark-fo
 $mat-dark-primary-text, $mat-dark-secondary-text, $mat-light-disabled-text, $mat-light-dividers,
 $mat-light-focused, $mat-light-primary-text, $mat-light-secondary-text, $mat-white-12-opacity,
 $mat-white-6-opacity, $mat-white-87-opacity;
-@forward '../density/private/compatibility' as mat-private-*;
-@forward '../theming/theming' as mat-* hide mat-check-duplicate-theme-styles,
-mat-create-backwards-compatibility-theme, mat-is-legacy-constructed-theme, mat-is-theme-object,
-mat-legacy-get-theme;
-@forward '../theming/theming' as mat-private-* hide $mat-private-theme-ignore-duplication-warnings,
-mat-private-color, mat-private-contrast, mat-private-dark-theme, mat-private-get-color-config,
-mat-private-get-density-config, mat-private-get-typography-config, mat-private-light-theme,
-mat-private-palette;
+@forward '../density/private/compatibility' as mat-*;
+@forward '../theming/theming' as mat-*;
 @forward '../style/layout-common' as mat-*;
-@forward 'focus-indicators' hide strong-focus-indicators, strong-focus-indicators-color,
-strong-focus-indicators-positioning, strong-focus-indicators-theme;
-@forward 'focus-indicators' as mat-* hide mat-strong-focus-indicators-border-color,
-mat-strong-focus-indicators-positioning;
-@forward 'focus-indicators' as mat-private-* hide mat-private-strong-focus-indicators,
-mat-private-strong-focus-indicators-border-color, mat-private-strong-focus-indicators-color,
-mat-private-strong-focus-indicators-theme;
+@forward 'focus-indicators' hide private-strong-focus-indicators-positioning,
+strong-focus-indicators, strong-focus-indicators-color, strong-focus-indicators-theme;
+@forward 'focus-indicators' as mat-* hide mat-strong-focus-indicators-border-color;
 
 @import '../theming/theming';
 @import '../style/layout-common';

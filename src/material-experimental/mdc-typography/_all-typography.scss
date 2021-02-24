@@ -73,7 +73,7 @@
 }
 
 @mixin angular-material-mdc-typography($config-or-theme: null) {
-  $config: if(theming.is-theme-object($config-or-theme),
+  $config: if(theming.private-is-theme-object($config-or-theme),
       theming.get-typography-config($config-or-theme), $config-or-theme);
 
   // If no actual color configuration has been specified, create a default one.

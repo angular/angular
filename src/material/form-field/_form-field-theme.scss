@@ -132,7 +132,8 @@ $dedupe: 0;
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
   // The unit-less line-height from the font config.
   $line-height: typography-utils.height($config, input);
 
@@ -241,15 +242,15 @@ $dedupe: 0;
 
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
-  @include form-field-legacy-theme.form-field-legacy-density($density-scale);
-  @include form-field-standard-theme.form-field-standard-density($density-scale);
-  @include form-field-fill-theme.form-field-fill-density($density-scale);
-  @include form-field-outline-theme.form-field-outline-density($density-scale);
+  @include form-field-legacy-theme.private-form-field-legacy-density($density-scale);
+  @include form-field-standard-theme.private-form-field-standard-density($density-scale);
+  @include form-field-fill-theme.private-form-field-fill-density($density-scale);
+  @include form-field-outline-theme.private-form-field-outline-density($density-scale);
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
-  @include theming.check-duplicate-theme-styles($theme, 'mat-form-field') {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-form-field') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
     $typography: theming.get-typography-config($theme);

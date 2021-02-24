@@ -76,7 +76,7 @@ $mini-fab-padding: 8px !default;
 // Applies styles to buttons with backgrounds: raised, fab, and mini-fab
 @mixin raised-button {
   @include base;
-  @include private.animation-noop();
+  @include private.private-animation-noop();
 
   // Force hardware acceleration.
   transform: translate3d(0, 0, 0);

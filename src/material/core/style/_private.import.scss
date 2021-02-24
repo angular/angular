@@ -10,6 +10,6 @@ $mat-z-index-fab;
 $mat-transition-timing-function, mat-transition, mat-transition-property-value;
 @forward 'elevation' as mat-elevation-* hide mat-elevation-elevation,
 mat-elevation-overridable-elevation;
-@forward 'private' as mat-private-*;
+@forward 'private' as mat-*;
 
 @import './elevation';

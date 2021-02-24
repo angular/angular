@@ -29,7 +29,7 @@ $_mat-progress-spinner-default-circumference:
   }
 
   circle {
-    @include private.animation-noop();
+    @include private.private-animation-noop();
     fill: transparent;
     transform-origin: center;
     transition: stroke-dashoffset 225ms linear;
@@ -43,13 +43,13 @@ $_mat-progress-spinner-default-circumference:
 
   &.mat-progress-spinner-indeterminate-animation[mode='indeterminate'] {
     svg {
-      @include private.animation-noop();
+      @include private.private-animation-noop();
       animation: mat-progress-spinner-linear-rotate variables.$swift-ease-in-out-duration * 4
           linear infinite;
     }
 
     circle {
-      @include private.animation-noop();
+      @include private.private-animation-noop();
       transition-property: stroke;
       // Note: we multiply the duration by 8, because the animation is spread out in 8 stages.
       animation-duration: variables.$swift-ease-in-out-duration * 8;
@@ -60,7 +60,7 @@ $_mat-progress-spinner-default-circumference:
 
   &.mat-progress-spinner-indeterminate-fallback-animation[mode='indeterminate'] {
     svg {
-      @include private.animation-noop();
+      @include private.private-animation-noop();
       animation: mat-progress-spinner-stroke-rotate-fallback
                  $stroke-rotate-fallback-duration
                  $stroke-rotate-fallback-ease
@@ -68,7 +68,7 @@ $_mat-progress-spinner-default-circumference:
     }
 
     circle {
-      @include private.animation-noop();
+      @include private.private-animation-noop();
       transition-property: stroke;
     }
   }

@@ -135,36 +135,37 @@ $_mat-button-ripple-opacity: 0.1;
   }
 
   .mat-stroked-button, .mat-flat-button {
-    @include private.theme-overridable-elevation(0, $config);
+    @include private.private-theme-overridable-elevation(0, $config);
   }
 
   .mat-raised-button {
-    @include private.theme-overridable-elevation(2, $config);
+    @include private.private-theme-overridable-elevation(2, $config);
 
     &:not(.mat-button-disabled):active {
-      @include private.theme-overridable-elevation(8, $config);
+      @include private.private-theme-overridable-elevation(8, $config);
     }
 
     &.mat-button-disabled {
-      @include private.theme-overridable-elevation(0, $config);
+      @include private.private-theme-overridable-elevation(0, $config);
     }
   }
 
   .mat-fab, .mat-mini-fab {
-    @include private.theme-overridable-elevation(6, $config);
+    @include private.private-theme-overridable-elevation(6, $config);
 
     &:not(.mat-button-disabled):active {
-      @include private.theme-overridable-elevation(12, $config);
+      @include private.private-theme-overridable-elevation(12, $config);
     }
 
     &.mat-button-disabled {
-      @include private.theme-overridable-elevation(0, $config);
+      @include private.private-theme-overridable-elevation(0, $config);
     }
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
   .mat-button, .mat-raised-button, .mat-icon-button, .mat-stroked-button,
   .mat-flat-button, .mat-fab, .mat-mini-fab {
     font: {
@@ -178,8 +179,8 @@ $_mat-button-ripple-opacity: 0.1;
 @mixin _mat-button-density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
-  @include theming.check-duplicate-theme-styles($theme, 'mat-button') {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-button') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
     $typography: theming.get-typography-config($theme);

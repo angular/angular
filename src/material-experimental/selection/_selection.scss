@@ -1,8 +1,8 @@
 @use '../../material/core/theming/theming';
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
-  @include theming.check-duplicate-theme-styles($theme, 'mat-selection');
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-selection');
 }
 
 @mixin typography($config-or-theme) {}

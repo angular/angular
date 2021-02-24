@@ -58,8 +58,8 @@
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
-  @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-radio') {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-radio') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
     $typography: theming.get-typography-config($theme);

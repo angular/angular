@@ -38,7 +38,7 @@ $_mat-pseudo-checkmark-size: checkbox-common.$size - (2 * $_mat-pseudo-checkbox-
     border-color: transparent;
   }
 
-  @include private.animation-noop {
+  @include private.private-animation-noop {
     &::after {
       transition: none;
     }

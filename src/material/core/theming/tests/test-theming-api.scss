@@ -214,7 +214,7 @@ $dark-theme-only-typography: theming.dark-theme((typography: $typography-config)
 
 // Custom theme mixin used by the custom theme backwards compatibility test.
 @mixin _my-custom-theme-new-api($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
   $color: theming.get-color-config($theme);
   $density: theming.get-density-config($theme);
 

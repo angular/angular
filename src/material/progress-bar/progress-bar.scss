@@ -9,7 +9,7 @@ $piece-animation-duration: 250ms !default;
 
 
 .mat-progress-bar {
-  @include private.animation-noop();
+  @include private.private-animation-noop();
   display: block;
   // Height is provided for mat-progress-bar to act as a default.
   height: $height;

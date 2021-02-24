@@ -72,12 +72,12 @@
 }
 
 // Whether a config is for the Material Design 2018 typography system.
-@function typography-is-2018-config($config) {
+@function private-typography-is-2018-config($config) {
   @return map.get($config, headline-1) != null;
 }
 
 // Whether a config is for the Material Design 2014 typography system.
-@function typography-is-2014-config($config) {
+@function private-typography-is-2014-config($config) {
   @return map.get($config, headline) != null;
 }
 
@@ -88,11 +88,11 @@
 //
 // Components using this function should be migrated to normalize to the 2018 style config instead.
 // New components should not use this function.
-@function typography-to-2014-config($config) {
+@function private-typography-to-2014-config($config) {
   @if $config == null {
     @return null;
   }
-  @if not typography-is-2014-config($config) {
+  @if not private-typography-is-2014-config($config) {
     $args: (
         display-4: map.get($config, headline-1),
         display-3: map.get($config, headline-2),
@@ -122,11 +122,11 @@
 // produces a normalized typography config for the 2018 Material Design typography system.
 // 2014 - https://material.io/archive/guidelines/style/typography.html#typography-styles
 // 2018 - https://material.io/design/typography/the-type-system.html#type-scale
-@function typography-to-2018-config($config) {
+@function private-typography-to-2018-config($config) {
   @if $config == null {
     @return null;
   }
-  @if typography-is-2014-config($config) {
+  @if private-typography-is-2014-config($config) {
     @return (
         headline-1: map.get($config, display-4),
         headline-2: map.get($config, display-3),
@@ -151,7 +151,7 @@
 // Adds the base typography styles, based on a config.
 /* stylelint-disable-next-line material/theme-mixin-api */
 @mixin base-typography($config-or-theme, $selector: '.mat-typography') {
-  $config: typography-to-2014-config(theming.get-typography-config($config-or-theme));
+  $config: private-typography-to-2014-config(theming.get-typography-config($config-or-theme));
 
   .mat-h1, .mat-headline, #{$selector} h1 {
     @include typography-utils.level-to-styles($config, headline);

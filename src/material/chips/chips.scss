@@ -41,7 +41,7 @@ $chip-remove-size: 18px;
 
 .mat-standard-chip {
   @include elevation.transition;
-  @include private.animation-noop;
+  @include private.private-animation-noop;
   display: inline-flex;
   padding: $chip-vertical-padding $chip-horizontal-padding;
   border-radius: 16px;

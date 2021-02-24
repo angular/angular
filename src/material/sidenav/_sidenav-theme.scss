@@ -34,7 +34,7 @@
     &:not(.mat-drawer-side) {
       // The elevation of z-16 is noted in the design specifications.
       // See https://material.io/design/components/navigation-drawer.html
-      @include private.theme-elevation(16, $config);
+      @include private.private-theme-elevation(16, $config);
     }
   }
 
@@ -81,8 +81,8 @@
 @mixin _mat-sidenav-density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
-  @include theming.check-duplicate-theme-styles($theme, 'mat-sidenav') {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-sidenav') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
     $typography: theming.get-typography-config($theme);

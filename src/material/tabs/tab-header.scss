@@ -17,7 +17,7 @@
 }
 
 .mat-tab-list {
-  @include private.animation-noop();
+  @include private.private-animation-noop();
 }
 
 // Wraps each tab label

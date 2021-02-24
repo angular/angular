@@ -94,7 +94,7 @@ $mat-typography-2018-level-mappings: (
 
 // Converts an Angular Material typography level config to an MDC one.
 @function mat-typography-level-config-to-mdc($mat-config, $mat-level) {
-  $mappings: if(typography.typography-is-2018-config($mat-config),
+  $mappings: if(typography.private-typography-is-2018-config($mat-config),
       $mat-typography-2018-level-mappings, $mat-typography-2014-level-mappings);
   $mdc-level: map.get(map.get($mappings, mat-to-mdc), $mat-level);
 
@@ -133,7 +133,7 @@ $mat-typography-2018-level-mappings: (
 @function mat-typography-config-to-mdc($mat-config: typography.config()) {
   $mdc-config: ();
 
-  $mappings: if(typography.typography-is-2018-config($mat-config),
+  $mappings: if(typography.private-typography-is-2018-config($mat-config),
       $mat-typography-2018-level-mappings, $mat-typography-2014-level-mappings);
 
   @each $mdc-level, $mat-level in map.get($mappings, mdc-to-mat) {

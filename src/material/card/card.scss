@@ -10,7 +10,7 @@ $header-size: 40px !default;
 
 .mat-card {
   @include elevation.transition;
-  @include private.animation-noop();
+  @include private.private-animation-noop();
   display: block;
   position: relative;
   padding: $padding;

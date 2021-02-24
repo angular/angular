@@ -4,12 +4,9 @@ mat-line-font-size, mat-line-font-weight, mat-line-letter-spacing, mat-line-leve
 @forward 'typography-utils' as mat-typography-* hide mat-typography-font-family,
 mat-typography-font-size, mat-typography-font-weight, mat-typography-height,
 mat-typography-letter-spacing;
-@forward 'typography' as mat-* hide mat-config, mat-level, mat-typography-is-2014-config,
-mat-typography-is-2018-config, mat-typography-to-2014-config, mat-typography-to-2018-config;
-@forward 'typography' as mat-private-* hide mat-private-base-typography, mat-private-config,
-mat-private-level;
+@forward 'typography' as mat-* hide mat-config, mat-level;
 @forward 'typography' as mat-typography-* hide mat-typography-base-typography,
-mat-typography-typography-is-2014-config, mat-typography-typography-is-2018-config,
-mat-typography-typography-to-2014-config, mat-typography-typography-to-2018-config;
+mat-typography-private-typography-is-2014-config, mat-typography-private-typography-is-2018-config,
+mat-typography-private-typography-to-2014-config, mat-typography-private-typography-to-2018-config;
 
 @import 'typography-utils';

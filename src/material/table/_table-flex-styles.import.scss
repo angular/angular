@@ -1,3 +1,1 @@
-@forward 'table-flex-styles' as mat-* hide mat-table-flex-styles;
-@forward 'table-flex-styles' as mat-private-* hide $mat-private-header-row-height,
-$mat-private-row-height, $mat-private-row-horizontal-padding;
+@forward 'table-flex-styles' as mat-*;

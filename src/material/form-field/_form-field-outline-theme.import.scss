@@ -1,12 +1,11 @@
 @forward '../core/style/form-common.import';
 @forward '../core/typography/typography-utils.import';
-@forward 'form-field-outline-theme' hide $outline-dedupe, form-field-outline-density, outline-color,
-outline-theme, outline-typography;
-@forward 'form-field-outline-theme' as mat-form-field-* hide
-mat-form-field-form-field-outline-density, mat-form-field-outline-label-floating;
-@forward 'form-field-outline-theme' as mat-private-* hide $mat-private-outline-dedupe,
-mat-private-outline-color, mat-private-outline-label-floating, mat-private-outline-theme,
-mat-private-outline-typography;
+@forward 'form-field-outline-theme' hide $outline-dedupe, outline-color, outline-theme,
+outline-typography, private-form-field-outline-density;
+@forward 'form-field-outline-theme' as mat-* hide $mat-outline-dedupe, mat-outline-color,
+mat-outline-label-floating, mat-outline-theme, mat-outline-typography;
+@forward 'form-field-outline-theme' as mat-form-field-* hide mat-form-field-outline-label-floating,
+mat-form-field-private-form-field-outline-density;
 
 @import '../core/theming/palette';
 @import '../core/theming/theming';

@@ -8,7 +8,7 @@
   $background: map.get($config, background);
 
   .mat-autocomplete-panel {
-    @include private.theme-overridable-elevation(4, $config);
+    @include private.private-theme-overridable-elevation(4, $config);
     background: theming.color($background, card);
     color: theming.color($foreground, text);
 
@@ -32,8 +32,8 @@
 @mixin _mat-autocomplete-density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
-  @include theming.check-duplicate-theme-styles($theme, 'mat-autocomplete') {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-autocomplete') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
     $typography: theming.get-typography-config($theme);

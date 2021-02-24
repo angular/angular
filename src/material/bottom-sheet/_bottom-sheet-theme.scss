@@ -11,14 +11,15 @@
   $foreground: map.get($config, foreground);
 
   .mat-bottom-sheet-container {
-    @include private.theme-elevation(16, $config);
+    @include private.private-theme-elevation(16, $config);
     background: theming.color($background, dialog);
     color: theming.color($foreground, text);
   }
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
   .mat-bottom-sheet-container {
     @include typography-utils.level-to-styles($config, body-1);
   }
@@ -27,8 +28,8 @@
 @mixin _mat-bottom-sheet-density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
-  @include theming.check-duplicate-theme-styles($theme, 'mat-bottom-sheet') {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-bottom-sheet') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
     $typography: theming.get-typography-config($theme);

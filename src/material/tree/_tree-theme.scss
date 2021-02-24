@@ -22,7 +22,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
   .mat-tree {
     font-family: typography-utils.font-family($config);
   }
@@ -36,9 +37,10 @@
 
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
-  $height: compatibility.density-prop-value(tree-variables.$density-config, $density-scale, height);
+  $height: compatibility.private-density-prop-value(tree-variables.$density-config,
+    $density-scale, height);
 
-  @include compatibility.density-legacy-compatibility() {
+  @include compatibility.private-density-legacy-compatibility() {
     .mat-tree-node {
       min-height: $height;
     }
@@ -46,8 +48,8 @@
 }
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
-  @include theming.check-duplicate-theme-styles($theme, 'mat-tree') {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-tree') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
     $typography: theming.get-typography-config($theme);

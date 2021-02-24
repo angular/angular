@@ -24,7 +24,7 @@
 
 @mixin angular-material-mdc-theme($theme-or-color-config) {
   $dedupe-key: 'angular-material-mdc-theme';
-  @include theming.check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
+  @include theming.private-check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
     @include core-theme.theme($theme-or-color-config);
     @include autocomplete-theme.theme($theme-or-color-config);
     @include button-theme.theme($theme-or-color-config);

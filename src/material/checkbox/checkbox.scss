@@ -177,7 +177,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
 }
 
 .mat-checkbox {
-  @include private.animation-noop();
+  @include private.private-animation-noop();
 
   // The host node defaults to `diplay: inline` so
   // we have to change it in order for margins to work.

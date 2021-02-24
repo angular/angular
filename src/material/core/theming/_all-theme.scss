@@ -39,7 +39,7 @@
 // Create a theme.
 @mixin angular-material-theme($theme-or-color-config) {
   $dedupe-key: 'angular-material-theme';
-  @include theming.check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
+  @include theming.private-check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
     @include core.theme($theme-or-color-config);
     @include autocomplete-theme.theme($theme-or-color-config);
     @include badge-theme.theme($theme-or-color-config);
@@ -53,7 +53,7 @@
     @include datepicker-theme.theme($theme-or-color-config);
     @include dialog-theme.theme($theme-or-color-config);
     @include divider-theme.theme($theme-or-color-config);
-    @include expansion-theme.panel-theme($theme-or-color-config);
+    @include expansion-theme.theme($theme-or-color-config);
     @include form-field-theme.theme($theme-or-color-config);
     @include grid-list-theme.theme($theme-or-color-config);
     @include icon-theme.theme($theme-or-color-config);

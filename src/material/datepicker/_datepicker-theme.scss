@@ -149,7 +149,7 @@ $calendar-weekday-table-font-size: 11px !default;
   @include _mat-datepicker-color(map.get($config, primary));
 
   .mat-datepicker-content {
-    @include private.theme-elevation(4, $config);
+    @include private.private-theme-elevation(4, $config);
     background-color: theming.color($background, card);
     color: theming.color($foreground, text);
 
@@ -163,7 +163,7 @@ $calendar-weekday-table-font-size: 11px !default;
   }
 
   .mat-datepicker-content-touch {
-    @include private.theme-elevation(0, $config);
+    @include private.private-theme-elevation(0, $config);
   }
 
   .mat-datepicker-toggle-active {
@@ -184,7 +184,8 @@ $calendar-weekday-table-font-size: 11px !default;
 }
 
 @mixin typography($config-or-theme) {
-  $config: typography.typography-to-2014-config(theming.get-typography-config($config-or-theme));
+  $config: typography.private-typography-to-2014-config(
+      theming.get-typography-config($config-or-theme));
   .mat-calendar {
     font-family: typography-utils.font-family($config);
   }
@@ -248,8 +249,8 @@ $calendar-weekday-table-font-size: 11px !default;
 @mixin _mat-datepicker-density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
-  @include theming.check-duplicate-theme-styles($theme, 'mat-datepicker') {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-datepicker') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
     $typography: theming.get-typography-config($theme);

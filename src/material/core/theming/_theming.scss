@@ -147,7 +147,7 @@ $_mat-theme-emitted-density: () !default;
   // If the legacy pattern is used, we generate a container object only with a light-themed
   // configuration for the `color` theming part.
   @if $accent != null {
-    @return create-backwards-compatibility-theme(_mat-validate-theme((
+    @return private-create-backwards-compatibility-theme(_mat-validate-theme((
       _is-legacy-theme: true,
       color: _mat-create-light-color-config($primary, $accent, $warn),
     )));
@@ -163,7 +163,7 @@ $_mat-theme-emitted-density: () !default;
     $warn: map.get($color-settings, warn);
     $result: map.merge($result, (color: _mat-create-light-color-config($primary, $accent, $warn)));
   }
-  @return create-backwards-compatibility-theme(_mat-validate-theme($result));
+  @return private-create-backwards-compatibility-theme(_mat-validate-theme($result));
 }
 
 // Creates a container object for a dark theme to be given to individual component theme mixins.
@@ -184,7 +184,7 @@ $_mat-theme-emitted-density: () !default;
   // If the legacy pattern is used, we generate a container object only with a dark-themed
   // configuration for the `color` theming part.
   @if $accent != null {
-    @return create-backwards-compatibility-theme(_mat-validate-theme((
+    @return private-create-backwards-compatibility-theme(_mat-validate-theme((
       _is-legacy-theme: true,
       color: _mat-create-dark-color-config($primary, $accent, $warn),
     )));
@@ -200,13 +200,13 @@ $_mat-theme-emitted-density: () !default;
     $warn: map.get($color-settings, warn);
     $result: map.merge($result, (color: _mat-create-dark-color-config($primary, $accent, $warn)));
   }
-  @return create-backwards-compatibility-theme(_mat-validate-theme($result));
+  @return private-create-backwards-compatibility-theme(_mat-validate-theme($result));
 }
 
 /// Gets the color configuration from the given theme or configuration.
 @function get-color-config($theme, $default: null) {
   // If a configuration has been passed, return the config directly.
-  @if not is-theme-object($theme) {
+  @if not private-is-theme-object($theme) {
     @return $theme;
   }
   // If the theme has been constructed through the legacy theming API, we use the theme object
@@ -214,7 +214,7 @@ $_mat-theme-emitted-density: () !default;
   // backwards compatibility, we copied the color configuration from `$theme.color` to `$theme`.
   // Hence developers could customize the colors at top-level and want to respect these changes
   // TODO: Remove when legacy theming API is removed.
-  @if is-legacy-constructed-theme($theme) {
+  @if private-is-legacy-constructed-theme($theme) {
     @return $theme;
   }
   @if map.has-key($theme, color) {
@@ -226,7 +226,7 @@ $_mat-theme-emitted-density: () !default;
 /// Gets the density configuration from the given theme or configuration.
 @function get-density-config($theme-or-config, $default: 0) {
   // If a configuration has been passed, return the config directly.
-  @if not is-theme-object($theme-or-config) {
+  @if not private-is-theme-object($theme-or-config) {
     @return $theme-or-config;
   }
   // In case a theme has been passed, extract the configuration if present,
@@ -241,7 +241,7 @@ $_mat-theme-emitted-density: () !default;
 /// For backwards compatibility, typography is not included by default.
 @function get-typography-config($theme-or-config, $default: null) {
   // If a configuration has been passed, return the config directly.
-  @if not is-theme-object($theme-or-config) {
+  @if not private-is-theme-object($theme-or-config) {
     @return $theme-or-config;
   }
   // In case a theme has been passed, extract the configuration if present,
@@ -269,8 +269,8 @@ $_mat-theme-emitted-density: () !default;
 // id. This is necessary because a given theme can be passed to multiple disjoint theme mixins
 // (e.g. `angular-material-theme` and `angular-material-mdc-theme`) without causing any
 // style duplication.
-@mixin check-duplicate-theme-styles($theme-or-color-config, $id) {
-  $theme: legacy-get-theme($theme-or-color-config);
+@mixin private-check-duplicate-theme-styles($theme-or-color-config, $id) {
+  $theme: private-legacy-get-theme($theme-or-color-config);
   $color-config: get-color-config($theme);
   $density-config: get-density-config($theme);
   $typography-config: get-typography-config($theme);
@@ -307,7 +307,7 @@ $_mat-theme-emitted-density: () !default;
       // Only report a warning if density styles would be duplicated for non-legacy theme
       // definitions. For legacy themes, we have compatibility logic that avoids duplication
       // of default density styles. We don't want to report a warning in those cases.
-      @if is-legacy-constructed-theme($theme) {
+      @if private-is-legacy-constructed-theme($theme) {
         $duplicate-legacy-density: true;
       }
       @else if not $theme-ignore-duplication-warnings {
@@ -339,19 +339,19 @@ $_mat-theme-emitted-density: () !default;
   // styles **once** and at root. This matches the old behavior where density styles were
   // part of the base component styles (that did not use view encapsulation).
   // TODO: Remove this compatibility logic when the legacy theming API is removed.
-  compatibility.$density-generate-at-root: is-legacy-constructed-theme($theme);
-  compatibility.$density-generate-styles: not $duplicate-legacy-density;
+  compatibility.$private-density-generate-at-root: private-is-legacy-constructed-theme($theme);
+  compatibility.$private-density-generate-styles: not $duplicate-legacy-density;
 
   @content;
   $theme-ignore-duplication-warnings: $orig-mat-theme-ignore-duplication-warnings !global;
 
-  compatibility.$density-generate-at-root: false;
-  compatibility.$density-generate-styles: true;
+  compatibility.$private-density-generate-at-root: false;
+  compatibility.$private-density-generate-styles: true;
 }
 
 // Checks whether the given value resolves to a theme object. Theme objects are always
 // of type `map` and can optionally only specify `color`, `density` or `typography`.
-@function is-theme-object($value) {
+@function private-is-theme-object($value) {
   @return meta.type-of($value) == 'map' and (
     map.has-key($value, color) or
     map.has-key($value, density) or
@@ -361,7 +361,7 @@ $_mat-theme-emitted-density: () !default;
 }
 
 // Checks whether a given value corresponds to a legacy constructed theme.
-@function is-legacy-constructed-theme($value) {
+@function private-is-legacy-constructed-theme($value) {
   @return meta.type-of($value) == 'map' and map.get($value, '_is-legacy-theme');
 }
 
@@ -382,7 +382,7 @@ $_mat-theme-emitted-density: () !default;
 // Note that the `$theme.primary` key does usually not exist since the color configuration
 // is stored in `$theme.color` which contains a property for `primary`. This method copies
 // the map from `$theme.color` to `$theme` for backwards compatibility.
-@function create-backwards-compatibility-theme($theme) {
+@function private-create-backwards-compatibility-theme($theme) {
   @if not map.get($theme, color) {
     @return $theme;
   }
@@ -397,11 +397,11 @@ $_mat-theme-emitted-density: () !default;
 // construct a theme manually and pass it to a theme. We support this for backwards compatibility.
 // TODO(devversion): remove this in the future. Constructing themes manually is rare,
 // and the code can be easily updated to the new API.
-@function legacy-get-theme($theme-or-color-config) {
-  @if is-theme-object($theme-or-color-config) {
+@function private-legacy-get-theme($theme-or-color-config) {
+  @if private-is-theme-object($theme-or-color-config) {
     @return $theme-or-color-config;
   }
-  @return create-backwards-compatibility-theme((
+  @return private-create-backwards-compatibility-theme((
     _is-legacy-theme: true,
     color: $theme-or-color-config
   ));

@@ -38,7 +38,7 @@
 
 // The bottom section of the view; contains the tab bodies
 .mat-tab-body-wrapper {
-  @include private.animation-noop();
+  @include private.private-animation-noop();
   position: relative;
   overflow: hidden;
   display: flex;

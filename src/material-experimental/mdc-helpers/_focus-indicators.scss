@@ -122,8 +122,9 @@
     @include _mat-mdc-strong-focus-indicators-border-color($theme-or-color);
   }
   @else {
-    $theme: theming.legacy-get-theme($theme-or-color);
-    @include theming.check-duplicate-theme-styles($theme, 'mat-mdc-strong-focus-indicators') {
+    $theme: theming.private-legacy-get-theme($theme-or-color);
+    @include theming.private-check-duplicate-theme-styles($theme,
+      'mat-mdc-strong-focus-indicators') {
       $color: theming.get-color-config($theme);
       @if $color != null {
         @include strong-focus-indicators-color($color);

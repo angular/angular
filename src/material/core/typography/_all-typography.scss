@@ -40,7 +40,7 @@
 
 // Includes all of the typographic styles.
 @mixin angular-material-typography($config-or-theme: null) {
-  $config: if(theming.is-theme-object($config-or-theme),
+  $config: if(theming.private-is-theme-object($config-or-theme),
       theming.get-typography-config($config-or-theme), $config-or-theme);
 
   // If no actual color configuration has been specified, create a default one.
@@ -67,7 +67,7 @@
   @include table-theme.typography($config);
   @include datepicker-theme.typography($config);
   @include dialog-theme.typography($config);
-  @include expansion-theme.panel-typography($config);
+  @include expansion-theme.typography($config);
   @include form-field-theme.typography($config);
   @include grid-list-theme.typography($config);
   @include icon-theme.typography($config);

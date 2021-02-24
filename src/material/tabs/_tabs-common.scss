@@ -58,7 +58,7 @@ $tab-animation-duration: 500ms !default;
 @mixin ink-bar {
   $height: 2px;
 
-  @include private.animation-noop();
+  @include private.private-animation-noop();
   position: absolute;
   bottom: 0;
   height: $height;

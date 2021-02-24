@@ -4,7 +4,7 @@
 @import '@material/data-table/mixins.import';
 
 @include mdc-data-table-core-styles($query: mdc-helpers.$mat-base-styles-without-animation-query);
-@include table-flex-styles.table-flex-styles();
+@include table-flex-styles.private-table-flex-styles();
 
 .mat-mdc-table-sticky {
   // Note that the table can either set this class or an inline style to make something sticky.

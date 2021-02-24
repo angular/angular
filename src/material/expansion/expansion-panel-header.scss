@@ -9,7 +9,7 @@
   align-items: center;
   padding: 0 24px;
   border-radius: inherit;
-  transition: height expansion-variables.$panel-header-transition;
+  transition: height expansion-variables.$header-transition;
 
   // If the `NoopAnimationsModule` is used, disable the height transition.
   &._mat-animation-noopable {
@@ -81,7 +81,7 @@
 }
 
 @include a11y.high-contrast(active, off) {
-  @include expansion-mixins.expansion-focus {
+  @include expansion-mixins.private-expansion-focus {
     &::before {
       // These styles are identical to the ones generated for all
       // `.mat-focus-indicator` when strong focus indication is enabled.

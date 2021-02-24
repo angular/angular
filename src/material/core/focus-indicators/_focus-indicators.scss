@@ -112,8 +112,8 @@
     @include _mat-strong-focus-indicators-border-color($theme-or-color);
   }
   @else {
-    $theme: theming.legacy-get-theme($theme-or-color);
-    @include theming.check-duplicate-theme-styles($theme, 'mat-strong-focus-indicators') {
+    $theme: theming.private-legacy-get-theme($theme-or-color);
+    @include theming.private-check-duplicate-theme-styles($theme, 'mat-strong-focus-indicators') {
       $color: theming.get-color-config($theme);
       @if $color != null {
         @include strong-focus-indicators-color($color);
@@ -125,7 +125,7 @@
 // Mixin that ensures focus indicator host elements are positioned so that the focus indicator
 // pseudo element within is positioned relative to the host. Private mixin included within
 // `mat-core`.
-@mixin strong-focus-indicators-positioning() {
+@mixin private-strong-focus-indicators-positioning() {
   .mat-focus-indicator {
     position: relative;
   }

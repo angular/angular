@@ -20,18 +20,18 @@
     }
 
     &.mat-form-field-disabled .mat-form-field-underline {
-      @include form-common.control-disabled-underline($underline-color);
+      @include form-common.private-control-disabled-underline($underline-color);
     }
   }
 }
 
 @mixin standard-typography($config-or-theme) {}
 
-@mixin form-field-standard-density($config-or-theme) {}
+@mixin private-form-field-standard-density($config-or-theme) {}
 
 @mixin standard-theme($theme-or-color-config) {
-  $theme: theming.legacy-get-theme($theme-or-color-config);
-  @include theming.check-duplicate-theme-styles($theme, 'mat-form-field-standard') {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-form-field-standard') {
     $color: theming.get-color-config($theme);
     $density: theming.get-density-config($theme);
     $typography: theming.get-typography-config($theme);
@@ -40,7 +40,7 @@
       @include standard-color($color);
     }
     @if $density != null {
-      @include form-field-standard-density($density);
+      @include private-form-field-standard-density($density);
     }
     @if $typography != null {
       @include standard-typography($typography);
