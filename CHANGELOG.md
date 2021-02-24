@@ -1,3 +1,37 @@
+## 11.2.2 "yarn-barn" (2021-02-24)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **clipboard:** typo in injection token name ([#21978](https://github.com/angular/components/issues/21978)) ([b0fc1f0311097ff224e7070f9c1c237b43d8f32b](https://github.com/angular/components/commit/b0fc1f0311097ff224e7070f9c1c237b43d8f32b)), closes [#21976](https://github.com/angular/components/issues/21976) |
+| bug fix |  **overlay:** not setting correct opacity in high contrast mode on Firefox ([#21896](https://github.com/angular/components/issues/21896)) ([8542243fd598376c29556d9b59b1199b7992a4db](https://github.com/angular/components/commit/8542243fd598376c29556d9b59b1199b7992a4db)), closes [#21890](https://github.com/angular/components/issues/21890) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **bottom-sheet:** focus restoration not working inside shadow dom ([#21975](https://github.com/angular/components/issues/21975)) ([78e45d08f483fa0fdb3dfa97ae2e3789975b138b](https://github.com/angular/components/commit/78e45d08f483fa0fdb3dfa97ae2e3789975b138b)), closes [#21796](https://github.com/angular/components/issues/21796) |
+| bug fix |  **core:** mat-optgroup labels are read twice during screen-reader page navigation. ([#21858](https://github.com/angular/components/issues/21858)) ([fad83cbf765920e7bff033d59170192cb4022383](https://github.com/angular/components/commit/fad83cbf765920e7bff033d59170192cb4022383)) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  mapTypeId not being set from options ([#21909](https://github.com/angular/components/issues/21909)) ([e227ebdd6b4a2765d06f464db70ce14a201340bc](https://github.com/angular/components/commit/e227ebdd6b4a2765d06f464db70ce14a201340bc)), closes [#21903](https://github.com/angular/components/issues/21903) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** fix incomplete icon class targeting in styles ([#21919](https://github.com/angular/components/issues/21919)) ([b18b4837a7648c3a2668b6908f9d2cebca2f764e](https://github.com/angular/components/commit/b18b4837a7648c3a2668b6908f9d2cebca2f764e)) |
+| bug fix |  **mdc-button:** use mdc mixins to style icons within buttons ([#21623](https://github.com/angular/components/issues/21623)) ([61deb71292f196841f95eb5ac685c74d7561a2f8](https://github.com/angular/components/commit/61deb71292f196841f95eb5ac685c74d7561a2f8)) |
+| bug fix |  **mdc-core:** rename core import file ([#21953](https://github.com/angular/components/issues/21953)) ([0e95dd52c8e8edc8dc6671d41bb5203f5c5db7fd](https://github.com/angular/components/commit/0e95dd52c8e8edc8dc6671d41bb5203f5c5db7fd)) |
+| bug fix |  **mdc-list:** update mixin and variable names ([#21968](https://github.com/angular/components/issues/21968)) ([05e7e744a4e310484a829fc3e44b4a6f89b7bcee](https://github.com/angular/components/commit/05e7e744a4e310484a829fc3e44b4a6f89b7bcee)) |
+| bug fix |  **mdc-progress-bar:** check observer function ([#21986](https://github.com/angular/components/issues/21986)) ([60248115c3b5b2b4125dcf0ce5d75a9cebf6af15](https://github.com/angular/components/commit/60248115c3b5b2b4125dcf0ce5d75a9cebf6af15)) |
+| bug fix |  **mdc-typography:** change transform to none ([#21964](https://github.com/angular/components/issues/21964)) ([a30f656e2f279bdccbbea9ca19ccaf51cc136728](https://github.com/angular/components/commit/a30f656e2f279bdccbbea9ca19ccaf51cc136728)) |
+| bug fix |  **mdc-typography:** strip typography properties ([#21878](https://github.com/angular/components/issues/21878)) ([762a537cb9b4f87107be0bbd421c5c01e8b46370](https://github.com/angular/components/commit/762a537cb9b4f87107be0bbd421c5c01e8b46370)) |
+
 ## 11.2.1 "lye-lie" (2021-02-17)
 
 ### cdk
