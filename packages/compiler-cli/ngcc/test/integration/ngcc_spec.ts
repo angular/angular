@@ -25,6 +25,7 @@ import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/pa
 
 import {compileIntoApf, compileIntoFlatEs2015Package, compileIntoFlatEs5Package} from './util';
 
+const ANGULAR_CORE_IMPORT_REGEX = /import \* as ɵngcc\d+ from '@angular\/core';/;
 const testFiles = loadStandardTestFiles({fakeCore: false, rxjs: true});
 
 runInEachFileSystem(() => {
@@ -1240,9 +1241,64 @@ runInEachFileSystem(() => {
          });
     });
 
+    describe('with typingsOnly set to true', () => {
+      it('should only compile the typings', () => {
+        mainNgcc({
+          basePath: '/node_modules',
+          propertiesToConsider: ['module', 'fesm2015', 'main'],
+          typingsOnly: true,
+          compileAllFormats: true,
+          logger: new MockLogger(),
+        });
+        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(loadPackage('@angular/common').__processed_by_ivy_ngcc__).toEqual({
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(loadPackage('@angular/common/testing').__processed_by_ivy_ngcc__).toEqual({
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(loadPackage('@angular/common/http').__processed_by_ivy_ngcc__).toEqual({
+          typings: '0.0.0-PLACEHOLDER',
+        });
+
+        // Doesn't touch original files
+        expect(fs.readFile(_(`/node_modules/@angular/common/esm2015/src/common_module.js`)))
+            .not.toMatch(ANGULAR_CORE_IMPORT_REGEX);
+        // Or create a backup of the original
+        expect(fs.exists(
+                   _(`/node_modules/@angular/common/esm2015/src/common_module.js.__ivy_ngcc_bak`)))
+            .toBe(false);
+      });
+
+      it('should cope with compiling the same entry-point multiple times with different formats',
+         () => {
+           mainNgcc({
+             basePath: '/node_modules',
+             propertiesToConsider: ['main'],
+             typingsOnly: true,
+             logger: new MockLogger(),
+           });
+           expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+             typings: '0.0.0-PLACEHOLDER',
+           });
+
+           // If ngcc tries to write out the typings files again, this will throw an exception.
+           mainNgcc({
+             basePath: '/node_modules',
+             propertiesToConsider: ['esm2015'],
+             typingsOnly: true,
+             logger: new MockLogger(),
+           });
+           expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+             typings: '0.0.0-PLACEHOLDER',
+           });
+         });
+    });
+
     describe('with createNewEntryPointFormats', () => {
       it('should create new files rather than overwriting the originals', () => {
-        const ANGULAR_CORE_IMPORT_REGEX = /import \* as ɵngcc\d+ from '@angular\/core';/;
         mainNgcc({
           basePath: '/node_modules',
           createNewEntryPointFormats: true,

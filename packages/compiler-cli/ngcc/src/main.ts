@@ -56,6 +56,7 @@ export function mainNgcc(options: AsyncNgccOptions|SyncNgccOptions): void|Promis
     basePath,
     targetEntryPointPath,
     propertiesToConsider,
+    typingsOnly,
     compileAllFormats,
     logger,
     pathMappings,
@@ -96,7 +97,7 @@ export function mainNgcc(options: AsyncNgccOptions|SyncNgccOptions): void|Promis
   const inParallel = workerCount > 1;
 
   const analyzeEntryPoints = getAnalyzeEntryPointsFn(
-      logger, finder, fileSystem, supportedPropertiesToConsider, compileAllFormats,
+      logger, finder, fileSystem, supportedPropertiesToConsider, typingsOnly, compileAllFormats,
       propertiesToConsider, inParallel);
 
   // Create an updater that will actually write to disk.

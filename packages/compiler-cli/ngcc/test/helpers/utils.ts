@@ -9,6 +9,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getFileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {TestFile} from '../../../src/ngtsc/file_system/testing';
+import {DtsProcessing} from '../../src/execution/tasks/api';
 import {BundleProgram, makeBundleProgram} from '../../src/packages/bundle_program';
 import {NgccEntryPointConfig} from '../../src/packages/configuration';
 import {EntryPoint, EntryPointFormat} from '../../src/packages/entry_point';
@@ -55,6 +56,7 @@ export function makeTestEntryPointBundle(
     rootDirs: [absoluteFrom('/')],
     src,
     dts,
+    dtsProcessing: dtsRootNames ? DtsProcessing.Yes : DtsProcessing.No,
     isCore,
     isFlatCore,
     enableI18nLegacyMessageIdFormat

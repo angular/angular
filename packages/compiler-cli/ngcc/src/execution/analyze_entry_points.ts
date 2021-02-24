@@ -19,15 +19,16 @@ import {EntryPoint, EntryPointJsonProperty, EntryPointPackageJson, SUPPORTED_FOR
 import {cleanOutdatedPackages} from '../writing/cleaning/package_cleaner';
 
 import {AnalyzeEntryPointsFn} from './api';
-import {PartiallyOrderedTasks, TaskQueue} from './tasks/api';
+import {DtsProcessing, PartiallyOrderedTasks, TaskQueue} from './tasks/api';
 
 /**
  * Create the function for performing the analysis of the entry-points.
  */
 export function getAnalyzeEntryPointsFn(
     logger: Logger, finder: EntryPointFinder, fileSystem: FileSystem,
-    supportedPropertiesToConsider: EntryPointJsonProperty[], compileAllFormats: boolean,
-    propertiesToConsider: string[], inParallel: boolean): AnalyzeEntryPointsFn {
+    supportedPropertiesToConsider: EntryPointJsonProperty[], typingsOnly: boolean,
+    compileAllFormats: boolean, propertiesToConsider: string[],
+    inParallel: boolean): AnalyzeEntryPointsFn {
   return () => {
     logger.debug('Analyzing entry-points...');
     const startTime = Date.now();
@@ -51,7 +52,8 @@ export function getAnalyzeEntryPointsFn(
       const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings');
       const {propertiesToProcess, equivalentPropertiesMap} =
           getPropertiesToProcess(packageJson, supportedPropertiesToConsider, compileAllFormats);
-      let processDts = !hasProcessedTypings;
+      let processDts = hasProcessedTypings ? DtsProcessing.No :
+                                             typingsOnly ? DtsProcessing.Only : DtsProcessing.Yes;
 
       if (propertiesToProcess.length === 0) {
         // This entry-point is unprocessable (i.e. there is no format property that is of interest
@@ -69,11 +71,19 @@ export function getAnalyzeEntryPointsFn(
           continue;
         }
 
-        const formatPropertiesToMarkAsProcessed = equivalentPropertiesMap.get(formatProperty)!;
-        tasks.push({entryPoint, formatProperty, formatPropertiesToMarkAsProcessed, processDts});
+        // If we are only processing typings then there should be no format properties to mark
+        const formatPropertiesToMarkAsProcessed =
+            typingsOnly ? [] : equivalentPropertiesMap.get(formatProperty)!;
+
+        tasks.push({
+          entryPoint,
+          formatProperty,
+          formatPropertiesToMarkAsProcessed,
+          processDts,
+        });
 
         // Only process typings for the first property (if not already processed).
-        processDts = false;
+        processDts = DtsProcessing.No;
       }
     }
 

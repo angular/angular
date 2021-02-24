@@ -8,6 +8,7 @@
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
+import {DtsProcessing} from '../../src/execution/tasks/api';
 import {EntryPoint} from '../../src/packages/entry_point';
 import {makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {createModuleResolutionCache, SharedFileCache} from '../../src/packages/source_file_cache';
@@ -184,7 +185,7 @@ runInEachFileSystem(() => {
          const moduleResolutionCache = createModuleResolutionCache(fs);
          const esm5bundle = makeEntryPointBundle(
              fs, entryPoint, new SharedFileCache(fs), moduleResolutionCache, './index.js', false,
-             'esm5', true);
+             'esm5', DtsProcessing.Yes);
 
          expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
              .toEqual(jasmine.arrayWithExactContents([
@@ -298,8 +299,7 @@ runInEachFileSystem(() => {
       const moduleResolutionCache = createModuleResolutionCache(fs);
       const esm5bundle = makeEntryPointBundle(
           fs, entryPoint, new SharedFileCache(fs), moduleResolutionCache, './index.js', false,
-          'esm5',
-          /* transformDts */ true,
+          'esm5', DtsProcessing.Yes,
           /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
 
       expect(esm5bundle.src.program.getSourceFiles().map(sf => _(sf.fileName)))
@@ -338,8 +338,7 @@ runInEachFileSystem(() => {
             const moduleResolutionCache = createModuleResolutionCache(fs);
             const esm5bundle = makeEntryPointBundle(
                 fs, entryPoint, new SharedFileCache(fs), moduleResolutionCache, './index.js', false,
-                'esm5',
-                /* transformDts */ true,
+                'esm5', DtsProcessing.Yes,
                 /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
             expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/test/internal.js'));
@@ -364,8 +363,7 @@ runInEachFileSystem(() => {
             const moduleResolutionCache = createModuleResolutionCache(fs);
             const esm5bundle = makeEntryPointBundle(
                 fs, entryPoint, new SharedFileCache(fs), moduleResolutionCache,
-                './esm2015/index.js', false, 'esm2015',
-                /* transformDts */ true,
+                './esm2015/index.js', false, 'esm2015', DtsProcessing.Yes,
                 /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
             expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/internal/esm2015/src/internal.js'));
@@ -390,8 +388,7 @@ runInEachFileSystem(() => {
             const moduleResolutionCache = createModuleResolutionCache(fs);
             const esm5bundle = makeEntryPointBundle(
                 fs, entryPoint, new SharedFileCache(fs), moduleResolutionCache, './index.js', false,
-                'esm5',
-                /* transformDts */ true,
+                'esm5', DtsProcessing.Yes,
                 /* pathMappings */ undefined, /* mirrorDtsFromSrc */ false);
             expect(esm5bundle.src.program.getSourceFiles().map(sf => sf.fileName))
                 .toContain(absoluteFrom('/node_modules/test/internal.js'));
@@ -417,8 +414,7 @@ runInEachFileSystem(() => {
       const moduleResolutionCache = createModuleResolutionCache(fs);
       const bundle = makeEntryPointBundle(
           fs, entryPoint, new SharedFileCache(fs), moduleResolutionCache, './index.js', false,
-          'esm2015',
-          /* transformDts */ true,
+          'esm2015', DtsProcessing.Yes,
           /* pathMappings */ undefined, /* mirrorDtsFromSrc */ true);
       expect(bundle.rootDirs).toEqual([absoluteFrom('/node_modules/primary')]);
     });

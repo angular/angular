@@ -7,6 +7,7 @@
  */
 import * as ts from 'typescript';
 import {AbsoluteFsPath, FileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
+import {DtsProcessing} from '../execution/tasks/api';
 import {PathMappings} from '../path_mappings';
 import {BundleProgram, makeBundleProgram} from './bundle_program';
 import {EntryPoint, EntryPointFormat} from './entry_point';
@@ -25,6 +26,7 @@ export interface EntryPointBundle {
   rootDirs: AbsoluteFsPath[];
   src: BundleProgram;
   dts: BundleProgram|null;
+  dtsProcessing: DtsProcessing;
   enableI18nLegacyMessageIdFormat: boolean;
 }
 
@@ -37,7 +39,7 @@ export interface EntryPointBundle {
  * @param formatPath The path to the source files for this bundle.
  * @param isCore This entry point is the Angular core package.
  * @param format The underlying format of the bundle.
- * @param transformDts Whether to transform the typings along with this bundle.
+ * @param dtsProcessing Whether to transform the typings along with this bundle.
  * @param pathMappings An optional set of mappings to use when compiling files.
  * @param mirrorDtsFromSrc If true then the `dts` program will contain additional files that
  * were guessed by mapping the `src` files to `dts` files.
@@ -47,7 +49,7 @@ export interface EntryPointBundle {
 export function makeEntryPointBundle(
     fs: FileSystem, entryPoint: EntryPoint, sharedFileCache: SharedFileCache,
     moduleResolutionCache: ts.ModuleResolutionCache, formatPath: string, isCore: boolean,
-    format: EntryPointFormat, transformDts: boolean, pathMappings?: PathMappings,
+    format: EntryPointFormat, dtsProcessing: DtsProcessing, pathMappings?: PathMappings,
     mirrorDtsFromSrc: boolean = false,
     enableI18nLegacyMessageIdFormat: boolean = true): EntryPointBundle {
   // Create the TS program and necessary helpers.
@@ -64,13 +66,14 @@ export function makeEntryPointBundle(
   const typingsPath = fs.resolve(entryPoint.path, entryPoint.typings);
   const src = makeBundleProgram(
       fs, isCore, entryPoint.packagePath, absFormatPath, 'r3_symbols.js', options, srcHost);
-  const additionalDtsFiles = transformDts && mirrorDtsFromSrc ?
+  const additionalDtsFiles = dtsProcessing !== DtsProcessing.No && mirrorDtsFromSrc ?
       computePotentialDtsFilesFromJsFiles(fs, src.program, absFormatPath, typingsPath) :
       [];
-  const dts = transformDts ? makeBundleProgram(
-                                 fs, isCore, entryPoint.packagePath, typingsPath, 'r3_symbols.d.ts',
-                                 {...options, allowJs: false}, dtsHost, additionalDtsFiles) :
-                             null;
+  const dts = dtsProcessing !== DtsProcessing.No ?
+      makeBundleProgram(
+          fs, isCore, entryPoint.packagePath, typingsPath, 'r3_symbols.d.ts',
+          {...options, allowJs: false}, dtsHost, additionalDtsFiles) :
+      null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
 
   return {
@@ -81,6 +84,7 @@ export function makeEntryPointBundle(
     isFlatCore,
     src,
     dts,
+    dtsProcessing,
     enableI18nLegacyMessageIdFormat
   };
 }

@@ -10,6 +10,7 @@ import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {RawSourceMap} from '../../../src/ngtsc/sourcemaps';
 import {loadTestFiles} from '../../../src/ngtsc/testing';
+import {DtsProcessing} from '../../src/execution/tasks/api';
 import {NgccConfiguration} from '../../src/packages/configuration';
 import {EntryPoint, EntryPointFormat, EntryPointJsonProperty, getEntryPointInfo, isEntryPoint} from '../../src/packages/entry_point';
 import {EntryPointBundle, makeEntryPointBundle} from '../../src/packages/entry_point_bundle';
@@ -731,6 +732,6 @@ runInEachFileSystem(() => {
     const moduleResolutionCache = createModuleResolutionCache(fs);
     return makeEntryPointBundle(
         fs, entryPoint, new SharedFileCache(fs), moduleResolutionCache,
-        entryPoint.packageJson[formatProperty]!, false, format, true);
+        entryPoint.packageJson[formatProperty]!, false, format, DtsProcessing.Yes);
   }
 });

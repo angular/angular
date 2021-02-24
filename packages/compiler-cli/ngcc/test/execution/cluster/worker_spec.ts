@@ -15,7 +15,7 @@ import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {MockLogger} from '../../../../src/ngtsc/logging/testing';
 import {CreateCompileFn} from '../../../src/execution/api';
 import {startWorker} from '../../../src/execution/cluster/worker';
-import {Task, TaskCompletedCallback, TaskProcessingOutcome} from '../../../src/execution/tasks/api';
+import {DtsProcessing, Task, TaskCompletedCallback, TaskProcessingOutcome} from '../../../src/execution/tasks/api';
 import {FileToWrite} from '../../../src/rendering/utils';
 import {mockProperty, spyProperty} from '../../helpers/spy_utils';
 
@@ -124,7 +124,7 @@ describe('startWorker()', () => {
       const mockTask = {
         entryPoint: {name: 'foo'},
         formatProperty: 'es2015',
-        processDts: true,
+        processDts: DtsProcessing.Yes,
       } as unknown as Task;
 
       startWorker(mockLogger, createCompileFnSpy);
@@ -134,7 +134,7 @@ describe('startWorker()', () => {
       expect(processSendSpy).not.toHaveBeenCalled();
 
       expect(mockLogger.logs.debug[0]).toEqual([
-        '[Worker #42] Processing task: {entryPoint: foo, formatProperty: es2015, processDts: true}',
+        '[Worker #42] Processing task: {entryPoint: foo, formatProperty: es2015, processDts: Yes}',
       ]);
     });
 
@@ -142,7 +142,7 @@ describe('startWorker()', () => {
       const mockTask = {
         entryPoint: {name: 'foo'},
         formatProperty: 'es2015',
-        processDts: true,
+        processDts: DtsProcessing.Yes,
       } as unknown as Task;
 
       let err: string|Error;
@@ -178,7 +178,7 @@ describe('startWorker()', () => {
         const mockTask = {
           entryPoint: {name: 'foo'},
           formatProperty: 'es2015',
-          processDts: true,
+          processDts: DtsProcessing.Yes,
         } as unknown as Task;
 
         const noMemError = Object.assign(new Error('ENOMEM: not enough memory'), {code: 'ENOMEM'});
