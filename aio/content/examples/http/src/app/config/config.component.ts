@@ -7,7 +7,7 @@ import { Config, ConfigService } from './config.service';
   selector: 'app-config',
   templateUrl: './config.component.html',
   providers: [ ConfigService ],
-  styles: ['.error {color: red;}']
+  styles: ['.error { color: #b30000; }']
 })
 export class ConfigComponent {
   error: any;
