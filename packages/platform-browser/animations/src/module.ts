@@ -15,7 +15,10 @@ import {BROWSER_ANIMATIONS_PROVIDERS, BROWSER_NOOP_ANIMATIONS_PROVIDERS} from '.
  * @publicApi
  */
 export interface BrowserAnimationsModuleConfig {
-  /** Whether animations should be disabled. */
+  /**
+   *  Whether animations should be disabled. Passing this is identical to providing the
+   * `NoopAnimationsModule`, but it can be controlled based on a runtime value.
+   */
   disableAnimations?: boolean;
 }
 
@@ -30,19 +33,20 @@ export interface BrowserAnimationsModuleConfig {
 })
 export class BrowserAnimationsModule {
   /**
-   * Creates and configures a module based on the specified object.
+   * Configures the module based on the specified object.
    *
-   * When registering the NgModule at the root, import as follows:
+   * @param config Object used to configure the behavior of the `BrowserAnimationsModule`.
+   * @see `BrowserAnimationsModuleConfig`
    *
+   * @usageNotes
+   * When registering the `BrowserAnimationsModule`, you can use the `withConfig`
+   * function as follows:
    * ```
    * @NgModule({
    *   imports: [BrowserAnimationsModule.withConfig(config)]
    * })
    * class MyNgModule {}
    * ```
-   *
-   * @param config Object used to configure the behavior of the `BrowserAnimationsModule`.
-   * @return The new `NgModule`.
    */
   static withConfig(config: BrowserAnimationsModuleConfig):
       ModuleWithProviders<BrowserAnimationsModule> {
