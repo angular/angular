@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpParams} from '@angular/common/http/src/params';
+import {HttpParams, HttpUrlPercentEncodingCodec} from '@angular/common/http/src/params';
 
 {
   describe('HttpUrlEncodedParams', () => {
@@ -113,7 +113,9 @@ import {HttpParams} from '@angular/common/http/src/params';
 
     describe('percent encoding toString', () => {
       it('should encode and stringify string params', () => {
-        const body = new HttpParams({fromObject: {a: '@:$,;+=?/', b: '2'}, percentEncoding: true});
+        const encoder = new HttpUrlPercentEncodingCodec();
+        const body = new HttpParams({fromObject: {a: '@:$,;+=?/', b: '2'}, encoder: encoder});
+
         expect(body.toString()).toBe('a=%40%3A%24%2C%3B%2B%3D%3F%2F&b=2');
       });
       it('should stringify array params', () => {

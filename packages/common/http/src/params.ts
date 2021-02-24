@@ -174,7 +174,6 @@ export interface HttpParamsOptions {
 
   /** Encoding codec used to parse and serialize the parameters. */
   encoder?: HttpParameterCodec;
-  percentEncoding?: boolean;
 }
 
 /**
@@ -193,9 +192,6 @@ export class HttpParams {
 
   constructor(options: HttpParamsOptions = {} as HttpParamsOptions) {
     this.encoder = options.encoder || new HttpUrlEncodingCodec();
-    if (!!options.percentEncoding) {
-      this.encoder = new HttpUrlPercentEncodingCodec();
-    }
     if (!!options.fromString) {
       if (!!options.fromObject) {
         throw new Error(`Cannot specify both fromString and fromObject.`);

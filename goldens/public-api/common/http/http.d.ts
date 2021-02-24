@@ -1786,6 +1786,14 @@ export declare class HttpUrlEncodingCodec implements HttpParameterCodec {
     encodeValue(value: string): string;
 }
 
+export declare class HttpUrlPercentEncodingCodec implements HttpParameterCodec {
+    decodeKey(key: string): string;
+    decodeValue(value: string): string;
+    encodeKey(key: string): string;
+    encodeValue(value: string): string;
+}
+
+
 export declare interface HttpUserEvent<T> {
     type: HttpEventType.User;
 }
