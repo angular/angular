@@ -8,6 +8,7 @@ import { NpmPackageInfo, PackageSearchService } from './package-search.service';
 @Component({
   selector: 'app-package-search',
   templateUrl: './package-search.component.html',
+  styles: ['input { margin-bottom: .5rem; }'],
   providers: [ PackageSearchService ]
 })
 export class PackageSearchComponent implements OnInit {
