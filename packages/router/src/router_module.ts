@@ -584,7 +584,7 @@ export function getBootstrapListener(r: RouterInitializer) {
 export const ROUTER_INITIALIZER =
     new InjectionToken<(compRef: ComponentRef<any>) => void>('Router Initializer');
 
-export function provideRouterInitializer() {
+export function provideRouterInitializer(): ReadonlyArray<Provider> {
   return [
     RouterInitializer,
     {

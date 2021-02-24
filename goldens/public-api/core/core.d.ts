@@ -25,12 +25,12 @@ export declare const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: Component
 
 export declare const APP_ID: InjectionToken<string>;
 
-export declare const APP_INITIALIZER: InjectionToken<(() => void)[]>;
+export declare const APP_INITIALIZER: InjectionToken<readonly (() => Observable<unknown> | Promise<unknown> | void)[]>;
 
 export declare class ApplicationInitStatus {
     readonly done = false;
     readonly donePromise: Promise<any>;
-    constructor(appInits: (() => any)[]);
+    constructor(appInits: ReadonlyArray<() => Observable<unknown> | Promise<unknown> | void>);
 }
 
 export declare class ApplicationModule {
