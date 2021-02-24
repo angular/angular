@@ -1,7 +1,7 @@
 # Communicating with backend services using HTTP
 
 Most front-end applications need to communicate with a server over the HTTP protocol, in order to download or upload data and access other back-end services.
-Angular provides a simplified client HTTP API for Angular applications, the `HttpClient` service class in `@angular/common/http`.
+Angular provides a client HTTP API for Angular applications, the `HttpClient` service class in `@angular/common/http`.
 
 The HTTP client service offers the following major features.
 
@@ -371,7 +371,7 @@ The following example shows how you can pipe a failed request to the `retry()` o
 
 In addition to fetching data from a server, `HttpClient` supports other HTTP methods such as PUT, POST, and DELETE, which you can use to modify the remote data.
 
-The sample app for this guide includes a simplified version of the "Tour of Heroes" example
+The sample app for this guide includes an abridged version of the "Tour of Heroes" example
 that fetches heroes and enables users to add, delete, and update them.
 The following sections show examples of the data-update methods from the sample's `HeroesService`.
 
@@ -563,7 +563,8 @@ for each `HttpClient` method call.
 
 To implement an interceptor, declare a class that implements the `intercept()` method of the `HttpInterceptor` interface.
 
- Here is a do-nothing _noop_ interceptor that simply passes the request through without touching it:
+Here is a do-nothing _noop_ interceptor that passes the request through without touching it:
+
 <code-example
   path="http/src/app/http-interceptors/noop-interceptor.ts"
   header="app/http-interceptors/noop-interceptor.ts">
@@ -582,7 +583,7 @@ export abstract class HttpHandler {
 
 Like `intercept()`, the `handle()` method transforms an HTTP request into an `Observable` of [`HttpEvents`](#interceptor-events) which ultimately include the server's response. The `intercept()` method could inspect that observable and alter it before returning it to the caller.
 
-This _no-op_ interceptor simply calls `next.handle()` with the original request and returns the observable without doing a thing.
+This _no-op_ interceptor calls `next.handle()` with the original request and returns the observable without doing a thing.
 
 ### The _next_ object
 
@@ -654,12 +655,12 @@ There are many more interceptors in the complete sample code.
 
 Angular applies interceptors in the order that you provide them.
 For example, consider a situation in which you want to handle the authentication of your HTTP requests and log them before sending them to a server. To accomplish this task, you could provide an `AuthInterceptor` service and then a `LoggingInterceptor` service.
-Outgoing requests would flow from the `AuthInterceptor` to the `LoggingInterceptor`.
+Outgoing requests would flow from the `AuthInterceptor` to the `AuthInterceptor`.
 Responses from these requests would flow in the other direction, from `LoggingInterceptor` back to `AuthInterceptor`.
 The following is a visual representation of the process:
 
 <div class="lightbox">
-  <img src="generated/images/guide/http/interceptor-order.svg" alt="Interceptor order">
+  <img src="generated/images/guide/http/interceptor-order.svg" alt="Interceptor in order of HttpClient, AuthInterceptor, AuthInterceptor, HttpBackend, Server, and back in opposite order to show the two-way flow">
 </div>
 
 <div class="alert is-helpful">
@@ -857,7 +858,7 @@ The `CachingInterceptor` in the following example demonstrates this approach.
 * The `isCacheable()` function determines if the request is cacheable.
 In this sample, only GET requests to the npm package search api are cacheable.
 
-* If the request is not cacheable, the interceptor simply forwards the request
+* If the request is not cacheable, the interceptor forwards the request
 to the next handler in the chain.
 
 * If a cacheable request is found in the cache, the interceptor returns an `of()` _observable_ with
