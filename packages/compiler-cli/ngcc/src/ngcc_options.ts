@@ -202,7 +202,7 @@ export function getSharedSetup(options: NgccOptions): SharedSetup&RequiredNgccOp
   }
 
   if (typingsOnly) {
-    // If we only want to process the typpings then we do not want to waste time trying to process
+    // If we only want to process the typings then we do not want to waste time trying to process
     // multiple JS formats.
     compileAllFormats = false;
   }

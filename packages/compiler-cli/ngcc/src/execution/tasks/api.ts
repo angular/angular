@@ -47,13 +47,13 @@ export enum DtsProcessing {
    */
   Yes,
   /**
-     No, do not process the typings as part of this task - they must have already been processed by
-     another task or previous ngcc process.
+   * No, do not process the typings as part of this task - they must have already been processed by
+   * another task or previous ngcc process.
    */
   No,
   /**
-     Only process the typings for this entry-point; do not render any JavaScript files for the
-     `formatProperty` of this task.
+   * Only process the typings for this entry-point; do not render any JavaScript files for the
+   * `formatProperty` of this task.
    */
   Only,
 }

@@ -82,9 +82,9 @@ export function createLogErrorHandler(
 }
 
 function createErrorMessage(fs: ReadonlyFileSystem, task: Task, message: string|null): string {
-  const format = task.typingsOnly ?
-      'typings only' :
+  const jsFormat =
       `${task.formatProperty} as ${getEntryPointFormat(fs, task.entryPoint, task.formatProperty)}`;
-  return `Failed to compile entry-point ${task.entryPoint.name} (${format})` +
-      (message !== null ? ` due to ${message}` : '');
+  const format = task.typingsOnly ? `typings only using ${jsFormat}` : jsFormat;
+  message = message !== null ? ` due to ${message}` : '';
+  return `Failed to compile entry-point ${task.entryPoint.name} (${format})` + message;
 }

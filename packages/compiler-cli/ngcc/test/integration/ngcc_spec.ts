@@ -1263,13 +1263,19 @@ runInEachFileSystem(() => {
           typings: '0.0.0-PLACEHOLDER',
         });
 
-        // Doesn't touch original files
+        // Doesn't touch original source files
         expect(fs.readFile(_(`/node_modules/@angular/common/esm2015/src/common_module.js`)))
             .not.toMatch(ANGULAR_CORE_IMPORT_REGEX);
         // Or create a backup of the original
         expect(fs.exists(
                    _(`/node_modules/@angular/common/esm2015/src/common_module.js.__ivy_ngcc_bak`)))
             .toBe(false);
+
+        // Overwrites .d.ts files
+        expect(fs.readFile(_(`/node_modules/@angular/common/common.d.ts`)))
+            .toMatch(ANGULAR_CORE_IMPORT_REGEX);
+        // And makes a backup
+        expect(fs.exists(_(`/node_modules/@angular/common/common.d.ts.__ivy_ngcc_bak`))).toBe(true);
       });
 
       it('should cope with compiling the same entry-point multiple times with different formats',
@@ -1295,6 +1301,30 @@ runInEachFileSystem(() => {
              typings: '0.0.0-PLACEHOLDER',
            });
          });
+
+      it('should cope with compiling typings only followed by javascript formats', () => {
+        mainNgcc({
+          basePath: '/node_modules',
+          propertiesToConsider: ['esm2015', 'main'],
+          typingsOnly: true,
+          logger: new MockLogger(),
+        });
+        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+          typings: '0.0.0-PLACEHOLDER',
+        });
+
+        // If ngcc tries to write out the typings files again, this will throw an exception.
+        mainNgcc({
+          basePath: '/node_modules',
+          propertiesToConsider: ['esm2015', 'main'],
+          logger: new MockLogger(),
+        });
+        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+          main: '0.0.0-PLACEHOLDER',
+          esm2015: '0.0.0-PLACEHOLDER',
+          typings: '0.0.0-PLACEHOLDER',
+        });
+      });
     });
 
     describe('with createNewEntryPointFormats', () => {

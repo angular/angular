@@ -50,8 +50,8 @@ export function getAnalyzeEntryPointsFn(
     for (const entryPoint of entryPoints) {
       const packageJson = entryPoint.packageJson;
       const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings');
-      const {propertiesToProcess, equivalentPropertiesMap} =
-          getPropertiesToProcess(packageJson, supportedPropertiesToConsider, compileAllFormats);
+      const {propertiesToProcess, equivalentPropertiesMap} = getPropertiesToProcess(
+          packageJson, supportedPropertiesToConsider, compileAllFormats, typingsOnly);
       let processDts = hasProcessedTypings ? DtsProcessing.No :
                                              typingsOnly ? DtsProcessing.Only : DtsProcessing.Yes;
 
@@ -71,16 +71,8 @@ export function getAnalyzeEntryPointsFn(
           continue;
         }
 
-        // If we are only processing typings then there should be no format properties to mark
-        const formatPropertiesToMarkAsProcessed =
-            typingsOnly ? [] : equivalentPropertiesMap.get(formatProperty)!;
-
-        tasks.push({
-          entryPoint,
-          formatProperty,
-          formatPropertiesToMarkAsProcessed,
-          processDts,
-        });
+        const formatPropertiesToMarkAsProcessed = equivalentPropertiesMap.get(formatProperty)!;
+        tasks.push({entryPoint, formatProperty, formatPropertiesToMarkAsProcessed, processDts});
 
         // Only process typings for the first property (if not already processed).
         processDts = DtsProcessing.No;
@@ -124,7 +116,7 @@ function logInvalidEntryPoints(logger: Logger, invalidEntryPoints: InvalidEntryP
  */
 function getPropertiesToProcess(
     packageJson: EntryPointPackageJson, propertiesToConsider: EntryPointJsonProperty[],
-    compileAllFormats: boolean): {
+    compileAllFormats: boolean, typingsOnly: boolean): {
   propertiesToProcess: EntryPointJsonProperty[];
   equivalentPropertiesMap: Map<EntryPointJsonProperty, EntryPointJsonProperty[]>;
 } {
@@ -166,7 +158,8 @@ function getPropertiesToProcess(
   const equivalentPropertiesMap = new Map<EntryPointJsonProperty, EntryPointJsonProperty[]>();
   for (const prop of propertiesToConsider) {
     const formatPath = packageJson[prop]!;
-    const equivalentProperties = formatPathToProperties[formatPath];
+    // If we are only processing typings then there should be no format properties to mark
+    const equivalentProperties = typingsOnly ? [] : formatPathToProperties[formatPath];
     equivalentPropertiesMap.set(prop, equivalentProperties);
   }
 
