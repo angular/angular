@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter} from '../../imports';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reexport, Reference, ReferenceEmitter, RelativePathStrategy} from '../../imports';
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
 import {ClassPropertyMapping, CompoundMetadataReader} from '../../metadata';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
@@ -28,6 +28,7 @@ import {Environment} from '../src/environment';
 import {OutOfBandDiagnosticRecorder} from '../src/oob';
 import {TypeCheckShimGenerator} from '../src/shim';
 import {generateTypeCheckBlock} from '../src/type_check_block';
+import {TypeCheckFile} from '../src/type_check_file';
 
 export function typescriptLibDts(): TestFile {
   return {
@@ -201,6 +202,7 @@ export type TestDirective = Partial<Pick<
       coercedInputFields?: string[], restrictedInputFields?: string[],
       stringLiteralInputFields?: string[], undeclaredInputFields?: string[], isGeneric?: boolean;
 };
+
 export type TestPipe = {
   name: string,
   file?: AbsoluteFsPath, pipeName: string, type: 'pipe',
@@ -212,9 +214,14 @@ export function tcb(
     template: string, declarations: TestDeclaration[] = [], config?: TypeCheckingConfig,
     options?: {emitSpans?: boolean}): string {
   const classes = ['Test', ...declarations.map(decl => decl.name)];
-  const code = classes.map(name => `class ${name}<T extends string> {}`).join('\n');
+  const code = classes.map(name => `export class ${name}<T extends string> {}`).join('\n');
 
-  const sf = ts.createSourceFile('synthetic.ts', code, ts.ScriptTarget.Latest, true);
+  const rootFilePath = absoluteFrom('/synthetic.ts');
+  const {program, host} = makeProgram([
+    {name: rootFilePath, contents: code, isRoot: true},
+  ]);
+
+  const sf = getSourceFileOrError(program, rootFilePath);
   const clazz = getClass(sf, 'Test');
   const templateUrl = 'synthetic.html';
   const {nodes} = parseTemplate(template, templateUrl);
@@ -251,13 +258,25 @@ export function tcb(
     emitSpans: false,
   };
 
-  const tcb = generateTypeCheckBlock(
-      FakeEnvironment.newFake(config), new Reference(clazz), ts.createIdentifier('Test_TCB'), meta,
-      new NoopSchemaChecker(), new NoopOobRecorder());
+  const fileName = absoluteFrom('/type-check-file.ts');
 
-  const removeComments = !options.emitSpans;
-  const res = ts.createPrinter({removeComments}).printNode(ts.EmitHint.Unspecified, tcb, sf);
-  return res.replace(/\s+/g, ' ');
+  const reflectionHost = new TypeScriptReflectionHost(program.getTypeChecker());
+
+  const refEmmiter: ReferenceEmitter = new ReferenceEmitter(
+      [new LocalIdentifierStrategy(), new RelativePathStrategy(reflectionHost)]);
+
+  const env = new TypeCheckFile(fileName, config, refEmmiter, reflectionHost, host);
+
+  const ref = new Reference(clazz);
+
+  const tcb = generateTypeCheckBlock(
+      env, ref, ts.createIdentifier('Test_TCB'), meta, new NoopSchemaChecker(),
+      new NoopOobRecorder());
+
+  env.addTypeCheckBlock(ref, meta, new NoopSchemaChecker(), new NoopOobRecorder());
+
+  const rendered = env.render(!options.emitSpans /* removeComments */);
+  return rendered.replace(/\s+/g, ' ');
 }
 
 /**

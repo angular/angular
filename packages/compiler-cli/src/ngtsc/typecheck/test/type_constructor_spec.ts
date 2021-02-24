@@ -43,7 +43,7 @@ runInEachFileSystem(() => {
       const file = new TypeCheckFile(
           _('/_typecheck_.ts'), ALL_ENABLED_CONFIG, new ReferenceEmitter([]),
           /* reflector */ null!, host);
-      const sf = file.render();
+      const sf = file.render(false /* removeComments */);
       expect(sf).toContain('export const IS_A_MODULE = true;');
     });
 
