@@ -6,25 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticSymbol} from '../../aot/static_symbol';
-import {CompileDirectiveMetadata, CompileDirectiveSummary, CompileQueryMetadata, CompileTokenMetadata, identifierName, sanitizeIdentifier} from '../../compile_metadata';
-import {CompileReflector} from '../../compile_reflector';
+import {CompileDirectiveSummary, sanitizeIdentifier} from '../../compile_metadata';
 import {BindingForm, convertPropertyBinding} from '../../compiler_util/expression_converter';
-import {ConstantPool, DefinitionKind} from '../../constant_pool';
+import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
 import {AST, ParsedEvent, ParsedEventType, ParsedProperty} from '../../expression_parser/ast';
-import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {ShadowCss} from '../../shadow_css';
 import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
 import {BindingParser} from '../../template_parser/binding_parser';
-import {error, OutputContext} from '../../util';
+import {error} from '../../util';
 import {BoundEvent} from '../r3_ast';
-import {compileFactoryFunction, R3FactoryTarget} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
-import {Render3ParseResult} from '../r3_template_transform';
 import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
 
 import {DeclarationListEmitMode, R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
@@ -32,7 +27,6 @@ import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCa
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
 import {asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getQueryPredicate, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
 
-const EMPTY_ARRAY: any[] = [];
 
 // This regex matches any binding names that contain the "attr." prefix, e.g. "attr.required"
 // If there is a match, the first matching group will contain the attribute name to bind.
@@ -291,147 +285,6 @@ function compileDeclarationList(
       const resolvedList = list.callMethod('map', [o.importExpr(R3.resolveForwardRef)]);
       return o.fn([], [new o.ReturnStatement(resolvedList)]);
   }
-}
-
-/**
- * A wrapper around `compileDirective` which depends on render2 global analysis data as its input
- * instead of the `R3DirectiveMetadata`.
- *
- * `R3DirectiveMetadata` is computed from `CompileDirectiveMetadata` and other statically reflected
- * information.
- */
-export function compileDirectiveFromRender2(
-    outputCtx: OutputContext, directive: CompileDirectiveMetadata, reflector: CompileReflector,
-    bindingParser: BindingParser) {
-  const name = identifierName(directive.type)!;
-  name || error(`Cannot resolver the name of ${directive.type}`);
-
-  const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Directive);
-
-  const meta = directiveMetadataFromGlobalMetadata(directive, outputCtx, reflector);
-  const res = compileDirectiveFromMetadata(meta, outputCtx.constantPool, bindingParser);
-  const factoryRes = compileFactoryFunction(
-      {...meta, injectFn: R3.directiveInject, target: R3FactoryTarget.Directive});
-  const ngFactoryDefStatement = new o.ClassStmt(
-      name, null,
-      [new o.ClassField('ɵfac', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)], [],
-      new o.ClassMethod(null, [], []), []);
-  const directiveDefStatement = new o.ClassStmt(
-      name, null,
-      [new o.ClassField(definitionField, o.INFERRED_TYPE, [o.StmtModifier.Static], res.expression)],
-      [], new o.ClassMethod(null, [], []), []);
-
-  // Create the partial class to be merged with the actual class.
-  outputCtx.statements.push(ngFactoryDefStatement, directiveDefStatement);
-}
-
-/**
- * A wrapper around `compileComponent` which depends on render2 global analysis data as its input
- * instead of the `R3DirectiveMetadata`.
- *
- * `R3ComponentMetadata` is computed from `CompileDirectiveMetadata` and other statically reflected
- * information.
- */
-export function compileComponentFromRender2(
-    outputCtx: OutputContext, component: CompileDirectiveMetadata, render3Ast: Render3ParseResult,
-    reflector: CompileReflector, bindingParser: BindingParser, directiveTypeBySel: Map<string, any>,
-    pipeTypeByName: Map<string, any>) {
-  const name = identifierName(component.type)!;
-  name || error(`Cannot resolver the name of ${component.type}`);
-
-  const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Component);
-
-  const summary = component.toSummary();
-
-  // Compute the R3ComponentMetadata from the CompileDirectiveMetadata
-  const meta: R3ComponentMetadata = {
-    ...directiveMetadataFromGlobalMetadata(component, outputCtx, reflector),
-    selector: component.selector,
-    template: {nodes: render3Ast.nodes, ngContentSelectors: render3Ast.ngContentSelectors},
-    directives: [],
-    pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
-    viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
-    declarationListEmitMode: DeclarationListEmitMode.Direct,
-    styles: (summary.template && summary.template.styles) || EMPTY_ARRAY,
-    encapsulation:
-        (summary.template && summary.template.encapsulation) || core.ViewEncapsulation.Emulated,
-    interpolation: DEFAULT_INTERPOLATION_CONFIG,
-    animations: null,
-    viewProviders:
-        component.viewProviders.length > 0 ? new o.WrappedNodeExpr(component.viewProviders) : null,
-    relativeContextFilePath: '',
-    i18nUseExternalIds: true,
-  };
-  const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
-  const factoryRes = compileFactoryFunction(
-      {...meta, injectFn: R3.directiveInject, target: R3FactoryTarget.Directive});
-  const ngFactoryDefStatement = new o.ClassStmt(
-      name, null,
-      [new o.ClassField('ɵfac', o.INFERRED_TYPE, [o.StmtModifier.Static], factoryRes.factory)], [],
-      new o.ClassMethod(null, [], []), []);
-  const componentDefStatement = new o.ClassStmt(
-      name, null,
-      [new o.ClassField(definitionField, o.INFERRED_TYPE, [o.StmtModifier.Static], res.expression)],
-      [], new o.ClassMethod(null, [], []), []);
-
-  // Create the partial class to be merged with the actual class.
-  outputCtx.statements.push(ngFactoryDefStatement, componentDefStatement);
-}
-
-/**
- * Compute `R3DirectiveMetadata` given `CompileDirectiveMetadata` and a `CompileReflector`.
- */
-function directiveMetadataFromGlobalMetadata(
-    directive: CompileDirectiveMetadata, outputCtx: OutputContext,
-    reflector: CompileReflector): R3DirectiveMetadata {
-  // The global-analysis based Ivy mode in ngc is no longer utilized/supported.
-  throw new Error('unsupported');
-}
-
-/**
- * Convert `CompileQueryMetadata` into `R3QueryMetadata`.
- */
-function queriesFromGlobalMetadata(
-    queries: CompileQueryMetadata[], outputCtx: OutputContext): R3QueryMetadata[] {
-  return queries.map(query => {
-    let read: o.Expression|null = null;
-    if (query.read && query.read.identifier) {
-      read = outputCtx.importExpr(query.read.identifier.reference);
-    }
-    return {
-      propertyName: query.propertyName,
-      first: query.first,
-      predicate: selectorsFromGlobalMetadata(query.selectors, outputCtx),
-      descendants: query.descendants,
-      read,
-      emitDistinctChangesOnly: !!query.emitDistinctChangesOnly,
-      static: !!query.static
-    };
-  });
-}
-
-/**
- * Convert `CompileTokenMetadata` for query selectors into either an expression for a predicate
- * type, or a list of string predicates.
- */
-function selectorsFromGlobalMetadata(
-    selectors: CompileTokenMetadata[], outputCtx: OutputContext): o.Expression|string[] {
-  if (selectors.length > 1 || (selectors.length == 1 && selectors[0].value)) {
-    const selectorStrings = selectors.map(value => value.value as string);
-    selectorStrings.some(value => !value) &&
-        error('Found a type among the string selectors expected');
-    return outputCtx.constantPool.getConstLiteral(
-        o.literalArr(selectorStrings.map(value => o.literal(value))));
-  }
-
-  if (selectors.length == 1) {
-    const first = selectors[0];
-    if (first.identifier) {
-      return outputCtx.importExpr(first.identifier.reference);
-    }
-  }
-
-  error('Unexpected query form');
 }
 
 function prepareQueryParams(query: R3QueryMetadata, constantPool: ConstantPool): o.Expression[] {
@@ -865,13 +718,6 @@ function metadataAsSummary(meta: R3HostMetadata): CompileDirectiveSummary {
 }
 
 
-function typeMapToExpressionMap(
-    map: Map<string, StaticSymbol>, outputCtx: OutputContext): Map<string, o.Expression> {
-  // Convert each map entry into another entry where the value is an expression importing the type.
-  const entries = Array.from(map).map(
-      ([key, type]): [string, o.Expression] => [key, outputCtx.importExpr(type)]);
-  return new Map(entries);
-}
 
 const HOST_REG_EXP = /^(?:\[([^\]]+)\])|(?:\(([^\)]+)\))$/;
 // Represents the groups in the above regex.
