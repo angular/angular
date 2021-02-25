@@ -15,23 +15,16 @@ import {createTokenForExternalReference, Identifiers} from '../identifiers';
 import {InjectableCompiler} from '../injectable_compiler';
 import {CompileMetadataResolver} from '../metadata_resolver';
 import {HtmlParser} from '../ml_parser/html_parser';
-import {removeWhitespaces} from '../ml_parser/html_whitespaces';
-import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
+import {InterpolationConfig} from '../ml_parser/interpolation_config';
 import {NgModuleCompiler} from '../ng_module_compiler';
 import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
-import {compileNgModuleFromRender2 as compileR3Module} from '../render3/r3_module_compiler';
-import {compilePipeFromRender2 as compileR3Pipe} from '../render3/r3_pipe_compiler';
-import {htmlAstToRender3Ast} from '../render3/r3_template_transform';
-import {compileComponentFromRender2 as compileR3Component, compileDirectiveFromRender2 as compileR3Directive} from '../render3/view/compiler';
-import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
 import {CompiledStylesheet, StyleCompiler} from '../style_compiler';
 import {SummaryResolver} from '../summary_resolver';
-import {BindingParser} from '../template_parser/binding_parser';
 import {TemplateAst} from '../template_parser/template_ast';
 import {TemplateParser} from '../template_parser/template_parser';
-import {error, newArray, OutputContext, syntaxError, ValueVisitor, visitValue} from '../util';
+import {newArray, OutputContext, syntaxError, ValueVisitor, visitValue} from '../util';
 import {TypeCheckCompiler} from '../view_compiler/type_check_compiler';
 import {ViewCompiler, ViewCompileResult} from '../view_compiler/view_compiler';
 
@@ -339,107 +332,6 @@ export class AotCompiler {
     }
 
     return messageBundle;
-  }
-
-  emitAllPartialModules(
-      {ngModuleByPipeOrDirective, files}: NgAnalyzedModules,
-      r3Files: NgAnalyzedFileWithInjectables[]): PartialModule[] {
-    const contextMap = new Map<string, OutputContext>();
-
-    const getContext = (fileName: string): OutputContext => {
-      if (!contextMap.has(fileName)) {
-        contextMap.set(fileName, this._createOutputContext(fileName));
-      }
-      return contextMap.get(fileName)!;
-    };
-
-    files.forEach(
-        file => this._compilePartialModule(
-            file.fileName, ngModuleByPipeOrDirective, file.directives, file.pipes, file.ngModules,
-            file.injectables, getContext(file.fileName)));
-    r3Files.forEach(
-        file => this._compileShallowModules(
-            file.fileName, file.shallowModules, getContext(file.fileName)));
-
-    return Array.from(contextMap.values())
-        .map(context => ({
-               fileName: context.genFilePath,
-               statements: [...context.constantPool.statements, ...context.statements],
-             }));
-  }
-
-  private _compileShallowModules(
-      fileName: string, shallowModules: CompileShallowModuleMetadata[],
-      context: OutputContext): void {
-    shallowModules.forEach(module => compileR3Module(context, module, this._injectableCompiler));
-  }
-
-  private _compilePartialModule(
-      fileName: string, ngModuleByPipeOrDirective: Map<StaticSymbol, CompileNgModuleMetadata>,
-      directives: StaticSymbol[], pipes: StaticSymbol[], ngModules: CompileNgModuleMetadata[],
-      injectables: CompileInjectableMetadata[], context: OutputContext): void {
-    const errors: ParseError[] = [];
-
-    const schemaRegistry = new DomElementSchemaRegistry();
-    const hostBindingParser = new BindingParser(
-        this._templateParser.expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, [],
-        errors);
-
-    // Process all components and directives
-    directives.forEach(directiveType => {
-      const directiveMetadata = this._metadataResolver.getDirectiveMetadata(directiveType);
-      if (directiveMetadata.isComponent) {
-        const module = ngModuleByPipeOrDirective.get(directiveType)!;
-        module ||
-            error(`Cannot determine the module for component '${
-                identifierName(directiveMetadata.type)}'`);
-
-        let htmlAst = directiveMetadata.template !.htmlAst!;
-        const preserveWhitespaces = directiveMetadata!.template !.preserveWhitespaces;
-
-        if (!preserveWhitespaces) {
-          htmlAst = removeWhitespaces(htmlAst);
-        }
-        const render3Ast = htmlAstToRender3Ast(htmlAst.rootNodes, hostBindingParser);
-
-        // Map of StaticType by directive selectors
-        const directiveTypeBySel = new Map<string, any>();
-
-        const directives = module.transitiveModule.directives.map(
-            dir => this._metadataResolver.getDirectiveSummary(dir.reference));
-
-        directives.forEach(directive => {
-          if (directive.selector) {
-            directiveTypeBySel.set(directive.selector, directive.type.reference);
-          }
-        });
-
-        // Map of StaticType by pipe names
-        const pipeTypeByName = new Map<string, any>();
-
-        const pipes = module.transitiveModule.pipes.map(
-            pipe => this._metadataResolver.getPipeSummary(pipe.reference));
-
-        pipes.forEach(pipe => {
-          pipeTypeByName.set(pipe.name, pipe.type.reference);
-        });
-
-        compileR3Component(
-            context, directiveMetadata, render3Ast, this.reflector, hostBindingParser,
-            directiveTypeBySel, pipeTypeByName);
-      } else {
-        compileR3Directive(context, directiveMetadata, this.reflector, hostBindingParser);
-      }
-    });
-
-    pipes.forEach(pipeType => {
-      const pipeMetadata = this._metadataResolver.getPipeMetadata(pipeType);
-      if (pipeMetadata) {
-        compileR3Pipe(context, pipeMetadata, this.reflector);
-      }
-    });
-
-    injectables.forEach(injectable => this._injectableCompiler.compile(injectable, context));
   }
 
   emitAllPartialModules2(files: NgAnalyzedFileWithInjectables[]): PartialModule[] {
