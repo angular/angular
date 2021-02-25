@@ -148,11 +148,11 @@ const getRoutes = (messageBus: MessageBus<Events>) => {
   messageBus.emit('updateRouterTree', [routes]);
 };
 
-const checkForAngular = (messageBus: MessageBus<Events>, attempt = 0): void => {
+const checkForAngular = (messageBus: MessageBus<Events>): void => {
   const ngVersion = getAngularVersion();
   const appIsIvy = appIsAngularIvy();
   if (!ngVersion) {
-    setTimeout(() => checkForAngular(messageBus, attempt + 1), 500);
+    setTimeout(() => checkForAngular(messageBus), 500);
     return;
   }
   if (appIsIvy) {
