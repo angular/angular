@@ -7,6 +7,15 @@
   }
 }
 
+@keyframes darkmode-pulse {
+  0% {
+    box-shadow: 0 0 0 0px rgb(126, 40, 40);
+  }
+  100% {
+    box-shadow: 0 0 0 35px rgba(0, 0, 0, 0);
+  }
+}
+
 :host {
   width: 100%;
   height: 100%;
@@ -17,6 +26,18 @@
   width: 100%;
   height: 100%;
   display: block;
+}
+
+:host-context(.dark-theme) {
+  .devtools-wrapper {
+    background: #242424;
+  }
+
+  .initializing {
+    .loading {
+      animation: darkmode-pulse 1s infinite;
+    }
+  }
 }
 
 .noselect {

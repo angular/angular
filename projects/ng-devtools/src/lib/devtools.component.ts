@@ -18,13 +18,10 @@ import { ThemeService } from './theme-service';
 export class DevToolsComponent implements OnInit, OnDestroy {
   angularExists: boolean | null = null;
   angularVersion: string | boolean | undefined = undefined;
-  angularIsInDevMode: boolean = true;
+  angularIsInDevMode = true;
   ivy: boolean;
 
-  constructor(
-    private _messageBus: MessageBus<Events>,
-    private _themeService: ThemeService // inject to initialize theme watcher
-  ) {}
+  constructor(private _messageBus: MessageBus<Events>, private _themeService: ThemeService) {}
 
   private _interval$ = interval(500).subscribe((attempt) => {
     if (attempt === 10) {
@@ -34,6 +31,8 @@ export class DevToolsComponent implements OnInit, OnDestroy {
   });
 
   ngOnInit(): void {
+    this._themeService.initializeThemeWatcher();
+
     this._messageBus.once('ngAvailability', ({ version, devMode, ivy }) => {
       this.angularExists = !!version;
       this.angularVersion = version;
