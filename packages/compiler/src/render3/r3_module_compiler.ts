@@ -8,7 +8,7 @@
 
 import * as o from '../output/output_ast';
 
-import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget} from './r3_factory';
+import {R3DependencyMetadata, R3FactoryFn} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
 import {jitOnlyGuardedExpression, mapToMapExpression, R3Reference} from './util';
 
@@ -230,19 +230,9 @@ export interface R3InjectorMetadata {
   imports: o.Expression[];
 }
 
-export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
-  const result = compileFactoryFunction({
-    name: meta.name,
-    type: meta.type,
-    internalType: meta.internalType,
-    typeArgumentCount: 0,
-    deps: meta.deps,
-    injectFn: R3.inject,
-    target: R3FactoryTarget.NgModule,
-  });
-  const definitionMap = {
-    factory: result.factory,
-  } as {factory: o.Expression, providers: o.Expression, imports: o.Expression};
+export function compileInjector(
+    meta: R3InjectorMetadata, {factory, statements}: R3FactoryFn): R3InjectorDef {
+  const definitionMap: Record<string, o.Expression> = {factory};
 
   if (meta.providers !== null) {
     definitionMap.providers = meta.providers;
@@ -256,7 +246,7 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
       o.importExpr(R3.defineInjector).callFn([mapToMapExpression(definitionMap)], undefined, true);
   const type =
       new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type.type)]));
-  return {expression, type, statements: result.statements};
+  return {expression, type, statements};
 }
 
 function tupleTypeOf(exp: R3Reference[]): o.Type {
