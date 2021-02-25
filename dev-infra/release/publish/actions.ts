@@ -21,7 +21,7 @@ import {runNpmPublish} from '../versioning/npm-publish';
 import {FatalReleaseActionError, UserAbortedReleaseActionError} from './actions-error';
 import {getCommitMessageForRelease, getReleaseNoteCherryPickCommitMessage} from './commit-message';
 import {changelogPath, packageJsonPath, waitForPullRequestInterval} from './constants';
-import {invokeReleaseBuildCommand, invokeYarnInstallCommand} from './external-commands';
+import {invokeBazelCleanCommand, invokeReleaseBuildCommand, invokeYarnInstallCommand} from './external-commands';
 import {findOwnedForksOfRepoQuery} from './graphql-queries';
 import {getPullRequestState} from './pull-request-state';
 import {getDefaultExtractReleaseNotesPattern, getLocalChangelogFilePath} from './release-notes';
@@ -515,6 +515,7 @@ export abstract class ReleaseAction {
     // created in the `next` branch. The new package would not be part of the patch branch,
     // so we cannot build and publish it.
     await invokeYarnInstallCommand(this.projectDir);
+    await invokeBazelCleanCommand(this.projectDir);
     const builtPackages = await invokeReleaseBuildCommand();
 
     // Verify the packages built are the correct version.
