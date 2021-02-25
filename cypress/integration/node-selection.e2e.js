@@ -44,4 +44,78 @@ describe('node selection', () => {
       cy.get('ng-property-view').last().find('mat-tree-node:contains("Save the world")').its('length').should('eq', 1);
     });
   });
+
+  describe('breadcrumb logic', () => {
+    it('should overflow when breadcrumb list is long enough', () => {
+      cy.get('.tree-wrapper')
+        .find('.tree-node:contains("app-todo[TooltipDirective]")')
+        .last()
+        .click({ force: true })
+        .then(() => {
+          cy.get('ng-breadcrumbs')
+            .find('.breadcrumbs')
+            .then((breadcrumbsContainer) => {
+              const hasOverflowX = () => breadcrumbsContainer[0].scrollWidth > breadcrumbsContainer[0].clientWidth;
+              expect(hasOverflowX()).to.be.true;
+            });
+        });
+    });
+
+    it('should scroll right when right scroll button is clicked', () => {
+      cy.get('.tree-wrapper')
+        .find('.tree-node:contains("app-todo[TooltipDirective]")')
+        .last()
+        .click({ force: true })
+        .then(() => {
+          cy.get('ng-breadcrumbs')
+            .find('.breadcrumbs')
+            .then((breadcrumbsContainer) => {
+              const scrollLeft = () => breadcrumbsContainer[0].scrollLeft;
+              expect(scrollLeft()).to.eql(0);
+
+              cy.get('ng-breadcrumbs')
+                .find('.scroll-button')
+                .last()
+                .click()
+                .wait(150) // wait for scroll animation to end
+                .then(() => {
+                  expect(scrollLeft()).to.eql(100);
+                });
+            });
+        });
+    });
+
+    it('should scroll left when left scroll button is clicked', () => {
+      cy.get('.tree-wrapper')
+        .find('.tree-node:contains("app-todo[TooltipDirective]")')
+        .last()
+        .click({ force: true })
+        .then(() => {
+          cy.get('ng-breadcrumbs')
+            .find('.breadcrumbs')
+            .then((breadcrumbsContainer) => {
+              const scrollLeft = () => breadcrumbsContainer[0].scrollLeft;
+              expect(scrollLeft()).to.eql(0);
+
+              cy.get('ng-breadcrumbs')
+                .find('.scroll-button')
+                .last()
+                .click()
+                .wait(150) // wait for scroll animation to end
+                .then(() => {
+                  expect(scrollLeft()).to.eql(100);
+
+                  cy.get('ng-breadcrumbs')
+                    .find('.scroll-button')
+                    .first()
+                    .click()
+                    .wait(150) // wait for scroll animation to end
+                    .then(() => {
+                      expect(scrollLeft()).to.eql(0);
+                    });
+                });
+            });
+        });
+    });
+  });
 });

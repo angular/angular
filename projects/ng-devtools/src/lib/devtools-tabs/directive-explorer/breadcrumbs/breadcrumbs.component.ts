@@ -33,10 +33,7 @@ export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
   updateScrollButtonVisibility$ = new Subject<void>();
 
   ngOnInit(): void {
-    this.updateScrollButtonVisibility$
-      .asObservable()
-      .pipe(debounceTime(100))
-      .subscribe((_) => this._updateScrollButtonVisibility());
+    this.updateScrollButtonVisibility$.pipe(debounceTime(100)).subscribe(() => this._updateScrollButtonVisibility());
   }
 
   ngAfterViewInit(): void {
@@ -58,27 +55,8 @@ export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   private _updateScrollButtonVisibility(): void {
-    const { clientWidth, scrollWidth } = this.breadcrumbsScrollContent.nativeElement;
-    const hasOverflowX = scrollWidth > clientWidth;
-
-    if (hasOverflowX) {
-      const scrollLeft = this.breadcrumbsScrollContent.nativeElement.scrollLeft;
-
-      if (scrollLeft > 0 && scrollLeft + clientWidth < scrollWidth) {
-        this.showScrollLeftButton = true;
-        this.showScrollRightButton = true;
-      } else if (scrollLeft === 0) {
-        this.showScrollLeftButton = false;
-        this.showScrollRightButton = true;
-      } else if (scrollLeft + clientWidth === scrollWidth) {
-        this.showScrollLeftButton = true;
-        this.showScrollRightButton = false;
-      }
-
-      return;
-    }
-
-    this.showScrollLeftButton = false;
-    this.showScrollRightButton = false;
+    const { clientWidth, scrollWidth, scrollLeft } = this.breadcrumbsScrollContent.nativeElement;
+    this.showScrollLeftButton = scrollLeft > 0;
+    this.showScrollRightButton = scrollLeft + clientWidth < scrollWidth;
   }
 }
