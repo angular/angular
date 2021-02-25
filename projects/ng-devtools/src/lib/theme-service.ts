@@ -13,7 +13,6 @@ export class ThemeService {
   constructor(private _rendererFactory: RendererFactory2) {
     this.renderer = this._rendererFactory.createRenderer(null, null);
     this.toggleDarkMode(this._prefersDarkMode);
-    this._initializeThemeWatcher();
   }
 
   toggleDarkMode(isDark: boolean): void {
@@ -24,7 +23,7 @@ export class ThemeService {
     this.currentTheme.next(addClass);
   }
 
-  private _initializeThemeWatcher(): void {
+  initializeThemeWatcher(): void {
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
       this.toggleDarkMode(this._prefersDarkMode);
     });
