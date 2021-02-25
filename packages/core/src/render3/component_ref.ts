@@ -19,6 +19,7 @@ import {RendererFactory2} from '../render/api';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {VERSION} from '../version';
 import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from '../view/provider';
+import {NgZone} from '../zone/ng_zone';
 import {assertComponentType} from './assert';
 import {createRootComponent, createRootComponentView, createRootContext, LifecycleHooksFeature} from './component';
 import {getComponentDef} from './definition';
@@ -132,6 +133,28 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
   }
 
   create(
+      injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
+      ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<T> {
+    // Should always ensure component is created inside angular zone.
+    if (typeof Zone !== 'undefined') {
+      if (NgZone.isInAngularZone()) {
+        return this._create(injector, projectableNodes, rootSelectorOrNode, ngModule);
+      } else {
+        const ngZone = injector.get(NgZone, null);
+        if (ngZone) {
+          return ngZone.run(() => {
+            return this._create(injector, projectableNodes, rootSelectorOrNode, ngModule);
+          });
+        }
+      }
+    }
+    return this._create(injector, projectableNodes, rootSelectorOrNode, ngModule);
+  }
+
+  /*
+   * @internal create component.
+   */
+  _create(
       injector: Injector, projectableNodes?: any[][]|undefined, rootSelectorOrNode?: any,
       ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<T> {
     ngModule = ngModule || this.ngModule;

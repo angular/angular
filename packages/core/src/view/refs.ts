@@ -19,6 +19,7 @@ import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, InternalViewRef, ViewRef, ViewRefTracker} from '../linker/view_ref';
 import {stringify} from '../util/stringify';
 import {VERSION} from '../version';
+import {NgZone} from '../zone';
 
 import {callNgModuleLifecycle, initNgModule, resolveNgModuleDep} from './ng_module';
 import {asElementData, asProviderData, asTextData, DepFlags, ElementData, NgModuleData, NgModuleDefinition, NodeDef, NodeFlags, Services, TemplateData, ViewContainerData, ViewData, ViewDefinitionFactory, ViewState} from './types';
@@ -81,6 +82,27 @@ class ComponentFactory_ extends ComponentFactory<any> {
    * Creates a new component.
    */
   create(
+      injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
+      ngModule?: NgModuleRef<any>): ComponentRef<any> {
+    if (typeof Zone !== 'undefined') {
+      if (NgZone.isInAngularZone()) {
+        return this._create(injector, projectableNodes, rootSelectorOrNode, ngModule);
+      } else {
+        const ngZone = injector.get(NgZone, null);
+        if (ngZone) {
+          return ngZone.run(() => {
+            return this._create(injector, projectableNodes, rootSelectorOrNode, ngModule);
+          });
+        }
+      }
+    }
+    return this._create(injector, projectableNodes, rootSelectorOrNode, ngModule);
+  }
+
+  /**
+   * @internal
+   */
+  _create(
       injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string|any,
       ngModule?: NgModuleRef<any>): ComponentRef<any> {
     if (!ngModule) {
