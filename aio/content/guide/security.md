@@ -151,10 +151,10 @@ this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` cal
 </div>
 
 If you need to convert user input into a trusted value, use a
-controller method. The following template allows users to enter a YouTube video ID and load the
+component method. The following template allows users to enter a YouTube video ID and load the
 corresponding video in an `<iframe>`. The `<iframe src>` attribute is a resource URL security
 context, because an untrusted source can, for example, smuggle in file downloads that unsuspecting users
-could execute. So call a method on the controller to construct a trusted video URL, which causes
+could execute. So call a method on the component to construct a trusted video URL, which causes
 Angular to allow binding into `<iframe src>`:
 
 
