@@ -1,3 +1,12 @@
+## 11.2.4 (2021-02-25)
+
+
+### Bug Fixes
+
+* **compiler:** ensure JIT compilation of ɵɵngDeclarePipe() works ([#40929](https://github.com/angular/angular/issues/40929)) ([55eb7b5](https://github.com/angular/angular/commit/55eb7b5681ef4ef921dc690a2a1f0621aaf56e4e))
+
+
+
 ## 11.2.3 (2021-02-24)
 
 
