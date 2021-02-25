@@ -1,19 +1,24 @@
 <div class="mat-typography mat-app-background" style="height: 100%;">
-  <ng-container *ngIf="angularExists === true; else errorOrLoad">
-    <ng-container *ngIf="supportedVersion; else notSupported">
-      <div class="devtools-wrapper noselect" [@enterAnimation]>
+  <ng-container *ngIf="angularExists === true; else errorOrLoading">
+    <ng-container *ngIf="angularIsInDevMode; else angularIsInProdMode">
+      <div *ngIf="supportedVersion; else notSupported" class="devtools-wrapper noselect" [@enterAnimation]>
         <ng-devtools-tabs [angularVersion]="angularVersion"></ng-devtools-tabs>
       </div>
+      <ng-template #notSupported>
+        <p class="text-message">
+          Angular Devtools only supports Angular versions 9 and above with
+          <a href="https://angular.io/guide/ivy" target="_blank">ivy</a> enabled.
+        </p>
+      </ng-template>
     </ng-container>
-    <ng-template #notSupported>
+    <ng-template #angularIsInProdMode>
       <p class="text-message">
-        Angular Devtools only supports Angular versions 9 and above with
-        <a href="https://angular.io/guide/ivy" target="_blank">ivy</a> enabled.
+        A production build of Angular was detected. Angular Devtools does not currently support production builds.
       </p>
     </ng-template>
   </ng-container>
-  <ng-template #errorOrLoad>
-    <ng-container *ngIf="angularExists === false; else load">
+  <ng-template #errorOrLoading>
+    <ng-container *ngIf="angularExists === false; else loading">
       <p class="text-message">
         Angular application not detected.
         <span
@@ -23,7 +28,7 @@
         >
       </p>
     </ng-container>
-    <ng-template #load>
+    <ng-template #loading>
       <div class="initializing" *ngIf="angularExists === null">
         <div class="loading"></div>
       </div>
