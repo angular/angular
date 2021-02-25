@@ -293,11 +293,6 @@ export function compileNgModuleFromRender2(
       /* methods */[]));
 }
 
-function accessExportScope(module: o.Expression): o.Expression {
-  const selectorScope = new o.ReadPropExpr(module, 'ɵmod');
-  return new o.ReadPropExpr(selectorScope, 'exported');
-}
-
 function tupleTypeOf(exp: R3Reference[]): o.Type {
   const types = exp.map(ref => o.typeofExpr(ref.type));
   return exp.length > 0 ? o.expressionType(o.literalArr(types)) : o.NONE_TYPE;
