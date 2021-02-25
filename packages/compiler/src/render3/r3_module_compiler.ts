@@ -6,15 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileShallowModuleMetadata, identifierName} from '../compile_metadata';
-import {InjectableCompiler} from '../injectable_compiler';
-import {mapLiteral} from '../output/map_util';
 import * as o from '../output/output_ast';
-import {OutputContext} from '../util';
 
 import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
-import {convertMetaToOutput, jitOnlyGuardedExpression, mapToMapExpression, R3Reference} from './util';
+import {jitOnlyGuardedExpression, mapToMapExpression, R3Reference} from './util';
 
 export interface R3NgModuleDef {
   expression: o.Expression;
@@ -259,38 +255,6 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
   const type =
       new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type.type)]));
   return {expression, type, statements: result.statements};
-}
-
-// TODO(alxhub): integrate this with `compileNgModule`. Currently the two are separate operations.
-export function compileNgModuleFromRender2(
-    ctx: OutputContext, ngModule: CompileShallowModuleMetadata,
-    injectableCompiler: InjectableCompiler): void {
-  const className = identifierName(ngModule.type)!;
-
-  const rawImports = ngModule.rawImports ? [ngModule.rawImports] : [];
-  const rawExports = ngModule.rawExports ? [ngModule.rawExports] : [];
-
-  const injectorDefArg = mapLiteral({
-    'factory':
-        injectableCompiler.factoryFor({type: ngModule.type, symbol: ngModule.type.reference}, ctx),
-    'providers': convertMetaToOutput(ngModule.rawProviders, ctx),
-    'imports': convertMetaToOutput([...rawImports, ...rawExports], ctx),
-  });
-
-  const injectorDef = o.importExpr(R3.defineInjector).callFn([injectorDefArg]);
-
-  ctx.statements.push(new o.ClassStmt(
-      /* name */ className,
-      /* parent */ null,
-      /* fields */[new o.ClassField(
-          /* name */ 'ɵinj',
-          /* type */ o.INFERRED_TYPE,
-          /* modifiers */[o.StmtModifier.Static],
-          /* initializer */ injectorDef,
-          )],
-      /* getters */[],
-      /* constructorMethod */ new o.ClassMethod(null, [], []),
-      /* methods */[]));
 }
 
 function tupleTypeOf(exp: R3Reference[]): o.Type {
