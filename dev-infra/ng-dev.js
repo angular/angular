@@ -5392,6 +5392,25 @@ function invokeYarnInstallCommand(projectDir) {
         }
     });
 }
+/**
+ * Invokes the `yarn bazel clean` command in order to clean the output tree and ensure new artifacts
+ * are created for builds.
+ */
+function invokeBazelCleanCommand(projectDir) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        try {
+            // Note: No progress indicator needed as that is the responsibility of the command.
+            // TODO: Consider using an Ora spinner instead to ensure minimal console output.
+            yield spawnWithDebugOutput('yarn', ['bazel', 'clean'], { cwd: projectDir });
+            info(green('  ✓   Cleaned bazel output tree.'));
+        }
+        catch (e) {
+            error(e);
+            error(red('  ✘   An error occurred while cleaning the bazel output tree.'));
+            throw new FatalReleaseActionError();
+        }
+    });
+}
 
 /**
  * @license
@@ -5931,6 +5950,7 @@ class ReleaseAction {
             // created in the `next` branch. The new package would not be part of the patch branch,
             // so we cannot build and publish it.
             yield invokeYarnInstallCommand(this.projectDir);
+            yield invokeBazelCleanCommand(this.projectDir);
             const builtPackages = yield invokeReleaseBuildCommand();
             // Verify the packages built are the correct version.
             yield this._verifyPackageVersions(newVersion, builtPackages);
