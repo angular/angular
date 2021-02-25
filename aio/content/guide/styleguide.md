@@ -3895,35 +3895,6 @@ Useful tools and tips for Angular.
 
 <a href="#toc">Back to top</a>
 
-{@a A-01}
-
-### Codelyzer
-
-#### Style A-01
-
-
-<div class="s-rule do">
-
-
-
-**Do** use [codelyzer](https://www.npmjs.com/package/codelyzer) to follow this guide.
-
-
-</div>
-
-
-
-<div class="s-rule consider">
-
-
-
-**Consider** adjusting the rules in codelyzer to suit your needs.
-
-
-</div>
-
-<a href="#toc">Back to top</a>
-
 {@a A-02}
 
 ### File templates and snippets
