@@ -154,6 +154,85 @@ runInEachFileSystem(() => {
       expect(loadPackage('local-package', _('/dist')).__processed_by_ivy_ngcc__).toBeUndefined();
     });
 
+    it('should report an error, if one of the format-paths is missing or empty', () => {
+      loadTestFiles([
+        // A package with a format-path (main) that points to a missing file.
+        {
+          name: _(`/dist/pkg-with-missing-main/package.json`),
+          contents: `
+            {
+              "name": "pkg-with-missing-main",
+              "typings": "./index.d.ts",
+              "es2015": "./index-es2015.js",
+              "fesm5": "./index-es5.js",
+              "main": "./index-missing.js"
+            }
+          `,
+        },
+        {
+          name: _('/dist/pkg-with-missing-main/index.d.ts'),
+          contents: 'export type DummyData = boolean;'
+        },
+        {
+          name: _('/dist/pkg-with-missing-main/index-es2015.js'),
+          contents: 'var DUMMY_DATA = true;'
+        },
+        {name: _('/dist/pkg-with-missing-main/index-es5.js'), contents: 'var DUMMY_DATA = true;'},
+        {name: _('/dist/pkg-with-missing-main/index.metadata.json'), contents: 'DUMMY DATA'},
+
+        // A package with a format-path (main) that points to an empty file.
+        {
+          name: _(`/dist/pkg-with-empty-main/package.json`),
+          contents: `
+            {
+              "name": "pkg-with-empty-main",
+              "typings": "./index.d.ts",
+              "es2015": "./index-es2015.js",
+              "fesm5": "./index-es5.js",
+              "main": "./index-empty.js"
+            }
+          `,
+        },
+        {
+          name: _('/dist/pkg-with-empty-main/index.d.ts'),
+          contents: 'export type DummyData = boolean;'
+        },
+        {name: _('/dist/pkg-with-empty-main/index-empty.js'), contents: ''},
+        {name: _('/dist/pkg-with-empty-main/index-es2015.js'), contents: 'var DUMMY_DATA = true;'},
+        {name: _('/dist/pkg-with-empty-main/index-es5.js'), contents: 'var DUMMY_DATA = true;'},
+        {name: _('/dist/pkg-with-empty-main/index.metadata.json'), contents: 'DUMMY DATA'},
+      ]);
+
+      const logger = new MockLogger();
+      mainNgcc({
+        basePath: '/dist',
+        propertiesToConsider: ['es2015', 'main', 'fesm5'],
+        logger,
+      });
+
+      expect(loadPackage('pkg-with-missing-main', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+        es2015: jasmine.any(String),
+        fesm5: jasmine.any(String),
+        typings: jasmine.any(String),
+      });
+      expect(loadPackage('pkg-with-empty-main', _('/dist')).__processed_by_ivy_ngcc__).toEqual({
+        es2015: jasmine.any(String),
+        fesm5: jasmine.any(String),
+        typings: jasmine.any(String),
+      });
+
+      expect(logger.logs.error).toEqual([
+        [
+          'Failed to compile entry-point pkg-with-missing-main (`main` as unknown format) due to ' +
+              'property `main` pointing to a missing or empty file: ./index-missing.js',
+        ],
+        [
+          'Failed to compile entry-point pkg-with-empty-main (`main` as unknown format) due to ' +
+              'property `main` pointing to a missing or empty file: ./index-empty.js',
+        ],
+      ]);
+    });
+
     it('should generate correct metadata for decorated getter/setter properties', () => {
       setupAngularCoreEsm5();
       compileIntoFlatEs5Package('test-package', {
@@ -573,7 +652,7 @@ runInEachFileSystem(() => {
            fail('should have thrown');
          } catch (e) {
            expect(e.message).toContain(
-               'Failed to compile entry-point test-package (esm2015 as esm2015) due to compilation errors:');
+               'Failed to compile entry-point test-package (`esm2015` as esm2015) due to compilation errors:');
            expect(e.message).toContain('NG1010');
            expect(e.message).toContain('selector must be a string');
          }
@@ -1552,7 +1631,7 @@ runInEachFileSystem(() => {
              fail('should have thrown');
            } catch (e) {
              expect(e.message).toContain(
-                 'Failed to compile entry-point fatal-error (es2015 as esm2015) due to compilation errors:');
+                 'Failed to compile entry-point fatal-error (`es2015` as esm2015) due to compilation errors:');
              expect(e.message).toContain('NG2001');
              expect(e.message).toContain('component is missing a template');
            }
@@ -1630,7 +1709,7 @@ runInEachFileSystem(() => {
            expect(logger.logs.error.length).toEqual(1);
            const message = logger.logs.error[0][0];
            expect(message).toContain(
-               'Failed to compile entry-point fatal-error (es2015 as esm2015) due to compilation errors:');
+               'Failed to compile entry-point fatal-error (`es2015` as esm2015) due to compilation errors:');
            expect(message).toContain('NG2001');
            expect(message).toContain('component is missing a template');
 
