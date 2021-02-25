@@ -206,7 +206,7 @@ runInEachFileSystem(() => {
       const logger = new MockLogger();
       mainNgcc({
         basePath: '/dist',
-        propertiesToConsider: ['es2015', 'fesm5', 'main'],
+        propertiesToConsider: ['es2015', 'main', 'fesm5'],
         logger,
       });
 
@@ -223,12 +223,12 @@ runInEachFileSystem(() => {
 
       expect(logger.logs.error).toEqual([
         [
-          'Failed to compile entry-point pkg-with-missing-main (main as unknown format) due to ' +
-              'property \'main\' pointing to a missing or empty file (./index-missing.js).',
+          'Failed to compile entry-point pkg-with-missing-main (`main` as unknown format) due to ' +
+              'property `main` pointing to a missing or empty file: ./index-missing.js',
         ],
         [
-          'Failed to compile entry-point pkg-with-empty-main (main as unknown format) due to ' +
-              'property \'main\' pointing to a missing or empty file (./index-empty.js).',
+          'Failed to compile entry-point pkg-with-empty-main (`main` as unknown format) due to ' +
+              'property `main` pointing to a missing or empty file: ./index-empty.js',
         ],
       ]);
     });
@@ -652,7 +652,7 @@ runInEachFileSystem(() => {
            fail('should have thrown');
          } catch (e) {
            expect(e.message).toContain(
-               'Failed to compile entry-point test-package (esm2015 as esm2015) due to compilation errors:');
+               'Failed to compile entry-point test-package (`esm2015` as esm2015) due to compilation errors:');
            expect(e.message).toContain('NG1010');
            expect(e.message).toContain('selector must be a string');
          }
@@ -1631,7 +1631,7 @@ runInEachFileSystem(() => {
              fail('should have thrown');
            } catch (e) {
              expect(e.message).toContain(
-                 'Failed to compile entry-point fatal-error (es2015 as esm2015) due to compilation errors:');
+                 'Failed to compile entry-point fatal-error (`es2015` as esm2015) due to compilation errors:');
              expect(e.message).toContain('NG2001');
              expect(e.message).toContain('component is missing a template');
            }
@@ -1709,7 +1709,7 @@ runInEachFileSystem(() => {
            expect(logger.logs.error.length).toEqual(1);
            const message = logger.logs.error[0][0];
            expect(message).toContain(
-               'Failed to compile entry-point fatal-error (es2015 as esm2015) due to compilation errors:');
+               'Failed to compile entry-point fatal-error (`es2015` as esm2015) due to compilation errors:');
            expect(message).toContain('NG2001');
            expect(message).toContain('component is missing a template');
 

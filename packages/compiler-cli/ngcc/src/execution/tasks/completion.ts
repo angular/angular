@@ -82,7 +82,7 @@ export function createLogErrorHandler(
 }
 
 function createErrorMessage(fs: ReadonlyFileSystem, task: Task, message: string|null): string {
-  const jsFormat = `${task.formatProperty} as ${
+  const jsFormat = `\`${task.formatProperty}\` as ${
       getEntryPointFormat(fs, task.entryPoint, task.formatProperty) ?? 'unknown format'}`;
   const format = task.typingsOnly ? `typings only using ${jsFormat}` : jsFormat;
   message = message !== null ? ` due to ${message}` : '';

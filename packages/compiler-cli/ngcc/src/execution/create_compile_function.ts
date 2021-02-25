@@ -51,7 +51,7 @@ export function getCreateCompileFn(
       if (!formatPath || !format) {
         onTaskCompleted(
             task, TaskProcessingOutcome.Failed,
-            `property '${formatProperty}' pointing to a missing or empty file (${formatPath}).`);
+            `property \`${formatProperty}\` pointing to a missing or empty file: ${formatPath}`);
         return;
       }
 
