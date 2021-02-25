@@ -6,7 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor, FocusOrigin, isFakeMousedownFromScreenReader} from '@angular/cdk/a11y';
+import {
+  FocusMonitor,
+  FocusOrigin,
+  isFakeMousedownFromScreenReader,
+  isFakeTouchstartFromScreenReader,
+} from '@angular/cdk/a11y';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
 import {
@@ -99,7 +104,11 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
    * Handles touch start events on the trigger.
    * Needs to be an arrow function so we can easily use addEventListener and removeEventListener.
    */
-  private _handleTouchStart = () => this._openedBy = 'touch';
+  private _handleTouchStart = (event: TouchEvent) => {
+    if (!isFakeTouchstartFromScreenReader(event)) {
+      this._openedBy = 'touch';
+    }
+  }
 
   // Tracking input type is necessary so it's possible to only auto-focus
   // the first item of the list when the menu is opened via the keyboard

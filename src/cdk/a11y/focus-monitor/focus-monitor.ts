@@ -23,7 +23,10 @@ import {
 import {Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {coerceElement} from '@angular/cdk/coercion';
 import {DOCUMENT} from '@angular/common';
-import {isFakeMousedownFromScreenReader} from '../fake-mousedown';
+import {
+  isFakeMousedownFromScreenReader,
+  isFakeTouchstartFromScreenReader,
+} from '../fake-event-detection';
 
 
 // This is the value used by AngularJS Material. Through trial and error (on iPhone 6S) they found
@@ -156,15 +159,21 @@ export class FocusMonitor implements OnDestroy {
    * Needs to be an arrow function in order to preserve the context when it gets bound.
    */
   private _documentTouchstartListener = (event: TouchEvent) => {
-    // When the touchstart event fires the focus event is not yet in the event queue. This means
-    // we can't rely on the trick used above (setting timeout of 1ms). Instead we wait 650ms to
-    // see if a focus happens.
-    if (this._touchTimeoutId != null) {
-      clearTimeout(this._touchTimeoutId);
-    }
+    // Some screen readers will fire a fake `touchstart` event if an element is activated using
+    // the keyboard while on a device with a touchsreen. Consider such events as keyboard focus.
+    if (!isFakeTouchstartFromScreenReader(event)) {
+      // When the touchstart event fires the focus event is not yet in the event queue. This means
+      // we can't rely on the trick used above (setting timeout of 1ms). Instead we wait 650ms to
+      // see if a focus happens.
+      if (this._touchTimeoutId != null) {
+        clearTimeout(this._touchTimeoutId);
+      }
 
-    this._lastTouchTarget = getTarget(event);
-    this._touchTimeoutId = setTimeout(() => this._lastTouchTarget = null, TOUCH_BUFFER_MS);
+      this._lastTouchTarget = getTarget(event);
+      this._touchTimeoutId = setTimeout(() => this._lastTouchTarget = null, TOUCH_BUFFER_MS);
+    } else if (!this._lastTouchTarget) {
+      this._setOriginForCurrentEventQueue('keyboard');
+    }
   }
 
   /**

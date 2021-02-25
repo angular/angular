@@ -193,6 +193,8 @@ export declare class InteractivityChecker {
 
 export declare function isFakeMousedownFromScreenReader(event: MouseEvent): boolean;
 
+export declare function isFakeTouchstartFromScreenReader(event: TouchEvent): boolean;
+
 export declare class IsFocusableConfig {
     ignoreVisibility: boolean;
 }

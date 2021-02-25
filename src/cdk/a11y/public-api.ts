@@ -18,7 +18,7 @@ export * from './interactivity-checker/interactivity-checker';
 export * from './live-announcer/live-announcer';
 export * from './live-announcer/live-announcer-tokens';
 export * from './focus-monitor/focus-monitor';
-export * from './fake-mousedown';
+export * from './fake-event-detection';
 export * from './a11y-module';
 export {
   HighContrastModeDetector,

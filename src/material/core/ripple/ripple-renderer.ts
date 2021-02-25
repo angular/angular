@@ -7,7 +7,7 @@
  */
 import {ElementRef, NgZone} from '@angular/core';
 import {Platform, normalizePassiveListenerOptions} from '@angular/cdk/platform';
-import {isFakeMousedownFromScreenReader} from '@angular/cdk/a11y';
+import {isFakeMousedownFromScreenReader, isFakeTouchstartFromScreenReader} from '@angular/cdk/a11y';
 import {coerceElement} from '@angular/cdk/coercion';
 import {RippleRef, RippleState, RippleConfig} from './ripple-ref';
 
@@ -259,7 +259,7 @@ export class RippleRenderer implements EventListenerObject {
 
   /** Function being called whenever the trigger is being pressed using touch. */
   private _onTouchStart(event: TouchEvent) {
-    if (!this._target.rippleDisabled) {
+    if (!this._target.rippleDisabled && !isFakeTouchstartFromScreenReader(event)) {
       // Some browsers fire mouse events after a `touchstart` event. Those synthetic mouse
       // events will launch a second ripple if we don't ignore mouse events for a specific
       // time after a touchstart event.
