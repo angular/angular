@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
+import {compileFactoryFunction, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, Identifiers as R3, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3FactoryTarget, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
@@ -449,21 +449,33 @@ export class NgModuleDecoratorHandler implements
   }
 
   compileFull(
-      node: ClassDeclaration, analysis: Readonly<NgModuleAnalysis>,
+      node: ClassDeclaration, {inj, mod, metadataStmt, declarations}: Readonly<NgModuleAnalysis>,
       resolution: Readonly<NgModuleResolution>): CompileResult[] {
+    const factoryFn = compileFactoryFunction({
+      name: inj.name,
+      type: inj.type,
+      internalType: inj.internalType,
+      typeArgumentCount: 0,
+      deps: inj.deps,
+      injectFn: R3.inject,
+      target: R3FactoryTarget.NgModule,
+    });
+
     //  Merge the injector imports (which are 'exports' that were later found to be NgModules)
     //  computed during resolution with the ones from analysis.
-    const ngInjectorDef = compileInjector({
-      ...analysis.inj,
-      imports: [...analysis.inj.imports, ...resolution.injectorImports],
-    });
-    const ngModuleDef = compileNgModule(analysis.mod);
+    const ngInjectorDef = compileInjector(
+        {
+          ...inj,
+          imports: [...inj.imports, ...resolution.injectorImports],
+        },
+        factoryFn);
+    const ngModuleDef = compileNgModule(mod);
     const ngModuleStatements = ngModuleDef.additionalStatements;
-    if (analysis.metadataStmt !== null) {
-      ngModuleStatements.push(analysis.metadataStmt);
+    if (metadataStmt !== null) {
+      ngModuleStatements.push(metadataStmt);
     }
     const context = getSourceFile(node);
-    for (const decl of analysis.declarations) {
+    for (const decl of declarations) {
       const remoteScope = this.scopeRegistry.getRemoteScope(decl.node);
       if (remoteScope !== null) {
         const directives = remoteScope.directives.map(
