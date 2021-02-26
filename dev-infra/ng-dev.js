@@ -5918,12 +5918,12 @@ class ReleaseAction {
      * Creates a Github release for the specified version in the configured project.
      * The release is created by tagging the specified commit SHA.
      */
-    _createGithubReleaseForVersion(newVersion, versionBumpCommitSha) {
+    _createGithubReleaseForVersion(newVersion, versionBumpCommitSha, prerelease) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const tagName = newVersion.format();
             yield this.git.github.git.createRef(Object.assign(Object.assign({}, this.git.remoteParams), { ref: `refs/tags/${tagName}`, sha: versionBumpCommitSha }));
             info(green(`  ✓   Tagged v${newVersion} release upstream.`));
-            yield this.git.github.repos.createRelease(Object.assign(Object.assign({}, this.git.remoteParams), { name: `v${newVersion}`, tag_name: tagName }));
+            yield this.git.github.repos.createRelease(Object.assign(Object.assign({}, this.git.remoteParams), { name: `v${newVersion}`, tag_name: tagName, prerelease }));
             info(green(`  ✓   Created v${newVersion} release in Github.`));
         });
     }
@@ -5955,7 +5955,7 @@ class ReleaseAction {
             // Verify the packages built are the correct version.
             yield this._verifyPackageVersions(newVersion, builtPackages);
             // Create a Github release for the new version.
-            yield this._createGithubReleaseForVersion(newVersion, versionBumpCommitSha);
+            yield this._createGithubReleaseForVersion(newVersion, versionBumpCommitSha, npmDistTag === 'next');
             // Walk through all built packages and publish them to NPM.
             for (const builtPackage of builtPackages) {
                 yield this._publishBuiltPackageToNpm(builtPackage, npmDistTag);

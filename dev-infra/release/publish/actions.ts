@@ -472,7 +472,7 @@ export abstract class ReleaseAction {
    * The release is created by tagging the specified commit SHA.
    */
   private async _createGithubReleaseForVersion(
-      newVersion: semver.SemVer, versionBumpCommitSha: string) {
+      newVersion: semver.SemVer, versionBumpCommitSha: string, prerelease: boolean) {
     const tagName = newVersion.format();
     await this.git.github.git.createRef({
       ...this.git.remoteParams,
@@ -485,6 +485,8 @@ export abstract class ReleaseAction {
       ...this.git.remoteParams,
       name: `v${newVersion}`,
       tag_name: tagName,
+      prerelease,
+
     });
     info(green(`  ✓   Created v${newVersion} release in Github.`));
   }
@@ -522,7 +524,8 @@ export abstract class ReleaseAction {
     await this._verifyPackageVersions(newVersion, builtPackages);
 
     // Create a Github release for the new version.
-    await this._createGithubReleaseForVersion(newVersion, versionBumpCommitSha);
+    await this._createGithubReleaseForVersion(
+        newVersion, versionBumpCommitSha, npmDistTag === 'next');
 
     // Walk through all built packages and publish them to NPM.
     for (const builtPackage of builtPackages) {
