@@ -40,7 +40,7 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
   messageBus.on('setSelectedComponent', selectedComponentCallback);
 
   messageBus.on('getNestedProperties', getNestedPropertiesCallback(messageBus));
-  messageBus.on('getRouter', getRouterCallback(messageBus));
+  messageBus.on('getRoutes', getRoutesCallback(messageBus));
 
   messageBus.on('updateState', updateState);
 
@@ -94,7 +94,7 @@ const getLatestComponentExplorerViewCallback = (messageBus: MessageBus<Events>) 
 };
 
 const checkForAngularCallback = (messageBus: MessageBus<Events>) => () => checkForAngular(messageBus);
-const getRouterCallback = (messageBus: MessageBus<Events>) => () => getRouter(messageBus);
+const getRoutesCallback = (messageBus: MessageBus<Events>) => () => getRoutes(messageBus);
 
 const startProfilingCallback = (messageBus: MessageBus<Events>) => () =>
   startProfiling((frame: ProfilerFrame) => {
@@ -139,7 +139,7 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
 //
 // Subscribe Helpers
 //
-const getRouter = (messageBus: MessageBus<Events>) => {
+const getRoutes = (messageBus: MessageBus<Events>) => {
   const node = queryDirectiveForest([0], initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest());
   let routes: Route[] = [];
   if (node?.component?.instance.router) {
