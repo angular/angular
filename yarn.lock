@@ -13,7 +13,7 @@
     typescript "4.1.5"
     webpack-sources "2.2.0"
 
-"@angular-devkit/core@12.0.0-next.0", "@angular-devkit/core@^12.0.0-next.0":
+"@angular-devkit/core@12.0.0-next.0":
   version "12.0.0-next.0"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-12.0.0-next.0.tgz#6ddf7f5e02df9223758b7ce65807bc84e535a55c"
   integrity sha512-R8CnuYD7xPNrD7ipv3tnbxKoO9dYQ0pJFR9kn9fqD5c/+UyMAmh6/oqxSbvj7Jl/riV6SzsQd+Me9rojm74YVg==
@@ -24,12 +24,32 @@
     rxjs "6.6.3"
     source-map "0.7.3"
 
-"@angular-devkit/schematics@12.0.0-next.0", "@angular-devkit/schematics@^12.0.0-next.0":
+"@angular-devkit/core@12.0.0-next.2", "@angular-devkit/core@^12.0.0-next.0":
+  version "12.0.0-next.2"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-12.0.0-next.2.tgz#35b3f05e9bf058e38ff8c1336939ce721fa0b22d"
+  integrity sha512-VEsLNqjNSRvbWT97kLqLzCys1Fu15tKiUNVzCiPElnCDMRuNRg2ybhXUgNa1IO00oaTajKpjolGQlkG56P3kHg==
+  dependencies:
+    ajv "6.12.6"
+    fast-json-stable-stringify "2.1.0"
+    magic-string "0.25.7"
+    rxjs "6.6.3"
+    source-map "0.7.3"
+
+"@angular-devkit/schematics@12.0.0-next.0":
   version "12.0.0-next.0"
   resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-12.0.0-next.0.tgz#99c7d1a68b6f4ac25df872d21d12cde334ac4847"
   integrity sha512-wFj6oD+/a+PXv3LabaTrqQeUeKQ2uBF40W/NCLUH+lHAyt91RRGrNRLgoI35q8TV3ZSGKmgmX8BQ7mNGF8n6XA==
   dependencies:
     "@angular-devkit/core" "12.0.0-next.0"
+    ora "5.3.0"
+    rxjs "6.6.3"
+
+"@angular-devkit/schematics@^12.0.0-next.0":
+  version "12.0.0-next.2"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/schematics/-/schematics-12.0.0-next.2.tgz#9e9ecdb36efe24c87840e3437b20b20607d5a2d7"
+  integrity sha512-fnCPvVK/yge6ppViQ50+q50VS5hv4tSUO9egs231swGJM56IYN8szro95g/GIjQklqyhCG+ldhtjSLNN0TF2dQ==
+  dependencies:
+    "@angular-devkit/core" "12.0.0-next.2"
     ora "5.3.0"
     rxjs "6.6.3"
 
@@ -9770,7 +9790,7 @@ optionator@^0.8.1:
     type-check "~0.3.2"
     wordwrap "~1.0.0"
 
-ora@5.3.0:
+ora@5.3.0, ora@^5.0.0, ora@^5.1.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/ora/-/ora-5.3.0.tgz#fb832899d3a1372fe71c8b2c534bbfe74961bb6f"
   integrity sha512-zAKMgGXUim0Jyd6CXK9lraBnD3H5yPGBPPOkC23a2BG6hsm4Zu6OQSjQuEtV0BHDf4aKHcUFvJiGRrFuW3MG8g==
@@ -9794,20 +9814,6 @@ ora@^3.4.0:
     cli-spinners "^2.0.0"
     log-symbols "^2.2.0"
     strip-ansi "^5.2.0"
-    wcwidth "^1.0.1"
-
-ora@^5.0.0, ora@^5.1.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/ora/-/ora-5.2.0.tgz#de10bfd2d15514384af45f3fa9d9b1aaf344fda1"
-  integrity sha512-+wG2v8TUU8EgzPHun1k/n45pXquQ9fHnbXVetl9rRgO6kjZszGGbraF3XPTIdgeA+s1lbRjSEftAnyT0w8ZMvQ==
-  dependencies:
-    bl "^4.0.3"
-    chalk "^4.1.0"
-    cli-cursor "^3.1.0"
-    cli-spinners "^2.5.0"
-    is-interactive "^1.0.0"
-    log-symbols "^4.0.0"
-    strip-ansi "^6.0.0"
     wcwidth "^1.0.1"
 
 ordered-read-streams@^1.0.0:
