@@ -1,4 +1,6 @@
-<span class="mdc-button__ripple"></span>
+<span
+    [class.mdc-button__ripple]="!_isFab"
+    [class.mdc-fab__ripple]="_isFab"></span>
 
 <ng-content select=".material-icons:not([iconPositionEnd]), mat-icon:not([iconPositionEnd])">
 </ng-content>

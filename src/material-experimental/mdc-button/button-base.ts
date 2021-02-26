@@ -101,6 +101,9 @@ export class MatButtonBase extends _MatButtonBaseMixin implements CanDisable, Ca
   /** Whether the ripple is centered on the button. */
   _isRippleCentered = false;
 
+  /** Whether this button is a FAB. Used to apply the correct class on the ripple. */
+  _isFab = false;
+
   /** Reference to the MatRipple instance of the button. */
   @ViewChild(MatRipple) ripple: MatRipple;
 

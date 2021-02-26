@@ -63,6 +63,8 @@ export class MatFabButton extends MatButtonBase {
   // The FAB by default has its color set to accent.
   color = 'accent' as ThemePalette;
 
+  _isFab = true;
+
   private _extended: boolean;
   get extended(): boolean { return this._extended; }
   set extended(value: boolean) { this._extended = coerceBooleanProperty(value); }
@@ -94,6 +96,8 @@ export class MatFabButton extends MatButtonBase {
 export class MatMiniFabButton extends MatButtonBase {
   // The FAB by default has its color set to accent.
   color = 'accent' as ThemePalette;
+
+  _isFab = true;
 
   constructor(
     elementRef: ElementRef, platform: Platform, ngZone: NgZone,
