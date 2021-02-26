@@ -94,7 +94,7 @@ vulnerability. For example, one could execute JavaScript in a following way:
 
 <code-example path="security/src/app/inner-html-binding.component.ts" header="src/app/inner-html-binding.component.ts (class)" region="class"></code-example>
 
-Angular recognizes the value as unsafe and automatically sanitizes it, which removes the `onerror` attribute but keeps safe content such as the `<b>` element.
+Angular recognizes the value as unsafe and automatically sanitizes it, which removes the `script` element but keeps safe content such as the `<b>` element.
 
 <div class="lightbox">
   <img src='generated/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'>
