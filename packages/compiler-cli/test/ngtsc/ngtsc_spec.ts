@@ -393,6 +393,31 @@ runInEachFileSystem(os => {
     // that start with `C:`.
     if (os !== 'Windows' || platform() === 'win32') {
       describe('when closure annotations are requested', () => {
+        it('should add @pureOrBreakMyCode to getInheritedFactory calls', () => {
+          env.tsconfig({
+            'annotateForClosureCompiler': true,
+          });
+          env.write(`test.ts`, `
+            import {Directive} from '@angular/core';
+    
+            @Directive({
+              selector: '[base]',
+            })
+            class Base {}
+    
+            @Directive({
+              selector: '[test]',
+            })
+            class Dir extends Base {
+            }
+        `);
+
+          env.driveMain();
+
+          const jsContents = env.getContents('test.js');
+          expect(jsContents).toContain('/** @pureOrBreakMyCode */ i0.ɵɵgetInheritedFactory(Dir)');
+        });
+
         it('should add @nocollapse to static fields', () => {
           env.tsconfig({
             'annotateForClosureCompiler': true,

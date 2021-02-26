@@ -23,7 +23,7 @@ import {generate} from './helpers';
 
 describe('FileLinker', () => {
   let factory: TypeScriptAstFactory;
-  beforeEach(() => factory = new TypeScriptAstFactory());
+  beforeEach(() => factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false));
 
   describe('isPartialDeclaration()', () => {
     it('should return true if the callee is recognized', () => {
@@ -154,7 +154,8 @@ describe('FileLinker', () => {
     const fs = new MockFileSystemNative();
     const logger = new MockLogger();
     const linkerEnvironment = LinkerEnvironment.create<ts.Statement, ts.Expression>(
-        fs, logger, new TypeScriptAstHost(), new TypeScriptAstFactory(), DEFAULT_LINKER_OPTIONS);
+        fs, logger, new TypeScriptAstHost(),
+        new TypeScriptAstFactory(/* annotateForClosureCompiler */ false), DEFAULT_LINKER_OPTIONS);
     const fileLinker = new FileLinker<MockConstantScopeRef, ts.Statement, ts.Expression>(
         linkerEnvironment, fs.resolve('/test.js'), '// test code');
     return {host: linkerEnvironment.host, fileLinker};

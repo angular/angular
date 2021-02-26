@@ -12,7 +12,7 @@ import {TypeScriptAstFactory} from '../src/typescript_ast_factory';
 
 describe('TypeScriptAstFactory', () => {
   let factory: TypeScriptAstFactory;
-  beforeEach(() => factory = new TypeScriptAstFactory());
+  beforeEach(() => factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false));
 
   describe('attachComments()', () => {
     it('should add the comments to the given statement', () => {
@@ -76,6 +76,14 @@ describe('TypeScriptAstFactory', () => {
       const {items: [callee, arg1, arg2], generate} = setupExpressions(`foo`, `42`, `"moo"`);
       const call = factory.createCallExpression(callee, [arg1, arg2], true);
       expect(generate(call)).toEqual('/*@__PURE__*/ foo(42, "moo")');
+    });
+
+    it('should create a call marked with a closure-style pure comment if `pure` is true', () => {
+      factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ true);
+
+      const {items: [callee, arg1, arg2], generate} = setupExpressions(`foo`, `42`, `"moo"`);
+      const call = factory.createCallExpression(callee, [arg1, arg2], true);
+      expect(generate(call)).toEqual('/** @pureOrBreakMyCode */ foo(42, "moo")');
     });
   });
 

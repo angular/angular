@@ -9,6 +9,21 @@ import * as ts from 'typescript';
 
 import {AstFactory, BinaryOperator, LeadingComment, ObjectLiteralProperty, SourceMapRange, TemplateLiteral, UnaryOperator, VariableDeclarationType} from './api/ast_factory';
 
+/**
+ * Different optimizers use different annotations on a function or method call to indicate its pure
+ * status.
+ */
+enum PureAnnotation {
+  /**
+   * Closure's annotation for purity is `@pureOrBreakMyCode`, but this needs to be in a semantic
+   * (jsdoc) enabled comment. Thus, the actual comment text for Closure must include the `*` that
+   * turns a `/*` comment into a `/**` comment, as well as surrounding whitespace.
+   */
+  CLOSURE = '* @pureOrBreakMyCode ',
+
+  TERSER = '@__PURE__',
+}
+
 const UNARY_OPERATORS: Record<UnaryOperator, ts.PrefixUnaryOperator> = {
   '+': ts.SyntaxKind.PlusToken,
   '-': ts.SyntaxKind.MinusToken,
@@ -46,6 +61,8 @@ const VAR_TYPES: Record<VariableDeclarationType, ts.NodeFlags> = {
 export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Expression> {
   private externalSourceFiles = new Map<string, ts.SourceMapSource>();
 
+  constructor(private annotateForClosureCompiler: boolean) {}
+
   attachComments = attachComments;
 
   createArrayLiteral = ts.createArrayLiteral;
@@ -68,7 +85,9 @@ export class TypeScriptAstFactory implements AstFactory<ts.Statement, ts.Express
     const call = ts.createCall(callee, undefined, args);
     if (pure) {
       ts.addSyntheticLeadingComment(
-          call, ts.SyntaxKind.MultiLineCommentTrivia, '@__PURE__', /* trailing newline */ false);
+          call, ts.SyntaxKind.MultiLineCommentTrivia,
+          this.annotateForClosureCompiler ? PureAnnotation.CLOSURE : PureAnnotation.TERSER,
+          /* trailing newline */ false);
     }
     return call;
   }
