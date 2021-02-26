@@ -217,21 +217,18 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|nul
 export interface R3InjectorDef {
   expression: o.Expression;
   type: o.Type;
-  statements: o.Statement[];
 }
 
 export interface R3InjectorMetadata {
   name: string;
   type: R3Reference;
   internalType: o.Expression;
-  deps: R3DependencyMetadata[]|null;
   providers: o.Expression|null;
   imports: o.Expression[];
 }
 
-export function compileInjector(
-    meta: R3InjectorMetadata, {factory, statements}: R3FactoryFn): R3InjectorDef {
-  const definitionMap: Record<string, o.Expression> = {factory};
+export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
+  const definitionMap: Record<string, o.Expression> = {};
 
   if (meta.providers !== null) {
     definitionMap.providers = meta.providers;
@@ -244,7 +241,7 @@ export function compileInjector(
   const expression = o.importExpr(R3.defineInjector).callFn([mapToMapExpression(definitionMap)]);
   const type =
       new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type.type)]));
-  return {expression, type, statements};
+  return {expression, type};
 }
 
 function tupleTypeOf(exp: R3Reference[]): o.Type {

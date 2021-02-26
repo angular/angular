@@ -138,8 +138,8 @@ describe('InjectorDef-based createInjector()', () => {
       deepModuleCreated = true;
     }
 
+    static ɵfac = () => new DeepModule(ɵɵinject(EagerService));
     static ɵinj = ɵɵdefineInjector({
-      factory: () => new DeepModule(ɵɵinject(EagerService)),
       imports: undefined,
       providers:
           [
@@ -164,7 +164,6 @@ describe('InjectorDef-based createInjector()', () => {
 
   class IntermediateModule {
     static ɵinj = ɵɵdefineInjector({
-      factory: () => new IntermediateModule(),
       imports: [DeepModule.safe()],
       providers: [],
     });
@@ -173,9 +172,8 @@ describe('InjectorDef-based createInjector()', () => {
   class InjectorWithDep {
     constructor(readonly service: Service) {}
 
-    static ɵinj = ɵɵdefineInjector({
-      factory: () => new InjectorWithDep(ɵɵinject(Service)),
-    });
+    static ɵfac = () => new InjectorWithDep(ɵɵinject(Service));
+    static ɵinj = ɵɵdefineInjector({});
   }
 
   class ChildService extends ServiceWithDep {}
@@ -191,7 +189,6 @@ describe('InjectorDef-based createInjector()', () => {
 
   class Module {
     static ɵinj = ɵɵdefineInjector({
-      factory: () => new Module(),
       imports: [IntermediateModule],
       providers:
           [
@@ -222,7 +219,6 @@ describe('InjectorDef-based createInjector()', () => {
 
   class OtherModule {
     static ɵinj = ɵɵdefineInjector({
-      factory: () => new OtherModule(),
       imports: undefined,
       providers: [],
     });
@@ -230,7 +226,6 @@ describe('InjectorDef-based createInjector()', () => {
 
   class ModuleWithMissingDep {
     static ɵinj = ɵɵdefineInjector({
-      factory: () => new ModuleWithMissingDep(),
       imports: undefined,
       providers: [ServiceWithMissingDep],
     });
@@ -240,7 +235,6 @@ describe('InjectorDef-based createInjector()', () => {
 
   class ImportsNotAModule {
     static ɵinj = ɵɵdefineInjector({
-      factory: () => new ImportsNotAModule(),
       imports: [NotAModule],
       providers: [],
     });
@@ -269,26 +263,22 @@ describe('InjectorDef-based createInjector()', () => {
 
   class MultiProviderA {
     static ɵinj = ɵɵdefineInjector({
-      factory: () => new MultiProviderA(),
       providers: [{provide: LOCALE, multi: true, useValue: 'A'}],
     });
   }
 
   class MultiProviderB {
     static ɵinj = ɵɵdefineInjector({
-      factory: () => new MultiProviderB(),
       providers: [{provide: LOCALE, multi: true, useValue: 'B'}],
     });
   }
 
   class WithProvidersTest {
     static ɵinj = ɵɵdefineInjector({
-      factory: () => new WithProvidersTest(),
-      imports:
-          [
-            {ngModule: MultiProviderA, providers: [{provide: LOCALE, multi: true, useValue: 'C'}]},
-            MultiProviderB
-          ],
+      imports: [
+        {ngModule: MultiProviderA, providers: [{provide: LOCALE, multi: true, useValue: 'C'}]},
+        MultiProviderB
+      ],
       providers: [],
     });
   }
@@ -305,7 +295,6 @@ describe('InjectorDef-based createInjector()', () => {
 
     class ChildModule {
       static ɵinj = ɵɵdefineInjector({
-        factory: () => new ChildModule(),
         imports: undefined,
         providers: [],
       });
@@ -316,7 +305,6 @@ describe('InjectorDef-based createInjector()', () => {
 
     class RootModule {
       static ɵinj = ɵɵdefineInjector({
-        factory: () => new RootModule(),
         imports: [ChildModule],
         providers: [],
       });
@@ -499,8 +487,7 @@ describe('InjectorDef-based createInjector()', () => {
         constructor(missingType: any) {}
       }
       class ErrorModule {
-        static ɵinj =
-            ɵɵdefineInjector({factory: () => new ErrorModule(), providers: [MissingArgumentType]});
+        static ɵinj = ɵɵdefineInjector({providers: [MissingArgumentType]});
       }
       expect(() => createInjector(ErrorModule).get(MissingArgumentType))
           .toThrowError('Can\'t resolve all parameters for MissingArgumentType: (?).');
