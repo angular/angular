@@ -52,6 +52,11 @@
   width: 100%;
 }
 
+.mat-mdc-form-field-icon-prefix,
+.mat-mdc-form-field-icon-suffix {
+  align-self: center;
+}
+
 // Infix that contains the projected content (usually an input or a textarea). We ensure
 // that the projected form-field control and content can stretch as needed, but we also
 // apply a default infix width to make the form-field's look natural.

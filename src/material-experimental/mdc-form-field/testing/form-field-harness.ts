@@ -37,8 +37,8 @@ export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldContr
             async (harness, hasErrors) => await harness.hasErrors() === hasErrors);
   }
 
-  protected _prefixContainer = this.locatorForOptional('.mat-mdc-form-field-prefix');
-  protected _suffixContainer = this.locatorForOptional('.mat-mdc-form-field-suffix');
+  protected _prefixContainer = this.locatorForOptional('.mat-mdc-form-field-text-prefix');
+  protected _suffixContainer = this.locatorForOptional('.mat-mdc-form-field-text-suffix');
   protected _label = this.locatorForOptional('.mdc-floating-label');
   protected _errors = this.locatorForAll('.mat-mdc-form-field-error');
   protected _hints = this.locatorForAll('.mat-mdc-form-field-hint');

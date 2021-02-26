@@ -17,7 +17,7 @@ export const MAT_SUFFIX = new InjectionToken<MatSuffix>('MatSuffix');
 
 /** Suffix to be placed at the end of the form field. */
 @Directive({
-  selector: '[matSuffix]',
+  selector: '[matSuffix], [matIconSuffix], [matTextSuffix]',
   providers: [{provide: MAT_SUFFIX, useExisting: MatSuffix}],
 })
 export class MatSuffix {}

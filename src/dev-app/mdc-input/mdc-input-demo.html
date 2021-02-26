@@ -124,32 +124,50 @@
     <mat-form-field [appearance]="prefixSuffixAppearance" class="demo-text-align-end">
       <mat-label>Amount</mat-label>
       <input matInput>
-      <span matPrefix *ngIf="showPrefix">$&nbsp;</span>
-      <span matSuffix>.00</span>
+      <span matTextPrefix *ngIf="showPrefix">$</span>
+      <span matTextSuffix>.00</span>
     </mat-form-field>
 
     <h4>Text (always outline)</h4>
     <mat-form-field appearance="outline" class="demo-text-align-end">
       <mat-label>Amount</mat-label>
       <input matInput>
-      <span matPrefix>$&nbsp;</span>
-      <span matSuffix>.00</span>
+      <span matTextPrefix>$</span>
+      <span matTextSuffix>.00</span>
     </mat-form-field>
 
     <h4>Icons</h4>
     <mat-form-field [appearance]="prefixSuffixAppearance">
       <mat-label>Amount</mat-label>
       <input matInput>
-      <mat-icon matPrefix *ngIf="showPrefix">calendar_today</mat-icon>
-      <mat-icon matSuffix>mode_edit</mat-icon>
+      <mat-icon matIconPrefix *ngIf="showPrefix">calendar_today</mat-icon>
+      <mat-icon matIconSuffix>mode_edit</mat-icon>
     </mat-form-field>
 
     <h4>Icon buttons</h4>
     <mat-form-field [appearance]="prefixSuffixAppearance">
       <mat-label>Amount</mat-label>
       <input matInput>
-      <button mat-icon-button matPrefix *ngIf="showPrefix"><mat-icon>calendar_today</mat-icon></button>
-      <button mat-icon-button matSuffix><mat-icon>mode_edit</mat-icon></button>
+      <button mat-icon-button matIconPrefix *ngIf="showPrefix">
+        <mat-icon>calendar_today</mat-icon>
+      </button>
+      <button mat-icon-button matIconSuffix>
+        <mat-icon>mode_edit</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <h4>Text & Icons</h4>
+    <mat-form-field [appearance]="prefixSuffixAppearance">
+      <mat-label>Amount</mat-label>
+      <input matInput>
+      <span matTextPrefix>$</span>
+      <span matTextSuffix>.00</span>
+      <button mat-icon-button matIconPrefix *ngIf="showPrefix">
+        <mat-icon>calendar_today</mat-icon>
+      </button>
+      <button mat-icon-button matIconSuffix>
+        <mat-icon>mode_edit</mat-icon>
+      </button>
     </mat-form-field>
 
     <p>
@@ -371,20 +389,22 @@
       <mat-form-field>
         <mat-label>Prefixed</mat-label>
         <input matInput value="example">
-        <div matPrefix>Example:&nbsp;</div>
+        <span matTextPrefix>Example:&nbsp;</span>
       </mat-form-field>
       <mat-form-field class="demo-text-align-end">
         <mat-label>Suffixed</mat-label>
         <input matInput value="123">
-        <span matSuffix>.00 €</span>
+        <span matTextSuffix>.00 €</span>
       </mat-form-field>
       <br/>
       Both:
       <mat-form-field class="demo-text-align-end">
         <mat-label>Email address</mat-label>
         <input matInput #email="matInput" value="angular-core">
-        <span matPrefix><mat-icon [class.primary]="email.focused">email</mat-icon>&nbsp;</span>
-        <span matSuffix [class.primary]="email.focused">&nbsp;@gmail.com</span>
+        <span matIconPrefix>
+          <mat-icon [class.primary]="email.focused">email</mat-icon>&nbsp;
+        </span>
+        <span matTextSuffix [class.primary]="email.focused">&nbsp;@gmail.com</span>
       </mat-form-field>
     </p>
 
@@ -679,8 +699,8 @@
         <mat-form-field appearance="outline" class="demo-text-align-end">
           <mat-label>Amount</mat-label>
           <input matInput>
-          <span matPrefix>$&nbsp;</span>
-          <span matSuffix>.00</span>
+          <span matTextPrefix>$&nbsp;</span>
+          <span matTextSuffix>.00</span>
         </mat-form-field>
       </mat-tab>
       <mat-tab label="Tab 2">
@@ -692,9 +712,9 @@
         <mat-form-field appearance="outline" class="demo-text-align-end">
           <mat-label>Amount</mat-label>
           <input matInput>
-          <span matPrefix>$&nbsp;</span>
-          <span matPrefix *ngIf="showSecondPrefix">!&nbsp;</span>
-          <span matSuffix>.00</span>
+          <span matTextPrefix>$&nbsp;</span>
+          <span matTextPrefix *ngIf="showSecondPrefix">!&nbsp;</span>
+          <span matTextSuffix>.00</span>
         </mat-form-field>
       </mat-tab>
     </mat-tab-group>
@@ -724,7 +744,7 @@
       <mat-form-field appearance="outline">
         <mat-label>Phone number</mat-label>
         <example-tel-input required></example-tel-input>
-        <mat-icon matSuffix>phone</mat-icon>
+        <mat-icon matIconSuffix>phone</mat-icon>
         <mat-hint>Include area code</mat-hint>
       </mat-form-field>
     </p>

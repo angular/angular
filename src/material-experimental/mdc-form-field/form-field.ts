@@ -134,7 +134,8 @@ const FLOATING_LABEL_DEFAULT_DOCKED_TRANSFORM = `translateY(-50%)`;
 export class MatFormField implements AfterViewInit, OnDestroy, AfterContentChecked,
     AfterContentInit {
   @ViewChild('textField') _textField: ElementRef<HTMLElement>;
-  @ViewChild('prefixContainer') _prefixContainer: ElementRef<HTMLElement>;
+  @ViewChild('iconPrefixContainer') _iconPrefixContainer: ElementRef<HTMLElement>;
+  @ViewChild('textPrefixContainer') _textPrefixContainer: ElementRef<HTMLElement>;
   @ViewChild(MatFormFieldFloatingLabel) _floatingLabel: MatFormFieldFloatingLabel|undefined;
   @ViewChild(MatFormFieldNotchedOutline) _notchedOutline: MatFormFieldNotchedOutline|undefined;
   @ViewChild(MatFormFieldLineRipple) _lineRipple: MatFormFieldLineRipple|undefined;
@@ -654,7 +655,7 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     const floatingLabel = this._floatingLabel.element;
     // If no prefix is displayed, reset the outline label offset from potential
     // previous label offset updates.
-    if (!this._prefixContainer) {
+    if (!(this._iconPrefixContainer || this._textPrefixContainer)) {
       floatingLabel.style.transform = '';
       return;
     }
@@ -664,11 +665,15 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
       this._needsOutlineLabelOffsetUpdateOnStable = true;
       return;
     }
-    const prefixContainer = this._prefixContainer.nativeElement as HTMLElement;
+    const iconPrefixContainer = this._iconPrefixContainer.nativeElement as HTMLElement;
+    const textPrefixContainer = this._textPrefixContainer.nativeElement as HTMLElement;
     // If the directionality is RTL, the x-axis transform needs to be inverted. This
     // is because `transformX` does not change based on the page directionality.
     const labelHorizontalOffset =
-      (this._dir.value === 'rtl' ? -1 : 1) * prefixContainer.getBoundingClientRect().width;
+      (this._dir.value === 'rtl' ? -1 : 1) * (
+          iconPrefixContainer.getBoundingClientRect().width +
+          textPrefixContainer.getBoundingClientRect().width
+        );
 
     // Update the transform the floating label to account for the prefix container. Note
     // that we do not want to overwrite the default transform for docked floating labels.

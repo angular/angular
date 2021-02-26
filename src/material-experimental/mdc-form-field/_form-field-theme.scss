@@ -75,8 +75,8 @@
     // the correct level.
     .mat-mdc-input-element,
     .mat-mdc-form-field label,
-    .mat-mdc-form-field-prefix,
-    .mat-mdc-form-field-suffix {
+    .mat-mdc-form-field-text-prefix,
+    .mat-mdc-form-field-text-suffix {
       @include mdc-typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
     }
   }

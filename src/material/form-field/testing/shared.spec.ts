@@ -1,8 +1,5 @@
 import {ComponentHarness, HarnessLoader, HarnessPredicate, parallel} from '@angular/cdk/testing';
-import {
-  createFakeEvent,
-  dispatchFakeEvent,
-} from '@angular/cdk/testing/private';
+import {createFakeEvent, dispatchFakeEvent} from '@angular/cdk/testing/private';
 import {TestbedHarnessEnvironment} from '@angular/cdk/testing/testbed';
 import {Component, Type} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -30,6 +27,7 @@ export function runHarnessTests(
         .compileComponents();
 
     fixture = TestBed.createComponent(FormFieldHarnessTest);
+    fixture.componentInstance.isMdc = isMdcImplementation;
     fixture.detectChanges();
     loader = TestbedHarnessEnvironment.loader(fixture);
   });
@@ -243,11 +241,14 @@ export function runHarnessTests(
 @Component({
   template: `
     <mat-form-field id="first-form-field" [floatLabel]="shouldLabelFloat">
-      <span matPrefix>prefix_text</span>
-      <span matPrefix>prefix_text_2</span>
+      <span matPrefix *ngIf="!isMdc">prefix_text</span>
+      <span matPrefix *ngIf="!isMdc">prefix_text_2</span>
+      <span matTextPrefix *ngIf="isMdc">prefix_text</span>
+      <span matTextPrefix *ngIf="isMdc">prefix_text_2</span>
       <input matInput value="Sushi" name="favorite-food" placeholder="With placeholder"
              [disabled]="isDisabled">
-      <span matSuffix>suffix_text</span>
+      <span matSuffix *ngIf="!isMdc">suffix_text</span>
+      <span matTextSuffix *ngIf="isMdc">suffix_text</span>
     </mat-form-field>
 
     <mat-form-field appearance="standard" color="warn" id="with-errors">
@@ -287,6 +288,7 @@ class FormFieldHarnessTest {
   shouldLabelFloat: 'always'|'auto' = 'auto';
   hasLabel = false;
   isDisabled = false;
+  isMdc = false;
 
   setupAsyncValidator() {
     this.requiredControl.setValidators(() => null);
