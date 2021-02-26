@@ -11,7 +11,7 @@ import {injectRootLimpMode, setInjectImplementation} from '../di/inject_switch';
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {InjectorMarkers} from '../di/injector_marker';
-import {getInjectorDef} from '../di/interface/defs';
+import {getInjectableDef} from '../di/interface/defs';
 import {InjectFlags} from '../di/interface/injector';
 import {AbstractType, Type} from '../interface/type';
 import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
@@ -732,20 +732,12 @@ export function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => 
   });
 }
 
-function getFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
-  const typeAny = type as any;
-
+function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T | null)|null {
   if (isForwardRef(type)) {
-    return (() => {
-             const factory = getFactoryOf<T>(resolveForwardRef(typeAny));
-             return factory ? factory() : null;
-           }) as any;
+    return () => {
+      const factory = getFactoryOf<T>(resolveForwardRef(type));
+      return factory && factory();
+    };
   }
-
-  let factory = getFactoryDef<T>(typeAny);
-  if (factory === null) {
-    const injectorDef = getInjectorDef<T>(typeAny);
-    factory = injectorDef && injectorDef.factory;
-  }
-  return factory || null;
+  return getFactoryDef<T>(type);
 }

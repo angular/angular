@@ -32,8 +32,9 @@ TodoComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", 
         }] }); })();
 export class TodoModule {
 }
+TodoModule.ɵfac = function TodoModule_Factory(t) { return new (t || TodoModule)(); };
 TodoModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TodoModule });
-TodoModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function TodoModule_Factory(t) { return new (t || TodoModule)(); } });
+TodoModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TodoModule, { declarations: [TodoComponent, MyApp] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(TodoModule, [{
         type: NgModule,
@@ -58,6 +59,7 @@ export declare class TodoComponent {
     static ɵcmp: i0.ɵɵComponentDefWithMeta<TodoComponent, "todo", never, { "data": "data"; }, {}, never, never>;
 }
 export declare class TodoModule {
+    static ɵfac: i0.ɵɵFactoryDef<TodoModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<TodoModule, [typeof TodoComponent, typeof MyApp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<TodoModule>;
 }

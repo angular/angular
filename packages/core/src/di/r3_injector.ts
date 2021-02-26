@@ -349,7 +349,8 @@ export class R3Injector {
     // Track the InjectorType and add a provider for it. It's important that this is done after the
     // def's imports.
     this.injectorDefTypes.add(defType);
-    this.records.set(defType, makeRecord(def.factory, NOT_YET));
+    const factory = getFactoryDef(defType) || (() => new defType());
+    this.records.set(defType, makeRecord(factory, NOT_YET));
 
     // Next, include providers listed on the definition itself.
     const defProviders = def.providers;
@@ -435,13 +436,6 @@ function injectableDefOrInjectorDefFactory(token: Type<any>|AbstractType<any>|
 
   if (factory !== null) {
     return factory;
-  }
-
-  // If the token is an NgModule, it's also injectable but the factory is on its injector def
-  // (`ɵinj`)
-  const injectorDef = getInjectorDef(token);
-  if (injectorDef !== null) {
-    return injectorDef.factory;
   }
 
   // InjectionTokens should have an injectable def (ɵprov) and thus should be handled above.

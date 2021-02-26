@@ -353,8 +353,9 @@ PercentPipe.ɵpipe = i0.ɵɵngDeclarePipe({ version: "0.0.0-PLACEHOLDER", ngImpo
     }], null, null); })();
 export class AppModule {
 }
+AppModule.ɵfac = function AppModule_Factory(t) { return new (t || AppModule)(); };
 AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
-AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t) { return new (t || AppModule)(); } });
+AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(AppModule, { declarations: [TestCmp, PercentPipe] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AppModule, [{
         type: NgModule,
@@ -364,7 +365,7 @@ AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function AppMod
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.js.map
  ****************************************************************************************************/
-{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;8DAAP,OAAO;6EAAP,OAAO,gDAFR,qCAAqC,yEAMpC,WAAW;uFAJX,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;sEADH,WAAW;2FAAX,WAAW;uFAAX,WAAW;cADvB,IAAI;eAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;2DAAT,SAAS;+GAAT,SAAS;wFAAT,SAAS,mBATT,OAAO,EAIP,WAAW;uFAKX,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
+{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;8DAAP,OAAO;6EAAP,OAAO,gDAFR,qCAAqC,yEAMpC,WAAW;uFAJX,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;sEADH,WAAW;2FAAX,WAAW;uFAAX,WAAW;cADvB,IAAI;eAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;kEAAT,SAAS;2DAAT,SAAS;;wFAAT,SAAS,mBATT,OAAO,EAIP,WAAW;uFAKX,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.d.ts
  ****************************************************************************************************/
@@ -380,6 +381,7 @@ export declare class PercentPipe implements PipeTransform {
     static ɵpipe: i0.ɵɵPipeDefWithMeta<PercentPipe, "percent">;
 }
 export declare class AppModule {
+    static ɵfac: i0.ɵɵFactoryDef<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<AppModule, [typeof TestCmp, typeof PercentPipe], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<AppModule>;
 }
@@ -411,8 +413,9 @@ PercentPipe.ɵpipe = i0.ɵɵngDeclarePipe({ version: "0.0.0-PLACEHOLDER", ngImpo
     }], null, null); })();
 export class AppModule {
 }
+AppModule.ɵfac = function AppModule_Factory(t) { return new (t || AppModule)(); };
 AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
-AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t) { return new (t || AppModule)(); } });
+AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(AppModule, { declarations: [TestCmp, PercentPipe] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AppModule, [{
         type: NgModule,
@@ -422,7 +425,7 @@ AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function AppMod
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.js.map
  ****************************************************************************************************/
-{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;8DAAP,OAAO;6EAAP,OAAO,gDAFR,qCAAqC,yEAMpC,WAAW;uFAJX,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;sEADH,WAAW;2FAAX,WAAW;uFAAX,WAAW;cADvB,IAAI;eAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;2DAAT,SAAS;+GAAT,SAAS;wFAAT,SAAS,mBATT,OAAO,EAIP,WAAW;uFAKX,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
+{"version":3,"file":"interpolation_with_pipe.js","sourceRoot":"","sources":["../interpolation_with_pipe.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,QAAQ,EAAE,IAAI,EAAgB,MAAM,eAAe,CAAC;;AAMvE,MAAM,OAAO,OAAO;;8DAAP,OAAO;6EAAP,OAAO,gDAFR,qCAAqC,yEAMpC,WAAW;uFAJX,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAKD,MAAM,OAAO,WAAW;IACtB,SAAS,KAAI,CAAC;;sEADH,WAAW;2FAAX,WAAW;uFAAX,WAAW;cADvB,IAAI;eAAC,EAAC,IAAI,EAAE,SAAS,EAAC;;AAMvB,MAAM,OAAO,SAAS;;kEAAT,SAAS;2DAAT,SAAS;;wFAAT,SAAS,mBATT,OAAO,EAIP,WAAW;uFAKX,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,WAAW,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: interpolation_with_pipe.d.ts
  ****************************************************************************************************/
@@ -438,6 +441,7 @@ export declare class PercentPipe implements PipeTransform {
     static ɵpipe: i0.ɵɵPipeDefWithMeta<PercentPipe, "percent">;
 }
 export declare class AppModule {
+    static ɵfac: i0.ɵɵFactoryDef<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<AppModule, [typeof TestCmp, typeof PercentPipe], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<AppModule>;
 }
@@ -883,8 +887,9 @@ NgModelDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER
         }] }); })();
 export class AppModule {
 }
+AppModule.ɵfac = function AppModule_Factory(t) { return new (t || AppModule)(); };
 AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
-AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t) { return new (t || AppModule)(); } });
+AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(AppModule, { declarations: [TestCmp, NgModelDirective] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AppModule, [{
         type: NgModule,
@@ -894,7 +899,7 @@ AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function AppMod
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_simple.js.map
  ****************************************************************************************************/
-{"version":3,"file":"two_way_binding_simple.js","sourceRoot":"","sources":["../two_way_binding_simple.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,gDAFR,kCAAkC,0EAOjC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,kCAAkC;aAC7C;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;2DAAT,SAAS;+GAAT,SAAS;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
+{"version":3,"file":"two_way_binding_simple.js","sourceRoot":"","sources":["../two_way_binding_simple.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,gDAFR,kCAAkC,0EAOjC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,kCAAkC;aAC7C;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;kEAAT,SAAS;2DAAT,SAAS;;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_simple.d.ts
  ****************************************************************************************************/
@@ -912,6 +917,7 @@ export declare class NgModelDirective {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never>;
 }
 export declare class AppModule {
+    static ɵfac: i0.ɵɵFactoryDef<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<AppModule, [typeof TestCmp, typeof NgModelDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<AppModule>;
 }
@@ -953,8 +959,9 @@ NgModelDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER
         }] }); })();
 export class AppModule {
 }
+AppModule.ɵfac = function AppModule_Factory(t) { return new (t || AppModule)(); };
 AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
-AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t) { return new (t || AppModule)(); } });
+AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(AppModule, { declarations: [TestCmp, NgModelDirective] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AppModule, [{
         type: NgModule,
@@ -964,7 +971,7 @@ AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function AppMod
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_simple.js.map
  ****************************************************************************************************/
-{"version":3,"file":"two_way_binding_simple.js","sourceRoot":"","sources":["../two_way_binding_simple.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,gDAFR,kCAAkC,0EAOjC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,kCAAkC;aAC7C;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;2DAAT,SAAS;+GAAT,SAAS;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
+{"version":3,"file":"two_way_binding_simple.js","sourceRoot":"","sources":["../two_way_binding_simple.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,gDAFR,kCAAkC,0EAOjC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,kCAAkC;aAC7C;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;kEAAT,SAAS;2DAAT,SAAS;;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_simple.d.ts
  ****************************************************************************************************/
@@ -982,6 +989,7 @@ export declare class NgModelDirective {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never>;
 }
 export declare class AppModule {
+    static ɵfac: i0.ɵɵFactoryDef<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<AppModule, [typeof TestCmp, typeof NgModelDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<AppModule>;
 }
@@ -1023,8 +1031,9 @@ NgModelDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER
         }] }); })();
 export class AppModule {
 }
+AppModule.ɵfac = function AppModule_Factory(t) { return new (t || AppModule)(); };
 AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
-AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t) { return new (t || AppModule)(); } });
+AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(AppModule, { declarations: [TestCmp, NgModelDirective] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AppModule, [{
         type: NgModule,
@@ -1034,7 +1043,7 @@ AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function AppMod
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_longhand.js.map
  ****************************************************************************************************/
-{"version":3,"file":"two_way_binding_longhand.js","sourceRoot":"","sources":["../two_way_binding_longhand.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,gDAFR,qCAAqC,0EAOpC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;2DAAT,SAAS;+GAAT,SAAS;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
+{"version":3,"file":"two_way_binding_longhand.js","sourceRoot":"","sources":["../two_way_binding_longhand.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,gDAFR,qCAAqC,0EAOpC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;kEAAT,SAAS;2DAAT,SAAS;;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_longhand.d.ts
  ****************************************************************************************************/
@@ -1052,6 +1061,7 @@ export declare class NgModelDirective {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never>;
 }
 export declare class AppModule {
+    static ɵfac: i0.ɵɵFactoryDef<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<AppModule, [typeof TestCmp, typeof NgModelDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<AppModule>;
 }
@@ -1093,8 +1103,9 @@ NgModelDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER
         }] }); })();
 export class AppModule {
 }
+AppModule.ɵfac = function AppModule_Factory(t) { return new (t || AppModule)(); };
 AppModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: AppModule });
-AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function AppModule_Factory(t) { return new (t || AppModule)(); } });
+AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(AppModule, { declarations: [TestCmp, NgModelDirective] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(AppModule, [{
         type: NgModule,
@@ -1104,7 +1115,7 @@ AppModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function AppMod
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_longhand.js.map
  ****************************************************************************************************/
-{"version":3,"file":"two_way_binding_longhand.js","sourceRoot":"","sources":["../two_way_binding_longhand.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,gDAFR,qCAAqC,0EAOpC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;2DAAT,SAAS;+GAAT,SAAS;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
+{"version":3,"file":"two_way_binding_longhand.js","sourceRoot":"","sources":["../two_way_binding_longhand.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,SAAS,EAAE,SAAS,EAAE,YAAY,EAAE,KAAK,EAAE,QAAQ,EAAE,MAAM,EAAC,MAAM,eAAe,CAAC;;AAM1F,MAAM,OAAO,OAAO;IAJpB;QAKE,SAAI,GAAW,EAAE,CAAC;KACnB;;8DAFY,OAAO;6EAAP,OAAO,gDAFR,qCAAqC,0EAOpC,gBAAgB;uFALhB,OAAO;cAJnB,SAAS;eAAC;gBACT,QAAQ,EAAE,UAAU;gBACpB,QAAQ,EAAE,qCAAqC;aAChD;;AAMD,MAAM,OAAO,gBAAgB;IAD7B;QAEW,YAAO,GAAW,EAAE,CAAC;QACpB,mBAAc,GAAyB,IAAI,YAAY,EAAE,CAAC;KACrE;;gFAHY,gBAAgB;sFAAhB,gBAAgB;uFAAhB,gBAAgB;cAD5B,SAAS;eAAC,EAAC,QAAQ,EAAE,WAAW,EAAC;gBAEvB,OAAO;kBAAf,KAAK;YACI,cAAc;kBAAvB,MAAM;;AAIT,MAAM,OAAO,SAAS;;kEAAT,SAAS;2DAAT,SAAS;;wFAAT,SAAS,mBAXT,OAAO,EAKP,gBAAgB;uFAMhB,SAAS;cADrB,QAAQ;eAAC,EAAC,YAAY,EAAE,CAAC,OAAO,EAAE,gBAAgB,CAAC,EAAC"}
 /****************************************************************************************************
  * PARTIAL FILE: two_way_binding_longhand.d.ts
  ****************************************************************************************************/
@@ -1122,6 +1133,7 @@ export declare class NgModelDirective {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgModelDirective, "[ngModel]", never, { "ngModel": "ngModel"; }, { "ngModelChanges": "ngModelChanges"; }, never>;
 }
 export declare class AppModule {
+    static ɵfac: i0.ɵɵFactoryDef<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<AppModule, [typeof TestCmp, typeof NgModelDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<AppModule>;
 }
