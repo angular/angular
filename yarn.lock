@@ -7039,10 +7039,10 @@ https-proxy-agent@^4.0.0:
     agent-base "5"
     debug "4"
 
-husky@5.0.6:
-  version "5.0.6"
-  resolved "https://registry.yarnpkg.com/husky/-/husky-5.0.6.tgz#27dbefe8603c6c0912fd89a3a67edfed9fac8bb9"
-  integrity sha512-SM+evfvcHT3rAYJKvPlatz3L5RqzgeM6xIvDjhs8VuhKj6iKqFDOt/Ov8sPjvWuE4FDB385gJBwWXRj7G3c1hg==
+husky@5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/husky/-/husky-5.1.1.tgz#8678953fd8deb86f387cbf1ad50bb2f7f96e83f2"
+  integrity sha512-80LZ736V0Nr4/st0c2COYaMbEQhHNmAbLMN8J/kLk7/mo0QdUkUGNDjv/7jVkhug377Wh8wfbWyaVXEJ/h2B/Q==
 
 iconv-lite@0.4.24, iconv-lite@^0.4.24, iconv-lite@^0.4.4, iconv-lite@~0.4.11:
   version "0.4.24"
