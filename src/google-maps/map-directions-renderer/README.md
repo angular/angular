@@ -21,6 +21,7 @@ Using the `MapDirectionsService` requires the Directions API to be enabled in Go
 
 ```typescript
 // google-maps-demo.component.ts
+import {MapDirectionsService} from '@angular/google-maps';
 import {Component} from '@angular/core';
 
 @Component({
