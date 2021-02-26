@@ -50,6 +50,8 @@ export class HobbitSheet {
 ```
 
 ### Configuring bottom sheet content via `entryComponents`
+**You only need to specify `entryComponents` if your project uses ViewEngine. Projects
+using Angular Ivy don't need `entryComponents`.**
 
 Similarly to `MatDialog`, `MatBottomSheet` instantiates components at run-time. In order for it to
 work, the Angular compiler needs extra information to create the necessary `ComponentFactory` for

@@ -40,6 +40,8 @@ export class YourDialog {
 ```
 
 ### Configuring dialog content via `entryComponents`
+**You only need to specify `entryComponents` if your project uses ViewEngine. Projects
+using Angular Ivy don't need `entryComponents`.**
 
 Because `MatDialog` instantiates components at run-time, the Angular compiler needs extra
 information to create the necessary `ComponentFactory` for your dialog content component.
