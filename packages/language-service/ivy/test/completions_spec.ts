@@ -52,6 +52,20 @@ const DIR_WITH_TWO_WAY_BINDING = {
   `
 };
 
+const DIR_WITH_BINDING_PROPERTY_NAME = {
+  'Dir': `
+    @Directive({
+      selector: '[dir]',
+      inputs: ['model: customModel'],
+      outputs: ['update: customModelChange'],
+    })
+    export class Dir {
+      model!: any;
+      update!: any;
+    }
+  `
+};
+
 const NG_FOR_DIR = {
   'NgFor': `
     @Directive({
@@ -562,6 +576,30 @@ describe('completions', () => {
         expectDoesNotContain(
             completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
             ['otherOutput']);
+      });
+
+      it('should return input completions for a binding property name', () => {
+        const {templateFile} =
+            setup(`<h1 dir [customModel]></h1>`, ``, DIR_WITH_BINDING_PROPERTY_NAME);
+        templateFile.moveCursorToText('[customModel¦]');
+        const completions = templateFile.getCompletionsAtPosition();
+        expectReplacementText(completions, templateFile.contents, 'customModel');
+
+        expectContain(
+            completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+            ['customModel']);
+      });
+
+      it('should return output completions for a binding property name', () => {
+        const {templateFile} =
+            setup(`<h1 dir (customModel)></h1>`, ``, DIR_WITH_BINDING_PROPERTY_NAME);
+        templateFile.moveCursorToText('(customModel¦)');
+        const completions = templateFile.getCompletionsAtPosition();
+        expectReplacementText(completions, templateFile.contents, 'customModel');
+
+        expectContain(
+            completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
+            ['customModelChange']);
       });
     });
   });
