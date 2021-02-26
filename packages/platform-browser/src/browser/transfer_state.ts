@@ -150,7 +150,8 @@ export function initTransferState(doc: Document, appId: string) {
   let initialState = {};
   if (script && script.textContent) {
     try {
-      initialState = JSON.parse(unescapeHtml(script.textContent));
+      // Avoid using any here as it triggers lint errors in google3 (any is not allowed).
+      initialState = JSON.parse(unescapeHtml(script.textContent)) as {};
     } catch (e) {
       console.warn('Exception while restoring TransferState for app ' + appId, e);
     }
