@@ -75,7 +75,7 @@ function addBody<T>(
  * }
  * ```
  *
- * Alternately, the parameter string can be used without invoking HttpParams
+ * Alternatively, the parameter string can be used without invoking HttpParams
  * by directly joining to the URL.
  * ```
  * this.httpClient.request('GET', this.heroesUrl + '?' + 'name=term', {responseType:'json'});
