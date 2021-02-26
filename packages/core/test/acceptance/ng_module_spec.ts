@@ -380,7 +380,7 @@ describe('NgModule', () => {
       function createNgModule(Comp: any) {
         class Module {
           static ɵmod = defineNgModule({type: Module});
-          static ɵinj = defineInjector({factory: () => new Module()});
+          static ɵinj = defineInjector({});
         }
         setClassMetadata(
             Module, [{

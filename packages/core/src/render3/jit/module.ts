@@ -17,7 +17,7 @@ import {NgModuleDef, NgModuleTransitiveScopes, NgModuleType} from '../../metadat
 import {deepForEach, flatten} from '../../util/array_utils';
 import {assertDefined} from '../../util/assert';
 import {getComponentDef, getDirectiveDef, getNgModuleDef, getPipeDef} from '../definition';
-import {NG_COMP_DEF, NG_DIR_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_MOD_DEF, NG_PIPE_DEF} from '../fields';
 import {ComponentDef} from '../interfaces/definition';
 import {maybeUnwrapFn} from '../util/misc_utils';
 import {stringifyForError} from '../util/stringify_utils';
@@ -94,7 +94,7 @@ export function compileNgModule(moduleType: Type<any>, ngModule: NgModule = {}):
 }
 
 /**
- * Compiles and adds the `ɵmod` and `ɵinj` properties to the module class.
+ * Compiles and adds the `ɵmod`, `ɵfac` and `ɵinj` properties to the module class.
  *
  * It's possible to compile a module via this API which will allow duplicate declarations in its
  * root.
@@ -141,6 +141,26 @@ export function compileNgModuleDefs(
     }
   });
 
+  let ngFactoryDef: any = null;
+  Object.defineProperty(moduleType, NG_FACTORY_DEF, {
+    get: () => {
+      if (ngFactoryDef === null) {
+        const compiler = getCompilerFacade();
+        ngFactoryDef = compiler.compileFactory(angularCoreEnv, `ng:///${moduleType.name}/ɵfac.js`, {
+          name: moduleType.name,
+          type: moduleType,
+          deps: reflectDependencies(moduleType),
+          injectFn: 'inject',
+          target: compiler.R3FactoryTarget.NgModule,
+          typeArgumentCount: 0,
+        });
+      }
+      return ngFactoryDef;
+    },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
+  });
+
   let ngInjectorDef: any = null;
   Object.defineProperty(moduleType, NG_INJ_DEF, {
     get: () => {
@@ -151,7 +171,6 @@ export function compileNgModuleDefs(
         const meta: R3InjectorMetadataFacade = {
           name: moduleType.name,
           type: moduleType,
-          deps: reflectDependencies(moduleType),
           providers: ngModule.providers || EMPTY_ARRAY,
           imports: [
             (ngModule.imports || EMPTY_ARRAY).map(resolveForwardRef),

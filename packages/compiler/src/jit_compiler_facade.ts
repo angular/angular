@@ -84,21 +84,11 @@ export class CompilerFacadeImpl implements CompilerFacade {
       name: facade.name,
       type: wrapReference(facade.type),
       internalType: new WrappedNodeExpr(facade.type),
-      deps: convertR3DependencyMetadataArray(facade.deps),
       providers: new WrappedNodeExpr(facade.providers),
       imports: facade.imports.map(i => new WrappedNodeExpr(i)),
     };
-    const factoryFn = compileFactoryFunction({
-      name: meta.name,
-      type: meta.type,
-      internalType: meta.internalType,
-      typeArgumentCount: 0,
-      deps: meta.deps,
-      injectFn: Identifiers.inject,
-      target: R3FactoryTarget.NgModule,
-    });
-    const res = compileInjector(meta, factoryFn);
-    return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, res.statements);
+    const res = compileInjector(meta);
+    return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []);
   }
 
   compileNgModule(

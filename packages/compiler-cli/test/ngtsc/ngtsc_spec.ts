@@ -1069,8 +1069,8 @@ runInEachFileSystem(os => {
               'function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TestModule, { declarations: [TestCmp] }); })();');
       expect(jsContents)
           .toContain(
-              'i0.ɵɵdefineInjector({ factory: ' +
-              'function TestModule_Factory(t) { return new (t || TestModule)(); } });');
+              'TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); }');
+      expect(jsContents).toContain('i0.ɵɵdefineInjector({});');
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
@@ -1182,8 +1182,10 @@ runInEachFileSystem(os => {
       const jsContents = env.getContents('test.js');
       expect(jsContents)
           .toContain(
-              'i0.ɵɵdefineInjector({ factory: function TestModule_Factory(t) ' +
-              '{ return new (t || TestModule)(); }, imports: [[OtherModule, RouterModule.forRoot()],' +
+              'TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); }');
+      expect(jsContents)
+          .toContain(
+              'i0.ɵɵdefineInjector({ imports: [[OtherModule, RouterModule.forRoot()],' +
               ' OtherModule, RouterModule] });');
     });
 
@@ -1213,12 +1215,15 @@ runInEachFileSystem(os => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
+      expect(jsContents)
+          .toContain(
+              'TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); }');
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
       expect(jsContents)
           .toContain(
-              `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
-              `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
-              `Token, useValue: 'test' }], imports: [[OtherModule]] });`);
+              `TestModule.ɵinj = i0.ɵɵdefineInjector({ ` +
+              `providers: [{ provide: Token, useValue: 'test' }], ` +
+              `imports: [[OtherModule]] });`);
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
@@ -1253,12 +1258,15 @@ runInEachFileSystem(os => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
+      expect(jsContents)
+          .toContain(
+              'TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); }');
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
       expect(jsContents)
           .toContain(
-              `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
-              `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
-              `Token, useFactory: function () { return new Token(); } }], imports: [[OtherModule]] });`);
+              `TestModule.ɵinj = i0.ɵɵdefineInjector({ ` +
+              `providers: [{ provide: Token, useFactory: function () { return new Token(); } }], ` +
+              `imports: [[OtherModule]] });`);
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
@@ -1297,12 +1305,15 @@ runInEachFileSystem(os => {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
+      expect(jsContents)
+          .toContain(
+              'TestModule.ɵfac = function TestModule_Factory(t) { return new (t || TestModule)(); }');
       expect(jsContents).toContain('i0.ɵɵdefineNgModule({ type: TestModule });');
       expect(jsContents)
           .toContain(
-              `TestModule.ɵinj = i0.ɵɵdefineInjector({ factory: ` +
-              `function TestModule_Factory(t) { return new (t || TestModule)(); }, providers: [{ provide: ` +
-              `Token, useFactory: function (dep) { return new Token(dep); }, deps: [Dep] }], imports: [[OtherModule]] });`);
+              `TestModule.ɵinj = i0.ɵɵdefineInjector({ ` +
+              `providers: [{ provide: Token, useFactory: function (dep) { return new Token(dep); }, deps: [Dep] }], ` +
+              `imports: [[OtherModule]] });`);
 
       const dtsContents = env.getContents('test.d.ts');
       expect(dtsContents)
