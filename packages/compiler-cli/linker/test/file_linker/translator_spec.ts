@@ -14,7 +14,7 @@ import {generate} from './helpers';
 
 describe('Translator', () => {
   let factory: TypeScriptAstFactory;
-  beforeEach(() => factory = new TypeScriptAstFactory());
+  beforeEach(() => factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false));
 
   describe('translateExpression()', () => {
     it('should generate expression specific output', () => {

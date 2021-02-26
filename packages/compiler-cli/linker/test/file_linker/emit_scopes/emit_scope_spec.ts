@@ -16,7 +16,7 @@ import {generate} from '../helpers';
 describe('EmitScope', () => {
   describe('translateDefinition()', () => {
     it('should translate the given output AST into a TExpression', () => {
-      const factory = new TypeScriptAstFactory();
+      const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
       const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator);
@@ -26,7 +26,7 @@ describe('EmitScope', () => {
     });
 
     it('should use the `ngImport` idenfifier for imports when translating', () => {
-      const factory = new TypeScriptAstFactory();
+      const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
       const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator);
@@ -37,7 +37,7 @@ describe('EmitScope', () => {
     });
 
     it('should not emit any shared constants in the replacement expression', () => {
-      const factory = new TypeScriptAstFactory();
+      const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
       const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator);
@@ -54,7 +54,7 @@ describe('EmitScope', () => {
 
   describe('getConstantStatements()', () => {
     it('should return any constant statements that were added to the `constantPool`', () => {
-      const factory = new TypeScriptAstFactory();
+      const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
       const emitScope = new EmitScope<ts.Statement, ts.Expression>(ngImport, translator);

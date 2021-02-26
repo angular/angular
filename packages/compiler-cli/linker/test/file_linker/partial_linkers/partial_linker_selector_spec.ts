@@ -33,7 +33,8 @@ describe('PartialLinkerSelector', () => {
     fs = new MockFileSystemNative();
     const logger = new MockLogger();
     environment = LinkerEnvironment.create<ts.Statement, ts.Expression>(
-        fs, logger, new TypeScriptAstHost(), new TypeScriptAstFactory(), options);
+        fs, logger, new TypeScriptAstHost(),
+        new TypeScriptAstFactory(/* annotateForClosureCompiler */ false), options);
   });
 
   describe('supportsDeclaration()', () => {

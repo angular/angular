@@ -16,7 +16,7 @@ import {generate} from '../helpers';
 describe('IifeEmitScope', () => {
   describe('translateDefinition()', () => {
     it('should translate the given output AST into a TExpression, wrapped in an IIFE', () => {
-      const factory = new TypeScriptAstFactory();
+      const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
       const emitScope =
@@ -27,7 +27,7 @@ describe('IifeEmitScope', () => {
     });
 
     it('should use the `ngImport` idenfifier for imports when translating', () => {
-      const factory = new TypeScriptAstFactory();
+      const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
       const emitScope =
@@ -39,7 +39,7 @@ describe('IifeEmitScope', () => {
     });
 
     it('should emit any shared constants in the replacement expression IIFE', () => {
-      const factory = new TypeScriptAstFactory();
+      const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
       const emitScope =
@@ -58,7 +58,7 @@ describe('IifeEmitScope', () => {
 
   describe('getConstantStatements()', () => {
     it('should throw an error', () => {
-      const factory = new TypeScriptAstFactory();
+      const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
       const translator = new Translator<ts.Statement, ts.Expression>(factory);
       const ngImport = factory.createIdentifier('core');
       const emitScope =

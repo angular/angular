@@ -23,7 +23,7 @@ interface TestObject {
 }
 
 const host: AstHost<ts.Expression> = new TypeScriptAstHost();
-const factory = new TypeScriptAstFactory();
+const factory = new TypeScriptAstFactory(/* annotateForClosureCompiler */ false);
 const nestedObj = factory.createObjectLiteral([
   {propertyName: 'x', quoted: false, value: factory.createLiteral(42)},
   {propertyName: 'y', quoted: false, value: factory.createLiteral('X')},

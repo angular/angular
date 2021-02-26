@@ -42,6 +42,7 @@ export interface TranslatorOptions<TExpression> {
   downlevelTaggedTemplates?: boolean;
   downlevelVariableDeclarations?: boolean;
   recordWrappedNodeExpr?: RecordWrappedNodeExprFn<TExpression>;
+  annotateForClosureCompiler?: boolean;
 }
 
 export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.ExpressionVisitor,

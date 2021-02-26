@@ -19,7 +19,7 @@ export function translateExpression(
     options: TranslatorOptions<ts.Expression> = {}): ts.Expression {
   return expression.visitExpression(
       new ExpressionTranslatorVisitor<ts.Statement, ts.Expression>(
-          new TypeScriptAstFactory(), imports, options),
+          new TypeScriptAstFactory(options.annotateForClosureCompiler === true), imports, options),
       new Context(false));
 }
 
@@ -28,6 +28,6 @@ export function translateStatement(
     options: TranslatorOptions<ts.Expression> = {}): ts.Statement {
   return statement.visitStatement(
       new ExpressionTranslatorVisitor<ts.Statement, ts.Expression>(
-          new TypeScriptAstFactory(), imports, options),
+          new TypeScriptAstFactory(options.annotateForClosureCompiler === true), imports, options),
       new Context(true));
 }
