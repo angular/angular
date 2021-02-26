@@ -8,8 +8,6 @@ import { Theme, ThemeService } from '../theme-service';
 import { Subscription } from 'rxjs';
 import { MatTabNav } from '@angular/material/tabs';
 import { RouterTreeComponent } from './router-tree/router-tree.component';
-import { MatDialog } from '@angular/material/dialog';
-import { RouterConfirmDialogComponent } from './router-tree/router-confirm-dialog/router-confirm-dialog.component';
 
 @Component({
   selector: 'ng-devtools-tabs',
@@ -22,7 +20,7 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('navBar', { static: true }) navbar: MatTabNav;
   @ViewChild('routerTree', { static: false }) routerTree: RouterTreeComponent;
 
-  tabs = ['Components', 'Profiler'];
+  tabs = ['Components', 'Profiler', 'Router Tree'];
   activeTab: 'Components' | 'Profiler' | 'Router Tree' = 'Components';
 
   inspectorRunning = false;
@@ -35,8 +33,7 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
     public tabUpdate: TabUpdate,
     public themeService: ThemeService,
     private _messageBus: MessageBus<Events>,
-    private _applicationEnvironment: ApplicationEnvironment,
-    private _dialog: MatDialog
+    private _applicationEnvironment: ApplicationEnvironment
   ) {}
 
   ngOnInit(): void {
@@ -59,9 +56,7 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.activeTab = tab;
     this.tabUpdate.notify();
     if (tab === 'Router Tree') {
-      setTimeout(() => {
-        this.routerTree.render();
-      });
+      setTimeout(() => this.routerTree.render());
     }
   }
 
@@ -90,28 +85,5 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   toggleTimingAPI(change: MatSlideToggleChange): void {
     change.checked ? this._messageBus.emit('enableTimingAPI') : this._messageBus.emit('disableTimingAPI');
-  }
-
-  toggleRouterTree(change: MatSlideToggleChange): void {
-    if (change.checked) {
-      this.tabs = ['Components', 'Profiler', 'Router Tree'];
-      this.routerTreeEnabled = true;
-    } else {
-      if (this.activeTab === 'Router Tree') {
-        const dialogRef = this._dialog.open(RouterConfirmDialogComponent);
-        dialogRef.afterClosed().subscribe((result) => {
-          if (result) {
-            this.routerTreeEnabled = false;
-            this.tabs = ['Components', 'Profiler'];
-            this.activeTab = 'Components';
-          } else {
-            this.routerTreeEnabled = true;
-          }
-        });
-      } else {
-        this.routerTreeEnabled = false;
-        this.tabs = ['Components', 'Profiler'];
-      }
-    }
   }
 }

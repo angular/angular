@@ -44,16 +44,6 @@
   <br />
   <br />
   <mat-slide-toggle
-    [(ngModel)]="routerTreeEnabled"
-    (change)="toggleRouterTree($event)"
-    class="menu-toggle-button"
-    (click)="$event.stopPropagation()"
-  >
-    Enable Router Tree
-  </mat-slide-toggle>
-  <br />
-  <br />
-  <mat-slide-toggle
     [checked]="currentTheme === 'dark-theme'"
     (change)="themeService.toggleDarkMode($event.checked)"
     class="menu-toggle-button"

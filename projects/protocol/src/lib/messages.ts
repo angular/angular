@@ -163,7 +163,7 @@ export interface Events {
   nestedProperties: (position: DirectivePosition, data: Properties, path: string[]) => void;
 
   setSelectedComponent: (position: ElementPosition) => void;
-  getRouter: () => void;
+  getRoutes: () => void;
   updateRouterTree: (routes: Route[]) => void;
 
   componentTreeDirty: () => void;

@@ -15,7 +15,7 @@ export class RouterTreeComponent implements OnInit {
   private tree: d3.TreeLayout<{}>;
 
   constructor(private _messageBus: MessageBus<Events>) {
-    this._messageBus.emit('getRouter');
+    this._messageBus.emit('getRoutes');
   }
 
   ngOnInit(): void {

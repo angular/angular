@@ -1,11 +1,8 @@
 <div class="router-tree-wrapper">
-  <div class="p2 no-routes" [hidden]="routes?.length !== 0">
+  <div class="no-routes" [hidden]="routes?.length !== 0">
     <h1>
       There are no routes to display.
     </h1>
-    <h3>
-      If you have routes defined and not seeing anything, for version of Angular older than 2.3.0, please see the
-    </h3>
   </div>
   <div class="full-height" [hidden]="routes?.length === 0">
     <div class="full-height" #routeTree>
