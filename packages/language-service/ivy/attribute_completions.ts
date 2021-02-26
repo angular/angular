@@ -203,7 +203,7 @@ export function buildAttributeCompletionTable(
         continue;
       }
 
-      for (const [propertyName, classPropertyName] of meta.inputs) {
+      for (const [classPropertyName, propertyName] of meta.inputs) {
         if (table.has(propertyName)) {
           continue;
         }
@@ -217,7 +217,7 @@ export function buildAttributeCompletionTable(
         });
       }
 
-      for (const [propertyName, classPropertyName] of meta.outputs) {
+      for (const [classPropertyName, propertyName] of meta.outputs) {
         if (table.has(propertyName)) {
           continue;
         }
