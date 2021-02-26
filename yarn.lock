@@ -8045,9 +8045,9 @@ jws@^4.0.0:
     safe-buffer "^5.0.1"
 
 kagekiri@^1.0.18:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/kagekiri/-/kagekiri-1.4.0.tgz#d02825c906f80c59a3c890ec8032d565d6d66cfc"
-  integrity sha512-pYPexgf7jIML67DZGvTasv+smbKHPKh8fC2LyBflAwAwLRyhl9Ti5k3UBlWLOmBHOdvGdVNTnvh9AZNvoxQaAw==
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/kagekiri/-/kagekiri-1.4.1.tgz#1ca819a95da5f046a7feb770297a73ab0fa85338"
+  integrity sha512-RD6xw0PFW+QDv0jwFlURSBL7wAsWZDQfMYZ204mMFNtivHlQZsOI4QzqWfC02hX5KXL8YRsZNbNh2I4JJMSzuQ==
 
 karma-browserstack-launcher@^1.6.0:
   version "1.6.0"
