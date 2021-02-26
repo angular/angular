@@ -133,7 +133,6 @@ export interface R3NgModuleMetadataFacade {
 export interface R3InjectorMetadataFacade {
   name: string;
   type: any;
-  deps: R3DependencyMetadataFacade[]|null;
   providers: any[];
   imports: any[];
 }
