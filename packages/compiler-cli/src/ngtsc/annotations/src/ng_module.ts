@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileFactoryFunction, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, Identifiers as R3, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3FactoryTarget, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
+import {compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, Identifiers as R3, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3DependencyMetadata, R3FactoryTarget, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
@@ -22,6 +22,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 import {getSourceFile} from '../../util/src/typescript';
 
 import {createValueHasWrongTypeError, getProviderDiagnostics} from './diagnostics';
+import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
@@ -29,6 +30,7 @@ import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidCons
 export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
   inj: R3InjectorMetadata;
+  deps: R3DependencyMetadata[]|null;
   metadataStmt: Statement|null;
   declarations: Reference<ClassDeclaration>[];
   rawDeclarations: ts.Expression|null;
@@ -118,8 +120,6 @@ export class NgModuleSymbol extends SemanticSymbol {
 
 /**
  * Compiles @NgModule annotations to ngModuleDef fields.
- *
- * TODO(alxhub): handle injector side of things as well.
  */
 export class NgModuleDecoratorHandler implements
     DecoratorHandler<Decorator, NgModuleAnalysis, NgModuleSymbol, NgModuleResolution> {
@@ -337,8 +337,6 @@ export class NgModuleDecoratorHandler implements
       name,
       type,
       internalType,
-      deps: getValidConstructorDependencies(
-          node, this.reflector, this.defaultImportRecorder, this.isCore),
       providers: wrapperProviders,
       imports: injectorImports,
     };
@@ -349,6 +347,8 @@ export class NgModuleDecoratorHandler implements
         schemas: schemas,
         mod: ngModuleDef,
         inj: ngInjectorDef,
+        deps: getValidConstructorDependencies(
+            node, this.reflector, this.defaultImportRecorder, this.isCore),
         declarations: declarationRefs,
         rawDeclarations,
         imports: importRefs,
@@ -449,26 +449,13 @@ export class NgModuleDecoratorHandler implements
   }
 
   compileFull(
-      node: ClassDeclaration, {inj, mod, metadataStmt, declarations}: Readonly<NgModuleAnalysis>,
+      node: ClassDeclaration,
+      {inj, mod, deps, metadataStmt, declarations}: Readonly<NgModuleAnalysis>,
       resolution: Readonly<NgModuleResolution>): CompileResult[] {
-    const factoryFn = compileFactoryFunction({
-      name: inj.name,
-      type: inj.type,
-      internalType: inj.internalType,
-      typeArgumentCount: 0,
-      deps: inj.deps,
-      injectFn: R3.inject,
-      target: R3FactoryTarget.NgModule,
-    });
-
     //  Merge the injector imports (which are 'exports' that were later found to be NgModules)
     //  computed during resolution with the ones from analysis.
-    const ngInjectorDef = compileInjector(
-        {
-          ...inj,
-          imports: [...inj.imports, ...resolution.injectorImports],
-        },
-        factoryFn);
+    const ngInjectorDef =
+        compileInjector({...inj, imports: [...inj.imports, ...resolution.injectorImports]});
     const ngModuleDef = compileNgModule(mod);
     const ngModuleStatements = ngModuleDef.additionalStatements;
     if (metadataStmt !== null) {
@@ -492,6 +479,15 @@ export class NgModuleDecoratorHandler implements
       }
     }
     const res: CompileResult[] = [
+      compileNgFactoryDefField({
+        name: inj.name,
+        type: inj.type,
+        internalType: inj.internalType,
+        typeArgumentCount: 0,
+        deps,
+        injectFn: R3.inject,
+        target: R3FactoryTarget.NgModule,
+      }),
       {
         name: 'ɵmod',
         initializer: ngModuleDef.expression,
@@ -501,9 +497,9 @@ export class NgModuleDecoratorHandler implements
       {
         name: 'ɵinj',
         initializer: ngInjectorDef.expression,
-        statements: ngInjectorDef.statements,
+        statements: [],
         type: ngInjectorDef.type,
-      }
+      },
     ];
 
     if (this.localeId) {

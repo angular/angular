@@ -464,6 +464,7 @@ export declare abstract class Injector {
 export declare const INJECTOR: InjectionToken<Injector>;
 
 export declare interface InjectorType<T> extends Type<T> {
+    ɵfac?: unknown;
     ɵinj: unknown;
 }
 

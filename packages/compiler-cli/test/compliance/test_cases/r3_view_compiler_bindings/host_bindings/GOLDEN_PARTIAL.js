@@ -19,8 +19,9 @@ HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER",
         }] }); })();
 export class MyModule {
 }
+MyModule.ɵfac = function MyModule_Factory(t) { return new (t || MyModule)(); };
 MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
-MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostBindingDir] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
@@ -37,6 +38,7 @@ export declare class HostBindingDir {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<HostBindingDir, "[hostBindingDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof HostBindingDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -56,8 +58,9 @@ HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER",
     }], null, null); })();
 export class MyModule {
 }
+MyModule.ɵfac = function MyModule_Factory(t) { return new (t || MyModule)(); };
 MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
-MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostBindingDir] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
@@ -76,6 +79,7 @@ export declare class HostBindingDir {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<HostBindingDir, "[hostBindingDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof HostBindingDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -98,8 +102,9 @@ HostBindingComp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER"
     }], null, null); })();
 export class MyModule {
 }
+MyModule.ɵfac = function MyModule_Factory(t) { return new (t || MyModule)(); };
 MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
-MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostBindingComp] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
@@ -116,6 +121,7 @@ export declare class HostBindingComp {
     static ɵcmp: i0.ɵɵComponentDefWithMeta<HostBindingComp, "host-binding-comp", never, {}, {}, never, never>;
 }
 export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof HostBindingComp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -138,8 +144,9 @@ HostAttributeDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER
     }], null, null); })();
 export class MyModule {
 }
+MyModule.ɵfac = function MyModule_Factory(t) { return new (t || MyModule)(); };
 MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
-MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostAttributeDir] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
@@ -156,6 +163,7 @@ export declare class HostAttributeDir {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<HostAttributeDir, "[hostAttributeDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof HostAttributeDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -175,8 +183,9 @@ HostAttributeDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER
     }], null, null); })();
 export class MyModule {
 }
+MyModule.ɵfac = function MyModule_Factory(t) { return new (t || MyModule)(); };
 MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
-MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostAttributeDir] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
@@ -192,6 +201,7 @@ export declare class HostAttributeDir {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<HostAttributeDir, "[hostAttributeDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof HostAttributeDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -232,8 +242,9 @@ HostAttributeDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER
     }], null, null); })();
 export class MyModule {
 }
+MyModule.ɵfac = function MyModule_Factory(t) { return new (t || MyModule)(); };
 MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
-MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostAttributeComp, HostAttributeDir] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
@@ -253,6 +264,7 @@ export declare class HostAttributeDir {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<HostAttributeDir, "[hostAttributeDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof HostAttributeComp, typeof HostAttributeDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -619,8 +631,9 @@ HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER",
         }] }); })();
 export class MyModule {
 }
+MyModule.ɵfac = function MyModule_Factory(t) { return new (t || MyModule)(); };
 MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
-MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostBindingDir] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
@@ -639,6 +652,7 @@ export declare class HostBindingDir {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<HostBindingDir, "[hostBindingDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof HostBindingDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -667,8 +681,9 @@ HostBindingDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER",
         }] }); })();
 export class MyModule {
 }
+MyModule.ɵfac = function MyModule_Factory(t) { return new (t || MyModule)(); };
 MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
-MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
 (function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [HostBindingDir] }); })();
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
@@ -687,6 +702,7 @@ export declare class HostBindingDir {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<HostBindingDir, "[hostBindingDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
+    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof HostBindingDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
