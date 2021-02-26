@@ -101,6 +101,14 @@ export class NgModuleSymbol extends SemanticSymbol {
     return false;
   }
 
+  isTypeCheckApiAffected(previousSymbol: SemanticSymbol): boolean {
+    if (!(previousSymbol instanceof NgModuleSymbol)) {
+      return true;
+    }
+
+    return false;
+  }
+
   addRemotelyScopedComponent(
       component: SemanticSymbol, usedDirectives: SemanticReference[],
       usedPipes: SemanticReference[]): void {

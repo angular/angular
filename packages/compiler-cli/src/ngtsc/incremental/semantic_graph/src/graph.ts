@@ -16,6 +16,7 @@ export interface SemanticDependencyResult {
    * The files that need to be re-emitted.
    */
   needsEmit: Set<AbsoluteFsPath>;
+  needsTypeCheckEmit: Set<AbsoluteFsPath>;
 
   /**
    * The newly built graph that represents the current compilation.
@@ -31,6 +32,10 @@ export interface SemanticDependencyResult {
  */
 export class OpaqueSymbol extends SemanticSymbol {
   isPublicApiAffected(): false {
+    return false;
+  }
+
+  isTypeCheckApiAffected(): false {
     return false;
   }
 }
@@ -148,13 +153,16 @@ export class SemanticDepGraphUpdater {
       // logically changed.
       return {
         needsEmit: new Set<AbsoluteFsPath>(),
+        needsTypeCheckEmit: new Set<AbsoluteFsPath>(),
         newGraph: this.newGraph,
       };
     }
 
     const needsEmit = this.determineInvalidatedFiles(this.priorGraph);
+    const needsTypeCheckEmit = this.determineInvalidatedTypeCheckFiles(this.priorGraph);
     return {
       needsEmit,
+      needsTypeCheckEmit,
       newGraph: this.newGraph,
     };
   }
@@ -187,6 +195,37 @@ export class SemanticDepGraphUpdater {
     }
 
     return needsEmit;
+  }
+
+  private determineInvalidatedTypeCheckFiles(priorGraph: SemanticDepGraph): Set<AbsoluteFsPath> {
+    const isTypeCheckApiAffected = new Set<SemanticSymbol>();
+
+    // The first phase is to collect all symbols which have their public API affected. Any symbols
+    // that cannot be matched up with a symbol from the prior graph are considered affected.
+    for (const symbol of this.newGraph.symbolByDecl.values()) {
+      const previousSymbol = priorGraph.getEquivalentSymbol(symbol);
+      if (previousSymbol === null || symbol.isTypeCheckApiAffected(previousSymbol)) {
+        isTypeCheckApiAffected.add(symbol);
+      }
+    }
+
+    // The second phase is to find all symbols for which the emit result is affected, either because
+    // their used declarations have changed or any of those used declarations has had its public API
+    // affected as determined in the first phase.
+    const needsTypeCheckEmit = new Set<AbsoluteFsPath>();
+    for (const symbol of this.newGraph.symbolByDecl.values()) {
+      if (symbol.isTypeCheckBlockAffected === undefined) {
+        continue;
+      }
+
+      const previousSymbol = priorGraph.getEquivalentSymbol(symbol);
+      if (previousSymbol === null ||
+          symbol.isTypeCheckBlockAffected(previousSymbol, isTypeCheckApiAffected)) {
+        needsTypeCheckEmit.add(symbol.path);
+      }
+    }
+
+    return needsTypeCheckEmit;
   }
 
   getSemanticReference(decl: ClassDeclaration, expr: Expression): SemanticReference {

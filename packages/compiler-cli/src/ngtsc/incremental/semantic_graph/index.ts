@@ -8,4 +8,5 @@
 
 export {SemanticReference, SemanticSymbol} from './src/api';
 export {SemanticDepGraph, SemanticDepGraphUpdater} from './src/graph';
+export {extractSemanticTypeParameters, isTypeParametersEqual, SemanticTypeParameter} from './src/type_parameters';
 export {isArrayEqual, isReferenceEqual, isSymbolEqual} from './src/util';

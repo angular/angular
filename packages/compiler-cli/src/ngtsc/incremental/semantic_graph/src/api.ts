@@ -67,9 +67,35 @@ export abstract class SemanticSymbol {
    *
    * @param previousSymbol The equivalent symbol from a prior compilation. Note that it may be a
    * different type of symbol, if e.g. a Component was changed into a Directive with the same name.
-   * @param publicApiAffected The set of symbols which of which the public API has changed.
+   * @param publicApiAffected The set of symbols of which the public API has changed.
    */
   isEmitAffected?(previousSymbol: SemanticSymbol, publicApiAffected: Set<SemanticSymbol>): boolean;
+
+  /**
+   * Similar to `isPublicApiAffected`, but here equivalent symbol from a prior compilation needs
+   * to be compared to see if the type-check block of components that use this symbol is affected.
+   *
+   * This method determines whether a change to _this_ symbol require the symbols that
+   * use to this symbol to have their type-check block regenerated.
+   *
+   * Note: `previousSymbol` is obtained from the most recently succeeded compilation. Symbols of
+   * failed compilations are never provided.
+   *
+   * @param previousSymbol The symbol from a prior compilation.
+   */
+  abstract isTypeCheckApiAffected(previousSymbol: SemanticSymbol): boolean;
+
+  /**
+   * Similar to `isEmitAffected`, but focused on the type-check block of this symbol. This method
+   * determines whether a change to _other_ symbols, i.e. those present in `typeCheckApiAffected`,
+   * should cause _this_ symbol's type-check block to be regenerated.
+   *
+   * @param previousSymbol The equivalent symbol from a prior compilation. Note that it may be a
+   * different type of symbol, if e.g. a Component was changed into a Directive with the same name.
+   * @param typeCheckApiAffected The set of symbols of which the type-check API has changed.
+   */
+  isTypeCheckBlockAffected?
+      (previousSymbol: SemanticSymbol, typeCheckApiAffected: Set<SemanticSymbol>): boolean;
 }
 
 /**

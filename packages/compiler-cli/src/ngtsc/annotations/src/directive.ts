@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFromSourceFile} from '../../file_system';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {isArrayEqual, SemanticSymbol} from '../../incremental/semantic_graph';
+import {extractSemanticTypeParameters, isArrayEqual, isTypeParametersEqual, SemanticSymbol, SemanticTypeParameter} from '../../incremental/semantic_graph';
 import {ClassPropertyMapping, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {extractDirectiveTypeCheckMeta} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
@@ -53,10 +53,13 @@ export interface DirectiveHandlerData {
  * from this symbol.
  */
 export class DirectiveSymbol extends SemanticSymbol {
+  baseClass: SemanticSymbol|null = null;
+
   constructor(
       decl: ClassDeclaration, public readonly selector: string|null,
       public readonly inputs: string[], public readonly outputs: string[],
-      public readonly exportAs: string[]|null) {
+      public readonly exportAs: string[]|null,
+      public readonly typeParameters: SemanticTypeParameter[]|null) {
     super(decl);
   }
 
@@ -77,6 +80,26 @@ export class DirectiveSymbol extends SemanticSymbol {
         !isArrayEqual(this.inputs, previousSymbol.inputs) ||
         !isArrayEqual(this.outputs, previousSymbol.outputs) ||
         !isArrayEqual(this.exportAs, previousSymbol.exportAs);
+  }
+
+  isTypeCheckApiAffected(previousSymbol: SemanticSymbol): boolean {
+    // If the public API of the directive has changed, then so has its type-check API.
+    if (this.isPublicApiAffected(previousSymbol)) {
+      return true;
+    }
+
+    if (!(previousSymbol instanceof DirectiveSymbol)) {
+      return true;
+    }
+
+    // The type parameters of a directive are emitted into the type constructors in the type-check
+    // block of a component, so if the type parameters are not considered equal then consider the
+    // type-check API of this directive to be affected.
+    if (!isTypeParametersEqual(this.typeParameters, previousSymbol.typeParameters)) {
+      return true;
+    }
+
+    return false;
   }
 }
 
@@ -151,9 +174,11 @@ export class DirectiveDecoratorHandler implements
   }
 
   symbol(node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>): DirectiveSymbol {
+    const typeParameters = extractSemanticTypeParameters(node);
+
     return new DirectiveSymbol(
         node, analysis.meta.selector, analysis.inputs.propertyNames, analysis.outputs.propertyNames,
-        analysis.meta.exportAs);
+        analysis.meta.exportAs, typeParameters);
   }
 
   register(node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>): void {
