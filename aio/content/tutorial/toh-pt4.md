@@ -182,9 +182,10 @@ which is an inherently _asynchronous_ operation.
 
 The `HeroService` must wait for the server to respond,
 `getHeroes()` cannot return immediately with hero data,
-and the browser will not block while the service waits.
+and the browser will block while the service waits.
 
-`HeroService.getHeroes()` must have an _asynchronous signature_ of some kind.
+For the application to function while `HeroService.getHeroes()` waits
+for data it must have an _asynchronous signature_ of some kind.
 
 In this tutorial, `HeroService.getHeroes()` will return an `Observable`
 because it will eventually use the Angular `HttpClient.get` method to fetch the heroes
