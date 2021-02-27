@@ -282,6 +282,12 @@
             "title": "Scully",
             "logo": "https://raw.githubusercontent.com/scullyio/scully/main/assets/logos/PNG/Green/scullyio-logo-green.png",
             "url": "https://scully.io"
+          },
+          "ng-mocks": {
+            "desc": "A testing library for creating mock services, components, directives, pipes and modules out of annoying dependencies in unit tests.",
+            "title": "ng-mocks",
+            "logo": "",
+            "url": "https://github.com/ike18t/ng-mocks#readme"
           }
         }
       },
