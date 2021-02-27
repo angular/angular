@@ -4,7 +4,8 @@
   "description": "Angular - library for localizing messages",
   "bin": {
     "localize-translate": "./src/tools/src/translate/main.js",
-    "localize-extract": "./src/tools/src/extract/main.js"
+    "localize-extract": "./src/tools/src/extract/main.js",
+    "localize-migrate": "./src/tools/src/migrate/main.js"
   },
   "author": "angular",
   "license": "MIT",
