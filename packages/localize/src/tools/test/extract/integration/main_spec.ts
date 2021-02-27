@@ -494,6 +494,54 @@ runInNativeFileSystem(() => {
           `}`,
         ].join('\n'));
       });
+
+      it('should generate the migration map file, if requested', () => {
+        const migrationMapFile = fs.resolve(rootPath, 'migration-map.json');
+
+        extractTranslations({
+          rootPath,
+          sourceLocale: 'en',
+          sourceFilePaths: [sourceFilePath],
+          format: 'json',
+          outputPath,
+          logger,
+          useSourceMaps: false,
+          useLegacyIds: true,
+          duplicateMessageHandling: 'ignore',
+          fileSystem: fs,
+          migrationMapFile
+        });
+
+        expect(fs.readFile(migrationMapFile)).toEqual([
+          `{`,
+          `  "1234567890123456789012345678901234567890": "273296103957933077",`,
+          `  "12345678901234567890": "273296103957933077"`,
+          `}`,
+        ].join('\n'));
+      });
+
+      it('should log a warning if there are no legacy message IDs to migrate', () => {
+        const migrationMapFile = fs.resolve(rootPath, 'migration-map.json');
+
+        extractTranslations({
+          rootPath,
+          sourceLocale: 'en',
+          sourceFilePaths: [textFile1],
+          format: 'json',
+          outputPath,
+          logger,
+          useSourceMaps: false,
+          useLegacyIds: true,
+          duplicateMessageHandling: 'ignore',
+          fileSystem: fs,
+          migrationMapFile: migrationMapFile
+        });
+
+        expect(fs.readFile(migrationMapFile)).toBe('{}');
+        expect(logger.logs.warn).toEqual([
+          ['Could not find any legacy message IDs in source files.']
+        ]);
+      });
     });
   });
 });

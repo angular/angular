@@ -23,6 +23,7 @@ import {Xliff1TranslationSerializer} from './translation_files/xliff1_translatio
 import {Xliff2TranslationSerializer} from './translation_files/xliff2_translation_serializer';
 import {XmbTranslationSerializer} from './translation_files/xmb_translation_serializer';
 import {FormatOptions, parseFormatOptions} from './translation_files/format_options';
+import {LegacyMessageIdMigrationSerializer} from './translation_files/legacy_message_id_migration_serializer';
 
 if (require.main === module) {
   process.title = 'Angular Localization Message Extractor (localize-extract)';
@@ -95,6 +96,11 @@ if (require.main === module) {
             default: 'warning',
             type: 'string',
           })
+          .option('migrationMapFile', {
+            describe:
+                'Path to where the legacy message ID migration mapping file will be written. Either absolute or relative to the current working directory',
+            type: 'string',
+          })
           .strict()
           .help()
           .parse(args);
@@ -122,6 +128,7 @@ if (require.main === module) {
     duplicateMessageHandling,
     formatOptions,
     fileSystem,
+    migrationMapFile: options.migrationMapFile,
   });
 }
 
@@ -173,6 +180,12 @@ export interface ExtractTranslationsOptions {
    * The file-system abstraction to use.
    */
   fileSystem: FileSystem;
+
+  /**
+   * Path to where the legacy message ID migration mapping file will be written.
+   * This should be relative to the root path.
+   */
+  migrationMapFile?: string;
 }
 
 export function extractTranslations({
@@ -187,6 +200,7 @@ export function extractTranslations({
   duplicateMessageHandling,
   formatOptions = {},
   fileSystem: fs,
+  migrationMapFile,
 }: ExtractTranslationsOptions) {
   const basePath = fs.resolve(rootPath);
   const extractor = new MessageExtractor(fs, logger, {basePath, useSourceMaps});
@@ -207,6 +221,21 @@ export function extractTranslations({
   const translationFile = serializer.serialize(messages);
   fs.ensureDir(fs.dirname(outputPath));
   fs.writeFile(outputPath, translationFile);
+
+  if (migrationMapFile) {
+    const legacyMessageIdMigrationSerializer = new LegacyMessageIdMigrationSerializer();
+    const mappingFile = legacyMessageIdMigrationSerializer.serialize(messages);
+    const mappingPath = fs.resolve(migrationMapFile);
+
+    // Log a warning if there are no messages to be migrated, because
+    // passing it into the migration afterwards will be a no-op.
+    if (!legacyMessageIdMigrationSerializer.hasMigratableIds(messages)) {
+      logger.warn('Could not find any legacy message IDs in source files.');
+    }
+
+    fs.ensureDir(fs.dirname(mappingPath));
+    fs.writeFile(mappingPath, mappingFile);
+  }
 
   if (diagnostics.messages.length) {
     logger.warn(diagnostics.formatDiagnostics('Messages extracted with warnings'));
