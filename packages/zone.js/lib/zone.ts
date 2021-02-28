@@ -361,6 +361,7 @@ interface _ZonePrivate {
   patchCallbacks:
       (api: _ZonePrivate, target: any, targetName: string, method: string,
        callbacks: string[]) => void;
+  patchObserver: (global: any, api: _ZonePrivate, observerTarget: string) => void;
   patchXHR: (global: any) => void;
   patchFileReader: (global: any) => void;
   getGlobalObjects: () => {
@@ -1429,6 +1430,7 @@ const Zone: ZoneType = (function(global: any) {
     attachOriginToPatched: () => noop,
     _redefineProperty: () => noop,
     patchCallbacks: () => noop,
+    patchObserver: () => noop,
     patchXHR: () => noop,
     patchFileReader: () => noop,
   };

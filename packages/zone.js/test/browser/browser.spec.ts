@@ -2649,6 +2649,42 @@ describe('Zone', function() {
 
               expect(entries.length).toBe(1);
               expect(entries[0].target).toBe(div);
+              observer.disconnect();
+              done();
+            });
+
+            zone.run(() => {
+              observer.observe(div);
+            });
+
+            document.body.appendChild(div);
+          });
+
+          it('ResizeObserver callback should schedule microTask', (done) => {
+            const ResizeObserver = (window as any)['ResizeObserver'];
+            const div = document.createElement('div');
+            const logs: string[] = [];
+            const zone = Zone.current.fork({
+              name: 'observer',
+              onScheduleTask: (delegate, curr, target, task) => {
+                logs.push(`scheduleTask ${task.source} ${task.type}`);
+                return delegate.scheduleTask(target, task);
+              },
+              onInvokeTask: (delegate, curr, target, task, applyThis, applyArgs) => {
+                logs.push(`invokeTask ${task.source} ${task.type}`);
+                return delegate.invokeTask(target, task, applyThis, applyArgs);
+              }
+            });
+            const observer = new ResizeObserver((entries: any, ob: any) => {
+              expect(Zone.current.name).toEqual(zone.name);
+
+              expect(entries.length).toBe(1);
+              expect(entries[0].target).toBe(div);
+              expect(logs).toEqual([
+                'scheduleTask ResizeObserver.observe microTask',
+                'invokeTask ResizeObserver.observe microTask'
+              ]);
+              observer.disconnect();
               done();
             });
 
@@ -2676,6 +2712,7 @@ describe('Zone', function() {
                  });
                  count++;
                  if (count === 2) {
+                   observer.disconnect();
                    done();
                  }
                });

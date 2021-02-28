@@ -13,6 +13,7 @@
 import {findEventTasks} from '../common/events';
 import {patchTimer} from '../common/timers';
 import {patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, zoneSymbol,} from '../common/utils';
+import {patchObserver} from './browser-util';
 
 import {patchCustomElements} from './custom-elements';
 import {patchMacroTaskWithEvent} from './event-macrotask';
@@ -104,89 +105,7 @@ Zone.__load_patch('MutationObserver', (global: any, Zone: ZoneType, api: _ZonePr
 });
 
 Zone.__load_patch('IntersectionObserver', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
-  function patchIntersectionObserver() {
-    if (global[Zone.__symbol__('IntersectionObserver')]) {
-      return;
-    }
-    const OriginalClass = global[Zone.__symbol__('IntersectionObserver')] =
-        global['IntersectionObserver'];
-    global['IntersectionObserver'] = function() {
-      const args = Array.prototype.slice.call(arguments);
-      const callback: Function = args[0];
-      const wrappedCallback = function(
-          this: unknown, entries: IntersectionObserverEntry[], observer: IntersectionObserver) {
-        const zone: Zone = (this as any)[Zone.__symbol__('zone')];
-        const isMultipleZone = (this as any)[Zone.__symbol__('multipleZone')];
-        if (zone && !isMultipleZone) {
-          zone.scheduleMicroTask(`IntersectionObserver.observe`, () => {
-            callback.call(this, entries, observer);
-          });
-          return;
-        } else if (isMultipleZone) {
-          const targetZoneMaps: any = (this as any)[Zone.__symbol__('targetZoneMaps')];
-          const zoneEntries:
-              {[name: string]: {zone: Zone, entries: IntersectionObserverEntry[]}} = {};
-          for (let i = 0; i < entries.length; i++) {
-            const entry = entries[i];
-            for (let j = 0; j < targetZoneMaps.length; j++) {
-              const targetZone = targetZoneMaps[j];
-              if (entry.target === targetZone.target) {
-                let zoneEntry = zoneEntries[targetZone.zone.name];
-                if (!zoneEntry) {
-                  zoneEntry =
-                      zoneEntries[targetZone.zone.name] = {zone: targetZone.zone, entries: []};
-                }
-                zoneEntry.entries.push(entry);
-              }
-            }
-          }
-          Object.values(zoneEntries).forEach(zoneEntry => {
-            zoneEntry.zone.scheduleMicroTask(`IntersectionObserver.observe`, () => {
-              callback.call(this, zoneEntry.entries, observer);
-            });
-          });
-        } else {
-          return callback.call(this, entries, observer);
-        }
-      };
-      args[0] = wrappedCallback;
-      return new OriginalClass(...args);
-    };
-    global['IntersectionObserver'][Zone.__symbol__('OriginalDelegate')] = OriginalClass;
-    const proto = global['IntersectionObserver'].prototype = OriginalClass.prototype;
-    if (proto) {
-      patchMethod(proto, 'observe', delegate => (self: any, args: any[]) => {
-        let isMultipleZone = self[Zone.__symbol__('multipleZone')];
-        const currZone = self[Zone.__symbol__('zone')];
-        let targetZoneMaps: any = self[Zone.__symbol__('targetZoneMaps')];
-        if (!targetZoneMaps) {
-          targetZoneMaps = self[Zone.__symbol__('targetZoneMaps')] = [];
-        }
-        if (!currZone) {
-          self[Zone.__symbol__('zone')] = Zone.current;
-        } else if (currZone !== Zone.current) {
-          // More than one zone called observe
-          isMultipleZone = self[Zone.__symbol__('multipleZone')] = true;
-        }
-        targetZoneMaps.push({zone: Zone.current, target: args[0]});
-
-        return delegate.apply(self, args);
-      });
-
-      patchMethod(proto, 'unobserve', delegate => (self: any, args: any[]) => {
-        const targetZoneMaps: any = self[Zone.__symbol__('targetZoneMaps')] = [];
-        if (targetZoneMaps) {
-          for (let i = 0; i < targetZoneMaps.length; i++) {
-            if (targetZoneMaps[i].target === args[0]) {
-              targetZoneMaps.splice(i, 1);
-            }
-          }
-        }
-        return delegate.apply(self, args);
-      });
-    }
-  }
-  patchIntersectionObserver();
+  patchObserver(global, api, 'IntersectionObserver');
 });
 
 Zone.__load_patch('FileReader', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
