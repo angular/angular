@@ -150,10 +150,30 @@ export class ComponentSymbol extends DirectiveSymbol {
       return true;
     }
 
-    // Create an equality function that considers symbols equal if they represent the same
-    // declaration, but only if the symbol in the current compilation does not have its type-check
+    // To verify that a used directive is not affected we need to verify that its full inheritance
+    // chain is not present in `typeCheckApiAffected`.
+    const isInheritanceChainAffected = (symbol: SemanticSymbol): boolean => {
+      let currentSymbol: SemanticSymbol|null = symbol;
+      while (currentSymbol instanceof DirectiveSymbol) {
+        if (typeCheckApiAffected.has(currentSymbol)) {
+          return true;
+        }
+        currentSymbol = currentSymbol.baseClass;
+      }
+
+      return false;
+    };
+
+    // Create an equality function that considers directives equal if they represent the same
+    // declaration and if the symbol and all symbols it inherits from in the current compilation
+    // do not have their type-check API affected.
+    const isDirectiveUnaffected = (current: SemanticReference, previous: SemanticReference) =>
+        isReferenceEqual(current, previous) && !isInheritanceChainAffected(current.symbol);
+
+    // Create an equality function that considers pipes equal if they represent the same
+    // declaration and if the symbol in the current compilation does not have its type-check
     // API affected.
-    const isSymbolUnaffected = (current: SemanticReference, previous: SemanticReference) =>
+    const isPipeUnaffected = (current: SemanticReference, previous: SemanticReference) =>
         isReferenceEqual(current, previous) && !typeCheckApiAffected.has(current.symbol);
 
     // The emit of a type-check block of a component is affected if either of the following is true:
@@ -161,8 +181,9 @@ export class ComponentSymbol extends DirectiveSymbol {
     //     type-check API changed.
     //  2. The list of used pipes has changed, or any of those pipes have had their type-check API
     //     changed.
-    return !isArrayEqual(this.usedDirectives, previousSymbol.usedDirectives, isSymbolUnaffected) ||
-        !isArrayEqual(this.usedPipes, previousSymbol.usedPipes, isSymbolUnaffected);
+    return !isArrayEqual(
+               this.usedDirectives, previousSymbol.usedDirectives, isDirectiveUnaffected) ||
+        !isArrayEqual(this.usedPipes, previousSymbol.usedPipes, isPipeUnaffected);
   }
 }
 
@@ -543,6 +564,10 @@ export class ComponentDecoratorHandler implements
   resolve(
       node: ClassDeclaration, analysis: Readonly<ComponentAnalysisData>,
       symbol: ComponentSymbol): ResolveResult<ComponentResolutionData> {
+    if (this.semanticDepGraphUpdater !== null && analysis.baseClass instanceof Reference) {
+      symbol.baseClass = this.semanticDepGraphUpdater.getSymbol(analysis.baseClass.node);
+    }
+
     if (analysis.isPoisoned && !this.usePoisonedData) {
       return {};
     }

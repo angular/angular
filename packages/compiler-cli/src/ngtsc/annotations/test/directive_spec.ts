@@ -169,6 +169,7 @@ runInEachFileSystem(() => {
     const handler = new DirectiveDecoratorHandler(
         reflectionHost, evaluator, scopeRegistry, scopeRegistry, metaReader,
         NOOP_DEFAULT_IMPORT_RECORDER, injectableRegistry, /*isCore*/ false,
+        /*semanticDepGraphUpdater*/ null,
         /*annotateForClosureCompiler*/ false,
         /*detectUndecoratedClassesWithAngularFeatures*/ false);
 

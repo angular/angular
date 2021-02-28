@@ -946,8 +946,8 @@ export class NgCompiler {
       // clang-format off
         new DirectiveDecoratorHandler(
             reflector, evaluator, metaRegistry, scopeRegistry, metaReader,
-            defaultImportTracker, injectableRegistry, isCore, this.closureCompilerEnabled,
-            compileUndecoratedClassesWithAngularFeatures,
+            defaultImportTracker, injectableRegistry, isCore, semanticDepGraphUpdater,
+          this.closureCompilerEnabled, compileUndecoratedClassesWithAngularFeatures,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed

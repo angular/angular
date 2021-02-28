@@ -424,5 +424,424 @@ runInEachFileSystem(() => {
         env.driveMain();
       });
     });
+
+    describe('inheritance', () => {
+      it('should type-check derived directives when the public API of the parent class is affected',
+         () => {
+           // This test verifies that an indirect change to the public API of `Dir` as caused by a
+           // change to `Dir`'s base class `Parent` causes the type-check result of component `Cmp`
+           // that uses `Dir` to be updated accordingly.
+           env.write('parent.ts', `
+             import {Directive, Input} from '@angular/core';
+
+             @Directive()
+             export class Parent {
+               @Input()
+               parent!: string;
+             }
+           `);
+           env.write('dir.ts', `
+             import {Directive, Input} from '@angular/core';
+             import {Parent} from './parent';
+
+             @Directive({
+               selector: '[dir]',
+             })
+             export class Dir extends Parent {
+               @Input()
+               dir!: string;
+             }
+           `);
+           env.write('cmp.ts', `
+             import {Component} from '@angular/core';
+
+             @Component({
+               selector: 'test-cmp',
+               template: '<div [dir]="foo" [parent]="foo"></div>',
+             })
+             export class Cmp {
+               foo = 'foo';
+             }
+           `);
+           env.write('mod.ts', `
+             import {NgModule} from '@angular/core';
+             import {Cmp} from './cmp';
+             import {Dir} from './dir';
+
+             @NgModule({
+               declarations: [Cmp, Dir],
+             })
+             export class Mod {}
+           `);
+           env.driveMain();
+
+           // Now remove an input from `Parent`. This invalidates the binding in `Cmp`'s template,
+           // so an error diagnostic should be reported.
+           env.write('parent.ts', `
+             import {Directive, Input} from '@angular/core';
+
+             @Directive()
+             export class Parent {
+
+             }
+           `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toContain(`Can't bind to 'parent' since it isn't a known property of 'div'.`);
+         });
+
+      it('should type-check derived directives when the public API of the grandparent class is affected',
+         () => {
+           // This test verifies that an indirect change to the public API of `Dir` as caused by a
+           // change to `Dir`'s transitive base class `Grandparent` causes the type-check result of
+           // component `Cmp` that uses `Dir` to be updated accordingly.
+           env.write('grandparent.ts', `
+             import {Directive, Input} from '@angular/core';
+
+             @Directive()
+             export class Grandparent {
+               @Input()
+               grandparent!: string;
+             }
+           `);
+           env.write('parent.ts', `
+             import {Directive, Input} from '@angular/core';
+             import {Grandparent} from './grandparent';
+
+             @Directive()
+             export class Parent extends Grandparent {
+               @Input()
+               parent!: string;
+             }
+           `);
+           env.write('dir.ts', `
+             import {Directive, Input} from '@angular/core';
+             import {Parent} from './parent';
+
+             @Directive({
+               selector: '[dir]',
+             })
+             export class Dir extends Parent {
+               @Input()
+               dir!: string;
+             }
+           `);
+           env.write('cmp.ts', `
+             import {Component} from '@angular/core';
+
+             @Component({
+               selector: 'test-cmp',
+               template: '<div [dir]="foo" [parent]="foo" [grandparent]="foo"></div>',
+             })
+             export class Cmp {
+               foo = 'foo';
+             }
+           `);
+           env.write('mod.ts', `
+             import {NgModule} from '@angular/core';
+             import {Cmp} from './cmp';
+             import {Dir} from './dir';
+
+             @NgModule({
+               declarations: [Cmp, Dir],
+             })
+             export class Mod {}
+           `);
+           env.driveMain();
+
+           // Now remove an input from `Grandparent`. This invalidates the binding in `Cmp`'s
+           // template, so an error diagnostic should be reported.
+           env.write('grandparent.ts', `
+             import {Directive, Input} from '@angular/core';
+
+             @Directive()
+             export class Grandparent {
+
+             }
+          `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toContain(`Can't bind to 'grandparent' since it isn't a known property of 'div'.`);
+         });
+
+      it('should type-check derived directives when a base class is added to a grandparent', () => {
+        // This test verifies that an indirect change to the public API of `Dir` as caused by
+        // adding a base class `Grandgrandparent` to `Dir`'s transitive base class `Grandparent`
+        // causes the type-check result of component `Cmp` that uses `Dir` to be
+        // updated accordingly.
+        env.write('grandgrandparent.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive()
+          export class Grandgrandparent {
+            @Input()
+            grandgrandparent!: string;
+          }
+        `);
+        env.write('grandparent.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive()
+          export class Grandparent {
+            @Input()
+            grandparent!: string;
+          }
+        `);
+        env.write('parent.ts', `
+          import {Directive, Input} from '@angular/core';
+          import {Grandparent} from './grandparent';
+
+          @Directive()
+          export class Parent extends Grandparent {
+            @Input()
+            parent!: string;
+          }
+        `);
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+          import {Parent} from './parent';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir extends Parent {
+            @Input()
+            dir!: string;
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div [dir]="foo" [parent]="foo" [grandgrandparent]="foo"></div>',
+          })
+          export class Cmp {
+            foo = 'foo';
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+
+        // `Cmp` already binds to the `grandgrandparent` input but it's not available, as
+        // `Granparent` does not yet extend from `Grandgrandparent`.
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain(
+                `Can't bind to 'grandgrandparent' since it isn't a known property of 'div'.`);
+
+        // Now fix the issue by adding the base class to `Grandparent`; this should allow
+        // type-checking to succeed.
+        env.write('grandparent.ts', `
+          import {Directive, Input} from '@angular/core';
+          import {Grandgrandparent} from './grandgrandparent';
+
+          @Directive()
+          export class Grandparent extends Grandgrandparent {
+            @Input()
+            grandparent!: string;
+          }
+        `);
+        env.driveMain();
+      });
+
+      it('should type-check derived directives when a base class is removed from a grandparent',
+         () => {
+           // This test verifies that an indirect change to the public API of `Dir` as caused by
+           // removing a base class `Grandgrandparent` from `Dir`'s transitive base class
+           // `Grandparent` causes the type-check result of component `Cmp` that uses `Dir` to be
+           // updated accordingly.
+           env.write('grandgrandparent.ts', `
+             import {Directive, Input} from '@angular/core';
+
+             @Directive()
+             export class Grandgrandparent {
+               @Input()
+               grandgrandparent!: string;
+             }
+           `);
+           env.write('grandparent.ts', `
+             import {Directive, Input} from '@angular/core';
+             import {Grandgrandparent} from './grandgrandparent';
+
+             @Directive()
+             export class Grandparent extends Grandgrandparent {
+               @Input()
+               grandparent!: string;
+             }
+           `);
+           env.write('parent.ts', `
+             import {Directive, Input} from '@angular/core';
+             import {Grandparent} from './grandparent';
+
+             @Directive()
+             export class Parent extends Grandparent {
+               @Input()
+               parent!: string;
+             }
+           `);
+           env.write('dir.ts', `
+             import {Directive, Input} from '@angular/core';
+             import {Parent} from './parent';
+
+             @Directive({
+               selector: '[dir]',
+             })
+             export class Dir extends Parent {
+               @Input()
+               dir!: string;
+             }
+           `);
+           env.write('cmp.ts', `
+             import {Component} from '@angular/core';
+
+             @Component({
+               selector: 'test-cmp',
+               template: '<div [dir]="foo" [parent]="foo" [grandgrandparent]="foo"></div>',
+             })
+             export class Cmp {
+               foo = 'foo';
+             }
+           `);
+           env.write('mod.ts', `
+             import {NgModule} from '@angular/core';
+             import {Cmp} from './cmp';
+             import {Dir} from './dir';
+
+             @NgModule({
+               declarations: [Cmp, Dir],
+             })
+             export class Mod {}
+           `);
+           env.driveMain();
+
+           // Removing the base class from `Grandparent` should start to report a type-check
+           // error in `Cmp`'s template, as its binding to the `grandgrandparent` input is no
+           // longer valid.
+           env.write('grandparent.ts', `
+             import {Directive, Input} from '@angular/core';
+
+             @Directive()
+             export class Grandparent {
+               @Input()
+               grandparent!: string;
+             }
+           `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toContain(
+                   `Can't bind to 'grandgrandparent' since it isn't a known property of 'div'.`);
+         });
+
+      it('should type-check derived directives when the base class of a grandparent changes',
+         () => {
+           // This test verifies that an indirect change to the public API of `Dir` as caused by
+           // changing the base class of `Dir`'s transitive base class `Grandparent` causes the
+           // type-check result of component `Cmp` that uses `Dir` to be updated accordingly.
+           env.write('grandgrandparent-a.ts', `
+             import {Directive, Input} from '@angular/core';
+
+             @Directive()
+             export class GrandgrandparentA {
+               @Input()
+               grandgrandparentA!: string;
+             }
+           `);
+           env.write('grandgrandparent-b.ts', `
+             import {Directive, Input} from '@angular/core';
+
+             @Directive()
+             export class GrandgrandparentB {
+               @Input()
+               grandgrandparentB!: string;
+             }
+           `);
+           env.write('grandparent.ts', `
+             import {Directive, Input} from '@angular/core';
+             import {GrandgrandparentA} from './grandgrandparent-a';
+
+             @Directive()
+             export class Grandparent extends GrandgrandparentA {
+               @Input()
+               grandparent!: string;
+             }
+           `);
+           env.write('parent.ts', `
+             import {Directive, Input} from '@angular/core';
+             import {Grandparent} from './grandparent';
+
+             @Directive()
+             export class Parent extends Grandparent {
+               @Input()
+               parent!: string;
+             }
+           `);
+           env.write('dir.ts', `
+             import {Directive, Input} from '@angular/core';
+             import {Parent} from './parent';
+
+             @Directive({
+               selector: '[dir]',
+             })
+             export class Dir extends Parent {
+               @Input()
+               dir!: string;
+             }
+           `);
+           env.write('cmp.ts', `
+             import {Component} from '@angular/core';
+
+             @Component({
+               selector: 'test-cmp',
+               template: '<div [dir]="foo" [parent]="foo" [grandgrandparentA]="foo"></div>',
+             })
+             export class Cmp {
+               foo = 'foo';
+             }
+           `);
+           env.write('mod.ts', `
+             import {NgModule} from '@angular/core';
+             import {Cmp} from './cmp';
+             import {Dir} from './dir';
+
+             @NgModule({
+               declarations: [Cmp, Dir],
+             })
+             export class Mod {}
+           `);
+           env.driveMain();
+
+           // Now switch the base class of `Grandparent` from `GrandgrandparentA` to
+           // `GrandgrandparentB` causes the input binding to `grandgrandparentA` to be reported as
+           // an error, as it's no longer available.
+           env.write('grandparent.ts', `
+             import {Directive, Input} from '@angular/core';
+             import {GrandgrandparentB} from './grandgrandparent-b';
+
+             @Directive()
+             export class Grandparent extends GrandgrandparentB {
+               @Input()
+               grandparent!: string;
+             }
+           `);
+           const diags = env.driveDiagnostics();
+           expect(diags.length).toBe(1);
+           expect(diags[0].messageText)
+               .toContain(
+                   `Can't bind to 'grandgrandparentA' since it isn't a known property of 'div'.`);
+         });
+    });
   });
 });

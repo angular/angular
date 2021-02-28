@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFromSourceFile} from '../../file_system';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {extractSemanticTypeParameters, isArrayEqual, isTypeParametersEqual, SemanticSymbol, SemanticTypeParameter} from '../../incremental/semantic_graph';
+import {extractSemanticTypeParameters, isArrayEqual, isSymbolEqual, isTypeParametersEqual, SemanticDepGraphUpdater, SemanticSymbol, SemanticTypeParameter} from '../../incremental/semantic_graph';
 import {ClassPropertyMapping, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {extractDirectiveTypeCheckMeta} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
@@ -99,8 +99,22 @@ export class DirectiveSymbol extends SemanticSymbol {
       return true;
     }
 
+    // Changing the base class of a directive means that its inputs/outputs etc may have changed,
+    // so the type-check block of components that use this directive needs to be regenerated.
+    if (!isBaseClassEqual(this.baseClass, previousSymbol.baseClass)) {
+      return true;
+    }
+
     return false;
   }
+}
+
+function isBaseClassEqual(current: SemanticSymbol|null, previous: SemanticSymbol|null): boolean {
+  if (current === null || previous === null) {
+    return current === previous;
+  }
+
+  return isSymbolEqual(current, previous);
 }
 
 export class DirectiveDecoratorHandler implements
@@ -110,6 +124,7 @@ export class DirectiveDecoratorHandler implements
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private metaReader: MetadataReader, private defaultImportRecorder: DefaultImportRecorder,
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
+      private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean,
       private compileUndecoratedClassesWithAngularFeatures: boolean) {}
 
@@ -203,9 +218,13 @@ export class DirectiveDecoratorHandler implements
     this.injectableRegistry.registerInjectable(node);
   }
 
-  resolve(node: ClassDeclaration, analysis: DirectiveHandlerData): ResolveResult<unknown> {
-    const diagnostics: ts.Diagnostic[] = [];
+  resolve(node: ClassDeclaration, analysis: DirectiveHandlerData, symbol: DirectiveSymbol):
+      ResolveResult<unknown> {
+    if (this.semanticDepGraphUpdater !== null && analysis.baseClass instanceof Reference) {
+      symbol.baseClass = this.semanticDepGraphUpdater.getSymbol(analysis.baseClass.node);
+    }
 
+    const diagnostics: ts.Diagnostic[] = [];
     if (analysis.providersRequiringFactory !== null &&
         analysis.meta.providers instanceof WrappedNodeExpr) {
       const providerDiagnostics = getProviderDiagnostics(
