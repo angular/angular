@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, getFileSystem, PathManipulation} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem, PathManipulation, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {PathMappings} from '../path_mappings';
 
@@ -41,21 +41,52 @@ export function getBasePaths(
           `This is likely to mess up how ngcc finds entry-points and is probably not correct.\n` +
           `Please check your path mappings configuration such as in the tsconfig.json file.`);
     }
-    Object.values(pathMappings.paths).forEach(paths => paths.forEach(path => {
-      // We only want base paths that exist and are not files
-      let basePath = fs.resolve(baseUrl, extractPathPrefix(path));
-      if (fs.exists(basePath) && fs.stat(basePath).isFile()) {
-        basePath = fs.dirname(basePath);
+    for (const paths of Object.values(pathMappings.paths)) {
+      for (const path of paths) {
+        let foundMatch = false;
+
+        // We only want base paths that exist and are not files
+        const {prefix, hasWildcard} = extractPathPrefix(path);
+        let basePath = fs.resolve(baseUrl, prefix);
+        if (fs.exists(basePath) && fs.stat(basePath).isFile()) {
+          basePath = fs.dirname(basePath);
+        }
+
+        if (fs.exists(basePath)) {
+          // The `basePath` is itself a directory
+          basePaths.push(basePath);
+          foundMatch = true;
+        }
+
+        if (hasWildcard) {
+          // The path contains a wildcard (`*`) so also try searching for directories that start
+          // with the wildcard prefix path segment.
+          const wildcardContainer = fs.dirname(basePath);
+          const wildcardPrefix = fs.basename(basePath);
+          if (isExistingDirectory(fs, wildcardContainer)) {
+            const candidates = fs.readdir(wildcardContainer);
+            for (const candidate of candidates) {
+              if (candidate.startsWith(wildcardPrefix)) {
+                const candidatePath = fs.resolve(wildcardContainer, candidate);
+                if (isExistingDirectory(fs, candidatePath)) {
+                  foundMatch = true;
+                  basePaths.push(candidatePath);
+                }
+              }
+            }
+          }
+        }
+
+        if (!foundMatch) {
+          // We neither found a direct match (i.e. `basePath` is an existing directory) nor a
+          // directory that starts with a wildcard prefix.
+          logger.debug(
+              `The basePath "${basePath}" computed from baseUrl "${baseUrl}" and path mapping "${
+                  path}" does not exist in the file-system.\n` +
+              `It will not be scanned for entry-points.`);
+        }
       }
-      if (fs.exists(basePath)) {
-        basePaths.push(basePath);
-      } else {
-        logger.debug(
-            `The basePath "${basePath}" computed from baseUrl "${baseUrl}" and path mapping "${
-                path}" does not exist in the file-system.\n` +
-            `It will not be scanned for entry-points.`);
-      }
-    }));
+    }
   }
 
   const dedupedBasePaths = dedupePaths(fs, basePaths);
@@ -70,13 +101,18 @@ export function getBasePaths(
   return dedupedBasePaths;
 }
 
+function isExistingDirectory(fs: ReadonlyFileSystem, path: AbsoluteFsPath): boolean {
+  return fs.exists(path) && fs.stat(path).isDirectory();
+}
+
 /**
  * Extract everything in the `path` up to the first `*`.
  * @param path The path to parse.
- * @returns The extracted prefix.
+ * @returns The extracted prefix and a flag to indicate whether there was a wildcard `*`.
  */
-function extractPathPrefix(path: string) {
-  return path.split('*', 1)[0];
+function extractPathPrefix(path: string): {prefix: string, hasWildcard: boolean} {
+  const [prefix, rest] = path.split('*', 2);
+  return {prefix, hasWildcard: rest !== undefined};
 }
 
 /**
