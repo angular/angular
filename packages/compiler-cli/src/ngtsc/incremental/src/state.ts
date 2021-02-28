@@ -226,6 +226,8 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
     }
     this.state.lastGood.typeCheckingResults = results;
 
+    // Delete the files for which type-check code was generated from the set of pending type-check
+    // files.
     for (const fileName of results.keys()) {
       this.state.pendingTypeCheckEmit.delete(fileName);
     }
@@ -308,6 +310,12 @@ interface BaseBuildState {
    * See the README.md for more information on this algorithm.
    */
   pendingEmit: Set<string>;
+
+  /**
+   * Similar to `pendingEmit`, but then for representing the set of files for which the type-check
+   * file should be regenerated. It behaves identically with respect to errored compilations as
+   * `pendingEmit`.
+   */
   pendingTypeCheckEmit: Set<string>;
 
 

@@ -16,6 +16,10 @@ export interface SemanticDependencyResult {
    * The files that need to be re-emitted.
    */
   needsEmit: Set<AbsoluteFsPath>;
+
+  /**
+   * The files for which the type-check block should be regenerated.
+   */
   needsTypeCheckEmit: Set<AbsoluteFsPath>;
 
   /**
@@ -30,7 +34,7 @@ export interface SemanticDependencyResult {
  * by this symbol. This allows the unresolved symbol to still be compared to a symbol from a prior
  * compilation.
  */
-export class OpaqueSymbol extends SemanticSymbol {
+class OpaqueSymbol extends SemanticSymbol {
   isPublicApiAffected(): false {
     return false;
   }
@@ -48,13 +52,10 @@ export class SemanticDepGraph {
   readonly symbolByDecl = new Map<ClassDeclaration, SemanticSymbol>();
 
   /**
-   * Registers a symbol for the provided declaration as created by the factory function. The symbol
-   * is given a unique identifier if possible, such that its equivalent symbol can be obtained from
-   * a prior graph even if its declaration node has changed across rebuilds. Symbols without an
-   * identifier are only able to find themselves in a prior graph if their declaration node is
-   * identical.
-   *
-   * @param symbol
+   * Registers a symbol in the graph. The symbol is given a unique identifier if possible, such that
+   * its equivalent symbol can be obtained from a prior graph even if its declaration node has
+   * changed across rebuilds. Symbols without an identifier are only able to find themselves in a
+   * prior graph if their declaration node is identical.
    */
   registerSymbol(symbol: SemanticSymbol): void {
     this.symbolByDecl.set(symbol.decl, symbol);
@@ -137,6 +138,9 @@ export class SemanticDepGraphUpdater {
        */
       private priorGraph: SemanticDepGraph|null) {}
 
+  /**
+   * Registers the symbol in the new graph that is being created.
+   */
   registerSymbol(symbol: SemanticSymbol): void {
     this.newGraph.registerSymbol(symbol);
   }
@@ -228,6 +232,10 @@ export class SemanticDepGraphUpdater {
     return needsTypeCheckEmit;
   }
 
+  /**
+   * Creates a `SemanticReference` for the reference to `decl` using the expression `expr`. See
+   * the documentation of `SemanticReference` for details.
+   */
   getSemanticReference(decl: ClassDeclaration, expr: Expression): SemanticReference {
     return {
       symbol: this.getSymbol(decl),
@@ -235,6 +243,10 @@ export class SemanticDepGraphUpdater {
     };
   }
 
+  /**
+   * Gets the `SemanticSymbol` that was registered for `decl` during the current compilation, or
+   * returns an opaque symbol that represents `decl`.
+   */
   getSymbol(decl: ClassDeclaration): SemanticSymbol {
     const symbol = this.newGraph.getSymbolByDecl(decl);
     if (symbol === null) {
