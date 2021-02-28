@@ -309,20 +309,11 @@ class Scheduler {
   }
 }
 
-let highPriorityScheduler: any;
-if (global[Zone.__symbol__('queueMicrotask')]) {
-  highPriorityScheduler = global[Zone.__symbol__('queueMicrotask')];
-} else if (global[Zone.__symbol__('Promise')]) {
-  highPriorityScheduler = global[Zone.__symbol__('Promise')].resolve()[Zone.__symbol__('then')];
-} else if (global[Zone.__symbol__('setTimeout')]) {
-  highPriorityScheduler = global[Zone.__symbol__('setTimeout')];
-}
-
-let lowPriorityScheduler: any;
+let scheduler: any;
 if (global['requestIdleCallback']) {
-  lowPriorityScheduler = global['requestIdleCallback'];
+  scheduler = global['requestIdleCallback'];
 } else if (global[Zone.__symbol__('setTimeout')]) {
-  lowPriorityScheduler = global[Zone.__symbol__('setTimeout')];
+  scheduler = global[Zone.__symbol__('setTimeout')];
 }
 
 class FakeAsyncTestZoneSpec implements ZoneSpec {
@@ -577,12 +568,13 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
     }
   }
 
-  private _flushObservers(
-      scheduler: (fn: Function) => void, getObservers: () => MicroTaskScheduledFunction[],
-      callback: () => void) {
+  flushObservers(callback: () => void) {
+    if (!scheduler) {
+      throw new Error('No scheduler to trigger observer callbacks.');
+    }
     const currZone = Zone.current;
     scheduler(() => {
-      const observers = getObservers();
+      const observers = this._highPriorityObservers.concat(this._lowPriorityObservers);
       if (observers.length === 0) {
         return currZone.run(callback);
       }
@@ -612,15 +604,6 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
         });
       });
       currZone.run(callback);
-    });
-  }
-
-  flushObservers(callback: () => {}): void {
-    if (!highPriorityScheduler || !lowPriorityScheduler) {
-      throw new Error('No scheduler to trigger observer callbacks.');
-    }
-    this._flushObservers(highPriorityScheduler, () => this._highPriorityObservers, () => {
-      this._flushObservers(lowPriorityScheduler, () => this._lowPriorityObservers, callback);
     });
   }
 
@@ -698,7 +681,9 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
         if (task.source === 'MutationObserver.observe') {
           meta.zone = task.zone;
           this._highPriorityObservers.push(meta);
-        } else if (task.source === 'IntersectionObserver.observe') {
+        } else if (
+            task.source === 'IntersectionObserver.observe' ||
+            task.source === 'ResizeObserver.observe') {
           meta.zone = task.zone;
           this._lowPriorityObservers.push(meta);
         } else {

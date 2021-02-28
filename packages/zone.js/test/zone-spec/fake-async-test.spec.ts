@@ -972,6 +972,41 @@ describe('FakeAsyncTestZoneSpec', () => {
              });
            }));
 
+  describe('ResizeObserver', ifEnvSupports('ResizeObserver', () => {
+             it('should run observe callback as microTask in fakeAsync()', (done: DoneFn) => {
+               const ResizeObserver = (window as any)['ResizeObserver'];
+               const div = document.createElement('div');
+
+               fakeAsyncTestZone.run(() => {
+                 const zone = Zone.current.fork({name: 'observer'});
+                 let observer: any;
+                 let entries: any;
+                 let zoneName: string;
+                 const ob = new ResizeObserver((e: any, o: any) => {
+                   entries = e;
+                   observer = o;
+                   zoneName = Zone.current.name;
+                   ob.disconnect();
+                 });
+
+                 zone.run(() => {
+                   ob.observe(div);
+                 });
+
+                 document.body.appendChild(div);
+
+                 testZoneSpec.flushObservers(() => {
+                   expect(zoneName).toEqual(zone.name);
+                   expect(entries.length).toBe(1);
+                   expect(entries[0].target).toBe(div);
+                   expect(ob).toEqual(observer);
+                   done();
+                   testZoneSpec.flushMicrotasks();
+                 });
+               });
+             });
+           }));
+
   describe('fetch', ifEnvSupports('fetch', () => {
              it('should get response from fetch', () => {
                const fetchPatch = loadFakeAsyncFetch(global);
