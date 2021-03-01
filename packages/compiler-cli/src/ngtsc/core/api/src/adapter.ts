@@ -28,7 +28,7 @@ export type ExtendedCompilerHostMethods =
     'getCurrentDirectory'|
     // Additional methods of `ExtendedTsCompilerHost` related to resource files (e.g. HTML
     // templates). These are optional.
-    'getModifiedResourceFiles'|'readResource'|'resourceNameToFileName';
+    'getModifiedResourceFiles'|'readResource'|'resourceNameToFileName'|'transformResource';
 
 /**
  * Adapter for `NgCompiler` that allows it to be used in various circumstances, such as
