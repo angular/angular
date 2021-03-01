@@ -22,7 +22,7 @@ export function throwMultipleComponentError(tNode: TNode): never {
 
 /** Throws an ExpressionChangedAfterChecked error if checkNoChanges mode is on. */
 export function throwErrorIfNoChangesMode(
-    creationMode: boolean, oldValue: any, currValue: any, propName?: string): never|void {
+    creationMode: boolean, oldValue: any, currValue: any, propName?: string): never {
   const field = propName ? ` for '${propName}'` : '';
   let msg =
       `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${

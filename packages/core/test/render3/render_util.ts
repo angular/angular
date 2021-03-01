@@ -294,13 +294,13 @@ export function renderTemplate<T>(
         providedRendererFactory, renderer, null, null);
     enterView(hostLView);
 
-    const def: ComponentDef<any> = ɵɵdefineComponent({
-      type: Object,
-      template: templateFn,
-      decls: decls,
-      vars: vars,
-      consts: consts,
-    });
+    const def = ɵɵdefineComponent({
+                  type: Object,
+                  template: templateFn,
+                  decls: decls,
+                  vars: vars,
+                  consts: consts,
+                }) as ComponentDef<any>;
     def.directiveDefs = directives || null;
     def.pipeDefs = pipes || null;
 
