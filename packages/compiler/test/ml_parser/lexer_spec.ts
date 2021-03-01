@@ -234,6 +234,13 @@ import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../src/parse_u
       });
 
       describe('tags', () => {
+        it('terminated with EOF', () => {
+          expect(tokenizeAndHumanizeSourceSpans('<div')).toEqual([
+            [lex.TokenType.INCOMPLETE_TAG_OPEN, '<div'],
+            [lex.TokenType.EOF, ''],
+          ]);
+        });
+
         it('after tag name', () => {
           expect(tokenizeAndHumanizeSourceSpans('<div<span><div</span>')).toEqual([
             [lex.TokenType.INCOMPLETE_TAG_OPEN, '<div'],
