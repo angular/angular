@@ -43,23 +43,27 @@ export function getBasePaths(
     }
     for (const paths of Object.values(pathMappings.paths)) {
       for (const path of paths) {
+        let foundMatch = false;
+
         // We only want base paths that exist and are not files
         const {prefix, hasWildcard} = extractPathPrefix(path);
         let basePath = fs.resolve(baseUrl, prefix);
         if (fs.exists(basePath) && fs.stat(basePath).isFile()) {
           basePath = fs.dirname(basePath);
         }
+
         if (fs.exists(basePath)) {
+          // The `basePath` is itself a directory
           basePaths.push(basePath);
-          continue;
+          foundMatch = true;
         }
 
         if (hasWildcard) {
-          // The path contains a wildcard so try searching for matching paths
+          // The path contains a wildcard (`*`) so also try searching for directories that start
+          // with the wildcard prefix path segment.
           const wildcardContainer = fs.dirname(basePath);
           const wildcardPrefix = fs.basename(basePath);
           if (isExistingDirectory(fs, wildcardContainer)) {
-            let foundMatch = false;
             const candidates = fs.readdir(wildcardContainer);
             for (const candidate of candidates) {
               if (candidate.startsWith(wildcardPrefix)) {
@@ -70,16 +74,17 @@ export function getBasePaths(
                 }
               }
             }
-            if (foundMatch) {
-              continue;
-            }
           }
         }
 
-        logger.debug(
-            `The basePath "${basePath}" computed from baseUrl "${baseUrl}" and path mapping "${
-                path}" does not exist in the file-system.\n` +
-            `It will not be scanned for entry-points.`);
+        if (!foundMatch) {
+          // We neither found a direct match (i.e. `basePath` is an existing directory) nor a
+          // directory that starts with a wildcard prefix.
+          logger.debug(
+              `The basePath "${basePath}" computed from baseUrl "${baseUrl}" and path mapping "${
+                  path}" does not exist in the file-system.\n` +
+              `It will not be scanned for entry-points.`);
+        }
       }
     }
   }
