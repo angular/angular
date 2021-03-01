@@ -468,18 +468,34 @@ describe('ScrollService', () => {
        }));
 
     it('should stop updating the stored location href', () => {
+      const triggerBeforeunloadEvent = () => {
+        // Karma adds an `onbeforeunload` listener to detect whether the tests do a full page reload
+        // (and report it as an error). This test tests functionality that requires emitting a
+        // `beforeunload` event.
+        // To stop Karma from erroring, we replace Karma's `onbeforeunload` listener and restore it
+        // after the fake event has been emitted.
+        const originalOnbeforeunload = window.onbeforeunload;
+        window.onbeforeunload = () => undefined;
+
+        try {
+          window.dispatchEvent(new Event('beforeunload'));
+        } finally {
+          window.onbeforeunload = originalOnbeforeunload;
+        }
+      };
+
       const updateScrollLocationHrefSpy = spyOn(scrollService, 'updateScrollLocationHref');
 
-      window.dispatchEvent(new Event('beforeunload'));
+      triggerBeforeunloadEvent();
       expect(updateScrollLocationHrefSpy).toHaveBeenCalledTimes(1);
 
-      window.dispatchEvent(new Event('beforeunload'));
+      triggerBeforeunloadEvent();
       expect(updateScrollLocationHrefSpy).toHaveBeenCalledTimes(2);
 
       updateScrollLocationHrefSpy.calls.reset();
       scrollService.ngOnDestroy();
 
-      window.dispatchEvent(new Event('beforeunload'));
+      triggerBeforeunloadEvent();
       expect(updateScrollLocationHrefSpy).not.toHaveBeenCalled();
     });
 
