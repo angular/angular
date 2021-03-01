@@ -91,7 +91,7 @@ export interface InjectableType<T> extends Type<T> {
   /**
    * Opaque type whose structure is highly version dependent. Do not rely on any properties.
    */
-  ɵprov: never;
+  ɵprov: unknown;
 }
 
 /**
@@ -105,7 +105,7 @@ export interface InjectorType<T> extends Type<T> {
   /**
    * Opaque type whose structure is highly version dependent. Do not rely on any properties.
    */
-  ɵinj: never;
+  ɵinj: unknown;
 }
 
 /**
@@ -143,13 +143,13 @@ export interface InjectorTypeWithProviders<T> {
 export function ɵɵdefineInjectable<T>(opts: {
   token: unknown,
   providedIn?: Type<any>|'root'|'platform'|'any'|null, factory: () => T,
-}): never {
-  return ({
-           token: opts.token,
-           providedIn: opts.providedIn as any || null,
-           factory: opts.factory,
-           value: undefined,
-         } as ɵɵInjectableDef<T>) as never;
+}): unknown {
+  return {
+    token: opts.token,
+    providedIn: opts.providedIn as any || null,
+    factory: opts.factory,
+    value: undefined,
+  } as ɵɵInjectableDef<T>;
 }
 
 /**
@@ -180,12 +180,12 @@ export const defineInjectable = ɵɵdefineInjectable;
  * @codeGenApi
  */
 export function ɵɵdefineInjector(options: {factory: () => any, providers?: any[], imports?: any[]}):
-    never {
-  return ({
-           factory: options.factory,
-           providers: options.providers || [],
-           imports: options.imports || [],
-         } as ɵɵInjectorDef<any>) as never;
+    unknown {
+  return {
+    factory: options.factory,
+    providers: options.providers || [],
+    imports: options.imports || [],
+  } as ɵɵInjectorDef<any>;
 }
 
 /**

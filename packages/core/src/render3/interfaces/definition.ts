@@ -59,7 +59,7 @@ export const enum RenderFlags {
  * consumable for rendering.
  */
 export interface ComponentType<T> extends Type<T> {
-  ɵcmp: never;
+  ɵcmp: unknown;
 }
 
 /**
@@ -67,8 +67,8 @@ export interface ComponentType<T> extends Type<T> {
  * consumable for rendering.
  */
 export interface DirectiveType<T> extends Type<T> {
-  ɵdir: never;
-  ɵfac: () => T;
+  ɵdir: unknown;
+  ɵfac: unknown;
 }
 
 /**
@@ -76,7 +76,7 @@ export interface DirectiveType<T> extends Type<T> {
  * consumable for rendering.
  */
 export interface PipeType<T> extends Type<T> {
-  ɵpipe: never;
+  ɵpipe: unknown;
 }
 
 /**
@@ -370,7 +370,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * Used to store the result of `noSideEffects` function so that it is not removed by closure
    * compiler. The property should never be read.
    */
-  readonly _?: never;
+  readonly _?: unknown;
 }
 
 /**
