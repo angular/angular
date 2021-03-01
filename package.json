@@ -141,7 +141,7 @@
     "@bazel/terser": "3.2.1",
     "@bazel/typescript": "3.2.1",
     "@firebase/app-types": "^0.6.1",
-    "@octokit/rest": "18.2.0",
+    "@octokit/rest": "18.3.0",
     "@schematics/angular": "^12.0.0-next.0",
     "@types/autoprefixer": "^9.7.2",
     "@types/browser-sync": "^2.26.1",
