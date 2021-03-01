@@ -1419,7 +1419,7 @@ function declareTests(config?: {useJit: boolean}) {
               }
 
               class Bar {
-                static ɵprov: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+                static ɵprov = ɵɵdefineInjectable({
                   token: Bar,
                   factory: () => new Bar(),
                   providedIn: SomeModule,
@@ -1452,7 +1452,7 @@ function declareTests(config?: {useJit: boolean}) {
               }
 
               class Bar {
-                static ɵprov: ɵɵInjectableDef<Bar> = ɵɵdefineInjectable({
+                static ɵprov = ɵɵdefineInjectable({
                   token: Bar,
                   factory: () => new Bar(),
                   providedIn: SomeModule,

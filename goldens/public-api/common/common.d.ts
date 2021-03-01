@@ -419,7 +419,7 @@ export declare abstract class ViewportScroller {
     abstract scrollToPosition(position: [number, number]): void;
     abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
     abstract setOffset(offset: [number, number] | (() => [number, number])): void;
-    static ɵprov: never;
+    static ɵprov: unknown;
 }
 
 export declare enum WeekDay {

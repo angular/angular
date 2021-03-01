@@ -7,7 +7,7 @@
  */
 
 import {Component, Injectable, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵProvidersFeature} from '@angular/core/src/core';
-import {getLContext} from '@angular/core/src/render3/context_discovery';
+import {ComponentDef, DirectiveDef} from '@angular/core/src/render3';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '@angular/core/src/render3/instructions/element';
 import {TNodeDebug} from '@angular/core/src/render3/instructions/lview_debug';
 import {createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
@@ -227,7 +227,10 @@ describe('lView_debug', () => {
       expect(myCompNode.injector).toEqual({
         bloom: jasmine.anything(),
         cumulativeBloom: jasmine.anything(),
-        providers: [DepA, String, MyComponent.ɵcmp, MyDirective.ɵdir],
+        providers: [
+          DepA, String, MyComponent.ɵcmp as ComponentDef<MyComponent>,
+          MyDirective.ɵdir as DirectiveDef<MyDirective>
+        ],
         viewProviders: [DepB, Number],
         parentInjectorIndex: -1,
       });
