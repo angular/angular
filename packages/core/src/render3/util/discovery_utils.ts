@@ -250,7 +250,7 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
  * @globalApi ng
  */
 export function getHostElement(componentOrDirective: {}): Element {
-  return getLContext(componentOrDirective)!.native as never as Element;
+  return getLContext(componentOrDirective)!.native as unknown as Element;
 }
 
 /**
