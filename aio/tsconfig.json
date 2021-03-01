@@ -36,6 +36,7 @@
     "tools"
   ],
   "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
     "disableTypeScriptVersionCheck": true,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
