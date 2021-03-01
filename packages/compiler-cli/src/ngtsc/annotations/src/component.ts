@@ -220,6 +220,7 @@ export class ComponentDecoratorHandler implements
    * thrown away, and the parsed template is reused during the analyze phase.
    */
   private preanalyzeTemplateCache = new Map<DeclarationNode, ParsedTemplateWithSource>();
+  private preanalyzeStylesCache = new Map<DeclarationNode, string[]|null>();
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = ComponentDecoratorHandler.name;
@@ -266,7 +267,7 @@ export class ComponentDecoratorHandler implements
          resourceType: ResourceTypeForDiagnostics): Promise<void>|undefined => {
           const resourceUrl =
               this._resolveResourceOrThrow(styleUrl, containingFile, nodeForError, resourceType);
-          return this.resourceLoader.preload(resourceUrl);
+          return this.resourceLoader.preload(resourceUrl, {type: 'style', containingFile});
         };
 
     // A Promise that waits for the template and all <link>ed styles within it to be preloaded.
@@ -289,22 +290,33 @@ export class ComponentDecoratorHandler implements
     // Extract all the styleUrls in the decorator.
     const componentStyleUrls = this._extractComponentStyleUrls(component);
 
-    if (componentStyleUrls === null) {
-      // A fast path exists if there are no styleUrls, to just wait for
-      // templateAndTemplateStyleResources.
-      return templateAndTemplateStyleResources;
-    } else {
-      // Wait for both the template and all styleUrl resources to resolve.
-      return Promise
-          .all([
-            templateAndTemplateStyleResources,
-            ...componentStyleUrls.map(
-                styleUrl => resolveStyleUrl(
-                    styleUrl.url, styleUrl.nodeForError,
-                    ResourceTypeForDiagnostics.StylesheetFromDecorator))
-          ])
-          .then(() => undefined);
+    // Extract inline styles, process, and cache for use in synchronous analyze phase
+    let inlineStyles;
+    if (component.has('styles')) {
+      const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
+      if (litStyles === null) {
+        this.preanalyzeStylesCache.set(node, null);
+      } else {
+        inlineStyles = Promise
+                           .all(litStyles.map(
+                               style => this.resourceLoader.preprocessInline(
+                                   style, {type: 'style', containingFile})))
+                           .then(styles => {
+                             this.preanalyzeStylesCache.set(node, styles);
+                           });
+      }
     }
+
+    // Wait for both the template and all styleUrl resources to resolve.
+    return Promise
+        .all([
+          templateAndTemplateStyleResources, inlineStyles,
+          ...componentStyleUrls.map(
+              styleUrl => resolveStyleUrl(
+                  styleUrl.url, styleUrl.nodeForError,
+                  ResourceTypeForDiagnostics.StylesheetFromDecorator))
+        ])
+        .then(() => undefined);
   }
 
   analyze(
@@ -409,12 +421,29 @@ export class ComponentDecoratorHandler implements
       }
     }
 
+    // If inline styles were preprocessed use those
     let inlineStyles: string[]|null = null;
-    if (component.has('styles')) {
-      const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
-      if (litStyles !== null) {
-        inlineStyles = [...litStyles];
-        styles.push(...litStyles);
+    if (this.preanalyzeStylesCache.has(node)) {
+      inlineStyles = this.preanalyzeStylesCache.get(node)!;
+      this.preanalyzeStylesCache.delete(node);
+      if (inlineStyles !== null) {
+        styles.push(...inlineStyles);
+      }
+    } else {
+      // Preprocessing is only supported asynchronously
+      // If no style cache entry is present asynchronous preanalyze was not executed.
+      // This protects against accidental differences in resource contents when preanalysis
+      // is not used with a provided transformResource hook on the ResourceHost.
+      if (this.resourceLoader.canPreprocess) {
+        throw new Error('Inline resource processing requires asynchronous preanalyze.');
+      }
+
+      if (component.has('styles')) {
+        const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
+        if (litStyles !== null) {
+          inlineStyles = [...litStyles];
+          styles.push(...litStyles);
+        }
       }
     }
     if (template.styles.length > 0) {
@@ -979,7 +1008,8 @@ export class ComponentDecoratorHandler implements
       }
       const resourceUrl = this._resolveResourceOrThrow(
           templateUrl, containingFile, templateUrlExpr, ResourceTypeForDiagnostics.Template);
-      const templatePromise = this.resourceLoader.preload(resourceUrl);
+      const templatePromise =
+          this.resourceLoader.preload(resourceUrl, {type: 'template', containingFile});
 
       // If the preload worked, then actually load and parse the template, and wait for any style
       // URLs to resolve.
