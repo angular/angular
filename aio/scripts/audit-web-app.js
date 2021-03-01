@@ -35,7 +35,6 @@ const puppeteer = require('puppeteer');
 // Constants
 const AUDIT_CATEGORIES = ['accessibility', 'best-practices', 'performance', 'pwa', 'seo'];
 const LIGHTHOUSE_FLAGS = {logLevel: process.env.CI ? 'error' : 'info'};  // Be less verbose on CI.
-const SKIPPED_HTTPS_AUDITS = ['redirects-http', 'uses-http2'];
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer';
 const WAIT_FOR_SW_DELAY = 5000;
 
@@ -45,7 +44,6 @@ _main(process.argv.slice(2));
 // Functions - Definitions
 async function _main(args) {
   const {url, minScores, logFile} = parseInput(args);
-  const isOnHttp = /^http:/.test(url);
   const lhFlags = {...LIGHTHOUSE_FLAGS, onlyCategories: Object.keys(minScores).sort()};
   const lhConfig = {
     extends: 'lighthouse:default',
@@ -56,10 +54,6 @@ async function _main(args) {
 
   console.log(`Running web-app audits for '${url}'...`);
   console.log(`  Audit categories: ${lhFlags.onlyCategories.join(', ')}`);
-
-  // If testing on HTTP, skip HTTPS-specific tests.
-  // (Note: Browsers special-case localhost and run ServiceWorker even on HTTP.)
-  if (isOnHttp) skipHttpsAudits(lhConfig);
 
   logger.setLevel(lhFlags.logLevel);
 
@@ -170,9 +164,4 @@ async function processResults(results, minScores, logFile) {
   }, true);
 
   return success;
-}
-
-function skipHttpsAudits(config) {
-  console.log(`  Skipping HTTPS-related audits: ${SKIPPED_HTTPS_AUDITS.join(', ')}`);
-  config.settings = {...config.settings, skipAudits: SKIPPED_HTTPS_AUDITS};
 }
