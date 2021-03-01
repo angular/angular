@@ -59,6 +59,7 @@ export class DelegatingCompilerHost implements
   readDirectory = this.delegateMethod('readDirectory');
   readFile = this.delegateMethod('readFile');
   readResource = this.delegateMethod('readResource');
+  transformResource = this.delegateMethod('transformResource');
   realpath = this.delegateMethod('realpath');
   resolveModuleNames = this.delegateMethod('resolveModuleNames');
   resolveTypeReferenceDirectives = this.delegateMethod('resolveTypeReferenceDirectives');

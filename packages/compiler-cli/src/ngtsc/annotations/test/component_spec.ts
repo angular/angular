@@ -19,7 +19,7 @@ import {PartialEvaluator} from '../../partial_evaluator';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
-import {ResourceLoader} from '../src/api';
+import {ResourceLoader, ResourceLoaderContext} from '../src/api';
 import {ComponentDecoratorHandler} from '../src/component';
 
 export class StubResourceLoader implements ResourceLoader {
@@ -27,10 +27,14 @@ export class StubResourceLoader implements ResourceLoader {
     return v;
   }
   canPreload = false;
+  canPreprocessInline = false;
   load(v: string): string {
     return '';
   }
   preload(): Promise<void>|undefined {
+    throw new Error('Not implemented');
+  }
+  preprocessInline(_data: string, _context: ResourceLoaderContext): Promise<string> {
     throw new Error('Not implemented');
   }
 }
@@ -53,6 +57,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
   const injectableRegistry = new InjectableClassRegistry(reflectionHost);
   const resourceRegistry = new ResourceRegistry();
   const typeCheckScopeRegistry = new TypeCheckScopeRegistry(scopeRegistry, metaReader);
+  const resourceLoader = new StubResourceLoader();
 
   const handler = new ComponentDecoratorHandler(
       reflectionHost,
@@ -64,7 +69,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       typeCheckScopeRegistry,
       resourceRegistry,
       /* isCore */ false,
-      new StubResourceLoader(),
+      resourceLoader,
       /* rootDirs */['/'],
       /* defaultPreserveWhitespaces */ false,
       /* i18nUseExternalIds */ true,
@@ -81,7 +86,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       /* semanticDepGraphUpdater */ null,
       /* annotateForClosureCompiler */ false,
   );
-  return {reflectionHost, handler};
+  return {reflectionHost, handler, resourceLoader};
 }
 
 runInEachFileSystem(() => {
@@ -254,6 +259,47 @@ runInEachFileSystem(() => {
       const compileResult =
           handler.compileFull(TestCmp, analysis!, resolution.data!, new ConstantPool());
       expect(compileResult).toEqual([]);
+    });
+
+    it('should replace inline style content with transformed content', async () => {
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '',
+            styles: ['.abc {}']
+          }) class TestCmp {}
+      `
+        },
+      ]);
+      const {reflectionHost, handler, resourceLoader} = setup(program, options, host);
+      resourceLoader.canPreload = true;
+      resourceLoader.canPreprocessInline = true;
+      resourceLoader.preprocessInline = async function(data, context) {
+        expect(data).toBe('.abc {}');
+        expect(context.containingFile).toBe(_('/entry.ts').toLowerCase());
+        expect(context.type).toBe('style');
+
+        return '.xyz {}';
+      };
+
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+
+      await handler.preanalyze(TestCmp, detected.metadata);
+
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      expect(analysis?.inlineStyles).toEqual(jasmine.arrayWithExactContents(['.xyz {}']));
     });
   });
 

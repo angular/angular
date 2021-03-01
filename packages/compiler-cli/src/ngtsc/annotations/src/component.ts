@@ -219,6 +219,7 @@ export class ComponentDecoratorHandler implements
    * thrown away, and the parsed template is reused during the analyze phase.
    */
   private preanalyzeTemplateCache = new Map<DeclarationNode, ParsedTemplateWithSource>();
+  private preanalyzeStylesCache = new Map<DeclarationNode, string[]>();
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = ComponentDecoratorHandler.name;
@@ -265,7 +266,7 @@ export class ComponentDecoratorHandler implements
          resourceType: ResourceTypeForDiagnostics): Promise<void>|undefined => {
           const resourceUrl =
               this._resolveResourceOrThrow(styleUrl, containingFile, nodeForError, resourceType);
-          return this.resourceLoader.preload(resourceUrl);
+          return this.resourceLoader.preload(resourceUrl, {type: 'style', containingFile});
         };
 
     // A Promise that waits for the template and all <link>ed styles within it to be preloaded.
@@ -288,6 +289,21 @@ export class ComponentDecoratorHandler implements
     // Extract all the styleUrls in the decorator.
     const componentStyleUrls = this._extractComponentStyleUrls(component);
 
+    // If preprocessing inline resources is available, extract inline styles and process
+    let inlineStyles;
+    if (this.resourceLoader.canPreprocessInline && component.has('styles')) {
+      const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
+      if (litStyles !== null) {
+        inlineStyles = Promise
+                           .all(litStyles.map(
+                               style => this.resourceLoader.preprocessInline(
+                                   style, {type: 'style', containingFile})))
+                           .then(styles => {
+                             this.preanalyzeStylesCache.set(node, styles);
+                           });
+      }
+    }
+
     if (componentStyleUrls === null) {
       // A fast path exists if there are no styleUrls, to just wait for
       // templateAndTemplateStyleResources.
@@ -296,7 +312,7 @@ export class ComponentDecoratorHandler implements
       // Wait for both the template and all styleUrl resources to resolve.
       return Promise
           .all([
-            templateAndTemplateStyleResources,
+            templateAndTemplateStyleResources, inlineStyles,
             ...componentStyleUrls.map(
                 styleUrl => resolveStyleUrl(
                     styleUrl.url, styleUrl.nodeForError,
@@ -407,8 +423,12 @@ export class ComponentDecoratorHandler implements
       }
     }
 
-    let inlineStyles: string[]|null = null;
-    if (component.has('styles')) {
+    // If inline styles were preprocessed use those
+    let inlineStyles: string[]|null = this.preanalyzeStylesCache.get(node) || null;
+    if (inlineStyles !== null) {
+      this.preanalyzeStylesCache.delete(node);
+      styles.push(...inlineStyles);
+    } else if (component.has('styles')) {
       const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
       if (litStyles !== null) {
         inlineStyles = [...litStyles];
@@ -996,7 +1016,8 @@ export class ComponentDecoratorHandler implements
       }
       const resourceUrl = this._resolveResourceOrThrow(
           templateUrl, containingFile, templateUrlExpr, ResourceTypeForDiagnostics.Template);
-      const templatePromise = this.resourceLoader.preload(resourceUrl);
+      const templatePromise =
+          this.resourceLoader.preload(resourceUrl, {type: 'template', containingFile});
 
       // If the preload worked, then actually load and parse the template, and wait for any style
       // URLs to resolve.
