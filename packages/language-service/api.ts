@@ -14,6 +14,24 @@
 
 import * as ts from 'typescript';
 
+export interface PluginConfig {
+  /**
+   * If true, return only Angular results. Otherwise, return Angular + TypeScript
+   * results.
+   */
+  angularOnly: boolean;
+  /**
+   * If true, return factory function for Ivy LS during plugin initialization.
+   * Otherwise return factory function for View Engine LS.
+   */
+  ivy: boolean;
+  /**
+   * If true, enable `strictTemplates` in Angular compiler options regardless
+   * of its value in tsconfig.json.
+   */
+  forceStrictTemplates?: true;
+}
+
 export type GetTcbResponse = {
   /**
    * The filename of the SourceFile this typecheck block belongs to.

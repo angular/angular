@@ -17,7 +17,7 @@ describe('getSemanticDiagnostics', () => {
   beforeAll(() => {
     const {project, service: _service, tsLS} = setup();
     service = _service;
-    ngLS = new LanguageService(project, tsLS);
+    ngLS = new LanguageService(project, tsLS, {});
   });
 
   beforeEach(() => {

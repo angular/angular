@@ -19,7 +19,7 @@ describe('getExternalFiles()', () => {
     // a global analysis
     expect(externalFiles).toEqual([]);
     // Trigger global analysis
-    const ngLS = new LanguageService(project, tsLS);
+    const ngLS = new LanguageService(project, tsLS, {});
     ngLS.getSemanticDiagnostics(APP_COMPONENT);
     // Now that global analysis is run, we should have all the typecheck files
     externalFiles = getExternalFiles(project);
