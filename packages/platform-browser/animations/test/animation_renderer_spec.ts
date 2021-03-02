@@ -7,10 +7,12 @@
  */
 import {animate, AnimationPlayer, AnimationTriggerMetadata, state, style, transition, trigger} from '@angular/animations';
 import {ɵAnimationEngine as AnimationEngine} from '@angular/animations/browser';
-import {Component, Injectable, NgZone, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
+import {Component, destroyPlatform, Injectable, NgModule, NgZone, RendererFactory2, RendererType2, ViewChild} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
+import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {BrowserAnimationsModule, ɵAnimationRendererFactory as AnimationRendererFactory, ɵInjectableAnimationEngine as InjectableAnimationEngine} from '@angular/platform-browser/animations';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
+import {onlyInIvy, withBody} from '@angular/private/testing';
 
 import {el} from '../../testing/src/browser_util';
 
@@ -322,6 +324,37 @@ describe('AnimationRendererFactory', () => {
     fixture.detectChanges();
     expect(renderer.log).toEqual(['begin', 'end']);
   });
+});
+
+onlyInIvy('View Engine uses another mechanism of removing DOM nodes').describe('destroy', () => {
+  beforeEach(destroyPlatform);
+  afterEach(destroyPlatform);
+
+  it('should clear bootstrapped component contents',
+     withBody('<div>before</div><app-root></app-root><div>after</div>', async () => {
+       @Component({selector: 'app-root', template: 'app-root content'})
+       class AppComponent {
+       }
+
+       @NgModule({
+         imports: [BrowserAnimationsModule],
+         declarations: [AppComponent],
+         bootstrap: [AppComponent]
+       })
+       class AppModule {
+       }
+
+       const ngModuleRef = await platformBrowserDynamic().bootstrapModule(AppModule);
+
+       const root = document.body.querySelector('app-root')!;
+       expect(root.textContent).toEqual('app-root content');
+       expect(document.body.childNodes.length).toEqual(3);
+
+       ngModuleRef.destroy();
+
+       expect(document.body.querySelector('app-root')).toBeFalsy();  // host element is removed
+       expect(document.body.childNodes.length).toEqual(2);           // other elements are preserved
+     }));
 });
 })();
 
