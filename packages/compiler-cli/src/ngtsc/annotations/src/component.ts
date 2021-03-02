@@ -478,8 +478,8 @@ export class ComponentDecoratorHandler implements
     const typeParameters = extractSemanticTypeParameters(node);
 
     return new ComponentSymbol(
-        node, analysis.meta.selector, analysis.inputs.propertyNames, analysis.outputs.propertyNames,
-        analysis.meta.exportAs, typeParameters);
+        node, analysis.meta.selector, analysis.inputs, analysis.outputs, analysis.meta.exportAs,
+        typeParameters);
   }
 
   register(node: ClassDeclaration, analysis: ComponentAnalysisData): void {

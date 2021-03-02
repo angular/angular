@@ -57,7 +57,7 @@ export class DirectiveSymbol extends SemanticSymbol {
 
   constructor(
       decl: ClassDeclaration, public readonly selector: string|null,
-      public readonly inputs: string[], public readonly outputs: string[],
+      public readonly inputs: ClassPropertyMapping, public readonly outputs: ClassPropertyMapping,
       public readonly exportAs: string[]|null,
       public readonly typeParameters: SemanticTypeParameter[]|null) {
     super(decl);
@@ -77,8 +77,8 @@ export class DirectiveSymbol extends SemanticSymbol {
     //     to be a change in public API.
     //  3. The list of exportAs names and its ordering.
     return this.selector !== previousSymbol.selector ||
-        !isArrayEqual(this.inputs, previousSymbol.inputs) ||
-        !isArrayEqual(this.outputs, previousSymbol.outputs) ||
+        !isArrayEqual(this.inputs.propertyNames, previousSymbol.inputs.propertyNames) ||
+        !isArrayEqual(this.outputs.propertyNames, previousSymbol.outputs.propertyNames) ||
         !isArrayEqual(this.exportAs, previousSymbol.exportAs);
   }
 
@@ -89,6 +89,13 @@ export class DirectiveSymbol extends SemanticSymbol {
     }
 
     if (!(previousSymbol instanceof DirectiveSymbol)) {
+      return true;
+    }
+
+    // The type-check block also depends on the class property names, as writes property bindings
+    // directly into the backing fields.
+    if (!isArrayEqual(this.inputs.classPropertyNames, previousSymbol.inputs.classPropertyNames) ||
+        !isArrayEqual(this.outputs.classPropertyNames, previousSymbol.outputs.classPropertyNames)) {
       return true;
     }
 
@@ -192,8 +199,8 @@ export class DirectiveDecoratorHandler implements
     const typeParameters = extractSemanticTypeParameters(node);
 
     return new DirectiveSymbol(
-        node, analysis.meta.selector, analysis.inputs.propertyNames, analysis.outputs.propertyNames,
-        analysis.meta.exportAs, typeParameters);
+        node, analysis.meta.selector, analysis.inputs, analysis.outputs, analysis.meta.exportAs,
+        typeParameters);
   }
 
   register(node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>): void {

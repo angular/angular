@@ -24,6 +24,106 @@ runInEachFileSystem(() => {
       env.tsconfig({strictTemplates: true});
     });
 
+    describe('type-check api surface', () => {
+      it('should type-check correctly when a backing input field is renamed', () => {
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Input('dir')
+            dir!: string;
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div [dir]="foo"></div>',
+          })
+          export class Cmp {
+            foo = 'foo';
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        env.driveMain();
+
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Input('dir')
+            dirRenamed!: string;
+          }
+        `);
+        env.driveMain();
+      });
+
+      it('should type-check correctly when a backing output field is renamed', () => {
+        env.write('dir.ts', `
+          import {Directive, EventEmitter, Output} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Output('dir')
+            dir = new EventEmitter<string>();
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div (dir)="foo($event)"></div>',
+          })
+          export class Cmp {
+            foo(bar: string) {}
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        env.driveMain();
+
+        env.write('dir.ts', `
+          import {Directive, EventEmitter, Output} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Output('dir')
+            dirRenamed = new EventEmitter<string>();
+          }
+        `);
+        env.driveMain();
+      });
+    });
+
     describe('type parameters', () => {
       it('should type-check correctly when directive becomes generic', () => {
         // This test verifies that changing a non-generic directive `Dir` into a generic directive
