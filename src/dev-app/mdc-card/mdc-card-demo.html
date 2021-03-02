@@ -1,18 +1,18 @@
 <div class="demo-card-container">
-  <mat-checkbox [(ngModel)]="outlined">Use outlined cards</mat-checkbox>
+  <mat-checkbox (change)="toggleAppearance()">Use outlined cards</mat-checkbox>
 
 <!-- TODO(jelbourn): re-add dividers and footers with progress bars once the MDC versions exist -->
-  <mat-card [class.mdc-card--outlined]="outlined">
+  <mat-card [appearance]="appearance">
     Card with only text content
   </mat-card>
 
-  <mat-card [class.mdc-card--outlined]="outlined">
+  <mat-card [appearance]="appearance">
     <mat-card-content>
       Card with only <code>&lt;mat-card-content&gt;</code> and text content.
     </mat-card-content>
   </mat-card>
 
-  <mat-card [class.mdc-card--outlined]="outlined">
+  <mat-card [appearance]="appearance">
     <mat-card-subtitle>Subtitle</mat-card-subtitle>
     <mat-card-title>Card with title and footer</mat-card-title>
     <mat-card-content>
@@ -25,7 +25,7 @@
     </mat-card-actions>
   </mat-card>
 
-  <mat-card [class.mdc-card--outlined]="outlined">
+  <mat-card [appearance]="appearance">
     <mat-card-subtitle>Subtitle</mat-card-subtitle>
     <mat-card-title>Card with title, footer, and inset-divider</mat-card-title>
     <mat-card-content>
@@ -39,7 +39,7 @@
 
   </mat-card>
 
-  <mat-card [class.mdc-card--outlined]="outlined">
+  <mat-card [appearance]="appearance">
     <img mat-card-image src="https://material.angularjs.org/latest/img/washedout.png">
     <mat-card-title>Content Title</mat-card-title>
     <mat-card-content>
@@ -51,7 +51,7 @@
     </mat-card-actions>
   </mat-card>
 
-  <mat-card [class.mdc-card--outlined]="outlined">
+  <mat-card [appearance]="appearance">
     <mat-card-header>
       <img mat-card-avatar>
       <mat-card-title>Header title</mat-card-title>
@@ -63,7 +63,7 @@
     </mat-card-content>
   </mat-card>
 
-  <mat-card class="demo-card-blue mat-card-flat" [class.mdc-card--outlined]="outlined">
+  <mat-card class="demo-card-blue mat-card-flat" [appearance]="appearance">
     <mat-card-title>Easily customizable</mat-card-title>
     <mat-card-actions>
       <button mat-button>First</button>
@@ -74,7 +74,7 @@
   <hr>
   <h2>Cards with media area</h2>
 
-  <mat-card [class.mdc-card--outlined]="outlined">
+  <mat-card [appearance]="appearance">
     <mat-card-title-group>
       <mat-card-title>Card</mat-card-title>
       <mat-card-subtitle>Small</mat-card-subtitle>
@@ -85,7 +85,7 @@
     </mat-card-content>
   </mat-card>
 
-  <mat-card [class.mdc-card--outlined]="outlined">
+  <mat-card [appearance]="appearance">
     <mat-card-title-group>
       <mat-card-title>Card</mat-card-title>
       <mat-card-subtitle>Medium</mat-card-subtitle>
@@ -96,7 +96,7 @@
     </mat-card-content>
   </mat-card>
 
-  <mat-card [class.mdc-card--outlined]="outlined">
+  <mat-card [appearance]="appearance">
     <mat-card-title-group>
       <mat-card-title>Card</mat-card-title>
       <mat-card-subtitle>Large</mat-card-subtitle>
@@ -107,7 +107,7 @@
     </mat-card-content>
   </mat-card>
 
-  <mat-card [class.mdc-card--outlined]="outlined">
+  <mat-card [appearance]="appearance">
     <mat-card-title-group>
       <mat-card-title>Card</mat-card-title>
       <mat-card-subtitle>Extra large</mat-card-subtitle>
