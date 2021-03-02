@@ -1550,12 +1550,12 @@
   resolved "https://registry.yarnpkg.com/@octokit/plugin-request-log/-/plugin-request-log-1.0.2.tgz#394d59ec734cd2f122431fbaf05099861ece3c44"
   integrity sha512-oTJSNAmBqyDR41uSMunLQKMX0jmEXbwD1fpz8FG27lScV3RhtGfBa1/BBLym+PxcC16IBlF7KH9vP1BUYxA+Eg==
 
-"@octokit/plugin-rest-endpoint-methods@4.13.0":
-  version "4.13.0"
-  resolved "https://registry.yarnpkg.com/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-4.13.0.tgz#59a90f59a564d416214ab191c3ffcd641f175e6a"
-  integrity sha512-Ofusy7BwHkU7z4TNsVdf7wm5W3KR625KqlQj4AiWPnBvclmZU0Y2bVK8b8Mz8nW7sEX9TJcCdX6KeaincE/cLw==
+"@octokit/plugin-rest-endpoint-methods@4.13.1":
+  version "4.13.1"
+  resolved "https://registry.yarnpkg.com/@octokit/plugin-rest-endpoint-methods/-/plugin-rest-endpoint-methods-4.13.1.tgz#d8c807bbd0e187ac903620f53321e2634818bb30"
+  integrity sha512-T9YhQqpbO9Onmg+FYk09uci9pfChg8CZR9GBaPJWj+bDSzictW1xnU0NtCSSKKyrwvpW/opu7CtuDSs/HF1Syg==
   dependencies:
-    "@octokit/types" "^6.11.0"
+    "@octokit/types" "^6.11.1"
     deprecation "^2.3.1"
 
 "@octokit/request-error@^1.0.2":
@@ -1609,15 +1609,15 @@
     universal-user-agent "^3.0.0"
     url-template "^2.0.8"
 
-"@octokit/rest@18.3.0":
-  version "18.3.0"
-  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-18.3.0.tgz#c326475a2039ffeaec9a1498ebee14a561aae4e5"
-  integrity sha512-R45oBVhnq3HAOGVtC6lHY7LX7TGWqbbcD4KvBHoT4QIjgJzfqKag3m/DUJwLnp8xrokz1spZmspTIXiDeQqJSA==
+"@octokit/rest@18.3.1":
+  version "18.3.1"
+  resolved "https://registry.yarnpkg.com/@octokit/rest/-/rest-18.3.1.tgz#6680331e941c422dbff0e758a9bd3dc4edcbd2db"
+  integrity sha512-g57ebsk7dtbLjiPBgEYDAiDTsyQM9kvlIt0J5UN6OSjG82K6fQQck6HXPpwcyNIDqbN7lIaWr3nsz56jBfI6qg==
   dependencies:
     "@octokit/core" "^3.2.3"
     "@octokit/plugin-paginate-rest" "^2.6.2"
     "@octokit/plugin-request-log" "^1.0.2"
-    "@octokit/plugin-rest-endpoint-methods" "4.13.0"
+    "@octokit/plugin-rest-endpoint-methods" "4.13.1"
 
 "@octokit/types@^2.0.0":
   version "2.3.1"
@@ -1648,7 +1648,7 @@
     "@octokit/openapi-types" "^2.0.0"
     "@types/node" ">= 8"
 
-"@octokit/types@^6.11.0":
+"@octokit/types@^6.11.1":
   version "6.11.1"
   resolved "https://registry.yarnpkg.com/@octokit/types/-/types-6.11.1.tgz#54ece128029526fa99bd71e757b9e35478403d95"
   integrity sha512-UiSRTG2lrFbMUMwhKNR0uSV33Fzv4bNu1n5iFuuNOg80XCh0VYNhR4TQWgrkLhVxdDuej6s61aP3eQvVm6K6uA==
