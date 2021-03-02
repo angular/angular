@@ -13,8 +13,8 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFromSourceFile} from '../../file_system';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {areTypeParametersEqual, extractSemanticTypeParameters, isArrayEqual, isSymbolEqual, SemanticDepGraphUpdater, SemanticSymbol, SemanticTypeParameter} from '../../incremental/semantic_graph';
-import {ClassPropertyMapping, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
+import {areTypeParametersEqual, extractSemanticTypeParameters, isArrayEqual, isSetEqual, isSymbolEqual, SemanticDepGraphUpdater, SemanticSymbol, SemanticTypeParameter} from '../../incremental/semantic_graph';
+import {ClassPropertyMapping, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, TemplateGuardMeta} from '../../metadata';
 import {extractDirectiveTypeCheckMeta} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
@@ -59,6 +59,7 @@ export class DirectiveSymbol extends SemanticSymbol {
       decl: ClassDeclaration, public readonly selector: string|null,
       public readonly inputs: ClassPropertyMapping, public readonly outputs: ClassPropertyMapping,
       public readonly exportAs: string[]|null,
+      public readonly typeCheckMeta: DirectiveTypeCheckMeta,
       public readonly typeParameters: SemanticTypeParameter[]|null) {
     super(decl);
   }
@@ -106,6 +107,12 @@ export class DirectiveSymbol extends SemanticSymbol {
       return true;
     }
 
+    // The type-check metadata is used during TCB code generation, so any changes should invalidate
+    // prior type-check files.
+    if (!isTypeCheckMetaEqual(this.typeCheckMeta, previousSymbol.typeCheckMeta)) {
+      return true;
+    }
+
     // Changing the base class of a directive means that its inputs/outputs etc may have changed,
     // so the type-check block of components that use this directive needs to be regenerated.
     if (!isBaseClassEqual(this.baseClass, previousSymbol.baseClass)) {
@@ -114,6 +121,36 @@ export class DirectiveSymbol extends SemanticSymbol {
 
     return false;
   }
+}
+
+function isTypeCheckMetaEqual(
+    current: DirectiveTypeCheckMeta, previous: DirectiveTypeCheckMeta): boolean {
+  if (current.hasNgTemplateContextGuard !== previous.hasNgTemplateContextGuard) {
+    return false;
+  }
+  if (current.isGeneric !== previous.isGeneric) {
+    return false;
+  }
+  if (!isArrayEqual(current.ngTemplateGuards, previous.ngTemplateGuards, isTemplateGuardEqual)) {
+    return false;
+  }
+  if (!isSetEqual(current.coercedInputFields, previous.coercedInputFields)) {
+    return false;
+  }
+  if (!isSetEqual(current.restrictedInputFields, previous.restrictedInputFields)) {
+    return false;
+  }
+  if (!isSetEqual(current.stringLiteralInputFields, previous.stringLiteralInputFields)) {
+    return false;
+  }
+  if (!isSetEqual(current.undeclaredInputFields, previous.undeclaredInputFields)) {
+    return false;
+  }
+  return true;
+}
+
+function isTemplateGuardEqual(current: TemplateGuardMeta, previous: TemplateGuardMeta): boolean {
+  return current.inputName === previous.inputName && current.type === previous.type;
 }
 
 function isBaseClassEqual(current: SemanticSymbol|null, previous: SemanticSymbol|null): boolean {
@@ -200,7 +237,7 @@ export class DirectiveDecoratorHandler implements
 
     return new DirectiveSymbol(
         node, analysis.meta.selector, analysis.inputs, analysis.outputs, analysis.meta.exportAs,
-        typeParameters);
+        analysis.typeCheckMeta, typeParameters);
   }
 
   register(node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>): void {

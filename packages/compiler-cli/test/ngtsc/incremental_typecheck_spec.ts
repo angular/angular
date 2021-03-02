@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as ts from 'typescript';
+
 import {absoluteFrom} from '../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {loadStandardTestFiles} from '../../src/ngtsc/testing';
@@ -26,6 +28,8 @@ runInEachFileSystem(() => {
 
     describe('type-check api surface', () => {
       it('should type-check correctly when a backing input field is renamed', () => {
+        // This test verifies that renaming the class field of an input is correctly reflected into
+        // the TCB.
         env.write('dir.ts', `
           import {Directive, Input} from '@angular/core';
 
@@ -60,6 +64,8 @@ runInEachFileSystem(() => {
         `);
         env.driveMain();
 
+        // Now rename the backing field of the input; the TCB should be updated such that the `dir`
+        // input binding is still valid.
         env.write('dir.ts', `
           import {Directive, Input} from '@angular/core';
 
@@ -75,6 +81,8 @@ runInEachFileSystem(() => {
       });
 
       it('should type-check correctly when a backing output field is renamed', () => {
+        // This test verifies that renaming the class field of an output is correctly reflected into
+        // the TCB.
         env.write('dir.ts', `
           import {Directive, EventEmitter, Output} from '@angular/core';
 
@@ -109,6 +117,8 @@ runInEachFileSystem(() => {
         `);
         env.driveMain();
 
+        // Now rename the backing field of the output; the TCB should be updated such that the `dir`
+        // input binding is still valid.
         env.write('dir.ts', `
           import {Directive, EventEmitter, Output} from '@angular/core';
 
@@ -121,6 +131,445 @@ runInEachFileSystem(() => {
           }
         `);
         env.driveMain();
+      });
+
+      it('should type-check correctly when the backing field of an input is removed', () => {
+        // For inputs that are only declared in the decorator but for which no backing field is
+        // declared in the TypeScript class, the TCB should not contain a write to the field as it
+        // would be an error. This test verifies that the TCB is regenerated when a backing field
+        // is removed.
+        env.write('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            inputs: ['dir'],
+          })
+          export class Dir {
+            dir!: string;
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div [dir]="foo"></div>',
+          })
+          export class Cmp {
+            foo = true;
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain(`Type 'boolean' is not assignable to type 'string'.`);
+
+        // Now remove the backing field for the `dir` input. The compilation should now succeed
+        // as there are no type-check errors.
+        env.write('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            inputs: ['dir'],
+          })
+          export class Dir {}
+        `);
+        env.driveMain();
+      });
+
+      it('should type-check correctly when the backing field of an input is made readonly', () => {
+        // When an input is declared as readonly and if `strictInputAccessModifiers` is disabled,
+        // the TCB contains an indirect write to the property to silence the error that a value
+        // cannot be assigned to a readonly property. This test verifies that changing a field to
+        // become readonly does result in the TCB being updated to use such an indirect write, as
+        // otherwise an error would incorrectly be reported.
+        env.tsconfig({strictTemplates: true, strictInputAccessModifiers: false});
+        env.write('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            inputs: ['dir'],
+          })
+          export class Dir {
+            dir!: string;
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div [dir]="foo"></div>',
+          })
+          export class Cmp {
+            foo = 'foo';
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        env.driveMain();
+
+        // Now change the `dir` input to be readonly. Because `strictInputAccessModifiers` is
+        // disabled this should be allowed.
+        env.write('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+            inputs: ['dir'],
+          })
+          export class Dir {
+            readonly dir!: string;
+          }
+        `);
+        env.driveMain();
+      });
+
+      it('should type-check correctly when an ngAcceptInputType field is declared', () => {
+        // Declaring a static `ngAcceptInputType` member requires that the TCB is regenerated, as
+        // writes to an input property should then be targeted against this static member instead
+        // of the input field itself.
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Input()
+            dir!: string;
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div [dir]="foo"></div>',
+          })
+          export class Cmp {
+            foo = true;
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain(`Type 'boolean' is not assignable to type 'string'.`);
+
+        // Now add an `ngAcceptInputType` static member to the directive such that its `dir` input
+        // also accepts `boolean`, unlike the type of `dir`'s class field. This should therefore
+        // allow the compilation to succeed.
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Input()
+            dir!: string;
+
+            static ngAcceptInputType_dir: string | boolean;
+          }
+        `);
+        env.driveMain();
+      });
+
+      it('should type-check correctly when an ngTemplateContextGuard field is declared', () => {
+        // This test adds an `ngTemplateContextGuard` static member to verify that the TCB is
+        // regenerated for the template context to take effect.
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Input()
+            dir!: string;
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div *dir="let bar">{{ foo(bar) }}</div>',
+          })
+          export class Cmp {
+            foo(bar: string) {}
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        env.driveMain();
+
+        // Now add the template context to declare the `$implicit` variable to be of type `number`.
+        // Doing so should report an error for `Cmp`, as the type of `bar` which binds to
+        // `$implicit` is no longer compatible with the method signature which requires a `string`.
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          export interface TemplateContext {
+            $implicit: number;
+          }
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Input()
+            dir!: string;
+
+            static ngTemplateContextGuard(dir: Dir, ctx: any): ctx is TemplateContext { return true; }
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(diags[0].messageText)
+            .toContain(
+                `Argument of type 'number' is not assignable to parameter of type 'string'.`);
+      });
+
+      it('should type-check correctly when an ngTemplateGuard field is declared', () => {
+        // This test verifies that adding an `ngTemplateGuard` static member has the desired effect
+        // of type-narrowing the bound input expression within the template.
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Input()
+            dir!: boolean;
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div *dir="foo !== null">{{ test(foo) }}</div>',
+          })
+          export class Cmp {
+            foo!: string | null;
+            test(foo: string) {}
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
+            .toContain(
+                `Argument of type 'string | null' is not assignable to parameter of type 'string'.`);
+
+        // Now resolve the compilation error by adding the `ngTemplateGuard_dir` static member to
+        // specify that the bound expression for `dir` should be used as template guard. This
+        // should allow the compilation to succeed.
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          export interface TemplateContext {
+            $implicit: number;
+          }
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir {
+            @Input()
+            dir!: boolean;
+
+            static ngTemplateGuard_dir: 'binding';
+          }
+        `);
+        env.driveMain();
+      });
+
+      it('should type-check correctly when the type of an ngTemplateGuard field changes', () => {
+        // This test verifies that changing the type of an `ngTemplateGuard` static member has the
+        // desired effect of type-narrowing the bound input expression within the template according
+        // to the new type of the `ngTemplateGuard` static member. Initially, an "invocation" type
+        // context guard is used, but it's ineffective at narrowing an expression that explicitly
+        // compares against null. An incremental step changes the type of the guard to be of type
+        // `binding`.
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir<T> {
+            @Input()
+            dir!: T;
+
+            static ngTemplateGuard_dir<T>(dir: Dir<T>, expr: any): expr is NonNullable<T> { return true; };
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div *dir="foo !== null">{{ test(foo) }}</div>',
+          })
+          export class Cmp {
+            foo!: string | null;
+            test(foo: string) {}
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
+            .toContain(
+                `Argument of type 'string | null' is not assignable to parameter of type 'string'.`);
+
+        // Now change the type of the template guard into "binding" to achieve the desired narrowing
+        // of `foo`, allowing the compilation to succeed.
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          export interface TemplateContext {
+            $implicit: number;
+          }
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir<T> {
+            @Input()
+            dir!: T;
+
+            static ngTemplateGuard_dir: 'binding';
+          }
+        `);
+        env.driveMain();
+      });
+
+      it('should type-check correctly when the name of an ngTemplateGuard field changes', () => {
+        // This test verifies that changing the name of the field to which an `ngTemplateGuard`
+        // static member applies correctly removes its narrowing effect on the original input
+        // binding expression.
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir<T> {
+            @Input()
+            dir!: T;
+
+            static ngTemplateGuard_dir: 'binding';
+          }
+        `);
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'test-cmp',
+            template: '<div *dir="foo !== null">{{ test(foo) }}</div>',
+          })
+          export class Cmp {
+            foo!: string | null;
+            test(foo: string) {}
+          }
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp} from './cmp';
+          import {Dir} from './dir';
+
+          @NgModule({
+            declarations: [Cmp, Dir],
+          })
+          export class Mod {}
+        `);
+        env.driveMain();
+
+        // Now change the `ngTemplateGuard` to target a different field. The `dir` binding should
+        // no longer be narrowed, causing the template of `Cmp` to become invalid.
+        env.write('dir.ts', `
+          import {Directive, Input} from '@angular/core';
+
+          export interface TemplateContext {
+            $implicit: number;
+          }
+
+          @Directive({
+            selector: '[dir]',
+          })
+          export class Dir<T> {
+            @Input()
+            dir!: T;
+
+            static ngTemplateGuard_dir_renamed: 'binding';
+          }
+        `);
+        const diags = env.driveDiagnostics();
+        expect(diags.length).toBe(1);
+        expect(ts.flattenDiagnosticMessageText(diags[0].messageText, '\n'))
+            .toContain(
+                `Argument of type 'string | null' is not assignable to parameter of type 'string'.`);
       });
     });
 

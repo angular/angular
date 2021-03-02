@@ -63,3 +63,34 @@ export function isArrayEqual<T>(
 
   return !a.some((item, index) => !equalityTester(item, b[index]));
 }
+
+/**
+ * Determines if the provided sets are equal to each other, using the provided equality tester.
+ * Sets that only differ in ordering are considered equal.
+ */
+export function isSetEqual<T>(
+    a: ReadonlySet<T>|null, b: ReadonlySet<T>|null,
+    equalityTester: (a: T, b: T) => boolean = referenceEquality): boolean {
+  if (a === null || b === null) {
+    return a === b;
+  }
+
+  if (a.size !== b.size) {
+    return false;
+  }
+
+  for (const itemA of a) {
+    let found = false;
+    for (const itemB of b) {
+      if (equalityTester(itemA, itemB)) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      return false;
+    }
+  }
+
+  return true;
+}
