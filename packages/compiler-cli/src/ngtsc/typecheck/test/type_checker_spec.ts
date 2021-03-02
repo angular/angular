@@ -168,49 +168,8 @@ runInEachFileSystem(() => {
         expect(diags.length).toBe(1);
         expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INLINE_TCB_REQUIRED));
       });
-
-      it('should produce errors for components that require type constructor inlining', () => {
-        const fileName = absoluteFrom('/main.ts');
-        const dirFile = absoluteFrom('/dir.ts');
-        const {program, templateTypeChecker} = setup(
-            [
-              {
-                fileName,
-                source: `export class Cmp {}`,
-                templates: {'Cmp': '<div dir></div>'},
-                declarations: [{
-                  name: 'TestDir',
-                  selector: '[dir]',
-                  file: dirFile,
-                  type: 'directive',
-                  isGeneric: true,
-                }]
-              },
-              {
-                fileName: dirFile,
-                source: `
-                // A non-exported interface used as a type bound for a generic directive causes
-                // an inline type constructor to be required.
-                interface NotExported {}
-                export class TestDir<T extends NotExported> {}`,
-                templates: {},
-              }
-            ],
-            {inlining: false});
-        const sf = getSourceFileOrError(program, fileName);
-        const diags = templateTypeChecker.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
-        expect(diags.length).toBe(1);
-        expect(diags[0].code).toBe(ngErrorCode(ErrorCode.INLINE_TYPE_CTOR_REQUIRED));
-
-        // The relatedInformation of the diagnostic should point to the directive which required
-        // the inline type constructor.
-        const dirSf = getSourceFileOrError(program, dirFile);
-        expect(diags[0].relatedInformation).not.toBeUndefined();
-        expect(diags[0].relatedInformation!.length).toBe(1);
-        expect(diags[0].relatedInformation![0].file).not.toBeUndefined();
-        expect(absoluteFromSourceFile(diags[0].relatedInformation![0].file!)).toBe(dirSf.fileName);
-      });
     });
+
     describe('getTemplateOfComponent()', () => {
       it('should provide access to a component\'s real template', () => {
         const fileName = absoluteFrom('/main.ts');

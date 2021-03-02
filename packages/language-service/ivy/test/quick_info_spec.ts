@@ -479,6 +479,49 @@ describe('quick info', () => {
     });
   });
 
+  describe('generics', () => {
+    beforeEach(() => {
+      initMockFileSystem('Native');
+      env = LanguageServiceTestEnv.setup();
+    });
+
+    it('should get quick info for the generic input of a directive that normally requires inlining',
+       () => {
+         // When compiling normally, we would have to inline the type constructor of `GenericDir`
+         // because its generic type parameter references `PrivateInterface`, which is not exported.
+         project = env.addProject('test', {
+           'app.ts': `
+          import {Directive, Component, Input, NgModule} from '@angular/core';
+
+          interface PrivateInterface {}
+
+          @Directive({
+            selector: '[dir]'
+          })export class GenericDir <T extends PrivateInterface>{
+            @Input('input') input: T = null!;
+          }
+
+          @Component({
+            selector: 'some-cmp',
+            templateUrl: './app.html'
+          })export class SomeCmp{}
+
+          @NgModule({
+            declarations: [GenericDir, SomeCmp],
+          })export class AppModule{}
+        `,
+           'app.html': ``,
+         });
+
+         expectQuickInfo({
+           templateOverride: `<div dir [inp¦ut]='{value: 42}'></div>`,
+           expectedSpanText: 'input',
+           expectedDisplayString: '(property) GenericDir<any>.input: any'
+         });
+       });
+  });
+
+
   describe('non-strict compiler options', () => {
     beforeEach(() => {
       initMockFileSystem('Native');
@@ -511,6 +554,7 @@ describe('quick info', () => {
           {templateOverride, expectedSpanText: 'date', expectedDisplayString: '(pipe) DatePipe'});
     });
   });
+
 
   function expectQuickInfo(
       {templateOverride, expectedSpanText, expectedDisplayString}:

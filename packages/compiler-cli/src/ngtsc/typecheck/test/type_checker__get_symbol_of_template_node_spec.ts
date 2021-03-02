@@ -1587,6 +1587,8 @@ function assertDomBindingSymbol(tSymbol: Symbol): asserts tSymbol is DomBindingS
 }
 
 export function setup(targets: TypeCheckingTarget[], config?: Partial<TypeCheckingConfig>) {
-  return baseTestSetup(
-      targets, {inlining: false, config: {...config, enableTemplateTypeChecker: true}});
+  return baseTestSetup(targets, {
+    inlining: false,
+    config: {...config, enableTemplateTypeChecker: true, useInlineTypeConstructors: false}
+  });
 }

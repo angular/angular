@@ -745,6 +745,7 @@ describe('type check blocks', () => {
       useContextGenericType: true,
       strictLiteralTypes: true,
       enableTemplateTypeChecker: false,
+      useInlineTypeConstructors: true
     };
 
     describe('config.applyTemplateContextGuards', () => {
@@ -1077,4 +1078,35 @@ describe('type check blocks', () => {
       });
     });
   });
+
+  it('should use `any` type for type constructors with bound generic params ' +
+         'when `useInlineTypeConstructors` is `false`',
+     () => {
+       const template = `
+    <div dir
+      [inputA]='foo'
+      [inputB]='bar'
+      ></div>
+    `;
+       const declarations: TestDeclaration[] = [{
+         code: `
+           interface PrivateInterface{};
+           export class Dir<T extends PrivateInterface, U extends string> {};
+        `,
+         type: 'directive',
+         name: 'Dir',
+         selector: '[dir]',
+         inputs: {
+           inputA: 'inputA',
+           inputB: 'inputB',
+         },
+         isGeneric: true
+       }];
+
+       const renderedTcb = tcb(template, declarations, {useInlineTypeConstructors: false});
+
+       expect(renderedTcb).toContain(`var _t1: i0.Dir<any, any> = null!;`);
+       expect(renderedTcb).toContain(`_t1.inputA = (((ctx).foo));`);
+       expect(renderedTcb).toContain(`_t1.inputB = (((ctx).bar));`);
+     });
 });
