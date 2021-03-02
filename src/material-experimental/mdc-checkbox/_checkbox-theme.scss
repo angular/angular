@@ -4,6 +4,7 @@
 @use 'sass:map';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
+@use '../../material/core/ripple/ripple';
 
 @import '@material/checkbox/mixins.import';
 @import '@material/checkbox/variables.import';
@@ -29,23 +30,23 @@
       ripple-checked-opacity: ripple-theme.$dark-ink-opacities,
     )
   );
-  @include _background-focus-indicator-color(mdc-theme-prop-value(on-surface));
-  @include _background-focus-indicator-checked-color($color);
 }
 
-// TODO(b/175233410): Use ripple element to show focus indicator.
-@mixin _background-focus-indicator-color($color) {
-  .mdc-checkbox__background::before {
-    @include theme.property(background-color, on-surface);
-  }
-}
+// Apply ripple colors to the MatRipple element and the MDC ripple element when the
+// checkbox is selected.
+@mixin _selected-ripple-colors($theme, $mdcColor) {
+  .mdc-checkbox--selected ~ {
+    .mat-mdc-checkbox-ripple {
+      @include ripple.theme((
+          foreground: (
+              base: mdc-theme-prop-value($mdcColor)
+          ),
+      ));
+    }
 
-// TODO(b/175233410): Use ripple element to show focus indicator.
-@mixin _background-focus-indicator-checked-color($color) {
-  .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background::before,
-  .mdc-checkbox__native-control:indeterminate ~ .mdc-checkbox__background::before,
-  .mdc-checkbox__native-control[data-indeterminate='true'] ~ .mdc-checkbox__background::before {
-    @include theme.property(background-color, $color);
+    .mdc-checkbox__ripple {
+      background: $theme;
+    }
   }
 }
 
@@ -73,35 +74,32 @@
     .mat-mdc-checkbox {
       @include private-checkbox-styles-with-color(primary);
       @include mdc-form-field-core-styles($query: mdc-helpers.$mat-theme-styles-query);
-    }
+      @include ripple.theme((
+        foreground: (
+          base: mdc-theme-prop-value(on-surface)
+        ),
+      ));
 
-    // MDC's checkbox doesn't support a `color` property. We add support for it by adding a CSS
-    // class for accent and warn style, and applying the appropriate overrides below. Since we don't
-    // use MDC's ripple, we also need to set the color for our replacement ripple.
-    .mat-mdc-checkbox {
-      .mat-ripple-element,
-      .mdc-checkbox__background::before {
+      .mdc-checkbox__ripple {
         background: mdc-theme-prop-value(on-surface);
       }
 
-      .mdc-checkbox--selected ~ .mat-mdc-checkbox-ripple .mat-ripple-element {
-        background: $primary;
+      // MDC's checkbox doesn't support a `color` property. We add support for it by adding a CSS
+      // class for accent and warn style, and applying the appropriate overrides below. Since we
+      // don't use MDC's ripple, we also need to set the color for our replacement ripple.
+      &.mat-primary {
+        @include private-checkbox-styles-with-color(primary);
+        @include _selected-ripple-colors($primary, primary);
       }
 
       &.mat-accent {
         @include private-checkbox-styles-with-color(secondary);
-
-        .mdc-checkbox--selected ~ .mat-mdc-checkbox-ripple .mat-ripple-element {
-          background: $accent;
-        }
+        @include _selected-ripple-colors($accent, secondary);
       }
 
       &.mat-warn {
         @include private-checkbox-styles-with-color(error);
-
-        .mdc-checkbox--selected ~ .mat-mdc-checkbox-ripple .mat-ripple-element {
-          background: $warn;
-        }
+        @include _selected-ripple-colors($warn, error);
       }
     }
   }
@@ -119,19 +117,6 @@
   }
 }
 
-// TODO(b/175233410): Use ripple element to show focus indicator.
-@mixin _background-focus-density($density-scale) {
-  $ripple-size: checkbox-theme.get-ripple-size($density-scale);
-  $checkbox-padding: ($ripple-size - checkbox-theme.$icon-size) / 2;
-
-  .mdc-checkbox__background::before {
-    top: -(checkbox-theme.$border-width) - $checkbox-padding;
-    left: -(checkbox-theme.$border-width) - $checkbox-padding;
-    width: $ripple-size;
-    height: $ripple-size;
-  }
-}
-
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
   .mat-mdc-checkbox .mdc-checkbox {
@@ -139,7 +124,6 @@
       $density-scale,
       $query: mdc-helpers.$mat-base-styles-query
     );
-    @include _background-focus-density($density-scale);
   }
 }
 
