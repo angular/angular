@@ -394,8 +394,8 @@ export declare abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSe
     abstract isValid(): boolean;
     ngOnDestroy(): void;
     updateSelection(value: S, source: unknown): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatDateSelectionModel<any, any>, never, never, {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatDateSelectionModel<any, any>, never>;
+    static ɵprov: i0.ɵɵInjectableDef<MatDateSelectionModel<any, any>>;
 }
 
 export declare class MatEndDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState, DoCheck, OnInit {
