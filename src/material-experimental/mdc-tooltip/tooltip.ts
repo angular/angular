@@ -34,6 +34,13 @@ import {numbers} from '@material/tooltip';
 import {matTooltipAnimations} from './tooltip-animations';
 
 /**
+ * CSS class that will be attached to the overlay panel.
+ * @deprecated
+ * @breaking-change 13.0.0 remove this variable
+ */
+export const TOOLTIP_PANEL_CLASS = 'mat-mdc-tooltip-panel';
+
+/**
  * Directive that attaches a material design tooltip to the host element. Animates the showing and
  * hiding of a tooltip provided position (defaults to below the element).
  *
@@ -48,7 +55,7 @@ import {matTooltipAnimations} from './tooltip-animations';
 })
 export class MatTooltip extends _MatTooltipBase<TooltipComponent> {
   protected readonly _tooltipComponent = TooltipComponent;
-  protected readonly _transformOriginSelector = '.mat-mdc-tooltip';
+  protected readonly _cssClassPrefix = 'mat-mdc';
 
   constructor(
     overlay: Overlay,

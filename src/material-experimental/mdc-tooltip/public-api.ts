@@ -18,7 +18,6 @@ export {
   TooltipTouchGestures,
   TooltipVisibility,
   SCROLL_THROTTLE_MS,
-  TOOLTIP_PANEL_CLASS,
   MAT_TOOLTIP_SCROLL_STRATEGY,
   MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER,
   MatTooltipDefaultOptions,

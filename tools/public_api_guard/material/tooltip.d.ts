@@ -1,9 +1,9 @@
 export declare abstract class _MatTooltipBase<T extends _TooltipComponentBase> implements OnDestroy, AfterViewInit {
+    protected readonly _cssClassPrefix: string;
     protected _dir: Directionality;
     _overlayRef: OverlayRef | null;
     protected abstract readonly _tooltipComponent: ComponentType<T>;
     _tooltipInstance: T | null;
-    protected abstract readonly _transformOriginSelector: string;
     protected _viewportMargin: number;
     get disabled(): boolean;
     set disabled(value: boolean);
@@ -83,7 +83,6 @@ export declare const MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER: {
 
 export declare class MatTooltip extends _MatTooltipBase<TooltipComponent> {
     protected readonly _tooltipComponent: typeof TooltipComponent;
-    protected readonly _transformOriginSelector = ".mat-tooltip";
     constructor(overlay: Overlay, elementRef: ElementRef<HTMLElement>, scrollDispatcher: ScrollDispatcher, viewContainerRef: ViewContainerRef, ngZone: NgZone, platform: Platform, ariaDescriber: AriaDescriber, focusMonitor: FocusMonitor, scrollStrategy: any, dir: Directionality, defaultOptions: MatTooltipDefaultOptions, _document: any);
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTooltip, "[matTooltip]", ["matTooltip"], {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatTooltip, [null, null, null, null, null, null, null, null, null, { optional: true; }, { optional: true; }, null]>;
