@@ -43,7 +43,7 @@ export class Environment {
 
   constructor(
       readonly config: TypeCheckingConfig, protected importManager: ImportManager,
-      private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
+      private refEmitter: ReferenceEmitter, readonly reflector: ReflectionHost,
       protected contextFile: ts.SourceFile) {}
 
   /**

@@ -166,7 +166,7 @@ export function ngForTypeCheckTarget(): TypeCheckingTarget {
   };
 }
 
-export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
+export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   applyTemplateContextGuards: true,
   checkQueries: false,
   checkTemplateBodies: true,
@@ -188,37 +188,55 @@ export const ALL_ENABLED_CONFIG: TypeCheckingConfig = {
   useContextGenericType: true,
   strictLiteralTypes: true,
   enableTemplateTypeChecker: false,
+  useInlineTypeConstructors: true
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
-export type TestDirective = Partial<Pick<
+export interface TestDirective extends Partial<Pick<
     TypeCheckableDirectiveMeta,
     Exclude<
         keyof TypeCheckableDirectiveMeta,
         'ref'|'coercedInputFields'|'restrictedInputFields'|'stringLiteralInputFields'|
-        'undeclaredInputFields'|'inputs'|'outputs'>>>&{
-  selector: string, name: string, file?: AbsoluteFsPath, type: 'directive',
-      inputs?: {[fieldName: string]: string}, outputs?: {[fieldName: string]: string},
-      coercedInputFields?: string[], restrictedInputFields?: string[],
-      stringLiteralInputFields?: string[], undeclaredInputFields?: string[], isGeneric?: boolean;
-};
+        'undeclaredInputFields'|'inputs'|'outputs'>>> {
+  selector: string;
+  name: string;
+  file?: AbsoluteFsPath;
+  type: 'directive';
+  inputs?: {[fieldName: string]: string};
+  outputs?: {[fieldName: string]: string};
+  coercedInputFields?: string[];
+  restrictedInputFields?: string[];
+  stringLiteralInputFields?: string[];
+  undeclaredInputFields?: string[];
+  isGeneric?: boolean;
+  code?: string;
+}
 
-export type TestPipe = {
-  name: string,
-  file?: AbsoluteFsPath, pipeName: string, type: 'pipe',
-};
+export interface TestPipe {
+  name: string;
+  file?: AbsoluteFsPath;
+  pipeName: string;
+  type: 'pipe';
+  code?: string;
+}
 
 export type TestDeclaration = TestDirective|TestPipe;
 
 export function tcb(
-    template: string, declarations: TestDeclaration[] = [], config?: TypeCheckingConfig,
+    template: string, declarations: TestDeclaration[] = [], config?: Partial<TypeCheckingConfig>,
     options?: {emitSpans?: boolean}): string {
-  const classes = ['Test', ...declarations.map(decl => decl.name)];
-  const code = classes.map(name => `export class ${name}<T extends string> {}`).join('\n');
+  const codeLines = [`export class Test<T extends string> {}`];
 
+  for (const decl of declarations) {
+    if (decl.code !== undefined) {
+      codeLines.push(decl.code);
+    } else {
+      codeLines.push(`export class ${decl.name}<T extends string> {}`);
+    }
+  }
   const rootFilePath = absoluteFrom('/synthetic.ts');
   const {program, host} = makeProgram([
-    {name: rootFilePath, contents: code, isRoot: true},
+    {name: rootFilePath, contents: codeLines.join('\n'), isRoot: true},
   ]);
 
   const sf = getSourceFileOrError(program, rootFilePath);
@@ -233,7 +251,7 @@ export function tcb(
   const id = 'tcb' as TemplateId;
   const meta: TypeCheckBlockMetadata = {id, boundTarget, pipes, schemas: []};
 
-  config = config || {
+  const fullConfig: TypeCheckingConfig = {
     applyTemplateContextGuards: true,
     checkQueries: false,
     checkTypeOfInputBindings: true,
@@ -253,6 +271,8 @@ export function tcb(
     useContextGenericType: true,
     strictLiteralTypes: true,
     enableTemplateTypeChecker: false,
+    useInlineTypeConstructors: true,
+    ...config
   };
   options = options || {
     emitSpans: false,
@@ -265,7 +285,7 @@ export function tcb(
   const refEmmiter: ReferenceEmitter = new ReferenceEmitter(
       [new LocalIdentifierStrategy(), new RelativePathStrategy(reflectionHost)]);
 
-  const env = new TypeCheckFile(fileName, config, refEmmiter, reflectionHost, host);
+  const env = new TypeCheckFile(fileName, fullConfig, refEmmiter, reflectionHost, host);
 
   const ref = new Reference(clazz);
 
@@ -373,7 +393,14 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
         program, checker, moduleResolver, new TypeScriptReflectionHost(checker)),
     new LogicalProjectStrategy(reflectionHost, logicalFs),
   ]);
-  const fullConfig = {...ALL_ENABLED_CONFIG, ...config};
+
+  const fullConfig = {
+    ...ALL_ENABLED_CONFIG,
+    useInlineTypeConstructors: overrides.inlining !== undefined ?
+        overrides.inlining :
+        ALL_ENABLED_CONFIG.useInlineTypeConstructors,
+    ...config
+  };
 
   // Map out the scope of each target component, which is needed for the ComponentScopeReader.
   const scopeMap = new Map<ClassDeclaration, ScopeData>();
