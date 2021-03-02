@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFromSourceFile} from '../../file_system';
 import {DefaultImportRecorder, Reference} from '../../imports';
-import {extractSemanticTypeParameters, isArrayEqual, isSymbolEqual, isTypeParametersEqual, SemanticDepGraphUpdater, SemanticSymbol, SemanticTypeParameter} from '../../incremental/semantic_graph';
+import {areTypeParametersEqual, extractSemanticTypeParameters, isArrayEqual, isSymbolEqual, SemanticDepGraphUpdater, SemanticSymbol, SemanticTypeParameter} from '../../incremental/semantic_graph';
 import {ClassPropertyMapping, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {extractDirectiveTypeCheckMeta} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
@@ -95,7 +95,7 @@ export class DirectiveSymbol extends SemanticSymbol {
     // The type parameters of a directive are emitted into the type constructors in the type-check
     // block of a component, so if the type parameters are not considered equal then consider the
     // type-check API of this directive to be affected.
-    if (!isTypeParametersEqual(this.typeParameters, previousSymbol.typeParameters)) {
+    if (!areTypeParametersEqual(this.typeParameters, previousSymbol.typeParameters)) {
       return true;
     }
 

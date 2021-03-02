@@ -136,6 +136,20 @@ export interface DecoratorHandler<D, A, S extends SemanticSymbol|null, R> {
   updateResources?(node: ClassDeclaration, analysis: A, resolution: R): void;
 
   /**
+   * Produces a `SemanticSymbol` that represents the class, which is registered into the semantic
+   * dependency graph. The symbol is used in incremental compilations to let the compiler determine
+   * how a change to the class affects prior emit results. See the `incremental` target's README for
+   * details on how this works.
+   *
+   * The symbol is passed in to `resolve`, where it can be extended with references into other parts
+   * of the compilation as needed.
+   *
+   * Only primary handlers are allowed to have symbols; handlers with `precedence` other than
+   * `HandlerPrecedence.PRIMARY` must return a `null` symbol.
+   */
+  symbol(node: ClassDeclaration, analysis: Readonly<A>): S;
+
+  /**
    * Post-process the analysis of a decorator/class combination and record any necessary information
    * in the larger compilation.
    *
@@ -188,11 +202,6 @@ export interface DecoratorHandler<D, A, S extends SemanticSymbol|null, R> {
   compilePartial?
       (node: ClassDeclaration, analysis: Readonly<A>, resolution: Readonly<R>): CompileResult
       |CompileResult[];
-
-  /**
-   * TODO(zarend): documentation
-   */
-  symbol(node: ClassDeclaration, analysis: Readonly<A>): S;
 }
 
 /**

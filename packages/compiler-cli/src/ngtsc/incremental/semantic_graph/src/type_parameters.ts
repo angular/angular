@@ -47,7 +47,7 @@ export function extractSemanticTypeParameters(node: ClassDeclaration): SemanticT
 /**
  * Compares the list of type parameters to determine if they can be considered equal.
  */
-export function isTypeParametersEqual(
+export function areTypeParametersEqual(
     current: SemanticTypeParameter[]|null, previous: SemanticTypeParameter[]|null): boolean {
   // First compare all type parameters one-to-one; any differences mean that the list of type
   // parameters has changed.
