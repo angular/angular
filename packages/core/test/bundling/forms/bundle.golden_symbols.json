@@ -1005,6 +1005,9 @@
     "name": "getFactoryDef"
   },
   {
+    "name": "getFactoryOf"
+  },
+  {
     "name": "getFirstLContainer"
   },
   {
@@ -1717,9 +1720,6 @@
   },
   {
     "name": "ɵɵelementStart"
-  },
-  {
-    "name": "ɵɵgetFactoryOf"
   },
   {
     "name": "ɵɵgetInheritedFactory"
