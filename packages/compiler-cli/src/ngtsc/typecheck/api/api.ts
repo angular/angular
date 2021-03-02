@@ -260,6 +260,21 @@ export interface TypeCheckingConfig {
    * literals are cast to `any` when declared.
    */
   strictLiteralTypes: boolean;
+
+  /**
+   * Whether to use inline type constructors.
+   *
+   * If this is `true`, create inline type constructors when required. For example, if a type
+   * constructor's parameters has private types, it cannot be created normally, so we inline it in
+   * the directives definition file.
+   *
+   * If false, do not create inline type constructors. Fall back to using `any` type for
+   * constructors that normally require inlining.
+   *
+   * This option requires the environment to support inlining. If the environment does not support
+   * inlining, this must be set to `false`.
+   */
+  useInlineTypeConstructors: boolean;
 }
 
 
