@@ -4,20 +4,23 @@
 }
 h1 {
   color: #264D73;
-  font-size: 250%;
+  font-size: 2.5rem;
 }
 h2, h3 {
   color: #444;
   font-weight: lighter;
 }
+h3 {
+  font-size: 1.3rem;
+}
 body {
-  padding: .5em;
+  padding: .5rem;
   max-width: 1000px;
   margin: auto;
 }
 @media (min-width: 600px) {
   body {
-    padding: 2em;
+    padding: 2rem;
   }
 }
 body, input[text] {
@@ -30,13 +33,17 @@ a {
 button {
   background-color: #eee;
   border: none;
-  padding: 5px 10px;
   border-radius: 4px;
   cursor: pointer;
   color: black;
+  font-size: 1.2rem;
+  padding: 1rem;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
 }
 button:hover {
-  background-color: #cfd8dc;
+  background-color: black;
+  color: white;
 }
 button:disabled {
   background-color: #eee;
@@ -63,4 +70,12 @@ nav a:hover {
 nav a.active {
   background-color: black;
   color: white;
+}
+hr {
+  margin: 1.5rem 0;
+}
+input[type="text"] {
+  box-sizing: border-box;
+  width: 100%;
+  padding: .5rem;
 }
