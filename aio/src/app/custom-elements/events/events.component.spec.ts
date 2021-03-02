@@ -1,5 +1,6 @@
 import { Injector } from '@angular/core';
 import { Subject } from 'rxjs';
+import * as tzMock from 'timezone-mock';
 import { Duration, Event, EventsComponent } from './events.component';
 import { EventsService } from './events.service';
 
@@ -132,86 +133,107 @@ describe('EventsComponent', () => {
   });
 
   describe('getEventDates()', () => {
-    describe('(without workshops)', () => {
-      it('should correctly format the main event date', () => {
-        const testEvent = createMockEvent('Test', {start: '2020-06-20', end: '2020-06-20'});
-        expect(component.getEventDates(testEvent)).toBe('June 20, 2020');
-      });
+    // Test on different timezones to ensure that event dates are processed correctly regardless of
+    // the user's local time.
+    const timezones: tzMock.TimeZone[] = [
+      'Australia/Adelaide',  // UTC+9.5/10.5
+      'Brazil/East',         // UTC-3
+      'UTC',                 // UTC
+    ];
 
-      it('should correctly format the main event date spanning mupliple days', () => {
-        const testEvent = createMockEvent('Test', {start: '2019-09-19', end: '2019-09-21'});
-        expect(component.getEventDates(testEvent)).toBe('September 19-21, 2019');
-      });
+    for (const tz of timezones) {
+      describe(`on timezone ${tz}`, () => {
+        // NOTE: `timezone-mock` does not work correctly if used together with Jasmine's mock clock.
+        beforeEach(() => tzMock.register(tz));
+        afterEach(() => tzMock.unregister());
 
-      it('should correctly format the main event date spanning mupliple months', () => {
-        const testEvent = createMockEvent('Test', {start: '2019-10-30', end: '2019-11-01'});
-        expect(component.getEventDates(testEvent)).toBe('October 30 - November 1, 2019');
-      });
-    });
+        describe('(without workshops)', () => {
+          it('should correctly format the main event date', () => {
+            const testEvent = createMockEvent('Test', {start: '2020-06-20', end: '2020-06-20'});
+            expect(component.getEventDates(testEvent)).toBe('June 20, 2020');
+          });
 
-    describe('(with workshops)', () => {
-      it('should correctly format event dates with workshops after main event', () => {
-        const testEvent = createMockEvent(
-            'Test',
-            {start: '2020-07-25', end: '2020-07-26'},
-            {start: '2020-07-27', end: '2020-07-27'});
+          it('should correctly format the main event date spanning mupliple days', () => {
+            const testEvent = createMockEvent('Test', {start: '2019-09-19', end: '2019-09-21'});
+            expect(component.getEventDates(testEvent)).toBe('September 19-21, 2019');
+          });
 
-        expect(component.getEventDates(testEvent))
-            .toBe('July 25-26 (conference), July 27 (workshops), 2020');
-      });
+          it('should correctly format the main event date spanning mupliple months', () => {
+            const testEvent = createMockEvent('Test', {start: '2019-10-30', end: '2019-11-01'});
+            expect(component.getEventDates(testEvent)).toBe('October 30 - November 1, 2019');
+          });
 
-      it('should correctly format event dates with workshops before main event', () => {
-        const testEvent = createMockEvent(
-            'Test',
-            {start: '2019-10-07', end: '2019-10-07'},
-            {start: '2019-10-06', end: '2019-10-06'});
-
-        expect(component.getEventDates(testEvent))
-            .toBe('October 6 (workshops), October 7 (conference), 2019');
-      });
-
-      it('should correctly format event dates spanning multiple days', () => {
-        const testEvent = createMockEvent(
-            'Test',
-            {start: '2019-08-30', end: '2019-08-31'},
-            {start: '2019-08-28', end: '2019-08-29'});
-
-        expect(component.getEventDates(testEvent))
-            .toBe('August 28-29 (workshops), August 30-31 (conference), 2019');
-      });
-
-      it('should correctly format event dates with workshops on different month before the main event',
-        () => {
-          const testEvent = createMockEvent(
-              'Test',
-              {start: '2020-08-01', end: '2020-08-02'},
-              {start: '2020-07-30', end: '2020-07-31'});
-
-          expect(component.getEventDates(testEvent))
-              .toBe('July 30-31 (workshops), August 1-2 (conference), 2020');
+          it('should correctly format event dates at the beginning/end of the year', () => {
+            const testEvent = createMockEvent('Test', {start: '2021-01-01', end: '2021-12-31'});
+            expect(component.getEventDates(testEvent)).toBe('January 1 - December 31, 2021');
+          });
         });
 
-      it('should correctly format event dates with workshops on different month after the main event',
-        () => {
-          const testEvent = createMockEvent(
-              'Test',
-              {start: '2020-07-30', end: '2020-07-31'},
-              {start: '2020-08-01', end: '2020-08-02'});
+        describe('(with workshops)', () => {
+          it('should correctly format event dates with workshops after main event', () => {
+            const testEvent = createMockEvent(
+                'Test',
+                {start: '2020-07-25', end: '2020-07-26'},
+                {start: '2020-07-27', end: '2020-07-27'});
 
-          expect(component.getEventDates(testEvent))
-              .toBe('July 30-31 (conference), August 1-2 (workshops), 2020');
+            expect(component.getEventDates(testEvent))
+                .toBe('July 25-26 (conference), July 27 (workshops), 2020');
+          });
+
+          it('should correctly format event dates with workshops before main event', () => {
+            const testEvent = createMockEvent(
+                'Test',
+                {start: '2019-10-07', end: '2019-10-07'},
+                {start: '2019-10-06', end: '2019-10-06'});
+
+            expect(component.getEventDates(testEvent))
+                .toBe('October 6 (workshops), October 7 (conference), 2019');
+          });
+
+          it('should correctly format event dates spanning multiple days', () => {
+            const testEvent = createMockEvent(
+                'Test',
+                {start: '2019-08-30', end: '2019-08-31'},
+                {start: '2019-08-28', end: '2019-08-29'});
+
+            expect(component.getEventDates(testEvent))
+                .toBe('August 28-29 (workshops), August 30-31 (conference), 2019');
+          });
+
+          it('should correctly format event dates with workshops on different month before the main event',
+            () => {
+              const testEvent = createMockEvent(
+                  'Test',
+                  {start: '2020-08-01', end: '2020-08-02'},
+                  {start: '2020-07-30', end: '2020-07-31'});
+
+              expect(component.getEventDates(testEvent))
+                  .toBe('July 30-31 (workshops), August 1-2 (conference), 2020');
+            });
+
+          it('should correctly format event dates with workshops on different month after the main event',
+            () => {
+              const testEvent = createMockEvent(
+                  'Test',
+                  {start: '2020-07-30', end: '2020-07-31'},
+                  {start: '2020-08-01', end: '2020-08-02'});
+
+              expect(component.getEventDates(testEvent))
+                  .toBe('July 30-31 (conference), August 1-2 (workshops), 2020');
+            });
+
+          it('should correctly format event dates spanning multiple months', () => {
+            const testEvent = createMockEvent(
+                'Test',
+                {start: '2020-07-31', end: '2020-08-01'},
+                {start: '2020-07-30', end: '2020-08-01'});
+
+            expect(component.getEventDates(testEvent))
+                .toBe('July 30 - August 1 (workshops), July 31 - August 1 (conference), 2020');
+          });
         });
-
-      it('should correctly format event dates spanning multiple months', () => {
-        const testEvent = createMockEvent(
-            'Test',
-            {start: '2020-07-31', end: '2020-08-01'},
-            {start: '2020-07-30', end: '2020-08-01'});
-
-        expect(component.getEventDates(testEvent))
-            .toBe('July 30 - August 1 (workshops), July 31 - August 1 (conference), 2020');
       });
-    });
+    }
   });
 
   // Helpers
