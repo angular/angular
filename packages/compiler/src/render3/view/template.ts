@@ -2096,6 +2096,22 @@ export interface ParseTemplateOptions {
    * Whether the template was inline.
    */
   isInline?: boolean;
+
+  /**
+   * Whether to always attempt to convert the parsed HTML AST to an R3 AST, despite HTML or i18n
+   * Meta parse errors.
+   *
+   *
+   * This option is useful in the context of the language service, where we want to get as much
+   * information as possible, despite any errors in the HTML. As an example, a user may be adding
+   * a new tag and expecting autocomplete on that tag. In this scenario, the HTML is in an errored
+   * state, as there is an incomplete open tag. However, we're still able to convert the HTML AST
+   * nodes to R3 AST nodes in order to provide information for the language service.
+   *
+   * Note that even when `true` the HTML parse and i18n errors are still appended to the errors
+   * output, but this is done after converting the HTML AST to R3 AST.
+   */
+  alwaysAttemptHtmlToR3AstConversion?: boolean;
 }
 
 /**
@@ -2115,9 +2131,8 @@ export function parseTemplate(
       template, templateUrl,
       {leadingTriviaChars: LEADING_TRIVIA_CHARS, ...options, tokenizeExpansionForms: true});
 
-  if (parseResult.errors && parseResult.errors.length > 0) {
-    // TODO(ayazhafiz): we may not always want to bail out at this point (e.g. in
-    // the context of a language service).
+  if (!options.alwaysAttemptHtmlToR3AstConversion && parseResult.errors &&
+      parseResult.errors.length > 0) {
     return {
       interpolationConfig,
       preserveWhitespaces,
@@ -2143,7 +2158,8 @@ export function parseTemplate(
       enableI18nLegacyMessageIdFormat);
   const i18nMetaResult = i18nMetaVisitor.visitAllWithErrors(rootNodes);
 
-  if (i18nMetaResult.errors && i18nMetaResult.errors.length > 0) {
+  if (!options.alwaysAttemptHtmlToR3AstConversion && i18nMetaResult.errors &&
+      i18nMetaResult.errors.length > 0) {
     return {
       interpolationConfig,
       preserveWhitespaces,
@@ -2175,6 +2191,7 @@ export function parseTemplate(
 
   const {nodes, errors, styleUrls, styles, ngContentSelectors} =
       htmlAstToRender3Ast(rootNodes, bindingParser);
+  errors.push(...parseResult.errors, ...i18nMetaResult.errors);
 
   return {
     interpolationConfig,
