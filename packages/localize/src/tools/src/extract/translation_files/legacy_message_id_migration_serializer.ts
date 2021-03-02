@@ -9,9 +9,13 @@ import {ɵParsedMessage as ParsedMessage} from '@angular/localize';
 import {TranslationSerializer} from './translation_serializer';
 
 
-/** A translation serializer that generates the mapping file for the legacy message ID migration. */
+/**
+ * A translation serializer that generates the mapping file for the legacy message ID migration.
+ * The file is used by the `localize-migrate` script to migrate existing translation files from
+ * the legacy message IDs to the canonical ones.
+ */
 export class LegacyMessageIdMigrationSerializer implements TranslationSerializer {
-  /** Gets whether any of the passed-in messages need to be migrated. */
+  /** Returns true if any of the `messages` need to be migrated. */
   hasMigratableIds(messages: ParsedMessage[]): boolean {
     return messages.some(shouldMigrate);
   }
@@ -30,7 +34,7 @@ export class LegacyMessageIdMigrationSerializer implements TranslationSerializer
   }
 }
 
-/** Gets whether a particular message needs to be migrated. */
+/** Returns true if a message needs to be migrated. */
 function shouldMigrate(message: ParsedMessage): boolean {
   return !message.customId && !!message.legacyIds && message.legacyIds.length > 0;
 }

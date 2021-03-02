@@ -98,7 +98,7 @@ if (require.main === module) {
           })
           .option('migrationMapFile', {
             describe:
-                'Path to where the legacy message ID migration mapping file will be written. Either absolute or relative to the current working directory',
+                'Path to where the legacy message ID migration mapping file will be written, in addition to the extracted translations. Either absolute or relative to the current working directory',
             type: 'string',
           })
           .strict()
@@ -183,7 +183,7 @@ export interface ExtractTranslationsOptions {
 
   /**
    * Path to where the legacy message ID migration mapping file will be written.
-   * This should be relative to the root path.
+   * This will be resolved relative to the root path.
    */
   migrationMapFile?: string;
 }
@@ -223,18 +223,7 @@ export function extractTranslations({
   fs.writeFile(outputPath, translationFile);
 
   if (migrationMapFile) {
-    const legacyMessageIdMigrationSerializer = new LegacyMessageIdMigrationSerializer();
-    const mappingFile = legacyMessageIdMigrationSerializer.serialize(messages);
-    const mappingPath = fs.resolve(migrationMapFile);
-
-    // Log a warning if there are no messages to be migrated, because
-    // passing it into the migration afterwards will be a no-op.
-    if (!legacyMessageIdMigrationSerializer.hasMigratableIds(messages)) {
-      logger.warn('Could not find any legacy message IDs in source files.');
-    }
-
-    fs.ensureDir(fs.dirname(mappingPath));
-    fs.writeFile(mappingPath, mappingFile);
+    writeMigrationMapFile(migrationMapFile, messages, fs, logger);
   }
 
   if (diagnostics.messages.length) {
@@ -264,4 +253,22 @@ export function getSerializer(
       return new ArbTranslationSerializer(sourceLocale, rootPath, fs);
   }
   throw new Error(`No translation serializer can handle the provided format: ${format}`);
+}
+
+function writeMigrationMapFile(
+    filePath: string, messages: ɵParsedMessage[], fs: FileSystem, logger: Logger) {
+  const legacyMessageIdMigrationSerializer = new LegacyMessageIdMigrationSerializer();
+  const mappingFile = legacyMessageIdMigrationSerializer.serialize(messages);
+  const mappingPath = fs.resolve(filePath);
+
+  // Log a warning if there are no messages to be migrated, because
+  // passing it into the migration afterwards will be a no-op.
+  if (!legacyMessageIdMigrationSerializer.hasMigratableIds(messages)) {
+    logger.warn(
+        'Could not find any legacy message IDs in source files while generating ' +
+        'the legacy message migration file.');
+  }
+
+  fs.ensureDir(fs.dirname(mappingPath));
+  fs.writeFile(mappingPath, mappingFile);
 }

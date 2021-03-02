@@ -190,7 +190,7 @@ runInNativeFileSystem(() => {
 
     /** Reads a path from the file system and normalizes the line endings. */
     function readAndNormalize(path: AbsoluteFsPath): string {
-      return fs.readFile(path).replace(/\r\n|\r|\n/g, '\n');
+      return fs.readFile(path).replace(/\r?\n/g, '\n');
     }
   });
 });

@@ -538,9 +538,9 @@ runInNativeFileSystem(() => {
         });
 
         expect(fs.readFile(migrationMapFile)).toBe('{}');
-        expect(logger.logs.warn).toEqual([
-          ['Could not find any legacy message IDs in source files.']
-        ]);
+        expect(logger.logs.warn).toEqual([[
+          'Could not find any legacy message IDs in source files while generating the legacy message migration file.'
+        ]]);
       });
     });
   });
