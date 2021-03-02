@@ -18,7 +18,6 @@ const INTERFACE_EXCEPTIONS = new Set<string>([
   'ɵɵNgModuleDefWithMeta',
   'ɵɵPipeDefWithMeta',
   'ɵɵFactoryDef',
-  'ɵɵgetFactoryOf',
   'ModuleWithProviders',
 ]);
 
