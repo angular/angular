@@ -71,12 +71,6 @@ export interface R3ConstructorFactoryMetadata {
 export enum R3FactoryDelegateType {
   Class,
   Function,
-  Factory,
-}
-
-export interface R3DelegatedFactoryMetadata extends R3ConstructorFactoryMetadata {
-  delegate: o.Expression;
-  delegateType: R3FactoryDelegateType.Factory;
 }
 
 export interface R3DelegatedFnOrClassMetadata extends R3ConstructorFactoryMetadata {
@@ -89,8 +83,8 @@ export interface R3ExpressionFactoryMetadata extends R3ConstructorFactoryMetadat
   expression: o.Expression;
 }
 
-export type R3FactoryMetadata = R3ConstructorFactoryMetadata|R3DelegatedFactoryMetadata|
-    R3DelegatedFnOrClassMetadata|R3ExpressionFactoryMetadata;
+export type R3FactoryMetadata =
+    R3ConstructorFactoryMetadata|R3DelegatedFnOrClassMetadata|R3ExpressionFactoryMetadata;
 
 export enum R3FactoryTarget {
   Directive = 0,
@@ -239,20 +233,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
     return r;
   }
 
-  if (isDelegatedMetadata(meta) && meta.delegateType === R3FactoryDelegateType.Factory) {
-    const delegateFactory = o.variable(`ɵ${meta.name}_BaseFactory`);
-    const getFactoryOf = o.importExpr(R3.getFactoryOf);
-    if (meta.delegate.isEquivalent(meta.internalType)) {
-      throw new Error(`Illegal state: compiling factory that delegates to itself`);
-    }
-    const delegateFactoryStmt =
-        delegateFactory.set(getFactoryOf.callFn([meta.delegate])).toDeclStmt(o.INFERRED_TYPE, [
-          o.StmtModifier.Exported, o.StmtModifier.Final
-        ]);
-
-    statements.push(delegateFactoryStmt);
-    retExpr = makeConditionalFactory(delegateFactory.callFn([]));
-  } else if (isDelegatedMetadata(meta)) {
+  if (isDelegatedMetadata(meta)) {
     // This type is created with a delegated factory. If a type parameter is not specified, call
     // the factory instead.
     const delegateArgs =
@@ -418,8 +399,7 @@ export function dependenciesFromGlobalMetadata(
   return deps;
 }
 
-function isDelegatedMetadata(meta: R3FactoryMetadata): meta is R3DelegatedFactoryMetadata|
-    R3DelegatedFnOrClassMetadata {
+function isDelegatedMetadata(meta: R3FactoryMetadata): meta is R3DelegatedFnOrClassMetadata {
   return (meta as any).delegateType !== undefined;
 }
 

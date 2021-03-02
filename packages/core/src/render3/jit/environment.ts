@@ -37,7 +37,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵdefineNgModule': r3.ɵɵdefineNgModule,
        'ɵɵdefinePipe': r3.ɵɵdefinePipe,
        'ɵɵdirectiveInject': r3.ɵɵdirectiveInject,
-       'ɵɵgetFactoryOf': r3.ɵɵgetFactoryOf,
        'ɵɵgetInheritedFactory': r3.ɵɵgetInheritedFactory,
        'ɵɵinject': ɵɵinject,
        'ɵɵinjectAttribute': r3.ɵɵinjectAttribute,
