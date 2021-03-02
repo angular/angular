@@ -92,7 +92,7 @@ export class Project {
 
     // The following operation forces a ts.Program to be created.
     this.tsLS = tsProject.getLanguageService();
-    this.ngLS = new LanguageService(tsProject, this.tsLS);
+    this.ngLS = new LanguageService(tsProject, this.tsLS, {});
   }
 
   openFile(projectFileName: string): OpenBuffer {
