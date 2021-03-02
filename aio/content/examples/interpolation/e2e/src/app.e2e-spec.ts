@@ -40,6 +40,6 @@ describe('Interpolation e2e tests', () => {
     const label = element(by.css('label'));
     expect(await label.getText()).toEqual('Type something:');
     await input.sendKeys('abc');
-    expect(await label.getText()).toEqual('Type something: abc');
+    expect(await label.getText()).toMatch(/^Type something:\s+abc$/);
   });
 });
