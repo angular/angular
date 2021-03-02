@@ -13168,6 +13168,11 @@ timers-ext@^0.1.5:
     es5-ext "~0.10.46"
     next-tick "1"
 
+timezone-mock@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/timezone-mock/-/timezone-mock-1.1.3.tgz#f5ca25befec2cdd2d64c07ee7a5293275c06b97e"
+  integrity sha512-r+fz9M1tflNkF6mJK0DwmlFyNWeSCXxZ68pu2Bv+DddIHK/czOZwnasEql17VfHqP/OcZRuPq/qi6wm7eQmQow==
+
 timsort@^0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/timsort/-/timsort-0.3.0.tgz#405411a8e7e6339fe64db9a234de11dc31e02bd4"
