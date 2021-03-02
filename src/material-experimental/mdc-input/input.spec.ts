@@ -1274,13 +1274,17 @@ describe('MatFormField default options', () => {
     expect(fixture.componentInstance.formField.hideRequiredMarker).toBe(false);
   });
 
-  it('should be able to change the default value of hideRequiredMarker', () => {
+  it('should be able to change the default value of hideRequiredMarker and appearance', () => {
     const fixture = createComponent(MatInputWithAppearance, [{
-      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {hideRequiredMarker: true}}
+      provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {
+        hideRequiredMarker: true,
+        appearance: 'outline',
+      }}
     ]);
 
     fixture.detectChanges();
     expect(fixture.componentInstance.formField.hideRequiredMarker).toBe(true);
+    expect(fixture.componentInstance.formField.appearance).toBe('outline');
   });
 
 });
