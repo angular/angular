@@ -80,10 +80,6 @@ export declare abstract class _MatAutocompleteTriggerBase implements ControlValu
     static ɵfac: i0.ɵɵFactoryDef<_MatAutocompleteTriggerBase, [null, null, null, null, null, null, { optional: true; }, { optional: true; host: true; }, { optional: true; }, null, { optional: true; }]>;
 }
 
-export declare const AUTOCOMPLETE_OPTION_HEIGHT = 48;
-
-export declare const AUTOCOMPLETE_PANEL_HEIGHT = 256;
-
 export declare function getMatAutocompleteMissingPanelError(): Error;
 
 export declare const MAT_AUTOCOMPLETE_DEFAULT_OPTIONS: InjectionToken<MatAutocompleteDefaultOptions>;

@@ -57,26 +57,6 @@ import {
 import {_MatAutocompleteOriginBase} from './autocomplete-origin';
 
 
-/**
- * The following style constants are necessary to save here in order
- * to properly calculate the scrollTop of the panel. Because we are not
- * actually focusing the active item, scroll must be handled manually.
- */
-
-/**
- * The height of each autocomplete option.
- * @deprecated No longer being used. To be removed.
- * @breaking-change 12.0.0
- */
-export const AUTOCOMPLETE_OPTION_HEIGHT = 48;
-
-/**
- * The total height of the autocomplete panel.
- * @deprecated No longer being used. To be removed.
- * @breaking-change 12.0.0
- */
-export const AUTOCOMPLETE_PANEL_HEIGHT = 256;
-
 /** Injection token that determines the scroll handling while the autocomplete panel is open. */
 export const MAT_AUTOCOMPLETE_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('mat-autocomplete-scroll-strategy');

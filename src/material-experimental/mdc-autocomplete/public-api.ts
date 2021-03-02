@@ -13,8 +13,6 @@ export * from './autocomplete-trigger';
 
 // Everything from `material/autocomplete`, except for `MatAutcomplete` and `MatAutocompleteModule`.
 export {
-  AUTOCOMPLETE_OPTION_HEIGHT,
-  AUTOCOMPLETE_PANEL_HEIGHT,
   getMatAutocompleteMissingPanelError,
   MAT_AUTOCOMPLETE_DEFAULT_OPTIONS,
   MAT_AUTOCOMPLETE_DEFAULT_OPTIONS_FACTORY,
