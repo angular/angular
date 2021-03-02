@@ -55,6 +55,15 @@
       }
     }
   },
+  "forms": {
+    "master": {
+      "uncompressed": {
+        "runtime-es2015": 1485,
+        "main-es2015": 169047,
+        "polyfills-es2015": 36975
+      }
+    }
+  },
   "hello_world__closure": {
     "master": {
       "uncompressed": {

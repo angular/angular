@@ -53,6 +53,10 @@ INTEGRATION_TESTS = {
         "tags": ["no-ivy-aot"],
     },
     "dynamic-compiler": {"tags": ["no-ivy-aot"]},
+    "forms": {
+        "commands": "payload_size_tracking",
+        "tags": ["no-ivy-aot"],
+    },
     "hello_world__closure": {
         # TODO: Re-enable the payload_size_tracking command:
         #   We should define ngDevMode to false in Closure, but --define only works in the global scope.
