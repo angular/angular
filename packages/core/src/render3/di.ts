@@ -701,37 +701,16 @@ export class NodeInjector implements Injector {
 /**
  * @codeGenApi
  */
-export function ɵɵgetFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
-  const typeAny = type as any;
-
-  if (isForwardRef(type)) {
-    return (() => {
-             const factory = ɵɵgetFactoryOf<T>(resolveForwardRef(typeAny));
-             return factory ? factory() : null;
-           }) as any;
-  }
-
-  let factory = getFactoryDef<T>(typeAny);
-  if (factory === null) {
-    const injectorDef = getInjectorDef<T>(typeAny);
-    factory = injectorDef && injectorDef.factory;
-  }
-  return factory || null;
-}
-
-/**
- * @codeGenApi
- */
 export function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
   return noSideEffects(() => {
     const ownConstructor = type.prototype.constructor;
-    const ownFactory = ownConstructor[NG_FACTORY_DEF] || ɵɵgetFactoryOf(ownConstructor);
+    const ownFactory = ownConstructor[NG_FACTORY_DEF] || getFactoryOf(ownConstructor);
     const objectPrototype = Object.prototype;
     let parent = Object.getPrototypeOf(type.prototype).constructor;
 
     // Go up the prototype until we hit `Object`.
     while (parent && parent !== objectPrototype) {
-      const factory = parent[NG_FACTORY_DEF] || ɵɵgetFactoryOf(parent);
+      const factory = parent[NG_FACTORY_DEF] || getFactoryOf(parent);
 
       // If we hit something that has a factory and the factory isn't the same as the type,
       // we've found the inherited factory. Note the check that the factory isn't the type's
@@ -751,4 +730,22 @@ export function ɵɵgetInheritedFactory<T>(type: Type<any>): (type: Type<T>) => 
     // latter has to be assumed.
     return t => new t();
   });
+}
+
+function getFactoryOf<T>(type: Type<any>): FactoryFn<T>|null {
+  const typeAny = type as any;
+
+  if (isForwardRef(type)) {
+    return (() => {
+             const factory = getFactoryOf<T>(resolveForwardRef(typeAny));
+             return factory ? factory() : null;
+           }) as any;
+  }
+
+  let factory = getFactoryDef<T>(typeAny);
+  if (factory === null) {
+    const injectorDef = getInjectorDef<T>(typeAny);
+    factory = injectorDef && injectorDef.factory;
+  }
+  return factory || null;
 }
