@@ -60,6 +60,8 @@
     $selector-context: #{&};
 
     @if ($encapsulation != 'on') {
+      // Note that if this selector is updated, the same change has to be made inside
+      // `_overlay.scss` which can't depend on this mixin due to some infrastructure limitations.
       .cdk-high-contrast-#{$target} {
         @include _cdk-optionally-nest-content($selector-context) {
           @content;
