@@ -6,7 +6,8 @@
 // ripple and state container so that they fill the button, match the border radius, and avoid
 // pointer events.
 @mixin mat-private-button-interactive() {
-  .mdc-button__ripple::before, .mdc-button__ripple::after {
+  .mdc-button__ripple::before, .mdc-button__ripple::after,
+  .mdc-fab__ripple::before, .mdc-fab__ripple::after {
     content: '';
     pointer-events: none;
     position: absolute;
@@ -20,7 +21,7 @@
   }
 
   // The ripple container should match the bounds of the entire button.
-  .mat-mdc-button-ripple, .mdc-button__ripple {
+  .mat-mdc-button-ripple, .mdc-button__ripple, .mdc-fab__ripple {
     @include layout-common.fill;
 
     // Disable pointer events for the ripple container and state overlay because the container

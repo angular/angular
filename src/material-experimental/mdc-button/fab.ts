@@ -147,6 +147,8 @@ export class MatFabAnchor extends MatAnchor {
   // The FAB by default has its color set to accent.
   color = 'accent' as ThemePalette;
 
+  _isFab = true;
+
   private _extended: boolean;
   get extended(): boolean { return this._extended; }
   set extended(value: boolean) { this._extended = coerceBooleanProperty(value); }
@@ -179,6 +181,8 @@ export class MatFabAnchor extends MatAnchor {
 export class MatMiniFabAnchor extends MatAnchor {
   // The FAB by default has its color set to accent.
   color = 'accent' as ThemePalette;
+
+  _isFab = true;
 
   constructor(
     elementRef: ElementRef, platform: Platform, ngZone: NgZone,
