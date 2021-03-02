@@ -313,11 +313,6 @@ export class Identifiers {
 
   static listener: o.ExternalReference = {name: 'ɵɵlistener', moduleName: CORE};
 
-  static getFactoryOf: o.ExternalReference = {
-    name: 'ɵɵgetFactoryOf',
-    moduleName: CORE,
-  };
-
   static getInheritedFactory: o.ExternalReference = {
     name: 'ɵɵgetInheritedFactory',
     moduleName: CORE,
