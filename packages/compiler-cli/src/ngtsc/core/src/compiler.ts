@@ -658,6 +658,8 @@ export class NgCompiler {
     // is not disabled when `strictTemplates` is enabled.
     const strictTemplates = !!this.options.strictTemplates;
 
+    const useInlineTypeConstructors = this.typeCheckingProgramStrategy.supportsInlineOperations;
+
     // First select a type-checking configuration, based on whether full template type-checking is
     // requested.
     let typeCheckingConfig: TypeCheckingConfig;
@@ -689,6 +691,7 @@ export class NgCompiler {
         useContextGenericType: strictTemplates,
         strictLiteralTypes: true,
         enableTemplateTypeChecker: this.enableTemplateTypeChecker,
+        useInlineTypeConstructors,
       };
     } else {
       typeCheckingConfig = {
@@ -713,6 +716,7 @@ export class NgCompiler {
         useContextGenericType: false,
         strictLiteralTypes: false,
         enableTemplateTypeChecker: this.enableTemplateTypeChecker,
+        useInlineTypeConstructors,
       };
     }
 
