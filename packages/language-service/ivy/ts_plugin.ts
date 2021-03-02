@@ -16,7 +16,7 @@ export function create(info: ts.server.PluginCreateInfo): NgLanguageService {
   const {project, languageService: tsLS, config} = info;
   const angularOnly = config?.angularOnly === true;
 
-  const ngLS = new LanguageService(project, tsLS);
+  const ngLS = new LanguageService(project, tsLS, config);
 
   function getSemanticDiagnostics(fileName: string): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];

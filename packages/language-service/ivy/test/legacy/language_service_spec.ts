@@ -23,7 +23,7 @@ describe('language service adapter', () => {
     const {project: _project, tsLS, service: _service, configFileFs: _configFileFs} = setup();
     project = _project;
     service = _service;
-    ngLS = new LanguageService(project, tsLS);
+    ngLS = new LanguageService(project, tsLS, {});
     configFileFs = _configFileFs;
   });
 
@@ -55,6 +55,33 @@ describe('language service adapter', () => {
 
       expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
         strictTemplates: false,
+      }));
+    });
+
+    it('should always enable strictTemplates if forceStrictTemplates is true', () => {
+      const {project, tsLS, configFileFs} = setup();
+      const ngLS = new LanguageService(project, tsLS, {
+        forceStrictTemplates: true,
+      });
+
+      // First make sure the default for strictTemplates is true
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+        enableIvy: true,  // default for ivy is true
+        strictTemplates: true,
+        strictInjectionParameters: true,
+      }));
+
+      // Change strictTemplates to false
+      configFileFs.overwriteConfigFile(TSCONFIG, {
+        angularCompilerOptions: {
+          strictTemplates: false,
+        }
+      });
+
+      // Make sure strictTemplates is still true because forceStrictTemplates
+      // is enabled.
+      expect(ngLS.getCompilerOptions()).toEqual(jasmine.objectContaining({
+        strictTemplates: true,
       }));
     });
   });
