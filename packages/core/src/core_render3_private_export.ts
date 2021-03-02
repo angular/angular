@@ -145,7 +145,6 @@ export {
   ɵɵenableBindings,
   ɵɵFactoryDef,
   ɵɵgetCurrentView,
-  ɵɵgetFactoryOf,
   ɵɵgetInheritedFactory,
   ɵɵhostProperty,
   ɵɵi18n,

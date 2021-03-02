@@ -16,7 +16,7 @@ import {getComponent, getDirectives, getHostElement, getRenderedText} from './ut
 
 export {NgModuleType} from '../metadata/ng_module_def';
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
-export {ɵɵgetFactoryOf, ɵɵgetInheritedFactory} from './di';
+export {ɵɵgetInheritedFactory} from './di';
 export {getLocaleId, setLocaleId} from './i18n/i18n_locale_id';
 // clang-format off
 export {
