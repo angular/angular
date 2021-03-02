@@ -12,6 +12,7 @@ import {Observable} from 'rxjs';
 import {delay} from 'rxjs/operators';
 
 import {isNode, patchMacroTask, zoneSymbol} from '../../lib/common/utils';
+import {loadFakeAsyncCanvas} from '../../lib/zone-spec/fake-async-canvas';
 import {loadFakeAsyncFetch} from '../../lib/zone-spec/fake-async-fetch';
 import {loadFakeAsyncFileReader} from '../../lib/zone-spec/fake-async-file-reader';
 import {loadFakeAsyncXHR} from '../../lib/zone-spec/fake-async-xhr';
@@ -1039,6 +1040,39 @@ describe('FakeAsyncTestZoneSpec', () => {
                  });
                } finally {
                  fetchPatch.restoreFetch();
+               }
+             });
+           }));
+
+  describe('HTMLCanvasElement.toBlob', ifEnvSupports('HTMLCanvasElement', () => {
+             it('should get result with toBlob()', () => {
+               const canvasPatch = loadFakeAsyncCanvas(global);
+               canvasPatch!.fakeCanvas();
+               try {
+                 fakeAsyncTestZone.run(() => {
+                   testZoneSpec.registerNonTimerMacroTaskHandler(
+                       'HTMLCanvasElement.toBlob',
+                       (data: any, taskDone: (...args: any[]) => void) => {
+                         setTimeout(() => {
+                           taskDone(new Blob(['Hello world!']));
+                         }, 100);
+                       });
+                   let finished = false;
+                   const canvas = document.createElement('canvas');
+                   let blob: any;
+                   canvas.toBlob((b: any) => {
+                     blob = b;
+                     finished = true;
+                   });
+
+                   expect(blob).toEqual(undefined);
+                   expect(finished).toBe(false);
+                   testZoneSpec.tick(100);
+                   expect(blob).toEqual(new Blob(['Hello world!']));
+                   expect(finished).toBe(true);
+                 });
+               } finally {
+                 canvasPatch!.restoreCanvas();
                }
              });
            }));

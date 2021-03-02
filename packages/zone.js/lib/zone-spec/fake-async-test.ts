@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {loadFakeAsyncCanvas, supportedSources as supportedCanvasSources} from './fake-async-canvas';
 import {loadFakeAsyncFetch, supportedSources as supportedFetchSources} from './fake-async-fetch';
 import {loadFakeAsyncFileReader, supportedSources as supportedFileReaderSources} from './fake-async-file-reader';
 import {loadFakeAsyncXHR, supportedSources as supportedXHRSources} from './fake-async-xhr';
@@ -334,10 +335,11 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
   pendingPeriodicTimers: number[] = [];
   pendingTimers: number[] = [];
   pendingNonTimerTasks: Task[] = [];
-  supportedNonTimerTaskSources =
-      supportedXHRSources.concat(supportedFileReaderSources).concat(supportedFetchSources);
+  supportedNonTimerTaskSources = supportedXHRSources.concat(supportedFileReaderSources)
+                                     .concat(supportedFetchSources)
+                                     .concat(supportedCanvasSources);
   onNonTimerMacroTaskHandlers:
-      {source: string, handler: (data: any, taskDone: () => void) => void}[] = [];
+      {source: string, handler: (data: any, taskDone: (...args: any[]) => void) => void}[] = [];
 
   private patchDateLocked = false;
 
@@ -461,9 +463,9 @@ class FakeAsyncTestZoneSpec implements ZoneSpec {
       const pendingNonTimerTasks = this.pendingNonTimerTasks.slice();
       pendingNonTimerTasks.forEach(task => {
         if (task.source === taskHandler.source) {
-          const data = task.data as {done?: () => void};
-          taskHandler.handler(data, () => {
-            data.done && data.done.call(data);
+          const data = task.data as {done?: (...args: any[]) => void};
+          taskHandler.handler(data, (...args: any[]) => {
+            data.done && data.done.call(data, ...args);
             this.removeNonTimerMacroTask(task);
           });
         }
@@ -812,6 +814,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
   const xhrPatch = loadFakeAsyncXHR(global);
   const fileReaderPatch = loadFakeAsyncFileReader(global);
   const fetchPatch = loadFakeAsyncFetch(global);
+  const canvasPatch = loadFakeAsyncCanvas(global);
   const FakeAsyncTestZoneSpec = Zone && (Zone as any)['FakeAsyncTestZoneSpec'];
   type ProxyZoneSpecType = {
     setDelegate(delegateSpec: ZoneSpec): void; getDelegate(): ZoneSpec; resetDelegate(): void;
@@ -886,6 +889,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
         xhrPatch.fakeXHR(api);
         fetchPatch.fakeFetch();
         fileReaderPatch.fakeFileReader(api);
+        canvasPatch?.fakeCanvas();
         try {
           res = fn.apply(this, args);
           flushMicrotasks();
@@ -893,6 +897,7 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
           xhrPatch.restoreXHR();
           fileReaderPatch.restoreFileReader();
           fetchPatch.restoreFetch();
+          canvasPatch?.restoreCanvas();
           proxyZoneSpec.setDelegate(lastProxyZoneSpec);
         }
 
