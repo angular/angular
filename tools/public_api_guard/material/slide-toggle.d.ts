@@ -57,6 +57,7 @@ export declare class MatSlideToggleChange {
 }
 
 export interface MatSlideToggleDefaultOptions {
+    color?: ThemePalette;
     disableToggleValue?: boolean;
 }
 

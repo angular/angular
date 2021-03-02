@@ -72,7 +72,7 @@ const _MatSlideToggleMixinBase:
     CanDisableRippleCtor &
     CanDisableCtor &
     typeof MatSlideToggleBase =
-        mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatSlideToggleBase)), 'accent'));
+        mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatSlideToggleBase))));
 
 /** Represents a slidable "switch" toggle that can be moved between on and off. */
 @Component({
@@ -168,6 +168,7 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(elementRef);
     this.tabIndex = parseInt(tabIndex) || 0;
+    this.color = this.defaultColor = defaults.color || 'accent';
   }
 
   ngAfterContentInit() {

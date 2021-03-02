@@ -114,7 +114,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   _rippleAnimation: RippleAnimationConfig = RIPPLE_ANIMATION_CONFIG;
 
   /** The color palette  for this slide toggle. */
-  @Input() color: ThemePalette = 'accent';
+  @Input() color: ThemePalette;
 
   /** Name value will be applied to the input element if present. */
   @Input() name: string | null = null;
@@ -203,6 +203,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
                   public defaults: MatSlideToggleDefaultOptions,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     this.tabIndex = parseInt(tabIndex) || 0;
+    this.color = defaults.color || 'accent';
   }
 
   ngAfterViewInit() {

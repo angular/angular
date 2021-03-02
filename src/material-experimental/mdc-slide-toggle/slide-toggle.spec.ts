@@ -456,6 +456,22 @@ describe('MDC-based MatSlideToggle without forms', () => {
       expect(testComponent.dragTriggered).toBe(0);
     }));
 
+  it('should be able to change the default color', () => {
+    TestBed
+      .resetTestingModule()
+      .configureTestingModule({
+        imports: [MatSlideToggleModule],
+        declarations: [SlideToggleWithForm],
+        providers: [
+          {provide: MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS, useValue: {color: 'warn'}},
+        ]
+      });
+    const fixture = TestBed.createComponent(SlideToggleWithForm);
+    fixture.detectChanges();
+    const slideToggle = fixture.nativeElement.querySelector('.mat-mdc-slide-toggle');
+    expect(slideToggle.classList).toContain('mat-warn');
+  });
+
   it('should clear static aria attributes from the host node', () => {
     const fixture = TestBed.createComponent(SlideToggleWithStaticAriaAttributes);
     fixture.detectChanges();

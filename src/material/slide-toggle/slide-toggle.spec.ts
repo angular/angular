@@ -407,7 +407,7 @@ describe('MatSlideToggle without forms', () => {
     }));
   });
 
-  describe('custom action configuration', () => {
+  describe('default options', () => {
     it('should not change value on click when click action is noop when using custom a ' +
       'action configuration', () => {
       TestBed
@@ -446,6 +446,22 @@ describe('MatSlideToggle without forms', () => {
       expect(slideToggle.checked).toBe(false, 'Expect slide toggle value not changed');
       expect(testComponent.toggleTriggered).toBe(2, 'Expect toggle twice');
       expect(testComponent.dragTriggered).toBe(0);
+    });
+
+    it('should be able to change the default color', () => {
+      TestBed
+        .resetTestingModule()
+        .configureTestingModule({
+          imports: [MatSlideToggleModule],
+          declarations: [SlideToggleWithForm],
+          providers: [
+            {provide: MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS, useValue: {color: 'warn'}},
+          ]
+        });
+      const fixture = TestBed.createComponent(SlideToggleWithForm);
+      fixture.detectChanges();
+      const slideToggle = fixture.nativeElement.querySelector('.mat-slide-toggle');
+      expect(slideToggle.classList).toContain('mat-warn');
     });
 
   });
