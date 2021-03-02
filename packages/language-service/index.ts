@@ -7,13 +7,13 @@
  */
 
 import * as ts from 'typescript/lib/tsserverlibrary';
-import {NgLanguageService, NgLanguageServiceConfig} from './api';
+import {NgLanguageService, PluginConfig} from './api';
 
 export * from './api';
 
 interface PluginModule extends ts.server.PluginModule {
   create(createInfo: ts.server.PluginCreateInfo): NgLanguageService;
-  onConfigurationChanged?(config: NgLanguageServiceConfig): void;
+  onConfigurationChanged?(config: PluginConfig): void;
 }
 
 const factory: ts.server.PluginModuleFactory = (tsModule): PluginModule => {
@@ -21,7 +21,7 @@ const factory: ts.server.PluginModuleFactory = (tsModule): PluginModule => {
 
   return {
     create(info: ts.server.PluginCreateInfo): NgLanguageService {
-      const config: NgLanguageServiceConfig = info.config;
+      const config: PluginConfig = info.config;
       const bundleName = config.ivy ? 'ivy.js' : 'language-service.js';
       plugin = require(`./bundles/${bundleName}`)(tsModule);
       return plugin.create(info);
@@ -29,7 +29,7 @@ const factory: ts.server.PluginModuleFactory = (tsModule): PluginModule => {
     getExternalFiles(project: ts.server.Project): string[] {
       return plugin?.getExternalFiles?.(project) ?? [];
     },
-    onConfigurationChanged(config: NgLanguageServiceConfig): void {
+    onConfigurationChanged(config: PluginConfig): void {
       plugin?.onConfigurationChanged?.(config);
     },
   };

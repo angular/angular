@@ -29,6 +29,14 @@ import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_tar
 import {findTightestNode, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
 
+interface LanguageServiceConfig {
+  /**
+   * If true, enable `strictTemplates` in Angular compiler options regardless
+   * of its value in tsconfig.json.
+   */
+  forceStrictTemplates?: true;
+}
+
 export class LanguageService {
   private options: CompilerOptions;
   readonly compilerFactory: CompilerFactory;
@@ -37,9 +45,12 @@ export class LanguageService {
   private readonly parseConfigHost: LSParseConfigHost;
 
   constructor(
-      private readonly project: ts.server.Project, private readonly tsLS: ts.LanguageService) {
+      private readonly project: ts.server.Project,
+      private readonly tsLS: ts.LanguageService,
+      private readonly config: LanguageServiceConfig,
+  ) {
     this.parseConfigHost = new LSParseConfigHost(project.projectService.host);
-    this.options = parseNgCompilerOptions(project, this.parseConfigHost);
+    this.options = parseNgCompilerOptions(project, this.parseConfigHost, config);
     logCompilerOptions(project, this.options);
     this.strategy = createTypeCheckingProgramStrategy(project);
     this.adapter = new LanguageServiceAdapter(project);
@@ -340,7 +351,7 @@ export class LanguageService {
         project.getConfigFilePath(), (fileName: string, eventKind: ts.FileWatcherEventKind) => {
           project.log(`Config file changed: ${fileName}`);
           if (eventKind === ts.FileWatcherEventKind.Changed) {
-            this.options = parseNgCompilerOptions(project, this.parseConfigHost);
+            this.options = parseNgCompilerOptions(project, this.parseConfigHost, this.config);
             logCompilerOptions(project, this.options);
           }
         });
@@ -354,7 +365,8 @@ function logCompilerOptions(project: ts.server.Project, options: CompilerOptions
 }
 
 function parseNgCompilerOptions(
-    project: ts.server.Project, host: ConfigurationHost): CompilerOptions {
+    project: ts.server.Project, host: ConfigurationHost,
+    config: LanguageServiceConfig): CompilerOptions {
   if (!(project instanceof ts.server.ConfiguredProject)) {
     return {};
   }
@@ -374,6 +386,12 @@ function parseNgCompilerOptions(
   // are not exported. In many cases, this ensures the test NgModules are ignored by the compiler
   // and only the real component declaration is used.
   options.compileNonExportedClasses = false;
+
+  // If `forceStrictTemplates` is true, always enable `strictTemplates`
+  // regardless of its value in tsconfig.json.
+  if (config.forceStrictTemplates === true) {
+    options.strictTemplates = true;
+  }
 
   return options;
 }

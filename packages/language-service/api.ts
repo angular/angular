@@ -14,7 +14,7 @@
 
 import * as ts from 'typescript';
 
-export interface NgLanguageServiceConfig {
+export interface PluginConfig {
   /**
    * If true, return only Angular results. Otherwise, return Angular + TypeScript
    * results.
@@ -25,6 +25,11 @@ export interface NgLanguageServiceConfig {
    * Otherwise return factory function for View Engine LS.
    */
   ivy: boolean;
+  /**
+   * If true, enable `strictTemplates` in Angular compiler options regardless
+   * of its value in tsconfig.json.
+   */
+  forceStrictTemplates?: true;
 }
 
 export type GetTcbResponse = {
