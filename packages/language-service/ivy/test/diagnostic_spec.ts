@@ -19,7 +19,7 @@ describe('getSemanticDiagnostics', () => {
     env = LanguageServiceTestEnv.setup();
   });
 
-  it('should not produce error for a minimal component defintion', () => {
+  it('should not produce error for a minimal component definition', () => {
     const files = {
       'app.ts': `
       import {Component, NgModule} from '@angular/core';
@@ -122,6 +122,34 @@ describe('getSemanticDiagnostics', () => {
     expect(messageText)
         .toContain(
             `Parser Error: Bindings cannot contain assignments at column 8 in [{{nope = true}}]`);
+  });
+
+  it('reports html parse errors along with typecheck errors as diagnostics', () => {
+    const files = {
+      'app.ts': `
+      import {Component, NgModule} from '@angular/core';
+
+      @Component({
+        templateUrl: './app.html'
+      })
+      export class AppComponent {
+        nope = false;
+      }
+    `,
+      'app.html': '<dne'
+    };
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const diags = project.getDiagnosticsForFile('app.html');
+    expect(diags.length).toBe(2);
+
+    expect(diags[0].category).toBe(ts.DiagnosticCategory.Error);
+    expect(diags[0].file?.fileName).toBe('/test/app.html');
+    expect(diags[0].messageText).toContain(`'dne' is not a known element`);
+
+    expect(diags[1].category).toBe(ts.DiagnosticCategory.Error);
+    expect(diags[1].file?.fileName).toBe('/test/app.html');
+    expect(diags[1].messageText).toContain(`Opening tag "dne" not terminated.`);
   });
 
   it('should report parse errors of components defined in the same ts file', () => {

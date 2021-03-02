@@ -975,6 +975,7 @@ export class ComponentDecoratorHandler implements
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs,
       isInline: template.isInline,
+      alwaysAttemptHtmlToR3AstConversion: this.usePoisonedData,
     });
 
     // Unfortunately, the primary parse of the template above may not contain accurate source map
@@ -1002,6 +1003,7 @@ export class ComponentDecoratorHandler implements
       i18nNormalizeLineEndingsInICUs,
       leadingTriviaChars: [],
       isInline: template.isInline,
+      alwaysAttemptHtmlToR3AstConversion: this.usePoisonedData,
     });
 
     return {

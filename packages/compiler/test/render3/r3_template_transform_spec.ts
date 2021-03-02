@@ -116,6 +116,19 @@ describe('R3 template transform', () => {
   });
 
   describe('Nodes without binding', () => {
+    it('should parse incomplete tags terminated by EOF', () => {
+      expectFromHtml('<a', true /* ignoreError */).toEqual([
+        ['Element', 'a'],
+      ]);
+    });
+
+    it('should parse incomplete tags terminated by another tag', () => {
+      expectFromHtml('<a <span></span>', true /* ignoreError */).toEqual([
+        ['Element', 'a'],
+        ['Element', 'span'],
+      ]);
+    });
+
     it('should parse text nodes', () => {
       expectFromHtml('a').toEqual([
         ['Text', 'a'],

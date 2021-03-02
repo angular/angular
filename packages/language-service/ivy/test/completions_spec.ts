@@ -353,6 +353,23 @@ describe('completions', () => {
       expect(ts.displayPartsToString(details.documentation!)).toEqual('This is another component.');
     });
 
+    it('should return completions for an incomplete tag', () => {
+      const OTHER_CMP = {
+        'OtherCmp': `
+            /** This is another component. */
+            @Component({selector: 'other-cmp', template: 'unimportant'})
+            export class OtherCmp {}
+          `,
+      };
+      const {templateFile} = setup(`<other`, '', OTHER_CMP);
+      templateFile.moveCursorToText('<other¦');
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.COMPONENT),
+          ['other-cmp']);
+    });
+
     it('should return completions with a blank open tag', () => {
       const OTHER_CMP = {
         'OtherCmp': `
@@ -397,6 +414,10 @@ describe('completions', () => {
 
       const completions = templateFile.getCompletionsAtPosition();
       expect(completions).toBeUndefined();
+
+
+      const details = templateFile.getCompletionEntryDetails('other-cmp')!;
+      expect(details).toBeUndefined();
     });
 
     describe('element attribute scope', () => {
