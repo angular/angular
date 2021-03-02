@@ -28,11 +28,11 @@
     $mdc-switch-disabled-thumb-color: mdc-theme-prop-value(surface) !global;
     $mdc-switch-disabled-track-color: mdc-theme-prop-value(on-surface) !global;
 
-    @include mdc-form-field-core-styles($query: mdc-helpers.$mat-theme-styles-query);
-
     // MDC's switch doesn't support a `color` property. We add support
     // for it by adding a CSS class for accent and warn style.
     .mat-mdc-slide-toggle {
+      @include mdc-form-field-core-styles($query: mdc-helpers.$mat-theme-styles-query);
+
       .mdc-switch__thumb-underlay::after, .mat-ripple-element {
         background: $mdc-switch-toggled-off-ripple-color;
       }
