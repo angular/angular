@@ -5,19 +5,18 @@ import { LoggerService } from './logger.service';
 @Component({
   selector: 'counter-parent',
   template: `
-  <div class="parent">
-    <h2>Counter Spy</h2>
+  <h2>Counter Spy</h2>
 
-    <button (click)="updateCounter()">Update counter</button>
-    <button (click)="reset()">Reset Counter</button>
+  <button (click)="updateCounter()">Update counter</button>
+  <button (click)="reset()">Reset Counter</button>
 
-    <app-counter [counter]="value"></app-counter>
+  <app-counter [counter]="value"></app-counter>
 
-    <h4>-- Spy Lifecycle Hook Log --</h4>
-    <div *ngFor="let msg of spyLog">{{msg}}</div>
+  <div class="info">
+    <h3>Spy Lifecycle Hook Log</h3>
+    <div *ngFor="let msg of spyLog" class="log">{{msg}}</div>
   </div>
   `,
-  styles: ['.parent {background: gold;}'],
   providers: [LoggerService]
 })
 export class CounterParentComponent {
@@ -38,7 +37,7 @@ export class CounterParentComponent {
   }
 
   reset() {
-    this.logger.log('-- reset --');
+    this.logger.log('reset');
     this.value = 0;
     this.logger.tick();
   }
