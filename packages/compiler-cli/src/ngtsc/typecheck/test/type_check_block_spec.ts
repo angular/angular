@@ -745,7 +745,8 @@ describe('type check blocks', () => {
       useContextGenericType: true,
       strictLiteralTypes: true,
       enableTemplateTypeChecker: false,
-      useInlineTypeConstructors: true
+      useInlineTypeConstructors: true,
+      suggestionsForSuboptimalTypeInference: false,
     };
 
     describe('config.applyTemplateContextGuards', () => {

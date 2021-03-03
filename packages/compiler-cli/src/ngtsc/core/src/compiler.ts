@@ -692,6 +692,10 @@ export class NgCompiler {
         strictLiteralTypes: true,
         enableTemplateTypeChecker: this.enableTemplateTypeChecker,
         useInlineTypeConstructors,
+        // Warnings for suboptimal type inference are only enabled if in Language Service mode
+        // (providing the full TemplateTypeChecker API) and if strict mode is not enabled. In strict
+        // mode, the user is in full control of type inference.
+        suggestionsForSuboptimalTypeInference: this.enableTemplateTypeChecker && !strictTemplates,
       };
     } else {
       typeCheckingConfig = {
@@ -717,6 +721,9 @@ export class NgCompiler {
         strictLiteralTypes: false,
         enableTemplateTypeChecker: this.enableTemplateTypeChecker,
         useInlineTypeConstructors,
+        // In "basic" template type-checking mode, no warnings are produced since most things are
+        // not checked anyways.
+        suggestionsForSuboptimalTypeInference: false,
       };
     }
 
