@@ -1,3 +1,27 @@
+## 11.2.3 "vanadium-vessel" (2021-03-03)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** detect fake touchstart events from screen readers ([#21987](https://github.com/angular/components/issues/21987)) ([a99a4d298adf9824a3d57756b9fb35b7a1729f36](https://github.com/angular/components/commit/a99a4d298adf9824a3d57756b9fb35b7a1729f36)), closes [#21947](https://github.com/angular/components/issues/21947) |
+| bug fix |  **accordion:** allow for closeAll to be used when multiple mode is disabled ([#22055](https://github.com/angular/components/issues/22055)) ([02fcebe1a398360bd80ba2ab5e10439cc17d42f7](https://github.com/angular/components/commit/02fcebe1a398360bd80ba2ab5e10439cc17d42f7)), closes [#22003](https://github.com/angular/components/issues/22003) |
+| bug fix |  **overlay:** resolve regression when overlay is imported through shorthand path ([#22043](https://github.com/angular/components/issues/22043)) ([#22086](https://github.com/angular/components/issues/22086)) ([2010bb5340e445b50ff1ab6eb89262753549b52f](https://github.com/angular/components/commit/2010bb5340e445b50ff1ab6eb89262753549b52f)), closes [#21896](https://github.com/angular/components/issues/21896) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **datepicker:** hide date selection model from docs ([#22056](https://github.com/angular/components/issues/22056)) ([92de83752f25734f6a1c6bad1120ed9e0a17ab87](https://github.com/angular/components/commit/92de83752f25734f6a1c6bad1120ed9e0a17ab87)), closes [#21985](https://github.com/angular/components/issues/21985) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** add mdc ripple class for fab ([#21923](https://github.com/angular/components/issues/21923)) ([e1875945a6b8e2f8ecfae503872658acdbc4ce09](https://github.com/angular/components/commit/e1875945a6b8e2f8ecfae503872658acdbc4ce09)) |
+| bug fix |  **mdc-form-field:** always check hideRequiredMarker ([#22068](https://github.com/angular/components/issues/22068)) ([020edd5ed0dd24407e79793e1ecfb90aacd52d21](https://github.com/angular/components/commit/020edd5ed0dd24407e79793e1ecfb90aacd52d21)) |
+
+
 ## 11.2.2 "yarn-barn" (2021-02-24)
 
 ### cdk
