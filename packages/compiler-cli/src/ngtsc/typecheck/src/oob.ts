@@ -68,6 +68,12 @@ export interface OutOfBandDiagnosticRecorder {
 
   requiresInlineTypeConstructors(
       templateId: TemplateId, node: ClassDeclaration, directives: ClassDeclaration[]): void;
+
+  /**
+   * Report a warning when structural directives support context guards, but the current
+   * type-checking configuration prohibits their usage.
+   */
+  suboptimalTypeInference(templateId: TemplateId, variables: TmplAstVariable[]): void;
 }
 
 export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecorder {
@@ -173,6 +179,37 @@ export class OutOfBandDiagnosticRecorderImpl implements OutOfBandDiagnosticRecor
         templateId, ErrorCode.INLINE_TYPE_CTOR_REQUIRED, node.name, message,
         directives.map(
             dir => makeRelatedInformation(dir.name, `Requires an inline type constructor.`))));
+  }
+
+  suboptimalTypeInference(templateId: TemplateId, variables: TmplAstVariable[]): void {
+    const mapping = this.resolver.getSourceMapping(templateId);
+
+    // Select one of the template variables that's most suitable for reporting the diagnostic. Any
+    // variable will do, but prefer one bound to the context's $implicit if present.
+    let diagnosticVar: TmplAstVariable|null = null;
+    for (const variable of variables) {
+      if (diagnosticVar === null || (variable.value === '' || variable.value === '$implicit')) {
+        diagnosticVar = variable;
+      }
+    }
+    if (diagnosticVar === null) {
+      // There is no variable on which to report the diagnostic.
+      return;
+    }
+
+    let varIdentification = `'${diagnosticVar.name}'`;
+    if (variables.length === 2) {
+      varIdentification += ` (and 1 other)`;
+    } else if (variables.length > 2) {
+      varIdentification += ` (and ${variables.length - 1} others)`;
+    }
+    const message =
+        `This structural directive supports advanced type inference, but the current compiler configuration prevents its usage. The variable ${
+            varIdentification} will have type 'any' as a result.\n\nConsider enabling the 'strictTemplates' option in your tsconfig.json for better type inference within this template.`;
+
+    this._diagnostics.push(makeTemplateDiagnostic(
+        templateId, mapping, diagnosticVar.keySpan, ts.DiagnosticCategory.Suggestion,
+        ngErrorCode(ErrorCode.SUGGEST_SUBOPTIMAL_TYPE_INFERENCE), message));
   }
 }
 
