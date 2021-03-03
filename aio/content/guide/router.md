@@ -580,7 +580,7 @@ You can use `HashLocationStrategy` by providing the `useHash: true` in an object
 
 ## Router Reference
 
-The folllowing sections highlight some core router concepts.
+The following sections highlight some core router concepts.
 
 {@a basics-router-imports}
 
