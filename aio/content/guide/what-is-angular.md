@@ -207,3 +207,5 @@ This topic is intended to give you a brief overview of what Angular is, the adva
 To see Angular in action, see our [Getting Started](https://angular.io/start) tutorial. This tutorial uses [stackblitz.com](https://stackblitz.com/), so you can explore a working example of Angular without any installation requirements.
 
 To explore Angular's capabilities further, we recommend reading through the sections, Understanding Angular and Developer Guides.
+
+@reviewed 2021-03-02
