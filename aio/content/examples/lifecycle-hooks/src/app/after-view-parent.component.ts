@@ -5,17 +5,16 @@ import { LoggerService } from './logger.service';
 @Component({
   selector: 'after-view-parent',
   template: `
-  <div class="parent">
-    <h2>AfterView</h2>
+  <h2>AfterView</h2>
 
-    <after-view  *ngIf="show"></after-view>
+  <after-view  *ngIf="show"></after-view>
 
-    <h4>-- AfterView Logs --</h4>
-    <p><button (click)="reset()">Reset</button></p>
-    <div *ngFor="let msg of logger.logs">{{msg}}</div>
+  <div class="info">
+    <h3>AfterView Logs</h3>
+    <button (click)="reset()">Reset</button>
+    <div *ngFor="let msg of logger.logs" class="log">{{msg}}</div>
   </div>
   `,
-  styles: ['.parent {background: burlywood}'],
   providers: [LoggerService]
 })
 export class AfterViewParentComponent {

@@ -7,14 +7,13 @@ import {
 @Component({
   selector: 'app-counter',
   template: `
-  <div class="counter">
-    Counter = {{counter}}
+    <p>Counter = {{counter}}</p>
 
-    <h5>-- Counter Change Log --</h5>
-    <div *ngFor="let chg of changeLog" appSpy>{{chg}}</div>
-  </div>
-  `,
-  styles: ['.counter {background: LightYellow; padding: 8px; margin-top: 8px}']
+    <div class="info">
+      <h3>Counter Change Log</h3>
+      <div *ngFor="let chg of changeLog" appSpy class="log">{{chg}}</div>
+    </div>
+  `
 })
 export class MyCounterComponent implements OnChanges {
   @Input() counter: number;

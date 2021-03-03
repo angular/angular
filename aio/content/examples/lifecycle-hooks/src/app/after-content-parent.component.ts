@@ -16,12 +16,13 @@ import { LoggerService } from './logger.service';
       // #enddocregion parent-template
     + `</div>
 
-    <h4>-- AfterContent Logs --</h4>
-    <p><button (click)="reset()">Reset</button></p>
-    <div *ngFor="let msg of logger.logs">{{msg}}</div>
+    <div class="info">
+      <h3>AfterContent Logs</h3>
+      <button (click)="reset()">Reset</button>
+      <div *ngFor="let msg of logger.logs" class="log">{{msg}}</div>
+    </div>
   </div>
   `,
-  styles: ['.parent {background: burlywood}'],
   providers: [LoggerService]
 })
 export class AfterContentParentComponent {
