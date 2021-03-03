@@ -1,7 +1,7 @@
 # Each individual package uses a placeholder for the version of Angular to ensure they're
 # all in-sync. This map is passed to each ng_package rule to stamp out the appropriate
 # version for the placeholders.
-ANGULAR_PACKAGE_VERSION = "^12.0.0-0 || ^13.0.0"
+ANGULAR_PACKAGE_VERSION = "^12.0.0-0 || ^13.0.0-0"
 MDC_PACKAGE_VERSION = "^9.0.0-canary.419e03572.0"
 TSLIB_PACKAGE_VERSION = "^2.0.0"
 
