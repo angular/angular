@@ -959,6 +959,27 @@
               "url": "guide/styleguide",
               "title": "Coding Style Guide",
               "tooltip": "Guidelines for writing Angular code."
+            }
+          ]
+        },
+        {
+          "title": "Content Contributor's Guide",
+          "tooltip": "Describes how to contribute to the Angular documentation.",
+          "children": [
+            {
+              "url": "guide/contributors-guide-overview",
+              "title": "Overview",
+              "tooltip": "Provides an overview of how to contribute to Angular's documentation"
+            },
+            {
+              "url": "guide/reviewing-content",
+              "title": "Reviewing content",
+              "tooltip": "Keep Angular content up-to-date by reviewing topics for accuracy."
+            },
+            {
+              "url": "guide/updating-search-keywords",
+              "title": "Updating search keywords",
+              "tooltip": "Help users find the content they need by adding additional search keywords."
             },
             {
               "url": "guide/docs-style-guide",
