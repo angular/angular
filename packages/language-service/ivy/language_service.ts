@@ -180,9 +180,7 @@ export class LanguageService {
         positionDetails.context.nodes[0] :
         positionDetails.context.node;
     return new CompletionBuilder(
-        this.tsLS, compiler, templateInfo.component, node,
-        nodeContextFromTarget(positionDetails.context), positionDetails.parent,
-        positionDetails.template);
+        this.tsLS, compiler, templateInfo.component, node, positionDetails);
   }
 
   getCompletionsAtPosition(
@@ -448,29 +446,6 @@ function getOrCreateTypeCheckScriptInfo(
     project.addRoot(scriptInfo);
   }
   return scriptInfo;
-}
-
-function nodeContextFromTarget(target: TargetContext): CompletionNodeContext {
-  switch (target.kind) {
-    case TargetNodeKind.ElementInTagContext:
-      return CompletionNodeContext.ElementTag;
-    case TargetNodeKind.ElementInBodyContext:
-      // Completions in element bodies are for new attributes.
-      return CompletionNodeContext.ElementAttributeKey;
-    case TargetNodeKind.TwoWayBindingContext:
-      return CompletionNodeContext.TwoWayBinding;
-    case TargetNodeKind.AttributeInKeyContext:
-      return CompletionNodeContext.ElementAttributeKey;
-    case TargetNodeKind.AttributeInValueContext:
-      if (target.node instanceof TmplAstBoundEvent) {
-        return CompletionNodeContext.EventValue;
-      } else {
-        return CompletionNodeContext.None;
-      }
-    default:
-      // No special context is available.
-      return CompletionNodeContext.None;
-  }
 }
 
 function isTemplateContext(program: ts.Program, fileName: string, position: number): boolean {

@@ -353,6 +353,52 @@ describe('completions', () => {
       expect(ts.displayPartsToString(details.documentation!)).toEqual('This is another component.');
     });
 
+    it('should return completions with a blank open tag', () => {
+      const OTHER_CMP = {
+        'OtherCmp': `
+            @Component({selector: 'other-cmp', template: 'unimportant'})
+            export class OtherCmp {}
+          `,
+      };
+      const {templateFile} = setup(`<`, '', OTHER_CMP);
+      templateFile.moveCursorToText('<¦');
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.COMPONENT),
+          ['other-cmp']);
+    });
+
+    it('should return completions with a blank open tag a character before', () => {
+      const OTHER_CMP = {
+        'OtherCmp': `
+            @Component({selector: 'other-cmp', template: 'unimportant'})
+            export class OtherCmp {}
+          `,
+      };
+      const {templateFile} = setup(`a <`, '', OTHER_CMP);
+      templateFile.moveCursorToText('a <¦');
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expectContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.COMPONENT),
+          ['other-cmp']);
+    });
+
+    it('should not return completions when cursor is not after the open tag', () => {
+      const OTHER_CMP = {
+        'OtherCmp': `
+            @Component({selector: 'other-cmp', template: 'unimportant'})
+            export class OtherCmp {}
+          `,
+      };
+      const {templateFile} = setup(`\n\n<         `, '', OTHER_CMP);
+      templateFile.moveCursorToText('< ¦');
+
+      const completions = templateFile.getCompletionsAtPosition();
+      expect(completions).toBeUndefined();
+    });
+
     describe('element attribute scope', () => {
       describe('dom completions', () => {
         it('should return completions for a new element attribute', () => {
