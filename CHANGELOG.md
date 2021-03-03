@@ -1,3 +1,54 @@
+# 12.0.0-next.1 "ruthenium-restaurant" (2021-03-03)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  **a11y:** allow focus options to be passed in to focus trap ([#21769](https://github.com/angular/components/issues/21769)) ([d7db7c89011bb1858479e21f2f7e3f8d013b6a87](https://github.com/angular/components/commit/d7db7c89011bb1858479e21f2f7e3f8d013b6a87)), closes [#21767](https://github.com/angular/components/issues/21767) |
+| feature |  **drag-drop:** allow for preview container to be customized ([#21830](https://github.com/angular/components/issues/21830)) ([b92f97f55c8ed974f988897374622402fa3361c5](https://github.com/angular/components/commit/b92f97f55c8ed974f988897374622402fa3361c5)), closes [#13288](https://github.com/angular/components/issues/13288) |
+| feature |  **stepper:** allow for orientation to be changed ([#21940](https://github.com/angular/components/issues/21940)) ([3a50c41c8b06fd959944d8aeb99ccecc1fe60644](https://github.com/angular/components/commit/3a50c41c8b06fd959944d8aeb99ccecc1fe60644)), closes [#21874](https://github.com/angular/components/issues/21874) |
+| feature |  **table:** add directive to enable recycle view repeater ([#21508](https://github.com/angular/components/issues/21508)) ([f68662cd53c501428042423a129283b6b92052e3](https://github.com/angular/components/commit/f68662cd53c501428042423a129283b6b92052e3)) |
+| feature |  **table:** add element offsets to sticky styler state ([#21886](https://github.com/angular/components/issues/21886)) ([c42ece36d41852f3200ea85d22ea1cb9b1bc6d7d](https://github.com/angular/components/commit/c42ece36d41852f3200ea85d22ea1cb9b1bc6d7d)) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **core:** restore private- mixin prefix ([#21989](https://github.com/angular/components/issues/21989)) ([8b3c82d7dfa19f7eb49fab0ed69446a0fc17bcd4](https://github.com/angular/components/commit/8b3c82d7dfa19f7eb49fab0ed69446a0fc17bcd4)) |
+| bug fix |  **datepicker:** focus restoration not working inside shadow dom ([#21796](https://github.com/angular/components/issues/21796)) ([85d8de935a7e8eeab8e07ce2d5c5c274d574d34d](https://github.com/angular/components/commit/85d8de935a7e8eeab8e07ce2d5c5c274d574d34d)), closes [#21785](https://github.com/angular/components/issues/21785) |
+| bug fix |  **input:** uncessary scroll bar on auto-resize textarea in some cases ([#21619](https://github.com/angular/components/issues/21619)) ([915791b655bd83560d3f30a9479b7bf68d52db9a](https://github.com/angular/components/commit/915791b655bd83560d3f30a9479b7bf68d52db9a)), closes [#21560](https://github.com/angular/components/issues/21560) |
+| bug fix |  **tooltip:** clear pending timers on destroy ([#16756](https://github.com/angular/components/issues/16756)) ([70ff528785cb9abe9f102f19b1ea87caef56a295](https://github.com/angular/components/commit/70ff528785cb9abe9f102f19b1ea87caef56a295)) |
+| feature |  **core:** migrate to the Sass module system ([#21204](https://github.com/angular/components/issues/21204)) ([53e98b14648b6f27c046febdd04b3104941614a2](https://github.com/angular/components/commit/53e98b14648b6f27c046febdd04b3104941614a2)) |
+| feature |  **list:** return selected options from selection list selectAll/deselectAll ([#21358](https://github.com/angular/components/issues/21358)) ([ae6e930bffd549519803b4a358060bb11b8ad545](https://github.com/angular/components/commit/ae6e930bffd549519803b4a358060bb11b8ad545)), closes [#21356](https://github.com/angular/components/issues/21356) |
+| feature |  **slide-toggle:** allow for default color to be configured globally ([#22047](https://github.com/angular/components/issues/22047)) ([5c7e5573f9a9c6ecd7dc2b593cce0f12427b521b](https://github.com/angular/components/commit/5c7e5573f9a9c6ecd7dc2b593cce0f12427b521b)), closes [#22012](https://github.com/angular/components/issues/22012) |
+| feature |  **stepper:** allow for content to be rendered lazily ([#15817](https://github.com/angular/components/issues/15817)) ([52f39bc16b3cb4288c994a3d64dfbadd470b989b](https://github.com/angular/components/commit/52f39bc16b3cb4288c994a3d64dfbadd470b989b)), closes [#12339](https://github.com/angular/components/issues/12339) |
+| feature |  **tooltip:** add class to tooltip element based on the current position ([#15217](https://github.com/angular/components/issues/15217)) ([1a10027975d6110c627d6ce20323d00a2ffe108d](https://github.com/angular/components/commit/1a10027975d6110c627d6ce20323d00a2ffe108d)), closes [#15216](https://github.com/angular/components/issues/15216) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  add geocoder wrapper ([#21832](https://github.com/angular/components/issues/21832)) ([86251af444874fc5e1be8f4aa20d203c15b211a5](https://github.com/angular/components/commit/86251af444874fc5e1be8f4aa20d203c15b211a5)), closes [#21665](https://github.com/angular/components/issues/21665) |
+| feature |  add heatmap support ([#21489](https://github.com/angular/components/issues/21489)) ([09581eedc317b281454c770c416951b5e5e47a97](https://github.com/angular/components/commit/09581eedc317b281454c770c416951b5e5e47a97)) |
+| feature |  Add MapDirectionsRenderer and MapDirectionsService ([#21736](https://github.com/angular/components/issues/21736)) ([9dbf49b6609f5d31dacf25c40d5e7133b23e0f50](https://github.com/angular/components/commit/9dbf49b6609f5d31dacf25c40d5e7133b23e0f50)) |
+| feature |  support options object on marker clusterer ([#21861](https://github.com/angular/components/issues/21861)) ([cdb2326fd614e8ba1c32d22a35f9af5f9c378b3a](https://github.com/angular/components/commit/cdb2326fd614e8ba1c32d22a35f9af5f9c378b3a)), closes [#21763](https://github.com/angular/components/issues/21763) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** apply appropriate focus/actives styles to FAB ([#22049](https://github.com/angular/components/issues/22049)) ([56a9fc36a560e8c6edda68d9b66f81de2dc61ad0](https://github.com/angular/components/commit/56a9fc36a560e8c6edda68d9b66f81de2dc61ad0)) |
+| bug fix |  **mdc-checkbox:** remove background state styles ([#21748](https://github.com/angular/components/issues/21748)) ([7006b482ce0e023cfbfcf9a13480a479f6db1c37](https://github.com/angular/components/commit/7006b482ce0e023cfbfcf9a13480a479f6db1c37)) |
+| bug fix |  **mdc-form-field:** allow shrinking in grid/flex layouts ([#21820](https://github.com/angular/components/issues/21820)) ([62d2e37e6c98ca67132d1c15a00fa1dfedad1c9b](https://github.com/angular/components/commit/62d2e37e6c98ca67132d1c15a00fa1dfedad1c9b)) |
+| feature |  **mdc-form-field:** separate out text and icon prefixes/suffixes ([#21956](https://github.com/angular/components/issues/21956)) ([db6511b40dadd614f0bfb22e74f70b19066f2554](https://github.com/angular/components/commit/db6511b40dadd614f0bfb22e74f70b19066f2554)) |
+| bug fix |  **mdc-paginator:** use MDC-based tooltip ([#21895](https://github.com/angular/components/issues/21895)) ([ce9c905ba2ed03a1d12cd8ca15f614f3e57eaedd](https://github.com/angular/components/commit/ce9c905ba2ed03a1d12cd8ca15f614f3e57eaedd)) |
+| bug fix |  **mdc-radio:** include form field core theme styles ([#22071](https://github.com/angular/components/issues/22071)) ([c791d6a6d32c4ee0d3ea0cab32f9a4b34df355da](https://github.com/angular/components/commit/c791d6a6d32c4ee0d3ea0cab32f9a4b34df355da)) |
+| bug fix |  **mdc-tooltip:** change class prefixes to mat-mdc ([#22025](https://github.com/angular/components/issues/22025)) ([7161587248517460ab5d703673767f2e663702d3](https://github.com/angular/components/commit/7161587248517460ab5d703673767f2e663702d3)) |
+| feature |  **mdc-card:** add appearance input ([#22070](https://github.com/angular/components/issues/22070)) ([4b1ee6f661d058bd03808f801343af57af0b2d73](https://github.com/angular/components/commit/4b1ee6f661d058bd03808f801343af57af0b2d73)) |
+| feature |  **mdc-tooltip:** add test harness ([#21855](https://github.com/angular/components/issues/21855)) ([5e4d5e0bf65a755896fa2e0f784f84f1e8bfa71d](https://github.com/angular/components/commit/5e4d5e0bf65a755896fa2e0f784f84f1e8bfa71d)) |
+| feature |  **mdc-tooltip:** implement MDC-based tooltip ([#21735](https://github.com/angular/components/issues/21735)) ([6eff9386b8145e4b3d50c59d353787d103d2fa8d](https://github.com/angular/components/commit/6eff9386b8145e4b3d50c59d353787d103d2fa8d)) |
+
+
 ## 11.2.3 "vanadium-vessel" (2021-03-03)
 
 ### cdk
