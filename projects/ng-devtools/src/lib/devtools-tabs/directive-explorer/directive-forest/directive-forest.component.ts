@@ -290,15 +290,8 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
   }
 
   handleFilter(filterText: string): void {
-    this.resetCurrentlyMatchedIndex();
-    this.setFilterRegex(filterText);
-  }
-
-  resetCurrentlyMatchedIndex(): void {
     this.currentlyMatchedIndex = -1;
-  }
 
-  setFilterRegex(filterText: string): void {
     try {
       this.filterRegex = new RegExp(filterText.toLowerCase() || '.^');
     } catch {
@@ -306,24 +299,24 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     }
   }
 
-  _findMatchedNodes(): number[] {
-    const result: number[] = [];
+  private _findMatchedNodes(): number[] {
+    const indexesOfMatchedNodes: number[] = [];
     for (let i = 0; i < this.dataSource.data.length; i++) {
       if (this.isMatched(this.dataSource.data[i])) {
-        result.push(i);
+        indexesOfMatchedNodes.push(i);
       }
     }
-    return result;
+    return indexesOfMatchedNodes;
   }
 
-  hasMatched(): boolean {
+  get hasMatched(): boolean {
     return this._findMatchedNodes().length > 0;
   }
 
   nextMatched(): void {
-    const matchedTree = this._findMatchedNodes();
-    this.currentlyMatchedIndex = (this.currentlyMatchedIndex + 1) % matchedTree.length;
-    const indexToSelect = matchedTree[this.currentlyMatchedIndex];
+    const indexesOfMatchedNodes = this._findMatchedNodes();
+    this.currentlyMatchedIndex = (this.currentlyMatchedIndex + 1) % indexesOfMatchedNodes.length;
+    const indexToSelect = indexesOfMatchedNodes[this.currentlyMatchedIndex];
     const nodeToSelect = this.dataSource.data[indexToSelect];
     if (indexToSelect !== undefined) {
       this.treeControl.expand(nodeToSelect);
@@ -336,9 +329,10 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
   }
 
   prevMatched(): void {
-    const matchedTree = this._findMatchedNodes();
-    this.currentlyMatchedIndex = (this.currentlyMatchedIndex - 1 + matchedTree.length) % matchedTree.length;
-    const indexToSelect = matchedTree[this.currentlyMatchedIndex];
+    const indexesOfMatchedNodes = this._findMatchedNodes();
+    this.currentlyMatchedIndex =
+      (this.currentlyMatchedIndex - 1 + indexesOfMatchedNodes.length) % indexesOfMatchedNodes.length;
+    const indexToSelect = indexesOfMatchedNodes[this.currentlyMatchedIndex];
     const nodeToSelect = this.dataSource.data[indexToSelect];
     if (indexToSelect !== undefined) {
       this.treeControl.expand(nodeToSelect);
