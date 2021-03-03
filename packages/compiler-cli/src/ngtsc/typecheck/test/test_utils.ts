@@ -188,7 +188,8 @@ export const ALL_ENABLED_CONFIG: Readonly<TypeCheckingConfig> = {
   useContextGenericType: true,
   strictLiteralTypes: true,
   enableTemplateTypeChecker: false,
-  useInlineTypeConstructors: true
+  useInlineTypeConstructors: true,
+  suggestionsForSuboptimalTypeInference: false,
 };
 
 // Remove 'ref' from TypeCheckableDirectiveMeta and add a 'selector' instead.
@@ -272,6 +273,7 @@ export function tcb(
     strictLiteralTypes: true,
     enableTemplateTypeChecker: false,
     useInlineTypeConstructors: true,
+    suggestionsForSuboptimalTypeInference: false,
     ...config
   };
   options = options || {
@@ -690,4 +692,5 @@ export class NoopOobRecorder implements OutOfBandDiagnosticRecorder {
   duplicateTemplateVar(): void {}
   requiresInlineTcb(): void {}
   requiresInlineTypeConstructors(): void {}
+  suboptimalTypeInference(): void {}
 }

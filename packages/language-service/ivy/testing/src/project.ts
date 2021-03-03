@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StrictTemplateOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {LegacyNgcOptions, StrictTemplateOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem, getSourceFileOrError} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {OptimizeFor, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
@@ -19,7 +19,7 @@ export type ProjectFiles = {
 
 function writeTsconfig(
     fs: FileSystem, tsConfigPath: AbsoluteFsPath, entryFiles: AbsoluteFsPath[],
-    options: StrictTemplateOptions): void {
+    options: TestableOptions): void {
   fs.writeFile(
       tsConfigPath,
       JSON.stringify(
@@ -44,7 +44,7 @@ function writeTsconfig(
           null, 2));
 }
 
-export type TestableOptions = StrictTemplateOptions;
+export type TestableOptions = StrictTemplateOptions&Pick<LegacyNgcOptions, 'fullTemplateTypeCheck'>;
 
 export class Project {
   private tsProject: ts.server.Project;
