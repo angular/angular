@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import {initMockFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import * as ts from 'typescript';
 
@@ -245,4 +246,40 @@ describe('getSemanticDiagnostics', () => {
       'component is missing a template',
     ]);
   });
+
+  it('reports a warning when the project configuration prevents good type inference', () => {
+    const files = {
+      'app.ts': `
+        import {Component, NgModule} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        @Component({
+          template: '<div *ngFor="let user of users">{{user}}</div>',
+        })
+        export class MyComponent {
+          users = ['Alpha', 'Beta'];
+        }
+      `
+    };
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files, {
+      // Disable `strictTemplates`.
+      strictTemplates: false,
+      // Use `fullTemplateTypeCheck` mode instead.
+      fullTemplateTypeCheck: true,
+    });
+    const diags = project.getDiagnosticsForFile('app.ts');
+    expect(diags.length).toBe(1);
+    const diag = diags[0];
+    expect(diag.code).toBe(ngErrorCode(ErrorCode.SUGGEST_SUBOPTIMAL_TYPE_INFERENCE));
+    expect(diag.category).toBe(ts.DiagnosticCategory.Suggestion);
+    expect(getTextOfDiagnostic(diag)).toBe('user');
+  });
 });
+
+function getTextOfDiagnostic(diag: ts.Diagnostic): string {
+  expect(diag.file).not.toBeUndefined();
+  expect(diag.start).not.toBeUndefined();
+  expect(diag.length).not.toBeUndefined();
+  return diag.file!.text.substring(diag.start!, diag.start! + diag.length!);
+}
