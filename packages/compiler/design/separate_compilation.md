@@ -415,55 +415,6 @@ except for the call to `ɵɵdefineInjector` would generate a `{ __symbolic: 'err
 value which is ignored by the ivy compiler. This allows the system to ignore
 the difference between manually and mechanically created module definitions.
 
-
-## Manual Considerations
-
-With this proposal, the compiler treats manually and mechanically generated
-Angular definitions identically. This allows flexibility not only in the future
-for how the declarations are mechanically produced, it also allows an alternative
-mechanism to generate declarations that can be easily explored without altering the
-compiler or dependent tool chain. It also allows third-party code generators
-with possibly different component syntaxes to generate a component that is fully
-understood by the compiler.
-
-Unfortunately, manually generated modules contain references to
-classes that might not be necessary at runtime. Manually or third-party
-components can get the same payload properties of an Angular generated
-component by annotating the `ngSelector` and `ngModuleScope` properties with
-`// @__BUILD_OPTIMIZER_REMOVE_` comment which will cause the build optimizer
-to remove the declaration.
-
-##### Example
-
-For example the above manually created module would have better payload
-properties by including a `// @__BUILD_OPTIMIZER_REMOVE_` comment:
-
-```ts
-export class MyModule {
-  static ɵinj = ɵɵdefineInjector({
-    providers: [{
-      provide: Service, useClass: ServiceImpl
-    }],
-    imports: [CommonModule, UtilityModule]
-  });
-
-  // @__BUILD_OPTIMIZER_REMOVE_
-  static ngModuleScope = [{
-    type: MyComponent,
-    selector: 'my-comp'
-  }, {
-    type: MyDirective,
-    selector: '[my-dir]'
-  }, {
-    type: MyPipe,
-    name: 'myPipe'
-  }, {
-    type: UtilityModule,
-    isModule: true
-  }];
-}
-```
-
 ## `ngc` output (non-Bazel)
 
 The cases that `ngc` handle are producing an application and producing a
@@ -724,7 +675,7 @@ To produce an Ivy library the options would look like,
 ##### Example - Ivy package
 
 Ivy packages are not supported in Angular 6.0 as they are not recommended in
-npm packages as they would only be usable if inside Ivy applications. 
+npm packages as they would only be usable if inside Ivy applications.
 Ivy applications support Renderer2 libraries so npm packages
 should all be Renderer2 libraries.
 
