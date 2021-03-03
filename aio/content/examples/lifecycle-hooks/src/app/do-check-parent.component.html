@@ -1,11 +1,9 @@
-<div class="parent">
-  <h2>{{title}}</h2>
+<h2>{{title}}</h2>
+<label for="power-input"><label>Power: </label>
+<input type="text" id="power-input" [(ngModel)]="power">
+<label for="hero-name">Hero.name: </label>
+<input type="text" id="hero-name" [(ngModel)]="hero.name">
+<button (click)="reset()">Reset Log</button>
 
-  <table>
-    <tr><td>Power: </td><td><input [(ngModel)]="power"></td></tr>
-    <tr><td>Hero.name: </td><td><input [(ngModel)]="hero.name"></td></tr>
-  </table>
-  <p><button (click)="reset()">Reset Log</button></p>
+<do-check [hero]="hero" [power]="power"></do-check>
 
-  <do-check [hero]="hero" [power]="power"></do-check>
-</div>

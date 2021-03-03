@@ -6,7 +6,7 @@ import { OnChangesComponent } from './on-changes.component';
 @Component({
   selector: 'on-changes-parent',
   templateUrl: './on-changes-parent.component.html',
-  styles: ['.parent {background: Lavender;}']
+  styles: ['']
 })
 export class OnChangesParentComponent {
   hero: Hero;

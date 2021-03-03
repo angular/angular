@@ -9,9 +9,9 @@ import { LoggerService } from './logger.service';
   selector: 'after-view',
 // #docregion template
   template: `
-    <div>-- child view begins --</div>
+    <div>child view begins</div>
       <app-child-view></app-child-view>
-    <div>-- child view ends --</div>`
+    <div>child view ends</div>`
 // #enddocregion template
    + `
     <p *ngIf="comment" class="comment">

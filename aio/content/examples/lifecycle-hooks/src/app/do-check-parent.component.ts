@@ -5,8 +5,7 @@ import { Hero } from './hero';
 
 @Component({
   selector: 'do-check-parent',
-  templateUrl: './do-check-parent.component.html',
-  styles: ['.parent {background: Lavender}']
+  templateUrl: './do-check-parent.component.html'
 })
 export class DoCheckParentComponent {
   hero: Hero;

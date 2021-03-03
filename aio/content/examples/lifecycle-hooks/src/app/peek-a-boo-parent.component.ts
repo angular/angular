@@ -6,6 +6,7 @@ import { LoggerService } from './logger.service';
 @Component({
   selector: 'peek-a-boo-parent',
   template: `
+  <hr />
   <div class="parent">
     <h2>Peek-A-Boo</h2>
 
@@ -14,14 +15,14 @@ import { LoggerService } from './logger.service';
     </button>
     <button (click)="updateHero()" [hidden]="!hasChild">Update Hero</button>
 
-    <peek-a-boo *ngIf="hasChild" [name]="heroName">
-    </peek-a-boo>
+    <div class="info">
+      <peek-a-boo *ngIf="hasChild" [name]="heroName"></peek-a-boo>
 
-    <h4>-- Lifecycle Hook Log --</h4>
-    <div *ngFor="let msg of hookLog">{{msg}}</div>
+      <h3>Lifecycle Hook Log</h3>
+      <div *ngFor="let msg of hookLog" class="log">{{msg}}</div>
+    </div>
   </div>
   `,
-  styles: ['.parent {background: moccasin}'],
   providers:  [ LoggerService ]
 })
 export class PeekABooParentComponent {

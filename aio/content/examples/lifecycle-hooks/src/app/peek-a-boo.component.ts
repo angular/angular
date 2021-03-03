@@ -19,8 +19,7 @@ import { PeekABooDirective } from './peek-a-boo.directive';
 
 @Component({
   selector: 'peek-a-boo',
-  template: '<p>Now you see my hero, {{name}}</p>',
-  styles: ['p {background: LightYellow; padding: 8px}']
+  template: '<p>Now you see my hero, {{name}}</p>'
 })
 // Don't HAVE to mention the Lifecycle Hook interfaces
 // unless we want typing and tool support.
