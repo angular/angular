@@ -30,11 +30,11 @@ describe('language-service/compiler integration', () => {
       'test.html': `<other-cmp>Test</other-cmp>`
     });
 
-    expect(project.getDiagnosticsForFile('test.ts').length).toBeGreaterThan(0);
+    expect(project.getDiagnosticsForFile('test.html').length).toBeGreaterThan(0);
 
     const tmplFile = project.openFile('test.html');
     tmplFile.contents = '<div>Test</div>';
-    expect(project.getDiagnosticsForFile('test.ts').length).toEqual(0);
+    expect(project.getDiagnosticsForFile('test.html').length).toEqual(0);
   });
 
   it('should not produce errors from inline test declarations mixing with those of the app', () => {
