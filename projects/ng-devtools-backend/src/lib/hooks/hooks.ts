@@ -6,7 +6,7 @@ import {
   getLViewFromDirectiveOrElementInstance,
   getDirectiveHostElement,
   METADATA_PROPERTY_NAME,
-} from '../lview-transform';
+} from '../directive-forest';
 import { Subject } from 'rxjs';
 
 export type CreationHook = (

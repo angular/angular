@@ -5,7 +5,7 @@ import {
   createShallowSerializedDescriptor,
   PropertyData,
 } from './serialized-descriptor-factory';
-import { METADATA_PROPERTY_NAME } from '../lview-transform';
+import { METADATA_PROPERTY_NAME } from '../directive-forest';
 
 const ignoreList = new Set([METADATA_PROPERTY_NAME, '__ngSimpleChanges__']);
 
@@ -81,7 +81,7 @@ const nestedSerializerContinuation = (nodes: NestedProp[], level: number) => (
   propName: string | number | undefined,
   nestedLevel: number
 ) => {
-  const idx = nodes.findIndex(v => v.name === propName);
+  const idx = nodes.findIndex((v) => v.name === propName);
   if (idx < 0) {
     // The property is not specified in the query.
     return nestedSerializer(nestedProp, [], nestedLevel, level);
@@ -123,11 +123,11 @@ export const deeplySerializeSelectedProperties = (
   props: NestedProp[]
 ): { [name: string]: Descriptor } => {
   const result = {};
-  Object.keys(instance).forEach(propName => {
+  Object.keys(instance).forEach((propName) => {
     if (ignoreList.has(propName)) {
       return;
     }
-    const idx = props.findIndex(v => v.name === propName);
+    const idx = props.findIndex((v) => v.name === propName);
     if (idx < 0) {
       result[propName] = levelSerializer(instance[propName]);
     } else {
