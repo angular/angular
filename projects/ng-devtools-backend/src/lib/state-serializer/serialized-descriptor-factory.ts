@@ -1,5 +1,5 @@
 import { Descriptor, NestedProp, PropType } from 'protocol';
-import { METADATA_PROPERTY_NAME } from '../lview-transform';
+import { METADATA_PROPERTY_NAME } from '../directive-forest';
 
 export interface CompositeType {
   type: Extract<PropType, PropType.Array | PropType.Object>;
@@ -179,7 +179,7 @@ const getNestedDescriptorValue = (
 
   switch (type) {
     case PropType.Array:
-      return nodes.map(nestedProp => nestedSerializer(prop[nestedProp.name], nestedProp.children, currentLevel + 1));
+      return nodes.map((nestedProp) => nestedSerializer(prop[nestedProp.name], nestedProp.children, currentLevel + 1));
     case PropType.Object:
       return nodes.reduce((accumulator, nestedProp) => {
         if (

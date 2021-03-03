@@ -142,8 +142,8 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
 const getRoutes = (messageBus: MessageBus<Events>) => {
   const node = queryDirectiveForest([0], initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest());
   let routes: Route[] = [];
-  if (node?.component?.instance.router) {
-    routes = [parseRoutes(node?.component?.instance.router)];
+  if (node?.component?.instance?.router) {
+    routes = [parseRoutes(node?.component?.instance?.router)];
   }
   messageBus.emit('updateRouterTree', [routes]);
 };

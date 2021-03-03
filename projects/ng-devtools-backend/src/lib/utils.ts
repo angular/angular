@@ -11,7 +11,7 @@ export const runOutsideAngular = (f: () => any): void => {
   w.Zone.current._parent.run(f);
 };
 
-export const componentMetadata = (instance: any) => instance.constructor.ɵcmp;
+export const componentMetadata = (instance: any) => instance?.constructor?.ɵcmp;
 
 export const isCustomElement = (node: Node) => {
   if (typeof customElements === 'undefined') {

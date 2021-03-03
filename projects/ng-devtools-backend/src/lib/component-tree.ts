@@ -9,7 +9,7 @@ import {
   PropertyQueryTypes,
   UpdatedStateData,
 } from 'protocol';
-import { buildDirectiveTree, getLViewFromDirectiveOrElementInstance } from './lview-transform';
+import { buildDirectiveTree, getLViewFromDirectiveOrElementInstance } from './directive-forest';
 
 const ngDebug = () => (window as any).ng;
 
@@ -106,20 +106,23 @@ const getRootLViewsHelper = (element: Element, rootLViews = new Set<any>()): Set
   return rootLViews;
 };
 
-// To get all roots, we first get all elements with ng-version attribute.
-// This includes all app roots plus Angular Elements.
-// We may also have overlays which are on the same level as the top-level
-// app. We get these by traversing the DOM starting from the root DOM
-// element and stopping once we hit a node which is not HTMLElement or
-// has lView data associated with it.
-const getRootLViews = (element: Element): Set<any> => {
-  const roots = element.querySelectorAll('[ng-version]');
-  return getRootLViewsHelper(element, new Set(Array.from(roots).map(getLViewFromDirectiveOrElementInstance)));
+const getRoots = () => {
+  const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]'));
+  const isTopLevel = (element: HTMLElement) => {
+    let parent: HTMLElement | null = element;
+    while ((parent = parent.parentElement)) {
+      if (parent.hasAttribute('ng-version')) {
+        return false;
+      }
+    }
+    return true;
+  };
+  return roots.filter(isTopLevel);
 };
 
 export const buildDirectiveForest = (): ComponentTreeNode[] => {
-  const roots = getRootLViews(document.documentElement);
-  return Array.prototype.concat.apply([], [...roots].map(buildDirectiveTree));
+  const roots = getRoots();
+  return Array.prototype.concat.apply([], Array.from(roots).map(buildDirectiveTree));
 };
 
 // Based on an ElementID we return a specific component node.
