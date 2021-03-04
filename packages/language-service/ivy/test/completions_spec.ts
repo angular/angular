@@ -91,6 +91,34 @@ const DIR_WITH_SELECTED_INPUT = {
   `
 };
 
+const ATTRIBUTE_IN_MULTIPLE_DIR = {
+  'DirOne': `
+    @Directive({
+      selector: '[model]',
+    })
+    export class DirOne {
+    }
+  `,
+  'DirTwo': `
+    @Directive({
+      selector: '[model]',
+      inputs: ['model'],
+      outputs: ['modelChange'],
+    })
+    export class DirTwo {
+      model!: any;
+      modelChange!: any;
+    }
+  `,
+  'DirThree': `
+    @Directive({
+      selector: '[model]',
+    })
+    export class DirThree {
+    }
+  `
+};
+
 const SOME_PIPE = {
   'SomePipe': `
     @Pipe({
@@ -644,6 +672,17 @@ describe('completions', () => {
             completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.EVENT),
             ['otherOutput']);
       });
+
+      it('should return two way binding completions when attribute is in multiple directives',
+         () => {
+           const {templateFile} = setup(`<h1 [(mod)]></h1>`, ``, ATTRIBUTE_IN_MULTIPLE_DIR);
+           templateFile.moveCursorToText('[(mod¦)]');
+
+           const completions = templateFile.getCompletionsAtPosition();
+           expectReplacementText(completions, templateFile.contents, 'mod');
+
+           expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['model']);
+         });
 
       it('should return input completions for a binding property name', () => {
         const {templateFile} =

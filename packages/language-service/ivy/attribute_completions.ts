@@ -266,8 +266,13 @@ export function buildAttributeCompletionTable(
               continue;
             }
 
-            if (table.has(attrName)) {
-              // Skip this attribute as there's already a binding for it.
+            const completionItem = table.get(attrName);
+            if (completionItem &&
+                completionItem.kind !== AttributeCompletionKind.DirectiveAttribute) {
+              // Skip this attribute as it's a `DirectiveInput` or `DirectiveOutput`.
+              // An attribute may be in multiple directives. So the kind of attribute can be reset
+              // from `DirectiveAttribute` into `DirectiveInput` or `DirectiveOutput`, but not vice
+              // versa.
               continue;
             }
 
