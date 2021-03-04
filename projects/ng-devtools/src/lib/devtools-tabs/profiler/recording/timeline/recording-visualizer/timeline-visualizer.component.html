@@ -21,7 +21,7 @@
       <mat-toolbar>{{ selectedEntry.label }} details</mat-toolbar>
       <section class="entry-statistics">
         <div class="txt-total-time">
-          <label>Total time spent:</label><span> {{ selectedEntry.value | number }}ms</span>
+          <label>Total time spent:</label><span> {{ selectedEntry.value | number }} ms</span>
         </div>
         <div *ngIf="selectedEntry.value > 0">
           <ng-execution-details [data]="selectedDirectives"> </ng-execution-details>
