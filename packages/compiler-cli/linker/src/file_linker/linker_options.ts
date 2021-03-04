@@ -33,6 +33,14 @@ export interface LinkerOptions {
    * The default is `true`.
    */
   sourceMapping: boolean;
+
+  /**
+   * This option tells the linker to generate information used by a downstream JIT compiler.
+   *
+   * Specifically, in JIT mode, NgModule definitions must describe the `declarations`, `imports`,
+   * `exports`, etc, which are otherwise not needed.
+   */
+  linkerJitMode: boolean;
 }
 
 /**
@@ -43,4 +51,5 @@ export const DEFAULT_LINKER_OPTIONS: LinkerOptions = {
   i18nNormalizeLineEndingsInICUs: false,
   i18nUseExternalIds: false,
   sourceMapping: true,
+  linkerJitMode: false,
 };

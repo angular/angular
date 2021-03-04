@@ -13,13 +13,20 @@ import {LinkerEnvironment} from '../linker_environment';
 
 import {PartialComponentLinkerVersion1} from './partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from './partial_directive_linker_1';
+import {PartialInjectorLinkerVersion1} from './partial_injector_linker_1';
 import {PartialLinker} from './partial_linker';
+import {PartialNgModuleLinkerVersion1} from './partial_ng_module_linker_1';
 import {PartialPipeLinkerVersion1} from './partial_pipe_linker_1';
 
 export const ɵɵngDeclareDirective = 'ɵɵngDeclareDirective';
 export const ɵɵngDeclareComponent = 'ɵɵngDeclareComponent';
+export const ɵɵngDeclareInjector = 'ɵɵngDeclareInjector';
+export const ɵɵngDeclareNgModule = 'ɵɵngDeclareNgModule';
 export const ɵɵngDeclarePipe = 'ɵɵngDeclarePipe';
-export const declarationFunctions = [ɵɵngDeclareDirective, ɵɵngDeclareComponent, ɵɵngDeclarePipe];
+export const declarationFunctions = [
+  ɵɵngDeclareDirective, ɵɵngDeclareComponent, ɵɵngDeclareInjector, ɵɵngDeclareNgModule,
+  ɵɵngDeclarePipe
+];
 
 interface LinkerRange<TExpression> {
   range: string;
@@ -83,6 +90,9 @@ export class PartialLinkerSelector<TStatement, TExpression> {
     const partialComponentLinkerVersion1 = new PartialComponentLinkerVersion1(
         environment, createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl,
         code);
+    const partialInjectorLinkerVersion1 = new PartialInjectorLinkerVersion1();
+    const partialNgModuleLinkerVersion1 =
+        new PartialNgModuleLinkerVersion1(environment.options.linkerJitMode);
     const partialPipeLinkerVersion1 = new PartialPipeLinkerVersion1();
 
     const linkers = new Map<string, LinkerRange<TExpression>[]>();
@@ -93,6 +103,14 @@ export class PartialLinkerSelector<TStatement, TExpression> {
     linkers.set(ɵɵngDeclareComponent, [
       {range: '0.0.0-PLACEHOLDER', linker: partialComponentLinkerVersion1},
       {range: '>=11.1.0-next.1', linker: partialComponentLinkerVersion1},
+    ]);
+    linkers.set(ɵɵngDeclareInjector, [
+      {range: '0.0.0-PLACEHOLDER', linker: partialInjectorLinkerVersion1},
+      {range: '>=11.1.0-next.1', linker: partialInjectorLinkerVersion1},
+    ]);
+    linkers.set(ɵɵngDeclareNgModule, [
+      {range: '0.0.0-PLACEHOLDER', linker: partialNgModuleLinkerVersion1},
+      {range: '>=11.1.0-next.1', linker: partialNgModuleLinkerVersion1},
     ]);
     linkers.set(ɵɵngDeclarePipe, [
       {range: '0.0.0-PLACEHOLDER', linker: partialPipeLinkerVersion1},

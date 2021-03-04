@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, Identifiers as R3, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3DependencyMetadata, R3FactoryTarget, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileFactoryFunction, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, Identifiers as R3, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3CompiledExpression, R3FactoryMetadata, R3FactoryTarget, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
@@ -22,7 +22,6 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 import {getSourceFile} from '../../util/src/typescript';
 
 import {createValueHasWrongTypeError, getProviderDiagnostics} from './diagnostics';
-import {compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
@@ -30,7 +29,7 @@ import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidCons
 export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
   inj: R3InjectorMetadata;
-  deps: R3DependencyMetadata[]|null;
+  fac: R3FactoryMetadata;
   metadataStmt: Statement|null;
   declarations: Reference<ClassDeclaration>[];
   rawDeclarations: ts.Expression|null;
@@ -299,7 +298,7 @@ export class NgModuleDecoratorHandler implements
     const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(node));
     const adjacentType = new WrappedNodeExpr(this.reflector.getAdjacentNameOfClass(node));
 
-    const ngModuleDef: R3NgModuleMetadata = {
+    const ngModuleMetadata: R3NgModuleMetadata = {
       type,
       internalType,
       adjacentType,
@@ -333,7 +332,7 @@ export class NgModuleDecoratorHandler implements
       this.routeAnalyzer.add(node.getSourceFile(), name, rawImports, rawExports, rawProviders);
     }
 
-    const ngInjectorDef: R3InjectorMetadata = {
+    const injectorMetadata: R3InjectorMetadata = {
       name,
       type,
       internalType,
@@ -341,14 +340,24 @@ export class NgModuleDecoratorHandler implements
       imports: injectorImports,
     };
 
+    const factoryMetadata: R3FactoryMetadata = {
+      name,
+      type,
+      internalType,
+      typeArgumentCount: 0,
+      deps: getValidConstructorDependencies(
+          node, this.reflector, this.defaultImportRecorder, this.isCore),
+      injectFn: R3.inject,
+      target: R3FactoryTarget.NgModule,
+    };
+
     return {
       analysis: {
         id,
-        schemas: schemas,
-        mod: ngModuleDef,
-        inj: ngInjectorDef,
-        deps: getValidConstructorDependencies(
-            node, this.reflector, this.defaultImportRecorder, this.isCore),
+        schemas,
+        mod: ngModuleMetadata,
+        inj: injectorMetadata,
+        fac: factoryMetadata,
         declarations: declarationRefs,
         rawDeclarations,
         imports: importRefs,
@@ -450,17 +459,55 @@ export class NgModuleDecoratorHandler implements
 
   compileFull(
       node: ClassDeclaration,
-      {inj, mod, deps, metadataStmt, declarations}: Readonly<NgModuleAnalysis>,
-      resolution: Readonly<NgModuleResolution>): CompileResult[] {
-    //  Merge the injector imports (which are 'exports' that were later found to be NgModules)
-    //  computed during resolution with the ones from analysis.
-    const ngInjectorDef =
-        compileInjector({...inj, imports: [...inj.imports, ...resolution.injectorImports]});
+      {inj, mod, fac, metadataStmt, declarations}: Readonly<NgModuleAnalysis>,
+      {injectorImports}: Readonly<NgModuleResolution>): CompileResult[] {
+    const factoryFn = compileFactoryFunction(fac);
+    const ngInjectorDef = compileInjector(this.mergeInjectorImports(inj, injectorImports));
     const ngModuleDef = compileNgModule(mod);
-    const ngModuleStatements = ngModuleDef.statements;
+    const statements = ngModuleDef.statements;
+    this.insertMetadataStatement(statements, metadataStmt);
+    this.appendRemoteScopingStatements(statements, node, declarations);
+
+    return this.compileNgModule(factoryFn, ngInjectorDef, ngModuleDef);
+  }
+
+  compilePartial(
+      node: ClassDeclaration, {inj, fac, mod, metadataStmt}: Readonly<NgModuleAnalysis>,
+      {injectorImports}: Readonly<NgModuleResolution>): CompileResult[] {
+    const factoryFn = compileFactoryFunction(fac);
+    const injectorDef =
+        compileDeclareInjectorFromMetadata(this.mergeInjectorImports(inj, injectorImports));
+    const ngModuleDef = compileDeclareNgModuleFromMetadata(mod);
+    this.insertMetadataStatement(ngModuleDef.statements, metadataStmt);
+    // NOTE: no remote scoping required as this is banned in partial compilation.
+    return this.compileNgModule(factoryFn, injectorDef, ngModuleDef);
+  }
+
+  /**
+   *  Merge the injector imports (which are 'exports' that were later found to be NgModules)
+   *  computed during resolution with the ones from analysis.
+   */
+  private mergeInjectorImports(inj: R3InjectorMetadata, injectorImports: Expression[]):
+      R3InjectorMetadata {
+    return {...inj, imports: [...inj.imports, ...injectorImports]};
+  }
+
+  /**
+   * Add class metadata statements, if provided, to the `ngModuleStatements`.
+   */
+  private insertMetadataStatement(ngModuleStatements: Statement[], metadataStmt: Statement|null):
+      void {
     if (metadataStmt !== null) {
-      ngModuleStatements.push(metadataStmt);
+      ngModuleStatements.unshift(metadataStmt);
     }
+  }
+
+  /**
+   * Add remote scoping statements, as needed, to the `ngModuleStatements`.
+   */
+  private appendRemoteScopingStatements(
+      ngModuleStatements: Statement[], node: ClassDeclaration,
+      declarations: Reference<ClassDeclaration>[]): void {
     const context = getSourceFile(node);
     for (const decl of declarations) {
       const remoteScope = this.scopeRegistry.getRemoteScope(decl.node);
@@ -478,31 +525,34 @@ export class NgModuleDecoratorHandler implements
         ngModuleStatements.push(callExpr.toStmt());
       }
     }
+  }
+
+  private compileNgModule(
+      factoryFn: R3CompiledExpression, injectorDef: R3CompiledExpression,
+      ngModuleDef: R3CompiledExpression): CompileResult[] {
     const res: CompileResult[] = [
-      compileNgFactoryDefField({
-        name: inj.name,
-        type: inj.type,
-        internalType: inj.internalType,
-        typeArgumentCount: 0,
-        deps,
-        injectFn: R3.inject,
-        target: R3FactoryTarget.NgModule,
-      }),
+      {
+        name: 'ɵfac',
+        initializer: factoryFn.expression,
+        statements: factoryFn.statements,
+        type: factoryFn.type,
+      },
       {
         name: 'ɵmod',
         initializer: ngModuleDef.expression,
-        statements: ngModuleStatements,
+        statements: ngModuleDef.statements,
         type: ngModuleDef.type,
       },
       {
         name: 'ɵinj',
-        initializer: ngInjectorDef.expression,
-        statements: ngInjectorDef.statements,
-        type: ngInjectorDef.type,
+        initializer: injectorDef.expression,
+        statements: injectorDef.statements,
+        type: injectorDef.type,
       },
     ];
 
     if (this.localeId) {
+      // QUESTION: can this stuff be removed?
       res.push({
         name: 'ɵloc',
         initializer: new LiteralExpr(this.localeId),

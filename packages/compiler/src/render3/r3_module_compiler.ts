@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {R3DeclareNgModuleFacade} from '../compiler_facade_interface';
 import * as o from '../output/output_ast';
 
 import {Identifiers as R3} from './r3_identifiers';
-import {jitOnlyGuardedExpression, R3CompiledExpression, R3Reference} from './util';
+import {jitOnlyGuardedExpression, R3CompiledExpression, R3Reference, refsToArray} from './util';
 import {DefinitionMap} from './view/util';
 
 /**
@@ -123,7 +124,6 @@ interface R3NgModuleDefMap {
 export function compileNgModule(meta: R3NgModuleMetadata): R3CompiledExpression {
   const {
     internalType,
-    type: moduleType,
     bootstrap,
     declarations,
     imports,
@@ -138,23 +138,22 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3CompiledExpression 
   const definitionMap = new DefinitionMap<R3NgModuleDefMap>();
   definitionMap.set('type', internalType);
 
-  // Only generate the keys in the metadata if the arrays have values.
-  if (bootstrap.length) {
+  if (bootstrap.length > 0) {
     definitionMap.set('bootstrap', refsToArray(bootstrap, containsForwardDecls));
   }
 
-  // If requested to emit scope information inline, pass the declarations, imports and exports to
-  // the `ɵɵdefineNgModule` call. The JIT compilation uses this.
+  // If requested to emit scope information inline, pass the `declarations`, `imports` and `exports`
+  // to the `ɵɵdefineNgModule()` call. The JIT compilation uses this.
   if (emitInline) {
-    if (declarations.length) {
+    if (declarations.length > 0) {
       definitionMap.set('declarations', refsToArray(declarations, containsForwardDecls));
     }
 
-    if (imports.length) {
+    if (imports.length > 0) {
       definitionMap.set('imports', refsToArray(imports, containsForwardDecls));
     }
 
-    if (exports.length) {
+    if (exports.length > 0) {
       definitionMap.set('exports', refsToArray(exports, containsForwardDecls));
     }
   }
@@ -168,23 +167,55 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3CompiledExpression 
     }
   }
 
-  if (schemas && schemas.length) {
+  if (schemas !== null && schemas.length > 0) {
     definitionMap.set('schemas', o.literalArr(schemas.map(ref => ref.value)));
   }
 
-  if (id) {
+  if (id !== null) {
     definitionMap.set('id', id);
   }
 
   const expression =
       o.importExpr(R3.defineNgModule).callFn([definitionMap.toLiteralMap()], undefined, true);
-  const type = new o.ExpressionType(o.importExpr(R3.NgModuleDefWithMeta, [
+  const type = createNgModuleType(meta);
+
+  return {expression, type, statements};
+}
+
+/**
+ * This function is used in JIT mode to generate the call to `ɵɵdefineNgModule()` from a call to
+ * `ɵɵngDeclareNgModule()`.
+ */
+export function compileNgModuleDeclarationExpression(meta: R3DeclareNgModuleFacade): o.Expression {
+  const definitionMap = new DefinitionMap<R3NgModuleDefMap>();
+  definitionMap.set('type', new o.WrappedNodeExpr(meta.type));
+  if (meta.bootstrap !== undefined) {
+    definitionMap.set('bootstrap', new o.WrappedNodeExpr(meta.bootstrap));
+  }
+  if (meta.declarations !== undefined) {
+    definitionMap.set('declarations', new o.WrappedNodeExpr(meta.declarations));
+  }
+  if (meta.imports !== undefined) {
+    definitionMap.set('imports', new o.WrappedNodeExpr(meta.imports));
+  }
+  if (meta.exports !== undefined) {
+    definitionMap.set('exports', new o.WrappedNodeExpr(meta.exports));
+  }
+  if (meta.schemas !== undefined) {
+    definitionMap.set('schemas', new o.WrappedNodeExpr(meta.schemas));
+  }
+  if (meta.id !== undefined) {
+    definitionMap.set('id', new o.WrappedNodeExpr(meta.id));
+  }
+  return o.importExpr(R3.defineNgModule).callFn([definitionMap.toLiteralMap()]);
+}
+
+export function createNgModuleType(
+    {type: moduleType, declarations, imports, exports}: R3NgModuleMetadata): o.ExpressionType {
+  return new o.ExpressionType(o.importExpr(R3.NgModuleDefWithMeta, [
     new o.ExpressionType(moduleType.type), tupleTypeOf(declarations), tupleTypeOf(imports),
     tupleTypeOf(exports)
   ]));
-
-
-  return {expression, type, statements};
 }
 
 /**
@@ -199,15 +230,15 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|nul
   const scopeMap = new DefinitionMap<
       {declarations: o.Expression, imports: o.Expression, exports: o.Expression}>();
 
-  if (declarations.length) {
+  if (declarations.length > 0) {
     scopeMap.set('declarations', refsToArray(declarations, containsForwardDecls));
   }
 
-  if (imports.length) {
+  if (imports.length > 0) {
     scopeMap.set('imports', refsToArray(imports, containsForwardDecls));
   }
 
-  if (exports.length) {
+  if (exports.length > 0) {
     scopeMap.set('exports', refsToArray(exports, containsForwardDecls));
   }
 
@@ -236,38 +267,7 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|nul
   return iifeCall.toStmt();
 }
 
-export interface R3InjectorMetadata {
-  name: string;
-  type: R3Reference;
-  internalType: o.Expression;
-  providers: o.Expression|null;
-  imports: o.Expression[];
-}
-
-export function compileInjector(meta: R3InjectorMetadata): R3CompiledExpression {
-  const definitionMap = new DefinitionMap<{providers: o.Expression, imports: o.Expression}>();
-
-  if (meta.providers !== null) {
-    definitionMap.set('providers', meta.providers);
-  }
-
-  if (meta.imports.length > 0) {
-    definitionMap.set('imports', o.literalArr(meta.imports));
-  }
-
-  const expression =
-      o.importExpr(R3.defineInjector).callFn([definitionMap.toLiteralMap()], undefined, true);
-  const type =
-      new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type.type)]));
-  return {expression, type, statements: []};
-}
-
 function tupleTypeOf(exp: R3Reference[]): o.Type {
   const types = exp.map(ref => o.typeofExpr(ref.type));
   return exp.length > 0 ? o.expressionType(o.literalArr(types)) : o.NONE_TYPE;
-}
-
-function refsToArray(refs: R3Reference[], shouldForwardDeclare: boolean): o.Expression {
-  const values = o.literalArr(refs.map(ref => ref.value));
-  return shouldForwardDeclare ? o.fn([], [new o.ReturnStatement(values)]) : values;
 }

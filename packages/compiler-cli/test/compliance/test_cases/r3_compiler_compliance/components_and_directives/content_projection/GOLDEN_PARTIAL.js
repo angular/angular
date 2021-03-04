@@ -37,9 +37,8 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: My
 export class MyModule {
 }
 MyModule.ɵfac = function MyModule_Factory(t) { return new (t || MyModule)(); };
-MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
-MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [SimpleComponent, ComplexComponent, MyApp] }); })();
+MyModule.ɵmod = i0.ɵɵngDeclareNgModule({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [SimpleComponent, ComplexComponent, MyApp] });
+MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [SimpleComponent, ComplexComponent, MyApp] }]
@@ -93,9 +92,8 @@ Cmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Cmp,
 class Module {
 }
 Module.ɵfac = function Module_Factory(t) { return new (t || Module)(); };
-Module.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: Module });
-Module.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(Module, { declarations: [Cmp] }); })();
+Module.ɵmod = i0.ɵɵngDeclareNgModule({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Module, declarations: [Cmp] });
+Module.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Module });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Module, [{
         type: NgModule,
         args: [{ declarations: [Cmp] }]
@@ -144,9 +142,8 @@ Cmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Cmp,
 class Module {
 }
 Module.ɵfac = function Module_Factory(t) { return new (t || Module)(); };
-Module.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: Module });
-Module.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(Module, { declarations: [Cmp] }); })();
+Module.ɵmod = i0.ɵɵngDeclareNgModule({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Module, declarations: [Cmp] });
+Module.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Module });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Module, [{
         type: NgModule,
         args: [{ declarations: [Cmp] }]
@@ -199,9 +196,8 @@ Cmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Cmp,
 class Module {
 }
 Module.ɵfac = function Module_Factory(t) { return new (t || Module)(); };
-Module.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: Module });
-Module.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(Module, { declarations: [Cmp] }); })();
+Module.ɵmod = i0.ɵɵngDeclareNgModule({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Module, declarations: [Cmp] });
+Module.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Module });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Module, [{
         type: NgModule,
         args: [{ declarations: [Cmp] }]
@@ -236,9 +232,8 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: My
 export class MyModule {
 }
 MyModule.ɵfac = function MyModule_Factory(t) { return new (t || MyModule)(); };
-MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
-MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [MyApp, SimpleComponent] }); })();
+MyModule.ɵmod = i0.ɵɵngDeclareNgModule({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [MyApp, SimpleComponent] });
+MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [MyApp, SimpleComponent] }]
@@ -286,9 +281,8 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: My
 export class MyModule {
 }
 MyModule.ɵfac = function MyModule_Factory(t) { return new (t || MyModule)(); };
-MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
-MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(MyModule, { declarations: [SimpleComponent, MyApp] }); })();
+MyModule.ɵmod = i0.ɵɵngDeclareNgModule({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, declarations: [SimpleComponent, MyApp] });
+MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
         type: NgModule,
         args: [{ declarations: [SimpleComponent, MyApp] }]

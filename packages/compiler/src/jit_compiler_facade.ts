@@ -7,7 +7,7 @@
  */
 
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDirectiveFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDirectiveFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, Type, ViewEncapsulation} from './core';
 import {Identifiers} from './identifiers';
@@ -17,10 +17,11 @@ import {DeclareVarStmt, Expression, LiteralExpr, Statement, StmtModifier, Wrappe
 import {JitEvaluator} from './output/output_jit';
 import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
 import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget, R3ResolvedDependencyType} from './render3/r3_factory';
+import {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
 import {R3JitReflector} from './render3/r3_jit';
-import {compileInjector, compileNgModule, R3InjectorMetadata, R3NgModuleMetadata} from './render3/r3_module_compiler';
+import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
-import {getSafePropertyAccessString, wrapReference} from './render3/util';
+import {getSafePropertyAccessString, R3Reference, wrapReference} from './render3/util';
 import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3UsedDirectiveMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
@@ -91,6 +92,14 @@ export class CompilerFacadeImpl implements CompilerFacade {
     return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []);
   }
 
+  compileInjectorDeclaration(
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
+      declaration: R3DeclareInjectorFacade): any {
+    const meta = convertDeclareInjectorFacadeToMetadata(declaration);
+    const res = compileInjector(meta);
+    return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []);
+  }
+
   compileNgModule(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
       facade: R3NgModuleMetadataFacade): any {
@@ -109,6 +118,13 @@ export class CompilerFacadeImpl implements CompilerFacade {
     };
     const res = compileNgModule(meta);
     return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []);
+  }
+
+  compileNgModuleDeclaration(
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
+      declaration: R3DeclareNgModuleFacade): any {
+    const expression = compileNgModuleDeclarationExpression(declaration);
+    return this.jitExpression(expression, angularCoreEnv, sourceMapUrl, []);
   }
 
   compileDirective(
@@ -527,6 +543,19 @@ function convertDeclarePipeFacadeToMetadata(declaration: R3DeclarePipeFacade): R
   };
 }
 
+function convertDeclareInjectorFacadeToMetadata(declaration: R3DeclareInjectorFacade):
+    R3InjectorMetadata {
+  return {
+    name: declaration.type.name,
+    type: wrapReference(declaration.type),
+    internalType: new WrappedNodeExpr(declaration.type),
+    providers: declaration.providers !== undefined ? new WrappedNodeExpr(declaration.providers) :
+                                                     null,
+    imports: declaration.imports !== undefined ?
+        declaration.imports.map(i => new WrappedNodeExpr(i)) :
+        [],
+  };
+}
 
 export function publishFacade(global: any) {
   const ng: ExportedCompilerFacade = global.ng || (global.ng = {});

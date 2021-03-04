@@ -33,9 +33,8 @@ TodoComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", 
 export class TodoModule {
 }
 TodoModule.ɵfac = function TodoModule_Factory(t) { return new (t || TodoModule)(); };
-TodoModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: TodoModule });
-TodoModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({});
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && i0.ɵɵsetNgModuleScope(TodoModule, { declarations: [TodoComponent, MyApp] }); })();
+TodoModule.ɵmod = i0.ɵɵngDeclareNgModule({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TodoModule, declarations: [TodoComponent, MyApp] });
+TodoModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TodoModule });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(TodoModule, [{
         type: NgModule,
         args: [{
