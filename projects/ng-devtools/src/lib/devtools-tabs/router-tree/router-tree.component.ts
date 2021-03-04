@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { MessageBus, Events } from 'protocol';
 import * as d3 from 'd3';
 
@@ -7,31 +7,35 @@ import * as d3 from 'd3';
   templateUrl: './router-tree.component.html',
   styleUrls: ['./router-tree.component.scss'],
 })
-export class RouterTreeComponent implements OnInit {
+export class RouterTreeComponent implements OnInit, AfterViewInit {
   @ViewChild('svgContainer', { static: true }) private svgContainer: ElementRef;
   @ViewChild('mainGroup', { static: true }) private g: ElementRef;
 
   routes: any[] = [];
   private tree: d3.TreeLayout<{}>;
+  private tooltip: any;
 
-  constructor(private _messageBus: MessageBus<Events>) {
-    this._messageBus.emit('getRoutes');
-  }
+  constructor(private _messageBus: MessageBus<Events>) {}
 
   ngOnInit(): void {
     this._messageBus.on('updateRouterTree', (routes) => {
-      this.routes = routes;
-      if (routes && this.g) {
-        d3.select(this.g.nativeElement).selectAll('*').remove();
-      }
+      this.routes = routes || [];
       this.render();
     });
   }
 
+  ngAfterViewInit(): void {
+    this._messageBus.emit('getRoutes');
+  }
+
   render(): void {
-    if (this.routes.length === 0) {
+    if (this.routes.length === 0 || !this.g) {
       return;
     }
+
+    // cleanup old render
+    this.tooltip?.remove?.();
+    d3.select(this.g.nativeElement).selectAll('*').remove();
 
     this.tree = d3.tree();
     const svg = d3.select(this.svgContainer.nativeElement);
@@ -51,7 +55,7 @@ export class RouterTreeComponent implements OnInit {
     );
 
     // Define the div for the tooltip
-    const div = d3.select('body').append('div').attr('class', 'tooltip').style('opacity', 0);
+    this.tooltip = d3.select('body').append('div').attr('class', 'tooltip').style('opacity', 0).style('padding', '0');
 
     g.selectAll('.link')
       .data(nodes.descendants().slice(1))
@@ -83,13 +87,13 @@ export class RouterTreeComponent implements OnInit {
           <b>Specificity:</b> ${n.data.specificity}<br/>
           <b>Handler:</b> ${n.data.handler}<br/>
         `;
-        div.transition().style('opacity', 0.9);
-        div
+        this.tooltip.style('padding', '4px 8px').transition().style('opacity', 0.9);
+        this.tooltip
           .html(content)
           .style('left', d3.event.pageX + 8 + 'px')
           .style('top', d3.event.pageY + 8 + 'px');
       })
-      .on('mouseout', () => div.transition().style('opacity', 0))
+      .on('mouseout', () => this.tooltip.transition().style('opacity', 0))
       .attr('transform', (d) => `translate(${d.y},${d.x})`);
 
     node
@@ -110,8 +114,10 @@ export class RouterTreeComponent implements OnInit {
         }
       })
       .attr('text-anchor', (d) => (d.children ? 'end' : 'start'))
-      .text((d) => (d.data as any).name)
-      .attr('class', 'monospace');
+      .text((d) => {
+        const label = (d.data as any).name;
+        return label.length > 20 ? label.slice(0, 17) + '...' : label;
+      });
 
     // reset transform
     g.attr('transform', 'translate(0, 0)');

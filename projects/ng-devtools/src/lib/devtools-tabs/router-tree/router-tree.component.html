@@ -4,11 +4,7 @@
       There are no routes to display.
     </h1>
   </div>
-  <div class="full-height" [hidden]="routes?.length === 0">
-    <div class="full-height" #routeTree>
-      <svg #svgContainer class="svg-container">
-        <g #mainGroup></g>
-      </svg>
-    </div>
-  </div>
+  <svg #svgContainer class="svg-container" [hidden]="routes?.length === 0">
+    <g #mainGroup></g>
+  </svg>
 </div>
