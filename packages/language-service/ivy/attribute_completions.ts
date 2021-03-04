@@ -180,7 +180,8 @@ export type AttributeCompletion = DomAttributeCompletion|DomPropertyCompletion|
  */
 export function buildAttributeCompletionTable(
     component: ts.ClassDeclaration, element: TmplAstElement|TmplAstTemplate,
-    checker: TemplateTypeChecker): Map<string, AttributeCompletion> {
+    checker: TemplateTypeChecker,
+    includeDomSchemaAttributes: boolean): Map<string, AttributeCompletion> {
   const table = new Map<string, AttributeCompletion>();
 
   // Use the `ElementSymbol` or `TemplateSymbol` to iterate over directives present on the node, and
@@ -332,7 +333,7 @@ export function buildAttributeCompletionTable(
   }
 
   // Finally, add any DOM attributes not already covered by inputs.
-  if (element instanceof TmplAstElement) {
+  if (element instanceof TmplAstElement && includeDomSchemaAttributes) {
     for (const {attribute, property} of checker.getPotentialDomBindings(element.name)) {
       const isAlsoProperty = attribute === property;
       if (!table.has(attribute)) {
