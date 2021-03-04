@@ -74,3 +74,8 @@ export function wrapReference(value: any): R3Reference {
   const wrapped = new o.WrappedNodeExpr(value);
   return {value: wrapped, type: wrapped};
 }
+
+export function refsToArray(refs: R3Reference[], shouldForwardDeclare: boolean): o.Expression {
+  const values = o.literalArr(refs.map(ref => ref.value));
+  return shouldForwardDeclare ? o.fn([], [new o.ReturnStatement(values)]) : values;
+}

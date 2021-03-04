@@ -34,7 +34,8 @@ export class LinkerEnvironment<TStatement, TExpression> {
       i18nNormalizeLineEndingsInICUs: options.i18nNormalizeLineEndingsInICUs ??
           DEFAULT_LINKER_OPTIONS.i18nNormalizeLineEndingsInICUs,
       i18nUseExternalIds: options.i18nUseExternalIds ?? DEFAULT_LINKER_OPTIONS.i18nUseExternalIds,
-      sourceMapping: options.sourceMapping ?? DEFAULT_LINKER_OPTIONS.sourceMapping
+      sourceMapping: options.sourceMapping ?? DEFAULT_LINKER_OPTIONS.sourceMapping,
+      linkerJitMode: options.linkerJitMode ?? DEFAULT_LINKER_OPTIONS.linkerJitMode,
     });
   }
 }

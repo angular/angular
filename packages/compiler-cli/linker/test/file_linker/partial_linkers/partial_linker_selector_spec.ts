@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 
-import {LinkerOptions} from '../../..';
+import {DEFAULT_LINKER_OPTIONS, LinkerOptions} from '../../..';
 import {FileSystem} from '../../../../src/ngtsc/file_system';
 import {MockFileSystemNative} from '../../../../src/ngtsc/file_system/testing';
 import {MockLogger} from '../../../../src/ngtsc/logging/testing';
@@ -16,16 +16,13 @@ import {TypeScriptAstHost} from '../../../src/ast/typescript/typescript_ast_host
 import {LinkerEnvironment} from '../../../src/file_linker/linker_environment';
 import {PartialComponentLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_directive_linker_1';
+import {PartialInjectorLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_injector_linker_1';
 import {PartialLinkerSelector} from '../../../src/file_linker/partial_linkers/partial_linker_selector';
+import {PartialNgModuleLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_ng_module_linker_1';
 import {PartialPipeLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_pipe_linker_1';
 
 describe('PartialLinkerSelector', () => {
-  const options: LinkerOptions = {
-    i18nNormalizeLineEndingsInICUs: true,
-    enableI18nLegacyMessageIdFormat: false,
-    i18nUseExternalIds: false,
-    sourceMapping: false,
-  };
+  const options: LinkerOptions = DEFAULT_LINKER_OPTIONS;
   let environment: LinkerEnvironment<ts.Statement, ts.Expression>;
   let fs: FileSystem;
 
@@ -65,6 +62,10 @@ describe('PartialLinkerSelector', () => {
           .toBeInstanceOf(PartialComponentLinkerVersion1);
       expect(selector.getLinker('ɵɵngDeclarePipe', '0.0.0-PLACEHOLDER'))
           .toBeInstanceOf(PartialPipeLinkerVersion1);
+      expect(selector.getLinker('ɵɵngDeclareInjector', '0.0.0-PLACEHOLDER'))
+          .toBeInstanceOf(PartialInjectorLinkerVersion1);
+      expect(selector.getLinker('ɵɵngDeclareNgModule', '0.0.0-PLACEHOLDER'))
+          .toBeInstanceOf(PartialNgModuleLinkerVersion1);
     });
 
     it('should return the linker that matches the name and valid full version', () => {

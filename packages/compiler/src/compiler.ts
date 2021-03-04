@@ -97,14 +97,17 @@ export {BoundAttribute as TmplAstBoundAttribute, BoundEvent as TmplAstBoundEvent
 export * from './render3/view/t2_api';
 export * from './render3/view/t2_binder';
 export {Identifiers as R3Identifiers} from './render3/r3_identifiers';
-export {R3DependencyMetadata, R3ResolvedDependencyType, compileFactoryFunction, R3FactoryMetadata, R3FactoryTarget} from './render3/r3_factory';
-export {compileInjector, compileNgModule, R3InjectorMetadata, R3NgModuleMetadata} from './render3/r3_module_compiler';
+export {compileFactoryFunction, R3DependencyMetadata, R3FactoryMetadata, R3FactoryTarget, R3ResolvedDependencyType} from './render3/r3_factory';
+export {compileNgModule, R3NgModuleMetadata} from './render3/r3_module_compiler';
+export {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
 export {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 export {makeBindingParser, ParsedTemplate, parseTemplate, ParseTemplateOptions} from './render3/view/template';
 export {R3CompiledExpression, R3Reference, devOnlyGuardedExpression, getSafePropertyAccessString} from './render3/util';
 export {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, ParsedHostBindings, verifyHostBindings} from './render3/view/compiler';
 export {compileDeclareComponentFromMetadata} from './render3/partial/component';
 export {compileDeclareDirectiveFromMetadata} from './render3/partial/directive';
+export {compileDeclareInjectorFromMetadata} from './render3/partial/injector';
+export {compileDeclareNgModuleFromMetadata} from './render3/partial/ng_module';
 export {compileDeclarePipeFromMetadata} from './render3/partial/pipe';
 export {publishFacade} from './jit_compiler_facade';
 // This file only reexports content of the `src` folder. Keep it that way.

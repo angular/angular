@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade, R3DeclareComponentFacade, R3DeclareDirectiveFacade, R3DeclarePipeFacade} from '../../compiler/compiler_facade';
+import {getCompilerFacade, R3DeclareComponentFacade, R3DeclareDirectiveFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade} from '../../compiler/compiler_facade';
 import {angularCoreEnv} from './environment';
 
 /**
@@ -29,6 +29,28 @@ export function ɵɵngDeclareComponent(decl: R3DeclareComponentFacade): unknown 
   const compiler = getCompilerFacade();
   return compiler.compileComponentDeclaration(
       angularCoreEnv, `ng:///${decl.type.name}/ɵcmp.js`, decl);
+}
+
+/**
+ * Compiles a partial injector declaration object into a full injector definition object.
+ *
+ * @codeGenApi
+ */
+export function ɵɵngDeclareInjector(decl: R3DeclareInjectorFacade): unknown {
+  const compiler = getCompilerFacade();
+  return compiler.compileInjectorDeclaration(
+      angularCoreEnv, `ng:///${decl.type.name}/ɵinj.js`, decl);
+}
+
+/**
+ * Compiles a partial NgModule declaration object into a full NgModule definition object.
+ *
+ * @codeGenApi
+ */
+export function ɵɵngDeclareNgModule(decl: R3DeclareNgModuleFacade): unknown {
+  const compiler = getCompilerFacade();
+  return compiler.compileNgModuleDeclaration(
+      angularCoreEnv, `ng:///${decl.type.name}/ɵmod.js`, decl);
 }
 
 /**
