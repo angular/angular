@@ -364,7 +364,7 @@ it is called in every change detection cycle _anywhere on the page_.
 
   Notice that the log confirms that input properties (the `name` property in this case) have no assigned values at construction.
   The input properties are available to the `onInit()` method for further initialization.
-k
+
 </div>
 
 Had the user clicked the *Update Hero* button, the log would show another `OnChanges` and two more triplets of `DoCheck`, `AfterContentChecked` and `AfterViewChecked`.
