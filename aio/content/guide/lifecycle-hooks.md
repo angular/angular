@@ -356,15 +356,15 @@ The following snapshot reflects the state of the log after the user clicked the 
 
 The sequence of log messages beginning at #2 displays the prescribed hook calling order.
 
-Note that `DoCheck` as well as the subsequent `AfterContentChecked` and `AfterViewInit` appear more than once.
-This is due to the fact that even though the `DoCheck` hook exists in the child component,
+Note that `DoCheck` as well as the subsequent `AfterContentChecked` and `AfterViewChecked` appear more than once.
+This is because even though the `DoCheck` hook exists in the child component,
 it is called in every change detection cycle _anywhere on the page_.
 
 <div class="alert is-helpful">
 
   Notice that the log confirms that input properties (the `name` property in this case) have no assigned values at construction.
   The input properties are available to the `onInit()` method for further initialization.
-
+k
 </div>
 
 Had the user clicked the *Update Hero* button, the log would show another `OnChanges` and two more triplets of `DoCheck`, `AfterContentChecked` and `AfterViewChecked`.
