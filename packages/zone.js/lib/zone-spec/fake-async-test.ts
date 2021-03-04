@@ -859,7 +859,14 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
    *
    * @experimental
    */
-  function fakeAsync(fn: Function): (...args: any[]) => any {
+  function fakeAsync(fn: Function): {
+    (fn: Function): (...args: any[]) => any;
+    on:
+        (source: string,
+         nonTimerTaskHandler:
+             (data: any, taskCallback: (options: {callbackArgs: any[], delay?: number}) => void) =>
+                 void) => typeof fakeAsync
+  } {
     // Not using an arrow function to preserve context passed from call site
     const fakeAsyncFn: any = function(this: unknown, ...args: any[]) {
       const ProxyZoneSpec = getProxyZoneSpec();
@@ -919,6 +926,44 @@ Zone.__load_patch('fakeasync', (global: any, Zone: ZoneType, api: _ZonePrivate) 
     (fakeAsyncFn as any).isFakeAsync = true;
     return fakeAsyncFn;
   }
+
+  function on(
+      this: any, source: string,
+      nonTimerTaskHandler:
+          (data: any, taskCallback: (options: {callbackArgs: any[], delay?: number}) => void) =>
+              void) {
+    // Keep a on handler list in the wrapped fakeAsync function to support
+    // nested on call.
+    let onHandlerList = this[Zone.__symbol__('fakeAsyncOnHandlerList')] as {
+      source: string,
+      nonTimerTaskHandler: (
+          data: any, taskCallback: (options: {callbackArgs: any[], delay?: number}) => void) => void
+    }[];
+    if (!onHandlerList) {
+      onHandlerList = [];
+    } else {
+      // Copy parent onHandler list
+      onHandlerList = onHandlerList.slice();
+    }
+    onHandlerList.push({source, nonTimerTaskHandler});
+    const fakeAsyncWrap = function(fn: Function) {
+      const wrappedWithHooks = function(this: unknown) {
+        // Invoke beforeEach hook from parent to child order
+        for (let i = 0; i < onHandlerList.length; i++) {
+          const onHandler = onHandlerList[i];
+          _getFakeAsyncZoneSpec().registerNonTimerMacroTaskHandler(
+              onHandler.source, onHandler.nonTimerTaskHandler);
+        }
+        return fn.apply(this, arguments);
+      };
+      return fakeAsync(wrappedWithHooks);
+    };
+    fakeAsyncWrap.on = on;
+    (fakeAsyncWrap as any)[Zone.__symbol__('fakeAsyncOnHandlerList')] = onHandlerList;
+    return fakeAsyncWrap;
+  }
+
+  fakeAsync.on = on;
 
   function _getFakeAsyncZoneSpec(): any {
     if (_fakeAsyncTestZoneSpec == null) {

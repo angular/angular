@@ -843,7 +843,7 @@ describe('FakeAsyncTestZoneSpec', () => {
                        'XMLHttpRequest.send', (data: any, taskDone: () => void) => {
                          setTimeout(() => {
                            data.responseText = 'response';
-                           data.triggerEvent('load');
+                           data.dispatchEvent({type: 'load'});
                            taskDone();
                          }, 100);
                        });
@@ -879,7 +879,7 @@ describe('FakeAsyncTestZoneSpec', () => {
                        'FileReader.readAsText', (data: any, taskDone: () => void) => {
                          setTimeout(() => {
                            data.result = 'blob';
-                           data.triggerEvent('load');
+                           data.dispatchEvent({type: 'load'});
                            taskDone();
                          }, 100);
                        });
@@ -1901,6 +1901,32 @@ const {fakeAsync, tick, discardPeriodicTasks, flush, flushMicrotasks} = fakeAsyn
            expect(unixTimeZero).toBe(0);
          }));
     });
+
+    describe('XHRs', ifEnvSupports('XMLHttpRequest', () => {
+               it('should get response with XMLHttpRequest',
+                  fakeAsync.on('XMLHttpRequest.send', (data: any, taskDone: () => void) => {
+                    setTimeout(() => {
+                      data.responseText = 'response';
+                      data.dispatchEvent({type: 'load'});
+                      taskDone();
+                    }, 100);
+                  })(() => {
+                    let finished = false;
+                    let req = new XMLHttpRequest();
+
+                    req.onload = () => {
+                      finished = true;
+                    };
+
+                    req.open('GET', '/test', true);
+                    req.send();
+                    expect(req.responseText as any).toEqual(undefined);
+                    expect(finished).toBe(false);
+                    tick(100);
+                    expect(req.responseText).toEqual('response');
+                    expect(finished).toBe(true);
+                  }));
+             }));
   });
 
   describe('ProxyZone', () => {

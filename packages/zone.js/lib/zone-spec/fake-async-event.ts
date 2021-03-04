@@ -10,7 +10,7 @@ export function createEventTargetPrototype(onProps?: string[]) {
     eventListeners: {eventName: string, listener: EventListenerOrEventListenerObject}[],
     addEventListener: (eventName: string, listener: EventListenerOrEventListenerObject) => void,
     removeEventListener: (eventName: string, listener: EventListenerOrEventListenerObject) => void,
-    triggerEvent: (eventName: string, evt: any) => void,
+    dispatchEvent: (evt: Event) => void,
   } = {
     eventListeners: [],
     addEventListener: function(eventName: string, listener: EventListenerOrEventListenerObject) {
@@ -25,8 +25,8 @@ export function createEventTargetPrototype(onProps?: string[]) {
         }
       }
     },
-    triggerEvent: function(eventName: string, evt: any) {
-      this.eventListeners.filter(el => el.eventName === eventName).forEach(el => {
+    dispatchEvent: function(evt: Event) {
+      this.eventListeners.filter(el => el.eventName === evt.type).forEach(el => {
         if (typeof el.listener === 'function') {
           el.listener.call(this, evt);
         } else {
@@ -35,6 +35,7 @@ export function createEventTargetPrototype(onProps?: string[]) {
       });
     }
   };
+
   if (onProps) {
     onProps.forEach(onProp => {
       Object.defineProperty(EventTargetPrototype, onProp, {

@@ -12,6 +12,39 @@ const fakeAsyncTestModuleNotLoadedErrorMessage =
     `zone-testing.js is needed for the fakeAsync() test helper but could not be found.
         Please make sure that your environment includes zone.js/testing`;
 
+type MutableRequired<T> = {
+  -readonly[P in keyof T] -?: T[P]
+};
+type MutableXMLHttpRequest = MutableRequired<XMLHttpRequest>;
+
+interface FakeAsync {
+  /**
+   * Wraps a function to be executed in the fakeAsync zone:
+   * - microtasks are manually executed by calling `flushMicrotasks()`,
+   * - timers are synchronous, `tick()` simulates the asynchronous passage of time.
+   *
+   * If there are any pending timers at the end of the function, an exception will be thrown.
+   *
+   * Can be used to wrap inject() calls.
+   *
+   * @usageNotes
+   * ### Example
+   *
+   * {@example core/testing/ts/fake_async.ts region='basic'}
+   *
+   * @param fn
+   * @returns The function wrapped to be executed in the fakeAsync zone
+   *
+   * @publicApi
+   */
+  (fn: Function): (...args: any[]) => any;
+
+  /**
+   */
+  on(source: 'XMLHttpRequest.send',
+     handler: (mutableXHR: MutableXMLHttpRequest, taskDone: () => void) => void): FakeAsync;
+}
+
 /**
  * Clears out the shared fake async zone for a test.
  * To be called in a global `beforeEach`.
@@ -44,12 +77,21 @@ export function resetFakeAsyncZone(): void {
  *
  * @publicApi
  */
-export function fakeAsync(fn: Function): (...args: any[]) => any {
+export const fakeAsync = function(fn: Function): (...args: any[]) => any {
   if (fakeAsyncTestModule) {
     return fakeAsyncTestModule.fakeAsync(fn);
   }
   throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
-}
+} as FakeAsync;
+
+fakeAsync.on = function(
+    source: 'XMLHttpRequest.send',
+    handler: (mutableXHR: MutableXMLHttpRequest, taskDone: () => void) => void) {
+  if (fakeAsyncTestModule) {
+    return fakeAsyncTestModule.fakeAsync.on(source, handler);
+  }
+  throw new Error(fakeAsyncTestModuleNotLoadedErrorMessage);
+};
 
 /**
  * Simulates the asynchronous passage of time for the timers in the fakeAsync zone.
