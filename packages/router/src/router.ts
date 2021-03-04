@@ -357,7 +357,7 @@ type LocationChangeInfo = {
 };
 
 /**
- * The equivalent `IsActiveUrlTreeOptions` options for `Router.isActive` is called with `false`
+ * The equivalent `IsActiveUrlTreeOptions` options for `Router.isActive` is called with `true`
  * (exact = true).
  */
 export const exactMatchOptions: IsActiveMatchOptions = {
