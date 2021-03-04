@@ -193,6 +193,24 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
   .mat-ripple-element:not(.mat-checkbox-persistent-ripple) {
     opacity: 0.16;
   }
+
+  // Increase specificity because ripple styles are part of the `mat-core` mixin and can
+  // potentially overwrite the absolute position of the container.
+  .mat-checkbox-ripple {
+    position: absolute;
+    left: calc(50% - #{$_mat-checkbox-ripple-radius});
+    top: calc(50% - #{$_mat-checkbox-ripple-radius});
+    height: $_mat-checkbox-ripple-radius * 2;
+    width: $_mat-checkbox-ripple-radius * 2;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  &.cdk-keyboard-focused .mat-checkbox-ripple {
+    @include a11y.high-contrast(active, off) {
+      outline: solid 3px;
+    }
+  }
 }
 
 .mat-checkbox-layout {
@@ -257,14 +275,6 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
 
   ._mat-animation-noopable & {
     transition: none;
-  }
-
-  .mat-checkbox.cdk-keyboard-focused & {
-    @include a11y.high-contrast(active, off) {
-      // Note that we change the border style of the checkbox frame to dotted because this
-      // is how IE/Edge similarly treats native checkboxes in high contrast mode.
-      border-style: dotted;
-    }
   }
 }
 
@@ -505,16 +515,4 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
   // Visual improvement to properly show browser popups when being required.
   bottom: 0;
   left: 50%;
-}
-
-// Increase specificity because ripple styles are part of the `mat-core` mixin and can
-// potentially overwrite the absolute position of the container.
-.mat-checkbox .mat-checkbox-ripple {
-  position: absolute;
-  left: calc(50% - #{$_mat-checkbox-ripple-radius});
-  top: calc(50% - #{$_mat-checkbox-ripple-radius});
-  height: $_mat-checkbox-ripple-radius * 2;
-  width: $_mat-checkbox-ripple-radius * 2;
-  z-index: 1;
-  pointer-events: none;
 }
