@@ -1,6 +1,5 @@
 import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
-import { saveAs } from './vendor/filesaver';
 import { toISO8601Compact } from './vendor/chromium/date-utilities';
 
 @Injectable({
@@ -23,7 +22,10 @@ export class FileApiService {
   }
 
   saveObjectAsJSON(object: object): void {
-    const blob = new Blob([JSON.stringify(object)], { type: 'application/json' });
-    saveAs(blob, `NgDevTools-Profile-${toISO8601Compact(new Date())}.json`);
+    const downloadLink = document.createElement('a');
+    downloadLink.download = `NgDevTools-Profile-${toISO8601Compact(new Date())}.json`;
+    downloadLink.href = URL.createObjectURL(new Blob([JSON.stringify(object)], { type: 'application/json' }));
+    downloadLink.click();
+    setTimeout(() => URL.revokeObjectURL(downloadLink.href));
   }
 }
