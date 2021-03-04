@@ -57,7 +57,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
   constructor(
       private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler,
       private readonly component: ts.ClassDeclaration, private readonly node: N,
-      private readonly targetDetails: TemplateTarget) {}
+      private readonly targetDetails: TemplateTarget, private readonly inlineTemplate: boolean) {}
 
   /**
    * Analogue for `ts.LanguageService.getCompletionsAtPosition`.
@@ -370,14 +370,18 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
 
     const replacementSpan: ts.TextSpan = {start, length};
 
-    const entries: ts.CompletionEntry[] =
-        Array.from(templateTypeChecker.getPotentialElementTags(this.component))
-            .map(([tag, directive]) => ({
-                   kind: tagCompletionKind(directive),
-                   name: tag,
-                   sortText: tag,
-                   replacementSpan,
-                 }));
+    let potentialTags = Array.from(templateTypeChecker.getPotentialElementTags(this.component));
+    if (!this.inlineTemplate) {
+      // If we are in an external template, don't provide non-Angular tags (directive === null)
+      // because we expect other extensions (i.e. Emmet) to provide those for HTML files.
+      potentialTags = potentialTags.filter(([_, directive]) => directive !== null);
+    }
+    const entries: ts.CompletionEntry[] = potentialTags.map(([tag, directive]) => ({
+                                                              kind: tagCompletionKind(directive),
+                                                              name: tag,
+                                                              sortText: tag,
+                                                              replacementSpan,
+                                                            }));
 
     return {
       entries,
@@ -458,7 +462,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     }
 
     const attrTable = buildAttributeCompletionTable(
-        this.component, element, this.compiler.getTemplateTypeChecker());
+        this.component, element, this.compiler.getTemplateTypeChecker(), this.inlineTemplate);
 
     let entries: ts.CompletionEntry[] = [];
 
@@ -532,7 +536,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     }
 
     const attrTable = buildAttributeCompletionTable(
-        this.component, element, this.compiler.getTemplateTypeChecker());
+        this.component, element, this.compiler.getTemplateTypeChecker(), this.inlineTemplate);
 
     if (!attrTable.has(name)) {
       return undefined;
@@ -599,7 +603,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     }
 
     const attrTable = buildAttributeCompletionTable(
-        this.component, element, this.compiler.getTemplateTypeChecker());
+        this.component, element, this.compiler.getTemplateTypeChecker(), this.inlineTemplate);
 
     if (!attrTable.has(name)) {
       return undefined;

@@ -299,10 +299,19 @@ describe('completions', () => {
   });
 
   describe('element tag scope', () => {
-    it('should return DOM completions', () => {
+    it('should not return DOM completions for external template', () => {
       const {templateFile} = setup(`<div>`, '');
       templateFile.moveCursorToText('<div¦>');
       const completions = templateFile.getCompletionsAtPosition();
+      expectDoesNotContain(
+          completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ELEMENT),
+          ['div', 'span']);
+    });
+
+    it('should return DOM completions', () => {
+      const {appFile} = setupInlineTemplate(`<div>`, '');
+      appFile.moveCursorToText('<div¦>');
+      const completions = appFile.getCompletionsAtPosition();
       expectContain(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ELEMENT),
           ['div', 'span']);
@@ -422,11 +431,19 @@ describe('completions', () => {
 
     describe('element attribute scope', () => {
       describe('dom completions', () => {
-        it('should return completions for a new element attribute', () => {
+        it('should not return completions dom completions in external template', () => {
           const {templateFile} = setup(`<input >`, '');
           templateFile.moveCursorToText('<input ¦>');
 
           const completions = templateFile.getCompletionsAtPosition();
+          expect(completions?.entries.length).toBe(0);
+        });
+
+        it('should return completions for a new element attribute', () => {
+          const {appFile} = setupInlineTemplate(`<input >`, '');
+          appFile.moveCursorToText('<input ¦>');
+
+          const completions = appFile.getCompletionsAtPosition();
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
               ['value']);
@@ -436,24 +453,24 @@ describe('completions', () => {
         });
 
         it('should return completions for a partial attribute', () => {
-          const {templateFile} = setup(`<input val>`, '');
-          templateFile.moveCursorToText('<input val¦>');
+          const {appFile} = setupInlineTemplate(`<input val>`, '');
+          appFile.moveCursorToText('<input val¦>');
 
-          const completions = templateFile.getCompletionsAtPosition();
+          const completions = appFile.getCompletionsAtPosition();
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
               ['value']);
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
               ['[value]']);
-          expectReplacementText(completions, templateFile.contents, 'val');
+          expectReplacementText(completions, appFile.contents, 'val');
         });
 
         it('should return completions for a partial property binding', () => {
-          const {templateFile} = setup(`<input [val]>`, '');
-          templateFile.moveCursorToText('[val¦]');
+          const {appFile} = setupInlineTemplate(`<input [val]>`, '');
+          appFile.moveCursorToText('[val¦]');
 
-          const completions = templateFile.getCompletionsAtPosition();
+          const completions = appFile.getCompletionsAtPosition();
           expectDoesNotContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
               ['value']);
@@ -463,7 +480,7 @@ describe('completions', () => {
           expectContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
               ['value']);
-          expectReplacementText(completions, templateFile.contents, 'val');
+          expectReplacementText(completions, appFile.contents, 'val');
         });
       });
 
@@ -778,4 +795,36 @@ function setup(
     'test.html': template,
   });
   return {templateFile: project.openFile('test.html')};
+}
+
+function setupInlineTemplate(
+    template: string, classContents: string, otherDeclarations: {[name: string]: string} = {}): {
+  appFile: OpenBuffer,
+} {
+  const decls = ['AppCmp', ...Object.keys(otherDeclarations)];
+
+  const otherDirectiveClassDecls = Object.values(otherDeclarations).join('\n\n');
+
+  const env = LanguageServiceTestEnv.setup();
+  const project = env.addProject('test', {
+    'test.ts': `
+        import {Component, Directive, NgModule, Pipe, TemplateRef} from '@angular/core';
+
+        @Component({
+          template: '${template}',
+          selector: 'app-cmp',
+        })
+        export class AppCmp {
+          ${classContents}
+        }
+        
+        ${otherDirectiveClassDecls}
+
+        @NgModule({
+          declarations: [${decls.join(', ')}],
+        })
+        export class AppModule {}
+        `,
+  });
+  return {appFile: project.openFile('test.ts')};
 }
