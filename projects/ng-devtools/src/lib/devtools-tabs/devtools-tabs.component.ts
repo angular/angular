@@ -56,7 +56,7 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.activeTab = tab;
     this.tabUpdate.notify();
     if (tab === 'Router Tree') {
-      setTimeout(() => this.routerTree.render());
+      this._messageBus.emit('getRoutes');
     }
   }
 
