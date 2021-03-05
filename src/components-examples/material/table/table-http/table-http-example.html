@@ -9,8 +9,9 @@
 
   <div class="example-table-container">
 
-    <table mat-table [dataSource]="data" class="example-table"
-           matSort matSortActive="created" matSortDisableClear matSortDirection="desc">
+    <table mat-table [dataSource]="filteredAndPagedIssues" class="example-table" matSort
+           matSortActive="created" matSortDisableClear matSortDirection="desc"
+           (matSortChange)="resetPaging()">
       <!-- Number Column -->
       <ng-container matColumnDef="number">
         <th mat-header-cell *matHeaderCellDef>#</th>
