@@ -13,7 +13,14 @@ import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {CommonModule} from '@angular/common';
 import {Observable} from 'rxjs';
-import {MAT_TABS_CONFIG, MatTab, MatTabGroup, MatTabHeaderPosition, MatTabsModule} from './index';
+import {
+  MAT_TABS_CONFIG,
+  MatTab,
+  MatTabGroup,
+  MatTabHeaderPosition,
+  MatTabsModule,
+  MatTabHeader,
+} from './index';
 
 
 describe('MDC-based MatTabGroup', () => {
@@ -326,6 +333,21 @@ describe('MDC-based MatTabGroup', () => {
       expect(fixture.componentInstance.handleFocus)
         .toHaveBeenCalledWith(jasmine.objectContaining({index: 2}));
     }));
+
+    it('should be able to programmatically focus a particular tab', () => {
+      fixture.detectChanges();
+      const tabGroup: MatTabGroup =
+          fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
+      const tabHeader: MatTabHeader =
+          fixture.debugElement.query(By.css('mat-tab-header')).componentInstance;
+
+      expect(tabHeader.focusIndex).not.toBe(3);
+
+      tabGroup.focusTab(3);
+      fixture.detectChanges();
+
+      expect(tabHeader.focusIndex).not.toBe(3);
+    });
 
   });
 

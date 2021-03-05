@@ -59,6 +59,7 @@ export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase imp
     _removeTabBodyWrapperHeight(): void;
     _setTabBodyWrapperHeight(tabHeight: number): void;
     _tabFocusChanged(focusOrigin: FocusOrigin, index: number): void;
+    focusTab(index: number): void;
     ngAfterContentChecked(): void;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;

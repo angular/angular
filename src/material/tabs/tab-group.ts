@@ -287,6 +287,18 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     }
   }
 
+  /**
+   * Sets focus to a particular tab.
+   * @param index Index of the tab to be focused.
+   */
+  focusTab(index: number) {
+    const header = this._tabHeader;
+
+    if (header) {
+      header.focusIndex = index;
+    }
+  }
+
   _focusChanged(index: number) {
     this.focusChange.emit(this._createChangeEvent(index));
   }
