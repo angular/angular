@@ -1,5 +1,5 @@
-var testPackage = require('../../helpers/test-package');
-var Dgeni = require('dgeni');
+const testPackage = require('../../helpers/test-package');
+const Dgeni = require('dgeni');
 
 describe('mergeDecoratorDocs processor', () => {
   let processor, moduleDoc, decoratorDoc, metadataDoc, otherDoc;
@@ -20,11 +20,10 @@ describe('mergeDecoratorDocs processor', () => {
       shortDescription: 'decorator - short description',
       description: 'decorator - description',
       symbol: {
-        valueDeclaration: { initializer: { expression: { text: 'makeDecorator' }, arguments: [{ text: 'X' }] } }
+        valueDeclaration:
+            {initializer: {expression: {text: 'makeDecorator'}, arguments: [{text: 'X'}]}}
       },
-      members: [
-        { name: 'templateUrl', description: 'templateUrl - description' }
-      ],
+      members: [{name: 'templateUrl', description: 'templateUrl - description'}],
       moduleDoc
     };
 
@@ -38,9 +37,7 @@ describe('mergeDecoratorDocs processor', () => {
           description: 'call interface - call member - description',
           usageNotes: 'call interface - call member - usageNotes',
         },
-        {
-          description: 'call interface - non call member - description'
-        }
+        {description: 'call interface - non call member - description'}
       ],
       moduleDoc
     };
@@ -49,7 +46,8 @@ describe('mergeDecoratorDocs processor', () => {
       name: 'Y',
       docType: 'const',
       symbol: {
-        valueDeclaration: { initializer: { expression: { text: 'otherCall' }, arguments: [{ text: 'param1' }] } }
+        valueDeclaration:
+            {initializer: {expression: {text: 'otherCall'}, arguments: [{text: 'param1'}]}}
       },
       moduleDoc
     };
@@ -58,11 +56,12 @@ describe('mergeDecoratorDocs processor', () => {
   });
 
 
-  it('should change the docType of only the docs that are initialized by a call to makeDecorator', () => {
-    processor.$process([decoratorDoc, metadataDoc, otherDoc]);
-    expect(decoratorDoc.docType).toEqual('decorator');
-    expect(otherDoc.docType).toEqual('const');
-  });
+  it('should change the docType of only the docs that are initialized by a call to makeDecorator',
+     () => {
+       processor.$process([decoratorDoc, metadataDoc, otherDoc]);
+       expect(decoratorDoc.docType).toEqual('decorator');
+       expect(otherDoc.docType).toEqual('const');
+     });
 
   it('should extract the "type" of the decorator meta data', () => {
     processor.$process([decoratorDoc, metadataDoc, otherDoc]);
@@ -88,4 +87,23 @@ describe('mergeDecoratorDocs processor', () => {
     processor.$process([decoratorDoc, metadataDoc, otherDoc]);
     expect(decoratorDoc.docType).toEqual('decorator');
   });
+
+  it('should handle a type cast before the "make decorator" call', () => {
+    decoratorDoc.symbol.valueDeclaration.initializer = {
+      expression: decoratorDoc.symbol.valueDeclaration.initializer,
+      type: {},
+    };
+    processor.$process([decoratorDoc, metadataDoc, otherDoc]);
+    expect(decoratorDoc.docType).toEqual('decorator');
+  });
+
+  it('should handle the "make decorator" call being wrapped in a call to `attachInjectFlag()`',
+     () => {
+       decoratorDoc.symbol.valueDeclaration.initializer = {
+         expression: {text: 'attachInjectFlag'},
+         arguments: [decoratorDoc.symbol.valueDeclaration.initializer]
+       };
+       processor.$process([decoratorDoc, metadataDoc, otherDoc]);
+       expect(decoratorDoc.docType).toEqual('decorator');
+     });
 });
