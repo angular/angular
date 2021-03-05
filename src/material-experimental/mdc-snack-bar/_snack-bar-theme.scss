@@ -36,10 +36,16 @@
   $mdc-snackbar-label-ink-color: $orig-mdc-snackbar-label-ink-color !global;
   $mdc-snackbar-dismiss-ink-color: $orig-mdc-snackbar-dismiss-ink-color !global;
 
-  .mat-mdc-simple-snack-bar .mdc-snackbar__action {
+  // The extra level of nesting here is to increase the specificity.
+  .mat-mdc-simple-snack-bar .mat-mdc-snack-bar-actions .mdc-snackbar__action {
     $is-dark-theme: map.get($config, is-dark);
     $accent: map.get($config, accent);
     color: if($is-dark-theme, inherit, theming.color($accent, text));
+
+    .mat-ripple-element {
+      background-color: currentColor;
+      opacity: 0.1;
+    }
   }
 }
 

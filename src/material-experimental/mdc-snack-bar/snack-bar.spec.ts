@@ -226,7 +226,7 @@ describe('MatSnackBar', () => {
     expect(messageElement.textContent)
         .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}'`);
 
-    let buttonElement = overlayContainerElement.querySelector('button.mat-button')!;
+    let buttonElement = overlayContainerElement.querySelector('button.mat-mdc-button')!;
     expect(buttonElement.tagName)
         .toBe('BUTTON', 'Expected snack bar action label to be a <button>');
     expect((buttonElement.textContent || '').trim())
@@ -249,7 +249,7 @@ describe('MatSnackBar', () => {
     let messageElement = overlayContainerElement.querySelector('mat-mdc-snack-bar-container')!;
     expect(messageElement.textContent)
         .toContain(simpleMessage, `Expected the snack bar message to be '${simpleMessage}'`);
-    expect(overlayContainerElement.querySelector('button.mat-button'))
+    expect(overlayContainerElement.querySelector('button.mat-mdc-button'))
         .toBeNull('Expected the query selection for action label to be null');
   });
 
@@ -388,7 +388,7 @@ describe('MatSnackBar', () => {
         snackBarRef.onAction().subscribe({complete: actionCompleteSpy});
 
         let actionButton =
-            overlayContainerElement.querySelector('button.mat-button') as HTMLButtonElement;
+            overlayContainerElement.querySelector('button.mat-mdc-button') as HTMLButtonElement;
         actionButton.click();
         viewContainerFixture.detectChanges();
         flush();

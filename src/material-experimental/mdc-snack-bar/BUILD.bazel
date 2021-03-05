@@ -22,6 +22,7 @@ ng_module(
     module_name = "@angular/material-experimental/mdc-snack-bar",
     deps = [
         "//src:dev_mode_types",
+        "//src/material-experimental/mdc-button",
         "//src/material-experimental/mdc-core",
         "//src/material/snack-bar",
         "@npm//@angular/core",
@@ -77,7 +78,10 @@ ng_test_library(
 
 ng_web_test_suite(
     name = "unit_tests",
-    static_files = ["@npm//:node_modules/@material/snackbar/dist/mdc.snackbar.js"],
+    static_files = [
+        "@npm//:node_modules/@material/snackbar/dist/mdc.snackbar.js",
+        "@npm//:node_modules/@material/ripple/dist/mdc.ripple.js",
+    ],
     deps = [
         ":unit_test_sources",
         "//src/material-experimental:mdc_require_config.js",

@@ -34,6 +34,7 @@ ng_web_test_suite(
     name = "unit_tests",
     static_files = [
         "@npm//:node_modules/@material/snackbar/dist/mdc.snackbar.js",
+        "@npm//:node_modules/@material/ripple/dist/mdc.ripple.js",
     ],
     deps = [
         ":unit_tests_lib",
