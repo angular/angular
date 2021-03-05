@@ -87,8 +87,7 @@ export function migrateFiles({
   } else {
     translationFilePaths.forEach(path => {
       const absolutePath = fs.resolve(rootPath, path);
-      const contents = fs.readFileBuffer(absolutePath);
-      const sourceCode = Buffer.from(contents).toString('utf8');
+      const sourceCode = fs.readFile(absolutePath);
       fs.writeFile(absolutePath, migrateFile(sourceCode, mapping));
     });
   }
