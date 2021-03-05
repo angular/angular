@@ -101,15 +101,19 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
                                         (window as unknown as WithMDCResizeObserver).ResizeObserver;
 
       if (resizeObserverConstructor) {
-        const observer = new resizeObserverConstructor(callback);
+        return this._ngZone.runOutsideAngular(() => {
+          const observer = new resizeObserverConstructor(callback);
 
-        // Internal client users found production errors where `observe` was not a function
-        // on the constructed `observer`. This should not happen, but adding this check for this
-        // edge case.
-        if (typeof observer.observe === 'function') {
-          observer.observe(this._rootElement);
-          return observer;
-        }
+          // Internal client users found production errors where `observe` was not a function
+          // on the constructed `observer`. This should not happen, but adding this check for this
+          // edge case.
+          if (typeof observer.observe === 'function') {
+            observer.observe(this._rootElement);
+            return observer;
+          }
+
+          return null;
+        });
       }
 
       return null;
