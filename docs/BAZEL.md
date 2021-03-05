@@ -75,7 +75,7 @@ See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc
 <a id="debugging"></a>
 
 - Open chrome at: [chrome://inspect](chrome://inspect)
-- Click on  `Open dedicated DevTools for Node` to launch a debugger.
+- Click on `Open dedicated DevTools for Node` to launch a debugger.
 - Run test: `yarn bazel test packages/core/test:test --config=debug`
 
 The process should automatically connect to the debugger.

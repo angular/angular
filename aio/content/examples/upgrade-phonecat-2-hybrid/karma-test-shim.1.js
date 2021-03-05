@@ -62,7 +62,7 @@ function importSystemJsExtras(){
   });
 }
 
-function initTestBed(){
+function initTestBed() {
   return Promise.all([
     System.import('@angular/core/testing'),
     System.import('@angular/platform-browser-dynamic/testing')
@@ -79,7 +79,7 @@ function initTestBed(){
 }
 
 // Import all spec files and start karma
-function initTesting () {
+function initTesting() {
   return Promise.all(
     allSpecFiles.map(function (moduleName) {
       return System.import(moduleName);

@@ -9,6 +9,6 @@ import { Component } from '@angular/core';
     <p>This is my first component!</p>
     `,
 })
-export class HelloWorldComponent  {
+export class HelloWorldComponent {
   // The code in this class drives the component's behavior.
 }
