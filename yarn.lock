@@ -4306,9 +4306,9 @@ copy-props@^2.0.1:
     is-plain-object "^2.0.1"
 
 core-js-bundle@^3.8.2:
-  version "3.9.0"
-  resolved "https://registry.yarnpkg.com/core-js-bundle/-/core-js-bundle-3.9.0.tgz#3947e3da203f2c34aab3d2c6822523f93ced23d9"
-  integrity sha512-CQAn8wNKgDob6Xo2pgMpBArIKDCWhZgkFrjqKpxWaTUbZlESEw0Hfnq8zXQc04aN4hmxLqJ889/g4zBKvKcisA==
+  version "3.9.1"
+  resolved "https://registry.yarnpkg.com/core-js-bundle/-/core-js-bundle-3.9.1.tgz#aec44bc6f3e4151c7461f9fb052edabf59ca3105"
+  integrity sha512-PXvt22/UnyegAVHKa17wZe8PqKCHmkNAV9ifEUy2ntnvA08NmFybuWr561W/ARaDYk512LsfiscPlX81tPeBeA==
 
 core-js@^2.4.0:
   version "2.6.12"
