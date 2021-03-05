@@ -20,8 +20,9 @@ export declare const MAT_SUFFIX: InjectionToken<MatSuffix>;
 
 export declare class MatError {
     id: string;
+    constructor(ariaLive: string, elementRef: ElementRef);
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatError, "mat-error", never, { "id": "id"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatError, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatError, [{ attribute: "aria-live"; }, null]>;
 }
 
 export declare class MatFormField extends _MatFormFieldMixinBase implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor {
