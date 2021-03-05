@@ -9,7 +9,7 @@ export class HelloWorldNgIfComponent {
   message = 'I\'m read only!';
   canEdit = false;
 
-  onEditClick(){
+  onEditClick() {
     this.canEdit = !this.canEdit;
     if (this.canEdit) {
       this.message = 'You can edit me!';

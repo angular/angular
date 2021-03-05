@@ -11,7 +11,7 @@ export class HelloWorldDependencyInjectionComponent  {
   constructor(private logger: Logger) {
   }
 
-  onLogMe(){
+  onLogMe() {
     this.logger.writeCount(this.count);
     this.count++;
   }

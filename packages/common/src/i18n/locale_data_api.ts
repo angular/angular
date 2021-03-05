@@ -122,7 +122,7 @@ export enum NumberSymbol {
   /**
    * Decimal separator.
    * For `en-US`, the dot character.
-   * Example : 2,345`.`67
+   * Example: 2,345`.`67
    */
   Decimal,
   /**

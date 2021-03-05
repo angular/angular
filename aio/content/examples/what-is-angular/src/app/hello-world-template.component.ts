@@ -10,10 +10,10 @@ import { Component } from '@angular/core';
         <p [contentEditable]="canEdit">{{ message }}</p>
         `
   })
-  export class HelloWorldTemplateComponent  {
+  export class HelloWorldTemplateComponent {
     message = 'I am read only!';
     canEdit = false;
-    onEditClick(){
+    onEditClick() {
       this.canEdit = !this.canEdit;
       if (this.canEdit) {
         this.message = 'You can edit me!';
