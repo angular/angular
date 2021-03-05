@@ -123,7 +123,10 @@ Help us keep Angular open and inclusive. Please read and follow our [Code of Con
 Join the conversation and help the community.
 
 - [Twitter][twitter]
+- [Discord][discord]
 - [Gitter][gitter]
+- [YouTube][youtube]
+- [StackOverflow][stackoverflow]
 - Find a Local [Meetup][meetup]
 
 [![Love Angular badge](https://img.shields.io/badge/angular-love-blue?logo=angular&angular=love)](https://www.github.com/angular/angular)
@@ -149,5 +152,8 @@ Join the conversation and help the community.
 [npm]: https://www.npmjs.com/get-npm
 [codeofconduct]: CODE_OF_CONDUCT.md
 [twitter]: https://www.twitter.com/angular
+[discord]: https://discord.gg/angular
 [gitter]: https://gitter.im/angular/angular
+[stackoverflow]: https://stackoverflow.com/questions/tagged/angular
+[youtube]: https://youtube.com/angular
 [meetup]: https://www.meetup.com/find/?keywords=angular"
