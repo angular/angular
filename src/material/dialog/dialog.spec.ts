@@ -19,13 +19,15 @@ import {
   ViewChild,
   ViewContainerRef,
   ComponentFactoryResolver,
-  NgZone
+  NgZone,
+  ViewEncapsulation
 } from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
 import {Directionality} from '@angular/cdk/bidi';
+import {_supportsShadowDom} from '@angular/cdk/platform';
 import {MatDialogContainer} from './dialog-container';
 import {OverlayContainer, ScrollStrategy, Overlay} from '@angular/cdk/overlay';
 import {ScrollDispatcher} from '@angular/cdk/scrolling';
@@ -1166,6 +1168,32 @@ describe('MatDialog', () => {
       document.body.removeChild(button);
     }));
 
+    it('should re-focus trigger element inside the shadow DOM when dialog closes', fakeAsync(() => {
+      if (!_supportsShadowDom()) {
+        return;
+      }
+
+      viewContainerFixture.destroy();
+      const fixture = TestBed.createComponent(ShadowDomComponent);
+      fixture.detectChanges();
+      const button = fixture.debugElement.query(By.css('button'))!.nativeElement;
+
+      button.focus();
+
+      const dialogRef = dialog.open(PizzaMsg);
+      flushMicrotasks();
+      fixture.detectChanges();
+      flushMicrotasks();
+
+      const spy = spyOn(button, 'focus').and.callThrough();
+      dialogRef.close();
+      flushMicrotasks();
+      fixture.detectChanges();
+      tick(500);
+
+      expect(spy).toHaveBeenCalled();
+    }));
+
     it('should re-focus the trigger via keyboard when closed via escape key', fakeAsync(() => {
       const button = document.createElement('button');
       let lastFocusOrigin: FocusOrigin = null;
@@ -1947,6 +1975,12 @@ class DialogWithInjectedData {
 @Component({template: '<p>Pasta</p>'})
 class DialogWithoutFocusableElements {}
 
+@Component({
+  template: `<button>I'm a button</button>`,
+  encapsulation: ViewEncapsulation.ShadowDom
+})
+class ShadowDomComponent {}
+
 // Create a real (non-test) NgModule as a workaround for
 // https://github.com/angular/angular/issues/10760
 const TEST_DIRECTIVES = [
@@ -1959,6 +1993,7 @@ const TEST_DIRECTIVES = [
   DialogWithInjectedData,
   DialogWithoutFocusableElements,
   ComponentWithContentElementTemplateRef,
+  ShadowDomComponent,
 ];
 
 @NgModule({
