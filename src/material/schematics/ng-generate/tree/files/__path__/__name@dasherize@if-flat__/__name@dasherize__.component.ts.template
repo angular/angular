@@ -58,27 +58,27 @@ export class <%= classify(name) %>Component {
   }
 
   /** Transform the data to something the tree can read. */
-  transformer(node: FileNode, level: number) {
+  transformer(node: FileNode, level: number): FlatTreeNode {
     return {
       name: node.name,
       type: node.type,
-      level: level,
+      level,
       expandable: !!node.children
     };
   }
 
   /** Get the level of the node */
-  getLevel(node: FlatTreeNode) {
+  getLevel(node: FlatTreeNode): number {
     return node.level;
   }
 
   /** Get whether the node is expanded or not. */
-  isExpandable(node: FlatTreeNode) {
+  isExpandable(node: FlatTreeNode): boolean {
     return node.expandable;
   }
 
   /** Get whether the node has children or not. */
-  hasChild(index: number, node: FlatTreeNode) {
+  hasChild(index: number, node: FlatTreeNode): boolean {
     return node.expandable;
   }
 

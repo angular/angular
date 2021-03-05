@@ -30,7 +30,7 @@ export class <%= classify(name) %>Component {
     'Walk dog'
   ];
 
-  drop(event: CdkDragDrop<string[]>) {
+  drop(event: CdkDragDrop<string[]>): void {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {

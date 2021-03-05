@@ -95,7 +95,7 @@ export class <%= classify(name) %>Component {
 
   constructor(private fb: FormBuilder) {}
 
-  onSubmit() {
+  onSubmit(): void {
     alert('Thanks!');
   }
 }
