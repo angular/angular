@@ -51,19 +51,19 @@ export declare class CdkStepper implements AfterContentInit, AfterViewInit, OnDe
     protected _destroyed: Subject<void>;
     _groupId: number;
     protected _orientation: StepperOrientation;
-    _stepHeader: QueryList<FocusableOption>;
+    _stepHeader: QueryList<CdkStepHeader>;
     _steps: QueryList<CdkStep>;
     get linear(): boolean;
     set linear(value: boolean);
     get orientation(): StepperOrientation;
     set orientation(value: StepperOrientation);
-    get selected(): CdkStep;
-    set selected(step: CdkStep);
+    get selected(): CdkStep | undefined;
+    set selected(step: CdkStep | undefined);
     get selectedIndex(): number;
     set selectedIndex(index: number);
     selectionChange: EventEmitter<StepperSelectionEvent>;
     readonly steps: QueryList<CdkStep>;
-    constructor(_dir: Directionality, _changeDetectorRef: ChangeDetectorRef, _elementRef?: ElementRef<HTMLElement> | undefined, _document?: any);
+    constructor(_dir: Directionality, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>, _document: any);
     _getAnimationDirection(index: number): StepContentPositionState;
     _getFocusIndex(): number | null;
     _getIndicatorType(index: number, state?: StepState): StepState;
@@ -110,8 +110,6 @@ export declare class CdkStepperPrevious {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepperPrevious, "button[cdkStepperPrevious]", never, { "type": "type"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkStepperPrevious, never>;
 }
-
-export declare const MAT_STEPPER_GLOBAL_OPTIONS: InjectionToken<StepperOptions>;
 
 export declare const STEP_STATE: {
     NUMBER: string;

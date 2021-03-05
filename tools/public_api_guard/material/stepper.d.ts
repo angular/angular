@@ -21,12 +21,12 @@ export declare class MatStep extends CdkStep implements ErrorStateMatcher, After
     _portal: TemplatePortal;
     color: ThemePalette;
     stepLabel: MatStepLabel;
-    constructor(stepper: MatStepper, _errorStateMatcher: ErrorStateMatcher, stepperOptions?: StepperOptions, _viewContainerRef?: ViewContainerRef | undefined);
+    constructor(stepper: MatStepper, _errorStateMatcher: ErrorStateMatcher, _viewContainerRef: ViewContainerRef, stepperOptions?: StepperOptions);
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatStep, "mat-step", ["matStep"], { "color": "color"; }, {}, ["stepLabel", "_lazyContent"], ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatStep, [null, { skipSelf: true; }, { optional: true; }, null]>;
+    static ɵfac: i0.ɵɵFactoryDef<MatStep, [null, { skipSelf: true; }, null, { optional: true; }]>;
 }
 
 export declare class MatStepContent {
@@ -131,7 +131,7 @@ export declare class MatStepperPrevious extends CdkStepperPrevious {
 }
 
 export declare class MatVerticalStepper extends MatStepper {
-    constructor(dir: Directionality, changeDetectorRef: ChangeDetectorRef, elementRef?: ElementRef<HTMLElement>, _document?: any);
+    constructor(dir: Directionality, changeDetectorRef: ChangeDetectorRef, elementRef: ElementRef<HTMLElement>, _document: any);
     static ngAcceptInputType_completed: BooleanInput;
     static ngAcceptInputType_editable: BooleanInput;
     static ngAcceptInputType_hasError: BooleanInput;

@@ -87,13 +87,6 @@ export const STEP_STATE = {
 /** InjectionToken that can be used to specify the global stepper options. */
 export const STEPPER_GLOBAL_OPTIONS = new InjectionToken<StepperOptions>('STEPPER_GLOBAL_OPTIONS');
 
-/**
- * InjectionToken that can be used to specify the global stepper options.
- * @deprecated Use `STEPPER_GLOBAL_OPTIONS` instead.
- * @breaking-change 8.0.0.
- */
-export const MAT_STEPPER_GLOBAL_OPTIONS = STEPPER_GLOBAL_OPTIONS;
-
 /** Configurable options for stepper. */
 export interface StepperOptions {
   /**
@@ -200,7 +193,6 @@ export class CdkStep implements OnChanges {
     return this.stepControl && this.stepControl.invalid && this.interacted;
   }
 
-  /** @breaking-change 8.0.0 remove the `?` after `stepperOptions` */
   constructor(
       @Inject(forwardRef(() => CdkStepper)) public _stepper: CdkStepper,
       @Optional() @Inject(STEPPER_GLOBAL_OPTIONS) stepperOptions?: StepperOptions) {
@@ -254,11 +246,7 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
   /** Used for managing keyboard focus. */
   private _keyManager: FocusKeyManager<FocusableOption>;
 
-  /**
-   * @breaking-change 8.0.0 Remove `| undefined` once the `_document`
-   * constructor param is required.
-   */
-  private _document: Document|undefined;
+  private _document: Document;
 
   /** Full list of steps inside the stepper, including inside nested steppers. */
   @ContentChildren(CdkStep, {descendants: true}) _steps: QueryList<CdkStep>;
@@ -266,12 +254,8 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
   /** Steps that belong to the current stepper, excluding ones from nested steppers. */
   readonly steps: QueryList<CdkStep> = new QueryList<CdkStep>();
 
-  /**
-   * The list of step headers of the steps in the stepper.
-   * @deprecated Type to be changed to `QueryList<CdkStepHeader>`.
-   * @breaking-change 8.0.0
-   */
-  @ContentChildren(CdkStepHeader, {descendants: true}) _stepHeader: QueryList<FocusableOption>;
+  /** The list of step headers of the steps in the stepper. */
+  @ContentChildren(CdkStepHeader, {descendants: true}) _stepHeader: QueryList<CdkStepHeader>;
 
   /** Whether the validity of previous steps should be checked or not. */
   @Input()
@@ -317,12 +301,11 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
 
   /** The step that is selected. */
   @Input()
-  get selected(): CdkStep {
-    // @breaking-change 8.0.0 Change return type to `CdkStep | undefined`.
-    return this.steps ? this.steps.toArray()[this.selectedIndex] : undefined!;
+  get selected(): CdkStep | undefined {
+    return this.steps ? this.steps.toArray()[this.selectedIndex] : undefined;
   }
-  set selected(step: CdkStep) {
-    this.selectedIndex = this.steps ? this.steps.toArray().indexOf(step) : -1;
+  set selected(step: CdkStep | undefined) {
+    this.selectedIndex = (step && this.steps) ? this.steps.toArray().indexOf(step) : -1;
   }
 
   /** Event emitted when the selected step has changed. */
@@ -347,8 +330,7 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
 
   constructor(
       @Optional() private _dir: Directionality, private _changeDetectorRef: ChangeDetectorRef,
-      // @breaking-change 8.0.0 `_elementRef` and `_document` parameters to become required.
-      private _elementRef?: ElementRef<HTMLElement>, @Inject(DOCUMENT) _document?: any) {
+      private _elementRef: ElementRef<HTMLElement>, @Inject(DOCUMENT) _document: any) {
     this._groupId = nextId++;
     this._document = _document;
   }
@@ -547,10 +529,6 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
 
   /** Checks whether the stepper contains the focused element. */
   private _containsFocus(): boolean {
-    if (!this._document || !this._elementRef) {
-      return false;
-    }
-
     const stepperElement = this._elementRef.nativeElement;
     const focusedElement = this._document.activeElement;
     return stepperElement === focusedElement || stepperElement.contains(focusedElement);

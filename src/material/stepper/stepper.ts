@@ -78,29 +78,24 @@ export class MatStep extends CdkStep implements ErrorStateMatcher, AfterContentI
   /** Currently-attached portal containing the lazy content. */
   _portal: TemplatePortal;
 
-  /** @breaking-change 8.0.0 remove the `?` after `stepperOptions` */
-  /** @breaking-change 9.0.0 _viewContainerRef parameter to become required. */
   constructor(@Inject(forwardRef(() => MatStepper)) stepper: MatStepper,
               @SkipSelf() private _errorStateMatcher: ErrorStateMatcher,
-              @Optional() @Inject(STEPPER_GLOBAL_OPTIONS) stepperOptions?: StepperOptions,
-              private _viewContainerRef?: ViewContainerRef) {
+              private _viewContainerRef: ViewContainerRef,
+              @Optional() @Inject(STEPPER_GLOBAL_OPTIONS) stepperOptions?: StepperOptions) {
     super(stepper, stepperOptions);
   }
 
   ngAfterContentInit() {
-    /** @breaking-change 9.0.0 Null check for _viewContainerRef to be removed. */
-    if (this._viewContainerRef) {
-      this._isSelected = this._stepper.steps.changes.pipe(switchMap(() => {
-        return this._stepper.selectionChange.pipe(
-          map(event => event.selectedStep === this),
-          startWith(this._stepper.selected === this)
-        );
-      })).subscribe(isSelected => {
-        if (isSelected && this._lazyContent && !this._portal) {
-          this._portal = new TemplatePortal(this._lazyContent._template, this._viewContainerRef!);
-        }
-      });
-    }
+    this._isSelected = this._stepper.steps.changes.pipe(switchMap(() => {
+      return this._stepper.selectionChange.pipe(
+        map(event => event.selectedStep === this),
+        startWith(this._stepper.selected === this)
+      );
+    })).subscribe(isSelected => {
+      if (isSelected && this._lazyContent && !this._portal) {
+        this._portal = new TemplatePortal(this._lazyContent._template, this._viewContainerRef!);
+      }
+    });
   }
 
   ngOnDestroy() {
@@ -239,9 +234,8 @@ export class MatVerticalStepper extends MatStepper {
   constructor(
     @Optional() dir: Directionality,
     changeDetectorRef: ChangeDetectorRef,
-    // @breaking-change 8.0.0 `elementRef` and `_document` parameters to become required.
-    elementRef?: ElementRef<HTMLElement>,
-    @Inject(DOCUMENT) _document?: any) {
+    elementRef: ElementRef<HTMLElement>,
+    @Inject(DOCUMENT) _document: any) {
     super(dir, changeDetectorRef, elementRef, _document);
     this._orientation = 'vertical';
   }

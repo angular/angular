@@ -21,6 +21,10 @@ export const constructorChecks: VersionChanges<ConstructorChecksUpgradeData> = {
     {
       pr: 'https://github.com/angular/components/pull/21876',
       changes: ['CdkTable', 'StickyStyler']
+    },
+    {
+      pr: 'https://github.com/angular/components/issues/21900',
+      changes: ['CdkStepper']
     }
   ],
   [TargetVersion.V11]: [
