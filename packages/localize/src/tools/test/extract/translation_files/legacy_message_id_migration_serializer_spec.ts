@@ -6,19 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵParsedMessage} from '@angular/localize';
+import {Diagnostics} from '../../../src/diagnostics';
 import {LegacyMessageIdMigrationSerializer} from '../../../src/extract/translation_files/legacy_message_id_migration_serializer';
 import {mockMessage} from './mock_message';
 
 // Doesn't need to run in each file system since it doesn't interact with the file system.
 
 describe('LegacyMessageIdMigrationSerializer', () => {
+  let serializer: LegacyMessageIdMigrationSerializer;
+
+  beforeEach(() => {
+    serializer = new LegacyMessageIdMigrationSerializer(new Diagnostics());
+  });
+
   it('should convert a set of parsed messages into a migration mapping file', () => {
     const messages: ɵParsedMessage[] = [
       mockMessage('one', [], [], {legacyIds: ['legacy-one', 'other-legacy-one']}),
       mockMessage('two', [], [], {legacyIds: ['legacy-two']}),
       mockMessage('three', [], [], {legacyIds: ['legacy-three', 'other-legacy-three']}),
     ];
-    const serializer = new LegacyMessageIdMigrationSerializer();
     const output = serializer.serialize(messages);
     expect(output.split('\n')).toEqual([
       '{',
@@ -37,7 +43,6 @@ describe('LegacyMessageIdMigrationSerializer', () => {
       mockMessage('two', [], [], {legacyIds: ['legacy-two'], customId: 'custom-two'}),
       mockMessage('three', [], [], {legacyIds: ['legacy-three']}),
     ];
-    const serializer = new LegacyMessageIdMigrationSerializer();
     const output = serializer.serialize(messages);
     expect(output.split('\n')).toEqual([
       '{',
@@ -53,7 +58,6 @@ describe('LegacyMessageIdMigrationSerializer', () => {
       mockMessage('two', [], [], {}),
       mockMessage('three', [], [], {legacyIds: ['legacy-three']}),
     ];
-    const serializer = new LegacyMessageIdMigrationSerializer();
     const output = serializer.serialize(messages);
     expect(output.split('\n')).toEqual([
       '{',
@@ -69,7 +73,6 @@ describe('LegacyMessageIdMigrationSerializer', () => {
       mockMessage('two', [], [], {}),
       mockMessage('three', [], [], {legacyIds: []}),
     ];
-    const serializer = new LegacyMessageIdMigrationSerializer();
     const output = serializer.serialize(messages);
     expect(output).toBe('{}');
   });

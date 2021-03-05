@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ɵParsedMessage as ParsedMessage} from '@angular/localize';
+import {Diagnostics} from '../../diagnostics';
 import {TranslationSerializer} from './translation_serializer';
 
 
@@ -15,20 +16,29 @@ import {TranslationSerializer} from './translation_serializer';
  * the legacy message IDs to the canonical ones.
  */
 export class LegacyMessageIdMigrationSerializer implements TranslationSerializer {
-  /** Returns true if any of the `messages` need to be migrated. */
-  hasMigratableIds(messages: ParsedMessage[]): boolean {
-    return messages.some(shouldMigrate);
-  }
+  constructor(private _diagnostics: Diagnostics) {}
 
   serialize(messages: ParsedMessage[]): string {
+    let hasMessages = false;
     const mapping = messages.reduce((output, message) => {
       if (shouldMigrate(message)) {
         for (const legacyId of message.legacyIds!) {
+          if (output.hasOwnProperty(legacyId)) {
+            this._diagnostics.warn(`Detected duplicate legacy ID ${legacyId}.`);
+          }
+
           output[legacyId] = message.id;
+          hasMessages = true;
         }
       }
       return output;
     }, {} as Record<string, string>);
+
+    if (!hasMessages) {
+      this._diagnostics.warn(
+          'Could not find any legacy message IDs in source files while generating ' +
+          'the legacy message migration file.');
+    }
 
     return JSON.stringify(mapping, null, 2);
   }

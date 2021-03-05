@@ -12,7 +12,7 @@ import {ɵParsedMessage} from '@angular/localize';
 import * as glob from 'glob';
 import * as yargs from 'yargs';
 
-import {DiagnosticHandlingStrategy} from '../diagnostics';
+import {Diagnostics, DiagnosticHandlingStrategy} from '../diagnostics';
 
 import {checkDuplicateMessages} from './duplicates';
 import {MessageExtractor} from './extraction';
@@ -54,7 +54,9 @@ if (require.main === module) {
           .option('f', {
             alias: 'format',
             required: true,
-            choices: ['xmb', 'xlf', 'xlif', 'xliff', 'xlf2', 'xlif2', 'xliff2', 'json'],
+            choices: [
+              'xmb', 'xlf', 'xlif', 'xliff', 'xlf2', 'xlif2', 'xliff2', 'json', 'legacy-migrate'
+            ],
             describe: 'The format of the translation file.',
             type: 'string',
           })
@@ -96,11 +98,6 @@ if (require.main === module) {
             default: 'warning',
             type: 'string',
           })
-          .option('migrationMapFile', {
-            describe:
-                'Path to where the legacy message ID migration mapping file will be written, in addition to the extracted translations. Either absolute or relative to the current working directory',
-            type: 'string',
-          })
           .strict()
           .help()
           .parse(args);
@@ -114,21 +111,20 @@ if (require.main === module) {
   const logger = new ConsoleLogger(logLevel ? LogLevel[logLevel] : LogLevel.warn);
   const duplicateMessageHandling = options.d as DiagnosticHandlingStrategy;
   const formatOptions = parseFormatOptions(options.formatOptions);
-
+  const format = options.f;
 
   extractTranslations({
     rootPath,
     sourceFilePaths,
     sourceLocale: options.l,
-    format: options.f,
+    format,
     outputPath: options.o,
     logger,
     useSourceMaps: options.useSourceMaps,
-    useLegacyIds: options.useLegacyIds,
+    useLegacyIds: format === 'legacy-migrate' || options.useLegacyIds,
     duplicateMessageHandling,
     formatOptions,
     fileSystem,
-    migrationMapFile: options.migrationMapFile,
   });
 }
 
@@ -180,12 +176,6 @@ export interface ExtractTranslationsOptions {
    * The file-system abstraction to use.
    */
   fileSystem: FileSystem;
-
-  /**
-   * Path to where the legacy message ID migration mapping file will be written.
-   * This will be resolved relative to the root path.
-   */
-  migrationMapFile?: string;
 }
 
 export function extractTranslations({
@@ -200,7 +190,6 @@ export function extractTranslations({
   duplicateMessageHandling,
   formatOptions = {},
   fileSystem: fs,
-  migrationMapFile,
 }: ExtractTranslationsOptions) {
   const basePath = fs.resolve(rootPath);
   const extractor = new MessageExtractor(fs, logger, {basePath, useSourceMaps});
@@ -216,24 +205,21 @@ export function extractTranslations({
   }
 
   const outputPath = fs.resolve(rootPath, output);
-  const serializer =
-      getSerializer(format, sourceLocale, fs.dirname(outputPath), useLegacyIds, formatOptions, fs);
+  const serializer = getSerializer(
+      format, sourceLocale, fs.dirname(outputPath), useLegacyIds, formatOptions, fs, diagnostics);
   const translationFile = serializer.serialize(messages);
   fs.ensureDir(fs.dirname(outputPath));
   fs.writeFile(outputPath, translationFile);
-
-  if (migrationMapFile) {
-    writeMigrationMapFile(migrationMapFile, messages, fs, logger);
-  }
 
   if (diagnostics.messages.length) {
     logger.warn(diagnostics.formatDiagnostics('Messages extracted with warnings'));
   }
 }
 
-export function getSerializer(
+function getSerializer(
     format: string, sourceLocale: string, rootPath: AbsoluteFsPath, useLegacyIds: boolean,
-    formatOptions: FormatOptions = {}, fs: PathManipulation): TranslationSerializer {
+    formatOptions: FormatOptions = {}, fs: PathManipulation,
+    diagnostics: Diagnostics): TranslationSerializer {
   switch (format) {
     case 'xlf':
     case 'xlif':
@@ -251,24 +237,8 @@ export function getSerializer(
       return new SimpleJsonTranslationSerializer(sourceLocale);
     case 'arb':
       return new ArbTranslationSerializer(sourceLocale, rootPath, fs);
+    case 'legacy-migrate':
+      return new LegacyMessageIdMigrationSerializer(diagnostics);
   }
   throw new Error(`No translation serializer can handle the provided format: ${format}`);
-}
-
-function writeMigrationMapFile(
-    filePath: string, messages: ɵParsedMessage[], fs: FileSystem, logger: Logger) {
-  const legacyMessageIdMigrationSerializer = new LegacyMessageIdMigrationSerializer();
-  const mappingFile = legacyMessageIdMigrationSerializer.serialize(messages);
-  const mappingPath = fs.resolve(filePath);
-
-  // Log a warning if there are no messages to be migrated, because
-  // passing it into the migration afterwards will be a no-op.
-  if (!legacyMessageIdMigrationSerializer.hasMigratableIds(messages)) {
-    logger.warn(
-        'Could not find any legacy message IDs in source files while generating ' +
-        'the legacy message migration file.');
-  }
-
-  fs.ensureDir(fs.dirname(mappingPath));
-  fs.writeFile(mappingPath, mappingFile);
 }

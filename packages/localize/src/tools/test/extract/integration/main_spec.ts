@@ -496,23 +496,19 @@ runInNativeFileSystem(() => {
       });
 
       it('should generate the migration map file, if requested', () => {
-        const migrationMapFile = fs.resolve(rootPath, 'migration-map.json');
-
         extractTranslations({
           rootPath,
           sourceLocale: 'en',
           sourceFilePaths: [sourceFilePath],
-          format: 'json',
+          format: 'legacy-migrate',
           outputPath,
           logger,
           useSourceMaps: false,
           useLegacyIds: true,
           duplicateMessageHandling: 'ignore',
-          fileSystem: fs,
-          migrationMapFile
+          fileSystem: fs
         });
-
-        expect(fs.readFile(migrationMapFile)).toEqual([
+        expect(fs.readFile(outputPath)).toEqual([
           `{`,
           `  "1234567890123456789012345678901234567890": "273296103957933077",`,
           `  "12345678901234567890": "273296103957933077"`,
@@ -521,25 +517,24 @@ runInNativeFileSystem(() => {
       });
 
       it('should log a warning if there are no legacy message IDs to migrate', () => {
-        const migrationMapFile = fs.resolve(rootPath, 'migration-map.json');
-
         extractTranslations({
           rootPath,
           sourceLocale: 'en',
           sourceFilePaths: [textFile1],
-          format: 'json',
+          format: 'legacy-migrate',
           outputPath,
           logger,
           useSourceMaps: false,
           useLegacyIds: true,
           duplicateMessageHandling: 'ignore',
-          fileSystem: fs,
-          migrationMapFile: migrationMapFile
+          fileSystem: fs
         });
 
-        expect(fs.readFile(migrationMapFile)).toBe('{}');
+        expect(fs.readFile(outputPath)).toBe('{}');
         expect(logger.logs.warn).toEqual([[
-          'Could not find any legacy message IDs in source files while generating the legacy message migration file.'
+          'Messages extracted with warnings\n' +
+          'WARNINGS:\n' +
+          ' - Could not find any legacy message IDs in source files while generating the legacy message migration file.'
         ]]);
       });
     });
