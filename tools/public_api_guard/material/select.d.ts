@@ -8,6 +8,7 @@ export declare abstract class _MatSelectBase<C> extends _MatSelectMixinBase impl
     _onChange: (value: any) => void;
     _onTouched: () => void;
     readonly _openedStream: Observable<void>;
+    protected _overlayDir: CdkConnectedOverlay;
     _overlayPanelClass: string | string[];
     _panelDoneAnimatingStream: Subject<string>;
     protected _parentFormField: MatFormField;
@@ -36,7 +37,6 @@ export declare abstract class _MatSelectBase<C> extends _MatSelectMixinBase impl
     abstract optionGroups: QueryList<MatOptgroup>;
     readonly optionSelectionChanges: Observable<MatOptionSelectionChange>;
     abstract options: QueryList<_MatOptionBase>;
-    overlayDir: CdkConnectedOverlay;
     panel: ElementRef;
     panelClass: string | string[] | Set<string> | {
         [key: string]: any;
@@ -159,15 +159,3 @@ export declare class MatSelectTrigger {
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatSelectTrigger, "mat-select-trigger", never, {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatSelectTrigger, never>;
 }
-
-export declare const SELECT_ITEM_HEIGHT_EM = 3;
-
-export declare const SELECT_MULTIPLE_PANEL_PADDING_X: number;
-
-export declare const SELECT_PANEL_INDENT_PADDING_X: number;
-
-export declare const SELECT_PANEL_MAX_HEIGHT = 256;
-
-export declare const SELECT_PANEL_PADDING_X = 16;
-
-export declare const SELECT_PANEL_VIEWPORT_PADDING = 8;

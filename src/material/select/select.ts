@@ -110,32 +110,16 @@ let nextUniqueId = 0;
  * the trigger element.
  */
 
-/**
- * The max height of the select's overlay panel.
- * @deprecated To be turned into a private variable.
- * @breaking-change 12.0.0
- */
+/** The max height of the select's overlay panel. */
 export const SELECT_PANEL_MAX_HEIGHT = 256;
 
-/**
- * The panel's padding on the x-axis.
- * @deprecated To be turned into a private variable.
- * @breaking-change 12.0.0
- */
+/** The panel's padding on the x-axis. */
 export const SELECT_PANEL_PADDING_X = 16;
 
-/**
- * The panel's x axis padding if it is indented (e.g. there is an option group).
- * @deprecated To be turned into a private variable.
- * @breaking-change 12.0.0
- */
+/** The panel's x axis padding if it is indented (e.g. there is an option group). */
 export const SELECT_PANEL_INDENT_PADDING_X = SELECT_PANEL_PADDING_X * 2;
 
-/**
- * The height of the select items in `em` units.
- * @deprecated To be turned into a private variable.
- * @breaking-change 12.0.0
- */
+/** The height of the select items in `em` units. */
 export const SELECT_ITEM_HEIGHT_EM = 3;
 
 // TODO(josephperrott): Revert to a constant after 2018 spec updates are fully merged.
@@ -147,18 +131,12 @@ export const SELECT_ITEM_HEIGHT_EM = 3;
  * (SELECT_PANEL_PADDING_X * 1.5) + 16 = 40
  * The padding is multiplied by 1.5 because the checkbox's margin is half the padding.
  * The checkbox width is 16px.
- *
- * @deprecated To be turned into a private variable.
- * @breaking-change 12.0.0
  */
 export const SELECT_MULTIPLE_PANEL_PADDING_X = SELECT_PANEL_PADDING_X * 1.5 + 16;
 
 /**
  * The select panel will only "fit" inside the viewport if it is positioned at
  * this value or more away from the viewport boundary.
- *
- * @deprecated To be turned into a private variable.
- * @breaking-change 12.0.0
  */
 export const SELECT_PANEL_VIEWPORT_PADDING = 8;
 
@@ -331,13 +309,9 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
   /** Panel containing the select options. */
   @ViewChild('panel') panel: ElementRef;
 
-  /**
-   * Overlay pane containing the options.
-   * @deprecated To be turned into a private API.
-   * @breaking-change 10.0.0
-   * @docs-private
-   */
-  @ViewChild(CdkConnectedOverlay) overlayDir: CdkConnectedOverlay;
+  /** Overlay pane containing the options. */
+  @ViewChild(CdkConnectedOverlay)
+  protected _overlayDir: CdkConnectedOverlay;
 
   /** Classes to be passed to the select panel. Supports the same syntax as `ngClass`. */
   @Input() panelClass: string|string[]|Set<string>|{[key: string]: any};
@@ -785,7 +759,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
    * Callback that is invoked when the overlay panel has been attached.
    */
   _onAttached(): void {
-    this.overlayDir.positionChange.pipe(take(1)).subscribe(() => {
+    this._overlayDir.positionChange.pipe(take(1)).subscribe(() => {
       this._changeDetectorRef.detectChanges();
       this._positioningSettled();
     });
@@ -1230,9 +1204,9 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
 
       // Set the font size on the panel element once it exists.
       this._ngZone.onStable.pipe(take(1)).subscribe(() => {
-        if (this._triggerFontSize && this.overlayDir.overlayRef &&
-            this.overlayDir.overlayRef.overlayElement) {
-          this.overlayDir.overlayRef.overlayElement.style.fontSize = `${this._triggerFontSize}px`;
+        if (this._triggerFontSize && this._overlayDir.overlayRef &&
+            this._overlayDir.overlayRef.overlayElement) {
+          this._overlayDir.overlayRef.overlayElement.style.fontSize = `${this._triggerFontSize}px`;
         }
       });
     }
@@ -1260,7 +1234,7 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
     if (this.panelOpen) {
       this._scrollTop = 0;
     } else {
-      this.overlayDir.offsetX = 0;
+      this._overlayDir.offsetX = 0;
       this._changeDetectorRef.markForCheck();
     }
 
@@ -1279,7 +1253,7 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
    * content width in order to constrain the panel within the viewport.
    */
   private _calculateOverlayOffsetX(): void {
-    const overlayRect = this.overlayDir.overlayRef.overlayElement.getBoundingClientRect();
+    const overlayRect = this._overlayDir.overlayRef.overlayElement.getBoundingClientRect();
     const viewportSize = this._viewportRuler.getViewportSize();
     const isRtl = this._isRtl();
     const paddingWidth = this.multiple ? SELECT_MULTIPLE_PANEL_PADDING_X + SELECT_PANEL_PADDING_X :
@@ -1316,8 +1290,8 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
     // Set the offset directly in order to avoid having to go through change detection and
     // potentially triggering "changed after it was checked" errors. Round the value to avoid
     // blurry content in some browsers.
-    this.overlayDir.offsetX = Math.round(offsetX);
-    this.overlayDir.overlayRef.updatePosition();
+    this._overlayDir.offsetX = Math.round(offsetX);
+    this._overlayDir.overlayRef.updatePosition();
   }
 
   /**

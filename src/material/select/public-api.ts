@@ -7,5 +7,16 @@
  */
 
 export * from './select-module';
-export * from './select';
 export * from './select-animations';
+export {
+  MAT_SELECT_SCROLL_STRATEGY,
+  MAT_SELECT_SCROLL_STRATEGY_PROVIDER_FACTORY,
+  MatSelectConfig,
+  MAT_SELECT_CONFIG,
+  MAT_SELECT_SCROLL_STRATEGY_PROVIDER,
+  MatSelectChange,
+  MAT_SELECT_TRIGGER,
+  _MatSelectBase,
+  MatSelect,
+  MatSelectTrigger
+} from './select';
