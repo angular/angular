@@ -8,11 +8,10 @@
 
 import {assertDefined} from '../../util/assert';
 import {assertLView} from '../assert';
+import {readPatchedLView} from '../context_discovery';
 import {LContainer} from '../interfaces/container';
 import {isLContainer, isLView} from '../interfaces/type_checks';
 import {CHILD_HEAD, CONTEXT, FLAGS, LView, LViewFlags, NEXT, PARENT, RootContext} from '../interfaces/view';
-
-import {readPatchedLView} from './view_utils';
 
 
 /**

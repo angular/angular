@@ -12,7 +12,9 @@ import {Injector} from '../di/injector';
 import {Type} from '../interface/type';
 import {Sanitizer} from '../sanitization/sanitizer';
 import {assertDefined, assertIndexInRange} from '../util/assert';
+
 import {assertComponentType} from './assert';
+import {readPatchedLView} from './context_discovery';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
 import {throwProviderNotFoundError} from './errors_di';
@@ -31,7 +33,6 @@ import {setUpAttributes} from './util/attrs_utils';
 import {publishDefaultGlobalUtils} from './util/global_utils';
 import {defaultScheduler} from './util/misc_utils';
 import {getRootContext} from './util/view_traversal_utils';
-import {readPatchedLView} from './util/view_utils';
 
 
 

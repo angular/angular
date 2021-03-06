@@ -8,10 +8,9 @@
 
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {RendererType2} from '../../src/render/api_flags';
-import {getLContext} from '../../src/render3/context_discovery';
+import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
 import {AttributeMarker, ɵɵadvance, ɵɵattribute, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵhostProperty, ɵɵproperty} from '../../src/render3/index';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵprojection, ɵɵprojectionDef, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
-import {MONKEY_PATCH_KEY_NAME} from '../../src/render3/interfaces/context';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {domRendererFactory3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
@@ -269,8 +268,8 @@ describe('element discovery', () => {
     const parent = host.querySelector('div') as any;
     const child = host.querySelector('p') as any;
 
-    expect(parent[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-    expect(child[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+    expect(readPatchedData(parent)).toBeTruthy();
+    expect(readPatchedData(child)).toBeFalsy();
   });
 
   it('should only monkey-patch immediate child nodes in a sub component', () => {
@@ -317,12 +316,12 @@ describe('element discovery', () => {
 
     const host = fixture.hostElement;
     const child = host.querySelector('child-comp') as any;
-    expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    expect(readPatchedData(child)).toBeTruthy();
 
     const [kid1, kid2, kid3] = Array.from(host.querySelectorAll('child-comp > *'));
-    expect(kid1[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-    expect(kid2[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-    expect(kid3[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    expect(readPatchedData(kid1)).toBeTruthy();
+    expect(readPatchedData(kid2)).toBeTruthy();
+    expect(readPatchedData(kid3)).toBeTruthy();
   });
 
   it('should only monkey-patch immediate child nodes in an embedded template container', () => {
@@ -364,16 +363,16 @@ describe('element discovery', () => {
     const [section, div1, p, div2] = Array.from(host.querySelectorAll('section, div, p'));
 
     expect(section.nodeName.toLowerCase()).toBe('section');
-    expect(section[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    expect(readPatchedData(section)).toBeTruthy();
 
     expect(div1.nodeName.toLowerCase()).toBe('div');
-    expect(div1[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    expect(readPatchedData(div1)).toBeTruthy();
 
     expect(p.nodeName.toLowerCase()).toBe('p');
-    expect(p[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+    expect(readPatchedData(p)).toBeFalsy();
 
     expect(div2.nodeName.toLowerCase()).toBe('div');
-    expect(div2[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    expect(readPatchedData(div2)).toBeTruthy();
   });
 
   it('should return a context object from a given dom node', () => {
@@ -436,11 +435,11 @@ describe('element discovery', () => {
     fixture.update();
 
     const section = fixture.hostElement.querySelector('section')! as any;
-    const result1 = section[MONKEY_PATCH_KEY_NAME];
+    const result1 = readPatchedData(section);
     expect(Array.isArray(result1)).toBeTruthy();
 
     const context = getLContext(section)!;
-    const result2 = section[MONKEY_PATCH_KEY_NAME];
+    const result2 = readPatchedData(section) as any;
     expect(Array.isArray(result2)).toBeFalsy();
 
     expect(result2).toBe(context);
@@ -471,14 +470,14 @@ describe('element discovery', () => {
        fixture.update();
 
        const section = fixture.hostElement.querySelector('section')! as any;
-       expect(section[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+       expect(readPatchedData(section)).toBeTruthy();
 
        const p = fixture.hostElement.querySelector('p')! as any;
-       expect(p[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+       expect(readPatchedData(p)).toBeFalsy();
 
        const pContext = getLContext(p)!;
        expect(pContext.native).toBe(p);
-       expect(p[MONKEY_PATCH_KEY_NAME]).toBe(pContext);
+       expect(readPatchedData(p)).toBe(pContext);
      });
 
   it('should be able to pull in element context data even if the element is decorated using styling',
@@ -503,14 +502,14 @@ describe('element discovery', () => {
        fixture.update();
 
        const section = fixture.hostElement.querySelector('section')! as any;
-       const result1 = section[MONKEY_PATCH_KEY_NAME];
+       const result1 = readPatchedData(section) as any;
        expect(Array.isArray(result1)).toBeTruthy();
 
        const elementResult = result1[HEADER_OFFSET];  // first element
        expect(elementResult).toBe(section);
 
        const context = getLContext(section)!;
-       const result2 = section[MONKEY_PATCH_KEY_NAME];
+       const result2 = readPatchedData(section);
        expect(Array.isArray(result2)).toBeFalsy();
 
        expect(context.native).toBe(section);
@@ -596,14 +595,14 @@ describe('element discovery', () => {
        expect(projectorComp.children).toContain(header);
        expect(h1.children).toContain(p);
 
-       expect(textNode[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-       expect(section[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-       expect(projectorComp[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-       expect(header[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-       expect(h1[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
-       expect(p[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-       expect(pText[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
-       expect(projectedTextNode[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+       expect(readPatchedData(textNode)).toBeTruthy();
+       expect(readPatchedData(section)).toBeTruthy();
+       expect(readPatchedData(projectorComp)).toBeTruthy();
+       expect(readPatchedData(header)).toBeTruthy();
+       expect(readPatchedData(h1)).toBeFalsy();
+       expect(readPatchedData(p)).toBeTruthy();
+       expect(readPatchedData(pText)).toBeFalsy();
+       expect(readPatchedData(projectedTextNode)).toBeTruthy();
 
        const parentContext = getLContext(section)!;
        const shadowContext = getLContext(header)!;
@@ -676,10 +675,10 @@ describe('element discovery', () => {
     const hostElm = fixture.hostElement;
     const component = fixture.component;
 
-    const componentLView = (component as any)[MONKEY_PATCH_KEY_NAME];
+    const componentLView = readPatchedData(component);
     expect(Array.isArray(componentLView)).toBeTruthy();
 
-    const hostLView = (hostElm as any)[MONKEY_PATCH_KEY_NAME];
+    const hostLView = readPatchedData(hostElm) as any;
     expect(hostLView).toBe(componentLView);
 
     const context1 = getLContext(hostElm)!;
@@ -745,9 +744,9 @@ describe('element discovery', () => {
        expect(componentView).toContain(myDir2Instance);
        expect(componentView).toContain(myDir3Instance);
 
-       expect(Array.isArray((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
-       expect(Array.isArray((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
-       expect(Array.isArray((myDir3Instance as any)[MONKEY_PATCH_KEY_NAME])).toBeTruthy();
+       expect(Array.isArray(readPatchedData(myDir1Instance))).toBeTruthy();
+       expect(Array.isArray(readPatchedData(myDir2Instance))).toBeTruthy();
+       expect(Array.isArray(readPatchedData(myDir3Instance))).toBeTruthy();
 
        const d1Context = getLContext(myDir1Instance)!;
        const d2Context = getLContext(myDir2Instance)!;
@@ -757,9 +756,9 @@ describe('element discovery', () => {
        expect(d2Context.lView).toEqual(componentView);
        expect(d3Context.lView).toEqual(componentView);
 
-       expect((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d1Context);
-       expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d2Context);
-       expect((myDir3Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(d3Context);
+       expect(readPatchedData(myDir1Instance)).toBe(d1Context);
+       expect(readPatchedData(myDir2Instance)).toBe(d2Context);
+       expect(readPatchedData(myDir3Instance)).toBe(d3Context);
 
        expect(d1Context.nodeIndex).toEqual(HEADER_OFFSET);
        expect(d1Context.native).toBe(div1);
@@ -829,11 +828,11 @@ describe('element discovery', () => {
 
        const childCompHostElm = fixture.hostElement.querySelector('child-comp')! as any;
 
-       const lView = childCompHostElm[MONKEY_PATCH_KEY_NAME];
+       const lView = readPatchedData(childCompHostElm);
        expect(Array.isArray(lView)).toBeTruthy();
-       expect((myDir1Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
-       expect((myDir2Instance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
-       expect((childComponentInstance as any)[MONKEY_PATCH_KEY_NAME]).toBe(lView);
+       expect(readPatchedData(myDir1Instance)).toBe(lView);
+       expect(readPatchedData(myDir2Instance)).toBe(lView);
+       expect(readPatchedData(childComponentInstance)).toBe(lView);
 
        const childNodeContext = getLContext(childCompHostElm)!;
        expect(childNodeContext.component).toBeFalsy();
@@ -864,7 +863,7 @@ describe('element discovery', () => {
        assertMonkeyPatchValueIsLView(childComponentInstance, false);
 
        function assertMonkeyPatchValueIsLView(value: any, yesOrNo = true) {
-         expect(Array.isArray((value as any)[MONKEY_PATCH_KEY_NAME])).toBe(yesOrNo);
+         expect(Array.isArray(readPatchedData(value))).toBe(yesOrNo);
        }
      });
 
@@ -913,18 +912,18 @@ describe('element discovery', () => {
 
        const host = fixture.hostElement;
        const child = host.querySelector('child-comp') as any;
-       expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+       expect(readPatchedData(child)).toBeTruthy();
 
        const context = getLContext(child)!;
-       expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+       expect(readPatchedData(child)).toBeTruthy();
 
        const componentData = context.lView[context.nodeIndex];
        const component = componentData[CONTEXT];
        expect(component instanceof ChildComp).toBeTruthy();
-       expect(component[MONKEY_PATCH_KEY_NAME]).toBe(context.lView);
+       expect(readPatchedData(component)).toBe(context.lView);
 
        const componentContext = getLContext(component)!;
-       expect(component[MONKEY_PATCH_KEY_NAME]).toBe(componentContext);
+       expect(readPatchedData(component)).toBe(componentContext);
        expect(componentContext.nodeIndex).toEqual(context.nodeIndex);
        expect(componentContext.native).toEqual(context.native);
        expect(componentContext.lView).toEqual(context.lView);
