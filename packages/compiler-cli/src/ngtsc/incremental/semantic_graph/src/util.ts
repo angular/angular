@@ -34,11 +34,8 @@ export function isReferenceEqual(a: SemanticReference, b: SemanticReference): bo
     return false;
   }
 
-  if (a.importPath === null || b.importPath === null) {
-    // If no import path is known for either of the references they are considered different.
-    return false;
-  }
-
+  // The reference still corresponds with the same symbol, now check that the path by which it is
+  // imported has not changed.
   return a.importPath === b.importPath;
 }
 

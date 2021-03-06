@@ -1078,6 +1078,49 @@ runInEachFileSystem(() => {
         ]);
       });
 
+      it('should not recompile components that use a local directive', () => {
+        // Testing setup: a single source file 'cmp.ts' declares components `Cmp` and `Dir`, where
+        // `Cmp` uses `Dir` in its template. This test verifies that the local reference of `Cmp`
+        // that is emitted into `Dir` does not inadvertently cause `cmp.ts` to be emitted even when
+        // nothing changed.
+        env.write('cmp.ts', `
+          import {Component} from '@angular/core';
+
+          @Component({
+            selector: 'dep',
+            template: 'Dep',
+          })
+          export class Dep {}
+
+          @Component({
+            selector: 'cmp',
+            template: '<dep></dep>',
+          })
+          export class Cmp {}
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {Cmp, Dep} from './cmp';
+
+          @NgModule({
+            declarations: [Cmp, Dep]
+          })
+          export class Mod {}
+        `);
+
+        env.driveMain();
+
+        env.invalidateCachedFile('mod.ts');
+
+        env.flushWrittenFileTracking();
+        env.driveMain();
+
+        expectToHaveWritten([
+          // Only `mod.js` should be written because it was invalidated.
+          '/mod.js',
+        ]);
+      });
+
       it('should recompile components when the name by which they are exported changes', () => {
         // Testing setup: component Cmp depends on component Dep, which is directly exported.
         //
