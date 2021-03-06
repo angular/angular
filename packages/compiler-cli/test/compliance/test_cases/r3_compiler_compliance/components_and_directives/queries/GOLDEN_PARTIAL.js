@@ -365,7 +365,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: My
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `, isInline: true, directives: [{ type: i0.forwardRef(function () { return ContentQueryComponent; }), selector: "content-query-component" }, { type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
+  `, isInline: true, components: [{ type: i0.forwardRef(function () { return ContentQueryComponent; }), selector: "content-query-component" }], directives: [{ type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{
@@ -524,7 +524,7 @@ MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: My
     <content-query-component>
       <div someDir></div>
     </content-query-component>
-  `, isInline: true, directives: [{ type: i0.forwardRef(function () { return ContentQueryComponent; }), selector: "content-query-component" }, { type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
+  `, isInline: true, components: [{ type: i0.forwardRef(function () { return ContentQueryComponent; }), selector: "content-query-component" }], directives: [{ type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
         type: Component,
         args: [{

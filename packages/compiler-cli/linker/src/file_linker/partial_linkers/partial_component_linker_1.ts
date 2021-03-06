@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, makeBindingParser, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3PartialDeclaration, R3UsedDirectiveMetadata} from '@angular/compiler';
+import {compileComponentFromMetadata, ConstantPool, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig, makeBindingParser, parseTemplate, R3ComponentMetadata, R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata, R3PartialDeclaration, R3UsedDirectiveMetadata} from '@angular/compiler';
 import {ChangeDetectionStrategy, ViewEncapsulation} from '@angular/compiler/src/core';
 import * as o from '@angular/compiler/src/output/output_ast';
 
@@ -74,34 +74,42 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
 
     let declarationListEmitMode = DeclarationListEmitMode.Direct;
 
-    let directives: R3UsedDirectiveMetadata[] = [];
-    if (metaObj.has('directives')) {
-      directives = metaObj.getArray('directives').map(directive => {
-        const directiveExpr = directive.getObject();
-        const type = directiveExpr.getValue('type');
-        const selector = directiveExpr.getString('selector');
+    const collectUsedDirectives =
+        (directives: AstValue<R3DeclareUsedDirectiveMetadata, TExpression>[]) => {
+          return directives.map(directive => {
+            const directiveExpr = directive.getObject();
+            const type = directiveExpr.getValue('type');
+            const selector = directiveExpr.getString('selector');
 
-        let typeExpr = type.getOpaque();
-        const forwardRefType = extractForwardRef(type);
-        if (forwardRefType !== null) {
-          typeExpr = forwardRefType;
-          declarationListEmitMode = DeclarationListEmitMode.Closure;
-        }
+            let typeExpr = type.getOpaque();
+            const forwardRefType = extractForwardRef(type);
+            if (forwardRefType !== null) {
+              typeExpr = forwardRefType;
+              declarationListEmitMode = DeclarationListEmitMode.Closure;
+            }
 
-        return {
-          type: typeExpr,
-          selector: selector,
-          inputs: directiveExpr.has('inputs') ?
-              directiveExpr.getArray('inputs').map(input => input.getString()) :
-              [],
-          outputs: directiveExpr.has('outputs') ?
-              directiveExpr.getArray('outputs').map(input => input.getString()) :
-              [],
-          exportAs: directiveExpr.has('exportAs') ?
-              directiveExpr.getArray('exportAs').map(exportAs => exportAs.getString()) :
-              null,
+            return {
+              type: typeExpr,
+              selector: selector,
+              inputs: directiveExpr.has('inputs') ?
+                  directiveExpr.getArray('inputs').map(input => input.getString()) :
+                  [],
+              outputs: directiveExpr.has('outputs') ?
+                  directiveExpr.getArray('outputs').map(input => input.getString()) :
+                  [],
+              exportAs: directiveExpr.has('exportAs') ?
+                  directiveExpr.getArray('exportAs').map(exportAs => exportAs.getString()) :
+                  null,
+            };
+          });
         };
-      });
+
+    let directives: R3UsedDirectiveMetadata[] = [];
+    if (metaObj.has('components')) {
+      directives.push(...collectUsedDirectives(metaObj.getArray('components')));
+    }
+    if (metaObj.has('directives')) {
+      directives.push(...collectUsedDirectives(metaObj.getArray('directives')));
     }
 
     let pipes = new Map<string, o.Expression>();

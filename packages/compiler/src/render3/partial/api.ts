@@ -134,38 +134,20 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
   styles?: string[];
 
   /**
+   * List of components which matched in the template, including sufficient
+   * metadata for each directive to attribute bindings and references within
+   * the template to each directive specifically, if the runtime instructions
+   * support this.
+   */
+  components?: R3DeclareUsedDirectiveMetadata[];
+
+  /**
    * List of directives which matched in the template, including sufficient
    * metadata for each directive to attribute bindings and references within
    * the template to each directive specifically, if the runtime instructions
    * support this.
    */
-  directives?: {
-    /**
-     * Selector of the directive.
-     */
-    selector: string;
-
-    /**
-     * Reference to the directive class (possibly a forward reference wrapped in a `forwardRef`
-     * invocation).
-     */
-    type: o.Expression | (() => o.Expression);
-
-    /**
-     * Property names of the directive's inputs.
-     */
-    inputs?: string[];
-
-    /**
-     * Event names of the directive's outputs.
-     */
-    outputs?: string[];
-
-    /**
-     * Names by which this directive exports itself for references.
-     */
-    exportAs?: string[];
-  }[];
+  directives?: R3DeclareUsedDirectiveMetadata[];
 
   /**
    * A map of pipe names to an expression referencing the pipe type (possibly a forward reference
@@ -204,6 +186,34 @@ export interface R3DeclareComponentMetadata extends R3DeclareDirectiveMetadata {
    * Whether whitespace in the template should be preserved. Defaults to false.
    */
   preserveWhitespaces?: boolean;
+}
+
+export interface R3DeclareUsedDirectiveMetadata {
+  /**
+   * Selector of the directive.
+   */
+  selector: string;
+
+  /**
+   * Reference to the directive class (possibly a forward reference wrapped in a `forwardRef`
+   * invocation).
+   */
+  type: o.Expression|(() => o.Expression);
+
+  /**
+   * Property names of the directive's inputs.
+   */
+  inputs?: string[];
+
+  /**
+   * Event names of the directive's outputs.
+   */
+  outputs?: string[];
+
+  /**
+   * Names by which this directive exports itself for references.
+   */
+  exportAs?: string[];
 }
 
 export interface R3DeclareQueryMetadata {

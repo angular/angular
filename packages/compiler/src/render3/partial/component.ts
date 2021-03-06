@@ -16,7 +16,7 @@ import {createComponentType} from '../view/compiler';
 import {ParsedTemplate} from '../view/template';
 import {DefinitionMap} from '../view/util';
 
-import {R3DeclareComponentMetadata} from './api';
+import {R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata} from './api';
 import {createDirectiveDefinitionMap} from './directive';
 import {toOptionalLiteralArray} from './util';
 
@@ -48,7 +48,12 @@ export function createComponentDefinitionMap(meta: R3ComponentMetadata, template
   }
 
   definitionMap.set('styles', toOptionalLiteralArray(meta.styles, o.literal));
-  definitionMap.set('directives', compileUsedDirectiveMetadata(meta));
+  definitionMap.set(
+      'components',
+      compileUsedDirectiveMetadata(meta, directive => directive.isComponent === true));
+  definitionMap.set(
+      'directives',
+      compileUsedDirectiveMetadata(meta, directive => directive.isComponent !== true));
   definitionMap.set('pipes', compileUsedPipeMetadata(meta));
   definitionMap.set('viewProviders', meta.viewProviders);
   definitionMap.set('animations', meta.animations);
@@ -119,13 +124,16 @@ function computeEndLocation(file: ParseSourceFile, contents: string): ParseLocat
  * Compiles the directives as registered in the component metadata into an array literal of the
  * individual directives. If the component does not use any directives, then null is returned.
  */
-function compileUsedDirectiveMetadata(meta: R3ComponentMetadata): o.LiteralArrayExpr|null {
+function compileUsedDirectiveMetadata(
+    meta: R3ComponentMetadata,
+    predicate: (directive: R3UsedDirectiveMetadata) => boolean): o.LiteralArrayExpr|null {
   const wrapType = meta.declarationListEmitMode !== DeclarationListEmitMode.Direct ?
       generateForwardRef :
       (expr: o.Expression) => expr;
 
-  return toOptionalLiteralArray(meta.directives, directive => {
-    const dirMeta = new DefinitionMap<R3UsedDirectiveMetadata>();
+  const directives = meta.directives.filter(predicate);
+  return toOptionalLiteralArray(directives, directive => {
+    const dirMeta = new DefinitionMap<R3DeclareUsedDirectiveMetadata>();
     dirMeta.set('type', wrapType(directive.type));
     dirMeta.set('selector', o.literal(directive.selector));
     dirMeta.set('inputs', toOptionalLiteralArray(directive.inputs, o.literal));

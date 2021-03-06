@@ -211,7 +211,7 @@ SimpleLayout.ɵfac = function SimpleLayout_Factory(t) { return new (t || SimpleL
 SimpleLayout.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: SimpleLayout, selector: "simple-layout", ngImport: i0, template: `
     <lifecycle-comp [name]="name1"></lifecycle-comp>
     <lifecycle-comp [name]="name2"></lifecycle-comp>
-  `, isInline: true, directives: [{ type: LifecycleComp, selector: "lifecycle-comp", inputs: ["name"] }] });
+  `, isInline: true, components: [{ type: LifecycleComp, selector: "lifecycle-comp", inputs: ["name"] }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(SimpleLayout, [{
         type: Component,
         args: [{
