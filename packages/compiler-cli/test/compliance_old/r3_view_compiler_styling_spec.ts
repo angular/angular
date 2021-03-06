@@ -1942,6 +1942,57 @@ describe('compiler compliance: styling', () => {
     });
   });
 
+  it('should use parsed class and style info for inline templates', () => {
+    const files = {
+      app: {
+        'spec.ts': `
+           import {Component, NgModule} from '@angular/core';
+
+           @Component({
+             selector: 'my-component',
+             template: '<div *ngIf="exp" class="a b c" style="margin: 10px"></div>'
+           })
+           export class MyComponent {
+             exp = true;
+           }
+       `
+      }
+    };
+
+    const template = `
+     function MyComponent_div_0_Template(rf, ctx) {
+       if (rf & 1) {
+         $r3$.ɵɵelement(0, "div", 1);
+       }
+     }
+     …
+     MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+         type: MyComponent,
+         selectors:[["my-component"]],
+         decls: 1,
+         vars: 1,
+         consts: [
+           [${AttributeMarker.Classes}, "a", "b", "c",
+             ${AttributeMarker.Styles}, "margin", "10px",
+             ${AttributeMarker.Template}, "ngIf"],
+           [${AttributeMarker.Classes}, "a", "b", "c",
+             ${AttributeMarker.Styles}, "margin", "10px"]],
+         template: function MyComponent_Template(rf, $ctx$) {
+           if (rf & 1) {
+             $r3$.ɵɵtemplate(0, MyComponent_div_0_Template, 1, 0, "div", 0);
+           }
+           if (rf & 2) {
+             $r3$.ɵɵproperty("ngIf", ctx.exp);
+           }
+         },
+         encapsulation: 2
+       });
+   `;
+
+    const result = compile(files, angularFiles);
+    expectEmit(result.source, template, 'Incorrect template');
+  });
+
   it('should count only non-style and non-class host bindings on Components', () => {
     const files = {
       app: {

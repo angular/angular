@@ -56,6 +56,20 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should correctly generate static class and style attributes for inline template nodes (*ngIf)",
+      "inputFiles": [
+        "inline_templates.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "inline_templates.js"
+          ]
+        }
+      ]
     }
   ]
 }

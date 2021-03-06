@@ -99,9 +99,6 @@
     "name": "callHooks"
   },
   {
-    "name": "classIndexOf"
-  },
-  {
     "name": "computeStaticStyling"
   },
   {
