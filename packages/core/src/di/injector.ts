@@ -105,7 +105,7 @@ export abstract class Injector {
   }
 
   /** @nocollapse */
-  static ɵprov = ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
     token: Injector,
     providedIn: 'any' as any,
     factory: () => ɵɵinject(INJECTOR),
