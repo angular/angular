@@ -49,15 +49,16 @@ function fileExists(filePath) {
 
 // This resolver mimics the TypeScript Path Mapping feature, which lets us resolve
 // modules based on a mapping of short names to paths.
-function resolveBazel(
-    importee, importer, baseDir = process.cwd(), resolve = require.resolve, root = rootDir) {
+function resolveBazel(importee, importer) {
   log_verbose(`resolving '${importee}' from ${importer}`);
 
+  const baseDir = process.cwd();
+
   function resolveInRootDir(importee) {
-    var candidate = path.join(baseDir, root, importee);
+    var candidate = path.join(baseDir, rootDir, importee);
     log_verbose(`try to resolve '${importee}' at '${candidate}'`);
     try {
-      var result = resolve(candidate);
+      var result = require.resolve(candidate);
       return result;
     } catch (e) {
       return undefined;
@@ -80,7 +81,7 @@ function resolveBazel(
     // relative import
     if (importer) {
       let importerRootRelative = path.dirname(importer);
-      const relative = path.relative(path.join(baseDir, root), importerRootRelative);
+      const relative = path.relative(path.join(baseDir, rootDir), importerRootRelative);
       if (!relative.startsWith('.')) {
         importerRootRelative = relative;
       }
