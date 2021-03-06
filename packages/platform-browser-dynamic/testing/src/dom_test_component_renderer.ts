@@ -31,11 +31,3 @@ export class DOMTestComponentRenderer extends TestComponentRenderer {
     this._doc.body.appendChild(rootElement);
   }
 }
-
-function getContent(node: Node): Node {
-  if ('content' in node) {
-    return (<any>node).content;
-  } else {
-    return node;
-  }
-}
