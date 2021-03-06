@@ -8,10 +8,10 @@
 
 import {Component, Injectable, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵProvidersFeature} from '@angular/core/src/core';
 import {ComponentDef, DirectiveDef} from '@angular/core/src/render3';
+import {readPatchedData} from '@angular/core/src/render3/context_discovery';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '@angular/core/src/render3/instructions/element';
 import {TNodeDebug} from '@angular/core/src/render3/instructions/lview_debug';
 import {createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
-import {MONKEY_PATCH_KEY_NAME} from '@angular/core/src/render3/interfaces/context';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {LView, LViewDebug, TView, TViewType} from '@angular/core/src/render3/interfaces/view';
 import {enterView, leaveView} from '@angular/core/src/render3/state';
@@ -278,7 +278,7 @@ describe('lView_debug', () => {
       const parentFixture = TestBed.createComponent(ParentComponent);
       const parentHostElement = parentFixture.nativeElement as HTMLElement;
       const childElement = parentHostElement.querySelector('child')! as HTMLElement;
-      if (!(childElement as any)[MONKEY_PATCH_KEY_NAME]) {
+      if (!readPatchedData(childElement)) {
         // In these browsers:
         //  - Chrome Mobile 72.0.3626 (Android 0.0.0)
         //  - IE 11.0.0 (Windows 8.1.0.0)
