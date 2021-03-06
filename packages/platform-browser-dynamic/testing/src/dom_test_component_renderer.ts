@@ -20,16 +20,15 @@ export class DOMTestComponentRenderer extends TestComponentRenderer {
   }
 
   insertRootElement(rootElId: string) {
-    const template = getDOM().getDefaultDocument().createElement('template');
-    template.innerHTML = `<div id="${rootElId}"></div>`;
-    const rootEl = <HTMLElement>getContent(template).firstChild;
+    const rootElement = getDOM().getDefaultDocument().createElement('div');
+    rootElement.setAttribute('id', rootElId);
 
     // TODO(juliemr): can/should this be optional?
     const oldRoots = this._doc.querySelectorAll('[id^=root]');
     for (let i = 0; i < oldRoots.length; i++) {
       getDOM().remove(oldRoots[i]);
     }
-    this._doc.body.appendChild(rootEl);
+    this._doc.body.appendChild(rootElement);
   }
 }
 
