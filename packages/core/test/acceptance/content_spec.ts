@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectorRef, Component, Directive, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {ChangeDetectorRef, Component, Directive, ElementRef, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -1162,14 +1162,16 @@ describe('projection', () => {
 
     it('should work when matching classes', () => {
       let xDirectives = 0;
+      let matchedElement: any;
       @Component({selector: 'selector-proj', template: '<ng-content select=".x"></ng-content>'})
       class SelectedNgContentComp {
       }
 
       @Directive({selector: '.x'})
       class XDirective {
-        constructor() {
+        constructor(elRef: ElementRef) {
           xDirectives++;
+          matchedElement = elRef.nativeElement;
         }
       }
 
@@ -1187,6 +1189,7 @@ describe('projection', () => {
       fixture.detectChanges();
       expect(fixture.nativeElement).toHaveText('Hello world!');
       expect(xDirectives).toEqual(1);
+      expect(matchedElement!.tagName).toEqual('DIV');
     });
 
     it('should ignore synthesized attributes (e.g. ngTrackBy)', () => {

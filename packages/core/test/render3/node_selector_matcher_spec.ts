@@ -225,61 +225,61 @@ describe('css selector matching', () => {
 
     describe('class matching', () => {
       it('should match with a class selector when an element has multiple classes', () => {
-        expect(isMatching('span', ['class', 'foo bar'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'foo', 'bar'], [
           '', SelectorFlags.CLASS, 'foo'
         ])).toBeTruthy(`Selector '.foo' should match <span class="foo bar">`);
 
-        expect(isMatching('span', ['class', 'foo bar'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'foo', 'bar'], [
           '', SelectorFlags.CLASS, 'bar'
         ])).toBeTruthy(`Selector '.bar' should match <span class="foo bar">`);
 
-        expect(isMatching('span', ['class', 'foo bar'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'foo', 'bar'], [
           '', SelectorFlags.CLASS, 'baz'
         ])).toBeFalsy(`Selector '.baz' should NOT match <span class="foo bar">`);
       });
 
       it('should not match on partial class name', () => {
-        expect(isMatching('span', ['class', 'foobar'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'foobar'], [
           '', SelectorFlags.CLASS, 'foo'
         ])).toBeFalsy(`Selector '.foo' should NOT match <span class="foobar">`);
 
-        expect(isMatching('span', ['class', 'foobar'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'foobar'], [
           '', SelectorFlags.CLASS, 'bar'
         ])).toBeFalsy(`Selector '.bar' should NOT match <span class="foobar">`);
 
-        expect(isMatching('span', ['class', 'foobar'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'foobar'], [
           '', SelectorFlags.CLASS, 'ob'
         ])).toBeFalsy(`Selector '.ob' should NOT match <span class="foobar">`);
 
-        expect(isMatching('span', ['class', 'foobar'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'foobar'], [
           '', SelectorFlags.CLASS, 'foobar'
         ])).toBeTruthy(`Selector '.foobar' should match <span class="foobar">`);
       });
 
       it('should support selectors with multiple classes', () => {
-        expect(isMatching('span', ['class', 'foo bar'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'foo', 'bar'], [
           '', SelectorFlags.CLASS, 'foo', 'bar'
         ])).toBeTruthy(`Selector '.foo.bar' should match <span class="foo bar">`);
 
-        expect(isMatching('span', ['class', 'foo'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'foo'], [
           '', SelectorFlags.CLASS, 'foo', 'bar'
         ])).toBeFalsy(`Selector '.foo.bar' should NOT match <span class="foo">`);
 
-        expect(isMatching('span', ['class', 'bar'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'bar'], [
           '', SelectorFlags.CLASS, 'foo', 'bar'
         ])).toBeFalsy(`Selector '.foo.bar' should NOT match <span class="bar">`);
       });
 
       it('should support selectors with multiple classes regardless of class name order', () => {
-        expect(isMatching('span', ['class', 'foo bar'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'foo', 'bar'], [
           '', SelectorFlags.CLASS, 'bar', 'foo'
         ])).toBeTruthy(`Selector '.bar.foo' should match <span class="foo bar">`);
 
-        expect(isMatching('span', ['class', 'bar foo'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'bar', 'foo'], [
           '', SelectorFlags.CLASS, 'foo', 'bar'
         ])).toBeTruthy(`Selector '.foo.bar' should match <span class="bar foo">`);
 
-        expect(isMatching('span', ['class', 'bar foo'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'bar', 'foo'], [
           '', SelectorFlags.CLASS, 'bar', 'foo'
         ])).toBeTruthy(`Selector '.bar.foo' should match <span class="bar foo">`);
       });
@@ -288,7 +288,7 @@ describe('css selector matching', () => {
        * We assume that compiler will lower-case all selectors when generating code
        */
       it('should match class name case-insensitively', () => {
-        expect(isMatching('span', ['class', 'Foo'], [
+        expect(isMatching('span', [AttributeMarker.Classes, 'Foo'], [
           '', SelectorFlags.CLASS, 'foo'
         ])).toBeTruthy(`Selector '.Foo' should match <span class="Foo">`);
       });
@@ -311,13 +311,14 @@ describe('css selector matching', () => {
         const selector = ['div', 'title', 'title', SelectorFlags.CLASS, 'foo'];
 
         // <div class="foo" title="title">
-        expect(isMatching('div', ['class', 'foo', 'title', 'title'], selector)).toBeTruthy();
+        expect(isMatching('div', ['title', 'title', AttributeMarker.Classes, 'foo'], selector))
+            .toBeTruthy();
 
         // <div title="title">
         expect(isMatching('div', ['title', 'title'], selector)).toBeFalsy();
 
         // <div class="foo">
-        expect(isMatching('div', ['class', 'foo'], selector)).toBeFalsy();
+        expect(isMatching('div', [AttributeMarker.Classes, 'foo'], selector)).toBeFalsy();
       });
     });
   });
@@ -353,13 +354,13 @@ describe('css selector matching', () => {
       const selector = ['', SelectorFlags.NOT | SelectorFlags.CLASS, 'foo', 'bar'];
 
       // <span class="foo bar">
-      expect(isMatching('span', ['class', 'foo bar'], selector)).toBeFalsy();
+      expect(isMatching('span', [AttributeMarker.Classes, 'foo', 'bar'], selector)).toBeFalsy();
 
       // <span class="foo">
-      expect(isMatching('span', ['class', 'foo'], selector)).toBeTruthy();
+      expect(isMatching('span', [AttributeMarker.Classes, 'foo'], selector)).toBeTruthy();
 
       // <span class="bar">
-      expect(isMatching('span', ['class', 'bar'], selector)).toBeTruthy();
+      expect(isMatching('span', [AttributeMarker.Classes, 'bar'], selector)).toBeTruthy();
     });
 
     it('should not match negative selector with classes and attributes', () => {
@@ -369,13 +370,14 @@ describe('css selector matching', () => {
       ];
 
       // <div class="baz">
-      expect(isMatching('div', ['class', 'baz'], selector)).toBeTruthy();
+      expect(isMatching('div', [AttributeMarker.Classes, 'baz'], selector)).toBeTruthy();
 
       // <div title="title">
       expect(isMatching('div', ['title', 'title'], selector)).toBeTruthy();
 
       // <div class="baz" title="title">
-      expect(isMatching('div', ['class', 'baz', 'title', 'title'], selector)).toBeFalsy();
+      expect(isMatching('div', ['title', 'title', AttributeMarker.Classes, 'baz'], selector))
+          .toBeFalsy();
     });
 
     it('should not match negative selector with attribute selector after', () => {
@@ -386,13 +388,14 @@ describe('css selector matching', () => {
       ];
 
       // <div class="baz">
-      expect(isMatching('div', ['class', 'baz'], selector)).toBeTruthy();
+      expect(isMatching('div', [AttributeMarker.Classes, 'baz'], selector)).toBeTruthy();
 
       // <div class="baz" title="">
-      expect(isMatching('div', ['class', 'baz', 'title', ''], selector)).toBeFalsy();
+      expect(isMatching('div', ['title', '', AttributeMarker.Classes, 'baz'], selector))
+          .toBeFalsy();
 
       // <div class="baz" foo="">
-      expect(isMatching('div', ['class', 'baz', 'foo', ''], selector)).toBeFalsy();
+      expect(isMatching('div', ['foo', '', AttributeMarker.Classes, 'baz'], selector)).toBeFalsy();
     });
 
     it('should not match with multiple negative selectors', () => {
@@ -421,13 +424,18 @@ describe('css selector matching', () => {
       ];
 
       // <div name="name" class="foo bar">
-      expect(isMatching('div', ['name', 'name', 'class', 'foo bar'], selector)).toBeTruthy();
+      expect(isMatching('div', ['name', 'name', AttributeMarker.Classes, 'foo', 'bar'], selector))
+          .toBeTruthy();
 
       // <div name="name" class="foo bar baz">
-      expect(isMatching('div', ['name', 'name', 'class', 'foo bar baz'], selector)).toBeFalsy();
+      expect(isMatching(
+                 'div', ['name', 'name', AttributeMarker.Classes, 'foo', 'bar', 'baz'], selector))
+          .toBeFalsy();
 
       // <div name="name" title class="foo bar">
-      expect(isMatching('div', ['name', 'name', 'title', '', 'class', 'foo bar'], selector))
+      expect(isMatching(
+                 'div', ['name', 'name', 'title', '', AttributeMarker.Classes, 'foo', 'bar'],
+                 selector))
           .toBeFalsy();
     });
   });

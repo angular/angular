@@ -12,7 +12,6 @@ import {assertDefined, assertEqual, assertNotEqual} from '../util/assert';
 
 import {AttributeMarker, TAttributes, TNode, TNodeType, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
-import {classIndexOf} from './styling/class_differ';
 import {isNameOnlyAttributeMarker} from './util/attrs_utils';
 
 const unusedValueToPlacateAjd = unused1 + unused2;
@@ -24,27 +23,15 @@ const NG_TEMPLATE_SELECTOR = 'ng-template';
  *
  * @param attrs `TAttributes` to search through.
  * @param cssClassToMatch class to match (lowercase)
- * @param isProjectionMode Whether or not class matching should look into the attribute `class` in
- *    addition to the `AttributeMarker.Classes`.
  */
-function isCssClassMatching(
-    attrs: TAttributes, cssClassToMatch: string, isProjectionMode: boolean): boolean {
-  // TODO(misko): The fact that this function needs to know about `isProjectionMode` seems suspect.
-  // It is strange to me that sometimes the class information comes in form of `class` attribute
-  // and sometimes in form of `AttributeMarker.Classes`. Some investigation is needed to determine
-  // if that is the right behavior.
+function isCssClassMatching(attrs: TAttributes, cssClassToMatch: string): boolean {
   ngDevMode &&
       assertEqual(
           cssClassToMatch, cssClassToMatch.toLowerCase(), 'Class name expected to be lowercase.');
   let i = 0;
   while (i < attrs.length) {
     let item = attrs[i++];
-    if (isProjectionMode && item === 'class') {
-      item = attrs[i] as string;
-      if (classIndexOf(item.toLowerCase(), cssClassToMatch, 0) !== -1) {
-        return true;
-      }
-    } else if (item === AttributeMarker.Classes) {
+    if (item === AttributeMarker.Classes) {
       // We found the classes section. Start searching for the class.
       while (i < attrs.length && typeof (item = attrs[i++]) == 'string') {
         // while we have strings
@@ -129,22 +116,41 @@ export function isNodeMatchingSelector(
         if (isPositive(mode)) return false;
         skipToNextSelector = true;
       }
-    } else {
-      const selectorAttrValue = mode & SelectorFlags.CLASS ? current : selector[++i];
-
-      // special case for matching against classes when a tNode has been instantiated with
-      // class and style values as separate attribute values (e.g. ['title', CLASS, 'foo'])
-      if ((mode & SelectorFlags.CLASS) && tNode.attrs !== null) {
-        if (!isCssClassMatching(tNode.attrs, selectorAttrValue as string, isProjectionMode)) {
+    } else if (mode & SelectorFlags.CLASS) {
+      // Match against classes potentially present in `tNode.attrs`.
+      // See more info on matching rules in `findAttrIndexInNode` function docs.
+      // Note: class matching happens if:
+      // - it's a projection mode
+      // - OR it's a directive matching mode and the current tNode is *NOT* an inline template. For
+      //   inline templates (e.g. <ng-template [ngIf]> generated while processing structural
+      //   directive on <div class="someClass" *ngIf>), directive matching should happen only on the
+      //   element node (which would have the same set of classes in attrs) to avoid matching the
+      //   same directive multiple times. Classes information is present on the template nodes only
+      //   for the purposes of content projection matching.
+      if (nodeAttrs.length > 0 && (isProjectionMode || !isInlineTemplate(tNode))) {
+        if (!isCssClassMatching(nodeAttrs, current /* class value */ as string)) {
           if (isPositive(mode)) return false;
           skipToNextSelector = true;
         }
-        continue;
+      } else {
+        // This code is executed when "class" matching should not be performed, i.e.:
+        // - if there are NO tNode.attrs -> nothing to match
+        // - OR it's a "directive matching" mode AND tNode represents an inline template (for which
+        //   we don't match classes in "directive matching" mode), directive matching only happens
+        //   on underlying element node. We also come here if tNode has no attrs, so there is
+        //   nothing to match.
+        if (isPositive(mode)) return false;
+        skipToNextSelector = true;
       }
+    } else {
+      // We are in the SelectorFlags.ATTRIBUTE section of a selector (CLASS and ELEMENT sections are
+      // handled above). Note: keys and values are represented as a flat list,
+      // e.g. [..., SelectorFlags.ATTRIBUTE, 'key', 'value', 'key1', 'value1', ...]
+      const selectorAttrName = selector[i] as string;
+      const selectorAttrValue = selector[++i];
 
-      const attrName = (mode & SelectorFlags.CLASS) ? 'class' : current;
-      const attrIndexInNode =
-          findAttrIndexInNode(attrName, nodeAttrs, isInlineTemplate(tNode), isProjectionMode);
+      const attrIndexInNode = findAttrIndexInNode(
+          selectorAttrName, nodeAttrs, isInlineTemplate(tNode), isProjectionMode);
 
       if (attrIndexInNode === -1) {
         if (isPositive(mode)) return false;
@@ -161,16 +167,12 @@ export function isNodeMatchingSelector(
               assertNotEqual(
                   nodeAttrs[attrIndexInNode], AttributeMarker.NamespaceURI,
                   'We do not match directives on namespaced attributes');
-          // we lowercase the attribute value to be able to match
-          // selectors without case-sensitivity
-          // (selectors are already in lowercase when generated)
+          // We lowercase the attribute value to be able to match selectors without
+          // case-sensitivity (selectors are already in lowercase when generated).
           nodeAttrValue = (nodeAttrs[attrIndexInNode + 1] as string).toLowerCase();
         }
 
-        const compareAgainstClassName = mode & SelectorFlags.CLASS ? nodeAttrValue : null;
-        if (compareAgainstClassName &&
-                classIndexOf(compareAgainstClassName, selectorAttrValue as string, 0) !== -1 ||
-            mode & SelectorFlags.ATTRIBUTE && selectorAttrValue !== nodeAttrValue) {
+        if (selectorAttrValue !== nodeAttrValue) {
           if (isPositive(mode)) return false;
           skipToNextSelector = true;
         }
@@ -194,18 +196,17 @@ function isPositive(mode: SelectorFlags): boolean {
  * Attribute matching depends upon `isInlineTemplate` and `isProjectionMode`.
  * The following table summarizes which types of attributes we attempt to match:
  *
- * ===========================================================================================================
- * Modes                   | Normal Attributes | Bindings Attributes | Template Attributes | I18n
- * Attributes
- * ===========================================================================================================
- * Inline + Projection     | YES               | YES                 | NO                  | YES
- * -----------------------------------------------------------------------------------------------------------
- * Inline + Directive      | NO                | NO                  | YES                 | NO
- * -----------------------------------------------------------------------------------------------------------
- * Non-inline + Projection | YES               | YES                 | NO                  | YES
- * -----------------------------------------------------------------------------------------------------------
- * Non-inline + Directive  | YES               | YES                 | NO                  | YES
- * ===========================================================================================================
+ * =========================================================================================
+ * Modes                   | Static Attrs | Classes | Bindings | Template Attrs | I18n Attrs
+ * =========================================================================================
+ * Inline + Projection     | YES          | YES     | YES      | NO              | YES
+ * -----------------------------------------------------------------------------------------
+ * Inline + Directive      | NO           | NO      | NO       | YES             | NO
+ * -----------------------------------------------------------------------------------------
+ * Non-inline + Projection | YES          | YES     | YES      | NO              | YES
+ * -----------------------------------------------------------------------------------------
+ * Non-inline + Directive  | YES          | YES     | YES      | NO              | YES
+ * =========================================================================================
  *
  * @param name the name of the attribute to find
  * @param attrs the attribute array to examine
