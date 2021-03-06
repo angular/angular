@@ -122,7 +122,7 @@ export function defaultKeyValueDiffersFactory() {
  */
 export class KeyValueDiffers {
   /** @nocollapse */
-  static ɵprov = ɵɵdefineInjectable(
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable(
       {token: KeyValueDiffers, providedIn: 'root', factory: defaultKeyValueDiffersFactory});
 
   /**

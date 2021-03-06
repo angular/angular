@@ -145,7 +145,7 @@ export function defaultIterableDiffersFactory() {
  */
 export class IterableDiffers {
   /** @nocollapse */
-  static ɵprov = ɵɵdefineInjectable(
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable(
       {token: IterableDiffers, providedIn: 'root', factory: defaultIterableDiffersFactory});
 
   /**

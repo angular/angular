@@ -21,7 +21,7 @@ export abstract class ViewportScroller {
   // De-sugared tree-shakable injection
   // See #23917
   /** @nocollapse */
-  static ɵprov = ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
     token: ViewportScroller,
     providedIn: 'root',
     factory: () => new BrowserViewportScroller(ɵɵinject(DOCUMENT), window)
