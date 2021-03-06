@@ -132,7 +132,7 @@ function getInitializer(doc) {
   //
   // In the first case, the type assertion `<InjectableFactory>` causes the AST to contain an extra
   // level of expression to hold the new type of the expression.
-  if (initializer.expression && initializer.expression.expression && initializer.expression.type) {
+  if (initializer.expression && initializer.type && initializer.expression.expression) {
     initializer = initializer.expression;
   }
 
@@ -144,7 +144,8 @@ function getInitializer(doc) {
   // ```
   //
   // If so, use the first argument of the call.
-  if (initializer && initializer.expression && initializer.expression.text === 'attachInjectFlag') {
+  if (initializer && initializer.expression && initializer.arguments &&
+      initializer.expression.text === 'attachInjectFlag') {
     initializer = initializer.arguments[0];
   }
 

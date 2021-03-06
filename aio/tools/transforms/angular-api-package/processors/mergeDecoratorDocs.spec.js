@@ -89,7 +89,7 @@ describe('mergeDecoratorDocs processor', () => {
   });
 
   it('should handle a type cast before the "make decorator" call', () => {
-    decoratorDoc.symbol.valueDeclaration.initializern = {
+    decoratorDoc.symbol.valueDeclaration.initializer = {
       expression: decoratorDoc.symbol.valueDeclaration.initializer,
       type: {},
     };
@@ -99,9 +99,9 @@ describe('mergeDecoratorDocs processor', () => {
 
   it('should handle the "make decorator" call being wrapped in a call to `attachInjectFlag()`',
      () => {
-       decoratorDoc.symbol.valueDeclaration.initializern = {
-         expression: {test: 'attachInjectFlag'},
-         args: [decoratorDoc.symbol.valueDeclaration.initializer]
+       decoratorDoc.symbol.valueDeclaration.initializer = {
+         expression: {text: 'attachInjectFlag'},
+         arguments: [decoratorDoc.symbol.valueDeclaration.initializer]
        };
        processor.$process([decoratorDoc, metadataDoc, otherDoc]);
        expect(decoratorDoc.docType).toEqual('decorator');
