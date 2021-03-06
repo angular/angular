@@ -1,4 +1,4 @@
-MyDirective.ɵdir = $r3$.ɵɵdefineDirective({
+MyDirective.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   …
   inputs:{
     directiveInput: "directiveInput",

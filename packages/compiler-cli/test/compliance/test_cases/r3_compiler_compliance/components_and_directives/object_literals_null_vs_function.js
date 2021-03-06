@@ -1,7 +1,7 @@
 const $c0$ = function () { return { foo: null }; };
 const $c1$ = function (a0) { return { foo: a0 }; };
 // ...
-MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
   selectors: [["ng-component"]],
   decls: 2,

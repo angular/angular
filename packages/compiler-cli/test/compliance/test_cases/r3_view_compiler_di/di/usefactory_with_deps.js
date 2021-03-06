@@ -1,4 +1,4 @@
-MyService.ɵprov = $r3$.ɵɵdefineInjectable({
+MyService.ɵprov = /*@__PURE__*/ $r3$.ɵɵdefineInjectable({
   token: MyService,
   factory: function MyService_Factory(t) {
     let r = null;

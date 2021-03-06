@@ -1,4 +1,4 @@
-LifecycleComp.ɵcmp = $r3$.ɵɵdefineComponent({
+LifecycleComp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: LifecycleComp,
   selectors: [["lifecycle-comp"]],
   inputs: {nameMin: ["name", "nameMin"]},

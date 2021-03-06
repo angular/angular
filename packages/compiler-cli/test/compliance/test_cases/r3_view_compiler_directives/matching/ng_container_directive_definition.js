@@ -6,7 +6,7 @@ function MyComponent_ng_container_0_Template(rf, ctx) {
   }
 }
 …
-MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
   consts: [["directiveA", "", __AttributeMarker.Template__, "ngIf"], ["directiveA", ""]],
   template: function MyComponent_Template(rf, ctx) {

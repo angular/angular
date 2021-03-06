@@ -1,4 +1,4 @@
-MyApp.ɵcmp = i0.ɵɵdefineComponent({
+MyApp.ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
   type: MyApp,
   selectors: [
       ["my-app"]

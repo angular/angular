@@ -1,4 +1,4 @@
-MyPurePipe.ɵpipe = $r3$.ɵɵdefinePipe({
+MyPurePipe.ɵpipe = /*@__PURE__*/ $r3$.ɵɵdefinePipe({
   name: "myPurePipe",
   type: MyPurePipe,
   pure: true

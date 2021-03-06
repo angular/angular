@@ -1,4 +1,4 @@
-SimpleLayout.ɵcmp = $r3$.ɵɵdefineComponent({
+SimpleLayout.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: SimpleLayout,
   selectors: [["simple-layout"]],
   decls: 2,

@@ -1,4 +1,4 @@
-MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   …
   consts: [[__AttributeMarker.Bindings__, "someDirective"]],
   template: function MyComponent_Template(rf, ctx) {

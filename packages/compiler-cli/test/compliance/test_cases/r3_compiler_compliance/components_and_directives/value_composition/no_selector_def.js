@@ -1,4 +1,4 @@
-EmptyOutletComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+EmptyOutletComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: EmptyOutletComponent,
   selectors: [["ng-component"]],
   decls: 1,

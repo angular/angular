@@ -1,3 +1,3 @@
-AbstractDirective.ɵdir = $r3$.ɵɵdefineDirective({
+AbstractDirective.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   type: AbstractDirective
 });

@@ -603,7 +603,8 @@ runInEachFileSystem(() => {
 
       const processedFile = fs.readFile(_('/node_modules/test-package/index.js'));
       expect(processedFile)
-          .toContain('FooModule.ɵmod = ɵngcc0.ɵɵdefineNgModule({ type: FooModule });');
+          .toContain(
+              'FooModule.ɵmod = /*@__PURE__*/ ɵngcc0.ɵɵdefineNgModule({ type: FooModule });');
       expect(processedFile)
           .toContain(
               'ɵngcc0.ɵɵsetNgModuleScope(FooModule, { declarations: function () { return [exports.FooDirective]; } });');
@@ -714,8 +715,8 @@ runInEachFileSystem(() => {
       expect(jsContents)
           .toContain(
               `TestClass.ɵfac = function TestClass_Factory(t) { return new (t || TestClass)(); };\n` +
-              `TestClass.ɵpipe = ɵngcc0.ɵɵdefinePipe({ name: "myTestPipe", type: TestClass, pure: true });\n` +
-              `TestClass.ɵprov = ɵngcc0.ɵɵdefineInjectable({`);
+              `TestClass.ɵpipe = /*@__PURE__*/ ɵngcc0.ɵɵdefinePipe({ name: "myTestPipe", type: TestClass, pure: true });\n` +
+              `TestClass.ɵprov = /*@__PURE__*/ ɵngcc0.ɵɵdefineInjectable({`);
     });
 
     // https://github.com/angular/angular/issues/38883
@@ -2125,7 +2126,7 @@ runInEachFileSystem(() => {
            const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
            expect(jsContents)
                .toContain(
-                   'DerivedDir.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: DerivedDir, ' +
+                   'DerivedDir.ɵdir = /*@__PURE__*/ ɵngcc0.ɵɵdefineDirective({ type: DerivedDir, ' +
                    'selectors: [["", "base", ""]], exportAs: ["base1", "base2"], ' +
                    'features: [ɵngcc0.ɵɵInheritDefinitionFeature, ɵngcc0.ɵɵCopyDefinitionFeature] });');
 
@@ -2164,7 +2165,7 @@ runInEachFileSystem(() => {
 
 
            const jsContents = fs.readFile(_(`/node_modules/test-package/index.js`));
-           expect(jsContents).toContain('DerivedCmp.ɵcmp = ɵngcc0.ɵɵdefineComponent');
+           expect(jsContents).toContain('DerivedCmp.ɵcmp = /*@__PURE__*/ ɵngcc0.ɵɵdefineComponent');
            expect(jsContents)
                .toContain(
                    'features: [ɵngcc0.ɵɵInheritDefinitionFeature, ɵngcc0.ɵɵCopyDefinitionFeature]');

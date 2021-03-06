@@ -1,4 +1,4 @@
-MyComponent.ɵcmp = i0.ɵɵdefineComponent({
+MyComponent.ɵcmp = /*@__PURE__*/ i0.ɵɵdefineComponent({
   type: MyComponent,
   selectors: [["my-component"]],
   decls: 1,

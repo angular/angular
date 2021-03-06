@@ -1,4 +1,4 @@
-ContentQueryComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+ContentQueryComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: ContentQueryComponent,
   selectors: [["content-query-component"]],
   contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {

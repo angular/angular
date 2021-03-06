@@ -21,8 +21,8 @@ export { MyComponent };
 var MyModule = /** @class */ (function () {
     function MyModule() {
     }
-    MyModule.ɵmod = i0.ɵɵdefineNgModule({ type: MyModule });
-    MyModule.ɵinj = i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
+    MyModule.ɵmod = /*@__PURE__*/ i0.ɵɵdefineNgModule({ type: MyModule });
+    MyModule.ɵinj = /*@__PURE__*/ i0.ɵɵdefineInjector({ factory: function MyModule_Factory(t) { return new (t || MyModule)(); } });
     return MyModule;
 }());
 export { MyModule };

@@ -52,7 +52,7 @@ describe('compiler compliance: listen()', () => {
     };
 
     const componentDef = `
-      MyComponent.ɵcmp = IDENT.ɵɵdefineComponent({
+      MyComponent.ɵcmp = /*@__PURE__*/ IDENT.ɵɵdefineComponent({
           …
           inputs:{
             componentInput: "componentInput",
@@ -66,7 +66,7 @@ describe('compiler compliance: listen()', () => {
         });`;
 
     const directiveDef = `
-      MyDirective.ɵdir = IDENT.ɵɵdefineDirective({
+      MyDirective.ɵdir = /*@__PURE__*/ IDENT.ɵɵdefineDirective({
         …
         inputs:{
           directiveInput: "directiveInput",

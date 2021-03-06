@@ -2,7 +2,7 @@ const $c0$ = function ($a0$) {
   return [$a0$, 1, 2, 3, 4, 5];
 };
 // ...
-MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
   selectors: [["my-app"]],
   decls: 7,

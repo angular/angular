@@ -36,7 +36,7 @@ describe('compiler compliance: directives', () => {
 
       // MyComponent definition should be:
       const MyComponentDefinition = `
-            MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+            MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
                 decls: 1,
@@ -86,7 +86,7 @@ describe('compiler compliance: directives', () => {
 
       // MyComponent definition should be:
       const MyComponentDefinition = `
-            MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+            MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
                 type: MyComponent,
                 selectors: [["my-component"]],
                 decls: 1,
@@ -135,7 +135,7 @@ describe('compiler compliance: directives', () => {
       // MyComponent definition should be:
       const MyComponentDefinition = `
           …
-          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+          MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
               …
               consts: [[${AttributeMarker.Bindings}, "someDirective"]],
               template: function MyComponent_Template(rf, ctx) {
@@ -193,7 +193,7 @@ describe('compiler compliance: directives', () => {
           }
         }
         …
-        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
           …
           consts: [["directiveA", ""]],
           template: function MyComponent_Template(rf, ctx) {
@@ -248,7 +248,7 @@ describe('compiler compliance: directives', () => {
           }
         }
         …
-        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
           …
           consts: [["directiveA", "", ${AttributeMarker.Template}, "ngIf"], ["directiveA", ""]],
           template: function MyComponent_Template(rf, ctx) {
@@ -293,7 +293,7 @@ describe('compiler compliance: directives', () => {
       // MyComponent definition should be:
       const MyComponentDefinition = `
         …
-        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
             …
             consts: [[${AttributeMarker.Bindings}, "someDirective"]],
             template: function MyComponent_Template(rf, ctx) {
@@ -339,7 +339,7 @@ describe('compiler compliance: directives', () => {
       // MyComponent definition should be:
       const MyComponentDefinition = `
           …
-          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+          MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
               …
               consts: [[${AttributeMarker.Template}, "someDirective"]],
               template: function MyComponent_Template(rf, ctx) {
@@ -385,7 +385,7 @@ describe('compiler compliance: directives', () => {
       // MyComponent definition should be:
       const MyComponentDefinition = `
         …
-        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
             …
             consts: [[${AttributeMarker.Bindings}, "someDirective"]],
             template: function MyComponent_Template(rf, ctx) {

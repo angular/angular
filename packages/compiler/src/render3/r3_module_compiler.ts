@@ -152,7 +152,8 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
     definitionMap.id = id;
   }
 
-  const expression = o.importExpr(R3.defineNgModule).callFn([mapToMapExpression(definitionMap)]);
+  const expression =
+      o.importExpr(R3.defineNgModule).callFn([mapToMapExpression(definitionMap)], undefined, true);
   const type = new o.ExpressionType(o.importExpr(R3.NgModuleDefWithMeta, [
     new o.ExpressionType(moduleType.type), tupleTypeOf(declarations), tupleTypeOf(imports),
     tupleTypeOf(exports)
@@ -251,7 +252,8 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
     definitionMap.imports = o.literalArr(meta.imports);
   }
 
-  const expression = o.importExpr(R3.defineInjector).callFn([mapToMapExpression(definitionMap)]);
+  const expression =
+      o.importExpr(R3.defineInjector).callFn([mapToMapExpression(definitionMap)], undefined, true);
   const type =
       new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type.type)]));
   return {expression, type, statements: result.statements};

@@ -95,7 +95,7 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-         MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+         MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
            …
            styles: ["div.cool { color: blue; }", ":host.nice p { color: gold; }"],
            encapsulation: 3
@@ -128,7 +128,7 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors:[["my-component"]],
           decls: 0,
@@ -167,7 +167,7 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
           type: MyComponent,
           selectors:[["my-component"]],
           decls: 0,
@@ -209,7 +209,7 @@ describe('compiler compliance: styling', () => {
 
       const template = `
         …
-        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
           …
           decls: 3,
           vars: 3,
@@ -270,7 +270,7 @@ describe('compiler compliance: styling', () => {
 
       const template = `
         …
-        MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+        MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
           …
           decls: 1,
           vars: 1,
@@ -331,7 +331,7 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-        MyAnimDir.ɵdir = $r3$.ɵɵdefineDirective({
+        MyAnimDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
           …
           hostVars: 1,
           hostBindings: function MyAnimDir_HostBindings(rf, ctx) {
@@ -500,7 +500,7 @@ describe('compiler compliance: styling', () => {
 
          const template = `
           …
-          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+          MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,
@@ -546,7 +546,7 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+          MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
             type: MyComponent,
             selectors: [["my-component"]],
             decls: 1,
@@ -690,7 +690,7 @@ describe('compiler compliance: styling', () => {
 
          const template = `
           …
-          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+          MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,
@@ -738,7 +738,7 @@ describe('compiler compliance: styling', () => {
 
          const template = `
           …
-          MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+          MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
               decls: 1,
@@ -1620,7 +1620,7 @@ describe('compiler compliance: styling', () => {
 
       const template = `
        …
-       MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+       MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
         …
         template: function MyComponent_Template(rf, $ctx$) {
           …
@@ -1658,7 +1658,7 @@ describe('compiler compliance: styling', () => {
 
       const template = `
        …
-       MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+       MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
         …
         template: function MyComponent_Template(rf, $ctx$) {
           …
@@ -1703,7 +1703,7 @@ describe('compiler compliance: styling', () => {
 
       const template = `
        …
-       MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+       MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
         …
         template: function MyComponent_Template(rf, $ctx$) {
           …
@@ -1740,7 +1740,7 @@ describe('compiler compliance: styling', () => {
 
       const template = `
        …
-       MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+       MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
         …
         template: function MyComponent_Template(rf, $ctx$) {
           …
@@ -1779,7 +1779,7 @@ describe('compiler compliance: styling', () => {
 
       const template = `
        …
-       MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+       MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
         …
         template: function MyComponent_Template(rf, $ctx$) {
           …
@@ -1827,7 +1827,7 @@ describe('compiler compliance: styling', () => {
 
          const template = `
             …
-            MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+            MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
               …
               template: function MyComponent_Template(rf, $ctx$) {
                 …
@@ -1872,7 +1872,7 @@ describe('compiler compliance: styling', () => {
 
          const template = `
             …
-            MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+            MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
               …
               template: function MyComponent_Template(rf, $ctx$) {
                 …
@@ -1924,7 +1924,7 @@ describe('compiler compliance: styling', () => {
 
       const template = `
          …
-         MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+         MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
           …
           hostBindings: function MyComponent_HostBindings(rf, $ctx$) {
             …

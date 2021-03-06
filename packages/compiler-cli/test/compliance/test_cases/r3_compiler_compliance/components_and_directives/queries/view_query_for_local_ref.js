@@ -1,7 +1,7 @@
 const $e0_attrs$ = ["myRef"];
 const $e1_attrs$ = ["myRef1", "myRef2", "myRef3"];
 // ...
-ViewQueryComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+ViewQueryComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   // ...
   viewQuery: function ViewQueryComponent_Query(rf, ctx) {
     if (rf & 1) {
