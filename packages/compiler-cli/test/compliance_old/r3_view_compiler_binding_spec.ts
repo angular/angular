@@ -705,7 +705,7 @@ describe('compiler compliance: bindings', () => {
       };
 
       const HostBindingDirDeclaration = `
-      HostBindingDir.ɵdir = $r3$.ɵɵdefineDirective({
+      HostBindingDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
         type: HostBindingDir,
         selectors: [["", "hostBindingDir", ""]],
           hostVars: 1,
@@ -744,7 +744,7 @@ describe('compiler compliance: bindings', () => {
       };
 
       const HostBindingDirDeclaration = `
-      HostBindingDir.ɵdir = $r3$.ɵɵdefineDirective({
+      HostBindingDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
         type: HostBindingDir,
         selectors: [["", "hostBindingDir", ""]],
           hostVars: 1,
@@ -789,7 +789,7 @@ describe('compiler compliance: bindings', () => {
       const HostBindingCompDeclaration = `
         const $ff$ = function ($v$) { return ["red", $v$]; };
         …
-        HostBindingComp.ɵcmp = $r3$.ɵɵdefineComponent({
+        HostBindingComp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
           type: HostBindingComp,
           selectors: [["host-binding-comp"]],
           hostVars: 3,
@@ -834,7 +834,7 @@ describe('compiler compliance: bindings', () => {
       };
 
       const HostAttributeDirDeclaration = `
-        HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
+        HostAttributeDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
           hostVars: 1,
@@ -874,7 +874,7 @@ describe('compiler compliance: bindings', () => {
       };
 
       const HostAttributeDirDeclaration = `
-        HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
+        HostAttributeDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
           hostAttrs: ["aria-label", "label"]
@@ -924,13 +924,13 @@ describe('compiler compliance: bindings', () => {
       };
 
       const CompAndDirDeclaration = `
-        HostAttributeComp.ɵcmp = $r3$.ɵɵdefineComponent({
+        HostAttributeComp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
           type: HostAttributeComp,
           selectors: [["my-host-attribute-component"]],
           hostAttrs: ["title", "hello there from component", ${
           AttributeMarker.Styles}, "opacity", "1"],
         …
-        HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
+        HostAttributeDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
           type: HostAttributeDir,
           selectors: [["", "hostAttributeDir", ""]],
           hostAttrs: ["title", "hello there from directive", ${

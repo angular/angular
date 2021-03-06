@@ -1,6 +1,6 @@
 const $e0_attrs$ = ["myRef"];
 // ...
-ContentQueryComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+ContentQueryComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   // ...
   contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
     if (rf & 1) {

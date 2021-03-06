@@ -3,7 +3,7 @@ const $e0_ff$ = function ($v$) { return {opacity: 1, duration: $v$}; };
 const $e0_ff_1$ = function ($v1$, $v2$) { return [$v1$, $v2$]; };
 const $e0_ff_2$ = function ($v1$, $v2$) { return {animation: $v1$, actions: $v2$}; };
 // ...
-MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
   selectors: [["my-app"]],
   decls: 1,

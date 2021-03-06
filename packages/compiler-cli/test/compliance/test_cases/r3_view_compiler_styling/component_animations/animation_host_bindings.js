@@ -1,4 +1,4 @@
-MyAnimDir.ɵdir = $r3$.ɵɵdefineDirective({
+MyAnimDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   // ...
   hostVars: 1,
   hostBindings: function MyAnimDir_HostBindings(rf, ctx) {

@@ -1,5 +1,5 @@
 // ...
-MyApp.ɵcmp = $r3$.ɵɵdefineComponent({
+MyApp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyApp,
   selectors: [["my-app"]],
   decls: 6,

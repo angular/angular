@@ -1,4 +1,4 @@
-SimpleComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+SimpleComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: SimpleComponent,
   selectors: [["simple"]],
   ngContentSelectors: $c0$,

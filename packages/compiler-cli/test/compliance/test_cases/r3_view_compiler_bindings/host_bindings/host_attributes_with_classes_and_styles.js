@@ -1,10 +1,10 @@
 
-HostAttributeComp.ɵcmp = $r3$.ɵɵdefineComponent({
+HostAttributeComp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: HostAttributeComp,
   selectors: [["my-host-attribute-component"]],
   hostAttrs: ["title", "hello there from component", __AttributeMarker.Styles__, "opacity", "1"],
 …
-HostAttributeDir.ɵdir = $r3$.ɵɵdefineDirective({
+HostAttributeDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   type: HostAttributeDir,
   selectors: [["", "hostAttributeDir", ""]],
   hostAttrs: ["title", "hello there from directive", __AttributeMarker.Classes__, "one", "two", __AttributeMarker.Styles__, "width", "200px", "height", "500px"],

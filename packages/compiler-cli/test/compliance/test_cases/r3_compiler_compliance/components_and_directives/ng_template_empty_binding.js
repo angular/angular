@@ -1,6 +1,6 @@
 function MyComponent_ng_template_0_Template(rf, ctx) {}
 // ...
-MyComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+MyComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: MyComponent,
   selectors: [["my-app"]],
   decls: 1,

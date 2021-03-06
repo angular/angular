@@ -1,4 +1,4 @@
-ForOfDirective.ɵdir = $r3$.ɵɵdefineDirective({
+ForOfDirective.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   type: ForOfDirective,
   selectors: [["", "forOf", ""]],
   inputs: {forOf: "forOf"},

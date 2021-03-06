@@ -1,7 +1,7 @@
 
 const $ff$ = function ($v$) { return ["red", $v$]; };
 …
-HostBindingComp.ɵcmp = $r3$.ɵɵdefineComponent({
+HostBindingComp.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: HostBindingComp,
   selectors: [["host-binding-comp"]],
   hostVars: 3,

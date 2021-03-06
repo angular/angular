@@ -1,4 +1,4 @@
-ChildComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+ChildComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: ChildComponent,
   selectors: [["child"]],
   decls: 1,

@@ -246,7 +246,7 @@ runInEachFileSystem(() => {
         expect(addDefinitionsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
 A.ɵfac = function A_Factory(t) { return new (t || A)(); };
 // TRANSPILED
-A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
+A.ɵcmp = /*@__PURE__*/ ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵɵtext(0);
     } if (rf & 2) {
         ɵngcc0.ɵɵtextInterpolate(ctx.person.name);
@@ -300,7 +300,7 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
              expect(addDefinitionsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
 A.ɵfac = function A_Factory(t) { return new (t || A)(); };
 // TRANSPILED
-A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`);
+A.ɵdir = /*@__PURE__*/ ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`);
            });
 
         it('should call addAdjacentStatements with the source code, the analyzed class and the rendered statements',
@@ -368,8 +368,8 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
           const definitions: string = addDefinitionsSpy.calls.first().args[2];
-          expect(definitions).toContain('A.ɵmod = ɵngcc0.ɵɵdefineNgModule(');
-          expect(definitions).toContain('A.ɵinj = ɵngcc0.ɵɵdefineInjector(');
+          expect(definitions).toContain('A.ɵmod = /*@__PURE__*/ ɵngcc0.ɵɵdefineNgModule(');
+          expect(definitions).toContain('A.ɵinj = /*@__PURE__*/ ɵngcc0.ɵɵdefineInjector(');
         });
 
         it('should render adjacent statements', () => {
@@ -569,7 +569,7 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
           expect(addDefinitionsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
 UndecoratedBase.ɵfac = function UndecoratedBase_Factory(t) { return new (t || UndecoratedBase)(); };
 // TRANSPILED
-UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, viewQuery: function UndecoratedBase_Query(rf, ctx) { if (rf & 1) {
+UndecoratedBase.ɵdir = /*@__PURE__*/ ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, viewQuery: function UndecoratedBase_Query(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵɵviewQuery(_c0, 3);
     } if (rf & 2) {
         let _t;

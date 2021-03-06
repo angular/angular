@@ -369,6 +369,12 @@
     "name": "ɵɵdefineComponent"
   },
   {
+    "name": "ɵɵdefineInjector"
+  },
+  {
+    "name": "ɵɵdefineNgModule"
+  },
+  {
     "name": "ɵɵelementStart"
   }
 ]

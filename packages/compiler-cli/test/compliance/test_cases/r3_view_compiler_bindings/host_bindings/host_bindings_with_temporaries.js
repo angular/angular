@@ -1,5 +1,5 @@
 
-HostBindingDir.ɵdir = $r3$.ɵɵdefineDirective({
+HostBindingDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
   type: HostBindingDir,
   selectors: [["", "hostBindingDir", ""]],
     hostVars: 1,

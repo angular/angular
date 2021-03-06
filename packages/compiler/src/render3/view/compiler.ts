@@ -116,7 +116,8 @@ export function compileDirectiveFromMetadata(
     bindingParser: BindingParser): R3DirectiveDef {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
-  const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
+  const expression =
+      o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()], undefined, true);
   const type = createDirectiveType(meta);
 
   return {expression, type};
@@ -251,7 +252,8 @@ export function compileComponentFromMetadata(
     definitionMap.set('changeDetection', o.literal(changeDetection));
   }
 
-  const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
+  const expression =
+      o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()], undefined, true);
   const type = createComponentType(meta);
 
   return {expression, type};

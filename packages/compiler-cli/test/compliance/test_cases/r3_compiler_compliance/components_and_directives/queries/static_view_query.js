@@ -1,6 +1,6 @@
 const $refs$ = ["foo"];
 // ...
-ViewQueryComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+ViewQueryComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: ViewQueryComponent,
   selectors: [["view-query-component"]],
   viewQuery: function ViewQueryComponent_Query(rf, ctx) {

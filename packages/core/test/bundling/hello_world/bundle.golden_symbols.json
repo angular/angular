@@ -243,6 +243,9 @@
     "name": "viewAttachedToChangeDetector"
   },
   {
+    "name": "ɵɵdefineComponent"
+  },
+  {
     "name": "ɵɵtext"
   }
 ]

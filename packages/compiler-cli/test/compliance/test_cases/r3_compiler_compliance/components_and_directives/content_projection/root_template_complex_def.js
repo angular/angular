@@ -1,6 +1,6 @@
 const $c1$ = [[["span", "title", "tofirst"]], [["span", "title", "tosecond"]]];
 // ...
-ComplexComponent.ɵcmp = $r3$.ɵɵdefineComponent({
+ComplexComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   type: ComplexComponent,
   selectors: [["complex"]],
   ngContentSelectors: $c2$,
