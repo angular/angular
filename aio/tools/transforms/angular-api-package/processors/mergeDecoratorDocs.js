@@ -110,7 +110,7 @@ module.exports = function mergeDecoratorDocs(log) {
 
 function getInitializer(doc) {
   const declaration = doc.symbol && doc.symbol.valueDeclaration;
-  if (!declaration || !declaration.initializer) {
+  if (!declaration || !declaration.initializer || !declaration.initializer.expression) {
     return;
   }
 
@@ -132,7 +132,7 @@ function getInitializer(doc) {
   //
   // In the first case, the type assertion `<InjectableFactory>` causes the AST to contain an extra
   // level of expression to hold the new type of the expression.
-  if (initializer.expression && initializer.type && initializer.expression.expression) {
+  if (initializer.type && initializer.expression.expression) {
     initializer = initializer.expression;
   }
 
@@ -144,8 +144,7 @@ function getInitializer(doc) {
   // ```
   //
   // If so, use the first argument of the call.
-  if (initializer && initializer.expression && initializer.arguments &&
-      initializer.expression.text === 'attachInjectFlag') {
+  if (initializer.arguments && initializer.expression.text === 'attachInjectFlag') {
     initializer = initializer.arguments[0];
   }
 
