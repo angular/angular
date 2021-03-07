@@ -159,20 +159,7 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
       throw getSortHeaderNotContainedWithinSortError();
     }
 
-    this._rerenderSubscription = merge(_sort.sortChange, _sort._stateChanges, _intl.changes)
-        .subscribe(() => {
-          if (this._isSorted()) {
-            this._updateArrowDirection();
-          }
-
-          // If this header was recently active and now no longer sorted, animate away the arrow.
-          if (!this._isSorted() && this._viewState && this._viewState.toState === 'active') {
-            this._disableViewStateAnimation = false;
-            this._setAnimationTransitionState({fromState: 'active', toState: this._arrowDirection});
-          }
-
-          _changeDetectorRef.markForCheck();
-        });
+    this._handleStateChanges();
   }
 
   ngOnInit() {
@@ -243,27 +230,17 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
 
   /** Triggers the sort on this sort header and removes the indicator hint. */
   _toggleOnInteraction() {
-
     this._sort.sort(this);
 
     // Do not show the animation if the header was already shown in the right position.
     if (this._viewState.toState === 'hint' || this._viewState.toState === 'active') {
       this._disableViewStateAnimation = true;
     }
-
-    // If the arrow is now sorted, animate the arrow into place. Otherwise, animate it away into
-    // the direction it is facing.
-    const viewState: ArrowViewStateTransition = this._isSorted() ?
-        {fromState: this._arrowDirection, toState: 'active'} :
-        {fromState: 'active', toState: this._arrowDirection};
-    this._setAnimationTransitionState(viewState);
-
-    this._showIndicatorHint = false;
   }
 
   _handleClick() {
     if (!this._isDisabled()) {
-      this._toggleOnInteraction();
+      this._sort.sort(this);
     }
   }
 
@@ -328,6 +305,32 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
   /** Whether the arrow inside the sort header should be rendered. */
   _renderArrow() {
     return !this._isDisabled() || this._isSorted();
+  }
+
+  /** Handles changes in the sorting state. */
+  private _handleStateChanges() {
+    this._rerenderSubscription =
+      merge(this._sort.sortChange, this._sort._stateChanges, this._intl.changes).subscribe(() => {
+        if (this._isSorted()) {
+          this._updateArrowDirection();
+
+          // Do not show the animation if the header was already shown in the right position.
+          if (this._viewState.toState === 'hint' || this._viewState.toState === 'active') {
+            this._disableViewStateAnimation = true;
+          }
+
+          this._setAnimationTransitionState({fromState: this._arrowDirection, toState: 'active'});
+          this._showIndicatorHint = false;
+        }
+
+        // If this header was recently active and now no longer sorted, animate away the arrow.
+        if (!this._isSorted() && this._viewState && this._viewState.toState === 'active') {
+          this._disableViewStateAnimation = false;
+          this._setAnimationTransitionState({fromState: 'active', toState: this._arrowDirection});
+        }
+
+        this._changeDetectorRef.markForCheck();
+      });
   }
 
   static ngAcceptInputType_disableClear: BooleanInput;

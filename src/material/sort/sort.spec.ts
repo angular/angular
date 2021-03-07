@@ -198,6 +198,16 @@ describe('MatSort', () => {
         component.dispatchMouseEvent('defaultA', 'mouseenter');
         component.expectViewAndDirectionStates(expectedStates);
       });
+
+      it('should be correct when sorting programmatically', () => {
+        component.active = 'defaultB';
+        component.direction = 'asc';
+        fixture.detectChanges();
+
+        expectedStates.set('defaultB', {viewState: 'asc-to-active', arrowDirection: 'active-asc'});
+        component.expectViewAndDirectionStates(expectedStates);
+      });
+
     });
 
     it('should be able to cycle from asc -> desc from either start point', () => {
