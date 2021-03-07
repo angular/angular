@@ -13,7 +13,7 @@ import * as path from 'path';
 const UTF8 = {
   encoding: 'utf-8'
 };
-const PACKAGE = 'angular/packages/core/test/bundling/forms';
+const PACKAGE = 'angular/packages/core/test/bundling/forms_reactive';
 
 describe('treeshaking with uglify', () => {
   let content: string;
