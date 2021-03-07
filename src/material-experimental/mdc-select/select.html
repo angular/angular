@@ -21,7 +21,14 @@
     </span>
   </div>
 
-  <div class="mat-mdc-select-arrow-wrapper"><div class="mat-mdc-select-arrow"></div></div>
+  <div class="mat-mdc-select-arrow-wrapper">
+    <div class="mat-mdc-select-arrow">
+      <!-- Use an inline SVG, because it works better than a CSS triangle in high contrast mode. -->
+      <svg viewBox="0 0 24 24" width="24px" height="24px" focusable="false">
+        <path d="M7 10l5 5 5-5z"/>
+      </svg>
+    </div>
+  </div>
 </div>
 
 <ng-template
