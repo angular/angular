@@ -230,11 +230,11 @@
             "title": "Angular CLI",
             "url": "https://cli.angular.io"
           },
-          "d1": {
-            "desc": "Static analysis for Angular projects.",
+          "angular-eslint": {
+            "desc": "The tooling which enables ESLint to lint Angular projects.",
             "logo": "",
-            "title": "Codelyzer",
-            "url": "https://github.com/mgechev/codelyzer"
+            "title": "Angular ESLint",
+            "url": "https://github.com/angular-eslint/angular-eslint"
           },
           "f1": {
             "desc": "This tool generates dedicated documentation for Angular applications.",
