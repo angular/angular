@@ -204,25 +204,10 @@
     "name": "FormArray"
   },
   {
-    "name": "FormArrayName"
-  },
-  {
-    "name": "FormBuilder"
-  },
-  {
     "name": "FormControl"
   },
   {
-    "name": "FormControlName"
-  },
-  {
     "name": "FormGroup"
-  },
-  {
-    "name": "FormGroupDirective"
-  },
-  {
-    "name": "FormGroupName"
   },
   {
     "name": "FormsExampleModule"
@@ -337,9 +322,6 @@
   },
   {
     "name": "NG_LOC_ID_DEF"
-  },
-  {
-    "name": "NG_MODEL_WITH_FORM_CONTROL_WARNING"
   },
   {
     "name": "NG_MOD_DEF"
@@ -484,15 +466,6 @@
   },
   {
     "name": "RangeValueAccessor"
-  },
-  {
-    "name": "ReactiveFormsComponent"
-  },
-  {
-    "name": "ReactiveFormsComponent_div_14_Template"
-  },
-  {
-    "name": "ReactiveFormsModule"
   },
   {
     "name": "RecordViewTuple"
@@ -684,9 +657,6 @@
     "name": "_global"
   },
   {
-    "name": "_hasInvalidParent"
-  },
-  {
     "name": "_keyMap"
   },
   {
@@ -762,12 +732,6 @@
     "name": "classIndexOf"
   },
   {
-    "name": "cleanUpControl"
-  },
-  {
-    "name": "cleanUpValidators"
-  },
-  {
     "name": "cleanUpView"
   },
   {
@@ -802,9 +766,6 @@
   },
   {
     "name": "connectableObservableDescriptor"
-  },
-  {
-    "name": "controlNameBinding"
   },
   {
     "name": "controlPath"
@@ -939,19 +900,10 @@
     "name": "forkJoinInternal"
   },
   {
-    "name": "formArrayNameProvider"
-  },
-  {
     "name": "formControlBinding"
   },
   {
     "name": "formDirectiveProvider"
-  },
-  {
-    "name": "formDirectiveProvider"
-  },
-  {
-    "name": "formGroupNameProvider"
   },
   {
     "name": "forwardRef"
@@ -979,12 +931,6 @@
   },
   {
     "name": "getConstant"
-  },
-  {
-    "name": "getControlAsyncValidators"
-  },
-  {
-    "name": "getControlValidators"
   },
   {
     "name": "getCurrentTNode"
@@ -1272,9 +1218,6 @@
     "name": "isPromise"
   },
   {
-    "name": "isPropertyUpdated"
-  },
-  {
     "name": "isScheduler"
   },
   {
@@ -1539,9 +1482,6 @@
     "name": "selectIndexInternal"
   },
   {
-    "name": "selectValueAccessor"
-  },
-  {
     "name": "setBindingRootForHostBindings"
   },
   {
@@ -1596,9 +1536,6 @@
     "name": "setUpControl"
   },
   {
-    "name": "setUpFormContainer"
-  },
-  {
     "name": "setUpValidators"
   },
   {
@@ -1621,9 +1558,6 @@
   },
   {
     "name": "subscribeToArray"
-  },
-  {
-    "name": "syncPendingControls"
   },
   {
     "name": "throwProviderNotFoundError"
@@ -1735,9 +1669,6 @@
   },
   {
     "name": "ɵɵproperty"
-  },
-  {
-    "name": "ɵɵtemplate"
   },
   {
     "name": "ɵɵtext"
