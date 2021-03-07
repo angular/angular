@@ -8813,10 +8813,10 @@ ngx-build-plus@^11.0.0:
     webpack-dev-server "^3.1.14"
     webpack-merge "^4.2.1"
 
-ngx-flamegraph@0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/ngx-flamegraph/-/ngx-flamegraph-0.0.9.tgz#c6434dd8fbc0de7d8af5645205c383a0a6734fbf"
-  integrity sha512-9W7G14M0ocH06A2MR3dE4IyQflEUCPJn6uiZO2pSBaZa4u4Nf8CG+P4Ca1xsO4vadYCI5AnGxLM2nEmrJYDCOQ==
+ngx-flamegraph@0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/ngx-flamegraph/-/ngx-flamegraph-0.0.10.tgz#6b05c0d436ffbfea353f0475d0ab4a9681642fb5"
+  integrity sha512-RnJDGkk9x+xk00QFDtqQS5NFPPo8wf3PAy+/s2iy59k1BSX3LEw6yErkXL9SUjvjd7ElMcocEI3Sfq6i4P2vTQ==
   dependencies:
     tslib "^2.0.0"
 
