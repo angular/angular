@@ -207,12 +207,6 @@
             "title": "UI Bakery",
             "url": "https://uibakery.io/"
           },
-          "a1": {
-            "desc": "A Google Chrome Dev Tools extension for debugging Angular applications.",
-            "logo": "https://augury.angular.io/images/augury-logo.svg",
-            "title": "Augury",
-            "url": "https://augury.rangle.io/"
-          },
           "b1": {
             "desc": "Server-side Rendering for Angular apps.",
             "logo": "https://cloud.githubusercontent.com/assets/1016365/10639063/138338bc-7806-11e5-8057-d34c75f3cafc.png",
