@@ -234,7 +234,7 @@
             "desc": "The tooling which enables ESLint to lint Angular projects.",
             "logo": "",
             "title": "Angular ESLint",
-            "url": "https://github.com/angular-eslint/angular-eslint"
+            "url": "https://github.com/angular-eslint/angular-eslint#readme"
           },
           "f1": {
             "desc": "This tool generates dedicated documentation for Angular applications.",
