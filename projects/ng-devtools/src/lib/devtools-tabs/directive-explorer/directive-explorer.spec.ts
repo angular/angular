@@ -9,16 +9,19 @@ describe('DirectiveExplorerComponent', () => {
   let comp: DirectiveExplorerComponent;
   let applicationOperationsSpy: any;
   let cdr: any;
+  let ngZone: any;
 
   beforeEach(() => {
     applicationOperationsSpy = jasmine.createSpyObj('_appOperations', ['viewSource', 'selectDomElement']);
     messageBusMock = jasmine.createSpyObj('messageBus', ['on', 'once', 'emit', 'destroy']);
     cdr = jasmine.createSpyObj('_cdr', ['detectChanges']);
+    ngZone = jasmine.createSpyObj('_ngZone', ['run']);
     comp = new DirectiveExplorerComponent(
       applicationOperationsSpy,
       messageBusMock,
       new ElementPropertyResolver(messageBusMock),
-      cdr
+      cdr,
+      ngZone
     );
   });
 

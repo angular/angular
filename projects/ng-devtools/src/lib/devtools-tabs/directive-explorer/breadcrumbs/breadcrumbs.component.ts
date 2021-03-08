@@ -33,7 +33,7 @@ export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
   updateScrollButtonVisibility$ = new Subject<void>();
 
   ngOnInit(): void {
-    this.updateScrollButtonVisibility$.pipe(debounceTime(100)).subscribe(() => this._updateScrollButtonVisibility());
+    this.updateScrollButtonVisibility$.pipe(debounceTime(100)).subscribe(() => this.updateScrollButtonVisibility());
   }
 
   ngAfterViewInit(): void {
@@ -54,7 +54,7 @@ export class BreadcrumbsComponent implements OnInit, AfterViewInit, OnChanges {
     this.updateScrollButtonVisibility$.next();
   }
 
-  private _updateScrollButtonVisibility(): void {
+  updateScrollButtonVisibility(): void {
     const { clientWidth, scrollWidth, scrollLeft } = this.breadcrumbsScrollContent.nativeElement;
     this.showScrollLeftButton = scrollLeft > 0;
     this.showScrollRightButton = scrollLeft + clientWidth < scrollWidth;

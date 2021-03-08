@@ -1,4 +1,3 @@
-/// <reference types="resize-observer-browser" />
 import { Component, ElementRef, Input, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as treemap from 'webtreemap/build/webtreemap';
 import { TreeMapNode, TreeMapFormatter } from '../../record-formatter/tree-map-formatter';
