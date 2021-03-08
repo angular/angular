@@ -33,11 +33,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
 import * as i0 from "@angular/core";
 export declare class HostBindingDir {
     dirId: string;
-    static ɵfac: i0.ɵɵFactoryDef<HostBindingDir, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -73,11 +73,11 @@ export declare class HostBindingDir {
     getData?: () => {
         id: number;
     };
-    static ɵfac: i0.ɵɵFactoryDef<HostBindingDir, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -114,11 +114,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
 import * as i0 from "@angular/core";
 export declare class HostBindingComp {
     id: string;
-    static ɵfac: i0.ɵɵFactoryDef<HostBindingComp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingComp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<HostBindingComp, "host-binding-comp", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingComp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -155,11 +155,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
 import * as i0 from "@angular/core";
 export declare class HostAttributeDir {
     required: boolean;
-    static ɵfac: i0.ɵɵFactoryDef<HostAttributeDir, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostAttributeDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostAttributeDir, "[hostAttributeDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostAttributeDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -192,11 +192,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class HostAttributeDir {
-    static ɵfac: i0.ɵɵFactoryDef<HostAttributeDir, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostAttributeDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostAttributeDir, "[hostAttributeDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostAttributeDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -250,15 +250,15 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class HostAttributeComp {
-    static ɵfac: i0.ɵɵFactoryDef<HostAttributeComp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostAttributeComp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<HostAttributeComp, "my-host-attribute-component", never, {}, {}, never, never>;
 }
 export declare class HostAttributeDir {
-    static ɵfac: i0.ɵɵFactoryDef<HostAttributeDir, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostAttributeDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostAttributeDir, "[hostAttributeDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostAttributeComp, typeof HostAttributeDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -288,7 +288,7 @@ import * as i0 from "@angular/core";
 export declare class MyDirective {
     myTitle: string;
     myId: string;
-    static ɵfac: i0.ɵɵFactoryDef<MyDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never>;
 }
 
@@ -323,7 +323,7 @@ import * as i0 from "@angular/core";
 export declare class MyDirective {
     myTitle: string;
     myId: string;
-    static ɵfac: i0.ɵɵFactoryDef<MyDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never>;
 }
 
@@ -349,7 +349,7 @@ MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", ty
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyDirective {
-    static ɵfac: i0.ɵɵFactoryDef<MyDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never>;
 }
 
@@ -381,7 +381,7 @@ import * as i0 from "@angular/core";
 export declare class MyDirective {
     expandedState: string;
     isSmall: boolean;
-    static ɵfac: i0.ɵɵFactoryDef<MyDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never>;
 }
 
@@ -413,7 +413,7 @@ import * as i0 from "@angular/core";
 export declare class MyDirective {
     myTitle: string;
     myId: string;
-    static ɵfac: i0.ɵɵFactoryDef<MyDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never>;
 }
 
@@ -448,7 +448,7 @@ import * as i0 from "@angular/core";
 export declare class MyDirective {
     myTitle: string;
     myId: string;
-    static ɵfac: i0.ɵɵFactoryDef<MyDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never>;
 }
 
@@ -474,7 +474,7 @@ MyDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", ty
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyDirective {
-    static ɵfac: i0.ɵɵFactoryDef<MyDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never>;
 }
 
@@ -513,7 +513,7 @@ export declare class MyDirective {
     mousedown(): void;
     mouseup(): void;
     click(): void;
-    static ɵfac: i0.ɵɵFactoryDef<MyDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<MyDirective, "[my-dir]", never, {}, {}, never>;
 }
 
@@ -548,7 +548,7 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", ty
 import * as i0 from "@angular/core";
 export declare class MyComponent {
     start(): void;
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-comp", never, {}, {}, never, never>;
 }
 
@@ -591,7 +591,7 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     start(): void;
     click(): void;
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-comp", never, {}, {}, never, never>;
 }
 
@@ -641,11 +641,11 @@ export declare class HostBindingDir {
     true: any;
     false: any;
     other: any;
-    static ɵfac: i0.ɵɵFactoryDef<HostBindingDir, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -690,11 +690,11 @@ export declare class HostBindingDir {
     'is-a': any;
     'is-"b"': any;
     '"is-c"': any;
-    static ɵfac: i0.ɵɵFactoryDef<HostBindingDir, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HostBindingDir, "[hostBindingDir]", never, {}, {}, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }

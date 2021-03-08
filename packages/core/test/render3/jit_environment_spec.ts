@@ -17,7 +17,7 @@ const INTERFACE_EXCEPTIONS = new Set<string>([
   'ɵɵInjectorDef',
   'ɵɵNgModuleDeclaration',
   'ɵɵPipeDeclaration',
-  'ɵɵFactoryDef',
+  'ɵɵFactoryDeclaration',
   'ModuleWithProviders',
 ]);
 

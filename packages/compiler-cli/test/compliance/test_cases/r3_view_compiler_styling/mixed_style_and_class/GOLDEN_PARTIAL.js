@@ -38,11 +38,11 @@ export declare class MyComponent {
         duration: number;
     })[];
     myClassExp: string;
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -101,12 +101,12 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
 import * as i0 from "@angular/core";
 export declare class StylePipe {
     transform(v: any): void;
-    static ɵfac: i0.ɵɵFactoryDef<StylePipe, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<StylePipe, never>;
     static ɵpipe: i0.ɵɵPipeDeclaration<StylePipe, "stylePipe">;
 }
 export declare class ClassPipe {
     transform(v: any): void;
-    static ɵfac: i0.ɵɵFactoryDef<ClassPipe, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ClassPipe, never>;
     static ɵpipe: i0.ɵɵPipeDeclaration<ClassPipe, "classPipe">;
 }
 export declare class MyComponent {
@@ -118,11 +118,11 @@ export declare class MyComponent {
         duration: number;
     })[];
     myClassExp: string;
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent, typeof StylePipe, typeof ClassPipe], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -188,7 +188,7 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
 import * as i0 from "@angular/core";
 export declare class PipePipe {
     transform(v: any): void;
-    static ɵfac: i0.ɵɵFactoryDef<PipePipe, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<PipePipe, never>;
     static ɵpipe: i0.ɵɵPipeDeclaration<PipePipe, "pipe">;
 }
 export declare class MyComponent {
@@ -198,11 +198,11 @@ export declare class MyComponent {
     bazExp: string;
     items: number[];
     item: number;
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent, typeof PipePipe], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -258,11 +258,11 @@ export declare class MyComponent {
     h1: string;
     a1: boolean;
     r1: boolean;
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }

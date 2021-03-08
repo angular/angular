@@ -141,7 +141,7 @@ runInEachFileSystem(() => {
           result.find(f => f.path === _('/node_modules/test-package/typings/file.d.ts'))!;
       expect(typingsFile.contents)
           .toContain(
-              'foo(x: number): number;\n    static ɵfac: ɵngcc0.ɵɵFactoryDef<A, never>;\n    static ɵdir: ɵngcc0.ɵɵDirectiveDeclaration');
+              'foo(x: number): number;\n    static ɵfac: ɵngcc0.ɵɵFactoryDeclaration<A, never>;\n    static ɵdir: ɵngcc0.ɵɵDirectiveDeclaration');
     });
 
     it('should render imports into typings files', () => {

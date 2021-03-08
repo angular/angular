@@ -774,7 +774,8 @@ runInEachFileSystem(() => {
          expect(dtsContents)
              .toContain(`export declare class ${exportedName} extends PlatformLocation`);
          // And that ngcc's modifications to that class use the correct (exported) name
-         expect(dtsContents).toContain(`static ɵfac: ɵngcc0.ɵɵFactoryDef<${exportedName}, never>`);
+         expect(dtsContents)
+             .toContain(`static ɵfac: ɵngcc0.ɵɵFactoryDeclaration<${exportedName}, never>`);
        });
 
     it('should include constructor metadata in factory definitions', () => {
@@ -787,7 +788,7 @@ runInEachFileSystem(() => {
       const dtsContents = fs.readFile(_('/node_modules/@angular/common/common.d.ts'));
       expect(dtsContents)
           .toContain(
-              `static ɵfac: ɵngcc0.ɵɵFactoryDef<NgPluralCase, [{ attribute: "ngPluralCase"; }, null, null, { host: true; }]>`);
+              `static ɵfac: ɵngcc0.ɵɵFactoryDeclaration<NgPluralCase, [{ attribute: "ngPluralCase"; }, null, null, { host: true; }]>`);
     });
 
     it('should add generic type for ModuleWithProviders and generate exports for private modules',
