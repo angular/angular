@@ -1,3 +1,4 @@
+/// <reference types="resize-observer-browser" />
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Events, MessageBus } from 'protocol';
 import { DirectiveExplorerComponent } from './directive-explorer/directive-explorer.component';

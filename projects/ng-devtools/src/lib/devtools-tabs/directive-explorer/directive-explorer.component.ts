@@ -1,4 +1,14 @@
-import { ChangeDetectorRef, Component, EventEmitter, HostListener, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import {
   MessageBus,
   Events,
@@ -12,14 +22,13 @@ import {
 } from 'protocol';
 import { IndexedNode } from './directive-forest/index-forest';
 import { ApplicationOperations } from '../../application-operations';
-import { Subject } from 'rxjs';
-import { throttleTime } from 'rxjs/operators';
 import { ElementPropertyResolver } from './property-resolver/element-property-resolver';
 import { FlatNode } from './directive-forest/component-data-source';
 import { FlatNode as PropertyFlatNode } from './property-resolver/element-property-resolver';
 import { DirectiveForestComponent } from './directive-forest/directive-forest.component';
 import { constructPathOfKeysToPropertyValue } from './property-resolver/directive-property-resolver';
 import { BreadcrumbsComponent } from './breadcrumbs/breadcrumbs.component';
+import { SplitComponent } from '../../../lib/vendor/angular-split/public_api';
 
 const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   if ((a.component && !b.component) || (!a.component && b.component)) {
@@ -48,14 +57,32 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
     },
   ],
 })
-export class DirectiveExplorerComponent implements OnInit {
+export class DirectiveExplorerComponent implements OnInit, OnDestroy {
   @Output() toggleInspector = new EventEmitter<void>();
 
   currentSelectedElement: IndexedNode | null = null;
   forest: DevToolsNode[];
-  splitDirection = 'horizontal';
+  splitDirection: 'horizontal' | 'vertical' = 'horizontal';
 
-  private _changeSize = new Subject<Event>();
+  @ViewChild(SplitComponent, { static: true, read: ElementRef }) splitElementRef: ElementRef;
+  @ViewChild('directiveForestSplitArea', { static: true, read: ElementRef }) directiveForestSplitArea: ElementRef;
+
+  private _resizeObserver = new ResizeObserver((entries) =>
+    this._ngZone.run(() => {
+      const resizedEntry = entries[0];
+
+      if (resizedEntry.target === this.splitElementRef.nativeElement) {
+        this.splitDirection = resizedEntry.contentRect.width <= 500 ? 'vertical' : 'horizontal';
+      }
+
+      if (!this.breadcrumbs) {
+        return;
+      }
+
+      this.breadcrumbs.updateScrollButtonVisibility();
+    })
+  );
+
   private _clickedElement: IndexedNode | null = null;
   private _refreshRetryTimeout: any = null;
 
@@ -68,17 +95,20 @@ export class DirectiveExplorerComponent implements OnInit {
     private _appOperations: ApplicationOperations,
     private _messageBus: MessageBus<Events>,
     private _propResolver: ElementPropertyResolver,
-    private _cdr: ChangeDetectorRef
-  ) {
-    this._changeSize
-      .asObservable()
-      .pipe(throttleTime(100))
-      .subscribe((event) => this.handleResize(event));
-  }
+    private _cdr: ChangeDetectorRef,
+    private _ngZone: NgZone
+  ) {}
 
   ngOnInit(): void {
     this.subscribeToBackendEvents();
     this.refresh();
+    this._resizeObserver.observe(this.splitElementRef.nativeElement);
+    this._resizeObserver.observe(this.directiveForestSplitArea.nativeElement);
+  }
+
+  ngOnDestroy(): void {
+    this._resizeObserver.unobserve(this.splitElementRef.nativeElement);
+    this._resizeObserver.unobserve(this.directiveForestSplitArea.nativeElement);
   }
 
   handleNodeSelection(node: IndexedNode | null): void {
@@ -182,19 +212,6 @@ export class DirectiveExplorerComponent implements OnInit {
 
   removeComponentHighlight(): void {
     this._messageBus.emit('removeHighlightOverlay');
-  }
-
-  @HostListener('window:resize', ['$event'])
-  onResize(event: Event): void {
-    this._changeSize.next(event);
-  }
-
-  handleResize(event: Event): void {
-    if ((event.target as any).innerWidth <= 500) {
-      this.splitDirection = 'vertical';
-    } else {
-      this.splitDirection = 'horizontal';
-    }
   }
 
   handleSelect(node: FlatNode): void {
