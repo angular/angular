@@ -266,7 +266,7 @@ export function compileComponentFromMetadata(
 export function createComponentType(meta: R3ComponentMetadata): o.Type {
   const typeParams = createDirectiveTypeParams(meta);
   typeParams.push(stringArrayAsType(meta.template.ngContentSelectors));
-  return o.expressionType(o.importExpr(R3.ComponentDefWithMeta, typeParams));
+  return o.expressionType(o.importExpr(R3.ComponentDeclaration, typeParams));
 }
 
 /**
@@ -427,7 +427,7 @@ export function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
  */
 export function createDirectiveType(meta: R3DirectiveMetadata): o.Type {
   const typeParams = createDirectiveTypeParams(meta);
-  return o.expressionType(o.importExpr(R3.DirectiveDefWithMeta, typeParams));
+  return o.expressionType(o.importExpr(R3.DirectiveDeclaration, typeParams));
 }
 
 // Define and update any view queries

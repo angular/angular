@@ -70,9 +70,10 @@ export interface SimpleChanges {
   [propName: string]: any;
 }
 
-export type ɵɵNgModuleDefWithMeta<ModuleT, DeclarationsT, ImportsT, ExportsT> = any;
-export type ɵɵDirectiveDefWithMeta<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> = any;
-export type ɵɵPipeDefWithMeta<PipeT, NameT> = any;
+export type ɵɵNgModuleDeclaration<ModuleT, DeclarationsT, ImportsT, ExportsT> = unknown;
+export type ɵɵDirectiveDeclaration<DirT, SelectorT, ExportAsT, InputsT, OutputsT, QueriesT> =
+    unknown;
+export type ɵɵPipeDeclaration<PipeT, NameT> = unknown;
 
 export enum ViewEncapsulation {
   Emulated = 0,

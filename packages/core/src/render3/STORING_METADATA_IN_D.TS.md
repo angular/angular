@@ -52,6 +52,6 @@ We store the information in the `.d.ts` file like so.
 
 ```typescript
 class TooltipDirective {
-  static ɵdir: DirectiveDefWithMeta<TooltipDirective, '[tooltip]', '', {}, {}, []>
+  static ɵdir: DirectiveDeclaration<TooltipDirective, '[tooltip]', '', {}, {}, []>
 }
 ```

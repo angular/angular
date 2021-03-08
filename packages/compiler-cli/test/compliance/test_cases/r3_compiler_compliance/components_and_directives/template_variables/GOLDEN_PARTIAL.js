@@ -38,7 +38,7 @@ export declare class ForOfDirective {
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
     static ɵfac: i0.ɵɵFactoryDef<ForOfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
 }
 
 /****************************************************************************************************
@@ -81,11 +81,11 @@ export declare class MyComponent {
         data: number;
     }[];
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent, typeof i1.ForOfDirective], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent, typeof i1.ForOfDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -129,7 +129,7 @@ export declare class ForOfDirective {
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
     static ɵfac: i0.ɵɵFactoryDef<ForOfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
 }
 
 /****************************************************************************************************
@@ -172,11 +172,11 @@ export declare class MyComponent {
         name: string;
     }[];
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent, typeof i1.ForOfDirective], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent, typeof i1.ForOfDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -220,7 +220,7 @@ export declare class ForOfDirective {
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
     static ɵfac: i0.ɵɵFactoryDef<ForOfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
 }
 
 /****************************************************************************************************
@@ -289,11 +289,11 @@ export declare class MyComponent {
         }[];
     }[];
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent, typeof i1.ForOfDirective], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent, typeof i1.ForOfDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -337,6 +337,6 @@ export declare class ForOfDirective {
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
     static ɵfac: i0.ɵɵFactoryDef<ForOfDirective, never>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
 }
 
