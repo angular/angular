@@ -20,7 +20,7 @@ import * as i0 from "@angular/core";
 export declare class BasicModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<BasicModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<BasicModule, never, never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<BasicModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<BasicModule>;
 }
 
 /****************************************************************************************************
@@ -88,7 +88,7 @@ export declare class QuxPipe implements PipeTransform {
 export declare class FooModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<FooModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<FooModule, [typeof FooComponent, typeof BarDirective, typeof QuxPipe], never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<FooModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<FooModule>;
 }
 
 /****************************************************************************************************
@@ -156,7 +156,7 @@ export declare class QuxPipe implements PipeTransform {
 export declare class FooModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<FooModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<FooModule, [typeof FooComponent, typeof BarDirective, typeof QuxPipe], never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<FooModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<FooModule>;
 }
 
 /****************************************************************************************************
@@ -234,7 +234,7 @@ export declare class ChildService extends BaseService {
 export declare class FooModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<FooModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<FooModule, never, never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<FooModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<FooModule>;
 }
 
 /****************************************************************************************************
@@ -317,7 +317,7 @@ export declare class A2Component {
 export declare class AModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<AModule, [typeof A1Component, typeof A2Component], never, [typeof A1Component, typeof A2Component]>;
-    static ɵinj: i0.ɵɵInjectorDef<AModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<AModule>;
 }
 export declare class B1Component {
     static ɵfac: i0.ɵɵFactoryDeclaration<B1Component, never>;
@@ -330,12 +330,12 @@ export declare class B2Component {
 export declare class BModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<BModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<BModule, [typeof B1Component, typeof B2Component], never, [typeof AModule]>;
-    static ɵinj: i0.ɵɵInjectorDef<BModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<BModule>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, never, [typeof BModule], never>;
-    static ɵinj: i0.ɵɵInjectorDef<AppModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<AppModule>;
 }
 
 /****************************************************************************************************
@@ -418,7 +418,7 @@ export declare class A2Component {
 export declare class AModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<AModule, [typeof A1Component, typeof A2Component], never, [typeof A1Component, typeof A2Component]>;
-    static ɵinj: i0.ɵɵInjectorDef<AModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<AModule>;
 }
 export declare class B1Component {
     static ɵfac: i0.ɵɵFactoryDeclaration<B1Component, never>;
@@ -431,12 +431,12 @@ export declare class B2Component {
 export declare class BModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<BModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<BModule, [typeof B1Component, typeof B2Component], never, [typeof AModule]>;
-    static ɵinj: i0.ɵɵInjectorDef<BModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<BModule>;
 }
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, never, [typeof BModule], never>;
-    static ɵinj: i0.ɵɵInjectorDef<AppModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<AppModule>;
 }
 
 /****************************************************************************************************
@@ -510,12 +510,12 @@ export declare class BaseModule {
     constructor(service: Service);
     static ɵfac: i0.ɵɵFactoryDeclaration<BaseModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<BaseModule, never, never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<BaseModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<BaseModule>;
 }
 export declare class BasicModule extends BaseModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<BasicModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<BasicModule, never, never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<BasicModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<BasicModule>;
 }
 
 /****************************************************************************************************
@@ -553,11 +553,11 @@ export declare function provideModule(): ModuleWithProviders<ForwardModule>;
 export declare class TestModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<TestModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<TestModule, never, [typeof ForwardModule], never>;
-    static ɵinj: i0.ɵɵInjectorDef<TestModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<TestModule>;
 }
 export declare class ForwardModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<ForwardModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<ForwardModule, never, never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<ForwardModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<ForwardModule>;
 }
 

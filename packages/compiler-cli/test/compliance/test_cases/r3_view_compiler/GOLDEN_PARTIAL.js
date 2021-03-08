@@ -60,6 +60,6 @@ export declare class TodoComponent {
 export declare class TodoModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<TodoModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<TodoModule, [typeof TodoComponent, typeof MyApp], never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<TodoModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<TodoModule>;
 }
 

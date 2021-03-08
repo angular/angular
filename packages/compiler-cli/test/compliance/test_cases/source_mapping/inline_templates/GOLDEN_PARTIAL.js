@@ -382,7 +382,7 @@ export declare class PercentPipe implements PipeTransform {
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, [typeof TestCmp, typeof PercentPipe], never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<AppModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<AppModule>;
 }
 
 /****************************************************************************************************
@@ -441,7 +441,7 @@ export declare class PercentPipe implements PipeTransform {
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, [typeof TestCmp, typeof PercentPipe], never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<AppModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<AppModule>;
 }
 
 /****************************************************************************************************
@@ -916,7 +916,7 @@ export declare class NgModelDirective {
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, [typeof TestCmp, typeof NgModelDirective], never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<AppModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<AppModule>;
 }
 
 /****************************************************************************************************
@@ -987,7 +987,7 @@ export declare class NgModelDirective {
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, [typeof TestCmp, typeof NgModelDirective], never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<AppModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<AppModule>;
 }
 
 /****************************************************************************************************
@@ -1058,7 +1058,7 @@ export declare class NgModelDirective {
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, [typeof TestCmp, typeof NgModelDirective], never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<AppModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<AppModule>;
 }
 
 /****************************************************************************************************
@@ -1129,7 +1129,7 @@ export declare class NgModelDirective {
 export declare class AppModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<AppModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<AppModule, [typeof TestCmp, typeof NgModelDirective], never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<AppModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<AppModule>;
 }
 
 /****************************************************************************************************
