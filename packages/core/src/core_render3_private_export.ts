@@ -153,6 +153,7 @@ export {
   ɵɵi18nStart,
   ɵɵInheritDefinitionFeature,
   ɵɵinjectAttribute,
+  ɵɵInjectorDeclaration,
   ɵɵinjectPipeChangeDetectorRef,
   ɵɵinvalidFactory,
   ɵɵlistener,

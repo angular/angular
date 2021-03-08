@@ -196,7 +196,7 @@ export declare class MyComponent {
 export declare class MyMod {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyMod, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyMod, [typeof MyComponent, typeof CustomEl], never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MyMod>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyMod>;
 }
 
 /****************************************************************************************************
@@ -292,7 +292,7 @@ export declare class MyComponent {
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MyModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
 /****************************************************************************************************
@@ -367,6 +367,6 @@ export declare class MyComponent {
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MyModule>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 

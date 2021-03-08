@@ -22,10 +22,10 @@
  */
 
 export {ɵɵinject} from './di/injector_compatibility';
-export {ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵInjectableDef, ɵɵInjectorDef} from './di/interface/defs';
+export {ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵInjectableDef} from './di/interface/defs';
 export {NgModuleDef} from './metadata/ng_module_def';
 export {ɵɵdefineNgModule} from './render3/definition';
-export {ɵɵFactoryDeclaration, ɵɵNgModuleDeclaration} from './render3/interfaces/public_definitions';
+export {ɵɵFactoryDeclaration, ɵɵInjectorDeclaration, ɵɵNgModuleDeclaration} from './render3/interfaces/public_definitions';
 export {setClassMetadata} from './render3/metadata';
 export {NgModuleFactory} from './render3/ng_module_ref';
 export {noSideEffects as ɵnoSideEffects} from './util/closure';

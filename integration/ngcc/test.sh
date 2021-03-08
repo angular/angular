@@ -97,7 +97,7 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   grep "import [*] as ɵngcc0 from './src/r3_symbols';" node_modules/@angular/core/core.d.ts
   assertSucceeded "Expected 'ngcc' to add an import for 'src/r3_symbols' in '@angular/core' typings."
 
-  grep "static ɵinj: ɵngcc0.ɵɵInjectorDef<ApplicationModule>;" node_modules/@angular/core/core.d.ts
+  grep "static ɵinj: ɵngcc0.ɵɵInjectorDeclaration<ApplicationModule>;" node_modules/@angular/core/core.d.ts
   assertSucceeded "Expected 'ngcc' to add a definition for 'ApplicationModule.ɵinj' in '@angular/core' typings."
 
 
