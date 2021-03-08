@@ -37,7 +37,7 @@ export declare class ForOfDirective {
     constructor(view: ViewContainerRef, template: TemplateRef<any>);
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
-    static ɵfac: i0.ɵɵFactoryDef<ForOfDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ForOfDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
 }
 
@@ -80,11 +80,11 @@ export declare class MyComponent {
     items: {
         data: number;
     }[];
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent, typeof i1.ForOfDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -128,7 +128,7 @@ export declare class ForOfDirective {
     constructor(view: ViewContainerRef, template: TemplateRef<any>);
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
-    static ɵfac: i0.ɵɵFactoryDef<ForOfDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ForOfDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
 }
 
@@ -171,11 +171,11 @@ export declare class MyComponent {
     items: {
         name: string;
     }[];
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent, typeof i1.ForOfDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -219,7 +219,7 @@ export declare class ForOfDirective {
     constructor(view: ViewContainerRef, template: TemplateRef<any>);
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
-    static ɵfac: i0.ɵɵFactoryDef<ForOfDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ForOfDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
 }
 
@@ -288,11 +288,11 @@ export declare class MyComponent {
             description: string;
         }[];
     }[];
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent, typeof i1.ForOfDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -336,7 +336,7 @@ export declare class ForOfDirective {
     constructor(view: ViewContainerRef, template: TemplateRef<any>);
     forOf: any[];
     ngOnChanges(simpleChanges: SimpleChanges): void;
-    static ɵfac: i0.ɵɵFactoryDef<ForOfDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ForOfDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<ForOfDirective, "[forOf]", never, { "forOf": "forOf"; }, {}, never>;
 }
 

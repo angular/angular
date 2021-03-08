@@ -41,11 +41,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class HostBindingComp {
-    static ɵfac: i0.ɵɵFactoryDef<HostBindingComp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingComp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<HostBindingComp, "host-binding-comp", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingComp, typeof MyForwardDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -93,11 +93,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class HostBindingComp {
-    static ɵfac: i0.ɵɵFactoryDef<HostBindingComp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HostBindingComp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<HostBindingComp, "host-binding-comp", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof HostBindingComp, typeof MyForwardPipe], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -130,11 +130,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class SomeDirective {
-    static ɵfac: i0.ɵɵFactoryDef<SomeDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<SomeDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<SomeDirective, "[some-directive]", ["someDir", "otherDir"], {}, {}, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof SomeDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -157,7 +157,7 @@ AbstractDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDE
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class AbstractDirective {
-    static ɵfac: i0.ɵɵFactoryDef<AbstractDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AbstractDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<AbstractDirective, never, never, {}, {}, never>;
 }
 
@@ -203,15 +203,15 @@ import * as i0 from "@angular/core";
 export declare class SomeComp {
     prop: any;
     otherProp: any;
-    static ɵfac: i0.ɵɵFactoryDef<SomeComp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<SomeComp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<SomeComp, "some-comp", never, { "prop": "prop"; "otherProp": "otherProp"; }, {}, never, never>;
 }
 export declare class MyApp {
-    static ɵfac: i0.ɵɵFactoryDef<MyApp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never>;
 }
 export declare class MyMod {
-    static ɵfac: i0.ɵɵFactoryDef<MyMod, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyMod, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyMod, [typeof SomeComp, typeof MyApp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyMod>;
 }
@@ -258,15 +258,15 @@ import * as i0 from "@angular/core";
 export declare class SomeComp {
     prop: any;
     otherProp: any;
-    static ɵfac: i0.ɵɵFactoryDef<SomeComp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<SomeComp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<SomeComp, "some-comp", never, { "prop": "prop"; "otherProp": "otherProp"; }, {}, never, never>;
 }
 export declare class MyApp {
-    static ɵfac: i0.ɵɵFactoryDef<MyApp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never>;
 }
 export declare class MyMod {
-    static ɵfac: i0.ɵɵFactoryDef<MyMod, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyMod, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyMod, [typeof MyApp, typeof SomeComp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyMod>;
 }
@@ -307,11 +307,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyApp {
-    static ɵfac: i0.ɵɵFactoryDef<MyApp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyApp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -352,11 +352,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyApp {
-    static ɵfac: i0.ɵɵFactoryDef<MyApp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyApp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -401,11 +401,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
 import * as i0 from "@angular/core";
 export declare class MyApp {
     getFoo(): string;
-    static ɵfac: i0.ɵɵFactoryDef<MyApp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "ng-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyApp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -452,7 +452,7 @@ export { Comp };
 import * as i0 from "@angular/core";
 export declare function Custom(): (target: any) => void;
 export declare class Comp {
-    static ɵfac: i0.ɵɵFactoryDef<Comp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<Comp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<Comp, "ng-component", never, {}, {}, never, never>;
 }
 
@@ -484,11 +484,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyComponent {
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-app", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }

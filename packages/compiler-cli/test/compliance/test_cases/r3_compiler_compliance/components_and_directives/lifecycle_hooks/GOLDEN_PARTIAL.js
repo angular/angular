@@ -26,11 +26,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyComponent {
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -95,15 +95,15 @@ import { TemplateRef } from '@angular/core';
 import * as i0 from "@angular/core";
 export declare class IfDirective {
     constructor(template: TemplateRef<any>);
-    static ɵfac: i0.ɵɵFactoryDef<IfDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<IfDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<IfDirective, "[if]", never, {}, {}, never>;
 }
 export declare class MyComponent {
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof IfDirective, typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -151,11 +151,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class MyComponent {
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -246,17 +246,17 @@ export declare class LifecycleComp {
     ngAfterViewInit(): void;
     ngAfterViewChecked(): void;
     ngOnDestroy(): void;
-    static ɵfac: i0.ɵɵFactoryDef<LifecycleComp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<LifecycleComp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<LifecycleComp, "lifecycle-comp", never, { "nameMin": "name"; }, {}, never, never>;
 }
 export declare class SimpleLayout {
     name1: string;
     name2: string;
-    static ɵfac: i0.ɵɵFactoryDef<SimpleLayout, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<SimpleLayout, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<SimpleLayout, "simple-layout", never, {}, {}, never, never>;
 }
 export declare class LifecycleModule {
-    static ɵfac: i0.ɵɵFactoryDef<LifecycleModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<LifecycleModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<LifecycleModule, [typeof LifecycleComp, typeof SimpleLayout], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<LifecycleModule>;
 }

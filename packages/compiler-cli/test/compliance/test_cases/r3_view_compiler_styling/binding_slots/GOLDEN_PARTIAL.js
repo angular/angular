@@ -61,11 +61,11 @@ export declare class MyComponent {
     id: string;
     title: string;
     name: string;
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, { "name": "name"; }, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -111,7 +111,7 @@ export declare class WidthDirective {
     myFooClass: boolean;
     id: string;
     title: string;
-    static ɵfac: i0.ɵɵFactoryDef<WidthDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<WidthDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<WidthDirective, "[myWidthDir]", never, {}, {}, never>;
 }
 
@@ -183,15 +183,15 @@ export declare class MyDir {
     _animValue: null;
     _animParam1: null;
     _animParam2: null;
-    static ɵfac: i0.ɵɵFactoryDef<MyDir, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<MyDir, "[my-dir]", never, {}, {}, never>;
 }
 export declare class MyAppComp {
-    static ɵfac: i0.ɵɵFactoryDef<MyAppComp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyAppComp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyAppComp, "my-app", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyAppComp, typeof MyDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }

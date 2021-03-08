@@ -48,17 +48,17 @@ TodoModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngIm
 import * as i0 from "@angular/core";
 export declare class MyApp {
     list: any[];
-    static ɵfac: i0.ɵɵFactoryDef<MyApp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never>;
 }
 export declare class TodoComponent {
     data: any[];
     myTitle: string;
-    static ɵfac: i0.ɵɵFactoryDef<TodoComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TodoComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TodoComponent, "todo", never, { "data": "data"; }, {}, never, never>;
 }
 export declare class TodoModule {
-    static ɵfac: i0.ɵɵFactoryDef<TodoModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TodoModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<TodoModule, [typeof TodoComponent, typeof MyApp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<TodoModule>;
 }
