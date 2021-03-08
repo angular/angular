@@ -259,49 +259,49 @@ export class DocViewerComponent implements OnDestroy {
  * issues with failing to find resources in the cache.
  * (See https://github.com/angular/angular/issues/28114.)
  */
-async function printSwDebugInfo(): Promise<void> {
-  console.log(`\nServiceWorker: ${navigator.serviceWorker?.controller?.state ?? 'N/A'}`);
+function printSwDebugInfo(): Promise<void> {
+  return Promise.resolve()
+      .then(() => console.log(`\nServiceWorker: ${navigator.serviceWorker?.controller?.state ?? 'N/A'}`))
+      .then(() => {
+        if (typeof caches === 'undefined') {
+          return console.log('\nCaches: N/A');
+        } else {
+          return caches.keys().then(allCacheNames => {
+            const swCacheNames = allCacheNames.filter(name => name.startsWith('ngsw:/:'));
+            return findCachesAndPrintEntries(swCacheNames, 'db:control', true, ['manifests'])
+                .then(() => findCachesAndPrintEntries(swCacheNames, 'assets:app-shell:cache', false))
+                .then(() => findCachesAndPrintEntries(swCacheNames, 'assets:app-shell:meta', true));
+          });
+        }
+      })
+      .then(() => {
+        console.warn(
+            '\nIf you see this error, please report an issue at ' +
+            'https://github.com/angular/angular/issues/new?template=3-docs-bug.md including the above logs.');
+      });
 
-  if (typeof caches === 'undefined') {
-    console.log('\nCaches: N/A');
-  } else {
-    const allCacheNames = await caches.keys();
-    const swCacheNames = allCacheNames.filter(name => name.startsWith('ngsw:/:'));
-
-    await findCachesAndPrintEntries(swCacheNames, 'db:control', true, ['manifests']);
-    await findCachesAndPrintEntries(swCacheNames, 'assets:app-shell:cache', false);
-    await findCachesAndPrintEntries(swCacheNames, 'assets:app-shell:meta', true);
-  }
-
-  console.warn(
-      '\nIf you see this error, please report an issue at ' +
-      'https://github.com/angular/angular/issues/new?template=3-docs-bug.md including the above logs.');
 
   // Internal helpers
-  async function findCachesAndPrintEntries(
+  function findCachesAndPrintEntries(
       swCacheNames: string[], nameSuffix: string, includeValues = false,
       ignoredKeys: string[] = []): Promise<void> {
     const cacheNames = swCacheNames.filter(name => name.endsWith(nameSuffix));
 
-    for (const cacheName of cacheNames) {
-      const cacheEntries = await getCacheEntries(cacheName, includeValues, ignoredKeys);
-      await printCacheEntries(cacheName, cacheEntries);
-    }
+    return cacheNames.reduce((prev, cacheName) => prev
+        .then(() => getCacheEntries(cacheName, includeValues, ignoredKeys))
+        .then(cacheEntries => printCacheEntries(cacheName, cacheEntries)), Promise.resolve());
   }
 
-  async function getCacheEntries(
+  function getCacheEntries(
       name: string, includeValues = false,
       ignoredKeys: string[] = []): Promise<{key: string, value?: object}[]> {
     const ignoredUrls = new Set(ignoredKeys.map(key => new Request(key).url));
 
-    const cache = await caches.open(name);
-    const keys = (await cache.keys()).map(req => req.url).filter(url => !ignoredUrls.has(url));
-    const entries = await Promise.all(keys.map(async key => ({
-      key,
-      value: !includeValues ? undefined : await (await cache.match(key))?.json(),
-    })));
-
-    return entries;
+    return caches.open(name).then(cache => cache.keys()
+        .then(keys => keys.map(req => req.url).filter(url => !ignoredUrls.has(url)))
+        .then(keys => Promise.all(keys.map(key => !includeValues ?
+          {key} :
+          cache.match(key).then(res => res?.json()).then(value => ({key, value}))))));
   }
 
   function printCacheEntries(name: string, entries: {key: string, value?: object}[]): void {
