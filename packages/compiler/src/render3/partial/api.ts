@@ -237,9 +237,6 @@ export interface R3DeclareQueryMetadata {
   /**
    * True to only fire changes if there are underlying changes to the query.
    */
-  // TODO(misko):  This will become `true` be default in v12. `QueryList.changes` would fire even if
-  // no changes to the query list were detected. This is not ideal, as changes should only fire if
-  // the `QueryList` actually materially changed.
   emitDistinctChangesOnly?: boolean;
 
   /**

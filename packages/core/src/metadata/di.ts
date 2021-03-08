@@ -107,9 +107,8 @@ export interface Query {
 }
 
 // Stores the default value of `emitDistinctChangesOnly` when the `emitDistinctChangesOnly` is not
-// explicitly set. This value will be changed to `true` in v12.
-// TODO(misko): switch the default in v12 to `true`. See: packages/compiler/src/core.ts
-export const emitDistinctChangesOnlyDefaultValue = false;
+// explicitly set.
+export const emitDistinctChangesOnlyDefaultValue = true;
 
 
 /**
@@ -148,8 +147,10 @@ export interface ContentChildrenDecorator {
    * * **selector** - The directive type or the name used for querying.
    * * **descendants** - True to include all descendants, otherwise include only direct children.
    * * **emitDistinctChangesOnly** - The ` QueryList#changes` observable will emit new values only
-   *   if the QueryList result has changed. The default value will change from `false` to `true` in
-   *   v12. When `false` the `changes` observable might emit even if the QueryList has not changed.
+   *   if the QueryList result has changed. When `false` the `changes` observable might emit even
+   *   if the QueryList has not changed.
+   *   ** Note: *** This config option is **deprecated**, it will be permanently set to `true` and
+   *   removed in future versions of Angular.
    * * **read** - Used to read a different token from the queried elements.
    *
    * @usageNotes
@@ -287,8 +288,10 @@ export interface ViewChildrenDecorator {
    * * **selector** - The directive type or the name used for querying.
    * * **read** - Used to read a different token from the queried elements.
    * * **emitDistinctChangesOnly** - The ` QueryList#changes` observable will emit new values only
-   *   if the QueryList result has changed. The default value will change from `false` to `true` in
-   *   v12. When `false` the `changes` observable might emit even if the QueryList has not changed.
+   *   if the QueryList result has changed. When `false` the `changes` observable might emit even
+   *   if the QueryList has not changed.
+   *   ** Note: *** This config option is **deprecated**, it will be permanently set to `true` and
+   * removed in future versions of Angular.
    *
    * @usageNotes
    *

@@ -32,7 +32,7 @@ import * as i0 from "@angular/core";
 export class ViewQueryComponent {
 }
 ViewQueryComponent.ɵfac = function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); };
-ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ViewQueryComponent, selector: "view-query-component", viewQueries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, emitDistinctChangesOnly: false, descendants: true }, { propertyName: "someDirs", predicate: SomeDirective, emitDistinctChangesOnly: false, descendants: true }], ngImport: i0, template: `
+ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ViewQueryComponent, selector: "view-query-component", viewQueries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, descendants: true }, { propertyName: "someDirs", predicate: SomeDirective, descendants: true }], ngImport: i0, template: `
     <div someDir></div>
   `, isInline: true, directives: [{ type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ViewQueryComponent, [{
@@ -88,7 +88,7 @@ import * as i0 from "@angular/core";
 export class ViewQueryComponent {
 }
 ViewQueryComponent.ɵfac = function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); };
-ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ViewQueryComponent, selector: "view-query-component", viewQueries: [{ propertyName: "myRef", first: true, predicate: ["myRef"], emitDistinctChangesOnly: false, descendants: true }, { propertyName: "myRefs", predicate: ["myRef1, myRef2, myRef3"], emitDistinctChangesOnly: false, descendants: true }], ngImport: i0, template: `
+ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ViewQueryComponent, selector: "view-query-component", viewQueries: [{ propertyName: "myRef", first: true, predicate: ["myRef"], descendants: true }, { propertyName: "myRefs", predicate: ["myRef1, myRef2, myRef3"], descendants: true }], ngImport: i0, template: `
     <div #myRef></div>
     <div #myRef1></div>
   `, isInline: true });
@@ -170,7 +170,7 @@ import * as i0 from "@angular/core";
 export class ViewQueryComponent {
 }
 ViewQueryComponent.ɵfac = function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); };
-ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ViewQueryComponent, selector: "view-query-component", viewQueries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, emitDistinctChangesOnly: false, descendants: true, static: true }, { propertyName: "foo", first: true, predicate: ["foo"], emitDistinctChangesOnly: false, descendants: true }], ngImport: i0, template: `
+ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ViewQueryComponent, selector: "view-query-component", viewQueries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, descendants: true, static: true }, { propertyName: "foo", first: true, predicate: ["foo"], descendants: true }], ngImport: i0, template: `
     <div someDir></div>
   `, isInline: true, directives: [{ type: i0.forwardRef(function () { return SomeDirective; }), selector: "[someDir]" }] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ViewQueryComponent, [{
@@ -252,7 +252,7 @@ import * as i0 from "@angular/core";
 export class ViewQueryComponent {
 }
 ViewQueryComponent.ɵfac = function ViewQueryComponent_Factory(t) { return new (t || ViewQueryComponent)(); };
-ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ViewQueryComponent, selector: "view-query-component", viewQueries: [{ propertyName: "myRef", first: true, predicate: ["myRef"], emitDistinctChangesOnly: false, descendants: true, read: TemplateRef }, { propertyName: "someDir", first: true, predicate: SomeDirective, emitDistinctChangesOnly: false, descendants: true, read: ElementRef }, { propertyName: "myRefs", predicate: ["myRef1, myRef2, myRef3"], emitDistinctChangesOnly: false, descendants: true, read: ElementRef }, { propertyName: "someDirs", predicate: SomeDirective, emitDistinctChangesOnly: false, descendants: true, read: TemplateRef }], ngImport: i0, template: `
+ViewQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ViewQueryComponent, selector: "view-query-component", viewQueries: [{ propertyName: "myRef", first: true, predicate: ["myRef"], descendants: true, read: TemplateRef }, { propertyName: "someDir", first: true, predicate: SomeDirective, descendants: true, read: ElementRef }, { propertyName: "myRefs", predicate: ["myRef1, myRef2, myRef3"], descendants: true, read: ElementRef }, { propertyName: "someDirs", predicate: SomeDirective, descendants: true, read: TemplateRef }], ngImport: i0, template: `
     <div someDir></div>
     <div #myRef></div>
     <div #myRef1></div>
@@ -344,7 +344,7 @@ import * as i0 from "@angular/core";
 export class ContentQueryComponent {
 }
 ContentQueryComponent.ɵfac = function ContentQueryComponent_Factory(t) { return new (t || ContentQueryComponent)(); };
-ContentQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ContentQueryComponent, selector: "content-query-component", queries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, emitDistinctChangesOnly: false, descendants: true }, { propertyName: "someDirList", predicate: SomeDirective, emitDistinctChangesOnly: false }], ngImport: i0, template: `
+ContentQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ContentQueryComponent, selector: "content-query-component", queries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, descendants: true }, { propertyName: "someDirList", predicate: SomeDirective }], ngImport: i0, template: `
     <div><ng-content></ng-content></div>
   `, isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ContentQueryComponent, [{
@@ -423,7 +423,7 @@ import * as i0 from "@angular/core";
 export class ContentQueryComponent {
 }
 ContentQueryComponent.ɵfac = function ContentQueryComponent_Factory(t) { return new (t || ContentQueryComponent)(); };
-ContentQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ContentQueryComponent, selector: "content-query-component", queries: [{ propertyName: "myRef", first: true, predicate: ["myRef"], emitDistinctChangesOnly: false, descendants: true }, { propertyName: "myRefs", predicate: ["myRef1, myRef2, myRef3"], emitDistinctChangesOnly: false }], ngImport: i0, template: `
+ContentQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ContentQueryComponent, selector: "content-query-component", queries: [{ propertyName: "myRef", first: true, predicate: ["myRef"], descendants: true }, { propertyName: "myRefs", predicate: ["myRef1, myRef2, myRef3"] }], ngImport: i0, template: `
     <div #myRef></div>
     <div #myRef1></div>
   `, isInline: true });
@@ -505,7 +505,7 @@ import * as i0 from "@angular/core";
 export class ContentQueryComponent {
 }
 ContentQueryComponent.ɵfac = function ContentQueryComponent_Factory(t) { return new (t || ContentQueryComponent)(); };
-ContentQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ContentQueryComponent, selector: "content-query-component", queries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, emitDistinctChangesOnly: false, descendants: true, static: true }, { propertyName: "foo", first: true, predicate: ["foo"], emitDistinctChangesOnly: false, descendants: true }], ngImport: i0, template: `
+ContentQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ContentQueryComponent, selector: "content-query-component", queries: [{ propertyName: "someDir", first: true, predicate: SomeDirective, descendants: true, static: true }, { propertyName: "foo", first: true, predicate: ["foo"], descendants: true }], ngImport: i0, template: `
     <div><ng-content></ng-content></div>
   `, isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(ContentQueryComponent, [{
@@ -610,7 +610,7 @@ import * as i0 from "@angular/core";
 export class ContentQueryComponent {
 }
 ContentQueryComponent.ɵfac = function ContentQueryComponent_Factory(t) { return new (t || ContentQueryComponent)(); };
-ContentQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ContentQueryComponent, selector: "content-query-component", queries: [{ propertyName: "myRef", first: true, predicate: ["myRef"], emitDistinctChangesOnly: false, descendants: true, read: TemplateRef }, { propertyName: "someDir", first: true, predicate: SomeDirective, emitDistinctChangesOnly: false, descendants: true, read: ElementRef }, { propertyName: "myRefs", predicate: ["myRef1, myRef2, myRef3"], emitDistinctChangesOnly: false, read: ElementRef }, { propertyName: "someDirs", predicate: SomeDirective, emitDistinctChangesOnly: false, read: TemplateRef }], ngImport: i0, template: `
+ContentQueryComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: ContentQueryComponent, selector: "content-query-component", queries: [{ propertyName: "myRef", first: true, predicate: ["myRef"], descendants: true, read: TemplateRef }, { propertyName: "someDir", first: true, predicate: SomeDirective, descendants: true, read: ElementRef }, { propertyName: "myRefs", predicate: ["myRef1, myRef2, myRef3"], read: ElementRef }, { propertyName: "someDirs", predicate: SomeDirective, read: TemplateRef }], ngImport: i0, template: `
     <div someDir></div>
     <div #myRef></div>
     <div #myRef1></div>

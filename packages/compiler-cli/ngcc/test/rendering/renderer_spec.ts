@@ -570,7 +570,7 @@ A.ɵdir = /*@__PURE__*/ ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", 
 UndecoratedBase.ɵfac = function UndecoratedBase_Factory(t) { return new (t || UndecoratedBase)(); };
 // TRANSPILED
 UndecoratedBase.ɵdir = /*@__PURE__*/ ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, viewQuery: function UndecoratedBase_Query(rf, ctx) { if (rf & 1) {
-        ɵngcc0.ɵɵviewQuery(_c0, 3);
+        ɵngcc0.ɵɵviewQuery(_c0, 7);
     } if (rf & 2) {
         let _t;
         ɵngcc0.ɵɵqueryRefresh(_t = ɵngcc0.ɵɵloadQuery()) && (ctx.test = _t.first);

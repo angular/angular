@@ -4,8 +4,8 @@ ContentQueryComponent.ɵcmp = /*@__PURE__*/ $r3$.ɵɵdefineComponent({
   contentQueries: function ContentQueryComponent_ContentQueries(rf, ctx, dirIndex) {
     if (rf & 1) {
       $r3$.ɵɵcontentQuery(
-          dirIndex, SomeDirective, __QueryFlags.isStatic__|__QueryFlags.descendants__);
-      $r3$.ɵɵcontentQuery(dirIndex, $ref0$, 1);
+          dirIndex, SomeDirective, __QueryFlags.isStatic__|__QueryFlags.descendants__|__QueryFlags.emitDistinctChangesOnly__);
+      $r3$.ɵɵcontentQuery(dirIndex, $ref0$, 5);
     }
     if (rf & 2) {
     let $tmp$;

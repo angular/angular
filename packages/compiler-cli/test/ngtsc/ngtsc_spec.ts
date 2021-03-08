@@ -3133,10 +3133,10 @@ function allTests(os: string) {
       expect(jsContents).toMatch(varRegExp('test1'));
       expect(jsContents).toMatch(varRegExp('test2'));
       expect(jsContents).toMatch(varRegExp('accessor'));
-      // match `i0.ɵɵcontentQuery(dirIndex, _c1, 1, TemplateRef)`
-      expect(jsContents).toMatch(contentQueryRegExp('\\w+', 1, 'TemplateRef'));
-      // match `i0.ɵɵviewQuery(_c2, 1, null)`
-      expect(jsContents).toMatch(viewQueryRegExp('\\w+', 1));
+      // match `i0.ɵɵcontentQuery(dirIndex, _c1, 5, TemplateRef)`
+      expect(jsContents).toMatch(contentQueryRegExp('\\w+', 5, 'TemplateRef'));
+      // match `i0.ɵɵviewQuery(_c2, 5, null)`
+      expect(jsContents).toMatch(viewQueryRegExp('\\w+', 5));
     });
 
     it('should generate queries for directives', () => {
@@ -3165,14 +3165,14 @@ function allTests(os: string) {
       expect(jsContents).toMatch(varRegExp('test1'));
       expect(jsContents).toMatch(varRegExp('test2'));
       expect(jsContents).toMatch(varRegExp('accessor'));
-      // match `i0.ɵɵcontentQuery(dirIndex, _c1, 1, TemplateRef)`
-      expect(jsContents).toMatch(contentQueryRegExp('\\w+', 1, 'TemplateRef'));
+      // match `i0.ɵɵcontentQuery(dirIndex, _c1, 5, TemplateRef)`
+      expect(jsContents).toMatch(contentQueryRegExp('\\w+', 5, 'TemplateRef'));
 
-      // match `i0.ɵɵviewQuery(_c2, 1)`
+      // match `i0.ɵɵviewQuery(_c2, 5)`
       // Note that while ViewQuery doesn't necessarily make sense on a directive,
       // because it doesn't have a view, we still need to handle it because a component
       // could extend the directive.
-      expect(jsContents).toMatch(viewQueryRegExp('\\w+', 1));
+      expect(jsContents).toMatch(viewQueryRegExp('\\w+', 5));
     });
 
     it('should handle queries that use forwardRef', () => {
@@ -3194,13 +3194,13 @@ function allTests(os: string) {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      // match `i0.ɵɵcontentQuery(dirIndex, TemplateRef, 1, null)`
-      expect(jsContents).toMatch(contentQueryRegExp('TemplateRef', 1));
-      // match `i0.ɵɵcontentQuery(dirIndex, ViewContainerRef, 1, null)`
-      expect(jsContents).toMatch(contentQueryRegExp('ViewContainerRef', 1));
-      // match `i0.ɵɵcontentQuery(dirIndex, _c0, 1, null)`
+      // match `i0.ɵɵcontentQuery(dirIndex, TemplateRef, 5, null)`
+      expect(jsContents).toMatch(contentQueryRegExp('TemplateRef', 5));
+      // match `i0.ɵɵcontentQuery(dirIndex, ViewContainerRef, 5, null)`
+      expect(jsContents).toMatch(contentQueryRegExp('ViewContainerRef', 5));
+      // match `i0.ɵɵcontentQuery(dirIndex, _c0, 5, null)`
       expect(jsContents).toContain('_c0 = ["parens"];');
-      expect(jsContents).toMatch(contentQueryRegExp('_c0', 1));
+      expect(jsContents).toMatch(contentQueryRegExp('_c0', 5));
     });
 
     it('should handle queries that use an InjectionToken', () => {
@@ -3221,10 +3221,10 @@ function allTests(os: string) {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-      // match `i0.ɵɵviewQuery(TOKEN, 1, null)`
-      expect(jsContents).toMatch(viewQueryRegExp('TOKEN', 1));
-      // match `i0.ɵɵcontentQuery(dirIndex, TOKEN, 1, null)`
-      expect(jsContents).toMatch(contentQueryRegExp('TOKEN', 1));
+      // match `i0.ɵɵviewQuery(TOKEN, 5, null)`
+      expect(jsContents).toMatch(viewQueryRegExp('TOKEN', 5));
+      // match `i0.ɵɵcontentQuery(dirIndex, TOKEN, 5, null)`
+      expect(jsContents).toMatch(contentQueryRegExp('TOKEN', 5));
     });
 
     it('should compile expressions that write keys', () => {

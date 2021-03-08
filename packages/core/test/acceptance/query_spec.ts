@@ -1257,11 +1257,8 @@ describe('query logic', () => {
        * - systematically detach and insert a view - this would result in unnecessary processing
        * when the previous and new indexes for the move operation are the same;
        * - detect the situation where the indexes are the same and do no processing in such case.
-       *
-       * This tests asserts on the implementation choices done by the VE (detach and insert) so we
-       * can replicate the same behavior in ivy.
        */
-      it('should notify on changes when a given view is removed and re-inserted at the same index',
+      it('should NOT notify on changes when a given view is removed and re-inserted at the same index',
          () => {
            @Component({
              selector: 'test-comp',
@@ -1298,7 +1295,7 @@ describe('query logic', () => {
            vc.move(viewRef, 0);
            fixture.detectChanges();
            expect(queryList.length).toBe(1);
-           expect(fixture.componentInstance.queryListNotificationCounter).toBe(2);
+           expect(fixture.componentInstance.queryListNotificationCounter).toBe(1);
          });
 
       it('should support a mix of content queries from the declaration and embedded view', () => {
