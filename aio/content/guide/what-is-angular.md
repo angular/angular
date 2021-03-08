@@ -8,7 +8,7 @@ Angular is a development platform, built on [TypeScript](https://www.typescriptl
 * A collection of well-integrated libraries that cover a wide variety of features, including routing, forms management, client-server communication, and more
 * A suite of developer tools to help you develop, build, test, and update your code
 
-When you build applications with Angular, you're taking advantage of a platform that can scale from single-developer projects to enterprise-level applications. Angular is designed to make updating as easy as possible, so you can take advantage of the latest developments with a minimum of effort. Best of all, the Angular ecosystem consists of a diverse group of over 1.7 million developers, library authors, and content creators.
+With Angular, you're taking advantage of a platform that can scale from single-developer projects to enterprise-level applications. Angular is designed to make updating as easy as possible, so you can take advantage of the latest developments with a minimum of effort. Best of all, the Angular ecosystem consists of a diverse group of over 1.7 million developers, library authors, and content creators.
 
 <div class="alert is-helpful">
 
@@ -208,4 +208,4 @@ To see Angular in action, see our [Getting Started](https://angular.io/start) tu
 
 To explore Angular's capabilities further, we recommend reading through the sections, Understanding Angular and Developer Guides.
 
-@reviewed 2021-03-02
+@reviewed 2021-03-08
