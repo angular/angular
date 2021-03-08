@@ -66,6 +66,7 @@
     "@types/clone-deep": "^4.0.1",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.3",
+    "@types/resize-observer-browser": "^0.1.5",
     "@types/semver": "^7.1.0",
     "codelyzer": "^6.0.0",
     "cross-env": "^7.0.2",
