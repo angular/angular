@@ -1298,7 +1298,7 @@ describe('query logic', () => {
            vc.move(viewRef, 0);
            fixture.detectChanges();
            expect(queryList.length).toBe(1);
-           expect(fixture.componentInstance.queryListNotificationCounter).toBe(2);
+           expect(fixture.componentInstance.queryListNotificationCounter).toBe(1);
          });
 
       it('should support a mix of content queries from the declaration and embedded view', () => {

@@ -605,7 +605,7 @@ export function extractQueryMetadata(
       if (typeof emitDistinctChangesOnlyValue !== 'boolean') {
         throw createValueHasWrongTypeError(
             emitDistinctChangesOnlyExpr, emitDistinctChangesOnlyValue,
-            `@${name} options.emitDistinctChangesOnlys must be a boolean`);
+            `@${name} options.emitDistinctChangesOnly must be a boolean`);
       }
       emitDistinctChangesOnly = emitDistinctChangesOnlyValue;
     }
