@@ -10,6 +10,7 @@
 
 // Imports
 const fs = require('fs');
+const path = require('path');
 
 // Get branch and project name from command line arguments.
 const [, , limitFile, project, branch, commit] = process.argv;
@@ -68,8 +69,10 @@ for (const compressionType in limitSizes) {
 successMessages.concat(failureMessages).forEach(message => console.error(message));
 
 if (failed) {
+  const projectRoot = path.resolve(__dirname, '../..');
+  const limitFileRelPath = path.relative(projectRoot, limitFile);
   console.info(
-      `If this is a desired change, please update the size limits in file '${limitFile}'.`);
+      `If this is a desired change, please update the size limits in file '${limitFileRelPath}'.`);
   process.exit(1);
 } else {
   console.info(`Payload size check passed. All diffs are less than 1% or 500 bytes.`);
