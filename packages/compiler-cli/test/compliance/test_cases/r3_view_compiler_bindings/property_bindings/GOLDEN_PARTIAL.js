@@ -31,11 +31,11 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     title: string;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-app", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-app", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -77,11 +77,11 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     name: string;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -152,11 +152,11 @@ export declare class MyComponent {
     eight: any;
     nine: any;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-app", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-app", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -198,11 +198,11 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     forValue: string;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -256,7 +256,7 @@ import * as i0 from "@angular/core";
 export declare class AsyncPipe {
     transform(v: any): null | any;
     static ɵfac: i0.ɵɵFactoryDef<AsyncPipe, never>;
-    static ɵpipe: i0.ɵɵPipeDefWithMeta<AsyncPipe, "async">;
+    static ɵpipe: i0.ɵɵPipeDeclaration<AsyncPipe, "async">;
 }
 export declare class MyComponent {
     myTitle: string;
@@ -264,11 +264,11 @@ export declare class MyComponent {
         identity(): any;
     };
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
 }
 export declare class MyMod {
     static ɵfac: i0.ɵɵFactoryDef<MyMod, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyMod, [typeof MyComponent, typeof AsyncPipe], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyMod, [typeof MyComponent, typeof AsyncPipe], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyMod>;
 }
 
@@ -298,7 +298,7 @@ export declare class MyComponent {
     myTitle: string;
     buttonId: string;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
 }
 
 /****************************************************************************************************
@@ -342,15 +342,15 @@ import * as i0 from "@angular/core";
 export declare class ButtonDir {
     al: any;
     static ɵfac: i0.ɵɵFactoryDef<ButtonDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<ButtonDir, "button", never, { "al": "aria-label"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ButtonDir, "button", never, { "al": "aria-label"; }, {}, never>;
 }
 export declare class MyComponent {
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
 }
 export declare class MyMod {
     static ɵfac: i0.ɵɵFactoryDef<MyMod, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyMod, [typeof ButtonDir, typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyMod, [typeof ButtonDir, typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyMod>;
 }
 
@@ -397,15 +397,15 @@ import * as i0 from "@angular/core";
 export declare class ButtonDir {
     al: any;
     static ɵfac: i0.ɵɵFactoryDef<ButtonDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<ButtonDir, "button", never, { "al": "aria-label"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<ButtonDir, "button", never, { "al": "aria-label"; }, {}, never>;
 }
 export declare class MyComponent {
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
 }
 export declare class MyMod {
     static ɵfac: i0.ɵɵFactoryDef<MyMod, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyMod, [typeof ButtonDir, typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyMod, [typeof ButtonDir, typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyMod>;
 }
 
@@ -449,7 +449,7 @@ export declare class MyComponent {
     expansionState: string;
     myTitle: string;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
 }
 
 /****************************************************************************************************
@@ -478,7 +478,7 @@ export declare class MyComponent {
     myTitle: string;
     buttonId: string;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
 }
 
 /****************************************************************************************************
@@ -547,23 +547,23 @@ import * as i0 from "@angular/core";
 export declare class SpanDir {
     someProp: any;
     static ɵfac: i0.ɵɵFactoryDef<SpanDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<SpanDir, "span", never, { "someProp": "someProp"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SpanDir, "span", never, { "someProp": "someProp"; }, {}, never>;
 }
 export declare class CustomEl {
     prop: any;
     otherProp: any;
     static ɵfac: i0.ɵɵFactoryDef<CustomEl, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<CustomEl, "custom-element", never, { "prop": "prop"; "otherProp": "otherProp"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<CustomEl, "custom-element", never, { "prop": "prop"; "otherProp": "otherProp"; }, {}, never, never>;
 }
 export declare class MyComponent {
     myTitle: string;
     buttonId: string;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
 }
 export declare class MyMod {
     static ɵfac: i0.ɵɵFactoryDef<MyMod, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyMod, [typeof MyComponent, typeof CustomEl, typeof SpanDir], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyMod, [typeof MyComponent, typeof CustomEl, typeof SpanDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyMod>;
 }
 
@@ -619,17 +619,17 @@ import * as i0 from "@angular/core";
 export declare class SpanDir {
     someProp: any;
     static ɵfac: i0.ɵɵFactoryDef<SpanDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<SpanDir, "span", never, { "someProp": "someProp"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<SpanDir, "span", never, { "someProp": "someProp"; }, {}, never>;
 }
 export declare class MyComponent {
     myTitle: string;
     buttonId: string;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
 }
 export declare class MyMod {
     static ɵfac: i0.ɵɵFactoryDef<MyMod, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyMod, [typeof MyComponent, typeof SpanDir], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyMod, [typeof MyComponent, typeof SpanDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyMod>;
 }
 

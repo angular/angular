@@ -212,7 +212,7 @@ export function compileNgModuleDeclarationExpression(meta: R3DeclareNgModuleFaca
 
 export function createNgModuleType(
     {type: moduleType, declarations, imports, exports}: R3NgModuleMetadata): o.ExpressionType {
-  return new o.ExpressionType(o.importExpr(R3.NgModuleDefWithMeta, [
+  return new o.ExpressionType(o.importExpr(R3.NgModuleDeclaration, [
     new o.ExpressionType(moduleType.type), tupleTypeOf(declarations), tupleTypeOf(imports),
     tupleTypeOf(exports)
   ]));

@@ -72,7 +72,7 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata): R3CompiledExp
 }
 
 export function createPipeType(metadata: R3PipeMetadata): o.Type {
-  return new o.ExpressionType(o.importExpr(R3.PipeDefWithMeta, [
+  return new o.ExpressionType(o.importExpr(R3.PipeDeclaration, [
     typeWithParameters(metadata.type.type, metadata.typeArgumentCount),
     new o.ExpressionType(new o.LiteralExpr(metadata.pipeName)),
   ]));
