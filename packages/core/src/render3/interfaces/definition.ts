@@ -113,16 +113,6 @@ export type CtorDependency = {
 }|null;
 
 /**
- * @codeGenApi
- */
-export type ɵɵDirectiveDefWithMeta<
-    T, Selector extends string, ExportAs extends
-        string[], InputMap extends {[key: string]: string},
-                                   OutputMap extends {[key: string]: string},
-                                                     QueryFields extends string[]> =
-    DirectiveDef<T>;
-
-/**
  * Runtime link information for Directives.
  *
  * This is an internal data structure used by the render to link
@@ -246,15 +236,6 @@ export interface DirectiveDef<T> {
            this: DirectiveDef<U>, instance: U, value: any, publicName: string,
            privateName: string) => void)|null;
 }
-
-/**
- * @codeGenApi
- */
-export type ɵɵComponentDefWithMeta<
-    T, Selector extends String, ExportAs extends
-        string[], InputMap extends {[key: string]: string},
-                                   OutputMap extends {[key: string]: string}, QueryFields extends
-            string[], NgContentSelectors extends string[]> = ComponentDef<T>;
 
 /**
  * @codeGenApi
@@ -413,11 +394,6 @@ export interface PipeDef<T> {
   /* The following are lifecycle hooks for this pipe */
   onDestroy: (() => void)|null;
 }
-
-/**
- * @codeGenApi
- */
-export type ɵɵPipeDefWithMeta<T, Name extends string> = PipeDef<T>;
 
 export interface DirectiveDefFeature {
   <T>(directiveDef: DirectiveDef<T>): void;

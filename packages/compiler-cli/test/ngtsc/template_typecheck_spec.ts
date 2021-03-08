@@ -42,7 +42,7 @@ export declare class NgForOfContext<T, U extends i0.NgIterable<T> = i0.NgIterabl
 export declare class IndexPipe {
   transform<T>(value: T[], index: number): T;
 
-  static ɵpipe: i0.ɵPipeDefWithMeta<IndexPipe, 'index'>;
+  static ɵpipe: i0.ɵPipeDeclaration<IndexPipe, 'index'>;
 }
 
 export declare class SlicePipe {
@@ -52,7 +52,7 @@ export declare class SlicePipe {
   transform(value: undefined, start: number, end?: number): undefined;
   transform(value: any, start: number, end?: number): any;
 
-  static ɵpipe: i0.ɵPipeDefWithMeta<SlicePipe, 'slice'>;
+  static ɵpipe: i0.ɵPipeDeclaration<SlicePipe, 'slice'>;
 }
 
 export declare class NgForOf<T, U extends i0.NgIterable<T> = i0.NgIterable<T>> implements DoCheck {
@@ -62,7 +62,7 @@ export declare class NgForOf<T, U extends i0.NgIterable<T> = i0.NgIterable<T>> i
   constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T, U>>, _differs: IterableDiffers);
   ngDoCheck(): void;
   static ngTemplateContextGuard<T, U extends i0.NgIterable<T>>(dir: NgForOf<T, U>, ctx: any): ctx is NgForOfContext<T, U>;
-  static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgForOf<any>, '[ngFor][ngForOf]', never, {'ngForOf': 'ngForOf'}, {}, never>;
+  static ɵdir: i0.ɵɵDirectiveDeclaration<NgForOf<any>, '[ngFor][ngForOf]', never, {'ngForOf': 'ngForOf'}, {}, never>;
 }
 
 export declare class NgIf<T = unknown> {
@@ -72,7 +72,7 @@ export declare class NgIf<T = unknown> {
   constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>);
   static ngTemplateGuard_ngIf: 'binding';
   static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<Exclude<T, false | 0 | "" | null | undefined>>;
-  static ɵdir: i0.ɵɵDirectiveDefWithMeta<NgIf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
+  static ɵdir: i0.ɵɵDirectiveDeclaration<NgIf<any>, '[ngIf]', never, {'ngIf': 'ngIf'}, {}, never>;
 }
 
 export declare class NgIfContext<T = unknown> {
@@ -81,7 +81,7 @@ export declare class NgIfContext<T = unknown> {
 }
 
 export declare class CommonModule {
-  static ɵmod: i0.ɵɵNgModuleDefWithMeta<CommonModule, [typeof NgIf, typeof NgForOf, typeof IndexPipe, typeof SlicePipe], never, [typeof NgIf, typeof NgForOf, typeof IndexPipe, typeof SlicePipe]>;
+  static ɵmod: i0.ɵɵNgModuleDeclaration<CommonModule, [typeof NgIf, typeof NgForOf, typeof IndexPipe, typeof SlicePipe], never, [typeof NgIf, typeof NgForOf, typeof IndexPipe, typeof SlicePipe]>;
 }
 `);
       env.write('node_modules/@angular/animations/index.d.ts', `
@@ -1346,17 +1346,17 @@ export declare class AnimationEvent {
         export declare class AbstractDir {
           fromAbstract: number;
 
-          static ɵdir: i0.ɵɵDirectiveDefWithMeta<AbstractDir, never, never, {'fromAbstract': 'fromAbstract'}, never, never>;
+          static ɵdir: i0.ɵɵDirectiveDeclaration<AbstractDir, never, never, {'fromAbstract': 'fromAbstract'}, never, never>;
         }
 
         export declare class BaseDir extends AbstractDir {
           fromBase: string;
 
-          static ɵdir: i0.ɵɵDirectiveDefWithMeta<BaseDir, '[base]', never, {'fromBase': 'fromBase'}, never, never>;
+          static ɵdir: i0.ɵɵDirectiveDeclaration<BaseDir, '[base]', never, {'fromBase': 'fromBase'}, never, never>;
         }
 
         export declare class ExternalModule {
-          static ɵmod: i0.ɵɵNgModuleDefWithMeta<ExternalModule, [typeof BaseDir], never, [typeof BaseDir]>;
+          static ɵmod: i0.ɵɵNgModuleDeclaration<ExternalModule, [typeof BaseDir], never, [typeof BaseDir]>;
         }
       `);
 
@@ -1472,25 +1472,25 @@ export declare class AnimationEvent {
 
          // 'alpha' declares the directive which will ultimately be imported.
          env.write('alpha.d.ts', `
-          import {ɵɵDirectiveDefWithMeta, ɵɵNgModuleDefWithMeta} from '@angular/core';
+          import {ɵɵDirectiveDeclaration, ɵɵNgModuleDeclaration} from '@angular/core';
 
           export declare class ExternalDir {
             input: string;
-            static ɵdir: ɵɵDirectiveDefWithMeta<ExternalDir, '[test]', never, { 'input': "input" }, never, never>;
+            static ɵdir: ɵɵDirectiveDeclaration<ExternalDir, '[test]', never, { 'input': "input" }, never, never>;
           }
 
           export declare class AlphaModule {
-            static ɵmod: ɵɵNgModuleDefWithMeta<AlphaModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
+            static ɵmod: ɵɵNgModuleDeclaration<AlphaModule, [typeof ExternalDir], never, [typeof ExternalDir]>;
           }
          `);
 
          // 'beta' re-exports AlphaModule from alpha.
          env.write('beta.d.ts', `
-          import {ɵɵNgModuleDefWithMeta} from '@angular/core';
+          import {ɵɵNgModuleDeclaration} from '@angular/core';
           import {AlphaModule} from './alpha';
 
           export declare class BetaModule {
-            static ɵmod: ɵɵNgModuleDefWithMeta<BetaModule, never, never, [typeof AlphaModule]>;
+            static ɵmod: ɵɵNgModuleDeclaration<BetaModule, never, never, [typeof AlphaModule]>;
           }
          `);
 
@@ -1525,12 +1525,12 @@ export declare class AnimationEvent {
 
         export declare class MatInput {
           value: string;
-          static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatInput, '[matInput]', never, {'value': 'value'}, {}, never>;
+          static ɵdir: i0.ɵɵDirectiveDeclaration<MatInput, '[matInput]', never, {'value': 'value'}, {}, never>;
           static ngAcceptInputType_value: string|number;
         }
 
         export declare class MatInputModule {
-          static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatInputModule, [typeof MatInput], never, [typeof MatInput]>;
+          static ɵmod: i0.ɵɵNgModuleDeclaration<MatInputModule, [typeof MatInput], never, [typeof MatInput]>;
         }
         `);
       });

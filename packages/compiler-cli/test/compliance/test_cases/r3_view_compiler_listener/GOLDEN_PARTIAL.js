@@ -29,11 +29,11 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     onClick(event: any): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -75,16 +75,16 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
 import * as i0 from "@angular/core";
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDef<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyApp, "my-app", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never>;
 }
 export declare class MyComponent {
     onClick(event: any): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent, typeof MyApp], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent, typeof MyApp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -134,11 +134,11 @@ export declare class MyComponent {
     onClick(name: any): void;
     onClick2(name: any): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -182,11 +182,11 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     onClick(v: any): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -226,11 +226,11 @@ export declare class MyComponent {
     click(): void;
     change(): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -298,7 +298,7 @@ export declare class SomeComp {
     update: EventEmitter<any>;
     delete: EventEmitter<any>;
     static ɵfac: i0.ɵɵFactoryDef<SomeComp, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<SomeComp, "some-comp", never, {}, { "update": "update"; "delete": "delete"; }, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SomeComp, "some-comp", never, {}, { "update": "update"; "delete": "delete"; }, never, never>;
 }
 export declare class MyComponent {
     click(): void;
@@ -306,11 +306,11 @@ export declare class MyComponent {
     delete(): void;
     update(): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent, typeof SomeComp], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent, typeof SomeComp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -346,11 +346,11 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
 import * as i0 from "@angular/core";
 export declare class MyComponent {
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "my-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
     static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyModule, [typeof MyComponent], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
 
@@ -376,7 +376,7 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     onClick(): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
 }
 
 /****************************************************************************************************
@@ -412,7 +412,7 @@ export declare class MyComponent {
     mousedown(): void;
     click(): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyComponent, "ng-component", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "ng-component", never, {}, {}, never, never>;
 }
 
 /****************************************************************************************************
@@ -440,7 +440,7 @@ import * as i0 from "@angular/core";
 export declare class MyComponent {
     click(target: any): void;
     static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MyComponent, never, never, {}, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MyComponent, never, never, {}, {}, never>;
 }
 
 /****************************************************************************************************
@@ -529,11 +529,11 @@ import * as i0 from "@angular/core";
 export declare class DivDir {
     event: any;
     static ɵfac: i0.ɵɵFactoryDef<DivDir, never>;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<DivDir, "div", never, { "event": "event"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<DivDir, "div", never, { "event": "event"; }, {}, never>;
 }
 export declare class MyMod {
     static ɵfac: i0.ɵɵFactoryDef<MyMod, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MyMod, [typeof Comp, typeof DivDir], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MyMod, [typeof Comp, typeof DivDir], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyMod>;
 }
 

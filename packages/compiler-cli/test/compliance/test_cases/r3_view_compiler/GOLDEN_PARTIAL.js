@@ -49,17 +49,17 @@ import * as i0 from "@angular/core";
 export declare class MyApp {
     list: any[];
     static ɵfac: i0.ɵɵFactoryDef<MyApp, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MyApp, "my-app", never, {}, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MyApp, "my-app", never, {}, {}, never, never>;
 }
 export declare class TodoComponent {
     data: any[];
     myTitle: string;
     static ɵfac: i0.ɵɵFactoryDef<TodoComponent, never>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<TodoComponent, "todo", never, { "data": "data"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TodoComponent, "todo", never, { "data": "data"; }, {}, never, never>;
 }
 export declare class TodoModule {
     static ɵfac: i0.ɵɵFactoryDef<TodoModule, never>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<TodoModule, [typeof TodoComponent, typeof MyApp], never, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<TodoModule, [typeof TodoComponent, typeof MyApp], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<TodoModule>;
 }
 

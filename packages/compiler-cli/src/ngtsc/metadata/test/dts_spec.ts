@@ -33,7 +33,7 @@ runInEachFileSystem(() => {
 
           export declare class TestDir {
             constructor(p0: ViewContainerRef);
-            static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestDir, "[test]", never, {}, {}, never>
+            static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[test]", never, {}, {}, never>
           }
         `
           }],
@@ -67,7 +67,7 @@ runInEachFileSystem(() => {
 
           export declare class TestDir {
             constructor(p0: ViewContainerRef, p1: TemplateRef);
-            static ɵdir: i0.ɵɵDirectiveDefWithMeta<TestDir, "[test]", never, {}, {}, never>
+            static ɵdir: i0.ɵɵDirectiveDeclaration<TestDir, "[test]", never, {}, {}, never>
           }
         `
           }],

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgIterable, TemplateRef, ɵɵDirectiveDefWithMeta, ɵɵNgModuleDefWithMeta, ɵɵPipeDefWithMeta} from '@angular/core';
+import {NgIterable, TemplateRef, ɵɵDirectiveDeclaration, ɵɵNgModuleDeclaration, ɵɵPipeDeclaration} from '@angular/core';
 
 export interface NgForOfContext<T, U extends NgIterable<T>> {
   $implicit: T;
@@ -36,7 +36,7 @@ export declare class NgForOf<T, U extends NgIterable<T>> {
   ngForTrackBy: TrackByFunction<T>;
   ngForTemplate: TemplateRef<NgForOfContext<T, U>>;
 
-  static ɵdir: ɵɵDirectiveDefWithMeta < NgForOf<any, any>, '[ngFor][ngForOf]', never, {
+  static ɵdir: ɵɵDirectiveDeclaration < NgForOf<any, any>, '[ngFor][ngForOf]', never, {
     'ngForOf': 'ngForOf';
     'ngForTrackBy': 'ngForTrackBy';
     'ngForTemplate': 'ngForTemplate';
@@ -50,7 +50,7 @@ export declare class NgIf<T = unknown> {
   ngIf: T;
   ngIfThen: TemplateRef<NgIfContext<T>>|null;
   ngIfElse: TemplateRef<NgIfContext<T>>|null;
-  static ɵdir: ɵɵDirectiveDefWithMeta < NgIf<any>, '[ngIf]', never, {
+  static ɵdir: ɵɵDirectiveDeclaration < NgIf<any>, '[ngIf]', never, {
     'ngIf': 'ngIf';
     'ngIfThen': 'ngIfThen';
     'ngIfElse': 'ngIfElse';
@@ -64,7 +64,7 @@ export declare class NgTemplateOutlet {
   ngTemplateOutlet: TemplateRef<any>|null;
   ngTemplateOutletContext: Object|null;
 
-  static ɵdir: ɵɵDirectiveDefWithMeta < NgTemplateOutlet, '[ngTemplateOutlet]', never, {
+  static ɵdir: ɵɵDirectiveDeclaration < NgTemplateOutlet, '[ngTemplateOutlet]', never, {
     'ngTemplateOutlet': 'ngTemplateOutlet';
     'ngTemplateOutletContext': 'ngTemplateOutletContext';
   }
@@ -80,11 +80,11 @@ export declare class DatePipe {
   transform(
       value: Date|string|number|null|undefined, format?: string, timezone?: string,
       locale?: string): string|null;
-  static ɵpipe: ɵɵPipeDefWithMeta<DatePipe, 'date'>;
+  static ɵpipe: ɵɵPipeDeclaration<DatePipe, 'date'>;
 }
 
 export declare class CommonModule {
-  static ɵmod: ɵɵNgModuleDefWithMeta<
+  static ɵmod: ɵɵNgModuleDeclaration<
       CommonModule, [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof NgTemplateOutlet], never,
       [typeof NgForOf, typeof NgIf, typeof DatePipe, typeof NgTemplateOutlet]>;
 }
