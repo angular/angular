@@ -24,7 +24,7 @@ TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: 
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestCmp {
-    static ɵfac: i0.ɵɵFactoryDef<TestCmp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
 }
 
@@ -54,7 +54,7 @@ TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: 
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestCmp {
-    static ɵfac: i0.ɵɵFactoryDef<TestCmp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
 }
 
@@ -84,7 +84,7 @@ TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: 
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestCmp {
-    static ɵfac: i0.ɵɵFactoryDef<TestCmp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
 }
 
@@ -114,7 +114,7 @@ TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: 
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestCmp {
-    static ɵfac: i0.ɵɵFactoryDef<TestCmp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
 }
 
@@ -144,7 +144,7 @@ TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: 
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestCmp {
-    static ɵfac: i0.ɵɵFactoryDef<TestCmp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
 }
 
@@ -174,7 +174,7 @@ TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: 
  ****************************************************************************************************/
 import * as i0 from "@angular/core";
 export declare class TestCmp {
-    static ɵfac: i0.ɵɵFactoryDef<TestCmp, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
 }
 

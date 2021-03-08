@@ -56,11 +56,11 @@ export declare class MyComponent {
     };
     myColorProp: string;
     myFooClass: string;
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -126,11 +126,11 @@ export declare class MyComponent {
         a: boolean;
         b: boolean;
     };
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -193,11 +193,11 @@ export declare class MyComponent {
     myWidthExp: string;
     myBarClassExp: boolean;
     myHeightExp: string;
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -273,11 +273,11 @@ export declare class MyComponent {
     p7: number;
     p8: number;
     p9: number;
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -353,11 +353,11 @@ export declare class MyComponent {
     p7: number;
     p8: number;
     p9: number;
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }
@@ -446,27 +446,27 @@ export declare class ClassDirective {
     myClassMap: {
         red: boolean;
     };
-    static ɵfac: i0.ɵɵFactoryDef<ClassDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ClassDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<ClassDirective, "[myClassDir]", never, {}, {}, never>;
 }
 export declare class WidthDirective {
     myWidth: number;
     myFooClass: boolean;
-    static ɵfac: i0.ɵɵFactoryDef<WidthDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<WidthDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<WidthDirective, "[myWidthDir]", never, {}, {}, never>;
 }
 export declare class HeightDirective {
     myHeight: number;
     myBarClass: boolean;
-    static ɵfac: i0.ɵɵFactoryDef<HeightDirective, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<HeightDirective, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<HeightDirective, "[myHeightDir]", never, {}, {}, never>;
 }
 export declare class MyComponent {
-    static ɵfac: i0.ɵɵFactoryDef<MyComponent, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, never>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
-    static ɵfac: i0.ɵɵFactoryDef<MyModule, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyModule, never>;
     static ɵmod: i0.ɵɵNgModuleDeclaration<MyModule, [typeof MyComponent, typeof WidthDirective, typeof HeightDirective, typeof ClassDirective], never, never>;
     static ɵinj: i0.ɵɵInjectorDef<MyModule>;
 }

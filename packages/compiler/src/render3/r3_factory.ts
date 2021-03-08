@@ -257,7 +257,8 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
         `${meta.name}_Factory`),
     statements,
     type: o.expressionType(o.importExpr(
-        R3.FactoryDef, [typeWithParameters(meta.type.type, meta.typeArgumentCount), ctorDepsType]))
+        R3.FactoryDeclaration,
+        [typeWithParameters(meta.type.type, meta.typeArgumentCount), ctorDepsType]))
   };
 }
 

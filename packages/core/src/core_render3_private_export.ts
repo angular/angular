@@ -140,7 +140,7 @@ export {
   ɵɵelementEnd,
   ɵɵelementStart,
   ɵɵenableBindings,
-  ɵɵFactoryDef,
+  ɵɵFactoryDeclaration,
   ɵɵgetCurrentView,
   ɵɵgetInheritedFactory,
   ɵɵhostProperty,
