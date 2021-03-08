@@ -42,6 +42,11 @@ export type ɵɵPipeDeclaration<T, Name extends string> = unknown;
 /**
  * @publicApi
  */
+export type ɵɵInjectorDeclaration<T> = unknown;
+
+/**
+ * @publicApi
+ */
 export type ɵɵFactoryDeclaration<T, CtorDependencies extends CtorDependency[]> = unknown;
 
 /**

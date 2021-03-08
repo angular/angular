@@ -37,5 +37,6 @@ export function compileInjector(meta: R3InjectorMetadata): R3CompiledExpression 
 }
 
 export function createInjectorType(meta: R3InjectorMetadata): o.Type {
-  return new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type.type)]));
+  return new o.ExpressionType(
+      o.importExpr(R3.InjectorDeclaration, [new o.ExpressionType(meta.type.type)]));
 }

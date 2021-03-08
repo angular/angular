@@ -1258,7 +1258,7 @@ function allTests(os: string) {
       expect(dtsContents)
           .toContain(
               'static ɵmod: i0.ɵɵNgModuleDeclaration<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
-      expect(dtsContents).toContain('static ɵinj: i0.ɵɵInjectorDef');
+      expect(dtsContents).toContain('static ɵinj: i0.ɵɵInjectorDeclaration');
     });
 
     it('should compile NgModules with factory providers without errors', () => {
@@ -1301,7 +1301,7 @@ function allTests(os: string) {
       expect(dtsContents)
           .toContain(
               'static ɵmod: i0.ɵɵNgModuleDeclaration<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
-      expect(dtsContents).toContain('static ɵinj: i0.ɵɵInjectorDef');
+      expect(dtsContents).toContain('static ɵinj: i0.ɵɵInjectorDeclaration');
     });
 
     it('should compile NgModules with factory providers and deps without errors', () => {
@@ -1348,7 +1348,7 @@ function allTests(os: string) {
       expect(dtsContents)
           .toContain(
               'static ɵmod: i0.ɵɵNgModuleDeclaration<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
-      expect(dtsContents).toContain('static ɵinj: i0.ɵɵInjectorDef');
+      expect(dtsContents).toContain('static ɵinj: i0.ɵɵInjectorDeclaration');
     });
 
     it('should compile NgModules with references to local components', () => {

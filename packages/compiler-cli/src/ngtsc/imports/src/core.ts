@@ -62,7 +62,7 @@ const CORE_SUPPORTED_SYMBOLS = new Map<string, string>([
   ['ɵɵFactoryDeclaration', 'ɵɵFactoryDeclaration'],
   ['ɵsetClassMetadata', 'setClassMetadata'],
   ['ɵɵInjectableDef', 'ɵɵInjectableDef'],
-  ['ɵɵInjectorDef', 'ɵɵInjectorDef'],
+  ['ɵɵInjectorDeclaration', 'ɵɵInjectorDeclaration'],
   ['ɵɵNgModuleDeclaration', 'ɵɵNgModuleDeclaration'],
   ['ɵNgModuleFactory', 'NgModuleFactory'],
   ['ɵnoSideEffects', 'ɵnoSideEffects'],
