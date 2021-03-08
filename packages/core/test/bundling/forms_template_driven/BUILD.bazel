@@ -5,7 +5,7 @@ load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
 load("@npm//http-server:index.bzl", "http_server")
 
 ng_module(
-    name = "forms",
+    name = "forms_template_driven",
     srcs = ["index.ts"],
     tags = [
         "ivy-only",
@@ -24,7 +24,7 @@ ng_rollup_bundle(
         "ivy-only",
     ],
     deps = [
-        ":forms",
+        ":forms_template_driven",
         "//packages/core",
         "//packages/forms",
         "//packages/platform-browser",

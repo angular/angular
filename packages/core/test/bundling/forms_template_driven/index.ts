@@ -47,7 +47,7 @@ class TemplateFormsComponent {
   }
 
   addCity() {
-    this.addresses.push(({city: ''}));
+    this.addresses.push({city: ''});
   }
 }
 
