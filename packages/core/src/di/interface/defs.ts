@@ -19,7 +19,7 @@ import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, S
  * requesting injection of other types if necessary.
  *
  * Optionally, a `providedIn` parameter specifies that the given type belongs to a particular
- * `InjectorDef`, `NgModule`, or a special scope (e.g. `'root'`). A value of `null` indicates
+ * `Injector`, `NgModule`, or a special scope (e.g. `'root'`). A value of `null` indicates
  * that the injectable does not belong to any scope.
  *
  * @codeGenApi
@@ -80,7 +80,7 @@ export interface ɵɵInjectorDef<T> {
 /**
  * A `Type` which has an `InjectableDef` static field.
  *
- * `InjectableDefType`s contain their own Dependency Injection metadata and are usable in an
+ * `InjectableType`s contain their own Dependency Injection metadata and are usable in an
  * `InjectorDef`-based `StaticInjector.
  *
  * @publicApi
@@ -95,7 +95,7 @@ export interface InjectableType<T> extends Type<T> {
 /**
  * A type which has an `InjectorDef` static field.
  *
- * `InjectorDefTypes` can be used to configure a `StaticInjector`.
+ * `InjectorTypes` can be used to configure a `StaticInjector`.
  *
  * This is an opaque type whose structure is highly version dependent. Do not rely on any
  * properties.
@@ -108,7 +108,7 @@ export interface InjectorType<T> extends Type<T> {
 }
 
 /**
- * Describes the `InjectorDef` equivalent of a `ModuleWithProviders`, an `InjectorDefType` with an
+ * Describes the `InjectorDef` equivalent of a `ModuleWithProviders`, an `InjectorType` with an
  * associated array of providers.
  *
  * Objects of this type can be listed in the imports section of an `InjectorDef`.
