@@ -279,7 +279,7 @@ async function printSwDebugInfo(): Promise<void> {
 
   // Internal helpers
   async function findCachesAndPrintEntries(
-      swCacheNames: string[], nameSuffix: string, includeValues = false,
+      swCacheNames: string[], nameSuffix: string, includeValues: boolean,
       ignoredKeys: string[] = []): Promise<void> {
     const cacheNames = swCacheNames.filter(name => name.endsWith(nameSuffix));
 
@@ -290,7 +290,7 @@ async function printSwDebugInfo(): Promise<void> {
   }
 
   async function getCacheEntries(
-      name: string, includeValues = false,
+      name: string, includeValues: boolean,
       ignoredKeys: string[] = []): Promise<{key: string, value?: object}[]> {
     const ignoredUrls = new Set(ignoredKeys.map(key => new Request(key).url));
 
