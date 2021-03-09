@@ -1,27 +1,22 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin label-theme($theme) {
-    $primary: map-get($theme, primary);
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
-    $is-dark-theme: map-get($theme, is-dark);
-
+@mixin theme($theme) {
     .api-header label {
-        color: $white;
+        color: constants.$white;
 
         &.api-status-label {
-          background-color: $mediumgray;
+          background-color: constants.$mediumgray;
       
           &.deprecated, &.security, &.impure-pipe {
-            background-color: $brightred;
+            background-color: constants.$brightred;
           }
         }
       
         &.api-type-label {
-          background-color: $accentblue;
+          background-color: constants.$accentblue;
       
-          @each $name, $symbol in $api-symbols {
+          @each $name, $symbol in constants.$api-symbols {
             &.#{$name} {
               background: map-get($symbol, background);
             }
@@ -29,13 +24,13 @@
         }
       
         &.page-label {
-          background-color: $mist;
-          color: $mediumgray;
+          background-color: constants.$mist;
+          color: constants.$mediumgray;
         }
       
         &.property-type-label {
-          background-color: $darkgray;
-          color: $white;
+          background-color: constants.$darkgray;
+          color: constants.$white;
         }
       }
 }

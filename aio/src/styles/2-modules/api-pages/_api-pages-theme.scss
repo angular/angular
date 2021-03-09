@@ -1,21 +1,16 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
 @mixin api-pages-theme($theme) {
-  $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
-  $is-dark-theme: map-get($theme, is-dark);
-
   .api-body {
     details.overloads {
       .detail-contents {
-        border: 1px solid $lightgray;
+        border: 1px solid constants.$lightgray;
       }
 
       summary {
         .actions {
-          color: $blue;
+          color: constants.$blue;
         }
       }
     }
@@ -27,10 +22,10 @@
         .with-github-links {
           .github-links {
             a {
-              color: $mediumgray;
+              color: constants.$mediumgray;
 
               .material-icons:hover {
-                color: $blue;
+                color: constants.$blue;
               }
             }
           }
@@ -38,21 +33,21 @@
       }
 
       tr {
-        border-bottom: 1px solid $lightgray;
+        border-bottom: 1px solid constants.$lightgray;
       }
     }
 
     .from-constructor,
     .read-only-property,
     .write-only-property {
-      background-color: $lightgray;
+      background-color: constants.$lightgray;
     }
   }
 
   .github-links {
     .material-icons {
       &:hover {
-        background-color: $mist;
+        background-color: constants.$mist;
       }
     }
   }

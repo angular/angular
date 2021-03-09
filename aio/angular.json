@@ -44,14 +44,14 @@
               "src/styles/main.scss",
               {
                 "inject": false,
-                "input": "src/styles/custom-themes/light.scss",
-                "bundleName": "assets/light"
+                "input": "src/styles/custom-themes/dark-theme.scss",
+                "bundleName": "dark-theme"
               },
               {
                 "inject": false,
-                "input": "src/styles/custom-themes/dark.scss",
-                "bundleName": "assets/dark"
-              },
+                "input": "src/styles/custom-themes/light-theme.scss",
+                "bundleName": "light-theme"
+              }
             ],
             "scripts": [],
             "budgets": [

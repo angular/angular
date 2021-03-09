@@ -1,5 +1,4 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 .error-list {
   display: grid;
@@ -12,9 +11,9 @@
   }
 
   li {
-    @include font-size(14);
+    @include mixins.font-size(14);
     margin: 8px 0;
-    @include line-height(14);
+    @include mixins.line-height(14);
     padding: 0;
     float: left;
     overflow: hidden;
@@ -32,7 +31,7 @@
 
     a {
       display: inline-block;
-      @include line-height(16);
+      @include mixins.line-height(16);
       padding: 0 16px 0;
       text-decoration: none;
       transition: all .3s;

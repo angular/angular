@@ -1,5 +1,4 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 // VARIABLES
 $showTopMenuWidth: 1048px;
@@ -29,7 +28,7 @@ mat-toolbar.app-toolbar {
   }
 
   // DOCS PAGES OVERRIDE: HAMBURGER
-  @include docs-pages($nestParentSelector: true) {
+  @include mixins.docs-pages($nestParentSelector: true) {
     @media (min-width: $showTopMenuWidth) {
       .hamburger {
         // Hamburger shown on non-marketing pages even on large screens.
@@ -172,8 +171,8 @@ mat-toolbar.app-toolbar {
         outline: none;
       }
 
-      @include placeholder {
-        @include font-size(14);
+      @include mixins.placeholder {
+        @include mixins.font-size(14);
       }
 
       @media (min-width: 1000px) {
@@ -190,6 +189,13 @@ mat-toolbar.app-toolbar {
     }
   }
 
+  aio-theme-toggle {
+    @media screen and (min-width: 350px) {
+      padding-right: 2px;
+      margin-right: 2px;
+    }
+  }
+
   // EXTERNAL LINK ICONS
   .toolbar-external-icons-container {
     display: flex;
@@ -197,14 +203,26 @@ mat-toolbar.app-toolbar {
     flex-shrink: 0; // This is required for the icons to be displayed correctly in IE11.
     height: 100%;
 
+    @media screen and (max-width: 350px) {
+      a[title="GitHub"] {
+        display: none;
+      }
+    }
+
+    a[title="Twitter"], a[title="YouTube"] {
+      @media screen and (max-width: 420px) {
+        display: none;
+      }
+    }
+
     a {
       display: flex;
       align-items: center;
-      padding: 24px;
-      margin: 0 -16px;
+      padding: 0;
+      margin: 24px 8px;
 
       &:focus {
-        outline-offset: -16px;
+        outline-offset: 8px;
       }
 
       @media screen and (max-width: 480px) {

@@ -1,5 +1,4 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 table {
   margin: 24px 0px;
@@ -23,12 +22,12 @@ table {
     }
 
     tr > th {
-      @include font-size(12);
+      @include mixins.font-size(12);
       font-weight: 500;
       padding: 8px 24px;
       text-align: left;
       text-transform: uppercase;
-      @include line-height(28);
+      @include mixins.line-height(28);
     }
   }
 
@@ -37,7 +36,7 @@ table {
     td {
       padding: 16px;
       text-align: left;
-      @include line-height(24);
+      @include mixins.line-height(24);
       vertical-align: top;
 
       @media (max-width: 480px) {
@@ -50,7 +49,7 @@ table {
     }
 
     td {
-      @include letter-spacing(0.3);
+      @include mixins.letter-spacing(0.3);
     }
 
     th {

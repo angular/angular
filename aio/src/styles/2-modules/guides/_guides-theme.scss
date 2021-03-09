@@ -1,13 +1,10 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin guides-theme($theme) {
-    $primary: map-get($theme, primary);
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
+@mixin theme($theme) {
     $is-dark-theme: map-get($theme, is-dark);
 
     .reviewed {
-        color: lighten($darkgray, 10);
+        color: if($is-dark-theme, constants.$offwhite, lighten(constants.$darkgray, 10));
       }
 }

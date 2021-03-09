@@ -1,78 +1,72 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin marketing-layout-theme($theme) {
+@mixin theme($theme) {
   $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
   $is-dark-theme: map-get($theme, is-dark);
 
   .background-sky {
-    background-color: mat-color($primary, default);
-    background: linear-gradient(145deg, mat-color($primary, 900), mat-color($primary, 400));
+    background: linear-gradient(145deg, mat-color($primary, 900), if($is-dark-theme, mat-color($primary, 700), #42a5f5));
     color: mat-color($foreground, text);
   }
 
   section#intro {
-    color: $white;
+    color: constants.$white;
 
-    @if $is-dark-theme {
-      .hero-logo {
-        img {
-          filter: brightness(1.1);
-        }
-      }
+    .hero-logo {
+      background-image: url(/assets/images/logos/angular/angular.svg);
     }
   }
 
   .announcement-bar {
-    background-color: $white;
+    background-color: constants.$white;
 
     .button {
-      color: $white;
-      background-color: $blue;
+      color: constants.$white;
+      background-color: constants.$blue;
 
       &:hover {
-        color: rgba($white, 0.7);
+        color: rgba(constants.$white, 0.7);
       }
     }
   }
 
   .home-row .card {
-    background-color: if($is-dark-theme, $darkgray, $white);
+    background-color: if($is-dark-theme, constants.$darkgray, constants.$white);
 
     .card-text-container {
       p {
-        color: if($is-dark-theme, $offwhite, $darkgray);
+        color: if($is-dark-theme, constants.$offwhite, constants.$darkgray);
       }
     }
 
     &:hover {
       h2 {
-        color: $blue;
+        color: if($is-dark-theme, constants.$cyan, constants.$blue);
       }
     }
   }
 
   .button.hero-cta {
-    background-color: if($is-dark-theme, $darkgray, $white);
+    background-color: if($is-dark-theme, constants.$darkgray, constants.$white);
   }
 
   .cta-bar {
     .hero-cta {
-      color: if($is-dark-theme, lighten($blue, 10), $blue);
+      color: if($is-dark-theme, constants.$cyan, constants.$blue);
     }
   }
 
   .text-headline {
-    color: if($is-dark-theme, lighten($blue, 10), $blue);
+    color: if($is-dark-theme, constants.$lightblue, constants.$blue);
   }
 
   .marketing-banner {
-    background-color: if($is-dark-theme, $blue, lighten($blue, 10));
+    background-color: if($is-dark-theme, mat-color($primary, 800), mat-color($primary, 600));
 
     .banner-headline {
-      color: $white;
+      color: constants.$white;
     }
   }
 }

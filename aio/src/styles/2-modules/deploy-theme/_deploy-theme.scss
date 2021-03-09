@@ -1,14 +1,18 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../constants';
+@use '../../mixins';
 
-aio-shell.mode-archive {
-  @include deploy-theme($blue-grey-900, $blue-grey-400);
-}
+@mixin theme($theme) {
+  $is-dark-theme: map-get($theme, is-dark);
 
-aio-shell.mode-next {
-  @include deploy-theme($brightred, $darkred);
-}
-
-aio-shell.mode-rc {
-  @include deploy-theme($tangerine, $darkgoldenrod);
+  aio-shell.mode-archive {
+    @include mixins.deploy-theme(constants.$blue-grey-900, constants.$blue-grey-400, if($is-dark-theme, constants.$powderblue, constants.$blue-grey-900));
+  }
+  
+  aio-shell.mode-next {
+    @include mixins.deploy-theme(constants.$brightred, constants.$darkred, if($is-dark-theme, constants.$powderblue, constants.$brightred));
+  }
+  
+  aio-shell.mode-rc {
+    @include mixins.deploy-theme(constants.$tangerine, constants.$darkgoldenrod, if($is-dark-theme, constants.$powderblue, constants.$tangerine));
+  }
 }
