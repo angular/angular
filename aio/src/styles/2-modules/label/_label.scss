@@ -1,11 +1,10 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 .api-header label {
   border-radius: 4px;
   padding: 2px 10px;
   display: inline;
-  @include font-size(12);
+  @include mixins.font-size(12);
   margin-right: 8px;
   font-weight: 500;
   text-transform: uppercase;
@@ -29,7 +28,7 @@
   }
 
   &.property-type-label {
-    @include font-size(12);
+    @include mixins.font-size(12);
     text-transform: none;
   }
 }

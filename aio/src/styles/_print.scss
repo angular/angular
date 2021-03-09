@@ -1,4 +1,4 @@
-@use './constants' as *;
+@use './constants';
 
 @media print {
   // General Adjustments
@@ -13,7 +13,7 @@
 
   h1 {
     height: 40px !important;
-    color: $darkgray !important;
+    color: constants.$darkgray !important;
   }
 
   h1,
@@ -38,7 +38,7 @@
   }
 
   table tbody tr:last-child td {
-    border-bottom: 1px solid $lightgray !important;
+    border-bottom: 1px solid constants.$lightgray !important;
   }
 
   img {
@@ -52,7 +52,7 @@
   p > code,
   li > code,
   table code {
-    color: $blue !important;
+    color: constants.$blue !important;
   }
 
   // No Print Class
@@ -104,19 +104,19 @@
       .lit,
       .pun,
       .dec {
-        color: $darkgray;
+        color: constants.$darkgray;
       }
     }
 
     header {
       background: none;
-      border: 0.5px solid $lightgray;
-      color: $darkgray;
+      border: 0.5px solid constants.$lightgray;
+      color: constants.$darkgray;
     }
   }
 
   .content code {
-    border: 0.5px solid $lightgray;
+    border: 0.5px solid constants.$lightgray;
   }
 
   .mat-tab-labels {
@@ -132,7 +132,7 @@
   }
 
   .api-header label {
-    color: $darkgray !important;
+    color: constants.$darkgray !important;
     font-weight: bold !important;
     margin: 2px !important;
     padding: 0 !important;

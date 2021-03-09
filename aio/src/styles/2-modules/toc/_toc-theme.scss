@@ -1,9 +1,7 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin toc-theme($theme) {
-  $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
+@mixin theme($theme) {
   $foreground: map-get($theme, foreground);
   $is-dark-theme: map-get($theme, is-dark);
 
@@ -12,7 +10,7 @@
       .toc-heading {
         &.secondary {
           &:hover {
-            color: $accentblue;
+            color: constants.$accentblue;
           }
         }
       }
@@ -21,22 +19,22 @@
         &.toc-heading,
         &.toc-more-items {
           &.embedded:focus {
-            background: if($is-dark-theme, $darkgray, $lightgray);
-            color: if($is-dark-theme, $white, $mediumgray);
+            background: if($is-dark-theme, constants.$darkgray, constants.$lightgray);
+            color: if($is-dark-theme, constants.$white, constants.$mediumgray);
           }
         }
 
         &.toc-heading {
           &:hover:not(.embedded) {
-            color: $accentblue;
+            color: constants.$accentblue;
           }
         }
 
         &.toc-more-items {
-          color: $mediumgray;
+          color: if($is-dark-theme, constants.$lightgray, constants.$mediumgray);
 
           &:hover {
-            color: $accentblue;
+            color: constants.$accentblue;
           }
         }
       }
@@ -44,38 +42,38 @@
       ul.toc-list {
         li {
           &.h1:after {
-            background: if($is-dark-theme, $mediumgray, $lightgray);
+            background: if($is-dark-theme, constants.$mediumgray, constants.$lightgray);
           }
 
           a {
-            color: if($is-dark-theme, $white, lighten($darkgray, 10));
+            color: if($is-dark-theme, constants.$white, lighten(constants.$darkgray, 10));
           }
 
           &:hover {
             * {
-              color: if($is-dark-theme, $lightblue, $accentblue);
+              color: if($is-dark-theme, constants.$lightblue, constants.$accentblue);
             }
           }
 
           &.active {
             * {
-              color: if($is-dark-theme, $cyan, $blue);
+              color: if($is-dark-theme, constants.$cyan, constants.$blue);
             }
 
             a:before {
-              background: if($is-dark-theme, $cyan, $blue);
+              background: if($is-dark-theme, constants.$cyan, constants.$blue);
             }
           }
         }
 
         &:not(.embedded) li {
           &:before {
-            border-left-color: if($is-dark-theme, $darkgray, $lightgray);
+            border-left-color: if($is-dark-theme, constants.$darkgray, constants.$lightgray);
           }
 
           &:not(.active):hover {
             a:before {
-              background: $lightgray;
+              background: constants.$lightgray;
             }
           }
         }

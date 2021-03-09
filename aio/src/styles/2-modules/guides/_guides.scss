@@ -1,8 +1,7 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 .reviewed {
-  @include font-size(13);
+  @include mixins.font-size(13);
   font-style: italic;
   text-align: right;
 }

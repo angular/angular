@@ -30,6 +30,11 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block">
   <!-- -->
 
+  <style id="aio-initial-theme">
+    @import url("light-theme.css") (prefers-color-scheme: light);
+    @import url("dark-theme.css") (prefers-color-scheme: dark);
+  </style>
+
   <link rel="manifest" href="pwa-manifest.json">
   <meta name="theme-color" content="#1976d2">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -97,14 +102,12 @@
   <noscript>
     <div class="background-sky hero"></div>
     <section id="intro" style="text-shadow: 1px 1px #1976d2;">
-      <div class="hero-logo">
-        <img src="assets/images/logos/angular/angular.svg" width="250" height="250" alt="Angular">
-      </div>
+      <div class="hero-logo"></div>
       <div class="homepage-container">
         <div class="hero-headline">The modern web<br>developer's platform</div>
       </div>
     </section>
-    <h2 style="color: red; margin-top: 40px; position: relative; text-align: center; text-shadow: 1px 1px #fafafa;">
+    <h2 style="color: red; margin-top: 40px; position: relative; text-align: center; text-shadow: 1px 1px #fafafa; border-top: none;">
       <b><i>This website requires JavaScript.</i></b>
     </h2>
   </noscript>

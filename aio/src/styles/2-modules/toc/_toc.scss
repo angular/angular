@@ -1,10 +1,9 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 $tocItemLineHeight: 24;
 $tocItemTopPadding: 9;
-$tocMarkerSize: 6;
 $tocMarkerRailSize: 1;
+$tocMarkerSize: 6;
 
 @mixin tocMarker() {
   border-radius: 50%;
@@ -29,13 +28,13 @@ $tocMarkerRailSize: 1;
 
 aio-toc {
   .toc-inner {
-    @include font-size(13);
+    @include mixins.font-size(13);
     overflow-y: visible;
     padding: 4px 0 0 10px;
 
     .toc-heading,
     .toc-list .h1 {
-      @include font-size(16);
+      @include mixins.font-size(16);
     }
 
     .toc-heading {
@@ -92,11 +91,11 @@ aio-toc {
 
     .mat-icon {
       &.collapsed {
-        @include rotate(0deg);
+        @include mixins.rotate(0deg);
       }
 
       &:not(.collapsed) {
-        @include rotate(90deg);
+        @include mixins.rotate(90deg);
       }
     }
 
@@ -111,7 +110,7 @@ aio-toc {
 
       li {
         box-sizing: border-box;
-        @include line-height($tocItemLineHeight);
+        @include mixins.line-height($tocItemLineHeight);
         padding: #{$tocItemTopPadding}px 0 #{$tocItemTopPadding}px 12px;
         position: relative;
         transition: all 0.3s ease-in-out;
@@ -131,7 +130,7 @@ aio-toc {
 
         a {
           overflow: visible;
-          @include font-size(14);
+          @include mixins.font-size(14);
           line-height: inherit;
           display: table-cell;
         }

@@ -1,5 +1,4 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 .presskit-container {
   padding: 0 32px 32px 32px;
@@ -40,7 +39,7 @@
             margin-right: 0;
           }
 
-          .transparent-img {
+          .transparent-img, .transparent-img-inverse {
             border-radius: 50%;
           }
         }
@@ -57,7 +56,7 @@
             &::after {
               content: "cloud_download";
               font-family: "Material Icons";
-              @include font-size(24);
+              @include mixins.font-size(24);
               position: absolute;
               right: 0;
             }

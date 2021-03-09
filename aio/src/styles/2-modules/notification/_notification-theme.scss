@@ -1,24 +1,19 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin notification-theme($theme) {
-  $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
-  $is-dark-theme: map-get($theme, is-dark);
-
+@mixin theme($theme) {
   aio-notification {
-    background: $darkgray;
+    background: constants.$darkgray;
 
     .close-button {
-      background: $darkgray;
+      background: constants.$darkgray;
     }
 
     .content {
-      background: $darkgray;
+      background: constants.$darkgray;
 
       .action-button {
-        background: $brightred;
+        background: constants.$brightred;
       }
     }
   }

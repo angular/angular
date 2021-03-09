@@ -1,5 +1,4 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 aio-contributor-list {
   .contributor-group {
@@ -58,7 +57,7 @@ aio-contributor {
 
     .info-item {
       display: flex;
-      @include font-size(14);
+      @include mixins.font-size(14);
       font-weight: 500;
       margin: 8px;
       padding: 0;
@@ -128,8 +127,8 @@ aio-contributor {
 
       p {
         margin: 8px 0;
-        @include font-size(12);
-        @include line-height(14);
+        @include mixins.font-size(12);
+        @include mixins.line-height(14);
         text-align: left;
       }
     }
@@ -158,8 +157,8 @@ aio-contributor {
 
   p {
     cursor: pointer;
-    @include font-size(14);
-    @include line-height(18);
+    @include mixins.font-size(14);
+    @include mixins.line-height(18);
     margin: 8px 16px;
     text-overflow: ellipsis;
     overflow-y: auto;

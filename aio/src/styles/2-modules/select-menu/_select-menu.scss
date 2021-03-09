@@ -1,5 +1,5 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../constants';
+@use '../../mixins';
 
 /* SELECT MENU */
 
@@ -11,9 +11,9 @@ aio-select {
   .form-select-button {
     box-sizing: border-box;
     border-radius: 4px;
-    @include font-size(14);
+    @include mixins.font-size(14);
     font-weight: 400;
-    @include line-height(32);
+    @include mixins.line-height(32);
     outline: none;
     padding: 4px 16px;
     text-align: left;
@@ -42,12 +42,12 @@ aio-select {
     position: absolute;
     top: 0;
     width: 100%;
-    z-index: $layer-2;
+    z-index: constants.$layer-2;
 
     li {
       cursor: pointer;
-      @include font-size(14);
-      @include line-height(32);
+      @include mixins.font-size(14);
+      @include mixins.line-height(32);
       margin: 0;
       padding: 4px 16px 4px 40px;
       position: relative;
@@ -66,7 +66,7 @@ aio-select {
         left: 16px;
         position: absolute;
         top: 12px;
-        z-index: $layer-5;
+        z-index: constants.$layer-5;
       }
     }
   }

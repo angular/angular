@@ -1,5 +1,4 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 aio-search-results {
   z-index: 10;
@@ -24,7 +23,7 @@ aio-search-results {
       padding: 16px;
 
       .search-section-header {
-        @include font-size(16);
+        @include mixins.font-size(16);
         font-weight: 400;
         margin: 10px 0px 5px;
         text-transform: uppercase;
@@ -39,8 +38,8 @@ aio-search-results {
         }
 
         .search-result-item {
-          @include font-size(14);
-          @include line-height(24);
+          @include mixins.font-size(14);
+          @include mixins.line-height(24);
           display: inline-block;
           font-weight: normal;
           padding: 0.6rem 0;

@@ -1,32 +1,27 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import "~@angular/material/theming";
 
-@mixin errors-theme($theme) {
-    $primary: map-get($theme, primary);
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
-    $is-dark-theme: map-get($theme, is-dark);
-
-    .error-list {
-        li {
-            .symbol {
-                &.runtime {
-                    background: $green-500;
-                }
-
-                &.compiler {
-                    background: $blue-500;
-                }
-            }
-
-            a {
-                color: $blue-grey-600;
-
-                &:hover {
-                    background: $blue-grey-50;
-                    color: $blue-500;
-                }
-            }
+@mixin theme($theme) {
+  .error-list {
+    li {
+      .symbol {
+        &.runtime {
+          background: constants.$green-500;
         }
+
+        &.compiler {
+          background: constants.$blue-500;
+        }
+      }
+
+      a {
+        color: constants.$blue-grey-600;
+
+        &:hover {
+          background: constants.$blue-grey-50;
+          color: constants.$blue-500;
+        }
+      }
     }
+  }
 }

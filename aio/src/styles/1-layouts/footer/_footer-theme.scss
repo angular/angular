@@ -1,25 +1,25 @@
-@use '../../constants' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin footer-theme($theme) {
+@mixin theme($theme) {
   $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
   $is-dark-theme: map-get($theme, is-dark);
 
   footer {
-    background-color: $blue;
+    // Because the footer background is always the same color in both light and dark mode, there is no need to specify a foreground color
+    background-color: mat-color($primary, if($is-dark-theme, 900, 700));
 
     aio-footer {
       & > * {
-        color: $white;
+        color: constants.$white;
       }
 
       a {
-        color: $white;
+        color: constants.$white;
       }
 
       h3 {
-        color: $white;
+        color: constants.$white;
       }
     }
   }

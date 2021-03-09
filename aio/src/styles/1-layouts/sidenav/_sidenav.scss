@@ -1,5 +1,5 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../constants';
+@use '../../mixins';
 
 // Disable sidenav animations for the initial render.
 .starting.mat-drawer-transition .mat-drawer-content {
@@ -71,7 +71,7 @@ aio-nav-menu {
       word-wrap: break-word;
 
       &:focus {
-        outline: $focus-outline-onlight auto 2px;
+        outline: constants.$focus-outline-onlight auto 2px;
       }
 
       span {
@@ -119,8 +119,8 @@ aio-nav-menu {
     }
 
     .level-1 {
-      @include font-size(16);
-      @include line-height(28);
+      @include mixins.font-size(16);
+      @include mixins.line-height(28);
       font-weight: 400;
       padding-left: 20px;
       margin: 0;
@@ -128,34 +128,34 @@ aio-nav-menu {
     }
 
     .level-2 {
-      @include font-size(14);
-      @include line-height(24);
+      @include mixins.font-size(14);
+      @include mixins.line-height(24);
       font-weight: 400;
       margin: 0;
       padding-left: 36px;
     }
 
     .level-3 {
-      @include font-size(14);
-      @include line-height(24);
+      @include mixins.font-size(14);
+      @include mixins.line-height(24);
       margin: 0;
       padding-left: 44px;
     }
 
     .level-4 {
-      @include font-size(14);
-      @include line-height(24);
+      @include mixins.font-size(14);
+      @include mixins.line-height(24);
       margin: 0;
       padding-left: 52px;
     }
 
     .level-1, .level-2, .level-3 {
       &.collapsed > .mat-icon {
-        @include rotate(0deg);
+        @include mixins.rotate(0deg);
       }
 
       &.expanded > .mat-icon {
-        @include rotate(90deg);
+        @include mixins.rotate(90deg);
       }
     }
   }

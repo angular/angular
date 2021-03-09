@@ -1,5 +1,5 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../constants';
+@use '../../mixins';
 
 /* API LIST STYLES */
 
@@ -44,15 +44,15 @@ aio-api-list {
       input {
         box-sizing: border-box;
         border-radius: 4px;
-        @include font-size(14);
-        @include line-height(32);
+        @include mixins.font-size(14);
+        @include mixins.line-height(32);
         outline: none;
         padding: 4px 16px 4px 32px;
         transition: all .2s;
         width: 182px;
 
-        @include placeholder {
-          @include font-size(14);
+        @include mixins.placeholder {
+          @include mixins.font-size(14);
         }
 
         @media screen and (max-width: 600px) {
@@ -61,13 +61,13 @@ aio-api-list {
       }
 
       .material-icons {
-        @include font-size(20);
+        @include mixins.font-size(20);
         left: 8px;
         pointer-events: none;
         position: absolute;
         top: 12px;
         width: 20px;
-        z-index: $layer-1;
+        z-index: constants.$layer-1;
       }
     }
 
@@ -85,9 +85,9 @@ aio-api-list {
     padding: 16px 0;
     position: relative;
 
-    @media handheld and (max-width: $phone-breakpoint),
-    screen and (max-device-width: $phone-breakpoint),
-    screen and (max-width: $tablet-breakpoint) {
+    @media handheld and (max-width: constants.$phone-breakpoint),
+    screen and (max-device-width: constants.$phone-breakpoint),
+    screen and (max-width: constants.$tablet-breakpoint) {
       padding: 24px 0 0;
     }
 
@@ -108,9 +108,9 @@ aio-api-list {
       }
 
       li {
-        @include font-size(14);
+        @include mixins.font-size(14);
         margin: 8px 0;
-        @include line-height(14);
+        @include mixins.line-height(14);
         padding: 0;
         float: left;
         width: 33%;
@@ -120,7 +120,7 @@ aio-api-list {
         white-space: nowrap;
 
         a {
-          @include line-height(16);
+          @include mixins.line-height(16);
           padding: 0 16px;
           text-decoration: none;
           transition: all .3s;
