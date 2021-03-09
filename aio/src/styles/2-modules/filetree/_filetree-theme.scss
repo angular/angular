@@ -1,0 +1,26 @@
+@use '../../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin filetree-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  .filetree {
+    background: $white;
+    border: 4px solid $lightgray;
+
+    .file {
+      color: $darkgray;
+    }
+
+    .children {
+      .file {
+        &:before {
+          border-color: $lightgray;
+        }
+      }
+    }
+  }
+}

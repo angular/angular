@@ -1,0 +1,29 @@
+@use '../../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin contributor-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  aio-contributor {
+    background: mat-color($background, background);
+
+    .contributor-info {
+      background: rgba($darkgray, 0.5);
+
+      .info-item {
+        color: $white;
+
+        &:hover {
+          color: $lightgray;
+        }
+      }
+    }
+
+    .contributor-image {
+      border: 2px solid $lightgray;
+    }
+  }
+}

@@ -1,0 +1,20 @@
+@use '../../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin images-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  .content {
+    .lightbox {
+      border: 1px solid if($is-dark-theme, $darkgray, $lightgray);
+      background-color: if($is-dark-theme, $deepgray, $lightboxgray);
+
+      img {
+        background-color: $white;
+      }
+    }
+  }
+}

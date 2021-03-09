@@ -1,0 +1,41 @@
+@use '../../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin label-theme($theme) {
+    $primary: map-get($theme, primary);
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $is-dark-theme: map-get($theme, is-dark);
+
+    .api-header label {
+        color: $white;
+
+        &.api-status-label {
+          background-color: $mediumgray;
+      
+          &.deprecated, &.security, &.impure-pipe {
+            background-color: $brightred;
+          }
+        }
+      
+        &.api-type-label {
+          background-color: $accentblue;
+      
+          @each $name, $symbol in $api-symbols {
+            &.#{$name} {
+              background: map-get($symbol, background);
+            }
+          }
+        }
+      
+        &.page-label {
+          background-color: $mist;
+          color: $mediumgray;
+        }
+      
+        &.property-type-label {
+          background-color: $darkgray;
+          color: $white;
+        }
+      }
+}
