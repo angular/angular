@@ -8,14 +8,12 @@ html {
 body {
   font-family: $main-font;
   margin: 0;
-  color: $darkgray;
   @include font-size(16);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: $deepgray;
   margin-bottom: 0;
   font-weight: 500;
 }
@@ -64,7 +62,6 @@ h5 {
 
 h6 {
   @include font-size(16);
-  color: $mediumgray;
   margin-top: 2rem;
   clear: both;
 }
@@ -97,7 +94,6 @@ a {
   @include line-height(32);
   font-family: inherit;
   font-weight: 400;
-  color: $darkgray;
 
   & > em {
     @include letter-spacing(0.3);
@@ -143,7 +139,6 @@ a {
 .app-toolbar a {
   @include font-size(16);
   font-weight: 400;
-  color: $white;
   font-family: $main-font;
   text-transform: uppercase;
 }
@@ -190,12 +185,9 @@ th {
 code {
   font-family: $code-font;
   font-size: 90%;
-  color: $darkgray;
 }
 
 .sidenav-content a {
-  color: $blue;
-
   &:hover {
     text-decoration: underline;
   }
@@ -227,8 +219,4 @@ code {
       }
     }
   }
-}
-
-.error-text {
-  color: $brightred;
 }

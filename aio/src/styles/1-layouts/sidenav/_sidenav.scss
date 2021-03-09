@@ -1,5 +1,5 @@
-@use '../constants' as *;
-@use '../mixins' as *;
+@use '../../constants' as *;
+@use '../../mixins' as *;
 
 // Disable sidenav animations for the initial render.
 .starting.mat-drawer-transition .mat-drawer-content {
@@ -7,7 +7,6 @@
 }
 
 mat-sidenav-container.sidenav-container {
-  background-color: $white;
   min-height: 100%;
   height: auto !important;
   max-width: 100%;
@@ -28,8 +27,6 @@ mat-sidenav-container.sidenav-container {
     bottom: 0;
     left: 0;
     min-width: 260px;
-    background-color: $superlightgray;
-    border-right: 1px solid $lightgray;
 
     @media (max-width: 599px) {
       top: 56px;
@@ -38,7 +35,6 @@ mat-sidenav-container.sidenav-container {
     // Angular Version Selector
     .doc-version {
       padding: 8px;
-      border-top: 1px solid $lightgray;
     }
   }
 }
@@ -63,7 +59,6 @@ aio-nav-menu {
   aio-nav-item {
     .vertical-menu-item {
       box-sizing: border-box;
-      color: $darkgray;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -75,18 +70,8 @@ aio-nav-menu {
       width: 100%;
       word-wrap: break-word;
 
-      &:hover {
-        background-color: $lightgray;
-        color: $blue;
-        text-shadow: 0 0 5px $white;
-      }
-
       &:focus {
         outline: $focus-outline-onlight auto 2px;
-      }
-
-      &.selected {
-        color: $darkblue;
       }
 
       span {

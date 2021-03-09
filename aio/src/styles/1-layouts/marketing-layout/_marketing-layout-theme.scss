@@ -1,4 +1,5 @@
 @use '../../constants' as *;
+@use '~@angular/material/theming' as *;
 
 @mixin marketing-layout-theme($theme) {
   $primary: map-get($theme, primary);
@@ -14,28 +15,38 @@
 
   section#intro {
     color: $white;
+
+    @if $is-dark-theme {
+      .hero-logo {
+        img {
+          filter: brightness(1.1);
+        }
+      }
+    }
   }
 
   .announcement-bar {
     background-color: $white;
-  
+
     .button {
       color: $white;
       background-color: $blue;
-  
+
       &:hover {
         color: rgba($white, 0.7);
       }
     }
   }
 
-  .home-row .card {    
-    .card-text-container {  
+  .home-row .card {
+    background-color: if($is-dark-theme, $darkgray, $white);
+
+    .card-text-container {
       p {
         color: if($is-dark-theme, $offwhite, $darkgray);
       }
     }
-  
+
     &:hover {
       h2 {
         color: $blue;
@@ -64,6 +75,4 @@
       color: $white;
     }
   }
-
 }
-

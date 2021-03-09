@@ -1,0 +1,52 @@
+@use '../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin typography-theme($theme) {
+    $primary: map-get($theme, primary);
+    $background: map-get($theme, background);
+    $foreground: map-get($theme, foreground);
+    $is-dark-theme: map-get($theme, is-dark);
+
+    body {
+        color: if($is-dark-theme, $offwhite, $darkgray);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color: if($is-dark-theme, $offwhite, $darkgray);
+    }
+
+    h6 {
+        color: if($is-dark-theme, $offwhite, $mediumgray);
+    }
+
+    p,
+    ol,
+    ul,
+    ol,
+    li,
+    input,
+    a {
+        color: if($is-dark-theme, $white, $darkgray);
+    }
+
+    .app-toolbar a {
+        color: if($is-dark-theme, $darkgray, $white);
+    }
+
+    code {
+        color: if($is-dark-theme, $white, $darkgray);
+    }
+
+    .sidenav-content a {
+        color: if($is-dark-theme, lighten($blue, 20), $blue);
+    }
+
+    .error-text {
+        color: $brightred;
+    }
+}

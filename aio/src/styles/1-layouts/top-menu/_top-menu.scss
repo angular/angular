@@ -1,5 +1,5 @@
-@use '../constants' as *;
-@use '../mixins' as *;
+@use '../../constants' as *;
+@use '../../mixins' as *;
 
 // VARIABLES
 $showTopMenuWidth: 1048px;
@@ -18,8 +18,6 @@ mat-toolbar.app-toolbar {
 
   // HOME PAGE OVERRIDE: TOPNAV TOOLBAR
   .page-home & {
-    background-color: $blue;
-
     @media (min-width: 481px) {
       &:not(.transitioning) {
         background-color: transparent;
@@ -44,10 +42,6 @@ mat-toolbar.app-toolbar {
     padding: 0 16px 0 0;
   }
 
-  mat-icon {
-    color: $white;
-  }
-
   // HAMBURGER BUTTON
   .hamburger {
     height: 100%;
@@ -70,12 +64,7 @@ mat-toolbar.app-toolbar {
       transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
-    &:hover {
-      color: $offwhite;
-    }
-
     & .mat-icon {
-      color: $white;
       position: inherit;
     }
   }
@@ -88,7 +77,6 @@ mat-toolbar.app-toolbar {
 
     &:focus {
       // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-      outline: 1px solid $focus-outline-ondark;
       outline-offset: 4px;
     }
 
@@ -146,33 +134,13 @@ mat-toolbar.app-toolbar {
           .nav-link-inner {
             border-radius: 4px;
             padding: 8px 16px;
-
-            &:hover {
-              background: rgba($white, 0.15);
-            }
           }
 
           &:focus {
             outline: none;
 
             .nav-link-inner {
-              background: rgba($white, 0.15);
               border-radius: 1px;
-              box-shadow: 0 0 1px 2px $focus-outline-ondark;
-            }
-          }
-
-          &:active {
-            .nav-link-inner {
-              background: rgba($white, 0.15);
-            }
-          }
-        }
-
-        &.selected {
-          a.nav-link {
-            .nav-link-inner {
-              background: rgba($white, 0.15);
             }
           }
         }
@@ -191,10 +159,8 @@ mat-toolbar.app-toolbar {
     margin-right: 16px;
 
     input {
-      color: $darkgray;
       border: none;
       border-radius: 100px;
-      background-color: $white;
       padding: 5px 16px;
       margin-left: 8px;
       width: 180px;
@@ -208,7 +174,6 @@ mat-toolbar.app-toolbar {
 
       @include placeholder {
         @include font-size(14);
-        color: $mediumgray;
       }
 
       @media (min-width: 1000px) {
@@ -239,8 +204,6 @@ mat-toolbar.app-toolbar {
       margin: 0 -16px;
 
       &:focus {
-        // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-        outline: 1px solid $focus-outline-ondark;
         outline-offset: -16px;
       }
 
