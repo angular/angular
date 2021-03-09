@@ -2,6 +2,10 @@ Badges are small status descriptors for UI elements. A badge consists of a small
 typically containing a number or other short set of characters, that appears in proximity to
 another object.
 
+Badges must always be applied to [block-level elements][block-level].
+
+[block-level]: https://developer.mozilla.org/en-US/docs/Web/HTML/Block-level_elements
+
 <!-- example(badge-overview) -->
 
 ### Badge position
