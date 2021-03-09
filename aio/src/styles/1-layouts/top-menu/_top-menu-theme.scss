@@ -1,0 +1,106 @@
+@use '../../constants' as *;
+@use '../../mixins' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin top-menu-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  mat-toolbar.app-toolbar {
+    // HOME PAGE OVERRIDE: TOPNAV TOOLBAR
+    .page-home & {
+      background-color: $blue;
+    }
+
+    mat-icon {
+      color: $white;
+    }
+
+    // HAMBURGER BUTTON
+    .hamburger {
+      &:hover {
+        color: $offwhite;
+      }
+
+      & .mat-icon {
+        color: $white;
+      }
+    }
+
+    // HOME NAV-LINK
+    .nav-link.home {
+      &:focus {
+        // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
+        outline: 1px solid $focus-outline-ondark;
+      }
+    }
+
+    // TOP MENU
+    aio-top-menu {
+      ul {
+        li {
+          a.nav-link {
+            .nav-link-inner {
+              &:hover {
+                background: rgba($white, 0.15);
+              }
+            }
+
+            &:focus {
+              .nav-link-inner {
+                background: rgba($white, 0.15);
+                box-shadow: 0 0 1px 2px $focus-outline-ondark;
+              }
+            }
+
+            &:active {
+              .nav-link-inner {
+                background: rgba($white, 0.15);
+              }
+            }
+          }
+
+          &.selected {
+            a.nav-link {
+              .nav-link-inner {
+                background: rgba($white, 0.15);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // SEARCH BOX
+    aio-search-box.search-container {
+      input {
+        color: $darkgray;
+        background-color: $white;
+
+        @include placeholder {
+          color: $mediumgray;
+        }
+      }
+    }
+
+    // THEME PICKER
+
+    aio-theme-picker {
+      button {
+        color: $offwhite;
+      }
+    }
+
+    // EXTERNAL LINK ICONS
+    .toolbar-external-icons-container {
+      a {
+        &:focus {
+          // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
+          outline: 1px solid $focus-outline-ondark;
+        }
+      }
+    }
+  }
+}

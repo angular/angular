@@ -1,4 +1,5 @@
-@import '../app-theme';
+@use '../app-theme' as *;
+@use '~@angular/material/theming' as *;
 
 
 $ng-io-primary: mat-palette($mat-blue, 700, 600, 800);
