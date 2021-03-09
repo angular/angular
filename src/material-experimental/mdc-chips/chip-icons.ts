@@ -173,7 +173,7 @@ const _MatChipRemoveMixinBase:
         mdc-chip__icon mdc-chip__icon--trailing`,
     '[tabIndex]': 'tabIndex',
     'role': 'button',
-    '(click)': 'interaction.next($event)',
+    '(click)': '_handleClick($event)',
     '(keydown)': 'interaction.next($event)',
 
     // We need to remove this explicitly, because it gets inherited from MatChipTrailingIcon.
@@ -194,6 +194,13 @@ export class MatChipRemove extends _MatChipRemoveMixinBase implements CanDisable
     if (elementRef.nativeElement.nodeName === 'BUTTON') {
       elementRef.nativeElement.setAttribute('type', 'button');
     }
+  }
+
+  /** Emits a MouseEvent when the user clicks on the remove icon. */
+  _handleClick(event: MouseEvent): void {
+    this.interaction.next(event);
+
+    event.stopPropagation();
   }
 
   static ngAcceptInputType_disabled: BooleanInput;
