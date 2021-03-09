@@ -89,9 +89,7 @@ aio-api-list {
   .api-list-container {
     display: flex;
     flex-direction: column;
-    margin: 0 auto;
-    max-width: 1100px;
-    padding: 16px 16px 16px 0;
+    padding: 16px 0;
     position: relative;
 
     @media handheld and (max-width: $phone-breakpoint),
@@ -124,7 +122,7 @@ aio-api-list {
         float: left;
         width: 33%;
         overflow: hidden;
-        min-width: 220px;
+        min-width: 330px;
         text-overflow: ellipsis;
         white-space: nowrap;
 

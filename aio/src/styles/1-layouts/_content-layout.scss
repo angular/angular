@@ -18,7 +18,7 @@
     padding: 80px 1rem 1rem;
   }
 
-  @include marketing-pages($extraSelectors: ('.page-guide-cheatsheet'), $nestParentSelector: true) {
+  @include marketing-pages($extraSelectors: ('.page-api', '.page-guide-cheatsheet'), $nestParentSelector: true) {
     max-width: none;
   }
 
