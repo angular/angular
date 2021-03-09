@@ -169,7 +169,7 @@ aio-code {
     }
   }
 
-  :not(h1, h2, h3, h4, h5, h6, pre) > code {
+  :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(pre) > code {
     background-color: rgba($lightgray, 0.5);
     border-radius: 4px;
     color: $deepgray;
