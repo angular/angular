@@ -130,13 +130,10 @@ aio-api-list {
 
         a {
           color: $blue-grey-600;
-          display: inline-block;
           @include line-height(16);
-          padding: 0 16px 0;
+          padding: 0 16px;
           text-decoration: none;
           transition: all .3s;
-          overflow: hidden;
-          text-overflow: ellipsis;
 
           &:hover {
             background: $blue-grey-50;
