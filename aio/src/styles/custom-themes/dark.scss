@@ -2,8 +2,8 @@
 @use '~@angular/material/theming' as *;
 
 $ng-io-primary: mat-palette($mat-blue, 700, 600, 800);
-$ng-io-accent:  mat-palette($mat-red, 700, 600, 800);
-$ng-io-warn:    mat-palette($mat-red);
+$ng-io-accent: mat-palette($mat-red, 700, 600, 800);
+$ng-io-warn: mat-palette($mat-red);
 $ng-io-theme: mat-dark-theme($ng-io-primary, $ng-io-accent, $ng-io-warn);
 
 @include angular-material-theme($ng-io-theme);

@@ -1,0 +1,95 @@
+@use '../../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin toc-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  aio-toc {
+    .toc-inner {
+      .toc-heading {
+        &.secondary {
+          &:hover {
+            color: $accentblue;
+          }
+        }
+      }
+
+      button {
+        &.toc-heading,
+        &.toc-more-items {
+          &.embedded:focus {
+            background: if($is-dark-theme, $darkgray, $lightgray);
+            color: if($is-dark-theme, $white, $mediumgray);
+          }
+        }
+
+        &.toc-heading {
+          &:hover:not(.embedded) {
+            color: $accentblue;
+          }
+        }
+
+        &.toc-more-items {
+          color: $mediumgray;
+
+          &:hover {
+            color: $accentblue;
+          }
+        }
+      }
+
+      ul.toc-list {
+        li {
+          &.h1:after {
+            background: if($is-dark-theme, $mediumgray, $lightgray);
+          }
+
+          a {
+            color: if($is-dark-theme, $white, lighten($darkgray, 10));
+          }
+
+          &:hover {
+            * {
+              color: if($is-dark-theme, $lightblue, $accentblue);
+            }
+          }
+
+          &.active {
+            * {
+              color: if($is-dark-theme, $cyan, $blue);
+            }
+
+            a:before {
+              background: if($is-dark-theme, $cyan, $blue);
+            }
+          }
+        }
+
+        &:not(.embedded) li {
+          &:before {
+            border-left-color: if($is-dark-theme, $darkgray, $lightgray);
+          }
+
+          &:not(.active):hover {
+            a:before {
+              background: $lightgray;
+            }
+          }
+        }
+      }
+    }
+
+    &.embedded {
+      .toc-inner {
+        .toc-heading {
+          &.secondary {
+            color: mat-color($foreground, text);
+          }
+        }
+      }
+    }
+  }
+}

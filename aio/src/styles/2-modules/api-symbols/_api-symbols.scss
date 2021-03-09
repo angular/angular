@@ -1,0 +1,17 @@
+@use '../../constants' as *;
+@use '../../mixins' as *;
+
+/* API SYMBOLS */
+
+/* SYMBOL CLASS */
+
+.symbol {
+  border-radius: 2px;
+  display: inline-block;
+  @include font-size(10);
+  font-weight: 600;
+  @include line-height(16);
+  margin-right: 8px;
+  text-align: center;
+  width: 16px;
+}
