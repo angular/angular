@@ -7,7 +7,6 @@
 @use '../mdc-helpers/mdc-helpers';
 @import '@material/textfield/mixins.import';
 
-
 // Base styles for MDC text-field, notched-outline, floating label and line-ripple.
 @include mdc-text-field-without-ripple(
   $query: mdc-helpers.$mat-base-styles-without-animation-query);
@@ -52,9 +51,32 @@
   width: 100%;
 }
 
+// Vertically center icons.
 .mat-mdc-form-field-icon-prefix,
 .mat-mdc-form-field-icon-suffix {
   align-self: center;
+  // The line-height can cause the prefix/suffix container to be taller than the actual icons,
+  // breaking the vertical centering. To prevent this we set the line-height to 0.
+  line-height: 0;
+}
+
+// The prefix/suffix needs a little extra padding between the icon and the infix. Because we need to
+// support arbitrary height input elements, we use a different DOM structure for prefix and suffix
+// icons, and therefore can't rely on MDC for these styles.
+.mat-mdc-form-field-icon-prefix,
+[dir='rtl'] .mat-mdc-form-field-icon-suffix {
+  padding: 0 form-field-sizing.$mat-form-field-icon-prefix-infix-padding 0 0;
+}
+.mat-mdc-form-field-icon-suffix,
+[dir='rtl'] .mat-mdc-form-field-icon-prefix {
+  padding: 0 0 0 form-field-sizing.$mat-form-field-icon-prefix-infix-padding;
+}
+
+.mat-mdc-form-field-icon-prefix,
+.mat-mdc-form-field-icon-suffix {
+  & > .mat-icon {
+    padding: 12px;
+  }
 }
 
 // Infix that contains the projected content (usually an input or a textarea). We ensure

@@ -102,6 +102,8 @@ const FLOATING_LABEL_DEFAULT_DOCKED_TRANSFORM = `translateY(-50%)`;
   host: {
     'class': 'mat-mdc-form-field',
     '[class.mat-mdc-form-field-label-always-float]': '_shouldAlwaysFloat()',
+    '[class.mat-mdc-form-field-has-icon-prefix]': '_hasIconPrefix',
+    '[class.mat-mdc-form-field-has-icon-suffix]': '_hasIconSuffix',
 
     // Note that these classes reuse the same names as the non-MDC version, because they can be
     // considered a public API since custom form controls may use them to style themselves.
@@ -196,6 +198,11 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     this._processHints();
   }
   private _hintLabel = '';
+
+  _hasIconPrefix = false;
+  _hasTextPrefix = false;
+  _hasIconSuffix = false;
+  _hasTextSuffix = false;
 
   // Unique id for the internal form field label.
   readonly _labelId = `mat-mdc-form-field-label-${nextUniqueId++}`;
@@ -438,13 +445,24 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     }
   }
 
+  private _checkPrefixAndSuffixTypes() {
+    this._hasIconPrefix = !!this._prefixChildren.find(p => !p._isText);
+    this._hasTextPrefix = !!this._prefixChildren.find(p => p._isText);
+    this._hasIconSuffix = !!this._suffixChildren.find(s => !s._isText);
+    this._hasTextSuffix = !!this._suffixChildren.find(s => s._isText);
+  }
+
   /** Initializes the prefix and suffix containers. */
   private _initializePrefixAndSuffix() {
+    this._checkPrefixAndSuffixTypes();
     // Mark the form-field as dirty whenever the prefix or suffix children change. This
     // is necessary because we conditionally display the prefix/suffix containers based
     // on whether there is projected content.
     merge(this._prefixChildren.changes, this._suffixChildren.changes)
-      .subscribe(() => this._changeDetectorRef.markForCheck());
+      .subscribe(() => {
+        this._checkPrefixAndSuffixTypes();
+        this._changeDetectorRef.markForCheck();
+      });
   }
 
   /**
@@ -667,15 +685,19 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
       this._needsOutlineLabelOffsetUpdateOnStable = true;
       return;
     }
-    const iconPrefixContainer = this._iconPrefixContainer.nativeElement as HTMLElement;
-    const textPrefixContainer = this._textPrefixContainer.nativeElement as HTMLElement;
+    const iconPrefixContainer = this._iconPrefixContainer?.nativeElement;
+    const textPrefixContainer = this._textPrefixContainer?.nativeElement;
     // If the directionality is RTL, the x-axis transform needs to be inverted. This
     // is because `transformX` does not change based on the page directionality.
     const labelHorizontalOffset =
       (this._dir.value === 'rtl' ? -1 : 1) * (
-          iconPrefixContainer.getBoundingClientRect().width +
-          textPrefixContainer.getBoundingClientRect().width
-        );
+          (iconPrefixContainer ?
+              // If there's an icon prefix, we disable the default 16px padding,
+              // so make sure to account for that.
+              (iconPrefixContainer?.getBoundingClientRect().width ?? 0) - 16 : 0
+          ) +
+          (textPrefixContainer?.getBoundingClientRect().width ?? 0)
+      );
 
     // Update the transform the floating label to account for the prefix container. Note
     // that we do not want to overwrite the default transform for docked floating labels.

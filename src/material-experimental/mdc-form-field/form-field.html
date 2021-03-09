@@ -44,10 +44,10 @@
       </ng-template>
     </div>
 
-    <div class="mat-mdc-form-field-icon-prefix" *ngIf="_prefixChildren.length" #iconPrefixContainer>
+    <div class="mat-mdc-form-field-icon-prefix" *ngIf="_hasIconPrefix" #iconPrefixContainer>
       <ng-content select="[matPrefix], [matIconPrefix]"></ng-content>
     </div>
-    <div class="mat-mdc-form-field-text-prefix" *ngIf="_prefixChildren.length" #textPrefixContainer>
+    <div class="mat-mdc-form-field-text-prefix" *ngIf="_hasTextPrefix" #textPrefixContainer>
       <ng-content select="[matTextPrefix]"></ng-content>
     </div>
 
@@ -59,10 +59,10 @@
       <ng-content></ng-content>
     </div>
 
-    <div class="mat-mdc-form-field-text-suffix" *ngIf="_suffixChildren.length">
+    <div class="mat-mdc-form-field-text-suffix" *ngIf="_hasTextSuffix">
       <ng-content select="[matTextSuffix]"></ng-content>
     </div>
-    <div class="mat-mdc-form-field-icon-suffix" *ngIf="_suffixChildren.length">
+    <div class="mat-mdc-form-field-icon-suffix" *ngIf="_hasIconSuffix">
       <ng-content select="[matSuffix], [matIconSuffix]"></ng-content>
     </div>
   </div>

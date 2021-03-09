@@ -40,6 +40,31 @@
     flex: auto;
   }
 
+  // The icon prefix/suffix is closer to the edge of the form-field than the infix is in a
+  // form-field with no prefix/suffix. Therefore the standard padding has to be removed when showing
+  // an icon prefix or suffix. We can't rely on MDC's styles for this because we use a different
+  // structure for our form-field in order to support arbitrary height input elements.
+  .mat-mdc-form-field-has-icon-prefix .mat-mdc-text-field-wrapper {
+    padding-left: 0;
+  }
+  .mat-mdc-form-field-has-icon-suffix .mat-mdc-text-field-wrapper {
+    padding-right: 0;
+  }
+  [dir='rtl'] {
+    // Undo the above padding removals which only apply in LTR languages.
+    .mat-mdc-text-field-wrapper {
+      padding-left: form-field-sizing.$mat-form-field-end-padding;
+      padding-right: form-field-sizing.$mat-form-field-end-padding;
+    }
+    // ...and apply the correct padding resets for RTL languages.
+    .mat-mdc-form-field-has-icon-suffix .mat-mdc-text-field-wrapper {
+      padding-left: 0;
+    }
+    .mat-mdc-form-field-has-icon-prefix .mat-mdc-text-field-wrapper {
+      padding-right: 0;
+    }
+  }
+
   // The default MDC text-field implementation does not support labels which always float.
   // MDC only renders the placeholder if the input is focused. We extend this to show the
   // placeholder if the form-field label is set to always float.
