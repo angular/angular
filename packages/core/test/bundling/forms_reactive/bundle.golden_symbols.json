@@ -450,7 +450,7 @@
     "name": "R3ViewContainerRef"
   },
   {
-    "name": "RadioControlRegistry"
+    "name": "RadioControlRegistryModule"
   },
   {
     "name": "ReactiveFormsComponent"

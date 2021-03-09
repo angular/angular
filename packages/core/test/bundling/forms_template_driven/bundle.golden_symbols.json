@@ -444,7 +444,7 @@
     "name": "REQUIRED_VALIDATOR"
   },
   {
-    "name": "RadioControlRegistry"
+    "name": "RadioControlRegistryModule"
   },
   {
     "name": "RecordViewTuple"
