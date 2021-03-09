@@ -20,18 +20,10 @@ mat-toolbar.app-toolbar {
     @media (min-width: 481px) {
       &:not(.transitioning) {
         background-color: transparent;
+        box-shadow: none;
+        position: absolute;
         transition: background-color 0.2s linear;
       }
-    }
-  }
-
-  // MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
-  @include marketing-pages($nestParentSelector: true) {
-    box-shadow: none;
-
-    // FIXED TOPNAV TOOLBAR FOR SMALL MOBILE
-    @media (min-width: 481px) {
-      position: absolute;
     }
   }
 
