@@ -1,5 +1,5 @@
-@use '../constants' as *;
-@use '../mixins' as *;
+@use '../../constants' as *;
+@use '../../mixins' as *;
 
 .nf-container {
     align-items: center;
@@ -12,15 +12,13 @@
     flex-direction: column;
 
     h1 {
-      @include font-size(48);
-      color: $blue;
+        @include font-size(48);
         text-transform: uppercase;
         margin: 8px 0;
     }
 }
 
 .nf-icon.material-icons {
-    color: $blue;
     @include font-size(100);
     position: static;
 }

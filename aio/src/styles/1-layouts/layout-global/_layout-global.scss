@@ -1,12 +1,5 @@
-@use '../constants' as *;
-
 html, body {
   height: 100%;
-}
-
-body,
-.content {
-  background-color: $white;
 }
 
 .center-layout {

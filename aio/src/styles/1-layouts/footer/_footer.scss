@@ -1,4 +1,4 @@
-@use '../../constants';
+@use '../../constants' as *;
 @use '../../mixins' as *;
 
 footer {
@@ -37,7 +37,7 @@ footer {
 
       &:focus {
         // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-        outline: 1px solid rgba(constants.$white, 0.8);
+        outline: 1px solid rgba($white, 0.8);
         outline-offset: 2px;
       }
     }

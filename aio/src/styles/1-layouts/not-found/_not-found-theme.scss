@@ -1,0 +1,19 @@
+@use '../../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin not-found-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  .nf-response {
+    h1 {
+      color: $blue;
+    }
+  }
+
+  .nf-icon.material-icons {
+    color: $blue;
+  }
+}
