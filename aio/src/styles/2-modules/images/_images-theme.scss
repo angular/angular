@@ -1,19 +1,16 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin images-theme($theme) {
-  $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin theme($theme) {
   $is-dark-theme: map-get($theme, is-dark);
 
   .content {
     .lightbox {
-      border: 1px solid if($is-dark-theme, $darkgray, $lightgray);
-      background-color: if($is-dark-theme, $deepgray, $lightboxgray);
+      border: 1px solid if($is-dark-theme, constants.$darkgray, constants.$lightgray);
+      background-color: if($is-dark-theme, constants.$deepgray, constants.$lightboxgray);
 
       img {
-        background-color: $white;
+        background-color: constants.$white;
       }
     }
   }

@@ -1,4 +1,4 @@
-@use '../../mixins' as *;
+@use '../../mixins';
 
 .sidenav-container {
   width: 100%;
@@ -22,7 +22,7 @@
     padding: 80px 1rem 1rem;
   }
 
-  @include marketing-pages(
+  @include mixins.marketing-pages(
       $extraSelectors: ('.page-api', '.page-file-not-found', '.page-guide-cheatsheet'),
       $nestParentSelector: true) {
     max-width: none;

@@ -1,15 +1,13 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants' ;
+@import '~@angular/material/theming';
 
-@mixin layout-global-theme($theme) {
-  $primary: map-get($theme, primary);
+@mixin theme($theme) {
   $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
   $is-dark-theme: map-get($theme, is-dark);
 
   html,
   body,
   .content {
-    background: if($is-dark-theme, mat-color($background, background), $white);
+    background: if($is-dark-theme, mat-color($background, background), constants.$white);
   }
 }

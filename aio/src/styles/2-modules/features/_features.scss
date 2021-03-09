@@ -1,5 +1,4 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 // FEATURES MARKETING PAGE SPECIFIC STYLES
 
@@ -16,7 +15,7 @@
   }
 
   .feature-title {
-    @include font-size(16);
+    @include mixins.font-size(16);
     font-weight: 500;
     margin: 8px 0px;
     clear: both;

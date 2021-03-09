@@ -1,52 +1,52 @@
-@use '../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../constants';
 
-@mixin typography-theme($theme) {
-    $primary: map-get($theme, primary);
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
-    $is-dark-theme: map-get($theme, is-dark);
+@mixin theme($theme) {
+  $is-dark-theme: map-get($theme, is-dark);
 
-    body {
-        color: if($is-dark-theme, $offwhite, $darkgray);
-    }
+  body {
+    color: if($is-dark-theme, constants.$offwhite, constants.$darkgray);
+  }
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-        color: if($is-dark-theme, $offwhite, $darkgray);
-    }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: if($is-dark-theme, constants.$offwhite, constants.$deepgray);
+  }
 
-    h6 {
-        color: if($is-dark-theme, $offwhite, $mediumgray);
-    }
+  h6 {
+    color: if($is-dark-theme, constants.$offwhite, constants.$mediumgray);
+  }
 
-    p,
-    ol,
-    ul,
-    ol,
-    li,
-    input,
-    a {
-        color: if($is-dark-theme, $white, $darkgray);
-    }
+  h2 {
+    border-top: 1px solid if($is-dark-theme, constants.$mediumgray, constants.$lightgray);
+  }
 
-    .app-toolbar a {
-        color: if($is-dark-theme, $darkgray, $white);
-    }
+  p,
+  ol,
+  ul,
+  ol,
+  li,
+  input,
+  a {
+    color: if($is-dark-theme, constants.$white, constants.$darkgray);
+  }
 
-    code {
-        color: if($is-dark-theme, $white, $darkgray);
-    }
+  .app-toolbar a {
+    color: constants.$white;
+  }
 
-    .sidenav-content a {
-        color: if($is-dark-theme, lighten($blue, 20), $blue);
-    }
+  code {
+    color: if($is-dark-theme, constants.$white, constants.$darkgray);
+  }
 
-    .error-text {
-        color: $brightred;
-    }
+  .sidenav-content a {
+    color: if($is-dark-theme, constants.$lightblue, constants.$blue);
+  }
+
+  .error-text {
+    color: constants.$brightred;
+  }
 }

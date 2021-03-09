@@ -1,5 +1,5 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../constants';
+@use '../../mixins';
 
 .hero {
   display: flex;
@@ -25,9 +25,9 @@
 
   .hero-title {
     display: inline-block;
-    @include font-size(28);
+    @include mixins.font-size(28);
     font-weight: 400;
-    @include line-height(48);
+    @include mixins.line-height(48);
     margin: 0 8px 0 0;
     text-transform: uppercase;
 
@@ -60,7 +60,7 @@ section#intro {
   }
 
   .homepage-container {
-    width: 100%;
+    width: 50%;
     max-width: 1040px;
     margin: 0 auto;
     margin-top: -7%;
@@ -78,8 +78,8 @@ section#intro {
   }
 
   .hero-headline {
-    @include font-size(40);
-    @include line-height(64);
+    @include mixins.font-size(40);
+    @include mixins.line-height(64);
     font-weight: 500;
     margin: 32px 0;
 
@@ -92,30 +92,20 @@ section#intro {
     }
 
     @media (max-width: 575px) {
-      @include font-size(32);
-      @include line-height(50);
+      @include mixins.font-size(32);
+      @include mixins.line-height(50);
     }
   }
 
   .hero-logo {
     display: flex;
-
-    @media (max-width: 780px) {
-      justify-content: center;
-    }
-
-    img {
-      width: 400px;
-      height: 400px;
-      margin-bottom: 8px;
-      max-width: none;
-      padding: 0;
-
-      @media (max-width: 780px) {
-        width: 250px;
-        height: 250px;
-      }
-    }
+    width: 50%;
+    min-width: 250px;
+    height: 400px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    margin-bottom: 8px;
   }
 }
 
@@ -129,7 +119,7 @@ section#intro {
   margin: 0 auto;
   padding: 16px;
   border-radius: 4px;
-  box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
+  box-shadow: 0 2px 2px rgba(constants.$black, 0.24), 0 0 2px rgba(constants.$black, 0.12);
   box-sizing: border-box;
   transition: all 0.3s ease-in;
 
@@ -154,7 +144,7 @@ section#intro {
     align-items: center;
     height: 40px;
     min-width: 160px;
-    @include font-size(16);
+    @include mixins.font-size(16);
     border-radius: 48px;
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
     box-sizing: border-box;
@@ -166,11 +156,11 @@ section#intro {
     right: 0;
     position: static;
     transition: all 0.3s ease-in;
-    @include font-size(16);
+    @include mixins.font-size(16);
   }
 
   p {
-    @include font-size(16);
+    @include mixins.font-size(16);
     margin: 8px;
     text-align: center;
   }
@@ -179,7 +169,7 @@ section#intro {
 // ANGULAR LINE
 
 .home-row .card {
-  @include card(70%, auto);
+  @include mixins.card(70%, auto);
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -228,9 +218,9 @@ section#intro {
 
 .button.hero-cta {
   padding: 2px 34px 0;
-  @include font-size(18);
+  @include mixins.font-size(18);
   font-weight: 600;
-  @include line-height(40);
+  @include mixins.line-height(40);
   border-radius: 48px;
   box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
   box-sizing: border-box;
@@ -241,7 +231,7 @@ section#intro {
   }
 }
 
-@include marketing-pages {
+@include mixins.marketing-pages {
   .sidenav-content {
     padding: 0 0 3rem;
   }
@@ -269,7 +259,7 @@ section#intro {
 }
 
 .text-headline {
-  @include font-size(20);
+  @include mixins.font-size(20);
   font-weight: 500;
   margin-top: 10px;
   text-transform: uppercase;
@@ -355,14 +345,14 @@ div[layout=row]{
 
   .banner-headline {
     text-transform: uppercase;
-    @include font-size(24);
+    @include mixins.font-size(24);
     font-weight: 300;
     margin: 0;
     -webkit-margin-before: 0;
     -webkit-margin-after: 0;
 
     @media (max-width: 600px) {
-      @include font-size(18);
+      @include mixins.font-size(18);
       font-weight: 400;
     }
 

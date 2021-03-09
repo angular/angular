@@ -1,37 +1,31 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin card-theme($theme) {
-  $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin theme($theme) { 
   $is-dark-theme: map-get($theme, is-dark);
 
   .card-container {
     .docs-card {
-      background-color: if($is-dark-theme, $darkgray, $white);
+      background-color: if($is-dark-theme, constants.$deepgray, constants.$white);
 
       section {
-        color: if($is-dark-theme, $powderblue, $blue);
+        color: if($is-dark-theme, constants.$cyan, constants.$blue);
       }
 
       p {
-        color: if($is-dark-theme, $offwhite, $darkgray);
+        color: if($is-dark-theme, constants.$offwhite, constants.$darkgray);
       }
 
       .card-footer {
-        color: if($is-dark-theme, $cyan, $darkblue);
-        background-color: if($is-dark-theme, $deepgray, rgba($blue, 0.1));
-        border-top: 0.5px solid if($is-dark-theme, $darkgray, $lightgray);
+        color: if($is-dark-theme, constants.$powderblue, constants.$darkblue);
+        background-color: if($is-dark-theme, constants.$darkgray, rgba(constants.$blue, 0.1));
+        border-top: 0.5px solid if($is-dark-theme, constants.$darkgray, constants.$lightgray);
 
         a {
-          color: $mediumgray;
+          color: constants.$mediumgray;
         }
       }
     }
   }
 
-  .card-section {
-    @include card(auto, 90%, if($is-dark-theme, $darkgray, $white));
-  }
 }

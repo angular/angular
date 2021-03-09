@@ -1,9 +1,9 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../constants';
+@use '../../mixins';
 
 footer {
   position: relative;
-  @include line-height(24);
+  @include mixins.line-height(24);
   flex: 1;
   padding: 48px;
   z-index: 0;
@@ -37,19 +37,19 @@ footer {
 
       &:focus {
         // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-        outline: 1px solid rgba($white, 0.8);
+        outline: 1px solid rgba(constants.$white, 0.8);
         outline-offset: 2px;
       }
     }
 
     h3 {
-      @include font-size(16);
+      @include mixins.font-size(16);
       text-transform: uppercase;
       font-weight: 400;
       margin: 8px 0 12px;
 
       @media (max-width: 600px) {
-        @include font-size(14);
+        @include mixins.font-size(14);
       }
     }
 

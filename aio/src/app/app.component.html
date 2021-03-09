@@ -1,4 +1,5 @@
 <div id="top-of-page"></div>
+
 <div *ngIf="isFetching" class="progress-bar-container">
   <mat-progress-bar mode="indeterminate" color="warn"></mat-progress-bar>
 </div>
@@ -23,7 +24,7 @@
     </a>
     <aio-top-menu *ngIf="showTopMenu" [nodes]="topMenuNodes" [currentNode]="currentNodes?.TopBar"></aio-top-menu>
     <aio-search-box class="search-container" #searchBox (onSearch)="doSearch($event)" (onFocus)="doSearch($event)"></aio-search-box>
-    <aio-theme-picker></aio-theme-picker>
+    <aio-theme-toggle></aio-theme-toggle>
     <div class="toolbar-external-icons-container">
       <a href="https://twitter.com/angular" title="Twitter" aria-label="Angular on twitter">
         <mat-icon svgIcon="logos:twitter"></mat-icon>
