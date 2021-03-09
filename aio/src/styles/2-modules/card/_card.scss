@@ -1,5 +1,5 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../constants';
+@use '../../mixins';
 
 .card-container {
   display: flex;
@@ -9,7 +9,8 @@
   margin: 16px 0;
 
   .docs-card {
-    @include card(194px, 35%);
+    @include mixins.card(194px, 35%);
+
     max-width: 340px;
     min-width: 300px;
     margin: 24px 16px;
@@ -23,8 +24,8 @@
     }
 
     section {
-      @include font-size(20);
-      @include line-height(24);
+      @include mixins.font-size(20);
+      @include mixins.line-height(24);
       margin: 0;
       padding: 32px 0 24px;
       text-transform: none;
@@ -32,8 +33,8 @@
     }
 
     p {
-      @include font-size(13);
-      @include line-height(24);
+      @include mixins.font-size(13);
+      @include mixins.line-height(24);
       padding: 0 16px;
       margin: 0;
       text-align: center;
@@ -42,21 +43,20 @@
     .card-footer {
       bottom: 0;
       box-sizing: border-box;
-      @include line-height(48);
+      @include mixins.line-height(48);
       left: 0;
       position: absolute;
       right: 0;
       text-align: right;
 
       a {
-        @include font-size(13);
+        @include mixins.font-size(13);
       }
     }
   }
 }
 
 .card-section {
-  @include card(auto, 90%);
   padding: 16px 32px;
   margin: 16px 0;
   display: flex;
@@ -65,7 +65,7 @@
 
   // Removes on-hover effect from card mixin
   &:hover {
-    box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
+    box-shadow: 0 2px 2px rgba(constants.$black, 0.24), 0 0 2px rgba(constants.$black, 0.12);
   }
 
   h1,

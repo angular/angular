@@ -1,39 +1,37 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin search-results-theme($theme) {
-  $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
+@mixin theme($theme) {
   $foreground: map-get($theme, foreground);
   $is-dark-theme: map-get($theme, is-dark);
 
   aio-search-results {
     .search-results {
-      background-color: $darkgray;
+      background-color: constants.$darkgray;
       box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
 
       .search-area {
         .search-section-header {
-          color: $white;
+          color: constants.$white;
         }
 
         ul {
           .search-result-item {
-            color: $lightgray;
+            color: if($is-dark-theme, constants.$offwhite , constants.$lightgray);
 
             &:hover {
-              color: $white;
+              color: constants.$white;
             }
           }
         }
       }
 
       .no-results {
-        color: $white;
+        color: mat-color($foreground, text);
       }
 
       a {
-        color: $white;
+        color: mat-color($foreground, text);
       }
     }
 
@@ -41,24 +39,24 @@
       .search-results {
         .search-area {
           .search-section-header {
-            color: $darkgray;
+            color: constants.$darkgray;
           }
 
           .search-result-item {
-            color: lighten($darkgray, 10);
+            color: if($is-dark-theme, constants.$offwhite ,lighten(constants.$darkgray, 10));
 
             &:hover {
-              color: $accentblue;
+              color: constants.$accentblue;
             }
           }
         }
 
         .no-results {
-          color: $darkgray;
+          color: mat-color($foreground, text);
         }
 
         a {
-          color: $blue;
+          color: constants.$blue;
         }
       }
     }

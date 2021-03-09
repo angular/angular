@@ -1,10 +1,9 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 .alert {
     padding: 16px;
     margin: 24px 0px;
-    @include font-size(14);
+    @include mixins.font-size(14);
     width: 100%;
     box-sizing: border-box;
     clear: both;

@@ -1,12 +1,7 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin buttons-theme($theme) {
-  $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
-  $is-dark-theme: map-get($theme, is-dark);
-
+@mixin theme($theme) {
   // This rule overrides some Angular Material styles defined for `.mat-button`
   // (hence we include `.mat-button` in the selector).
   a.button.mat-button,
@@ -14,43 +9,43 @@
     // COLORS
 
     &.button-secondary {
-      background: $mediumgray;
-      color: rgba($white, 0.87);
+      background: constants.$mediumgray;
+      color: rgba(constants.$white, 0.87);
     }
 
     &.button-plain {
-      background: $white;
-      color: rgba($darkgray, 0.87);
+      background: constants.$white;
+      color: rgba(constants.$darkgray, 0.87);
     }
 
     &.button-subtle {
-      background: $mediumgray;
-      color: darken($offwhite, 10%);
+      background: constants.$mediumgray;
+      color: darken(constants.$offwhite, 10%);
 
       &:hover {
-        color: rgba($white, 0.7);
+        color: rgba(constants.$white, 0.7);
       }
     }
 
     &.button-blue {
-      background: $blue;
-      color: rgba($white, 0.87);
+      background: constants.$blue;
+      color: rgba(constants.$white, 0.87);
 
       &:hover {
-        color: rgba($white, 0.7);
+        color: rgba(constants.$white, 0.7);
       }
     }
 
     &.button-banner {
-      background: $darkgray;
-      color: rgba($white, 0.87);
+      background: constants.$darkgray;
+      color: rgba(constants.$white, 0.87);
     }
   }
 
   .cta-bar {
     .button {
       &:hover {
-        color: $offwhite;
+        color: constants.$offwhite;
       }
     }
   }
@@ -59,11 +54,11 @@
     // This rule overrides some Angular Material styles defined for `.mat-button`
     // (hence we include `.mat-button` in the selector).
     a.button.mat-button.filter-button {
-      background-color: rgba($blue, 0.2);
+      background-color: rgba(constants.$blue, 0.2);
       &.selected,
       &:hover {
-        background-color: $blue;
-        color: $white;
+        background-color: constants.$blue;
+        color: constants.$white;
       }
     }
   }

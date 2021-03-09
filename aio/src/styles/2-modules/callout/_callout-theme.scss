@@ -1,42 +1,39 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin callout-theme($theme) {
-    $primary: map-get($theme, primary);
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
+@mixin theme($theme) {
     $is-dark-theme: map-get($theme, is-dark);
 
 
     .callout {      
         header {
-          color: $white;
+          color: constants.$white;
         }
       
         &.is-critical {
-          border-color: $brightred;
-          background: rgba($brightred, 0.05);
+          border-color: constants.$brightred;
+          background: rgba(constants.$brightred, if($is-dark-theme, 0.1, 0.05));
       
           header {
-            background: $brightred;
+            background: constants.$brightred;
           }
         }
       
         &.is-important {
-          border-color: $orange;
-          background: rgba($orange, 0.05);
+          border-color: constants.$orange;
+          background: rgba(constants.$orange,if($is-dark-theme, 0.1, 0.05));
       
           header {
-            background: $amber-700;
+            background: constants.$amber-700;
           }
         }
       
         &.is-helpful {
-          border-color: $blue;
-          background: rgba($blue, 0.05);
+          border-color: constants.$blue;
+          background: rgba(constants.$blue, if($is-dark-theme, 0.1, 0.05));
       
           header {
-            background: $blue;
+            background: constants.$blue;
           }
         }
       }

@@ -1,5 +1,5 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../constants';
+@use '../../mixins';
 
 /* Button Styles */
 
@@ -13,9 +13,9 @@ a.button.mat-button,
 .button {
   color: inherit;
   display: inline-block;
-  @include line-height(32);
+  @include mixins.line-height(32);
   padding: 0px 16px;
-  @include font-size(14);
+  @include mixins.font-size(14);
   font-weight: 400;
   border-radius: 3px;
   text-decoration: none;
@@ -25,20 +25,20 @@ a.button.mat-button,
 
   // SIZES
   &.button-small {
-    @include font-size(12);
-    @include line-height(24);
+    @include mixins.font-size(12);
+    @include mixins.line-height(24);
     padding: 0px 8px;
   }
 
   &.button-large {
-    @include font-size(15);
-    @include line-height(48);
+    @include mixins.font-size(15);
+    @include mixins.line-height(48);
     padding: 0px 24px;
   }
 
   &.button-x-large {
-    @include font-size(16);
-    @include line-height(56);
+    @include mixins.font-size(16);
+    @include mixins.line-height(56);
     padding: 0px 24px;
   }
 }
@@ -64,14 +64,14 @@ a.button.mat-button,
   // (hence we include `.mat-button` in the selector).
   a.button.mat-button.filter-button {
     border-radius: 4px;
-    @include font-size(16);
-    @include line-height(48);
+    @include mixins.font-size(16);
+    @include mixins.line-height(48);
     margin: 8px;
     padding: 0px 16px;
     width: 168px;
 
     @media (max-width: 480px) {
-      @include font-size(14);
+      @include mixins.font-size(14);
       width: auto;
     }
   }

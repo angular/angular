@@ -2,8 +2,8 @@
   "aio": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 4538,
-        "main-es2015": 451314,
+        "runtime-es2015": 4619,
+        "main-es2015": 453172,
         "polyfills-es2015": 55210
       }
     }
@@ -11,8 +11,8 @@
   "aio-local": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 4538,
-        "main-es2015": 451493,
+        "runtime-es2015": 4619,
+        "main-es2015": 453394,
         "polyfills-es2015": 55291
       }
     }

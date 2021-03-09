@@ -1,5 +1,4 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 .api-body {
   max-width: 1200px;
@@ -42,7 +41,7 @@
       }
       .actions {
         display: flex;
-        @include font-size(14);
+        @include mixins.font-size(14);
       }
       .show-all {
         display: initial;
@@ -84,7 +83,7 @@
 
     &.parameters-table {
       margin-top: 0;
-      @include font-size(14);
+      @include mixins.font-size(14);
       box-shadow: none;
 
       tr {
@@ -143,7 +142,7 @@
       }
 
       h4 {
-        @include font-size(14);
+        @include mixins.font-size(14);
         font-weight: bold;
         margin-top: 12px;
       }
@@ -151,7 +150,7 @@
 
     th {
       text-transform: none;
-      @include font-size(16);
+      @include mixins.font-size(16);
       font-weight: bold;
     }
 
@@ -199,16 +198,16 @@
   }
 
   .api-heading {
-    @include font-size(14);
+    @include mixins.font-size(14);
     margin: 16px;
   }
 
   .from-constructor,
   .read-only-property,
   .write-only-property {
-    @include font-size(12);
+    @include mixins.font-size(12);
     font-weight: 600;
-    @include letter-spacing(0.5);
+    @include mixins.letter-spacing(0.5);
     font-style: italic;
     border-radius: 4px;
     padding: 4px 6px;
@@ -242,7 +241,7 @@
   .material-icons {
     border-radius: 4px;
     padding: 4px;
-    @include font-size(20);
+    @include mixins.font-size(20);
   }
 }
 
@@ -263,7 +262,7 @@
   }
 
   h1 {
-    @include font-size(24);
+    @include mixins.font-size(24);
     margin: 0;
   }
 }

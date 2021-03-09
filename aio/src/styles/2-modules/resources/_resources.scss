@@ -1,10 +1,10 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../constants';
+@use '../../mixins';
 
 aio-resource-list {
   .showcase {
     transition: box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 1px 4px 0 rgba($black, 0.37);
+    box-shadow: 0 1px 4px 0 rgba(constants.$black, 0.37);
     border-radius: 4px;
     margin-bottom: 8px * 6;
   }
@@ -12,7 +12,7 @@ aio-resource-list {
   .resource-item {
     h4 {
       margin: 0;
-      @include line-height(24);
+      @include mixins.line-height(24);
     }
 
     p {

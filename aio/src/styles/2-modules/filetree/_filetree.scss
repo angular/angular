@@ -1,5 +1,4 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 .filetree {
   border-radius: 4px;
@@ -8,8 +7,8 @@
 
   .file {
     display: block;
-    @include letter-spacing(0.3);
-    @include line-height(32);
+    @include mixins.letter-spacing(0.3);
+    @include mixins.line-height(32);
   }
 
   .children {

@@ -1,31 +1,35 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@use '../../mixins';
+@import '~@angular/material/theming';
 
-@mixin top-menu-theme($theme) {
+@mixin theme($theme) {
   $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
   $is-dark-theme: map-get($theme, is-dark);
 
   mat-toolbar.app-toolbar {
+    @if $is-dark-theme {
+      &.mat-primary {
+        background: mat-color($primary, darker)
+      }
+    }
+
     // HOME PAGE OVERRIDE: TOPNAV TOOLBAR
     .page-home & {
-      background-color: $blue;
+      background: if($is-dark-theme, mat-color($primary, darker), constants.$blue);
     }
 
     mat-icon {
-      color: $white;
+      color: constants.$white;
     }
 
     // HAMBURGER BUTTON
     .hamburger {
       &:hover {
-        color: $offwhite;
+        color: constants.$offwhite;
       }
 
       & .mat-icon {
-        color: $white;
+        color: constants.$white;
       }
     }
 
@@ -33,7 +37,7 @@
     .nav-link.home {
       &:focus {
         // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-        outline: 1px solid $focus-outline-ondark;
+        outline: 1px solid constants.$focus-outline-ondark;
       }
     }
 
@@ -44,20 +48,20 @@
           a.nav-link {
             .nav-link-inner {
               &:hover {
-                background: rgba($white, 0.15);
+                background: rgba(constants.$white, 0.15);
               }
             }
 
             &:focus {
               .nav-link-inner {
-                background: rgba($white, 0.15);
-                box-shadow: 0 0 1px 2px $focus-outline-ondark;
+                background: rgba(constants.$white, 0.15);
+                box-shadow: 0 0 1px 2px constants.$focus-outline-ondark;
               }
             }
 
             &:active {
               .nav-link-inner {
-                background: rgba($white, 0.15);
+                background: rgba(constants.$white, 0.15);
               }
             }
           }
@@ -65,7 +69,7 @@
           &.selected {
             a.nav-link {
               .nav-link-inner {
-                background: rgba($white, 0.15);
+                background: rgba(constants.$white, 0.15);
               }
             }
           }
@@ -76,20 +80,18 @@
     // SEARCH BOX
     aio-search-box.search-container {
       input {
-        color: $darkgray;
-        background-color: $white;
+        color: constants.$darkgray;
+        background-color: constants.$white;
 
-        @include placeholder {
-          color: $mediumgray;
+        @include mixins.placeholder {
+          color: constants.$mediumgray;
         }
       }
     }
 
-    // THEME PICKER
-
-    aio-theme-picker {
-      button {
-        color: $offwhite;
+    aio-theme-toggle {
+      @media screen and (min-width: 351px) {
+        border-right: 1px solid constants.$white;
       }
     }
 
@@ -98,7 +100,7 @@
       a {
         &:focus {
           // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-          outline: 1px solid $focus-outline-ondark;
+          outline: 1px solid constants.$focus-outline-ondark;
         }
       }
     }

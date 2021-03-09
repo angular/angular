@@ -1,26 +1,24 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin presskit-theme($theme) {
-  $primary: map-get($theme, primary);
+@mixin theme($theme) {
   $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
   $is-dark-theme: map-get($theme, is-dark);
 
   .presskit-container {
     .presskit-section {
       &:not(:first-child) {
-        border-top: 1px solid $lightgray;
+        border-top: 1px solid constants.$lightgray;
       }
 
       .presskit-icon-group {
         .presskit-icon-item {
           .presskit-image-container {
             .transparent-img {
-              background-color: $white;
+              background-color: constants.$white;
 
               &-inverse {
-                background-color: if($is-dark-theme, mat-color($background, background), $deepgray);
+                background-color: if($is-dark-theme, mat-color($background, background), constants.$deepgray);
               }
             }
           }

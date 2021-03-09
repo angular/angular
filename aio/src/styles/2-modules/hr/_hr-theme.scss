@@ -1,13 +1,10 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import '~@angular/material/theming';
 
-@mixin hr-theme($theme) {
-  $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin theme($theme) {
   $is-dark-theme: map-get($theme, is-dark);
 
   hr {
-    background: if($is-dark-theme, $mediumgray, $lightgray);
+    background: if($is-dark-theme, constants.$mediumgray, constants.$lightgray);
   }
 }

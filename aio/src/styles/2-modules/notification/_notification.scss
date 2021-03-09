@@ -1,5 +1,4 @@
-@use '../../constants' as *;
-@use '../../mixins' as *;
+@use '../../mixins';
 
 $notificationHeight: 56px;
 
@@ -57,7 +56,7 @@ aio-notification {
       border-radius: 15px;
       text-transform: uppercase;
       padding: 0 10px;
-      @include font-size(12);
+      @include mixins.font-size(12);
       @media (max-width: 780px) {
         display: none;
       }
@@ -91,7 +90,7 @@ aio-notification {
   }
 }
 
-@include marketing-pages {
+@include mixins.marketing-pages {
   &.aio-notification-show {
     mat-sidenav-container.sidenav-container {
       .sidenav-content {

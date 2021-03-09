@@ -1,29 +1,26 @@
-@use '../../constants' as *;
-@use '~@angular/material/theming' as *;
+@use '../../constants';
+@import "~@angular/material/theming";
 
-@mixin code-theme($theme) {
-  $primary: map-get($theme, primary);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
+@mixin theme($theme) {
   $is-dark-theme: map-get($theme, is-dark);
 
   code-example {
     &:not(.no-box) {
-      background-color: if($is-dark-theme, $deepgray, rgb($backgroundgray, 0.2));
-      border: 0.5px solid if($is-dark-theme, $darkgray, $lightgray);
-      color: $darkgray;
+      background-color: if($is-dark-theme, constants.$deepgray, rgb(constants.$backgroundgray, 0.2));
+      border: 0.5px solid if($is-dark-theme, constants.$darkgray, constants.$lightgray);
+      color: constants.$darkgray;
     }
 
     // TERMINAL / SHELL TEXT STYLES
     &.code-shell,
     &[language="sh"],
     &[language="bash"] {
-      background-color: $darkgray;
+      background-color: constants.$darkgray;
     }
 
     header {
-      background-color: if($is-dark-theme, $blue-900, $accentblue);
-      color: $offwhite;
+      background-color: constants.$accentblue;
+      color: constants.$offwhite;
     }
   }
 
@@ -39,50 +36,50 @@
 
   code-example.avoid header,
   code-example.avoidFile header {
-    border: 2px solid $anti-pattern;
-    background: $anti-pattern;
+    border: 2px solid constants.$anti-pattern;
+    background: constants.$anti-pattern;
   }
 
   code-example.avoid,
   code-example.avoidFile,
   code-tabs.avoid mat-tab-body,
   code-tabs.avoidFile mat-tab-body {
-    border: 0.5px solid $anti-pattern;
+    border: 0.5px solid constants.$anti-pattern;
   }
 
   aio-code {
     pre.prettyprint {
       code {
         ol.linenums {
-          color: lighten($mediumgray, 25%);
+          color: lighten(constants.$mediumgray, 25%);
 
           li {
             &::marker {
-              color: lighten($mediumgray, 25%);
+              color: lighten(constants.$mediumgray, 25%);
             }
           }
         }
 
         .code-missing {
-          color: $darkred;
+          color: constants.$darkred;
         }
       }
 
       .copy-button {
-        color: $blue-grey-200;
+        color: constants.$blue-grey-200;
 
         &:hover {
-          color: $mediumgray;
+          color: constants.$mediumgray;
         }
       }
 
       &.lang-sh,
       &.lang-bash {
         .copy-button {
-          color: if($is-dark-theme, $blue-grey-200, $lightgray);
+          color: if($is-dark-theme, constants.$blue-grey-200, constants.$lightgray);
 
           &:hover {
-            color: if($is-dark-theme, $blue-grey-300, $superlightgray);
+            color: if($is-dark-theme, constants.$blue-grey-300, constants.$superlightgray);
           }
         }
       }
@@ -92,14 +89,14 @@
   .sidenav-content {
     code {
       a {
-        color: if($is-dark-theme, $cyan, $darkblue);
+        color: if($is-dark-theme, constants.$cyan, constants.$darkblue);
       }
     }
 
     :not(h1):not(h2):not(h3):not(h4):not(h5):not(h6):not(pre) {
       > code {
-        background-color: if($is-dark-theme, $darkgray, rgba($lightgray, 0.5));
-        color: if($is-dark-theme, $white, $darkgray);
+        background-color: if($is-dark-theme, constants.$darkgray, rgba(constants.$lightgray, 0.5));
+        color: if($is-dark-theme, constants.$white, constants.$darkgray);
       }
     }
   }
@@ -107,7 +104,7 @@
   // Dark Mode Code Palette
   $code-lightteal: #17d3ff;
   $code-lightred: #ffb0b0;
-  $code-lightgreen: #a9ef5f;
+  $code-lightgreen: #c3e88d;
   $code-lightpurple: #d1b4ff;
   $code-lightorange: #ffd779;
   $code-lightblue: #98caff;
@@ -119,7 +116,7 @@
 
   /* SPAN elements with the classes below are added by prettyprint. */
   .pln {
-    color: if($is-dark-theme, $white, #000);
+    color: if($is-dark-theme, constants.$white, #000);
   } /* plain text */
 
   @media screen {
@@ -219,7 +216,7 @@
       .lit,
       .pun,
       .dec {
-        color: $codegreen;
+        color: constants.$codegreen;
       }
     }
   }
