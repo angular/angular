@@ -204,25 +204,24 @@ code {
 // We add the icon to all external links which are identified as absolute links (those that start with `http:` or https:`).
 // For more info see PR #36601.
 @include docs-pages {
-  aio-doc-viewer{
-    a {
-      &[href^="http:"]::after,
-      &[href^="https:"]::after {
-        font-family: "Material Icons";
-        content: "open_in_new";
-        margin-left: 2px;
-        position: relative;
-        @include line-height(24);
-        vertical-align: middle;
-      }
-    }
+  aio-doc-viewer {
+    // The docs-viewer also contain links to GitHub (e.g. the "edit this page" icon) identified with
+    // the `.github-links` class. We don't want to add the external link icon to these links.
+    :not(.github-links) {
+      > a {
+        &[href^="http:"],
+        &[href^="https:"] {
+          display: inline-flex;
+          padding-right: calc(1em + 0.25rem);
+          position: relative;
 
-    // The docs-viewer also contain links to GitHub (e.g. the edit this page icon) identified with `.github-links` class.
-    // We don't want to add the external link icon to these links, so we hide them.
-    .github-links a {
-      &[href^="http:"]::after,
-      &[href^="https:"]::after {
-        display: none;
+          &::after {
+            content: "open_in_new";
+            font-family: "Material Icons";
+            position: absolute;
+            right: 0;
+          }
+        }
       }
     }
   }
