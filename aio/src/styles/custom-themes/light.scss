@@ -1,11 +1,9 @@
 @use '../app-theme' as *;
 @use '~@angular/material/theming' as *;
 
-
 $ng-io-primary: mat-palette($mat-blue, 700, 600, 800);
-$ng-io-accent:  mat-palette($mat-red, 700, 600, 800);
-$ng-io-warn:    mat-palette($mat-red);
+$ng-io-accent: mat-palette($mat-red, 700, 600, 800);
+$ng-io-warn: mat-palette($mat-red);
 $ng-io-theme: mat-light-theme($ng-io-primary, $ng-io-accent, $ng-io-warn);
 
-@include angular-material-theme($ng-io-theme);
-@include app-theme($ng-io-theme);
+// We don't have to call theme mixins here because light.scss is used by default in ng-io-theme.scss

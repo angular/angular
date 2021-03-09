@@ -1,0 +1,66 @@
+@use '../../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin search-results-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  aio-search-results {
+    .search-results {
+      background-color: $darkgray;
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
+
+      .search-area {
+        .search-section-header {
+          color: $white;
+        }
+
+        ul {
+          .search-result-item {
+            color: $lightgray;
+
+            &:hover {
+              color: $white;
+            }
+          }
+        }
+      }
+
+      .no-results {
+        color: $white;
+      }
+
+      a {
+        color: $white;
+      }
+    }
+
+    &.embedded {
+      .search-results {
+        .search-area {
+          .search-section-header {
+            color: $darkgray;
+          }
+
+          .search-result-item {
+            color: lighten($darkgray, 10);
+
+            &:hover {
+              color: $accentblue;
+            }
+          }
+        }
+
+        .no-results {
+          color: $darkgray;
+        }
+
+        a {
+          color: $blue;
+        }
+      }
+    }
+  }
+}

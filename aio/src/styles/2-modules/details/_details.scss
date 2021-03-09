@@ -1,0 +1,52 @@
+@use '../../constants' as *;
+@use '../../mixins' as *;
+
+/*
+ * General styling to make detail/summary tags look a bit more material
+ * To get the best out of it you should structure your usage like this:
+ *
+ * ```html
+ * <details>
+ *   <summary>Some title</summary>
+ *   <div class="details-content">
+ *     Some content
+ *   </div>
+ * </details>
+ * ```
+ */
+
+details {
+  > summary {
+    cursor: pointer;
+    @include font-size(16);
+    position: relative;
+    padding: 16px 24px;
+    height: 16px;
+    display: block; // Remove the built in details marker in FF
+    overflow: hidden;
+
+    &::-webkit-details-marker {
+      display: none; // Remove the built in details marker in webkit
+    }
+
+    // Rotate the icon
+    i.material-icons.expand {
+      @include rotate(0deg);
+
+      @at-root #{selector-replace(&, 'details', 'details[open]')} {
+        @include rotate(180deg);
+      }
+    }
+
+    > h2 {
+      margin: 0;
+      padding: 0;
+      border: none;
+      display: inline;
+    }
+  }
+
+  .detail-contents {
+    padding: 16px 24px;
+  }
+}

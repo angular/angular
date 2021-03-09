@@ -1,0 +1,31 @@
+@use '../../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin presskit-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  .presskit-container {
+    .presskit-section {
+      &:not(:first-child) {
+        border-top: 1px solid $lightgray;
+      }
+
+      .presskit-icon-group {
+        .presskit-icon-item {
+          .presskit-image-container {
+            .transparent-img {
+              background-color: $white;
+
+              &-inverse {
+                background-color: if($is-dark-theme, mat-color($background, background), $deepgray);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,7 +1,9 @@
 @use '0-base/typography-theme' as *;
-@use '1-layouts' as *;
+@use '1-layouts/theme' as *;
+@use '2-modules/theme' as *;
 
 @mixin app-theme($theme) {
-    @include typography-theme($theme);
-    @include layout-theme($theme);
+  @include typography-theme($theme);
+  @include layout-themes($theme);
+  @include module-themes($theme);
 }

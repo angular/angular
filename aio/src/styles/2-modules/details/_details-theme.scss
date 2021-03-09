@@ -1,0 +1,17 @@
+@use '../../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin details-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  details {
+    box-shadow: 0 1px 4px 0 rgba($black, 0.37);
+
+    > summary {
+      color: $black;
+    }
+  }
+}

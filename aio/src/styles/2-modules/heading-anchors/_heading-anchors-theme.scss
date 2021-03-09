@@ -1,0 +1,22 @@
+@use '../../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin heading-anchors-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  .sidenav-content {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      .header-link {
+        color: $mediumgray;
+      }
+    }
+  }
+}
