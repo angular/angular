@@ -1,0 +1,59 @@
+@use '../../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin api-pages-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  .api-body {
+    details.overloads {
+      .detail-contents {
+        border: 1px solid $lightgray;
+      }
+
+      summary {
+        .actions {
+          color: $blue;
+        }
+      }
+    }
+
+    table {
+      &.method-table,
+      &.option-table,
+      &.list-table {
+        .with-github-links {
+          .github-links {
+            a {
+              color: $mediumgray;
+
+              .material-icons:hover {
+                color: $blue;
+              }
+            }
+          }
+        }
+      }
+
+      tr {
+        border-bottom: 1px solid $lightgray;
+      }
+    }
+
+    .from-constructor,
+    .read-only-property,
+    .write-only-property {
+      background-color: $lightgray;
+    }
+  }
+
+  .github-links {
+    .material-icons {
+      &:hover {
+        background-color: $mist;
+      }
+    }
+  }
+}

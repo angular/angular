@@ -1,0 +1,43 @@
+@use '../../constants' as *;
+@use '~@angular/material/theming' as *;
+
+@mixin select-menu-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  aio-select {
+    .form-select-button {
+      background: if($is-dark-theme, $darkgray, $white);
+      box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
+      border: 1px solid if($is-dark-theme, $darkgray, $white);
+      color: if($is-dark-theme, $blue-grey-200, $blue-grey-600);
+
+      &:focus {
+        border: 1px solid $blue-400;
+        box-shadow: 0 2px 2px rgba($blue-400, 0.24), 0 0 2px rgba($blue-400, 0.12);
+      }
+
+      &[disabled] {
+        color: lightgrey;
+      }
+    }
+
+    .form-select-dropdown {
+      background: mat-color($background, background);
+      box-shadow: 0 16px 16px rgba($black, 0.24), 0 0 16px rgba($black, 0.12);
+
+      li {
+        &:hover {
+          background-color: if($is-dark-theme, $darkgray, $blue-grey-50);
+          color: f($is-dark-theme, $blue-grey-400, $blue-grey-500);
+        }
+
+        &.selected {
+          background-color: if($is-dark-theme, $darkgray, $blue-grey-100);
+        }
+      }
+    }
+  }
+}

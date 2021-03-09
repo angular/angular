@@ -1,0 +1,8 @@
+@use '../../constants' as *;
+@use '../../mixins' as *;
+
+.reviewed {
+  @include font-size(13);
+  font-style: italic;
+  text-align: right;
+}
