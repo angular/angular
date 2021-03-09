@@ -9,6 +9,7 @@
 import {Injectable} from '@angular/core';
 
 import {AsyncValidatorFn, ValidatorFn} from './directives/validators';
+import {ReactiveFormsModule} from './form_providers';
 import {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup, FormHooks} from './model';
 
 function isAbstractControlOptions(options: AbstractControlOptions|
@@ -30,7 +31,7 @@ function isAbstractControlOptions(options: AbstractControlOptions|
  *
  * @publicApi
  */
-@Injectable()
+@Injectable({providedIn: ReactiveFormsModule})
 export class FormBuilder {
   /**
    * @description
