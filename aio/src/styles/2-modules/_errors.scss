@@ -1,4 +1,5 @@
 @use '../constants' as *;
+@use '../mixins' as *;
 
 .error-list {
   display: grid;

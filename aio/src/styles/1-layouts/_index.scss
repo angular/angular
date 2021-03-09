@@ -2,11 +2,11 @@
    LAYOUT STYLES
    ============================== */
 
-@import 'content-layout/content-layout';
-@import 'doc-viewer/doc-viewer';
-@import 'footer/footer';
-@import 'layout-global';
-@import 'marketing-layout/marketing-layout';
-@import 'not-found';
-@import 'sidenav';
-@import 'top-menu';
+@forward 'content-layout/content-layout';
+@forward 'doc-viewer/doc-viewer';
+@forward 'footer/footer';
+@forward 'layout-global';
+@forward 'marketing-layout/marketing-layout';
+@forward 'not-found';
+@forward 'sidenav';
+@forward 'top-menu';

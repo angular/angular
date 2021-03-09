@@ -1,4 +1,5 @@
 @use '../constants' as *;
+@use '../mixins' as *;
 
 aio-shell.mode-archive {
   @include deploy-theme($blue-grey-900, $blue-grey-400);
