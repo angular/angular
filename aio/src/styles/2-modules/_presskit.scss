@@ -50,14 +50,16 @@
           padding: 0;
 
           a {
-            display: flex;
-            align-items: center;
+            display: inline-flex;
+            padding-right: 3rem;
+            position: relative;
 
-            &:after {
-              font-family: 'Material Icons';
-              content: 'cloud_download';
+            &::after {
+              content: "cloud_download";
+              font-family: "Material Icons";
               @include font-size(24);
-              margin-left: 0.5rem;
+              position: absolute;
+              right: 0;
             }
           }
         }
