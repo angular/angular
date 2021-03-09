@@ -1,3 +1,5 @@
+<div class="center-layout-wide">
+
 <h1 class="no-toc">Cheat Sheet</h1>
 
 <table class="is-full-width is-fixed-layout">
@@ -390,3 +392,5 @@ so the <code>@Directive</code> configuration applies to components as well</p>
 </td>
 </tr>
 </tbody></table>
+
+</div>
