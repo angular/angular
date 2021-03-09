@@ -1,4 +1,4 @@
-<div>
+<div class="center-layout">
   <div class="flex-center group-buttons">
     <a *ngFor="let category of categories"
       [class.selected]="category.id == selectedCategory.id"
@@ -6,19 +6,17 @@
       (click)="selectCategory(category.id)"
       (keyup.enter)="selectCategory(category.id)">{{category.title}}</a>
   </div>
-  <div class="resources-container">
-    <div class="showcase">
-      <div *ngFor="let subCategory of selectedCategory?.subCategories">
-        <a id="{{subCategory.id}}"></a>
-        <h3 class="subcategory-title">{{subCategory.title}}</h3>
+  <div class="showcase">
+    <div *ngFor="let subCategory of selectedCategory?.subCategories">
+      <a id="{{subCategory.id}}"></a>
+      <h3 class="subcategory-title">{{subCategory.title}}</h3>
 
-        <div *ngFor="let resource of subCategory.resources">
-          <div class="resource-item">
-            <a class="resource-row-link" rel="noopener" target="_blank" [href]="resource.url">
-              <h4>{{resource.title}}</h4>
-              <p class="resource-description">{{resource.desc || 'No Description'}}</p>
-            </a>
-          </div>
+      <div *ngFor="let resource of subCategory.resources">
+        <div class="resource-item">
+          <a class="resource-row-link" rel="noopener" target="_blank" [href]="resource.url">
+            <h4>{{resource.title}}</h4>
+            <p class="resource-description">{{resource.desc || 'No Description'}}</p>
+          </a>
         </div>
       </div>
     </div>
