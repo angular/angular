@@ -8,9 +8,9 @@
 @import './mixins';
 
 // import directories
-@import './0-base/base-dir';
-@import './1-layouts/layouts-dir';
-@import './2-modules/modules-dir';
+@import './0-base';
+@import './1-layouts';
+@import './2-modules';
 
 // import print styles
 @import './print';
