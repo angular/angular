@@ -176,6 +176,16 @@ aio-code {
     padding: 4px;
   }
 
+  #cheatsheet {
+    td:first-of-type,
+    th {
+      code {
+        background-color: inherit;
+        padding: 0;
+      }
+    }
+  }
+
   .code-anchor {
     cursor: pointer;
     text-decoration: none;
