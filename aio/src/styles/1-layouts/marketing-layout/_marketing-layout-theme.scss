@@ -1,13 +1,69 @@
-@mixin marketing-layout-theme($theme) {
-    $primary: map-get($theme, primary);
-    $background: map-get($theme, background);
-    $foreground: map-get($theme, foreground);
-    $is-dark-theme: map-get($theme, is-dark);  
+@use '../../constants' as *;
 
-    .background-sky {
-        background-color: mat-color($primary, default);
-        background: linear-gradient(145deg, mat-color($primary, 900), mat-color($primary, 400));
-        color: mat-color($foreground, text);
-      }
-}
+@mixin marketing-layout-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  .background-sky {
+    background-color: mat-color($primary, default);
+    background: linear-gradient(145deg, mat-color($primary, 900), mat-color($primary, 400));
+    color: mat-color($foreground, text);
+  }
+
+  section#intro {
+    color: $white;
+  }
+
+  .announcement-bar {
+    background-color: $white;
   
+    .button {
+      color: $white;
+      background-color: $blue;
+  
+      &:hover {
+        color: rgba($white, 0.7);
+      }
+    }
+  }
+
+  .home-row .card {    
+    .card-text-container {  
+      p {
+        color: if($is-dark-theme, $offwhite, $darkgray);
+      }
+    }
+  
+    &:hover {
+      h2 {
+        color: $blue;
+      }
+    }
+  }
+
+  .button.hero-cta {
+    background-color: if($is-dark-theme, $darkgray, $white);
+  }
+
+  .cta-bar {
+    .hero-cta {
+      color: if($is-dark-theme, lighten($blue, 10), $blue);
+    }
+  }
+
+  .text-headline {
+    color: if($is-dark-theme, lighten($blue, 10), $blue);
+  }
+
+  .marketing-banner {
+    background-color: if($is-dark-theme, $blue, lighten($blue, 10));
+
+    .banner-headline {
+      color: $white;
+    }
+  }
+
+}
+

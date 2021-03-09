@@ -1,4 +1,5 @@
 @use '../constants' as *;
+@use '../mixins' as *;
 
 $tocItemLineHeight: 24;
 $tocItemTopPadding: 9;

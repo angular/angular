@@ -1,4 +1,5 @@
 @use '../constants' as *;
+@use '../mixins' as *;
 
 // Disable sidenav animations for the initial render.
 .starting.mat-drawer-transition .mat-drawer-content {
