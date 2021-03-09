@@ -1,3 +1,6 @@
+@use '../../constants' as *;
+@use '../../mixins' as *;
+
 .hero {
   display: flex;
   flex-direction: column;
@@ -42,7 +45,6 @@ section#intro {
   height: 480px;
   margin: 0 auto -32px;
   padding: 48px 0 0;
-  color: $white;
 
   @media (max-width: 780px) {
     flex-direction: column;
@@ -108,7 +110,6 @@ section#intro {
       margin-bottom: 8px;
       max-width: none;
       padding: 0;
-      filter: drop-shadow(0 2px 2px rgba($black, 0.24));
 
       @media (max-width: 780px) {
         width: 250px;
@@ -127,7 +128,6 @@ section#intro {
   max-width: 50vw;
   margin: 0 auto;
   padding: 16px;
-  background-color: $white;
   border-radius: 4px;
   box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
   box-sizing: border-box;
@@ -155,16 +155,10 @@ section#intro {
     height: 40px;
     min-width: 160px;
     @include font-size(16);
-    color: $white;
-    background-color: $blue;
     border-radius: 48px;
     box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
     box-sizing: border-box;
     cursor: pointer;
-
-    &:hover {
-      color: rgba($white, 0.7);
-    }
   }
 
   .material-icons {
@@ -226,16 +220,8 @@ section#intro {
 
     p {
       text-align: left;
-      color: $darkgray;
       margin: 0;
       padding: 8px 0;
-    }
-  }
-
-
-  &:hover {
-    h2 {
-      color: $blue;
     }
   }
 }
@@ -245,7 +231,6 @@ section#intro {
   @include font-size(18);
   font-weight: 600;
   @include line-height(40);
-  background-color: $white;
   border-radius: 48px;
   box-shadow: 0 2px 5px 0 rgba(0,0,0,.26);
   box-sizing: border-box;
@@ -281,16 +266,11 @@ section#intro {
     background: none;
     box-shadow: none;
   }
-
-  .hero-cta {
-    color: $blue;
-  }
 }
 
 .text-headline {
   @include font-size(20);
   font-weight: 500;
-  color: $blue;
   margin-top: 10px;
   text-transform: uppercase;
 }
@@ -365,7 +345,6 @@ div[layout=row]{
 }
 
 .marketing-banner {
-  background-color: lighten($blue, 10);
   margin-top: 64px;
   padding: 32px;
 
@@ -378,7 +357,6 @@ div[layout=row]{
     text-transform: uppercase;
     @include font-size(24);
     font-weight: 300;
-    color: $white;
     margin: 0;
     -webkit-margin-before: 0;
     -webkit-margin-after: 0;

@@ -1,13 +1,9 @@
-// import global themes
-@use './ng-io-theme';
-
-// import global mixins
-@import './mixins';
+@use './ng-io-theme.scss';
 
 // import directories
-@import './0-base';
-@import './1-layouts';
-@import './2-modules';
+@use './0-base' as base;
+@use './1-layouts' as layouts;
+@use './2-modules' as modules;
 
 // import print styles
 @import './print';

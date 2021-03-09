@@ -1,4 +1,6 @@
 @use '../constants' as *;
+@use '../mixins' as *;
+@use './alert';
 
 .callout {
   @extend .alert;
