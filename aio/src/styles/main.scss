@@ -1,8 +1,5 @@
 // import global themes
-@import './ng-io-theme';
-
-// import global variables
-@import './constants';
+@use './ng-io-theme';
 
 // import global mixins
 @import './mixins';

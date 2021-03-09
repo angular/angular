@@ -1,3 +1,5 @@
+@use '../constants' as *;
+
 .reviewed {
   color: lighten($darkgray, 10);
   @include font-size(13);
