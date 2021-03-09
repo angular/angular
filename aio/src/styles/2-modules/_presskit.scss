@@ -1,4 +1,5 @@
 @use '../constants' as *;
+@use '../mixins' as *;
 
 .presskit-container {
   padding: 0 32px 32px 32px;

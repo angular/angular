@@ -1,10 +1,12 @@
+@use '../../constants';
+@use '../../mixins' as *;
+
 footer {
   position: relative;
   @include line-height(24);
   flex: 1;
   padding: 48px;
   z-index: 0;
-  background-color: $blue;
   font-weight: 300;
 
   aio-footer {
@@ -12,7 +14,6 @@ footer {
     z-index: 0;
 
     & > * {
-      color: $white;
       max-width: 50em;
     }
 
@@ -22,7 +23,6 @@ footer {
     }
 
     a {
-      color: $white;
       text-decoration: none;
       z-index: 20;
       position: relative;
@@ -37,7 +37,7 @@ footer {
 
       &:focus {
         // `outline-offset` is not applied on Chrome on Windows, if `outline-style` is `auto.
-        outline: 1px solid rgba($white, 0.8);
+        outline: 1px solid rgba(constants.$white, 0.8);
         outline-offset: 2px;
       }
     }
@@ -47,7 +47,6 @@ footer {
       text-transform: uppercase;
       font-weight: 400;
       margin: 8px 0 12px;
-      color: $white;
 
       @media (max-width: 600px) {
         @include font-size(14);

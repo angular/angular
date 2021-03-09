@@ -1,4 +1,4 @@
-@use './constants';
+@use './constants' as *;
 
 // REM Font Adjustments
 @mixin font-size($sizeValue) {
@@ -48,14 +48,14 @@
 @mixin card($height, $width) {
   height: $height;
   width: $width;
-  background-color: constants.$white;
+  background-color: $white;
   border-radius: 4px;
-  box-shadow: 0 2px 2px rgba(constants.$black, 0.24), 0 0 2px rgba(constants.$black, 0.12);
+  box-shadow: 0 2px 2px rgba($black, 0.24), 0 0 2px rgba($black, 0.12);
   box-sizing: border-box;
   transition: box-shadow .5s;
 
   &:hover {
-    box-shadow: 0 8px 8px rgba(constants.$black, 0.24), 0 0 8px rgba(constants.$black, 0.12);
+    box-shadow: 0 8px 8px rgba($black, 0.24), 0 0 8px rgba($black, 0.12);
     text-decoration: none;
   }
 }

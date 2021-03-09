@@ -1,0 +1,26 @@
+@use '../../constants' as *;
+
+@mixin footer-theme($theme) {
+  $primary: map-get($theme, primary);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $is-dark-theme: map-get($theme, is-dark);
+
+  footer {
+    background-color: $blue;
+  
+    aio-footer {  
+      & > * {
+        color: $white;
+      }
+  
+      a {
+        color: $white;
+      }
+  
+      h3 {
+        color: $white;
+      }
+    }
+  }
+}
