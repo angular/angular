@@ -1,6 +1,5 @@
 <h1 class="no-toc">Cheat Sheet</h1>
 
-<div id="cheatsheet">
 <table class="is-full-width is-fixed-layout">
 <tbody><tr>
 <th>Bootstrapping</th>
@@ -391,4 +390,3 @@ so the <code>@Directive</code> configuration applies to components as well</p>
 </td>
 </tr>
 </tbody></table>
-</div>
