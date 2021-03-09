@@ -65,6 +65,16 @@ describe('MatTableDataSource', () => {
       dataSource.connect();
       expect(spy).toHaveBeenCalledTimes(1);
     });
+
+    it('should update filteredData even if the data source is disconnected', () => {
+      dataSource.data = [1, 2, 3, 4, 5];
+      expect(dataSource.filteredData).toEqual([1, 2, 3, 4, 5]);
+
+      dataSource.disconnect();
+      dataSource.data = [5, 4, 3, 2, 1];
+      expect(dataSource.filteredData).toEqual([5, 4, 3, 2, 1]);
+    });
+
   });
 });
 

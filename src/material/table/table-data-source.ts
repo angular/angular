@@ -65,14 +65,28 @@ export class _MatTableDataSource<T, P extends Paginator> extends DataSource<T> {
 
   /** Array of data that should be rendered by the table, where each object represents one row. */
   get data() { return this._data.value; }
-  set data(data: T[]) { this._data.next(data); }
+  set data(data: T[]) {
+    this._data.next(data);
+    // Normally the `filteredData` is updated by the re-render
+    // subscription, but that won't happen if it's inactive.
+    if (!this._renderChangesSubscription) {
+      this._filterData(data);
+    }
+  }
 
   /**
    * Filter term that should be used to filter out objects from the data array. To override how
    * data objects match to this filter string, provide a custom function for filterPredicate.
    */
   get filter(): string { return this._filter.value; }
-  set filter(filter: string) { this._filter.next(filter); }
+  set filter(filter: string) {
+    this._filter.next(filter);
+    // Normally the `filteredData` is updated by the re-render
+    // subscription, but that won't happen if it's inactive.
+    if (!this._renderChangesSubscription) {
+      this._filterData(this.data);
+    }
+  }
 
   /**
    * Instance of the MatSort directive used by the table to control its sorting. Sort changes
