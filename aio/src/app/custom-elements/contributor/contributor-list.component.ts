@@ -6,18 +6,19 @@ import { LocationService } from 'app/shared/location.service';
 @Component({
   selector: `aio-contributor-list`,
   template: `
-  <div class="flex-center group-buttons">
-<a *ngFor="let name of groupNames"
-    [class.selected]="name == selectedGroup.name"
-    class="button mat-button filter-button"
-    (click)="selectGroup(name)"
-    (keyup.enter)="selectGroup(name)">{{name}}</a>
-  </div>
-  <section *ngIf="selectedGroup" class="grid-fluid">
-    <div class="contributor-group">
-      <aio-contributor *ngFor="let person of selectedGroup.contributors" [person]="person"></aio-contributor>
+    <div class="flex-center group-buttons">
+      <a *ngFor="let name of groupNames"
+          class="button mat-button filter-button"
+          [class.selected]="name == selectedGroup.name"
+          (click)="selectGroup(name)"
+          (keyup.enter)="selectGroup(name)">{{name}}</a>
     </div>
-  </section>`
+    <section *ngIf="selectedGroup" class="grid-fluid">
+      <div class="contributor-group">
+        <aio-contributor *ngFor="let person of selectedGroup.contributors" [person]="person"></aio-contributor>
+      </div>
+    </section>
+  `,
 })
 export class ContributorListComponent implements OnInit {
   private groups: ContributorGroup[];
