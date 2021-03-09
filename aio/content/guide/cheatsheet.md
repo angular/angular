@@ -22,7 +22,7 @@
 </th>
 </tr>
 <tr>
-<td><code>@<b>NgModule</b>({ declarations: ..., imports: ...,<br>     exports: ..., providers: ..., bootstrap: ...})<br>class MyModule {}</code></td>
+<td><code>@<b>NgModule</b>({<br>&emsp;declarations: ..., imports: ..., exports: ...,<br>&emsp;providers: ..., bootstrap: ...<br>})<br>class MyModule {}</code></td>
 <td><p>Defines a module that contains components, directives, pipes, and providers.</p>
 </td>
 </tr><tr>
@@ -91,7 +91,7 @@ is available to <code>declarations</code> of this module.</p>
 <td><p>Sets up two-way data binding. Equivalent to: <code>&lt;my-cmp [title]="name" (titleChange)="name=$event"&gt;</code></p>
 </td>
 </tr><tr>
-<td><code>&lt;video <b>#movieplayer</b> ...&gt;<br>  &lt;button <b>(click)</b>="movieplayer.play()"&gt;<br>&lt;/video&gt;</code></td>
+<td><code>&lt;video <b>#movieplayer</b> ...&gt;&lt;/video&gt;<br>&lt;button <b>(click)</b>="movieplayer.play()"&gt;Play&lt;/button&gt;</code></td>
 <td><p>Creates a local variable <code>movieplayer</code> that provides access to the <code>video</code> element instance in data-binding and event-binding expressions in the current template.</p>
 </td>
 </tr><tr>
@@ -112,7 +112,7 @@ is available to <code>declarations</code> of this module.</p>
 <td><p>An SVG snippet template needs an <code>svg:</code> prefix on its root element to disambiguate the SVG element from an HTML component.</p>
 </td>
 </tr><tr>
-<td><code>&lt;<b>svg</b>&gt;<br>  &lt;rect x="0" y="0" width="100" height="100"/&gt;<br>&lt;/<b>svg</b>&gt;</code></td>
+<td><code>&lt;<b>svg</b>&gt;<br>&emsp;&lt;rect x="0" y="0" width="100" height="100"/&gt;<br>&lt;/<b>svg</b>&gt;</code></td>
 <td><p>An <code>&lt;svg&gt;</code> root element is detected as an SVG element automatically, without the prefix.</p>
 </td>
 </tr>
@@ -134,7 +134,7 @@ is available to <code>declarations</code> of this module.</p>
 <td><p>Turns the li element and its contents into a template, and uses that to instantiate a view for each item in list.</p>
 </td>
 </tr><tr>
-<td><code>&lt;div <b>[ngSwitch]</b>="conditionExpression"&gt;<br>  &lt;ng-template <b>[<b>ngSwitchCase</b>]</b>="case1Exp"&gt;...&lt;/ng-template&gt;<br>  &lt;ng-template <b>ngSwitchCase</b>="case2LiteralString"&gt;...&lt;/ng-template&gt;<br>  &lt;ng-template <b>ngSwitchDefault</b>&gt;...&lt;/ng-template&gt;<br>&lt;/div&gt;</code></td>
+<td><code>&lt;div <b>[ngSwitch]</b>="conditionExpression"&gt;<br>&emsp;&lt;ng-template <b>[<b>ngSwitchCase</b>]</b>="case1Exp"&gt;...&lt;/ng-template&gt;<br>&emsp;&lt;ng-template <b>ngSwitchCase</b>="case2LiteralString"&gt;...&lt;/ng-template&gt;<br>&emsp;&lt;ng-template <b>ngSwitchDefault</b>&gt;...&lt;/ng-template&gt;<br>&lt;/div&gt;</code></td>
 <td><p>Conditionally swaps the contents of the div by selecting one of the embedded templates based on the current value of <code>conditionExpression</code>.</p>
 </td>
 </tr><tr>
@@ -353,7 +353,7 @@ so the <code>@Directive</code> configuration applies to components as well</p>
 </th>
 </tr>
 <tr>
-<td><code>const routes: <b>Routes</b> = [<br>  { path: '', component: HomeComponent },<br>  { path: 'path/:routeParam', component: MyComponent },<br>  { path: 'staticPath', component: ... },<br>  { path: '**', component: ... },<br>  { path: 'oldPath', redirectTo: '/staticPath' },<br>  { path: ..., component: ..., data: { message: 'Custom' } }<br>]);<br><br>const routing = RouterModule.forRoot(routes);</code></td>
+<td><code>const routes: <b>Routes</b> = [<br>&emsp;{ path: '', component: HomeComponent },<br>&emsp;{ path: 'path/:routeParam', component: MyComponent },<br>&emsp;{ path: 'staticPath', component: ... },<br>&emsp;{ path: '**', component: ... },<br>&emsp;{ path: 'oldPath', redirectTo: '/staticPath' },<br>&emsp;{ path: ..., component: ..., data: { message: 'Custom' } }<br>]);<br><br>const routing = RouterModule.forRoot(routes);</code></td>
 <td><p>Configures routes for the application. Supports static, parameterized, redirect, and wildcard routes. Also supports custom route data and resolve.</p>
 </td>
 </tr><tr>
@@ -361,31 +361,31 @@ so the <code>@Directive</code> configuration applies to components as well</p>
 <td><p>Marks the location to load the component of the active route.</p>
 </td>
 </tr><tr>
-<td><code><br>&lt;a routerLink="/path"&gt;<br>&lt;a <b>[routerLink]</b>="[ '/path', routeParam ]"&gt;<br>&lt;a <b>[routerLink]</b>="[ '/path', { matrixParam: 'value' } ]"&gt;<br>&lt;a <b>[routerLink]</b>="[ '/path' ]" [queryParams]="{ page: 1 }"&gt;<br>&lt;a <b>[routerLink]</b>="[ '/path' ]" fragment="anchor"&gt;<br></code></td>
+<td><code><br>&lt;a <b>routerLink</b>="/path"&gt;<br>&lt;a <b>[routerLink]</b>="[ '/path', routeParam ]"&gt;<br>&lt;a <b>[routerLink]</b>="[ '/path', { matrixParam: 'value' } ]"&gt;<br>&lt;a <b>[routerLink]</b>="[ '/path' ]" [queryParams]="{ page: 1 }"&gt;<br>&lt;a <b>[routerLink]</b>="[ '/path' ]" fragment="anchor"&gt;<br></code></td>
 <td><p>Creates a link to a different view based on a route instruction consisting of a route path, required and optional parameters, query parameters, and a fragment. To navigate to a root route, use the <code>/</code> prefix; for a child route, use the <code>./</code>prefix; for a sibling or parent, use the <code>../</code> prefix.</p>
 </td>
 </tr><tr>
-<td><code>&lt;a [routerLink]="[ '/path' ]" routerLinkActive="active"&gt;</code></td>
+<td><code>&lt;a [routerLink]="[ '/path' ]" <b>routerLinkActive</b>="active"&gt;</code></td>
 <td><p>The provided classes are added to the element when the <code>routerLink</code> becomes the current active route.</p>
 </td>
 </tr><tr>
-<td><code>class <b>CanActivate</b>Guard implements <b>CanActivate</b> {<br>    canActivate(<br>      route: ActivatedRouteSnapshot,<br>      state: RouterStateSnapshot<br>    ): Observable&lt;boolean|UrlTree&gt;|Promise&lt;boolean|UrlTree&gt;|boolean|UrlTree { ... }<br>}<br><br>{ path: ..., canActivate: [<b>CanActivate</b>Guard] }</code></td>
+<td><code>class <b>CanActivate</b>Guard implements <b>CanActivate</b> {<br>&emsp;canActivate(<br>&emsp;&emsp;route: ActivatedRouteSnapshot,<br>&emsp;&emsp;state: RouterStateSnapshot<br>&emsp;):&nbsp;Observable&lt;boolean|UrlTree&gt;|Promise&lt;boolean|UrlTree&gt;|boolean|UrlTree { ... }<br>}<br><br>{ path: ..., canActivate: [<b>CanActivate</b>Guard] }</code></td>
 <td><p>An interface for defining a class that the router should call first to determine if it should activate this component. Should return a boolean|UrlTree or an Observable/Promise that resolves to a boolean|UrlTree.</p>
 </td>
 </tr><tr>
-<td><code>class <b>CanDeactivate</b>Guard implements <b>CanDeactivate</b>&lt;T&gt; {<br>    canDeactivate(<br>      component: T,<br>      route: ActivatedRouteSnapshot,<br>      state: RouterStateSnapshot<br>    ): Observable&lt;boolean|UrlTree&gt;|Promise&lt;boolean|UrlTree&gt;|boolean|UrlTree { ... }<br>}<br><br>{ path: ..., canDeactivate: [<b>CanDeactivate</b>Guard] }</code></td>
+<td><code>class <b>CanDeactivate</b>Guard implements <b>CanDeactivate</b>&lt;T&gt; {<br>&emsp;canDeactivate(<br>&emsp;&emsp;component: T,<br>&emsp;&emsp;route: ActivatedRouteSnapshot,<br>&emsp;&emsp;state: RouterStateSnapshot<br>&emsp;):&nbsp;Observable&lt;boolean|UrlTree&gt;|Promise&lt;boolean|UrlTree&gt;|boolean|UrlTree { ... }<br>}<br><br>{ path: ..., canDeactivate: [<b>CanDeactivate</b>Guard] }</code></td>
 <td><p>An interface for defining a class that the router should call first to determine if it should deactivate this component after a navigation. Should return a boolean|UrlTree or an Observable/Promise that resolves to a boolean|UrlTree.</p>
 </td>
 </tr><tr>
-<td><code>class <b>CanActivateChild</b>Guard implements <b>CanActivateChild</b> {<br>    canActivateChild(<br>      route: ActivatedRouteSnapshot,<br>      state: RouterStateSnapshot<br>    ): Observable&lt;boolean|UrlTree&gt;|Promise&lt;boolean|UrlTree&gt;|boolean|UrlTree { ... }<br>}<br><br>{ path: ..., canActivateChild: [CanActivateGuard],<br>    children: ... }</code></td>
+<td><code>class <b>CanActivateChild</b>Guard implements <b>CanActivateChild</b> {<br>&emsp;canActivateChild(<br>&emsp;&emsp;route: ActivatedRouteSnapshot,<br>&emsp;&emsp;state: RouterStateSnapshot<br>&emsp;):&nbsp;Observable&lt;boolean|UrlTree&gt;|Promise&lt;boolean|UrlTree&gt;|boolean|UrlTree { ... }<br>}<br><br>{ path: ..., canActivateChild: [CanActivateGuard],<br>&emsp;children: ... }</code></td>
 <td><p>An interface for defining a class that the router should call first to determine if it should activate the child route. Should return a boolean|UrlTree or an Observable/Promise that resolves to a boolean|UrlTree.</p>
 </td>
 </tr><tr>
-<td><code>class <b>Resolve</b>Guard implements <b>Resolve</b>&lt;T&gt; {<br>    resolve(<br>      route: ActivatedRouteSnapshot,<br>      state: RouterStateSnapshot<br>    ): Observable&lt;any&gt;|Promise&lt;any&gt;|any { ... }<br>}<br><br>{ path: ..., resolve: [<b>Resolve</b>Guard] }</code></td>
+<td><code>class <b>Resolve</b>Guard implements <b>Resolve</b>&lt;T&gt; {<br>&emsp;resolve(<br>&emsp;&emsp;route: ActivatedRouteSnapshot,<br>&emsp;&emsp;state: RouterStateSnapshot<br>&emsp;): Observable&lt;any&gt;|Promise&lt;any&gt;|any { ... }<br>}<br><br>{ path: ..., resolve: [<b>Resolve</b>Guard] }</code></td>
 <td><p>An interface for defining a class that the router should call first to resolve route data before rendering the route. Should return a value or an Observable/Promise that resolves to a value.</p>
 </td>
 </tr><tr>
-<td><code>class <b>CanLoad</b>Guard implements <b>CanLoad</b> {<br>    canLoad(<br>      route: Route<br>    ): Observable&lt;boolean|UrlTree&gt;|Promise&lt;boolean|UrlTree&gt;|boolean|UrlTree { ... }<br>}<br><br>{ path: ..., canLoad: [<b>CanLoad</b>Guard], loadChildren: ... }</code></td>
+<td><code>class <b>CanLoad</b>Guard implements <b>CanLoad</b> {<br>&emsp;canLoad(<br>&emsp;&emsp;route: Route<br>&emsp;):&nbsp;Observable&lt;boolean|UrlTree&gt;|Promise&lt;boolean|UrlTree&gt;|boolean|UrlTree { ... }<br>}<br><br>{ path: ..., canLoad: [<b>CanLoad</b>Guard], loadChildren: ... }</code></td>
 <td><p>An interface for defining a class that the router should call first to check if the lazy loaded module should be loaded. Should return a boolean|UrlTree or an Observable/Promise that resolves to a boolean|UrlTree.</p>
 </td>
 </tr>
