@@ -5,7 +5,6 @@
 
   .card-section {
     justify-content: space-between;
-    max-width: 880px;
 
     @media (max-width: 600px) {
       flex-direction: column;

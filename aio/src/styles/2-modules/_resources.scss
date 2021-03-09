@@ -4,7 +4,6 @@ aio-resource-list {
     box-shadow: 0 1px 4px 0 rgba($black, 0.37);
     border-radius: 4px;
     margin-bottom: 8px * 6;
-    max-width: 50em;
   }
 
   .resource-item {
@@ -16,12 +15,6 @@ aio-resource-list {
     p {
       margin: 0;
     }
-  }
-
-  .resources-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
   }
 
   .subcategory-title {
