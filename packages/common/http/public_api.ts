@@ -8,6 +8,7 @@
 
 export {HttpBackend, HttpHandler} from './src/backend';
 export {HttpClient} from './src/client';
+export {HttpContext, HttpContextToken} from './src/context';
 export {HttpHeaders} from './src/headers';
 export {HTTP_INTERCEPTORS, HttpInterceptor} from './src/interceptor';
 export {JsonpClientBackend, JsonpInterceptor} from './src/jsonp';

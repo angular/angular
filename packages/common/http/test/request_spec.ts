@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HttpContext} from '@angular/common/http/src/context';
 import {HttpHeaders} from '@angular/common/http/src/headers';
 import {HttpParams} from '@angular/common/http/src/params';
 import {HttpRequest} from '@angular/common/http/src/request';
@@ -56,6 +57,11 @@ const TEST_STRING = `I'm a body!`;
         const req = new HttpRequest('GET', TEST_URL, {headers});
         expect(req.headers).toBe(headers);
       });
+      it('uses the provided context if passed', () => {
+        const context = new HttpContext();
+        const req = new HttpRequest('GET', TEST_URL, {context});
+        expect(req.context).toBe(context);
+      });
       it('defaults to Json', () => {
         const req = new HttpRequest('GET', TEST_URL);
         expect(req.responseType).toBe('json');
@@ -65,8 +71,10 @@ const TEST_STRING = `I'm a body!`;
       const headers = new HttpHeaders({
         'Test': 'Test header',
       });
+      const context = new HttpContext();
       const req = new HttpRequest('POST', TEST_URL, 'test body', {
         headers,
+        context,
         reportProgress: true,
         responseType: 'text',
         withCredentials: true,
@@ -79,6 +87,8 @@ const TEST_STRING = `I'm a body!`;
         // Headers should be the same, as the headers are sealed.
         expect(clone.headers).toBe(headers);
         expect(clone.headers.get('Test')).toBe('Test header');
+
+        expect(clone.context).toBe(context);
       });
       it('and updates the url', () => {
         expect(req.clone({url: '/changed'}).url).toBe('/changed');
@@ -88,6 +98,10 @@ const TEST_STRING = `I'm a body!`;
       });
       it('and updates the body', () => {
         expect(req.clone({body: 'changed body'}).body).toBe('changed body');
+      });
+      it('and updates the context', () => {
+        const newContext = new HttpContext();
+        expect(req.clone({context: newContext}).context).toBe(newContext);
       });
     });
     describe('content type detection', () => {
