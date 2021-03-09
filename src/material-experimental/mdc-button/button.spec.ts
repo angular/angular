@@ -1,7 +1,7 @@
 import {waitForAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MatButtonModule, MatButton} from './index';
+import {MatButtonModule, MatButton, MatFabDefaultOptions, MAT_FAB_DEFAULT_OPTIONS} from './index';
 import {MatRipple, ThemePalette} from '@angular/material-experimental/mdc-core';
 
 
@@ -283,6 +283,35 @@ describe('MDC-based MatButton', () => {
         .every(element => !!element.querySelector('.mat-mdc-focus-indicator'))).toBe(true);
   });
 });
+
+describe('MatFabDefaultOptions', () => {
+  function configure(defaults: MatFabDefaultOptions) {
+    TestBed.configureTestingModule({
+      imports: [MatButtonModule],
+      declarations: [TestApp],
+      providers: [{provide: MAT_FAB_DEFAULT_OPTIONS, useValue: defaults}]
+    });
+
+    TestBed.compileComponents();
+  }
+
+  it('should override default color in component', () => {
+    configure({color: 'primary'});
+    const fixture: ComponentFixture<TestApp> = TestBed.createComponent(TestApp);
+    fixture.detectChanges();
+    const fabButtonDebugEl = fixture.debugElement.query(By.css('button[mat-fab]'))!;
+    expect(fabButtonDebugEl.nativeElement.classList).toContain('mat-primary');
+  });
+
+  it('should default to accent if config does not specify color', () => {
+    configure({});
+    const fixture: ComponentFixture<TestApp> = TestBed.createComponent(TestApp);
+    fixture.detectChanges();
+    const fabButtonDebugEl = fixture.debugElement.query(By.css('button[mat-fab]'))!;
+    expect(fabButtonDebugEl.nativeElement.classList).toContain('mat-accent');
+  });
+});
+
 
 /** Test component that contains an MatButton. */
 @Component({

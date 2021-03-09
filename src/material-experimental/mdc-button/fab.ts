@@ -12,6 +12,7 @@ import {
   Component,
   ElementRef,
   Inject,
+  InjectionToken,
   NgZone,
   Optional,
   ViewEncapsulation
@@ -28,6 +29,30 @@ import {
 } from './button-base';
 import {ThemePalette} from '@angular/material-experimental/mdc-core';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
+
+
+/** Default FAB options that can be overridden. */
+export interface MatFabDefaultOptions {
+  color?: ThemePalette;
+}
+
+/** Injection token to be used to override the default options for FAB. */
+export const MAT_FAB_DEFAULT_OPTIONS =
+  new InjectionToken<MatFabDefaultOptions>('mat-mdc-fab-default-options', {
+    providedIn: 'root',
+    factory: MAT_FAB_DEFAULT_OPTIONS_FACTORY
+  });
+
+/** @docs-private */
+export function MAT_FAB_DEFAULT_OPTIONS_FACTORY(): MatFabDefaultOptions {
+  return {
+    // The FAB by default has its color set to accent.
+    color: 'accent',
+  };
+}
+
+// Default FAB configuration.
+const defaults = MAT_FAB_DEFAULT_OPTIONS_FACTORY();
 
 /**
  * Material Design floating action button (FAB) component. These buttons represent the primary
@@ -60,9 +85,6 @@ import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatFabButton extends MatButtonBase {
-  // The FAB by default has its color set to accent.
-  color = 'accent' as ThemePalette;
-
   _isFab = true;
 
   private _extended: boolean;
@@ -71,8 +93,11 @@ export class MatFabButton extends MatButtonBase {
 
   constructor(
       elementRef: ElementRef, platform: Platform, ngZone: NgZone,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+      @Optional() @Inject(MAT_FAB_DEFAULT_OPTIONS) private _options?: MatFabDefaultOptions) {
     super(elementRef, platform, ngZone, animationMode);
+    this._options = this._options || defaults;
+    this.color = this.defaultColor = this._options!.color || defaults.color;
   }
 
   static ngAcceptInputType_extended: BooleanInput;
@@ -94,15 +119,15 @@ export class MatFabButton extends MatButtonBase {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatMiniFabButton extends MatButtonBase {
-  // The FAB by default has its color set to accent.
-  color = 'accent' as ThemePalette;
-
   _isFab = true;
 
   constructor(
     elementRef: ElementRef, platform: Platform, ngZone: NgZone,
-    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+    @Optional() @Inject(MAT_FAB_DEFAULT_OPTIONS) private _options?: MatFabDefaultOptions) {
     super(elementRef, platform, ngZone, animationMode);
+    this._options = this._options || defaults;
+    this.color = this.defaultColor = this._options!.color || defaults.color;
   }
 }
 
@@ -144,9 +169,6 @@ export class MatMiniFabButton extends MatButtonBase {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatFabAnchor extends MatAnchor {
-  // The FAB by default has its color set to accent.
-  color = 'accent' as ThemePalette;
-
   _isFab = true;
 
   private _extended: boolean;
@@ -156,8 +178,11 @@ export class MatFabAnchor extends MatAnchor {
 
   constructor(
       elementRef: ElementRef, platform: Platform, ngZone: NgZone,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+      @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+      @Optional() @Inject(MAT_FAB_DEFAULT_OPTIONS) private _options?: MatFabDefaultOptions) {
     super(elementRef, platform, ngZone, animationMode);
+    this._options = this._options || defaults;
+    this.color = this.defaultColor = this._options!.color || defaults.color;
   }
 
   static ngAcceptInputType_extended: BooleanInput;
@@ -179,14 +204,14 @@ export class MatFabAnchor extends MatAnchor {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatMiniFabAnchor extends MatAnchor {
-  // The FAB by default has its color set to accent.
-  color = 'accent' as ThemePalette;
-
   _isFab = true;
 
   constructor(
     elementRef: ElementRef, platform: Platform, ngZone: NgZone,
-    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string) {
+    @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+    @Optional() @Inject(MAT_FAB_DEFAULT_OPTIONS) private _options?: MatFabDefaultOptions) {
     super(elementRef, platform, ngZone, animationMode);
+    this._options = this._options || defaults;
+    this.color = this.defaultColor = this._options!.color || defaults.color;
   }
 }
