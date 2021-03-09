@@ -19,18 +19,6 @@ $text-padding: 16px;
   position: absolute;
   overflow: hidden;
 
-  .mat-figure {
-    @include layout-common.fill;
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-
-    padding: 0;
-    margin: 0;
-  }
-
   // Headers & footers
   .mat-grid-tile-header,
   .mat-grid-tile-footer {
@@ -78,4 +66,16 @@ $text-padding: 16px;
       display: none;
     }
   }
+}
+
+.mat-grid-tile-content {
+  @include layout-common.fill;
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+
+  padding: 0;
+  margin: 0;
 }
