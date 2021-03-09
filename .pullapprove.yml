@@ -1159,7 +1159,7 @@ groups:
     conditions:
       - *can-be-global-approved
       - >
-        contains_any_globs(files.exclude("CHANGELOG.md").exclude("packages/compiler-cli/**/BUILD.bazel"), [
+        contains_any_globs(files.exclude("packages/compiler-cli/**/BUILD.bazel"), [
           '*',
           '.circleci/**',
           '.devcontainer/**',
@@ -1220,7 +1220,6 @@ groups:
       - >
         contains_any_globs(files, [
           'goldens/public-api/**',
-          'CHANGELOG.md',
           'docs/NAMING.md',
           'aio/content/errors/*.md',
           'aio/content/guide/glossary.md',
