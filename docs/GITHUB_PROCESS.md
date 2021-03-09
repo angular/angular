@@ -12,3 +12,41 @@ Automatically locking closed, inactive issues guides people towards filing new i
 context rather than commenting on a "resolved" issue that contains out-of-date or unrelated
 information. As an example, someone may comment "I'm still having this issue", but without
 providing any of the additional information the team needs to investigate.
+
+<a name="feature-request"></a>
+# Feature request process
+
+To manage the requests we receive at scale, we introduced automation in our feature request
+management process. After we triage a ticket and we identify it as a feature request, it goes
+through several steps.
+
+## Manual review
+
+First, we manually review to verify if it aligns with any of the existing roadmap efforts. If it
+does, we prioritize it. Alternatively, we keep it open and our feature request bot initiates a
+voting process.
+
+## Voting phase
+
+To include the community in the feature request process, we open voting for 60 days. Anyone can cast
+a vote for the request with a thump-up (👍) reaction. If the feature request reaches 20 or more
+upvotes, we review it again manually. Alternatively, the bot closes the request.
+
+## Consideration phase
+
+If the feature request receives 20 or more votes, we verify if we can afford to maintain it and
+whether it aligns with the long-term vision of Angular. If the answers of both questions are yes,
+we prioritize the request, alternatively we close it.
+
+## Diagram
+
+![Feature Request Automation](https://github.com/angular/angular/raw/master/docs/images/feature-request-automation.png)
+
+## What if I want to implement the feature to help the Angular team?
+
+Often implementing the feature as an separate package is a better option. Building an external
+package rather than including the functionality in Angular helps with:
+
+- Keeping the framework's runtime smaller and simpler
+- Makes the learning journey of developers getting started with Angular smoother
+- Reduces maintainers burden and the complexity of the source code
