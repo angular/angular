@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, forwardRef, Injectable, Injector, Input, OnDestroy, OnInit, Renderer2} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Injectable, Injector, Input, NgModule, OnDestroy, OnInit, Renderer2} from '@angular/core';
 
 import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 import {NgControl} from './ng_control';
@@ -25,10 +25,20 @@ function throwNameError() {
 }
 
 /**
+ * Internal-only NgModule that works as a host for the `RadioControlRegistry` tree-shakable
+ * provider. Note: the `InternalFormsSharedModule` can not be used here directly, since it's
+ * declared *after* the `RadioControlRegistry` class and the `providedIn` doesn't support
+ * `forwardRef` logic.
+ */
+@NgModule()
+export class RadioControlRegistryModule {
+}
+
+/**
  * @description
  * Class used by Angular to track radio buttons. For internal use only.
  */
-@Injectable()
+@Injectable({providedIn: RadioControlRegistryModule})
 export class RadioControlRegistry {
   private _accessors: any[] = [];
 
