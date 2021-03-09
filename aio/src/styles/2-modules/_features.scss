@@ -24,7 +24,7 @@
     flex-wrap: wrap;
     justify-content: space-evenly;
 
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
       flex-direction: column;
     }
 
