@@ -26,9 +26,6 @@ export class HighlightDirective {
     this.el.nativeElement.style.backgroundColor = color;
   }
   // #enddocregion mouse-methods
-  // #docregion color-2
-  @Input() appHighlight: string;
-  // #enddocregion color-2
 
 }
 // #enddocregion

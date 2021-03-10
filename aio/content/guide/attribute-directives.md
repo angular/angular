@@ -91,7 +91,7 @@ This section walks you through setting the highlight color while applying the `H
 
 1. Add an `appHighlight` `@Input()` property.
 
-  <code-example path="attribute-directives/src/app/highlight.directive.2.ts" header="src/app/highlight.directive.ts" region="color-2"></code-example>
+  <code-example path="attribute-directives/src/app/highlight.directive.3.ts" header="src/app/highlight.directive.ts" region="input"></code-example>
 
   The `@Input()` decorator adds metadata to the class that makes the directive's `appHighlight` property available for binding.
 
