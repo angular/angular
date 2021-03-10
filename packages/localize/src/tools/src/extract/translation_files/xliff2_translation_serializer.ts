@@ -113,7 +113,9 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
     const text = substitutionLocations?.[placeholderName]?.text;
 
     if (placeholderName.startsWith('START_')) {
-      const closingPlaceholderName = placeholderName.replace(/^START/, 'CLOSE');
+      // Replace the `START` with `CLOSE` and strip off any `_1` ids from the end.
+      const closingPlaceholderName =
+          placeholderName.replace(/^START/, 'CLOSE').replace(/_\d+$/, '');
       const closingText = substitutionLocations?.[closingPlaceholderName]?.text;
       const attrs: Record<string, string> = {
         id: `${this.currentPlaceholderId++}`,
@@ -186,7 +188,7 @@ export class Xliff2TranslationSerializer implements TranslationSerializer {
  * and links are special cases.
  */
 function getTypeForPlaceholder(placeholder: string): string|null {
-  const tag = placeholder.replace(/^(START_|CLOSE_)/, '');
+  const tag = placeholder.replace(/^(START_|CLOSE_)/, '').replace(/_\d+$/, '');
   switch (tag) {
     case 'BOLD_TEXT':
     case 'EMPHASISED_TEXT':

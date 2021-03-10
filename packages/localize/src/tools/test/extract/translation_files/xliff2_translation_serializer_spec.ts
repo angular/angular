@@ -301,6 +301,27 @@ runInEachFileSystem(() => {
                 '<source>a<pc id="0" equivStart="START_TAG_DIV" equivEnd="CLOSE_TAG_DIV" type="other">b</pc>c</source>',
             );
           });
+
+          it('should render the "type" for link elements', () => {
+            const serializer = new Xliff2TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize(
+                [mockMessage('6', ['a', 'b', 'c'], ['START_LINK', 'CLOSE_LINK'], {})]);
+            expect(output).toContain(
+                '<source>a<pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link">b</pc>c</source>',
+            );
+          });
+
+          it('should render generic close tag placeholders for additional elements', () => {
+            const serializer = new Xliff2TranslationSerializer(
+                'xx', absoluteFrom('/project'), useLegacyIds, options);
+            const output = serializer.serialize([mockMessage(
+                '6', ['a', 'b', 'c', 'd', 'e'],
+                ['START_LINK', 'CLOSE_LINK', 'START_LINK_1', 'CLOSE_LINK'], {})]);
+            expect(output).toContain(
+                '<source>a<pc id="0" equivStart="START_LINK" equivEnd="CLOSE_LINK" type="link">b</pc>c<pc id="1" equivStart="START_LINK_1" equivEnd="CLOSE_LINK" type="link">d</pc>e</source>',
+            );
+          });
         });
       });
     });
