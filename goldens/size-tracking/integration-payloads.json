@@ -4,7 +4,7 @@
       "uncompressed": {
         "runtime": 1083,
         "main": 126218,
-        "polyfills": 33304
+        "polyfills": 33824
       }
     }
   },
@@ -16,7 +16,7 @@
         "main": "Likely there is a missing PURE annotation https://github.com/angular/angular/pull/43344",
         "main": "Tracking issue: https://github.com/angular/angular/issues/43568",
         "main": 20378,
-        "polyfills": 33328
+        "polyfills": 33848
       }
     }
   },
@@ -25,7 +25,7 @@
       "uncompressed": {
         "runtime": 1105,
         "main": 131882,
-        "polyfills": 33326
+        "polyfills": 33846
       }
     }
   },
@@ -34,7 +34,7 @@
       "uncompressed": {
         "runtime": 929,
         "main": 124544,
-        "polyfills": 34010
+        "polyfills": 34530
       }
     }
   },
@@ -43,7 +43,7 @@
       "uncompressed": {
         "runtime": 2835,
         "main": 233348,
-        "polyfills": 33322,
+        "polyfills": 33842,
         "src_app_lazy_lazy_module_ts": 795
       }
     }
@@ -53,27 +53,27 @@
       "uncompressed": {
         "runtime": 1063,
         "main": 158556,
-        "polyfills": 33284
+        "polyfills": 33804
       }
-    },
-    "animations": {
-      "master": {
-        "uncompressed": {
-          "runtime": 1070,
-          "main": 158300,
-          "polyfills": 33294
-        }
+    }
+  },
+  "animations": {
+    "master": {
+      "uncompressed": {
+        "runtime": 1070,
+        "main": 158300,
+        "polyfills": 33814
       }
-    },
-    "hello_world__closure": {
-      "master": {
-        "uncompressed": {
-          "bundle": "TODO(i): temporarily increase the payload size limit from 105779 - this is due to a closure issue related to ESM reexports that still needs to be investigated",
-          "bundle": "TODO(i): we should define ngDevMode to false in Closure, but --define only works in the global scope.",
-          "bundle": "TODO(i): (FW-2164) TS 3.9 new class shape seems to have broken Closure in big ways. The size went from 169991 to 252338",
-          "bundle": "TODO(i): after removal of tsickle from ngc-wrapped / ng_package, we had to switch to SIMPLE optimizations which increased the size from 252338 to 1198917, see PR#37221 and PR#37317 for more info",
-          "bundle": 1214857
-        }
+    }
+  },
+  "hello_world__closure": {
+    "master": {
+      "uncompressed": {
+        "bundle": "TODO(i): temporarily increase the payload size limit from 105779 - this is due to a closure issue related to ESM reexports that still needs to be investigated",
+        "bundle": "TODO(i): we should define ngDevMode to false in Closure, but --define only works in the global scope.",
+        "bundle": "TODO(i): (FW-2164) TS 3.9 new class shape seems to have broken Closure in big ways. The size went from 169991 to 252338",
+        "bundle": "TODO(i): after removal of tsickle from ngc-wrapped / ng_package, we had to switch to SIMPLE optimizations which increased the size from 252338 to 1198917, see PR#37221 and PR#37317 for more info",
+        "bundle": 1214857
       }
     }
   }
