@@ -16,6 +16,7 @@ import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
 import {destroyLView, detachView, renderDetachView} from './node_manipulation';
+import {getComponentLViewByIndex} from './util/view_utils';
 
 
 
@@ -311,7 +312,34 @@ export class RootViewRef<T> extends ViewRef<T> {
     super(_view);
   }
 
+  private isRootComponentDirtyOrCheckAlways() {
+    const tView = this._view[TVIEW];
+    const components = tView.components;
+    if (components) {
+      for (let i = 0; i < components.length; i++) {
+        const componentView = getComponentLViewByIndex(components[i], this._view);
+        if (!(componentView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty))) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   detectChanges(): void {
+    // Mark all root children components dirty to ensure these components run change detection.
+    // The current RootViewRef is the hostView, when the component is
+    //
+    // 1. `bootstrap` or `dynamic`
+    // 2. Using `ChangeDetectionStrategy.OnPush`
+    // 3. Not dirty
+    //
+    // The change detection will bypass the root component.
+    // So we need to warn the user to call `this.injector.get(ChangeDetectorRef).detectChanges()`
+    // instead.
+    ngDevMode && !this.isRootComponentDirtyOrCheckAlways() &&
+        console.warn(
+            `Calling detectChanges() on RootViewRef of the OnPush component doesn't trigger the change detection of the OnPush component, call this.injector.get(ChangeDetectorRef).detectChanges() instead.`);
     detectChangesInRootView(this._view);
   }
 
