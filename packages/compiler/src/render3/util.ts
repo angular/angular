@@ -6,29 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {StaticSymbol} from '../aot/static_symbol';
 import {escapeIdentifier} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
-import {OutputContext} from '../util';
-
-/**
- * Convert metadata into an `Expression` in the given `OutputContext`.
- *
- * This operation will handle arrays, references to symbols, or literal `null` or `undefined`.
- */
-export function convertMetaToOutput(meta: any, ctx: OutputContext): o.Expression {
-  if (Array.isArray(meta)) {
-    return o.literalArr(meta.map(entry => convertMetaToOutput(entry, ctx)));
-  }
-  if (meta instanceof StaticSymbol) {
-    return ctx.importExpr(meta);
-  }
-  if (meta == null) {
-    return o.literal(meta);
-  }
-
-  throw new Error(`Internal error: Unsupported or unknown metadata: ${meta}`);
-}
 
 export function typeWithParameters(type: o.Expression, numParams: number): o.ExpressionType {
   if (numParams === 0) {
@@ -53,21 +32,6 @@ export function prepareSyntheticPropertyName(name: string) {
 
 export function prepareSyntheticListenerName(name: string, phase: string) {
   return `${ANIMATE_SYMBOL_PREFIX}${name}.${phase}`;
-}
-
-export function isSyntheticPropertyOrListener(name: string) {
-  return name.charAt(0) == ANIMATE_SYMBOL_PREFIX;
-}
-
-export function getSyntheticPropertyName(name: string) {
-  // this will strip out listener phase values...
-  // @foo.start => @foo
-  const i = name.indexOf('.');
-  name = i > 0 ? name.substring(0, i) : name;
-  if (name.charAt(0) !== ANIMATE_SYMBOL_PREFIX) {
-    name = ANIMATE_SYMBOL_PREFIX + name;
-  }
-  return name;
 }
 
 export function getSafePropertyAccessString(accessor: string, name: string): string {
