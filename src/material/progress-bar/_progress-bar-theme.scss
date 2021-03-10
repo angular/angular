@@ -1,19 +1,33 @@
 @use 'sass:map';
+@use 'sass:meta';
+@use 'sass:color';
 @use '../core/theming/palette';
 @use '../core/theming/theming';
+
+// Approximates the correct buffer color by using a mix between the theme color
+// and the theme's background color.
+@function _get-buffer-color($theme, $background) {
+  $theme-color: theming.color($theme);
+  // Return fallback color if the theme uses variables to define colors.
+  @if (meta.type-of($theme-color) != 'color' or meta.type-of($background) != 'color') {
+    @return theming.color($theme, lighter);
+  }
+  @return color.mix($theme-color, $background, $weight: 25%);
+}
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $primary: map.get($config, primary);
   $accent: map.get($config, accent);
   $warn: map.get($config, warn);
+  $background: map.get(map.get($config, background), background);
 
   .mat-progress-bar-background {
-    fill: theming.color($primary, lighter);
+    fill: _get-buffer-color($primary, $background);
   }
 
   .mat-progress-bar-buffer {
-    background-color: theming.color($primary, lighter);
+    background-color: _get-buffer-color($primary, $background);
   }
 
   .mat-progress-bar-fill::after {
@@ -22,11 +36,11 @@
 
   .mat-progress-bar.mat-accent {
     .mat-progress-bar-background {
-      fill: theming.color($accent, lighter);
+      fill: _get-buffer-color($accent, $background);
     }
 
     .mat-progress-bar-buffer {
-      background-color: theming.color($accent, lighter);
+      background-color: _get-buffer-color($accent, $background);
     }
 
     .mat-progress-bar-fill::after {
@@ -36,11 +50,11 @@
 
   .mat-progress-bar.mat-warn {
     .mat-progress-bar-background {
-      fill: theming.color($warn, lighter);
+      fill: _get-buffer-color($warn, $background);
     }
 
     .mat-progress-bar-buffer {
-      background-color: theming.color($warn, lighter);
+      background-color: _get-buffer-color($warn, $background);
     }
 
     .mat-progress-bar-fill::after {
