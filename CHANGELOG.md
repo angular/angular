@@ -1,3 +1,26 @@
+## 11.2.4 "rayon-crayon" (2021-03-10)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **card:** not clearing margin on last button in end alignment ([#20040](https://github.com/angular/components/issues/20040)) ([4d45db74ceacb203ed89538c331d7785c20da99c](https://github.com/angular/components/commit/4d45db74ceacb203ed89538c331d7785c20da99c)), closes [#20024](https://github.com/angular/components/issues/20024) |
+| bug fix |  **dialog:** focus restoration not working inside shadow dom ([#21811](https://github.com/angular/components/issues/21811)) ([f18c416bbce3a9cf8c433bdd84b0783d6859cc51](https://github.com/angular/components/commit/f18c416bbce3a9cf8c433bdd84b0783d6859cc51)), closes [#21796](https://github.com/angular/components/issues/21796) |
+| bug fix |  **schematics:** generate code that works in strict CLI projects ([#22052](https://github.com/angular/components/issues/22052)) ([99c24d40bf89b1c0fd8906d4f8bf1ac2ffd12a2c](https://github.com/angular/components/commit/99c24d40bf89b1c0fd8906d4f8bf1ac2ffd12a2c)), closes [#21981](https://github.com/angular/components/issues/21981) [#21981](https://github.com/angular/components/issues/21981) |
+| bug fix |  **sort:** view not updated when sort state is changed through binding ([#19492](https://github.com/angular/components/issues/19492)) ([90f7a5639581eb8db45e9782237940647370def6](https://github.com/angular/components/commit/90f7a5639581eb8db45e9782237940647370def6)), closes [#19467](https://github.com/angular/components/issues/19467) |
+| bug fix |  **table:** data source filteredData not updating while disconnected ([#22058](https://github.com/angular/components/issues/22058)) ([afdec6f55ae91a64cc150bdca3f4f95f617aa747](https://github.com/angular/components/commit/afdec6f55ae91a64cc150bdca3f4f95f617aa747)), closes [#21338](https://github.com/angular/components/issues/21338) [#21984](https://github.com/angular/components/issues/21984) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-autocomplete:** only animate along y axis ([#21588](https://github.com/angular/components/issues/21588)) ([627b0ebad45ac08f263e821f4a6ea50150ac9231](https://github.com/angular/components/commit/627b0ebad45ac08f263e821f4a6ea50150ac9231)) |
+| bug fix |  **mdc-chips:** remove icon click interaction ([#22132](https://github.com/angular/components/issues/22132)) ([4c69d18df20b37a9af69aff3353ef670e4129dd3](https://github.com/angular/components/commit/4c69d18df20b37a9af69aff3353ef670e4129dd3)) |
+| bug fix |  **mdc-form-field:** fix height for form field with textarea ([#22089](https://github.com/angular/components/issues/22089)) ([766c9ea0dff389c08f49b703ed52706aa001abf1](https://github.com/angular/components/commit/766c9ea0dff389c08f49b703ed52706aa001abf1)) |
+| bug fix |  **mdc-progress-bar:** run resize observer outside zone ([#21564](https://github.com/angular/components/issues/21564)) ([e94b7bd3c81a30db13225050e12b5f69765ef4c8](https://github.com/angular/components/commit/e94b7bd3c81a30db13225050e12b5f69765ef4c8)) |
+| bug fix |  **mdc-select:** arrow not rendering in high contrast mode ([#21606](https://github.com/angular/components/issues/21606)) ([0f333a2e8a81ef2c38997ce5f9469414c8f8dab3](https://github.com/angular/components/commit/0f333a2e8a81ef2c38997ce5f9469414c8f8dab3)), closes [#14219](https://github.com/angular/components/issues/14219) [#21263](https://github.com/angular/components/issues/21263) |
+
+
 # 12.0.0-next.1 "ruthenium-restaurant" (2021-03-03)
 
 ### cdk
