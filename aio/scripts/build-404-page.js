@@ -18,8 +18,9 @@ function _main() {
   const dst404PagePath = join(DIST_DIR, '404.html');
 
   const srcIndexContent = readFileSync(srcIndexPath, 'utf8');
-  const src404BodyContent = readFileSync(src404BodyPath, 'utf8');
-  const dst404PageContent = srcIndexContent.replace(/<body>[\s\S]+<\/body>/, src404BodyContent);
+  const src404BodyContent = readFileSync(src404BodyPath, 'utf8').trim();
+  const dst404PageContent = srcIndexContent
+      .replace(/(<body>)[\s\S]+(<\/body>)/, `$1\n  ${src404BodyContent}\n$2`);
 
   if (dst404PageContent === srcIndexContent) {
     throw new Error(
