@@ -335,6 +335,8 @@ groups:
           'aio/content/guide/component-styles.md',
           'aio/content/guide/view-encapsulation.md',
           'aio/content/examples/component-styles/**',
+          'aio/content/examples/content-projection/**',
+          'aio/content/guide/content-projection.md',
           'aio/content/guide/dependency-injection.md',
           'aio/content/examples/dependency-injection/**',
           'aio/content/images/guide/dependency-injection/**',

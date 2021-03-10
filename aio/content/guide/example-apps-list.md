@@ -154,6 +154,12 @@ For more information, see [Built-in directives](guide/built-in-directives).
 Demonstrates Angular built-in template functions.
 For more information, see the [`$any()` type cast function section](guide/template-expression-operators#the-any-type-cast-function) of [Template expression operators](guide/template-expression-operators).
 
+### Content projection
+
+<live-example name="content-projection"></live-example>
+
+Demonstrates how to use Angular's content projection feature when creating reusable components.
+
 ### Interpolation
 
 <live-example name="interpolation"></live-example>
