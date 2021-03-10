@@ -7,8 +7,9 @@
  */
 import {assertDefined} from '../../util/assert';
 import {global} from '../../util/global';
+
 import {applyChanges} from './change_detection_utils';
-import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
+import {getComponent, getComponentOrDirectiveMetadata, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from './discovery_utils';
 
 
 
@@ -41,6 +42,7 @@ export function publishDefaultGlobalUtils() {
   if (!_published) {
     _published = true;
     publishGlobalUtil('getComponent', getComponent);
+    publishGlobalUtil('getMetadata', getComponentOrDirectiveMetadata);
     publishGlobalUtil('getContext', getContext);
     publishGlobalUtil('getListeners', getListeners);
     publishGlobalUtil('getOwningComponent', getOwningComponent);

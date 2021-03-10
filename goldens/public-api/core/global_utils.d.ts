@@ -2,6 +2,8 @@ export declare function applyChanges(component: {}): void;
 
 export declare function getComponent<T>(element: Element): T | null;
 
+export declare function getComponentOrDirectiveMetadata<T>(instance: any): DirectiveMetadata<T>|ComponentMetadata<T>|null;
+
 export declare function getContext<T>(element: Element): T | null;
 
 export declare function getDirectives(element: Element): {}[];

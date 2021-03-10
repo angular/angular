@@ -7,9 +7,11 @@
  */
 
 import {Injector} from '../../di/injector';
-import {assertEqual} from '../../util/assert';
+import {ViewEncapsulation} from '../../metadata/view';
+import {assertDefined, assertEqual} from '../../util/assert';
 import {assertLView} from '../assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
+import {getComponentDef, getDirectiveDef} from '../definition';
 import {NodeInjector} from '../di';
 import {buildDebugNode} from '../instructions/lview_debug';
 import {LContext} from '../interfaces/context';
@@ -17,6 +19,7 @@ import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {isLView} from '../interfaces/type_checks';
 import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, T_HOST, TVIEW, TViewType} from '../interfaces/view';
+
 import {stringifyForError} from './stringify_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
 import {getTNode, unwrapRNode} from './view_utils';
@@ -58,6 +61,70 @@ export function getComponent<T>(element: Element): T|null {
   }
 
   return context.component as T;
+}
+
+export interface DirectiveMetadata<T> {
+  readonly inputs: {[P in keyof T]: string};
+  readonly outputs: {[P in keyof T]: string};
+}
+
+export interface ComponentMetadata<T> extends DirectiveMetadata<T> {
+  onPush: boolean;
+  encapsulation: ViewEncapsulation;
+}
+
+/**
+ * Retrieves the metadata for a particular component or directive instance
+ *
+ * @usageNotes
+ * Given the component:
+ * ```typescript
+ * @Component({
+ *   selector: 'my-app',
+ *   template: '...',
+ *   changeDetection: ChangeDetectionStrategy.OnPush
+ * })
+ * class AppComponent {
+ *   @Input() foo = '';
+ * }
+ * ```
+ * Calling `getComponentOrDirectiveMetadata` on an instance of the `AppComponent` will return its
+ * metadata, including inputs, outputs, view encapsulation, and whether or not the component
+ * uses `OnPush` change detection strategy.
+ *
+ *
+ * @param instance instance of the component or directive.
+ * @returns Metadata
+ *
+ * @publicApi
+ * @globalApi ng
+ */
+export function getComponentOrDirectiveMetadata<T>(instance: any): DirectiveMetadata<T>|
+    ComponentMetadata<T>|null {
+  assertDefined(instance, 'The component or directive instance is not defined');
+
+  const {constructor} = instance;
+  assertDefined(constructor, 'No constructor of the component or directive instance');
+
+  const componentDef = getComponentDef<T>(constructor);
+  if (componentDef) {
+    return {
+      inputs: componentDef.inputs,
+      outputs: componentDef.outputs,
+      encapsulation: componentDef.encapsulation,
+      onPush: componentDef.onPush
+    };
+  }
+
+  const directiveDef = getDirectiveDef<T>(constructor);
+  if (directiveDef) {
+    return {
+      inputs: directiveDef.inputs,
+      outputs: directiveDef.outputs,
+    };
+  }
+
+  return null;
 }
 
 

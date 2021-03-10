@@ -68,5 +68,6 @@ ivyEnabled && describe('ApplicationRef bootstrap', () => {
 
        const ngUtils = (global as any).ng;
        expect(ngUtils.getComponent).toBeTruthy();
+       expect(ngUtils.getComponentOrDirectiveMetadata).toBeTruthy();
      }));
 });

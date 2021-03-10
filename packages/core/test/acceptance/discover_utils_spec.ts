@@ -7,6 +7,7 @@
  */
 import {CommonModule} from '@angular/common';
 import {Component, Directive, HostBinding, InjectionToken, ViewChild} from '@angular/core';
+import {Input} from '@angular/core/src/metadata';
 import {isLView} from '@angular/core/src/render3/interfaces/type_checks';
 import {CONTEXT} from '@angular/core/src/render3/interfaces/view';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -14,8 +15,8 @@ import {getElementStyles} from '@angular/core/testing/src/styling';
 import {expect} from '@angular/core/testing/src/testing_internal';
 import {onlyInIvy} from '@angular/private/testing';
 
-import {getHostElement, markDirty} from '../../src/render3/index';
-import {getComponent, getComponentLView, getContext, getDebugNode, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents, loadLContext} from '../../src/render3/util/discovery_utils';
+import {ComponentDef, DirectiveDef, getHostElement, markDirty} from '../../src/render3/index';
+import {getComponent, getComponentLView, getComponentOrDirectiveMetadata, getContext, getDebugNode, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents, loadLContext} from '../../src/render3/util/discovery_utils';
 
 onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -55,6 +56,7 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
 
   @Directive({selector: '[dirA]', exportAs: 'dirA'})
   class DirectiveA {
+    @Input() foo? = 2;
     constructor() {
       dirA.push(this);
     }
@@ -96,6 +98,25 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
       expect(getComponent<MyApp>(fixture.nativeElement)).toEqual(myApp);
       expect(getComponent<Child>(child[0])).toEqual(childComponent[0]);
       expect(getComponent<Child>(child[1])).toEqual(childComponent[1]);
+    });
+  });
+
+  describe('getMetadata', () => {
+    it('should throw when called with null or undefined', () => {
+      expect(() => getComponentOrDirectiveMetadata(null))
+          .toThrowError(/The component or directive instance is not defined/);
+      expect(() => getComponentOrDirectiveMetadata(undefined))
+          .toThrowError(/The component or directive instance is not defined/);
+    });
+
+    it('should return metadata from component and directive instance', () => {
+      const componentMetadata =
+          getComponentOrDirectiveMetadata(myApp) as Pick<ComponentDef<any>, 'onPush'>;
+      expect(componentMetadata.onPush).toBe(false);
+
+      const directiveMetadata =
+          getComponentOrDirectiveMetadata(dirA[0]) as Pick<DirectiveDef<any>, 'inputs'|'outputs'>;
+      expect(directiveMetadata.inputs['foo']).toBe('foo');
     });
   });
 

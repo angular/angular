@@ -12,7 +12,7 @@ import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_featur
 import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ɵɵProvidersFeature} from './features/providers_feature';
 import {ComponentTemplate, ComponentType, DirectiveType, PipeDef, ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta, ɵɵFactoryDef, ɵɵPipeDefWithMeta} from './interfaces/definition';
-import {getComponent, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
+import {ComponentMetadata, DirectiveMetadata, getComponent, getComponentOrDirectiveMetadata, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
 
 export {NgModuleType} from '../metadata/ng_module_def';
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef, injectComponentFactoryResolver} from './component_ref';
@@ -177,10 +177,13 @@ export { ɵɵinjectPipeChangeDetectorRef,ɵɵtemplateRefExtractor} from './view_
 // clang-format on
 
 export {
+  ComponentMetadata,
   ComponentTemplate,
   ComponentType,
+  DirectiveMetadata,
   DirectiveType,
   getComponent,
+  getComponentOrDirectiveMetadata,
   getDirectives,
   getHostElement,
   getRenderedText,
