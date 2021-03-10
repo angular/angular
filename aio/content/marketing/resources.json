@@ -564,6 +564,12 @@
             "desc": "Comprehensive learning resource on building Angular apps with NgRx",
             "url": "https://gumroad.com/l/angular-ngrx-book",
             "logo": ""
+          },
+		      "testing-angular-guide": {
+            "title": "Testing Angular",
+            "desc": "A Guide to Robust Angular Applications (free online book and e-book)",
+            "url": "https://molily.de/testing-angular",
+            "logo": ""
           }
         }
       },
