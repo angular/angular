@@ -13,6 +13,7 @@
           "/assets/js/*.js",
           "/*.css",
           "/*.js",
+          "!/assets/js/native-shim.js",
           "!/*-es5*.js"
         ],
         "urls": [
@@ -39,6 +40,7 @@
       "resources": {
         "files": [
           "/assets/images/favicons/**",
+          "/assets/js/native-shim.js",
           "/*-es5*.js",
           "!/**/_unused/**"
         ]
