@@ -457,7 +457,7 @@ export class NgModuleDecoratorHandler implements
     const ngInjectorDef =
         compileInjector({...inj, imports: [...inj.imports, ...resolution.injectorImports]});
     const ngModuleDef = compileNgModule(mod);
-    const ngModuleStatements = ngModuleDef.additionalStatements;
+    const ngModuleStatements = ngModuleDef.statements;
     if (metadataStmt !== null) {
       ngModuleStatements.push(metadataStmt);
     }
@@ -497,7 +497,7 @@ export class NgModuleDecoratorHandler implements
       {
         name: 'ɵinj',
         initializer: ngInjectorDef.expression,
-        statements: [],
+        statements: ngInjectorDef.statements,
         type: ngInjectorDef.type,
       },
     ];

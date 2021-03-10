@@ -15,7 +15,7 @@ import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
 import {OutputContext} from '../util';
 
-import {R3Reference, typeWithParameters} from './util';
+import {R3CompiledExpression, R3Reference, typeWithParameters} from './util';
 import {unsupported} from './view/util';
 
 
@@ -169,16 +169,10 @@ export interface R3DependencyMetadata {
   skipSelf: boolean;
 }
 
-export interface R3FactoryFn {
-  factory: o.Expression;
-  statements: o.Statement[];
-  type: o.ExpressionType;
-}
-
 /**
  * Construct a factory function expression for the given `R3FactoryMetadata`.
  */
-export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
+export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpression {
   const t = o.variable('t');
   const statements: o.Statement[] = [];
   let ctorDepsType: o.Type = o.NONE_TYPE;
@@ -258,7 +252,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3FactoryFn {
   }
 
   return {
-    factory: o.fn(
+    expression: o.fn(
         [new o.FnParam('t', o.DYNAMIC_TYPE)], body, o.INFERRED_TYPE, undefined,
         `${meta.name}_Factory`),
     statements,

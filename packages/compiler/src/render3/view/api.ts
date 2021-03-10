@@ -339,30 +339,6 @@ export interface R3QueryMetadata {
 }
 
 /**
- * Output of render3 directive compilation.
- */
-export interface R3DirectiveDef {
-  expression: o.Expression;
-  type: o.Type;
-}
-
-/**
- * Output of render3 component compilation.
- */
-export interface R3ComponentDef {
-  expression: o.Expression;
-  type: o.Type;
-}
-
-/**
- * Output of render3 pipe compilation.
- */
-export interface R3PipeDef {
-  expression: o.Expression;
-  type: o.Type;
-}
-
-/**
  * Mappings indicating how the class interacts with its
  * host element (host bindings, listeners, etc).
  */

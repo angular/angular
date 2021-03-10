@@ -196,7 +196,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
       target: meta.target,
     });
     return this.jitExpression(
-        factoryRes.factory, angularCoreEnv, sourceMapUrl, factoryRes.statements);
+        factoryRes.expression, angularCoreEnv, sourceMapUrl, factoryRes.statements);
   }
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan {

@@ -20,9 +20,9 @@ import {BindingParser} from '../../template_parser/binding_parser';
 import {error} from '../../util';
 import {BoundEvent} from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
-import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, typeWithParameters} from '../util';
+import {prepareSyntheticListenerFunctionName, prepareSyntheticPropertyName, R3CompiledExpression, typeWithParameters} from '../util';
 
-import {DeclarationListEmitMode, R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata} from './api';
 import {MIN_STYLING_BINDING_SLOTS_REQUIRED, StylingBuilder, StylingInstructionCall} from './styling_builder';
 import {BindingScope, makeBindingParser, prepareEventListenerParameters, renderFlagCheckIfStmt, resolveSanitizationFn, TemplateDefinitionBuilder, ValueConverter} from './template';
 import {asLiteral, chainedInstruction, conditionallyCreateMapObjectLiteral, CONTEXT_NAME, DefinitionMap, getQueryPredicate, RENDER_FLAGS, TEMPORARY_NAME, temporaryAllocator} from './util';
@@ -113,14 +113,14 @@ function addFeatures(definitionMap: DefinitionMap, meta: R3DirectiveMetadata|R3C
  */
 export function compileDirectiveFromMetadata(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
-    bindingParser: BindingParser): R3DirectiveDef {
+    bindingParser: BindingParser): R3CompiledExpression {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
   const expression =
       o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()], undefined, true);
   const type = createDirectiveType(meta);
 
-  return {expression, type};
+  return {expression, type, statements: []};
 }
 
 /**
@@ -128,7 +128,7 @@ export function compileDirectiveFromMetadata(
  */
 export function compileComponentFromMetadata(
     meta: R3ComponentMetadata, constantPool: ConstantPool,
-    bindingParser: BindingParser): R3ComponentDef {
+    bindingParser: BindingParser): R3CompiledExpression {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
 
@@ -256,7 +256,7 @@ export function compileComponentFromMetadata(
       o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()], undefined, true);
   const type = createComponentType(meta);
 
-  return {expression, type};
+  return {expression, type, statements: []};
 }
 
 /**
