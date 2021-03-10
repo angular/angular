@@ -4,7 +4,7 @@ import {CommitMessageConfig} from '../dev-infra/commit-message/config';
  * The configuration for `ng-dev commit-message` commands.
  */
 export const commitMessage: CommitMessageConfig = {
-  maxLineLength: 120,
+  maxLineLength: Infinity,
   minBodyLength: 20,
   minBodyLengthTypeExcludes: ['docs'],
   scopes: [
