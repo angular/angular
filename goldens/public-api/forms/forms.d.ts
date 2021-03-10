@@ -112,7 +112,7 @@ export declare interface AsyncValidatorFn {
     (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
 
-export declare class CheckboxControlValueAccessor implements ControlValueAccessor {
+export declare class CheckboxControlValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
     constructor(_renderer: Renderer2, _elementRef: ElementRef);
@@ -382,11 +382,11 @@ export declare abstract class NgControl extends AbstractControlDirective {
     abstract viewToModelUpdate(newValue: any): void;
 }
 
-export declare class NgControlStatus extends ɵangular_packages_forms_forms_g {
+export declare class NgControlStatus extends ɵangular_packages_forms_forms_h {
     constructor(cd: NgControl);
 }
 
-export declare class NgControlStatusGroup extends ɵangular_packages_forms_forms_g {
+export declare class NgControlStatusGroup extends ɵangular_packages_forms_forms_h {
     constructor(cd: ControlContainer);
 }
 
@@ -454,7 +454,7 @@ export declare class NgSelectOption implements OnDestroy {
     ngOnDestroy(): void;
 }
 
-export declare class NumberValueAccessor implements ControlValueAccessor {
+export declare class NumberValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
     constructor(_renderer: Renderer2, _elementRef: ElementRef);
@@ -471,13 +471,13 @@ export declare class PatternValidator implements Validator, OnChanges {
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
-export declare class RadioControlValueAccessor implements ControlValueAccessor, OnDestroy, OnInit {
+export declare class RadioControlValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor, OnDestroy, OnInit {
     formControlName: string;
     name: string;
     onChange: () => void;
     onTouched: () => void;
     value: any;
-    constructor(_renderer: Renderer2, _elementRef: ElementRef, _registry: ɵangular_packages_forms_forms_n, _injector: Injector);
+    constructor(_renderer: Renderer2, _elementRef: ElementRef, _registry: ɵangular_packages_forms_forms_o, _injector: Injector);
     fireUncheck(value: any): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
@@ -487,7 +487,7 @@ export declare class RadioControlValueAccessor implements ControlValueAccessor, 
     writeValue(value: any): void;
 }
 
-export declare class RangeValueAccessor implements ControlValueAccessor {
+export declare class RangeValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor {
     onChange: (_: any) => void;
     onTouched: () => void;
     constructor(_renderer: Renderer2, _elementRef: ElementRef);
@@ -509,7 +509,7 @@ export declare class RequiredValidator implements Validator {
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
-export declare class SelectControlValueAccessor implements ControlValueAccessor {
+export declare class SelectControlValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor {
     set compareWith(fn: (o1: any, o2: any) => boolean);
     onChange: (_: any) => void;
     onTouched: () => void;
@@ -521,7 +521,7 @@ export declare class SelectControlValueAccessor implements ControlValueAccessor 
     writeValue(value: any): void;
 }
 
-export declare class SelectMultipleControlValueAccessor implements ControlValueAccessor {
+export declare class SelectMultipleControlValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor {
     set compareWith(fn: (o1: any, o2: any) => boolean);
     onChange: (_: any) => void;
     onTouched: () => void;

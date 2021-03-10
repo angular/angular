@@ -45,9 +45,6 @@
     "name": "BROWSER_MODULE_PROVIDERS"
   },
   {
-    "name": "BUILTIN_ACCESSORS"
-  },
-  {
     "name": "BrowserDomAdapter"
   },
   {
@@ -55,6 +52,9 @@
   },
   {
     "name": "BrowserModule"
+  },
+  {
+    "name": "BuiltInControlValueAccessor"
   },
   {
     "name": "CHECKBOX_VALUE_ACCESSOR"
@@ -354,9 +354,6 @@
     "name": "NULL_INJECTOR"
   },
   {
-    "name": "NUMBER_VALUE_ACCESSOR"
-  },
-  {
     "name": "NgControl"
   },
   {
@@ -414,9 +411,6 @@
     "name": "NullInjector"
   },
   {
-    "name": "NumberValueAccessor"
-  },
-  {
     "name": "ObjectUnsubscribedError"
   },
   {
@@ -450,22 +444,10 @@
     "name": "R3ViewContainerRef"
   },
   {
-    "name": "RADIO_VALUE_ACCESSOR"
-  },
-  {
-    "name": "RANGE_VALUE_ACCESSOR"
-  },
-  {
     "name": "REQUIRED_VALIDATOR"
   },
   {
     "name": "RadioControlRegistry"
-  },
-  {
-    "name": "RadioControlValueAccessor"
-  },
-  {
-    "name": "RangeValueAccessor"
   },
   {
     "name": "RecordViewTuple"
@@ -501,12 +483,6 @@
     "name": "SCHEDULER"
   },
   {
-    "name": "SELECT_MULTIPLE_VALUE_ACCESSOR"
-  },
-  {
-    "name": "SELECT_VALUE_ACCESSOR"
-  },
-  {
     "name": "SERVER_TRANSITION_PROVIDERS"
   },
   {
@@ -526,12 +502,6 @@
   },
   {
     "name": "Sanitizer"
-  },
-  {
-    "name": "SelectControlValueAccessor"
-  },
-  {
-    "name": "SelectMultipleControlValueAccessor"
   },
   {
     "name": "ShadowDomRenderer"

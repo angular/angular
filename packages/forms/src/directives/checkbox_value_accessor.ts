@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, forwardRef, Renderer2} from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const CHECKBOX_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -45,7 +45,8 @@ export const CHECKBOX_VALUE_ACCESSOR: any = {
   host: {'(change)': 'onChange($event.target.checked)', '(blur)': 'onTouched()'},
   providers: [CHECKBOX_VALUE_ACCESSOR]
 })
-export class CheckboxControlValueAccessor implements ControlValueAccessor {
+export class CheckboxControlValueAccessor extends BuiltInControlValueAccessor implements
+    ControlValueAccessor {
   /**
    * The registered callback function called when a change event occurs on the input element.
    * @nodoc
@@ -58,7 +59,9 @@ export class CheckboxControlValueAccessor implements ControlValueAccessor {
    */
   onTouched = () => {};
 
-  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
+  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {
+    super();
+  }
 
   /**
    * Sets the "checked" property on the input element.
