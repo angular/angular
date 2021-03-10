@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider} from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const SELECT_MULTIPLE_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,
@@ -81,7 +81,8 @@ abstract class HTMLCollection {
   host: {'(change)': 'onChange($event.target)', '(blur)': 'onTouched()'},
   providers: [SELECT_MULTIPLE_VALUE_ACCESSOR]
 })
-export class SelectMultipleControlValueAccessor implements ControlValueAccessor {
+export class SelectMultipleControlValueAccessor extends BuiltInControlValueAccessor implements
+    ControlValueAccessor {
   /**
    * The current value.
    * @nodoc
@@ -121,7 +122,9 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
 
   private _compareWith: (o1: any, o2: any) => boolean = Object.is;
 
-  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
+  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {
+    super();
+  }
 
   /**
    * Sets the "value" property on one or of more of the select's options.

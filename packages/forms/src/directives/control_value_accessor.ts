@@ -132,6 +132,15 @@ export interface ControlValueAccessor {
 }
 
 /**
+ * Base class for all built-in ControlValueAccessor classes. We use this class to distinguish
+ * between built-in and custom CVAs, so that Forms logic can recognize built-in CVAs and treat
+ * custom ones with higher priority (when both built-in and custom CVAs are present).
+ * Note: this is an *internal-only* class and should not be extended or used directly in
+ * applications code.
+ */
+export class BuiltInControlValueAccessor {}
+
+/**
  * Used to provide a `ControlValueAccessor` for form controls.
  *
  * See `DefaultValueAccessor` for how to implement one.

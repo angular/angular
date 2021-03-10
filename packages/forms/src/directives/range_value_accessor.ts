@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, forwardRef, Renderer2, StaticProvider} from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const RANGE_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,
@@ -50,7 +50,8 @@ export const RANGE_VALUE_ACCESSOR: StaticProvider = {
   },
   providers: [RANGE_VALUE_ACCESSOR]
 })
-export class RangeValueAccessor implements ControlValueAccessor {
+export class RangeValueAccessor extends BuiltInControlValueAccessor implements
+    ControlValueAccessor {
   /**
    * The registered callback function called when a change or input event occurs on the input
    * element.
@@ -64,7 +65,9 @@ export class RangeValueAccessor implements ControlValueAccessor {
    */
   onTouched = () => {};
 
-  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
+  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {
+    super();
+  }
 
   /**
    * Sets the "value" property on the input element.
