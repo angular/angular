@@ -26,8 +26,8 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
       <p> Dirty: {{ drinkControl.dirty }} </p>
       <p> Status: {{ drinkControl.control?.status }} </p>
       <p>
-        <label for="floating-placeholder">Floating placeholder:</label>
-        <select [(ngModel)]="floatLabel" id="floating-placeholder">
+        <label for="floating-label">Floating label:</label>
+        <select [(ngModel)]="floatLabel" id="floating-label">
           <option value="auto">Auto</option>
           <option value="always">Always</option>
           <option value="never">Never</option>
@@ -321,16 +321,6 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
             <option value="mercedes">Mercedes</option>
             <option value="audi">Audi</option>
           </optgroup>
-        </select>
-      </mat-form-field>
-      <h4>Place holder</h4>
-      <mat-form-field class="demo-full-width">
-        <select matNativeControl placeholder="place holder">
-          <option value="" disabled selected></option>
-          <option value="volvo">Volvo</option>
-          <option value="saab" disabled>Saab</option>
-          <option value="mercedes">Mercedes</option>
-          <option value="audi">Audi</option>
         </select>
       </mat-form-field>
       <h4>Error message, hint, form sumbit</h4>
