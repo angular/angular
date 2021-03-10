@@ -150,7 +150,7 @@
     "@types/gulp": "4.0.8",
     "@types/inquirer": "^7.3.1",
     "@types/jasmine": "^3.6.0",
-    "@types/marked": "^1.2.1",
+    "@types/marked": "^2.0.0",
     "@types/merge2": "^0.3.30",
     "@types/minimist": "^1.2.0",
     "@types/node": "^14.14.22",
