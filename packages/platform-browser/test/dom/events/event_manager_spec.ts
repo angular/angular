@@ -21,7 +21,7 @@ let zone: NgZone;
 
 describe('EventManager', () => {
   beforeEach(() => {
-    doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+    doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
     zone = new NgZone({});
     domEventPlugin = new DomEventsPlugin(doc);
   });
@@ -337,7 +337,7 @@ describe('EventManager', () => {
 
   it('should only trigger one Change detection when bubbling with shouldCoalesceEventChangeDetection = true',
      (done: DoneFn) => {
-       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
        zone = new NgZone({shouldCoalesceEventChangeDetection: true});
        domEventPlugin = new DomEventsPlugin(doc);
        const element = el('<div></div>');
@@ -374,7 +374,7 @@ describe('EventManager', () => {
 
   it('should only trigger one Change detection when bubbling with shouldCoalesceRunChangeDetection = true',
      (done: DoneFn) => {
-       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
        zone = new NgZone({shouldCoalesceRunChangeDetection: true});
        domEventPlugin = new DomEventsPlugin(doc);
        const element = el('<div></div>');
@@ -411,7 +411,7 @@ describe('EventManager', () => {
 
   it('should not drain micro tasks queue too early with shouldCoalesceEventChangeDetection=true',
      (done: DoneFn) => {
-       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
        zone = new NgZone({shouldCoalesceEventChangeDetection: true});
        domEventPlugin = new DomEventsPlugin(doc);
        const element = el('<div></div>');
@@ -457,7 +457,7 @@ describe('EventManager', () => {
 
   it('should not drain micro tasks queue too early with shouldCoalesceRunChangeDetection=true',
      (done: DoneFn) => {
-       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+       doc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
        zone = new NgZone({shouldCoalesceRunChangeDetection: true});
        domEventPlugin = new DomEventsPlugin(doc);
        const element = el('<div></div>');

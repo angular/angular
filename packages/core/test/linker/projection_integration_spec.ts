@@ -508,7 +508,7 @@ describe('projection', () => {
     });
   }
 
-  if (getDOM().supportsDOMEvents()) {
+  if (getDOM().supportsDOMEvents) {
     it('should support non emulated styles', () => {
       TestBed.configureTestingModule({declarations: [OtherComp]});
       TestBed.overrideComponent(MainComp, {

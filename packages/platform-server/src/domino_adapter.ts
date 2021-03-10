@@ -10,10 +10,6 @@ const domino = require('domino');
 import {ɵBrowserDomAdapter as BrowserDomAdapter} from '@angular/platform-browser';
 import {ɵsetRootDomAdapter as setRootDomAdapter} from '@angular/common';
 
-function _notImplemented(methodName: string) {
-  return new Error('This method is not implemented in DominoAdapter: ' + methodName);
-}
-
 export function setDomTypes() {
   // Make all Domino types available in the global env.
   Object.assign(global, domino.impl);
@@ -45,22 +41,8 @@ export class DominoAdapter extends BrowserDomAdapter {
     setRootDomAdapter(new DominoAdapter());
   }
 
+  readonly supportsDOMEvents = false;
   private static defaultDoc: Document;
-
-  log(error: string) {
-    // tslint:disable-next-line:no-console
-    console.log(error);
-  }
-
-  logGroup(error: string) {
-    console.error(error);
-  }
-
-  logGroupEnd() {}
-
-  supportsDOMEvents(): boolean {
-    return false;
-  }
 
   createHtmlDocument(): HTMLDocument {
     return parseDocument('<html><head><title>fakeTitle</title></head><body></body></html>');
@@ -80,18 +62,6 @@ export class DominoAdapter extends BrowserDomAdapter {
     return node.shadowRoot == node;
   }
 
-  getProperty(el: Element, name: string): any {
-    if (name === 'href') {
-      // Domino tries to resolve href-s which we do not want. Just return the
-      // attribute value.
-      return el.getAttribute('href');
-    } else if (name === 'innerText') {
-      // Domino does not support innerText. Just map it to textContent.
-      return el.textContent;
-    }
-    return (<any>el)[name];
-  }
-
   getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
     if (target === 'window') {
       return doc.defaultView;
@@ -106,13 +76,8 @@ export class DominoAdapter extends BrowserDomAdapter {
   }
 
   getBaseHref(doc: Document): string {
-    const base = doc.documentElement!.querySelector('base');
-    let href = '';
-    if (base) {
-      href = base.getAttribute('href')!;
-    }
     // TODO(alxhub): Need relative path logic from BrowserDomAdapter here?
-    return href;
+    return doc.documentElement!.querySelector('base')?.getAttribute('href') || '';
   }
 
   dispatchEvent(el: Node, evt: any) {
@@ -126,24 +91,11 @@ export class DominoAdapter extends BrowserDomAdapter {
     }
   }
 
-  getHistory(): History {
-    throw _notImplemented('getHistory');
-  }
-  getLocation(): Location {
-    throw _notImplemented('getLocation');
-  }
   getUserAgent(): string {
     return 'Fake user agent';
   }
 
-  performanceNow(): number {
-    return Date.now();
-  }
-
-  supportsCookies(): boolean {
-    return false;
-  }
   getCookie(name: string): string {
-    throw _notImplemented('getCookie');
+    throw new Error('getCookie has not been implemented');
   }
 }

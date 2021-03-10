@@ -109,8 +109,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.componentInstance.ctxProp = 'Hello World!';
         fixture.detectChanges();
 
-        expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'id'))
-            .toEqual('Hello World!');
+        expect(fixture.debugElement.children[0].nativeElement.id).toEqual('Hello World!');
       });
 
       it('should consume binding to aria-* attributes', () => {
@@ -168,13 +167,11 @@ function declareTests(config?: {useJit: boolean}) {
            const fixture = TestBed.createComponent(MyComp);
 
            fixture.detectChanges();
-           expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'tabIndex'))
-               .toEqual(0);
+           expect(fixture.debugElement.children[0].nativeElement.tabIndex).toEqual(0);
 
            fixture.componentInstance.ctxNumProp = 5;
            fixture.detectChanges();
-           expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'tabIndex'))
-               .toEqual(5);
+           expect(fixture.debugElement.children[0].nativeElement.tabIndex).toEqual(5);
          });
 
       it('should consume binding to camel-cased properties', () => {
@@ -184,13 +181,11 @@ function declareTests(config?: {useJit: boolean}) {
         const fixture = TestBed.createComponent(MyComp);
 
         fixture.detectChanges();
-        expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'readOnly'))
-            .toBeFalsy();
+        expect(fixture.debugElement.children[0].nativeElement.readOnly).toBeFalsy();
 
         fixture.componentInstance.ctxBoolProp = true;
         fixture.detectChanges();
-        expect(getDOM().getProperty(fixture.debugElement.children[0].nativeElement, 'readOnly'))
-            .toBeTruthy();
+        expect(fixture.debugElement.children[0].nativeElement.readOnly).toBeTruthy();
       });
 
       it('should consume binding to innerHtml', () => {
@@ -236,7 +231,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.debugElement.componentInstance.ctxProp = 'foo';
         fixture.detectChanges();
 
-        expect(getDOM().getProperty(nativeEl, 'htmlFor')).toBe('foo');
+        expect(nativeEl.htmlFor).toBe('foo');
       });
 
       it('should consume directive watch expression change.', () => {
@@ -617,7 +612,7 @@ function declareTests(config?: {useJit: boolean}) {
           expect(cmp.numberOfChecks).toEqual(2);
         });
 
-        if (getDOM().supportsDOMEvents()) {
+        if (getDOM().supportsDOMEvents) {
           it('should allow to destroy a component from within a host event handler',
              fakeAsync(() => {
                TestBed.configureTestingModule({declarations: [MyComp, [[PushCmpWithHostEvent]]]});
@@ -922,7 +917,7 @@ function declareTests(config?: {useJit: boolean}) {
 
         fixture.detectChanges();
 
-        expect(getDOM().getProperty(tc.nativeElement, 'id')).toEqual('newId');
+        expect(tc.nativeElement.id).toEqual('newId');
       });
 
       it('should not use template variables for expressions in hostProperties', () => {
@@ -996,7 +991,7 @@ function declareTests(config?: {useJit: boolean}) {
 
 
 
-      if (getDOM().supportsDOMEvents()) {
+      if (getDOM().supportsDOMEvents) {
         it('should support preventing default on render events', () => {
           TestBed.configureTestingModule({
             declarations:
@@ -1881,7 +1876,7 @@ function declareTests(config?: {useJit: boolean}) {
         fixture.detectChanges();
 
         const el = fixture.nativeElement.querySelector('span');
-        expect(getDOM().getProperty(el, 'title')).toEqual('TITLE');
+        expect(el.title).toEqual('TITLE');
       });
     });
 
@@ -2097,7 +2092,7 @@ function declareTests(config?: {useJit: boolean}) {
         expect(fixture.debugElement.children[0].nativeElement.outerHTML).toContain('my-attr="aaa"');
       });
 
-      if (getDOM().supportsDOMEvents()) {
+      if (getDOM().supportsDOMEvents) {
         it('should support event decorators', fakeAsync(() => {
              TestBed.configureTestingModule({
                declarations: [MyComp, DirectiveWithPropDecorators],
@@ -2200,7 +2195,7 @@ function declareTests(config?: {useJit: boolean}) {
          }));
     });
 
-    if (getDOM().supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents) {
       describe('svg', () => {
         it('should support svg elements', () => {
           TestBed.configureTestingModule({declarations: [MyComp]});
@@ -2211,12 +2206,10 @@ function declareTests(config?: {useJit: boolean}) {
           const el = fixture.nativeElement;
           const svg = el.childNodes[0];
           const use = svg.childNodes[0];
-          expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
-              .toEqual('http://www.w3.org/2000/svg');
-          expect(getDOM().getProperty(<Element>use, 'namespaceURI'))
-              .toEqual('http://www.w3.org/2000/svg');
+          expect(svg.namespaceURI).toEqual('http://www.w3.org/2000/svg');
+          expect(use.namespaceURI).toEqual('http://www.w3.org/2000/svg');
 
-          const firstAttribute = getDOM().getProperty(<Element>use, 'attributes')[0];
+          const firstAttribute = use.attributes[0];
           expect(firstAttribute.name).toEqual('xlink:href');
           expect(firstAttribute.namespaceURI).toEqual('http://www.w3.org/1999/xlink');
         });
@@ -2232,12 +2225,9 @@ function declareTests(config?: {useJit: boolean}) {
           const svg = el.childNodes[0];
           const foreignObject = svg.childNodes[0];
           const p = foreignObject.childNodes[0];
-          expect(getDOM().getProperty(<Element>svg, 'namespaceURI'))
-              .toEqual('http://www.w3.org/2000/svg');
-          expect(getDOM().getProperty(<Element>foreignObject, 'namespaceURI'))
-              .toEqual('http://www.w3.org/2000/svg');
-          expect(getDOM().getProperty(<Element>p, 'namespaceURI'))
-              .toEqual('http://www.w3.org/1999/xhtml');
+          expect(svg.namespaceURI).toEqual('http://www.w3.org/2000/svg');
+          expect(foreignObject.namespaceURI).toEqual('http://www.w3.org/2000/svg');
+          expect(p.namespaceURI).toEqual('http://www.w3.org/1999/xhtml');
         });
       });
 

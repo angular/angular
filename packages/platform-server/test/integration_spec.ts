@@ -402,7 +402,7 @@ class HiddenModule {
 }
 
 (function() {
-if (getDOM().supportsDOMEvents()) return;  // NODE only
+if (getDOM().supportsDOMEvents) return;  // NODE only
 
 describe('platform-server integration', () => {
   beforeEach(() => {

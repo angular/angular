@@ -156,7 +156,7 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
       expect(data.length).toBe(0);
     });
 
-    if (getDOM().supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents) {
       describe('simple observable interface', () => {
         it('should fire callbacks on change', fakeAsync(() => {
              let fires = 0;
