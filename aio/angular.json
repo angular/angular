@@ -49,6 +49,11 @@
                 "glob": "native-shim.js",
                 "input": "node_modules/@webcomponents/custom-elements/src",
                 "output": "/assets/js"
+              },
+              {
+                "glob": "es.reflect.construct.js",
+                "input": "node_modules/core-js/modules",
+                "output": "/assets/js"
               }
             ],
             "styles": [
@@ -155,6 +160,11 @@
               {
                 "glob": "native-shim.js",
                 "input": "node_modules/@webcomponents/custom-elements/src",
+                "output": "/assets/js"
+              },
+              {
+                "glob": "es.reflect.construct.js",
+                "input": "node_modules/core-js/modules",
                 "output": "/assets/js"
               }
             ],
