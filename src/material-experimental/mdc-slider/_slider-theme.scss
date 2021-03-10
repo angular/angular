@@ -1,5 +1,5 @@
 // TODO: disabled until we implement the new MDC slider.
-// @import '@material/slider/mixins.import';
+// @use '@material/slider' as mdc-slider;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
 

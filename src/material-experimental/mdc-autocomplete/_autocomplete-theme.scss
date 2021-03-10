@@ -1,25 +1,25 @@
+@use '@material/menu-surface/mixins' as mdc-menu-surface;
+@use '@material/list/mixins' as mdc-list;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
-@import '@material/menu-surface/mixins.import';
-@import '@material/list/mixins.import';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    @include mdc-menu-surface-core-styles(mdc-helpers.$mat-theme-styles-query);
-    @include mdc-list-deprecated-without-ripple(mdc-helpers.$mat-theme-styles-query);
+    @include mdc-menu-surface.core-styles(mdc-helpers.$mat-theme-styles-query);
+    @include mdc-list.deprecated-without-ripple(mdc-helpers.$mat-theme-styles-query);
   }
 }
 
 @mixin typography($config-or-theme) {
   $config: theming.get-typography-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-menu-surface-core-styles(mdc-helpers.$mat-typography-styles-query);
+    @include mdc-menu-surface.core-styles(mdc-helpers.$mat-typography-styles-query);
 
     .mat-mdc-autocomplete-panel {
       // Note that we include this private mixin, because the public one adds
       // a bunch of styles that we aren't using for the autocomplete panel.
-      @include mdc-list-deprecated-base_(mdc-helpers.$mat-typography-styles-query);
+      @include mdc-list.deprecated-base_(mdc-helpers.$mat-typography-styles-query);
     }
   }
 }

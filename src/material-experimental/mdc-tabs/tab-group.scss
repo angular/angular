@@ -1,11 +1,10 @@
+@use '@material/tab' as mdc-tab;
 @use '../../material/core/style/variables';
 @use '../../material/core/style/private';
 @use '../mdc-helpers/mdc-helpers';
 @use './tabs-common';
-@import '@material/tab/mixins.import';
-@import '@material/ripple/variables.import';
 
-@include mdc-tab-without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-tab.without-ripple($query: mdc-helpers.$mat-base-styles-query);
 @include tabs-common.tab-ripple;
 
 .mat-mdc-tab {

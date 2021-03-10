@@ -1,39 +1,38 @@
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/theme/theme' as mdc-theme;
+@use '@material/tab-indicator' as mdc-tab-indicator;
+@use '@material/tab' as mdc-tab;
+@use '@material/tab-bar' as mdc-tab-bar;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
-@import '@material/theme/functions.import';
-@import '@material/theme/mixins.import';
-@import '@material/tab-indicator/mixins.import';
-@import '@material/tab/mixins.import';
-@import '@material/tab/variables.import';
-@import '@material/tab-bar/mixins.import';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
-  $orig-mdc-tab-text-label-color-active: $mdc-tab-text-label-color-active;
-  $orig-mdc-tab-icon-color-active: $mdc-tab-icon-color-active;
-  $orig-mdc-tab-text-label-color-default: $mdc-tab-text-label-color-default;
+  $orig-text-label-color-active: mdc-tab.$text-label-color-active;
+  $orig-icon-color-active: mdc-tab.$icon-color-active;
+  $orig-text-label-color-default: mdc-tab.$text-label-color-default;
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
     // This value is the same as MDC's default, but MDC defines it once inside
     // a variables file which means that we can't override it with our own palette.
-    $mdc-tab-text-label-color-default:
-        rgba(mdc-theme-prop-value(on-surface), $mdc-tab-text-label-opacity) !global;
+    mdc-tab.$text-label-color-default:
+        rgba(mdc-theme-color.prop-value(on-surface), mdc-tab.$text-label-opacity);
 
-    @include _mat-mdc-tabs-palette-styles($mdc-tab-text-label-color-active);
+    @include _mat-mdc-tabs-palette-styles(mdc-tab.$text-label-color-active);
 
     .mat-mdc-tab-group, .mat-mdc-tab-nav-bar {
       &.mat-accent {
-        $mdc-tab-text-label-color-active: secondary !global;
-        $mdc-tab-icon-color-active: secondary !global;
-        @include _mat-mdc-tabs-palette-styles($mdc-tab-text-label-color-active);
+        mdc-tab.$text-label-color-active: secondary;
+        mdc-tab.$icon-color-active: secondary;
+        @include _mat-mdc-tabs-palette-styles(mdc-tab.$text-label-color-active);
       }
 
       &.mat-warn {
-        $mdc-tab-text-label-color-active: error !global;
-        $mdc-tab-icon-color-active: error !global;
-        @include _mat-mdc-tabs-palette-styles($mdc-tab-text-label-color-active);
+        mdc-tab.$text-label-color-active: error;
+        mdc-tab.$icon-color-active: error;
+        @include _mat-mdc-tabs-palette-styles(mdc-tab.$text-label-color-active);
       }
     }
 
@@ -52,14 +51,14 @@
     }
 
     .mat-mdc-tab-header-pagination-chevron {
-      @include mdc-theme-prop(border-color, on-surface);
+      @include mdc-theme.prop(border-color, on-surface);
     }
   }
 
   // Restore original values of MDC global variables.
-  $mdc-tab-text-label-color-active: $orig-mdc-tab-text-label-color-active !global;
-  $mdc-tab-icon-color-active: $orig-mdc-tab-icon-color-active !global;
-  $mdc-tab-text-label-color-default: $orig-mdc-tab-text-label-color-default !global;
+  mdc-tab.$text-label-color-active: $orig-text-label-color-active;
+  mdc-tab.$icon-color-active: $orig-icon-color-active;
+  mdc-tab.$text-label-color-default: $orig-text-label-color-default;
 }
 
 @mixin _mat-mdc-tabs-background($background-color, $foreground-color) {
@@ -68,52 +67,52 @@
 
   > .mat-mdc-tab-header, > .mat-mdc-tab-link-container, > .mat-mdc-tab-header-pagination {
     // Set background color for the tab group
-    @include mdc-theme-prop(background-color, $background-color);
+    @include mdc-theme.prop(background-color, $background-color);
   }
 
   > .mat-mdc-tab-header, > .mat-mdc-tab-link-container {
     // Set labels to contrast against background
     .mdc-tab__text-label, .mat-mdc-tab-link {
-      @include mdc-theme-prop(color, $foreground-color);
+      @include mdc-theme.prop(color, $foreground-color);
     }
 
     .mat-ripple-element, .mdc-tab__ripple::before {
-      @include mdc-theme-prop(background-color, $foreground-color);
+      @include mdc-theme.prop(background-color, $foreground-color);
     }
 
     .mdc-tab-indicator__content--underline, .mat-mdc-tab-header-pagination-chevron,
     .mat-mdc-focus-indicator::before,
     .mat-mdc-focus-indicator::before {
-      @include mdc-theme-prop(border-color, $foreground-color);
+      @include mdc-theme.prop(border-color, $foreground-color);
     }
   }
 }
 
 @mixin _mat-mdc-tabs-palette-styles($color) {
-  @include mdc-tab-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
-  @include mdc-tab-indicator-underline-color($color, $query: mdc-helpers.$mat-theme-styles-query);
-  @include mdc-tab-indicator-icon-color($color, $query: mdc-helpers.$mat-theme-styles-query);
+  @include mdc-tab.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+  @include mdc-tab-indicator.underline-color($color, $query: mdc-helpers.$mat-theme-styles-query);
+  @include mdc-tab-indicator.icon-color($color, $query: mdc-helpers.$mat-theme-styles-query);
 
   .mdc-tab__ripple::before,
   .mat-mdc-tab .mat-ripple-element,
   .mat-mdc-tab-header-pagination .mat-ripple-element,
   .mat-mdc-tab-link .mat-ripple-element {
-    @include mdc-theme-prop(background-color, $color);
+    @include mdc-theme.prop(background-color, $color);
   }
 }
 
 @mixin typography($config-or-theme) {
   $config: theming.get-typography-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-tab-without-ripple($query: mdc-helpers.$mat-typography-styles-query);
-    @include mdc-tab-indicator-core-styles($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-tab.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-tab-indicator.core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
   .mat-mdc-tab-header {
-    @include mdc-tab-bar-density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
+    @include mdc-tab-bar.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
   }
 }
 

@@ -1,11 +1,9 @@
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/switch' as mdc-switch;
+@use '@material/form-field' as mdc-form-field;
 @use 'sass:map';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
-@import '@material/switch/mixins.import';
-@import '@material/switch/variables.import';
-@import '@material/form-field/mixins.import';
-@import '@material/ripple/variables.import';
-@import '@material/theme/functions.import';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
@@ -15,40 +13,40 @@
 
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
-  $orig-mdc-switch-baseline-theme-color: $mdc-switch-baseline-theme-color;
-  $orig-mdc-switch-toggled-off-thumb-color: $mdc-switch-toggled-off-thumb-color;
-  $orig-mdc-switch-toggled-off-track-color: $mdc-switch-toggled-off-track-color;
-  $orig-mdc-switch-disabled-thumb-color: $mdc-switch-disabled-thumb-color;
-  $orig-mdc-switch-disabled-track-color: $mdc-switch-disabled-track-color;
+  $orig-baseline-theme-color: mdc-switch.$baseline-theme-color;
+  $orig-toggled-off-thumb-color: mdc-switch.$toggled-off-thumb-color;
+  $orig-toggled-off-track-color: mdc-switch.$toggled-off-track-color;
+  $orig-disabled-thumb-color: mdc-switch.$disabled-thumb-color;
+  $orig-disabled-track-color: mdc-switch.$disabled-track-color;
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    $mdc-switch-baseline-theme-color: primary !global;
-    $mdc-switch-toggled-off-thumb-color: mdc-theme-prop-value(surface) !global;
-    $mdc-switch-toggled-off-track-color: mdc-theme-prop-value(on-surface) !global;
-    $mdc-switch-disabled-thumb-color: mdc-theme-prop-value(surface) !global;
-    $mdc-switch-disabled-track-color: mdc-theme-prop-value(on-surface) !global;
+    mdc-switch.$baseline-theme-color: primary;
+    mdc-switch.$toggled-off-thumb-color: mdc-theme-color.prop-value(surface);
+    mdc-switch.$toggled-off-track-color: mdc-theme-color.prop-value(on-surface);
+    mdc-switch.$disabled-thumb-color: mdc-theme-color.prop-value(surface);
+    mdc-switch.$disabled-track-color: mdc-theme-color.prop-value(on-surface);
 
     // MDC's switch doesn't support a `color` property. We add support
     // for it by adding a CSS class for accent and warn style.
     .mat-mdc-slide-toggle {
-      @include mdc-form-field-core-styles($query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
 
       .mdc-switch__thumb-underlay::after, .mat-ripple-element {
-        background: $mdc-switch-toggled-off-ripple-color;
+        background: mdc-switch.$toggled-off-ripple-color;
       }
 
       &.mat-primary {
-        @include mdc-switch-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+        @include mdc-switch.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
       }
 
       &.mat-accent {
-        $mdc-switch-baseline-theme-color: secondary !global;
-        @include mdc-switch-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+        mdc-switch.$baseline-theme-color: secondary;
+        @include mdc-switch.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
       }
 
       &.mat-warn {
-        $mdc-switch-baseline-theme-color: error !global;
-        @include mdc-switch-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+        mdc-switch.$baseline-theme-color: error;
+        @include mdc-switch.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
       }
     }
 
@@ -73,25 +71,25 @@
   }
 
   // Restore original values of MDC global variables.
-  $mdc-switch-baseline-theme-color: $orig-mdc-switch-baseline-theme-color !global;
-  $mdc-switch-toggled-off-thumb-color: $orig-mdc-switch-toggled-off-thumb-color !global;
-  $mdc-switch-toggled-off-track-color: $orig-mdc-switch-toggled-off-track-color !global;
-  $mdc-switch-disabled-thumb-color: $orig-mdc-switch-disabled-thumb-color !global;
-  $mdc-switch-disabled-track-color: $orig-mdc-switch-disabled-track-color !global;
+  mdc-switch.$baseline-theme-color: $orig-baseline-theme-color;
+  mdc-switch.$toggled-off-thumb-color: $orig-toggled-off-thumb-color;
+  mdc-switch.$toggled-off-track-color: $orig-toggled-off-track-color;
+  mdc-switch.$disabled-thumb-color: $orig-disabled-thumb-color;
+  mdc-switch.$disabled-track-color: $orig-disabled-track-color;
 }
 
 @mixin typography($config-or-theme) {
   $config: theming.get-typography-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-switch-without-ripple($query: mdc-helpers.$mat-typography-styles-query);
-    @include mdc-form-field-core-styles($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-switch.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-form-field.core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
   .mat-mdc-slide-toggle .mdc-switch {
-    @include mdc-switch-density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
+    @include mdc-switch.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
   }
 }
 

@@ -1,13 +1,12 @@
+@use '@material/list' as mdc-list;
 @use '../../mdc-helpers/mdc-helpers';
-@import '@material/list/mixins.import';
-@import '@material/list/variables.import';
 
 .mat-mdc-optgroup-label {
-  @include mdc-list-deprecated-item-base_;
-  @include mdc-list-deprecated-list-item-padding-variant(
-    $mdc-list-deprecated-textual-variant-config, $query: mdc-helpers.$mat-base-styles-query);
-  @include mdc-list-deprecated-list-item-height-variant(
-    $mdc-list-deprecated-textual-variant-config, $query: mdc-helpers.$mat-base-styles-query);
-  @include mdc-list-deprecated-item-disabled-text-opacity(
-    $mdc-list-deprecated-text-disabled-opacity, $query: mdc-helpers.$mat-base-styles-query);
+  @include mdc-list.deprecated-item-base_;
+  @include mdc-list.deprecated-list-item-padding-variant(
+    mdc-list.$deprecated-textual-variant-config, $query: mdc-helpers.$mat-base-styles-query);
+  @include mdc-list.deprecated-list-item-height-variant(
+    mdc-list.$deprecated-textual-variant-config, $query: mdc-helpers.$mat-base-styles-query);
+  @include mdc-list.deprecated-item-disabled-text-opacity(
+    mdc-list.$deprecated-text-disabled-opacity, $query: mdc-helpers.$mat-base-styles-query);
 }

@@ -1,15 +1,13 @@
+@use '@material/switch' as mdc-switch;
+@use '@material/form-field' as mdc-form-field;
+@use '@material/ripple' as mdc-ripple;
 @use 'sass:map';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/style/layout-common';
 @use '../../cdk/a11y/a11y';
-@import '@material/switch/functions.import';
-@import '@material/switch/mixins.import';
-@import '@material/switch/variables.import';
-@import '@material/form-field/mixins.import';
-@import '@material/ripple/variables.import';
 
-@include mdc-switch-without-ripple($query: mdc-helpers.$mat-base-styles-query);
-@include mdc-form-field-core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-switch.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
 
 .mat-mdc-slide-toggle {
   display: inline-block;
@@ -52,19 +50,19 @@
   }
 
   .mdc-switch:hover .mdc-switch__thumb-underlay::after {
-    opacity: map.get($mdc-ripple-dark-ink-opacities, hover);
+    opacity: map.get(mdc-ripple.$dark-ink-opacities, hover);
     transition: mdc-switch-transition-enter(opacity, 0, 75ms);
   }
 
   // Needs a little more specificity so the :hover styles don't override it.
   &.mat-mdc-slide-toggle-focused .mdc-switch .mdc-switch__thumb-underlay::after {
-    opacity: map.get($mdc-ripple-dark-ink-opacities, focus);
+    opacity: map.get(mdc-ripple.$dark-ink-opacities, focus);
   }
 
   // We use an Angular Material ripple rather than an MDC ripple due to size concerns, so we need to
   // style it appropriately.
   .mat-ripple-element {
-    opacity: map.get($mdc-ripple-dark-ink-opacities, press);
+    opacity: map.get(mdc-ripple.$dark-ink-opacities, press);
   }
 
   .mat-ripple {
@@ -89,7 +87,7 @@
       // Usually 1px would be enough, but MDC reduces the opacity on the
       // element so we need to make this a bit more prominent.
       outline: solid 2px;
-      outline-offset: $mdc-switch-track-height / 2;
+      outline-offset: mdc-switch.$track-height / 2;
     }
   }
 }

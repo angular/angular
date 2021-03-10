@@ -2,20 +2,20 @@
 //  "theming", "typography", "core". Currently splitting it is difficult because of our brittle
 //  gulp-based release build process. We can update this when we switch to bazel.
 
+@use '@material/feature-targeting' as mdc-feature-targeting;
+@use '@material/typography' as mdc-typography;
+@use '@material/theme/functions' as mdc-theme-functions;
+@use '@material/theme/theme-color' as mdc-theme-color;
 @use 'sass:map';
 @use '../../material/core/style/layout-common';
 @use '../../material/core/theming/theming';
 @use '../../material/core/typography/typography';
 @use '../../material/core/typography/typography-utils';
-@import '@material/feature-targeting/functions.import';
-@import '@material/theme/functions.import';
-@import '@material/theme/variables.import';
-@import '@material/typography/variables.import';
 
 // A set of standard queries to use with MDC's queryable mixins.
-$mat-base-styles-query: mdc-feature-without(mdc-feature-any(color, typography));
+$mat-base-styles-query: mdc-feature-targeting.without(mdc-feature-targeting.any(color, typography));
 $mat-base-styles-without-animation-query:
-    mdc-feature-all($mat-base-styles-query, mdc-feature-without(animation));
+    mdc-feature-targeting.all($mat-base-styles-query, mdc-feature-targeting.without(animation));
 $mat-theme-styles-query: color;
 $mat-typography-styles-query: typography;
 
@@ -100,7 +100,7 @@ $mat-typography-2018-level-mappings: (
 
   $result-with-nulls: map.merge(
       if($mdc-level,
-          map.get($mdc-typography-styles, $mdc-level),
+          map.get(mdc-typography.$styles, $mdc-level),
           (
             text-decoration: none,
             -moz-osx-font-smoothing: grayscale,
@@ -147,7 +147,7 @@ $mat-typography-2018-level-mappings: (
 
 // Converts an MDC typography level config to an Angular Material one.
 @function mat-typography-config-level-from-mdc($mdc-level) {
-  $mdc-level-config: map.get($mdc-typography-styles, $mdc-level);
+  $mdc-level-config: map.get(mdc-typography.$styles, $mdc-level);
 
   @return typography.level(
       map.get($mdc-level-config, font-size),
@@ -167,79 +167,85 @@ $mat-typography-2018-level-mappings: (
   $background-palette: map.get($config, background);
 
   // Save the original values.
-  $orig-mdc-theme-primary: $mdc-theme-primary;
-  $orig-mdc-theme-on-primary: $mdc-theme-on-primary;
-  $orig-mdc-theme-secondary: $mdc-theme-secondary;
-  $orig-mdc-theme-on-secondary: $mdc-theme-on-secondary;
-  $orig-mdc-theme-background: $mdc-theme-background;
-  $orig-mdc-theme-surface: $mdc-theme-surface;
-  $orig-mdc-theme-on-surface: $mdc-theme-on-surface;
-  $orig-mdc-theme-error: $mdc-theme-error;
-  $orig-mdc-theme-on-error: $mdc-theme-on-error;
-  $orig-mdc-theme-property-values: $mdc-theme-property-values;
+  $orig-primary: mdc-theme-color.$primary;
+  $orig-on-primary: mdc-theme-color.$on-primary;
+  $orig-secondary: mdc-theme-color.$secondary;
+  $orig-on-secondary: mdc-theme-color.$on-secondary;
+  $orig-background: mdc-theme-color.$background;
+  $orig-surface: mdc-theme-color.$surface;
+  $orig-on-surface: mdc-theme-color.$on-surface;
+  $orig-error: mdc-theme-color.$error;
+  $orig-on-error: mdc-theme-color.$on-error;
+  $orig-property-values: mdc-theme-color.$property-values;
 
   // Set new values based on the given Angular Material theme.
-  $mdc-theme-primary: $primary !global;
-  $mdc-theme-on-primary:
-      if(mdc-theme-contrast-tone($mdc-theme-primary) == 'dark', #000, #fff) !global;
-  $mdc-theme-secondary: $accent !global;
-  $mdc-theme-on-secondary:
-      if(mdc-theme-contrast-tone($mdc-theme-secondary) == 'dark', #000, #fff) !global;
-  $mdc-theme-background: theming.color($background-palette, background) !global;
-  $mdc-theme-surface: theming.color($background-palette, card) !global;
-  $mdc-theme-on-surface:
-      if(mdc-theme-contrast-tone($mdc-theme-surface) == 'dark', #000, #fff) !global;
-  $mdc-theme-error: $warn !global;
-  $mdc-theme-on-error: if(mdc-theme-contrast-tone($mdc-theme-error) == 'dark', #000, #fff) !global;
-  $mdc-theme-property-values: (
+  mdc-theme-color.$primary: $primary;
+  mdc-theme-color.$on-primary:
+      if(mdc-theme-color.contrast-tone(mdc-theme-color.$primary) == 'dark', #000, #fff);
+  mdc-theme-color.$secondary: $accent;
+  mdc-theme-color.$on-secondary:
+      if(mdc-theme-color.contrast-tone(mdc-theme-color.$secondary) == 'dark', #000, #fff);
+  mdc-theme-color.$background: theming.color($background-palette, background);
+  mdc-theme-color.$surface: theming.color($background-palette, card);
+  mdc-theme-color.$on-surface:
+      if(mdc-theme-color.contrast-tone(mdc-theme-color.$surface) == 'dark', #000, #fff);
+  mdc-theme-color.$error: $warn;
+  mdc-theme-color.$on-error:
+      if(mdc-theme-color.contrast-tone(mdc-theme-color.$error) == 'dark', #000, #fff);
+  mdc-theme-color.$property-values: (
       // Primary
-      primary: $mdc-theme-primary,
+      primary: mdc-theme-color.$primary,
       // Secondary
-      secondary: $mdc-theme-secondary,
+      secondary: mdc-theme-color.$secondary,
       // Background
-      background: $mdc-theme-background,
+      background: mdc-theme-color.$background,
       // Surface
-      surface: $mdc-theme-surface,
+      surface: mdc-theme-color.$surface,
       // Error
-      error: $mdc-theme-error,
-      on-primary: $mdc-theme-on-primary,
-      on-secondary: $mdc-theme-on-secondary,
-      on-surface: $mdc-theme-on-surface,
-      on-error: $mdc-theme-on-error,
+      error: mdc-theme-color.$error,
+      on-primary: mdc-theme-color.$on-primary,
+      on-secondary: mdc-theme-color.$on-secondary,
+      on-surface: mdc-theme-color.$on-surface,
+      on-error: mdc-theme-color.$on-error,
       // Text-primary on "background" background
-      text-primary-on-background: mdc-theme-ink-color-for-fill_(primary, $mdc-theme-background),
-      text-secondary-on-background: mdc-theme-ink-color-for-fill_(secondary, $mdc-theme-background),
-      text-hint-on-background: mdc-theme-ink-color-for-fill_(hint, $mdc-theme-background),
-      text-disabled-on-background: mdc-theme-ink-color-for-fill_(disabled, $mdc-theme-background),
-      text-icon-on-background: mdc-theme-ink-color-for-fill_(icon, $mdc-theme-background),
+      text-primary-on-background:
+          mdc-theme-color.ink-color-for-fill_(primary, mdc-theme-color.$background),
+      text-secondary-on-background:
+          mdc-theme-color.ink-color-for-fill_(secondary, mdc-theme-color.$background),
+      text-hint-on-background:
+          mdc-theme-color.ink-color-for-fill_(hint, mdc-theme-color.$background),
+      text-disabled-on-background:
+          mdc-theme-color.ink-color-for-fill_(disabled, mdc-theme-color.$background),
+      text-icon-on-background:
+          mdc-theme-color.ink-color-for-fill_(icon, mdc-theme-color.$background),
       // Text-primary on "light" background
-      text-primary-on-light: mdc-theme-ink-color-for-fill_(primary, light),
-      text-secondary-on-light: mdc-theme-ink-color-for-fill_(secondary, light),
-      text-hint-on-light: mdc-theme-ink-color-for-fill_(hint, light),
-      text-disabled-on-light: mdc-theme-ink-color-for-fill_(disabled, light),
-      text-icon-on-light: mdc-theme-ink-color-for-fill_(icon, light),
+      text-primary-on-light: mdc-theme-color.ink-color-for-fill_(primary, light),
+      text-secondary-on-light: mdc-theme-color.ink-color-for-fill_(secondary, light),
+      text-hint-on-light: mdc-theme-color.ink-color-for-fill_(hint, light),
+      text-disabled-on-light: mdc-theme-color.ink-color-for-fill_(disabled, light),
+      text-icon-on-light: mdc-theme-color.ink-color-for-fill_(icon, light),
       // Text-primary on "dark" background
-      text-primary-on-dark: mdc-theme-ink-color-for-fill_(primary, dark),
-      text-secondary-on-dark: mdc-theme-ink-color-for-fill_(secondary, dark),
-      text-hint-on-dark: mdc-theme-ink-color-for-fill_(hint, dark),
-      text-disabled-on-dark: mdc-theme-ink-color-for-fill_(disabled, dark),
-      text-icon-on-dark: mdc-theme-ink-color-for-fill_(icon, dark)
-  ) !global;
+      text-primary-on-dark: mdc-theme-color.ink-color-for-fill_(primary, dark),
+      text-secondary-on-dark: mdc-theme-color.ink-color-for-fill_(secondary, dark),
+      text-hint-on-dark: mdc-theme-color.ink-color-for-fill_(hint, dark),
+      text-disabled-on-dark: mdc-theme-color.ink-color-for-fill_(disabled, dark),
+      text-icon-on-dark: mdc-theme-color.ink-color-for-fill_(icon, dark)
+  );
 
   // Apply given rules.
   @content;
 
   // Reset the original values.
-  $mdc-theme-primary: $orig-mdc-theme-primary !global;
-  $mdc-theme-on-primary: $orig-mdc-theme-on-primary !global;
-  $mdc-theme-secondary: $orig-mdc-theme-secondary !global;
-  $mdc-theme-on-secondary: $orig-mdc-theme-on-secondary !global;
-  $mdc-theme-background: $orig-mdc-theme-background !global;
-  $mdc-theme-surface: $orig-mdc-theme-surface !global;
-  $mdc-theme-on-surface: $orig-mdc-theme-on-surface !global;
-  $mdc-theme-error: $orig-mdc-theme-error !global;
-  $mdc-theme-on-error: $orig-mdc-theme-on-error !global;
-  $mdc-theme-property-values: $orig-mdc-theme-property-values !global;
+  mdc-theme-color.$primary: $orig-primary;
+  mdc-theme-color.$on-primary: $orig-on-primary;
+  mdc-theme-color.$secondary: $orig-secondary;
+  mdc-theme-color.$on-secondary: $orig-on-secondary;
+  mdc-theme-color.$background: $orig-background;
+  mdc-theme-color.$surface: $orig-surface;
+  mdc-theme-color.$on-surface: $orig-on-surface;
+  mdc-theme-color.$error: $orig-error;
+  mdc-theme-color.$on-error: $orig-on-error;
+  mdc-theme-color.$property-values: $orig-property-values;
 }
 
 // Configures MDC's global variables to reflect the given typography config,
@@ -247,16 +253,16 @@ $mat-typography-2018-level-mappings: (
 /* stylelint-disable-next-line material/theme-mixin-api */
 @mixin mat-using-mdc-typography($config) {
   // Save the original values.
-  $orig-mdc-typography-styles: $mdc-typography-styles;
+  $orig-mdc-typography-styles: mdc-typography.$styles;
 
   // Set new values based on the given Angular Material typography configuration.
   @if $config {
-    $mdc-typography-styles: mat-typography-config-to-mdc($config) !global;
+    mdc-typography.$styles: mat-typography-config-to-mdc($config);
   }
 
   // Apply given rules.
   @content;
 
   // Reset the original values.
-  $mdc-typography-styles: $orig-mdc-typography-styles !global;
+  mdc-typography.$styles: $orig-mdc-typography-styles;
 }

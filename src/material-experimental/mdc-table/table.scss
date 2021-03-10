@@ -1,9 +1,9 @@
+@use '@material/data-table/data-table' as mdc-data-table;
 @use '../../material/core/style/vendor-prefixes';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/table/table-flex-styles';
-@import '@material/data-table/mixins.import';
 
-@include mdc-data-table-core-styles($query: mdc-helpers.$mat-base-styles-without-animation-query);
+@include mdc-data-table.core-styles($query: mdc-helpers.$mat-base-styles-without-animation-query);
 @include table-flex-styles.private-table-flex-styles();
 
 .mat-mdc-table-sticky {

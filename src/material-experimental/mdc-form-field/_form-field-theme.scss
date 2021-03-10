@@ -1,5 +1,10 @@
 @use '@material/ripple/mixins' as mdc-ripple;
-@use '@material/textfield/variables' as mdc-text-field;
+@use '@material/textfield' as mdc-textfield;
+@use '@material/floating-label' as mdc-floating-label;
+@use '@material/notched-outline' as mdc-notched-outline;
+@use '@material/line-ripple' as mdc-line-ripple;
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/typography' as mdc-typography;
 @use '../mdc-helpers/mdc-helpers';
 @use 'form-field-density';
 @use 'form-field-subscript';
@@ -8,45 +13,40 @@
 @use 'mdc-text-field-theme-variable-refresh';
 @use '../../material/core/theming/theming';
 
-@import '@material/density/functions.import';
-@import '@material/theme/variables.import';
-@import '@material/textfield/mixins.import';
-@import '@material/textfield/variables.import';
-@import '@material/typography/mixins.import';
 
 // Mixin that overwrites the default MDC text-field color styles to be based on
 // the given theme palette. The MDC text-field is styled using `primary` by default.
 @mixin _mat-mdc-text-field-color-styles($palette-name,
   $query: mdc-helpers.$mat-theme-styles-query) {
-  $_mdc-text-field-focused-label-color: mdc-text-field.$focused-label-color;
-  mdc-text-field.$focused-label-color: rgba(mdc-theme-prop-value($palette-name), 0.87);
+  $_mdc-text-field-focused-label-color: mdc-textfield.$focused-label-color;
+  mdc-textfield.$focused-label-color: rgba(mdc-theme-color.prop-value($palette-name), 0.87);
 
-  @include mdc-text-field-caret-color($palette-name, $query);
-  @include mdc-text-field-line-ripple-color($palette-name, $query);
+  @include mdc-textfield.caret-color($palette-name, $query);
+  @include mdc-textfield.line-ripple-color($palette-name, $query);
 
   .mdc-text-field--focused {
-    @include mdc-text-field-focused_($query);
+    @include mdc-textfield.focused_($query);
   }
 
   .mdc-text-field--invalid {
-    @include mdc-text-field-invalid_($query);
+    @include mdc-textfield.invalid_($query);
   }
 
   .mdc-text-field--outlined {
-    @include mdc-text-field-focused-outline-color($palette-name, $query);
+    @include mdc-textfield.focused-outline-color($palette-name, $query);
   }
 
-  mdc-text-field.$focused-label-color: $_mdc-text-field-focused-label-color;
+  mdc-textfield.$focused-label-color: $_mdc-text-field-focused-label-color;
 }
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
     @include mdc-text-field-theme-variable-refresh.private-text-field-refresh-theme-variables() {
-      @include mdc-text-field-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
-      @include mdc-floating-label-core-styles($query: mdc-helpers.$mat-theme-styles-query);
-      @include mdc-notched-outline-core-styles($query: mdc-helpers.$mat-theme-styles-query);
-      @include mdc-line-ripple-core-styles($query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-textfield.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-floating-label.core-styles($query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-notched-outline.core-styles($query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-line-ripple.core-styles($query: mdc-helpers.$mat-theme-styles-query);
       @include form-field-subscript.private-form-field-subscript-color();
       @include form-field-focus-overlay.private-form-field-focus-overlay-color();
       @include form-field-native-select.private-form-field-native-select-color($config);
@@ -65,10 +65,10 @@
 @mixin typography($config-or-theme) {
   $config: theming.get-typography-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-text-field-without-ripple($query: mdc-helpers.$mat-typography-styles-query);
-    @include mdc-floating-label-core-styles($query: mdc-helpers.$mat-typography-styles-query);
-    @include mdc-notched-outline-core-styles($query: mdc-helpers.$mat-typography-styles-query);
-    @include mdc-line-ripple-core-styles($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-textfield.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-floating-label.core-styles($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-notched-outline.core-styles($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-line-ripple.core-styles($query: mdc-helpers.$mat-typography-styles-query);
     @include form-field-subscript.private-form-field-subscript-typography($config);
 
     // MDC uses the `subtitle1` level for the input label and value, but the spec shows `body1` as
@@ -77,7 +77,7 @@
     .mat-mdc-form-field label,
     .mat-mdc-form-field-text-prefix,
     .mat-mdc-form-field-text-suffix {
-      @include mdc-typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
+      @include mdc-typography.typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
     }
   }
 }

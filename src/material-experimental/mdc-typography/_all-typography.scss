@@ -1,9 +1,9 @@
+@use '@material/typography' as mdc-typography;
 @use 'sass:map';
 @use '../mdc-theming/all-theme';
 @use '../../material/core/theming/theming';
 @use '../../material/core/typography/typography';
 @use '../mdc-helpers/mdc-helpers';
-@import '@material/typography/variables.import';
 
 /// Generates an Angular Material typography config based on values from the official Material
 /// Design spec implementation (MDC Web). All arguments are optional, but may be passed to override
@@ -27,7 +27,7 @@
 /// @param {Map} $overline The font settings for the overline font level.
 /// @return {Map} A map containing font settings for each of the levels in the Material Design spec.
 @function config(
-  $font-family: $mdc-typography-font-family,
+  $font-family: mdc-typography.$font-family,
   $headline-1:  mdc-helpers.mat-typography-config-level-from-mdc(headline1),
   $headline-2:  mdc-helpers.mat-typography-config-level-from-mdc(headline2),
   $headline-3:  mdc-helpers.mat-typography-config-level-from-mdc(headline3),

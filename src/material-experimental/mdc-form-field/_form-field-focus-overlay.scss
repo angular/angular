@@ -1,6 +1,6 @@
-@use '@material/ripple/functions' as ripple-functions;
+@use '@material/ripple/functions' as mdc-ripple-functions;
+@use '@material/textfield' as mdc-textfield;
 @use '../../material/core/style/layout-common';
-@import '@material/textfield/mixins.import';
 
 // MDC text-field uses `@material/ripple` in order to show a focus and hover effect for
 // text-fields. This is unnecessary because the ripples bring in a lot of unnecessary
@@ -17,11 +17,11 @@
 }
 
 @mixin private-form-field-focus-overlay-color() {
-  $focus-opacity: ripple-functions.states-opacity($mdc-text-field-ink-color, focus);
-  $hover-opacity: ripple-functions.states-opacity($mdc-text-field-ink-color, hover);
+  $focus-opacity: mdc-ripple-functions.states-opacity(mdc-textfield.$ink-color, focus);
+  $hover-opacity: mdc-ripple-functions.states-opacity(mdc-textfield.$ink-color, hover);
 
   .mat-mdc-form-field-focus-overlay {
-    background-color: $mdc-text-field-ink-color;
+    background-color: mdc-textfield.$ink-color;
   }
 
   .mat-mdc-form-field:hover .mat-mdc-form-field-focus-overlay {

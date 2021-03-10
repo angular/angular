@@ -1,40 +1,39 @@
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/snackbar' as mdc-snackbar;
 @use 'sass:color';
 @use 'sass:map';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
 
-@import '@material/theme/functions.import';
-@import '@material/snackbar/variables.import';
-@import '@material/snackbar/mixins.import';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
 
-  $orig-mdc-snackbar-fill-color: $mdc-snackbar-fill-color;
-  $orig-mdc-snackbar-label-ink-color: $mdc-snackbar-label-ink-color;
-  $orig-mdc-snackbar-dismiss-ink-color: $mdc-snackbar-dismiss-ink-color;
+  $orig-fill-color: mdc-snackbar.$fill-color;
+  $orig-label-ink-color: mdc-snackbar.$label-ink-color;
+  $orig-dismiss-ink-color: mdc-snackbar.$dismiss-ink-color;
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    $mdc-snackbar-fill-color: color.mix(
-      mdc-theme-prop-value(on-surface),
-      mdc-theme-prop-value(surface),
+    mdc-snackbar.$fill-color: color.mix(
+      mdc-theme-color.prop-value(on-surface),
+      mdc-theme-color.prop-value(surface),
       80%
-    ) !global;
-    $mdc-snackbar-label-ink-color: rgba(
-      mdc-theme-prop-value(surface),
-      mdc-theme-text-emphasis(high)
-    ) !global;
-    $mdc-snackbar-dismiss-ink-color: rgba(
-      mdc-theme-prop-value(surface),
-      mdc-theme-text-emphasis(high)
-    ) !global;
+    );
+    mdc-snackbar.$label-ink-color: rgba(
+      mdc-theme-color.prop-value(surface),
+      mdc-theme-color.text-emphasis(high)
+    );
+    mdc-snackbar.$dismiss-ink-color: rgba(
+      mdc-theme-color.prop-value(surface),
+      mdc-theme-color.text-emphasis(high)
+    );
 
-    @include mdc-snackbar-core-styles($query: mdc-helpers.$mat-theme-styles-query);
+    @include mdc-snackbar.core-styles($query: mdc-helpers.$mat-theme-styles-query);
   }
 
-  $mdc-snackbar-fill-color: $orig-mdc-snackbar-fill-color !global;
-  $mdc-snackbar-label-ink-color: $orig-mdc-snackbar-label-ink-color !global;
-  $mdc-snackbar-dismiss-ink-color: $orig-mdc-snackbar-dismiss-ink-color !global;
+  mdc-snackbar.$fill-color: $orig-fill-color;
+  mdc-snackbar.$label-ink-color: $orig-label-ink-color;
+  mdc-snackbar.$dismiss-ink-color: $orig-dismiss-ink-color;
 
   // The extra level of nesting here is to increase the specificity.
   .mat-mdc-simple-snack-bar .mat-mdc-snack-bar-actions .mdc-snackbar__action {
@@ -52,7 +51,7 @@
 @mixin typography($config-or-theme) {
   $config: theming.get-typography-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-snackbar-core-styles($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-snackbar.core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 

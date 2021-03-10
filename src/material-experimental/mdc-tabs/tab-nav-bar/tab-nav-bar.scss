@@ -1,7 +1,6 @@
 @use '../tabs-common';
 @use '../../../material/core/style/variables';
 @use '../../mdc-helpers/mdc-helpers';
-@import '@material/tab/mixins.import';
 
 @include tabs-common.paginated-tab-header;
 

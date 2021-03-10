@@ -1,12 +1,12 @@
+@use '@material/radio/radio' as mdc-radio;
+@use '@material/radio/radio-theme' as mdc-radio-theme;
+@use '@material/form-field' as mdc-form-field;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../cdk/a11y/a11y';
 @use '../../material/core/style/layout-common';
-@import '@material/radio/mixins.import';
-@import '@material/radio/variables.import';
-@import '@material/form-field/mixins.import';
 
-@include mdc-radio-without-ripple($query: mdc-helpers.$mat-base-styles-query);
-@include mdc-form-field-core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-radio.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);
 
 // This is necessary because we do not depend on MDC's ripple, but have our own that should be
 // positioned correctly. This can be removed once we start using MDC's ripple implementation.
@@ -17,7 +17,7 @@
   border-radius: 50%;
 
   .mat-ripple-element:not(.mat-radio-persistent-ripple) {
-    opacity: $mdc-radio-ripple-opacity;
+    opacity: mdc-radio-theme.$ripple-opacity;
   }
 }
 

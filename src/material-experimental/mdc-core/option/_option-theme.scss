@@ -1,10 +1,10 @@
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/theme/theme' as mdc-theme;
+@use '@material/list' as mdc-list;
+@use '@material/typography' as mdc-typography;
+@use '@material/ripple' as mdc-ripple;
 @use '../../mdc-helpers/mdc-helpers';
 @use '../../../material/core/theming/theming';
-@import '@material/list/mixins.import';
-@import '@material/list/variables.import';
-@import '@material/theme/functions.import';
-@import '@material/theme/mixins.import';
-@import '@material/typography/mixins.import';
 
 @mixin option-color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
@@ -13,9 +13,9 @@
     .mat-mdc-option {
       // Since this will usually be rendered in an overlay,
       // we have explicitly set the default color.
-      @include mdc-theme-prop(color, text-primary-on-background);
-      @include mdc-list-deprecated-item-disabled-text-color(
-        $mdc-list-deprecated-text-disabled-color, $query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-theme.prop(color, text-primary-on-background);
+      @include mdc-list.deprecated-item-disabled-text-color(
+        mdc-list.$deprecated-text-disabled-color, $query: mdc-helpers.$mat-theme-styles-query);
 
       &:hover:not(.mdc-list-item--disabled),
       &:focus:not(.mdc-list-item--disabled),
@@ -23,23 +23,23 @@
 
       // In multiple mode there is a checkbox to show that the option is selected.
       &.mdc-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-list-item--disabled) {
-        $color: mdc-helpers.$mdc-theme-on-surface;
-        background: rgba($color, mdc-states-opacity($color, hover));
+        $color: mdc-theme-color.$on-surface;
+        background: rgba($color, mdc-ripple.states-opacity($color, hover));
       }
     }
 
     .mat-primary .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-      @include mdc-list-deprecated-item-primary-text-ink-color(
+      @include mdc-list.deprecated-item-primary-text-ink-color(
         primary, $query: mdc-helpers.$mat-theme-styles-query);
     }
 
     .mat-accent .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-      @include mdc-list-deprecated-item-primary-text-ink-color(
+      @include mdc-list.deprecated-item-primary-text-ink-color(
         secondary, $query: mdc-helpers.$mat-theme-styles-query);
     }
 
     .mat-warn .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
-      @include mdc-list-deprecated-item-primary-text-ink-color(
+      @include mdc-list.deprecated-item-primary-text-ink-color(
         error, $query: mdc-helpers.$mat-theme-styles-query);
     }
   }
@@ -52,7 +52,7 @@
     // MDC uses the `subtitle1` level for list items, but the spec shows `body1` as the correct
     // level. Class is repeated for increased specificity.
     .mat-mdc-option {
-      @include mdc-typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
+      @include mdc-typography.typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
     }
   }
 }

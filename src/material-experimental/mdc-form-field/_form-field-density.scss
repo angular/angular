@@ -1,8 +1,8 @@
-@use '@material/density';
+@use '@material/density' as mdc-density;
+@use '@material/textfield' as mdc-textfield;
 @use 'sass:map';
 @use '../../material/core/theming/theming';
 @use 'form-field-sizing';
-@import '@material/textfield/variables.import';
 
 // Mixin that sets the vertical spacing for the infix container of filled form fields.
 // We need to apply spacing to the infix container because we removed the input padding
@@ -40,21 +40,21 @@
 @mixin private-form-field-density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
   // Height of the form field that is based on the current density scale.
-  $height: density.prop-value(
-    $density-config: $mdc-text-field-density-config,
+  $height: mdc-density.prop-value(
+    $density-config: mdc-textfield.$density-config,
     $density-scale: $density-scale,
     $property-name: height,
   );
 
   // Whether floating labels for filled form fields should be hidden. MDC hides the label in
   // their density styles when the height decreases too much. We match their density styles.
-  $hide-filled-floating-label: $height < $mdc-text-field-minimum-height-for-filled-label;
+  $hide-filled-floating-label: $height < mdc-textfield.$minimum-height-for-filled-label;
   // We computed the desired height of the form-field using the density configuration. The
   // spec only describes vertical spacing/alignment in non-dense mode. This means that we
   // cannot update the spacing to explicit numbers based on the density scale. Instead, we
   // determine the height reduction and equally subtract it from the default `top` and `bottom`
   // padding that is provided by the Material Design specification.
-  $vertical-deduction: ($mdc-text-field-height - $height) / 2;
+  $vertical-deduction: (mdc-textfield.$height - $height) / 2;
   // Map that describes the padding for form-fields with label.
   $with-label-padding: (
     top: form-field-sizing.$mat-form-field-with-label-input-padding-top - $vertical-deduction,
@@ -88,7 +88,7 @@
   // because it's unlikely that developers commonly overwrite the floating label transform.
   .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mdc-notched-outline--upgraded
   .mdc-floating-label--float-above {
-    $outlined-label-floating-position-y: mdc-text-field-get-outlined-label-position-y($height);
+    $outlined-label-floating-position-y: mdc-textfield.get-outlined-label-position-y($height);
     // This transform has been extracted from the MDC text-field styles. We can't access it
     // through a variable because MDC generates this label transform through a mixin.
     transform: translateY(-$outlined-label-floating-position-y) scale(0.75) !important;

@@ -1,9 +1,8 @@
+@use '@material/list' as mdc-list;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/style/layout-common';
-@import '@material/list/mixins.import';
-@import '@material/list/variables.import';
 
-@include mdc-list-deprecated-without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-list.deprecated-without-ripple($query: mdc-helpers.$mat-base-styles-query);
 
 // MDC expects the list element to be a `<ul>`, since we use `<mat-list>` instead we need to
 // explicitly set `display: block`
@@ -46,10 +45,10 @@
 // MDC supports avatars, but it's a per-list setting, whereas ours applies to individual
 // items. Therefore, we need to add our own styles.
 .mat-mdc-list-avatar {
-  // Styles here come from `$mdc-list-graphic-size_`:
+  // Styles here come from `mdc-list.$graphic-size_`:
   // https://github.com/material-components/material-components-web/blob/3ca8c4c45a3d2a654ef3cb8fc7525bcde37badf0/packages/mdc-list/_mixins.scss#L538
   $size: 40px;
-  $margin-value: 72px - $mdc-list-deprecated-side-padding - $size;
+  $margin-value: 72px - mdc-list.$deprecated-side-padding - $size;
 
   width: $size;
   height: $size;

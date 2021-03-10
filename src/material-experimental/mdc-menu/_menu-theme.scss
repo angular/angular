@@ -1,18 +1,17 @@
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/theme/theme' as mdc-theme;
+@use '@material/menu-surface' as mdc-menu-surface;
+@use '@material/list' as mdc-list;
+@use '@material/typography' as mdc-typography;
+@use '@material/ripple' as mdc-ripple;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
-@import '@material/menu-surface/mixins.import';
-@import '@material/menu-surface/variables.import';
-@import '@material/list/mixins.import';
-@import '@material/list/variables.import';
-@import '@material/theme/functions.import';
-@import '@material/theme/mixins.import';
-@import '@material/typography/mixins.import';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    @include mdc-menu-surface-core-styles(mdc-helpers.$mat-theme-styles-query);
-    @include mdc-list-deprecated-without-ripple(mdc-helpers.$mat-theme-styles-query);
+    @include mdc-menu-surface.core-styles(mdc-helpers.$mat-theme-styles-query);
+    @include mdc-list.deprecated-without-ripple(mdc-helpers.$mat-theme-styles-query);
 
     // MDC doesn't appear to have disabled styling for menu
     // items so we have to grey them out ourselves.
@@ -20,7 +19,7 @@
       &,
       &::after,
       .mat-icon-no-color {
-        @include mdc-theme-prop(color, text-disabled-on-background);
+        @include mdc-theme.prop(color, text-disabled-on-background);
       }
     }
 
@@ -28,7 +27,7 @@
     // chevron ourselves, we have to handle the color as well.
     .mat-mdc-menu-item .mat-icon-no-color,
     .mat-mdc-menu-item-submenu-trigger::after {
-      @include mdc-theme-prop(color, text-icon-on-background);
+      @include mdc-theme.prop(color, text-icon-on-background);
     }
 
     // MDC's hover and focus styles are tied to their ripples which we aren't using.
@@ -37,8 +36,8 @@
     .mat-mdc-menu-item.cdk-keyboard-focused,
     .mat-mdc-menu-item-highlighted {
       &:not([disabled]) {
-        $color: mdc-helpers.$mdc-theme-on-surface;
-        background: rgba($color, mdc-states-opacity($color, hover));
+        $color: mdc-theme-color.$on-surface;
+        background: rgba($color, mdc-ripple.states-opacity($color, hover));
       }
     }
   }
@@ -47,17 +46,17 @@
 @mixin typography($config-or-theme) {
   $config: theming.get-typography-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-menu-surface-core-styles(mdc-helpers.$mat-typography-styles-query);
+    @include mdc-menu-surface.core-styles(mdc-helpers.$mat-typography-styles-query);
 
     .mat-mdc-menu-content {
       // Note that we include this private mixin, because the public
       // one adds a bunch of styles that we aren't using for the menu.
-      @include mdc-list-deprecated-base_(mdc-helpers.$mat-typography-styles-query);
+      @include mdc-list.deprecated-base_(mdc-helpers.$mat-typography-styles-query);
 
       // MDC uses the `subtitle1` level for list items, but the spec shows `body1` as the correct
       // level.
       .mat-mdc-menu-item {
-        @include mdc-typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
+        @include mdc-typography.typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
       }
     }
   }

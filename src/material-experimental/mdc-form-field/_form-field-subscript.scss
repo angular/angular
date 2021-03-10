@@ -1,9 +1,9 @@
+@use '@material/textfield' as mdc-textfield;
+@use '@material/theme/theme' as mdc-theme;
+@use '@material/typography' as mdc-typography;
 @use 'form-field-sizing';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
-@import '@material/theme/mixins.import';
-@import '@material/textfield/variables.import';
-@import '@material/typography/mixins.import';
 
 @mixin private-form-field-subscript() {
   // Wrapper for the hints and error messages.
@@ -60,7 +60,7 @@
 @mixin private-form-field-subscript-color() {
   // MDC does not have built-in error treatment.
   .mat-mdc-form-field-error {
-    @include mdc-theme-prop(color, $mdc-text-field-error);
+    @include mdc-theme.prop(color, mdc-textfield.$error);
   }
 }
 
@@ -73,6 +73,6 @@
   // jumps when hints or errors are displayed.
   .mat-mdc-form-field-subscript-wrapper,
   .mat-mdc-form-field-bottom-align::before {
-    @include mdc-typography(caption, $query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-typography.typography(caption, $query: mdc-helpers.$mat-typography-styles-query);
   }
 }

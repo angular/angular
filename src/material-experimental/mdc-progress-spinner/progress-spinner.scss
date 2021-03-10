@@ -1,7 +1,7 @@
+@use '@material/circular-progress' as mdc-circular-progress;
 @use '../mdc-helpers/mdc-helpers';
-@import '@material/circular-progress/mixins.import';
 
-@include mdc-circular-progress-core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-circular-progress.core-styles($query: mdc-helpers.$mat-base-styles-query);
 
 .mat-mdc-progress-spinner {
   // Prevents the spinning of the inner element from affecting layout outside of the spinner.

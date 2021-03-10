@@ -1,14 +1,14 @@
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/menu-surface' as mdc-menu-surface;
+@use '@material/list' as mdc-list;
+@use '@material/select' as mdc-select;
+@use '@material/typography' as mdc-typography;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
-@import '@material/menu-surface/mixins.import';
-@import '@material/list/mixins.import';
-@import '@material/theme/variables.import';
-@import '@material/select/variables.import';
-@import '@material/typography/mixins.import';
 
 // Gets the color to use for some text that is highlighted while a select has focus.
 @function _get-mdc-focused-text-color($palette) {
-  @return rgba(mdc-theme-prop-value($palette), 0.87);
+  @return rgba(mdc-theme-color.prop-value($palette), 0.87);
 }
 
 @mixin color($config-or-theme) {
@@ -16,36 +16,36 @@
 
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
-  $orig-mdc-select-ink-color: $mdc-select-ink-color;
-  $orig-mdc-select-label-color: $mdc-select-label-color;
-  $orig-mdc-select-disabled-label-color: $mdc-select-disabled-label-color;
-  $orig-mdc-select-dropdown-icon-color: $mdc-select-dropdown-icon-color;
-  $orig-mdc-select-disabled-dropdown-icon-color: $mdc-select-disabled-dropdown-icon-color;
+  $orig-ink-color: mdc-select.$ink-color;
+  $orig-label-color: mdc-select.$label-color;
+  $orig-disabled-label-color: mdc-select.$disabled-label-color;
+  $orig-dropdown-icon-color: mdc-select.$dropdown-icon-color;
+  $orig-disabled-dropdown-icon-color: mdc-select.$disabled-dropdown-icon-color;
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    $mdc-select-ink-color: rgba(mdc-theme-prop-value(on-surface), 0.87) !global;
-    $mdc-select-label-color: rgba(mdc-theme-prop-value(on-surface), 0.6) !global;
-    $mdc-select-disabled-label-color: rgba(mdc-theme-prop-value(on-surface), 0.38) !global;
-    $mdc-select-dropdown-icon-color: rgba(mdc-theme-prop-value(on-surface), 0.54) !global;
-    $mdc-select-disabled-dropdown-icon-color: rgba(mdc-theme-prop-value(on-surface), 0.38) !global;
+    mdc-select.$ink-color: rgba(mdc-theme-color.prop-value(on-surface), 0.87);
+    mdc-select.$label-color: rgba(mdc-theme-color.prop-value(on-surface), 0.6);
+    mdc-select.$disabled-label-color: rgba(mdc-theme-color.prop-value(on-surface), 0.38);
+    mdc-select.$dropdown-icon-color: rgba(mdc-theme-color.prop-value(on-surface), 0.54);
+    mdc-select.$disabled-dropdown-icon-color: rgba(mdc-theme-color.prop-value(on-surface), 0.38);
 
-    @include mdc-menu-surface-core-styles(mdc-helpers.$mat-theme-styles-query);
-    @include mdc-list-deprecated-without-ripple(mdc-helpers.$mat-theme-styles-query);
+    @include mdc-menu-surface.core-styles(mdc-helpers.$mat-theme-styles-query);
+    @include mdc-list.deprecated-without-ripple(mdc-helpers.$mat-theme-styles-query);
 
     .mat-mdc-select-value {
-      color: $mdc-select-ink-color;
+      color: mdc-select.$ink-color;
     }
 
     .mat-mdc-select-placeholder {
-      color: $mdc-select-label-color;
+      color: mdc-select.$label-color;
     }
 
     .mat-mdc-select-disabled .mat-mdc-select-value {
-      color: $mdc-select-disabled-label-color;
+      color: mdc-select.$disabled-label-color;
     }
 
     .mat-mdc-select-arrow {
-      color: $mdc-select-dropdown-icon-color;
+      color: mdc-select.$dropdown-icon-color;
     }
 
     .mat-mdc-form-field {
@@ -68,32 +68,32 @@
       }
 
       .mat-mdc-select.mat-mdc-select-disabled .mat-mdc-select-arrow {
-        color: $mdc-select-disabled-dropdown-icon-color;
+        color: mdc-select.$disabled-dropdown-icon-color;
       }
     }
   }
 
   // Restore original values of MDC global variables.
-  $mdc-select-ink-color: $orig-mdc-select-ink-color !global;
-  $mdc-select-label-color: $orig-mdc-select-label-color !global;
-  $mdc-select-disabled-label-color: $orig-mdc-select-disabled-label-color !global;
-  $mdc-select-dropdown-icon-color: $orig-mdc-select-dropdown-icon-color !global;
-  $mdc-select-disabled-dropdown-icon-color: $orig-mdc-select-disabled-dropdown-icon-color !global;
+  mdc-select.$ink-color: $orig-ink-color;
+  mdc-select.$label-color: $orig-label-color;
+  mdc-select.$disabled-label-color: $orig-disabled-label-color;
+  mdc-select.$dropdown-icon-color: $orig-dropdown-icon-color;
+  mdc-select.$disabled-dropdown-icon-color: $orig-disabled-dropdown-icon-color;
 }
 
 @mixin typography($config-or-theme) {
   $config: theming.get-typography-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-menu-surface-core-styles(mdc-helpers.$mat-typography-styles-query);
+    @include mdc-menu-surface.core-styles(mdc-helpers.$mat-typography-styles-query);
 
     .mat-mdc-select-panel {
       // Note that we include this private mixin, because the public one adds
       // a bunch of styles that we aren't using for the select panel.
-      @include mdc-list-deprecated-base_(mdc-helpers.$mat-typography-styles-query);
+      @include mdc-list.deprecated-base_(mdc-helpers.$mat-typography-styles-query);
     }
 
     .mat-mdc-select-value {
-      @include mdc-typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
+      @include mdc-typography.typography(body1, $query: mdc-helpers.$mat-typography-styles-query);
     }
   }
 }

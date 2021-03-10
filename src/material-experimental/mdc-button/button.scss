@@ -1,13 +1,11 @@
-@use '@material/button/button';
+@use '@material/button/button' as mdc-button;
+@use '@material/button/variables' as mdc-button-variables;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../cdk/a11y/a11y';
 @use '_button-base';
 
-@import '@material/button/mixins.import';
-@import '@material/button/variables.import';
-@import '@material/ripple/mixins.import';
 
-@include mdc-button-without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-button.without-ripple($query: mdc-helpers.$mat-base-styles-query);
 
 .mat-mdc-button, .mat-mdc-unelevated-button, .mat-mdc-raised-button, .mat-mdc-outlined-button {
   @include button-base.mat-private-button-interactive();
@@ -22,22 +20,22 @@
 // mixins will style the icons appropriately.
 .mat-mdc-button {
   .mat-icon {
-    @include button.icon();
+    @include mdc-button.icon();
   }
  .mdc-button__label + .mat-icon {
-   @include button.icon-trailing();
+   @include mdc-button.icon-trailing();
  }
 }
 
 .mat-mdc-unelevated-button, .mat-mdc-raised-button, .mat-mdc-outlined-button {
   // Icons inside contained buttons have different styles due to increased button padding
   .mat-icon {
-    @include button.icon();
-    @include button.icon-contained();
+    @include mdc-button.icon();
+    @include mdc-button.icon-contained();
   }
 
   .mdc-button__label + .mat-icon {
-    @include button.icon-contained-trailing();
+    @include mdc-button.icon-contained-trailing();
   }
 }
 
@@ -68,9 +66,10 @@
 // then. See: https://github.com/angular/components/issues/13738
 .mat-mdc-outlined-button .mat-mdc-button-ripple,
 .mat-mdc-outlined-button .mdc-button__ripple {
-  top: -$mdc-button-outlined-border-width;
-  left: -$mdc-button-outlined-border-width;
-  bottom: -$mdc-button-outlined-border-width;
-  right: -$mdc-button-outlined-border-width;
+  $offset: -(mdc-button-variables.$outlined-border-width);
+  top: $offset;
+  left: $offset;
+  bottom: $offset;
+  right: $offset;
   border: none;
 }

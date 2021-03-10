@@ -1,10 +1,11 @@
+@use '@material/chips' as mdc-chips;
+@use '@material/ripple' as mdc-ripple;
 @use '../../material/core/style/layout-common';
 @use '../../cdk/a11y/a11y';
 @use '../mdc-helpers/mdc-helpers';
-@import '@material/chips/mixins.import';
 
-@include mdc-chip-without-ripple($query: mdc-helpers.$mat-base-styles-query);
-@include mdc-chip-set-core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-chips.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-chips.set-core-styles($query: mdc-helpers.$mat-base-styles-query);
 
 .mat-mdc-chip {
   // MDC uses a pointer cursor
@@ -47,7 +48,7 @@
 // We currently don't use the MDC ripple due to size concerns, therefore we need to add some
 // additional styles to restore these states.
 .mdc-chip__ripple {
-  @include mdc-ripple-target-common($query: structure);
+  @include mdc-ripple.target-common($query: structure);
 
   &::after, &::before {
     @include layout-common.fill;

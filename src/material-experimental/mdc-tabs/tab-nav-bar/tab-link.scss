@@ -1,10 +1,11 @@
+@use '@material/tab' as mdc-tab;
+@use '@material/tab-indicator' as mdc-tab-indicator;
 @use '../../../material/core/style/variables';
 @use '../../mdc-helpers/mdc-helpers';
 @use '../tabs-common';
-@import '@material/tab/mixins.import';
 
-@include mdc-tab-without-ripple($query: mdc-helpers.$mat-base-styles-query);
-@include mdc-tab-indicator-core-styles($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-tab.without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-tab-indicator.core-styles($query: mdc-helpers.$mat-base-styles-query);
 @include tabs-common.tab-ripple;
 
 // Wraps each link in the header

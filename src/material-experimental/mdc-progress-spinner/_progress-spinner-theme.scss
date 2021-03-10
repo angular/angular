@@ -1,9 +1,9 @@
+@use '@material/circular-progress' as mdc-circular-progress;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
-@import '@material/circular-progress/mixins.import';
 
 @mixin _mat-mdc-progress-spinner-color($color) {
-  @include mdc-circular-progress-color($color, $query: mdc-helpers.$mat-theme-styles-query);
+  @include mdc-circular-progress.color($color, $query: mdc-helpers.$mat-theme-styles-query);
 }
 
 @mixin color($config-or-theme) {

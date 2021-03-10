@@ -1,11 +1,9 @@
-@use '@material/density';
+@use '@material/density' as mdc-density;
+@use '@material/list' as mdc-list;
 @use './interactive-list-theme';
 @use './list-option-theme';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
-@import '@material/list/variables.import';
-@import '@material/list/mixins.import';
-
 
 
 // TODO: implement mat-list[dense] once density system is in master
@@ -19,7 +17,7 @@
   @include interactive-list-theme.private-interactive-list-item-state-colors($config);
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    @include mdc-list-deprecated-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+    @include mdc-list.deprecated-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
 
     .mat-mdc-list-option {
       @include list-option-theme.private-list-option-color-override(primary);
@@ -35,8 +33,8 @@
 
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
-  $height: density.prop-value(
-    $density-config: $mdc-list-deprecated-single-line-density-config,
+  $height: mdc-density.prop-value(
+    $density-config: mdc-list.$deprecated-single-line-density-config,
     $density-scale: $density-scale,
     $property-name: height,
   );
@@ -46,7 +44,7 @@
   // the styles should actually only affect single-line list items. This has been reported as
   // a bug in the MDC repository: https://github.com/material-components/material-components-web/issues/5737.
   .mat-mdc-list-item-single-line {
-    @include mdc-list-deprecated-single-line-height($height);
+    @include mdc-list.deprecated-single-line-height($height);
   }
 
   @include list-option-theme.private-list-option-density-styles($density-scale);
@@ -55,7 +53,7 @@
 @mixin typography($config-or-theme) {
   $config: theming.get-typography-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-list-deprecated-without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-list.deprecated-without-ripple($query: mdc-helpers.$mat-typography-styles-query);
     @include list-option-theme.private-list-option-typography-styles();
   }
 }

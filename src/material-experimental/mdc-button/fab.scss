@@ -1,11 +1,8 @@
+@use '@material/fab' as mdc-fab;
 @use '../mdc-helpers/mdc-helpers';
 @use '_button-base';
-@import '@material/fab/mixins.import';
-@import '@material/fab/variables.import';
-@import '@material/button/variables.import';
-@import '@material/theme/variables.import';
 
-@include mdc-fab-without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-fab.without-ripple($query: mdc-helpers.$mat-base-styles-query);
 
 .mat-mdc-fab, .mat-mdc-mini-fab {
   @include button-base.mat-private-button-interactive();
@@ -26,18 +23,18 @@
   // mixin will style the icons appropriately.
   /* stylelint-disable-next-line selector-class-pattern */
   .mat-icon, .material-icons {
-    @include mdc-fab-icon_();
+    @include mdc-fab.icon_();
   }
 }
 
 .mat-mdc-extended-fab {
-  @include mdc-fab-extended_();
+  @include mdc-fab.extended_();
 
   /* stylelint-disable-next-line selector-class-pattern */
   .mat-icon, .material-icons {
-    @include mdc-fab-extended-icon-padding(
-                    $mdc-fab-extended-icon-padding,
-                    $mdc-fab-extended-label-padding
+    @include mdc-fab.extended-icon-padding(
+      mdc-fab.$extended-icon-padding,
+      mdc-fab.$extended-label-padding
     );
   }
 
@@ -46,10 +43,10 @@
   // uses the same template as button.
   /* stylelint-disable-next-line selector-class-pattern */
   .mdc-button__label + .mat-icon, .mdc-button__label + .material-icons {
-    @include mdc-fab-extended-icon-padding(
-                    $mdc-fab-extended-icon-padding,
-                    $mdc-fab-extended-label-padding,
-                    $is-icon-at-end: true
+    @include mdc-fab.extended-icon-padding(
+      mdc-fab.$extended-icon-padding,
+      mdc-fab.$extended-label-padding,
+      $is-icon-at-end: true
     );
   }
 }

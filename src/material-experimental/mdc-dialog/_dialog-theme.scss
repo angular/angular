@@ -1,19 +1,18 @@
+@use '@material/dialog' as mdc-dialog;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
-
-@import '@material/dialog/mixins.import';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    @include mdc-dialog-core-styles($query: mdc-helpers.$mat-theme-styles-query);
+    @include mdc-dialog.core-styles($query: mdc-helpers.$mat-theme-styles-query);
   }
 }
 
 @mixin typography($config-or-theme) {
   $config: theming.get-typography-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-dialog-core-styles($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-dialog.core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 

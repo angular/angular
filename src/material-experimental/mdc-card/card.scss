@@ -1,5 +1,5 @@
+@use '@material/card' as mdc-card;
 @use '../mdc-helpers/mdc-helpers';
-@import '@material/card/mixins.import';
 
 // TODO(jelbourn): move header and title-group styles to their own files.
 
@@ -10,7 +10,7 @@ $mat-card-header-size: 40px !default;
 $mat-card-default-padding: 16px !default;
 
 // Include all MDC card styles except for color and typography.
-@include mdc-card-without-ripple($query: mdc-helpers.$mat-base-styles-query);
+@include mdc-card.without-ripple($query: mdc-helpers.$mat-base-styles-query);
 
 // Title text and subtitles text within a card. MDC doesn't have pre-made title sections for cards.
 // Maintained here for backwards compatibility with the previous generation MatCard.

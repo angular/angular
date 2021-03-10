@@ -1,14 +1,14 @@
+@use '@material/ripple' as mdc-ripple;
 @use 'sass:map';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
-@import '@material/ripple/variables.import';
 
 // Mixin that provides colors for the various states of an interactive list-item. MDC
 // has integrated styles for these states but relies on their complex ripples for it.
 @mixin private-interactive-list-item-state-colors($config) {
   $is-dark-theme: map.get($config, is-dark);
   $state-opacities:
-    if($is-dark-theme, $mdc-ripple-light-ink-opacities, $mdc-ripple-dark-ink-opacities);
+    if($is-dark-theme, mdc-ripple.$light-ink-opacities, mdc-ripple.$dark-ink-opacities);
 
   .mat-mdc-list-item-interactive {
     &::before {

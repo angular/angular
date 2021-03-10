@@ -1,61 +1,61 @@
+@use '@material/theme/theme-color' as mdc-theme-color;
+@use '@material/radio/radio-theme' as mdc-radio-theme;
+@use '@material/radio/radio' as mdc-radio;
+@use '@material/form-field' as mdc-form-field;
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
 
-@import '@material/form-field/mixins.import';
-@import '@material/radio/mixins';
-@import '@material/radio/variables';
-@import '@material/theme/functions.import';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
-  $orig-mdc-radio-baseline-theme-color: $mdc-radio-baseline-theme-color;
-  $orig-mdc-radio-unchecked-color: $mdc-radio-unchecked-color;
-  $orig-mdc-radio-disabled-circle-color: $mdc-radio-disabled-circle-color;
+  $orig-baseline-theme-color: mdc-radio-theme.$baseline-theme-color;
+  $orig-unchecked-color: mdc-radio-theme.$unchecked-color;
+  $orig-disabled-circle-color: mdc-radio-theme.$disabled-circle-color;
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
-    $mdc-radio-baseline-theme-color: primary !global;
-    $mdc-radio-unchecked-color: rgba(mdc-theme-prop-value(on-surface), 0.54) !global;
-    $mdc-radio-disabled-circle-color: rgba(mdc-theme-prop-value(on-surface), 0.38) !global;
+    mdc-radio-theme.$baseline-theme-color: primary;
+    mdc-radio-theme.$unchecked-color: rgba(mdc-theme-color.prop-value(on-surface), 0.54);
+    mdc-radio-theme.$disabled-circle-color: rgba(mdc-theme-color.prop-value(on-surface), 0.38);
 
     .mat-mdc-radio-button {
-      @include mdc-form-field-core-styles($query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
 
       &.mat-primary {
-        @include mdc-radio-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+        @include mdc-radio.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
       }
 
       &.mat-accent {
-        $mdc-radio-baseline-theme-color: secondary !global;
-        @include mdc-radio-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+        mdc-radio-theme.$baseline-theme-color: secondary;
+        @include mdc-radio.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
       }
 
       &.mat-warn {
-        $mdc-radio-baseline-theme-color: error !global;
-        @include mdc-radio-without-ripple($query: mdc-helpers.$mat-theme-styles-query);
+        mdc-radio-theme.$baseline-theme-color: error;
+        @include mdc-radio.without-ripple($query: mdc-helpers.$mat-theme-styles-query);
       }
     }
   }
 
   // Restore original values of MDC global variables.
-  $mdc-radio-baseline-theme-color: $orig-mdc-radio-baseline-theme-color !global;
-  $mdc-radio-unchecked-color: $orig-mdc-radio-unchecked-color !global;
-  $mdc-radio-disabled-circle-color: $orig-mdc-radio-disabled-circle-color !global;
+  mdc-radio-theme.$baseline-theme-color: $orig-baseline-theme-color;
+  mdc-radio-theme.$unchecked-color: $orig-unchecked-color;
+  mdc-radio-theme.$disabled-circle-color: $orig-disabled-circle-color;
 }
 
 @mixin typography($config-or-theme) {
   $config: theming.get-typography-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-typography($config) {
-    @include mdc-radio-without-ripple($query: mdc-helpers.$mat-typography-styles-query);
-    @include mdc-form-field-core-styles($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-radio.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
+    @include mdc-form-field.core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }
 }
 
 @mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
   .mat-mdc-radio-button .mdc-radio {
-    @include mdc-radio-density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
+    @include mdc-radio-theme.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
   }
 }
 

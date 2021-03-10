@@ -1,9 +1,7 @@
+@use '@material/list' as mdc-list;
+@use '@material/theme/theme' as mdc-theme;
 @use '../../mdc-helpers/mdc-helpers';
 @use '../../../material/core/theming/theming';
-@import '@material/list/mixins.import';
-@import '@material/list/variables.import';
-@import '@material/theme/functions.import';
-@import '@material/theme/mixins.import';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
@@ -12,9 +10,9 @@
     .mat-mdc-optgroup-label {
       // Since this will usually be rendered in an overlay,
       // we have explicitly set the default color.
-      @include mdc-theme-prop(color, text-primary-on-background);
-      @include mdc-list-deprecated-item-disabled-text-color(
-        $mdc-list-deprecated-text-disabled-color, $query: mdc-helpers.$mat-theme-styles-query);
+      @include mdc-theme.prop(color, text-primary-on-background);
+      @include mdc-list.deprecated-item-disabled-text-color(
+        mdc-list.$deprecated-text-disabled-color, $query: mdc-helpers.$mat-theme-styles-query);
     }
   }
 }

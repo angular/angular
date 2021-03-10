@@ -1,7 +1,7 @@
+@use '@material/linear-progress' as mdc-linear-progress;
 @use '../mdc-helpers/mdc-helpers';
-@import '@material/linear-progress/mixins.import';
 
-@include mdc-linear-progress-core-styles($query:
+@include mdc-linear-progress.core-styles($query:
   mdc-helpers.$mat-base-styles-without-animation-query);
 
 .mat-mdc-progress-bar {
@@ -17,6 +17,6 @@
   }
 
   &:not(._mat-animation-noopable) {
-    @include mdc-linear-progress-core-styles($query: animation);
+    @include mdc-linear-progress.core-styles($query: animation);
   }
 }

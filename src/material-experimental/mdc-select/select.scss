@@ -1,8 +1,8 @@
+@use '@material/menu-surface' as mdc-menu-surface;
+@use '@material/list' as mdc-list;
 @use '../../material/core/style/variables';
 @use '../../material/core/style/vendor-prefixes';
 @use '../../cdk/a11y/a11y';
-@import '@material/menu-surface/mixins.import';
-@import '@material/list/mixins.import';
 
 $mat-select-arrow-size: 5px !default;
 $mat-select-arrow-margin: 4px !default;
@@ -15,7 +15,7 @@ $scale: 0.75 !default;
 // We base the select panel styling on top of MDC's menu styles and we
 // implement the trigger ourselves since MDC doesn't provide an equivalent.
 
-@include mdc-menu-surface-core-styles($query: structure);
+@include mdc-menu-surface.core-styles($query: structure);
 
 .mat-mdc-select {
   display: inline-block;
@@ -85,7 +85,7 @@ $scale: 0.75 !default;
 
   // Note that we include this private mixin, because the public
   // one adds a bunch of styles that we aren't using for the menu.
-  @include mdc-list-deprecated-base_($query: structure);
+  @include mdc-list.deprecated-base_($query: structure);
   @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }

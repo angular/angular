@@ -1,10 +1,9 @@
+@use '@material/menu-surface/mixins' as mdc-menu-surface;
+@use '@material/list/mixins' as mdc-list;
 @use '../../cdk/a11y/a11y';
 @use '../mdc-helpers/mdc-helpers';
-@import '@material/menu-surface/mixins.import';
-@import '@material/list/mixins.import';
-@import '@material/list/variables.import';
 
-@include mdc-menu-surface-core-styles($query: structure);
+@include mdc-menu-surface.core-styles($query: structure);
 
 // Note that the `.mdc-menu-surface` is here in order to bump up the specificity
 // and avoid interference with `mat-menu` which uses the same mixins from MDC.
@@ -19,7 +18,7 @@
 
   // Note that we include this private mixin, because the public
   // one adds a bunch of styles that we aren't using for the menu.
-  @include mdc-list-deprecated-base_($query: structure);
+  @include mdc-list.deprecated-base_($query: structure);
   @include a11y.high-contrast(active, off) {
     outline: solid 1px;
   }
