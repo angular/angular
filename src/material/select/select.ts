@@ -1064,7 +1064,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
    * @docs-private
    */
   get shouldLabelFloat(): boolean {
-    return this._panelOpen || !this.empty;
+    return this._panelOpen || !this.empty || (this._focused && !!this._placeholder);
   }
 
   static ngAcceptInputType_required: BooleanInput;
