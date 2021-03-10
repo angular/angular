@@ -392,14 +392,16 @@ describe('Zone', function() {
                   checkTarget = Object.getPrototypeOf(checkTarget);
                 }
                 if (!propExistsOnTarget) {
+                  console.warn(`${prop} not exists on target ${target}`);
                   continue;
                 }
                 target[prop] = noop;
                 if (!target[Zone.__symbol__('ON_PROPERTY' + prop.substr(2))]) {
                   fail(`${prop} of ${target} is not patched`);
                 } else {
+                  expect(target[prop]).toBe(noop);
                   target[prop] = null;
-                  expect(!target[Zone.__symbol__('ON_PROPERTY' + prop.substr(2))]).toBeTruthy();
+                  expect(target[Zone.__symbol__('ON_PROPERTY' + prop.substr(2))]).toBeNull();
                 }
               }
             }
@@ -438,6 +440,7 @@ describe('Zone', function() {
                 }
               }
             }
+
             isPropertiesPatched(
                 window, eventNames.concat(['messageerror']), Object.getPrototypeOf(window));
             isPropertiesPatched(Document.prototype, eventNames);
@@ -548,7 +551,7 @@ describe('Zone', function() {
 
           it('should patch all possible on properties on worker', function() {
             checkIsOnPropertiesPatched(
-                new Worker('/base/angular/packages/zone.js/test/assets/worker.js'),
+                new Worker('/base/angular/packages/zone.js/test/assets/empty-worker.js'),
                 workerEventNames);
           });
 
@@ -604,15 +607,32 @@ describe('Zone', function() {
             document.body.removeChild(div);
           });
 
-          it('property startsWith on but not event listener should still work as expected', () => {
-            (window as any).one_two_three = {foo: 'bar'};
+          it('non function property starts with on but not event listener should still work as expected',
+             () => {
+               (window as any).one_two_three = {foo: 'bar'};
 
-            expect((window as any).one_two_three).toEqual({foo: 'bar'});
-            (window as any).one_two_three = {bar: 'foo'};
-            expect((window as any).one_two_three).toEqual({bar: 'foo'});
-            (window as any).one_two_three = null;
-            expect((window as any).one_two_three).toBeNull();
-          });
+               expect((window as any).one_two_three).toEqual({foo: 'bar'});
+               (window as any).one_two_three = {bar: 'foo'};
+               expect((window as any).one_two_three).toEqual({bar: 'foo'});
+               (window as any).one_two_three = null;
+               expect((window as any).one_two_three).toBeNull();
+             });
+
+          it('function property starts with on but not event listener should still work as expected',
+             () => {
+               let called = false;
+               const func = function() {
+                 called = true;
+               };
+               (window as any).one_two_three = func;
+
+               expect((window as any).one_two_three).toEqual(func);
+               expect(called).toBeFalse();
+               (window as any).one_two_three();
+               expect(called).toBeTrue();
+               (window as any).one_two_three = null;
+               expect((window as any).one_two_three).toBeNull();
+             });
 
           it('should be able to clear on handler added before load zone.js', function() {
             const TestTarget: any = (window as any)['TestTarget'];
