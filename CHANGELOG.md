@@ -1,3 +1,22 @@
+# 12.0.0-next.2 "carbon-crab" (2021-03-10)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **grid-list:** remove internal figure element ([#21826](https://github.com/angular/components/issues/21826)) ([b4fafdad704e1fa815ce74ca518917e335664045](https://github.com/angular/components/commit/b4fafdad704e1fa815ce74ca518917e335664045)), closes [#21775](https://github.com/angular/components/issues/21775) |
+| feature |  **form-field:** make mat-errors more polite ([#21870](https://github.com/angular/components/issues/21870)) ([a405ce6ce5e6a46307a7d6e7e3b9dafe9ec79d1e](https://github.com/angular/components/commit/a405ce6ce5e6a46307a7d6e7e3b9dafe9ec79d1e)), closes [#21781](https://github.com/angular/components/issues/21781) |
+| feature |  **tabs:** add method for programmatically setting focus ([#15228](https://github.com/angular/components/issues/15228)) ([d869d79bcefb760966f0101a7a3afd671d6076a8](https://github.com/angular/components/commit/d869d79bcefb760966f0101a7a3afd671d6076a8)), closes [#15007](https://github.com/angular/components/issues/15007) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-form-field:** fix prefix/suffix padding ([#22090](https://github.com/angular/components/issues/22090)) ([23a0248bc882974258a3b53bddb3c9ca077eeb2b](https://github.com/angular/components/commit/23a0248bc882974258a3b53bddb3c9ca077eeb2b)) |
+| bug fix |  **mdc-snack-bar:** use MDC-based button ([#21442](https://github.com/angular/components/issues/21442)) ([9f879b291a414ad205e70faa9b75d007a10f1b40](https://github.com/angular/components/commit/9f879b291a414ad205e70faa9b75d007a10f1b40)), closes [#22024](https://github.com/angular/components/issues/22024) |
+| feature |  **mdc-button:** add default config for FAB ([#22102](https://github.com/angular/components/issues/22102)) ([17f66d693abb6ddefc1e5aa41a65dd2ff0060c3c](https://github.com/angular/components/commit/17f66d693abb6ddefc1e5aa41a65dd2ff0060c3c)) |
+
+
 ## 11.2.4 "rayon-crayon" (2021-03-10)
 
 ### material

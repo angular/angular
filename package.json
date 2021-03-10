@@ -50,7 +50,7 @@
     "check-mdc-exports": "ts-node --project scripts/tsconfig.json scripts/check-mdc-exports.ts",
     "check-tools": "yarn tsc --project tools/tsconfig-ci.json"
   },
-  "version": "12.0.0-next.1",
+  "version": "12.0.0-next.2",
   "dependencies": {
     "@angular/animations": "^12.0.0-next.0",
     "@angular/common": "^12.0.0-next.0",
