@@ -134,8 +134,8 @@ export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
    * @docs-private
    */
   protected _setNameInput(value: string) {
-    // If the directive is set without a name (updated programatically), then this setter will
-    // trigger with an empty string and should not overwrite the programatically set value.
+    // If the directive is set without a name (updated programmatically), then this setter will
+    // trigger with an empty string and should not overwrite the programmatically set value.
     if (value) {
       this._name = value;
       this.cssClassFriendlyName = value.replace(/[^a-z0-9_-]/ig, '-');

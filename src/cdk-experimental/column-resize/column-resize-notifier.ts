@@ -26,7 +26,7 @@ export interface ColumnSizeAction extends ColumnSize {
   /**
    * Whether the resize action should be applied instantaneously. False for events triggered during
    * a UI-triggered resize (such as with the mouse) until the mouse button is released. True
-   * for all programatically triggered resizes.
+   * for all programmatically triggered resizes.
    */
   readonly completeImmediately?: boolean;
 

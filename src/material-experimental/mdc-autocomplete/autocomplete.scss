@@ -12,8 +12,8 @@
   max-height: 256px; // Prevents lists with a lot of option from growing too high.
   position: static; // MDC uses `absolute` by default which will throw off our positioning.
   visibility: hidden;
-  // MDC sets the transform-origin programatically based on whether the dropdown is above or below
-  // the input. We use our own positioning logic, so we need to set this ourselves.
+  // MDC sets the transform-origin programmatically based on whether the dropdown is above or
+  // below the input. We use our own positioning logic, so we need to set this ourselves.
   transform-origin: center top;
 
   // Note that we include this private mixin, because the public
@@ -31,8 +31,8 @@
   .mat-mdc-autocomplete-panel-above & {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-    // MDC sets the transform-origin programatically based on whether the dropdown is above or below
-    // the input. We use our own positioning logic, so we need to set this ourselves.
+    // MDC sets the transform-origin programmatically based on whether the dropdown is above or
+    // below the input. We use our own positioning logic, so we need to set this ourselves.
     transform-origin: center bottom;
   }
 
