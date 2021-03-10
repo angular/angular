@@ -11,7 +11,7 @@ import {ɵɵCopyDefinitionFeature} from './features/copy_definition_feature';
 import {ɵɵInheritDefinitionFeature} from './features/inherit_definition_feature';
 import {ɵɵNgOnChangesFeature} from './features/ng_onchanges_feature';
 import {ɵɵProvidersFeature} from './features/providers_feature';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PipeDef, ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta, ɵɵFactoryDef, ɵɵPipeDefWithMeta} from './interfaces/definition';
+import {ComponentTemplate, ComponentType, DirectiveType, PipeDef, ɵɵComponentDefWithMeta, ɵɵDirectiveDefWithMeta, ɵɵFactoryDef, ɵɵPipeDefWithMeta} from './interfaces/definition';
 import {getComponent, getDirectives, getHostElement, getRenderedText} from './util/discovery_utils';
 
 export {NgModuleType} from '../metadata/ng_module_def';
@@ -129,11 +129,13 @@ export {
   ɵɵtextInterpolateV,
 } from './instructions/all';
 export {ɵɵi18n, ɵɵi18nApply, ɵɵi18nAttributes, ɵɵi18nEnd, ɵɵi18nExp,ɵɵi18nPostprocess, ɵɵi18nStart} from './instructions/i18n';
-export {RenderFlags} from './interfaces/definition';
+export { ComponentDef, DirectiveDef, RenderFlags} from './interfaces/definition';
 export {
   AttributeMarker
 } from './interfaces/node';
 export {CssSelectorList, ProjectionSlots} from './interfaces/projection';
+export {RNode} from './interfaces/renderer_dom';
+export {LContainerDebug, LTreeNodeDebug, LViewDebug} from './interfaces/view';
 export {
   setClassMetadata,
 } from './metadata';
@@ -175,10 +177,8 @@ export { ɵɵinjectPipeChangeDetectorRef,ɵɵtemplateRefExtractor} from './view_
 // clang-format on
 
 export {
-  ComponentDef,
   ComponentTemplate,
   ComponentType,
-  DirectiveDef,
   DirectiveType,
   getComponent,
   getDirectives,

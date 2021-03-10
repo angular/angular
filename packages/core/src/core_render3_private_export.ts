@@ -91,7 +91,10 @@ export {
   DirectiveType as ɵDirectiveType,
   getDirectives as ɵgetDirectives,
   getHostElement as ɵgetHostElement,
+  LContainerDebug as ɵLContainerDebug,
   LifecycleHooksFeature as ɵLifecycleHooksFeature,
+  LTreeNodeDebug as ɵLTreeNodeDebug,
+  LViewDebug as ɵLViewDebug,
   markDirty as ɵmarkDirty,
   NgModuleFactory as ɵNgModuleFactory,
   NgModuleRef as ɵRender3NgModuleRef,
@@ -100,6 +103,8 @@ export {
   PipeDef as ɵPipeDef,
   renderComponent as ɵrenderComponent,
   RenderFlags as ɵRenderFlags,
+  RNode as ɵRNode
+,
   setClassMetadata as ɵsetClassMetadata,
   setLocaleId as ɵsetLocaleId,
   store as ɵstore,
@@ -240,8 +245,7 @@ export {
   ɵɵtextInterpolate7,
   ɵɵtextInterpolate8,
   ɵɵtextInterpolateV,
-  ɵɵviewQuery,
-} from './render3/index';
+  ɵɵviewQuery} from './render3/index';
 export {
   LContext as ɵLContext,
 } from './render3/interfaces/context';

@@ -15,9 +15,10 @@ import {assertDefined} from '../../util/assert';
 import {createNamedArrayType} from '../../util/named_array_type';
 import {initNgDevMode} from '../../util/ng_dev_mode';
 import {assertNodeInjector} from '../assert';
+import {getComponentDef, getDirectiveDef} from '../definition';
 import {getInjectorIndex, getParentInjectorLocation} from '../di';
 import {CONTAINER_HEADER_OFFSET, HAS_TRANSPLANTED_VIEWS, LContainer, MOVED_VIEWS, NATIVE} from '../interfaces/container';
-import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
+import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList, ViewQueriesFunction} from '../interfaces/definition';
 import {NO_PARENT_INJECTOR, NodeInjectorOffset} from '../interfaces/injector';
 import {AttributeMarker, InsertBeforeIndex, PropertyAliases, TConstants, TContainerNode, TElementNode, TNode as ITNode, TNodeFlags, TNodeProviderIndexes, TNodeType, toTNodeTypeAsString} from '../interfaces/node';
 import {SelectorFlags} from '../interfaces/projection';
@@ -25,7 +26,8 @@ import {LQueries, TQueries} from '../interfaces/query';
 import {Renderer3, RendererFactory3} from '../interfaces/renderer';
 import {RComment, RElement, RNode} from '../interfaces/renderer_dom';
 import {getTStylingRangeNext, getTStylingRangeNextDuplicate, getTStylingRangePrev, getTStylingRangePrevDuplicate, TStylingKey, TStylingRange} from '../interfaces/styling';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, FLAGS, HEADER_OFFSET, HookData, HOST, HostBindingOpCodes, INJECTOR, LContainerDebug as ILContainerDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, NodeInjectorDebug, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType, TViewTypeAsString} from '../interfaces/view';
+import {isLView} from '../interfaces/type_checks';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DebugNode, DECLARATION_VIEW, DestroyHookData, FLAGS, HEADER_OFFSET, HookData, HOST, HostBindingOpCodes, INJECTOR, LContainerDebug as ILContainerDebug, LTreeNodeDebug, LView, LViewDebug as ILViewDebug, LViewDebugRange, LViewDebugRangeContent, LViewFlags, NEXT, NodeInjectorDebug, PARENT, QUERIES, RENDERER, RENDERER_FACTORY, SANITIZER, T_HOST, TData, TView as ITView, TVIEW, TView, TViewType, TViewTypeAsString} from '../interfaces/view';
 import {attachDebugObject} from '../util/debug_utils';
 import {getParentInjectorIndex, getParentInjectorView} from '../util/injector_utils';
 import {unwrapRNode} from '../util/view_utils';
@@ -432,8 +434,95 @@ function toHtml(value: any, includeChildren: boolean = false): string|null {
   return null;
 }
 
+function getLViewOrLContainerTNode(
+    rawLViewOrLContainer: LView|LContainer, parent: LView|LContainer): TNode|null {
+  let idx = -1;
+  for (let i = HEADER_OFFSET; i < parent.length; i++) {
+    if (parent[i] === rawLViewOrLContainer || parent[i][HOST] === rawLViewOrLContainer) {
+      idx = i;
+      break;
+    }
+  }
+  if (idx === -1) {
+    return null;
+  }
+  const tView = parent[TVIEW];
+  if (tView === true) {
+    return null;
+  }
+  const tViewData = tView.data[idx] as TNode;
+  if (!tViewData) {
+    return null;
+  }
+  return tViewData;
+}
+
+/**
+ * Get the directives associated with a particular LView or LContainer. The function finds
+ * the associated TNode in the parent of the view or container and extracts the directive
+ * instances from the parent instance.
+ *
+ * @param rawLViewOrLContainer LView or LContainer
+ * @returns An array with all directives. The first element of the array contains the
+ * component from the view/container or null.
+ */
+function getLViewOrLContainerDirectiveInstances(rawLViewOrLContainer: LView|LContainer): any[] {
+  const result: any[] = [null];
+  const parent = rawLViewOrLContainer[PARENT];
+  if (!parent) {
+    return result;
+  }
+  const tNode = getLViewOrLContainerTNode(rawLViewOrLContainer, parent);
+  if (!tNode) {
+    return result;
+  }
+  for (let i = tNode.directiveStart; i < tNode.directiveEnd; i++) {
+    const instance = parent[i];
+    if (!instance.constructor) {
+      continue;
+    }
+    const componentMetadata: ComponentDef<any>|null = getComponentDef(instance.constructor);
+    if (componentMetadata) {
+      result[0] = instance;
+      continue;
+    }
+    const directiveMetadata: DirectiveDef<any>|null = getDirectiveDef(instance.constructor);
+    if (directiveMetadata) {
+      result.push(instance);
+    }
+  }
+  return result;
+}
+
+function extractChildren(views: (ILContainerDebug|ILViewDebug)[]) {
+  const children: LTreeNodeDebug[] = [];
+  for (const child of views) {
+    children.push(...child.lTree());
+  }
+  return children;
+}
+
+
 export class LViewDebug implements ILViewDebug {
   constructor(private readonly _raw_lView: LView) {}
+
+  lTree(): LTreeNodeDebug[] {
+    const result = getLViewOrLContainerDirectiveInstances(this._raw_lView);
+    const [component, ...directives] = result;
+    if (!component && !directives.length) {
+      return extractChildren(this.childViews);
+    }
+    const node = this._raw_lView[HOST];
+    if (!node) {
+      return [];
+    }
+    return [{
+      node,
+      component,
+      directives,
+      children: extractChildren(this.childViews),
+    }];
+  }
 
   /**
    * Flags associated with the `LView` unpacked into a more readable state.
@@ -658,6 +747,26 @@ function toBloom(array: any[], idx: number): string {
 
 export class LContainerDebug implements ILContainerDebug {
   constructor(private readonly _raw_lContainer: LContainer) {}
+
+  lTree(): LTreeNodeDebug[] {
+    const result = getLViewOrLContainerDirectiveInstances(this._raw_lContainer);
+    const [component, ...directives] = result;
+    if (!component && !directives.length) {
+      return extractChildren(this.views);
+    }
+    const node = this._raw_lContainer[HOST];
+    // In case of dynamically inserted content there are not directives
+    // here, but there could be logical subtree starting at the parents.
+    if (!node || isLView(node)) {
+      return extractChildren(this.views);
+    }
+    return [{
+      node,
+      component,
+      directives,
+      children: extractChildren(this.views),
+    }];
+  }
 
   get hasTransplantedViews(): boolean {
     return this._raw_lContainer[HAS_TRANSPLANTED_VIEWS];

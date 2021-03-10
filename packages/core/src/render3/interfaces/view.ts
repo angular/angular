@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ChangeDetectionStrategy} from '../../compiler/compiler_facade';
 import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
+import {ViewEncapsulation} from '../../metadata/view';
 import {Sanitizer} from '../../sanitization/sanitizer';
 import {LContainer} from './container';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, HostBindingsFunction, PipeDef, PipeDefList, ViewQueriesFunction} from './definition';
@@ -18,7 +20,7 @@ import {TConstants, TNode} from './node';
 import {PlayerHandler} from './player';
 import {LQueries, TQueries} from './query';
 import {Renderer3, RendererFactory3} from './renderer';
-import {RComment, RElement} from './renderer_dom';
+import {RComment, RElement, RNode} from './renderer_dom';
 import {TStylingKey, TStylingRange} from './styling';
 
 
@@ -913,6 +915,18 @@ export type TData =
 export const unusedValueExportToPlacateAjd = 1;
 
 /**
+ * Human readable logical tree node. We map the logical tree to the original DOM tree
+ * the user have specified in their editor. We match each LView or LContainer to a
+ * DOM node and collect all the directives and the component associated with it.
+ */
+export interface LTreeNodeDebug {
+  node: RNode;
+  component: any|null;
+  directives: any[];
+  children: LTreeNodeDebug[];
+}
+
+/**
  * Human readable version of the `LView`.
  *
  * `LView` is a data structure used internally to keep track of views. The `LView` is designed for
@@ -922,6 +936,11 @@ export const unusedValueExportToPlacateAjd = 1;
  * in tests.
  */
 export interface LViewDebug {
+  /**
+   * Returns the human readable logical tree with root the current LView.
+   */
+  lTree(): LTreeNodeDebug[];
+
   /**
    * Flags associated with the `LView` unpacked into a more readable state.
    *
@@ -1015,6 +1034,11 @@ export interface LViewDebug {
  * `LContainerDebug` to be used in tests.
  */
 export interface LContainerDebug {
+  /**
+   * Returns the human readable logical tree with root the current LContainer.
+   */
+  lTree(): LTreeNodeDebug[];
+
   readonly native: RComment;
   /**
    * Child `LView`s.

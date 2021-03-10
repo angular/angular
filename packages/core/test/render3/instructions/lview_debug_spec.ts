@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Injectable, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵProvidersFeature} from '@angular/core/src/core';
+import {NgForOf} from '@angular/common';
+import {Component, ComponentFactoryResolver, Directive, Injectable, ViewChild, ViewContainerRef, ɵɵdefineComponent, ɵɵdefineDirective, ɵɵdirectiveInject, ɵɵProvidersFeature} from '@angular/core/src/core';
 import {ComponentDef, DirectiveDef} from '@angular/core/src/render3';
 import {readPatchedData} from '@angular/core/src/render3/context_discovery';
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '@angular/core/src/render3/instructions/element';
@@ -19,6 +20,7 @@ import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_bin
 import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
 import {KeyValueArray} from '@angular/core/src/util/array_utils';
 import {TestBed} from '@angular/core/testing';
+
 import {TemplateFixture} from '../render_util';
 
 describe('lView_debug', () => {
@@ -302,6 +304,222 @@ describe('lView_debug', () => {
           .toEqual(
               rootLViewDebug.nodes[0].injector,
           );
+    });
+  });
+
+  describe('LViewDebug', () => {
+    describe('lTree', () => {
+      it('should work', () => {
+        @Component({
+          selector: 'parent',
+          template: `Parent: [<child></child>]`,
+        })
+        class ParentComponent {
+        }
+        @Component({
+          selector: 'child',
+          template: `<b>Child!</b>`,
+        })
+        class ChildComponent {
+        }
+
+        expect(ngDevMode).toBeTruthy();
+        TestBed.configureTestingModule({declarations: [ParentComponent, ChildComponent]});
+        const parentFixture = TestBed.createComponent(ParentComponent);
+        const parentHostElement = parentFixture.nativeElement as HTMLElement;
+        if (!readPatchedData(parentHostElement)) {
+          // In these browsers:
+          //  - Chrome Mobile 72.0.3626 (Android 0.0.0)
+          //  - IE 11.0.0 (Windows 8.1.0.0)
+          // Retrieving `LContext` does not work for unknown reasons, and we are unable to debug it.
+          // Exiting tests early to prevent breaking the test suite.
+          return;
+        }
+        const parentLViewDebug = getComponentLView(parentHostElement).debug!;
+        const tree = parentLViewDebug.lTree();
+
+        // Should have a single root element that is instance of the ParentComponent
+        expect(tree.length).toBe(1);
+        expect(tree[0].component).toBeInstanceOf(ParentComponent);
+
+        // Should have proper children
+        const [child] = tree[0].children;
+        expect(child.component).toBeInstanceOf(ChildComponent);
+      });
+
+      it('should ignore content projection', () => {
+        @Component({
+          selector: 'projection',
+          template: '<ng-content></ng-content>',
+        })
+        class ProjectionComponent {
+        }
+
+        @Component({
+          selector: 'projected',
+          template: 'foo',
+        })
+        class ProjectedComponent {
+        }
+
+        @Directive({
+          selector: '[dir]',
+        })
+        class SampleDirective {
+        }
+
+        @Component({
+          selector: 'parent',
+          template: '<projection><projected dir></projected></projection>',
+        })
+        class ParentComponent {
+        }
+
+        expect(ngDevMode).toBeTruthy();
+        TestBed.configureTestingModule({
+          declarations: [ParentComponent, SampleDirective, ProjectedComponent, ProjectionComponent]
+        });
+        const parentFixture = TestBed.createComponent(ParentComponent);
+        const parentHostElement = parentFixture.nativeElement as HTMLElement;
+        if (!readPatchedData(parentHostElement)) {
+          // In these browsers:
+          //  - Chrome Mobile 72.0.3626 (Android 0.0.0)
+          //  - IE 11.0.0 (Windows 8.1.0.0)
+          // Retrieving `LContext` does not work for unknown reasons, and we are unable to debug it.
+          // Exiting tests early to prevent breaking the test suite.
+          return;
+        }
+        const parentLViewDebug = getComponentLView(parentHostElement).debug!;
+        const tree = parentLViewDebug.lTree();
+
+        // Should have a single root element that is instance of the ParentComponent
+        expect(tree.length).toBe(1);
+        expect(tree[0].component).toBeInstanceOf(ParentComponent);
+
+        const {children} = tree[0];
+        expect(children.length).toBe(2);
+        expect(children[0].component).toBeInstanceOf(ProjectionComponent);
+        expect(children[1].component).toBeInstanceOf(ProjectedComponent);
+        expect(children[1].directives.length).toBe(1);
+        expect(children[1].directives[0]).toBeInstanceOf(SampleDirective);
+      });
+    });
+
+    it('should work with structural directives', async () => {
+      @Component({
+        selector: 'child',
+        template: 'child',
+      })
+      class ChildComponent {
+      }
+      @Component({
+        selector: 'parent',
+        template: '<child *ngFor="let item of items"></child>',
+      })
+      class ParentComponent {
+        items = [1, 2, 3];
+      }
+
+      expect(ngDevMode).toBeTruthy();
+      TestBed.configureTestingModule({declarations: [ParentComponent, ChildComponent, NgForOf]});
+      const parentFixture = TestBed.createComponent(ParentComponent);
+
+      await parentFixture.whenStable();
+      parentFixture.detectChanges();
+
+      const parentHostElement = parentFixture.nativeElement as HTMLElement;
+      if (!readPatchedData(parentHostElement)) {
+        // In these browsers:
+        //  - Chrome Mobile 72.0.3626 (Android 0.0.0)
+        //  - IE 11.0.0 (Windows 8.1.0.0)
+        // Retrieving `LContext` does not work for unknown reasons, and we are unable to debug it.
+        // Exiting tests early to prevent breaking the test suite.
+        return;
+      }
+
+      const parentLViewDebug = getComponentLView(parentHostElement).debug!;
+      const tree = parentLViewDebug.lTree();
+
+      // Should have a single root element that is instance of the ParentComponent
+      expect(tree.length).toBe(1);
+      expect(tree[0].component).toBeInstanceOf(ParentComponent);
+
+      const {children} = tree[0];
+      expect(children.length).toBe(1);
+      expect(children[0].component).toBeNull();
+      expect((children[0].node as Node).nodeName.toLowerCase()).toBe('#comment');
+
+      const nested = children[0].children;
+      expect(nested.length).toBe(3);
+      expect(nested[0].component).toBeInstanceOf(ChildComponent);
+      expect(nested[1].component).toBeInstanceOf(ChildComponent);
+      expect(nested[2].component).toBeInstanceOf(ChildComponent);
+    });
+
+    it('should work with dynamically inserted content directives', async () => {
+      @Component({selector: 'child', template: 'child'})
+      class ChildComponent {
+      }
+
+      @Directive({
+        selector: '[host]',
+      })
+      class HostDirective {
+        constructor(public viewContainerRef: ViewContainerRef) {}
+      }
+
+      @Component({selector: 'parent', template: '<div host></div>'})
+      class ParentComponent {
+        @ViewChild(HostDirective, {static: true}) host: HostDirective|null = null;
+
+        constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+
+        ngAfterViewInit() {
+          this.loadComponent();
+        }
+
+        loadComponent() {
+          const componentFactory =
+              this.componentFactoryResolver.resolveComponentFactory(ChildComponent);
+
+          const viewContainerRef = this.host!.viewContainerRef;
+          viewContainerRef.clear();
+
+          viewContainerRef.createComponent<ChildComponent>(componentFactory);
+        }
+      }
+
+      expect(ngDevMode).toBeTruthy();
+      TestBed.configureTestingModule(
+          {declarations: [ParentComponent, ChildComponent, HostDirective]});
+      const parentFixture = TestBed.createComponent(ParentComponent);
+
+      await parentFixture.whenStable();
+      parentFixture.detectChanges();
+
+      const parentHostElement = parentFixture.nativeElement as HTMLElement;
+      if (!readPatchedData(parentHostElement)) {
+        // In these browsers:
+        //  - Chrome Mobile 72.0.3626 (Android 0.0.0)
+        //  - IE 11.0.0 (Windows 8.1.0.0)
+        // Retrieving `LContext` does not work for unknown reasons, and we are unable to debug it.
+        // Exiting tests early to prevent breaking the test suite.
+        return;
+      }
+
+      const parentLViewDebug = getComponentLView(parentHostElement).debug!;
+      const tree = parentLViewDebug.lTree();
+
+      // Should have a single root element that is instance of the ParentComponent
+      expect(tree.length).toBe(1);
+      expect(tree[0].component).toBeInstanceOf(ParentComponent);
+
+      const {children} = tree[0];
+      expect((children[0].node as Node).nodeName.toLowerCase()).toBe('div');
+      expect(children[0].directives[0]).toBeInstanceOf(HostDirective);
+
+      expect(children[0].children.length).toBe(1);
+      expect(children[0].children[0].component).toBeInstanceOf(ChildComponent);
     });
   });
 });
