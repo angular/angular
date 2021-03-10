@@ -273,7 +273,7 @@ function bootstrap(
          });
        }));
 
-    if (getDOM().supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents) {
       it('should forward the error to promise when bootstrap fails',
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            const logger = new MockConsole();

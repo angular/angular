@@ -120,8 +120,8 @@ export class BrowserPlatformLocation extends PlatformLocation {
   // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
   /** @internal */
   _init() {
-    (this as {location: Location}).location = getDOM().getLocation();
-    this._history = getDOM().getHistory();
+    (this as {location: Location}).location = window.location;
+    this._history = window.history;
   }
 
   getBaseHrefFromDOM(): string {

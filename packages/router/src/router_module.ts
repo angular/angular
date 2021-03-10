@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller, ɵgetDOM as getDOM} from '@angular/common';
+import {APP_BASE_HREF, HashLocationStrategy, Location, LOCATION_INITIALIZED, LocationStrategy, PathLocationStrategy, PlatformLocation, ViewportScroller} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 import {of, Subject} from 'rxjs';
 
@@ -448,12 +448,13 @@ export function setupRouter(
   assignExtraOptionsToRouter(opts, router);
 
   if (opts.enableTracing) {
-    const dom = getDOM();
     router.events.subscribe((e: Event) => {
-      dom.logGroup(`Router Event: ${(<any>e.constructor).name}`);
-      dom.log(e.toString());
-      dom.log(e);
-      dom.logGroupEnd();
+      // tslint:disable:no-console
+      console.group?.(`Router Event: ${(<any>e.constructor).name}`);
+      console.log(e.toString());
+      console.log(e);
+      console.groupEnd?.();
+      // tslint:enable:no-console
     });
   }
 
