@@ -8,9 +8,9 @@
 
 import * as o from '../output/output_ast';
 
-import {R3DependencyMetadata, R3FactoryFn} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
-import {jitOnlyGuardedExpression, mapToMapExpression, R3Reference} from './util';
+import {jitOnlyGuardedExpression, R3Reference} from './util';
+import {DefinitionMap} from './view/util';
 
 export interface R3NgModuleDef {
   expression: o.Expression;
@@ -87,6 +87,43 @@ export interface R3NgModuleMetadata {
 }
 
 /**
+ * The shape of the object literal that is passed to the `ɵɵdefineNgModule()` call.
+ */
+interface R3NgModuleDefMap {
+  /**
+   * An expression representing the module type being compiled.
+   */
+  type: o.Expression;
+  /**
+   * An expression evaluating to an array of expressions representing the bootstrap components
+   * specified by the module.
+   */
+  bootstrap?: o.Expression;
+  /**
+   * An expression evaluating to an array of expressions representing the directives and pipes
+   * declared by the module.
+   */
+  declarations?: o.Expression;
+  /**
+   * An expression evaluating to an array of expressions representing the imports of the module.
+   */
+  imports?: o.Expression;
+  /**
+   * An expression evaluating to an array of expressions representing the exports of the module.
+   */
+  exports?: o.Expression;
+  /**
+   * A literal array expression containing the schemas that declare elements to be allowed in the
+   * NgModule.
+   */
+  schemas?: o.LiteralArrayExpr;
+  /**
+   * An expression evaluating to the unique ID of an NgModule.
+   * */
+  id?: o.Expression;
+}
+
+/**
  * Construct an `R3NgModuleDef` for the given `R3NgModuleMetadata`.
  */
 export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
@@ -104,34 +141,27 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
   } = meta;
 
   const additionalStatements: o.Statement[] = [];
-  const definitionMap = {type: internalType} as {
-    type: o.Expression,
-    bootstrap: o.Expression,
-    declarations: o.Expression,
-    imports: o.Expression,
-    exports: o.Expression,
-    schemas: o.LiteralArrayExpr,
-    id: o.Expression
-  };
+  const definitionMap = new DefinitionMap<R3NgModuleDefMap>();
+  definitionMap.set('type', internalType);
 
   // Only generate the keys in the metadata if the arrays have values.
   if (bootstrap.length) {
-    definitionMap.bootstrap = refsToArray(bootstrap, containsForwardDecls);
+    definitionMap.set('bootstrap', refsToArray(bootstrap, containsForwardDecls));
   }
 
   // If requested to emit scope information inline, pass the declarations, imports and exports to
   // the `ɵɵdefineNgModule` call. The JIT compilation uses this.
   if (emitInline) {
     if (declarations.length) {
-      definitionMap.declarations = refsToArray(declarations, containsForwardDecls);
+      definitionMap.set('declarations', refsToArray(declarations, containsForwardDecls));
     }
 
     if (imports.length) {
-      definitionMap.imports = refsToArray(imports, containsForwardDecls);
+      definitionMap.set('imports', refsToArray(imports, containsForwardDecls));
     }
 
     if (exports.length) {
-      definitionMap.exports = refsToArray(exports, containsForwardDecls);
+      definitionMap.set('exports', refsToArray(exports, containsForwardDecls));
     }
   }
 
@@ -145,15 +175,15 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
   }
 
   if (schemas && schemas.length) {
-    definitionMap.schemas = o.literalArr(schemas.map(ref => ref.value));
+    definitionMap.set('schemas', o.literalArr(schemas.map(ref => ref.value)));
   }
 
   if (id) {
-    definitionMap.id = id;
+    definitionMap.set('id', id);
   }
 
   const expression =
-      o.importExpr(R3.defineNgModule).callFn([mapToMapExpression(definitionMap)], undefined, true);
+      o.importExpr(R3.defineNgModule).callFn([definitionMap.toLiteralMap()], undefined, true);
   const type = new o.ExpressionType(o.importExpr(R3.NgModuleDefWithMeta, [
     new o.ExpressionType(moduleType.type), tupleTypeOf(declarations), tupleTypeOf(imports),
     tupleTypeOf(exports)
@@ -172,32 +202,29 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
 function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|null {
   const {adjacentType: moduleType, declarations, imports, exports, containsForwardDecls} = meta;
 
-  const scopeMap = {} as {
-    declarations: o.Expression,
-    imports: o.Expression,
-    exports: o.Expression,
-  };
+  const scopeMap = new DefinitionMap<
+      {declarations: o.Expression, imports: o.Expression, exports: o.Expression}>();
 
   if (declarations.length) {
-    scopeMap.declarations = refsToArray(declarations, containsForwardDecls);
+    scopeMap.set('declarations', refsToArray(declarations, containsForwardDecls));
   }
 
   if (imports.length) {
-    scopeMap.imports = refsToArray(imports, containsForwardDecls);
+    scopeMap.set('imports', refsToArray(imports, containsForwardDecls));
   }
 
   if (exports.length) {
-    scopeMap.exports = refsToArray(exports, containsForwardDecls);
+    scopeMap.set('exports', refsToArray(exports, containsForwardDecls));
   }
 
-  if (Object.keys(scopeMap).length === 0) {
+  if (Object.keys(scopeMap.values).length === 0) {
     return null;
   }
 
   // setNgModuleScope(...)
   const fnCall = new o.InvokeFunctionExpr(
       /* fn */ o.importExpr(R3.setNgModuleScope),
-      /* args */[moduleType, mapToMapExpression(scopeMap)]);
+      /* args */[moduleType, scopeMap.toLiteralMap()]);
 
   // (ngJitMode guard) && setNgModuleScope(...)
   const guardedCall = jitOnlyGuardedExpression(fnCall);
@@ -229,18 +256,18 @@ export interface R3InjectorMetadata {
 }
 
 export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
-  const definitionMap: Record<string, o.Expression> = {};
+  const definitionMap = new DefinitionMap<{providers: o.Expression, imports: o.Expression}>();
 
   if (meta.providers !== null) {
-    definitionMap.providers = meta.providers;
+    definitionMap.set('providers', meta.providers);
   }
 
   if (meta.imports.length > 0) {
-    definitionMap.imports = o.literalArr(meta.imports);
+    definitionMap.set('imports', o.literalArr(meta.imports));
   }
 
   const expression =
-      o.importExpr(R3.defineInjector).callFn([mapToMapExpression(definitionMap)], undefined, true);
+      o.importExpr(R3.defineInjector).callFn([definitionMap.toLiteralMap()], undefined, true);
   const type =
       new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type.type)]));
   return {expression, type};

@@ -9,7 +9,8 @@
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
 import {compileFactoryFunction, R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata, R3FactoryTarget} from './render3/r3_factory';
-import {mapToMapExpression, R3Reference, typeWithParameters} from './render3/util';
+import {R3Reference, typeWithParameters} from './render3/util';
+import {DefinitionMap} from './render3/view/util';
 
 export interface InjectableDef {
   expression: o.Expression;
@@ -106,15 +107,18 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
 
   const token = meta.internalType;
 
-  const injectableProps: {[key: string]: o.Expression} = {token, factory: result.factory};
+  const injectableProps =
+      new DefinitionMap<{token: o.Expression, factory: o.Expression, providedIn: o.Expression}>();
+  injectableProps.set('token', token);
+  injectableProps.set('factory', result.factory);
 
   // Only generate providedIn property if it has a non-null value
   if ((meta.providedIn as o.LiteralExpr).value !== null) {
-    injectableProps.providedIn = meta.providedIn;
+    injectableProps.set('providedIn', meta.providedIn);
   }
 
   const expression = o.importExpr(Identifiers.ɵɵdefineInjectable)
-                         .callFn([mapToMapExpression(injectableProps)], undefined, true);
+                         .callFn([injectableProps.toLiteralMap()], undefined, true);
   const type = new o.ExpressionType(o.importExpr(
       Identifiers.InjectableDef, [typeWithParameters(meta.type.type, meta.typeArgumentCount)]));
 
