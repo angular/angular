@@ -10,7 +10,8 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config
 import * as o from '../../output/output_ast';
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '../../parse_util';
 import {Identifiers as R3} from '../r3_identifiers';
-import {DeclarationListEmitMode, R3ComponentDef, R3ComponentMetadata, R3UsedDirectiveMetadata} from '../view/api';
+import {R3CompiledExpression} from '../util';
+import {DeclarationListEmitMode, R3ComponentMetadata, R3UsedDirectiveMetadata} from '../view/api';
 import {createComponentType} from '../view/compiler';
 import {ParsedTemplate} from '../view/template';
 import {DefinitionMap} from '../view/util';
@@ -24,13 +25,13 @@ import {toOptionalLiteralArray} from './util';
  * Compile a component declaration defined by the `R3ComponentMetadata`.
  */
 export function compileDeclareComponentFromMetadata(
-    meta: R3ComponentMetadata, template: ParsedTemplate): R3ComponentDef {
+    meta: R3ComponentMetadata, template: ParsedTemplate): R3CompiledExpression {
   const definitionMap = createComponentDefinitionMap(meta, template);
 
   const expression = o.importExpr(R3.declareComponent).callFn([definitionMap.toLiteralMap()]);
   const type = createComponentType(meta);
 
-  return {expression, type};
+  return {expression, type, statements: []};
 }
 
 /**

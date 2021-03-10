@@ -6,12 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, getSafePropertyAccessString, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DependencyMetadata, R3DirectiveDef, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, R3ResolvedDependencyType, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, getSafePropertyAccessString, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3CompiledExpression, R3DependencyMetadata, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, R3ResolvedDependencyType, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import {emitDistinctChangesOnlyDefaultValue} from '@angular/compiler/src/core';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {absoluteFromSourceFile} from '../../file_system';
 import {DefaultImportRecorder, Reference} from '../../imports';
 import {areTypeParametersEqual, extractSemanticTypeParameters, isArrayEqual, isSetEqual, isSymbolEqual, SemanticDepGraphUpdater, SemanticSymbol, SemanticTypeParameter} from '../../incremental/semantic_graph';
 import {BindingPropertyName, ClassPropertyMapping, ClassPropertyName, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, TemplateGuardMeta} from '../../metadata';
@@ -313,7 +312,7 @@ export class DirectiveDecoratorHandler implements
 
   private compileDirective(
       analysis: Readonly<DirectiveHandlerData>,
-      {expression: initializer, type}: R3DirectiveDef): CompileResult[] {
+      {expression: initializer, statements, type}: R3CompiledExpression): CompileResult[] {
     const factoryRes = compileNgFactoryDefField({
       ...analysis.meta,
       injectFn: Identifiers.directiveInject,
@@ -326,7 +325,7 @@ export class DirectiveDecoratorHandler implements
       factoryRes, {
         name: 'ɵdir',
         initializer,
-        statements: [],
+        statements,
         type,
       }
     ];

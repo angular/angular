@@ -8,7 +8,7 @@
 import * as o from '../../output/output_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {createPipeType, R3PipeMetadata} from '../r3_pipe_compiler';
-import {R3PipeDef} from '../view/api';
+import {R3CompiledExpression} from '../util';
 import {DefinitionMap} from '../view/util';
 import {R3DeclarePipeMetadata} from './api';
 
@@ -16,13 +16,13 @@ import {R3DeclarePipeMetadata} from './api';
 /**
  * Compile a Pipe declaration defined by the `R3PipeMetadata`.
  */
-export function compileDeclarePipeFromMetadata(meta: R3PipeMetadata): R3PipeDef {
+export function compileDeclarePipeFromMetadata(meta: R3PipeMetadata): R3CompiledExpression {
   const definitionMap = createPipeDefinitionMap(meta);
 
   const expression = o.importExpr(R3.declarePipe).callFn([definitionMap.toLiteralMap()]);
   const type = createPipeType(meta);
 
-  return {expression, type};
+  return {expression, type, statements: []};
 }
 
 /**

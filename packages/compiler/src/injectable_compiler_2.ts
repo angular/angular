@@ -32,7 +32,7 @@ export interface R3InjectableMetadata {
 }
 
 export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
-  let result: {factory: o.Expression, statements: o.Statement[]}|null = null;
+  let result: {expression: o.Expression, statements: o.Statement[]}|null = null;
 
   const factoryMeta: R3FactoryMetadata = {
     name: meta.name,
@@ -83,7 +83,7 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
     } else {
       result = {
         statements: [],
-        factory: o.fn([], [new o.ReturnStatement(meta.useFactory.callFn([]))])
+        expression: o.fn([], [new o.ReturnStatement(meta.useFactory.callFn([]))])
       };
     }
   } else if (meta.useValue !== undefined) {
@@ -110,7 +110,7 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
   const injectableProps =
       new DefinitionMap<{token: o.Expression, factory: o.Expression, providedIn: o.Expression}>();
   injectableProps.set('token', token);
-  injectableProps.set('factory', result.factory);
+  injectableProps.set('factory', result.expression);
 
   // Only generate providedIn property if it has a non-null value
   if ((meta.providedIn as o.LiteralExpr).value !== null) {
@@ -135,7 +135,7 @@ function delegateToFactory(type: o.WrappedNodeExpr<any>, internalType: o.Wrapped
     // If types are the same, we can generate `factory: type.ɵfac`
     // If types are different, we have to generate a wrapper function to ensure
     // the internal type has been resolved (`factory: function(t) { return type.ɵfac(t); }`)
-    factory: type.node === internalType.node ?
+    expression: type.node === internalType.node ?
         internalType.prop('ɵfac') :
         o.fn([new o.FnParam('t', o.DYNAMIC_TYPE)], [new o.ReturnStatement(internalType.callMethod(
                                                        'ɵfac', [o.variable('t')]))])

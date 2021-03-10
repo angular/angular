@@ -9,14 +9,8 @@
 import * as o from '../output/output_ast';
 
 import {Identifiers as R3} from './r3_identifiers';
-import {jitOnlyGuardedExpression, R3Reference} from './util';
+import {jitOnlyGuardedExpression, R3CompiledExpression, R3Reference} from './util';
 import {DefinitionMap} from './view/util';
-
-export interface R3NgModuleDef {
-  expression: o.Expression;
-  type: o.Type;
-  additionalStatements: o.Statement[];
-}
 
 /**
  * Metadata required by the module compiler to generate a module def (`ɵmod`) for a type.
@@ -126,7 +120,7 @@ interface R3NgModuleDefMap {
 /**
  * Construct an `R3NgModuleDef` for the given `R3NgModuleMetadata`.
  */
-export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
+export function compileNgModule(meta: R3NgModuleMetadata): R3CompiledExpression {
   const {
     internalType,
     type: moduleType,
@@ -140,7 +134,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
     id
   } = meta;
 
-  const additionalStatements: o.Statement[] = [];
+  const statements: o.Statement[] = [];
   const definitionMap = new DefinitionMap<R3NgModuleDefMap>();
   definitionMap.set('type', internalType);
 
@@ -170,7 +164,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
   else {
     const setNgModuleScopeCall = generateSetNgModuleScopeCall(meta);
     if (setNgModuleScopeCall !== null) {
-      additionalStatements.push(setNgModuleScopeCall);
+      statements.push(setNgModuleScopeCall);
     }
   }
 
@@ -190,7 +184,7 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
   ]));
 
 
-  return {expression, type, additionalStatements};
+  return {expression, type, statements};
 }
 
 /**
@@ -242,11 +236,6 @@ function generateSetNgModuleScopeCall(meta: R3NgModuleMetadata): o.Statement|nul
   return iifeCall.toStmt();
 }
 
-export interface R3InjectorDef {
-  expression: o.Expression;
-  type: o.Type;
-}
-
 export interface R3InjectorMetadata {
   name: string;
   type: R3Reference;
@@ -255,7 +244,7 @@ export interface R3InjectorMetadata {
   imports: o.Expression[];
 }
 
-export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
+export function compileInjector(meta: R3InjectorMetadata): R3CompiledExpression {
   const definitionMap = new DefinitionMap<{providers: o.Expression, imports: o.Expression}>();
 
   if (meta.providers !== null) {
@@ -270,7 +259,7 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
       o.importExpr(R3.defineInjector).callFn([definitionMap.toLiteralMap()], undefined, true);
   const type =
       new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type.type)]));
-  return {expression, type};
+  return {expression, type, statements: []};
 }
 
 function tupleTypeOf(exp: R3Reference[]): o.Type {

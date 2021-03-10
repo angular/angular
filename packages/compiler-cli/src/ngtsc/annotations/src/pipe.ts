@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDeclarePipeFromMetadata, compilePipeFromMetadata, Identifiers, R3FactoryTarget, R3PipeDef, R3PipeMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclarePipeFromMetadata, compilePipeFromMetadata, Identifiers, R3CompiledExpression, R3FactoryTarget, R3PipeMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -170,7 +170,7 @@ export class PipeDecoratorHandler implements
     return this.compilePipe(analysis, res);
   }
 
-  private compilePipe(analysis: Readonly<PipeHandlerData>, def: R3PipeDef) {
+  private compilePipe(analysis: Readonly<PipeHandlerData>, def: R3CompiledExpression) {
     const factoryRes = compileNgFactoryDefField({
       ...analysis.meta,
       injectFn: Identifiers.directiveInject,
@@ -183,7 +183,7 @@ export class PipeDecoratorHandler implements
       factoryRes, {
         name: 'ɵpipe',
         initializer: def.expression,
-        statements: [],
+        statements: def.statements,
         type: def.type,
       }
     ];

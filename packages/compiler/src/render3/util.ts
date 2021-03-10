@@ -25,6 +25,15 @@ export interface R3Reference {
   type: o.Expression;
 }
 
+/**
+ * Result of compilation of a render3 code unit, e.g. component, directive, pipe, etc.
+ */
+export interface R3CompiledExpression {
+  expression: o.Expression;
+  type: o.Type;
+  statements: o.Statement[];
+}
+
 const ANIMATE_SYMBOL_PREFIX = '@';
 export function prepareSyntheticPropertyName(name: string) {
   return `${ANIMATE_SYMBOL_PREFIX}${name}`;
