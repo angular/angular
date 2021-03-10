@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 
 import {
   FlamegraphNode,
@@ -45,7 +45,7 @@ export class FlamegraphVisualizerComponent implements OnInit, OnDestroy {
     this._selectFrame();
   }
 
-  constructor(public themeService: ThemeService, private _el: ElementRef) {}
+  constructor(public themeService: ThemeService) {}
 
   ngOnInit(): void {
     this._currentThemeSubscription = this.themeService.currentTheme.subscribe((theme) => {
@@ -68,10 +68,6 @@ export class FlamegraphVisualizerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this._currentThemeSubscription.unsubscribe();
-  }
-
-  get availableWidth(): number {
-    return this._el.nativeElement.querySelector('.level-profile-wrapper').offsetWidth;
   }
 
   selectFrame(frame: RawData): void {
