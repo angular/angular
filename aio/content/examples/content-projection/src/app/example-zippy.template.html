@@ -1,0 +1,8 @@
+<ng-content></ng-content>
+<!-- #docregion ngif -->
+<div *ngIf="expanded" [id]="contentId">
+    <!-- #docregion ng-container -->
+    <ng-container [ngTemplateOutlet]="content.templateRef"> </ng-container>
+    <!-- #enddocregion ng-container-->
+</div>
+<!-- #enddocregion ngif -->
