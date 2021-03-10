@@ -13,6 +13,7 @@
           "/assets/js/*.js",
           "/*.css",
           "/*.js",
+          "!/assets/js/es.reflect.construct.js",
           "!/assets/js/native-shim.js",
           "!/*-es5*.js"
         ],
@@ -40,6 +41,7 @@
       "resources": {
         "files": [
           "/assets/images/favicons/**",
+          "/assets/js/es.reflect.construct.js",
           "/assets/js/native-shim.js",
           "/*-es5*.js",
           "!/**/_unused/**"
