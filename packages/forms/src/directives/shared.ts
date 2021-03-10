@@ -11,18 +11,12 @@ import {getControlAsyncValidators, getControlValidators, mergeValidators} from '
 
 import {AbstractControlDirective} from './abstract_control_directive';
 import {AbstractFormGroupDirective} from './abstract_form_group_directive';
-import {CheckboxControlValueAccessor} from './checkbox_value_accessor';
 import {ControlContainer} from './control_container';
-import {ControlValueAccessor} from './control_value_accessor';
+import {BuiltInControlValueAccessor, ControlValueAccessor} from './control_value_accessor';
 import {DefaultValueAccessor} from './default_value_accessor';
 import {NgControl} from './ng_control';
-import {NumberValueAccessor} from './number_value_accessor';
-import {RadioControlValueAccessor} from './radio_control_value_accessor';
-import {RangeValueAccessor} from './range_value_accessor';
 import {FormArrayName} from './reactive_directives/form_group_name';
 import {ReactiveErrors} from './reactive_errors';
-import {SelectControlValueAccessor} from './select_control_value_accessor';
-import {SelectMultipleControlValueAccessor} from './select_multiple_control_value_accessor';
 import {AsyncValidatorFn, Validator, ValidatorFn} from './validators';
 
 
@@ -309,17 +303,10 @@ export function isPropertyUpdated(changes: {[key: string]: any}, viewModel: any)
   return !Object.is(viewModel, change.currentValue);
 }
 
-const BUILTIN_ACCESSORS = [
-  CheckboxControlValueAccessor,
-  RangeValueAccessor,
-  NumberValueAccessor,
-  SelectControlValueAccessor,
-  SelectMultipleControlValueAccessor,
-  RadioControlValueAccessor,
-];
-
 export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean {
-  return BUILTIN_ACCESSORS.some(a => valueAccessor.constructor === a);
+  // Check if a given value accessor is an instance of a class that directly extends
+  // `BuiltInControlValueAccessor` one.
+  return Object.getPrototypeOf(valueAccessor.constructor) === BuiltInControlValueAccessor;
 }
 
 export function syncPendingControls(form: FormGroup, directives: NgControl[]): void {

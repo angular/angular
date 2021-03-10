@@ -8,7 +8,7 @@
 
 import {Directive, ElementRef, forwardRef, Renderer2} from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const NUMBER_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -46,7 +46,8 @@ export const NUMBER_VALUE_ACCESSOR: any = {
   host: {'(input)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [NUMBER_VALUE_ACCESSOR]
 })
-export class NumberValueAccessor implements ControlValueAccessor {
+export class NumberValueAccessor extends BuiltInControlValueAccessor implements
+    ControlValueAccessor {
   /**
    * The registered callback function called when a change or input event occurs on the input
    * element.
@@ -60,7 +61,9 @@ export class NumberValueAccessor implements ControlValueAccessor {
    */
   onTouched = () => {};
 
-  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
+  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {
+    super();
+  }
 
   /**
    * Sets the "value" property on the input element.
