@@ -136,6 +136,11 @@
               "tooltip": "Introductory guide to sharing data between parent and child directives or components."
             },
             {
+              "url": "guide/content-projection",
+              "title": "Content Projection",
+              "tooltip": "Learn how to create reusable components using Angular's content projection feature."
+            },
+            {
               "url": "guide/dynamic-component-loader",
               "title": "Dynamic Components",
               "tooltip": "Load components dynamically."
