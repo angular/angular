@@ -25,7 +25,7 @@ import {MatChipTextControl} from './chip-text-control';
 
 /** Represents an input event on a `matChipInput`. */
 export interface MatChipInputEvent {
-  /** 
+  /**
    * The native `<input>` element that the event is being fired for.
    * @deprecated Use `MatChipInputEvent#chipInput.inputElement` instead.
    * @breaking-change 13.0.0 This property will be removed.
@@ -34,9 +34,9 @@ export interface MatChipInputEvent {
 
   /** The value of the input. */
   value: string;
-  
-  /** 
-   * Reference to the chip input that emitted the event. 
+
+  /**
+   * Reference to the chip input that emitted the event.
    * @breaking-change 13.0.0 This property will be made required.
    */
   chipInput?: MatChipInput;
