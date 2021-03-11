@@ -37,7 +37,7 @@
     .mat-mdc-checkbox-ripple {
       @include ripple.theme((
           foreground: (
-              base: mdc-theme-prop-value($mdcColor)
+              base: mdc-theme-color.prop-value($mdcColor)
           ),
       ));
     }
@@ -74,12 +74,12 @@
       @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
       @include ripple.theme((
         foreground: (
-          base: mdc-theme-prop-value(on-surface)
+          base: mdc-theme-color.prop-value(on-surface)
         ),
       ));
 
       .mdc-checkbox__ripple {
-        background: mdc-theme-prop-value(on-surface);
+        background: mdc-theme-color.prop-value(on-surface);
       }
 
       // MDC's checkbox doesn't support a `color` property. We add support for it by adding a CSS
