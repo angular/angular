@@ -13,8 +13,6 @@
           "/assets/js/*.js",
           "/*.css",
           "/*.js",
-          "!/assets/js/es.reflect.construct.js",
-          "!/assets/js/native-shim.js",
           "!/*-es5*.js"
         ],
         "urls": [
@@ -41,8 +39,7 @@
       "resources": {
         "files": [
           "/assets/images/favicons/**",
-          "/assets/js/es.reflect.construct.js",
-          "/assets/js/native-shim.js",
+          "/generated/js/custom-elements-es5-polyfills.js",
           "/*-es5*.js",
           "!/**/_unused/**"
         ]
