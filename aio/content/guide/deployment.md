@@ -19,7 +19,7 @@ Both `ng build` and `ng serve` clear the output folder before they build the pro
 
 <div class="alert is-helpful">
 
-Any full or incremental re-build (with Angular CLI using Webpack 4) means that all project assets are re-processed and copied into the output folder again regardless of whether they have changed or not.
+Any full or incremental re-build (using Angular CLI and Webpack 4 internally) means that all project assets are re-processed and copied into the output folder again regardless of whether they have changed or not.
 
 </div>
 
