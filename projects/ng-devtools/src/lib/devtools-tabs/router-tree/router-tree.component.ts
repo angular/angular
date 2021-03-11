@@ -1,5 +1,5 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
-import { MessageBus, Events } from 'protocol';
+import { Component, ViewChild, ElementRef, AfterViewInit, Input } from '@angular/core';
+import { MessageBus, Events, Route } from 'protocol';
 import * as d3 from 'd3';
 
 @Component({
@@ -7,29 +7,27 @@ import * as d3 from 'd3';
   templateUrl: './router-tree.component.html',
   styleUrls: ['./router-tree.component.scss'],
 })
-export class RouterTreeComponent implements OnInit, AfterViewInit {
+export class RouterTreeComponent implements AfterViewInit {
   @ViewChild('svgContainer', { static: true }) private svgContainer: ElementRef;
   @ViewChild('mainGroup', { static: true }) private g: ElementRef;
 
-  routes: any[] = [];
+  @Input() set routes(routes: Route[]) {
+    this._routes = routes;
+    this.render();
+  }
+
+  private _routes: Route[] = [];
   private tree: d3.TreeLayout<{}>;
   private tooltip: any;
 
   constructor(private _messageBus: MessageBus<Events>) {}
-
-  ngOnInit(): void {
-    this._messageBus.on('updateRouterTree', (routes) => {
-      this.routes = routes || [];
-      this.render();
-    });
-  }
 
   ngAfterViewInit(): void {
     this._messageBus.emit('getRoutes');
   }
 
   render(): void {
-    if (this.routes.length === 0 || !this.g) {
+    if (this._routes.length === 0 || !this.g) {
       return;
     }
 
@@ -48,7 +46,7 @@ export class RouterTreeComponent implements OnInit, AfterViewInit {
     // Compute the new tree layout.
     this.tree.nodeSize([75, 200]);
 
-    const root: any = this.routes[0];
+    const root: any = this._routes[0];
 
     const nodes = this.tree(
       d3.hierarchy(root.children.length === 0 || root.children.length > 1 ? root : root.children[0], (d) => d.children)
