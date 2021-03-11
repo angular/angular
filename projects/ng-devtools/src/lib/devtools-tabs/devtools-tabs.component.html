@@ -34,7 +34,7 @@
     (toggleInspector)="toggleInspector()"
   ></ng-directive-explorer>
   <ng-profiler [ngClass]="{ hidden: activeTab !== 'Profiler' }"></ng-profiler>
-  <ng-router-tree #routerTree [ngClass]="{ hidden: activeTab !== 'Router Tree' }"></ng-router-tree>
+  <ng-router-tree [routes]="routes" [ngClass]="{ hidden: activeTab !== 'Router Tree' }"></ng-router-tree>
 </div>
 
 <mat-menu #menu="matMenu" class="options-menu">
