@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileDirectiveFromMetadata, ConstantPool, makeBindingParser, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata, R3Reference} from '@angular/compiler';
+import {compileDirectiveFromMetadata, ConstantPool, makeBindingParser, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
@@ -14,6 +14,7 @@ import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
 import {PartialLinker} from './partial_linker';
+import {wrapReference} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareDirective()` call expressions.
@@ -152,10 +153,6 @@ function toQueryMetadata<TExpression>(obj: AstObject<R3DeclareQueryMetadata, TEx
     read: obj.has('read') ? obj.getOpaque('read') : null,
     static: obj.has('static') ? obj.getBoolean('static') : false,
   };
-}
-
-function wrapReference<TExpression>(wrapped: o.WrappedNodeExpr<TExpression>): R3Reference {
-  return {value: wrapped, type: wrapped};
 }
 
 export function createSourceSpan(range: Range, code: string, sourceUrl: string): ParseSourceSpan {
