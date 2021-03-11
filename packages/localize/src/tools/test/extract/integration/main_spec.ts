@@ -399,7 +399,8 @@ runInNativeFileSystem(() => {
              // These source file paths are due to how Bazel TypeScript compilation source-maps
              // work
              `          <context context-type="sourcefile">../packages/localize/src/tools/test/extract/integration/test_files/src/a.ts</context>`,
-             `          <context context-type="linenumber">3</context>`,
+             `          <context context-type="linenumber">3,${
+                 target === 'es2015' ? 7 : 5}</context>`,
              `        </context-group>`,
              `      </trans-unit>`,
              `      <trans-unit id="7829869508202074508" datatype="html">`,
