@@ -20,6 +20,11 @@ export interface R3PartialDeclaration {
    * to all Angular exports, including Ivy instructions.
    */
   ngImport: o.Expression;
+
+  /**
+   * Reference to the decorated class, which is subject to this partial declaration.
+   */
+  type: o.Expression;
 }
 
 /**
@@ -33,11 +38,6 @@ export interface R3DeclareDirectiveMetadata extends R3PartialDeclaration {
    * Unparsed selector of the directive.
    */
   selector?: string;
-
-  /**
-   * Reference to the directive class itself.
-   */
-  type: o.Expression;
 
   /**
    * A mapping of inputs from class property names to binding property names, or to a tuple of
@@ -268,11 +268,6 @@ export interface R3DeclareQueryMetadata {
  * enforced during linking.
  */
 export interface R3DeclarePipeMetadata extends R3PartialDeclaration {
-  /**
-   * Reference to the pipe class itself.
-   */
-  type: o.Expression;
-
   /**
    * The name to use in templates to refer to this pipe.
    */
