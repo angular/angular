@@ -823,6 +823,14 @@
     "groups": ["Angular"],
     "lead": "juleskremer"
   },
+  "stevermeister": {
+    "name": "Stepan Suvorov",
+    "picture": "stevermeister.jpg",
+    "twitter": "stevermeister",
+    "website": "https://stepansuvorov.com/blog/",
+    "bio": "Stepan is a CTO at Studytube, organizer of Angular Kharkiv(Ukraine), co-organizer Dutch Angular Group, teacher at javascript.info, creator of Angular Pro screencast (angular.ninja)",
+    "groups": ["GDE"]
+  },
   "tchatel": {
     "name": "Thierry Chatel",
     "picture": "thierrychatel.jpg",
