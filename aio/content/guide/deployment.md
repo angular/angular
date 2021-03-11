@@ -19,6 +19,12 @@ Both `ng build` and `ng serve` clear the output folder before they build the pro
 
 <div class="alert is-helpful">
 
+Any full or incremental re-build (with Angular CLI using Webpack 4) means that all project assets are re-processed and copied into the output folder again regardless of whether they have changed or not.
+
+</div>
+
+<div class="alert is-helpful">
+
 The output folder is  `dist/project-name/` by default.
 To output to a different folder, change the `outputPath` in `angular.json`.
 
