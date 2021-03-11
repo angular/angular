@@ -430,6 +430,11 @@ If you rely on the behavior that the same object instance should cause change de
 - Clone the resulting value so that it has a new identity.
 - Explicitly call [`ChangeDetectorRef.detectChanges()`](api/core/ChangeDetectorRef#detectchanges) to force the update.
 
+### Internet Explorer 11
+Angular support for Microsoft's Internet Explorer 11 (IE11) is deprecated. Maintaining support for IE11 incurs ongoing costs, including increased bundle size, code complexity, and test load. Global usage of IE11 has fallen to a point where these costs no longer warrant the additional maintenance effort. Ending IE11 support additionally allows Angular to take advantage of platform APIs present only in evergreen browsers.
+
+Microsoft announced that its 365 services will no longer support IE11 starting August 17, 2021. Microsoft previously ended support for IE11 in Microsoft Teams on November 30, 2020. For more information, see [Microsoft 365 apps say farewell to Internet Explorer 11](https://techcommunity.microsoft.com/t5/microsoft-365-blog/microsoft-365-apps-say-farewell-to-internet-explorer-11-and/ba-p/1591666).
+
 {@a deprecated-cli-flags}
 ## Deprecated CLI APIs and Options
 

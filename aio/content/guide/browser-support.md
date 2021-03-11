@@ -53,7 +53,8 @@ Angular supports most recent browsers. This includes the following specific vers
       IE
     </td>
     <td>
-      <div>11</div>
+      <div>11<br>
+      <em>*deprecated, see the <a href="guide/deprecations#internet-explorer-11">deprecations guide</a></em></div>
     </td>
   </tr>
  <tr>
