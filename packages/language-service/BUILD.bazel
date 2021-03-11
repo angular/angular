@@ -8,6 +8,7 @@ ts_library(
         "api.ts",
         "index.ts",
     ],
+    prodmode_module = "commonjs",
     deps = [
         "@npm//@types/node",
         "@npm//typescript",
