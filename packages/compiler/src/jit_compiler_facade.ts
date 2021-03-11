@@ -20,7 +20,7 @@ import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget, R3Resolve
 import {R3JitReflector} from './render3/r3_jit';
 import {compileInjector, compileNgModule, R3InjectorMetadata, R3NgModuleMetadata} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
-import {getSafePropertyAccessString, R3Reference} from './render3/util';
+import {getSafePropertyAccessString, wrapReference} from './render3/util';
 import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3UsedDirectiveMetadata} from './render3/view/api';
 import {compileComponentFromMetadata, compileDirectiveFromMetadata, ParsedHostBindings, parseHostBindings, verifyHostBindings} from './render3/view/compiler';
 import {makeBindingParser, parseTemplate} from './render3/view/template';
@@ -238,11 +238,6 @@ const USE_CLASS = Object.keys({useClass: null})[0];
 const USE_FACTORY = Object.keys({useFactory: null})[0];
 const USE_VALUE = Object.keys({useValue: null})[0];
 const USE_EXISTING = Object.keys({useExisting: null})[0];
-
-const wrapReference = function(value: any): R3Reference {
-  const wrapped = new WrappedNodeExpr(value);
-  return {value: wrapped, type: wrapped};
-};
 
 function convertToR3QueryMetadata(facade: R3QueryMetadataFacade): R3QueryMetadata {
   return {

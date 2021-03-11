@@ -5,13 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compilePipeFromMetadata, ConstantPool, R3DeclarePipeMetadata, R3PartialDeclaration, R3PipeMetadata, R3Reference} from '@angular/compiler';
+import {compilePipeFromMetadata, ConstantPool, R3DeclarePipeMetadata, R3PartialDeclaration, R3PipeMetadata} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
 
 import {AstObject} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
 import {PartialLinker} from './partial_linker';
+import {wrapReference} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclarePipe()` call expressions.
@@ -51,8 +52,4 @@ export function toR3PipeMeta<TExpression>(metaObj: AstObject<R3DeclarePipeMetada
     pipeName: metaObj.getString('name'),
     pure,
   };
-}
-
-function wrapReference<TExpression>(wrapped: o.WrappedNodeExpr<TExpression>): R3Reference {
-  return {value: wrapped, type: wrapped};
 }
