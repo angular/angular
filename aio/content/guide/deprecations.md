@@ -430,6 +430,14 @@ If you rely on the behavior that the same object instance should cause change de
 - Clone the resulting value so that it has a new identity.
 - Explicitly call [`ChangeDetectorRef.detectChanges()`](api/core/ChangeDetectorRef#detectchanges) to force the update.
 
+### Internet Explorer 11
+Support for IE 11 has been deprecated and will be dropped in a future version. Supporting outdated browsers like this increases bundle size, code complexity, and test load, and also requires time and effort that could be spent on improvements to the framework. For example, fixing issues can be more difficult, as a straightforward fix for modern browsers could break old ones that have quirks due to not receiving updates from vendors.
+
+Microsoft announced that its 365 apps and services no longer support Internet Explorer 11 (IE 11) from August 17, 2020. Additionally, Microsoft dropped support for IE 11 from Microsoft Teams web app in November 30, 2020. 
+
+For more information, see [Microsoft 365 apps say farewell to Internet Explorer 11](https://techcommunity.microsoft.com/t5/microsoft-365-blog/microsoft-365-apps-say-farewell-to-internet-explorer-11-and/ba-p/1591666).
+
+
 {@a deprecated-cli-flags}
 ## Deprecated CLI APIs and Options
 
