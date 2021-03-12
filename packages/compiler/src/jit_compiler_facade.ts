@@ -19,7 +19,7 @@ import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
 import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget, R3ResolvedDependencyType} from './render3/r3_factory';
 import {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
 import {R3JitReflector} from './render3/r3_jit';
-import {compileNgModule, R3NgModuleMetadata} from './render3/r3_module_compiler';
+import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata} from './render3/r3_module_compiler';
 import {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
 import {getSafePropertyAccessString, R3Reference, wrapReference} from './render3/util';
 import {DeclarationListEmitMode, R3ComponentMetadata, R3DirectiveMetadata, R3HostMetadata, R3QueryMetadata, R3UsedDirectiveMetadata} from './render3/view/api';
@@ -123,9 +123,8 @@ export class CompilerFacadeImpl implements CompilerFacade {
   compileNgModuleDeclaration(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
       declaration: R3DeclareNgModuleFacade): any {
-    const meta = convertDeclareNgModuleFacadeToMetadata(declaration);
-    const res = compileNgModule(meta);
-    return this.jitExpression(res.expression, angularCoreEnv, sourceMapUrl, []);
+    const expression = compileNgModuleDeclarationExpression(declaration);
+    return this.jitExpression(expression, angularCoreEnv, sourceMapUrl, []);
   }
 
   compileDirective(
@@ -556,33 +555,6 @@ function convertDeclareInjectorFacadeToMetadata(declaration: R3DeclareInjectorFa
         declaration.imports.map(i => new WrappedNodeExpr(i)) :
         [],
   };
-}
-
-function convertDeclareNgModuleFacadeToMetadata(declaration: R3DeclareNgModuleFacade):
-    R3NgModuleMetadata {
-  return {
-    type: wrapReference(declaration.type),
-    internalType: new WrappedNodeExpr(declaration.type),
-    adjacentType: new WrappedNodeExpr(declaration.type),
-    bootstrap: wrapReferences(declaration.bootstrap),
-    declarations: wrapReferences(declaration.declarations),
-    imports: wrapReferences(declaration.imports),
-    exports: wrapReferences(declaration.exports),
-    emitInline: true,
-    containsForwardDecls: false,
-    schemas: wrapReferences(declaration.schemas),
-    id: declaration.id !== undefined ? new WrappedNodeExpr(declaration.id) : null,
-  };
-}
-
-function wrapReferences(classes: OpaqueValue[]|(() => OpaqueValue[])|undefined): R3Reference[] {
-  if (classes === undefined) {
-    return [];
-  }
-  if (classes instanceof Function) {
-    classes = classes();
-  }
-  return classes.map(wrapReference);
 }
 
 export function publishFacade(global: any) {

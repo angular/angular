@@ -7,6 +7,7 @@
  */
 
 import {NO_ERRORS_SCHEMA, ɵNgModuleDef, ɵɵngDeclareNgModule} from '@angular/core';
+import {SchemaMetadata, Type} from '@angular/core/src/core';
 
 describe('NgModule declaration jit compilation', () => {
   it('should compile a minimal NgModule declaration', () => {
@@ -21,9 +22,10 @@ describe('NgModule declaration jit compilation', () => {
   });
 
   it('should compile an NgModule declaration with forward referenced bootstrap classes', () => {
-    const def = ɵɵngDeclareNgModule({type: TestClass, bootstrap: () => [TestComponent]}) as
+    const def = ɵɵngDeclareNgModule({type: TestClass, bootstrap: () => [ForwardRef]}) as
         ɵNgModuleDef<TestClass>;
-    expectNgModuleDef(def, {bootstrap: [TestComponent]});
+    class ForwardRef {}
+    expectNgModuleDef(def, {bootstrap: [ForwardRef]});
   });
 
   it('should compile an NgModule declaration with declarations classes', () => {
@@ -80,8 +82,12 @@ class TestClass {}
 class TestComponent {}
 class TestModule {}
 
-type NgModuleDefExpectations = jasmine.Expected<
-    Pick<ɵNgModuleDef<unknown>, 'bootstrap'|'declarations'|'imports'|'exports'|'schemas'|'id'>>;
+type NgModuleDefExpectations = jasmine.Expected<{
+  schemas: SchemaMetadata[] | null; id: string | null; bootstrap: Type<unknown>[];
+  declarations: Type<unknown>[];
+  imports: Type<unknown>[];
+  exports: Type<unknown>[];
+}>;
 
 /**
  * Asserts that the provided NgModule definition is according to the provided expectation.
@@ -101,10 +107,14 @@ function expectNgModuleDef(
   };
 
   expect(actual.type).toBe(TestClass);
-  expect(actual.bootstrap).toEqual(expectation.bootstrap);
-  expect(actual.declarations).toEqual(expectation.declarations);
-  expect(actual.imports).toEqual(expectation.imports);
-  expect(actual.exports).toEqual(expectation.exports);
+  expect(unwrap(actual.bootstrap)).toEqual(expectation.bootstrap);
+  expect(unwrap(actual.declarations)).toEqual(expectation.declarations);
+  expect(unwrap(actual.imports)).toEqual(expectation.imports);
+  expect(unwrap(actual.exports)).toEqual(expectation.exports);
   expect(actual.schemas).toEqual(expectation.schemas);
   expect(actual.id).toEqual(expectation.id);
+}
+
+function unwrap(values: Type<any>[]|(() => Type<any>[])): Type<any>[] {
+  return (typeof values === 'function') ? values() : values;
 }

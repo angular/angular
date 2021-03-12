@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {R3DeclareNgModuleFacade} from '../compiler_facade_interface';
 import * as o from '../output/output_ast';
 
 import {Identifiers as R3} from './r3_identifiers';
@@ -179,6 +180,34 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3CompiledExpression 
   const type = createNgModuleType(meta);
 
   return {expression, type, statements};
+}
+
+/**
+ * This function is used in JIT mode to generate the call to `ɵɵdefineNgModule()` from a call to
+ * `ɵɵngDeclareNgModule()`.
+ */
+export function compileNgModuleDeclarationExpression(meta: R3DeclareNgModuleFacade): o.Expression {
+  const definitionMap = new DefinitionMap<R3NgModuleDefMap>();
+  definitionMap.set('type', new o.WrappedNodeExpr(meta.type));
+  if (meta.bootstrap !== undefined) {
+    definitionMap.set('bootstrap', new o.WrappedNodeExpr(meta.bootstrap));
+  }
+  if (meta.declarations !== undefined) {
+    definitionMap.set('declarations', new o.WrappedNodeExpr(meta.declarations));
+  }
+  if (meta.imports !== undefined) {
+    definitionMap.set('imports', new o.WrappedNodeExpr(meta.imports));
+  }
+  if (meta.exports !== undefined) {
+    definitionMap.set('exports', new o.WrappedNodeExpr(meta.exports));
+  }
+  if (meta.schemas !== undefined) {
+    definitionMap.set('schemas', new o.WrappedNodeExpr(meta.schemas));
+  }
+  if (meta.id !== undefined) {
+    definitionMap.set('id', new o.WrappedNodeExpr(meta.id));
+  }
+  return o.importExpr(R3.defineNgModule).callFn([definitionMap.toLiteralMap()], undefined, true);
 }
 
 export function createNgModuleType(
