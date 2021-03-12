@@ -735,6 +735,12 @@
     "name": "collectStylingFromTAttrs"
   },
   {
+    "name": "compose"
+  },
+  {
+    "name": "composeAsync"
+  },
+  {
     "name": "composeAsyncValidators"
   },
   {
@@ -1345,6 +1351,9 @@
   },
   {
     "name": "notFoundValueOrThrow"
+  },
+  {
+    "name": "nullValidator"
   },
   {
     "name": "observable"
