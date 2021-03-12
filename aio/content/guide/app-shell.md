@@ -31,12 +31,16 @@ After running this command you will notice that the `angular.json` configuration
 <code-example language="json">
 "server": {
   "builder": "@angular-devkit/build-angular:server",
+  "defaultConfiguration": "production",
   "options": {
     "outputPath": "dist/my-app/server",
     "main": "src/main.server.ts",
     "tsConfig": "tsconfig.server.json"
   },
   "configurations": {
+    "development": {
+      "outputHashing": "none",
+    },
     "production": {
       "outputHashing": "media",
       "fileReplacements": [
@@ -52,12 +56,15 @@ After running this command you will notice that the `angular.json` configuration
 },
 "app-shell": {
   "builder": "@angular-devkit/build-angular:app-shell",
+  "defaultConfiguration": "production",
   "options": {
-    "browserTarget": "my-app:build",
-    "serverTarget": "my-app:server",
     "route": "shell"
   },
   "configurations": {
+    "development": {
+      "browserTarget": "my-app:build:development",
+      "serverTarget": "my-app:server:development",
+    },
     "production": {
       "browserTarget": "my-app:build:production",
       "serverTarget": "my-app:server:production"
@@ -71,7 +78,7 @@ After running this command you will notice that the `angular.json` configuration
 Use the CLI to build the `app-shell` target.
 
 <code-example language="bash">
-ng run my-app:app-shell
+ng run my-app:app-shell:development
 </code-example>
 
 Or to use the production configuration.

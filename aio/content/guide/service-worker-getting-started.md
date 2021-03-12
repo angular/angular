@@ -32,7 +32,7 @@ The above command completes the following actions:
  Now, build the project:
 
 ```sh
-ng build --prod
+ng build
 ```
 
 The CLI project is now set up to use the Angular service worker.
@@ -130,7 +130,7 @@ next step is understanding how updates work. Let's make a change to the applicat
 6. Build and run the server again:
 
 ```sh
-ng build --prod
+ng build
 http-server -p 8080 -c-1 dist/<project-name>
 ```
 
