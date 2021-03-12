@@ -41,7 +41,7 @@ class MyAppComponent {
 })
 class MyAppModule {
     // ngtsc generates this:
-  static ɵdir = ɵɵdefineNgModule(...);
+  static ɵmod = ɵɵdefineNgModule(...);
 }
 ```
 
