@@ -37,6 +37,7 @@ import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DE
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
 import {updateTextNode} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
+import {profiler, ProfilerEvent} from '../profiler';
 import {enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
 import {isAnimationProp, mergeHostAttrs} from '../util/attrs_utils';
@@ -501,16 +502,25 @@ export function renderComponentOrTemplate<T>(
 function executeTemplate<T>(
     tView: TView, lView: LView, templateFn: ComponentTemplate<T>, rf: RenderFlags, context: T) {
   const prevSelectedIndex = getSelectedIndex();
+  const isUpdatePhase = rf & RenderFlags.Update;
   try {
     setSelectedIndex(-1);
-    if (rf & RenderFlags.Update && lView.length > HEADER_OFFSET) {
+    if (isUpdatePhase && lView.length > HEADER_OFFSET) {
       // When we're updating, inherently select 0 so we don't
       // have to generate that instruction for most update blocks.
       selectIndexInternal(tView, lView, HEADER_OFFSET, isInCheckNoChangesMode());
     }
+
+    const preHookType =
+        isUpdatePhase ? ProfilerEvent.TemplateUpdateStart : ProfilerEvent.TemplateCreateStart;
+    profiler(preHookType, context);
     templateFn(rf, context);
   } finally {
     setSelectedIndex(prevSelectedIndex);
+
+    const postHookType =
+        isUpdatePhase ? ProfilerEvent.TemplateUpdateEnd : ProfilerEvent.TemplateCreateEnd;
+    profiler(postHookType, context);
   }
 }
 
