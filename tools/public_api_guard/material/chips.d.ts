@@ -70,10 +70,11 @@ export interface MatChipEvent {
     chip: MatChip;
 }
 
-export declare class MatChipInput implements MatChipTextControl, OnChanges, OnDestroy, AfterContentInit {
+export declare class MatChipInput implements MatChipTextControl, OnChanges {
     _addOnBlur: boolean;
     _chipList: MatChipList;
     protected _elementRef: ElementRef<HTMLInputElement>;
+    protected _inputElement: HTMLInputElement;
     get addOnBlur(): boolean;
     set addOnBlur(value: boolean);
     chipEnd: EventEmitter<MatChipInputEvent>;
@@ -83,7 +84,6 @@ export declare class MatChipInput implements MatChipTextControl, OnChanges, OnDe
     get empty(): boolean;
     focused: boolean;
     id: string;
-    readonly inputElement: HTMLInputElement;
     placeholder: string;
     separatorKeyCodes: readonly number[] | ReadonlySet<number>;
     constructor(_elementRef: ElementRef<HTMLInputElement>, _defaultOptions: MatChipsDefaultOptions);
@@ -91,13 +91,9 @@ export declare class MatChipInput implements MatChipTextControl, OnChanges, OnDe
     _emitChipEnd(event?: KeyboardEvent): void;
     _focus(): void;
     _keydown(event?: KeyboardEvent): void;
-    _keyup(event: KeyboardEvent): void;
     _onInput(): void;
-    clear(): void;
     focus(options?: FocusOptions): void;
-    ngAfterContentInit(): void;
     ngOnChanges(): void;
-    ngOnDestroy(): void;
     static ngAcceptInputType_addOnBlur: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatChipInput, "input[matChipInputFor]", ["matChipInput", "matChipInputFor"], { "chipList": "matChipInputFor"; "addOnBlur": "matChipInputAddOnBlur"; "separatorKeyCodes": "matChipInputSeparatorKeyCodes"; "placeholder": "placeholder"; "id": "id"; "disabled": "disabled"; }, { "chipEnd": "matChipInputTokenEnd"; }, never>;
@@ -105,7 +101,6 @@ export declare class MatChipInput implements MatChipTextControl, OnChanges, OnDe
 }
 
 export interface MatChipInputEvent {
-    chipInput?: MatChipInput;
     input: HTMLInputElement;
     value: string;
 }

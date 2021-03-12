@@ -34,15 +34,18 @@ export class ChipsAutocompleteExample {
   }
 
   add(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
+    const input = event.input;
+    const value = event.value;
 
     // Add our fruit
-    if (value) {
-      this.fruits.push(value);
+    if ((value || '').trim()) {
+      this.fruits.push(value.trim());
     }
 
-    // Clear the input value
-    event.chipInput!.clear();
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
 
     this.fruitCtrl.setValue(null);
   }

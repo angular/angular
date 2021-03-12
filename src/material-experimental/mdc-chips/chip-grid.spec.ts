@@ -1,7 +1,6 @@
 import {animate, style, transition, trigger} from '@angular/animations';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {
-  A,
   BACKSPACE,
   DELETE,
   END,
@@ -50,6 +49,7 @@ import {
 
 
 describe('MDC-based MatChipGrid', () => {
+  let fixture: ComponentFixture<any>;
   let chipGridDebugElement: DebugElement;
   let chipGridNativeElement: HTMLElement;
   let chipGridInstance: MatChipGrid;
@@ -59,22 +59,10 @@ describe('MDC-based MatChipGrid', () => {
   let testComponent: StandardChipGrid;
   let dirChange: Subject<Direction>;
 
-  const expectNoCellFocused = () => {
-    expect(manager.activeRowIndex).toBe(-1);
-    expect(manager.activeColumnIndex).toBe(-1);
-  };
-
-  const expectLastCellFocused = () => {
-    expect(manager.activeRowIndex).toBe(chips.length - 1);
-    expect(manager.activeColumnIndex).toBe(0);
-  };
-
   describe('StandardChipGrid', () => {
     describe('basic behaviors', () => {
-      let fixture: ComponentFixture<StandardChipGrid>;
-
       beforeEach(() => {
-        fixture = setupStandardGrid();
+        setupStandardGrid();
       });
 
       it('should add the `mat-mdc-chip-set` class', () => {
@@ -120,11 +108,9 @@ describe('MDC-based MatChipGrid', () => {
     });
 
     describe('focus behaviors', () => {
-      let fixture: ComponentFixture<StandardChipGrid> |
-        ComponentFixture<StandardChipGridWithAnimations>;
-
       beforeEach(() => {
-        fixture = setupStandardGrid();
+        setupStandardGrid();
+        manager = chipGridInstance._keyManager;
       });
 
       it('should focus the first chip on focus', () => {
@@ -136,9 +122,11 @@ describe('MDC-based MatChipGrid', () => {
       });
 
       it('should watch for chip focus', () => {
-        const lastIndex = chips.length - 1;
+        let array = chips.toArray();
+        let lastIndex = array.length - 1;
+        let lastItem = array[lastIndex];
 
-        chips.last.focus();
+        lastItem.focus();
         fixture.detectChanges();
 
         expect(manager.activeRowIndex).toBe(lastIndex);
@@ -167,7 +155,8 @@ describe('MDC-based MatChipGrid', () => {
 
       describe('on chip destroy', () => {
         it('should focus the next item', () => {
-          const midItem = chips.get(2)!;
+          let array = chips.toArray();
+          let midItem = array[2];
 
           // Focus the middle item
           midItem.focus();
@@ -181,10 +170,12 @@ describe('MDC-based MatChipGrid', () => {
         });
 
         it('should focus the previous item', () => {
-          const lastIndex = chips.length - 1;
+          let array = chips.toArray();
+          let lastIndex = array.length - 1;
+          let lastItem = array[lastIndex];
 
           // Focus the last item
-          chips.last.focus();
+          lastItem.focus();
 
           // Destroy the last item
           testComponent.chips.pop();
@@ -195,7 +186,8 @@ describe('MDC-based MatChipGrid', () => {
         });
 
         it('should not focus if chip grid is not focused', fakeAsync(() => {
-          const midItem = chips.get(2)!;
+          let array = chips.toArray();
+          let midItem = array[2];
 
           // Focus and blur the middle item
           midItem.focus();
@@ -227,8 +219,14 @@ describe('MDC-based MatChipGrid', () => {
           'component with animations', fakeAsync(() => {
             fixture.destroy();
             TestBed.resetTestingModule();
-
             fixture = createComponent(StandardChipGridWithAnimations, [], BrowserAnimationsModule);
+            fixture.detectChanges();
+
+            chipGridDebugElement = fixture.debugElement.query(By.directive(MatChipGrid))!;
+            chipGridNativeElement = chipGridDebugElement.nativeElement;
+            chipGridInstance = chipGridDebugElement.componentInstance;
+            testComponent = fixture.debugElement.componentInstance;
+            chips = chipGridInstance._chips;
 
             chips.last.focus();
             fixture.detectChanges();
@@ -254,23 +252,30 @@ describe('MDC-based MatChipGrid', () => {
     });
 
     describe('keyboard behavior', () => {
-
       describe('LTR (default)', () => {
-        let fixture: ComponentFixture<ChipGridWithRemove>;
-
         beforeEach(() => {
           fixture = createComponent(ChipGridWithRemove);
+          fixture.detectChanges();
+
+          chipGridDebugElement = fixture.debugElement.query(By.directive(MatChipGrid))!;
+          chipGridInstance = chipGridDebugElement.componentInstance;
+          chipGridNativeElement = chipGridDebugElement.nativeElement;
+          chips = chipGridInstance._chips;
+          manager = chipGridInstance._keyManager;
         });
 
         it('should focus previous column when press LEFT ARROW', () => {
           let nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
           let lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
 
-          const lastRowIndex = chips.length - 1;
+          let array = chips.toArray();
+          let lastRowIndex = array.length - 1;
+          let lastChip = array[lastRowIndex];
 
           // Focus the first column of the last chip in the array
-          chips.last.focus();
-          expectLastCellFocused();
+          lastChip.focus();
+          expect(manager.activeRowIndex).toEqual(lastRowIndex);
+          expect(manager.activeColumnIndex).toEqual(0);
 
           // Press the LEFT arrow
           dispatchKeyboardEvent(lastNativeChip, 'keydown', LEFT_ARROW);
@@ -287,8 +292,11 @@ describe('MDC-based MatChipGrid', () => {
           let nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
           let firstNativeChip = nativeChips[0] as HTMLElement;
 
+          let array = chips.toArray();
+          let firstItem = array[0];
+
           // Focus the first column of the first chip in the array
-          chips.first.focus();
+          firstItem.focus();
           expect(manager.activeRowIndex).toEqual(0);
           expect(manager.activeColumnIndex).toEqual(0);
 
@@ -314,21 +322,24 @@ describe('MDC-based MatChipGrid', () => {
       });
 
       describe('RTL', () => {
-        let fixture: ComponentFixture<StandardChipGrid>;
-
         beforeEach(() => {
-          fixture = setupStandardGrid('rtl');
+          setupStandardGrid('rtl');
+          manager = chipGridInstance._keyManager;
         });
 
         it('should focus previous column when press RIGHT ARROW', () => {
           let nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
           let lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
 
-          const lastRowIndex = chips.length - 1;
+          let array = chips.toArray();
+          let lastRowIndex = array.length - 1;
+          let lastItem = array[lastRowIndex];
 
           // Focus the first column of the last chip in the array
-          chips.last.focus();
-          expectLastCellFocused();
+          lastItem.focus();
+          expect(manager.activeRowIndex).toEqual(lastRowIndex);
+          expect(manager.activeColumnIndex).toEqual(0);
+
 
           // Press the RIGHT arrow
           dispatchKeyboardEvent(lastNativeChip, 'keydown', RIGHT_ARROW);
@@ -344,10 +355,14 @@ describe('MDC-based MatChipGrid', () => {
           let nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
           let firstNativeChip = nativeChips[0] as HTMLElement;
 
+          let array = chips.toArray();
+          let firstItem = array[0];
+
           // Focus the first column of the first chip in the array
-          chips.first.focus();
+          firstItem.focus();
           expect(manager.activeRowIndex).toEqual(0);
           expect(manager.activeColumnIndex).toEqual(0);
+
 
           // Press the LEFT arrow
           dispatchKeyboardEvent(firstNativeChip, 'keydown', LEFT_ARROW);
@@ -394,110 +409,123 @@ describe('MDC-based MatChipGrid', () => {
         }));
       });
 
-      describe('keydown behavior', () => {
-        let fixture: ComponentFixture<StandardChipGrid>;
+      it('should account for the direction changing', () => {
+        setupStandardGrid();
+        manager = chipGridInstance._keyManager;
 
-        beforeEach(() => {
-          fixture = setupStandardGrid();
-        });
+        let nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
+        let firstNativeChip = nativeChips[0] as HTMLElement;
 
-        it('should account for the direction changing', () => {
-          const firstNativeChip =
-            chipGridNativeElement.querySelectorAll('mat-chip-row')[0] as HTMLElement;
+        let RIGHT_EVENT = createKeyboardEvent('keydown', RIGHT_ARROW);
+        let array = chips.toArray();
+        let firstItem = array[0];
 
-          const RIGHT_EVENT = createKeyboardEvent('keydown', RIGHT_ARROW);
+        firstItem.focus();
+        expect(manager.activeRowIndex).toBe(0);
+        expect(manager.activeColumnIndex).toBe(0);
 
-          chips.first.focus();
-          expect(manager.activeRowIndex).toBe(0);
-          expect(manager.activeColumnIndex).toBe(0);
+        dispatchEvent(firstNativeChip, RIGHT_EVENT);
+        chipGridInstance._blur();
+        fixture.detectChanges();
 
-          dispatchEvent(firstNativeChip, RIGHT_EVENT);
-          chipGridInstance._blur();
+        expect(manager.activeRowIndex).toBe(1);
+        expect(manager.activeColumnIndex).toBe(0);
+
+        dirChange.next('rtl');
+        fixture.detectChanges();
+
+        chipGridInstance._keydown(RIGHT_EVENT);
+        chipGridInstance._blur();
+        fixture.detectChanges();
+
+        expect(manager.activeRowIndex).toBe(0);
+        expect(manager.activeColumnIndex).toBe(0);
+      });
+
+      it('should move focus to the first chip when pressing HOME', () => {
+        setupStandardGrid();
+        manager = chipGridInstance._keyManager;
+
+        const nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
+        const lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
+
+        const HOME_EVENT = createKeyboardEvent('keydown', HOME);
+        const array = chips.toArray();
+        const lastItem = array[array.length - 1];
+
+        lastItem.focus();
+        expect(manager.activeRowIndex).toBe(4);
+        expect(manager.activeColumnIndex).toBe(0);
+
+        dispatchEvent(lastNativeChip, HOME_EVENT);
+        fixture.detectChanges();
+
+        expect(HOME_EVENT.defaultPrevented).toBe(true);
+        expect(manager.activeRowIndex).toBe(0);
+        expect(manager.activeColumnIndex).toBe(0);
+      });
+
+      it('should move focus to the last chip when pressing END', () => {
+        setupStandardGrid();
+        manager = chipGridInstance._keyManager;
+
+        const nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
+        const firstNativeChip = nativeChips[0] as HTMLElement;
+
+        const END_EVENT = createKeyboardEvent('keydown', END);
+        const array = chips.toArray();
+        const firstItem = array[0];
+
+        firstItem.focus();
+        expect(manager.activeRowIndex).toBe(0);
+        expect(manager.activeColumnIndex).toBe(0);
+
+        dispatchEvent(firstNativeChip, END_EVENT);
+        fixture.detectChanges();
+
+        expect(END_EVENT.defaultPrevented).toBe(true);
+        expect(manager.activeRowIndex).toBe(4);
+        expect(manager.activeColumnIndex).toBe(0);
+      });
+
+      it('should ignore all non-tab navigation keyboard events from an editing chip', () => {
+        setupStandardGrid();
+        manager = chipGridInstance._keyManager;
+        testComponent.editable = true;
+        fixture.detectChanges();
+
+        const array = chips.toArray();
+        const firstItem = array[0];
+
+        firstItem.focus();
+        dispatchKeyboardEvent(document.activeElement!, 'keydown', ENTER, 'Enter');
+        fixture.detectChanges();
+
+        const activeRowIndex = manager.activeRowIndex;
+        const activeColumnIndex = manager.activeColumnIndex;
+
+        const KEYS_TO_IGNORE = [HOME, END, LEFT_ARROW, RIGHT_ARROW];
+        for (const key of KEYS_TO_IGNORE) {
+          dispatchKeyboardEvent(document.activeElement!, 'keydown', key);
           fixture.detectChanges();
 
-          expect(manager.activeRowIndex).toBe(1);
-          expect(manager.activeColumnIndex).toBe(0);
-
-          dirChange.next('rtl');
-          fixture.detectChanges();
-
-          chipGridInstance._keydown(RIGHT_EVENT);
-          chipGridInstance._blur();
-          fixture.detectChanges();
-
-          expect(manager.activeRowIndex).toBe(0);
-          expect(manager.activeColumnIndex).toBe(0);
-        });
-
-        it('should move focus to the first chip when pressing HOME', () => {
-          const nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
-          const lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
-
-          const HOME_EVENT = createKeyboardEvent('keydown', HOME);
-          chips.last.focus();
-
-          expect(manager.activeRowIndex).toBe(4);
-          expect(manager.activeColumnIndex).toBe(0);
-
-          dispatchEvent(lastNativeChip, HOME_EVENT);
-          fixture.detectChanges();
-
-          expect(HOME_EVENT.defaultPrevented).toBe(true);
-          expect(manager.activeRowIndex).toBe(0);
-          expect(manager.activeColumnIndex).toBe(0);
-        });
-
-        it('should move focus to the last chip when pressing END', () => {
-          const nativeChips = chipGridNativeElement.querySelectorAll('mat-chip-row');
-          const firstNativeChip = nativeChips[0] as HTMLElement;
-
-          const END_EVENT = createKeyboardEvent('keydown', END);
-          chips.first.focus();
-
-          expect(manager.activeRowIndex).toBe(0);
-          expect(manager.activeColumnIndex).toBe(0);
-
-          dispatchEvent(firstNativeChip, END_EVENT);
-          fixture.detectChanges();
-
-          expect(END_EVENT.defaultPrevented).toBe(true);
-          expect(manager.activeRowIndex).toBe(4);
-          expect(manager.activeColumnIndex).toBe(0);
-        });
-
-        it('should ignore all non-tab navigation keyboard events from an editing chip', () => {
-          testComponent.editable = true;
-          fixture.detectChanges();
-
-          chips.first.focus();
-
-          dispatchKeyboardEvent(document.activeElement!, 'keydown', ENTER, 'Enter');
-          fixture.detectChanges();
-
-          const activeRowIndex = manager.activeRowIndex;
-          const activeColumnIndex = manager.activeColumnIndex;
-
-          const KEYS_TO_IGNORE = [HOME, END, LEFT_ARROW, RIGHT_ARROW];
-          for (const key of KEYS_TO_IGNORE) {
-            dispatchKeyboardEvent(document.activeElement!, 'keydown', key);
-            fixture.detectChanges();
-
-            expect(manager.activeRowIndex).toBe(activeRowIndex);
-            expect(manager.activeColumnIndex).toBe(activeColumnIndex);
-          }
-        });
+          expect(manager.activeRowIndex).toBe(activeRowIndex);
+          expect(manager.activeColumnIndex).toBe(activeColumnIndex);
+        }
       });
     });
   });
 
   describe('FormFieldChipGrid', () => {
-    let fixture: ComponentFixture<FormFieldChipGrid>;
-
     beforeEach(() => {
-      fixture = setupInputGrid();
+      setupInputGrid();
     });
 
     describe('keyboard behavior', () => {
+      beforeEach(() => {
+        manager = chipGridInstance._keyManager;
+      });
+
       it('should maintain focus if the active chip is deleted', () => {
         const secondChip = fixture.nativeElement.querySelectorAll('.mat-mdc-chip')[1];
 
@@ -513,19 +541,22 @@ describe('MDC-based MatChipGrid', () => {
       });
 
       describe('when the input has focus', () => {
+
         it('should not focus the last chip when press DELETE', () => {
           let nativeInput = fixture.nativeElement.querySelector('input');
 
           // Focus the input
           nativeInput.focus();
-          expectNoCellFocused();
+          expect(manager.activeRowIndex).toBe(-1);
+          expect(manager.activeColumnIndex).toBe(-1);
 
           // Press the DELETE key
           dispatchKeyboardEvent(nativeInput, 'keydown', DELETE);
           fixture.detectChanges();
 
           // It doesn't focus the last chip
-          expectNoCellFocused();
+          expect(manager.activeRowIndex).toEqual(-1);
+          expect(manager.activeColumnIndex).toBe(-1);
         });
 
         it('should focus the last chip when press BACKSPACE', () => {
@@ -533,14 +564,16 @@ describe('MDC-based MatChipGrid', () => {
 
           // Focus the input
           nativeInput.focus();
-          expectNoCellFocused();
+          expect(manager.activeRowIndex).toBe(-1);
+          expect(manager.activeColumnIndex).toBe(-1);
 
           // Press the BACKSPACE key
           dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
           fixture.detectChanges();
 
           // It focuses the last chip
-          expectLastCellFocused();
+          expect(manager.activeRowIndex).toEqual(chips.length - 1);
+          expect(manager.activeColumnIndex).toBe(0);
         });
       });
     });
@@ -567,45 +600,40 @@ describe('MDC-based MatChipGrid', () => {
   });
 
   describe('with chip remove', () => {
-    let fixture: ComponentFixture<ChipGridWithRemove>;
     let chipGrid: MatChipGrid;
     let chipRemoveDebugElements: DebugElement[];
 
     beforeEach(() => {
       fixture = createComponent(ChipGridWithRemove);
+      fixture.detectChanges();
 
       chipGrid = fixture.debugElement.query(By.directive(MatChipGrid))!.componentInstance;
       chipRemoveDebugElements = fixture.debugElement.queryAll(By.directive(MatChipRemove));
+      chips = chipGrid._chips;
     });
 
     it('should properly focus next item if chip is removed through click', () => {
-      chips.get(2)!.focus();
+      chips.toArray()[2].focus();
 
       // Destroy the third focused chip by dispatching a bubbling click event on the
       // associated chip remove element.
       dispatchMouseEvent(chipRemoveDebugElements[2].nativeElement, 'click');
       fixture.detectChanges();
 
-      expect(chips.get(2)!.value).not.toBe(2, 'Expected the third chip to be removed.');
+      expect(chips.toArray()[2].value).not.toBe(2, 'Expected the third chip to be removed.');
       expect(chipGrid._keyManager.activeRowIndex).toBe(2);
     });
   });
 
   describe('chip grid with chip input', () => {
-    let fixture: ComponentFixture<InputChipGrid>;
     let nativeChips: HTMLElement[];
-    let nativeInput: HTMLInputElement;
-    let nativeChipGrid: HTMLElement;
 
     beforeEach(() => {
       fixture = createComponent(InputChipGrid);
+      fixture.detectChanges();
 
       nativeChips = fixture.debugElement.queryAll(By.css('mat-chip-row'))
         .map((chip) => chip.nativeElement);
-
-      nativeChipGrid = fixture.debugElement.query(By.css('mat-chip-grid'))!.nativeElement;
-
-      nativeInput = fixture.nativeElement.querySelector('input');
     });
 
     it('should take an initial view value with reactive forms', () => {
@@ -630,6 +658,7 @@ describe('MDC-based MatChipGrid', () => {
       expect(fixture.componentInstance.control.value)
         .toEqual(null, `Expected the control's value to be empty initially.`);
 
+      const nativeInput = fixture.nativeElement.querySelector('input');
       nativeInput.focus();
 
       typeInElement(nativeInput, '123');
@@ -658,6 +687,7 @@ describe('MDC-based MatChipGrid', () => {
       expect(fixture.componentInstance.control.touched)
         .toBe(false, 'Expected the control to start off as untouched.');
 
+      const nativeChipGrid = fixture.debugElement.query(By.css('mat-chip-grid'))!.nativeElement;
       dispatchFakeEvent(nativeChipGrid, 'blur');
       tick();
 
@@ -670,6 +700,7 @@ describe('MDC-based MatChipGrid', () => {
         .toBe(false, 'Expected the control to start off as untouched.');
 
       fixture.componentInstance.control.disable();
+      const nativeChipGrid = fixture.debugElement.query(By.css('mat-chip-grid'))!.nativeElement;
       dispatchFakeEvent(nativeChipGrid, 'blur');
       tick();
 
@@ -682,6 +713,7 @@ describe('MDC-based MatChipGrid', () => {
       expect(fixture.componentInstance.control.dirty)
           .toEqual(false, `Expected control to start out pristine.`);
 
+      const nativeInput = fixture.nativeElement.querySelector('input');
       nativeInput.focus();
 
       typeInElement(nativeInput, '123');
@@ -738,6 +770,7 @@ describe('MDC-based MatChipGrid', () => {
     }));
 
     it('should keep focus on the input after adding the first chip', fakeAsync(() => {
+      const nativeInput = fixture.nativeElement.querySelector('input');
       const chipEls = Array.from<HTMLElement>(
           fixture.nativeElement.querySelectorAll('mat-chip-row')).reverse();
 
@@ -782,64 +815,16 @@ describe('MDC-based MatChipGrid', () => {
       fixture.detectChanges();
       expect(input.getAttribute('aria-invalid')).toBe('false');
     }));
-
-    describe('when the input has focus', () => {
-      beforeEach(() => {
-        nativeInput.focus();
-        expectNoCellFocused();
-      });
-
-      it('should not focus the last chip when pressing DELETE', () => {
-        dispatchKeyboardEvent(nativeInput, 'keydown', DELETE);
-        expectNoCellFocused();
-      });
-
-      it('should focus the last chip when pressing BACKSPACE when input is empty', () => {
-        dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
-        expectLastCellFocused();
-      });
-
-      it('should not focus the last chip when pressing BACKSPACE after changing input, ' +
-        'until BACKSPACE is released and pressed again', () => {
-        // Change the input
-        dispatchKeyboardEvent(nativeInput, 'keydown', A);
-
-        // It shouldn't focus until backspace is released and pressed again
-        dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
-        dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
-        dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
-        expectNoCellFocused();
-
-        // Still not focused
-        dispatchKeyboardEvent(nativeInput, 'keyup', BACKSPACE);
-        expectNoCellFocused();
-
-        // Only now should it focus the last element
-        dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
-        expectLastCellFocused();
-      });
-
-      it('should focus last chip after pressing BACKSPACE after creating a chip', () => {
-        // Create a chip
-        typeInElement(nativeInput, '123');
-        dispatchKeyboardEvent(nativeInput, 'keydown', ENTER);
-
-        expectNoCellFocused();
-
-        dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
-        expectLastCellFocused();
-      });
-    });
   });
 
   describe('error messages', () => {
-    let fixture: ComponentFixture<ChipGridWithFormErrorMessages>;
     let errorTestComponent: ChipGridWithFormErrorMessages;
     let containerEl: HTMLElement;
     let chipGridEl: HTMLElement;
 
     beforeEach(() => {
       fixture = createComponent(ChipGridWithFormErrorMessages);
+      fixture.detectChanges();
       errorTestComponent = fixture.componentInstance;
       containerEl = fixture.debugElement.query(By.css('mat-form-field'))!.nativeElement;
       chipGridEl = fixture.debugElement.query(By.css('mat-chip-grid'))!.nativeElement;
@@ -947,12 +932,9 @@ describe('MDC-based MatChipGrid', () => {
     });
   });
 
-  function createComponent<T>(
-    component: Type<T>,
-    providers: Provider[] = [],
-    animationsModule:
-      Type<NoopAnimationsModule> | Type<BrowserAnimationsModule> = NoopAnimationsModule
-  ): ComponentFixture<T> {
+  function createComponent<T>(component: Type<T>, providers: Provider[] = [], animationsModule:
+      Type<NoopAnimationsModule> | Type<BrowserAnimationsModule> = NoopAnimationsModule):
+          ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
@@ -964,15 +946,22 @@ describe('MDC-based MatChipGrid', () => {
       ],
       declarations: [component],
       providers: [
-        {
-          provide: NgZone,
-          useFactory: () => zone = new MockNgZone()
-        },
+        {provide: NgZone, useFactory: () => zone = new MockNgZone()},
         ...providers
       ]
     }).compileComponents();
 
-    const fixture = TestBed.createComponent<T>(component);
+    return TestBed.createComponent<T>(component);
+  }
+
+  function setupStandardGrid(direction: Direction = 'ltr') {
+    dirChange = new Subject();
+    fixture = createComponent(StandardChipGrid, [{
+      provide: Directionality, useFactory: () => ({
+        value: direction.toLowerCase(),
+        change: dirChange
+      })
+    }]);
     fixture.detectChanges();
 
     chipGridDebugElement = fixture.debugElement.query(By.directive(MatChipGrid))!;
@@ -980,27 +969,17 @@ describe('MDC-based MatChipGrid', () => {
     chipGridInstance = chipGridDebugElement.componentInstance;
     testComponent = fixture.debugElement.componentInstance;
     chips = chipGridInstance._chips;
-    manager = chipGridInstance._keyManager;
-
-    return fixture;
-  }
-
-  function setupStandardGrid(direction: Direction = 'ltr') {
-    dirChange = new Subject();
-
-    return createComponent(StandardChipGrid, [
-      {
-        provide: Directionality,
-        useFactory: () => ({
-          value: direction.toLowerCase(),
-          change: dirChange
-        })
-      }
-    ]);
   }
 
   function setupInputGrid() {
-    return createComponent(FormFieldChipGrid);
+    fixture = createComponent(FormFieldChipGrid);
+    fixture.detectChanges();
+
+    chipGridDebugElement = fixture.debugElement.query(By.directive(MatChipGrid))!;
+    chipGridNativeElement = chipGridDebugElement.nativeElement;
+    chipGridInstance = chipGridDebugElement.componentInstance;
+    testComponent = fixture.debugElement.componentInstance;
+    chips = chipGridInstance._chips;
   }
 });
 
@@ -1080,18 +1059,21 @@ class InputChipGrid {
   isRequired: boolean;
 
   add(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
+    let input = event.input;
+    let value = event.value;
 
     // Add our foods
-    if (value) {
+    if ((value || '').trim()) {
       this.foods.push({
-        value: `${value.toLowerCase()}-${this.foods.length}`,
-        viewValue: value,
+        value: `${value.trim().toLowerCase()}-${this.foods.length}`,
+        viewValue: value.trim()
       });
     }
 
     // Reset the input value
-    event.chipInput!.clear();
+    if (input) {
+      input.value = '';
+    }
   }
 
   remove(food: any): void {

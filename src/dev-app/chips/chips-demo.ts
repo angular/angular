@@ -11,6 +11,7 @@ import {Component} from '@angular/core';
 import {MatChipInputEvent} from '@angular/material/chips';
 import {ThemePalette} from '@angular/material/core';
 
+
 export interface Person {
   name: string;
 }
@@ -60,15 +61,17 @@ export class ChipsDemo {
   }
 
   add(event: MatChipInputEvent): void {
-    const value = (event.value || '').trim();
+    const {input, value} = event;
 
     // Add our person
-    if (value) {
-      this.people.push({ name: value });
+    if ((value || '').trim()) {
+      this.people.push({ name: value.trim() });
     }
 
-    // Clear the input value
-    event.chipInput!.clear();
+    // Reset the input value
+    if (input) {
+      input.value = '';
+    }
   }
 
   remove(person: Person): void {
