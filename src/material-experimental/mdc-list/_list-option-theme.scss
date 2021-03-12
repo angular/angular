@@ -9,11 +9,11 @@
 // default, the MDC list uses the `primary` color for list items. The MDC checkbox
 // inside list options by default uses the `primary` color too.
 @mixin private-list-option-color-override($color) {
-  & .mdc-list-item__meta, & .mdc-list-item__graphic {
+  & .mdc-deprecated-list-item__meta, & .mdc-deprecated-list-item__graphic {
     @include checkbox-theme.private-checkbox-styles-with-color($color);
   }
 
-  &.mdc-list-item--selected {
+  &.mdc-deprecated-list-item--selected {
     @include mdc-list.deprecated-item-primary-text-ink-color($color);
     @include mdc-list.deprecated-item-graphic-ink-color($color);
 
@@ -25,7 +25,7 @@
 
 @mixin private-list-option-density-styles($density-scale) {
   .mat-mdc-list-option {
-    .mdc-list-item__meta, .mdc-list-item__graphic {
+    .mdc-deprecated-list-item__meta, .mdc-deprecated-list-item__graphic {
       .mdc-checkbox {
         @include mdc-checkbox.density($density-scale, $query: mdc-helpers.$mat-base-styles-query);
       }
@@ -35,7 +35,7 @@
 
 @mixin private-list-option-typography-styles() {
   .mat-mdc-list-option {
-    .mdc-list-item__meta, .mdc-list-item__graphic {
+    .mdc-deprecated-list-item__meta, .mdc-deprecated-list-item__graphic {
       @include mdc-checkbox.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
     }
   }

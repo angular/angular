@@ -1445,7 +1445,7 @@ describe('MDC-based MatSelect', () => {
 
         option = overlayContainerElement.querySelector('mat-option') as HTMLElement;
 
-        expect(option.classList).toContain('mdc-list-item--selected');
+        expect(option.classList).toContain('mdc-deprecated-list-item--selected');
         expect(fixture.componentInstance.options.first.selected).toBe(true);
         expect(fixture.componentInstance.select.selected)
             .toBe(fixture.componentInstance.options.first);
@@ -1463,7 +1463,7 @@ describe('MDC-based MatSelect', () => {
         optionInstances[1].select();
         fixture.detectChanges();
 
-        expect(optionNodes[1].classList).toContain('mdc-list-item--selected');
+        expect(optionNodes[1].classList).toContain('mdc-deprecated-list-item--selected');
         expect(optionInstances[1].selected).toBe(true);
         expect(fixture.componentInstance.select.selected).toBe(optionInstances[1]);
       }));
@@ -1486,8 +1486,8 @@ describe('MDC-based MatSelect', () => {
 
         options =
             overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
-        expect(options[1].classList).not.toContain('mdc-list-item--selected');
-        expect(options[2].classList).not.toContain('mdc-list-item--selected');
+        expect(options[1].classList).not.toContain('mdc-deprecated-list-item--selected');
+        expect(options[2].classList).not.toContain('mdc-deprecated-list-item--selected');
 
         const optionInstances = fixture.componentInstance.options.toArray();
         expect(optionInstances[1].selected).toBe(false);
@@ -1519,10 +1519,11 @@ describe('MDC-based MatSelect', () => {
         options = overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
 
         expect(options[0].classList)
-            .not.toContain('mdc-list-item--selected',
+            .not.toContain('mdc-deprecated-list-item--selected',
                 'Expected first option to no longer be selected');
         expect(options[1].classList)
-            .toContain('mdc-list-item--selected', 'Expected second option to be selected');
+            .toContain('mdc-deprecated-list-item--selected',
+              'Expected second option to be selected');
 
         const optionInstances = fixture.componentInstance.options.toArray();
 
@@ -1626,7 +1627,7 @@ describe('MDC-based MatSelect', () => {
         fixture.detectChanges();
 
         expect(fixture.componentInstance.select.panelOpen).toBe(true);
-        expect(options[2].classList).not.toContain('mdc-list-item--selected');
+        expect(options[2].classList).not.toContain('mdc-deprecated-list-item--selected');
         expect(fixture.componentInstance.select.selected).toBeUndefined();
       }));
 
@@ -1645,7 +1646,7 @@ describe('MDC-based MatSelect', () => {
         groupFixture.detectChanges();
 
         expect(groupFixture.componentInstance.select.panelOpen).toBe(true);
-        expect(options[0].classList).not.toContain('mdc-list-item--selected');
+        expect(options[0].classList).not.toContain('mdc-deprecated-list-item--selected');
         expect(groupFixture.componentInstance.select.selected).toBeUndefined();
       }));
 
@@ -1771,7 +1772,7 @@ describe('MDC-based MatSelect', () => {
         const options =
             overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
         expect(options[1].classList)
-            .toContain('mdc-list-item--selected',
+            .toContain('mdc-deprecated-list-item--selected',
                 `Expected option with the control's initial value to be selected.`);
       }));
 
@@ -1792,7 +1793,7 @@ describe('MDC-based MatSelect', () => {
 
         const options =
             overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
-        expect(options[1].classList).toContain('mdc-list-item--selected',
+        expect(options[1].classList).toContain('mdc-deprecated-list-item--selected',
             `Expected option with the control's new value to be selected.`);
       }));
 
@@ -1832,7 +1833,7 @@ describe('MDC-based MatSelect', () => {
 
         const options =
             overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
-        expect(options[1].classList).not.toContain('mdc-list-item--selected',
+        expect(options[1].classList).not.toContain('mdc-deprecated-list-item--selected',
             `Expected option w/ the old value not to be selected.`);
       }));
 
@@ -1856,7 +1857,7 @@ describe('MDC-based MatSelect', () => {
 
         const options =
             overlayContainerElement.querySelectorAll('mat-option') as NodeListOf<HTMLElement>;
-        expect(options[1].classList).not.toContain('mdc-list-item--selected',
+        expect(options[1].classList).not.toContain('mdc-deprecated-list-item--selected',
             `Expected option w/ the old value not to be selected.`);
       }));
 
@@ -2742,7 +2743,7 @@ describe('MDC-based MatSelect', () => {
       expect(fixture.componentInstance.options.first.selected)
           .toBe(true, 'Expected first option to be selected');
       expect(overlayContainerElement.querySelectorAll('mat-option')[0].classList)
-          .toContain('mdc-list-item--selected', 'Expected first option to be selected');
+          .toContain('mdc-deprecated-list-item--selected', 'Expected first option to be selected');
     }));
   });
 
@@ -2867,7 +2868,7 @@ describe('MDC-based MatSelect', () => {
       fixture.detectChanges();
       flush();
 
-      expect(options[5].classList).not.toContain('mdc-list-item--selected');
+      expect(options[5].classList).not.toContain('mdc-deprecated-list-item--selected');
     }));
 
     it('should not reset when any other falsy option is selected', fakeAsync(() => {
@@ -2989,7 +2990,7 @@ describe('MDC-based MatSelect', () => {
 
       const option = overlayContainerElement.querySelectorAll('mat-option')[2];
 
-      expect(option.classList).toContain('mdc-list-item--selected');
+      expect(option.classList).toContain('mdc-deprecated-list-item--selected');
       expect(fixture.componentInstance.select.value).toBe('sandwich-2');
     }));
 
@@ -3035,7 +3036,7 @@ describe('MDC-based MatSelect', () => {
 
       const option = overlayContainerElement.querySelectorAll('mat-option')[1];
 
-      expect(option.classList).toContain('mdc-list-item--selected');
+      expect(option.classList).toContain('mdc-deprecated-list-item--selected');
       expect(fixture.componentInstance.select.value).toBe('pizza-1');
     }));
 
@@ -3435,8 +3436,8 @@ describe('MDC-based MatSelect', () => {
 
       const optionInstances = testInstance.options.toArray();
 
-      expect(optionNodes[0].classList).toContain('mdc-list-item--selected');
-      expect(optionNodes[5].classList).toContain('mdc-list-item--selected');
+      expect(optionNodes[0].classList).toContain('mdc-deprecated-list-item--selected');
+      expect(optionNodes[5].classList).toContain('mdc-deprecated-list-item--selected');
 
       expect(optionInstances[0].selected).toBe(true);
       expect(optionInstances[5].selected).toBe(true);
@@ -3452,13 +3453,13 @@ describe('MDC-based MatSelect', () => {
       options[0].click();
       fixture.detectChanges();
 
-      expect(options[0].classList).toContain('mdc-list-item--selected');
+      expect(options[0].classList).toContain('mdc-deprecated-list-item--selected');
 
       testInstance.control.setValue(['eggs-5']);
       fixture.detectChanges();
 
-      expect(options[0].classList).not.toContain('mdc-list-item--selected');
-      expect(options[5].classList).toContain('mdc-list-item--selected');
+      expect(options[0].classList).not.toContain('mdc-deprecated-list-item--selected');
+      expect(options[5].classList).toContain('mdc-deprecated-list-item--selected');
     }));
 
     it('should not close the panel when clicking on options', fakeAsync(() => {
@@ -3766,7 +3767,7 @@ describe('MDC-based MatSelect', () => {
       const optionNodes = Array.from(overlayContainerElement.querySelectorAll('mat-option'));
       const optionInstances = testInstance.options.toArray();
 
-      expect(optionNodes.map(node => node.classList.contains('mdc-list-item--selected')))
+      expect(optionNodes.map(node => node.classList.contains('mdc-deprecated-list-item--selected')))
         .toEqual([true, true, true, true, false, false]);
 
       expect(optionInstances.map(instance => instance.selected))
@@ -3785,7 +3786,7 @@ describe('MDC-based MatSelect', () => {
         const optionInstances = testInstance.options.toArray();
 
         expect(optionNodes.some(option => {
-          return option.classList.contains('mdc-list-item--selected');
+          return option.classList.contains('mdc-deprecated-list-item--selected');
         })).toBe(false);
         expect(optionInstances.some(option => option.selected)).toBe(false);
 
@@ -3793,7 +3794,7 @@ describe('MDC-based MatSelect', () => {
         testInstance.control.setValue(value);
         fixture.detectChanges();
 
-        expect(optionNodes[5].classList).toContain('mdc-list-item--selected');
+        expect(optionNodes[5].classList).toContain('mdc-deprecated-list-item--selected');
         expect(optionInstances[5].selected).toBe(true);
       }));
 

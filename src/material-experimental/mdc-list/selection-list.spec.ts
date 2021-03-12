@@ -205,7 +205,7 @@ describe('MDC-based MatSelectionList without forms', () => {
       dispatchMouseEvent(testListItem._hostElement, 'click');
       fixture.detectChanges();
 
-      expect(listOptions[2].nativeElement.classList.contains('mdc-list-item--selected'))
+      expect(listOptions[2].nativeElement.classList.contains('mdc-deprecated-list-item--selected'))
         .toBe(false);
     });
 
@@ -214,13 +214,13 @@ describe('MDC-based MatSelectionList without forms', () => {
       let selectList =
         selectionList.injector.get<MatSelectionList>(MatSelectionList).selectedOptions;
 
-      expect(selectList.selected.length).toBe(0);
+      expect(selectList.selected.length).toBe(0, 'before click');
       expect(listOptions[0].nativeElement.getAttribute('aria-disabled')).toBe('true');
 
       dispatchMouseEvent(testListItem._hostElement, 'click');
       fixture.detectChanges();
 
-      expect(selectList.selected.length).toBe(0);
+      expect(selectList.selected.length).toBe(0, 'after click');
     });
 
     it('should be able to un-disable disabled items', () => {
@@ -515,7 +515,7 @@ describe('MDC-based MatSelectionList without forms', () => {
     it('should disable list item ripples when the ripples on the list have been disabled',
       fakeAsync(() => {
         const rippleTarget = fixture.nativeElement
-          .querySelector('.mat-mdc-list-option:not(.mdc-list-item--disabled)');
+          .querySelector('.mat-mdc-list-option:not(.mdc-deprecated-list-item--disabled)');
         const {enterDuration, exitDuration} = defaultRippleAnimationConfig;
 
         dispatchMouseEvent(rippleTarget, 'mousedown');
@@ -630,12 +630,12 @@ describe('MDC-based MatSelectionList without forms', () => {
     });
 
     it('should apply the "mat-list-item-disabled" class properly', () => {
-      expect(listOptionEl.classList).not.toContain('mdc-list-item--disabled');
+      expect(listOptionEl.classList).not.toContain('mdc-deprecated-list-item--disabled');
 
       fixture.componentInstance.disableItem = true;
       fixture.detectChanges();
 
-      expect(listOptionEl.classList).toContain('mdc-list-item--disabled');
+      expect(listOptionEl.classList).toContain('mdc-deprecated-list-item--disabled');
     });
   });
 
@@ -715,9 +715,11 @@ describe('MDC-based MatSelectionList without forms', () => {
     }));
 
     it('should be able to customize checkbox position', () => {
-      expect(fixture.nativeElement.querySelector('.mdc-list-item__meta .mdc-checkbox'))
+      expect(fixture.nativeElement.querySelector('.mdc-deprecated-list-item__meta .mdc-checkbox'))
         .toBeTruthy('Expected checkbox to show up after content.');
-      expect(fixture.nativeElement.querySelector('.mdc-list-item__graphic .mdc-checkbox'))
+      expect(
+        fixture.nativeElement.querySelector('.mdc-deprecated-list-item__graphic .mdc-checkbox')
+      )
         .toBeFalsy('Expected no checkbox to show up before content.');
     });
   });
@@ -736,7 +738,7 @@ describe('MDC-based MatSelectionList without forms', () => {
     function expectCheckboxAtPosition(listItemElement: HTMLElement,
                               position: MatListOptionCheckboxPosition) {
       const containerSelector = position === 'before' ?
-          '.mdc-list-item__graphic' : 'mdc-list-item__meta';
+          '.mdc-deprecated-list-item__graphic' : 'mdc-deprecated-list-item__meta';
       expect(listItemElement.querySelector(`${containerSelector} .mdc-checkbox`))
           .toBeDefined(`Expected checkbox to be aligned ${position}`);
     }
@@ -765,17 +767,17 @@ describe('MDC-based MatSelectionList without forms', () => {
       const icon = listOption.querySelector('.mat-mdc-list-icon')!;
 
       expectCheckboxAtPosition(listOption, 'after');
-      expect(icon.classList).toContain('mdc-list-item__graphic');
+      expect(icon.classList).toContain('mdc-deprecated-list-item__graphic');
 
       fixture.componentInstance.checkboxPosition = 'before';
       fixture.detectChanges();
       expectCheckboxAtPosition(listOption, 'before');
-      expect(icon.classList).toContain('mdc-list-item__meta');
+      expect(icon.classList).toContain('mdc-deprecated-list-item__meta');
 
       fixture.componentInstance.checkboxPosition = 'after';
       fixture.detectChanges();
       expectCheckboxAtPosition(listOption, 'after');
-      expect(icon.classList).toContain('mdc-list-item__graphic');
+      expect(icon.classList).toContain('mdc-deprecated-list-item__graphic');
     });
 
     it('should align avatars properly together with checkbox', () => {
@@ -786,16 +788,16 @@ describe('MDC-based MatSelectionList without forms', () => {
       const avatar = listOption.querySelector('.mat-mdc-list-avatar')!;
 
       expectCheckboxAtPosition(listOption, 'after');
-      expect(avatar.classList).toContain('mdc-list-item__graphic');
+      expect(avatar.classList).toContain('mdc-deprecated-list-item__graphic');
 
       fixture.componentInstance.checkboxPosition = 'before';
       fixture.detectChanges();
-      expect(avatar.classList).toContain('mdc-list-item__meta');
+      expect(avatar.classList).toContain('mdc-deprecated-list-item__meta');
       expectCheckboxAtPosition(listOption, 'before');
 
       fixture.componentInstance.checkboxPosition = 'after';
       fixture.detectChanges();
-      expect(avatar.classList).toContain('mdc-list-item__graphic');
+      expect(avatar.classList).toContain('mdc-deprecated-list-item__graphic');
       expectCheckboxAtPosition(listOption, 'after');
     });
   });
@@ -836,16 +838,16 @@ describe('MDC-based MatSelectionList without forms', () => {
       fixture.detectChanges();
 
       expect(selectList.selected).toEqual([testListItem1]);
-      expect(listOptions[1].nativeElement.classList.contains('mdc-list-item--selected'))
+      expect(listOptions[1].nativeElement.classList.contains('mdc-deprecated-list-item--selected'))
         .toBe(true);
 
       dispatchMouseEvent(testListItem2._hostElement, 'click');
       fixture.detectChanges();
 
       expect(selectList.selected).toEqual([testListItem2]);
-      expect(listOptions[1].nativeElement.classList.contains('mdc-list-item--selected'))
+      expect(listOptions[1].nativeElement.classList.contains('mdc-deprecated-list-item--selected'))
         .toBe(false);
-      expect(listOptions[2].nativeElement.classList.contains('mdc-list-item--selected'))
+      expect(listOptions[2].nativeElement.classList.contains('mdc-deprecated-list-item--selected'))
         .toBe(true);
     });
 

@@ -29,7 +29,7 @@ describe('MDC-based MatList', () => {
     fixture.detectChanges();
     expect(listItem.nativeElement.classList.length).toBe(3);
     expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item');
-    expect(listItem.nativeElement.classList).toContain('mdc-list-item');
+    expect(listItem.nativeElement.classList).toContain('mdc-deprecated-list-item');
     expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item-single-line');
   });
 
@@ -96,7 +96,7 @@ describe('MDC-based MatList', () => {
     expect(listItem.nativeElement.classList.length).toBe(3);
     expect(listItem.nativeElement.classList).toContain('mat-mdc-2-line');
     expect(listItem.nativeElement.classList).toContain('mat-mdc-list-item');
-    expect(listItem.nativeElement.classList).toContain('mdc-list-item');
+    expect(listItem.nativeElement.classList).toContain('mdc-deprecated-list-item');
 
     fixture.debugElement.componentInstance.showThirdLine = true;
     fixture.detectChanges();
@@ -302,14 +302,14 @@ describe('MDC-based MatList', () => {
     fixture.detectChanges();
 
     expect(listItems.map(item => {
-      return item.classList.contains('mdc-list-item--disabled');
+      return item.classList.contains('mdc-deprecated-list-item--disabled');
     })).toEqual([false, false, false]);
 
     fixture.componentInstance.firstItemDisabled = true;
     fixture.detectChanges();
 
     expect(listItems.map(item => {
-      return item.classList.contains('mdc-list-item--disabled');
+      return item.classList.contains('mdc-deprecated-list-item--disabled');
     })).toEqual([true, false, false]);
   });
 
@@ -320,13 +320,13 @@ describe('MDC-based MatList', () => {
     fixture.detectChanges();
 
     expect(listItems.every(item =>
-        item.classList.contains('mdc-list-item--disabled'))).toBe(false);
+        item.classList.contains('mdc-deprecated-list-item--disabled'))).toBe(false);
 
     fixture.componentInstance.listDisabled = true;
     fixture.detectChanges();
 
     expect(listItems.every(item =>
-        item.classList.contains('mdc-list-item--disabled'))).toBe(true);
+        item.classList.contains('mdc-deprecated-list-item--disabled'))).toBe(true);
   });
 
 });

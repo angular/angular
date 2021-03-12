@@ -31,7 +31,7 @@ import {MatListBase, MatListItemBase} from './list-base';
   exportAs: 'matList',
   template: '<ng-content></ng-content>',
   host: {
-    'class': 'mat-mdc-list mat-mdc-list-base mdc-list',
+    'class': 'mat-mdc-list mat-mdc-list-base mdc-deprecated-list',
   },
   styleUrls: ['list.css'],
   encapsulation: ViewEncapsulation.None,
@@ -46,7 +46,7 @@ export class MatList extends MatListBase {}
   selector: 'mat-list-item, a[mat-list-item], button[mat-list-item]',
   exportAs: 'matListItem',
   host: {
-    'class': 'mat-mdc-list-item mdc-list-item',
+    'class': 'mat-mdc-list-item mdc-deprecated-list-item',
     '[class.mat-mdc-list-item-with-avatar]': '_hasIconOrAvatar()',
   },
   templateUrl: 'list-item.html',

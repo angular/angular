@@ -54,7 +54,7 @@ export class MatSubheaderHarness extends ComponentHarness {
 
 /** Selectors for the various list item sections that may contain user content. */
 export const enum MatListItemSection {
-  CONTENT = '.mdc-list-item__text',
+  CONTENT = '.mdc-deprecated-list-item__text',
 }
 
 /**

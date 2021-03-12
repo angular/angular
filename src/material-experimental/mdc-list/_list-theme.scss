@@ -40,9 +40,10 @@
   );
 
   // MDC list provides a mixin called `mdc-list-single-line-density`, but we cannot use
-  // that mixin, as the generated generated density styles are scoped to `.mdc-list-item`, while
-  // the styles should actually only affect single-line list items. This has been reported as
-  // a bug in the MDC repository: https://github.com/material-components/material-components-web/issues/5737.
+  // that mixin, as the generated generated density styles are scoped to
+  // `.mdc-deprecated-list-item`, while the styles should actually only affect single-line list
+  // items. This has been reported as a bug in the MDC repository:
+  // https://github.com/material-components/material-components-web/issues/5737.
   .mat-mdc-list-item-single-line {
     @include mdc-list.deprecated-single-line-height($height);
   }

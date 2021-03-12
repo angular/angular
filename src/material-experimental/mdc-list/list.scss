@@ -10,14 +10,14 @@
   display: block;
 }
 
-// .mdc-list-item__primary-text adds its own margin settings, so only reset if it doesn't have that
-// class
-.mat-mdc-list-base .mdc-list-item__text > :not(.mdc-list-item__primary-text),
-.mat-mdc-list-base .mdc-list-item__text > :not(.mdc-list-item__primary-text) {
+// .mdc-deprecated-list-item__primary-text adds its own margin settings, so only reset if it doesn't
+// have that class
+.mat-mdc-list-base .mdc-deprecated-list-item__text > :not(.mdc-deprecated-list-item__primary-text),
+.mat-mdc-list-base .mdc-deprecated-list-item__text > :not(.mdc-deprecated-list-item__primary-text) {
   margin: 0;
 
   // Fixes the gap between the 2nd & 3rd lines.
-  &.mdc-list-item__secondary-text {
+  &.mdc-deprecated-list-item__secondary-text {
     margin-top: -3px;
   }
 }
@@ -28,7 +28,7 @@
 .mat-mdc-2-line {
   height: 72px;
 
-  .mdc-list-item__text {
+  .mdc-deprecated-list-item__text {
     align-self: flex-start;
   }
 }
@@ -37,7 +37,7 @@
 .mat-mdc-3-line {
   height: 88px;
 
-  .mdc-list-item__text {
+  .mdc-deprecated-list-item__text {
     align-self: flex-start;
   }
 }
@@ -54,11 +54,11 @@
   height: $size;
   border-radius: 50%;
 
-  // Avatars that come before the text have the .mdc-list-item__graphic class.
-  // MDC's .mdc-list--avatar-list class would normally apply overrides to set the appropriate
-  // margins for avatar images, but since ours is a per-list-item setting we need to add similar
-  // styles ourselves.
-  &.mdc-list-item__graphic {
+  // Avatars that come before the text have the .mdc-deprecated-list-item__graphic class.
+  // MDC's .mdc-deprecated-list--avatar-list class would normally apply overrides to set the
+  // appropriate margins for avatar images, but since ours is a per-list-item setting we need to add
+  // similar styles ourselves.
+  &.mdc-deprecated-list-item__graphic {
     margin-left: 0;
     margin-right: $margin-value;
 
@@ -113,7 +113,7 @@
 
 // MDC always sets the cursor to `pointer`. We do not want to show this for non-interactive
 // lists. See: https://github.com/material-components/material-components-web/issues/6443
-.mat-mdc-list-non-interactive .mdc-list-item {
+.mat-mdc-list-non-interactive .mdc-deprecated-list-item {
   cursor: default;
 }
 

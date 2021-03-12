@@ -15,7 +15,7 @@
       background: if($is-dark-theme, white, black);
     }
 
-    &.mdc-list-item--selected::before {
+    &.mdc-deprecated-list-item--selected::before {
       background: theming.color(map.get($config, primary));
       opacity: map.get($state-opacities, selected);
     }
@@ -27,7 +27,7 @@
 
   // MDC still shows focus/selected state if the option is disabled. Just the hover
   // styles should not show up.
-  .mat-mdc-list-item-interactive:not(.mdc-list-item--disabled) {
+  .mat-mdc-list-item-interactive:not(.mdc-deprecated-list-item--disabled) {
     &:hover::before {
       opacity: map.get($state-opacities, hover);
     }

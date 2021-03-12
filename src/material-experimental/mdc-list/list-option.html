@@ -25,7 +25,7 @@
 </ng-template>
 
 <!-- Container for the checkbox at start. -->
-<span class="mdc-list-item__graphic mat-mdc-list-option-checkbox-before"
+<span class="mdc-deprecated-list-item__graphic mat-mdc-list-option-checkbox-before"
       *ngIf="_shouldShowCheckboxAt('before')">
   <ng-template [ngTemplateOutlet]="checkbox"></ng-template>
 </span>
@@ -35,12 +35,12 @@
 </ng-template>
 
 <!-- Text -->
-<span class="mdc-list-item__text" #text>
+<span class="mdc-deprecated-list-item__text" #text>
   <ng-content></ng-content>
 </span>
 
 <!-- Container for the checkbox at the end. -->
-<span class="mdc-list-item__meta" *ngIf="_shouldShowCheckboxAt('after')">
+<span class="mdc-deprecated-list-item__meta" *ngIf="_shouldShowCheckboxAt('after')">
   <ng-template [ngTemplateOutlet]="checkbox"></ng-template>
 </span>
 <!-- Conditionally renders icons/avatars after the list item text. -->
