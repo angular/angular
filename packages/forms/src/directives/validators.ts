@@ -10,7 +10,7 @@ import {Directive, forwardRef, Input, OnChanges, SimpleChanges, StaticProvider} 
 import {Observable} from 'rxjs';
 
 import {AbstractControl} from '../model';
-import {NG_VALIDATORS, Validators} from '../validators';
+import {emailValidator, maxLengthValidator, maxValidator, minLengthValidator, minValidator, NG_VALIDATORS, nullValidator, patternValidator, requiredTrueValidator, requiredValidator} from '../validators';
 
 
 /**
@@ -77,7 +77,7 @@ export interface Validator {
  */
 @Directive()
 abstract class AbstractValidatorDirective implements Validator {
-  private _validator: ValidatorFn = Validators.nullValidator;
+  private _validator: ValidatorFn = nullValidator;
   private _onChange!: () => void;
 
   /**
@@ -180,7 +180,7 @@ export class MaxValidator extends AbstractValidatorDirective implements OnChange
   /** @internal */
   normalizeInput = (input: string): number => parseInt(input, 10);
   /** @internal */
-  createValidator = (max: number): ValidatorFn => Validators.max(max);
+  createValidator = (max: number): ValidatorFn => maxValidator(max);
   /**
    * Declare `ngOnChanges` lifecycle hook at the main directive level (vs keeping it in base class)
    * to avoid differences in handling inheritance of lifecycle hooks between Ivy and ViewEngine in
@@ -240,7 +240,7 @@ export class MinValidator extends AbstractValidatorDirective implements OnChange
   /** @internal */
   normalizeInput = (input: string): number => parseInt(input, 10);
   /** @internal */
-  createValidator = (min: number): ValidatorFn => Validators.min(min);
+  createValidator = (min: number): ValidatorFn => minValidator(min);
   /**
    * Declare `ngOnChanges` lifecycle hook at the main directive level (vs keeping it in base class)
    * to avoid differences in handling inheritance of lifecycle hooks between Ivy and ViewEngine in
@@ -364,7 +364,7 @@ export class RequiredValidator implements Validator {
    * @nodoc
    */
   validate(control: AbstractControl): ValidationErrors|null {
-    return this.required ? Validators.required(control) : null;
+    return this.required ? requiredValidator(control) : null;
   }
 
   /**
@@ -411,7 +411,7 @@ export class CheckboxRequiredValidator extends RequiredValidator {
    * @nodoc
    */
   validate(control: AbstractControl): ValidationErrors|null {
-    return this.required ? Validators.requiredTrue(control) : null;
+    return this.required ? requiredTrueValidator(control) : null;
   }
 }
 
@@ -472,7 +472,7 @@ export class EmailValidator implements Validator {
    * @nodoc
    */
   validate(control: AbstractControl): ValidationErrors|null {
-    return this._enabled ? Validators.email(control) : null;
+    return this._enabled ? emailValidator(control) : null;
   }
 
   /**
@@ -543,7 +543,7 @@ export const MIN_LENGTH_VALIDATOR: any = {
   host: {'[attr.minlength]': 'minlength ? minlength : null'}
 })
 export class MinLengthValidator implements Validator, OnChanges {
-  private _validator: ValidatorFn = Validators.nullValidator;
+  private _validator: ValidatorFn = nullValidator;
   private _onChange?: () => void;
 
   /**
@@ -579,7 +579,7 @@ export class MinLengthValidator implements Validator, OnChanges {
   }
 
   private _createValidator(): void {
-    this._validator = Validators.minLength(
+    this._validator = minLengthValidator(
         typeof this.minlength === 'number' ? this.minlength : parseInt(this.minlength, 10));
   }
 }
@@ -621,7 +621,7 @@ export const MAX_LENGTH_VALIDATOR: any = {
   host: {'[attr.maxlength]': 'maxlength ? maxlength : null'}
 })
 export class MaxLengthValidator implements Validator, OnChanges {
-  private _validator: ValidatorFn = Validators.nullValidator;
+  private _validator: ValidatorFn = nullValidator;
   private _onChange?: () => void;
 
   /**
@@ -656,7 +656,7 @@ export class MaxLengthValidator implements Validator, OnChanges {
   }
 
   private _createValidator(): void {
-    this._validator = Validators.maxLength(
+    this._validator = maxLengthValidator(
         typeof this.maxlength === 'number' ? this.maxlength : parseInt(this.maxlength, 10));
   }
 }
@@ -701,7 +701,7 @@ export const PATTERN_VALIDATOR: any = {
   host: {'[attr.pattern]': 'pattern ? pattern : null'}
 })
 export class PatternValidator implements Validator, OnChanges {
-  private _validator: ValidatorFn = Validators.nullValidator;
+  private _validator: ValidatorFn = nullValidator;
   private _onChange?: () => void;
 
   /**
@@ -736,6 +736,6 @@ export class PatternValidator implements Validator, OnChanges {
   }
 
   private _createValidator(): void {
-    this._validator = Validators.pattern(this.pattern);
+    this._validator = patternValidator(this.pattern);
   }
 }
