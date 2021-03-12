@@ -168,9 +168,6 @@
     "name": "DomSharedStylesHost"
   },
   {
-    "name": "EMAIL_REGEXP"
-  },
-  {
     "name": "EMPTY_ARRAY"
   },
   {
@@ -568,9 +565,6 @@
   },
   {
     "name": "VE_ViewContainerRef"
-  },
-  {
-    "name": "Validators"
   },
   {
     "name": "Version"
@@ -1053,9 +1047,6 @@
     "name": "hasTagAndTypeMatch"
   },
   {
-    "name": "hasValidLength"
-  },
-  {
     "name": "hostReportError"
   },
   {
@@ -1135,9 +1126,6 @@
   },
   {
     "name": "isDirectiveHost"
-  },
-  {
-    "name": "isEmptyInputValue"
   },
   {
     "name": "isForwardRef"
