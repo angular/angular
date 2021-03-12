@@ -203,10 +203,10 @@
   resolved "https://registry.yarnpkg.com/@angular/core/-/core-9.0.0.tgz#227dc53e1ac81824f998c6e76000b7efc522641e"
   integrity sha512-6Pxgsrf0qF9iFFqmIcWmjJGkkCaCm6V5QNnxMy2KloO3SDq6QuMVRbN9RtC8Urmo25LP+eZ6ZgYqFYpdD8Hd9w==
 
-"@angular/core@~11.0.1":
-  version "11.0.2"
-  resolved "https://registry.yarnpkg.com/@angular/core/-/core-11.0.2.tgz#490248b1d746e24513f2db996bd857e5a36d2f45"
-  integrity sha512-GyDebks5ZPHDyChDW3VvzJq00Ct0iuesNpb9z/GpKtOXqug3sGr4KgkFDUTbfizKPWyeoaLH9FQYP55215nCKQ==
+"@angular/core@~11.0.5":
+  version "11.0.9"
+  resolved "https://registry.yarnpkg.com/@angular/core/-/core-11.0.9.tgz#5e509af2d2580a07f9ddfe3b99ce86ae67689daf"
+  integrity sha512-J0ff3UK2Cw7Z0eNLtUXrpMFvmmkvPPZWLYIwimyc1pZys7qsIVT6cy2ybGEOhbJgC6qt3fo0DoJV3pGXTalb8A==
   dependencies:
     tslib "^2.0.0"
 
@@ -11959,7 +11959,7 @@ snyk-try-require@1.3.1, snyk-try-require@^1.1.1, snyk-try-require@^1.3.1:
     lru-cache "^4.0.0"
     then-fs "^2.0.0"
 
-snyk@1.437.3, snyk@^1.437.3:
+snyk@^1.437.3:
   version "1.437.3"
   resolved "https://registry.yarnpkg.com/snyk/-/snyk-1.437.3.tgz#a3cfbfb568bf60b19be31a337899ebe71365bd70"
   integrity sha512-DFcYz8Q8LT/XNCNxaeEoGahazvkEhWS//JWJTfr6W1d5jMnORQauPxxj4RR3WGjKewSDl2eElwK1jhi5RNOP9g==
