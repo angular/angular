@@ -51,10 +51,10 @@ A best practice is to run your project locally before you deploy it. To run your
 {@a building}
 ## Building and hosting your application
 
- 1. To build your application for production, use the `build` command with the `prod` flag.
+ 1. To build your application for production, use the `build` command. By default, this command uses the `production` build configuration.
 
     ```sh
-    ng build --prod
+    ng build
     ```
 
     This command creates a `dist` folder in the application root directory with all the files that a hosting service needs for serving your application.

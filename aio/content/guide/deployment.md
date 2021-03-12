@@ -68,7 +68,7 @@ ng deploy
 
 The command is interactive. In this case, you must have or create a Firebase account, and authenticate using that account. The command prompts you to select a Firebase project for deployment
 
-After the command produces an optimal build of your application (equivalent to `ng deploy --prod`), it'll upload the production assets to Firebase.
+The command builds your application and uploads the production assets to Firebase.
 
 In the table below, you can find a list of packages which implement deployment functionality to different platforms. The `deploy` command for each package may require different command line options. You can read more by following the links associated with the package names below:
 
@@ -92,7 +92,7 @@ For the simplest deployment, create a production build and copy the output direc
 
   <code-example language="none" class="code-shell">
 
-    ng build --prod
+    ng build
 
   </code-example>
 
@@ -135,7 +135,7 @@ To deploy your Angular application to [GitHub Pages](https://help.github.com/art
 
   <code-example language="none" class="code-shell">
 
-    ng build --prod --output-path docs --base-href /your_project_name/
+    ng build --output-path docs --base-href /your_project_name/
 
   </code-example>
 
@@ -299,7 +299,7 @@ Read about how to enable CORS for specific servers at
 {@a optimize}
 ## Production optimizations
 
-The `--prod` _meta-flag_ engages the following build optimization features.
+The `production` configuration engages the following build optimization features.
 
 * [Ahead-of-Time (AOT) Compilation](guide/aot-compiler): pre-compiles Angular component templates.
 * [Production mode](#enable-prod-mode): deploys the production environment which enables _production mode_.
@@ -323,9 +323,10 @@ In addition to build optimizations, Angular also has a runtime production mode. 
 
 </code-example>
 
-Switching to _production mode_ makes it run faster by disabling development specific checks such as the dual change detection cycles.
-
-When you enable production builds via `--prod` command line flag, the runtime production mode is enabled as well.
+_Production mode_ improves application performance by disabling development-only safety
+checks and debugging utilities, such as the expression-changed-after-checked detection.
+Building your application with the production configuration automatically enables Angular's
+runtime production mode.
 
 {@a lazy-loading}
 
@@ -394,7 +395,7 @@ Build your app for production _including the source maps_
 
 <code-example language="none" class="code-shell">
 
-  ng build --prod --source-map
+  ng build --source-map
 
 </code-example>
 

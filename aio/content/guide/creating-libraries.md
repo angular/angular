@@ -45,13 +45,13 @@ When you generate a new library, the workspace configuration file, `angular.json
 You can build, test, and lint the project with CLI commands:
 
 <code-example language="bash">
- ng build my-lib
+ ng build my-lib --configuration development
  ng test my-lib
  ng lint my-lib
 </code-example>
 
 Notice that the configured builder for the project is different from the default builder for app projects.
-This builder, among other things, ensures that the library is always built with the [AOT compiler](guide/aot-compiler), without the need to specify the `--prod` flag.
+This builder, among other things, ensures that the library is always built with the [AOT compiler](guide/aot-compiler).
 
 To make library code reusable you must define a public API for it. This "user layer" defines what is available to consumers of your library. A user of your library should be able to access public functionality (such as NgModules, service providers and general utility functions) through a single import path.
 
@@ -118,10 +118,10 @@ To learn more, see [Schematics Overview](guide/schematics) and [Schematics for
 
 Use the Angular CLI and the npm package manager to build and publish your library as an npm package.
 
-Before publishing a library to NPM, build it using the `--prod` flag which will use the older compiler and runtime known as View Engine instead of Ivy.
+Before publishing a library to NPM, build it using the `production` configuration which uses the older compiler and runtime known as View Engine instead of Ivy.
 
 <code-example language="bash">
-ng build my-lib --prod
+ng build my-lib
 cd dist/my-lib
 npm publish
 </code-example>
