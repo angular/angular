@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NO_ERRORS_SCHEMA, ɵNgModuleDef, ɵɵngDeclareNgModule} from '@angular/core';
-import {SchemaMetadata, Type} from '@angular/core/src/core';
+import {NO_ERRORS_SCHEMA, SchemaMetadata, Type, ɵNgModuleDef, ɵɵngDeclareNgModule} from '@angular/core';
 
 describe('NgModule declaration jit compilation', () => {
   it('should compile a minimal NgModule declaration', () => {
@@ -116,5 +115,5 @@ function expectNgModuleDef(
 }
 
 function unwrap(values: Type<any>[]|(() => Type<any>[])): Type<any>[] {
-  return (typeof values === 'function') ? values() : values;
+  return typeof values === 'function' ? values() : values;
 }

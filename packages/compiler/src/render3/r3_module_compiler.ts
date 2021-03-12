@@ -207,7 +207,7 @@ export function compileNgModuleDeclarationExpression(meta: R3DeclareNgModuleFaca
   if (meta.id !== undefined) {
     definitionMap.set('id', new o.WrappedNodeExpr(meta.id));
   }
-  return o.importExpr(R3.defineNgModule).callFn([definitionMap.toLiteralMap()], undefined, true);
+  return o.importExpr(R3.defineNgModule).callFn([definitionMap.toLiteralMap()]);
 }
 
 export function createNgModuleType(
