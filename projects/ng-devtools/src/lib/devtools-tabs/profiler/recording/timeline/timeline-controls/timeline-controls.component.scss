@@ -2,6 +2,19 @@
   height: 60px;
 }
 
+.visual-controls {
+  display: flex;
+  flex-direction: column;
+  height: 80px;
+  justify-content: space-around;
+  margin-right: 25px;
+  width: 150px;
+}
+
+.hidden {
+  visibility: hidden;
+}
+
 .controls {
   display: flex;
   white-space: nowrap;

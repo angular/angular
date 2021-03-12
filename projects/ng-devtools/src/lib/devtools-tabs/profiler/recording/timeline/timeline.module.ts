@@ -17,6 +17,7 @@ import { RecordingDialogComponent } from './recording-modal/recording-dialog/rec
 import { RecordingModalComponent } from './recording-modal/recording-modal.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatTooltipModule,
     MatIconModule,
     MatCardModule,
+    MatInputModule,
     NgxFlamegraphModule,
     MatSelectModule,
   ],

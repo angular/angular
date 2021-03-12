@@ -1,17 +1,29 @@
 <div class="controls">
-  <mat-form-field *ngIf="record">
-    <mat-select [value]="visualizationMode" (selectionChange)="this.changeVisualizationMode.emit($event.value)">
-      <mat-option [value]="flameGraphMode">
-        Flame graph
-      </mat-option>
-      <mat-option [value]="treeMapMode">
-        Tree map
-      </mat-option>
-      <mat-option [value]="barGraphMode">
-        Bar chart
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+  <div class="visual-controls">
+    <mat-form-field>
+      <mat-label>Filter</mat-label>
+      <input
+        matInput
+        class="filter-input"
+        (keyup)="filter.emit($event.target.value)"
+        placeholder="duration: >30 source: click"
+      />
+    </mat-form-field>
+
+    <mat-form-field [class.hidden]="!record">
+      <mat-select [value]="visualizationMode" (selectionChange)="this.changeVisualizationMode.emit($event.value)">
+        <mat-option [value]="flameGraphMode">
+          Flame graph
+        </mat-option>
+        <mat-option [value]="treeMapMode">
+          Tree map
+        </mat-option>
+        <mat-option [value]="barGraphMode">
+          Bar chart
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
 
   <div
     class="details"
