@@ -62,7 +62,7 @@ export function toR3NgModuleMeta<TExpression>(
   // The following blocks of code will unwrap the arrays from such functions, because
   // `R3NgModuleMetadata` expects arrays of `R3Reference` objects.
 
-  // Further, since the `ɵdefineNgModule()` will also suffer from the forward declaration problem,
+  // Further, since the `ɵɵdefineNgModule()` will also suffer from the forward declaration problem,
   // we must update the `containsForwardDecls` property if a function wrapper was found.
 
   if (metaObj.has('bootstrap')) {

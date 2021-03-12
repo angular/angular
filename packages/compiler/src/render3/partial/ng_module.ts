@@ -35,7 +35,7 @@ function createNgModuleDefinitionMap(meta: R3NgModuleMetadata):
 
   // We must wrap the arrays inside a function if any of the values are a forward reference to a
   // not-yet-declared class. This is to support JIT execution of the `ɵɵngDeclareNgModule()` call.
-  // In the linker these wrappers are stripped and then reapplied for the `ɵdefineNgModule()` call.
+  // In the linker these wrappers are stripped and then reapplied for the `ɵɵdefineNgModule()` call.
 
   if (meta.bootstrap.length > 0) {
     definitionMap.set('bootstrap', refsToArray(meta.bootstrap, meta.containsForwardDecls));
