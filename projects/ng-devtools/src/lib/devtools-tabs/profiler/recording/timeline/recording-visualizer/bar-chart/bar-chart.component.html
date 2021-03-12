@@ -7,6 +7,6 @@
     [style.backgroundColor]="color"
     [style.width.%]="bar.value"
   >
-    <span>{{ bar.label }}</span>
+    <span [matTooltip]="bar.label">{{ bar.label }}</span>
   </div>
 </div>
