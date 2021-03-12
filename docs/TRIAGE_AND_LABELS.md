@@ -53,6 +53,16 @@ Sometimes, especially in the case of cross-cutting issues or PRs, these PRs or i
 multiple components. In these cases, all applicable component labels should be used to triage the
 issue or PR.
 
+### Community engagement
+
+* `help wanted` - Indicates an issue whose complexity/scope makes it suitable for a community contributor to pick up.
+* `good first issue` - Indicates an issue that is suitable for first-time contributors.
+  (This label should be applied _in addition_ to `help wanted` for better discoverability.)
+
+<sub>`help wanted` and `good first issue` are [default GitHub labels] familiar to many developers.</sub>
+
+[default GitHub labels]: https://docs.github.com/en/github/managing-your-work-on-github/managing-labels#about-default-labels
+
 ## Caretaker Triage Process (Initial Triage)
 
 The caretaker assigns `comp:  *` labels to new issues as they come in.
@@ -88,7 +98,7 @@ infeasible, close the issue with a comment explaining why.
 If the issue is an RFC or discussion, apply the "discussion" label. Use your judgement to determine
 whether this discussion belongs on GitHub. Discussions here should pertain to the technical
 implementation details of Angular. Redirect requests for debugging help or advice to a more
-appropriate channel unless they're capturing a legitimate bug. 
+appropriate channel unless they're capturing a legitimate bug.
 
 ### Step 3: Set a Priority
 
@@ -104,17 +114,17 @@ For bug reports, set a priority label.
 | P5 | The team acknowledges the request but (due to any number of reasons) does not plan to work on or accept contributions for this request. The issue remains open for discussion.                                                                       |
 
 
-Issues marked with "feature" or "discussion" don't require a priority. 
+Issues marked with "feature" or "discussion" don't require a priority.
 
 ### Step 4: Apply additional information labels
 
 Many optional labels provide additional context for issues. Consider adding any of the following if
 they apply to the issue:
 
-* Browser or operating system labels (`windows`, `ie11`, etc.)
+* Browser or operating system labels (`windows`, `browser: ie 11`, etc.)
 * Labels that inform the severity (`regression`, `has workaround`, `no workaround`)
 * Labels that categorize the bug (`performance`, `refactoring`, `memory leak`)
-* Community engagement labels (`good first issue`)
+* Community engagement labels (`help wanted`, `good first issue`)
 
 Once this triage is done, the ng-bot automatically changes the milestone from `needs triage` to
 `Backlog`.
