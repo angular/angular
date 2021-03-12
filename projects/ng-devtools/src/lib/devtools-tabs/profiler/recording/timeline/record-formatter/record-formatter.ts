@@ -13,6 +13,7 @@ export interface AppEntry<T> {
 export interface GraphNode {
   toolTip: string;
   style: any;
+  frame: ProfilerFrame;
 }
 
 export abstract class RecordFormatter<T> {

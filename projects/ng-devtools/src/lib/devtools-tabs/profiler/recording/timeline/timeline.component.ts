@@ -2,8 +2,9 @@ import { Component, EventEmitter, Input, Output, OnDestroy } from '@angular/core
 import { ProfilerFrame } from 'protocol';
 import { GraphNode } from './record-formatter/record-formatter';
 import { Observable, Subscription, BehaviorSubject } from 'rxjs';
-import { share } from 'rxjs/operators';
+import { map, share } from 'rxjs/operators';
 import { mergeFrames } from './record-formatter/frame-merger';
+import { createFilter, Filter, noopFilter } from './filter';
 
 export enum VisualizationMode {
   FlameGraph,
@@ -24,6 +25,7 @@ export class TimelineComponent implements OnDestroy {
       this._subscription.unsubscribe();
     }
     this._allRecords = [];
+    this._filtered = [];
     this._maxDuration = -Infinity;
     this._subscription = data.subscribe({
       next: (frames: ProfilerFrame[]): void => {
@@ -39,24 +41,36 @@ export class TimelineComponent implements OnDestroy {
   changeDetection = false;
   frame: ProfilerFrame | null = null;
 
+  private _filter: Filter = noopFilter;
   private _maxDuration = -Infinity;
   private _subscription: Subscription;
   private _allRecords: ProfilerFrame[] = [];
+  private _filtered: GraphNode[] = [];
   private _graphDataSubject = new BehaviorSubject<GraphNode[]>([]);
   visualizing = false;
-  graphData$ = this._graphDataSubject.asObservable().pipe(share());
+  graphData$ = this._graphDataSubject.pipe(
+    share(),
+    map((nodes) => {
+      return (this._filtered = nodes.filter((node) => this._filter(node)));
+    })
+  );
 
   selectFrames({ indexes }: { indexes: number[] }): void {
-    this.frame = mergeFrames(indexes.map((index) => this._allRecords[index]));
+    this.frame = mergeFrames(indexes.map((index) => this._filtered[index].frame));
   }
 
   get hasFrames(): boolean {
-    return this._allRecords.length > 0;
+    return this._graphDataSubject.value.length > 0;
   }
 
   estimateFrameRate(timeSpent: number): number {
     const multiplier = Math.max(Math.ceil(timeSpent / 16) - 1, 0);
     return Math.floor(60 / 2 ** multiplier);
+  }
+
+  setFilter(filter: string): void {
+    this._filter = createFilter(filter);
+    this._graphDataSubject.next(this._graphDataSubject.value);
   }
 
   getColorByFrameRate(framerate: number): string {
@@ -104,13 +118,10 @@ export class TimelineComponent implements OnDestroy {
     return this._allRecords.map((r) => this._getBarStyles(r, multiplicationFactor));
   }
 
-  private _getBarStyles(
-    record: ProfilerFrame,
-    multiplicationFactor: number
-  ): { style: { [key: string]: string }; toolTip: string } {
-    const height = record.duration * multiplicationFactor;
+  private _getBarStyles(frame: ProfilerFrame, multiplicationFactor: number): GraphNode {
+    const height = frame.duration * multiplicationFactor;
     const colorPercentage = Math.max(10, Math.round((height / MAX_HEIGHT) * 100));
-    const backgroundColor = this.getColorByFrameRate(this.estimateFrameRate(record.duration));
+    const backgroundColor = this.getColorByFrameRate(this.estimateFrameRate(frame.duration));
 
     const style = {
       'background-image': `-webkit-linear-gradient(bottom, ${backgroundColor} ${colorPercentage}%, transparent ${colorPercentage}%)`,
@@ -119,7 +130,7 @@ export class TimelineComponent implements OnDestroy {
       width: '25px',
       height: '50px',
     };
-    const toolTip = `${record.source} TimeSpent: ${record.duration.toFixed(3)}ms`;
-    return { style, toolTip };
+    const toolTip = `${frame.source} TimeSpent: ${frame.duration.toFixed(3)}ms`;
+    return { style, toolTip, frame };
   }
 }

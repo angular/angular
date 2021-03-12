@@ -2,7 +2,7 @@
 
 <p class="info" *ngIf="!hasFrames && visualizing">There's no information to show.</p>
 
-<div style="margin: 10px; height: 100%">
+<div style="margin: 10px; height: 100%;">
   <ng-timeline-controls
     [class.hidden]="!hasFrames"
     [record]="frame"
@@ -14,6 +14,7 @@
     (changeVisualizationMode)="visualizationMode = $event"
     (exportProfile)="exportProfile.emit($event)"
     (toggleChangeDetection)="changeDetection = $event"
+    (filter)="setFilter($event)"
   ></ng-timeline-controls>
 
   <ng-frame-selector
