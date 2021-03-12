@@ -57,11 +57,11 @@ issue or PR.
 
 * `help wanted` - Indicates an issue whose complexity/scope makes it suitable for a community contributor to pick up.
 * `good first issue` - Indicates an issue that is suitable for first-time contributors.
-  (This label implies `help wanted` and there is no need to apply both.)
+  (This label should be applied _in addition_ to `help wanted` for better discoverability.)
 
-> NOTE:
-> `help wanted` and `good first issue` are [default GitHub labels](https://docs.github.com/en/github/managing-your-work-on-github/managing-labels#about-default-labels) provided to all repositories.
-> As such, using them is more likely to offer a familiar user experience to contributors from the community.
+<sub>`help wanted` and `good first issue` are [default GitHub labels] familiar to many developers.</sub>
+
+[default GitHub labels]: https://docs.github.com/en/github/managing-your-work-on-github/managing-labels#about-default-labels
 
 ## Caretaker Triage Process (Initial Triage)
 
