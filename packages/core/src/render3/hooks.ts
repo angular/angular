@@ -13,6 +13,7 @@ import {NgOnChangesFeatureImpl} from './features/ng_onchanges_feature';
 import {DirectiveDef} from './interfaces/definition';
 import {TNode} from './interfaces/node';
 import {FLAGS, HookData, InitPhaseState, LView, LViewFlags, PREORDER_HOOK_FLAGS, PreOrderHookFlags, TView} from './interfaces/view';
+import {profiler, ProfilerEvent} from './profiler';
 import {isInCheckNoChangesMode} from './state';
 
 
@@ -256,9 +257,19 @@ function callHook(currentView: LView, initPhase: InitPhaseState, arr: HookData, 
             (currentView[PREORDER_HOOK_FLAGS] >> PreOrderHookFlags.NumberOfInitHooksCalledShift) &&
         (currentView[FLAGS] & LViewFlags.InitPhaseStateMask) === initPhase) {
       currentView[FLAGS] += LViewFlags.IndexWithinInitPhaseIncrementer;
-      hook.call(directive);
+      profiler(ProfilerEvent.LifecycleHookStart, directive, hook);
+      try {
+        hook.call(directive);
+      } finally {
+        profiler(ProfilerEvent.LifecycleHookEnd, directive, hook);
+      }
     }
   } else {
-    hook.call(directive);
+    profiler(ProfilerEvent.LifecycleHookStart, directive, hook);
+    try {
+      hook.call(directive);
+    } finally {
+      profiler(ProfilerEvent.LifecycleHookEnd, directive, hook);
+    }
   }
 }
