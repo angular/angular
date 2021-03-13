@@ -1,3 +1,5 @@
+// stylelint-disable max-line-length
+
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/theme/theme' as mdc-theme;
 @use '@material/list' as mdc-list;
@@ -22,11 +24,9 @@
       &.mat-mdc-option-active,
 
       // In multiple mode there is a checkbox to show that the option is selected.
-      &.mdc-deprecated-list-item--selected {
-        &:not(.mat-mdc-option-multiple):not(.mdc-deprecated-list-item--disabled) {
-          $color: mdc-theme-color.$on-surface;
-          background: rgba($color, mdc-ripple.states-opacity($color, hover));
-        }
+      &.mdc-deprecated-list-item--selected:not(.mat-mdc-option-multiple):not(.mdc-deprecated-list-item--disabled) {
+        $color: mdc-theme-color.$on-surface;
+        background: rgba($color, mdc-ripple.states-opacity($color, hover));
       }
     }
 
