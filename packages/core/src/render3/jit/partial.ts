@@ -7,6 +7,8 @@
  */
 
 import {getCompilerFacade, R3DeclareComponentFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade} from '../../compiler/compiler_facade';
+import {Type} from '../../interface/type';
+import {setClassMetadata} from '../metadata';
 import {angularCoreEnv} from './environment';
 
 /**
@@ -18,6 +20,20 @@ export function ɵɵngDeclareDirective(decl: R3DeclareDirectiveFacade): unknown 
   const compiler = getCompilerFacade();
   return compiler.compileDirectiveDeclaration(
       angularCoreEnv, `ng:///${decl.type.name}/ɵfac.js`, decl);
+}
+
+/**
+ * Evaluates the class metadata declaration.
+ *
+ * @codeGenApi
+ */
+export function ɵɵngDeclareClassMetadata(decl: {
+  type: Type<any>; decorators: any[];
+  ctorParameters?: () => any[];
+  propDecorators?: {[field: string]: any};
+}): void {
+  setClassMetadata(
+      decl.type, decl.decorators, decl.ctorParameters ?? null, decl.propDecorators ?? null);
 }
 
 /**

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDeclareInjectableFromMetadata, compileInjectable, createR3ProviderExpression, Expression, FactoryTarget, LiteralExpr, R3CompiledExpression, R3DependencyMetadata, R3InjectableMetadata, R3ProviderExpression, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, CompileClassMetadataFn, compileDeclareClassMetadata, compileDeclareInjectableFromMetadata, compileInjectable, createR3ProviderExpression, Expression, FactoryTarget, LiteralExpr, R3ClassMetadata, R3CompiledExpression, R3DependencyMetadata, R3InjectableMetadata, R3ProviderExpression, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -17,12 +17,12 @@ import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from 
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {compileDeclareFactory, CompileFactoryFn, compileNgFactoryDefField} from './factory';
-import {generateSetClassMetadataCall} from './metadata';
+import {extractClassMetadata} from './metadata';
 import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, validateConstructorDependencies, wrapTypeReference} from './util';
 
 export interface InjectableHandlerData {
   meta: R3InjectableMetadata;
-  metadataStmt: Statement|null;
+  classMetadata: R3ClassMetadata|null;
   ctorDeps: R3DependencyMetadata[]|'invalid'|null;
   needsFactory: boolean;
 }
@@ -76,8 +76,8 @@ export class InjectableDecoratorHandler implements
         ctorDeps: extractInjectableCtorDeps(
             node, meta, decorator, this.reflector, this.defaultImportRecorder, this.isCore,
             this.strictCtorDeps),
-        metadataStmt: generateSetClassMetadataCall(
-            node, this.reflector, this.defaultImportRecorder, this.isCore),
+        classMetadata:
+            extractClassMetadata(node, this.reflector, this.defaultImportRecorder, this.isCore),
         // Avoid generating multiple factories if a class has
         // more Angular decorators, apart from Injectable.
         needsFactory: !decorators ||
@@ -96,27 +96,30 @@ export class InjectableDecoratorHandler implements
 
   compileFull(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
     return this.compile(
-        compileNgFactoryDefField, meta => compileInjectable(meta, false), node, analysis);
+        compileNgFactoryDefField, meta => compileInjectable(meta, false), compileClassMetadata,
+        node, analysis);
   }
 
   compilePartial(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>):
       CompileResult[] {
     return this.compile(
-        compileDeclareFactory, compileDeclareInjectableFromMetadata, node, analysis);
+        compileDeclareFactory, compileDeclareInjectableFromMetadata, compileDeclareClassMetadata,
+        node, analysis);
   }
 
   private compile(
       compileFactoryFn: CompileFactoryFn,
       compileInjectableFn: (meta: R3InjectableMetadata) => R3CompiledExpression,
-      node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
+      compileClassMetadataFn: CompileClassMetadataFn, node: ClassDeclaration,
+      analysis: Readonly<InjectableHandlerData>): CompileResult[] {
     const results: CompileResult[] = [];
 
     if (analysis.needsFactory) {
       const meta = analysis.meta;
       const factoryRes = compileFactoryFn(
           toFactoryMetadata({...meta, deps: analysis.ctorDeps}, FactoryTarget.Injectable));
-      if (analysis.metadataStmt !== null) {
-        factoryRes.statements.push(analysis.metadataStmt);
+      if (analysis.classMetadata !== null) {
+        factoryRes.statements.push(compileClassMetadataFn(analysis.classMetadata).toStmt());
       }
       results.push(factoryRes);
     }

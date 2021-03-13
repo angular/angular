@@ -6,14 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {devOnlyGuardedExpression, Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, literalMap, NONE_TYPE, ReturnStatement, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, FunctionExpr, LiteralArrayExpr, LiteralExpr, literalMap, R3ClassMetadata, ReturnStatement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder} from '../../imports';
 import {CtorParameter, DeclarationNode, Decorator, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
 import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './util';
-
 
 /**
  * Given a class declaration, generate a call to `setClassMetadata` with the Angular metadata
@@ -23,10 +22,10 @@ import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './uti
  * If no such metadata is present, this function returns `null`. Otherwise, the call is returned
  * as a `Statement` for inclusion along with the class.
  */
-export function generateSetClassMetadataCall(
+export function extractClassMetadata(
     clazz: DeclarationNode, reflection: ReflectionHost,
     defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
-    annotateForClosureCompiler?: boolean): Statement|null {
+    annotateForClosureCompiler?: boolean): R3ClassMetadata|null {
   if (!reflection.isClass(clazz)) {
     return null;
   }
@@ -50,10 +49,10 @@ export function generateSetClassMetadataCall(
   if (ngClassDecorators.length === 0) {
     return null;
   }
-  const metaDecorators = ts.createArrayLiteral(ngClassDecorators);
+  const metaDecorators = new WrappedNodeExpr(ts.createArrayLiteral(ngClassDecorators));
 
   // Convert the constructor parameters to metadata, passing null if none are present.
-  let metaCtorParameters: Expression = new LiteralExpr(null);
+  let metaCtorParameters: Expression|null = null;
   const classCtorParameters = reflection.getConstructorParameters(clazz);
   if (classCtorParameters !== null) {
     const ctorParameters = classCtorParameters.map(
@@ -64,7 +63,7 @@ export function generateSetClassMetadataCall(
   }
 
   // Do the same for property decorators.
-  let metaPropDecorators: ts.Expression = ts.createNull();
+  let metaPropDecorators: Expression|null = null;
   const classMembers = reflection.getMembersOfClass(clazz).filter(
       member => !member.isStatic && member.decorators !== null && member.decorators.length > 0);
   const duplicateDecoratedMemberNames =
@@ -80,22 +79,15 @@ export function generateSetClassMetadataCall(
   const decoratedMembers = classMembers.map(
       member => classMemberToMetadata(member.nameNode ?? member.name, member.decorators!, isCore));
   if (decoratedMembers.length > 0) {
-    metaPropDecorators = ts.createObjectLiteral(decoratedMembers);
+    metaPropDecorators = new WrappedNodeExpr(ts.createObjectLiteral(decoratedMembers));
   }
 
-  // Generate a pure call to setClassMetadata with the class identifier and its metadata.
-  const setClassMetadata = new ExternalExpr(Identifiers.setClassMetadata);
-  const fnCall = new InvokeFunctionExpr(
-      /* fn */ setClassMetadata,
-      /* args */
-      [
-        new WrappedNodeExpr(id),
-        new WrappedNodeExpr(metaDecorators),
-        metaCtorParameters,
-        new WrappedNodeExpr(metaPropDecorators),
-      ]);
-  const iife = new FunctionExpr([], [devOnlyGuardedExpression(fnCall).toStmt()]);
-  return iife.callFn([]).toStmt();
+  return {
+    type: new WrappedNodeExpr(id),
+    decorators: metaDecorators,
+    ctorParameters: metaCtorParameters,
+    propDecorators: metaPropDecorators,
+  };
 }
 
 /**

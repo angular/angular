@@ -97,6 +97,7 @@ export {BoundAttribute as TmplAstBoundAttribute, BoundEvent as TmplAstBoundEvent
 export * from './render3/view/t2_api';
 export * from './render3/view/t2_binder';
 export {Identifiers as R3Identifiers} from './render3/r3_identifiers';
+export {R3ClassMetadata, CompileClassMetadataFn, compileClassMetadata} from './render3/r3_class_metadata_compiler';
 export {compileFactoryFunction, R3DependencyMetadata, R3FactoryMetadata, FactoryTarget} from './render3/r3_factory';
 export {compileNgModule, R3NgModuleMetadata} from './render3/r3_module_compiler';
 export {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
@@ -104,6 +105,7 @@ export {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compile
 export {makeBindingParser, ParsedTemplate, parseTemplate, ParseTemplateOptions} from './render3/view/template';
 export {R3CompiledExpression, R3Reference, devOnlyGuardedExpression, getSafePropertyAccessString} from './render3/util';
 export {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, ParsedHostBindings, verifyHostBindings} from './render3/view/compiler';
+export {compileDeclareClassMetadata} from './render3/partial/class_metadata';
 export {compileDeclareComponentFromMetadata} from './render3/partial/component';
 export {compileDeclareDirectiveFromMetadata} from './render3/partial/directive';
 export {compileDeclareFactoryFunction} from './render3/partial/factory';

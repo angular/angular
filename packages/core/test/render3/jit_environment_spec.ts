@@ -24,11 +24,20 @@ const INTERFACE_EXCEPTIONS = new Set<string>([
 ]);
 
 /**
+ * The following symbols are only referenced from AOT compilation outputs so are allowed to be
+ * omitted from the JIT environment.
+ */
+const AOT_ONLY = new Set<string>([
+  'ɵsetClassMetadata',
+]);
+
+/**
  * The following symbols are only referenced from partial declaration compilation outputs, which
  * will never be emitted by the JIT compiler so are allowed to be omitted from the JIT environment.
  */
 const PARTIAL_ONLY = new Set<string>([
   'ɵɵngDeclareDirective',
+  'ɵɵngDeclareClassMetadata',
   'ɵɵngDeclareComponent',
   'ɵɵngDeclareFactory',
   'ɵɵngDeclareInjectable',
@@ -52,7 +61,9 @@ describe('r3 jit environment', () => {
         // A few such properties are string constants. Ignore them, and focus on ExternalReferences.
         .filter(isExternalReference)
         // Some references are to interface types. Only take properties which have runtime values.
-        .filter(sym => !INTERFACE_EXCEPTIONS.has(sym.name) && !PARTIAL_ONLY.has(sym.name))
+        .filter(
+            sym => !INTERFACE_EXCEPTIONS.has(sym.name) && !AOT_ONLY.has(sym.name) &&
+                !PARTIAL_ONLY.has(sym.name))
         .forEach(sym => {
           // Assert that angularCoreEnv has a reference to the runtime symbol.
           expect(angularCoreEnv.hasOwnProperty(sym.name))
