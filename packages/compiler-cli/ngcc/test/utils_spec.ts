@@ -108,6 +108,22 @@ describe('getTsHelperFnFromDeclaration()', () => {
     expect(getTsHelperFnFromDeclaration(decl2)).toBe(KnownDeclaration.TsHelperSpreadArrays);
   });
 
+  it('should recognize the `__spreadArray` helper as function declaration', () => {
+    const decl1 = createFunctionDeclaration('__spreadArray');
+    const decl2 = createFunctionDeclaration('__spreadArray$42');
+
+    expect(getTsHelperFnFromDeclaration(decl1)).toBe(KnownDeclaration.TsHelperSpreadArray);
+    expect(getTsHelperFnFromDeclaration(decl2)).toBe(KnownDeclaration.TsHelperSpreadArray);
+  });
+
+  it('should recognize the `__spreadArray` helper as variable declaration', () => {
+    const decl1 = createVariableDeclaration('__spreadArray');
+    const decl2 = createVariableDeclaration('__spreadArray$42');
+
+    expect(getTsHelperFnFromDeclaration(decl1)).toBe(KnownDeclaration.TsHelperSpreadArray);
+    expect(getTsHelperFnFromDeclaration(decl2)).toBe(KnownDeclaration.TsHelperSpreadArray);
+  });
+
   it('should return null for unrecognized helpers', () => {
     const decl1 = createFunctionDeclaration('__foo');
     const decl2 = createVariableDeclaration('spread');
@@ -156,6 +172,14 @@ describe('getTsHelperFnFromIdentifier()', () => {
 
     expect(getTsHelperFnFromIdentifier(id1)).toBe(KnownDeclaration.TsHelperSpreadArrays);
     expect(getTsHelperFnFromIdentifier(id2)).toBe(KnownDeclaration.TsHelperSpreadArrays);
+  });
+
+  it('should recognize the `__spreadArray` helper', () => {
+    const id1 = ts.createIdentifier('__spreadArray');
+    const id2 = ts.createIdentifier('__spreadArray$42');
+
+    expect(getTsHelperFnFromIdentifier(id1)).toBe(KnownDeclaration.TsHelperSpreadArray);
+    expect(getTsHelperFnFromIdentifier(id2)).toBe(KnownDeclaration.TsHelperSpreadArray);
   });
 
   it('should return null for unrecognized helpers', () => {

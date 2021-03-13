@@ -646,6 +646,7 @@ runInEachFileSystem(() => {
               export declare function __assign(t: any, ...sources: any[]): any;
               export declare function __spread(...args: any[][]): any[];
               export declare function __spreadArrays(...args: any[][]): any[];
+              export declare function __spreadArray(to: any[], from: any[]): any[];
             `,
           },
         ]);
@@ -733,6 +734,30 @@ runInEachFileSystem(() => {
 
         expect(arr).toEqual([4, 5, 6]);
       });
+
+      it('should evaluate `__spreadArray()` (named import)', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              import {__spreadArray} from 'tslib';
+              const a = [4];
+              const b = [5, 6];
+            `,
+            '__spreadArray(a, b)');
+
+        expect(arr).toEqual([4, 5, 6]);
+      });
+
+      it('should evaluate `__spreadArray()` (star import)', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              import * as tslib from 'tslib';
+              const a = [4];
+              const b = [5, 6];
+            `,
+            'tslib.__spreadArray(a, b)');
+
+        expect(arr).toEqual([4, 5, 6]);
+      });
     });
 
     describe('(with emitted TypeScript helpers as functions)', () => {
@@ -742,6 +767,7 @@ runInEachFileSystem(() => {
           function __assign(t, ...sources) { /* ... */ }
           function __spread(...args) { /* ... */ }
           function __spreadArrays(...args) { /* ... */ }
+          function __spreadArray(to, from) { /* ... */ }
         `;
         const {checker, expression} = makeExpression(helpers + code, expr);
 
@@ -786,6 +812,17 @@ runInEachFileSystem(() => {
 
         expect(arr).toEqual([4, 5, 6]);
       });
+
+      it('should evaluate `__spreadArray()`', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              const a = [4];
+              const b = [5, 6];
+            `,
+            '__spreadArray(a, b)');
+
+        expect(arr).toEqual([4, 5, 6]);
+      });
     });
 
     describe('(with emitted TypeScript helpers as variables)', () => {
@@ -795,6 +832,7 @@ runInEachFileSystem(() => {
           var __assign = (this && this.__assign) || function (t, ...sources) { /* ... */ }
           var __spread = (this && this.__spread) || function (...args) { /* ... */ }
           var __spreadArrays = (this && this.__spreadArrays) || function (...args) { /* ... */ }
+          var __spreadArray = (this && this.__spreadArray) || function (to, from) { /* ... */ }
         `;
         const {checker, expression} = makeExpression(helpers + code, expr);
 
@@ -836,6 +874,17 @@ runInEachFileSystem(() => {
               const b = [5, 6];
             `,
             '__spreadArrays(a, b)');
+
+        expect(arr).toEqual([4, 5, 6]);
+      });
+
+      it('should evaluate `__spreadArray()`', () => {
+        const arr: number[] = evaluateExpression(
+            `
+              const a = [4];
+              const b = [5, 6];
+            `,
+            '__spreadArray(a, b)');
 
         expect(arr).toEqual([4, 5, 6]);
       });
@@ -980,6 +1029,8 @@ runInEachFileSystem(() => {
         return KnownDeclaration.TsHelperSpread;
       case '__spreadArrays':
         return KnownDeclaration.TsHelperSpreadArrays;
+      case '__spreadArray':
+        return KnownDeclaration.TsHelperSpreadArray;
       default:
         return null;
     }
