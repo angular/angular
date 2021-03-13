@@ -61,7 +61,7 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
     return this._applicationEnvironment.environment.process.env.LATEST_SHA;
   }
 
-  onTabChange(tab: 'Profiler' | 'Components' | 'Router Tree'): void {
+  changeTab(tab: 'Profiler' | 'Components' | 'Router Tree'): void {
     this.activeTab = tab;
     this.tabUpdate.notify();
     if (tab === 'Router Tree') {
@@ -77,7 +77,7 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
   emitInspectorEvent(): void {
     if (this.inspectorRunning) {
       this._messageBus.emit('inspectorStart');
-      this.activeTab = 'Components';
+      this.changeTab('Components');
     } else {
       this._messageBus.emit('inspectorEnd');
       this._messageBus.emit('removeHighlightOverlay');

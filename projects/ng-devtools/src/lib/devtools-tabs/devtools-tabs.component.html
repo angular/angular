@@ -16,7 +16,7 @@
       </mat-icon>
     </button>
   </div>
-  <a class="mat-tab-link" mat-tab-link *ngFor="let tab of tabs" (click)="onTabChange(tab)" [active]="activeTab === tab">
+  <a class="mat-tab-link" mat-tab-link *ngFor="let tab of tabs" (click)="changeTab(tab)" [active]="activeTab === tab">
     {{ tab }}
   </a>
   <section *ngIf="angularVersion" id="app-angular-version">
