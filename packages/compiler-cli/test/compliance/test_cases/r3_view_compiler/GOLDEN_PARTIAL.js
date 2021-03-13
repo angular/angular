@@ -10,10 +10,10 @@ export class MyApp {
 }
 MyApp.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 MyApp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyApp, selector: "my-app", ngImport: i0, template: '<todo [data]="list"></todo>', isInline: true, components: [{ type: i0.forwardRef(function () { return TodoComponent; }), selector: "todo", inputs: ["data"] }] });
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyApp, [{
-        type: Component,
-        args: [{ selector: 'my-app', template: '<todo [data]="list"></todo>' }]
-    }], null, null); })();
+i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyApp, decorators: [{
+            type: Component,
+            args: [{ selector: 'my-app', template: '<todo [data]="list"></todo>' }]
+        }] });
 export class TodoComponent {
     constructor() {
         this.data = [];
@@ -21,26 +21,26 @@ export class TodoComponent {
 }
 TodoComponent.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TodoComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
 TodoComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: TodoComponent, selector: "todo", inputs: { data: "data" }, ngImport: i0, template: '<ul class="list" [title]="myTitle"><li *ngFor="let item of data">{{data}}</li></ul>', isInline: true });
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(TodoComponent, [{
-        type: Component,
-        args: [{
-                selector: 'todo',
-                template: '<ul class="list" [title]="myTitle"><li *ngFor="let item of data">{{data}}</li></ul>'
-            }]
-    }], null, { data: [{
-            type: Input
-        }] }); })();
+i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TodoComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'todo',
+                    template: '<ul class="list" [title]="myTitle"><li *ngFor="let item of data">{{data}}</li></ul>'
+                }]
+        }], propDecorators: { data: [{
+                type: Input
+            }] } });
 export class TodoModule {
 }
 TodoModule.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TodoModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
 TodoModule.ɵmod = i0.ɵɵngDeclareNgModule({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TodoModule, declarations: [TodoComponent, MyApp] });
 TodoModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TodoModule });
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(TodoModule, [{
-        type: NgModule,
-        args: [{
-                declarations: [TodoComponent, MyApp],
-            }]
-    }], null, null); })();
+i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TodoModule, decorators: [{
+            type: NgModule,
+            args: [{
+                    declarations: [TodoComponent, MyApp],
+                }]
+        }] });
 
 /****************************************************************************************************
  * PARTIAL FILE: todo_example.d.ts

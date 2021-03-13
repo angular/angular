@@ -298,6 +298,10 @@ export class Identifiers {
   static definePipe: o.ExternalReference = {name: 'ɵɵdefinePipe', moduleName: CORE};
   static declarePipe: o.ExternalReference = {name: 'ɵɵngDeclarePipe', moduleName: CORE};
 
+  static declareClassMetadata:
+      o.ExternalReference = {name: 'ɵɵngDeclareClassMetadata', moduleName: CORE};
+  static setClassMetadata: o.ExternalReference = {name: 'ɵsetClassMetadata', moduleName: CORE};
+
   static queryRefresh: o.ExternalReference = {name: 'ɵɵqueryRefresh', moduleName: CORE};
   static viewQuery: o.ExternalReference = {name: 'ɵɵviewQuery', moduleName: CORE};
   static loadQuery: o.ExternalReference = {name: 'ɵɵloadQuery', moduleName: CORE};

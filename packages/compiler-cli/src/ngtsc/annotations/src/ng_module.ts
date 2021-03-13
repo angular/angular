@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, FactoryTarget, Identifiers as R3, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, FactoryTarget, Identifiers as R3, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3ClassMetadata, R3CompiledExpression, R3FactoryMetadata, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
@@ -24,7 +24,7 @@ import {getSourceFile} from '../../util/src/typescript';
 
 import {createValueHasWrongTypeError, getProviderDiagnostics} from './diagnostics';
 import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
-import {generateSetClassMetadataCall} from './metadata';
+import {extractClassMetadata} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
@@ -32,7 +32,7 @@ export interface NgModuleAnalysis {
   mod: R3NgModuleMetadata;
   inj: R3InjectorMetadata;
   fac: R3FactoryMetadata;
-  metadataStmt: Statement|null;
+  classMetadata: R3ClassMetadata|null;
   declarations: Reference<ClassDeclaration>[];
   rawDeclarations: ts.Expression|null;
   schemas: SchemaMetadata[];
@@ -370,7 +370,7 @@ export class NgModuleDecoratorHandler implements
         providersRequiringFactory: rawProviders ?
             resolveProvidersRequiringFactory(rawProviders, this.reflector, this.evaluator) :
             null,
-        metadataStmt: generateSetClassMetadataCall(
+        classMetadata: extractClassMetadata(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
         factorySymbolName: node.name.text,
@@ -463,26 +463,28 @@ export class NgModuleDecoratorHandler implements
 
   compileFull(
       node: ClassDeclaration,
-      {inj, mod, fac, metadataStmt, declarations}: Readonly<NgModuleAnalysis>,
+      {inj, mod, fac, classMetadata, declarations}: Readonly<NgModuleAnalysis>,
       {injectorImports}: Readonly<NgModuleResolution>): CompileResult[] {
     const factoryFn = compileNgFactoryDefField(fac);
     const ngInjectorDef = compileInjector(this.mergeInjectorImports(inj, injectorImports));
     const ngModuleDef = compileNgModule(mod);
     const statements = ngModuleDef.statements;
-    this.insertMetadataStatement(statements, metadataStmt);
+    const metadata = classMetadata !== null ? compileClassMetadata(classMetadata) : null;
+    this.insertMetadataStatement(statements, metadata);
     this.appendRemoteScopingStatements(statements, node, declarations);
 
     return this.compileNgModule(factoryFn, ngInjectorDef, ngModuleDef);
   }
 
   compilePartial(
-      node: ClassDeclaration, {inj, fac, mod, metadataStmt}: Readonly<NgModuleAnalysis>,
+      node: ClassDeclaration, {inj, fac, mod, classMetadata}: Readonly<NgModuleAnalysis>,
       {injectorImports}: Readonly<NgModuleResolution>): CompileResult[] {
     const factoryFn = compileDeclareFactory(fac);
     const injectorDef =
         compileDeclareInjectorFromMetadata(this.mergeInjectorImports(inj, injectorImports));
     const ngModuleDef = compileDeclareNgModuleFromMetadata(mod);
-    this.insertMetadataStatement(ngModuleDef.statements, metadataStmt);
+    const metadata = classMetadata !== null ? compileDeclareClassMetadata(classMetadata) : null;
+    this.insertMetadataStatement(ngModuleDef.statements, metadata);
     // NOTE: no remote scoping required as this is banned in partial compilation.
     return this.compileNgModule(factoryFn, injectorDef, ngModuleDef);
   }
@@ -499,10 +501,10 @@ export class NgModuleDecoratorHandler implements
   /**
    * Add class metadata statements, if provided, to the `ngModuleStatements`.
    */
-  private insertMetadataStatement(ngModuleStatements: Statement[], metadataStmt: Statement|null):
+  private insertMetadataStatement(ngModuleStatements: Statement[], metadata: Expression|null):
       void {
-    if (metadataStmt !== null) {
-      ngModuleStatements.unshift(metadataStmt);
+    if (metadata !== null) {
+      ngModuleStatements.unshift(metadata.toStmt());
     }
   }
 

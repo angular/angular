@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {compileClassMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
@@ -13,7 +14,7 @@ import {NOOP_DEFAULT_IMPORT_RECORDER, NoopImportRewriter} from '../../imports';
 import {TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {ImportManager, translateStatement} from '../../translator';
-import {generateSetClassMetadataCall} from '../src/metadata';
+import {extractClassMetadata} from '../src/metadata';
 
 runInEachFileSystem(() => {
   describe('ngtsc setClassMetadata converter', () => {
@@ -127,13 +128,14 @@ runInEachFileSystem(() => {
         {target: ts.ScriptTarget.ES2015});
     const host = new TypeScriptReflectionHost(program.getTypeChecker());
     const target = getDeclaration(program, _('/index.ts'), 'Target', ts.isClassDeclaration);
-    const call = generateSetClassMetadataCall(target, host, NOOP_DEFAULT_IMPORT_RECORDER, false);
+    const call = extractClassMetadata(target, host, NOOP_DEFAULT_IMPORT_RECORDER, false);
     if (call === null) {
       return '';
     }
     const sf = getSourceFileOrError(program, _('/index.ts'));
     const im = new ImportManager(new NoopImportRewriter(), 'i');
-    const tsStatement = translateStatement(call, im);
+    const stmt = compileClassMetadata(call).toStmt();
+    const tsStatement = translateStatement(stmt, im);
     const res = ts.createPrinter().printNode(ts.EmitHint.Unspecified, tsStatement, sf);
     return res.replace(/\s+/g, ' ');
   }

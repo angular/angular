@@ -11,6 +11,7 @@ import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {createGetSourceFile} from '../get_source_file';
 import {LinkerEnvironment} from '../linker_environment';
 
+import {PartialClassMetadataLinkerVersion1} from './partial_class_metadata_linker_1';
 import {PartialComponentLinkerVersion1} from './partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from './partial_directive_linker_1';
 import {PartialFactoryLinkerVersion1} from './partial_factory_linker_1';
@@ -21,6 +22,7 @@ import {PartialNgModuleLinkerVersion1} from './partial_ng_module_linker_1';
 import {PartialPipeLinkerVersion1} from './partial_pipe_linker_1';
 
 export const ɵɵngDeclareDirective = 'ɵɵngDeclareDirective';
+export const ɵɵngDeclareClassMetadata = 'ɵɵngDeclareClassMetadata';
 export const ɵɵngDeclareComponent = 'ɵɵngDeclareComponent';
 export const ɵɵngDeclareFactory = 'ɵɵngDeclareFactory';
 export const ɵɵngDeclareInjectable = 'ɵɵngDeclareInjectable';
@@ -28,8 +30,8 @@ export const ɵɵngDeclareInjector = 'ɵɵngDeclareInjector';
 export const ɵɵngDeclareNgModule = 'ɵɵngDeclareNgModule';
 export const ɵɵngDeclarePipe = 'ɵɵngDeclarePipe';
 export const declarationFunctions = [
-  ɵɵngDeclareDirective, ɵɵngDeclareComponent, ɵɵngDeclareFactory, ɵɵngDeclareInjectable,
-  ɵɵngDeclareInjector, ɵɵngDeclareNgModule, ɵɵngDeclarePipe
+  ɵɵngDeclareDirective, ɵɵngDeclareClassMetadata, ɵɵngDeclareComponent, ɵɵngDeclareFactory,
+  ɵɵngDeclareInjectable, ɵɵngDeclareInjector, ɵɵngDeclareNgModule, ɵɵngDeclarePipe
 ];
 
 interface LinkerRange<TExpression> {
@@ -91,6 +93,7 @@ export class PartialLinkerSelector<TStatement, TExpression> {
       environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
       code: string): Map<string, LinkerRange<TExpression>[]> {
     const partialDirectiveLinkerVersion1 = new PartialDirectiveLinkerVersion1(sourceUrl, code);
+    const partialClassMetadataLinkerVersion1 = new PartialClassMetadataLinkerVersion1();
     const partialComponentLinkerVersion1 = new PartialComponentLinkerVersion1(
         environment, createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl,
         code);
@@ -105,6 +108,10 @@ export class PartialLinkerSelector<TStatement, TExpression> {
     linkers.set(ɵɵngDeclareDirective, [
       {range: '0.0.0-PLACEHOLDER', linker: partialDirectiveLinkerVersion1},
       {range: '>=11.1.0-next.1', linker: partialDirectiveLinkerVersion1},
+    ]);
+    linkers.set(ɵɵngDeclareClassMetadata, [
+      {range: '0.0.0-PLACEHOLDER', linker: partialClassMetadataLinkerVersion1},
+      {range: '>=11.1.0-next.1', linker: partialClassMetadataLinkerVersion1},
     ]);
     linkers.set(ɵɵngDeclareComponent, [
       {range: '0.0.0-PLACEHOLDER', linker: partialComponentLinkerVersion1},

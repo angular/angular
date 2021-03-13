@@ -457,3 +457,28 @@ export interface R3DeclareDependencyMetadata {
    */
   skipSelf?: boolean;
 }
+
+/**
+ * Describes the shape of the object that the `ɵɵngDeclareClassMetadata()` function accepts.
+ *
+ * This interface serves primarily as documentation, as conformance to this interface is not
+ * enforced during linking.
+ */
+export interface R3DeclareClassMetadata extends R3PartialDeclaration {
+  /**
+   * The Angular decorators of the class.
+   */
+  decorators: o.Expression;
+
+  /**
+   * Optionally specifies the constructor parameters, their types and the Angular decorators of each
+   * parameter. This property is omitted if the class does not have a constructor.
+   */
+  ctorParameters?: o.Expression;
+
+  /**
+   * Optionally specifies the Angular decorators applied to the class properties. This property is
+   * omitted if no properties have any decorators.
+   */
+  propDecorators?: o.Expression;
+}

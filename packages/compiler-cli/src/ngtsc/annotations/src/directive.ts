@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, FactoryTarget, getSafePropertyAccessString, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3FactoryMetadata, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, FactoryTarget, getSafePropertyAccessString, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3ClassMetadata, R3DirectiveMetadata, R3FactoryMetadata, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import {emitDistinctChangesOnlyDefaultValue} from '@angular/compiler/src/core';
 import * as ts from 'typescript';
 
@@ -23,7 +23,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFl
 
 import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic} from './diagnostics';
 import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
-import {generateSetClassMetadataCall} from './metadata';
+import {extractClassMetadata} from './metadata';
 import {compileResults, createSourceSpan, findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, unwrapExpression, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
@@ -40,7 +40,7 @@ export interface DirectiveHandlerData {
   baseClass: Reference<ClassDeclaration>|'dynamic'|null;
   typeCheckMeta: DirectiveTypeCheckMeta;
   meta: R3DirectiveMetadata;
-  metadataStmt: Statement|null;
+  classMetadata: R3ClassMetadata|null;
   providersRequiringFactory: Set<Reference<ClassDeclaration>>|null;
   inputs: ClassPropertyMapping;
   outputs: ClassPropertyMapping;
@@ -233,7 +233,7 @@ export class DirectiveDecoratorHandler implements
         inputs: directiveResult.inputs,
         outputs: directiveResult.outputs,
         meta: analysis,
-        metadataStmt: generateSetClassMetadataCall(
+        classMetadata: extractClassMetadata(
             node, this.reflector, this.defaultImportRecorder, this.isCore,
             this.annotateForClosureCompiler),
         baseClass: readBaseClass(node, this.reflector, this.evaluator),
@@ -304,7 +304,10 @@ export class DirectiveDecoratorHandler implements
       resolution: Readonly<unknown>, pool: ConstantPool): CompileResult[] {
     const fac = compileNgFactoryDefField(toFactoryMetadata(analysis.meta, FactoryTarget.Directive));
     const def = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
-    return compileResults(fac, def, analysis.metadataStmt, 'ɵdir');
+    const classMetadata = analysis.classMetadata !== null ?
+        compileClassMetadata(analysis.classMetadata).toStmt() :
+        null;
+    return compileResults(fac, def, classMetadata, 'ɵdir');
   }
 
   compilePartial(
@@ -312,7 +315,10 @@ export class DirectiveDecoratorHandler implements
       resolution: Readonly<unknown>): CompileResult[] {
     const fac = compileDeclareFactory(toFactoryMetadata(analysis.meta, FactoryTarget.Directive));
     const def = compileDeclareDirectiveFromMetadata(analysis.meta);
-    return compileResults(fac, def, analysis.metadataStmt, 'ɵdir');
+    const classMetadata = analysis.classMetadata !== null ?
+        compileDeclareClassMetadata(analysis.classMetadata).toStmt() :
+        null;
+    return compileResults(fac, def, classMetadata, 'ɵdir');
   }
 
   /**

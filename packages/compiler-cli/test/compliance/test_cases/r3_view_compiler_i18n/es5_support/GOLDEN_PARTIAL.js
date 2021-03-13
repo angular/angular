@@ -11,13 +11,13 @@ var MyComponent = /** @class */ (function () {
     return MyComponent;
 }());
 export { MyComponent };
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
-        type: Component,
-        args: [{
-                selector: 'my-component',
-                template: '<div i18n="meaning:A|descA@@idA">Content A</div>',
-            }]
-    }], null, null); })();
+i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, decorators: [{
+            type: Component,
+            args: [{
+                    selector: 'my-component',
+                    template: '<div i18n="meaning:A|descA@@idA">Content A</div>',
+                }]
+        }] });
 var MyModule = /** @class */ (function () {
     function MyModule() {
     }
@@ -27,10 +27,10 @@ var MyModule = /** @class */ (function () {
     return MyModule;
 }());
 export { MyModule };
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyModule, [{
-        type: NgModule,
-        args: [{ declarations: [MyComponent] }]
-    }], null, null); })();
+i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyModule, decorators: [{
+            type: NgModule,
+            args: [{ declarations: [MyComponent] }]
+        }] });
 
 /****************************************************************************************************
  * PARTIAL FILE: test.d.ts
