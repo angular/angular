@@ -161,6 +161,8 @@ export function getTsHelperFnFromIdentifier(id: ts.Identifier): KnownDeclaration
       return KnownDeclaration.TsHelperSpread;
     case '__spreadArrays':
       return KnownDeclaration.TsHelperSpreadArrays;
+    case '__spreadArray':
+      return KnownDeclaration.TsHelperSpreadArray;
     default:
       return null;
   }
