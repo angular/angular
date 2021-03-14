@@ -56,6 +56,6 @@ export class SpreadArrayHelperFn extends KnownFn {
       return DynamicValue.fromInvalidExpressionType(node, from);
     }
 
-    return from.concat(to);
+    return to.concat(from);
   }
 }
