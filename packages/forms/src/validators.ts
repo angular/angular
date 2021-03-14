@@ -196,7 +196,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static required(control: AbstractControl): ValidationErrors|null {
+  static required: ValidatorFn = (control: AbstractControl): ValidationErrors|null => {
     return isEmptyInputValue(control.value) ? {'required': true} : null;
   }
 
@@ -221,7 +221,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static requiredTrue(control: AbstractControl): ValidationErrors|null {
+  static requiredTrue: ValidatorFn = (control: AbstractControl): ValidationErrors|null => {
     return control.value === true ? null : {'required': true};
   }
 
@@ -261,7 +261,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static email(control: AbstractControl): ValidationErrors|null {
+  static email: ValidatorFn = (control: AbstractControl): ValidationErrors|null => {
     if (isEmptyInputValue(control.value)) {
       return null;  // don't validate empty values to allow optional controls
     }
@@ -431,7 +431,7 @@ export class Validators {
    * @see `updateValueAndValidity()`
    *
    */
-  static nullValidator(control: AbstractControl): ValidationErrors|null {
+  static nullValidator: ValidatorFn = (control: AbstractControl): ValidationErrors|null => {
     return null;
   }
 
