@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
 import * as i0 from "@angular/core";
 class Comp {
 }
-Comp.ɵfac = function Comp_Factory(t) { return new (t || Comp)(); };
+Comp.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 Comp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: '<div [tabIndex]="$any(10)"></div>', isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Comp, [{
         type: Component,
@@ -27,7 +27,7 @@ class Comp {
         return value;
     }
 }
-Comp.ɵfac = function Comp_Factory(t) { return new (t || Comp)(); };
+Comp.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 Comp.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: '<div [tabIndex]="this.$any(null)"></div>', isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Comp, [{
         type: Component,

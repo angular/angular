@@ -55,6 +55,8 @@ export interface CompilerFacade {
       declaration: R3DeclareComponentFacade): any;
   compileFactory(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3FactoryDefMetadataFacade): any;
+  compileFactoryDeclaration(
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3DeclareFactoryFacade): any;
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
@@ -102,7 +104,16 @@ export interface R3DependencyMetadataFacade {
   host: boolean;
   optional: boolean;
   self: boolean;
-  skipSelf: boolean;
+  skipSelf?: boolean;
+}
+
+export interface R3DeclareDependencyMetadataFacade {
+  token: any;
+  resolved: R3ResolvedDependencyType;
+  host?: boolean;
+  optional?: boolean;
+  self?: boolean;
+  skipSelf?: boolean;
 }
 
 export interface R3PipeMetadataFacade {
@@ -232,6 +243,12 @@ export interface R3FactoryDefMetadataFacade {
   target: R3FactoryTarget;
 }
 
+export interface R3DeclareFactoryFacade {
+  type: Function;
+  deps: R3DeclareDependencyMetadataFacade[]|null;
+  target: R3FactoryTarget;
+}
+
 export enum ViewEncapsulation {
   Emulated = 0,
   // Historically the 1 value was for `Native` encapsulation which has been removed as of v11.
@@ -265,7 +282,6 @@ export interface R3DeclareInjectorFacade {
   type: Function;
   imports?: OpaqueValue[];
   providers?: OpaqueValue[];
-  deps: R3DependencyMetadataFacade[]|null;
 }
 
 export interface R3DeclareNgModuleFacade {

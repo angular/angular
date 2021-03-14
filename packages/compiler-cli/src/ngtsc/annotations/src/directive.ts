@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, getSafePropertyAccessString, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3CompiledExpression, R3DependencyMetadata, R3DirectiveMetadata, R3FactoryTarget, R3QueryMetadata, R3ResolvedDependencyType, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, getSafePropertyAccessString, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3CompiledExpression, R3DependencyMetadata, R3DirectiveMetadata, R3FactoryMetadata, R3FactoryTarget, R3QueryMetadata, R3ResolvedDependencyType, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import {emitDistinctChangesOnlyDefaultValue} from '@angular/compiler/src/core';
 import * as ts from 'typescript';
 
@@ -22,9 +22,9 @@ import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 
 import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic} from './diagnostics';
-import {compileNgFactoryDefField} from './factory';
+import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {createSourceSpan, findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
+import {compileResults, createSourceSpan, findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const FIELD_DECORATORS = [
@@ -302,35 +302,17 @@ export class DirectiveDecoratorHandler implements
   compileFull(
       node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
       resolution: Readonly<unknown>, pool: ConstantPool): CompileResult[] {
+    const fac = compileNgFactoryDefField(toDirectiveFactoryMetadata(analysis.meta));
     const def = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
-    return this.compileDirective(analysis, def);
+    return compileResults(fac, def, analysis.metadataStmt, 'ɵdir');
   }
 
   compilePartial(
       node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
       resolution: Readonly<unknown>): CompileResult[] {
+    const fac = compileDeclareFactory(toDirectiveFactoryMetadata(analysis.meta));
     const def = compileDeclareDirectiveFromMetadata(analysis.meta);
-    return this.compileDirective(analysis, def);
-  }
-
-  private compileDirective(
-      analysis: Readonly<DirectiveHandlerData>,
-      {expression: initializer, statements, type}: R3CompiledExpression): CompileResult[] {
-    const factoryRes = compileNgFactoryDefField({
-      ...analysis.meta,
-      target: R3FactoryTarget.Directive,
-    });
-    if (analysis.metadataStmt !== null) {
-      factoryRes.statements.push(analysis.metadataStmt);
-    }
-    return [
-      factoryRes, {
-        name: 'ɵdir',
-        initializer,
-        statements,
-        type,
-      }
-    ];
+    return compileResults(fac, def, analysis.metadataStmt, 'ɵdir');
   }
 
   /**
@@ -945,3 +927,7 @@ const QUERY_TYPES = new Set([
   'ViewChild',
   'ViewChildren',
 ]);
+
+function toDirectiveFactoryMetadata(meta: R3DirectiveMetadata): R3FactoryMetadata {
+  return {...meta, target: R3FactoryTarget.Directive};
+}

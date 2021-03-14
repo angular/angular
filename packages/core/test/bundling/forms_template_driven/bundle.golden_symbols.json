@@ -1560,9 +1560,6 @@
     "name": "writeDirectStyle"
   },
   {
-    "name": "ɵAbstractFormGroupDirective_BaseFactory"
-  },
-  {
     "name": "ɵInternalFormsSharedModule"
   },
   {
@@ -1612,9 +1609,6 @@
   },
   {
     "name": "ɵɵelementStart"
-  },
-  {
-    "name": "ɵɵgetInheritedFactory"
   },
   {
     "name": "ɵɵinject"

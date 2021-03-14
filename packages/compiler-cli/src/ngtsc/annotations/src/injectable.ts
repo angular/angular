@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileInjectable as compileIvyInjectable, Expression, Identifiers, LiteralExpr, R3DependencyMetadata, R3FactoryTarget, R3InjectableMetadata, R3ResolvedDependencyType, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileInjectable as compileIvyInjectable, Expression, LiteralExpr, R3DependencyMetadata, R3FactoryMetadata, R3FactoryTarget, R3InjectableMetadata, R3ResolvedDependencyType, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -16,7 +16,7 @@ import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
-import {compileNgFactoryDefField} from './factory';
+import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, unwrapConstructorDependencies, unwrapForwardRef, validateConstructorDependencies, wrapTypeReference} from './util';
 
@@ -101,14 +101,8 @@ export class InjectableDecoratorHandler implements
 
     if (analysis.needsFactory) {
       const meta = analysis.meta;
-      const factoryRes = compileNgFactoryDefField({
-        name: meta.name,
-        type: meta.type,
-        internalType: meta.internalType,
-        typeArgumentCount: meta.typeArgumentCount,
-        deps: analysis.ctorDeps,
-        target: R3FactoryTarget.Injectable,
-      });
+      const factoryRes =
+          compileNgFactoryDefField(toInjectableFactoryMetadata(meta, analysis.ctorDeps));
       if (analysis.metadataStmt !== null) {
         factoryRes.statements.push(analysis.metadataStmt);
       }
@@ -130,6 +124,49 @@ export class InjectableDecoratorHandler implements
 
     return results;
   }
+
+  compilePartial(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>):
+      CompileResult[] {
+    const res = compileIvyInjectable(analysis.meta);
+    const statements = res.statements;
+    const results: CompileResult[] = [];
+
+    if (analysis.needsFactory) {
+      const meta = analysis.meta;
+      const factoryRes =
+          compileDeclareFactory(toInjectableFactoryMetadata(meta, analysis.ctorDeps));
+      if (analysis.metadataStmt !== null) {
+        factoryRes.statements.push(analysis.metadataStmt);
+      }
+      results.push(factoryRes);
+    }
+
+    const ɵprov = this.reflector.getMembersOfClass(node).find(member => member.name === 'ɵprov');
+    if (ɵprov !== undefined && this.errorOnDuplicateProv) {
+      throw new FatalDiagnosticError(
+          ErrorCode.INJECTABLE_DUPLICATE_PROV, ɵprov.nameNode || ɵprov.node || node,
+          'Injectables cannot contain a static ɵprov property, because the compiler is going to generate one.');
+    }
+
+    if (ɵprov === undefined) {
+      // Only add a new ɵprov if there is not one already
+      results.push({name: 'ɵprov', initializer: res.expression, statements, type: res.type});
+    }
+
+    return results;
+  }
+}
+
+function toInjectableFactoryMetadata(
+    meta: R3InjectableMetadata, deps: R3DependencyMetadata[]|'invalid'|null): R3FactoryMetadata {
+  return {
+    name: meta.name,
+    type: meta.type,
+    internalType: meta.internalType,
+    typeArgumentCount: meta.typeArgumentCount,
+    deps,
+    target: R3FactoryTarget.Injectable,
+  };
 }
 
 /**

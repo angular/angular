@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3CompiledExpression, R3ComponentMetadata, R3FactoryTarget, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
+import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, Identifiers, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3CompiledExpression, R3ComponentMetadata, R3FactoryMetadata, R3FactoryTarget, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../cycles';
@@ -29,10 +29,10 @@ import {SubsetOfKeys} from '../../util/src/typescript';
 import {ResourceLoader} from './api';
 import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagnostics} from './diagnostics';
 import {DirectiveSymbol, extractDirectiveMetadata, parseFieldArrayValue} from './directive';
-import {compileNgFactoryDefField} from './factory';
+import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {NgModuleSymbol} from './ng_module';
-import {findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, resolveProvidersRequiringFactory, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {compileResults, findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, resolveProvidersRequiringFactory, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -833,8 +833,9 @@ export class ComponentDecoratorHandler implements
       return [];
     }
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
+    const fac = compileNgFactoryDefField(toComponentFactoryMetadata(meta));
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
-    return this.compileComponent(analysis, def);
+    return compileResults(fac, def, analysis.metadataStmt, 'ɵcmp');
   }
 
   compilePartial(
@@ -844,28 +845,9 @@ export class ComponentDecoratorHandler implements
       return [];
     }
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
+    const fac = compileDeclareFactory(toComponentFactoryMetadata(meta));
     const def = compileDeclareComponentFromMetadata(meta, analysis.template);
-    return this.compileComponent(analysis, def);
-  }
-
-  private compileComponent(
-      analysis: Readonly<ComponentAnalysisData>,
-      {expression: initializer, statements, type}: R3CompiledExpression): CompileResult[] {
-    const factoryRes = compileNgFactoryDefField({
-      ...analysis.meta,
-      target: R3FactoryTarget.Component,
-    });
-    if (analysis.metadataStmt !== null) {
-      factoryRes.statements.push(analysis.metadataStmt);
-    }
-    return [
-      factoryRes, {
-        name: 'ɵcmp',
-        initializer,
-        statements,
-        type,
-      }
-    ];
+    return compileResults(fac, def, analysis.metadataStmt, 'ɵcmp');
   }
 
   private _resolveLiteral(decorator: Decorator): ts.ObjectLiteralExpression {
@@ -1407,4 +1389,8 @@ function makeCyclicImportInfo(
   const message =
       `The ${type} '${name}' is used in the template but importing it would create a cycle: `;
   return makeRelatedInformation(ref.node, message + path);
+}
+
+function toComponentFactoryMetadata(meta: R3ComponentMetadata): R3FactoryMetadata {
+  return {...meta, target: R3FactoryTarget.Component};
 }

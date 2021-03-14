@@ -269,8 +269,12 @@ export {
   transitiveScopesFor as ɵtransitiveScopesFor,
 } from './render3/jit/module';
 export {
+  R3FactoryDelegateType as ɵɵFactoryDelegateType,
+  R3FactoryTarget as ɵɵFactoryTarget,
+  R3ResolvedDependencyType as ɵɵResolvedDependencyType,
   ɵɵngDeclareComponent,
   ɵɵngDeclareDirective,
+  ɵɵngDeclareFactory,
   ɵɵngDeclareInjector,
   ɵɵngDeclareNgModule,
   ɵɵngDeclarePipe,

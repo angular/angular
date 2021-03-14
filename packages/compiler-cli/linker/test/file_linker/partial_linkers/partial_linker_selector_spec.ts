@@ -16,6 +16,7 @@ import {TypeScriptAstHost} from '../../../src/ast/typescript/typescript_ast_host
 import {LinkerEnvironment} from '../../../src/file_linker/linker_environment';
 import {PartialComponentLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_directive_linker_1';
+import {PartialFactoryLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_factory_linker_1';
 import {PartialInjectorLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_injector_linker_1';
 import {PartialLinkerSelector} from '../../../src/file_linker/partial_linkers/partial_linker_selector';
 import {PartialNgModuleLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_ng_module_linker_1';
@@ -41,6 +42,9 @@ describe('PartialLinkerSelector', () => {
              environment, fs.resolve('/some/path/to/file.js'), 'some file contents');
          expect(selector.supportsDeclaration('ɵɵngDeclareDirective')).toBe(true);
          expect(selector.supportsDeclaration('ɵɵngDeclareComponent')).toBe(true);
+         expect(selector.supportsDeclaration('ɵɵngDeclareFactory')).toBe(true);
+         expect(selector.supportsDeclaration('ɵɵngDeclareInjector')).toBe(true);
+         expect(selector.supportsDeclaration('ɵɵngDeclareNgModule')).toBe(true);
          expect(selector.supportsDeclaration('ɵɵngDeclarePipe')).toBe(true);
          expect(selector.supportsDeclaration('$foo')).toBe(false);
        });
@@ -60,12 +64,14 @@ describe('PartialLinkerSelector', () => {
           .toBeInstanceOf(PartialDirectiveLinkerVersion1);
       expect(selector.getLinker('ɵɵngDeclareComponent', '0.0.0-PLACEHOLDER'))
           .toBeInstanceOf(PartialComponentLinkerVersion1);
-      expect(selector.getLinker('ɵɵngDeclarePipe', '0.0.0-PLACEHOLDER'))
-          .toBeInstanceOf(PartialPipeLinkerVersion1);
+      expect(selector.getLinker('ɵɵngDeclareFactory', '0.0.0-PLACEHOLDER'))
+          .toBeInstanceOf(PartialFactoryLinkerVersion1);
       expect(selector.getLinker('ɵɵngDeclareInjector', '0.0.0-PLACEHOLDER'))
           .toBeInstanceOf(PartialInjectorLinkerVersion1);
       expect(selector.getLinker('ɵɵngDeclareNgModule', '0.0.0-PLACEHOLDER'))
           .toBeInstanceOf(PartialNgModuleLinkerVersion1);
+      expect(selector.getLinker('ɵɵngDeclarePipe', '0.0.0-PLACEHOLDER'))
+          .toBeInstanceOf(PartialPipeLinkerVersion1);
     });
 
     it('should return the linker that matches the name and valid full version', () => {

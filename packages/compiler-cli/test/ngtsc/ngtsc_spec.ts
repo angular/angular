@@ -419,7 +419,10 @@ function allTests(os: string) {
           env.driveMain();
 
           const jsContents = env.getContents('test.js');
-          expect(jsContents).toContain('/** @pureOrBreakMyCode */ i0.ɵɵgetInheritedFactory(Dir)');
+          expect(jsContents).toContain('Dir.ɵfac = /** @pureOrBreakMyCode */ function () {');
+          expect(jsContents)
+              .toContain(
+                  '(ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir);');
         });
 
         it('should add @nocollapse to static fields', () => {
@@ -4138,9 +4141,8 @@ function allTests(os: string) {
       expect(jsContents)
           .toContain('function Base_Factory(t) { return new (t || Base)(i0.ɵɵinject(Dep)); }');
       expect(jsContents)
-          .toContain('var \u0275Child_BaseFactory = /*@__PURE__*/ i0.ɵɵgetInheritedFactory(Child)');
-      expect(jsContents)
-          .toContain('function Child_Factory(t) { return \u0275Child_BaseFactory(t || Child); }');
+          .toContain(
+              'function () { var ɵChild_BaseFactory; return function Child_Factory(t) { return (ɵChild_BaseFactory || (ɵChild_BaseFactory = i0.ɵɵgetInheritedFactory(Child)))(t || Child); }; }();');
       expect(jsContents)
           .toContain('function GrandChild_Factory(t) { return new (t || GrandChild)(); }');
     });
@@ -4164,9 +4166,9 @@ function allTests(os: string) {
 
       env.driveMain();
       const jsContents = env.getContents('test.js');
-
       expect(jsContents)
-          .toContain('var \u0275Dir_BaseFactory = /*@__PURE__*/ i0.ɵɵgetInheritedFactory(Dir)');
+          .toContain(
+              '/*@__PURE__*/ function () { var ɵDir_BaseFactory; return function Dir_Factory(t) { return (ɵDir_BaseFactory || (ɵDir_BaseFactory = i0.ɵɵgetInheritedFactory(Dir)))(t || Dir); }; }();');
     });
 
     it('should wrap "directives" in component metadata in a closure when forward references are present',
