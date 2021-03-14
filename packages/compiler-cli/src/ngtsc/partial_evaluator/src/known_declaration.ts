@@ -10,7 +10,7 @@ import {KnownDeclaration} from '../../reflection/src/host';
 
 import {ObjectAssignBuiltinFn} from './builtin';
 import {ResolvedValue} from './result';
-import {AssignHelperFn, SpreadArrayHelperFn, SpreadHelperFn} from './ts_helpers';
+import {AssignHelperFn, ReadHelperFn, SpreadArrayHelperFn, SpreadHelperFn} from './ts_helpers';
 
 /** Resolved value for the JavaScript global `Object` declaration. */
 export const jsGlobalObjectValue = new Map([['assign', new ObjectAssignBuiltinFn()]]);
@@ -23,6 +23,9 @@ const spreadTsHelperFn = new SpreadHelperFn();
 
 /** Resolved value for the `__spreadArray()` TypeScript helper declarations. */
 const spreadArrayTsHelperFn = new SpreadArrayHelperFn();
+
+/** Resolved value for the `__read()` TypeScript helper declarations. */
+const readTsHelperFn = new ReadHelperFn();
 
 /**
  * Resolves the specified known declaration to a resolved value. For example,
@@ -40,6 +43,8 @@ export function resolveKnownDeclaration(decl: KnownDeclaration): ResolvedValue {
       return spreadTsHelperFn;
     case KnownDeclaration.TsHelperSpreadArray:
       return spreadArrayTsHelperFn;
+    case KnownDeclaration.TsHelperRead:
+      return readTsHelperFn;
     default:
       throw new Error(`Cannot resolve known declaration. Received: ${KnownDeclaration[decl]}.`);
   }

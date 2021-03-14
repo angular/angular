@@ -2332,11 +2332,13 @@ runInEachFileSystem(() => {
               function __spread(...args) { /* ... */ }
               function __spreadArrays(...args) { /* ... */ }
               function __spreadArray(to, from) { /* ... */ }
+              function __read(o) { /* ... */ }
 
               var a = __assign({foo: 'bar'}, {baz: 'qux'});
               var b = __spread(['foo', 'bar'], ['baz', 'qux']);
               var c = __spreadArrays(['foo', 'bar'], ['baz', 'qux']);
               var d = __spreadArray(['foo', 'bar'], ['baz', 'qux']);
+              var e = __read(['foo', 'bar']);
             })));
           `,
           };
@@ -2352,6 +2354,7 @@ runInEachFileSystem(() => {
           testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
           testForHelper('d', '__spreadArray', KnownDeclaration.TsHelperSpreadArray);
+          testForHelper('e', '__read', KnownDeclaration.TsHelperRead);
         });
 
         it('should recognize suffixed TypeScript helpers (as function declarations)', () => {
@@ -2367,11 +2370,13 @@ runInEachFileSystem(() => {
               function __spread$2(...args) { /* ... */ }
               function __spreadArrays$3(...args) { /* ... */ }
               function __spreadArray$3(to, from) { /* ... */ }
+              function __read$3(o) { /* ... */ }
 
               var a = __assign$1({foo: 'bar'}, {baz: 'qux'});
               var b = __spread$2(['foo', 'bar'], ['baz', 'qux']);
               var c = __spreadArrays$3(['foo', 'bar'], ['baz', 'qux']);
               var d = __spreadArray$3(['foo', 'bar'], ['baz', 'qux']);
+              var e = __read$3(['foo', 'bar']);
             })));
           `,
           };
@@ -2387,6 +2392,7 @@ runInEachFileSystem(() => {
           testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays$3', KnownDeclaration.TsHelperSpreadArrays);
           testForHelper('d', '__spreadArray$3', KnownDeclaration.TsHelperSpreadArray);
+          testForHelper('e', '__read$3', KnownDeclaration.TsHelperRead);
         });
 
         it('should recognize TypeScript helpers (as variable declarations)', () => {
@@ -2402,11 +2408,13 @@ runInEachFileSystem(() => {
               var __spread = (this && this.__spread) || function (...args) { /* ... */ }
               var __spreadArrays = (this && this.__spreadArrays) || function (...args) { /* ... */ }
               var __spreadArray = (this && this.__spreadArray) || function (to, from) { /* ... */ }
+              var __read = (this && this.__read) || function (o) { /* ... */ }
 
               var a = __assign({foo: 'bar'}, {baz: 'qux'});
               var b = __spread(['foo', 'bar'], ['baz', 'qux']);
               var c = __spreadArrays(['foo', 'bar'], ['baz', 'qux']);
               var d = __spreadArray(['foo', 'bar'], ['baz', 'qux']);
+              var e = __read(['foo', 'bar']);
             })));
           `,
           };
@@ -2422,6 +2430,7 @@ runInEachFileSystem(() => {
           testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
           testForHelper('d', '__spreadArray', KnownDeclaration.TsHelperSpreadArray);
+          testForHelper('e', '__read', KnownDeclaration.TsHelperRead);
         });
 
         it('should recognize suffixed TypeScript helpers (as variable declarations)', () => {
@@ -2437,11 +2446,13 @@ runInEachFileSystem(() => {
               var __spread$2 = (this && this.__spread$2) || function (...args) { /* ... */ }
               var __spreadArrays$3 = (this && this.__spreadArrays$3) || function (...args) { /* ... */ }
               var __spreadArray$3 = (this && this.__spreadArray$3) || function (to, from) { /* ... */ }
+              var __read$3 = (this && this.__read$3) || function (o) { /* ... */ }
 
               var a = __assign$1({foo: 'bar'}, {baz: 'qux'});
               var b = __spread$2(['foo', 'bar'], ['baz', 'qux']);
               var c = __spreadArrays$3(['foo', 'bar'], ['baz', 'qux']);
               var d = __spreadArray$3(['foo', 'bar'], ['baz', 'qux']);
+              var e = __read$3(['foo', 'bar']);
             })));
           `,
           };
@@ -2457,6 +2468,7 @@ runInEachFileSystem(() => {
           testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays$3', KnownDeclaration.TsHelperSpreadArrays);
           testForHelper('d', '__spreadArray$3', KnownDeclaration.TsHelperSpreadArray);
+          testForHelper('e', '__read$3', KnownDeclaration.TsHelperRead);
         });
 
         it('should recognize imported TypeScript helpers', () => {
@@ -2473,6 +2485,7 @@ runInEachFileSystem(() => {
                 var b = tslib_1.__spread(['foo', 'bar'], ['baz', 'qux']);
                 var c = tslib_1.__spreadArrays(['foo', 'bar'], ['baz', 'qux']);
                 var d = tslib_1.__spreadArray(['foo', 'bar'], ['baz', 'qux']);
+                var e = tslib_1.__read(['foo', 'bar']);
               })));
             `,
             },
@@ -2483,6 +2496,7 @@ runInEachFileSystem(() => {
               export declare function __spread(...args: any[][]): any[];
               export declare function __spreadArrays(...args: any[][]): any[];
               export declare function __spreadArray(to: any[], from: any[]): any[];
+              export declare function __read(o: any, n?: number): any[];
             `,
             },
           ];
@@ -2502,6 +2516,7 @@ runInEachFileSystem(() => {
           testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread, 'tslib');
           testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays, 'tslib');
           testForHelper('d', '__spreadArray', KnownDeclaration.TsHelperSpreadArray, 'tslib');
+          testForHelper('e', '__read', KnownDeclaration.TsHelperRead, 'tslib');
         });
 
         it('should recognize undeclared, unimported TypeScript helpers (by name)', () => {
@@ -2517,6 +2532,7 @@ runInEachFileSystem(() => {
               var b = __spread(['foo', 'bar'], ['baz', 'qux']);
               var c = __spreadArrays(['foo', 'bar'], ['baz', 'qux']);
               var d = __spreadArray(['foo', 'bar'], ['baz', 'qux']);
+              var e = __read(['foo', 'bar']);
             })));
           `,
           };
@@ -2544,6 +2560,7 @@ runInEachFileSystem(() => {
           testForHelper('b', '__spread', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays', KnownDeclaration.TsHelperSpreadArrays);
           testForHelper('d', '__spreadArray', KnownDeclaration.TsHelperSpreadArray);
+          testForHelper('e', '__read', KnownDeclaration.TsHelperRead);
         });
 
         it('should recognize suffixed, undeclared, unimported TypeScript helpers (by name)', () => {
@@ -2559,6 +2576,7 @@ runInEachFileSystem(() => {
               var b = __spread$2(['foo', 'bar'], ['baz', 'qux']);
               var c = __spreadArrays$3(['foo', 'bar'], ['baz', 'qux']);
               var d = __spreadArray$3(['foo', 'bar'], ['baz', 'qux']);
+              var e = __read$3(['foo', 'bar']);
             })));
           `,
           };
@@ -2586,6 +2604,7 @@ runInEachFileSystem(() => {
           testForHelper('b', '__spread$2', KnownDeclaration.TsHelperSpread);
           testForHelper('c', '__spreadArrays$3', KnownDeclaration.TsHelperSpreadArrays);
           testForHelper('d', '__spreadArray$3', KnownDeclaration.TsHelperSpreadArray);
+          testForHelper('e', '__read$3', KnownDeclaration.TsHelperRead);
         });
 
         it('should recognize enum declarations with string values', () => {
@@ -2861,6 +2880,7 @@ runInEachFileSystem(() => {
             export declare function __spread(...args: any[][]): any[];
             export declare function __spreadArrays(...args: any[][]): any[];
             export declare function __spreadArray(to: any[], from: any[]): any[];
+            export declare function __read(o: any, n?: number): any[];
             export declare function __unknownHelper(...args: any[]): any;
           `,
           };
@@ -2876,6 +2896,7 @@ runInEachFileSystem(() => {
                 ['__spread', KnownDeclaration.TsHelperSpread],
                 ['__spreadArrays', KnownDeclaration.TsHelperSpreadArrays],
                 ['__spreadArray', KnownDeclaration.TsHelperSpreadArray],
+                ['__read', KnownDeclaration.TsHelperRead],
                 ['__unknownHelper', null],
               ]);
         });
