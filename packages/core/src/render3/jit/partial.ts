@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getCompilerFacade, R3DeclareComponentFacade, R3DeclareDirectiveFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade} from '../../compiler/compiler_facade';
+import {getCompilerFacade, R3DeclareComponentFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade} from '../../compiler/compiler_facade';
 import {angularCoreEnv} from './environment';
 
 /**
@@ -30,6 +30,22 @@ export function ɵɵngDeclareComponent(decl: R3DeclareComponentFacade): unknown 
   return compiler.compileComponentDeclaration(
       angularCoreEnv, `ng:///${decl.type.name}/ɵcmp.js`, decl);
 }
+
+/**
+ * Compiles a partial pipe declaration object into a full pipe definition object.
+ *
+ * @codeGenApi
+ */
+export function ɵɵngDeclareFactory(decl: R3DeclareFactoryFacade): unknown {
+  const compiler = getCompilerFacade();
+  return compiler.compileFactoryDeclaration(
+      angularCoreEnv, `ng:///${decl.type.name}/ɵfac.js`, decl);
+}
+
+/**
+ * These enums are used in the partial factory declaration calls.
+ */
+export {R3FactoryTarget, R3ResolvedDependencyType, R3FactoryDelegateType} from '../../compiler/compiler_facade';
 
 /**
  * Compiles a partial injector declaration object into a full injector definition object.

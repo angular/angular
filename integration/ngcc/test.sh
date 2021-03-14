@@ -102,10 +102,10 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
 
 
 # Did it generate a base factory call for synthesized constructors correctly?
-  grep "const ɵMatTable_BaseFactory = /\*@__PURE__\*/ ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm2015/table/table.js
+  grep "/\*@__PURE__\*/ function () { let ɵMatTable_BaseFactory; return function MatTable_Factory(t) { return (ɵMatTable_BaseFactory || (ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable)))(t || MatTable); }; }();" node_modules/@angular/material/esm2015/table/table.js
   assertSucceeded "Expected 'ngcc' to generate a base factory for 'MatTable' in '@angular/material' (esm2015)."
 
-  grep "var ɵMatTable_BaseFactory = /\*@__PURE__\*/ ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm5/table/table.js
+  grep "/\*@__PURE__\*/ function () { var ɵMatTable_BaseFactory; return function MatTable_Factory(t) { return (ɵMatTable_BaseFactory || (ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable)))(t || MatTable); }; }();" node_modules/@angular/material/esm5/table/table.js
   assertSucceeded "Expected 'ngcc' to generate a base factory for 'MatTable' in '@angular/material' (esm5)."
 
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, ReadPropExpr, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3CompiledExpression, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, ReadPropExpr, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
@@ -14,6 +14,7 @@ import {DefaultImportRecorder, ImportFlags, Reference, ReferenceEmitter} from '.
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, CtorParameter, Decorator, Import, ImportedTypeValueReference, isNamedClassDeclaration, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind, UnavailableValue, ValueUnavailableKind} from '../../reflection';
 import {DeclarationData} from '../../scope';
+import {CompileResult} from '../../transform';
 
 export type ConstructorDeps = {
   deps: R3DependencyMetadata[];
@@ -562,4 +563,24 @@ export function createSourceSpan(node: ts.Node): ParseSourceSpan {
   return new ParseSourceSpan(
       new ParseLocation(parseSf, startOffset, startLine + 1, startCol + 1),
       new ParseLocation(parseSf, endOffset, endLine + 1, endCol + 1));
+}
+
+/**
+ * Collate the factory and definition compiled results into an array of CompileResult objects.
+ */
+export function compileResults(
+    fac: CompileResult, def: R3CompiledExpression, metadataStmt: Statement|null,
+    propName: string): CompileResult[] {
+  const statements = def.statements;
+  if (metadataStmt !== null) {
+    statements.push(metadataStmt);
+  }
+  return [
+    fac, {
+      name: propName,
+      initializer: def.expression,
+      statements: def.statements,
+      type: def.type,
+    }
+  ];
 }

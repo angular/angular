@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileFactoryFunction, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, Identifiers as R3, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3CompiledExpression, R3FactoryMetadata, R3FactoryTarget, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclareInjectorFromMetadata, compileDeclareNgModuleFromMetadata, compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, ExternalExpr, Identifiers as R3, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, NO_ERRORS_SCHEMA, R3CompiledExpression, R3FactoryMetadata, R3FactoryTarget, R3Identifiers, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, SchemaMetadata, Statement, STRING_TYPE, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
@@ -23,6 +23,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 import {getSourceFile} from '../../util/src/typescript';
 
 import {createValueHasWrongTypeError, getProviderDiagnostics} from './diagnostics';
+import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {ReferencesRegistry} from './references_registry';
 import {combineResolvers, findAngularDecorator, forwardRefResolver, getValidConstructorDependencies, isExpressionForwardReference, resolveProvidersRequiringFactory, toR3Reference, unwrapExpression, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
@@ -464,7 +465,7 @@ export class NgModuleDecoratorHandler implements
       node: ClassDeclaration,
       {inj, mod, fac, metadataStmt, declarations}: Readonly<NgModuleAnalysis>,
       {injectorImports}: Readonly<NgModuleResolution>): CompileResult[] {
-    const factoryFn = compileFactoryFunction(fac);
+    const factoryFn = compileNgFactoryDefField(fac);
     const ngInjectorDef = compileInjector(this.mergeInjectorImports(inj, injectorImports));
     const ngModuleDef = compileNgModule(mod);
     const statements = ngModuleDef.statements;
@@ -477,7 +478,7 @@ export class NgModuleDecoratorHandler implements
   compilePartial(
       node: ClassDeclaration, {inj, fac, mod, metadataStmt}: Readonly<NgModuleAnalysis>,
       {injectorImports}: Readonly<NgModuleResolution>): CompileResult[] {
-    const factoryFn = compileFactoryFunction(fac);
+    const factoryFn = compileDeclareFactory(fac);
     const injectorDef =
         compileDeclareInjectorFromMetadata(this.mergeInjectorImports(inj, injectorImports));
     const ngModuleDef = compileDeclareNgModuleFromMetadata(mod);
@@ -531,15 +532,10 @@ export class NgModuleDecoratorHandler implements
   }
 
   private compileNgModule(
-      factoryFn: R3CompiledExpression, injectorDef: R3CompiledExpression,
+      factoryFn: CompileResult, injectorDef: R3CompiledExpression,
       ngModuleDef: R3CompiledExpression): CompileResult[] {
     const res: CompileResult[] = [
-      {
-        name: 'ɵfac',
-        initializer: factoryFn.expression,
-        statements: factoryFn.statements,
-        type: factoryFn.type,
-      },
+      factoryFn,
       {
         name: 'ɵmod',
         initializer: ngModuleDef.expression,

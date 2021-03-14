@@ -29,9 +29,13 @@ const INTERFACE_EXCEPTIONS = new Set<string>([
 const PARTIAL_ONLY = new Set<string>([
   'ɵɵngDeclareDirective',
   'ɵɵngDeclareComponent',
+  'ɵɵngDeclareFactory',
   'ɵɵngDeclareInjector',
   'ɵɵngDeclareNgModule',
   'ɵɵngDeclarePipe',
+  'ɵɵFactoryTarget',
+  'ɵɵResolvedDependencyType',
+  'ɵɵFactoryDelegateType',
   'ChangeDetectionStrategy',
   'ViewEncapsulation',
 ]);
