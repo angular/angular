@@ -5,6 +5,7 @@ h1 {
 nav a {
   padding: 1rem;
   text-decoration: none;
+  margin-right: 10px;
   margin-top: 10px;
   display: inline-block;
   background-color: #e8e8e8;
