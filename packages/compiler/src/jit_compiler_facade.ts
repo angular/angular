@@ -7,7 +7,7 @@
  */
 
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDirectiveFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, Type, ViewEncapsulation} from './core';
 import {Identifiers} from './identifiers';
@@ -212,6 +212,21 @@ export class CompilerFacadeImpl implements CompilerFacade {
     return this.jitExpression(
         factoryRes.expression, angularCoreEnv, sourceMapUrl, factoryRes.statements);
   }
+
+  compileFactoryDeclaration(
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3DeclareFactoryFacade) {
+    const factoryRes = compileFactoryFunction({
+      name: meta.type.name,
+      type: wrapReference(meta.type),
+      internalType: new WrappedNodeExpr(meta.type),
+      typeArgumentCount: 0,
+      deps: convertR3DeclareDependencyMetadataArray(meta.deps),
+      target: meta.target,
+    });
+    return this.jitExpression(
+        factoryRes.expression, angularCoreEnv, sourceMapUrl, factoryRes.statements);
+  }
+
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan {
     return r3JitTypeSourceSpan(kind, typeName, sourceUrl);
@@ -447,7 +462,8 @@ function computeProvidedIn(providedIn: Type|string|null|undefined): Expression {
   }
 }
 
-function convertR3DependencyMetadata(facade: R3DependencyMetadataFacade): R3DependencyMetadata {
+function convertR3DependencyMetadata(facade: R3DeclareDependencyMetadataFacade):
+    R3DependencyMetadata {
   let tokenExpr;
   if (facade.token === null) {
     tokenExpr = new LiteralExpr(null);
@@ -460,15 +476,20 @@ function convertR3DependencyMetadata(facade: R3DependencyMetadataFacade): R3Depe
     token: tokenExpr,
     attribute: null,
     resolved: facade.resolved,
-    host: facade.host,
-    optional: facade.optional,
-    self: facade.self,
-    skipSelf: facade.skipSelf,
+    host: !!facade.host,
+    optional: !!facade.optional,
+    self: !!facade.self,
+    skipSelf: !!facade.skipSelf,
   };
 }
 
 function convertR3DependencyMetadataArray(facades: R3DependencyMetadataFacade[]|null|
                                           undefined): R3DependencyMetadata[]|null {
+  return facades == null ? null : facades.map(convertR3DependencyMetadata);
+}
+
+function convertR3DeclareDependencyMetadataArray(facades: R3DeclareDependencyMetadataFacade[]|null|
+                                                 undefined): R3DependencyMetadata[]|null {
   return facades == null ? null : facades.map(convertR3DependencyMetadata);
 }
 

@@ -6,11 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileFactoryFunction, R3FactoryMetadata} from '@angular/compiler';
+import {compileDeclareFactoryFunction, compileFactoryFunction, R3FactoryMetadata} from '@angular/compiler';
 
 import {CompileResult} from '../../transform';
 
 export function compileNgFactoryDefField(metadata: R3FactoryMetadata): CompileResult {
   const res = compileFactoryFunction(metadata);
+  return {name: 'ɵfac', initializer: res.expression, statements: res.statements, type: res.type};
+}
+
+export function compileDeclareFactory(metadata: R3FactoryMetadata): CompileResult {
+  const res = compileDeclareFactoryFunction(metadata);
   return {name: 'ɵfac', initializer: res.expression, statements: res.statements, type: res.type};
 }

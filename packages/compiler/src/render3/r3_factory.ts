@@ -63,13 +63,13 @@ export interface R3ConstructorFactoryMetadata {
 }
 
 export enum R3FactoryDelegateType {
-  Class,
-  Function,
+  Class = 0,
+  Function = 1,
 }
 
 export interface R3DelegatedFnOrClassMetadata extends R3ConstructorFactoryMetadata {
   delegate: o.Expression;
-  delegateType: R3FactoryDelegateType.Class|R3FactoryDelegateType.Function;
+  delegateType: R3FactoryDelegateType;
   delegateDeps: R3DependencyMetadata[];
 }
 
@@ -168,15 +168,14 @@ export interface R3DependencyMetadata {
  */
 export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpression {
   const t = o.variable('t');
-  const statements: o.Statement[] = [];
-  let ctorDepsType: o.Type = o.NONE_TYPE;
+  let baseFactoryVar: o.ReadVarExpr|null = null;
 
   // The type to instantiate via constructor invocation. If there is no delegated factory, meaning
   // this type is always created by constructor invocation, then this is the type-to-create
   // parameter provided by the user (t) if specified, or the current type if not. If there is a
   // delegated factory (which is used to create the current type) then this is only the type-to-
   // create parameter (t).
-  const typeForCtor = !isDelegatedMetadata(meta) ?
+  const typeForCtor = !isDelegatedFactoryMetadata(meta) ?
       new o.BinaryOperatorExpr(o.BinaryOperator.Or, t, meta.internalType) :
       t;
 
@@ -185,23 +184,12 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
     // There is a constructor (either explicitly or implicitly defined).
     if (meta.deps !== 'invalid') {
       ctorExpr = new o.InstantiateExpr(typeForCtor, injectDependencies(meta.deps, meta.target));
-
-      ctorDepsType = createCtorDepsType(meta.deps);
     }
   } else {
-    const baseFactory = o.variable(`ɵ${meta.name}_BaseFactory`);
-    const getInheritedFactory = o.importExpr(R3.getInheritedFactory);
-    const baseFactoryStmt =
-        baseFactory
-            .set(getInheritedFactory.callFn(
-                [meta.internalType], /* sourceSpan */ undefined, /* pure */ true))
-            .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Exported, o.StmtModifier.Final]);
-    statements.push(baseFactoryStmt);
-
     // There is no constructor, use the base class' factory to construct typeForCtor.
-    ctorExpr = baseFactory.callFn([typeForCtor]);
+    baseFactoryVar = o.variable(`ɵ${meta.name}_BaseFactory`);
+    ctorExpr = baseFactoryVar.callFn([typeForCtor]);
   }
-  const ctorExprFinal = ctorExpr;
 
   const body: o.Statement[] = [];
   let retExpr: o.Expression|null = null;
@@ -209,17 +197,13 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
   function makeConditionalFactory(nonCtorExpr: o.Expression): o.ReadVarExpr {
     const r = o.variable('r');
     body.push(r.set(o.NULL_EXPR).toDeclStmt());
-    let ctorStmt: o.Statement|null = null;
-    if (ctorExprFinal !== null) {
-      ctorStmt = r.set(ctorExprFinal).toStmt();
-    } else {
-      ctorStmt = o.importExpr(R3.invalidFactory).callFn([]).toStmt();
-    }
+    const ctorStmt = ctorExpr !== null ? r.set(ctorExpr).toStmt() :
+                                         o.importExpr(R3.invalidFactory).callFn([]).toStmt();
     body.push(o.ifStmt(t, [ctorStmt], [r.set(nonCtorExpr).toStmt()]));
     return r;
   }
 
-  if (isDelegatedMetadata(meta)) {
+  if (isDelegatedFactoryMetadata(meta)) {
     // This type is created with a delegated factory. If a type parameter is not specified, call
     // the factory instead.
     const delegateArgs = injectDependencies(meta.delegateDeps, meta.target);
@@ -236,21 +220,48 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
     retExpr = ctorExpr;
   }
 
-  if (retExpr !== null) {
-    body.push(new o.ReturnStatement(retExpr));
-  } else {
+
+  if (retExpr === null) {
+    // The expression cannot be formed so render an `ɵɵinvalidFactory()` call.
     body.push(o.importExpr(R3.invalidFactory).callFn([]).toStmt());
+  } else if (baseFactoryVar !== null) {
+    // This factory uses a base factory, so call `ɵɵgetInheritedFactory()` to compute it.
+    const getInheritedFactoryCall =
+        o.importExpr(R3.getInheritedFactory).callFn([meta.internalType]);
+    // Memoize the base factoryFn: `baseFactory || (baseFactory = ɵɵgetInheritedFactory(...))`
+    const baseFactory = new o.BinaryOperatorExpr(
+        o.BinaryOperator.Or, baseFactoryVar, baseFactoryVar.set(getInheritedFactoryCall));
+    body.push(new o.ReturnStatement(baseFactory.callFn([typeForCtor])));
+  } else {
+    // This is straightforward factory, just return it.
+    body.push(new o.ReturnStatement(retExpr));
+  }
+
+  let factoryFn: o.Expression = o.fn(
+      [new o.FnParam('t', o.DYNAMIC_TYPE)], body, o.INFERRED_TYPE, undefined,
+      `${meta.name}_Factory`);
+
+  if (baseFactoryVar !== null) {
+    // There is a base factory variable so wrap its declaration along with the factory function into
+    // an IIFE.
+    factoryFn = o.fn([], [
+                   new o.DeclareVarStmt(baseFactoryVar.name!), new o.ReturnStatement(factoryFn)
+                 ]).callFn([], /* sourceSpan */ undefined, /* pure */ true);
   }
 
   return {
-    expression: o.fn(
-        [new o.FnParam('t', o.DYNAMIC_TYPE)], body, o.INFERRED_TYPE, undefined,
-        `${meta.name}_Factory`),
-    statements,
-    type: o.expressionType(o.importExpr(
-        R3.FactoryDeclaration,
-        [typeWithParameters(meta.type.type, meta.typeArgumentCount), ctorDepsType]))
+    expression: factoryFn,
+    statements: [],
+    type: createFactoryType(meta),
   };
+}
+
+export function createFactoryType(meta: R3FactoryMetadata) {
+  const ctorDepsType =
+      meta.deps !== null && meta.deps !== 'invalid' ? createCtorDepsType(meta.deps) : o.NONE_TYPE;
+  return o.expressionType(o.importExpr(
+      R3.FactoryDeclaration,
+      [typeWithParameters(meta.type.type, meta.typeArgumentCount), ctorDepsType]));
 }
 
 function injectDependencies(deps: R3DependencyMetadata[], target: R3FactoryTarget): o.Expression[] {
@@ -386,11 +397,13 @@ export function dependenciesFromGlobalMetadata(
   return deps;
 }
 
-function isDelegatedMetadata(meta: R3FactoryMetadata): meta is R3DelegatedFnOrClassMetadata {
+export function isDelegatedFactoryMetadata(meta: R3FactoryMetadata):
+    meta is R3DelegatedFnOrClassMetadata {
   return (meta as any).delegateType !== undefined;
 }
 
-function isExpressionFactoryMetadata(meta: R3FactoryMetadata): meta is R3ExpressionFactoryMetadata {
+export function isExpressionFactoryMetadata(meta: R3FactoryMetadata):
+    meta is R3ExpressionFactoryMetadata {
   return (meta as any).expression !== undefined;
 }
 

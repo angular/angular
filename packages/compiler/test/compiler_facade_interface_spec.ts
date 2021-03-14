@@ -74,9 +74,17 @@ const coreR3DependencyMetadataFacade: core.R3DependencyMetadataFacade =
 const compilerR3DependencyMetadataFacade: compiler.R3DependencyMetadataFacade =
     null! as core.R3DependencyMetadataFacade;
 
+const coreR3DeclareDependencyMetadataFacade: core.R3DeclareDependencyMetadataFacade =
+    null! as compiler.R3DeclareDependencyMetadataFacade;
+const compilerR3DeclareDependencyMetadataFacade: compiler.R3DeclareDependencyMetadataFacade =
+    null! as core.R3DeclareDependencyMetadataFacade;
+
 const coreR3PipeMetadataFacade: core.R3PipeMetadataFacade = null! as compiler.R3PipeMetadataFacade;
 const compilerR3PipeMetadataFacade: compiler.R3PipeMetadataFacade =
     null! as core.R3PipeMetadataFacade;
+
+const coreR3DeclarePipeFacade: core.R3DeclarePipeFacade = null! as compiler.R3DeclarePipeFacade;
+const compilerR3DeclarePipeFacade: compiler.R3DeclarePipeFacade = null! as core.R3DeclarePipeFacade;
 
 const coreR3InjectableMetadataFacade: core.R3InjectableMetadataFacade =
     null! as compiler.R3InjectableMetadataFacade;
@@ -88,25 +96,35 @@ const coreR3NgModuleMetadataFacade: core.R3NgModuleMetadataFacade =
 const compilerR3NgModuleMetadataFacade: compiler.R3NgModuleMetadataFacade =
     null! as core.R3NgModuleMetadataFacade;
 
+const coreR3DeclareNgModuleFacade: core.R3DeclareNgModuleFacade =
+    null! as compiler.R3DeclareNgModuleFacade;
+const compilerR3DeclareNgModuleFacade: compiler.R3DeclareNgModuleFacade =
+    null! as core.R3DeclareNgModuleFacade;
+
 const coreR3InjectorMetadataFacade: core.R3InjectorMetadataFacade =
     null! as compiler.R3InjectorMetadataFacade;
 const compilerR3InjectorMetadataFacade: compiler.R3InjectorMetadataFacade =
     null! as core.R3InjectorMetadataFacade;
+
+const coreR3DeclareInjectorFacade: core.R3DeclareInjectorFacade =
+    null! as compiler.R3DeclareInjectorFacade;
+const compilerR3DeclareInjectorFacade: compiler.R3DeclareInjectorFacade =
+    null! as core.R3DeclareInjectorFacade;
 
 const coreR3DirectiveMetadataFacade: core.R3DirectiveMetadataFacade =
     null! as compiler.R3DirectiveMetadataFacade;
 const compilerR3DirectiveMetadataFacade: compiler.R3DirectiveMetadataFacade =
     null! as core.R3DirectiveMetadataFacade;
 
-const coreR3ComponentMetadataFacade: core.R3ComponentMetadataFacade =
-    null! as compiler.R3ComponentMetadataFacade;
-const compilerR3ComponentMetadataFacade: compiler.R3ComponentMetadataFacade =
-    null! as core.R3ComponentMetadataFacade;
-
 const coreR3DeclareDirectiveFacade: core.R3DeclareDirectiveFacade =
     null! as compiler.R3DeclareDirectiveFacade;
 const compilerR3DeclareDirectiveFacade: compiler.R3DeclareDirectiveFacade =
     null! as core.R3DeclareDirectiveFacade;
+
+const coreR3ComponentMetadataFacade: core.R3ComponentMetadataFacade =
+    null! as compiler.R3ComponentMetadataFacade;
+const compilerR3ComponentMetadataFacade: compiler.R3ComponentMetadataFacade =
+    null! as core.R3ComponentMetadataFacade;
 
 const coreR3DeclareComponentFacade: core.R3DeclareComponentFacade =
     null! as compiler.R3DeclareComponentFacade;

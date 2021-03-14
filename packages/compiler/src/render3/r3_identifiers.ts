@@ -259,6 +259,12 @@ export class Identifiers {
     name: 'ɵɵFactoryDeclaration',
     moduleName: CORE,
   };
+  static declareFactory: o.ExternalReference = {name: 'ɵɵngDeclareFactory', moduleName: CORE};
+  static R3FactoryTarget: o.ExternalReference = {name: 'ɵɵFactoryTarget', moduleName: CORE};
+  static R3ResolvedDependencyType:
+      o.ExternalReference = {name: 'ɵɵResolvedDependencyType', moduleName: CORE};
+  static R3FactoryDelegateType:
+      o.ExternalReference = {name: 'ɵɵFactoryDelegateType', moduleName: CORE};
 
   static defineDirective: o.ExternalReference = {name: 'ɵɵdefineDirective', moduleName: CORE};
   static declareDirective: o.ExternalReference = {name: 'ɵɵngDeclareDirective', moduleName: CORE};
