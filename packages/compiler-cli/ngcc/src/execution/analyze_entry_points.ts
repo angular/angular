@@ -49,11 +49,8 @@ export function getAnalyzeEntryPointsFn(
 
     for (const entryPoint of entryPoints) {
       const packageJson = entryPoint.packageJson;
-      const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings');
       const {propertiesToProcess, equivalentPropertiesMap} = getPropertiesToProcess(
           packageJson, supportedPropertiesToConsider, compileAllFormats, typingsOnly);
-      let processDts = hasProcessedTypings ? DtsProcessing.No :
-                                             typingsOnly ? DtsProcessing.Only : DtsProcessing.Yes;
 
       if (propertiesToProcess.length === 0) {
         // This entry-point is unprocessable (i.e. there is no format property that is of interest
@@ -63,6 +60,16 @@ export function getAnalyzeEntryPointsFn(
         unprocessableEntryPointPaths.push(entryPoint.path);
         continue;
       }
+
+      const hasProcessedTypings = hasBeenProcessed(packageJson, 'typings');
+      if (hasProcessedTypings && typingsOnly) {
+        // Typings for this entry-point have already been processed and we're in typings-only mode,
+        // so no task has to be created for this entry-point.
+        logger.debug(`Skipping ${entryPoint.name} : typings have already been processed.`);
+        continue;
+      }
+      let processDts = hasProcessedTypings ? DtsProcessing.No :
+                                             typingsOnly ? DtsProcessing.Only : DtsProcessing.Yes;
 
       for (const formatProperty of propertiesToProcess) {
         if (hasBeenProcessed(entryPoint.packageJson, formatProperty)) {

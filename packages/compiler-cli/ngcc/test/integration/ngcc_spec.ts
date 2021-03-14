@@ -1358,6 +1358,66 @@ runInEachFileSystem(() => {
         expect(fs.exists(_(`/node_modules/@angular/common/common.d.ts.__ivy_ngcc_bak`))).toBe(true);
       });
 
+      it('should not compile anything when typings have already been processed', () => {
+        let logger = new MockLogger();
+        mainNgcc({
+          basePath: '/node_modules',
+          propertiesToConsider: ['esm2015'],
+          targetEntryPointPath: '@angular/core',
+          typingsOnly: true,
+          logger,
+        });
+        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(fs.readFile(_(`/node_modules/@angular/core/esm2015/src/application_init.js`)))
+            .not.toMatch(ANGULAR_CORE_IMPORT_REGEX);
+        expect(logger.logs.debug).toContain(['  Successfully compiled @angular/core : esm2015']);
+
+        // Try to process the typings for @angular/core again, now using a different format
+        // property, to verify that it does not process the entry-point again and that the JS
+        // files are still untouched.
+        logger = new MockLogger();
+        mainNgcc({
+          basePath: '/node_modules',
+          propertiesToConsider: ['main'],
+          targetEntryPointPath: '@angular/core',
+          typingsOnly: true,
+          logger,
+        });
+        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(fs.readFile(_(`/node_modules/@angular/core/esm2015/src/application_init.js`)))
+            .not.toMatch(ANGULAR_CORE_IMPORT_REGEX);
+        expect(logger.logs.debug).toContain([
+          'Skipping @angular/core : typings have already been processed.'
+        ]);
+
+        // Now also process the typings for @angular/common to verify that its dependency on
+        // @angular/core, which has already been processed and will therefore be skipped, is able
+        // to succeed.
+        logger = new MockLogger();
+        mainNgcc({
+          basePath: '/node_modules',
+          propertiesToConsider: ['esm2015'],
+          targetEntryPointPath: '@angular/common',
+          typingsOnly: true,
+          logger,
+        });
+        expect(loadPackage('@angular/core').__processed_by_ivy_ngcc__).toEqual({
+          typings: '0.0.0-PLACEHOLDER',
+        });
+        expect(fs.readFile(_(`/node_modules/@angular/core/esm2015/src/application_init.js`)))
+            .not.toMatch(ANGULAR_CORE_IMPORT_REGEX);
+        expect(fs.readFile(_(`/node_modules/@angular/common/esm2015/src/common_module.js`)))
+            .not.toMatch(ANGULAR_CORE_IMPORT_REGEX);
+        expect(logger.logs.debug).toContain([
+          'Skipping @angular/core : typings have already been processed.'
+        ]);
+        expect(logger.logs.debug).toContain(['  Successfully compiled @angular/common : esm2015']);
+      });
+
       it('should cope with compiling the same entry-point multiple times with different formats',
          () => {
            mainNgcc({
