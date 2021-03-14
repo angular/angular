@@ -59,3 +59,24 @@ export class SpreadArrayHelperFn extends KnownFn {
     return to.concat(from);
   }
 }
+
+// Used for `__read` TypeScript helper function.
+export class ReadHelperFn extends KnownFn {
+  evaluate(node: ts.Node, args: ResolvedValueArray): ResolvedValue {
+    if (args.length !== 1) {
+      // The `__read` helper accepts a second argument `n` but that case is not supported.
+      return DynamicValue.fromUnknown(node);
+    }
+
+    const [value] = args;
+    if (value instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, value);
+    }
+
+    if (!Array.isArray(value)) {
+      return DynamicValue.fromInvalidExpressionType(node, value);
+    }
+
+    return value;
+  }
+}
