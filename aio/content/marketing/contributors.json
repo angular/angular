@@ -719,6 +719,14 @@
     "groups": ["Angular"],
     "lead": "jelbourn"
   },
+  "prestonjlamb": {
+    "name": "Preston Lamb",
+    "picture": "prestonjlamb.png",
+    "twitter": "prestonjlamb",
+    "website": "https://github.com/pjlamb12",
+    "bio": "Preston is a JavaScript developer, husband, and father of four from Roy, UT. He also writes blog posts, creates training courses for Thinkster.io, and loves learning more about web development. In his free time he likes to spend time with his family and play or watch basketball (Go Jazz!). ",
+    "groups": ["GDE"]
+  },
   "ralph": {
     "name": "Ralph Wang",
     "picture": "ralph.jpg",
