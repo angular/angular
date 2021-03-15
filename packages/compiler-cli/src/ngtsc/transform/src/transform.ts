@@ -10,6 +10,7 @@ import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {DefaultImportRecorder, ImportRewriter} from '../../imports';
+import {PerfPhase, PerfRecorder} from '../../perf';
 import {Decorator, ReflectionHost} from '../../reflection';
 import {ImportManager, RecordWrappedNodeExprFn, translateExpression, translateStatement, TranslatorOptions} from '../../translator';
 import {visit, VisitListEntryResult, Visitor} from '../../util/src/visitor';
@@ -33,14 +34,16 @@ interface FileOverviewMeta {
 
 export function ivyTransformFactory(
     compilation: TraitCompiler, reflector: ReflectionHost, importRewriter: ImportRewriter,
-    defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
+    defaultImportRecorder: DefaultImportRecorder, perf: PerfRecorder, isCore: boolean,
     isClosureCompilerEnabled: boolean): ts.TransformerFactory<ts.SourceFile> {
   const recordWrappedNodeExpr = createRecorderFn(defaultImportRecorder);
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     return (file: ts.SourceFile): ts.SourceFile => {
-      return transformIvySourceFile(
-          compilation, context, reflector, importRewriter, file, isCore, isClosureCompilerEnabled,
-          recordWrappedNodeExpr);
+      return perf.inPhase(
+          PerfPhase.Compile,
+          () => transformIvySourceFile(
+              compilation, context, reflector, importRewriter, file, isCore,
+              isClosureCompilerEnabled, recordWrappedNodeExpr));
     };
   };
 }

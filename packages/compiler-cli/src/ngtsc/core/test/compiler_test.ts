@@ -25,8 +25,8 @@ function makeFreshCompiler(
     programStrategy: TypeCheckingProgramStrategy, incrementalStrategy: IncrementalBuildStrategy,
     enableTemplateTypeChecker: boolean, usePoisonedData: boolean): NgCompiler {
   const ticket = freshCompilationTicket(
-      program, options, incrementalStrategy, programStrategy, enableTemplateTypeChecker,
-      usePoisonedData);
+      program, options, incrementalStrategy, programStrategy, /* perfRecorder */ null,
+      enableTemplateTypeChecker, usePoisonedData);
   return NgCompiler.fromTicket(ticket, host);
 }
 

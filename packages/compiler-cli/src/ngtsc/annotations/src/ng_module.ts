@@ -14,6 +14,7 @@ import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports'
 import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, SemanticSymbol} from '../../incremental/semantic_graph';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
+import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration, ReflectionHost, reflectObjectLiteral, typeNodeToValueExpr} from '../../reflection';
 import {NgModuleRouteAnalyzer} from '../../routing';
 import {LocalModuleScopeRegistry, ScopeData} from '../../scope';
@@ -131,7 +132,8 @@ export class NgModuleDecoratorHandler implements
       private factoryTracker: FactoryTracker|null,
       private defaultImportRecorder: DefaultImportRecorder,
       private annotateForClosureCompiler: boolean,
-      private injectableRegistry: InjectableClassRegistry, private localeId?: string) {}
+      private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
+      private localeId?: string) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = NgModuleDecoratorHandler.name;
@@ -154,6 +156,8 @@ export class NgModuleDecoratorHandler implements
 
   analyze(node: ClassDeclaration, decorator: Readonly<Decorator>):
       AnalysisOutput<NgModuleAnalysis> {
+    this.perf.eventCount(PerfEvent.AnalyzeNgModule);
+
     const name = node.name.text;
     if (decorator.args === null || decorator.args.length > 1) {
       throw new FatalDiagnosticError(

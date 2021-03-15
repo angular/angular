@@ -8,6 +8,8 @@
 
 import * as ts from 'typescript';
 
+import {PerfPhase, PerfRecorder} from '../../perf';
+
 /**
  * A cached graph of imports in the `ts.Program`.
  *
@@ -17,7 +19,7 @@ import * as ts from 'typescript';
 export class ImportGraph {
   private map = new Map<ts.SourceFile, Set<ts.SourceFile>>();
 
-  constructor(private checker: ts.TypeChecker) {}
+  constructor(private checker: ts.TypeChecker, private perf: PerfRecorder) {}
 
   /**
    * List the direct (not transitive) imports of a given `ts.SourceFile`.
@@ -99,26 +101,28 @@ export class ImportGraph {
   }
 
   private scanImports(sf: ts.SourceFile): Set<ts.SourceFile> {
-    const imports = new Set<ts.SourceFile>();
-    // Look through the source file for import and export statements.
-    for (const stmt of sf.statements) {
-      if ((!ts.isImportDeclaration(stmt) && !ts.isExportDeclaration(stmt)) ||
-          stmt.moduleSpecifier === undefined) {
-        continue;
-      }
+    return this.perf.inPhase(PerfPhase.CycleDetection, () => {
+      const imports = new Set<ts.SourceFile>();
+      // Look through the source file for import and export statements.
+      for (const stmt of sf.statements) {
+        if ((!ts.isImportDeclaration(stmt) && !ts.isExportDeclaration(stmt)) ||
+            stmt.moduleSpecifier === undefined) {
+          continue;
+        }
 
-      const symbol = this.checker.getSymbolAtLocation(stmt.moduleSpecifier);
-      if (symbol === undefined || symbol.valueDeclaration === undefined) {
-        // No symbol could be found to skip over this import/export.
-        continue;
+        const symbol = this.checker.getSymbolAtLocation(stmt.moduleSpecifier);
+        if (symbol === undefined || symbol.valueDeclaration === undefined) {
+          // No symbol could be found to skip over this import/export.
+          continue;
+        }
+        const moduleFile = symbol.valueDeclaration;
+        if (ts.isSourceFile(moduleFile) && isLocalFile(moduleFile)) {
+          // Record this local import.
+          imports.add(moduleFile);
+        }
       }
-      const moduleFile = symbol.valueDeclaration;
-      if (ts.isSourceFile(moduleFile) && isLocalFile(moduleFile)) {
-        // Record this local import.
-        imports.add(moduleFile);
-      }
-    }
-    return imports;
+      return imports;
+    });
   }
 }
 

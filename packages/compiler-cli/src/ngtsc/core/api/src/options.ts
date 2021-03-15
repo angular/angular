@@ -28,9 +28,8 @@ export interface TestOnlyOptions {
   /**
    * An option to enable ngtsc's internal performance tracing.
    *
-   * This should be a path to a JSON file where trace information will be written. An optional 'ts:'
-   * prefix will cause the trace to be written via the TS host instead of directly to the filesystem
-   * (not all hosts support this mode of operation).
+   * This should be a path to a JSON file where trace information will be written. This is sensitive
+   * to the compiler's working directory, and should likely be an absolute path.
    *
    * This is currently not exposed to users as the trace format is still unstable.
    */
