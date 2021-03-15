@@ -174,11 +174,11 @@ The `architect/build` section configures defaults for options of the `ng build` 
 
 ### Alternate build configurations
 
-By default, both a `production` and `development` configurations are defined. The `ng build` command is configured to run with the `production` configuration. This configuration sets defaults that optimize the app in a number of ways, such as:
+Angular CLI comes with two build configurations: `production` and `development`. By default, the `ng build` command uses the `production` configuration, which applies a number of build optimizations, including:
 * Bundling files
 * Minimizing excess whitespace
 * Removing comments and dead code
-* Rewriting code to use short, mangled names (minification).
+* Rewriting code to use short, mangled names (minification)
 
 You can define and name additional alternate configurations (such as `stage`, for instance) appropriate to your development process. Some examples of different build configurations are `stable`, `archive` and `next` used by AIO itself, and the individual locale-specific configurations required for building localized versions of an app. For details, see [Internationalization (i18n)](guide/i18n#merge-aot).
 

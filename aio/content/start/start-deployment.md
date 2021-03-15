@@ -51,7 +51,7 @@ A best practice is to run your project locally before you deploy it. To run your
 {@a building}
 ## Building and hosting your application
 
- 1. To build your application for production, use the `build` command. By default, this command is configured to `production` mode.
+ 1. To build your application for production, use the `build` command. By default, this command uses the `production` build configuration.
 
     ```sh
     ng build

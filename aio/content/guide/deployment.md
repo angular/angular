@@ -68,7 +68,7 @@ ng deploy
 
 The command is interactive. In this case, you must have or create a Firebase account, and authenticate using that account. The command prompts you to select a Firebase project for deployment
 
-After the command produces an optimal build of your application (equivalent to `ng deploy`), it uploads the production assets to Firebase.
+The command builds your application and uploads the production assets to Firebase.
 
 In the table below, you can find a list of packages which implement deployment functionality to different platforms. The `deploy` command for each package may require different command line options. You can read more by following the links associated with the package names below:
 
@@ -323,9 +323,10 @@ In addition to build optimizations, Angular also has a runtime production mode. 
 
 </code-example>
 
-Switching to _production mode_ makes it run faster by disabling development specific checks such as the dual change detection cycles.
-
-When you enable production builds, the runtime production mode is enabled as well.
+_Production mode_ improves application performance by disabling development-only safety
+checks and debugging utilities, such as the expression-changed-after-checked detection.
+Building your application with the production configuration automatically enables Angular's
+runtime production mode.
 
 {@a lazy-loading}
 
