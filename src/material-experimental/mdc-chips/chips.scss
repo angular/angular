@@ -1,4 +1,4 @@
-@use '@material/chips' as mdc-chips;
+@use '@material/chips/deprecated' as mdc-chips;
 @use '@material/ripple' as mdc-ripple;
 @use '../../material/core/style/layout-common';
 @use '../../cdk/a11y/a11y';
