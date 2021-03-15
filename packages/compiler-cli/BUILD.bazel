@@ -2,6 +2,10 @@ package(default_visibility = ["//visibility:public"])
 
 load("//tools:defaults.bzl", "pkg_npm", "ts_api_guardian_test", "ts_config", "ts_library")
 
+# Load ng_perf_flag explicitly from ng_perf.bzl as it's private API, and not exposed to other
+# consumers of @angular/bazel.
+load("//packages/bazel/src:ng_perf.bzl", "ng_perf_flag")
+
 ts_config(
     name = "tsconfig",
     src = "tsconfig-build.json",
@@ -87,4 +91,10 @@ ts_api_guardian_test(
         "//goldens:public-api",
     ],
     golden = "angular/goldens/public-api/compiler-cli/compiler_options.d.ts",
+)
+
+# Controls whether the Ivy compiler produces performance traces as part of each build
+ng_perf_flag(
+    name = "ng_perf",
+    build_setting_default = False,
 )

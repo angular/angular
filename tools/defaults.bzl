@@ -156,6 +156,7 @@ def ng_module(name, tsconfig = None, entry_point = None, testonly = False, deps 
         api_extractor = _INTERNAL_NG_MODULE_API_EXTRACTOR,
         ng_xi18n = _INTERNAL_NG_MODULE_XI18N,
         module_name = module_name,
+        perf_flag = "//packages/compiler-cli:ng_perf",
         **kwargs
     )
 
