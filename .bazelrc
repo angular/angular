@@ -140,6 +140,13 @@ build:remote --remote_executor=remotebuildexecution.googleapis.com
 # retry mechanism and we do not want to retry unnecessarily if Karma already tried multiple times.
 test:saucelabs --flaky_test_attempts=1
 
+################
+# Flag Aliases #
+################
+
+# --ng_perf will ask the Ivy compiler to produce performance results for each build.
+build --flag_alias=ng_perf=//packages/compiler-cli:ng_perf
+
 ####################################################
 # User bazel configuration
 # NOTE: This needs to be the *last* entry in the config.
