@@ -26,8 +26,18 @@ load(
     "tsc_wrapped_tsconfig",
 )
 
+# enable_perf_logging controls whether Ivy's performance tracing system will be enabled for any
+# compilation which includes this provider.
+NgPerfInfo = provider(fields = ["enable_perf_logging"])
+
 _FLAT_DTS_FILE_SUFFIX = ".bundle.d.ts"
 _R3_SYMBOLS_DTS_FILE = "src/r3_symbols.d.ts"
+
+def is_perf_requested(ctx):
+    enable_perf_logging = ctx.attr.perf_flag != None and ctx.attr.perf_flag[NgPerfInfo].enable_perf_logging == True
+    if enable_perf_logging and not is_ivy_enabled(ctx):
+        fail("Angular View Engine does not support performance tracing")
+    return enable_perf_logging
 
 def is_ivy_enabled(ctx):
     """Determine if the ivy compiler should be used to by the ng_module.
@@ -278,6 +288,15 @@ def _expected_outs(ctx):
     else:
         i18n_messages_files = []
 
+    dev_perf_files = []
+    prod_perf_files = []
+
+    # In Ivy mode, dev and prod builds both produce a .json output containing performance metrics
+    # from the compiler for that build.
+    if is_perf_requested(ctx):
+        dev_perf_files = [ctx.actions.declare_file(ctx.label.name + "_perf_dev.json")]
+        prod_perf_files = [ctx.actions.declare_file(ctx.label.name + "_perf_prod.json")]
+
     return struct(
         closure_js = closure_js_files,
         devmode_js = devmode_js_files,
@@ -288,6 +307,8 @@ def _expected_outs(ctx):
         dts_bundles = dts_bundles,
         bundle_index_typings = bundle_index_typings,
         i18n_messages = i18n_messages_files,
+        dev_perf_files = dev_perf_files,
+        prod_perf_files = prod_perf_files,
     )
 
 # Determines if we need to generate View Engine shims (.ngfactory and .ngsummary files)
@@ -335,6 +356,15 @@ def _ngc_tsconfig(ctx, files, srcs, **kwargs):
         "_useHostForImportGeneration": (not _is_bazel()),
         "_useManifestPathsAsModuleName": (not _is_bazel()),
     }
+
+    if is_perf_requested(ctx):
+        # In Ivy mode, set the `tracePerformance` Angular compiler option to enable performance
+        # metric output.
+        if "devmode_manifest" in kwargs:
+            perf_path = outs.dev_perf_files[0].path
+        else:
+            perf_path = outs.prod_perf_files[0].path
+        angular_compiler_options["tracePerformance"] = perf_path
 
     if _should_produce_flat_module_outs(ctx):
         angular_compiler_options["flatModuleId"] = ctx.attr.module_name
@@ -519,6 +549,7 @@ def _compile_action(
         outputs,
         dts_bundles_out,
         messages_out,
+        perf_out,
         tsconfig_file,
         node_opts,
         compile_mode):
@@ -563,12 +594,12 @@ def _compile_action(
 
 def _prodmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
-    return _compile_action(ctx, inputs, outputs + outs.closure_js, None, outs.i18n_messages, tsconfig_file, node_opts, "prodmode")
+    return _compile_action(ctx, inputs, outputs + outs.closure_js + outs.prod_perf_files, None, outs.i18n_messages, outs.prod_perf_files, tsconfig_file, node_opts, "prodmode")
 
 def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     outs = _expected_outs(ctx)
-    compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries + outs.metadata
-    _compile_action(ctx, inputs, compile_action_outputs, outs.dts_bundles, None, tsconfig_file, node_opts, "devmode")
+    compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries + outs.metadata + outs.dev_perf_files
+    _compile_action(ctx, inputs, compile_action_outputs, outs.dts_bundles, None, outs.dev_perf_files, tsconfig_file, node_opts, "devmode")
 
 def _ts_expected_outs(ctx, label, srcs_files = []):
     # rules_typescript expects a function with two or more arguments, but our
@@ -710,6 +741,16 @@ NG_MODULE_ATTRIBUTES = {
         default = Label(DEFAULT_NG_XI18N),
         executable = True,
         cfg = "host",
+    ),
+    # In the angular/angular monorepo, //tools:defaults.bzl wraps the ng_module rule in a macro
+    # which sets this attribute to the //packages/compiler-cli:ng_perf flag.
+    # This is done to avoid exposing the flag to user projects, which would require:
+    # * defining the flag within @angular/bazel and referencing it correctly here, and
+    # * committing to the flag and its semantics (including the format of perf JSON files)
+    #   as something users can depend upon.
+    "perf_flag": attr.label(
+        providers = [NgPerfInfo],
+        doc = "Private API to control production of performance metric JSON files",
     ),
     "_supports_workers": attr.bool(default = True),
 }
