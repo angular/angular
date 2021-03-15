@@ -158,3 +158,172 @@ patch:
         patched: '2021-01-03T23:47:20.477Z'
     - '@angular/localize > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash':
         patched: '2021-01-03T23:47:20.477Z'
+    - concurrently > lodash:
+        patched: '2021-03-15T05:36:55.294Z'
+    - karma > lodash:
+        patched: '2021-03-15T05:36:55.294Z'
+    - '@nguniversal/builders > http-proxy-middleware > lodash':
+        patched: '2021-03-15T05:36:55.294Z'
+    - karma-coverage > istanbul-lib-instrument > @babel/core > lodash:
+        patched: '2021-03-15T05:36:55.294Z'
+    - karma-coverage > istanbul-lib-instrument > @babel/core > @babel/traverse > lodash:
+        patched: '2021-03-15T05:36:55.294Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > lodash':
+        patched: '2021-03-15T05:36:55.294Z'
+    - '@angular-devkit/build-angular > webpack-dev-server > portfinder > async > lodash':
+        patched: '2021-03-15T05:36:55.294Z'
+    - karma-coverage > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > lodash:
+        patched: '2021-03-15T05:36:55.294Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/traverse > lodash':
+        patched: '2021-03-15T05:36:55.294Z'
+    - karma-coverage > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/generator > lodash:
+        patched: '2021-03-15T05:36:55.294Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > lodash':
+        patched: '2021-03-15T05:36:55.294Z'
+    - '@nguniversal/builders > guess-parser > @wessberg/ts-evaluator > jsdom > request-promise-native > request-promise-core > lodash':
+        patched: '2021-03-15T05:36:55.294Z'
+    - karma-coverage > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash:
+        patched: '2021-03-15T05:36:55.294Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/generator > lodash':
+        patched: '2021-03-15T05:36:55.294Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash':
+        patched: '2021-03-15T05:36:55.294Z'
+    - karma-coverage > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash:
+        patched: '2021-03-15T05:36:55.294Z'
+    - '@angular-devkit/build-angular > @jsdevtools/coverage-istanbul-loader > istanbul-lib-instrument > @babel/core > @babel/helpers > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash':
+        patched: '2021-03-15T05:36:55.294Z'
+    - '@angular-devkit/build-angular > webpack-dev-server > http-proxy-middleware > lodash':
+        patched: '2021-03-15T05:36:55.294Z'
+    - '@nguniversal/builders > browser-sync > easy-extender > lodash':
+        patched: '2021-03-15T05:36:55.294Z'
+    - jasmine-marbles > lodash:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > lodash:
+        patched: '2021-03-15T05:36:55.294Z'
+  'npm:debug:20170905':
+    - lite-server > browser-sync > connect > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > serve-index > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > connect > finalhandler > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io-client > socket.io-parser > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-parser > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-adapter > socket.io-parser > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-client > socket.io-parser > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > localtunnel > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > serve-static > send > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io-client > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > engine.io > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-adapter > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io-client > engine.io-client > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-client > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-client > engine.io-client > debug:
+        patched: '2021-03-15T05:36:55.294Z'
+  'npm:extend:20180424':
+    - karma > dom-serialize > extend:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > localtunnel > request > extend:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > chokidar > fsevents > node-pre-gyp > request > extend:
+        patched: '2021-03-15T05:36:55.294Z'
+  'npm:hoek:20180212':
+    - lite-server > browser-sync > localtunnel > request > hawk > hoek:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > localtunnel > request > hawk > boom > hoek:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > localtunnel > request > hawk > sntp > hoek:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > chokidar > fsevents > node-pre-gyp > hawk > hoek:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > localtunnel > request > hawk > cryptiles > boom > hoek:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > chokidar > fsevents > node-pre-gyp > hawk > boom > hoek:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > chokidar > fsevents > node-pre-gyp > hawk > sntp > hoek:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > chokidar > fsevents > node-pre-gyp > request > hawk > hoek:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > chokidar > fsevents > node-pre-gyp > hawk > cryptiles > boom > hoek:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > chokidar > fsevents > node-pre-gyp > request > hawk > boom > hoek:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > chokidar > fsevents > node-pre-gyp > request > hawk > sntp > hoek:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > chokidar > fsevents > node-pre-gyp > request > hawk > cryptiles > boom > hoek:
+        patched: '2021-03-15T05:36:55.294Z'
+  SNYK-JS-HTTPSPROXYAGENT-469131:
+    - protractor > browserstack > https-proxy-agent:
+        patched: '2021-03-15T05:36:55.294Z'
+    - protractor > saucelabs > https-proxy-agent:
+        patched: '2021-03-15T05:36:55.294Z'
+  'npm:lodash:20180130':
+    - lite-server > browser-sync > easy-extender > lodash:
+        patched: '2021-03-15T05:36:55.294Z'
+  'npm:mime:20170907':
+    - lite-server > browser-sync > serve-static > send > mime:
+        patched: '2021-03-15T05:36:55.294Z'
+  'npm:moment:20170905':
+    - lite-server > connect-logger > moment:
+        patched: '2021-03-15T05:36:55.294Z'
+  'npm:ms:20170412':
+    - lite-server > browser-sync > connect > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > serve-index > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > connect > finalhandler > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io-client > socket.io-parser > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-parser > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-adapter > socket.io-parser > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-client > socket.io-parser > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > serve-static > send > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > serve-static > send > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io-client > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > engine.io > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-adapter > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io-client > engine.io-client > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-client > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-client > engine.io-client > debug > ms:
+        patched: '2021-03-15T05:36:55.294Z'
+  'npm:qs:20170213':
+    - lite-server > browser-sync > qs:
+        patched: '2021-03-15T05:36:55.294Z'
+  'npm:stringstream:20180511':
+    - lite-server > browser-sync > localtunnel > request > stringstream:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > chokidar > fsevents > node-pre-gyp > request > stringstream:
+        patched: '2021-03-15T05:36:55.294Z'
+  'npm:ws:20160920':
+    - lite-server > browser-sync > socket.io > engine.io > ws:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io-client > engine.io-client > ws:
+        patched: '2021-03-15T05:36:55.294Z'
+    - lite-server > browser-sync > socket.io > socket.io-client > engine.io-client > ws:
+        patched: '2021-03-15T05:36:55.294Z'
