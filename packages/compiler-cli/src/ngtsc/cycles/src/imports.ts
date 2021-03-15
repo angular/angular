@@ -17,7 +17,7 @@ import {PerfPhase, PerfRecorder} from '../../perf';
  * dependencies within the same program are tracked; imports into packages on NPM are not.
  */
 export class ImportGraph {
-  private map = new Map<ts.SourceFile, Set<ts.SourceFile>>();
+  private imports = new Map<ts.SourceFile, Set<ts.SourceFile>>();
 
   constructor(private checker: ts.TypeChecker, private perf: PerfRecorder) {}
 
@@ -27,29 +27,10 @@ export class ImportGraph {
    * This operation is cached.
    */
   importsOf(sf: ts.SourceFile): Set<ts.SourceFile> {
-    if (!this.map.has(sf)) {
-      this.map.set(sf, this.scanImports(sf));
+    if (!this.imports.has(sf)) {
+      this.imports.set(sf, this.scanImports(sf));
     }
-    return this.map.get(sf)!;
-  }
-
-  /**
-   * Lists the transitive imports of a given `ts.SourceFile`.
-   */
-  transitiveImportsOf(sf: ts.SourceFile): Set<ts.SourceFile> {
-    const imports = new Set<ts.SourceFile>();
-    this.transitiveImportsOfHelper(sf, imports);
-    return imports;
-  }
-
-  private transitiveImportsOfHelper(sf: ts.SourceFile, results: Set<ts.SourceFile>): void {
-    if (results.has(sf)) {
-      return;
-    }
-    results.add(sf);
-    this.importsOf(sf).forEach(imported => {
-      this.transitiveImportsOfHelper(imported, results);
-    });
+    return this.imports.get(sf)!;
   }
 
   /**
