@@ -84,6 +84,11 @@
       "version": "11.1.0-beta",
       "description": "Removes `canActivate` from a `Route` config when `redirectTo` is also present",
       "factory": "./migrations/can-activate-with-redirect-to/index"
+    },
+    "migration-v12-activated-route-snapshot-fragment": {
+      "version": "12.0.0-beta",
+      "description": "In Angular version 12, the type of ActivatedRouteSnapshot.fragment is nullable. This migration automatically adds non-null assertions to it.",
+      "factory": "./migrations/activated-route-snapshot-fragment/index"
     }
   }
 }
