@@ -353,6 +353,13 @@ jobs:
             yarn check-entry-point-setup $(bazel info bazel-bin)/entry_points_manifest.json
 
       - run: yarn ng-dev format changed --check << pipeline.git.base_revision >>
+      - run: yarn ownerslint
+      - run: yarn check-mdc-tests
+      - run: yarn stylelint
+      - run: yarn tslint
+      - run: yarn -s ts-circular-deps:check
+      - run: yarn check-mdc-exports
+      # Should be last so that it doesn't prevent the other lint checks from running.
       - run:
           name: Check Commit Message (PR Only)
           # Only run the commit message checks on pull requests since we can't do
@@ -361,12 +368,6 @@ jobs:
             if [ -n "$CIRCLE_PR_NUMBER" ]; then
               yarn ng-dev commit-message validate-range --range $CI_COMMIT_RANGE
             fi
-      - run: yarn ownerslint
-      - run: yarn check-mdc-tests
-      - run: yarn stylelint
-      - run: yarn tslint
-      - run: yarn -s ts-circular-deps:check
-      - run: yarn check-mdc-exports
 
       - *slack_notify_on_failure
       - *save_cache
