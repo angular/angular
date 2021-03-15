@@ -16,6 +16,7 @@ import {runInEachFileSystem} from '../../file_system/testing';
 import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
+import {NOOP_PERF_RECORDER} from '../../perf';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver, TypeCheckScopeRegistry} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
@@ -41,7 +42,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
   const evaluator = new PartialEvaluator(reflectionHost, checker, /* dependencyTracker */ null);
   const moduleResolver =
       new ModuleResolver(program, options, host, /* moduleResolutionCache */ null);
-  const importGraph = new ImportGraph(checker);
+  const importGraph = new ImportGraph(checker, NOOP_PERF_RECORDER);
   const cycleAnalyzer = new CycleAnalyzer(importGraph);
   const metaRegistry = new LocalMetadataRegistry();
   const dtsReader = new DtsMetadataReader(checker, reflectionHost);
@@ -80,6 +81,7 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       injectableRegistry,
       /* semanticDepGraphUpdater */ null,
       /* annotateForClosureCompiler */ false,
+      NOOP_PERF_RECORDER,
   );
   return {reflectionHost, handler};
 }

@@ -7,6 +7,7 @@
  */
 
 import * as ng from '@angular/compiler-cli';
+import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
 import {BazelOptions, CachedFileLoader, CompilerHost, constructManifest, debug, FileCache, FileLoader, parseTsconfig, resolveNormalizedPath, runAsWorker, runWorkerLoop, UncachedFileLoader} from '@bazel/typescript';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -515,6 +516,12 @@ function gatherDiagnosticsForInputsOnly(
     options: ng.CompilerOptions, bazelOpts: BazelOptions,
     ngProgram: ng.Program): (ng.Diagnostic|ts.Diagnostic)[] {
   const tsProgram = ngProgram.getTsProgram();
+
+  // For the Ivy compiler, track the amount of time spent fetching TypeScript diagnostics.
+  let previousPhase = PerfPhase.Unaccounted;
+  if (ngProgram instanceof ng.NgtscProgram) {
+    previousPhase = ngProgram.compiler.perfRecorder.phase(PerfPhase.TypeScriptDiagnostics);
+  }
   const diagnostics: (ng.Diagnostic|ts.Diagnostic)[] = [];
   // These checks mirror ts.getPreEmitDiagnostics, with the important
   // exception of avoiding b/30708240, which is that if you call
@@ -529,6 +536,11 @@ function gatherDiagnosticsForInputsOnly(
     diagnostics.push(...tsProgram.getSyntacticDiagnostics(sf));
     diagnostics.push(...tsProgram.getSemanticDiagnostics(sf));
   }
+
+  if (ngProgram instanceof ng.NgtscProgram) {
+    ngProgram.compiler.perfRecorder.phase(previousPhase);
+  }
+
   if (!diagnostics.length) {
     // only gather the angular diagnostics if we have no diagnostics
     // in any other files.

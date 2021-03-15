@@ -9,6 +9,7 @@
 import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, resourceChangeTicket} from '@angular/compiler-cli/src/ngtsc/core';
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {TrackedIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
+import {ActivePerfRecorder} from '@angular/compiler-cli/src/ngtsc/perf';
 import {TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
@@ -44,6 +45,10 @@ export class CompilerFactory {
         // Only resource files have changed since the last NgCompiler was created.
         const ticket = resourceChangeTicket(this.compiler, modifiedResourceFiles);
         this.compiler = NgCompiler.fromTicket(ticket, this.adapter);
+      } else {
+        // The previous NgCompiler is being reused, but we still want to reset its performance
+        // tracker to capture only the operations that are needed to service the current request.
+        this.compiler.perfRecorder.reset();
       }
 
       return this.compiler;
@@ -52,11 +57,12 @@ export class CompilerFactory {
     let ticket: CompilationTicket;
     if (this.compiler === null || this.lastKnownProgram === null) {
       ticket = freshCompilationTicket(
-          program, this.options, this.incrementalStrategy, this.programStrategy, true, true);
+          program, this.options, this.incrementalStrategy, this.programStrategy,
+          /* perfRecorder */ null, true, true);
     } else {
       ticket = incrementalFromCompilerTicket(
           this.compiler, program, this.incrementalStrategy, this.programStrategy,
-          modifiedResourceFiles);
+          modifiedResourceFiles, /* perfRecorder */ null);
     }
     this.compiler = NgCompiler.fromTicket(ticket, this.adapter);
     this.lastKnownProgram = program;

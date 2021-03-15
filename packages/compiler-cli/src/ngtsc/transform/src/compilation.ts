@@ -13,7 +13,7 @@ import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {IncrementalBuild} from '../../incremental/api';
 import {SemanticDepGraphUpdater, SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
-import {PerfRecorder} from '../../perf';
+import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost} from '../../reflection';
 import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck/api';
 import {getSourceFile, isExported} from '../../util/src/typescript';
@@ -123,6 +123,9 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       for (const priorRecord of priorWork) {
         this.adopt(priorRecord);
       }
+
+      this.perf.eventCount(PerfEvent.SourceFileReuseAnalysis);
+      this.perf.eventCount(PerfEvent.TraitReuseAnalysis, priorWork.length);
 
       // Skip the rest of analysis, as this file's prior traits are being reused.
       return;
@@ -359,6 +362,8 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
           TraitState[trait.state]} (expected DETECTED)`);
     }
 
+    this.perf.eventCount(PerfEvent.TraitAnalyze);
+
     // Attempt analysis. This could fail with a `FatalDiagnosticError`; catch it if it does.
     let result: AnalysisOutput<unknown>;
     try {
@@ -509,9 +514,6 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
         continue;
       }
 
-      const compileSpan = this.perf.start('compileClass', original);
-
-
       // `trait.resolution` is non-null asserted here because TypeScript does not recognize that
       // `Readonly<unknown>` is nullable (as `unknown` itself is nullable) due to the way that
       // `Readonly` works.
@@ -526,7 +528,6 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
       }
 
       const compileMatchRes = compileRes;
-      this.perf.stop(compileSpan);
       if (Array.isArray(compileMatchRes)) {
         for (const result of compileMatchRes) {
           if (!res.some(r => r.name === result.name)) {

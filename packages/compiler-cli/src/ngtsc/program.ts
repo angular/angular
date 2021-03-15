@@ -14,10 +14,10 @@ import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
 import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, NgCompilerHost} from './core';
 import {NgCompilerOptions} from './core/api';
-import {absoluteFrom, AbsoluteFsPath} from './file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem} from './file_system';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
-import {NOOP_PERF_RECORDER, PerfRecorder, PerfTracker} from './perf';
+import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPhase} from './perf';
 import {DeclarationNode} from './reflection';
 import {retagAllTsFiles, untagAllTsFiles} from './shims';
 import {ReusedProgramStrategy} from './typecheck';
@@ -54,22 +54,20 @@ export class NgtscProgram implements api.Program {
   private reuseTsProgram: ts.Program;
   private closureCompilerEnabled: boolean;
   private host: NgCompilerHost;
-  private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER;
-  private perfTracker: PerfTracker|null = null;
   private incrementalStrategy: TrackedIncrementalBuildStrategy;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: NgCompilerOptions,
       delegateHost: api.CompilerHost, oldProgram?: NgtscProgram) {
+    const perfRecorder = ActivePerfRecorder.zeroedToNow();
+
+    perfRecorder.phase(PerfPhase.Setup);
+
     // First, check whether the current TS version is supported.
     if (!options.disableTypeScriptVersionCheck) {
       verifySupportedTypeScriptVersion();
     }
 
-    if (options.tracePerformance !== undefined) {
-      this.perfTracker = PerfTracker.zeroedToNow();
-      this.perfRecorder = this.perfTracker;
-    }
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
 
     const reuseProgram = oldProgram?.reuseTsProgram;
@@ -83,8 +81,13 @@ export class NgtscProgram implements api.Program {
       retagAllTsFiles(reuseProgram);
     }
 
-    this.tsProgram = ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram);
+    this.tsProgram = perfRecorder.inPhase(
+        PerfPhase.TypeScriptProgramCreate,
+        () => ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram));
     this.reuseTsProgram = this.tsProgram;
+
+    perfRecorder.phase(PerfPhase.Unaccounted);
+    perfRecorder.memory(PerfCheckpoint.TypeScriptProgramCreate);
 
     this.host.postProgramCreationCleanup();
 
@@ -111,7 +114,7 @@ export class NgtscProgram implements api.Program {
     let ticket: CompilationTicket;
     if (oldProgram === undefined) {
       ticket = freshCompilationTicket(
-          this.tsProgram, options, this.incrementalStrategy, reusedProgramStrategy,
+          this.tsProgram, options, this.incrementalStrategy, reusedProgramStrategy, perfRecorder,
           /* enableTemplateTypeChecker */ false, /* usePoisonedData */ false);
     } else {
       ticket = incrementalFromCompilerTicket(
@@ -120,12 +123,13 @@ export class NgtscProgram implements api.Program {
           this.incrementalStrategy,
           reusedProgramStrategy,
           modifiedResourceFiles,
+          perfRecorder,
       );
     }
 
 
     // Create the NgCompiler which will drive the rest of the compilation.
-    this.compiler = NgCompiler.fromTicket(ticket, this.host, this.perfRecorder);
+    this.compiler = NgCompiler.fromTicket(ticket, this.host);
   }
 
   getTsProgram(): ts.Program {
@@ -138,49 +142,59 @@ export class NgtscProgram implements api.Program {
 
   getTsOptionDiagnostics(cancellationToken?: ts.CancellationToken|
                          undefined): readonly ts.Diagnostic[] {
-    return this.tsProgram.getOptionsDiagnostics(cancellationToken);
+    return this.compiler.perfRecorder.inPhase(
+        PerfPhase.TypeScriptDiagnostics,
+        () => this.tsProgram.getOptionsDiagnostics(cancellationToken));
   }
 
   getTsSyntacticDiagnostics(
       sourceFile?: ts.SourceFile|undefined,
       cancellationToken?: ts.CancellationToken|undefined): readonly ts.Diagnostic[] {
-    const ignoredFiles = this.compiler.ignoreForDiagnostics;
-    if (sourceFile !== undefined) {
-      if (ignoredFiles.has(sourceFile)) {
-        return [];
-      }
-
-      return this.tsProgram.getSyntacticDiagnostics(sourceFile, cancellationToken);
-    } else {
-      const diagnostics: ts.Diagnostic[] = [];
-      for (const sf of this.tsProgram.getSourceFiles()) {
-        if (!ignoredFiles.has(sf)) {
-          diagnostics.push(...this.tsProgram.getSyntacticDiagnostics(sf, cancellationToken));
+    return this.compiler.perfRecorder.inPhase(PerfPhase.TypeScriptDiagnostics, () => {
+      const ignoredFiles = this.compiler.ignoreForDiagnostics;
+      let res: readonly ts.Diagnostic[];
+      if (sourceFile !== undefined) {
+        if (ignoredFiles.has(sourceFile)) {
+          return [];
         }
+
+        res = this.tsProgram.getSyntacticDiagnostics(sourceFile, cancellationToken);
+      } else {
+        const diagnostics: ts.Diagnostic[] = [];
+        for (const sf of this.tsProgram.getSourceFiles()) {
+          if (!ignoredFiles.has(sf)) {
+            diagnostics.push(...this.tsProgram.getSyntacticDiagnostics(sf, cancellationToken));
+          }
+        }
+        res = diagnostics;
       }
-      return diagnostics;
-    }
+      return res;
+    });
   }
 
   getTsSemanticDiagnostics(
       sourceFile?: ts.SourceFile|undefined,
       cancellationToken?: ts.CancellationToken|undefined): readonly ts.Diagnostic[] {
-    const ignoredFiles = this.compiler.ignoreForDiagnostics;
-    if (sourceFile !== undefined) {
-      if (ignoredFiles.has(sourceFile)) {
-        return [];
-      }
-
-      return this.tsProgram.getSemanticDiagnostics(sourceFile, cancellationToken);
-    } else {
-      const diagnostics: ts.Diagnostic[] = [];
-      for (const sf of this.tsProgram.getSourceFiles()) {
-        if (!ignoredFiles.has(sf)) {
-          diagnostics.push(...this.tsProgram.getSemanticDiagnostics(sf, cancellationToken));
+    return this.compiler.perfRecorder.inPhase(PerfPhase.TypeScriptDiagnostics, () => {
+      const ignoredFiles = this.compiler.ignoreForDiagnostics;
+      let res: readonly ts.Diagnostic[];
+      if (sourceFile !== undefined) {
+        if (ignoredFiles.has(sourceFile)) {
+          return [];
         }
+
+        res = this.tsProgram.getSemanticDiagnostics(sourceFile, cancellationToken);
+      } else {
+        const diagnostics: ts.Diagnostic[] = [];
+        for (const sf of this.tsProgram.getSourceFiles()) {
+          if (!ignoredFiles.has(sf)) {
+            diagnostics.push(...this.tsProgram.getSemanticDiagnostics(sf, cancellationToken));
+          }
+        }
+        res = diagnostics;
       }
-      return diagnostics;
-    }
+      return res;
+    });
   }
 
   getNgOptionDiagnostics(cancellationToken?: ts.CancellationToken|
@@ -235,73 +249,82 @@ export class NgtscProgram implements api.Program {
     emitCallback?: api.TsEmitCallback | undefined;
     mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback | undefined;
   }|undefined): ts.EmitResult {
-    const {transformers} = this.compiler.prepareEmit();
-    const ignoreFiles = this.compiler.ignoreForEmit;
-    const emitCallback = opts && opts.emitCallback || defaultEmitCallback;
+    this.compiler.perfRecorder.memory(PerfCheckpoint.PreEmit);
 
-    const writeFile: ts.WriteFileCallback =
-        (fileName: string, data: string, writeByteOrderMark: boolean,
-         onError: ((message: string) => void)|undefined,
-         sourceFiles: ReadonlyArray<ts.SourceFile>|undefined) => {
-          if (sourceFiles !== undefined) {
-            // Record successful writes for any `ts.SourceFile` (that's not a declaration file)
-            // that's an input to this write.
-            for (const writtenSf of sourceFiles) {
-              if (writtenSf.isDeclarationFile) {
-                continue;
+    const res = this.compiler.perfRecorder.inPhase(PerfPhase.TypeScriptEmit, () => {
+      const {transformers} = this.compiler.prepareEmit();
+      const ignoreFiles = this.compiler.ignoreForEmit;
+      const emitCallback = opts && opts.emitCallback || defaultEmitCallback;
+
+      const writeFile: ts.WriteFileCallback =
+          (fileName: string, data: string, writeByteOrderMark: boolean,
+           onError: ((message: string) => void)|undefined,
+           sourceFiles: ReadonlyArray<ts.SourceFile>|undefined) => {
+            if (sourceFiles !== undefined) {
+              // Record successful writes for any `ts.SourceFile` (that's not a declaration file)
+              // that's an input to this write.
+              for (const writtenSf of sourceFiles) {
+                if (writtenSf.isDeclarationFile) {
+                  continue;
+                }
+
+                this.compiler.incrementalDriver.recordSuccessfulEmit(writtenSf);
               }
-
-              this.compiler.incrementalDriver.recordSuccessfulEmit(writtenSf);
             }
-          }
-          this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
-        };
+            this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
+          };
 
-    const customTransforms = opts && opts.customTransformers;
-    const beforeTransforms = transformers.before || [];
-    const afterDeclarationsTransforms = transformers.afterDeclarations;
+      const customTransforms = opts && opts.customTransformers;
+      const beforeTransforms = transformers.before || [];
+      const afterDeclarationsTransforms = transformers.afterDeclarations;
 
-    if (customTransforms !== undefined && customTransforms.beforeTs !== undefined) {
-      beforeTransforms.push(...customTransforms.beforeTs);
-    }
-
-    const emitSpan = this.perfRecorder.start('emit');
-    const emitResults: ts.EmitResult[] = [];
-
-    for (const targetSourceFile of this.tsProgram.getSourceFiles()) {
-      if (targetSourceFile.isDeclarationFile || ignoreFiles.has(targetSourceFile)) {
-        continue;
+      if (customTransforms !== undefined && customTransforms.beforeTs !== undefined) {
+        beforeTransforms.push(...customTransforms.beforeTs);
       }
 
-      if (this.compiler.incrementalDriver.safeToSkipEmit(targetSourceFile)) {
-        continue;
+      const emitResults: ts.EmitResult[] = [];
+
+      for (const targetSourceFile of this.tsProgram.getSourceFiles()) {
+        if (targetSourceFile.isDeclarationFile || ignoreFiles.has(targetSourceFile)) {
+          continue;
+        }
+
+        if (this.compiler.incrementalDriver.safeToSkipEmit(targetSourceFile)) {
+          this.compiler.perfRecorder.eventCount(PerfEvent.EmitSkipSourceFile);
+          continue;
+        }
+
+        this.compiler.perfRecorder.eventCount(PerfEvent.EmitSourceFile);
+
+        emitResults.push(emitCallback({
+          targetSourceFile,
+          program: this.tsProgram,
+          host: this.host,
+          options: this.options,
+          emitOnlyDtsFiles: false,
+          writeFile,
+          customTransformers: {
+            before: beforeTransforms,
+            after: customTransforms && customTransforms.afterTs,
+            afterDeclarations: afterDeclarationsTransforms,
+          } as any,
+        }));
       }
 
-      const fileEmitSpan = this.perfRecorder.start('emitFile', targetSourceFile);
-      emitResults.push(emitCallback({
-        targetSourceFile,
-        program: this.tsProgram,
-        host: this.host,
-        options: this.options,
-        emitOnlyDtsFiles: false,
-        writeFile,
-        customTransformers: {
-          before: beforeTransforms,
-          after: customTransforms && customTransforms.afterTs,
-          afterDeclarations: afterDeclarationsTransforms,
-        } as any,
-      }));
-      this.perfRecorder.stop(fileEmitSpan);
+      this.compiler.perfRecorder.memory(PerfCheckpoint.Emit);
+
+      // Run the emit, including a custom transformer that will downlevel the Ivy decorators in
+      // code.
+      return ((opts && opts.mergeEmitResultsCallback) || mergeEmitResults)(emitResults);
+    });
+
+    // Record performance analysis information to disk if we've been asked to do so.
+    if (this.options.tracePerformance !== undefined) {
+      const perf = this.compiler.perfRecorder.finalize();
+      getFileSystem().writeFile(
+          getFileSystem().resolve(this.options.tracePerformance), JSON.stringify(perf, null, 2));
     }
-
-    this.perfRecorder.stop(emitSpan);
-
-    if (this.perfTracker !== null && this.options.tracePerformance !== undefined) {
-      this.perfTracker.serializeToFile(this.options.tracePerformance, this.host);
-    }
-
-    // Run the emit, including a custom transformer that will downlevel the Ivy decorators in code.
-    return ((opts && opts.mergeEmitResultsCallback) || mergeEmitResults)(emitResults);
+    return res;
   }
 
   getIndexedComponents(): Map<DeclarationNode, IndexedComponent> {

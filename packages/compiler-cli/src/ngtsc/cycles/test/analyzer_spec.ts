@@ -8,6 +8,7 @@
 import * as ts from 'typescript';
 import {absoluteFrom, getFileSystem, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
+import {NOOP_PERF_RECORDER} from '../../perf';
 import {Cycle, CycleAnalyzer} from '../src/analyzer';
 import {ImportGraph} from '../src/imports';
 import {importPath, makeProgramFromGraph} from './util';
@@ -75,7 +76,7 @@ runInEachFileSystem(() => {
     const {program} = makeProgramFromGraph(getFileSystem(), graph);
     return {
       program,
-      analyzer: new CycleAnalyzer(new ImportGraph(program.getTypeChecker())),
+      analyzer: new CycleAnalyzer(new ImportGraph(program.getTypeChecker(), NOOP_PERF_RECORDER)),
     };
   }
 });
