@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1100.2",
-    "@angular/cli": "~11.0.2",
+    "@angular/cli": "~11.1.0",
     "@angular/compiler-cli": "~11.0.1",
     "@nguniversal/builders": "^11.0.0",
     "@types/express": "^4.17.8",
