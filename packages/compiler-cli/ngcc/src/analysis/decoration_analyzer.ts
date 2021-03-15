@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {ConstantPool} from '@angular/compiler';
+import {NOOP_PERF_RECORDER} from '@angular/compiler-cli/src/ngtsc/perf';
 import * as ts from 'typescript';
 
 import {ParsedConfiguration} from '../../..';
@@ -89,7 +90,7 @@ export class DecorationAnalyzer {
   fullRegistry = new CompoundMetadataRegistry([this.metaRegistry, this.scopeRegistry]);
   evaluator =
       new PartialEvaluator(this.reflectionHost, this.typeChecker, /* dependencyTracker */ null);
-  importGraph = new ImportGraph(this.typeChecker);
+  importGraph = new ImportGraph(this.typeChecker, NOOP_PERF_RECORDER);
   cycleAnalyzer = new CycleAnalyzer(this.importGraph);
   injectableRegistry = new InjectableClassRegistry(this.reflectionHost);
   typeCheckScopeRegistry = new TypeCheckScopeRegistry(this.scopeRegistry, this.fullMetaReader);
@@ -104,7 +105,8 @@ export class DecorationAnalyzer {
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
         CycleHandlingStrategy.UseRemoteScoping, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
         NOOP_DEPENDENCY_TRACKER, this.injectableRegistry,
-        /* semanticDepGraphUpdater */ null, !!this.compilerOptions.annotateForClosureCompiler),
+        /* semanticDepGraphUpdater */ null, !!this.compilerOptions.annotateForClosureCompiler,
+        NOOP_PERF_RECORDER),
 
     // See the note in ngtsc about why this cast is needed.
     // clang-format off
@@ -117,23 +119,26 @@ export class DecorationAnalyzer {
         // version 10, undecorated classes that use Angular features are no longer handled
         // in ngtsc, but we want to ensure compatibility in ngcc for outdated libraries that
         // have not migrated to explicit decorators. See: https://hackmd.io/@alx/ryfYYuvzH.
-        /* compileUndecoratedClassesWithAngularFeatures */ true
+        /* compileUndecoratedClassesWithAngularFeatures */ true,
+        NOOP_PERF_RECORDER
     ) as DecoratorHandler<unknown, unknown, SemanticSymbol|null,unknown>,
     // clang-format on
     // Pipe handler must be before injectable handler in list so pipe factories are printed
     // before injectable factories (so injectable factories can delegate to them)
     new PipeDecoratorHandler(
         this.reflectionHost, this.evaluator, this.metaRegistry, this.scopeRegistry,
-        NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore),
+        NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore, NOOP_PERF_RECORDER),
     new InjectableDecoratorHandler(
         this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore,
-        /* strictCtorDeps */ false, this.injectableRegistry, /* errorOnDuplicateProv */ false),
+        /* strictCtorDeps */ false, this.injectableRegistry, NOOP_PERF_RECORDER,
+        /* errorOnDuplicateProv */ false),
     new NgModuleDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
         this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
         this.refEmitter,
         /* factoryTracker */ null, NOOP_DEFAULT_IMPORT_RECORDER,
-        !!this.compilerOptions.annotateForClosureCompiler, this.injectableRegistry),
+        !!this.compilerOptions.annotateForClosureCompiler, this.injectableRegistry,
+        NOOP_PERF_RECORDER),
   ];
   compiler = new NgccTraitCompiler(this.handlers, this.reflectionHost);
   migrations: Migration[] = [

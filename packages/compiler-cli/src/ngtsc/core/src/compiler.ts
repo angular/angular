@@ -21,7 +21,9 @@ import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer
 import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, ResourceRegistry} from '../../metadata';
 import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {NOOP_PERF_RECORDER, PerfRecorder} from '../../perf';
+import {ActivePerfRecorder} from '../../perf';
+import {PerfCheckpoint, PerfEvent, PerfPhase} from '../../perf/src/api';
+import {DelegatingPerfRecorder} from '../../perf/src/recorder';
 import {DeclarationNode, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {AdapterResourceLoader} from '../../resource';
 import {entryPointKeyFor, NgModuleRouteAnalyzer} from '../../routing';
@@ -80,6 +82,7 @@ export interface FreshCompilationTicket {
   enableTemplateTypeChecker: boolean;
   usePoisonedData: boolean;
   tsProgram: ts.Program;
+  perfRecorder: ActivePerfRecorder;
 }
 
 /**
@@ -95,12 +98,14 @@ export interface IncrementalTypeScriptCompilationTicket {
   newDriver: IncrementalDriver;
   enableTemplateTypeChecker: boolean;
   usePoisonedData: boolean;
+  perfRecorder: ActivePerfRecorder;
 }
 
 export interface IncrementalResourceCompilationTicket {
   kind: CompilationTicketKind.IncrementalResource;
   compiler: NgCompiler;
   modifiedResourceFiles: Set<string>;
+  perfRecorder: ActivePerfRecorder;
 }
 
 /**
@@ -119,8 +124,8 @@ export type CompilationTicket = FreshCompilationTicket|IncrementalTypeScriptComp
 export function freshCompilationTicket(
     tsProgram: ts.Program, options: NgCompilerOptions,
     incrementalBuildStrategy: IncrementalBuildStrategy,
-    typeCheckingProgramStrategy: TypeCheckingProgramStrategy, enableTemplateTypeChecker: boolean,
-    usePoisonedData: boolean): CompilationTicket {
+    typeCheckingProgramStrategy: TypeCheckingProgramStrategy, perfRecorder: ActivePerfRecorder|null,
+    enableTemplateTypeChecker: boolean, usePoisonedData: boolean): CompilationTicket {
   return {
     kind: CompilationTicketKind.Fresh,
     tsProgram,
@@ -129,6 +134,7 @@ export function freshCompilationTicket(
     typeCheckingProgramStrategy,
     enableTemplateTypeChecker,
     usePoisonedData,
+    perfRecorder: perfRecorder ?? ActivePerfRecorder.zeroedToNow(),
   };
 }
 
@@ -139,8 +145,8 @@ export function freshCompilationTicket(
 export function incrementalFromCompilerTicket(
     oldCompiler: NgCompiler, newProgram: ts.Program,
     incrementalBuildStrategy: IncrementalBuildStrategy,
-    typeCheckingProgramStrategy: TypeCheckingProgramStrategy,
-    modifiedResourceFiles: Set<string>): CompilationTicket {
+    typeCheckingProgramStrategy: TypeCheckingProgramStrategy, modifiedResourceFiles: Set<string>,
+    perfRecorder: ActivePerfRecorder|null): CompilationTicket {
   const oldProgram = oldCompiler.getNextProgram();
   const oldDriver = oldCompiler.incrementalStrategy.getIncrementalDriver(oldProgram);
   if (oldDriver === null) {
@@ -148,11 +154,15 @@ export function incrementalFromCompilerTicket(
     // program.
     return freshCompilationTicket(
         newProgram, oldCompiler.options, incrementalBuildStrategy, typeCheckingProgramStrategy,
-        oldCompiler.enableTemplateTypeChecker, oldCompiler.usePoisonedData);
+        perfRecorder, oldCompiler.enableTemplateTypeChecker, oldCompiler.usePoisonedData);
   }
 
-  const newDriver =
-      IncrementalDriver.reconcile(oldProgram, oldDriver, newProgram, modifiedResourceFiles);
+  if (perfRecorder === null) {
+    perfRecorder = ActivePerfRecorder.zeroedToNow();
+  }
+
+  const newDriver = IncrementalDriver.reconcile(
+      oldProgram, oldDriver, newProgram, modifiedResourceFiles, perfRecorder);
 
   return {
     kind: CompilationTicketKind.IncrementalTypeScript,
@@ -164,6 +174,7 @@ export function incrementalFromCompilerTicket(
     newDriver,
     oldProgram,
     newProgram,
+    perfRecorder,
   };
 }
 
@@ -175,9 +186,14 @@ export function incrementalFromDriverTicket(
     oldProgram: ts.Program, oldDriver: IncrementalDriver, newProgram: ts.Program,
     options: NgCompilerOptions, incrementalBuildStrategy: IncrementalBuildStrategy,
     typeCheckingProgramStrategy: TypeCheckingProgramStrategy, modifiedResourceFiles: Set<string>,
-    enableTemplateTypeChecker: boolean, usePoisonedData: boolean): CompilationTicket {
-  const newDriver =
-      IncrementalDriver.reconcile(oldProgram, oldDriver, newProgram, modifiedResourceFiles);
+    perfRecorder: ActivePerfRecorder|null, enableTemplateTypeChecker: boolean,
+    usePoisonedData: boolean): CompilationTicket {
+  if (perfRecorder === null) {
+    perfRecorder = ActivePerfRecorder.zeroedToNow();
+  }
+
+  const newDriver = IncrementalDriver.reconcile(
+      oldProgram, oldDriver, newProgram, modifiedResourceFiles, perfRecorder);
   return {
     kind: CompilationTicketKind.IncrementalTypeScript,
     oldProgram,
@@ -188,6 +204,7 @@ export function incrementalFromDriverTicket(
     typeCheckingProgramStrategy,
     enableTemplateTypeChecker,
     usePoisonedData,
+    perfRecorder,
   };
 }
 
@@ -197,6 +214,7 @@ export function resourceChangeTicket(compiler: NgCompiler, modifiedResourceFiles
     kind: CompilationTicketKind.IncrementalResource,
     compiler,
     modifiedResourceFiles,
+    perfRecorder: ActivePerfRecorder.zeroedToNow(),
   };
 }
 
@@ -246,15 +264,22 @@ export class NgCompiler {
   readonly ignoreForEmit: Set<ts.SourceFile>;
 
   /**
+   * `NgCompiler` can be reused for multiple compilations (for resource-only changes), and each
+   * new compilation uses a fresh `PerfRecorder`. Thus, classes created with a lifespan of the
+   * `NgCompiler` use a `DelegatingPerfRecorder` so the `PerfRecorder` they write to can be updated
+   * with each fresh compilation.
+   */
+  private delegatingPerfRecorder = new DelegatingPerfRecorder(this.perfRecorder);
+
+  /**
    * Convert a `CompilationTicket` into an `NgCompiler` instance for the requested compilation.
    *
    * Depending on the nature of the compilation request, the `NgCompiler` instance may be reused
    * from a previous compilation and updated with any changes, it may be a new instance which
-   * incrementally reuses state from a previous compilation, or it may represent a fresh compilation
-   * entirely.
+   * incrementally reuses state from a previous compilation, or it may represent a fresh
+   * compilation entirely.
    */
-  static fromTicket(
-      ticket: CompilationTicket, adapter: NgCompilerAdapter, perfRecorder?: PerfRecorder) {
+  static fromTicket(ticket: CompilationTicket, adapter: NgCompilerAdapter) {
     switch (ticket.kind) {
       case CompilationTicketKind.Fresh:
         return new NgCompiler(
@@ -266,7 +291,7 @@ export class NgCompiler {
             IncrementalDriver.fresh(ticket.tsProgram),
             ticket.enableTemplateTypeChecker,
             ticket.usePoisonedData,
-            perfRecorder,
+            ticket.perfRecorder,
         );
       case CompilationTicketKind.IncrementalTypeScript:
         return new NgCompiler(
@@ -278,11 +303,11 @@ export class NgCompiler {
             ticket.newDriver,
             ticket.enableTemplateTypeChecker,
             ticket.usePoisonedData,
-            perfRecorder,
+            ticket.perfRecorder,
         );
       case CompilationTicketKind.IncrementalResource:
         const compiler = ticket.compiler;
-        compiler.updateWithChangedResources(ticket.modifiedResourceFiles);
+        compiler.updateWithChangedResources(ticket.modifiedResourceFiles, ticket.perfRecorder);
         return compiler;
     }
   }
@@ -296,7 +321,7 @@ export class NgCompiler {
       readonly incrementalDriver: IncrementalDriver,
       readonly enableTemplateTypeChecker: boolean,
       readonly usePoisonedData: boolean,
-      private perfRecorder: PerfRecorder = NOOP_PERF_RECORDER,
+      private livePerfRecorder: ActivePerfRecorder,
   ) {
     this.constructionDiagnostics.push(...this.adapter.constructionDiagnostics);
     const incompatibleTypeCheckOptionsDiagnostic = verifyCompatibleTypeCheckOptions(this.options);
@@ -312,9 +337,7 @@ export class NgCompiler {
 
     const moduleResolutionCache = ts.createModuleResolutionCache(
         this.adapter.getCurrentDirectory(),
-        // Note: this used to be an arrow-function closure. However, JS engines like v8 have some
-        // strange behaviors with retaining the lexical scope of the closure. Even if this function
-        // doesn't retain a reference to `this`, if other closures in the constructor here reference
+        // doen't retain a reference to `this`, if other closures in the constructor here reference
         // `this` internally then a closure created here would retain them. This can cause major
         // memory leak issues since the `moduleResolutionCache` is a long-lived object and finds its
         // way into all kinds of places inside TS internal objects.
@@ -322,42 +345,66 @@ export class NgCompiler {
     this.moduleResolver =
         new ModuleResolver(tsProgram, this.options, this.adapter, moduleResolutionCache);
     this.resourceManager = new AdapterResourceLoader(adapter, this.options);
-    this.cycleAnalyzer = new CycleAnalyzer(new ImportGraph(tsProgram.getTypeChecker()));
+    this.cycleAnalyzer =
+        new CycleAnalyzer(new ImportGraph(tsProgram.getTypeChecker(), this.delegatingPerfRecorder));
     this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, tsProgram);
 
     this.ignoreForDiagnostics =
         new Set(tsProgram.getSourceFiles().filter(sf => this.adapter.isShim(sf)));
     this.ignoreForEmit = this.adapter.ignoreForEmit;
+
+    let dtsFileCount = 0;
+    let nonDtsFileCount = 0;
+    for (const sf of tsProgram.getSourceFiles()) {
+      if (sf.isDeclarationFile) {
+        dtsFileCount++;
+      } else {
+        nonDtsFileCount++;
+      }
+    }
+
+    livePerfRecorder.eventCount(PerfEvent.InputDtsFile, dtsFileCount);
+    livePerfRecorder.eventCount(PerfEvent.InputTsFile, nonDtsFileCount);
   }
 
-  private updateWithChangedResources(changedResources: Set<string>): void {
-    if (this.compilation === null) {
-      // Analysis hasn't happened yet, so no update is necessary - any changes to resources will be
-      // captured by the inital analysis pass itself.
-      return;
-    }
+  get perfRecorder(): ActivePerfRecorder {
+    return this.livePerfRecorder;
+  }
 
-    this.resourceManager.invalidate();
+  private updateWithChangedResources(
+      changedResources: Set<string>, perfRecorder: ActivePerfRecorder): void {
+    this.livePerfRecorder = perfRecorder;
+    this.delegatingPerfRecorder.target = perfRecorder;
 
-    const classesToUpdate = new Set<DeclarationNode>();
-    for (const resourceFile of changedResources) {
-      for (const templateClass of this.getComponentsWithTemplateFile(resourceFile)) {
-        classesToUpdate.add(templateClass);
+    perfRecorder.inPhase(PerfPhase.ResourceUpdate, () => {
+      if (this.compilation === null) {
+        // Analysis hasn't happened yet, so no update is necessary - any changes to resources will
+        // be captured by the inital analysis pass itself.
+        return;
       }
 
-      for (const styleClass of this.getComponentsWithStyleFile(resourceFile)) {
-        classesToUpdate.add(styleClass);
-      }
-    }
+      this.resourceManager.invalidate();
 
-    for (const clazz of classesToUpdate) {
-      this.compilation.traitCompiler.updateResources(clazz);
-      if (!ts.isClassDeclaration(clazz)) {
-        continue;
+      const classesToUpdate = new Set<DeclarationNode>();
+      for (const resourceFile of changedResources) {
+        for (const templateClass of this.getComponentsWithTemplateFile(resourceFile)) {
+          classesToUpdate.add(templateClass);
+        }
+
+        for (const styleClass of this.getComponentsWithStyleFile(resourceFile)) {
+          classesToUpdate.add(styleClass);
+        }
       }
 
-      this.compilation.templateTypeChecker.invalidateClass(clazz);
-    }
+      for (const clazz of classesToUpdate) {
+        this.compilation.traitCompiler.updateResources(clazz);
+        if (!ts.isClassDeclaration(clazz)) {
+          continue;
+        }
+
+        this.compilation.templateTypeChecker.invalidateClass(clazz);
+      }
+    });
   }
 
   /**
@@ -481,33 +528,28 @@ export class NgCompiler {
     if (this.compilation !== null) {
       return;
     }
-    this.compilation = this.makeCompilation();
 
-    const analyzeSpan = this.perfRecorder.start('analyze');
-    const promises: Promise<void>[] = [];
-    for (const sf of this.tsProgram.getSourceFiles()) {
-      if (sf.isDeclarationFile) {
-        continue;
+    await this.perfRecorder.inPhase(PerfPhase.Analysis, async () => {
+      this.compilation = this.makeCompilation();
+
+      const promises: Promise<void>[] = [];
+      for (const sf of this.tsProgram.getSourceFiles()) {
+        if (sf.isDeclarationFile) {
+          continue;
+        }
+
+        let analysisPromise = this.compilation.traitCompiler.analyzeAsync(sf);
+        this.scanForMwp(sf);
+        if (analysisPromise !== undefined) {
+          promises.push(analysisPromise);
+        }
       }
 
-      const analyzeFileSpan = this.perfRecorder.start('analyzeFile', sf);
-      let analysisPromise = this.compilation.traitCompiler.analyzeAsync(sf);
-      this.scanForMwp(sf);
-      if (analysisPromise === undefined) {
-        this.perfRecorder.stop(analyzeFileSpan);
-      } else if (this.perfRecorder.enabled) {
-        analysisPromise = analysisPromise.then(() => this.perfRecorder.stop(analyzeFileSpan));
-      }
-      if (analysisPromise !== undefined) {
-        promises.push(analysisPromise);
-      }
-    }
+      await Promise.all(promises);
 
-    await Promise.all(promises);
-
-    this.perfRecorder.stop(analyzeSpan);
-
-    this.resolveCompilation(this.compilation.traitCompiler);
+      this.perfRecorder.memory(PerfCheckpoint.Analysis);
+      this.resolveCompilation(this.compilation.traitCompiler);
+    });
   }
 
   /**
@@ -517,9 +559,7 @@ export class NgCompiler {
    */
   listLazyRoutes(entryRoute?: string): LazyRoute[] {
     if (entryRoute) {
-      // Note:
-      // This resolution step is here to match the implementation of the old `AotCompilerHost` (see
-      // https://github.com/angular/angular/blob/50732e156/packages/compiler-cli/src/transformers/compiler_host.ts#L175-L188).
+      // htts://github.com/angular/angular/blob/50732e156/packages/compiler-cli/src/transformers/compiler_host.ts#L175-L188).
       //
       // `@angular/cli` will always call this API with an absolute path, so the resolution step is
       // not necessary, but keeping it backwards compatible in case someone else is using the API.
@@ -573,7 +613,8 @@ export class NgCompiler {
     const before = [
       ivyTransformFactory(
           compilation.traitCompiler, compilation.reflector, importRewriter,
-          compilation.defaultImportTracker, compilation.isCore, this.closureCompilerEnabled),
+          compilation.defaultImportTracker, this.delegatingPerfRecorder, compilation.isCore,
+          this.closureCompilerEnabled),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
       compilation.defaultImportTracker.importPreservingTransformer(),
     ];
@@ -618,28 +659,32 @@ export class NgCompiler {
   }
 
   private analyzeSync(): void {
-    const analyzeSpan = this.perfRecorder.start('analyze');
-    this.compilation = this.makeCompilation();
-    for (const sf of this.tsProgram.getSourceFiles()) {
-      if (sf.isDeclarationFile) {
-        continue;
+    this.perfRecorder.inPhase(PerfPhase.Analysis, () => {
+      this.compilation = this.makeCompilation();
+      for (const sf of this.tsProgram.getSourceFiles()) {
+        if (sf.isDeclarationFile) {
+          continue;
+        }
+        this.compilation.traitCompiler.analyzeSync(sf);
+        this.scanForMwp(sf);
       }
-      const analyzeFileSpan = this.perfRecorder.start('analyzeFile', sf);
-      this.compilation.traitCompiler.analyzeSync(sf);
-      this.scanForMwp(sf);
-      this.perfRecorder.stop(analyzeFileSpan);
-    }
-    this.perfRecorder.stop(analyzeSpan);
 
-    this.resolveCompilation(this.compilation.traitCompiler);
+      this.perfRecorder.memory(PerfCheckpoint.Analysis);
+
+      this.resolveCompilation(this.compilation.traitCompiler);
+    });
   }
 
   private resolveCompilation(traitCompiler: TraitCompiler): void {
-    traitCompiler.resolve();
+    this.perfRecorder.inPhase(PerfPhase.Resolve, () => {
+      traitCompiler.resolve();
 
-    // At this point, analysis is complete and the compiler can now calculate which files need to
-    // be emitted, so do that.
-    this.incrementalDriver.recordSuccessfulAnalysis(traitCompiler);
+      // At this point, analysis is complete and the compiler can now calculate which files need to
+      // be emitted, so do that.
+      this.incrementalDriver.recordSuccessfulAnalysis(traitCompiler);
+
+      this.perfRecorder.memory(PerfCheckpoint.Resolve);
+    });
   }
 
   private get fullTemplateTypeCheck(): boolean {
@@ -770,7 +815,6 @@ export class NgCompiler {
     const compilation = this.ensureAnalyzed();
 
     // Get the diagnostics.
-    const typeCheckSpan = this.perfRecorder.start('typeCheckDiagnostics');
     const diagnostics: ts.Diagnostic[] = [];
     for (const sf of this.tsProgram.getSourceFiles()) {
       if (sf.isDeclarationFile || this.adapter.isShim(sf)) {
@@ -782,7 +826,6 @@ export class NgCompiler {
     }
 
     const program = this.typeCheckingProgramStrategy.getProgram();
-    this.perfRecorder.stop(typeCheckSpan);
     this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, program);
     this.nextProgram = program;
 
@@ -794,14 +837,12 @@ export class NgCompiler {
     const compilation = this.ensureAnalyzed();
 
     // Get the diagnostics.
-    const typeCheckSpan = this.perfRecorder.start('typeCheckDiagnostics');
     const diagnostics: ts.Diagnostic[] = [];
     if (!sf.isDeclarationFile && !this.adapter.isShim(sf)) {
       diagnostics.push(...compilation.templateTypeChecker.getDiagnosticsForFile(sf, optimizeFor));
     }
 
     const program = this.typeCheckingProgramStrategy.getProgram();
-    this.perfRecorder.stop(typeCheckSpan);
     this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, program);
     this.nextProgram = program;
 
@@ -950,7 +991,8 @@ export class NgCompiler {
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
           this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
           cycleHandlingStrategy, refEmitter, defaultImportTracker, this.incrementalDriver.depGraph,
-          injectableRegistry, semanticDepGraphUpdater, this.closureCompilerEnabled),
+          injectableRegistry, semanticDepGraphUpdater, this.closureCompilerEnabled,
+          this.delegatingPerfRecorder),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
@@ -959,31 +1001,33 @@ export class NgCompiler {
             reflector, evaluator, metaRegistry, scopeRegistry, metaReader,
             defaultImportTracker, injectableRegistry, isCore, semanticDepGraphUpdater,
           this.closureCompilerEnabled, compileUndecoratedClassesWithAngularFeatures,
+          this.delegatingPerfRecorder,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
       // clang-format on
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
       new PipeDecoratorHandler(
           reflector, evaluator, metaRegistry, scopeRegistry, defaultImportTracker,
-          injectableRegistry, isCore),
+          injectableRegistry, isCore, this.delegatingPerfRecorder),
       new InjectableDecoratorHandler(
           reflector, defaultImportTracker, isCore, this.options.strictInjectionParameters || false,
-          injectableRegistry),
+          injectableRegistry, this.delegatingPerfRecorder),
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry, isCore,
           routeAnalyzer, refEmitter, this.adapter.factoryTracker, defaultImportTracker,
-          this.closureCompilerEnabled, injectableRegistry, this.options.i18nInLocale),
+          this.closureCompilerEnabled, injectableRegistry, this.delegatingPerfRecorder,
+          this.options.i18nInLocale),
     ];
 
     const traitCompiler = new TraitCompiler(
-        handlers, reflector, this.perfRecorder, this.incrementalDriver,
+        handlers, reflector, this.delegatingPerfRecorder, this.incrementalDriver,
         this.options.compileNonExportedClasses !== false, compilationMode, dtsTransforms,
         semanticDepGraphUpdater);
 
     const templateTypeChecker = new TemplateTypeCheckerImpl(
         this.tsProgram, this.typeCheckingProgramStrategy, traitCompiler,
         this.getTypeCheckingConfig(), refEmitter, reflector, this.adapter, this.incrementalDriver,
-        scopeRegistry, typeCheckScopeRegistry);
+        scopeRegistry, typeCheckScopeRegistry, this.delegatingPerfRecorder);
 
     return {
       isCore,
