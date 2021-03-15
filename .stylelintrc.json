@@ -8,7 +8,8 @@
     "./tools/stylelint/no-nested-mixin.ts",
     "./tools/stylelint/no-concrete-rules.ts",
     "./tools/stylelint/no-top-level-ampersand-in-mixin.ts",
-    "./tools/stylelint/theme-mixin-api.ts"
+    "./tools/stylelint/theme-mixin-api.ts",
+    "./tools/stylelint/no-import.ts"
   ],
   "rules": {
     "material/no-prefixes": [true, {
@@ -18,6 +19,9 @@
     "material/theme-mixin-api": true,
     "material/selector-no-deep": true,
     "material/no-nested-mixin": true,
+    "material/no-import": [true, {
+      "exclude": "\\.import\\.scss$"
+    }],
     "material/no-ampersand-beyond-selector-start": [true, {
       "filePattern": "-theme\\.scss$"
     }],
@@ -69,8 +73,8 @@
     "declaration-block-semicolon-newline-after": "always-multi-line",
     "declaration-colon-space-after": "always-single-line",
     "declaration-property-value-disallowed-list": [
-        {"/.*/": ["initial"]},
-        {"message": "The `initial` value is not supported in IE."}
+      {"/.*/": ["initial"]},
+      {"message": "The `initial` value is not supported in IE."}
     ],
 
     "block-closing-brace-newline-after": "always",

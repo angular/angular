@@ -1,6 +1,7 @@
 // Imports the theming bundle. Needs to be an absolute bin-dir import path as on Windows,
 // runfiles are not symlinked, so the Sass compilation happens in the workspace directory
 // with the include paths being set to the `bazel-bin` directory.
+// stylelint-disable-next-line material/no-import
 @import 'src/material/theming';
 
 // Disable theme style duplication warnings. This test intentionally generates
