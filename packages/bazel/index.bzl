@@ -12,5 +12,6 @@ load("//packages/bazel/src:ng_module.bzl", _ng_module = "ng_module_macro")
 
 ng_module = _ng_module
 ng_package = _ng_package
+
 # DO NOT ADD PUBLIC API without including in the documentation generation
 # Run `yarn bazel build //packages/bazel/docs` to verify
