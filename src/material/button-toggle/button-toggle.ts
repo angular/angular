@@ -83,7 +83,8 @@ export const MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR: any = {
   multi: true
 };
 
-let _uniqueIdCounter = 0;
+// Counter used to generate unique IDs.
+let uniqueIdCounter = 0;
 
 /** Change event object emitted by MatButtonToggle. */
 export class MatButtonToggleChange {
@@ -157,7 +158,7 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
       });
     }
   }
-  private _name = `mat-button-toggle-group-${_uniqueIdCounter++}`;
+  private _name = `mat-button-toggle-group-${uniqueIdCounter++}`;
 
   /** Whether the toggle group is vertical. */
   @Input()
@@ -190,7 +191,7 @@ export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, After
   @Output() readonly valueChange = new EventEmitter<any>();
 
   /** Selected button toggles in the group. */
-  get selected() {
+  get selected(): MatButtonToggle | MatButtonToggle[] {
     const selected = this._selectionModel ? this._selectionModel.selected : [];
     return this.multiple ? selected : (selected[0] || null);
   }
@@ -424,6 +425,7 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
    */
   @Input('aria-labelledby') ariaLabelledby: string | null = null;
 
+  /** Underlying native `button` element. */
   @ViewChild('button') _buttonElement: ElementRef<HTMLButtonElement>;
 
   /** The parent button toggle group (exclusive selection). Optional. */
@@ -504,7 +506,7 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
   ngOnInit() {
     const group = this.buttonToggleGroup;
     this._isSingleSelector = group && !group.multiple;
-    this.id = this.id || `mat-button-toggle-${_uniqueIdCounter++}`;
+    this.id = this.id || `mat-button-toggle-${uniqueIdCounter++}`;
 
     if (this._isSingleSelector) {
       this.name = group.name;
