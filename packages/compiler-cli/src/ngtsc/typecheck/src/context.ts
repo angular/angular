@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
+import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
 import {ComponentToShimMappingStrategy, TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
@@ -179,7 +180,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
       private componentMappingStrategy: ComponentToShimMappingStrategy,
       private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
-      private host: TypeCheckingHost, private inlining: InliningMode) {
+      private host: TypeCheckingHost, private inlining: InliningMode, private perf: PerfRecorder) {
     if (inlining === InliningMode.Error && config.useInlineTypeConstructors) {
       // We cannot use inlining for type checking since this environment does not support it.
       throw new Error(`AssertionError: invalid inlining configuration.`);
@@ -273,6 +274,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       shimData.oobRecorder.requiresInlineTcb(templateId, ref.node);
 
       // Checking this template would be unsupported, so don't try.
+      this.perf.eventCount(PerfEvent.SkipGenerateTcbNoInline);
       return;
     }
 
@@ -282,6 +284,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       pipes,
       schemas,
     };
+    this.perf.eventCount(PerfEvent.GenerateTcb);
     if (tcbRequiresInline) {
       // This class didn't meet the requirements for external type checking, so generate an inline
       // TCB for the class.

@@ -12,7 +12,7 @@ import {CompilationTicket, freshCompilationTicket, incrementalFromDriverTicket, 
 import {NgCompilerOptions, UnifiedModulesHost} from './core/api';
 import {NodeJSFileSystem, setFileSystem} from './file_system';
 import {PatchedProgramIncrementalBuildStrategy} from './incremental';
-import {NOOP_PERF_RECORDER} from './perf';
+import {ActivePerfRecorder, NOOP_PERF_RECORDER, PerfPhase} from './perf';
 import {untagAllTsFiles} from './shims';
 import {OptimizeFor} from './typecheck/api';
 import {ReusedProgramStrategy} from './typecheck/src/augmented_program';
@@ -94,6 +94,13 @@ export class NgTscPlugin implements TscPlugin {
     ignoreForDiagnostics: Set<ts.SourceFile>,
     ignoreForEmit: Set<ts.SourceFile>,
   } {
+    // TODO(alxhub): we provide a `PerfRecorder` to the compiler, but because we're not driving the
+    // compilation, the information captured within it is incomplete, and may not include timings
+    // for phases such as emit.
+    //
+    // Additionally, nothing actually captures the perf results here, so recording stats at all is
+    // somewhat moot for now :)
+    const perfRecorder = ActivePerfRecorder.zeroedToNow();
     if (this.host === null || this.options === null) {
       throw new Error('Lifecycle error: setupCompilation() before wrapHost().');
     }
@@ -115,15 +122,15 @@ export class NgTscPlugin implements TscPlugin {
 
     if (oldProgram === undefined || oldDriver === null) {
       ticket = freshCompilationTicket(
-          program, this.options, strategy, typeCheckStrategy,
+          program, this.options, strategy, typeCheckStrategy, perfRecorder,
           /* enableTemplateTypeChecker */ false, /* usePoisonedData */ false);
     } else {
       strategy.toNextBuildStrategy().getIncrementalDriver(oldProgram);
       ticket = incrementalFromDriverTicket(
           oldProgram, oldDriver, program, this.options, strategy, typeCheckStrategy,
-          modifiedResourceFiles, false, false);
+          modifiedResourceFiles, perfRecorder, false, false);
     }
-    this._compiler = NgCompiler.fromTicket(ticket, this.host, NOOP_PERF_RECORDER);
+    this._compiler = NgCompiler.fromTicket(ticket, this.host);
     return {
       ignoreForDiagnostics: this._compiler.ignoreForDiagnostics,
       ignoreForEmit: this._compiler.ignoreForEmit,
@@ -146,6 +153,9 @@ export class NgTscPlugin implements TscPlugin {
   }
 
   createTransformers(): ts.CustomTransformers {
+    // The plugin consumer doesn't know about our perf tracing system, so we consider the emit phase
+    // as beginning now.
+    this.compiler.perfRecorder.phase(PerfPhase.TypeScriptEmit);
     return this.compiler.prepareEmit().transformers;
   }
 }

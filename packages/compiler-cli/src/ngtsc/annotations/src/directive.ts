@@ -16,6 +16,7 @@ import {areTypeParametersEqual, extractSemanticTypeParameters, isArrayEqual, isS
 import {BindingPropertyName, ClassPropertyMapping, ClassPropertyName, DirectiveTypeCheckMeta, InjectableClassRegistry, MetadataReader, MetadataRegistry, TemplateGuardMeta} from '../../metadata';
 import {extractDirectiveTypeCheckMeta} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
+import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
@@ -180,7 +181,7 @@ export class DirectiveDecoratorHandler implements
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
       private semanticDepGraphUpdater: SemanticDepGraphUpdater|null,
       private annotateForClosureCompiler: boolean,
-      private compileUndecoratedClassesWithAngularFeatures: boolean) {}
+      private compileUndecoratedClassesWithAngularFeatures: boolean, private perf: PerfRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = DirectiveDecoratorHandler.name;
@@ -210,6 +211,8 @@ export class DirectiveDecoratorHandler implements
     if (this.compileUndecoratedClassesWithAngularFeatures === false && decorator === null) {
       return {diagnostics: [getUndecoratedClassWithAngularFeaturesDiagnostic(node)]};
     }
+
+    this.perf.eventCount(PerfEvent.AnalyzeDirective);
 
     const directiveResult = extractDirectiveMetadata(
         node, decorator, this.reflector, this.evaluator, this.defaultImportRecorder, this.isCore,

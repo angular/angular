@@ -12,6 +12,7 @@ import * as ts from 'typescript';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {Reference, ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
+import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 import {ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
@@ -82,7 +83,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
       private priorBuild: IncrementalBuild<unknown, FileTypeCheckingData>,
       private readonly componentScopeReader: ComponentScopeReader,
-      private readonly typeCheckScopeRegistry: TypeCheckScopeRegistry) {}
+      private readonly typeCheckScopeRegistry: TypeCheckScopeRegistry,
+      private readonly perf: PerfRecorder) {}
 
   getTemplate(component: ts.ClassDeclaration): TmplAstNode[]|null {
     const {data} = this.getLatestComponentState(component);
@@ -181,19 +183,60 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         break;
     }
 
-    const sfPath = absoluteFromSourceFile(sf);
-    const fileRecord = this.state.get(sfPath)!;
+    return this.perf.inPhase(PerfPhase.TtcDiagnostics, () => {
+      const sfPath = absoluteFromSourceFile(sf);
+      const fileRecord = this.state.get(sfPath)!;
 
-    const typeCheckProgram = this.typeCheckingStrategy.getProgram();
+      const typeCheckProgram = this.typeCheckingStrategy.getProgram();
 
-    const diagnostics: (ts.Diagnostic|null)[] = [];
-    if (fileRecord.hasInlines) {
-      const inlineSf = getSourceFileOrError(typeCheckProgram, sfPath);
-      diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(inlineSf).map(
-          diag => convertDiagnostic(diag, fileRecord.sourceManager)));
-    }
+      const diagnostics: (ts.Diagnostic|null)[] = [];
+      if (fileRecord.hasInlines) {
+        const inlineSf = getSourceFileOrError(typeCheckProgram, sfPath);
+        diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(inlineSf).map(
+            diag => convertDiagnostic(diag, fileRecord.sourceManager)));
+      }
 
-    for (const [shimPath, shimRecord] of fileRecord.shimData) {
+      for (const [shimPath, shimRecord] of fileRecord.shimData) {
+        const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
+        diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(shimSf).map(
+            diag => convertDiagnostic(diag, fileRecord.sourceManager)));
+        diagnostics.push(...shimRecord.genesisDiagnostics);
+
+        for (const templateData of shimRecord.templates.values()) {
+          diagnostics.push(...templateData.templateDiagnostics);
+        }
+      }
+
+      return diagnostics.filter((diag: ts.Diagnostic|null): diag is ts.Diagnostic => diag !== null);
+    });
+  }
+
+  getDiagnosticsForComponent(component: ts.ClassDeclaration): ts.Diagnostic[] {
+    this.ensureShimForComponent(component);
+
+    return this.perf.inPhase(PerfPhase.TtcDiagnostics, () => {
+      const sf = component.getSourceFile();
+      const sfPath = absoluteFromSourceFile(sf);
+      const shimPath = this.typeCheckingStrategy.shimPathForComponent(component);
+
+      const fileRecord = this.getFileData(sfPath);
+
+      if (!fileRecord.shimData.has(shimPath)) {
+        return [];
+      }
+
+      const templateId = fileRecord.sourceManager.getTemplateId(component);
+      const shimRecord = fileRecord.shimData.get(shimPath)!;
+
+      const typeCheckProgram = this.typeCheckingStrategy.getProgram();
+
+      const diagnostics: (TemplateDiagnostic|null)[] = [];
+      if (shimRecord.hasInlines) {
+        const inlineSf = getSourceFileOrError(typeCheckProgram, sfPath);
+        diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(inlineSf).map(
+            diag => convertDiagnostic(diag, fileRecord.sourceManager)));
+      }
+
       const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
       diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(shimSf).map(
           diag => convertDiagnostic(diag, fileRecord.sourceManager)));
@@ -202,48 +245,11 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       for (const templateData of shimRecord.templates.values()) {
         diagnostics.push(...templateData.templateDiagnostics);
       }
-    }
 
-    return diagnostics.filter((diag: ts.Diagnostic|null): diag is ts.Diagnostic => diag !== null);
-  }
-
-  getDiagnosticsForComponent(component: ts.ClassDeclaration): ts.Diagnostic[] {
-    this.ensureShimForComponent(component);
-
-    const sf = component.getSourceFile();
-    const sfPath = absoluteFromSourceFile(sf);
-    const shimPath = this.typeCheckingStrategy.shimPathForComponent(component);
-
-    const fileRecord = this.getFileData(sfPath);
-
-    if (!fileRecord.shimData.has(shimPath)) {
-      return [];
-    }
-
-    const templateId = fileRecord.sourceManager.getTemplateId(component);
-    const shimRecord = fileRecord.shimData.get(shimPath)!;
-
-    const typeCheckProgram = this.typeCheckingStrategy.getProgram();
-
-    const diagnostics: (TemplateDiagnostic|null)[] = [];
-    if (shimRecord.hasInlines) {
-      const inlineSf = getSourceFileOrError(typeCheckProgram, sfPath);
-      diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(inlineSf).map(
-          diag => convertDiagnostic(diag, fileRecord.sourceManager)));
-    }
-
-    const shimSf = getSourceFileOrError(typeCheckProgram, shimPath);
-    diagnostics.push(...typeCheckProgram.getSemanticDiagnostics(shimSf).map(
-        diag => convertDiagnostic(diag, fileRecord.sourceManager)));
-    diagnostics.push(...shimRecord.genesisDiagnostics);
-
-    for (const templateData of shimRecord.templates.values()) {
-      diagnostics.push(...templateData.templateDiagnostics);
-    }
-
-    return diagnostics.filter(
-        (diag: TemplateDiagnostic|null): diag is TemplateDiagnostic =>
-            diag !== null && diag.templateId === templateId);
+      return diagnostics.filter(
+          (diag: TemplateDiagnostic|null): diag is TemplateDiagnostic =>
+              diag !== null && diag.templateId === templateId);
+    });
   }
 
   getTypeCheckBlock(component: ts.ClassDeclaration): ts.Node|null {
@@ -256,7 +262,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     if (engine === null) {
       return null;
     }
-    return engine.getGlobalCompletions(context);
+    return this.perf.inPhase(
+        PerfPhase.TtcAutocompletion, () => engine.getGlobalCompletions(context));
   }
 
   getExpressionCompletionLocation(
@@ -266,7 +273,8 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     if (engine === null) {
       return null;
     }
-    return engine.getExpressionCompletionLocation(ast);
+    return this.perf.inPhase(
+        PerfPhase.TtcAutocompletion, () => engine.getExpressionCompletionLocation(ast));
   }
 
   invalidateClass(clazz: ts.ClassDeclaration): void {
@@ -318,6 +326,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return;
     }
 
+    this.perf.eventCount(PerfEvent.ReuseTypeCheckFile);
     this.state.set(sfPath, previousResults);
   }
 
@@ -326,50 +335,55 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       return;
     }
 
-    const host = new WholeProgramTypeCheckingHost(this);
-    const ctx = this.newContext(host);
+    this.perf.inPhase(PerfPhase.TcbGeneration, () => {
+      const host = new WholeProgramTypeCheckingHost(this);
+      const ctx = this.newContext(host);
 
-    for (const sf of this.originalProgram.getSourceFiles()) {
-      if (sf.isDeclarationFile || isShim(sf)) {
-        continue;
+      for (const sf of this.originalProgram.getSourceFiles()) {
+        if (sf.isDeclarationFile || isShim(sf)) {
+          continue;
+        }
+
+        this.maybeAdoptPriorResultsForFile(sf);
+
+        const sfPath = absoluteFromSourceFile(sf);
+        const fileData = this.getFileData(sfPath);
+        if (fileData.isComplete) {
+          continue;
+        }
+
+        this.typeCheckAdapter.typeCheck(sf, ctx);
+
+        fileData.isComplete = true;
       }
 
+      this.updateFromContext(ctx);
+      this.isComplete = true;
+    });
+  }
+
+  private ensureAllShimsForOneFile(sf: ts.SourceFile): void {
+    this.perf.inPhase(PerfPhase.TcbGeneration, () => {
       this.maybeAdoptPriorResultsForFile(sf);
 
       const sfPath = absoluteFromSourceFile(sf);
+
       const fileData = this.getFileData(sfPath);
       if (fileData.isComplete) {
-        continue;
+        // All data for this file is present and accounted for already.
+        return;
       }
+
+      const host =
+          new SingleFileTypeCheckingHost(sfPath, fileData, this.typeCheckingStrategy, this);
+      const ctx = this.newContext(host);
 
       this.typeCheckAdapter.typeCheck(sf, ctx);
 
       fileData.isComplete = true;
-    }
 
-    this.updateFromContext(ctx);
-    this.isComplete = true;
-  }
-
-  private ensureAllShimsForOneFile(sf: ts.SourceFile): void {
-    this.maybeAdoptPriorResultsForFile(sf);
-
-    const sfPath = absoluteFromSourceFile(sf);
-
-    const fileData = this.getFileData(sfPath);
-    if (fileData.isComplete) {
-      // All data for this file is present and accounted for already.
-      return;
-    }
-
-    const host = new SingleFileTypeCheckingHost(sfPath, fileData, this.typeCheckingStrategy, this);
-    const ctx = this.newContext(host);
-
-    this.typeCheckAdapter.typeCheck(sf, ctx);
-
-    fileData.isComplete = true;
-
-    this.updateFromContext(ctx);
+      this.updateFromContext(ctx);
+    });
   }
 
   private ensureShimForComponent(component: ts.ClassDeclaration): void {
@@ -399,7 +413,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
                                                                           InliningMode.Error;
     return new TypeCheckContextImpl(
         this.config, this.compilerHost, this.typeCheckingStrategy, this.refEmitter, this.reflector,
-        host, inlining);
+        host, inlining, this.perf);
   }
 
   /**
@@ -428,8 +442,14 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
   private updateFromContext(ctx: TypeCheckContextImpl): void {
     const updates = ctx.finalize();
-    this.typeCheckingStrategy.updateFiles(updates, UpdateMode.Incremental);
-    this.priorBuild.recordSuccessfulTypeCheck(this.state);
+    return this.perf.inPhase(PerfPhase.TcbUpdateProgram, () => {
+      if (updates.size > 0) {
+        this.perf.eventCount(PerfEvent.UpdateTypeCheckProgram);
+      }
+      this.typeCheckingStrategy.updateFiles(updates, UpdateMode.Incremental);
+      this.priorBuild.recordSuccessfulTypeCheck(this.state);
+      this.perf.memory(PerfCheckpoint.TtcUpdateProgram);
+    });
   }
 
   getFileData(path: AbsoluteFsPath): FileTypeCheckingData {
@@ -450,7 +470,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     if (builder === null) {
       return null;
     }
-    return builder.getSymbol(node);
+    return this.perf.inPhase(PerfPhase.TtcSymbol, () => builder.getSymbol(node));
   }
 
   private getOrCreateSymbolBuilder(component: ts.ClassDeclaration): SymbolBuilder|null {

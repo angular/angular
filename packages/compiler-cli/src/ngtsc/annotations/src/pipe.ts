@@ -14,6 +14,7 @@ import {DefaultImportRecorder, Reference} from '../../imports';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {InjectableClassRegistry, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
+import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, ResolveResult} from '../../transform';
@@ -55,7 +56,8 @@ export class PipeDecoratorHandler implements
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
       private defaultImportRecorder: DefaultImportRecorder,
-      private injectableRegistry: InjectableClassRegistry, private isCore: boolean) {}
+      private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
+      private perf: PerfRecorder) {}
 
   readonly precedence = HandlerPrecedence.PRIMARY;
   readonly name = PipeDecoratorHandler.name;
@@ -78,6 +80,8 @@ export class PipeDecoratorHandler implements
 
   analyze(clazz: ClassDeclaration, decorator: Readonly<Decorator>):
       AnalysisOutput<PipeHandlerData> {
+    this.perf.eventCount(PerfEvent.AnalyzePipe);
+
     const name = clazz.name.text;
     const type = wrapTypeReference(this.reflector, clazz);
     const internalType = new WrappedNodeExpr(this.reflector.getInternalNameOfClass(clazz));
