@@ -30,11 +30,11 @@ div.code {
 }
 
 hr {
-  margin: 40px 0
+  margin: 40px 0;
 }
 
 .odd {
-  background-color:  palegoldenrod;
+  background-color: palegoldenrod;
 }
 
 td, th {
@@ -42,7 +42,10 @@ td, th {
   vertical-align: top;
 }
 
-p span { color: red; font-size: 70%; }
+p span { 
+  color: red; 
+  font-size: 70%; 
+}
 
 .unless {
   border: 2px solid;
