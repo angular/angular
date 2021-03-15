@@ -44,7 +44,7 @@ if (module === require.main) {
 
 /** Builds the release packages for NPM. */
 function performNpmReleaseBuild() {
-  buildReleasePackages(false, defaultDistPath, /* isSnapshotBuild */ false);
+  return buildReleasePackages(false, defaultDistPath, /* isSnapshotBuild */ false);
 }
 
 /**
@@ -52,7 +52,7 @@ function performNpmReleaseBuild() {
  * Git HEAD SHA is included in the version (for easier debugging and back tracing).
  */
 function performDefaultSnapshotBuild() {
-  buildReleasePackages(false, defaultDistPath, /* isSnapshotBuild */ true);
+  return buildReleasePackages(false, defaultDistPath, /* isSnapshotBuild */ true);
 }
 
 /**
@@ -103,6 +103,14 @@ function buildReleasePackages(useIvy, distPath, isSnapshotBuild) {
     cp('-R', outputPath, targetFolder);
     chmod('-R', 'u+w', targetFolder);
   });
+
+  return packageNames.map(pkg => {
+    const outputPath = getOutputPath(pkg);
+    return {
+      name: `@angular/${pkg}`,
+      outputPath
+    }
+  })
 }
 
 /**

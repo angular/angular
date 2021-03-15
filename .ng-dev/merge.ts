@@ -1,6 +1,7 @@
 import {DevInfraMergeConfig} from '@angular/dev-infra-private/pr/merge/config';
 import {getDefaultTargetLabelConfiguration} from '@angular/dev-infra-private/pr/merge/defaults';
 import {github} from './github';
+import {release} from './release';
 
 /**
  * Configuration for the merge tool in `ng-dev`. This sets up the labels which
@@ -22,6 +23,6 @@ export const merge: DevInfraMergeConfig['merge'] = async api => {
     mergeReadyLabel: 'merge ready',
     commitMessageFixupLabel: 'commit message fixup',
     caretakerNoteLabel: 'caretaker note',
-    labels: await getDefaultTargetLabelConfiguration(api, github, '@angular/cdk'),
+    labels: await getDefaultTargetLabelConfiguration(api, github, release),
   };
 };
