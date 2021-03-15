@@ -1,0 +1,22 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.19.0
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - karma > lodash:
+        patched: '2021-03-15T05:28:47.879Z'
+    - karma-coverage-istanbul-reporter > istanbul-api > async > lodash:
+        patched: '2021-03-15T05:28:47.879Z'
+    - karma > log4js > streamroller > lodash:
+        patched: '2021-03-15T05:28:47.879Z'
+    - karma > log4js > streamroller > async > lodash:
+        patched: '2021-03-15T05:28:47.879Z'
+    - karma-coverage-istanbul-reporter > istanbul-api > istanbul-lib-instrument > @babel/traverse > lodash:
+        patched: '2021-03-15T05:28:47.879Z'
+    - karma-coverage-istanbul-reporter > istanbul-api > istanbul-lib-instrument > @babel/traverse > @babel/generator > lodash:
+        patched: '2021-03-15T05:28:47.879Z'
+    - karma-coverage-istanbul-reporter > istanbul-api > istanbul-lib-instrument > @babel/traverse > @babel/helper-split-export-declaration > @babel/types > lodash:
+        patched: '2021-03-15T05:28:47.879Z'
+    - karma-coverage-istanbul-reporter > istanbul-api > istanbul-lib-instrument > @babel/traverse > @babel/helper-function-name > @babel/helper-get-function-arity > @babel/types > lodash:
+        patched: '2021-03-15T05:28:47.879Z'

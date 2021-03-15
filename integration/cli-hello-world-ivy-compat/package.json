@@ -10,7 +10,9 @@
     "postinstall": "ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points",
     "start": "ng serve",
     "pretest": "ng version",
-    "test": "ng test && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production"
+    "test": "ng test && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production",
+    "snyk-protect": "snyk protect",
+    "prepare": "yarn run snyk-protect"
   },
   "private": true,
   "dependencies": {
@@ -24,7 +26,8 @@
     "@angular/router": "file:../../dist/packages-dist/router",
     "rxjs": "file:../../node_modules/rxjs",
     "tslib": "file:../../node_modules/tslib",
-    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz",
+    "snyk": "^1.486.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
@@ -37,7 +40,7 @@
     "codelyzer": "5.2.0",
     "jasmine-core": "3.5.0",
     "jasmine-spec-reporter": "4.2.1",
-    "karma": "4.4.0",
+    "karma": "6.0.0",
     "karma-chrome-launcher": "3.1.0",
     "karma-coverage-istanbul-reporter": "2.1.0",
     "karma-jasmine": "2.0.1",
@@ -51,5 +54,6 @@
   "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
   "resolutions": {
     "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
-  }
+  },
+  "snyk": true
 }
