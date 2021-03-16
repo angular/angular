@@ -1,19 +1,10 @@
-:host {
-  display: flex;
-  flex-direction: column;
-  padding-top: 24px;
-}
-
 label {
-  display: block;
-  width: 6em;
-  margin: .5em 0;
-  color: #607D8B;
   font-weight: bold;
+  padding-bottom: .5rem;
+  padding-top: 1rem;
+  display: inline-block;
 }
 
-input {
-  height: 2em;
-  font-size: 1em;
-  padding-left: .4em;
+button {
+  max-width: 300px;
 }
