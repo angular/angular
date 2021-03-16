@@ -769,12 +769,14 @@ runInEachFileSystem(() => {
 
           let diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(diags[0].messageText).toContain('"alpha" | "beta"');
+          expect(diags[0].messageText)
+              .toContain(`Type '"gamma"' is not assignable to type 'keyof Keys'.`);
 
           // On a rebuild, the same errors should be present.
           diags = env.driveDiagnostics();
           expect(diags.length).toBe(1);
-          expect(diags[0].messageText).toContain('"alpha" | "beta"');
+          expect(diags[0].messageText)
+              .toContain(`Type '"gamma"' is not assignable to type 'keyof Keys'.`);
         });
       });
     });

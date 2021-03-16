@@ -58,7 +58,7 @@ function buildLogLevelFunction(loadCommand, level) {
         for (var _i = 0; _i < arguments.length; _i++) {
             text[_i] = arguments[_i];
         }
-        runConsoleCommand.apply(void 0, tslib.__spread([loadCommand, level], text));
+        runConsoleCommand.apply(void 0, tslib.__spreadArray([loadCommand, level], tslib.__read(text)));
     };
     /** Start a group at the LOG_LEVEL, optionally starting it as collapsed. */
     loggingFunction.group = function (text, collapsed) {
@@ -87,9 +87,9 @@ function runConsoleCommand(loadCommand, logLevel) {
         text[_i - 2] = arguments[_i];
     }
     if (getLogLevel() >= logLevel) {
-        loadCommand().apply(void 0, tslib.__spread(text));
+        loadCommand().apply(void 0, tslib.__spreadArray([], tslib.__read(text)));
     }
-    printToLogFile.apply(void 0, tslib.__spread([logLevel], text));
+    printToLogFile.apply(void 0, tslib.__spreadArray([logLevel], tslib.__read(text)));
 }
 /**
  * Retrieve the log level from environment variables, if the value found

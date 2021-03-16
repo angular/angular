@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/angular/angular/tree/master/packages/router",
   "dependencies": {
-    "tslib": "^2.0.0"
+    "tslib": "^2.1.0"
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",

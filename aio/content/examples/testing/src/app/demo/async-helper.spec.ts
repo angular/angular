@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-unused-variable
-import { fakeAsync, tick, waitForAsync } from '@angular/core/testing';
-import { interval, of } from 'rxjs';
-import { delay, take } from 'rxjs/operators';
+import {fakeAsync, tick, waitForAsync} from '@angular/core/testing';
+import {interval, of} from 'rxjs';
+import {delay, take} from 'rxjs/operators';
 
 describe('Angular async helper', () => {
   describe('async', () => {
@@ -183,7 +183,7 @@ describe('Angular async helper', () => {
     // before loading zone.js/testing
     it('should wait until promise.then is called', waitForAsync(() => {
          let finished = false;
-         new Promise((res, rej) => {
+         new Promise<void>(res => {
            jsonp('localhost:8080/jsonp', () => {
              // success callback and resolve the promise
              finished = true;

@@ -7,7 +7,7 @@
  */
 
 import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {relative} from 'path';
+import {basename, join, relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
@@ -43,11 +43,15 @@ export default function(): Rule {
 }
 
 function runRendererToRenderer2Migration(tree: Tree, tsconfigPath: string, basePath: string) {
+  // Technically we can get away with using `MODULE_AUGMENTATION_FILENAME` as the path, but as of
+  // TS 4.2, the module resolution caching seems to be more aggressive which causes the file to be
+  // retained between test runs. We can avoid it by using the full path.
+  const augmentedFilePath = join(basePath, MODULE_AUGMENTATION_FILENAME);
   const {program} = createMigrationProgram(tree, tsconfigPath, basePath, fileName => {
     // In case the module augmentation file has been requested, we return a source file that
     // augments "@angular/core" to include a named export called "Renderer". This ensures that
     // we can rely on the type checker for this migration in v9 where "Renderer" has been removed.
-    if (fileName === MODULE_AUGMENTATION_FILENAME) {
+    if (basename(fileName) === MODULE_AUGMENTATION_FILENAME) {
       return `
         import '@angular/core';
         declare module "@angular/core" {
@@ -55,8 +59,8 @@ function runRendererToRenderer2Migration(tree: Tree, tsconfigPath: string, baseP
         }
       `;
     }
-    return null;
-  }, [MODULE_AUGMENTATION_FILENAME]);
+    return undefined;
+  }, [augmentedFilePath]);
   const typeChecker = program.getTypeChecker();
   const printer = ts.createPrinter();
   const sourceFiles =

@@ -830,8 +830,7 @@ describe('diagnostics', () => {
     const tsDiags = tsLS.getSemanticDiagnostics(APP_COMPONENT);
     expect(tsDiags.length).toBe(1);
     expect(tsDiags[0].messageText)
-        .toBe(
-            `Module '"../node_modules/@angular/core/core"' has no exported member 'OpaqueToken'.`);
+        .toBe(`Module '"@angular/core"' has no exported member 'OpaqueToken'.`);
   });
 
   describe('templates', () => {

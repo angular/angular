@@ -17,8 +17,8 @@ describe('FileReader', ifEnvSupports('FileReader', function() {
 
            // Android 4.3's native browser doesn't implement add/RemoveEventListener for FileReader
            function supportsEventTargetFns() {
-             return FileReader.prototype.addEventListener &&
-                 FileReader.prototype.removeEventListener;
+             return !!FileReader.prototype.addEventListener &&
+                 !!FileReader.prototype.removeEventListener;
            }
            (<any>supportsEventTargetFns).message =
                'FileReader#addEventListener and FileReader#removeEventListener';

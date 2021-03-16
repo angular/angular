@@ -33,7 +33,7 @@
     "shelljs": "^0.8.4",
     "source-map-support": "^0.5.19",
     "tar-stream": "^2.1.3",
-    "tslib": "^2.0.1"
+    "tslib": "^2.1.0"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.0",
@@ -49,6 +49,6 @@
     "supertest": "^4.0.2",
     "tslint": "^6.1.3",
     "tslint-jasmine-noSkipOrFocus": "^1.0.9",
-    "typescript": "^4.1.2"
+    "typescript": "^4.2.3"
   }
 }
