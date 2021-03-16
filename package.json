@@ -88,7 +88,7 @@
     "@bazel/jasmine": "3.2.1",
     "@bazel/protractor": "3.2.1",
     "@bazel/rollup": "3.2.1",
-    "@bazel/terser": "3.2.1",
+    "@bazel/terser": "3.2.2",
     "@bazel/typescript": "3.2.1",
     "@firebase/app-types": "^0.6.1",
     "@material/animation": "`11.0.0-canary.f8579b7ea.0`",
