@@ -2,6 +2,7 @@ import {animate, style, transition, trigger} from '@angular/animations';
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {
+  A,
   BACKSPACE,
   DELETE,
   END,
@@ -1036,7 +1037,6 @@ describe('MatChipList', () => {
         .toBeFalsy(`Expected chip with the old value not to be selected.`);
     });
 
-
     it('should clear the selection when the control is reset', () => {
       const array = fixture.componentInstance.chips.toArray();
 
@@ -1096,7 +1096,6 @@ describe('MatChipList', () => {
         .toEqual(false, `Expected control to stay pristine after programmatic change.`);
     });
 
-
     it('should set an asterisk after the placeholder if the control is required', () => {
       let requiredMarker = fixture.debugElement.query(By.css('.mat-form-field-required-marker'))!;
       expect(requiredMarker)
@@ -1151,45 +1150,63 @@ describe('MatChipList', () => {
     });
 
     describe('keyboard behavior', () => {
+      let nativeInput: HTMLInputElement;
+
+      const expectNoItemFocused = () => expect(manager.activeItemIndex).toBe(-1);
+      const expectLastItemFocused = () => expect(manager.activeItemIndex).toEqual(chips.length - 1);
+
       beforeEach(() => {
         chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList))!;
         chipListInstance = chipListDebugElement.componentInstance;
         chips = chipListInstance.chips;
         manager = fixture.componentInstance.chipList._keyManager;
+        nativeInput = fixture.nativeElement.querySelector('input');
+        nativeInput.focus();
+        expectNoItemFocused();
       });
 
       describe('when the input has focus', () => {
 
-        it('should not focus the last chip when press DELETE', () => {
-          let nativeInput = fixture.nativeElement.querySelector('input');
-
-          // Focus the input
-          nativeInput.focus();
-          expect(manager.activeItemIndex).toBe(-1);
-
-          // Press the DELETE key
+        it('should not focus the last chip when pressing DELETE', () => {
           dispatchKeyboardEvent(nativeInput, 'keydown', DELETE);
-          fixture.detectChanges();
-
-          // It doesn't focus the last chip
-          expect(manager.activeItemIndex).toEqual(-1);
+          expectNoItemFocused();
         });
 
-        it('should focus the last chip when press BACKSPACE', () => {
-          let nativeInput = fixture.nativeElement.querySelector('input');
-
-          // Focus the input
-          nativeInput.focus();
-          expect(manager.activeItemIndex).toBe(-1);
-
-          // Press the BACKSPACE key
+        it('should focus the last chip when pressing BACKSPACE when input is empty', () => {
           dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
-          fixture.detectChanges();
-
-          // It focuses the last chip
-          expect(manager.activeItemIndex).toEqual(chips.length - 1);
+          expectLastItemFocused();
         });
 
+        it('should not focus the last chip when pressing BACKSPACE after changing input, ' +
+          'until BACKSPACE is released and pressed again', () => {
+          // Change the input
+          dispatchKeyboardEvent(nativeInput, 'keydown', A);
+
+          // It shouldn't focus until backspace is released and pressed again
+          dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
+          dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
+          dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
+          expectNoItemFocused();
+
+          // Still not focused
+          dispatchKeyboardEvent(nativeInput, 'keyup', BACKSPACE);
+          expectNoItemFocused();
+
+          // Only now should it focus the last element
+          dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
+          expectLastItemFocused();
+        });
+
+        it('should focus last chip after pressing BACKSPACE after creating a chip', () => {
+          // Create a chip
+          typeInElement(nativeInput, '123');
+          dispatchKeyboardEvent(nativeInput, 'keydown', ENTER);
+
+          expectNoItemFocused();
+
+          dispatchKeyboardEvent(nativeInput, 'keydown', BACKSPACE);
+          expectLastItemFocused();
+        });
       });
     });
   });
@@ -1490,11 +1507,13 @@ class MultiSelectionChipList {
           {{ food.viewValue }}
         </mat-chip>
       </mat-chip-list>
+
       <input placeholder="New food..."
           [matChipInputFor]="chipList1"
           [matChipInputSeparatorKeyCodes]="separatorKeyCodes"
           [matChipInputAddOnBlur]="addOnBlur"
-          (matChipInputTokenEnd)="add($event)" />/>
+          (matChipInputTokenEnd)="add($event)"
+      />
     </mat-form-field>
   `
 })
@@ -1516,21 +1535,18 @@ class InputChipList {
   isRequired: boolean;
 
   add(event: MatChipInputEvent): void {
-    let input = event.input;
-    let value = event.value;
+    const value = (event.value || '').trim();
 
     // Add our foods
-    if ((value || '').trim()) {
+    if (value) {
       this.foods.push({
-        value: `${value.trim().toLowerCase()}-${this.foods.length}`,
-        viewValue: value.trim()
+        value: `${value.toLowerCase()}-${this.foods.length}`,
+        viewValue: value
       });
     }
 
-    // Reset the input value
-    if (input) {
-      input.value = '';
-    }
+    // Clear the input value
+    event.chipInput!.clear();
   }
 
   remove(food: any): void {

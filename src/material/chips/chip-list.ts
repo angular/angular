@@ -10,7 +10,6 @@ import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
-import {BACKSPACE} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -42,7 +41,6 @@ import {startWith, takeUntil} from 'rxjs/operators';
 import {MatChip, MatChipEvent, MatChipSelectionChange} from './chip';
 import {MatChipTextControl} from './chip-text-control';
 
-
 // Boilerplate for applying mixins to MatChipList.
 /** @docs-private */
 class MatChipListBase {
@@ -67,7 +65,6 @@ export class MatChipListChange {
     /** Value of the chip list when the event was emitted. */
     public value: any) { }
 }
-
 
 /**
  * A material design chips component (named ChipList for its similarity to the List component).
@@ -415,7 +412,6 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
     this._dropSubscriptions();
   }
 
-
   /** Associates an HTML input element with this chip list. */
   registerInput(inputElement: MatChipTextControl): void {
     this._chipInput = inputElement;
@@ -499,16 +495,11 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   _keydown(event: KeyboardEvent) {
     const target = event.target as HTMLElement;
 
-    // If they are on an empty input and hit backspace, focus the last chip
-    if (event.keyCode === BACKSPACE && this._isInputEmpty(target)) {
-      this._keyManager.setLastItemActive();
-      event.preventDefault();
-    } else if (target && target.classList.contains('mat-chip')) {
+    if (target && target.classList.contains('mat-chip')) {
       this._keyManager.onKeydown(event);
       this.stateChanges.next();
     }
   }
-
 
   /**
    * Check the tab index as you should not be allowed to focus an empty list.
@@ -544,15 +535,6 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
    */
   private _isValidIndex(index: number): boolean {
     return index >= 0 && index < this.chips.length;
-  }
-
-  private _isInputEmpty(element: HTMLElement): boolean {
-    if (element && element.nodeName.toLowerCase() === 'input') {
-      let input = element as HTMLInputElement;
-      return !input.value;
-    }
-
-    return false;
   }
 
   _setSelectionByValue(value: any, isUserInput: boolean = true) {

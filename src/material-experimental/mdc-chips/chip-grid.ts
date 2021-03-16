@@ -8,7 +8,7 @@
 
 import {Directionality} from '@angular/cdk/bidi';
 import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
-import {BACKSPACE, TAB} from '@angular/cdk/keycodes';
+import {TAB} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   AfterViewInit,
@@ -42,7 +42,6 @@ import {MatChipEvent} from './chip';
 import {MatChipRow} from './chip-row';
 import {MatChipSet} from './chip-set';
 import {GridFocusKeyManager} from './grid-focus-key-manager';
-
 
 /** Change event object that is emitted when the chip grid value has changed. */
 export class MatChipGridChange {
@@ -109,11 +108,11 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
    */
   readonly controlType: string = 'mat-chip-grid';
 
-  /** Subscription to blur changes in the chips. */
-  private _chipBlurSubscription: Subscription | null;
-
   /** Subscription to focus changes in the chips. */
   private _chipFocusSubscription: Subscription | null;
+
+  /** Subscription to blur changes in the chips. */
+  private _chipBlurSubscription: Subscription | null;
 
   /** The chip input to add more chips */
   protected _chipInput: MatChipTextControl;
@@ -408,19 +407,15 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     const target = event.target as HTMLElement;
     const keyCode = event.keyCode;
     const manager = this._keyManager;
+
     if (keyCode === TAB && target.id !== this._chipInput!.id) {
       this._allowFocusEscape();
     } else if (this._originatesFromEditingChip(event)) {
       // No-op, let the editing chip handle all keyboard events except for Tab.
-    } else if (keyCode === BACKSPACE && this._isEmptyInput(target)) {
-      // If they are on an empty input and hit backspace, focus the last chip
-      if (this._chips.length) {
-        manager.setLastCellActive();
-      }
-      event.preventDefault();
     } else if (this._originatesFromChip(event)) {
       manager.onKeydown(event);
     }
+
     this.stateChanges.next();
   }
 
@@ -458,7 +453,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     }
   }
 
-   /** Subscribes to chip focus events. */
+  /** Subscribes to chip focus events. */
   private _listenToChipsFocus(): void {
     this._chipFocusSubscription = this.chipFocusChanges.subscribe((event: MatChipEvent) => {
       let chipIndex: number = this._chips.toArray().indexOf(event.chip as MatChipRow);
@@ -477,7 +472,7 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
     });
   }
 
- /** Emits change event to set the model value. */
+  /** Emits change event to set the model value. */
   private _propagateChanges(): void {
     const valueToEmit = this._chips.length ? this._chips.toArray().map(
       chip => chip.value) : [];
@@ -518,15 +513,6 @@ export class MatChipGrid extends _MatChipGridMixinBase implements AfterContentIn
   /** Focus input element. */
   private _focusInput() {
     this._chipInput.focus();
-  }
-
-  /** Returns true if element is an input with no value. */
-  private _isEmptyInput(element: HTMLElement): boolean {
-    if (element && element.id === this._chipInput!.id) {
-      return this._chipInput.empty;
-    }
-
-    return false;
   }
 
   static ngAcceptInputType_disabled: BooleanInput;

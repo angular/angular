@@ -203,6 +203,10 @@ export class MatChipRemove extends _MatChipRemoveMixinBase implements CanDisable
     event.stopPropagation();
   }
 
+  focus() {
+    this._elementRef.nativeElement.focus();
+  }
+
   static ngAcceptInputType_disabled: BooleanInput;
   static ngAcceptInputType_tabIndex: NumberInput;
 }
