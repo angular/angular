@@ -13,7 +13,7 @@ Try this <live-example title="Reactive Forms in Stackblitz">Reactive Forms live-
 Before going further into reactive forms, you should have a basic understanding of the following:
 
 * [TypeScript](https://www.typescriptlang.org/ "The TypeScript language") programming.
-* Angular app-design fundamentals, as described in [Angular Concepts](guide/architecture "Introduction to Angular concepts.").
+* Angular application-design fundamentals, as described in [Angular Concepts](guide/architecture "Introduction to Angular concepts.").
 * The form-design concepts that are presented in [Introduction to Forms](guide/forms-overview "Overview of Angular forms.").
 
 {@a intro}
@@ -85,7 +85,7 @@ The form control assigned to `name` is displayed when the component is added to 
 <code-example path="reactive-forms/src/app/app.component.1.html" region="app-name-editor" header="src/app/app.component.html (name editor)"></code-example>
 
 <div class="lightbox">
-  <img src="generated/images/guide/reactive-forms/name-editor-1.png" alt="Name Editor">
+  <img src="generated/images/guide/reactive-forms/name-editor-1.png" alt="Name Editor, which has a name label and an input so the user can enter a name">
 </div>
 
 {@a display-value}
@@ -126,7 +126,7 @@ Update the template with a button to simulate a name update. When you click the 
 The form model is the source of truth for the control, so when you click the button, the value of the input is changed within the component class, overriding its current value.
 
 <div class="lightbox">
-  <img src="generated/images/guide/reactive-forms/name-editor-2.png" alt="Name Editor Update">
+  <img src="generated/images/guide/reactive-forms/name-editor-2.gif" alt="Name Editor Update with a name label, the name Nancy in the input, text specifying that the value of the input is Nancy and an Update Name button">
 </div>
 
 <div class="alert is-helpful">
@@ -217,7 +217,7 @@ To display the `ProfileEditor` component that contains the form, add it to a com
 `ProfileEditor` allows you to manage the form control instances for the `firstName` and `lastName` controls within the form group instance.
 
 <div class="lightbox">
-  <img src="generated/images/guide/reactive-forms/profile-editor-1.png" alt="Profile Editor">
+  <img src="generated/images/guide/reactive-forms/profile-editor-1.gif" alt="Profile Editor with labels and inputs for first and last name as well as a submit button">
 </div>
 
 {@a nested-groups}
@@ -254,7 +254,7 @@ Add the `address` form group containing the `street`, `city`, `state`, and `zip`
 The `ProfileEditor` form is displayed as one group, but the model is broken down further to represent the logical grouping areas.
 
 <div class="lightbox">
-  <img src="generated/images/guide/reactive-forms/profile-editor-2.png" alt="Profile Editor Update">
+  <img src="generated/images/guide/reactive-forms/profile-editor-2.png" alt="Profile editor update adding address inputs, instructive text for filling out the form to enable the submit button, and a disabled submit button">
 </div>
 
 <div class="alert is-helpful">
@@ -388,7 +388,7 @@ Display the current status of `profileForm` using interpolation.
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" header="src/app/profile-editor/profile-editor.component.html (display status)"></code-example>
 
 <div class="lightbox">
-  <img src="generated/images/guide/reactive-forms/profile-editor-3.png" alt="Profile Editor Validation">
+  <img src="generated/images/guide/reactive-forms/profile-editor-3.png" alt="Profile Editor with validation status of invalid">
 </div>
 
 The **Submit** button is disabled because `profileForm` is invalid due to the required `firstName` form control. After you fill out the `firstName` input, the form becomes valid and the **Submit** button is enabled.
@@ -466,7 +466,7 @@ Add the template HTML below after the `<div>` closing the `formGroupName` elemen
 The `*ngFor` directive iterates over each form control instance provided by the aliases form array instance. Because form array elements are unnamed, you assign the index to the `i` variable and pass it to each control to bind it to the `formControlName` input.
 
 <div class="lightbox">
-  <img src="generated/images/guide/reactive-forms/profile-editor-4.png" alt="Profile Editor Aliases">
+  <img src="generated/images/guide/reactive-forms/profile-editor-4.png" alt="Profile Editor with aliases section, which includes an alias label, input, and button for adding another alias text input">
 </div>
 
 Each time a new alias instance is added, the new form array instance is provided its control based on the index. This allows you to track each individual control when calculating the status and value of the root control.
