@@ -25,7 +25,7 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
         const compiler = getCompilerFacade();
         ngFactoryDef = compiler.compileFactory(
             angularCoreEnv, `ng:///${metadata.name}/ɵfac.js`,
-            {...metadata, injectFn: 'directiveInject', target: compiler.R3FactoryTarget.Pipe});
+            {...metadata, target: compiler.R3FactoryTarget.Pipe});
       }
       return ngFactoryDef;
     },

@@ -207,8 +207,6 @@ export class CompilerFacadeImpl implements CompilerFacade {
       internalType: new WrappedNodeExpr(meta.type),
       typeArgumentCount: meta.typeArgumentCount,
       deps: convertR3DependencyMetadataArray(meta.deps),
-      injectFn: meta.injectFn === 'directiveInject' ? Identifiers.directiveInject :
-                                                      Identifiers.inject,
       target: meta.target,
     });
     return this.jitExpression(

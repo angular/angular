@@ -853,7 +853,6 @@ export class ComponentDecoratorHandler implements
       {expression: initializer, statements, type}: R3CompiledExpression): CompileResult[] {
     const factoryRes = compileNgFactoryDefField({
       ...analysis.meta,
-      injectFn: Identifiers.directiveInject,
       target: R3FactoryTarget.Component,
     });
     if (analysis.metadataStmt !== null) {
