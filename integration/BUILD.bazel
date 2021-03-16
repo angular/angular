@@ -85,12 +85,6 @@ INTEGRATION_TESTS = {
     "service-worker-schema": {},
     "side-effects": {"tags": ["no-ivy-aot"]},
     "terser": {},
-    "typings_test_ts40": {
-        # Special case for `typings_test_ts40` test as we want to pin
-        # `typescript` at version 4.0.x for that test and not link to the
-        # root @npm//typescript package.
-        "pinned_npm_packages": ["typescript"],
-    },
     "typings_test_ts41": {
         # Special case for `typings_test_ts41` test as we want to pin
         # `typescript` at version 4.1.x for that test and not link to the
