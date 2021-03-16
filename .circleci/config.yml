@@ -644,7 +644,7 @@ jobs:
       - *yarn_install
 
       # Install the latest canary version of the "material-components-web".
-      - run: yarn add material-components-web@canary
+      - run: node ./scripts/circleci/setup-mdc-canary.js
 
       # Setup the components repository to use the MDC snapshot builds.
       # Run project tests with the MDC canary builds.
