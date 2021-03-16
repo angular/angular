@@ -57,12 +57,6 @@ export interface R3ConstructorFactoryMetadata {
   deps: R3DependencyMetadata[]|'invalid'|null;
 
   /**
-   * An expression for the function which will be used to inject dependencies. The API of this
-   * function could be different, and other options control how it will be invoked.
-   */
-  injectFn: o.ExternalReference;
-
-  /**
    * Type of the target being created by the factory.
    */
   target: R3FactoryTarget;
@@ -190,9 +184,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
   if (meta.deps !== null) {
     // There is a constructor (either explicitly or implicitly defined).
     if (meta.deps !== 'invalid') {
-      ctorExpr = new o.InstantiateExpr(
-          typeForCtor,
-          injectDependencies(meta.deps, meta.injectFn, meta.target === R3FactoryTarget.Pipe));
+      ctorExpr = new o.InstantiateExpr(typeForCtor, injectDependencies(meta.deps, meta.target));
 
       ctorDepsType = createCtorDepsType(meta.deps);
     }
@@ -230,8 +222,7 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
   if (isDelegatedMetadata(meta)) {
     // This type is created with a delegated factory. If a type parameter is not specified, call
     // the factory instead.
-    const delegateArgs =
-        injectDependencies(meta.delegateDeps, meta.injectFn, meta.target === R3FactoryTarget.Pipe);
+    const delegateArgs = injectDependencies(meta.delegateDeps, meta.target);
     // Either call `new delegate(...)` or `delegate(...)` depending on meta.delegateType.
     const factoryExpr = new (
         meta.delegateType === R3FactoryDelegateType.Class ?
@@ -262,14 +253,14 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
   };
 }
 
-function injectDependencies(
-    deps: R3DependencyMetadata[], injectFn: o.ExternalReference, isPipe: boolean): o.Expression[] {
-  return deps.map((dep, index) => compileInjectDependency(dep, injectFn, isPipe, index));
+function injectDependencies(deps: R3DependencyMetadata[], target: R3FactoryTarget): o.Expression[] {
+  return deps.map((dep, index) => compileInjectDependency(dep, target, index));
 }
 
 function compileInjectDependency(
-    dep: R3DependencyMetadata, injectFn: o.ExternalReference, isPipe: boolean,
-    index: number): o.Expression {
+    dep: R3DependencyMetadata, target: R3FactoryTarget, index: number): o.Expression {
+  const isPipe = target === R3FactoryTarget.Pipe;
+
   // Interpret the dependency according to its resolved type.
   switch (dep.resolved) {
     case R3ResolvedDependencyType.Token:
@@ -295,6 +286,7 @@ function compileInjectDependency(
       if (flagsParam) {
         injectArgs.push(flagsParam);
       }
+      const injectFn = getInjectFn(target);
       return o.importExpr(injectFn).callFn(injectArgs);
     case R3ResolvedDependencyType.Attribute:
       // In the case of attributes, the attribute name in question is given as the token.
@@ -400,4 +392,17 @@ function isDelegatedMetadata(meta: R3FactoryMetadata): meta is R3DelegatedFnOrCl
 
 function isExpressionFactoryMetadata(meta: R3FactoryMetadata): meta is R3ExpressionFactoryMetadata {
   return (meta as any).expression !== undefined;
+}
+
+function getInjectFn(target: R3FactoryTarget): o.ExternalReference {
+  switch (target) {
+    case R3FactoryTarget.Component:
+    case R3FactoryTarget.Directive:
+    case R3FactoryTarget.Pipe:
+      return R3.directiveInject;
+    case R3FactoryTarget.NgModule:
+    case R3FactoryTarget.Injectable:
+    default:
+      return R3.inject;
+  }
 }

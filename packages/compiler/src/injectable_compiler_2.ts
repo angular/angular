@@ -40,7 +40,6 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
     internalType: meta.internalType,
     typeArgumentCount: meta.typeArgumentCount,
     deps: [],
-    injectFn: Identifiers.inject,
     target: R3FactoryTarget.Injectable,
   };
 

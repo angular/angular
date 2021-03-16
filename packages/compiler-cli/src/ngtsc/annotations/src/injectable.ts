@@ -107,7 +107,6 @@ export class InjectableDecoratorHandler implements
         internalType: meta.internalType,
         typeArgumentCount: meta.typeArgumentCount,
         deps: analysis.ctorDeps,
-        injectFn: Identifiers.inject,
         target: R3FactoryTarget.Injectable,
       });
       if (analysis.metadataStmt !== null) {

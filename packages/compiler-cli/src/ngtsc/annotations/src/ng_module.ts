@@ -351,7 +351,6 @@ export class NgModuleDecoratorHandler implements
       typeArgumentCount: 0,
       deps: getValidConstructorDependencies(
           node, this.reflector, this.defaultImportRecorder, this.isCore),
-      injectFn: R3.inject,
       target: R3FactoryTarget.NgModule,
     };
 
