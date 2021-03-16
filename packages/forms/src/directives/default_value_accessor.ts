@@ -9,7 +9,7 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Directive, ElementRef, forwardRef, Inject, InjectionToken, Optional, Renderer2} from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {BaseControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const DEFAULT_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -83,25 +83,14 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
   },
   providers: [DEFAULT_VALUE_ACCESSOR]
 })
-export class DefaultValueAccessor implements ControlValueAccessor {
-  /**
-   * The registered callback function called when an input event occurs on the input element.
-   * @nodoc
-   */
-  onChange = (_: any) => {};
-
-  /**
-   * The registered callback function called when a blur event occurs on the input element.
-   * @nodoc
-   */
-  onTouched = () => {};
-
+export class DefaultValueAccessor extends BaseControlValueAccessor implements ControlValueAccessor {
   /** Whether the user is creating a composition string (IME events). */
   private _composing = false;
 
   constructor(
-      private _renderer: Renderer2, private _elementRef: ElementRef,
+      renderer: Renderer2, elementRef: ElementRef,
       @Optional() @Inject(COMPOSITION_BUFFER_MODE) private _compositionMode: boolean) {
+    super(renderer, elementRef);
     if (this._compositionMode == null) {
       this._compositionMode = !_isAndroid();
     }
@@ -113,31 +102,7 @@ export class DefaultValueAccessor implements ControlValueAccessor {
    */
   writeValue(value: any): void {
     const normalizedValue = value == null ? '' : value;
-    this._renderer.setProperty(this._elementRef.nativeElement, 'value', normalizedValue);
-  }
-
-  /**
-   * Registers a function called when the control value changes.
-   * @nodoc
-   */
-  registerOnChange(fn: (_: any) => void): void {
-    this.onChange = fn;
-  }
-
-  /**
-   * Registers a function called when the control is touched.
-   * @nodoc
-   */
-  registerOnTouched(fn: () => void): void {
-    this.onTouched = fn;
-  }
-
-  /**
-   * Sets the "disabled" property on the input element.
-   * @nodoc
-   */
-  setDisabledState(isDisabled: boolean): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
+    this.setProperty('value', normalizedValue);
   }
 
   /** @internal */
