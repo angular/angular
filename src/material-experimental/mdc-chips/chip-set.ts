@@ -23,7 +23,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {HasTabIndex, HasTabIndexCtor, mixinTabIndex} from '@angular/material-experimental/mdc-core';
-import {MDCChipSetAdapter, MDCChipSetFoundation} from '@material/chips';
+import {deprecated} from '@material/chips';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
 import {MatChip, MatChipEvent} from './chip';
@@ -81,7 +81,7 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
   protected _lastDestroyedChipIndex: number | null = null;
 
   /** The MDC foundation containing business logic for MDC chip-set. */
-  protected _chipSetFoundation: MDCChipSetFoundation;
+  protected _chipSetFoundation: deprecated.MDCChipSetFoundation;
 
   /** Subject that emits when the component has been destroyed. */
   protected _destroyed = new Subject<void>();
@@ -90,7 +90,7 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
    * Implementation of the MDC chip-set adapter interface.
    * These methods are called by the chip set foundation.
    */
-  protected _chipSetAdapter: MDCChipSetAdapter = {
+  protected _chipSetAdapter: deprecated.MDCChipSetAdapter = {
     hasClass: (className) => this._hasMdcClass(className),
     // No-op. We keep track of chips via ContentChildren, which will be updated when a chip is
     // removed.
@@ -175,7 +175,7 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
               protected _changeDetectorRef: ChangeDetectorRef,
               @Optional() protected _dir: Directionality) {
     super(_elementRef);
-    this._chipSetFoundation = new MDCChipSetFoundation(this._chipSetAdapter);
+    this._chipSetFoundation = new deprecated.MDCChipSetFoundation(this._chipSetAdapter);
   }
 
   ngAfterViewInit() {

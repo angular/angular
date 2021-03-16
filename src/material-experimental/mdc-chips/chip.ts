@@ -44,7 +44,7 @@ import {
   RippleAnimationConfig,
   RippleGlobalOptions,
 } from '@angular/material-experimental/mdc-core';
-import {MDCChipAdapter, MDCChipFoundation} from '@material/chips';
+import {deprecated} from '@material/chips';
 import {numbers} from '@material/ripple';
 import {SPACE, ENTER, hasModifierKey} from '@angular/cdk/keycodes';
 import {Subject} from 'rxjs';
@@ -223,7 +223,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   @Output() readonly removed: EventEmitter<MatChipEvent> = new EventEmitter<MatChipEvent>();
 
   /** The MDC foundation containing business logic for MDC chip. */
-  _chipFoundation: MDCChipFoundation;
+  _chipFoundation: deprecated.MDCChipFoundation;
 
   /** The unstyled chip selector for this component. */
   protected basicChipAttrName = 'mat-basic-chip';
@@ -244,7 +244,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   * Implementation of the MDC chip adapter interface.
   * These methods are called by the chip foundation.
   */
-  protected _chipAdapter: MDCChipAdapter = {
+  protected _chipAdapter: deprecated.MDCChipAdapter = {
     addClass: (className) => this._setMdcClass(className, true),
     removeClass: (className) => this._setMdcClass(className, false),
     hasClass: (className) =>
@@ -343,7 +343,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
       @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS)
         private _globalRippleOptions?: RippleGlobalOptions) {
     super(_elementRef);
-    this._chipFoundation = new MDCChipFoundation(this._chipAdapter);
+    this._chipFoundation = new deprecated.MDCChipFoundation(this._chipAdapter);
     this._animationsDisabled = animationMode === 'NoopAnimations';
     this._isBasicChip = _elementRef.nativeElement.hasAttribute(this.basicChipAttrName) ||
                         _elementRef.nativeElement.tagName.toLowerCase() === this.basicChipAttrName;

@@ -17,7 +17,7 @@ import {
   ViewEncapsulation,
   AfterContentInit
 } from '@angular/core';
-import {chipCssClasses} from '@material/chips';
+import {deprecated} from '@material/chips';
 import {take} from 'rxjs/operators';
 import {MatChip} from './chip';
 
@@ -123,7 +123,7 @@ export class MatChipOption extends MatChip implements AfterContentInit {
     super.ngAfterContentInit();
 
     if (this.selected && this.leadingIcon) {
-      this.leadingIcon.setClass(chipCssClasses.HIDDEN_LEADING_ICON, true);
+      this.leadingIcon.setClass(deprecated.chipCssClasses.HIDDEN_LEADING_ICON, true);
     }
   }
 

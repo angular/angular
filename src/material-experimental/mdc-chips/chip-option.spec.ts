@@ -8,7 +8,7 @@ import {
   RippleGlobalOptions,
 } from '@angular/material-experimental/mdc-core';
 import {By} from '@angular/platform-browser';
-import {chipCssClasses} from '@material/chips';
+import {deprecated} from '@material/chips';
 import {Subject} from 'rxjs';
 import {
   MatChipEvent,
@@ -307,7 +307,7 @@ describe('MDC-based Option Chips', () => {
       chipInstance = chipDebugElement.injector.get<MatChipOption>(MatChipOption);
 
       const avatar = fixture.nativeElement.querySelector('.avatar');
-      expect(avatar.classList).toContain(chipCssClasses.HIDDEN_LEADING_ICON);
+      expect(avatar.classList).toContain(deprecated.chipCssClasses.HIDDEN_LEADING_ICON);
     });
 
     it('should have a focus indicator', () => {

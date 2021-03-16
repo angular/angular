@@ -16,9 +16,8 @@ import {
   mixinDisabled,
   mixinTabIndex,
 } from '@angular/material-experimental/mdc-core';
-import {MDCChipTrailingActionAdapter, MDCChipTrailingActionFoundation} from '@material/chips';
+import {deprecated} from '@material/chips';
 import {Subject} from 'rxjs';
-
 
 /**
  * Injection token that can be used to reference instances of `MatChipAvatar`. It serves as
@@ -73,8 +72,8 @@ export const MAT_CHIP_TRAILING_ICON =
   providers: [{provide: MAT_CHIP_TRAILING_ICON, useExisting: MatChipTrailingIcon}],
 })
 export class MatChipTrailingIcon implements OnDestroy {
-  private _foundation: MDCChipTrailingActionFoundation;
-  private _adapter: MDCChipTrailingActionAdapter = {
+  private _foundation: deprecated.MDCChipTrailingActionFoundation;
+  private _adapter: deprecated.MDCChipTrailingActionAdapter = {
     focus: () => this._elementRef.nativeElement.focus(),
     getAttribute: (name: string) =>
         this._elementRef.nativeElement.getAttribute(name),
@@ -106,7 +105,7 @@ export class MatChipTrailingIcon implements OnDestroy {
       // method is removed, we can't use the chip here, because it causes a
       // circular import. private _chip: MatChip
   ) {
-    this._foundation = new MDCChipTrailingActionFoundation(this._adapter);
+    this._foundation = new deprecated.MDCChipTrailingActionFoundation(this._adapter);
   }
 
   ngOnDestroy() {

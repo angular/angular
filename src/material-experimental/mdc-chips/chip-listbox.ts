@@ -25,7 +25,7 @@ import {
   ViewEncapsulation
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {MDCChipSetFoundation} from '@material/chips';
+import {deprecated} from '@material/chips';
 import {merge, Observable, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
 import {MatChip, MatChipEvent} from './chip';
@@ -211,7 +211,7 @@ export class MatChipListbox extends MatChipSet implements AfterContentInit, Cont
       this._setSelected(index, selected);
     };
     // Reinitialize the foundation with our overridden adapter
-    this._chipSetFoundation = new MDCChipSetFoundation(this._chipSetAdapter);
+    this._chipSetFoundation = new deprecated.MDCChipSetFoundation(this._chipSetAdapter);
     this._updateMdcSelectionClasses();
   }
 
