@@ -20,6 +20,11 @@ export class HeroService {
   // #docregion getHero
   getHero(id: number): Observable<Hero> {
     const hero = HEROES.find(h => h.id === id);
+
+    if (hero === undefined) {
+      throw new Error(`Failed to fetch hero id=${id}`);
+    }
+
     this.messageService.add(`HeroService: fetched hero id=${id}`);
     return of(hero);
   }
