@@ -208,7 +208,6 @@ groups:
          - petebacondarwin         # Pete Bacon Darwin
          - pkozlowski-opensource   # Pawel Kozlowski
          - Splaktar                # Michael Prentice
-         - StephenFluin            # Stephen Fluin
          - twerske                 # Emma Twersky
 
   # =========================================================
@@ -928,7 +927,7 @@ groups:
       users:
         - aikidave
         - IgorMinar
-        - StephenFluin
+        - jelbourn
 
 
   # =========================================================
@@ -953,7 +952,6 @@ groups:
         - aikidave
         - IgorMinar
         - mgechev
-        - StephenFluin
 
   # =========================================================
   #  Docs: Observables
