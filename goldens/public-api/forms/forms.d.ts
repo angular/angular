@@ -112,13 +112,7 @@ export declare interface AsyncValidatorFn {
     (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null>;
 }
 
-export declare class CheckboxControlValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor {
-    onChange: (_: any) => void;
-    onTouched: () => void;
-    constructor(_renderer: Renderer2, _elementRef: ElementRef);
-    registerOnChange(fn: (_: any) => {}): void;
-    registerOnTouched(fn: () => {}): void;
-    setDisabledState(isDisabled: boolean): void;
+export declare class CheckboxControlValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor {
     writeValue(value: any): void;
 }
 
@@ -141,13 +135,8 @@ export declare interface ControlValueAccessor {
     writeValue(obj: any): void;
 }
 
-export declare class DefaultValueAccessor implements ControlValueAccessor {
-    onChange: (_: any) => void;
-    onTouched: () => void;
-    constructor(_renderer: Renderer2, _elementRef: ElementRef, _compositionMode: boolean);
-    registerOnChange(fn: (_: any) => void): void;
-    registerOnTouched(fn: () => void): void;
-    setDisabledState(isDisabled: boolean): void;
+export declare class DefaultValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor {
+    constructor(renderer: Renderer2, elementRef: ElementRef, _compositionMode: boolean);
     writeValue(value: any): void;
 }
 
@@ -382,11 +371,11 @@ export declare abstract class NgControl extends AbstractControlDirective {
     abstract viewToModelUpdate(newValue: any): void;
 }
 
-export declare class NgControlStatus extends ɵangular_packages_forms_forms_h {
+export declare class NgControlStatus extends ɵangular_packages_forms_forms_i {
     constructor(cd: NgControl);
 }
 
-export declare class NgControlStatusGroup extends ɵangular_packages_forms_forms_h {
+export declare class NgControlStatusGroup extends ɵangular_packages_forms_forms_i {
     constructor(cd: ControlContainer);
 }
 
@@ -454,13 +443,8 @@ export declare class NgSelectOption implements OnDestroy {
     ngOnDestroy(): void;
 }
 
-export declare class NumberValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor {
-    onChange: (_: any) => void;
-    onTouched: () => void;
-    constructor(_renderer: Renderer2, _elementRef: ElementRef);
+export declare class NumberValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor {
     registerOnChange(fn: (_: number | null) => void): void;
-    registerOnTouched(fn: () => void): void;
-    setDisabledState(isDisabled: boolean): void;
     writeValue(value: number): void;
 }
 
@@ -471,29 +455,21 @@ export declare class PatternValidator implements Validator, OnChanges {
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
-export declare class RadioControlValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor, OnDestroy, OnInit {
+export declare class RadioControlValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor, OnDestroy, OnInit {
     formControlName: string;
     name: string;
     onChange: () => void;
-    onTouched: () => void;
     value: any;
-    constructor(_renderer: Renderer2, _elementRef: ElementRef, _registry: ɵangular_packages_forms_forms_p, _injector: Injector);
+    constructor(renderer: Renderer2, elementRef: ElementRef, _registry: ɵangular_packages_forms_forms_q, _injector: Injector);
     fireUncheck(value: any): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
     registerOnChange(fn: (_: any) => {}): void;
-    registerOnTouched(fn: () => {}): void;
-    setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
 }
 
-export declare class RangeValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor {
-    onChange: (_: any) => void;
-    onTouched: () => void;
-    constructor(_renderer: Renderer2, _elementRef: ElementRef);
+export declare class RangeValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor {
     registerOnChange(fn: (_: number | null) => void): void;
-    registerOnTouched(fn: () => void): void;
-    setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
 }
 
@@ -509,27 +485,17 @@ export declare class RequiredValidator implements Validator {
     validate(control: AbstractControl): ValidationErrors | null;
 }
 
-export declare class SelectControlValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor {
+export declare class SelectControlValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor {
     set compareWith(fn: (o1: any, o2: any) => boolean);
-    onChange: (_: any) => void;
-    onTouched: () => void;
     value: any;
-    constructor(_renderer: Renderer2, _elementRef: ElementRef);
     registerOnChange(fn: (value: any) => any): void;
-    registerOnTouched(fn: () => any): void;
-    setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
 }
 
-export declare class SelectMultipleControlValueAccessor extends ɵangular_packages_forms_forms_f implements ControlValueAccessor {
+export declare class SelectMultipleControlValueAccessor extends ɵangular_packages_forms_forms_g implements ControlValueAccessor {
     set compareWith(fn: (o1: any, o2: any) => boolean);
-    onChange: (_: any) => void;
-    onTouched: () => void;
     value: any;
-    constructor(_renderer: Renderer2, _elementRef: ElementRef);
     registerOnChange(fn: (value: any) => any): void;
-    registerOnTouched(fn: () => any): void;
-    setDisabledState(isDisabled: boolean): void;
     writeValue(value: any): void;
 }
 

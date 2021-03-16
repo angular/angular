@@ -53,28 +53,11 @@ export const RANGE_VALUE_ACCESSOR: StaticProvider = {
 export class RangeValueAccessor extends BuiltInControlValueAccessor implements
     ControlValueAccessor {
   /**
-   * The registered callback function called when a change or input event occurs on the input
-   * element.
-   * @nodoc
-   */
-  onChange = (_: any) => {};
-
-  /**
-   * The registered callback function called when a blur event occurs on the input element.
-   * @nodoc
-   */
-  onTouched = () => {};
-
-  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {
-    super();
-  }
-
-  /**
    * Sets the "value" property on the input element.
    * @nodoc
    */
   writeValue(value: any): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'value', parseFloat(value));
+    this.setProperty('value', parseFloat(value));
   }
 
   /**
@@ -85,21 +68,5 @@ export class RangeValueAccessor extends BuiltInControlValueAccessor implements
     this.onChange = (value) => {
       fn(value == '' ? null : parseFloat(value));
     };
-  }
-
-  /**
-   * Registers a function called when the control is touched.
-   * @nodoc
-   */
-  registerOnTouched(fn: () => void): void {
-    this.onTouched = fn;
-  }
-
-  /**
-   * Sets the "disabled" property on the range input element.
-   * @nodoc
-   */
-  setDisabledState(isDisabled: boolean): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 }

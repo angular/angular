@@ -124,15 +124,12 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
 
   /**
    * The registered callback function called when a change event occurs on the input element.
+   * Note: we declare `onChange` here (also used as host listener) as a function with no arguments
+   * to override the `onChange` function (which expects 1 argument) in the parent
+   * `BaseControlValueAccessor` class.
    * @nodoc
    */
   onChange = () => {};
-
-  /**
-   * The registered callback function called when a blur event occurs on the input element.
-   * @nodoc
-   */
-  onTouched = () => {};
 
   /**
    * @description
@@ -156,9 +153,9 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
   @Input() value: any;
 
   constructor(
-      private _renderer: Renderer2, private _elementRef: ElementRef,
-      private _registry: RadioControlRegistry, private _injector: Injector) {
-    super();
+      renderer: Renderer2, elementRef: ElementRef, private _registry: RadioControlRegistry,
+      private _injector: Injector) {
+    super(renderer, elementRef);
   }
 
   /** @nodoc */
@@ -179,7 +176,7 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
    */
   writeValue(value: any): void {
     this._state = value === this.value;
-    this._renderer.setProperty(this._elementRef.nativeElement, 'checked', this._state);
+    this.setProperty('checked', this._state);
   }
 
   /**
@@ -201,22 +198,6 @@ export class RadioControlValueAccessor extends BuiltInControlValueAccessor imple
    */
   fireUncheck(value: any): void {
     this.writeValue(value);
-  }
-
-  /**
-   * Registers a function called when the control is touched.
-   * @nodoc
-   */
-  registerOnTouched(fn: () => {}): void {
-    this.onTouched = fn;
-  }
-
-  /**
-   * Sets the "disabled" property on the input element.
-   * @nodoc
-   */
-  setDisabledState(isDisabled: boolean): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
   private _checkName(): void {

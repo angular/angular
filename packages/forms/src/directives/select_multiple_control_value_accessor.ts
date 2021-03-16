@@ -96,18 +96,6 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
   _idCounter: number = 0;
 
   /**
-   * The registered callback function called when a change event occurs on the input element.
-   * @nodoc
-   */
-  onChange = (_: any) => {};
-
-  /**
-   * The registered callback function called when a blur event occurs on the input element.
-   * @nodoc
-   */
-  onTouched = () => {};
-
-  /**
    * @description
    * Tracks the option comparison algorithm for tracking identities when
    * checking for changes.
@@ -121,10 +109,6 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
   }
 
   private _compareWith: (o1: any, o2: any) => boolean = Object.is;
-
-  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {
-    super();
-  }
 
   /**
    * Sets the "value" property on one or of more of the select's options.
@@ -177,22 +161,6 @@ export class SelectMultipleControlValueAccessor extends BuiltInControlValueAcces
       this.value = selected;
       fn(selected);
     };
-  }
-
-  /**
-   * Registers a function called when the control is touched.
-   * @nodoc
-   */
-  registerOnTouched(fn: () => any): void {
-    this.onTouched = fn;
-  }
-
-  /**
-   * Sets the "disabled" property on the select input element.
-   * @nodoc
-   */
-  setDisabledState(isDisabled: boolean): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
   /** @internal */
