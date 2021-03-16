@@ -60,7 +60,7 @@ describe('type check blocks', () => {
       selector: '[dir]',
       inputs: {inputA: 'inputA'},
     }];
-    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('_t1: DirA = (null!); _t1.inputA = ("value");');
+    expect(tcb(TEMPLATE, DIRECTIVES)).toContain('_t1: DirA = null!; _t1.inputA = ("value");');
   });
 
   it('should handle multiple bindings to the same property', () => {
@@ -135,7 +135,7 @@ describe('type check blocks', () => {
       }];
       expect(tcb(TEMPLATE, DIRECTIVES))
           .toContain(
-              'var _t1 = Dir.ngTypeCtor({ "fieldA": (((ctx).foo)), "fieldB": (null as any) });');
+              'var _t1 = Dir.ngTypeCtor({ "fieldA": (((ctx).foo)), "fieldB": null as any });');
     });
 
     it('should handle multiple bindings to the same property', () => {
@@ -261,7 +261,7 @@ describe('type check blocks', () => {
       }];
       expect(tcb(TEMPLATE, DIRECTIVES))
           .toContain(
-              'var _t1: typeof Dir.ngAcceptInputType_fieldA = (null!); ' +
+              'var _t1: typeof Dir.ngAcceptInputType_fieldA = null!; ' +
               '_t1 = (((ctx).foo));');
     });
   });
@@ -321,11 +321,11 @@ describe('type check blocks', () => {
       },
     ];
     const block = tcb(TEMPLATE, DIRECTIVES);
-    expect(block).toContain('var _t1: HasInput = (null!)');
+    expect(block).toContain('var _t1: HasInput = null!');
     expect(block).toContain('_t1.input = (((ctx).value));');
-    expect(block).toContain('var _t2: HasOutput = (null!)');
+    expect(block).toContain('var _t2: HasOutput = null!');
     expect(block).toContain('_t2["output"]');
-    expect(block).toContain('var _t4: HasReference = (null!)');
+    expect(block).toContain('var _t4: HasReference = null!');
     expect(block).toContain('var _t3 = _t4;');
     expect(block).toContain('(_t3).a');
     expect(block).not.toContain('NoBindings');
@@ -355,7 +355,7 @@ describe('type check blocks', () => {
     }];
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
-            'var _t2: Dir = (null!); ' +
+            'var _t2: Dir = null!; ' +
             'var _t1 = _t2; ' +
             '"" + (((_t1).value));');
   });
@@ -383,7 +383,7 @@ describe('type check blocks', () => {
       inputs: {'color': 'color', 'strong': 'strong', 'enabled': 'enabled'},
     }];
     const block = tcb(TEMPLATE, DIRECTIVES);
-    expect(block).not.toContain('var _t1: Dir = (null!);');
+    expect(block).not.toContain('var _t1: Dir = null!;');
     expect(block).not.toContain('"color"');
     expect(block).not.toContain('"strong"');
     expect(block).not.toContain('"enabled"');
@@ -403,7 +403,7 @@ describe('type check blocks', () => {
     }];
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
-            'var _t2: Dir = (null!); ' +
+            'var _t2: Dir = null!; ' +
             'var _t1 = _t2; ' +
             '_t2.input = (_t1);');
   });
@@ -431,9 +431,9 @@ describe('type check blocks', () => {
     ];
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
-            'var _t2: DirB = (null!); ' +
+            'var _t2: DirB = null!; ' +
             'var _t1 = _t2; ' +
-            'var _t3: DirA = (null!); ' +
+            'var _t3: DirA = null!; ' +
             '_t3.inputA = (_t1); ' +
             'var _t4 = _t3; ' +
             '_t2.inputA = (_t4);');
@@ -451,7 +451,7 @@ describe('type check blocks', () => {
       undeclaredInputFields: ['fieldA']
     }];
     const block = tcb(TEMPLATE, DIRECTIVES);
-    expect(block).not.toContain('var _t1: Dir = (null!);');
+    expect(block).not.toContain('var _t1: Dir = null!;');
     expect(block).toContain('(((ctx).foo)); ');
   });
 
@@ -468,8 +468,8 @@ describe('type check blocks', () => {
     }];
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
-            'var _t1: Dir = (null!); ' +
-            'var _t2: typeof _t1["fieldA"] = (null!); ' +
+            'var _t1: Dir = null!; ' +
+            'var _t2: typeof _t1["fieldA"] = null!; ' +
             '_t2 = (((ctx).foo)); ');
   });
 
@@ -487,7 +487,7 @@ describe('type check blocks', () => {
        }];
        const block = tcb(TEMPLATE, DIRECTIVES);
        expect(block).toContain(
-           'var _t1: Dir = (null!); ' +
+           'var _t1: Dir = null!; ' +
            '_t1["some-input.xs"] = (((ctx).foo)); ');
      });
 
@@ -504,7 +504,7 @@ describe('type check blocks', () => {
     }];
     expect(tcb(TEMPLATE, DIRECTIVES))
         .toContain(
-            'var _t1: Dir = (null!); ' +
+            'var _t1: Dir = null!; ' +
             '_t1.field2 = _t1.field1 = (((ctx).foo));');
   });
 
@@ -523,8 +523,8 @@ describe('type check blocks', () => {
        }];
        expect(tcb(TEMPLATE, DIRECTIVES))
            .toContain(
-               'var _t1: typeof Dir.ngAcceptInputType_field1 = (null!); ' +
-               'var _t2: Dir = (null!); ' +
+               'var _t1: typeof Dir.ngAcceptInputType_field1 = null!; ' +
+               'var _t2: Dir = null!; ' +
                '_t2.field2 = _t1 = (((ctx).foo));');
      });
 
@@ -543,7 +543,7 @@ describe('type check blocks', () => {
        }];
        expect(tcb(TEMPLATE, DIRECTIVES))
            .toContain(
-               'var _t1: Dir = (null!); ' +
+               'var _t1: Dir = null!; ' +
                '_t1.field2 = (((ctx).foo));');
      });
 
@@ -559,9 +559,9 @@ describe('type check blocks', () => {
       coercedInputFields: ['fieldA'],
     }];
     const block = tcb(TEMPLATE, DIRECTIVES);
-    expect(block).not.toContain('var _t1: Dir = (null!);');
+    expect(block).not.toContain('var _t1: Dir = null!;');
     expect(block).toContain(
-        'var _t1: typeof Dir.ngAcceptInputType_fieldA = (null!); ' +
+        'var _t1: typeof Dir.ngAcceptInputType_fieldA = null!; ' +
         '_t1 = (((ctx).foo));');
   });
 
@@ -578,9 +578,9 @@ describe('type check blocks', () => {
       undeclaredInputFields: ['fieldA'],
     }];
     const block = tcb(TEMPLATE, DIRECTIVES);
-    expect(block).not.toContain('var _t1: Dir = (null!);');
+    expect(block).not.toContain('var _t1: Dir = null!;');
     expect(block).toContain(
-        'var _t1: typeof Dir.ngAcceptInputType_fieldA = (null!); ' +
+        'var _t1: typeof Dir.ngAcceptInputType_fieldA = null!; ' +
         '_t1 = (((ctx).foo));');
   });
 
@@ -893,7 +893,7 @@ describe('type check blocks', () => {
             TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfDomReferences: false};
         const block = tcb(TEMPLATE, [], DISABLED_CONFIG);
         expect(block).toContain(
-            'var _t1 = (_t2 as any); ' +
+            'var _t1 = _t2 as any; ' +
             '"" + (((_t1).value));');
       });
     });
@@ -928,7 +928,7 @@ describe('type check blocks', () => {
             TypeCheckingConfig = {...BASE_CONFIG, checkTypeOfNonDomReferences: false};
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain(
-            'var _t1 = (_t2 as any); ' +
+            'var _t1 = _t2 as any; ' +
             '"" + (((_t1).value));');
       });
     });
@@ -983,8 +983,8 @@ describe('type check blocks', () => {
 
       it('should use undefined for safe navigation operations when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('((null as any) ? (((ctx).a))!.method() : undefined)');
-        expect(block).toContain('((null as any) ? (((ctx).a))!.b : undefined)');
+        expect(block).toContain('(null as any ? (((ctx).a))!.method() : undefined)');
+        expect(block).toContain('(null as any ? (((ctx).a))!.b : undefined)');
       });
       it('should use an \'any\' type for safe navigation operations when disabled', () => {
         const DISABLED_CONFIG:
@@ -999,8 +999,8 @@ describe('type check blocks', () => {
       const TEMPLATE = `{{a.method()?.b}} {{a()?.method()}}`;
       it('should check the presence of a property/method on the receiver when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
-        expect(block).toContain('((null as any) ? ((((ctx).a)).method())!.b : undefined)');
-        expect(block).toContain('((null as any) ? ((ctx).a())!.method() : undefined)');
+        expect(block).toContain('(null as any ? ((((ctx).a)).method())!.b : undefined)');
+        expect(block).toContain('(null as any ? ((ctx).a())!.method() : undefined)');
       });
       it('should not check the presence of a property/method on the receiver when disabled', () => {
         const DISABLED_CONFIG:
@@ -1045,7 +1045,7 @@ describe('type check blocks', () => {
                TypeCheckingConfig = {...BASE_CONFIG, honorAccessModifiersForInputBindings: true};
            const block = tcb(TEMPLATE, DIRECTIVES, enableChecks);
            expect(block).toContain(
-               'var _t1: Dir = (null!); ' +
+               'var _t1: Dir = null!; ' +
                '_t1["some-input.xs"] = (((ctx).foo)); ');
          });
 
@@ -1063,7 +1063,7 @@ describe('type check blocks', () => {
             TypeCheckingConfig = {...BASE_CONFIG, honorAccessModifiersForInputBindings: true};
         const block = tcb(TEMPLATE, DIRECTIVES, enableChecks);
         expect(block).toContain(
-            'var _t1: Dir = (null!); ' +
+            'var _t1: Dir = null!; ' +
             '_t1.fieldA = (((ctx).foo)); ');
       });
     });

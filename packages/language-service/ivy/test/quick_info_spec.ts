@@ -216,7 +216,7 @@ describe('quick info', () => {
             templateOverride: `<div *ngFor="let item o¦f heroes; trackBy: trackByFn;"></div>`,
             expectedSpanText: 'of',
             expectedDisplayString:
-                '(property) NgForOf<Hero, Hero[]>.ngForOf: Hero[] | (Hero[] & Iterable<Hero>) | null | undefined'
+                '(property) NgForOf<Hero, Hero[]>.ngForOf: (Hero[] & NgIterable<Hero>) | null | undefined'
           });
         });
 

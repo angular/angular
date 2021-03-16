@@ -683,13 +683,13 @@ describe('static-queries migration with usage strategy', () => {
     it('should not mark queries used in promises as static', async () => {
       writeFile('/es2015.dom.d.ts', `
         interface PromiseConstructor {
-          resolve(): Promise;
-          reject(): Promise;
+          resolve(): Promise<unknown>;
+          reject(): Promise<unknown>;
         }
 
         interface Promise {
-          then(cb: Function): Promise;
-          catch(cb: Function): Promise;
+          then(cb: Function): Promise<unknown>;
+          catch(cb: Function): Promise<unknown>;
         }
 
         declare var Promise: PromiseConstructor;

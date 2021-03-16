@@ -239,7 +239,7 @@ function promptAutocomplete(message, choices, noChoiceText) {
                 case 0:
                     prompt = inquirer.createPromptModule({}).registerPrompt('autocomplete', inquirerAutocomplete);
                     if (noChoiceText) {
-                        choices = tslib.__spread([noChoiceText], choices);
+                        choices = tslib.__spreadArray([noChoiceText], tslib.__read(choices));
                     }
                     return [4 /*yield*/, prompt({
                             type: 'autocomplete',
@@ -313,7 +313,7 @@ function buildLogLevelFunction(loadCommand, level) {
         for (var _i = 0; _i < arguments.length; _i++) {
             text[_i] = arguments[_i];
         }
-        runConsoleCommand.apply(void 0, tslib.__spread([loadCommand, level], text));
+        runConsoleCommand.apply(void 0, tslib.__spreadArray([loadCommand, level], tslib.__read(text)));
     };
     /** Start a group at the LOG_LEVEL, optionally starting it as collapsed. */
     loggingFunction.group = function (text, collapsed) {
@@ -342,9 +342,9 @@ function runConsoleCommand(loadCommand, logLevel) {
         text[_i - 2] = arguments[_i];
     }
     if (getLogLevel() >= logLevel) {
-        loadCommand().apply(void 0, tslib.__spread(text));
+        loadCommand().apply(void 0, tslib.__spreadArray([], tslib.__read(text)));
     }
-    printToLogFile.apply(void 0, tslib.__spread([logLevel], text));
+    printToLogFile.apply(void 0, tslib.__spreadArray([logLevel], tslib.__read(text)));
 }
 /**
  * Retrieve the log level from environment variables, if the value found
@@ -2254,7 +2254,7 @@ function allChangedFilesSince(sha) {
     var diffFiles = gitOutputAsArray("git diff --name-only --diff-filter=d " + sha);
     var untrackedFiles = gitOutputAsArray("git ls-files --others --exclude-standard");
     // Use a set to deduplicate the list as its possible for a file to show up in both lists.
-    return Array.from(new Set(tslib.__spread(diffFiles, untrackedFiles)));
+    return Array.from(new Set(tslib.__spreadArray(tslib.__spreadArray([], tslib.__read(diffFiles)), tslib.__read(untrackedFiles))));
 }
 /**
  * A list of all staged files which have been modified.
@@ -2947,7 +2947,7 @@ function getPr(prSchema, prNumber, git) {
                     PR_QUERY = typedGraphqlify.params({
                         $number: 'Int!',
                         $owner: 'String!',
-                        $name: 'String!',
+                        $name: 'String!', // The organization to query for
                     }, {
                         repository: typedGraphqlify.params({ owner: '$owner', name: '$name' }, {
                             pullRequest: typedGraphqlify.params({ number: '$number' }, prSchema),
@@ -2973,7 +2973,7 @@ function getPendingPrs(prSchema, git) {
                         $first: 'Int',
                         $after: 'String',
                         $owner: 'String!',
-                        $name: 'String!',
+                        $name: 'String!', // The repository to query for
                     }, {
                         repository: typedGraphqlify.params({ owner: '$owner', name: '$name' }, {
                             pullRequests: typedGraphqlify.params({
@@ -3003,7 +3003,7 @@ function getPendingPrs(prSchema, git) {
                     return [4 /*yield*/, git.github.graphql.query(PRS_QUERY, params_1)];
                 case 2:
                     results = _b.sent();
-                    prs.push.apply(prs, tslib.__spread(results.repository.pullRequests.nodes));
+                    prs.push.apply(prs, tslib.__spreadArray([], tslib.__read(results.repository.pullRequests.nodes)));
                     hasNextPage = results.repository.pullRequests.pageInfo.hasNextPage;
                     cursor = results.repository.pullRequests.pageInfo.endCursor;
                     return [3 /*break*/, 1];
@@ -3598,7 +3598,7 @@ var MergeStrategy = /** @class */ (function () {
                 // Checkout the local target branch.
                 this.git.run(['checkout', localTargetBranch]);
                 // Cherry-pick the refspec into the target branch.
-                if (this.git.runGraceful(tslib.__spread(['cherry-pick'], cherryPickArgs)).status !== 0) {
+                if (this.git.runGraceful(tslib.__spreadArray(['cherry-pick'], tslib.__read(cherryPickArgs))).status !== 0) {
                     // Abort the failed cherry-pick. We do this because Git persists the failed
                     // cherry-pick state globally in the repository. This could prevent future
                     // pull request merges as a Git thinks a cherry-pick is still in progress.
@@ -3637,7 +3637,7 @@ var MergeStrategy = /** @class */ (function () {
         });
         // Fetch all target branches with a single command. We don't want to fetch them
         // individually as that could cause an unnecessary slow-down.
-        this.git.run(tslib.__spread(['fetch', '-q', '-f', this.git.repoGitUrl], fetchRefspecs, extraRefspecs));
+        this.git.run(tslib.__spreadArray(tslib.__spreadArray(['fetch', '-q', '-f', this.git.repoGitUrl], tslib.__read(fetchRefspecs)), tslib.__read(extraRefspecs)));
     };
     /** Pushes the given target branches upstream. */
     MergeStrategy.prototype.pushTargetBranchesUpstream = function (names) {
@@ -3648,7 +3648,7 @@ var MergeStrategy = /** @class */ (function () {
         });
         // Push all target branches with a single command if we don't run in dry-run mode.
         // We don't want to push them individually as that could cause an unnecessary slow-down.
-        this.git.run(tslib.__spread(['push', this.git.repoGitUrl], pushRefspecs));
+        this.git.run(tslib.__spreadArray(['push', this.git.repoGitUrl], tslib.__read(pushRefspecs)));
     };
     return MergeStrategy;
 }());
