@@ -95,7 +95,7 @@ $candy-app-theme: mat-light-theme((
   color: (
     primary: $candy-app-primary,
     accent: $candy-app-accent,
-    warn: $candy-app-warn,  
+    warn: $candy-app-warn,
   ),
   typography: mat-typography-config(),
   density: 0, // Defaults to 0 if omitted, but shown for completeness.
@@ -114,9 +114,9 @@ add a new entry to the `"styles"` list in `angular.json` pointing to the theme
 file (e.g., `unicorn-app-theme.scss`).
 
 If you're not using the Angular CLI, you can use any existing Sass tooling to build the file (such
-as gulp-sass or grunt-sass). The simplest approach is to use the `node-sass` CLI; you simply run:
+as gulp-sass or grunt-sass). The simplest approach is to use the `sass` CLI; you simply run:
 ```
-node-sass src/unicorn-app-theme.scss dist/unicorn-app-theme.css
+sass src/unicorn-app-theme.scss dist/unicorn-app-theme.css
 ```
 Then include the output file in your index.html.
 
