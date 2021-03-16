@@ -647,6 +647,7 @@ jobs:
       - run: yarn tsc -p packages --module UMD
       - run: yarn tsc -p modules --module UMD
       - run: yarn bazel build //packages/zone.js:npm_package
+      - run: yarn --cwd=./packages/zone.js install && yarn --cwd=./packages/zone.js tsc -p . --module UMD
       # Build test fixtures for a test that rely on Bazel-generated fixtures. Note that disabling
       # specific tests which are reliant on such generated fixtures is not an option as SystemJS
       # in the Saucelabs legacy job always fetches referenced files, even if the imports would be
@@ -660,6 +661,9 @@ jobs:
             cp dist/bin/packages/core/test/reflection/es5_downleveled_inheritance_fixture.js \
               dist/all/@angular/core/test/reflection/es5_downleveled_inheritance_fixture.js
       - run:
+          name: Prepare zone.js npm_package bundles required in zone.js legacy tests
+          command: cp ./dist/bin/packages/zone.js/npm_package/dist/*.js ./packages/zone.js/dist/
+      - run:
           # Waiting on ready ensures that we don't run tests too early without Saucelabs not being ready.
           name: Waiting for Saucelabs tunnel to connect
           command: ./tools/saucelabs/sauce-service.sh ready-wait
@@ -668,6 +672,7 @@ jobs:
           command: |
             browsers=$(node -e 'console.log(require("./browser-providers.conf").sauceAliases.CI_REQUIRED.join(","))')
             yarn karma start ./karma-js.conf.js --single-run --browsers=${browsers}
+            yarn karma start ./packages/zone.js/karma-dist-sauce-jasmine.conf.js --single-run
       - run:
           name: Stop Saucelabs tunnel service
           command: ./tools/saucelabs/sauce-service.sh stop

@@ -5,87 +5,90 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ifEnvSupports, ifEnvSupportsWithDone, isFirefox, isSafari} from '../test-util';
+import {ifEnvSupports, ifEnvSupportsWithDone, isAndroid, isFirefox, isSafari} from '../test-util';
 
 declare const global: any;
+const isSaucelab = typeof window !== 'undefined' ? (window as any).isSaucelab : false;
+const simpleJson = isSaucelab ? '/base/test/assets/sample.json' :
+                                '/base/angular/packages/zone.js/test/assets/sample.json';
+
+function supportFetch() {
+  return !!global['fetch'] && !isAndroid();
+}
 
 describe(
-    'fetch', ifEnvSupports('fetch', function() {
+    'fetch', ifEnvSupports(supportFetch, function() {
       let testZone: Zone;
       beforeEach(() => {
         testZone = Zone.current.fork({name: 'TestZone'});
       });
       it('should work for text response', function(done) {
         testZone.run(function() {
-          global['fetch']('/base/angular/packages/zone.js/test/assets/sample.json')
-              .then(function(response: any) {
-                const fetchZone = Zone.current;
-                expect(fetchZone.name).toBe(testZone.name);
+          global['fetch'](simpleJson).then(function(response: any) {
+            const fetchZone = Zone.current;
+            expect(fetchZone.name).toBe(testZone.name);
 
-                response.text().then(function(text: string) {
-                  expect(Zone.current.name).toBe(fetchZone.name);
-                  expect(text.trim()).toEqual('{"hello": "world"}');
-                  done();
-                });
-              });
+            response.text().then(function(text: string) {
+              expect(Zone.current.name).toBe(fetchZone.name);
+              expect(text.trim()).toEqual('{"hello": "world"}');
+              done();
+            });
+          });
         });
       });
 
       it('should work for json response', function(done) {
         testZone.run(function() {
-          global['fetch']('/base/angular/packages/zone.js/test/assets/sample.json')
-              .then(function(response: any) {
-                const fetchZone = Zone.current;
-                expect(fetchZone.name).toBe(testZone.name);
+          global['fetch'](simpleJson).then(function(response: any) {
+            const fetchZone = Zone.current;
+            expect(fetchZone.name).toBe(testZone.name);
 
-                response.json().then(function(obj: any) {
-                  expect(Zone.current.name).toBe(fetchZone.name);
-                  expect(obj.hello).toEqual('world');
-                  done();
-                });
-              });
+            response.json().then(function(obj: any) {
+              expect(Zone.current.name).toBe(fetchZone.name);
+              expect(obj.hello).toEqual('world');
+              done();
+            });
+          });
         });
       });
 
       it('should work for blob response', function(done) {
         testZone.run(function() {
-          global['fetch']('/base/angular/packages/zone.js/test/assets/sample.json')
-              .then(function(response: any) {
-                const fetchZone = Zone.current;
-                expect(fetchZone.name).toBe(testZone.name);
+          global['fetch'](simpleJson).then(function(response: any) {
+            const fetchZone = Zone.current;
+            expect(fetchZone.name).toBe(testZone.name);
 
-                // Android 4.3- doesn't support response.blob()
-                if (response.blob) {
-                  response.blob().then(function(blob: any) {
-                    expect(Zone.current.name).toBe(fetchZone.name);
-                    expect(blob instanceof Blob).toEqual(true);
-                    done();
-                  });
-                } else {
-                  done();
-                }
+            // Android 4.3- doesn't support response.blob()
+            if (response.blob) {
+              response.blob().then(function(blob: any) {
+                expect(Zone.current.name).toBe(fetchZone.name);
+                expect(blob instanceof Blob).toEqual(true);
+                done();
               });
+            } else {
+              done();
+            }
+          });
         });
       });
 
       it('should work for arrayBuffer response', function(done) {
         testZone.run(function() {
-          global['fetch']('/base/angular/packages/zone.js/test/assets/sample.json')
-              .then(function(response: any) {
-                const fetchZone = Zone.current;
-                expect(fetchZone.name).toBe(testZone.name);
+          global['fetch'](simpleJson).then(function(response: any) {
+            const fetchZone = Zone.current;
+            expect(fetchZone.name).toBe(testZone.name);
 
-                // Android 4.3- doesn't support response.arrayBuffer()
-                if (response.arrayBuffer) {
-                  response.arrayBuffer().then(function(blob: any) {
-                    expect(Zone.current).toBe(fetchZone);
-                    expect(blob instanceof ArrayBuffer).toEqual(true);
-                    done();
-                  });
-                } else {
-                  done();
-                }
+            // Android 4.3- doesn't support response.arrayBuffer()
+            if (response.arrayBuffer) {
+              response.arrayBuffer().then(function(blob: any) {
+                expect(Zone.current).toBe(fetchZone);
+                expect(blob instanceof ArrayBuffer).toEqual(true);
+                done();
               });
+            } else {
+              done();
+            }
+          });
         });
       });
 
@@ -140,16 +143,15 @@ describe(
         });
         it('fetch should be considered as macroTask', (done: DoneFn) => {
           fetchZone.run(() => {
-            global['fetch']('/base/angular/packages/zone.js/test/assets/sample.json')
-                .then(function(response: any) {
-                  expect(Zone.current.name).toBe(fetchZone.name);
-                  expect(logs).toEqual([
-                    'scheduleTask:fetch:macroTask', 'scheduleTask:Promise.then:microTask',
-                    'invokeTask:Promise.then:microTask', 'invokeTask:fetch:macroTask',
-                    'scheduleTask:Promise.then:microTask', 'invokeTask:Promise.then:microTask'
-                  ]);
-                  done();
-                });
+            global['fetch'](simpleJson).then(function(response: any) {
+              expect(Zone.current.name).toBe(fetchZone.name);
+              expect(logs).toEqual([
+                'scheduleTask:fetch:macroTask', 'scheduleTask:Promise.then:microTask',
+                'invokeTask:Promise.then:microTask', 'invokeTask:fetch:macroTask',
+                'scheduleTask:Promise.then:microTask', 'invokeTask:Promise.then:microTask'
+              ]);
+              done();
+            });
           });
         });
 
@@ -193,7 +195,7 @@ describe(
                const AbortController = global['AbortController'];
                const abort = new AbortController();
                const signal = abort.signal;
-               global['fetch']('/base/angular/packages/zone.js/test/assets/sample.json', {signal})
+               global['fetch'](simpleJson, {signal})
                    .then(function(response: any) {
                      fail('should not get response');
                    })

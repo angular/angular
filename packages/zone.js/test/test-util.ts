@@ -116,6 +116,14 @@ export function isFirefox() {
   return false;
 }
 
+export function isAndroid() {
+  const userAgent = navigator.userAgent.toLowerCase();
+  if (userAgent.indexOf('android') != -1) {
+    return true;
+  }
+  return false;
+}
+
 export function isSafari() {
   const userAgent = navigator.userAgent.toLowerCase();
   if (userAgent.indexOf('safari') != -1) {

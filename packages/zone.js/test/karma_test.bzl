@@ -82,35 +82,3 @@ def karma_test(name, env_srcs, env_deps, env_entry_point, test_srcs, test_deps, 
                 "@npm//karma-sauce-launcher",
             ],
         )
-
-        if ci and firstFlag:
-            karma_web_test_suite(
-                name = "karma_jasmine_test_ci",
-                srcs = [
-                    "fake_entry.js",
-                ],
-                bootstrap = [
-                    ":saucelabs.js",
-                    ":" + name + "_env_rollup.umd",
-                    "//packages/zone.js/bundles:zone-testing-bundle.umd.min.js",
-                ] + _karma_test_required_dist_files,
-                browsers = ["//dev-infra/browsers/chromium:chromium"],
-                config_file = "//:karma-js.conf.js",
-                configuration_env_vars = ["KARMA_WEB_TEST_MODE"],
-                data = [
-                    "//:browser-providers.conf.js",
-                    "//tools:jasmine-seed-generator.js",
-                ],
-                static_files = [
-                    ":assets/sample.json",
-                    ":assets/worker.js",
-                    ":assets/import.html",
-                ],
-                tags = ["zone_karma_test"],
-                # Visible to //:saucelabs_unit_tests_poc target
-                visibility = ["//:__pkg__"],
-                runtime_deps = [
-                    "@npm//karma-browserstack-launcher",
-                    "@npm//karma-sauce-launcher",
-                ],
-            )

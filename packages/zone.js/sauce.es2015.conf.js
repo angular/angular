@@ -58,4 +58,19 @@ module.exports = function(config, ignoredLaunchers) {
 
     process.env.SAUCE_ACCESS_KEY = process.env.SAUCE_ACCESS_KEY.split('').reverse().join('');
   }
+
+  if (process.env['SAUCE_TUNNEL_IDENTIFIER']) {
+    console.log(`SAUCE_TUNNEL_IDENTIFIER: ${process.env.SAUCE_TUNNEL_IDENTIFIER}`);
+
+    const tunnelIdentifier = process.env['SAUCE_TUNNEL_IDENTIFIER'];
+
+    // Setup the Saucelabs plugin so that it can launch browsers using the proper tunnel.
+    config.sauceLabs.build = tunnelIdentifier;
+    config.sauceLabs.tunnelIdentifier = tunnelIdentifier;
+
+    // Setup the Browserstack plugin so that it can launch browsers using the proper tunnel.
+    // TODO: This is currently not used because BS doesn't run on the CI. Consider removing.
+    // config.browserStack.build = tunnelIdentifier;
+    // config.browserStack.tunnelIdentifier = tunnelIdentifier;
+  }
 };

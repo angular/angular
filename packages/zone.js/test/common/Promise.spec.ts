@@ -664,6 +664,13 @@ describe(
                 done();
               });
         });
+        let supportClass = true;
+        try {
+          eval('"use strict"; class foo {}');
+        } catch (e) {
+          supportClass = false;
+        }
+
         const Subclass = (function() {
           try {
             // eslint-disable-next-line no-new-func
@@ -675,25 +682,25 @@ describe(
           return false;
         }());
 
-        describe('inheritance', () => {
-          it('preserves correct subclass', () => {
-            const promise = allSettled.call(Subclass, [1]);
-            expect(promise instanceof Subclass).toBe(true);
-            expect(promise.constructor).toEqual(Subclass);
-          });
+        describe('inheritance', ifEnvSupports(() => supportClass, () => {
+                   it('preserves correct subclass', () => {
+                     const promise = allSettled.call(Subclass, [1]);
+                     expect(promise instanceof Subclass).toBe(true);
+                     expect(promise.constructor).toEqual(Subclass);
+                   });
 
-          it('invoke the subclass', () => {
-            Subclass.thenArgs.length = 0;
+                   it('invoke the subclass', () => {
+                     Subclass.thenArgs.length = 0;
 
-            const original = Subclass.resolve();
-            expect(Subclass.thenArgs.length).toBe(0);
-            expect(original.thenArgs.length).toBe(0);
+                     const original = Subclass.resolve();
+                     expect(Subclass.thenArgs.length).toBe(0);
+                     expect(original.thenArgs.length).toBe(0);
 
-            allSettled.call(Subclass, [original]);
+                     allSettled.call(Subclass, [original]);
 
-            expect(original.thenArgs.length).toBe(1);
-            expect(Subclass.thenArgs.length).toBe(1);
-          });
-        });
+                     expect(original.thenArgs.length).toBe(1);
+                     expect(Subclass.thenArgs.length).toBe(1);
+                   });
+                 }));
       });
     }));

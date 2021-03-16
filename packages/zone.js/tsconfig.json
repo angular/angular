@@ -9,6 +9,7 @@
     "noEmitOnError": false,
     "stripInternal": false,
     "strict": true,
+    "moduleResolution": "node",
     "lib": [
       "es5",
       "dom",
@@ -17,7 +18,9 @@
       "es2015.symbol",
       "es2015.symbol.wellknown"
     ],
-    "typeRoots": ["node_modules/@types"],
+    "typeRoots": [
+      "node_modules/@types"
+    ],
   },
   "exclude": [
     "node_modules",
