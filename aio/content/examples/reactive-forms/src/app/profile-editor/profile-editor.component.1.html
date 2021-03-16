@@ -1,65 +1,48 @@
 <!-- #docplaster -->
 <!-- #docregion formgroup -->
 <form [formGroup]="profileForm">
-  
-  <label>
-    First Name:
-    <input type="text" formControlName="firstName">
-  </label>
 
-  <label>
-    Last Name:
-    <input type="text" formControlName="lastName">
-  </label>
+  <label for="first-name">First Name: </label>
+  <input id="first-name" type="text" formControlName="firstName">
+
+  <label for="last-name">Last Name: </label>
+  <input id="last-name" type="text" formControlName="lastName">
 
 <!-- #enddocregion formgroup -->
   <!-- #docregion formgroupname -->
   <div formGroupName="address">
-    <h3>Address</h3>
+    <h2>Address</h2>
 
-    <label>
-      Street:
-      <input type="text" formControlName="street">
-    </label>
+    <label for="street">Street: </label>
+    <input id="street" type="text" formControlName="street">
 
-    <label>
-      City:
-      <input type="text" formControlName="city">
-    </label>
-    
-    <label>
-      State:
-      <input type="text" formControlName="state">
-    </label>
+    <label for="city">City: </label>
+    <input id="city" type="text" formControlName="city">
 
-    <label>
-      Zip Code:
-      <input type="text" formControlName="zip">
-    </label>
+    <label for="state">State: </label>
+    <input id="state" type="text" formControlName="state">
+
+    <label for="zip">Zip Code: </label>
+    <input id="zip" type="text" formControlName="zip">
   </div>
   <!-- #enddocregion formgroupname -->
 
   <div formArrayName="aliases">
-    <h3>Aliases</h3> <button (click)="addAlias()">Add Alias</button>
+    <h2>Aliases</h2>
+    <button (click)="addAlias()">+ Add another alias</button>
 
     <div *ngFor="let address of aliases.controls; let i=index">
       <!-- The repeated alias template -->
-      <label>
-        Alias:
-        <input type="text" [formControlName]="i">
-      </label>
+      <label for="alias-{{ i }}">Alias: </label>
+      <input id="alias-{{ i }}" type="text" [formControlName]="i">
     </div>
   </div>
-<!-- #docregion formgroup -->  
+<!-- #docregion formgroup -->
 </form>
 <!-- #enddocregion formgroup -->
 
-<p>
-  Form Value: {{ profileForm.value | json }}
-</p>
+<p>Form Value: {{ profileForm.value | json }}</p>
 
 <!-- #docregion patch-value -->
-<p>
-  <button (click)="updateProfile()">Update Profile</button>
-</p>
+<button (click)="updateProfile()">Update Profile</button>
 <!-- #enddocregion patch-value -->
