@@ -54,7 +54,6 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
             type: metadata.type,
             typeArgumentCount: metadata.typeArgumentCount,
             deps: reflectDependencies(type),
-            injectFn: 'inject',
             target: compiler.R3FactoryTarget.Injectable
           });
         }

@@ -149,7 +149,6 @@ export function compileNgModuleDefs(
           name: moduleType.name,
           type: moduleType,
           deps: reflectDependencies(moduleType),
-          injectFn: 'inject',
           target: compiler.R3FactoryTarget.NgModule,
           typeArgumentCount: 0,
         });

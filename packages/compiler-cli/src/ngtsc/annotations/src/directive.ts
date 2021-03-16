@@ -318,7 +318,6 @@ export class DirectiveDecoratorHandler implements
       {expression: initializer, statements, type}: R3CompiledExpression): CompileResult[] {
     const factoryRes = compileNgFactoryDefField({
       ...analysis.meta,
-      injectFn: Identifiers.directiveInject,
       target: R3FactoryTarget.Directive,
     });
     if (analysis.metadataStmt !== null) {

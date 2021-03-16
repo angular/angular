@@ -177,7 +177,6 @@ export class PipeDecoratorHandler implements
   private compilePipe(analysis: Readonly<PipeHandlerData>, def: R3CompiledExpression) {
     const factoryRes = compileNgFactoryDefField({
       ...analysis.meta,
-      injectFn: Identifiers.directiveInject,
       target: R3FactoryTarget.Pipe,
     });
     if (analysis.metadataStmt !== null) {

@@ -229,7 +229,6 @@ export interface R3FactoryDefMetadataFacade {
   type: any;
   typeArgumentCount: number;
   deps: R3DependencyMetadataFacade[]|null;
-  injectFn: 'directiveInject'|'inject';
   target: R3FactoryTarget;
 }
 
