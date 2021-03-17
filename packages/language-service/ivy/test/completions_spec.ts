@@ -308,11 +308,11 @@ describe('completions', () => {
           ['div', 'span']);
     });
 
-    it('should return DOM completions', () => {
+    it('should not return DOM completions for inline template', () => {
       const {appFile} = setupInlineTemplate(`<div>`, '');
       appFile.moveCursorToText('<div¦>');
       const completions = appFile.getCompletionsAtPosition();
-      expectContain(
+      expectDoesNotContain(
           completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ELEMENT),
           ['div', 'span']);
     });
@@ -431,20 +431,25 @@ describe('completions', () => {
 
     describe('element attribute scope', () => {
       describe('dom completions', () => {
-        it('should not return completions dom completions in external template', () => {
+        it('should return dom property completions in external template', () => {
           const {templateFile} = setup(`<input >`, '');
           templateFile.moveCursorToText('<input ¦>');
 
           const completions = templateFile.getCompletionsAtPosition();
-          expect(completions?.entries.length).toBe(0);
+          expectDoesNotContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
+              ['value']);
+          expectContain(
+              completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
+              ['[value]']);
         });
 
-        it('should return completions for a new element attribute', () => {
+        it('should return completions for a new element property', () => {
           const {appFile} = setupInlineTemplate(`<input >`, '');
           appFile.moveCursorToText('<input ¦>');
 
           const completions = appFile.getCompletionsAtPosition();
-          expectContain(
+          expectDoesNotContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
               ['value']);
           expectContain(
@@ -457,7 +462,7 @@ describe('completions', () => {
           appFile.moveCursorToText('<input val¦>');
 
           const completions = appFile.getCompletionsAtPosition();
-          expectContain(
+          expectDoesNotContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.ATTRIBUTE),
               ['value']);
           expectContain(
@@ -477,7 +482,7 @@ describe('completions', () => {
           expectDoesNotContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
               ['[value]']);
-          expectContain(
+          expectDoesNotContain(
               completions, unsafeCastDisplayInfoKindToScriptElementKind(DisplayInfoKind.PROPERTY),
               ['value']);
           expectReplacementText(completions, appFile.contents, 'val');
