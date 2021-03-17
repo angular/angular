@@ -6,7 +6,7 @@ This topic describes how you can help keep Angular content up-to-date by reviewi
 
 ## Before you begin
 
-You can review content even if you've never contributed to Angular before. However, you may find it helpful to have the [Contributing to Angular](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#contributing-to-angular) guide available if you're filing your first pull request in the repository.
+You can review content even if you've never contributed to Angular before. However, you may find it helpful to have the [Contributing to Angular](https://github.com/angular/angular/blob/master/CONTRIBUTING.md) guide available if you're filing your first pull request in the repository.
 
 ## Reviewing content (`@reviewed`)
 
@@ -31,9 +31,9 @@ You can review a topic using either the GitHub user interface or in an editor on
 
 1. Read through the topic.
 
-1. If the topic requires an update, either [file an issue](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue) that describes the update required, or [create a pull request](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-a-pull-request-pr) with the update.
+1. If the topic requires an update, either [file an issue](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#submit-issue) that describes the update required, or [create a pull request](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#submit-pr) with the update.
 
-1. Update the `@reviewed` tag, either through the [GitHub user interface](guide/updating-content-github-ui) or through Angular's [standard pull request process](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-a-pull-request-pr).
+1. Update the `@reviewed` tag, either through the [GitHub user interface](guide/updating-content-github-ui) or through Angular's [standard pull request process](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#submit-pr).
 
 {@a review-criteria}
 ### Review criteria

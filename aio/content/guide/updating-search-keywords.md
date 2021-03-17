@@ -10,7 +10,7 @@ You can help improve the documentation experience by adding search keywords to a
 
 ## Before you begin
 
-You can update search keywords for a topic even if you've never contributed to Angular before. However, you may find it helpful to have the [Contributing to Angular](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#contributing-to-angular) guide available if you're filing your first pull request in the repository.
+You can update search keywords for a topic even if you've never contributed to Angular before. However, you may find it helpful to have the [Contributing to Angular](https://github.com/angular/angular/blob/master/CONTRIBUTING.md) guide available if you're filing your first pull request in the repository.
 
 **To update search keywords:**
 
