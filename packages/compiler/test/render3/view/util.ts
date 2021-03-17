@@ -107,7 +107,7 @@ export function parseR3(
       ['onEvent'], ['onEvent']);
   const bindingParser =
       new BindingParser(expressionParser, DEFAULT_INTERPOLATION_CONFIG, schemaRegistry, null, []);
-  const r3Result = htmlAstToRender3Ast(htmlNodes, bindingParser);
+  const r3Result = htmlAstToRender3Ast(htmlNodes, bindingParser, {collectCommentNodes: false});
 
   if (r3Result.errors.length > 0 && !options.ignoreError) {
     const msg = r3Result.errors.map(e => e.toString()).join('\n');

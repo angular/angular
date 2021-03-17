@@ -2086,6 +2086,16 @@ export interface ParseTemplateOptions {
    * output, but this is done after converting the HTML AST to R3 AST.
    */
   alwaysAttemptHtmlToR3AstConversion?: boolean;
+
+  /**
+   * Include HTML Comment nodes in a top-level comments array on the returned R3 AST.
+   *
+   * This option is required by tooling that needs to know the location of comment nodes within the
+   * AST. A concrete example is @angular-eslint which requires this in order to enable
+   * "eslint-disable" comments within HTML templates, which then allows users to turn off specific
+   * rules on a case by case basis, instead of for their whole project within a configuration file.
+   */
+  collectCommentNodes?: boolean;
 }
 
 /**
@@ -2107,7 +2117,7 @@ export function parseTemplate(
 
   if (!options.alwaysAttemptHtmlToR3AstConversion && parseResult.errors &&
       parseResult.errors.length > 0) {
-    return {
+    const parsedTemplate: ParsedTemplate = {
       interpolationConfig,
       preserveWhitespaces,
       template,
@@ -2119,6 +2129,10 @@ export function parseTemplate(
       styles: [],
       ngContentSelectors: []
     };
+    if (options.collectCommentNodes) {
+      parsedTemplate.commentNodes = [];
+    }
+    return parsedTemplate;
   }
 
   let rootNodes: html.Node[] = parseResult.rootNodes;
@@ -2134,7 +2148,7 @@ export function parseTemplate(
 
   if (!options.alwaysAttemptHtmlToR3AstConversion && i18nMetaResult.errors &&
       i18nMetaResult.errors.length > 0) {
-    return {
+    const parsedTemplate: ParsedTemplate = {
       interpolationConfig,
       preserveWhitespaces,
       template,
@@ -2146,6 +2160,10 @@ export function parseTemplate(
       styles: [],
       ngContentSelectors: []
     };
+    if (options.collectCommentNodes) {
+      parsedTemplate.commentNodes = [];
+    }
+    return parsedTemplate;
   }
 
   rootNodes = i18nMetaResult.rootNodes;
@@ -2163,11 +2181,11 @@ export function parseTemplate(
     }
   }
 
-  const {nodes, errors, styleUrls, styles, ngContentSelectors} =
-      htmlAstToRender3Ast(rootNodes, bindingParser);
+  const {nodes, errors, styleUrls, styles, ngContentSelectors, commentNodes} = htmlAstToRender3Ast(
+      rootNodes, bindingParser, {collectCommentNodes: !!options.collectCommentNodes});
   errors.push(...parseResult.errors, ...i18nMetaResult.errors);
 
-  return {
+  const parsedTemplate: ParsedTemplate = {
     interpolationConfig,
     preserveWhitespaces,
     errors: errors.length > 0 ? errors : null,
@@ -2179,6 +2197,10 @@ export function parseTemplate(
     styles,
     ngContentSelectors
   };
+  if (options.collectCommentNodes) {
+    parsedTemplate.commentNodes = commentNodes;
+  }
+  return parsedTemplate;
 }
 
 const elementRegistry = new DomElementSchemaRegistry();
@@ -2384,4 +2406,10 @@ export interface ParsedTemplate {
    * Any ng-content selectors extracted from the template.
    */
   ngContentSelectors: string[];
+
+  /**
+   * Any R3 Comment Nodes extracted from the template when the `collectCommentNodes` parse template
+   * option is enabled.
+   */
+  commentNodes?: t.Comment[];
 }
