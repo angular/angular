@@ -969,7 +969,7 @@
             {
               "url": "guide/contributors-guide-overview",
               "title": "Overview",
-              "tooltip": "Provides an overview of how to contribute to Angular's documentation"
+              "tooltip": "Provides an overview of how to contribute to Angular's documentation."
             },
             {
               "url": "guide/reviewing-content",
@@ -980,6 +980,11 @@
               "url": "guide/updating-search-keywords",
               "title": "Updating search keywords",
               "tooltip": "Help users find the content they need by adding additional search keywords."
+            },
+            {
+              "url": "guide/updating-content-github-ui",
+              "title": "Updating content using GitHub UI",
+              "tooltip": "Update topics in the browser through the GitHub user interface."
             },
             {
               "url": "guide/docs-style-guide",
