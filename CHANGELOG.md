@@ -1,3 +1,24 @@
+## 11.2.6 (2021-03-17)
+
+
+### Bug Fixes
+
+* **core:** remove duplicated EMPTY_OBJ constant ([#41153](https://github.com/angular/angular/issues/41153)) ([fa97166](https://github.com/angular/angular/commit/fa97166361b17802f8d1771e18b47ac55a117a53))
+* **forms:** properly handle the change to the FormGroup shape ([#40829](https://github.com/angular/angular/issues/40829)) ([60ac964](https://github.com/angular/angular/commit/60ac9643334b83b6b720afd1b7d7fadf02c4e7fc)), closes [#13788](https://github.com/angular/angular/issues/13788)
+* **localize:** render correct closing tag placeholder names in XLIFF 2 ([#41152](https://github.com/angular/angular/issues/41152)) ([7dbb550](https://github.com/angular/angular/commit/7dbb550946031d212b334b9e805e198232bc933b)), closes [#41142](https://github.com/angular/angular/issues/41142)
+* **localize:** trim extracted `equiv-text` values ([#41180](https://github.com/angular/angular/issues/41180)) ([ed6c09a](https://github.com/angular/angular/commit/ed6c09ae45faa598b505c68bd68fe0d1ba3300c4)), closes [#41176](https://github.com/angular/angular/issues/41176)
+* **ngcc:** do not compile JavaScript sources if typings-only processing is repeated ([#41209](https://github.com/angular/angular/issues/41209)) ([be050b2](https://github.com/angular/angular/commit/be050b2582eed2ad036fb4dd679926a146e17264)), closes [#41198](https://github.com/angular/angular/issues/41198)
+
+
+### Performance Improvements
+
+* **forms:** avoid direct references to the `Validators` class ([#41189](https://github.com/angular/angular/issues/41189)) ([#41220](https://github.com/angular/angular/issues/41220)) ([804b6b6](https://github.com/angular/angular/commit/804b6b66853aa53f446b3e9c3cb921ae8cb794c2))
+* **forms:** make `FormBuilder` class tree-shakable ([#41126](https://github.com/angular/angular/issues/41126)) ([ffc93e0](https://github.com/angular/angular/commit/ffc93e0946dc7c5a2a64a25a97dbae551b3ffbec))
+* **forms:** make `RadioControlRegistry` class tree-shakable ([#41126](https://github.com/angular/angular/issues/41126)) ([6414590](https://github.com/angular/angular/commit/6414590f8d09d5d33a9022b023e025fc1452f5b5))
+* **forms:** make built-in ControlValueAccessors more tree-shakable ([#41146](https://github.com/angular/angular/issues/41146)) ([#41197](https://github.com/angular/angular/issues/41197)) ([5908eda](https://github.com/angular/angular/commit/5908eda7c11ebff169d07598e54f62d7e35f6580))
+
+
+
 # 12.0.0-next.4 (2021-03-10)
 
 
