@@ -2,7 +2,7 @@
 
 This topic describes how to submit pull requests to the Angular repository using GitHub's user interface. If you are unfamiliar with [Git](https://git-scm.com/), you might find this process easier for making changes.
 
-<div class="alert is-warning">
+<div class="alert is-important">
 
    Using the GitHub user interface for updates is recommended only for small changes to one file at a time, such as fixing typos, [updating the review date](guide/reviewing-content) or [updating search keywords](guide/updating-search-keywords).
 
