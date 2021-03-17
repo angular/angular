@@ -53,6 +53,7 @@ export declare class MatBottomSheetContainer extends BasePortalOutlet implements
 }
 
 export declare class MatBottomSheetModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatBottomSheetModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatBottomSheetModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatBottomSheetModule, [typeof i1.MatBottomSheetContainer], [typeof i2.OverlayModule, typeof i3.MatCommonModule, typeof i4.PortalModule], [typeof i1.MatBottomSheetContainer, typeof i3.MatCommonModule]>;
 }

@@ -24,6 +24,7 @@ export declare class Platform {
 }
 
 export declare class PlatformModule {
+    static ɵfac: i0.ɵɵFactoryDef<PlatformModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<PlatformModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<PlatformModule, never, never, never>;
 }

@@ -91,6 +91,7 @@ export declare class PortalInjector implements Injector {
 }
 
 export declare class PortalModule {
+    static ɵfac: i0.ɵɵFactoryDef<PortalModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<PortalModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<PortalModule, [typeof CdkPortal, typeof CdkPortalOutlet, typeof TemplatePortalDirective, typeof PortalHostDirective], never, [typeof CdkPortal, typeof CdkPortalOutlet, typeof TemplatePortalDirective, typeof PortalHostDirective]>;
 }

@@ -26,6 +26,7 @@ export declare class Clipboard {
 }
 
 export declare class ClipboardModule {
+    static ɵfac: i0.ɵɵFactoryDef<ClipboardModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<ClipboardModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<ClipboardModule, [typeof i1.CdkCopyToClipboard], never, [typeof i1.CdkCopyToClipboard]>;
 }

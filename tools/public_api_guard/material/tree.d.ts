@@ -47,6 +47,7 @@ export declare class MatTreeFlattener<T, F, K = F> {
 }
 
 export declare class MatTreeModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatTreeModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatTreeModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatTreeModule, [typeof i1.MatNestedTreeNode, typeof i1.MatTreeNodeDef, typeof i2.MatTreeNodePadding, typeof i3.MatTreeNodeToggle, typeof i4.MatTree, typeof i1.MatTreeNode, typeof i5.MatTreeNodeOutlet], [typeof i6.CdkTreeModule, typeof i7.MatCommonModule], [typeof i7.MatCommonModule, typeof i1.MatNestedTreeNode, typeof i1.MatTreeNodeDef, typeof i2.MatTreeNodePadding, typeof i3.MatTreeNodeToggle, typeof i4.MatTree, typeof i1.MatTreeNode, typeof i5.MatTreeNodeOutlet]>;
 }

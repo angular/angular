@@ -89,6 +89,7 @@ export declare class CdkStepper implements AfterContentInit, AfterViewInit, OnDe
 }
 
 export declare class CdkStepperModule {
+    static ɵfac: i0.ɵɵFactoryDef<CdkStepperModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<CdkStepperModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<CdkStepperModule, [typeof i1.CdkStep, typeof i1.CdkStepper, typeof i2.CdkStepHeader, typeof i3.CdkStepLabel, typeof i4.CdkStepperNext, typeof i4.CdkStepperPrevious], [typeof i5.BidiModule], [typeof i1.CdkStep, typeof i1.CdkStepper, typeof i2.CdkStepHeader, typeof i3.CdkStepLabel, typeof i4.CdkStepperNext, typeof i4.CdkStepperPrevious]>;
 }

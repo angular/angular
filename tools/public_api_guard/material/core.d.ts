@@ -167,6 +167,7 @@ export declare const MAT_RIPPLE_GLOBAL_OPTIONS: InjectionToken<RippleGlobalOptio
 export declare class MatCommonModule {
     protected _document: Document;
     constructor(highContrastModeDetector: HighContrastModeDetector, sanityChecks: any, document: any);
+    static ɵfac: i0.ɵɵFactoryDef<MatCommonModule, [null, { optional: true; }, null]>;
     static ɵinj: i0.ɵɵInjectorDef<MatCommonModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatCommonModule, never, [typeof i1.BidiModule], [typeof i1.BidiModule]>;
 }
@@ -192,11 +193,13 @@ export declare class MatLine {
 }
 
 export declare class MatLineModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatLineModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatLineModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatLineModule, [typeof MatLine], [typeof i1.MatCommonModule], [typeof MatLine, typeof i1.MatCommonModule]>;
 }
 
 export declare class MatNativeDateModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatNativeDateModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatNativeDateModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatNativeDateModule, never, [typeof NativeDateModule], never>;
 }
@@ -213,6 +216,7 @@ export declare class MatOption extends _MatOptionBase {
 }
 
 export declare class MatOptionModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatOptionModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatOptionModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatOptionModule, [typeof i1.MatOption, typeof i2.MatOptgroup], [typeof i3.MatRippleModule, typeof i4.CommonModule, typeof i5.MatCommonModule, typeof i6.MatPseudoCheckboxModule], [typeof i1.MatOption, typeof i2.MatOptgroup]>;
 }
@@ -241,6 +245,7 @@ export declare class MatPseudoCheckbox {
 }
 
 export declare class MatPseudoCheckboxModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatPseudoCheckboxModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatPseudoCheckboxModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatPseudoCheckboxModule, [typeof i1.MatPseudoCheckbox], [typeof i2.MatCommonModule], [typeof i1.MatPseudoCheckbox]>;
 }
@@ -270,6 +275,7 @@ export declare class MatRipple implements OnInit, OnDestroy, RippleTarget {
 }
 
 export declare class MatRippleModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatRippleModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatRippleModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatRippleModule, [typeof i1.MatRipple], [typeof i2.MatCommonModule, typeof i3.PlatformModule], [typeof i1.MatRipple, typeof i2.MatCommonModule]>;
 }
@@ -317,6 +323,7 @@ export declare class NativeDateAdapter extends DateAdapter<Date> {
 }
 
 export declare class NativeDateModule {
+    static ɵfac: i0.ɵɵFactoryDef<NativeDateModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<NativeDateModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<NativeDateModule, never, [typeof i1.PlatformModule], never>;
 }

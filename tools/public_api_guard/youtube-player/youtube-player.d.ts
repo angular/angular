@@ -48,6 +48,7 @@ export declare class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
 }
 
 export declare class YouTubePlayerModule {
+    static ɵfac: i0.ɵɵFactoryDef<YouTubePlayerModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<YouTubePlayerModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<YouTubePlayerModule, [typeof i1.YouTubePlayer], never, [typeof i1.YouTubePlayer]>;
 }

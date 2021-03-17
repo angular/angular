@@ -70,6 +70,7 @@ export declare class CdkScrollable implements OnInit, OnDestroy {
 }
 
 export declare class CdkScrollableModule {
+    static ɵfac: i0.ɵɵFactoryDef<CdkScrollableModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<CdkScrollableModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<CdkScrollableModule, [typeof i1.CdkScrollable], never, [typeof i1.CdkScrollable]>;
 }
@@ -181,6 +182,7 @@ export declare class ScrollDispatcher implements OnDestroy {
 }
 
 export declare class ScrollingModule {
+    static ɵfac: i0.ɵɵFactoryDef<ScrollingModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<ScrollingModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<ScrollingModule, [typeof i2.CdkFixedSizeVirtualScroll, typeof i3.CdkVirtualForOf, typeof i4.CdkVirtualScrollViewport], [typeof i5.BidiModule, typeof i6.PlatformModule, typeof CdkScrollableModule], [typeof i5.BidiModule, typeof CdkScrollableModule, typeof i2.CdkFixedSizeVirtualScroll, typeof i3.CdkVirtualForOf, typeof i4.CdkVirtualScrollViewport]>;
 }

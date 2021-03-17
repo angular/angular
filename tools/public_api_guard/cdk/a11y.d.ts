@@ -1,5 +1,6 @@
 export declare class A11yModule {
     constructor(highContrastModeDetector: HighContrastModeDetector);
+    static ɵfac: i0.ɵɵFactoryDef<A11yModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<A11yModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<A11yModule, [typeof i1.CdkAriaLive, typeof i2.CdkTrapFocus, typeof i3.CdkMonitorFocus], [typeof i4.PlatformModule, typeof i5.ObserversModule], [typeof i1.CdkAriaLive, typeof i2.CdkTrapFocus, typeof i3.CdkMonitorFocus]>;
 }

@@ -1,4 +1,5 @@
 export declare class BidiModule {
+    static ɵfac: i0.ɵɵFactoryDef<BidiModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<BidiModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<BidiModule, [typeof i1.Dir], never, [typeof i1.Dir]>;
 }

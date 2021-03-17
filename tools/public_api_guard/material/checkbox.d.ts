@@ -1,4 +1,5 @@
 export declare class _MatCheckboxRequiredValidatorModule {
+    static ɵfac: i0.ɵɵFactoryDef<_MatCheckboxRequiredValidatorModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<_MatCheckboxRequiredValidatorModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<_MatCheckboxRequiredValidatorModule, [typeof i1.MatCheckboxRequiredValidator], never, [typeof i1.MatCheckboxRequiredValidator]>;
 }
@@ -71,6 +72,7 @@ export interface MatCheckboxDefaultOptions {
 }
 
 export declare class MatCheckboxModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatCheckboxModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatCheckboxModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatCheckboxModule, [typeof i2.MatCheckbox], [typeof i3.MatRippleModule, typeof i3.MatCommonModule, typeof i4.ObserversModule, typeof _MatCheckboxRequiredValidatorModule], [typeof i2.MatCheckbox, typeof i3.MatCommonModule, typeof _MatCheckboxRequiredValidatorModule]>;
 }

@@ -257,6 +257,7 @@ export interface MatTabsConfig {
 }
 
 export declare class MatTabsModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatTabsModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatTabsModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatTabsModule, [typeof i1.MatTabGroup, typeof i2.MatTabLabel, typeof i3.MatTab, typeof i4.MatInkBar, typeof i5.MatTabLabelWrapper, typeof i6.MatTabNav, typeof i6.MatTabLink, typeof i7.MatTabBody, typeof i7.MatTabBodyPortal, typeof i8.MatTabHeader, typeof i9.MatTabContent], [typeof i10.CommonModule, typeof i11.MatCommonModule, typeof i12.PortalModule, typeof i11.MatRippleModule, typeof i13.ObserversModule, typeof i14.A11yModule], [typeof i11.MatCommonModule, typeof i1.MatTabGroup, typeof i2.MatTabLabel, typeof i3.MatTab, typeof i6.MatTabNav, typeof i6.MatTabLink, typeof i9.MatTabContent]>;
 }

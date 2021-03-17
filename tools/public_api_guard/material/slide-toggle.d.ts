@@ -1,4 +1,5 @@
 export declare class _MatSlideToggleRequiredValidatorModule {
+    static ɵfac: i0.ɵɵFactoryDef<_MatSlideToggleRequiredValidatorModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<_MatSlideToggleRequiredValidatorModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<_MatSlideToggleRequiredValidatorModule, [typeof i1.MatSlideToggleRequiredValidator], never, [typeof i1.MatSlideToggleRequiredValidator]>;
 }
@@ -62,6 +63,7 @@ export interface MatSlideToggleDefaultOptions {
 }
 
 export declare class MatSlideToggleModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatSlideToggleModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatSlideToggleModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSlideToggleModule, [typeof i2.MatSlideToggle], [typeof _MatSlideToggleRequiredValidatorModule, typeof i3.MatRippleModule, typeof i3.MatCommonModule, typeof i4.ObserversModule], [typeof _MatSlideToggleRequiredValidatorModule, typeof i2.MatSlideToggle, typeof i3.MatCommonModule]>;
 }

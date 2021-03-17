@@ -81,6 +81,7 @@ export declare class MatPaginatorIntl {
 }
 
 export declare class MatPaginatorModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatPaginatorModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatPaginatorModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatPaginatorModule, [typeof i1.MatPaginator], [typeof i2.CommonModule, typeof i3.MatButtonModule, typeof i4.MatSelectModule, typeof i5.MatTooltipModule, typeof i6.MatCommonModule], [typeof i1.MatPaginator]>;
 }

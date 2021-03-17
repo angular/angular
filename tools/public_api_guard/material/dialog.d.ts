@@ -138,6 +138,7 @@ export declare class MatDialogContent {
 }
 
 export declare class MatDialogModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatDialogModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatDialogModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatDialogModule, [typeof i1.MatDialogContainer, typeof i2.MatDialogClose, typeof i2.MatDialogTitle, typeof i2.MatDialogActions, typeof i2.MatDialogContent], [typeof i3.OverlayModule, typeof i4.PortalModule, typeof i5.MatCommonModule], [typeof i1.MatDialogContainer, typeof i2.MatDialogClose, typeof i2.MatDialogTitle, typeof i2.MatDialogContent, typeof i2.MatDialogActions, typeof i5.MatCommonModule]>;
 }

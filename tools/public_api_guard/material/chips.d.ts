@@ -6,7 +6,7 @@ export declare const MAT_CHIP_TRAILING_ICON: InjectionToken<MatChipTrailingIcon>
 
 export declare const MAT_CHIPS_DEFAULT_OPTIONS: InjectionToken<MatChipsDefaultOptions>;
 
-export declare class MatChip extends _MatChipMixinBase implements FocusableOption, OnDestroy, CanColor, CanDisableRipple, RippleTarget, HasTabIndex {
+export declare class MatChip extends _MatChipMixinBase implements FocusableOption, OnDestroy, CanColor, CanDisableRipple, RippleTarget, HasTabIndex, CanDisable {
     _animationsDisabled: boolean;
     _chipListDisabled: boolean;
     _chipListMultiple: boolean;
@@ -219,6 +219,7 @@ export declare class MatChipSelectionChange {
 }
 
 export declare class MatChipsModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatChipsModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatChipsModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatChipsModule, [typeof i1.MatChipList, typeof i2.MatChip, typeof i3.MatChipInput, typeof i2.MatChipRemove, typeof i2.MatChipAvatar, typeof i2.MatChipTrailingIcon], [typeof i4.MatCommonModule], [typeof i1.MatChipList, typeof i2.MatChip, typeof i3.MatChipInput, typeof i2.MatChipRemove, typeof i2.MatChipAvatar, typeof i2.MatChipTrailingIcon]>;
 }

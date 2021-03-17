@@ -21,6 +21,7 @@ export declare class MatGridList implements MatGridListBase, OnInit, AfterConten
 }
 
 export declare class MatGridListModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatGridListModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatGridListModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatGridListModule, [typeof i1.MatGridList, typeof i2.MatGridTile, typeof i2.MatGridTileText, typeof i2.MatGridTileHeaderCssMatStyler, typeof i2.MatGridTileFooterCssMatStyler, typeof i2.MatGridAvatarCssMatStyler], [typeof i3.MatLineModule, typeof i3.MatCommonModule], [typeof i1.MatGridList, typeof i2.MatGridTile, typeof i2.MatGridTileText, typeof i3.MatLineModule, typeof i3.MatCommonModule, typeof i2.MatGridTileHeaderCssMatStyler, typeof i2.MatGridTileFooterCssMatStyler, typeof i2.MatGridAvatarCssMatStyler]>;
 }

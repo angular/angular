@@ -44,6 +44,7 @@ export declare class MatListItem extends _MatListItemMixinBase implements AfterC
 }
 
 export declare class MatListModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatListModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatListModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatListModule, [typeof i1.MatList, typeof i1.MatNavList, typeof i1.MatListItem, typeof i1.MatListAvatarCssMatStyler, typeof i1.MatListIconCssMatStyler, typeof i1.MatListSubheaderCssMatStyler, typeof i2.MatSelectionList, typeof i2.MatListOption], [typeof i3.MatLineModule, typeof i3.MatRippleModule, typeof i3.MatCommonModule, typeof i3.MatPseudoCheckboxModule, typeof i4.CommonModule], [typeof i1.MatList, typeof i1.MatNavList, typeof i1.MatListItem, typeof i1.MatListAvatarCssMatStyler, typeof i3.MatLineModule, typeof i3.MatCommonModule, typeof i1.MatListIconCssMatStyler, typeof i1.MatListSubheaderCssMatStyler, typeof i3.MatPseudoCheckboxModule, typeof i2.MatSelectionList, typeof i2.MatListOption, typeof i5.MatDividerModule]>;
 }

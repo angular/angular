@@ -241,6 +241,7 @@ export declare class OverlayKeyboardDispatcher extends BaseOverlayDispatcher {
 }
 
 export declare class OverlayModule {
+    static ɵfac: i0.ɵɵFactoryDef<OverlayModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<OverlayModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<OverlayModule, [typeof i1.CdkConnectedOverlay, typeof i1.CdkOverlayOrigin], [typeof i2.BidiModule, typeof i3.PortalModule, typeof i4.ScrollingModule], [typeof i1.CdkConnectedOverlay, typeof i1.CdkOverlayOrigin, typeof i4.ScrollingModule]>;
 }

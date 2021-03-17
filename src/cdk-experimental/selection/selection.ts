@@ -138,7 +138,7 @@ export class CdkSelection<T> implements OnInit, AfterContentChecked, CollectionV
 
   /** Toggles selection for a given value. `index` is required if `trackBy` is used. */
   toggleSelection(value: T, index?: number) {
-    if (this.trackByFn && index == null && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    if (!!this.trackByFn && index == null && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('CdkSelection: index required when trackBy is used');
     }
 
@@ -167,7 +167,7 @@ export class CdkSelection<T> implements OnInit, AfterContentChecked, CollectionV
 
   /** Checks whether a value is selected. `index` is required if `trackBy` is used. */
   isSelected(value: T, index?: number) {
-    if (this.trackByFn && index == null && (typeof ngDevMode === 'undefined' || ngDevMode)) {
+    if (!!this.trackByFn && index == null && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('CdkSelection: index required when trackBy is used');
     }
 

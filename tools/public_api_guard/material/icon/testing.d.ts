@@ -40,6 +40,7 @@ export declare class MatIconHarness extends ComponentHarness {
 }
 
 export declare class MatIconTestingModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatIconTestingModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatIconTestingModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatIconTestingModule, never, never, never>;
 }

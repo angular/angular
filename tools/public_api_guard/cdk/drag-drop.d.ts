@@ -228,6 +228,7 @@ export interface DragDropConfig extends Partial<DragRefConfig> {
 }
 
 export declare class DragDropModule {
+    static ɵfac: i0.ɵɵFactoryDef<DragDropModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<DragDropModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<DragDropModule, [typeof i1.CdkDropList, typeof i2.CdkDropListGroup, typeof i3.CdkDrag, typeof i4.CdkDragHandle, typeof i5.CdkDragPreview, typeof i6.CdkDragPlaceholder], never, [typeof i7.CdkScrollableModule, typeof i1.CdkDropList, typeof i2.CdkDropListGroup, typeof i3.CdkDrag, typeof i4.CdkDragHandle, typeof i5.CdkDragPreview, typeof i6.CdkDragPlaceholder]>;
 }

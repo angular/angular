@@ -10,6 +10,7 @@ export declare class MatDivider {
 }
 
 export declare class MatDividerModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatDividerModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatDividerModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatDividerModule, [typeof i1.MatDivider], [typeof i2.MatCommonModule], [typeof i1.MatDivider, typeof i2.MatCommonModule]>;
 }

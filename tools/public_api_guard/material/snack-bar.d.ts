@@ -76,6 +76,7 @@ export interface MatSnackBarDismiss {
 export declare type MatSnackBarHorizontalPosition = 'start' | 'center' | 'end' | 'left' | 'right';
 
 export declare class MatSnackBarModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatSnackBarModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatSnackBarModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSnackBarModule, [typeof i1.MatSnackBarContainer, typeof i2.SimpleSnackBar], [typeof i3.OverlayModule, typeof i4.PortalModule, typeof i5.CommonModule, typeof i6.MatButtonModule, typeof i7.MatCommonModule], [typeof i1.MatSnackBarContainer, typeof i7.MatCommonModule]>;
 }

@@ -32,6 +32,7 @@ import {
 import {
   CanColor,
   CanColorCtor,
+  CanDisable,
   CanDisableRipple,
   CanDisableRippleCtor,
   HasTabIndex,
@@ -87,8 +88,7 @@ export class MatChipCssInternalOnly { }
  * Boilerplate for applying mixins to MatChip.
  * @docs-private
  */
-abstract class MatChipBase {
-  abstract disabled: boolean;
+class MatChipBase {
   constructor(public _elementRef: ElementRef) {}
 }
 
@@ -126,7 +126,7 @@ const _MatChipMixinBase:
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatChip extends _MatChipMixinBase implements AfterContentInit, AfterViewInit,
-  CanColor, CanDisableRipple, HasTabIndex, OnDestroy {
+  CanColor, CanDisableRipple, CanDisable, HasTabIndex, OnDestroy {
   /** The ripple animation configuration to use for the chip. */
   readonly _rippleAnimation: RippleAnimationConfig = RIPPLE_ANIMATION_CONFIG;
 

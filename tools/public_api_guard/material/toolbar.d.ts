@@ -7,6 +7,7 @@ export declare class MatToolbar extends _MatToolbarMixinBase implements CanColor
 }
 
 export declare class MatToolbarModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatToolbarModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatToolbarModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatToolbarModule, [typeof i1.MatToolbar, typeof i1.MatToolbarRow], [typeof i2.MatCommonModule], [typeof i1.MatToolbar, typeof i1.MatToolbarRow, typeof i2.MatCommonModule]>;
 }

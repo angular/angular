@@ -82,6 +82,7 @@ export declare class MatSliderChange {
 }
 
 export declare class MatSliderModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatSliderModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatSliderModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSliderModule, [typeof i1.MatSlider], [typeof i2.CommonModule, typeof i3.MatCommonModule], [typeof i1.MatSlider, typeof i3.MatCommonModule]>;
 }

@@ -53,6 +53,7 @@ export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatM
 }
 
 export declare class _MatMenuDirectivesModule {
+    static ɵfac: i0.ɵɵFactoryDef<_MatMenuDirectivesModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<_MatMenuDirectivesModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<_MatMenuDirectivesModule, [typeof i1.MatMenuTrigger, typeof i2.MatMenuContent], never, [typeof i1.MatMenuTrigger, typeof i2.MatMenuContent, typeof i3.MatCommonModule]>;
 }
@@ -121,6 +122,7 @@ export declare class MatMenuItem extends _MatMenuItemMixinBase implements Focusa
 }
 
 export declare class MatMenuModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatMenuModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatMenuModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatMenuModule, [typeof i4.MatMenu, typeof i5.MatMenuItem], [typeof i6.CommonModule, typeof i3.MatCommonModule, typeof i3.MatRippleModule, typeof i7.OverlayModule, typeof _MatMenuDirectivesModule], [typeof i8.CdkScrollableModule, typeof i3.MatCommonModule, typeof i4.MatMenu, typeof i5.MatMenuItem, typeof _MatMenuDirectivesModule]>;
 }

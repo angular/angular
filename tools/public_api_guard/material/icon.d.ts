@@ -51,6 +51,7 @@ export interface MatIconLocation {
 }
 
 export declare class MatIconModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatIconModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatIconModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatIconModule, [typeof i1.MatIcon], [typeof i2.MatCommonModule], [typeof i1.MatIcon, typeof i2.MatCommonModule]>;
 }

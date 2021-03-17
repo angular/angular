@@ -63,6 +63,7 @@ export declare class MatInput extends _MatInputMixinBase implements MatFormField
 }
 
 export declare class MatInputModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatInputModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatInputModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatInputModule, [typeof i1.MatInput, typeof i2.MatTextareaAutosize], [typeof i3.TextFieldModule, typeof i4.MatFormFieldModule, typeof i5.MatCommonModule], [typeof i3.TextFieldModule, typeof i4.MatFormFieldModule, typeof i1.MatInput, typeof i2.MatTextareaAutosize]>;
 }

@@ -34,6 +34,7 @@ export interface MatProgressSpinnerDefaultOptions {
 }
 
 export declare class MatProgressSpinnerModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatProgressSpinnerModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatProgressSpinnerModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatProgressSpinnerModule, [typeof i1.MatProgressSpinner, typeof i1.MatSpinner], [typeof i2.MatCommonModule, typeof i3.CommonModule], [typeof i1.MatProgressSpinner, typeof i1.MatSpinner, typeof i2.MatCommonModule]>;
 }

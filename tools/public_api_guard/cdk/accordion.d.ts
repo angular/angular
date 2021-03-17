@@ -37,6 +37,7 @@ export declare class CdkAccordionItem implements OnDestroy {
 }
 
 export declare class CdkAccordionModule {
+    static ɵfac: i0.ɵɵFactoryDef<CdkAccordionModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<CdkAccordionModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<CdkAccordionModule, [typeof i1.CdkAccordion, typeof i2.CdkAccordionItem], never, [typeof i1.CdkAccordion, typeof i2.CdkAccordionItem]>;
 }

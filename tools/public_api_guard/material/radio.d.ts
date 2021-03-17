@@ -108,6 +108,7 @@ export declare class MatRadioGroup extends _MatRadioGroupBase<MatRadioButton> {
 }
 
 export declare class MatRadioModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatRadioModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatRadioModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatRadioModule, [typeof i1.MatRadioGroup, typeof i1.MatRadioButton], [typeof i2.MatRippleModule, typeof i2.MatCommonModule], [typeof i1.MatRadioGroup, typeof i1.MatRadioButton, typeof i2.MatCommonModule]>;
 }

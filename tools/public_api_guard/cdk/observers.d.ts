@@ -29,6 +29,7 @@ export declare class MutationObserverFactory {
 }
 
 export declare class ObserversModule {
+    static ɵfac: i0.ɵɵFactoryDef<ObserversModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<ObserversModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<ObserversModule, [typeof CdkObserveContent], never, [typeof CdkObserveContent]>;
 }

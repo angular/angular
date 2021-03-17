@@ -47,6 +47,7 @@ export declare class MatCardMdImage {
 }
 
 export declare class MatCardModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatCardModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatCardModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatCardModule, [typeof i1.MatCard, typeof i1.MatCardHeader, typeof i1.MatCardTitleGroup, typeof i1.MatCardContent, typeof i1.MatCardTitle, typeof i1.MatCardSubtitle, typeof i1.MatCardActions, typeof i1.MatCardFooter, typeof i1.MatCardSmImage, typeof i1.MatCardMdImage, typeof i1.MatCardLgImage, typeof i1.MatCardImage, typeof i1.MatCardXlImage, typeof i1.MatCardAvatar], [typeof i2.MatCommonModule], [typeof i1.MatCard, typeof i1.MatCardHeader, typeof i1.MatCardTitleGroup, typeof i1.MatCardContent, typeof i1.MatCardTitle, typeof i1.MatCardSubtitle, typeof i1.MatCardActions, typeof i1.MatCardFooter, typeof i1.MatCardSmImage, typeof i1.MatCardMdImage, typeof i1.MatCardLgImage, typeof i1.MatCardImage, typeof i1.MatCardXlImage, typeof i1.MatCardAvatar, typeof i2.MatCommonModule]>;
 }

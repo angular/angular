@@ -29,6 +29,7 @@ import {
 import {
   CanColor,
   CanColorCtor,
+  CanDisable,
   CanDisableRipple,
   CanDisableRippleCtor,
   HasTabIndex,
@@ -88,8 +89,7 @@ export const MAT_CHIP_TRAILING_ICON =
 
 // Boilerplate for applying mixins to MatChip.
 /** @docs-private */
-abstract class MatChipBase {
-  abstract disabled: boolean;
+class MatChipBase {
   constructor(public _elementRef: ElementRef) {}
 }
 
@@ -146,7 +146,7 @@ export class MatChipTrailingIcon {}
   },
 })
 export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDestroy, CanColor,
-  CanDisableRipple, RippleTarget, HasTabIndex {
+  CanDisableRipple, RippleTarget, HasTabIndex, CanDisable {
 
   /** Reference to the RippleRenderer for the chip. */
   private _chipRipple: RippleRenderer;

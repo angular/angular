@@ -151,6 +151,7 @@ export interface MatSelectConfig {
 }
 
 export declare class MatSelectModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatSelectModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatSelectModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSelectModule, [typeof i1.MatSelect, typeof i1.MatSelectTrigger], [typeof i2.CommonModule, typeof i3.OverlayModule, typeof i4.MatOptionModule, typeof i4.MatCommonModule], [typeof i5.CdkScrollableModule, typeof i6.MatFormFieldModule, typeof i1.MatSelect, typeof i1.MatSelectTrigger, typeof i4.MatOptionModule, typeof i4.MatCommonModule]>;
 }

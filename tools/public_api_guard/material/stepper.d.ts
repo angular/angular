@@ -116,6 +116,7 @@ export declare class MatStepperIntl {
 }
 
 export declare class MatStepperModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatStepperModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatStepperModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatStepperModule, [typeof i1.MatHorizontalStepper, typeof i1.MatVerticalStepper, typeof i1.MatStep, typeof i2.MatStepLabel, typeof i1.MatStepper, typeof i3.MatStepperNext, typeof i3.MatStepperPrevious, typeof i4.MatStepHeader, typeof i5.MatStepperIcon, typeof i6.MatStepContent], [typeof i7.MatCommonModule, typeof i8.CommonModule, typeof i9.PortalModule, typeof i10.MatButtonModule, typeof i11.CdkStepperModule, typeof i12.MatIconModule, typeof i7.MatRippleModule], [typeof i7.MatCommonModule, typeof i1.MatHorizontalStepper, typeof i1.MatVerticalStepper, typeof i1.MatStep, typeof i2.MatStepLabel, typeof i1.MatStepper, typeof i3.MatStepperNext, typeof i3.MatStepperPrevious, typeof i4.MatStepHeader, typeof i5.MatStepperIcon, typeof i6.MatStepContent]>;
 }

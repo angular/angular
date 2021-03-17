@@ -35,6 +35,7 @@ export interface MatProgressBarLocation {
 }
 
 export declare class MatProgressBarModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatProgressBarModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatProgressBarModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatProgressBarModule, [typeof i1.MatProgressBar], [typeof i2.CommonModule, typeof i3.MatCommonModule], [typeof i1.MatProgressBar, typeof i3.MatCommonModule]>;
 }

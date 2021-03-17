@@ -32,6 +32,7 @@ export interface BreakpointState {
 }
 
 export declare class LayoutModule {
+    static ɵfac: i0.ɵɵFactoryDef<LayoutModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<LayoutModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<LayoutModule, never, never, never>;
 }

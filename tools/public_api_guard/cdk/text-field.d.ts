@@ -49,6 +49,7 @@ export declare class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDe
 }
 
 export declare class TextFieldModule {
+    static ɵfac: i0.ɵɵFactoryDef<TextFieldModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<TextFieldModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<TextFieldModule, [typeof i1.CdkAutofill, typeof i2.CdkTextareaAutosize], [typeof i3.PlatformModule], [typeof i1.CdkAutofill, typeof i2.CdkTextareaAutosize]>;
 }

@@ -88,6 +88,7 @@ export declare class MatButtonToggleGroup implements ControlValueAccessor, OnIni
 }
 
 export declare class MatButtonToggleModule {
+    static ɵfac: i0.ɵɵFactoryDef<MatButtonToggleModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatButtonToggleModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatButtonToggleModule, [typeof i1.MatButtonToggleGroup, typeof i1.MatButtonToggle], [typeof i2.MatCommonModule, typeof i2.MatRippleModule], [typeof i2.MatCommonModule, typeof i1.MatButtonToggleGroup, typeof i1.MatButtonToggle]>;
 }
