@@ -57,7 +57,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
   constructor(
       private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler,
       private readonly component: ts.ClassDeclaration, private readonly node: N,
-      private readonly targetDetails: TemplateTarget, private readonly inlineTemplate: boolean) {}
+      private readonly targetDetails: TemplateTarget) {}
 
   /**
    * Analogue for `ts.LanguageService.getCompletionsAtPosition`.
@@ -371,11 +371,9 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     const replacementSpan: ts.TextSpan = {start, length};
 
     let potentialTags = Array.from(templateTypeChecker.getPotentialElementTags(this.component));
-    if (!this.inlineTemplate) {
-      // If we are in an external template, don't provide non-Angular tags (directive === null)
-      // because we expect other extensions (i.e. Emmet) to provide those for HTML files.
-      potentialTags = potentialTags.filter(([_, directive]) => directive !== null);
-    }
+    // Don't provide non-Angular tags (directive === null) because we expect other extensions (i.e.
+    // Emmet) to provide those for HTML files.
+    potentialTags = potentialTags.filter(([_, directive]) => directive !== null);
     const entries: ts.CompletionEntry[] = potentialTags.map(([tag, directive]) => ({
                                                               kind: tagCompletionKind(directive),
                                                               name: tag,
@@ -462,7 +460,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     }
 
     const attrTable = buildAttributeCompletionTable(
-        this.component, element, this.compiler.getTemplateTypeChecker(), this.inlineTemplate);
+        this.component, element, this.compiler.getTemplateTypeChecker());
 
     let entries: ts.CompletionEntry[] = [];
 
@@ -536,7 +534,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     }
 
     const attrTable = buildAttributeCompletionTable(
-        this.component, element, this.compiler.getTemplateTypeChecker(), this.inlineTemplate);
+        this.component, element, this.compiler.getTemplateTypeChecker());
 
     if (!attrTable.has(name)) {
       return undefined;
@@ -603,7 +601,7 @@ export class CompletionBuilder<N extends TmplAstNode|AST> {
     }
 
     const attrTable = buildAttributeCompletionTable(
-        this.component, element, this.compiler.getTemplateTypeChecker(), this.inlineTemplate);
+        this.component, element, this.compiler.getTemplateTypeChecker());
 
     if (!attrTable.has(name)) {
       return undefined;

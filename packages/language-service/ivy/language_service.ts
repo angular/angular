@@ -211,8 +211,7 @@ export class LanguageService {
         positionDetails.context.nodes[0] :
         positionDetails.context.node;
     return new CompletionBuilder(
-        this.tsLS, compiler, templateInfo.component, node, positionDetails,
-        isTypeScriptFile(fileName));
+        this.tsLS, compiler, templateInfo.component, node, positionDetails);
   }
 
   getCompletionsAtPosition(
