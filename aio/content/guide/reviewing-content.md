@@ -31,9 +31,9 @@ You can review a topic using either the GitHub user interface or in an editor on
 
 1. Read through the topic.
 
-1. If the topic requires an update, either [file an issue](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue) that describes the update required, or [create a pull request](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue) with the update.
+1. If the topic requires an update, either [file an issue](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue) that describes the update required, or [create a pull request](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-a-pull-request-pr) with the update.
 
-1. Update the `@reviewed` tag, either through the [GitHub user interface](guide/updating-content-github-ui) or through Angular's [standard pull request process](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue).
+1. Update the `@reviewed` tag, either through the [GitHub user interface](guide/updating-content-github-ui) or through Angular's [standard pull request process](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-a-pull-request-pr).
 
 {@a review-criteria}
 ### Review criteria
