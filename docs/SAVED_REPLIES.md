@@ -34,7 +34,7 @@ Thanks for reporting this issue. However this issue is a duplicate of an existin
 
 ## Angular: Insufficient Information Provided (v2)
 ```
-Thanks for reporting this issue. However, you didn't provide sufficient information for us to understand and reproduce the problem. Please check out [our submission guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue) to understand why we can't act on issues that are lacking important information.
+Thanks for reporting this issue. However, you didn't provide sufficient information for us to understand and reproduce the problem. Please check out [our submission guidelines](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#submit-issue) to understand why we can't act on issues that are lacking important information.
 
 If the problem still exists in your application, please [open a new issue](https://github.com/angular/angular/issues/new/choose) and follow the instructions in the issue template.
 
@@ -69,5 +69,5 @@ If the problem still exists in your application, please [open a new issue](https
 ```
 Hello, we reviewed this issue and determined that it doesn't fall into the bug report or feature request category. This issue tracker is not suitable for support requests, please repost your issue on [StackOverflow](https://stackoverflow.com/) using tag `angular`.
 
-If you are wondering why we don't resolve support issues via the issue tracker, please [check out this explanation](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-got-a-question-or-problem).
+If you are wondering why we don't resolve support issues via the issue tracker, please [check out this explanation](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question).
 ```
