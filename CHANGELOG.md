@@ -1,3 +1,30 @@
+# 12.0.0-next.3 "hollandaise-holiday" (2021-03-17)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **progress-bar:** adjust buffer colors ([#22164](https://github.com/angular/components/issues/22164)) ([94d585080690559e9b6cfa6af5ed5578d2e0c3bd](https://github.com/angular/components/commit/94d585080690559e9b6cfa6af5ed5578d2e0c3bd)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-checkbox:** fix mdc function name ([#22198](https://github.com/angular/components/issues/22198)) ([85b5df6389f141f76b9b331c9d16c071f0a3d153](https://github.com/angular/components/commit/85b5df6389f141f76b9b331c9d16c071f0a3d153)) |
+| bug fix |  **mdc-core:** fix broken list option style ([#22218](https://github.com/angular/components/issues/22218)) ([4a943f1f98caabe6a35956a61aefe09c24c12477](https://github.com/angular/components/commit/4a943f1f98caabe6a35956a61aefe09c24c12477)) |
+| bug fix |  **mdc-list:** rename mdc-list-* classes ([#22157](https://github.com/angular/components/issues/22157)) ([5524942da35161be0f0b0a9c456a1ed9444e75a1](https://github.com/angular/components/commit/5524942da35161be0f0b0a9c456a1ed9444e75a1)) |
+| bug fix |  **mdc-progress-bar:** improve buffer color ([#22152](https://github.com/angular/components/issues/22152)) ([97f1cccd79a86a70ac5d60ad1f0e4f351770ced0](https://github.com/angular/components/commit/97f1cccd79a86a70ac5d60ad1f0e4f351770ced0)) |
+
+
+## 11.2.5 "fauxfur-falafel" (2021-03-17)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **select:** float label on focus if there's a placeholder ([#19517](https://github.com/angular/components/issues/19517)) ([77b6a6d860b5a0879fe584323bfb50df33d644d0](https://github.com/angular/components/commit/77b6a6d860b5a0879fe584323bfb50df33d644d0)), closes [#19514](https://github.com/angular/components/issues/19514) |
+
+
 # 12.0.0-next.2 "carbon-crab" (2021-03-10)
 
 ### material
