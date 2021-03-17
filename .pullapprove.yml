@@ -1139,16 +1139,12 @@ groups:
           'aio/tools/**',
           'aio/content/images/guide/contributors-guide/**',
           'aio/content/guide/contributors-guide-overview.md',
-          'aio/content/guide/contributors-guide-overview/**',
-          'aio/content/guide/reviewing-content.md',
-          'aio/content/guide/reviewing-content/**',
-          'aio/content/guide/updating-content-github-ui.md',
-          'aio/content/guide/updating-content-github-ui/**',
-          'aio/content/guide/updating-search-keywords.md',
-          'aio/content/guide/updating-search-keywords/**',
           'aio/content/guide/docs-style-guide.md',
           'aio/content/examples/docs-style-guide/**',
           'aio/content/images/guide/docs-style-guide/**',
+          'aio/content/guide/reviewing-content.md',
+          'aio/content/guide/updating-content-github-ui.md',
+          'aio/content/guide/updating-search-keywords.md',
           'aio/content/guide/visual-studio-2015.md'
           ])
     reviewers:
