@@ -7,10 +7,10 @@ Tutorials and guides include downloadable examples to accelerate your projects.
 
 
 <div class="card-container">
-  <a href="guide/what-is-angular" class="docs-card" title="Angular Local Environment Setup">
+  <a href="guide/what-is-angular" class="docs-card" title="Angular Platform Overview">
     <section>What is Angular</section>
     <p>Get a high-level overview of the Angular platform.</p>
-    <p class="card-footer">Local setup</p>
+    <p class="card-footer">Platform overview</p>
   </a>
   <a href="guide/setup-local" class="docs-card" title="Angular Local Environment Setup">
     <section>Get Started</section>
@@ -27,7 +27,7 @@ Tutorials and guides include downloadable examples to accelerate your projects.
     <p>Examine and work with a small ready-made Angular app, without any setup.</p>
     <p class="card-footer">Try it now</p>
   </a>
-  <a href="tutorial" class="docs-card" title="Create an app">
+  <a href="tutorial" class="docs-card" title="Work through a full tutorial">
     <section>Hello World</section>
     <p>Work through a full tutorial to create your first app.</p>
     <p class="card-footer">Tour of Heroes tutorial</p>
