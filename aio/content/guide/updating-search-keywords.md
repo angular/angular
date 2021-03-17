@@ -18,7 +18,7 @@ You can update search keywords for a topic even if you've never contributed to A
 
 1. Decide what search keywords you'd like to add to the topic. For information on how to format keywords, see [Search keywords format](#format).
 
-1. Update the {`@searchKeywords tag`}, either through the [GitHub user interface](guide/updating-content-github-ui) or through Angular's [standard pull request process](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-an-issue).
+1. Update the {`@searchKeywords tag`}, either through the [GitHub user interface](guide/updating-content-github-ui) or through Angular's [standard pull request process](https://github.com/angular/angular/blob/master/CONTRIBUTING.md#-submitting-a-pull-request-pr).
 
   If a topic does not have a {`@searchKeywords`} tag, you can add it to the end of the topic.
 
