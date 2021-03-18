@@ -3080,7 +3080,7 @@ describe('styling', () => {
       one = 'one';
     }
 
-    TestBed.configureTestingModule({declarations: [MyComp]})
+    TestBed.configureTestingModule({declarations: [MyComp]});
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
 
@@ -3106,7 +3106,7 @@ describe('styling', () => {
       margin = '10px';
     }
 
-    TestBed.configureTestingModule({declarations: [MyComp]})
+    TestBed.configureTestingModule({declarations: [MyComp]});
     const fixture = TestBed.createComponent(MyComp);
     fixture.detectChanges();
 
