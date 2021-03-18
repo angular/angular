@@ -1,4 +1,4 @@
-# Reviewing content
+# Reviewing Content
 
 Angular developers work best when they have access to accurate and complete documentation. Keeping existing content up-to-date is an essential part of ensuring that all developers have a great documentation experience.
 
@@ -26,7 +26,8 @@ You can review a topic using either the GitHub user interface or in an editor on
 
 1. Locate the last reviewed date at the bottom of the topic and verify that the topic meets the [review criteria](#review-criteria).
 
-   If the topic does not have a last reviewed date, you are welcome to add it to the topic.
+   If the topic does not have a last reviewed date, you are welcome to add it to the topic. To add a date, use the `YYYY-MM-DD` date format. Example: 
+   `@reviewed 2021-03-23`
 
 1. Read through the topic.
 
