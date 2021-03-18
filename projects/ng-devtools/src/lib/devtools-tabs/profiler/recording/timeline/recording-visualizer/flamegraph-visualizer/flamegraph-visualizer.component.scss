@@ -31,10 +31,15 @@
     ::ng-deep {
       .ngx-fg-rect {
         stroke: #303030;
+        transition: none;
       }
 
       .ngx-fg-label {
         color: #bcc5ce;
+      }
+
+      .ngx-fg-svg-g {
+        transition: none;
       }
     }
   }
