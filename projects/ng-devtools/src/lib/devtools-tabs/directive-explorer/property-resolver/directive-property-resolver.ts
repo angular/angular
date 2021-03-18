@@ -6,7 +6,7 @@ import { getExpandedDirectiveProperties } from './property-expanded-directive-pr
 import { Observable } from 'rxjs';
 import { Property, FlatNode } from './element-property-resolver';
 import { ViewEncapsulation } from '@angular/core';
-import { arrayify } from './arrayify';
+import { arrayifyProps } from './arrayify-props';
 
 export interface DirectiveTreeData {
   dataSource: PropertyDataSource;
@@ -131,7 +131,7 @@ export class DirectivePropertyResolver {
       (descriptor.type === PropType.Object || descriptor.type === PropType.Array) &&
       !(descriptor.value instanceof Observable)
     ) {
-      return arrayify(descriptor.value || {}, prop);
+      return arrayifyProps(descriptor.value || {}, prop);
     } else {
       console.error('Unexpected data type', descriptor, 'in property', prop);
     }
