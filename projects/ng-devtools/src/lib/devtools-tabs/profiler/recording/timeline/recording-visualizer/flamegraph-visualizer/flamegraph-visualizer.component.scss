@@ -6,13 +6,14 @@
   -ms-user-select: text;
   user-select: text;
 
-  ::ng-deep {
-    .level-profile-wrapper {
-      height: 100%;
-      width: 100%;
-      cursor: pointer;
-    }
+  .level-profile-wrapper {
+    height: 100%;
+    width: 100%;
+    cursor: pointer;
+    overflow-y: auto;
+  }
 
+  ::ng-deep {
     .ngx-fg-label {
       color: #000000de;
       font-weight: 500;
