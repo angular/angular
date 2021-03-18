@@ -19,6 +19,10 @@ describe('bootstrap', () => {
   let log: any[] = [];
   let testProviders: any[] = null!;
 
+  @Component({template: 'simple'})
+  class SimpleCmp {
+  }
+
   @Component({selector: 'test-app', template: 'root <router-outlet></router-outlet>'})
   class RootCmp {
     constructor() {
@@ -369,7 +373,35 @@ describe('bootstrap', () => {
     done();
   });
 
-  function waitForNavigationToComplete(router: Router): Promise<any> {
-    return router.events.pipe(filter((e: any) => e instanceof NavigationEnd), first()).toPromise();
-  }
+  it('can schedule a navigation from the NavigationEnd event #37460', async (done) => {
+    @NgModule({
+      imports: [
+        BrowserModule,
+        RouterModule.forRoot(
+            [
+              {path: 'a', component: SimpleCmp},
+              {path: 'b', component: SimpleCmp},
+            ],
+            )
+      ],
+      declarations: [RootCmp, SimpleCmp],
+      bootstrap: [RootCmp],
+      providers: [...testProviders],
+    })
+    class TestModule {
+    }
+
+    const res = await platformBrowserDynamic([]).bootstrapModule(TestModule);
+    const router = res.injector.get(Router);
+    router.events.subscribe(() => {
+      expect(router.getCurrentNavigation()?.id).toBeDefined();
+    });
+    router.events.subscribe(async (e) => {
+      if (e instanceof NavigationEnd && e.url === '/b') {
+        await router.navigate(['a']);
+        done();
+      }
+    });
+    await router.navigateByUrl('/b');
+  });
 });

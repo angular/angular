@@ -1245,7 +1245,6 @@ export class Router {
               .next(new NavigationEnd(
                   t.id, this.serializeUrl(t.extractedUrl), this.serializeUrl(this.currentUrlTree)));
           this.lastSuccessfulNavigation = this.currentNavigation;
-          this.currentNavigation = null;
           t.resolve(true);
         },
         e => {
