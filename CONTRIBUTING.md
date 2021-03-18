@@ -89,9 +89,9 @@ Before you submit your Pull Request (PR) consider the following guidelines:
    We cannot accept code without a signed CLA.
    Make sure you author all contributed Git commits with email address associated with your CLA signature.
 
-4. Fork the angular/angular repo.
+4. [Fork](https://docs.github.com/en/github/getting-started-with-github/fork-a-repo) the angular/angular repo.
 
-5. Make your changes in a new git branch:
+5. In your forked repository, make your changes in a new git branch:
 
      ```shell
      git checkout -b my-fix-branch master
