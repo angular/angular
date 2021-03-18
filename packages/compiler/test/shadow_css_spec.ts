@@ -286,6 +286,17 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
         expect(s(':host-context(div) > :host(.x) > .y {}', 'contenta', 'a-host'))
             .toEqual('div > .x[a-host] > .y[contenta] {}');
       });
+
+      it('should parse multiple rules containing :host-context and :host', () => {
+        const input = `
+            :host-context(outer1) :host(bar) {}
+            :host-context(outer2) :host(foo) {}
+        `;
+        expect(s(input, 'contenta', 'a-host'))
+            .toEqual(
+                'outer1 bar[a-host] {} ' +
+                'outer2 foo[a-host] {}');
+      });
     });
 
     it('should support polyfill-next-selector', () => {
