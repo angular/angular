@@ -2,7 +2,7 @@
 
 // Imports
 const {existsSync, readFileSync, statSync} = require('fs');
-const {join, resolve} = require('path');
+const {basename, join, resolve} = require('path');
 
 // Constants
 const MAX_IMAGE_SIZE = 30 * 1024;  // 30kb
@@ -44,7 +44,7 @@ function _main() {
 
   // Check that there are no images that exceed the size limit.
   const tooLargeImages = expectedImages
-       .filter(path => !EXCLUDE_FROM_SIZE_CHECK.has(path.split('/').pop()))
+       .filter(path => !EXCLUDE_FROM_SIZE_CHECK.has(basename(path)))
        .filter(path => statSync(path).size > MAX_IMAGE_SIZE);
   if (tooLargeImages.length > 0) {
     throw new Error(
