@@ -3069,6 +3069,56 @@ describe('styling', () => {
     expect(fixture.debugElement.nativeElement.innerHTML).toContain('three');
   });
 
+  it('should allow static and bound `class` attribute, but use last occurrence', () => {
+    @Component({
+      template: `
+        <div id="first" class="zero {{one}}" [class]="'two'"></div>
+        <div id="second" [class]="'two'" class="zero {{one}}"></div>
+      `,
+    })
+    class MyComp {
+      one = 'one';
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp]})
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    const first = fixture.nativeElement.querySelector('#first').outerHTML;
+    expect(first).not.toContain('zero');
+    expect(first).not.toContain('one');
+    expect(first).toContain('two');
+
+    const second = fixture.nativeElement.querySelector('#second').outerHTML;
+    expect(second).toContain('zero');
+    expect(second).toContain('one');
+    expect(second).not.toContain('two');
+  });
+
+  it('should allow static and bound `style` attribute, but use last occurrence', () => {
+    @Component({
+      template: `
+        <div id="first" style="margin: {{margin}}" [style]="'padding: 20px;'"></div>
+        <div id="second" [style]="'padding: 20px;'" style="margin: {{margin}}"></div>
+      `,
+    })
+    class MyComp {
+      margin = '10px';
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp]})
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    const first = fixture.nativeElement.querySelector('#first').outerHTML;
+    expect(first).not.toContain('margin');
+    expect(first).toContain('padding');
+
+    const second = fixture.nativeElement.querySelector('#second').outerHTML;
+    expect(second).toContain('margin');
+    expect(second).not.toContain('padding');
+  });
+
   it('should allow to reset style property value defined using [style.prop.px] binding', () => {
     @Component({
       template: '<div [style.left.px]="left"></div>',

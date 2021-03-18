@@ -246,10 +246,6 @@ export class StylingBuilder {
     const entry:
         BoundStylingEntry = {name: property, value, sourceSpan, hasOverrideFlag, suffix: null};
     if (isMapBased) {
-      if (this._classMapInput) {
-        throw new Error(
-            '[class] and [className] bindings cannot be used on the same element simultaneously');
-      }
       this._classMapInput = entry;
     } else {
       (this._singleClassInputs = this._singleClassInputs || []).push(entry);
