@@ -720,6 +720,7 @@ function escapeBlocks(
  */
 function combineHostContextSelectors(contextSelectors: string[], otherSelectors: string): string {
   const hostMarker = _polyfillHostNoCombinator;
+  _polyfillHostRe.lastIndex = 0;  // reset the regex to ensure we get an accurate test
   const otherSelectorsHasHost = _polyfillHostRe.test(otherSelectors);
 
   // If there are no context selectors then just output a host marker
