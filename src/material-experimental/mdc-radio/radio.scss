@@ -25,7 +25,12 @@
 // how IE/Edge treat native radio buttons in high contrast mode. We can't turn the border
 // into a dotted one, because it's too thick which causes the circles to look off.
 @include a11y.high-contrast {
-  .mat-mdc-radio-button.cdk-keyboard-focused .mat-radio-ripple {
-    outline: dotted 1px;
+  .mat-mdc-radio-button:not(.mat-radio-disabled) {
+    &.cdk-keyboard-focused,
+    &.cdk-program-focused {
+      .mat-radio-ripple {
+        outline: solid 3px;
+      }
+    }
   }
 }

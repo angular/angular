@@ -186,6 +186,15 @@ $ripple-radius: 20px;
 }
 
 @include a11y.high-contrast(active, off) {
+  .mat-radio-button:not(.mat-radio-disabled) {
+    &.cdk-keyboard-focused,
+    &.cdk-program-focused {
+      .mat-radio-ripple {
+        outline: solid 3px;
+      }
+    }
+  }
+
   .mat-radio-disabled {
     opacity: 0.5;
   }
