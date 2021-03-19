@@ -316,13 +316,6 @@ $mat-fab-state-target: '.mdc-fab__ripple';
       @include mdc-ripple-theme.states(
           $query: mdc-helpers.$mat-theme-styles-query, $ripple-target: $mat-button-state-target);
 
-      &.mat-unthemed {
-        @include mdc-ripple-theme.states-base-color(mdc-theme-color.$on-surface,
-          $query: mdc-helpers.$mat-theme-styles-query, $ripple-target: $mat-button-state-target);
-        @include mdc-icon-button.ink-color(mdc-theme-color.$on-surface,
-          $query: mdc-helpers.$mat-theme-styles-query);
-      }
-
       &.mat-primary {
         @include mdc-ripple-theme.states-base-color(primary,
           $query: mdc-helpers.$mat-theme-styles-query,
