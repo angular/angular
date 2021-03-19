@@ -1,5 +1,5 @@
 {% macro deprecationTitle(doc) %}
   {%- if doc.breakingChange -%}
-    title="Will be deleted in v{$ doc.breakingChange $}"
+    title="Will be removed in v{$ doc.breakingChange $} or later"
   {%- endif -%}
 {% endmacro %}

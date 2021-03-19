@@ -30,10 +30,10 @@ import {InteractivityChecker} from '../interactivity-checker/interactivity-check
  *
  * This class currently uses a relatively simple approach to focus trapping.
  * It assumes that the tab order is the same as DOM order, which is not necessarily true.
- * Things like `tabIndex > 0`, flex `order`, and shadow roots can cause the two to misalign.
+ * Things like `tabIndex > 0`, flex `order`, and shadow roots can cause the two to be misaligned.
  *
  * @deprecated Use `ConfigurableFocusTrap` instead.
- * @breaking-change for 11.0.0 Remove this class.
+ * @breaking-change 11.0.0
  */
 export class FocusTrap {
   private _startAnchor: HTMLElement | null;
@@ -96,7 +96,7 @@ export class FocusTrap {
   /**
    * Inserts the anchors into the DOM. This is usually done automatically
    * in the constructor, but can be deferred for cases like directives with `*ngIf`.
-   * @returns Whether the focus trap managed to attach successfuly. This may not be the case
+   * @returns Whether the focus trap managed to attach successfully. This may not be the case
    * if the target element isn't currently in the DOM.
    */
   attachAnchors(): boolean {
@@ -355,7 +355,7 @@ export class FocusTrap {
 /**
  * Factory that allows easy instantiation of focus traps.
  * @deprecated Use `ConfigurableFocusTrapFactory` instead.
- * @breaking-change for 11.0.0 Remove this class.
+ * @breaking-change 11.0.0
  */
 @Injectable({providedIn: 'root'})
 export class FocusTrapFactory {
