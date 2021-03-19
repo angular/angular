@@ -4,7 +4,7 @@ This topic demonstrates how to create a structural directive and provides concep
 
 <div class="alert is-helpful">
 
-For the example app that this page describes, see the <live-example></live-example>.
+For the example application that this page describes, see the <live-example></live-example>.
 
 </div>
 

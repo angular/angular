@@ -1,12 +1,33 @@
 # Common Routing Tasks
 
+<<<<<<< HEAD
 This topic describes how to implement many of the common tasks associated with adding the Angular router to your application.
+=======
+In a single-page application, you change what the user sees by showing or hiding portions of the display that correspond to particular components, rather than going out to the server to get a new page.
+As users perform application tasks, they need to move between the different [views](guide/glossary#view "Definition of view") that you have defined.
+
+To handle the navigation from one [view](guide/glossary#view) to the next, you use the Angular **`Router`**.
+The **`Router`** enables navigation by interpreting a browser URL as an instruction to change the view.
+
+To explore a sample application featuring the router's primary features, see the <live-example></live-example>.
+
+## Prerequisites
+
+Before creating a route, you should be familiar with the following:
+
+* [Basics of components](guide/architecture-components)
+* [Basics of templates](guide/glossary#template)
+* An Angular app&mdash;you can generate a basic Angular application using the [Angular CLI](cli).
+
+For an introduction to Angular with a ready-made app, see [Getting Started](start).
+For a more in-depth experience of building an Angular app, see the [Tour of Heroes](tutorial) tutorial. Both guide you through using component classes and templates.
+>>>>>>> 9112c24ec1 (docs: edit to remove jargon)
 
 {@a basics}
-## Generate an app with routing enabled
+## Generate an application with routing enabled
 
-The following command uses the Angular CLI to generate a basic Angular app with an app routing module, called `AppRoutingModule`, which is an NgModule where you can configure your routes.
-The app name in the following example is `routing-app`.
+The following command uses the Angular CLI to generate a basic Angular application with an app routing module, called `AppRoutingModule`, which is an NgModule where you can configure your routes.
+The application name in the following example is `routing-app`.
 
 <code-example language="sh">
   ng new routing-app --routing
@@ -17,7 +38,7 @@ For this example, accept the default of `CSS`.
 
 ### Adding components for routing
 
-To use the Angular router, an app needs to have at least two components so that it can navigate from one to the other. To create a component using the CLI, enter the following at the command line where `first` is the name of your component:
+To use the Angular router, an application needs to have at least two components so that it can navigate from one to the other. To create a component using the CLI, enter the following at the command line where `first` is the name of your component:
 
 <code-example language="sh">
   ng generate component first
@@ -38,7 +59,7 @@ The CLI automatically appends `Component`, so if you were to write `first-compon
 
   #### `<base href>`
 
-  This guide works with a CLI-generated Angular app.
+  This guide works with a CLI-generated Angular application.
   If you are working manually, make sure that you have `<base href="/">` in the `<head>` of your index.html file.
   This assumes that the `app` folder is the application root, and uses `"/"`.
 
@@ -67,7 +88,7 @@ There are three fundamental building blocks to creating a route.
 Import the `AppRoutingModule` into `AppModule` and add it to the `imports` array.
 
 The Angular CLI performs this step for you.
-However, if you are creating an app manually or working with an existing, non-CLI app, verify that the imports and configuration are correct.
+However, if you are creating an application manually or working with an existing, non-CLI application, verify that the imports and configuration are correct.
 The following is the default `AppModule` using the CLI with the `--routing` flag.
 
   <code-example path="router/src/app/app.module.8.ts" header="Default CLI AppModule with routing">
@@ -262,7 +283,7 @@ The `goToItems()` method interprets the destination URI as relative to the activ
 
 ## Accessing query parameters and fragments
 
-Sometimes, a feature of your application requires accessing a part of a route, such as a query parameter or a fragment. The Tour of Heroes app at this stage in the tutorial uses a list view in which you can click on a hero to see details. The router uses an `id` to show the correct hero's details.
+Sometimes, a feature of your application requires accessing a part of a route, such as a query parameter or a fragment. The Tour of Heroes application at this stage in the tutorial uses a list view in which you can click on a hero to see details. The router uses an `id` to show the correct hero's details.
 
 First, import the following members in the component you want to navigate from.
 
@@ -338,14 +359,14 @@ Inject `ActivatedRoute` and `Router` in the constructor of the component class s
 
 ## Lazy loading
 
-You can configure your routes to lazy load modules, which means that Angular only loads modules as needed, rather than loading all modules when the app launches.
-Additionally, you can preload parts of your app in the background to improve the user experience.
+You can configure your routes to lazy load modules, which means that Angular only loads modules as needed, rather than loading all modules when the application launches.
+Additionally, you can preload parts of your application in the background to improve the user experience.
 
 For more information on lazy loading and preloading see the dedicated guide [Lazy loading NgModules](guide/lazy-loading-ngmodules).
 
 ## Preventing unauthorized access
 
-Use route guards to prevent users from navigating to parts of an app without authorization.
+Use route guards to prevent users from navigating to parts of an application without authorization.
 The following route guards are available in Angular:
 
 * [`CanActivate`](api/router/CanActivate)
@@ -408,7 +429,7 @@ You can provide optional route parameters in an object, as in `{ foo: 'foo' }`:
 
 <code-example path="router/src/app/app.component.3.ts" header="src/app/app.component.ts (cc-query-params)" region="cc-query-params"></code-example>
 
-These three examples cover the needs of an app with one level of routing.
+These three examples cover the needs of an application with one level of routing.
 However, with a child router, such as in the crisis center, you create new link array possibilities.
 
 The following minimal `RouterLink` example builds upon a specified [default child route](guide/router-tutorial-toh#a-crisis-center-with-child-routes) for the crisis center.
@@ -489,8 +510,8 @@ You must choose a routing strategy early in the development of you project becau
 Almost all Angular projects should use the default HTML5 style.
 It produces URLs that are easier for users to understand and it preserves the option to do server-side rendering.
 
-Rendering critical pages on the server is a technique that can greatly improve perceived responsiveness when the app first loads.
-An app that would otherwise take ten or more seconds to start could be rendered on the server and delivered to the user's device in less than a second.
+Rendering critical pages on the server is a technique that can greatly improve perceived responsiveness when the application first loads.
+An application that would otherwise take ten or more seconds to start could be rendered on the server and delivered to the user's device in less than a second.
 
 This option is only available if application URLs look like normal web URLs without hashes (#) in the middle.
 
@@ -509,7 +530,7 @@ In the [LocationStrategy and browser URL styles](#browser-url-styles) section, l
 
 </div>
 
-You must add a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a> to the app's `index.html` for `pushState` routing to work.
+You must add a <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a> to the application's `index.html` for `pushState` routing to work.
 The browser uses the `<base href>` value to prefix relative URLs when referencing CSS files, scripts, and images.
 
 Add the `<base>` element just after the  `<head>` tag.
@@ -536,7 +557,7 @@ The preferred way to configure the strategy is to add a <a href="https://develop
 <code-example path="router/src/index.html" header="src/index.html (base-href)" region="base-href"></code-example>
 
 Without that tag, the browser may not be able to load resources
-(images, CSS, scripts) when "deep linking" into the app.
+(images, CSS, scripts) when "deep linking" into the application.
 
 Some developers may not be able to add the `<base>` element, perhaps because they don't have access to `<head>` or the `index.html`.
 

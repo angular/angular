@@ -227,7 +227,7 @@ Test that clicking the *Agree* and *Disagree* buttons update the appropriate cou
 
 
 
-## Parent interacts with child via *local variable*
+## Parent interacts with child using *local variable*
 
 A parent component cannot use data binding to read child properties
 or invoke child methods. You can do both
@@ -296,7 +296,7 @@ Test also that clicking the *Stop* button pauses the countdown timer:
 
 ## Parent calls an _@ViewChild()_
 
-The *local variable* approach is simple and easy. But it is limited because
+The *local variable* approach is easy. But it is limited because
 the parent-child wiring must be done entirely within the parent template.
 The parent component *itself* has no access to the child.
 
@@ -335,7 +335,7 @@ It takes a bit more work to get the child view into the parent component *class*
 First, you have to import references to the `ViewChild` decorator and the `AfterViewInit` lifecycle hook.
 
 Next, inject the child `CountdownTimerComponent` into the private `timerComponent` property
-via the `@ViewChild` property decoration.
+using the `@ViewChild` property decoration.
 
 The `#timer` local variable is gone from the component metadata.
 Instead, bind the buttons to the parent component's own `start` and `stop` methods and
@@ -350,7 +350,7 @@ So it displays `0` seconds initially.
 Then Angular calls the `ngAfterViewInit` lifecycle hook at which time it is *too late*
 to update the parent view's display of the countdown seconds.
 Angular's unidirectional data flow rule prevents updating the parent view's
-in the same cycle. The app has to *wait one turn* before it can display the seconds.
+in the same cycle. The application has to *wait one turn* before it can display the seconds.
 
 Use `setTimeout()` to wait one tick and then revise the `seconds()` method so
 that it takes future values from the timer component.
@@ -363,7 +363,7 @@ Use [the same countdown timer tests](guide/component-interaction#countdown-tests
 
 {@a bidirectional-service}
 
-## Parent and children communicate via a service
+## Parent and children communicate using a service
 
 A parent component and its children share a service whose interface enables bi-directional communication
 *within the family*.
@@ -405,8 +405,8 @@ Each `AstronautComponent` is a child of the `MissionControlComponent` and theref
 
 
 Notice that this example captures the `subscription` and `unsubscribe()` when the `AstronautComponent` is destroyed.
-This is a memory-leak guard step. There is no actual risk in this app because the
-lifetime of a `AstronautComponent` is the same as the lifetime of the app itself.
+This is a memory-leak guard step. There is no actual risk in this application because the
+lifetime of a `AstronautComponent` is the same as the lifetime of the application itself.
 That *would not* always be true in a more complex application.
 
 You don't add this guard to the `MissionControlComponent` because, as the parent,
