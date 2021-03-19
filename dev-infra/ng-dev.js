@@ -1817,6 +1817,16 @@ function parseCommitMessagesForRange(range) {
  */
 /** Regex matching a URL for an entire commit body line. */
 const COMMIT_BODY_URL_LINE_RE = /^https?:\/\/.*$/;
+/**
+ * Regex matching a breaking change.
+ *
+ * - Starts with BREAKING CHANGE
+ * - Followed by a colon
+ * - Followed by a single space or two consecutive new lines
+ *
+ * NB: Anything after `BREAKING CHANGE` is optional to facilitate the validation.
+ */
+const COMMIT_BODY_BREAKING_CHANGE_RE = /^BREAKING CHANGE(:( |\n{2}))?/m;
 /** Validate a commit message against using the local repo's config. */
 function validateCommitMessage(commitMsg, options = {}) {
     const config = getCommitMessageConfig().commitMessage;
@@ -1903,8 +1913,20 @@ function validateCommitMessage(commitMsg, options = {}) {
             return line.length > config.maxLineLength && !COMMIT_BODY_URL_LINE_RE.test(line);
         });
         if (lineExceedsMaxLength) {
-            errors.push(`The commit message body contains lines greater than ${config.maxLineLength} characters`);
+            errors.push(`The commit message body contains lines greater than ${config.maxLineLength} characters.`);
             return false;
+        }
+        // Breaking change
+        // Check if the commit message contains a valid break change description.
+        // https://github.com/angular/angular/blob/88fbc066775ab1a2f6a8c75f933375b46d8fa9a4/CONTRIBUTING.md#commit-message-footer
+        const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.body);
+        if (hasBreakingChange !== null) {
+            const [, breakingChangeDescription] = hasBreakingChange;
+            if (!breakingChangeDescription) {
+                // Not followed by :, space or two consecutive new lines,
+                errors.push(`The commit message body contains an invalid breaking change description.`);
+                return false;
+            }
         }
         return true;
     }
@@ -1920,6 +1942,11 @@ function printValidationErrors(errors, print = error) {
     print('<type>(<scope>): <summary>');
     print();
     print('<body>');
+    print();
+    print(`BREAKING CHANGE: <breaking change summary>`);
+    print();
+    print(`<breaking change description>`);
+    print();
     print();
 }
 
