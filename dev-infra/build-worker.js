@@ -7,7 +7,6 @@ var fs = require('fs');
 var path = require('path');
 var chalk = _interopDefault(require('chalk'));
 require('inquirer');
-require('inquirer-autocomplete-prompt');
 var shelljs = require('shelljs');
 
 /**
