@@ -32,7 +32,7 @@ Conversely, `@Output()` allows the child to send data to a parent component.
 The `@Input()` decorator in a child component or directive signifies that the property can receive its value from its parent component.
 
 <div class="lightbox">
-  <img src="generated/images/guide/inputs-outputs/input.svg" alt="Input data flow diagram">
+  <img src="generated/images/guide/inputs-outputs/input.svg" alt="Input data flow diagram of data flowing from parent to child">
 </div>
 
 To use `@Input()`, you must configure the parent and child.
@@ -72,7 +72,7 @@ With `@Input()`, Angular passes the value for `currentItem` to the child so that
 The following diagram shows this structure:
 
 <div class="lightbox">
-  <img src="generated/images/guide/inputs-outputs/input-diagram-target-source.svg" alt="Property binding diagram">
+  <img src="generated/images/guide/inputs-outputs/input-diagram-target-source.svg" alt="Property binding diagram of the target, item, in square brackets set to the source, currentItem, on the right of an equal sign">
 </div>
 
 The target in the square brackets, `[]`, is the property you decorate with `@Input()` in the child component.
@@ -90,7 +90,7 @@ See the [`OnChanges`](guide/lifecycle-hooks#onchanges) section of the [Lifecycle
 The `@Output()` decorator in a child component or directive allows data to flow from the child to the parent.
 
 <div class="lightbox">
-  <img src="generated/images/guide/inputs-outputs/output.svg" alt="Output diagram">
+  <img src="generated/images/guide/inputs-outputs/output.svg" alt="Output diagram of the data flow going from child to parent">
 </div>
 
 `@Output()` marks a property in a child component as a doorway through which data can travel from the child to the parent.
@@ -190,7 +190,7 @@ When you click delete, the child component raises an event, `deleteRequest`, whi
 The following diagram shows the different parts of the `@Input()` and `@Output()` on the `<app-input-output>` child component.
 
 <div class="lightbox">
-  <img src="generated/images/guide/inputs-outputs/input-output-diagram.svg" alt="Input/Output diagram">
+  <img src="generated/images/guide/inputs-outputs/input-output-diagram.svg" alt="Diagram of an input target and an output target each bound to a source.">
 </div>
 
 The child selector is `<app-input-output>` with `item` and `deleteRequest` being `@Input()` and `@Output()`
