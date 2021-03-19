@@ -1826,7 +1826,7 @@ const COMMIT_BODY_URL_LINE_RE = /^https?:\/\/.*$/;
  *
  * NB: Anything after `BREAKING CHANGE` is optional to facilitate the validation.
  */
-const COMMIT_BODY_BREAKING_CHANGE_RE = /^(BREAKING CHANGE)(\:( |\n{2}))?/mi;
+const COMMIT_BODY_BREAKING_CHANGE_RE = /^(BREAKING CHANGE)(:( |\n{2}))?/mi;
 /** Validate a commit message against using the local repo's config. */
 function validateCommitMessage(commitMsg, options = {}) {
     const config = getCommitMessageConfig().commitMessage;
@@ -1929,7 +1929,7 @@ function validateCommitMessage(commitMsg, options = {}) {
             }
             if (!breakingChangeDescription) {
                 // Not followed by :, space or two consecutive new lines,
-                errors.push(`The commit message body contains a non valid breaking change description.`);
+                errors.push(`The commit message body contains an invalid breaking change description.`);
                 return false;
             }
         }

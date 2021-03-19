@@ -295,7 +295,7 @@ describe('validate-commit-message.js', () => {
             'BREAKING CHANGE This is a summary of a breaking change.';
         expectValidationResult(
             validateCommitMessage(msgWithSummary), INVALID,
-            [`The commit message body contains a non valid breaking change description.`]);
+            [`The commit message body contains an invalid breaking change description.`]);
 
         const msgWithDescription = 'feat(compiler): this is just an usual commit message tile\n\n' +
             'This is a normal commit message body which does not exceed the max length\n' +
@@ -304,7 +304,7 @@ describe('validate-commit-message.js', () => {
             'This is a full description of the breaking change.';
         expectValidationResult(
             validateCommitMessage(msgWithDescription), INVALID,
-            [`The commit message body contains a non valid breaking change description.`]);
+            [`The commit message body contains an invalid breaking change description.`]);
 
         const msgWithSummaryAndDescription =
             'feat(compiler): this is just an usual commit message tile\n\n' +
@@ -314,7 +314,7 @@ describe('validate-commit-message.js', () => {
             'This is a full description of the breaking change.';
         expectValidationResult(
             validateCommitMessage(msgWithSummaryAndDescription), INVALID,
-            [`The commit message body contains a non valid breaking change description.`]);
+            [`The commit message body contains an invalid breaking change description.`]);
       });
 
       it('should fail for when "BREAKING CHANGE" is in lowercase.', () => {
