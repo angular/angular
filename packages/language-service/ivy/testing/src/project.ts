@@ -179,6 +179,10 @@ export class Project {
   getTemplateTypeChecker(): TemplateTypeChecker {
     return this.ngLS.compilerFactory.getOrCreate().getTemplateTypeChecker();
   }
+
+  getLogger(): ts.server.Logger {
+    return this.tsProject.projectService.logger;
+  }
 }
 
 function getClassOrError(sf: ts.SourceFile, name: string): ts.ClassDeclaration {
