@@ -4,14 +4,18 @@
   element containing the SVG. `focusable="false"` prevents IE from allowing the user to
   tab into the SVG element.
 -->
-
+<!--
+  All children need to be hidden for screen readers in order to support ChromeVox.
+  More context in the issue: https://github.com/angular/components/issues/22165.
+-->
 <svg
   [style.width.px]="diameter"
   [style.height.px]="diameter"
   [attr.viewBox]="_getViewBox()"
   preserveAspectRatio="xMidYMid meet"
   focusable="false"
-  [ngSwitch]="mode === 'indeterminate'">
+  [ngSwitch]="mode === 'indeterminate'"
+  aria-hidden="true">
 
   <!--
     Technically we can reuse the same `circle` element, however Safari has an issue that breaks

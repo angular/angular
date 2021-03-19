@@ -483,6 +483,17 @@ describe('MatProgressSpinner', () => {
       expect(shadowRoot.querySelector('style[mat-spinner-animation="27"]')).toBeTruthy();
     });
 
+  it('should apply aria-hidden to child nodes', () => {
+    const fixture = TestBed.createComponent(BasicProgressSpinner);
+    fixture.detectChanges();
+
+    const progressElement = fixture.nativeElement.querySelector('mat-progress-spinner');
+    const children = Array.from<HTMLElement>(progressElement.children);
+
+    expect(children.length).toBeGreaterThan(0);
+    expect(children.every(child => child.getAttribute('aria-hidden') === 'true')).toBe(true);
+  });
+
 });
 
 
