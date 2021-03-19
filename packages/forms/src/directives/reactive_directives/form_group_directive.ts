@@ -311,6 +311,9 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
           setUpControl(newCtrl, dir);
           (dir as {control: FormControl}).control = newCtrl;
         }
+        if (!newCtrl) {
+          (dir as any).control = undefined;
+        }
       }
     });
 
