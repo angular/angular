@@ -1,4 +1,8 @@
-<div class="mdc-linear-progress">
+<!--
+  All children need to be hidden for screen readers in order to support ChromeVox.
+  More context in the issue: https://github.com/angular/components/issues/22165.
+-->
+<div class="mdc-linear-progress" aria-hidden="true">
   <div class="mdc-linear-progress__buffer">
     <div class="mdc-linear-progress__buffer-bar"></div>
     <div class="mdc-linear-progress__buffer-dots"></div>
