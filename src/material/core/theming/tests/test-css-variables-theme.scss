@@ -22,13 +22,13 @@
 
 // Theme used to test that our themes would compile if the colors were specified as CSS variables.
 ._demo-css-variables-theme {
-  $palette: theming.palette(palette.$blue-grey);
-  $theme: theming.dark-theme((
+  $palette: theming.define-palette(palette.$blue-grey-palette);
+  $theme: theming.define-dark-theme((
     color: (
       primary: $palette,
       accent: $palette,
       warn: $palette
     )
   ));
-  @include all-theme.angular-material-theme(replace-all-values($theme, var(--test-var)));
+  @include all-theme.all-component-themes(replace-all-values($theme, var(--test-var)));
 }

@@ -12,7 +12,7 @@
 }
 
 // Gets the line height for a level inside a typography config.
-@function height($config, $level) {
+@function line-height($config, $level) {
   @return _mat-get-type-value($config, $level, line-height);
 }
 
@@ -66,10 +66,10 @@
 }
 
 // Converts a typography level into CSS styles.
-@mixin level-to-styles($config, $level) {
+@mixin typography-level($config, $level) {
   $font-size: font-size($config, $level);
   $font-weight: font-weight($config, $level);
-  $line-height: height($config, $level);
+  $line-height: line-height($config, $level);
   $font-family: font-family($config, $level);
 
   @include font-shorthand($font-size, $font-weight, $line-height, $font-family);

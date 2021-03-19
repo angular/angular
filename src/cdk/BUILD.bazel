@@ -1,5 +1,5 @@
 load("//src/cdk:config.bzl", "CDK_ENTRYPOINTS", "CDK_ENTRYPOINTS_WITH_STYLES", "CDK_SCSS_LIBS", "CDK_TARGETS")
-load("//tools:defaults.bzl", "ng_package", "ts_library")
+load("//tools:defaults.bzl", "ng_package", "sass_library", "ts_library")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -49,11 +49,17 @@ rerootedStyleTargets = ["%s_rerooted" % file for [
     _,
 ] in rerootedStyles]
 
+# Makes the public Sass API bundle available in the release output as `angular/cdk`.
+sass_library(
+    name = "sass_index",
+    srcs = ["_index.scss"],
+)
+
 # Creates the @angular/cdk package published to npm.
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
-    data = rerootedStyleTargets + CDK_SCSS_LIBS,
+    data = [":sass_index"] + rerootedStyleTargets + CDK_SCSS_LIBS,
     entry_point = ":public-api.ts",
     nested_packages = [
         "//src/cdk/schematics:npm_package",

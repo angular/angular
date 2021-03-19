@@ -1,0 +1,39 @@
+@use 'typography';
+
+// @deprecated Use `define-typography-level`.
+@function level(
+  $font-size,
+  $line-height: $font-size,
+  $font-weight: 400,
+  $font-family: null,
+  $letter-spacing: normal) {
+  @return typography.define-typography-level($font-size, $line-height, $font-weight, $font-family,
+    $letter-spacing);
+}
+
+// @deprecated Use `typography-hierarchy`.
+@mixin base-typography($config-or-theme, $selector: '.mat-typography') {
+  @include typography.typography-hierarchy($config-or-theme, $selector);
+}
+
+// @deprecated Use `define-typography-config`.
+@function config(
+  $font-family:   'Roboto, "Helvetica Neue", sans-serif',
+  $display-4:     typography.define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
+  $display-3:     typography.define-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
+  $display-2:     typography.define-typography-level(45px, 48px, 400, $letter-spacing: -0.005em),
+  $display-1:     typography.define-typography-level(34px, 40px, 400),
+  $headline:      typography.define-typography-level(24px, 32px, 400),
+  $title:         typography.define-typography-level(20px, 32px, 500),
+  $subheading-2:  typography.define-typography-level(16px, 28px, 400),
+  $subheading-1:  typography.define-typography-level(15px, 24px, 400),
+  $body-2:        typography.define-typography-level(14px, 24px, 500),
+  $body-1:        typography.define-typography-level(14px, 20px, 400),
+  $caption:       typography.define-typography-level(12px, 20px, 400),
+  $button:        typography.define-typography-level(14px, 14px, 500),
+  $input:         typography.define-typography-level(inherit, 1.125, 400)
+) {
+  @return typography.define-typography-config($font-family, $display-4, $display-3, $display-2,
+    $display-1, $headline, $title, $subheading-2, $subheading-1, $body-2,
+    $body-1, $caption, $button);
+}

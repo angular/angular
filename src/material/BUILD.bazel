@@ -23,7 +23,10 @@ filegroup(
 # Makes the theming bundle available in the release output as `angular/material/theming`.
 sass_library(
     name = "theming_bundle",
-    srcs = ["_theming.scss"],
+    srcs = [
+        "_index.scss",
+        "_theming.scss",
+    ],
     deps = ["//src/material/core:theming_scss_lib"],
 )
 

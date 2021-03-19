@@ -1,4 +1,4 @@
-@mixin a11y {
+@mixin a11y-visually-hidden {
   .cdk-visually-hidden {
     border: 0;
     clip: rect(0 0 0 0);
@@ -16,6 +16,11 @@
     -webkit-appearance: none;
     -moz-appearance: none;
   }
+}
+
+// @deprecated Use `a11y-visually-hidden`.
+@mixin a11y {
+  @include a11y-visually-hidden;
 }
 
 /// Emits the mixin's content nested under `$selector-context` if `$selector-context`

@@ -15,10 +15,10 @@ theming.$theme-ignore-duplication-warnings: true;
 // API is backwards compatible, so that the old pattern for configuring themes can be still
 // used. The Sass compilation of this file will fail if one of the tests/assertions fails.
 
-$primary: theming.palette(palette.$blue);
-$accent: theming.palette(palette.$grey);
-$warn: theming.palette(palette.$indigo);
-$default-warn: theming.palette(palette.$red);
+$primary: theming.define-palette(palette.$blue-palette);
+$accent: theming.define-palette(palette.$grey-palette);
+$warn: theming.define-palette(palette.$indigo-palette);
+$default-warn: theming.define-palette(palette.$red-palette);
 
 // Asserts that a given value matches the expected value. If not, an error is
 // thrown with the given error message.
@@ -41,30 +41,30 @@ $default-warn: theming.palette(palette.$red);
       'Expected color config `is-dark` to be: #{$is-dark}');
 }
 
-$legacy-light-theme: theming.light-theme($primary, $accent, $warn);
-$legacy-dark-theme: theming.dark-theme($primary, $accent, $warn);
-$legacy-light-theme-default-warn: theming.light-theme($primary, $accent);
-$legacy-dark-theme-default-warn: theming.dark-theme($primary, $accent);
+$legacy-light-theme: theming.define-light-theme($primary, $accent, $warn);
+$legacy-dark-theme: theming.define-dark-theme($primary, $accent, $warn);
+$legacy-light-theme-default-warn: theming.define-light-theme($primary, $accent);
+$legacy-dark-theme-default-warn: theming.define-dark-theme($primary, $accent);
 
-$new-api-light-theme: theming.light-theme((
+$new-api-light-theme: theming.define-light-theme((
   color: (primary: $primary, accent: $accent, warn: $warn)
 ));
-$new-api-dark-theme: theming.dark-theme((
+$new-api-dark-theme: theming.define-dark-theme((
   color: (primary: $primary, accent: $accent, warn: $warn)
 ));
-$new-api-light-theme-default-warn: theming.light-theme((
+$new-api-light-theme-default-warn: theming.define-light-theme((
   color: (primary: $primary, accent: $accent)
 ));
-$new-api-dark-theme-default-warn: theming.dark-theme((
+$new-api-dark-theme-default-warn: theming.define-dark-theme((
   color: (primary: $primary, accent: $accent)
 ));
 
-$light-theme-only-density: theming.light-theme((density: -3));
-$dark-theme-only-density: theming.dark-theme((density: -3));
+$light-theme-only-density: theming.define-light-theme((density: -3));
+$dark-theme-only-density: theming.define-dark-theme((density: -3));
 
-$typography-config: typography.config();
-$light-theme-only-typography: theming.light-theme((typography: $typography-config));
-$dark-theme-only-typography: theming.dark-theme((typography: $typography-config));
+$typography-config: typography.define-typography-config();
+$light-theme-only-typography: theming.define-light-theme((typography: $typography-config));
+$dark-theme-only-typography: theming.define-dark-theme((typography: $typography-config));
 
 // Test which ensures that constructed themes by default do not set configurations
 // for the individual parts of the theming system (color, density, typography).
@@ -118,8 +118,8 @@ $dark-theme-only-typography: theming.dark-theme((typography: $typography-config)
 // theme objects passed to individual component theme mixins.
 @mixin test-get-color-config() {
   $color-config: map.get($legacy-light-theme, color);
-  $no-color-light-theme: theming.light-theme((color: null));
-  $no-color-dark-theme: theming.dark-theme((color: null));
+  $no-color-light-theme: theming.define-light-theme((color: null));
+  $no-color-dark-theme: theming.define-dark-theme((color: null));
   @include assert(theming.get-color-config($color-config), $color-config,
       'Expected that passing a color config to a theme will work for backwards compatibility.');
   // For legacy constructed themes, the color configuration is the actual `$theme` object.
@@ -142,8 +142,8 @@ $dark-theme-only-typography: theming.dark-theme((typography: $typography-config)
 // theme objects passed to individual component theme mixins.
 @mixin test-get-density-config() {
   $density-config: map.get($light-theme-only-density, density);
-  $no-density-light-theme: theming.light-theme((density: null));
-  $no-density-dark-theme: theming.dark-theme((density: null));
+  $no-density-light-theme: theming.define-light-theme((density: null));
+  $no-density-dark-theme: theming.define-dark-theme((density: null));
   @include assert(theming.get-density-config($light-theme-only-density), -3,
     'Expected that a density config can be read from a theme object.');
   @include assert(theming.get-density-config($light-theme-only-typography), 0,
@@ -157,8 +157,8 @@ $dark-theme-only-typography: theming.dark-theme((typography: $typography-config)
 // Test which ensures that typography configurations can be properly read from
 // theme objects passed to individual component theme mixins.
 @mixin test-get-typography-config() {
-  $no-typography-light-theme: theming.light-theme((density: null));
-  $no-typography-dark-theme: theming.dark-theme((density: null));
+  $no-typography-light-theme: theming.define-light-theme((density: null));
+  $no-typography-dark-theme: theming.define-dark-theme((density: null));
   @include assert(theming.get-typography-config($light-theme-only-typography), $typography-config,
     'Expected that a typography config can be read from a theme object.');
   @include assert(theming.get-typography-config($legacy-light-theme), null,
@@ -172,25 +172,25 @@ $dark-theme-only-typography: theming.dark-theme((typography: $typography-config)
 // Test which ensures that all Angular Material theme mixins accept a theme
 // object without throwing any exception.
 @mixin test-theme-mixins-successful-compilation() {
-  @include all-theme.angular-material-theme($legacy-light-theme);
-  @include all-theme.angular-material-theme($legacy-light-theme-default-warn);
-  @include all-theme.angular-material-theme($legacy-dark-theme);
-  @include all-theme.angular-material-theme($legacy-dark-theme-default-warn);
-  @include all-theme.angular-material-theme($new-api-light-theme);
-  @include all-theme.angular-material-theme($new-api-light-theme-default-warn);
-  @include all-theme.angular-material-theme($new-api-dark-theme);
-  @include all-theme.angular-material-theme($new-api-dark-theme-default-warn);
-  @include all-theme.angular-material-theme($light-theme-only-density);
-  @include all-theme.angular-material-theme($dark-theme-only-density);
-  @include all-theme.angular-material-theme($light-theme-only-typography);
-  @include all-theme.angular-material-theme($dark-theme-only-typography);
+  @include all-theme.all-component-themes($legacy-light-theme);
+  @include all-theme.all-component-themes($legacy-light-theme-default-warn);
+  @include all-theme.all-component-themes($legacy-dark-theme);
+  @include all-theme.all-component-themes($legacy-dark-theme-default-warn);
+  @include all-theme.all-component-themes($new-api-light-theme);
+  @include all-theme.all-component-themes($new-api-light-theme-default-warn);
+  @include all-theme.all-component-themes($new-api-dark-theme);
+  @include all-theme.all-component-themes($new-api-dark-theme-default-warn);
+  @include all-theme.all-component-themes($light-theme-only-density);
+  @include all-theme.all-component-themes($dark-theme-only-density);
+  @include all-theme.all-component-themes($light-theme-only-typography);
+  @include all-theme.all-component-themes($dark-theme-only-typography);
 }
 
 // Custom theme mixin used by the custom theme backwards compatibility test.
 // This replicates a custom theme that expects legacy theme objects.
 @mixin _my-custom-theme-legacy($theme) {
   .demo-custom-comp {
-    border-color: theming.color(map.get($theme, primary));
+    border-color: theming.get-color-from-palette(map.get($theme, primary));
   }
 }
 
@@ -198,7 +198,7 @@ $dark-theme-only-typography: theming.dark-theme((typography: $typography-config)
   $config: theming.get-color-config($config-or-theme);
 
   .demo-custom-comp {
-    border-color: theming.color(map.get($config, primary));
+    border-color: theming.get-color-from-palette(map.get($config, primary));
   }
 }
 
@@ -248,20 +248,20 @@ $dark-theme-only-typography: theming.dark-theme((typography: $typography-config)
   );
 
   @each $theme in $test-themes {
-    @include all-typography.angular-material-typography($theme);
-    @include all-color.angular-material-color($theme);
-    @include all-density.angular-material-density($theme);
+    @include all-typography.all-component-typographies($theme);
+    @include all-color.all-component-colors($theme);
+    @include all-density.all-component-densities($theme);
   }
 
-  @include all-typography.angular-material-typography(
+  @include all-typography.all-component-typographies(
     map.get($light-theme-only-typography, typography));
-  @include all-typography.angular-material-typography($light-theme-only-typography);
+  @include all-typography.all-component-typographies($light-theme-only-typography);
 
-  @include all-density.angular-material-density(map.get($light-theme-only-density, density));
-  @include all-density.angular-material-density($light-theme-only-density);
+  @include all-density.all-component-densities(map.get($light-theme-only-density, density));
+  @include all-density.all-component-densities($light-theme-only-density);
 
-  @include all-color.angular-material-color(map.get($new-api-dark-theme, color));
-  @include all-color.angular-material-color($new-api-dark-theme);
+  @include all-color.all-component-colors(map.get($new-api-dark-theme, color));
+  @include all-color.all-component-colors($new-api-dark-theme);
 }
 
 @mixin test-individual-system-mixins-unwrap() {
@@ -270,8 +270,8 @@ $dark-theme-only-typography: theming.dark-theme((typography: $typography-config)
   @include _my-custom-theme-new-api($new-api-dark-theme);
   @include _my-custom-theme-new-api(map.get($new-api-dark-theme, color));
 
-  @include all-theme.angular-material-theme($new-api-dark-theme);
-  @include all-theme.angular-material-theme(map.get($new-api-dark-theme, color));
+  @include all-theme.all-component-themes($new-api-dark-theme);
+  @include all-theme.all-component-themes(map.get($new-api-dark-theme, color));
 }
 
 // Include all tests. Sass will throw if one of the tests fails.

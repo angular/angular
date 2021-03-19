@@ -25,7 +25,7 @@ $chip-remove-font-size: 18px;
 // Since we can't perform alpha-blending on a CSS variable,
 // we instead add the opacity directly to the ripple element.
 @mixin _mat-chips-ripple-background($palette, $default-contrast, $opacity) {
-  $background-color: theming.color($palette, $default-contrast, $opacity);
+  $background-color: theming.get-color-from-palette($palette, $default-contrast, $opacity);
   background-color: $background-color;
   @if (meta.type-of($background-color) != color) {
     opacity: $opacity;
@@ -33,8 +33,8 @@ $chip-remove-font-size: 18px;
 }
 
 @mixin _mat-chip-theme-color($palette) {
-  @include _mat-chip-element-color(theming.color($palette, default-contrast),
-    theming.color($palette));
+  @include _mat-chip-element-color(theming.get-color-from-palette($palette, default-contrast),
+    theming.get-color-from-palette($palette));
 
   .mat-ripple-element {
     @include _mat-chips-ripple-background($palette, default-contrast, 0.1);
@@ -50,8 +50,8 @@ $chip-remove-font-size: 18px;
   $background: map.get($config, background);
   $foreground: map.get($config, foreground);
 
-  $unselected-background: theming.color($background, unselected-chip);
-  $unselected-foreground: theming.color($foreground, text);
+  $unselected-background: theming.get-color-from-palette($background, unselected-chip);
+  $unselected-foreground: theming.get-color-from-palette($foreground, text);
 
   .mat-chip.mat-standard-chip {
     @include _mat-chip-element-color($unselected-foreground, $unselected-background);

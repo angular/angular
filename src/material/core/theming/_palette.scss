@@ -37,7 +37,7 @@ $light-disabled-text: rgba(white, 0.5);
 $light-dividers: rgba(white, 0.12);
 $light-focused: rgba(white, 0.12);
 
-$red: (
+$red-palette: (
   50: #ffebee,
   100: #ffcdd2,
   200: #ef9a9a,
@@ -70,7 +70,7 @@ $red: (
   )
 );
 
-$pink: (
+$pink-palette: (
   50: #fce4ec,
   100: #f8bbd0,
   200: #f48fb1,
@@ -103,7 +103,7 @@ $pink: (
   )
 );
 
-$purple: (
+$purple-palette: (
   50: #f3e5f5,
   100: #e1bee7,
   200: #ce93d8,
@@ -136,7 +136,7 @@ $purple: (
   )
 );
 
-$deep-purple: (
+$deep-purple-palette: (
   50: #ede7f6,
   100: #d1c4e9,
   200: #b39ddb,
@@ -169,7 +169,7 @@ $deep-purple: (
   )
 );
 
-$indigo: (
+$indigo-palette: (
   50: #e8eaf6,
   100: #c5cae9,
   200: #9fa8da,
@@ -202,7 +202,7 @@ $indigo: (
   )
 );
 
-$blue: (
+$blue-palette: (
   50: #e3f2fd,
   100: #bbdefb,
   200: #90caf9,
@@ -235,7 +235,7 @@ $blue: (
   )
 );
 
-$light-blue: (
+$light-blue-palette: (
   50: #e1f5fe,
   100: #b3e5fc,
   200: #81d4fa,
@@ -268,7 +268,7 @@ $light-blue: (
   )
 );
 
-$cyan: (
+$cyan-palette: (
   50: #e0f7fa,
   100: #b2ebf2,
   200: #80deea,
@@ -301,7 +301,7 @@ $cyan: (
   )
 );
 
-$teal: (
+$teal-palette: (
   50: #e0f2f1,
   100: #b2dfdb,
   200: #80cbc4,
@@ -334,7 +334,7 @@ $teal: (
   )
 );
 
-$green: (
+$green-palette: (
   50: #e8f5e9,
   100: #c8e6c9,
   200: #a5d6a7,
@@ -367,7 +367,7 @@ $green: (
   )
 );
 
-$light-green: (
+$light-green-palette: (
   50: #f1f8e9,
   100: #dcedc8,
   200: #c5e1a5,
@@ -400,7 +400,7 @@ $light-green: (
   )
 );
 
-$lime: (
+$lime-palette: (
   50: #f9fbe7,
   100: #f0f4c3,
   200: #e6ee9c,
@@ -433,7 +433,7 @@ $lime: (
   )
 );
 
-$yellow: (
+$yellow-palette: (
   50: #fffde7,
   100: #fff9c4,
   200: #fff59d,
@@ -466,7 +466,7 @@ $yellow: (
   )
 );
 
-$amber: (
+$amber-palette: (
   50: #fff8e1,
   100: #ffecb3,
   200: #ffe082,
@@ -499,7 +499,7 @@ $amber: (
   )
 );
 
-$orange: (
+$orange-palette: (
   50: #fff3e0,
   100: #ffe0b2,
   200: #ffcc80,
@@ -532,7 +532,7 @@ $orange: (
   )
 );
 
-$deep-orange: (
+$deep-orange-palette: (
   50: #fbe9e7,
   100: #ffccbc,
   200: #ffab91,
@@ -565,7 +565,7 @@ $deep-orange: (
   )
 );
 
-$brown: (
+$brown-palette: (
   50: #efebe9,
   100: #d7ccc8,
   200: #bcaaa4,
@@ -598,7 +598,7 @@ $brown: (
   )
 );
 
-$grey: (
+$grey-palette: (
   50: #fafafa,
   100: #f5f5f5,
   200: #eeeeee,
@@ -632,9 +632,9 @@ $grey: (
 );
 
 // Alias for alternate spelling.
-$gray: $grey;
+$gray-palette: $grey-palette;
 
-$blue-grey: (
+$blue-grey-palette: (
   50: #eceff1,
   100: #cfd8dc,
   200: #b0bec5,
@@ -668,49 +668,49 @@ $blue-grey: (
 );
 
 // Alias for alternate spelling.
-$blue-gray: $blue-grey;
+$blue-gray-palette: $blue-grey-palette;
 
 
 // Background palette for light themes.
-$light-theme-background: (
-  status-bar: map.get($grey, 300),
-  app-bar:    map.get($grey, 100),
-  background: map.get($grey, 50),
+$light-theme-background-palette: (
+  status-bar: map.get($grey-palette, 300),
+  app-bar:    map.get($grey-palette, 100),
+  background: map.get($grey-palette, 50),
   hover:      rgba(black, 0.04), // TODO(kara): check style with Material Design UX
   card:       white,
   dialog:     white,
   disabled-button: rgba(black, 0.12),
   raised-button: white,
   focused-button: $dark-focused,
-  selected-button: map.get($grey, 300),
-  selected-disabled-button: map.get($grey, 400),
-  disabled-button-toggle: map.get($grey, 200),
-  unselected-chip: map.get($grey, 300),
-  disabled-list-option: map.get($grey, 200),
-  tooltip: map.get($grey, 700),
+  selected-button: map.get($grey-palette, 300),
+  selected-disabled-button: map.get($grey-palette, 400),
+  disabled-button-toggle: map.get($grey-palette, 200),
+  unselected-chip: map.get($grey-palette, 300),
+  disabled-list-option: map.get($grey-palette, 200),
+  tooltip: map.get($grey-palette, 700),
 );
 
 // Background palette for dark themes.
-$dark-theme-background: (
+$dark-theme-background-palette: (
   status-bar: black,
-  app-bar:    map.get($grey, 900),
+  app-bar:    map.get($grey-palette, 900),
   background: #303030,
   hover:      rgba(white, 0.04), // TODO(kara): check style with Material Design UX
-  card:       map.get($grey, 800),
-  dialog:     map.get($grey, 800),
+  card:       map.get($grey-palette, 800),
+  dialog:     map.get($grey-palette, 800),
   disabled-button: rgba(white, 0.12),
-  raised-button: map.get($grey, 800),
+  raised-button: map.get($grey-palette, 800),
   focused-button: $light-focused,
-  selected-button: map.get($grey, 900),
-  selected-disabled-button: map.get($grey, 800),
+  selected-button: map.get($grey-palette, 900),
+  selected-disabled-button: map.get($grey-palette, 800),
   disabled-button-toggle: black,
-  unselected-chip: map.get($grey, 700),
+  unselected-chip: map.get($grey-palette, 700),
   disabled-list-option: black,
-  tooltip: map.get($grey, 700),
+  tooltip: map.get($grey-palette, 700),
 );
 
 // Foreground palette for light themes.
-$light-theme-foreground: (
+$light-theme-foreground-palette: (
   base:              black,
   divider:           $dark-dividers,
   dividers:          $dark-dividers,
@@ -729,7 +729,7 @@ $light-theme-foreground: (
 );
 
 // Foreground palette for dark themes.
-$dark-theme-foreground: (
+$dark-theme-foreground-palette: (
   base:              white,
   divider:           $light-dividers,
   dividers:          $light-dividers,

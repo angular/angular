@@ -6,14 +6,14 @@
 
 @mixin _mat-radio-color($palette) {
   &.mat-radio-checked .mat-radio-outer-circle {
-    border-color: theming.color($palette);
+    border-color: theming.get-color-from-palette($palette);
   }
 
   .mat-radio-inner-circle,
   .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
   &.mat-radio-checked .mat-radio-persistent-ripple,
   &:active .mat-radio-persistent-ripple {
-    background-color: theming.color($palette);
+    background-color: theming.get-color-from-palette($palette);
   }
 }
 
@@ -26,7 +26,7 @@
   $foreground: map.get($config, foreground);
 
   .mat-radio-outer-circle {
-    border-color: theming.color($foreground, secondary-text);
+    border-color: theming.get-color-from-palette($foreground, secondary-text);
   }
 
   .mat-radio-button {
@@ -48,16 +48,16 @@
     &.mat-radio-disabled {
       &.mat-radio-checked .mat-radio-outer-circle,
       .mat-radio-outer-circle {
-        border-color: theming.color($foreground, disabled);
+        border-color: theming.get-color-from-palette($foreground, disabled);
       }
 
       .mat-radio-ripple .mat-ripple-element,
       .mat-radio-inner-circle {
-        background-color: theming.color($foreground, disabled);
+        background-color: theming.get-color-from-palette($foreground, disabled);
       }
 
       .mat-radio-label-content {
-        color: theming.color($foreground, disabled);
+        color: theming.get-color-from-palette($foreground, disabled);
       }
     }
 

@@ -16,5 +16,6 @@
 @function private-control-placeholder-color($config) {
   $foreground: map.get($config, foreground);
   $is-dark-theme: map.get($config, is-dark);
-  @return theming.color($foreground, secondary-text, if($is-dark-theme, 0.5, 0.42));
+  @return theming.get-color-from-palette($foreground, secondary-text,
+    if($is-dark-theme, 0.5, 0.42));
 }

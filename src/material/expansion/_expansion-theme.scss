@@ -15,16 +15,16 @@
 
   .mat-expansion-panel {
     @include private.private-theme-overridable-elevation(2, $config);
-    background: theming.color($background, card);
-    color: theming.color($foreground, text);
+    background: theming.get-color-from-palette($background, card);
+    color: theming.get-color-from-palette($foreground, text);
   }
 
   .mat-action-row {
-    border-top-color: theming.color($foreground, divider);
+    border-top-color: theming.get-color-from-palette($foreground, divider);
   }
 
   @include expansion-mixins.private-expansion-focus {
-    background: theming.color($background, hover);
+    background: theming.get-color-from-palette($background, hover);
   }
 
   // Disable the hover on touch devices since it can appear like it is stuck. We can't use
@@ -32,21 +32,21 @@
   @media (hover: none) {
     .mat-expansion-panel:not(.mat-expanded):not([aria-disabled='true'])
       .mat-expansion-panel-header:hover {
-      background: theming.color($background, card);
+      background: theming.get-color-from-palette($background, card);
     }
   }
 
   .mat-expansion-panel-header-title {
-    color: theming.color($foreground, text);
+    color: theming.get-color-from-palette($foreground, text);
   }
 
   .mat-expansion-panel-header-description,
   .mat-expansion-indicator::after {
-    color: theming.color($foreground, secondary-text);
+    color: theming.get-color-from-palette($foreground, secondary-text);
   }
 
   .mat-expansion-panel-header[aria-disabled='true'] {
-    color: theming.color($foreground, disabled-button);
+    color: theming.get-color-from-palette($foreground, disabled-button);
 
     .mat-expansion-panel-header-title,
     .mat-expansion-panel-header-description {
@@ -67,7 +67,7 @@
   }
 
   .mat-expansion-panel-content {
-    @include typography-utils.level-to-styles($config, body-1);
+    @include typography-utils.typography-level($config, body-1);
   }
 }
 

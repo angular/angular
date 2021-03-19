@@ -7,11 +7,11 @@
   $foreground: map.get($config, foreground);
 
   .mat-divider {
-    border-top-color: theming.color($foreground, divider);
+    border-top-color: theming.get-color-from-palette($foreground, divider);
   }
 
   .mat-divider-vertical {
-    border-right-color: theming.color($foreground, divider);
+    border-right-color: theming.get-color-from-palette($foreground, divider);
   }
 }
 

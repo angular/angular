@@ -5,7 +5,7 @@
 @forward '../../../tree/tree-theme.import';
 @forward '../../../paginator/paginator-theme.import';
 @forward '../../../form-field/form-field-theme.import';
-@forward 'all-density';
+@forward 'all-density' hide all-component-densities;
 
 @import '../../theming/theming';
 @import '../../../expansion/expansion-theme';

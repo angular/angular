@@ -1,0 +1,6 @@
+@use 'typography-utils';
+
+// @deprecated Use `typography-level`.
+@mixin level-to-styles($config, $level) {
+  @include typography-utils.typography-level($config, $level);
+}

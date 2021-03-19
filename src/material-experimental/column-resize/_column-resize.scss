@@ -9,9 +9,9 @@
   $primary: map.get($config, primary);
   $foreground: map.get($config, foreground);
 
-  $non-resizable-hover-divider: theming.color($foreground, divider);
-  $resizable-hover-divider: theming.color($primary, 200);
-  $resizable-active-divider: theming.color($primary, 500);
+  $non-resizable-hover-divider: theming.get-color-from-palette($foreground, divider);
+  $resizable-hover-divider: theming.get-color-from-palette($primary, 200);
+  $resizable-active-divider: theming.get-color-from-palette($primary, 500);
 
   // Required for resizing to work properly.
   .mat-column-resize-table.cdk-column-resize-with-resized-column {

@@ -9,11 +9,11 @@
   $foreground: map.get($config, foreground);
 
   .mat-optgroup-label {
-    color: theming.color($foreground, secondary-text);
+    color: theming.get-color-from-palette($foreground, secondary-text);
   }
 
   .mat-optgroup-disabled .mat-optgroup-label {
-    color: theming.color($foreground, hint-text);
+    color: theming.get-color-from-palette($foreground, hint-text);
   }
 }
 
@@ -21,7 +21,7 @@
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
   .mat-optgroup-label {
-    @include typography-utils.level-to-styles($config, body-2);
+    @include typography-utils.typography-level($config, body-2);
   }
 }
 

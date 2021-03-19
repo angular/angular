@@ -9,16 +9,16 @@
   .mat-slider-track-fill,
   .mat-slider-thumb,
   .mat-slider-thumb-label {
-    background-color: theming.color($palette);
+    background-color: theming.get-color-from-palette($palette);
   }
 
   .mat-slider-thumb-label-text {
-    color: theming.color($palette, default-contrast);
+    color: theming.get-color-from-palette($palette, default-contrast);
   }
 
   .mat-slider-focus-ring {
     $opacity: 0.2;
-    $color: theming.color($palette, default, $opacity);
+    $color: theming.get-color-from-palette($palette, default, $opacity);
     background-color: $color;
 
     // `mat-color` uses `rgba` for the opacity which won't work with
@@ -37,13 +37,16 @@
   $background: map.get($config, background);
   $foreground: map.get($config, foreground);
 
-  $mat-slider-off-color: theming.color($foreground, slider-off);
-  $mat-slider-off-focused-color: theming.color($foreground, slider-off-active);
-  $mat-slider-disabled-color: theming.color($foreground, slider-off);
-  $mat-slider-labeled-min-value-thumb-color: theming.color($foreground, slider-min);
-  $mat-slider-labeled-min-value-thumb-label-color: theming.color($foreground, slider-off);
+  $mat-slider-off-color: theming.get-color-from-palette($foreground, slider-off);
+  $mat-slider-off-focused-color: theming.get-color-from-palette($foreground, slider-off-active);
+  $mat-slider-disabled-color: theming.get-color-from-palette($foreground, slider-off);
+  $mat-slider-labeled-min-value-thumb-color:
+    theming.get-color-from-palette($foreground, slider-min);
+  $mat-slider-labeled-min-value-thumb-label-color:
+    theming.get-color-from-palette($foreground, slider-off);
   $mat-slider-tick-opacity: 0.7;
-  $mat-slider-tick-color: theming.color($foreground, base, $mat-slider-tick-opacity);
+  $mat-slider-tick-color:
+    theming.get-color-from-palette($foreground, base, $mat-slider-tick-opacity);
   $mat-slider-tick-size: 2px;
 
   .mat-slider-track-background {
@@ -86,7 +89,7 @@
   .mat-slider-min-value {
     .mat-slider-focus-ring {
       $opacity: 0.12;
-      $color: theming.color($foreground, base, $opacity);
+      $color: theming.get-color-from-palette($foreground, base, $opacity);
       background-color: $color;
 
       // `mat-color` uses `rgba` for the opacity which won't work with

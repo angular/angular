@@ -18,10 +18,10 @@
   $colored-box-selector: '.mat-pseudo-checkbox-checked, .mat-pseudo-checkbox-indeterminate';
 
   .mat-pseudo-checkbox {
-    color: theming.color(map.get($config, foreground), secondary-text);
+    color: theming.get-color-from-palette(map.get($config, foreground), secondary-text);
 
     &::after {
-      color: theming.color($background, background);
+      color: theming.get-color-from-palette($background, background);
     }
   }
 
@@ -31,7 +31,7 @@
 
   .mat-primary .mat-pseudo-checkbox-checked,
   .mat-primary .mat-pseudo-checkbox-indeterminate {
-    background: theming.color(map.get($config, primary));
+    background: theming.get-color-from-palette(map.get($config, primary));
   }
 
   // Default to the accent color. Note that the pseudo checkboxes are meant to inherit the
@@ -43,12 +43,12 @@
   .mat-pseudo-checkbox-indeterminate,
   .mat-accent .mat-pseudo-checkbox-checked,
   .mat-accent .mat-pseudo-checkbox-indeterminate {
-    background: theming.color(map.get($config, accent));
+    background: theming.get-color-from-palette(map.get($config, accent));
   }
 
   .mat-warn .mat-pseudo-checkbox-checked,
   .mat-warn .mat-pseudo-checkbox-indeterminate {
-    background: theming.color(map.get($config, warn));
+    background: theming.get-color-from-palette(map.get($config, warn));
   }
 
   .mat-pseudo-checkbox-checked,

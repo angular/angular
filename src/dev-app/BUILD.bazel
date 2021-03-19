@@ -107,6 +107,7 @@ sass_binary(
         "external/npm/node_modules",
     ],
     deps = [
+        "//src/material:theming_bundle",
         "//src/material-experimental/column-resize:column_resize_scss_lib",
         "//src/material-experimental/mdc-color:all_color",
         "//src/material-experimental/mdc-density:all_density",

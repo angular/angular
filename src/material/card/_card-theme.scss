@@ -13,8 +13,8 @@
 
   .mat-card {
     @include private.private-theme-overridable-elevation(1, $config);
-    background: theming.color($background, card);
-    color: theming.color($foreground, text);
+    background: theming.get-color-from-palette($background, card);
+    color: theming.get-color-from-palette($foreground, text);
 
     // Needs extra specificity to be able to override the elevation selectors.
     &.mat-card-flat {
@@ -23,7 +23,7 @@
   }
 
   .mat-card-subtitle {
-    color: theming.color($foreground, secondary-text);
+    color: theming.get-color-from-palette($foreground, secondary-text);
   }
 }
 

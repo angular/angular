@@ -22,7 +22,7 @@
 @use '../../material/core/core';
 @use '../../material/core/theming/theming';
 
-@mixin angular-material-mdc-theme($theme-or-color-config) {
+@mixin all-mdc-component-themes($theme-or-color-config) {
   $dedupe-key: 'angular-material-mdc-theme';
   @include theming.private-check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
     @include core-theme.theme($theme-or-color-config);
@@ -49,4 +49,9 @@
     @include tabs-theme.theme($theme-or-color-config);
     @include tooltip-theme.theme($theme-or-color-config);
   }
+}
+
+// @deprecated Use `all-mdc-component-themes`.
+@mixin angular-material-mdc-theme($theme-or-color-config) {
+  @include all-mdc-component-themes($theme-or-color-config);
 }

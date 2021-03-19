@@ -15,16 +15,16 @@
   $foreground: map.get($config, foreground);
 
   .mat-form-field-type-mat-native-select .mat-form-field-infix::after {
-    color: theming.color($foreground, secondary-text);
+    color: theming.get-color-from-palette($foreground, secondary-text);
   }
 
   .mat-input-element:disabled,
   .mat-form-field-type-mat-native-select.mat-form-field-disabled .mat-form-field-infix::after {
-    color: theming.color($foreground, disabled-text);
+    color: theming.get-color-from-palette($foreground, disabled-text);
   }
 
   .mat-input-element {
-    caret-color: theming.color($primary, text);
+    caret-color: theming.get-color-from-palette($primary, text);
 
     @include vendor-prefixes.input-placeholder {
       color: form-common.private-control-placeholder-color($config);
@@ -47,16 +47,16 @@
   }
 
   .mat-form-field.mat-accent .mat-input-element {
-    caret-color: theming.color($accent, text);
+    caret-color: theming.get-color-from-palette($accent, text);
   }
 
   .mat-form-field.mat-warn .mat-input-element,
   .mat-form-field-invalid .mat-input-element {
-    caret-color: theming.color($warn, text);
+    caret-color: theming.get-color-from-palette($warn, text);
   }
 
   .mat-form-field-type-mat-native-select.mat-form-field-invalid .mat-form-field-infix::after {
-    color: theming.color($warn, text);
+    color: theming.get-color-from-palette($warn, text);
   }
 }
 
@@ -64,7 +64,7 @@
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
   // The unit-less line-height from the font config.
-  $line-height: typography-utils.height($config, input);
+  $line-height: typography-utils.line-height($config, input);
 
   // The amount of space between the top of the line and the top of the actual text
   // (as a fraction of the font-size).

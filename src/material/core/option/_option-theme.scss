@@ -13,38 +13,38 @@
   $warn: map.get($config, warn);
 
   .mat-option {
-    color: theming.color($foreground, text);
+    color: theming.get-color-from-palette($foreground, text);
 
     &:hover:not(.mat-option-disabled),
     &:focus:not(.mat-option-disabled) {
-      background: theming.color($background, hover);
+      background: theming.get-color-from-palette($background, hover);
     }
 
     // In multiple mode there is a checkbox to show that the option is selected.
     &.mat-selected:not(.mat-option-multiple):not(.mat-option-disabled) {
-      background: theming.color($background, hover);
+      background: theming.get-color-from-palette($background, hover);
     }
 
     &.mat-active {
-      background: theming.color($background, hover);
-      color: theming.color($foreground, text);
+      background: theming.get-color-from-palette($background, hover);
+      color: theming.get-color-from-palette($foreground, text);
     }
 
     &.mat-option-disabled {
-      color: theming.color($foreground, hint-text);
+      color: theming.get-color-from-palette($foreground, hint-text);
     }
   }
 
   .mat-primary .mat-option.mat-selected:not(.mat-option-disabled) {
-    color: theming.color($primary, text);
+    color: theming.get-color-from-palette($primary, text);
   }
 
   .mat-accent .mat-option.mat-selected:not(.mat-option-disabled) {
-    color: theming.color($accent, text);
+    color: theming.get-color-from-palette($accent, text);
   }
 
   .mat-warn .mat-option.mat-selected:not(.mat-option-disabled) {
-    color: theming.color($warn, text);
+    color: theming.get-color-from-palette($warn, text);
   }
 }
 

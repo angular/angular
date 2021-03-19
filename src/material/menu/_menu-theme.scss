@@ -13,25 +13,25 @@
 
   .mat-menu-panel {
     @include private.private-theme-overridable-elevation(4, $config);
-    background: theming.color($background, 'card');
+    background: theming.get-color-from-palette($background, 'card');
   }
 
   .mat-menu-item {
     background: transparent;
-    color: theming.color($foreground, 'text');
+    color: theming.get-color-from-palette($foreground, 'text');
 
     &[disabled] {
       &,
       &::after,
       .mat-icon-no-color {
-        color: theming.color($foreground, 'disabled');
+        color: theming.get-color-from-palette($foreground, 'disabled');
       }
     }
   }
 
   .mat-menu-item .mat-icon-no-color,
   .mat-menu-item-submenu-trigger::after {
-    color: theming.color($foreground, 'icon');
+    color: theming.get-color-from-palette($foreground, 'icon');
   }
 
   .mat-menu-item:hover,
@@ -39,7 +39,7 @@
   .mat-menu-item.cdk-keyboard-focused,
   .mat-menu-item-highlighted {
     &:not([disabled]) {
-      background: theming.color($background, 'hover');
+      background: theming.get-color-from-palette($background, 'hover');
     }
   }
 }

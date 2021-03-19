@@ -17,8 +17,8 @@
 }
 
 @mixin _mat-toolbar-color($palette) {
-  background: theming.color($palette);
-  color: theming.color($palette, default-contrast);
+  background: theming.get-color-from-palette($palette);
+  color: theming.get-color-from-palette($palette, default-contrast);
 }
 
 @mixin _mat-toolbar-form-field-overrides {
@@ -50,8 +50,8 @@
   $foreground: map.get($config, foreground);
 
   .mat-toolbar {
-    background: theming.color($background, app-bar);
-    color: theming.color($foreground, text);
+    background: theming.get-color-from-palette($background, app-bar);
+    color: theming.get-color-from-palette($foreground, text);
 
     &.mat-primary {
       @include _mat-toolbar-color($primary);
@@ -79,7 +79,7 @@
   .mat-toolbar h4,
   .mat-toolbar h5,
   .mat-toolbar h6 {
-    @include typography-utils.level-to-styles($config, title);
+    @include typography-utils.typography-level($config, title);
     margin: 0;
   }
 }

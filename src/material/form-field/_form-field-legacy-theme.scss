@@ -13,8 +13,9 @@
   $foreground: map.get($config, foreground);
   $is-dark-theme: map.get($config, is-dark);
 
-  $label-color: theming.color($foreground, secondary-text);
-  $underline-color: theming.color($foreground, divider, if($is-dark-theme, 0.7, 0.42));
+  $label-color: theming.get-color-from-palette($foreground, secondary-text);
+  $underline-color:
+    theming.get-color-from-palette($foreground, divider, if($is-dark-theme, 0.7, 0.42));
 
   .mat-form-field-appearance-legacy {
     .mat-form-field-label {
@@ -74,7 +75,7 @@ $legacy-dedupe: 0;
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
   // The unit-less line-height from the font config.
-  $line-height: typography-utils.height($config, input);
+  $line-height: typography-utils.line-height($config, input);
   // The amount to scale the font for the floating label and subscript.
   $subscript-font-scale: 0.75;
   // The amount of space between the top of the line and the top of the actual text

@@ -1,6 +1,4 @@
 @use 'sass:map';
-@use 'sass:meta';
-@use '../../material/core/theming/theming';
 @use '../../material/core/style/layout-common';
 @use '../../material/core/focus-indicators/focus-indicators';
 
@@ -86,49 +84,5 @@
     // For all other components, render the focus indicator on focus.
   .mat-mdc-focus-indicator:focus::before {
     content: '';
-  }
-}
-
-// Mixin that applies the border color for the focus indicators.
-@mixin _mat-mdc-strong-focus-indicators-border-color($color) {
-  .mat-mdc-focus-indicator::before {
-    border-color: $color;
-  }
-}
-
-@mixin strong-focus-indicators-color($config-or-theme) {
-  $config: theming.get-color-config($config-or-theme);
-  @include _mat-mdc-strong-focus-indicators-border-color(theming.color(map.get($config, primary)));
-}
-
-/// Mixin that sets the color of the focus indicators.
-///
-/// @param {color|map} $theme-or-color
-///   If theme, focus indicators are set to the primary color of the theme. If
-///   color, focus indicators are set to that color.
-///
-/// @example
-///   .demo-dark-theme {
-///     @include mat-mdc-strong-focus-indicators-theme($dark-theme-map);
-///   }
-///
-/// @example
-///   .demo-red-theme {
-///     @include mat-mdc-strong-focus-indicators-theme(#f00);
-///   }
-/* stylelint-disable-next-line material/theme-mixin-api */
-@mixin strong-focus-indicators-theme($theme-or-color) {
-  @if meta.type-of($theme-or-color) != 'map' {
-    @include _mat-mdc-strong-focus-indicators-border-color($theme-or-color);
-  }
-  @else {
-    $theme: theming.private-legacy-get-theme($theme-or-color);
-    @include theming.private-check-duplicate-theme-styles($theme,
-      'mat-mdc-strong-focus-indicators') {
-      $color: theming.get-color-config($theme);
-      @if $color != null {
-        @include strong-focus-indicators-color($color);
-      }
-    }
   }
 }

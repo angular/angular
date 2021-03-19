@@ -11,8 +11,8 @@
   $config: theming.get-color-config($config-or-theme);
   $foreground: map.get($config, foreground);
   $is-dark-theme: map.get($config, is-dark);
-
-  $underline-color: theming.color($foreground, divider, if($is-dark-theme, 0.7, 0.42));
+  $underline-color:
+    theming.get-color-from-palette($foreground, divider, if($is-dark-theme, 0.7, 0.42));
 
   .mat-form-field-appearance-standard {
     .mat-form-field-underline {

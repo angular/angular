@@ -8,7 +8,7 @@
 @use '../../../button-toggle/button-toggle-theme';
 
 // Includes all of the density styles.
-@mixin angular-material-density($config-or-theme) {
+@mixin all-component-densities($config-or-theme) {
   // In case a theme object has been passed instead of a configuration for
   // the density system, extract the density config from the theme object.
   $config: if(theming.private-is-theme-object($config-or-theme),
@@ -31,4 +31,10 @@
   @include paginator-theme.density($config);
   @include form-field-theme.density($config);
   @include button-toggle-theme.density($config);
+}
+
+
+// @deprecated Use `all-component-densities`.
+@mixin angular-material-density($config-or-theme) {
+  @include all-component-densities($config-or-theme);
 }

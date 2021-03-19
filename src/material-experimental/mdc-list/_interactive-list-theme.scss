@@ -16,7 +16,7 @@
     }
 
     &.mdc-deprecated-list-item--selected::before {
-      background: theming.color(map.get($config, primary));
+      background: theming.get-color-from-palette(map.get($config, primary));
       opacity: map.get($state-opacities, selected);
     }
 

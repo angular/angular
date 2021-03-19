@@ -7,7 +7,7 @@
 @use 'sass:map';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
-@use '../../material/core/ripple/ripple';
+@use '../../material/core/ripple/ripple-theme';
 
 
 // Mixin that includes the checkbox theme styles with a given palette.
@@ -35,7 +35,7 @@
 @mixin _selected-ripple-colors($theme, $mdcColor) {
   .mdc-checkbox--selected ~ {
     .mat-mdc-checkbox-ripple {
-      @include ripple.theme((
+      @include ripple-theme.theme((
           foreground: (
               base: mdc-theme-color.prop-value($mdcColor)
           ),
@@ -50,9 +50,9 @@
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $primary: theming.color(map.get($config, primary));
-  $accent: theming.color(map.get($config, accent));
-  $warn: theming.color(map.get($config, warn));
+  $primary: theming.get-color-from-palette(map.get($config, primary));
+  $accent: theming.get-color-from-palette(map.get($config, accent));
+  $warn: theming.get-color-from-palette(map.get($config, warn));
 
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.
@@ -72,7 +72,7 @@
     .mat-mdc-checkbox {
       @include private-checkbox-styles-with-color(primary);
       @include mdc-form-field.core-styles($query: mdc-helpers.$mat-theme-styles-query);
-      @include ripple.theme((
+      @include ripple-theme.theme((
         foreground: (
           base: mdc-theme-color.prop-value(on-surface)
         ),

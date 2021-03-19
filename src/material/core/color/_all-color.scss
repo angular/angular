@@ -2,7 +2,7 @@
 @use '../theming/theming';
 
 // Includes all of the color styles.
-@mixin angular-material-color($config-or-theme) {
+@mixin all-component-colors($config-or-theme) {
   // In case a theme object has been passed instead of a configuration for
   // the color system, extract the color config from the theme object.
   $config: if(theming.private-is-theme-object($config-or-theme),
@@ -12,9 +12,14 @@
     @error 'No color configuration specified.';
   }
 
-  @include all-theme.angular-material-theme((
+  @include all-theme.all-component-themes((
     color: $config,
     typography: null,
     density: null,
   ));
+}
+
+// @deprecated Use `all-component-colors`.
+@mixin angular-material-color($config-or-theme) {
+  @include all-component-colors($config-or-theme);
 }

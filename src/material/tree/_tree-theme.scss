@@ -12,12 +12,12 @@
   $foreground: map.get($config, foreground);
 
   .mat-tree {
-    background: theming.color($background, 'card');
+    background: theming.get-color-from-palette($background, 'card');
   }
 
   .mat-tree-node,
   .mat-nested-tree-node {
-    color: theming.color($foreground, text);
+    color: theming.get-color-from-palette($foreground, text);
   }
 }
 

@@ -7,7 +7,7 @@
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use '@material/theme/theme' as mdc-theme;
 @use '@material/elevation/elevation-theme' as mdc-elevation-theme;
-@use '../../material/core/ripple/ripple';
+@use '../../material/core/ripple/ripple-theme';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
 
@@ -39,7 +39,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
 // which is what the ripple mixin uses. This creates a new theme that sets the color to the
 // foreground base to appropriately color the ink.
 @mixin _mat-button-ripple-ink-color($mdcColor) {
-  @include ripple.theme((
+  @include ripple-theme.theme((
     foreground: (
       base: mdc-theme-color.prop-value($mdcColor)
     ),

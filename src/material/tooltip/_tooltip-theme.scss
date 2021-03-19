@@ -18,7 +18,7 @@ $handset-vertical-padding:
   $background: map.get($config, background);
 
   .mat-tooltip {
-    background: theming.color($background, tooltip, 0.9);
+    background: theming.get-color-from-palette($background, tooltip, 0.9);
   }
 }
 

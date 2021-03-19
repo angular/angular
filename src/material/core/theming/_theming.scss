@@ -23,7 +23,7 @@ $_mat-theme-emitted-density: () !default;
 // For a given hue in a palette, return the contrast color from the map of contrast palettes.
 // @param $palette
 // @param $hue
-@function contrast($palette, $hue) {
+@function get-contrast-color-from-palette($palette, $hue) {
   @return map.get(map.get($palette, contrast), $hue);
 }
 
@@ -35,22 +35,23 @@ $_mat-theme-emitted-density: () !default;
 // @param $lighter
 // @param $darker
 // @param $text
-@function palette($base-palette, $default: 500, $lighter: 100, $darker: 700, $text: $default) {
+@function define-palette($base-palette, $default: 500, $lighter: 100, $darker: 700,
+  $text: $default) {
   $result: map.merge($base-palette, (
     default: map.get($base-palette, $default),
     lighter: map.get($base-palette, $lighter),
     darker: map.get($base-palette, $darker),
     text: map.get($base-palette, $text),
 
-    default-contrast: contrast($base-palette, $default),
-    lighter-contrast: contrast($base-palette, $lighter),
-    darker-contrast: contrast($base-palette, $darker)
+    default-contrast: get-contrast-color-from-palette($base-palette, $default),
+    lighter-contrast: get-contrast-color-from-palette($base-palette, $lighter),
+    darker-contrast: get-contrast-color-from-palette($base-palette, $darker)
   ));
 
   // For each hue in the palette, add a "-contrast" color to the map.
   @each $hue, $color in $base-palette {
     $result: map.merge($result, (
-      '#{$hue}-contrast': contrast($base-palette, $hue)
+      '#{$hue}-contrast': get-contrast-color-from-palette($base-palette, $hue)
     ));
   }
 
@@ -66,11 +67,11 @@ $_mat-theme-emitted-density: () !default;
 // @param $hue The hue from the palette to use. If this is a value between 0 and 1, it will
 //     be treated as opacity.
 // @param $opacity The alpha channel value for the color.
-@function color($palette, $hue: default, $opacity: null) {
+@function get-color-from-palette($palette, $hue: default, $opacity: null) {
   // If hueKey is a number between zero and one, then it actually contains an
   // opacity value, so recall this function with the default hue and that given opacity.
   @if meta.type-of($hue) == number and $hue >= 0 and $hue <= 1 {
-    @return color($palette, default, $hue);
+    @return get-color-from-palette($palette, default, $hue);
   }
 
   $color: map.get($palette, $hue);
@@ -109,10 +110,10 @@ $_mat-theme-emitted-density: () !default;
   @return (
     primary: $primary,
     accent: $accent,
-    warn: if($warn != null, $warn, palette(palette.$red)),
+    warn: if($warn != null, $warn, define-palette(palette.$red-palette)),
     is-dark: false,
-    foreground: palette.$light-theme-foreground,
-    background: palette.$light-theme-background,
+    foreground: palette.$light-theme-foreground-palette,
+    background: palette.$light-theme-background-palette,
   );
 }
 
@@ -122,17 +123,17 @@ $_mat-theme-emitted-density: () !default;
   @return (
     primary: $primary,
     accent: $accent,
-    warn: if($warn != null, $warn, palette(palette.$red)),
+    warn: if($warn != null, $warn, define-palette(palette.$red-palette)),
     is-dark: true,
-    foreground: palette.$dark-theme-foreground,
-    background: palette.$dark-theme-background,
+    foreground: palette.$dark-theme-foreground-palette,
+    background: palette.$dark-theme-background-palette,
   );
 }
 
 // Creates a container object for a light theme to be given to individual component theme mixins.
 // TODO: Remove legacy API and rename `$primary` to `$config`. Currently it cannot be renamed
 // as it would break existing apps that set the parameter by name.
-@function light-theme($primary, $accent: null, $warn: palette(palette.$red)) {
+@function define-light-theme($primary, $accent: null, $warn: define-palette(palette.$red-palette)) {
   // This function creates a container object for the individual component theme mixins. Consumers
   // can construct such an object by calling this function, or by building the object manually.
   // There are two possible ways to invoke this function in order to create such an object:
@@ -169,7 +170,7 @@ $_mat-theme-emitted-density: () !default;
 // Creates a container object for a dark theme to be given to individual component theme mixins.
 // TODO: Remove legacy API and rename `$primary` to `$config`. Currently it cannot be renamed
 // as it would break existing apps that set the parameter by name.
-@function dark-theme($primary, $accent: null, $warn: palette(palette.$red)) {
+@function define-dark-theme($primary, $accent: null, $warn: define-palette(palette.$red-palette)) {
   // This function creates a container object for the individual component theme mixins. Consumers
   // can construct such an object by calling this function, or by building the object manually.
   // There are two possible ways to invoke this function in order to create such an object:
@@ -267,7 +268,7 @@ $_mat-theme-emitted-density: () !default;
 //
 // The mixin keeps track of all configurations in a list that is scoped to the specified
 // id. This is necessary because a given theme can be passed to multiple disjoint theme mixins
-// (e.g. `angular-material-theme` and `angular-material-mdc-theme`) without causing any
+// (e.g. `all-component-themes` and `all-mdc-component-themes`) without causing any
 // style duplication.
 @mixin private-check-duplicate-theme-styles($theme-or-color-config, $id) {
   $theme: private-legacy-get-theme($theme-or-color-config);
@@ -327,7 +328,7 @@ $_mat-theme-emitted-density: () !default;
 
   // Optionally, consumers of this mixin can wrap contents inside so that nested
   // duplicate style checks do not report another warning. e.g. if developers include
-  // the `angular-material-theme` mixin twice, only the top-level duplicate styles check
+  // the `all-component-themes` mixin twice, only the top-level duplicate styles check
   // should report a warning. Not all individual components should report a warning too.
   $orig-mat-theme-ignore-duplication-warnings: $theme-ignore-duplication-warnings;
   $theme-ignore-duplication-warnings: true !global;

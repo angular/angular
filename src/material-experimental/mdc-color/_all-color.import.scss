@@ -92,6 +92,6 @@ $mat-mdc-mdc-text-field-outlined-idle-border, $mat-mdc-mdc-text-field-placeholde
 @forward '../mdc-form-field/form-field-focus-overlay' as mat-mdc-*;
 @forward '../mdc-form-field/form-field-theme' as mat-mdc-form-field-*;
 @forward '../mdc-theming/all-theme';
-@forward 'all-color';
+@forward 'all-color' hide all-mdc-component-colors;
 
 @import '../mdc-theming/all-theme';

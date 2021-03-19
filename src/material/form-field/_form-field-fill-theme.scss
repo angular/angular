@@ -13,10 +13,13 @@
   $foreground: map.get($config, foreground);
   $is-dark-theme: map.get($config, is-dark);
 
-  $fill-background: theming.color($foreground, base, if($is-dark-theme, 0.1, 0.04));
-  $fill-disabled-background: theming.color($foreground, base, if($is-dark-theme, 0.05, 0.02));
-  $underline-color: theming.color($foreground, divider, if($is-dark-theme, 0.5, 0.42));
-  $label-disabled-color: theming.color($foreground, disabled-text);
+  $fill-background:
+    theming.get-color-from-palette($foreground, base, if($is-dark-theme, 0.1, 0.04));
+  $fill-disabled-background:
+    theming.get-color-from-palette($foreground, base, if($is-dark-theme, 0.05, 0.02));
+  $underline-color:
+    theming.get-color-from-palette($foreground, divider, if($is-dark-theme, 0.5, 0.42));
+  $label-disabled-color: theming.get-color-from-palette($foreground, disabled-text);
 
   .mat-form-field-appearance-fill {
     .mat-form-field-flex {
@@ -62,7 +65,7 @@ $fill-dedupe: 0;
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
   // The unit-less line-height from the font config.
-  $line-height: typography-utils.height($config, input);
+  $line-height: typography-utils.line-height($config, input);
   // The amount to scale the font for the floating label and subscript.
   $subscript-font-scale: 0.75;
   // The padding on top of the infix.

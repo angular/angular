@@ -1,7 +1,9 @@
-@forward '../theming/palette' hide $amber, $blue, $blue-gray, $blue-grey, $brown, $cyan,
-$dark-theme-background, $dark-theme-foreground, $deep-orange, $deep-purple, $gray, $green, $grey,
-$indigo, $light-blue, $light-green, $light-theme-background, $light-theme-foreground, $lime,
-$orange, $pink, $purple, $red, $teal, $yellow;
+@forward '../theming/palette' hide $amber-palette, $blue-palette, $blue-gray-palette,
+$blue-grey-palette, $brown-palette, $cyan-palette, $dark-theme-background-palette,
+$dark-theme-foreground-palette, $deep-orange-palette, $deep-purple-palette, $gray-palette,
+$green-palette, $grey-palette, $indigo-palette, $light-blue-palette, $light-green-palette,
+$light-theme-background-palette, $light-theme-foreground-palette, $lime-palette, $orange-palette,
+$pink-palette, $purple-palette, $red-palette, $teal-palette, $yellow-palette;
 @forward '../theming/palette' as mat-* hide $mat-black-12-opacity, $mat-black-6-opacity,
 $mat-black-87-opacity, $mat-dark-disabled-text, $mat-dark-dividers, $mat-dark-focused,
 $mat-dark-primary-text, $mat-dark-secondary-text, $mat-light-disabled-text, $mat-light-dividers,
@@ -11,8 +13,10 @@ $mat-white-6-opacity, $mat-white-87-opacity;
 @forward '../theming/theming' as mat-*;
 @forward '../style/layout-common' as mat-*;
 @forward 'focus-indicators' hide private-strong-focus-indicators-positioning,
-strong-focus-indicators, strong-focus-indicators-color, strong-focus-indicators-theme;
+strong-focus-indicators;
+@forward 'focus-indicators-theme' hide color, theme;
 @forward 'focus-indicators' as mat-* hide mat-strong-focus-indicators-border-color;
+@forward 'focus-indicators-theme' as mat-strong-focus-indicators-*;
 
 @import '../theming/theming';
 @import '../style/layout-common';

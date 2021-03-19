@@ -9,8 +9,8 @@
   $foreground: map.get($config, foreground);
 
   .mat-sort-header-arrow {
-    $table-background: theming.color($background, 'card');
-    $text-color: theming.color($foreground, secondary-text);
+    $table-background: theming.get-color-from-palette($background, 'card');
+    $text-color: theming.get-color-from-palette($foreground, secondary-text);
 
     // Because the arrow is made up of multiple elements that are stacked on top of each other,
     // we can't use the semi-transparent color from the theme directly. If the value is a color

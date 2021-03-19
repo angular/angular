@@ -12,7 +12,7 @@
   $config: theming.get-color-config($config-or-theme);
   $foreground: map.get($config, foreground);
   $background: map.get($config, background);
-  $divider-color: theming.color($foreground, divider);
+  $divider-color: theming.get-color-from-palette($foreground, divider);
 
   .mat-button-toggle-standalone,
   .mat-button-toggle-group {
@@ -25,19 +25,19 @@
   }
 
   .mat-button-toggle {
-    color: theming.color($foreground, hint-text);
+    color: theming.get-color-from-palette($foreground, hint-text);
 
     .mat-button-toggle-focus-overlay {
-      background-color: theming.color($background, focused-button);
+      background-color: theming.get-color-from-palette($background, focused-button);
     }
   }
 
   .mat-button-toggle-appearance-standard {
-    color: theming.color($foreground, text);
-    background: theming.color($background, card);
+    color: theming.get-color-from-palette($foreground, text);
+    background: theming.get-color-from-palette($background, card);
 
     .mat-button-toggle-focus-overlay {
-      background-color: theming.color($background, focused-button, 1);
+      background-color: theming.get-color-from-palette($background, focused-button, 1);
     }
   }
 
@@ -59,24 +59,24 @@
   }
 
   .mat-button-toggle-checked {
-    background-color: theming.color($background, selected-button);
-    color: theming.color($foreground, secondary-text);
+    background-color: theming.get-color-from-palette($background, selected-button);
+    color: theming.get-color-from-palette($foreground, secondary-text);
 
     &.mat-button-toggle-appearance-standard {
-      color: theming.color($foreground, text);
+      color: theming.get-color-from-palette($foreground, text);
     }
   }
 
   .mat-button-toggle-disabled {
-    color: theming.color($foreground, disabled-button);
-    background-color: theming.color($background, disabled-button-toggle);
+    color: theming.get-color-from-palette($foreground, disabled-button);
+    background-color: theming.get-color-from-palette($background, disabled-button-toggle);
 
     &.mat-button-toggle-appearance-standard {
-      background: theming.color($background, card);
+      background: theming.get-color-from-palette($background, card);
     }
 
     &.mat-button-toggle-checked {
-      background-color: theming.color($background, selected-disabled-button);
+      background-color: theming.get-color-from-palette($background, selected-disabled-button);
     }
   }
 

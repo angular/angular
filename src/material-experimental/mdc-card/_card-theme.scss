@@ -25,7 +25,7 @@
     // Card subtitles are an Angular Material construct (not MDC), so we explicitly set their
     // color to secondary text here.
     .mat-mdc-card-subtitle {
-      color: theming.color($foreground, secondary-text);
+      color: theming.get-color-from-palette($foreground, secondary-text);
     }
   }
 

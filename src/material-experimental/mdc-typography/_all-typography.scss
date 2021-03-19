@@ -26,7 +26,7 @@
 /// @param {Map} $button The font settings for the button font level.
 /// @param {Map} $overline The font settings for the overline font level.
 /// @return {Map} A map containing font settings for each of the levels in the Material Design spec.
-@function config(
+@function define-typography-config(
   $font-family: mdc-typography.$font-family,
   $headline-1:  mdc-helpers.mat-typography-config-level-from-mdc(headline1),
   $headline-2:  mdc-helpers.mat-typography-config-level-from-mdc(headline2),
@@ -72,18 +72,23 @@
   @return map.merge($config, (font-family: $font-family));
 }
 
-@mixin angular-material-mdc-typography($config-or-theme: null) {
+@mixin all-mdc-component-typographies($config-or-theme: null) {
   $config: if(theming.private-is-theme-object($config-or-theme),
       theming.get-typography-config($config-or-theme), $config-or-theme);
 
   // If no actual color configuration has been specified, create a default one.
   @if $config == null {
-    $config: typography.config();
+    $config: typography.define-typography-config();
   }
 
-  @include all-theme.angular-material-mdc-theme((
+  @include all-theme.all-mdc-component-themes((
     color: null,
     density: null,
     typography: $config,
   ));
+}
+
+// @deprecated Use `all-mdc-component-typographies`.
+@mixin angular-material-mdc-typography($config-or-theme: null) {
+  @include all-mdc-component-typographies($config-or-theme);
 }

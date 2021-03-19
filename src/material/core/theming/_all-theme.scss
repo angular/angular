@@ -1,5 +1,5 @@
 // Import all the theming functionality.
-@use '../core';
+@use '../core-theme';
 @use '../../autocomplete/autocomplete-theme';
 @use '../../badge/badge-theme';
 @use '../../bottom-sheet/bottom-sheet-theme';
@@ -37,10 +37,10 @@
 @use './theming';
 
 // Create a theme.
-@mixin angular-material-theme($theme-or-color-config) {
+@mixin all-component-themes($theme-or-color-config) {
   $dedupe-key: 'angular-material-theme';
   @include theming.private-check-duplicate-theme-styles($theme-or-color-config, $dedupe-key) {
-    @include core.theme($theme-or-color-config);
+    @include core-theme.theme($theme-or-color-config);
     @include autocomplete-theme.theme($theme-or-color-config);
     @include badge-theme.theme($theme-or-color-config);
     @include bottom-sheet-theme.theme($theme-or-color-config);
@@ -76,4 +76,9 @@
     @include tree-theme.theme($theme-or-color-config);
     @include snack-bar-theme.theme($theme-or-color-config);
   }
+}
+
+// @deprecated Use `all-component-themes`.
+@mixin angular-material-theme($theme-or-color-config) {
+  @include all-component-themes($theme-or-color-config);
 }

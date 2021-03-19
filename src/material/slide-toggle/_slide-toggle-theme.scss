@@ -8,19 +8,19 @@
 @mixin _mat-slide-toggle-checked($palette, $thumb-checked-hue) {
   &.mat-checked {
     .mat-slide-toggle-thumb {
-      background-color: theming.color($palette, $thumb-checked-hue);
+      background-color: theming.get-color-from-palette($palette, $thumb-checked-hue);
     }
 
     .mat-slide-toggle-bar {
       // Opacity is determined from the specs for the selection controls.
       // See: https://material.io/design/components/selection-controls.html#specs
-      background-color: theming.color($palette, $thumb-checked-hue, 0.54);
+      background-color: theming.get-color-from-palette($palette, $thumb-checked-hue, 0.54);
     }
 
     .mat-ripple-element {
       // Set no opacity for the ripples because the ripple opacity will be adjusted dynamically
       // based on the type of interaction with the slide-toggle (e.g. for hover, focus)
-      background-color: theming.color($palette, $thumb-checked-hue);
+      background-color: theming.get-color-from-palette($palette, $thumb-checked-hue);
     }
   }
 }
@@ -43,8 +43,8 @@
   $thumb-unchecked-hue: if($is-dark, 400, 50);
   $thumb-checked-hue: default;
 
-  $bar-unchecked-color: theming.color($foreground, disabled);
-  $ripple-unchecked-color: theming.color($foreground, base);
+  $bar-unchecked-color: theming.get-color-from-palette($foreground, disabled);
+  $ripple-unchecked-color: theming.get-color-from-palette($foreground, base);
 
   .mat-slide-toggle {
     @include _mat-slide-toggle-checked($accent, $thumb-checked-hue);
@@ -66,7 +66,7 @@
 
   .mat-slide-toggle-thumb {
     @include private.private-theme-elevation(1, $config);
-    background-color: theming.color(palette.$grey, $thumb-unchecked-hue);
+    background-color: theming.get-color-from-palette(palette.$grey-palette, $thumb-unchecked-hue);
   }
 
   .mat-slide-toggle-bar {

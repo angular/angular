@@ -160,6 +160,7 @@ export function checkPackageJsonMigrations(
 export function checkMaterialPackage(packagePath: string): string[] {
   const prebuiltThemesPath = join(packagePath, 'prebuilt-themes');
   const themingFilePath = join(packagePath, '_theming.scss');
+  const newThemingFilePath = join(packagePath, '_index.scss');
   const failures: string[] = [];
 
   if (glob('*.css', {cwd: prebuiltThemesPath}).length === 0) {
@@ -167,7 +168,11 @@ export function checkMaterialPackage(packagePath: string): string[] {
   }
 
   if (!existsSync(themingFilePath)) {
-    failures.push('The theming bundle could not be found.');
+    failures.push('Legacy theming bundle could not be found.');
+  }
+
+  if (!existsSync(newThemingFilePath)) {
+    failures.push('New theming bundle could not be found.');
   }
 
   return failures;
@@ -178,9 +183,16 @@ export function checkMaterialPackage(packagePath: string): string[] {
  */
 export function checkCdkPackage(packagePath: string): string[] {
   const prebuiltFiles = glob('*-prebuilt.css', {cwd: packagePath}).map(path => basename(path));
-  return ['overlay', 'a11y', 'text-field']
+  const newApiFilePath = join(packagePath, '_index.scss');
+  const failures = ['overlay', 'a11y', 'text-field']
       .filter(name => !prebuiltFiles.includes(`${name}-prebuilt.css`))
       .map(name => `Could not find the prebuilt ${name} styles.`);
+
+  if (!existsSync(newApiFilePath)) {
+    failures.push('New Sass API bundle could not be found.');
+  }
+
+  return failures;
 }
 
 /**

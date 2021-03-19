@@ -13,33 +13,33 @@
 
   .mat-list-base {
     .mat-list-item {
-      color: theming.color($foreground, text);
+      color: theming.get-color-from-palette($foreground, text);
     }
 
     .mat-list-option {
-      color: theming.color($foreground, text);
+      color: theming.get-color-from-palette($foreground, text);
     }
 
     .mat-subheader {
-      color: theming.color($foreground, secondary-text);
+      color: theming.get-color-from-palette($foreground, secondary-text);
     }
   }
 
   .mat-list-item-disabled {
-    background-color: theming.color($background, disabled-list-option);
+    background-color: theming.get-color-from-palette($background, disabled-list-option);
   }
 
   .mat-list-option,
   .mat-nav-list .mat-list-item,
   .mat-action-list .mat-list-item {
     &:hover, &:focus {
-      background: theming.color($background, 'hover');
+      background: theming.get-color-from-palette($background, 'hover');
     }
   }
 
   .mat-list-single-selected-option {
     &, &:hover, &:focus {
-      background: theming.color($background, hover, 0.12);
+      background: theming.get-color-from-palette($background, hover, 0.12);
     }
   }
 }

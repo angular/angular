@@ -39,13 +39,13 @@
 
 
 // Includes all of the typographic styles.
-@mixin angular-material-typography($config-or-theme: null) {
+@mixin all-component-typographies($config-or-theme: null) {
   $config: if(theming.private-is-theme-object($config-or-theme),
       theming.get-typography-config($config-or-theme), $config-or-theme);
 
   // If no actual color configuration has been specified, create a default one.
   @if not $config {
-    $config: typography.config();
+    $config: typography.define-typography-config();
   }
 
   // TODO: COMP-309: Do not use individual mixins. Instead, use the all-theme mixin and only
@@ -55,7 +55,7 @@
   // would then load `all-theme` again. This ultimately results a circular dependency.
 
   @include badge-theme.typography($config);
-  @include typography.base-typography($config);
+  @include typography.typography-hierarchy($config);
   @include autocomplete-theme.typography($config);
   @include bottom-sheet-theme.typography($config);
   @include button-theme.typography($config);
@@ -91,4 +91,9 @@
   @include optgroup-theme.typography($config);
   @include snack-bar-theme.typography($config);
   @include tree-theme.typography($config);
+}
+
+// @deprecated Use `all-component-typographies`.
+@mixin angular-material-typography($config-or-theme: null) {
+  @include all-component-typographies($config-or-theme);
 }

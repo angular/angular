@@ -16,7 +16,7 @@
   $background: map.get($config, background);
   $foreground: map.get($config, foreground);
   $primary: map.get($config, primary);
-  $background-color: theming.color($background, 'card');
+  $background-color: theming.get-color-from-palette($background, 'card');
 
   .mat-row-hover-content-host-cell {
     position: relative;
@@ -49,7 +49,7 @@
     position: relative;
 
     &::after {
-      background-color: theming.color($primary);
+      background-color: theming.get-color-from-palette($primary);
       bottom: 0;
       content: '';
       height: 2px;
@@ -81,7 +81,7 @@
   .mat-edit-pane {
     @include private.private-theme-elevation(2, $config);
     background: $background-color;
-    color: theming.color($foreground, text);
+    color: theming.get-color-from-palette($foreground, text);
     display: block;
     padding: 16px 24px;
 
@@ -149,7 +149,7 @@
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
   [mat-edit-title] {
-    @include typography-utils.level-to-styles($config, title);
+    @include typography-utils.typography-level($config, title);
   }
 }
 

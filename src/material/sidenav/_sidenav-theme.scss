@@ -13,19 +13,19 @@
   $background: map.get($config, background);
   $foreground: map.get($config, foreground);
 
-  $drawer-background-color: theming.color($background, dialog);
-  $drawer-container-background-color:  theming.color($background, background);
-  $drawer-push-background-color: theming.color($background, dialog);
-  $drawer-side-border: solid 1px theming.color($foreground, divider);
+  $drawer-background-color: theming.get-color-from-palette($background, dialog);
+  $drawer-container-background-color:  theming.get-color-from-palette($background, background);
+  $drawer-push-background-color: theming.get-color-from-palette($background, dialog);
+  $drawer-side-border: solid 1px theming.get-color-from-palette($foreground, divider);
 
   .mat-drawer-container {
     background-color: $drawer-container-background-color;
-    color: theming.color($foreground, text);
+    color: theming.get-color-from-palette($foreground, text);
   }
 
   .mat-drawer {
     background-color: $drawer-background-color;
-    color: theming.color($foreground, text);
+    color: theming.get-color-from-palette($foreground, text);
 
     &.mat-drawer-push {
       background-color: $drawer-push-background-color;
@@ -59,7 +59,7 @@
 
   .mat-drawer-backdrop.mat-drawer-shown {
     $opacity: 0.6;
-    $backdrop-color: theming.color($background, card, $opacity);
+    $backdrop-color: theming.get-color-from-palette($background, card, $opacity);
 
     @if (meta.type-of($backdrop-color) == color) {
       // We use invert() here to have the darken the background color expected to be used. If the

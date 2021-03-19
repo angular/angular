@@ -1,0 +1,76 @@
+@use './palette';
+
+// @deprecated Use `$red-palette` instead
+$red: palette.$red-palette;
+
+// @deprecated Use `$pink-palette` instead
+$pink: palette.$pink-palette;
+
+// @deprecated Use `$indigo-palette` instead
+$indigo: palette.$indigo-palette;
+
+// @deprecated Use `$purple-palette` instead.
+$purple: palette.$purple-palette;
+
+// @deprecated Use `$deep-purple-palette` instead.
+$deep-purple: palette.$deep-purple-palette;
+
+// @deprecated Use `$blue-palette` instead.
+$blue: palette.$blue-palette;
+
+// @deprecated Use `$light-blue-palette` instead.
+$light-blue: palette.$light-blue-palette;
+
+// @deprecated Use `$cyan-palette` instead.
+$cyan: palette.$cyan-palette;
+
+// @deprecated Use `$teal-palette` instead.
+$teal: palette.$teal-palette;
+
+// @deprecated Use `$green-palette` instead.
+$green: palette.$green-palette;
+
+// @deprecated Use `$light-green-palette` instead.
+$light-green: palette.$light-green-palette;
+
+// @deprecated Use `$lime-palette` instead.
+$lime: palette.$lime-palette;
+
+// @deprecated Use `$yellow-palette` instead.
+$yellow: palette.$yellow-palette;
+
+// @deprecated Use `$amber-palette` instead.
+$amber: palette.$amber-palette;
+
+// @deprecated Use `$orange-palette` instead.
+$orange: palette.$orange-palette;
+
+// @deprecated Use `$deep-orange-palette` instead.
+$deep-orange: palette.$deep-orange-palette;
+
+// @deprecated Use `$brown-palette` instead.
+$brown: palette.$brown-palette;
+
+// @deprecated Use `$grey-palette` instead.
+$grey: palette.$grey-palette;
+
+// @deprecated Use `$gray-palette` instead.
+$gray: palette.$gray-palette;
+
+// @deprecated Use `$blue-grey-palette` instead.
+$blue-grey: palette.$blue-grey-palette;
+
+// @deprecated Use `$blue-gray-palette` instead.
+$blue-gray: palette.$blue-gray-palette;
+
+// @deprecated Use `$light-theme-background-palette` instead.
+$light-theme-background: palette.$light-theme-background-palette;
+
+// @deprecated Use `$dark-theme-background-palette` instead.
+$dark-theme-background: palette.$dark-theme-background-palette;
+
+// @deprecated Use `$light-theme-foreground-palette` instead.
+$light-theme-foreground: palette.$light-theme-foreground-palette;
+
+// @deprecated Use `$dark-theme-foreground-palette` instead.
+$dark-theme-foreground: palette.$dark-theme-foreground-palette;

@@ -1,59 +1,52 @@
-@use '../material/core/color/all-color' as color-all-color;
+@use '../material' as mat;
 @use '../material/core/density/private/all-density' as private-all-density;
-@use '../material/core/focus-indicators/focus-indicators' as focus-indicators-focus-indicators;
-@use '../material/core/theming/all-theme' as theming-all-theme;
 @use '../material-experimental/column-resize/column-resize';
-@use '../material-experimental/mdc-helpers/mdc-helpers';
-@use '../material-experimental/mdc-helpers/focus-indicators';
-@use '../material-experimental/mdc-color/all-color';
-@use '../material-experimental/mdc-theming/all-theme';
-@use '../material-experimental/mdc-typography/all-typography';
-@use '../material-experimental/mdc-density/all-density';
-@use '../material-experimental/mdc-slider/slider-theme';
+@use '../material-experimental/mdc-helpers/focus-indicators-theme' as mdc-focus-indicators-theme;
+@use '../material-experimental/mdc-helpers/focus-indicators' as mdc-focus-indicators;
+@use '../material-experimental/mdc-color/all-color' as mdc-all-color;
+@use '../material-experimental/mdc-theming/all-theme' as mdc-all-theme;
+@use '../material-experimental/mdc-density/all-density' as mdc-all-density;
+@use '../material-experimental/mdc-slider/slider-theme' as mdc-slider-theme;
 @use '../material-experimental/popover-edit/popover-edit';
-@use '../material-experimental/mdc-table/table-theme';
-@use '../material/core/core';
-@use '../material/core/theming/palette';
-@use '../material/core/theming/theming';
 
 // Plus imports for other components in your app.
 
 // Define the default (light) theme.
-$candy-app-primary: theming.palette(palette.$indigo);
-$candy-app-accent: theming.palette(palette.$pink, A200, A100, A400);
-$candy-app-theme: theming.light-theme((
-    // Define the default colors for our app.
-    color: (
-        primary: $candy-app-primary,
-        accent: $candy-app-accent
-    ),
-    // Define the default typography for our app.
-    typography: all-typography.config(),
-    // Define the default density level for our app.
-    density: 0,
+$candy-app-primary: mat.define-palette(mat.$indigo-palette);
+$candy-app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$candy-app-theme: mat.define-light-theme((
+  // Define the default colors for our app.
+  color: (
+    primary: $candy-app-primary,
+    accent: $candy-app-accent
+  ),
+  // Define the default typography for our app.
+  typography: mat.define-typography-config(),
+  // Define the default density level for our app.
+  density: 0,
 ));
 
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // **Be sure that you only ever include this mixin once!**
-@include core.core($candy-app-theme);
+@include mat.core($candy-app-theme);
 
 // Include the default theme styles.
-@include theming-all-theme.angular-material-theme($candy-app-theme);
-@include all-theme.angular-material-mdc-theme($candy-app-theme);
+@include mat.all-component-themes($candy-app-theme);
+@include mdc-all-theme.all-mdc-component-themes($candy-app-theme);
 @include column-resize.theme($candy-app-theme);
 @include popover-edit.theme($candy-app-theme);
-// We add this in manually for now, because it isn't included in `angular-material-mdc-theme`.
-@include slider-theme.theme($candy-app-theme);
+// We add this in manually for now, because it isn't included in `all-mdc-component-themes`.
+@include mdc-slider-theme.theme($candy-app-theme);
 
 .demo-strong-focus {
   // Include base styles for strong focus indicators.
-  @include focus-indicators-focus-indicators.strong-focus-indicators();
-  @include focus-indicators.strong-focus-indicators();
+  @include mat.strong-focus-indicators();
+  @include mdc-focus-indicators.strong-focus-indicators();
 
   // Include the default theme for focus indicators.
-  @include focus-indicators-focus-indicators.strong-focus-indicators-theme($candy-app-theme);
-  @include focus-indicators.strong-focus-indicators-theme($candy-app-theme);
+  @include mat.strong-focus-indicators-theme($candy-app-theme);
+  @include mdc-focus-indicators-theme.theme($candy-app-theme);
 }
 
 // Include the alternative theme styles inside of a block with a CSS class. You can make this
@@ -62,23 +55,23 @@ $candy-app-theme: theming.light-theme((
 // default theme.
 .demo-unicorn-dark-theme {
   // Create the color palettes used in our dark theme.
-  $dark-primary: theming.palette(palette.$blue-grey);
-  $dark-accent: theming.palette(palette.$amber, A200, A100, A400);
-  $dark-warn: theming.palette(palette.$deep-orange);
-  $dark-colors: theming.dark-theme($dark-primary, $dark-accent, $dark-warn);
+  $dark-primary: mat.define-palette(mat.$blue-grey-palette);
+  $dark-accent: mat.define-palette(mat.$amber-palette, A200, A100, A400);
+  $dark-warn: mat.define-palette(mat.$deep-orange-palette);
+  $dark-colors: mat.define-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
   // Include the dark theme color styles.
-  @include color-all-color.angular-material-color($dark-colors);
-  @include all-color.angular-material-mdc-color($dark-colors);
+  @include mat.all-component-colors($dark-colors);
+  @include mdc-all-color.all-mdc-component-colors($dark-colors);
   @include column-resize.color($dark-colors);
   @include popover-edit.color($dark-colors);
-  // We add this in manually for now, because it isn't included in `angular-material-mdc-theme`.
-  @include slider-theme.color($dark-colors);
+  // We add this in manually for now, because it isn't included in `all-mdc-component-themes`.
+  @include mdc-slider-theme.color($dark-colors);
 
   // Include the dark theme colors for focus indicators.
   .demo-strong-focus {
-    @include focus-indicators-focus-indicators.strong-focus-indicators-color($dark-colors);
-    @include focus-indicators.strong-focus-indicators-color($dark-colors);
+    @include mat.strong-focus-indicators-color($dark-colors);
+    @include mdc-focus-indicators-theme.color($dark-colors);
   }
 }
 
@@ -88,7 +81,7 @@ $candy-app-theme: theming.light-theme((
 $density-scales: (-1, -2, minimum, maximum);
 @each $density in $density-scales {
   .demo-density-#{$density} {
-    @include private-all-density.angular-material-density($density);
-    @include all-density.angular-material-mdc-density($density);
+    @include private-all-density.all-component-densities($density);
+    @include mdc-all-density.all-mdc-component-densities($density);
   }
 }

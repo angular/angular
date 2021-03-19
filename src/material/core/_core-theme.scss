@@ -1,0 +1,58 @@
+@use 'sass:map';
+@use 'theming/theming';
+@use './style/private';
+@use './ripple/ripple-theme';
+@use './option/option-theme';
+@use './option/optgroup-theme';
+@use './selection/pseudo-checkbox/pseudo-checkbox-theme';
+@use './style/elevation';
+
+
+@mixin color($config-or-theme) {
+  $config: theming.get-color-config($config-or-theme);
+  // Wrapper element that provides the theme background when the user's content isn't
+  // inside of a `mat-sidenav-container`. Note that we need to exclude the ampersand
+  // selector in case the mixin is included at the top level.
+  .mat-app-background#{if(&, ', &.mat-app-background', '')} {
+    $background: map.get($config, background);
+    $foreground: map.get($config, foreground);
+
+    background-color: theming.get-color-from-palette($background, background);
+    color: theming.get-color-from-palette($foreground, text);
+  }
+
+  // Provides external CSS classes for each elevation value. Each CSS class is formatted as
+  // `mat-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the element is
+  // elevated.
+  @for $zValue from 0 through 24 {
+    .#{elevation.$prefix}#{$zValue} {
+      @include private.private-theme-elevation($zValue, $config);
+    }
+  }
+
+  // Marker that is used to determine whether the user has added a theme to their page.
+  @at-root {
+    .mat-theme-loaded-marker {
+      display: none;
+    }
+  }
+}
+
+// Mixin that renders all of the core styles that depend on the theme.
+@mixin theme($theme-or-color-config) {
+  $theme: theming.private-legacy-get-theme($theme-or-color-config);
+  // Wrap the sub-theme includes in the duplicate theme styles mixin. This ensures that
+  // there won't be multiple warnings. e.g. if `mat-core-theme` reports a warning, then
+  // the imported themes (such as `mat-ripple-theme`) should not report again.
+  @include theming.private-check-duplicate-theme-styles($theme, 'mat-core') {
+    @include ripple-theme.theme($theme);
+    @include option-theme.theme($theme);
+    @include optgroup-theme.theme($theme);
+    @include pseudo-checkbox-theme.theme($theme);
+
+    $color: theming.get-color-config($theme);
+    @if $color != null {
+      @include color($color);
+    }
+  }
+}

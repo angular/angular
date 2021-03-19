@@ -9,8 +9,8 @@
 
   .mat-autocomplete-panel {
     @include private.private-theme-overridable-elevation(4, $config);
-    background: theming.color($background, card);
-    color: theming.color($foreground, text);
+    background: theming.get-color-from-palette($background, card);
+    color: theming.get-color-from-palette($foreground, text);
 
     // Selected options in autocompletes should not be gray, but we
     // only want to override the background for selected options if
@@ -18,10 +18,10 @@
     // made here because base option styles are shared between the
     // autocomplete and the select.
     .mat-option.mat-selected:not(.mat-active):not(:hover) {
-      background: theming.color($background, card);
+      background: theming.get-color-from-palette($background, card);
 
       &:not(.mat-option-disabled) {
-        color: theming.color($foreground, text);
+        color: theming.get-color-from-palette($foreground, text);
       }
     }
   }

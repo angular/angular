@@ -1,22 +1,5 @@
-// Core styles that enable monitoring autofill state of text fields.
-@mixin text-field {
-  // Keyframes that apply no styles, but allow us to monitor when an text field becomes autofilled
-  // by watching for the animation events that are fired when they start. Note: the /*!*/ comment is
-  // needed to prevent LibSass from stripping the keyframes out.
-  // Based on: https://medium.com/@brunn/detecting-autofilled-fields-in-javascript-aed598d25da7
-  @keyframes cdk-text-field-autofill-start {/*!*/}
-  @keyframes cdk-text-field-autofill-end {/*!*/}
-
-  .cdk-text-field-autofill-monitored:-webkit-autofill {
-    // Since Chrome 80 we need a 1ms delay, or the animationstart event won't fire.
-    animation: cdk-text-field-autofill-start 0s 1ms;
-  }
-
-  .cdk-text-field-autofill-monitored:not(:-webkit-autofill) {
-    // Since Chrome 80 we need a 1ms delay, or the animationstart event won't fire.
-    animation: cdk-text-field-autofill-end 0s 1ms;
-  }
-
+// Structural styles for the autosize text fields.
+@mixin text-field-autosize() {
   // Remove the resize handle on autosizing textareas, because whatever height
   // the user resized to will be overwritten once they start typing again.
   textarea.cdk-textarea-autosize {
@@ -44,6 +27,26 @@
   }
 }
 
+// Core styles that enable monitoring autofill state of text fields.
+@mixin text-field-autofill() {
+  // Keyframes that apply no styles, but allow us to monitor when an text field becomes autofilled
+  // by watching for the animation events that are fired when they start. Note: the /*!*/ comment is
+  // needed to prevent LibSass from stripping the keyframes out.
+  // Based on: https://medium.com/@brunn/detecting-autofilled-fields-in-javascript-aed598d25da7
+  @keyframes cdk-text-field-autofill-start {/*!*/}
+  @keyframes cdk-text-field-autofill-end {/*!*/}
+
+  .cdk-text-field-autofill-monitored:-webkit-autofill {
+    // Since Chrome 80 we need a 1ms delay, or the animationstart event won't fire.
+    animation: cdk-text-field-autofill-start 0s 1ms;
+  }
+
+  .cdk-text-field-autofill-monitored:not(:-webkit-autofill) {
+    // Since Chrome 80 we need a 1ms delay, or the animationstart event won't fire.
+    animation: cdk-text-field-autofill-end 0s 1ms;
+  }
+}
+
 @mixin _cdk-textarea-autosize-measuring-base {
   // Having 2px top and bottom padding seems to fix a bug where Chrome gets an incorrect
   // measurement. We just have to account for it later and subtract it off the final result.
@@ -57,7 +60,7 @@ $autofill-color-frame-count: 0;
 // Mixin used to apply custom background and foreground colors to an autofilled text field.
 // Based on: https://stackoverflow.com/questions/2781549/
 // removing-input-background-colour-for-chrome-autocomplete#answer-37432260
-@mixin autofill-color($background, $foreground:'') {
+@mixin text-field-autofill-color($background, $foreground:'') {
   @keyframes cdk-text-field-autofill-color-#{$autofill-color-frame-count} {
     to {
       background: $background;
@@ -78,4 +81,10 @@ $autofill-color-frame-count: 0;
 
   $autofill-color-frame-count:
       $autofill-color-frame-count + 1 !global;
+}
+
+// @deprecated Use `autosize` and `autofill` instead.
+@mixin text-field {
+  @include text-field-autosize();
+  @include text-field-autofill();
 }

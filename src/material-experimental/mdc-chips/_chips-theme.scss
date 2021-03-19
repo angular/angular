@@ -20,11 +20,11 @@
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
-  $primary: theming.color(map.get($config, primary));
-  $accent: theming.color(map.get($config, accent));
-  $warn: theming.color(map.get($config, warn));
+  $primary: theming.get-color-from-palette(map.get($config, primary));
+  $accent: theming.get-color-from-palette(map.get($config, accent));
+  $warn: theming.get-color-from-palette(map.get($config, warn));
   $background: map.get($config, background);
-  $unselected-background: theming.color($background, unselected-chip);
+  $unselected-background: theming.get-color-from-palette($background, unselected-chip);
 
   // Save original values of MDC global variables. We need to save these so we can restore the
   // variables to their original values and prevent unintended side effects from using this mixin.

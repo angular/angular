@@ -21,15 +21,17 @@
   $is-dark-theme: map.get($config, is-dark);
 
   // Label colors. Required is used for the `*` star shown in the label.
-  $label-color: theming.color($foreground, secondary-text, if($is-dark-theme, 0.7, 0.6));
-  $focused-label-color: theming.color($primary, text);
-  $required-label-color: theming.color($accent, text);
+  $label-color:
+    theming.get-color-from-palette($foreground, secondary-text, if($is-dark-theme, 0.7, 0.6));
+  $focused-label-color: theming.get-color-from-palette($primary, text);
+  $required-label-color: theming.get-color-from-palette($accent, text);
 
   // Underline colors.
-  $underline-color-base: theming.color($foreground, divider, if($is-dark-theme, 1, 0.87));
-  $underline-color-accent: theming.color($accent, text);
-  $underline-color-warn: theming.color($warn, text);
-  $underline-focused-color: theming.color($primary, text);
+  $underline-color-base:
+    theming.get-color-from-palette($foreground, divider, if($is-dark-theme, 1, 0.87));
+  $underline-color-accent: theming.get-color-from-palette($accent, text);
+  $underline-color-warn: theming.get-color-from-palette($warn, text);
+  $underline-focused-color: theming.get-color-from-palette($primary, text);
 
   .mat-form-field-label {
     color: $label-color;
@@ -135,7 +137,7 @@ $dedupe: 0;
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
   // The unit-less line-height from the font config.
-  $line-height: typography-utils.height($config, input);
+  $line-height: typography-utils.line-height($config, input);
 
   // The amount to scale the font for the floating label and subscript.
   $subscript-font-scale: 0.75;
@@ -161,7 +163,7 @@ $dedupe: 0;
   $wrapper-padding-bottom: ($subscript-margin-top + $line-height) * $subscript-font-scale;
 
   .mat-form-field {
-    @include typography-utils.level-to-styles($config, input);
+    @include typography-utils.typography-level($config, input);
   }
 
   .mat-form-field-wrapper {

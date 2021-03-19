@@ -39,7 +39,7 @@
   .mat-mdc-simple-snack-bar .mat-mdc-snack-bar-actions .mdc-snackbar__action {
     $is-dark-theme: map.get($config, is-dark);
     $accent: map.get($config, accent);
-    color: if($is-dark-theme, inherit, theming.color($accent, text));
+    color: if($is-dark-theme, inherit, theming.get-color-from-palette($accent, text));
 
     .mat-ripple-element {
       background-color: currentColor;

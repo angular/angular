@@ -12,23 +12,23 @@
   $background: map.get($config, background);
 
   .mat-paginator {
-    background: theming.color($background, 'card');
+    background: theming.get-color-from-palette($background, 'card');
   }
 
   .mat-paginator,
   .mat-paginator-page-size .mat-select-trigger {
-    color: theming.color($foreground, secondary-text);
+    color: theming.get-color-from-palette($foreground, secondary-text);
   }
 
   .mat-paginator-decrement,
   .mat-paginator-increment {
-    border-top: 2px solid theming.color($foreground, 'icon');
-    border-right: 2px solid theming.color($foreground, 'icon');
+    border-top: 2px solid theming.get-color-from-palette($foreground, 'icon');
+    border-right: 2px solid theming.get-color-from-palette($foreground, 'icon');
   }
 
   .mat-paginator-first,
   .mat-paginator-last {
-    border-top: 2px solid theming.color($foreground, 'icon');
+    border-top: 2px solid theming.get-color-from-palette($foreground, 'icon');
   }
 
   .mat-icon-button[disabled] {
@@ -36,7 +36,7 @@
     .mat-paginator-increment,
     .mat-paginator-first,
     .mat-paginator-last {
-      border-color: theming.color($foreground, 'disabled');
+      border-color: theming.get-color-from-palette($foreground, 'disabled');
     }
   }
 }

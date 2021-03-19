@@ -14,13 +14,13 @@
     // Use the primary text on the dark theme, even though the lighter one uses
     // a secondary, because the contrast on the light primary text is poor.
     color: if($is-dark-theme, palette.$dark-primary-text, palette.$light-secondary-text);
-    background: if($is-dark-theme, map.get(palette.$grey, 50), #323232);
+    background: if($is-dark-theme, map.get(palette.$grey-palette, 50), #323232);
 
     @include private.private-theme-elevation(6, $config);
   }
 
   .mat-simple-snackbar-action {
-    color: if($is-dark-theme, inherit, theming.color($accent, text));
+    color: if($is-dark-theme, inherit, theming.get-color-from-palette($accent, text));
   }
 }
 

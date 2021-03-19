@@ -41,11 +41,13 @@
 @forward '../sort/sort-theme.import';
 @forward '../tabs/tabs-theme.import';
 @forward 'typography/all-typography';
-@forward 'core' hide color, core, theme;
-@forward 'core' as mat-* hide mat-color, mat-mdc-core, mat-mdc-strong-focus-indicators-positioning,
-mat-theme;
-@forward 'core' as mat-core-* hide mat-core-core, mat-core-mdc-core,
+@forward 'core' hide core;
+@forward 'core-theme' hide color, theme;
+@forward 'core' as mat-* hide mat-mdc-core, mat-mdc-strong-focus-indicators-positioning;
+@forward 'core-theme' as mat-* hide mat-color, mat-theme;
+@forward 'core' as mat-core-* hide mat-core-mdc-core,
 mat-core-mdc-strong-focus-indicators-positioning;
+@forward 'core-theme' as mat-core-*;
 
 @import '../../cdk/overlay/overlay';
 @import '../../cdk/a11y/a11y';

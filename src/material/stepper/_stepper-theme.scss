@@ -18,7 +18,7 @@
     &.cdk-keyboard-focused,
     &.cdk-program-focused,
     &:hover {
-      background-color: theming.color($background, hover);
+      background-color: theming.get-color-from-palette($background, hover);
     }
 
     // On touch devices the :hover state will linger on the element after a tap.
@@ -34,75 +34,75 @@
     .mat-step-optional {
       // TODO(josephperrott): Update to using a corrected disabled-text contrast
       // instead of secondary-text.
-      color: theming.color($foreground, secondary-text);
+      color: theming.get-color-from-palette($foreground, secondary-text);
     }
 
     .mat-step-icon {
       // TODO(josephperrott): Update to using a corrected disabled-text contrast
       // instead of secondary-text.
-      background-color: theming.color($foreground, secondary-text);
-      color: theming.color($primary, default-contrast);
+      background-color: theming.get-color-from-palette($foreground, secondary-text);
+      color: theming.get-color-from-palette($primary, default-contrast);
     }
 
     .mat-step-icon-selected,
     .mat-step-icon-state-done,
     .mat-step-icon-state-edit {
-      background-color: theming.color($primary);
-      color: theming.color($primary, default-contrast);
+      background-color: theming.get-color-from-palette($primary);
+      color: theming.get-color-from-palette($primary, default-contrast);
     }
 
     &.mat-accent {
       .mat-step-icon {
-        color: theming.color($accent, default-contrast);
+        color: theming.get-color-from-palette($accent, default-contrast);
       }
 
       .mat-step-icon-selected,
       .mat-step-icon-state-done,
       .mat-step-icon-state-edit {
-        background-color: theming.color($accent);
-        color: theming.color($accent, default-contrast);
+        background-color: theming.get-color-from-palette($accent);
+        color: theming.get-color-from-palette($accent, default-contrast);
       }
     }
 
     &.mat-warn {
       .mat-step-icon {
-        color: theming.color($warn, default-contrast);
+        color: theming.get-color-from-palette($warn, default-contrast);
       }
 
       .mat-step-icon-selected,
       .mat-step-icon-state-done,
       .mat-step-icon-state-edit {
-        background-color: theming.color($warn);
-        color: theming.color($warn, default-contrast);
+        background-color: theming.get-color-from-palette($warn);
+        color: theming.get-color-from-palette($warn, default-contrast);
       }
     }
 
     .mat-step-icon-state-error {
       background-color: transparent;
-      color: theming.color($warn, text);
+      color: theming.get-color-from-palette($warn, text);
     }
 
     .mat-step-label.mat-step-label-active {
-      color: theming.color($foreground, text);
+      color: theming.get-color-from-palette($foreground, text);
     }
 
     .mat-step-label.mat-step-label-error {
-      color: theming.color($warn, text);
+      color: theming.get-color-from-palette($warn, text);
     }
   }
 
   .mat-stepper-horizontal, .mat-stepper-vertical {
-    background-color: theming.color($background, card);
+    background-color: theming.get-color-from-palette($background, card);
   }
 
   .mat-stepper-vertical-line::before {
-    border-left-color: theming.color($foreground, divider);
+    border-left-color: theming.get-color-from-palette($foreground, divider);
   }
 
   .mat-horizontal-stepper-header::before,
   .mat-horizontal-stepper-header::after,
   .mat-stepper-horizontal-line {
-    border-top-color: theming.color($foreground, divider);
+    border-top-color: theming.get-color-from-palette($foreground, divider);
   }
 }
 

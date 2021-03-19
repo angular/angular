@@ -100,8 +100,8 @@ $large-size: $default-size + 6;
   $foreground: map.get($config, foreground);
 
   .mat-badge-content {
-    color: theming.color($primary, default-contrast);
-    background: theming.color($primary);
+    color: theming.get-color-from-palette($primary, default-contrast);
+    background: theming.get-color-from-palette($primary);
 
     @include a11y.high-contrast(active, off) {
       outline: solid 1px;
@@ -111,15 +111,15 @@ $large-size: $default-size + 6;
 
   .mat-badge-accent {
     .mat-badge-content {
-      background: theming.color($accent);
-      color: theming.color($accent, default-contrast);
+      background: theming.get-color-from-palette($accent);
+      color: theming.get-color-from-palette($accent, default-contrast);
     }
   }
 
   .mat-badge-warn {
     .mat-badge-content {
-      color: theming.color($warn, default-contrast);
-      background: theming.color($warn);
+      color: theming.get-color-from-palette($warn, default-contrast);
+      background: theming.get-color-from-palette($warn);
     }
   }
 
@@ -135,8 +135,8 @@ $large-size: $default-size + 6;
 
   .mat-badge-disabled {
     .mat-badge-content {
-      $app-background: theming.color($background, 'background');
-      $badge-color: theming.color($foreground, disabled-button);
+      $app-background: theming.get-color-from-palette($background, 'background');
+      $badge-color: theming.get-color-from-palette($foreground, disabled-button);
 
       // The disabled color usually has some kind of opacity, but because the badge is overlayed
       // on top of something else, it won't look good if it's opaque. If it is a color *type*,
@@ -151,7 +151,7 @@ $large-size: $default-size + 6;
         background: $badge-color;
       }
 
-      color: theming.color($foreground, disabled-text);
+      color: theming.get-color-from-palette($foreground, disabled-text);
     }
   }
 

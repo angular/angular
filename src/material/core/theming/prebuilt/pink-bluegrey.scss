@@ -8,10 +8,10 @@
 @include core.core();
 
 // Define a theme.
-$primary: theming.palette(palette.$pink, 700, 500, 900);
-$accent:  theming.palette(palette.$blue-grey, A200, A100, A400);
+$primary: theming.define-palette(palette.$pink-palette, 700, 500, 900);
+$accent:  theming.define-palette(palette.$blue-grey-palette, A200, A100, A400);
 
-$theme: theming.dark-theme((
+$theme: theming.define-dark-theme((
   color: (
     primary: $primary,
     accent: $accent
@@ -19,4 +19,4 @@ $theme: theming.dark-theme((
 ));
 
 // Include all theme styles for the components.
-@include all-theme.angular-material-theme($theme);
+@include all-theme.all-component-themes($theme);

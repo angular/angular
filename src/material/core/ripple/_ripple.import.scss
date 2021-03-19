@@ -1,7 +1,9 @@
-@forward '../theming/palette' hide $amber, $blue, $blue-gray, $blue-grey, $brown, $cyan,
-$dark-theme-background, $dark-theme-foreground, $deep-orange, $deep-purple, $gray, $green, $grey,
-$indigo, $light-blue, $light-green, $light-theme-background, $light-theme-foreground, $lime,
-$orange, $pink, $purple, $red, $teal, $yellow;
+@forward '../theming/palette' hide $amber-palette, $blue-palette, $blue-gray-palette,
+$blue-grey-palette, $brown-palette, $cyan-palette, $dark-theme-background-palette,
+$dark-theme-foreground-palette, $deep-orange-palette, $deep-purple-palette, $gray-palette,
+$green-palette, $grey-palette, $indigo-palette, $light-blue-palette, $light-green-palette,
+$light-theme-background-palette, $light-theme-foreground-palette, $lime-palette, $orange-palette,
+$pink-palette, $purple-palette, $red-palette, $teal-palette, $yellow-palette;
 @forward '../theming/palette' as mat-* hide $mat-black-12-opacity, $mat-black-6-opacity,
 $mat-black-87-opacity, $mat-dark-disabled-text, $mat-dark-dividers, $mat-dark-focused,
 $mat-dark-primary-text, $mat-dark-secondary-text, $mat-light-disabled-text, $mat-light-dividers,
@@ -10,8 +12,9 @@ $mat-white-6-opacity, $mat-white-87-opacity;
 @forward '../density/private/compatibility' as mat-*;
 @forward '../theming/theming' as mat-*;
 @forward '../../../cdk/a11y/a11y.import';
-@forward 'ripple' as mat-* hide $mat-color-opacity, mat-color, mat-theme;
+@forward 'ripple' as mat-* hide $mat-color-opacity;
 @forward 'ripple' as mat-ripple-* hide mat-ripple-ripple;
+@forward 'ripple-theme' as mat-ripple-*;
 
 @import '../theming/theming';
 @import '../../../cdk/a11y/a11y';

@@ -15,15 +15,15 @@ $_mat-button-ripple-opacity: 0.1;
   $warn: map.get($config, warn);
 
   &.mat-primary .mat-button-focus-overlay {
-    background-color: theming.color($primary);
+    background-color: theming.get-color-from-palette($primary);
   }
 
   &.mat-accent .mat-button-focus-overlay {
-    background-color: theming.color($accent);
+    background-color: theming.get-color-from-palette($accent);
   }
 
   &.mat-warn .mat-button-focus-overlay {
-    background-color: theming.color($warn);
+    background-color: theming.get-color-from-palette($warn);
   }
 
   &.mat-button-disabled .mat-button-focus-overlay {
@@ -35,7 +35,7 @@ $_mat-button-ripple-opacity: 0.1;
 // we assume that we've been given a CSS variable. Since we can't perform alpha-blending
 // on a CSS variable, we instead add the opacity directly to the ripple element.
 @mixin _mat-button-ripple-background($palette, $hue, $opacity) {
-  $background-color: theming.color($palette, $hue, $opacity);
+  $background-color: theming.get-color-from-palette($palette, $hue, $opacity);
   background-color: $background-color;
   @if (meta.type-of($background-color) != color) {
     opacity: $opacity;
@@ -69,19 +69,19 @@ $_mat-button-ripple-opacity: 0.1;
   $foreground: map.get($theme, foreground);
 
   &.mat-primary {
-    #{$property}: theming.color($primary, $hue);
+    #{$property}: theming.get-color-from-palette($primary, $hue);
   }
   &.mat-accent {
-    #{$property}: theming.color($accent, $hue);
+    #{$property}: theming.get-color-from-palette($accent, $hue);
   }
   &.mat-warn {
-    #{$property}: theming.color($warn, $hue);
+    #{$property}: theming.get-color-from-palette($warn, $hue);
   }
 
   &.mat-primary, &.mat-accent, &.mat-warn, &.mat-button-disabled {
     &.mat-button-disabled {
       $palette: if($property == 'color', $foreground, $background);
-      #{$property}: theming.color($palette, disabled-button);
+      #{$property}: theming.get-color-from-palette($palette, disabled-button);
     }
   }
 }
@@ -121,13 +121,13 @@ $_mat-button-ripple-opacity: 0.1;
   // Note: this needs a bit extra specificity, because we're not guaranteed the inclusion
   // order of the theme styles and the button reset may end up resetting this as well.
   .mat-stroked-button:not(.mat-button-disabled) {
-    border-color: theming.color($foreground, divider);
+    border-color: theming.get-color-from-palette($foreground, divider);
   }
 
   .mat-flat-button, .mat-raised-button, .mat-fab, .mat-mini-fab {
     // Default font and background color when not using any color palette.
-    color: theming.color($foreground, text);
-    background-color: theming.color($background, raised-button);
+    color: theming.get-color-from-palette($foreground, text);
+    background-color: theming.get-color-from-palette($background, raised-button);
 
     @include _mat-button-theme-property($config, 'color', default-contrast);
     @include _mat-button-theme-property($config, 'background-color', default);

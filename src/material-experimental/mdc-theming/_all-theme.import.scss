@@ -91,7 +91,7 @@ $mat-mdc-mdc-text-field-outlined-idle-border, $mat-mdc-mdc-text-field-placeholde
 @forward '../mdc-form-field/form-field-subscript' as mat-mdc-*;
 @forward '../mdc-form-field/form-field-focus-overlay' as mat-mdc-*;
 @forward '../mdc-form-field/form-field-theme' as mat-mdc-form-field-*;
-@forward 'all-theme';
+@forward 'all-theme' hide all-mdc-component-themes;;
 
 @import '../mdc-core/core-theme';
 @import '../mdc-autocomplete/autocomplete-theme';
@@ -115,4 +115,5 @@ $mat-mdc-mdc-text-field-outlined-idle-border, $mat-mdc-mdc-text-field-placeholde
 @import '../mdc-input/input-theme';
 @import '../mdc-form-field/form-field-theme';
 @import '../../material/core/core';
+@import '../../material/core/core-theme';
 @import '../../material/core/theming/theming';

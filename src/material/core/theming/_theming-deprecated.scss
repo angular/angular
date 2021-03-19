@@ -1,0 +1,27 @@
+@use './theming';
+@use './palette';
+
+// @deprecated Use `get-color-from-palette`.
+@function color($palette, $hue: default, $opacity: null) {
+  @return theming.get-color-from-palette($palette, $hue, $opacity);
+}
+
+// @deprecated Use `get-contrast-color-from-palette`.
+@function contrast($palette, $hue) {
+  @return theming.get-contrast-color-from-palette($palette, $hue);
+}
+
+// @deprecated Use `define-palette`.
+@function palette($base-palette, $default: 500, $lighter: 100, $darker: 700, $text: $default) {
+  @return theming.define-palette($base-palette, $default, $lighter, $darker, $text);
+}
+
+// @deprecated Use `define-light-theme`.
+@function dark-theme($primary, $accent: null, $warn: palette(palette.$red-palette)) {
+  @return theming.define-dark-theme($primary, $accent, $warn);
+}
+
+// @deprecated Use `define-light-theme`.
+@function light-theme($primary, $accent: null, $warn: palette(palette.$red-palette)) {
+  @return theming.define-light-theme($primary, $accent, $warn);
+}

@@ -13,8 +13,8 @@
 
   .mat-dialog-container {
     @include private.private-theme-elevation(24, $config);
-    background: theming.color($background, dialog);
-    color: theming.color($foreground, text);
+    background: theming.get-color-from-palette($background, dialog);
+    color: theming.get-color-from-palette($foreground, text);
   }
 }
 
@@ -22,7 +22,7 @@
   $config: typography.private-typography-to-2014-config(
       theming.get-typography-config($config-or-theme));
   .mat-dialog-title {
-    @include typography-utils.level-to-styles($config, title);
+    @include typography-utils.typography-level($config, title);
   }
 }
 

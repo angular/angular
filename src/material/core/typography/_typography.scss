@@ -3,7 +3,7 @@
 @use '../theming/theming';
 
 // Represents a typography level from the Material design spec.
-@function level(
+@function define-typography-level(
   $font-size,
   $line-height: $font-size,
   $font-weight: 400,
@@ -23,22 +23,22 @@
 // Defaults come from https://material.io/guidelines/style/typography.html
 // Note: The spec doesn't mention letter spacing. The values here come from
 // eyeballing it until it looked exactly like the spec examples.
-@function config(
+@function define-typography-config(
   $font-family:   'Roboto, "Helvetica Neue", sans-serif',
-  $display-4:     level(112px, 112px, 300, $letter-spacing: -0.05em),
-  $display-3:     level(56px, 56px, 400, $letter-spacing: -0.02em),
-  $display-2:     level(45px, 48px, 400, $letter-spacing: -0.005em),
-  $display-1:     level(34px, 40px, 400),
-  $headline:      level(24px, 32px, 400),
-  $title:         level(20px, 32px, 500),
-  $subheading-2:  level(16px, 28px, 400),
-  $subheading-1:  level(15px, 24px, 400),
-  $body-2:        level(14px, 24px, 500),
-  $body-1:        level(14px, 20px, 400),
-  $caption:       level(12px, 20px, 400),
-  $button:        level(14px, 14px, 500),
+  $display-4:     define-typography-level(112px, 112px, 300, $letter-spacing: -0.05em),
+  $display-3:     define-typography-level(56px, 56px, 400, $letter-spacing: -0.02em),
+  $display-2:     define-typography-level(45px, 48px, 400, $letter-spacing: -0.005em),
+  $display-1:     define-typography-level(34px, 40px, 400),
+  $headline:      define-typography-level(24px, 32px, 400),
+  $title:         define-typography-level(20px, 32px, 500),
+  $subheading-2:  define-typography-level(16px, 28px, 400),
+  $subheading-1:  define-typography-level(15px, 24px, 400),
+  $body-2:        define-typography-level(14px, 24px, 500),
+  $body-1:        define-typography-level(14px, 20px, 400),
+  $caption:       define-typography-level(12px, 20px, 400),
+  $button:        define-typography-level(14px, 14px, 500),
   // Line-height must be unit-less fraction of the font-size.
-  $input:         level(inherit, 1.125, 400)
+  $input:         define-typography-level(inherit, 1.125, 400)
 ) {
 
   // Declare an initial map with all of the levels.
@@ -113,7 +113,7 @@
         $non-null-args: map.merge($non-null-args, ($key: $value));
       }
     }
-    @return config($non-null-args...);
+    @return define-typography-config($non-null-args...);
   }
   @return $config;
 }
@@ -141,7 +141,7 @@
         button: map.get($config, button),
         caption: map.get($config, caption),
         overline: if(map.get($config, overline), map.get($config, overline),
-            level(12px, 32px, 500)
+            define-typography-level(12px, 32px, 500)
         )
     );
   }
@@ -150,26 +150,26 @@
 
 // Adds the base typography styles, based on a config.
 /* stylelint-disable-next-line material/theme-mixin-api */
-@mixin base-typography($config-or-theme, $selector: '.mat-typography') {
+@mixin typography-hierarchy($config-or-theme, $selector: '.mat-typography') {
   $config: private-typography-to-2014-config(theming.get-typography-config($config-or-theme));
 
   .mat-h1, .mat-headline, #{$selector} h1 {
-    @include typography-utils.level-to-styles($config, headline);
+    @include typography-utils.typography-level($config, headline);
     margin: 0 0 16px;
   }
 
   .mat-h2, .mat-title, #{$selector} h2 {
-    @include typography-utils.level-to-styles($config, title);
+    @include typography-utils.typography-level($config, title);
     margin: 0 0 16px;
   }
 
   .mat-h3, .mat-subheading-2, #{$selector} h3 {
-    @include typography-utils.level-to-styles($config, subheading-2);
+    @include typography-utils.typography-level($config, subheading-2);
     margin: 0 0 16px;
   }
 
   .mat-h4, .mat-subheading-1, #{$selector} h4 {
-    @include typography-utils.level-to-styles($config, subheading-1);
+    @include typography-utils.typography-level($config, subheading-1);
     margin: 0 0 16px;
   }
 
@@ -181,7 +181,7 @@
        // calc is used here to support css variables
       calc(#{typography-utils.font-size($config, body-1)} * 0.83),
       typography-utils.font-weight($config, body-1),
-      typography-utils.height($config, body-1),
+      typography-utils.line-height($config, body-1),
       typography-utils.font-family($config, body-1)
     );
 
@@ -193,7 +193,7 @@
        // calc is used here to support css variables
       calc(#{typography-utils.font-size($config, body-1)} * 0.67),
       typography-utils.font-weight($config, body-1),
-      typography-utils.height($config, body-1),
+      typography-utils.line-height($config, body-1),
       typography-utils.font-family($config, body-1)
     );
 
@@ -201,11 +201,11 @@
   }
 
   .mat-body-strong, .mat-body-2 {
-    @include typography-utils.level-to-styles($config, body-2);
+    @include typography-utils.typography-level($config, body-2);
   }
 
   .mat-body, .mat-body-1, #{$selector} {
-    @include typography-utils.level-to-styles($config, body-1);
+    @include typography-utils.typography-level($config, body-1);
 
     p {
       margin: 0 0 12px;
@@ -213,26 +213,26 @@
   }
 
   .mat-small, .mat-caption {
-    @include typography-utils.level-to-styles($config, caption);
+    @include typography-utils.typography-level($config, caption);
   }
 
   .mat-display-4, #{$selector} .mat-display-4 {
-    @include typography-utils.level-to-styles($config, display-4);
+    @include typography-utils.typography-level($config, display-4);
     margin: 0 0 56px;
   }
 
   .mat-display-3, #{$selector} .mat-display-3 {
-    @include typography-utils.level-to-styles($config, display-3);
+    @include typography-utils.typography-level($config, display-3);
     margin: 0 0 64px;
   }
 
   .mat-display-2, #{$selector} .mat-display-2 {
-    @include typography-utils.level-to-styles($config, display-2);
+    @include typography-utils.typography-level($config, display-2);
     margin: 0 0 64px;
   }
 
   .mat-display-1, #{$selector} .mat-display-1 {
-    @include typography-utils.level-to-styles($config, display-1);
+    @include typography-utils.typography-level($config, display-1);
     margin: 0 0 64px;
   }
 }

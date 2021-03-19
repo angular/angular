@@ -10,15 +10,15 @@
 
   .mat-progress-spinner, .mat-spinner {
     circle {
-      stroke: theming.color($primary);
+      stroke: theming.get-color-from-palette($primary);
     }
 
     &.mat-accent circle {
-      stroke: theming.color($accent);
+      stroke: theming.get-color-from-palette($accent);
     }
 
     &.mat-warn circle {
-      stroke: theming.color($warn);
+      stroke: theming.get-color-from-palette($warn);
     }
   }
 }
