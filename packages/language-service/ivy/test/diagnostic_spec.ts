@@ -275,6 +275,28 @@ describe('getSemanticDiagnostics', () => {
     expect(diag.category).toBe(ts.DiagnosticCategory.Suggestion);
     expect(getTextOfDiagnostic(diag)).toBe('user');
   });
+
+  it('logs perf tracing', () => {
+    const files = {
+      'app.ts': `
+        import {Component} from '@angular/core';
+        @Component({ template: '' })
+        export class MyComponent {}
+      `
+    };
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+
+    const logger = project.getLogger();
+    spyOn(logger, 'hasLevel').and.returnValue(true);
+    spyOn(logger, 'perftrc').and.callFake(() => {});
+
+    const diags = project.getDiagnosticsForFile('app.ts');
+    expect(diags.length).toEqual(0);
+    expect(logger.perftrc)
+        .toHaveBeenCalledWith(jasmine.stringMatching(
+            /LanguageService\#LsDiagnostics\:.*\"LsDiagnostics\":\s*\d+.*/g));
+  });
 });
 
 function getTextOfDiagnostic(diag: ts.Diagnostic): string {
