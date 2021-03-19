@@ -34,7 +34,7 @@ const COMMIT_BODY_URL_LINE_RE = /^https?:\/\/.*$/;
  *
  * NB: Anything after `BREAKING CHANGE` is optional to facilitate the validation.
  */
-const COMMIT_BODY_BREAKING_CHANGE_RE = /^BREAKING CHANGE(:( |\n{2}))?/m;
+const COMMIT_BODY_BREAKING_CHANGE_RE = /^BREAKING CHANGE(S)?(:( |\n{2}))?/m;
 
 /** Validate a commit message against using the local repo's config. */
 export function validateCommitMessage(
@@ -157,8 +157,8 @@ export function validateCommitMessage(
     // https://github.com/angular/angular/blob/88fbc066775ab1a2f6a8c75f933375b46d8fa9a4/CONTRIBUTING.md#commit-message-footer
     const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.body);
     if (hasBreakingChange !== null) {
-      const [, breakingChangeDescription] = hasBreakingChange;
-      if (!breakingChangeDescription) {
+      const [, breakingChangePlural, breakingChangeDescription] = hasBreakingChange;
+      if (breakingChangePlural || !breakingChangeDescription) {
         // Not followed by :, space or two consecutive new lines,
         errors.push(`The commit message body contains an invalid breaking change description.`);
         return false;
