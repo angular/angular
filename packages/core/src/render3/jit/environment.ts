@@ -42,7 +42,6 @@ export const angularCoreEnv: {[name: string]: Function} =
        'ɵɵinjectAttribute': r3.ɵɵinjectAttribute,
        'ɵɵinvalidFactory': r3.ɵɵinvalidFactory,
        'ɵɵinvalidFactoryDep': ɵɵinvalidFactoryDep,
-       'ɵɵinjectPipeChangeDetectorRef': r3.ɵɵinjectPipeChangeDetectorRef,
        'ɵɵtemplateRefExtractor': r3.ɵɵtemplateRefExtractor,
        'ɵɵNgOnChangesFeature': r3.ɵɵNgOnChangesFeature,
        'ɵɵProvidersFeature': r3.ɵɵProvidersFeature,

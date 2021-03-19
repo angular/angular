@@ -219,9 +219,6 @@ export class Identifiers {
 
   static injectAttribute: o.ExternalReference = {name: 'ɵɵinjectAttribute', moduleName: CORE};
 
-  static injectPipeChangeDetectorRef:
-      o.ExternalReference = {name: 'ɵɵinjectPipeChangeDetectorRef', moduleName: CORE};
-
   static directiveInject: o.ExternalReference = {name: 'ɵɵdirectiveInject', moduleName: CORE};
   static invalidFactory: o.ExternalReference = {name: 'ɵɵinvalidFactory', moduleName: CORE};
   static invalidFactoryDep: o.ExternalReference = {name: 'ɵɵinvalidFactoryDep', moduleName: CORE};

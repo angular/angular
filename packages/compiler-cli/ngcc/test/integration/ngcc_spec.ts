@@ -823,7 +823,7 @@ runInEachFileSystem(() => {
       expect(jsContents)
           .toContain(
               `TestClass.ɵfac = function TestClass_Factory(t) { ` +
-              `return new (t || TestClass)(ɵngcc0.ɵɵinjectPipeChangeDetectorRef()); };`);
+              `return new (t || TestClass)(ɵngcc0.ɵɵdirectiveInject(ɵngcc0.ChangeDetectorRef, 16)); };`);
     });
 
     it('should use the correct type name in typings files when an export has a different name in source files',

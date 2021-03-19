@@ -694,9 +694,6 @@ export declare interface ɵɵInjectableDef<T> {
 /** @codeGenApi */
 export declare function ɵɵinjectAttribute(attrNameToInject: string): string | null;
 
-/** @codeGenApi */
-export declare function ɵɵinjectPipeChangeDetectorRef(flags?: InjectFlags): ChangeDetectorRef | null;
-
 export declare const PACKAGE_ROOT_URL: InjectionToken<string>;
 
 export declare interface Pipe {

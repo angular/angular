@@ -272,6 +272,11 @@ export const enum InjectFlags {
   SkipSelf = 1 << 2,
   /** Inject `defaultValue` instead if token not found. */
   Optional = 1 << 3,
+  /**
+   * This token is being injected into a pipe.
+   * @internal
+   */
+  ForPipe = 1 << 4,
 }
 
 export const enum ArgumentType {

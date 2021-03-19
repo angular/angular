@@ -86,10 +86,6 @@ export function getConstructorDependencies(
       }
     });
 
-    if (token instanceof ExternalExpr && token.value.name === 'ChangeDetectorRef' &&
-        token.value.moduleName === '@angular/core') {
-      resolved = R3ResolvedDependencyType.ChangeDetectorRef;
-    }
     if (token === null) {
       if (param.typeValueReference.kind !== TypeValueReferenceKind.UNAVAILABLE) {
         throw new Error(

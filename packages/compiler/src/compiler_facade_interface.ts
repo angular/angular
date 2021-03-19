@@ -86,8 +86,7 @@ export type Provider = any;
 export enum R3ResolvedDependencyType {
   Token = 0,
   Attribute = 1,
-  ChangeDetectorRef = 2,
-  Invalid = 3,
+  Invalid = 2,
 }
 
 export enum R3FactoryTarget {

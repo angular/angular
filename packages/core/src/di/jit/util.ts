@@ -68,9 +68,6 @@ function reflectDependency(compiler: CompilerFacade, dep: any|any[]): R3Dependen
         }
         meta.token = param.attributeName;
         meta.resolved = compiler.R3ResolvedDependencyType.Attribute;
-      } else if (param.__ChangeDetectorRef__ === true) {
-        meta.token = param;
-        meta.resolved = compiler.R3ResolvedDependencyType.ChangeDetectorRef;
       } else {
         setTokenAndResolvedType(param);
       }
