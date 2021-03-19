@@ -10,14 +10,12 @@ import * as yargs from 'yargs';
 import {RestoreCommitMessageModule} from './restore-commit-message/cli';
 import {ValidateFileModule} from './validate-file/cli';
 import {ValidateRangeModule} from './validate-range/cli';
-import {WizardModule} from './wizard/cli';
 
 /** Build the parser for the commit-message commands. */
 export function buildCommitMessageParser(localYargs: yargs.Argv) {
   return localYargs.help()
       .strict()
       .command(RestoreCommitMessageModule)
-      .command(WizardModule)
       .command(ValidateFileModule)
       .command(ValidateRangeModule);
 }
