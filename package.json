@@ -200,7 +200,7 @@
     "protractor": "^7.0.0",
     "reflect-metadata": "^0.1.3",
     "requirejs": "^2.3.6",
-    "rollup": "~1.25.0",
+    "rollup": "~2.41.5",
     "rollup-plugin-alias": "^2.2.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
