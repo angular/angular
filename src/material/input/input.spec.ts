@@ -1719,7 +1719,7 @@ describe('MatFormField default options', () => {
 });
 
 describe('MatInput with textarea autosize', () => {
-  it('should not calculate wrong content height due to long placeholders', () => {
+  it('should adjust height due to long placeholders', () => {
     const fixture = createComponent(AutosizeTextareaWithLongPlaceholder);
     fixture.detectChanges();
 
@@ -1735,8 +1735,8 @@ describe('MatInput with textarea autosize', () => {
 
     autosize.resizeToFitContent(true);
 
-    expect(textarea.clientHeight).toBe(heightWithLongPlaceholder,
-        'Expected the textarea height to be the same with a long placeholder.');
+    expect(textarea.clientHeight).toBeLessThan(heightWithLongPlaceholder,
+        'Expected the textarea height to be shorter with a long placeholder.');
   });
 
   it('should work in a tab', () => {
