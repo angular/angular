@@ -11,9 +11,11 @@ ts_library(
     deps = [
         "//dev-infra/commit-message",
         "//dev-infra/utils",
+        "@npm//@types/conventional-commits-parser",
         "@npm//@types/inquirer",
         "@npm//@types/node",
         "@npm//@types/yargs",
+        "@npm//conventional-commits-parser",
         "@npm//inquirer",
         "@npm//typed-graphqlify",
         "@npm//yargs",
