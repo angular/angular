@@ -10,7 +10,7 @@ Before reading about form validation, you should have a basic understanding of t
 
 * [TypeScript](https://www.typescriptlang.org/ "The TypeScript language") and HTML5  programming.
 
-* Fundamental concepts of [Angular app design](guide/architecture "Introduction to Angular app-design concepts").
+* Fundamental concepts of [Angular application design](guide/architecture "Introduction to Angular application-design concepts").
 
 * The [two types of forms that Angular supports](guide/forms-overview "Introduction to Angular forms").
 

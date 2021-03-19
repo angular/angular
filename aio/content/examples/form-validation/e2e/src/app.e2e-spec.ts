@@ -54,7 +54,7 @@ function getPage(sectionTag: string) {
   page = {
     section,
     form: section.element(by.css('form')),
-    title: section.element(by.css('h1')),
+    title: section.element(by.css('h2')),
     nameInput: section.element(by.css('#name')),
     alterEgoInput: section.element(by.css('#alterEgo')),
     powerSelect: section.element(by.css('#power')),
