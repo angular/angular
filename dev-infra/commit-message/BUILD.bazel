@@ -11,10 +11,12 @@ ts_library(
     visibility = ["//dev-infra:__subpackages__"],
     deps = [
         "//dev-infra/utils",
+        "@npm//@types/conventional-commits-parser",
         "@npm//@types/inquirer",
         "@npm//@types/node",
         "@npm//@types/shelljs",
         "@npm//@types/yargs",
+        "@npm//conventional-commits-parser",
         "@npm//inquirer",
         "@npm//shelljs",
         "@npm//yargs",

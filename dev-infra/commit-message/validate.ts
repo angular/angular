@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {error} from '../utils/console';
 
 import {COMMIT_TYPES, getCommitMessageConfig, ScopeRequirement} from './config';
-import {parseCommitMessage, ParsedCommitMessage} from './parse';
+import {Commit, parseCommitMessage} from './parse';
 
 /** Options for commit message validation. */
 export interface ValidateCommitMessageOptions {
@@ -20,7 +21,7 @@ export interface ValidateCommitMessageOptions {
 export interface ValidateCommitMessageResult {
   valid: boolean;
   errors: string[];
-  commit: ParsedCommitMessage;
+  commit: Commit;
 }
 
 /** Regex matching a URL for an entire commit body line. */
@@ -38,7 +39,7 @@ const COMMIT_BODY_BREAKING_CHANGE_RE = /^BREAKING CHANGE(:( |\n{2}))?/m;
 
 /** Validate a commit message against using the local repo's config. */
 export function validateCommitMessage(
-    commitMsg: string|ParsedCommitMessage,
+    commitMsg: string|Commit,
     options: ValidateCommitMessageOptions = {}): ValidateCommitMessageResult {
   const config = getCommitMessageConfig().commitMessage;
   const commit = typeof commitMsg === 'string' ? parseCommitMessage(commitMsg) : commitMsg;
@@ -46,8 +47,6 @@ export function validateCommitMessage(
 
   /** Perform the validation checks against the parsed commit. */
   function validateCommitAndCollectErrors() {
-    // TODO(josephperrott): Remove early return calls when commit message errors are found
-
     ////////////////////////////////////
     // Checking revert, squash, fixup //
     ////////////////////////////////////
@@ -133,14 +132,14 @@ export function validateCommitMessage(
     //////////////////////////
 
     if (!config.minBodyLengthTypeExcludes?.includes(commit.type) &&
-        commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
+        commit.body.trim().length < config.minBodyLength) {
       errors.push(`The commit message body does not meet the minimum length of ${
           config.minBodyLength} characters`);
       return false;
     }
 
     const bodyByLine = commit.body.split('\n');
-    const lineExceedsMaxLength = bodyByLine.some(line => {
+    const lineExceedsMaxLength = bodyByLine.some((line: string) => {
       // Check if any line exceeds the max line length limit. The limit is ignored for
       // lines that just contain an URL (as these usually cannot be wrapped or shortened).
       return line.length > config.maxLineLength && !COMMIT_BODY_URL_LINE_RE.test(line);
@@ -155,7 +154,7 @@ export function validateCommitMessage(
     // Breaking change
     // Check if the commit message contains a valid break change description.
     // https://github.com/angular/angular/blob/88fbc066775ab1a2f6a8c75f933375b46d8fa9a4/CONTRIBUTING.md#commit-message-footer
-    const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.body);
+    const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.fullText);
     if (hasBreakingChange !== null) {
       const [, breakingChangeDescription] = hasBreakingChange;
       if (!breakingChangeDescription) {

@@ -7,8 +7,8 @@
  */
 
 import {types as graphQLTypes} from 'typed-graphqlify';
-import {parseCommitMessagesForRange, ParsedCommitMessage} from '../../commit-message/parse';
 
+import {Commit, parseCommitMessagesForRange} from '../../commit-message/parse';
 import {getConfig, NgDevConfig} from '../../utils/config';
 import {error, info, promptConfirm} from '../../utils/console';
 import {addTokenToGitHttpsUrl} from '../../utils/git/github-urls';
@@ -95,8 +95,7 @@ export async function rebasePr(
 
     const commits = parseCommitMessagesForRange(`${commonAncestorSha}..HEAD`);
 
-    let squashFixups =
-        commits.filter((commit: ParsedCommitMessage) => commit.isFixup).length === 0 ?
+    let squashFixups = commits.filter((commit: Commit) => commit.isFixup).length === 0 ?
         false :
         await promptConfirm(
             `PR #${prNumber} contains fixup commits, would you like to squash them during rebase?`,
