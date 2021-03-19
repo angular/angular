@@ -19,6 +19,7 @@ var fetch = _interopDefault(require('node-fetch'));
 var semver = require('semver');
 var multimatch = require('multimatch');
 var yaml = require('yaml');
+var conventionalCommitsParser = require('conventional-commits-parser');
 var cliProgress = require('cli-progress');
 var os = require('os');
 var minimatch = require('minimatch');
@@ -1683,56 +1684,84 @@ const COMMIT_TYPES = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/** Markers used to denote the start of a note section in a commit. */
+var NoteSections;
+(function (NoteSections) {
+    NoteSections["BREAKING_CHANGE"] = "BREAKING CHANGE";
+    NoteSections["DEPRECATED"] = "DEPRECATED";
+})(NoteSections || (NoteSections = {}));
 /** Regex determining if a commit is a fixup. */
 const FIXUP_PREFIX_RE = /^fixup! /i;
-/** Regex finding all github keyword links. */
-const GITHUB_LINKING_RE = /((closed?s?)|(fix(es)?(ed)?)|(resolved?s?))\s\#(\d+)/ig;
 /** Regex determining if a commit is a squash. */
 const SQUASH_PREFIX_RE = /^squash! /i;
 /** Regex determining if a commit is a revert. */
 const REVERT_PREFIX_RE = /^revert:? /i;
-/** Regex determining the scope of a commit if provided. */
-const TYPE_SCOPE_RE = /^(\w+)(?:\(([^)]+)\))?\:\s(.+)$/;
-/** Regex determining the entire header line of the commit. */
-const COMMIT_HEADER_RE = /^(.*)/i;
-/** Regex determining the body of the commit. */
-const COMMIT_BODY_RE = /^.*\n\n([\s\S]*)$/;
+/**
+ * Regex pattern for parsing the header line of a commit.
+ *
+ * Several groups are being matched to be used in the parsed commit object, being mapped to the
+ * `headerCorrespondence` object.
+ *
+ * The pattern can be broken down into component parts:
+ * - `(\w+)` - a capturing group discovering the type of the commit.
+ * - `(?:\((?:([^/]+)\/)?([^)]+)\))?` - a pair of capturing groups to capture the scope and,
+ * optionally the npmScope of the commit.
+ * - `(.*)` - a capturing group discovering the subject of the commit.
+ */
+const headerPattern = /^(\w+)(?:\((?:([^/]+)\/)?([^)]+)\))?: (.*)$/;
+/**
+ * The property names used for the values extracted from the header via the `headerPattern` regex.
+ */
+const headerCorrespondence = ['type', 'npmScope', 'scope', 'subject'];
+/**
+ * Configuration options for the commit parser.
+ *
+ * NOTE: An extended type from `Options` must be used because the current
+ * @types/conventional-commits-parser version does not include the `notesPattern` field.
+ */
+const parseOptions = {
+    commentChar: '#',
+    headerPattern,
+    headerCorrespondence,
+    noteKeywords: [NoteSections.BREAKING_CHANGE, NoteSections.DEPRECATED],
+    notesPattern: (keywords) => new RegExp(`(${keywords})(?:: ?)(.*)`),
+};
 /** Parse a full commit message into its composite parts. */
-function parseCommitMessage(commitMsg) {
-    // Ignore comments (i.e. lines starting with `#`). Comments are automatically removed by git and
-    // should not be considered part of the final commit message.
-    commitMsg = commitMsg.split('\n').filter(line => !line.startsWith('#')).join('\n');
-    let header = '';
-    let body = '';
-    let bodyWithoutLinking = '';
-    let type = '';
-    let scope = '';
-    let subject = '';
-    if (COMMIT_HEADER_RE.test(commitMsg)) {
-        header = COMMIT_HEADER_RE.exec(commitMsg)[1]
-            .replace(FIXUP_PREFIX_RE, '')
-            .replace(SQUASH_PREFIX_RE, '');
-    }
-    if (COMMIT_BODY_RE.test(commitMsg)) {
-        body = COMMIT_BODY_RE.exec(commitMsg)[1];
-        bodyWithoutLinking = body.replace(GITHUB_LINKING_RE, '');
-    }
-    if (TYPE_SCOPE_RE.test(header)) {
-        const parsedCommitHeader = TYPE_SCOPE_RE.exec(header);
-        type = parsedCommitHeader[1];
-        scope = parsedCommitHeader[2];
-        subject = parsedCommitHeader[3];
-    }
+function parseCommitMessage(fullText) {
+    /** The commit message text with the fixup and squash markers stripped out. */
+    const strippedCommitMsg = fullText.replace(FIXUP_PREFIX_RE, '')
+        .replace(SQUASH_PREFIX_RE, '')
+        .replace(REVERT_PREFIX_RE, '');
+    /** The initially parsed commit. */
+    const commit = conventionalCommitsParser.sync(strippedCommitMsg, parseOptions);
+    /** A list of breaking change notes from the commit. */
+    const breakingChanges = [];
+    /** A list of deprecation notes from the commit. */
+    const deprecations = [];
+    // Extract the commit message notes by marked types into their respective lists.
+    commit.notes.forEach((note) => {
+        if (note.title === NoteSections.BREAKING_CHANGE) {
+            return breakingChanges.push(note);
+        }
+        if (note.title === NoteSections.DEPRECATED) {
+            return deprecations.push(note);
+        }
+    });
     return {
-        header,
-        body,
-        bodyWithoutLinking,
-        type,
-        scope,
-        subject,
-        isFixup: FIXUP_PREFIX_RE.test(commitMsg),
-        isSquash: SQUASH_PREFIX_RE.test(commitMsg),
-        isRevert: REVERT_PREFIX_RE.test(commitMsg),
+        fullText,
+        breakingChanges,
+        deprecations,
+        body: commit.body || '',
+        footer: commit.footer || '',
+        header: commit.header || '',
+        references: commit.references,
+        scope: commit.scope || '',
+        subject: commit.subject || '',
+        type: commit.type || '',
+        npmScope: commit.npmScope || '',
+        isFixup: FIXUP_PREFIX_RE.test(fullText),
+        isSquash: SQUASH_PREFIX_RE.test(fullText),
+        isRevert: REVERT_PREFIX_RE.test(fullText),
     };
 }
 /** Retrieve and parse each commit message in a provide range. */
@@ -1786,11 +1815,10 @@ function validateCommitMessage(commitMsg, options = {}) {
     const errors = [];
     /** Perform the validation checks against the parsed commit. */
     function validateCommitAndCollectErrors() {
-        // TODO(josephperrott): Remove early return calls when commit message errors are found
-        var _a;
         ////////////////////////////////////
         // Checking revert, squash, fixup //
         ////////////////////////////////////
+        var _a;
         // All revert commits are considered valid.
         if (commit.isRevert) {
             return true;
@@ -1854,12 +1882,12 @@ function validateCommitMessage(commitMsg, options = {}) {
         // Checking commit body //
         //////////////////////////
         if (!((_a = config.minBodyLengthTypeExcludes) === null || _a === void 0 ? void 0 : _a.includes(commit.type)) &&
-            commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
+            commit.body.trim().length < config.minBodyLength) {
             errors.push(`The commit message body does not meet the minimum length of ${config.minBodyLength} characters`);
             return false;
         }
         const bodyByLine = commit.body.split('\n');
-        const lineExceedsMaxLength = bodyByLine.some(line => {
+        const lineExceedsMaxLength = bodyByLine.some((line) => {
             // Check if any line exceeds the max line length limit. The limit is ignored for
             // lines that just contain an URL (as these usually cannot be wrapped or shortened).
             return line.length > config.maxLineLength && !COMMIT_BODY_URL_LINE_RE.test(line);
@@ -1871,7 +1899,7 @@ function validateCommitMessage(commitMsg, options = {}) {
         // Breaking change
         // Check if the commit message contains a valid break change description.
         // https://github.com/angular/angular/blob/88fbc066775ab1a2f6a8c75f933375b46d8fa9a4/CONTRIBUTING.md#commit-message-footer
-        const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.body);
+        const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.fullText);
         if (hasBreakingChange !== null) {
             const [, breakingChangeDescription] = hasBreakingChange;
             if (!breakingChangeDescription) {

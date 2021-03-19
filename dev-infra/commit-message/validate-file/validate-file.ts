@@ -11,7 +11,7 @@ import {resolve} from 'path';
 import {getRepoBaseDir} from '../../utils/config';
 import {error, green, info, log, red, yellow} from '../../utils/console';
 
-import {deleteCommitMessageDraft, saveCommitMessageDraft} from '../commit-message-draft';
+import {deleteCommitMessageDraft, saveCommitMessageDraft} from '../restore-commit-message/commit-message-draft';
 import {printValidationErrors, validateCommitMessage} from '../validate';
 
 /** Validate commit message at the provided file path. */
