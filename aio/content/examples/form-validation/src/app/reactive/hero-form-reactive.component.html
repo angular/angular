@@ -1,7 +1,7 @@
  <!-- #docregion -->
 <div class="container">
 
-  <h1>Reactive Form</h1>
+  <h2>Reactive Form</h2>
 
   <form [formGroup]="heroForm" #formDir="ngForm">
 
@@ -12,8 +12,8 @@
 
           <label for="name">Name</label>
           <!-- #docregion name-with-error-msg -->
-          <input id="name" class="form-control"
-                formControlName="name" required >
+          <input type="text" id="name" class="form-control"
+                formControlName="name" required>
 
           <div *ngIf="name.invalid && (name.dirty || name.touched)"
               class="alert alert-danger">
@@ -33,8 +33,8 @@
 
         <div class="form-group">
           <label for="alterEgo">Alter Ego</label>
-          <input id="alterEgo" class="form-control"
-              formControlName="alterEgo"  >
+          <input type="text" id="alterEgo" class="form-control"
+              formControlName="alterEgo">
 
           <div *ngIf="alterEgo.pending">Validating...</div>
           <div *ngIf="alterEgo.invalid" class="alert alert-danger alter-ego-errors">
@@ -54,7 +54,7 @@
       <div class="form-group">
         <label for="power">Hero Power</label>
         <select id="power" class="form-control"
-            formControlName="power" required >
+            formControlName="power" required>
           <option *ngFor="let p of powers" [value]="p">{{p}}</option>
         </select>
 
@@ -63,8 +63,10 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-default"
-             [disabled]="heroForm.invalid">Submit</button>
+      <p>Complete the form to enable the Submit button.</p>
+      <button type="submit"
+              class="btn btn-default"
+              [disabled]="heroForm.invalid">Submit</button>
       <button type="button" class="btn btn-default"
              (click)="formDir.resetForm({})">Reset</button>
     </div>
