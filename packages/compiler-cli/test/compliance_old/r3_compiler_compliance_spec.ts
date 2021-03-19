@@ -2294,7 +2294,7 @@ describe('compiler compliance', () => {
             `;
 
            const MyPipeFactory = `
-              MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)($r3$.ɵɵinjectPipeChangeDetectorRef()); };
+              MyPipe.ɵfac = function MyPipe_Factory(t) { return new (t || MyPipe)($i0$.ɵɵdirectiveInject($i0$.ChangeDetectorRef, 16)); };
             `;
 
            const MyOtherPipeDefinition = `
@@ -2305,7 +2305,7 @@ describe('compiler compliance', () => {
               });`;
 
            const MyOtherPipeFactory = `
-              MyOtherPipe.ɵfac = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)($r3$.ɵɵinjectPipeChangeDetectorRef(8)); };
+              MyOtherPipe.ɵfac = function MyOtherPipe_Factory(t) { return new (t || MyOtherPipe)($i0$.ɵɵdirectiveInject($i0$.ChangeDetectorRef, 24)); };
             `;
 
            const result = compile(files, angularFiles);

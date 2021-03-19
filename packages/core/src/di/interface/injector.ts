@@ -42,6 +42,12 @@ export enum InjectFlags {
 
   /** Inject `defaultValue` instead if token not found. */
   Optional = 0b1000,
+
+  /**
+   * This token is being injected into a pipe.
+   * @internal
+   */
+  ForPipe = 0b10000,
 }
 
 /**
@@ -70,4 +76,9 @@ export const enum InternalInjectFlags {
 
   /** Inject `defaultValue` instead if token not found. */
   Optional = 0b1000,
+
+  /**
+   * This token is being injected into a pipe.
+   */
+  ForPipe = 0b10000,
 }

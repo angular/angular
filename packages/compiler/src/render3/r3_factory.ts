@@ -110,14 +110,9 @@ export enum R3ResolvedDependencyType {
   Attribute = 1,
 
   /**
-   * Injecting the `ChangeDetectorRef` token. Needs special handling when injected into a pipe.
-   */
-  ChangeDetectorRef = 2,
-
-  /**
    * An invalid dependency (no token could be determined). An error should be thrown at runtime.
    */
-  Invalid = 3,
+  Invalid = 2,
 }
 
 /**
@@ -270,27 +265,20 @@ function injectDependencies(deps: R3DependencyMetadata[], target: R3FactoryTarge
 
 function compileInjectDependency(
     dep: R3DependencyMetadata, target: R3FactoryTarget, index: number): o.Expression {
-  const isPipe = target === R3FactoryTarget.Pipe;
-
   // Interpret the dependency according to its resolved type.
   switch (dep.resolved) {
     case R3ResolvedDependencyType.Token:
-    case R3ResolvedDependencyType.ChangeDetectorRef:
       // Build up the injection flags according to the metadata.
       const flags = InjectFlags.Default | (dep.self ? InjectFlags.Self : 0) |
           (dep.skipSelf ? InjectFlags.SkipSelf : 0) | (dep.host ? InjectFlags.Host : 0) |
-          (dep.optional ? InjectFlags.Optional : 0);
+          (dep.optional ? InjectFlags.Optional : 0) |
+          (target === R3FactoryTarget.Pipe ? InjectFlags.ForPipe : 0);
 
       // If this dependency is optional or otherwise has non-default flags, then additional
       // parameters describing how to inject the dependency must be passed to the inject function
       // that's being used.
       let flagsParam: o.LiteralExpr|null =
           (flags !== InjectFlags.Default || dep.optional) ? o.literal(flags) : null;
-
-      // We have a separate instruction for injecting ChangeDetectorRef into a pipe.
-      if (isPipe && dep.resolved === R3ResolvedDependencyType.ChangeDetectorRef) {
-        return o.importExpr(R3.injectPipeChangeDetectorRef).callFn(flagsParam ? [flagsParam] : []);
-      }
 
       // Build up the arguments to the injectFn call.
       const injectArgs = [dep.token];

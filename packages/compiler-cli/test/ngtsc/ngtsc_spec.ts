@@ -1565,7 +1565,7 @@ function allTests(os: string) {
       env.driveMain();
 
       const jsContents = env.getContents('test.js');
-      expect(jsContents).toContain('return new (t || TestPipe)(i0.ɵɵdirectiveInject(Dep));');
+      expect(jsContents).toContain('return new (t || TestPipe)(i0.ɵɵdirectiveInject(Dep, 16));');
     });
 
     it('should compile Pipes with generic types', () => {

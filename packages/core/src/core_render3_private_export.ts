@@ -154,7 +154,6 @@ export {
   ɵɵInheritDefinitionFeature,
   ɵɵinjectAttribute,
   ɵɵInjectorDeclaration,
-  ɵɵinjectPipeChangeDetectorRef,
   ɵɵinvalidFactory,
   ɵɵlistener,
   ɵɵloadQuery,

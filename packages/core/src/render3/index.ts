@@ -172,7 +172,7 @@ export {
 } from './state';
 export {NO_CHANGE} from './tokens';
 export { ɵɵresolveBody, ɵɵresolveDocument,ɵɵresolveWindow} from './util/misc_utils';
-export { ɵɵinjectPipeChangeDetectorRef,ɵɵtemplateRefExtractor} from './view_engine_compatibility_prebound';
+export { ɵɵtemplateRefExtractor} from './view_engine_compatibility_prebound';
 // clang-format on
 
 export {

@@ -206,7 +206,7 @@ export class MyComponent {
         this.cdr = cdr;
     }
 }
-MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [{ token: i0.ElementRef, resolved: i0.ɵɵResolvedDependencyType.Token }, { token: i0.ViewContainerRef, resolved: i0.ɵɵResolvedDependencyType.Token }, { token: i0.ChangeDetectorRef, resolved: i0.ɵɵResolvedDependencyType.ChangeDetectorRef }], target: i0.ɵɵFactoryTarget.Component });
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [{ token: i0.ElementRef, resolved: i0.ɵɵResolvedDependencyType.Token }, { token: i0.ViewContainerRef, resolved: i0.ɵɵResolvedDependencyType.Token }, { token: i0.ChangeDetectorRef, resolved: i0.ɵɵResolvedDependencyType.Token }], target: i0.ɵɵFactoryTarget.Component });
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '', isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,

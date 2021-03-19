@@ -627,12 +627,6 @@ describe('TestBed', () => {
      });
 
   it('should handle overrides for a provider that has `ChangeDetectorRef` as a dependency', () => {
-    // Note: we specifically check an @Injectable with `ChangeDetectorRef` here due to the fact that
-    // in Ivy there is a special instruction that injects `ChangeDetectorRef` token for Pipes
-    // (ɵɵinjectPipeChangeDetectorRef) and using that function for other types causes problems,
-    // for example when we try to override an @Injectable. The test below captures a use-case that
-    // triggers a problem in case incompatible function is used to inject `ChangeDetectorRef` as a
-    // dependency.
     @Injectable({providedIn: 'root'})
     class MyService {
       token = 'original';

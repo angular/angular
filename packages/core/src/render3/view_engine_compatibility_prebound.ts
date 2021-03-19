@@ -24,18 +24,3 @@ import {LView} from './interfaces/view';
 export function ɵɵtemplateRefExtractor(tNode: TNode, lView: LView): TemplateRef<any>|null {
   return createTemplateRef(tNode, lView);
 }
-
-
-/**
- * Returns the appropriate `ChangeDetectorRef` for a pipe.
- *
- * @codeGenApi
- */
-export function ɵɵinjectPipeChangeDetectorRef(flags = InjectFlags.Default): ChangeDetectorRef|null {
-  const value = injectChangeDetectorRef(true);
-  if (value == null && !(flags & InjectFlags.Optional)) {
-    throwProviderNotFoundError('ChangeDetectorRef');
-  } else {
-    return value;
-  }
-}
