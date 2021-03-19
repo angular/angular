@@ -52,12 +52,11 @@ export class ConfigurableFocusTrapFactory {
    */
   create(element: HTMLElement, deferCaptureElements: boolean): ConfigurableFocusTrap;
 
-  create(element: HTMLElement, config: ConfigurableFocusTrapConfig | boolean =
-    new ConfigurableFocusTrapConfig()): ConfigurableFocusTrap {
+  create(element: HTMLElement, config: ConfigurableFocusTrapConfig|boolean = {defer: false}):
+      ConfigurableFocusTrap {
     let configObject: ConfigurableFocusTrapConfig;
     if (typeof config === 'boolean') {
-      configObject = new ConfigurableFocusTrapConfig();
-      configObject.defer = config;
+      configObject = {defer: config};
     } else {
       configObject = config;
     }

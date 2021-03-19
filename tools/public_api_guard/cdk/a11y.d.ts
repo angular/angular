@@ -71,6 +71,10 @@ export declare class ConfigurableFocusTrap extends FocusTrap implements ManagedF
     destroy(): void;
 }
 
+export interface ConfigurableFocusTrapConfig {
+    defer: boolean;
+}
+
 export declare class ConfigurableFocusTrapFactory {
     constructor(_checker: InteractivityChecker, _ngZone: NgZone, _focusTrapManager: FocusTrapManager, _document: any, _inertStrategy?: FocusTrapInertStrategy);
     create(element: HTMLElement, config?: ConfigurableFocusTrapConfig): ConfigurableFocusTrap;

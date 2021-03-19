@@ -7,13 +7,11 @@
  */
 
 /**
- * Configuration for creating a ConfigurableFocusTrap.
+ * Options for creating a ConfigurableFocusTrap.
  */
-export class ConfigurableFocusTrapConfig {
+export interface ConfigurableFocusTrapConfig {
   /**
-   * Whether to defer the creation of FocusTrap elements to be
-   * done manually by the user. Default is to create them
-   * automatically.
+   * Whether to defer the creation of FocusTrap elements to be done manually by the user.
    */
-  defer: boolean = false;
+  defer: boolean;
 }
