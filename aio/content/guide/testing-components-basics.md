@@ -15,7 +15,7 @@ can validate much of the component's behavior in an easier, more obvious way.
 
 <div class="alert is-helpful">
 
-  For the sample app that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
+  For the sample application that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
 
   For the tests features in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
 
@@ -74,7 +74,7 @@ or its parent component.
   region="class-only"
   header="app/dashboard/dashboard-hero.component.spec.ts (class tests)"></code-example>
 
-When a component has dependencies, you may wish to use the `TestBed` to both
+When a component has dependencies, you may want to use the `TestBed` to both
 create the component and its dependencies.
 
 The following `WelcomeComponent` depends on the `UserService` to know the name of the user to greet.
@@ -98,7 +98,7 @@ Then provide and inject _both the_ **component** _and the service_ in the `TestB
   region="class-only-before-each"
   header="app/welcome/welcome.component.spec.ts (class-only setup)"></code-example>
 
-Then exercise the component class, remembering to call the [lifecycle hook methods](guide/lifecycle-hooks) as Angular does when running the app.
+Then exercise the component class, remembering to call the [lifecycle hook methods](guide/lifecycle-hooks) as Angular does when running the application.
 
 <code-example
   path="testing/src/app/welcome/welcome.component.spec.ts"
@@ -162,7 +162,7 @@ Because `compileComponents` is asynchronous, it uses
 the [`waitForAsync`](api/core/testing/waitForAsync) utility
 function imported from `@angular/core/testing`.
 
-Please refer to the [waitForAsync](guide/testing-components-scenarios#waitForAsync) section for more details.
+Refer to the [waitForAsync](guide/testing-components-scenarios#waitForAsync) section for more details.
 
 </div>
 
@@ -270,7 +270,7 @@ Later you'll encounter the `DebugElement.nativeElement` and it too has the `any`
 
 Angular can't know at compile time what kind of HTML element the `nativeElement` is or
 if it even is an HTML element.
-The app might be running on a _non-browser platform_, such as the server or a
+The application might be running on a _non-browser platform_, such as the server or a
 [Web Worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API),
 where the element may have a diminished API or not exist at all.
 
@@ -341,7 +341,7 @@ You import the `DebugElement` symbol from the Angular core library.
 ### _By.css()_
 
 Although the tests in this guide all run in the browser,
-some apps might run on a different platform at least some of the time.
+some applications might run on a different platform at least some of the time.
 
 For example, the component might render first on the server as part of a strategy to make the application launch faster on poorly connected devices. The server-side renderer might not support the full HTML element API.
 If it doesn't support `querySelector`, the previous test could fail.

@@ -5,7 +5,7 @@ To check that your services are working as you intend, you can write tests speci
 
 <div class="alert is-helpful">
 
-  For the sample app that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
+  For the sample application that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
 
   For the tests features in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
 
@@ -58,7 +58,7 @@ Angular testing utilities make it easy to investigate how injected services beha
 
 ## Testing services with the _TestBed_
 
-Your app relies on Angular [dependency injection (DI)](guide/dependency-injection)
+Your application relies on Angular [dependency injection (DI)](guide/dependency-injection)
 to create services.
 When a service has a dependent service, DI finds or creates that dependent service.
 And if that dependent service has its own dependencies, DI finds-or-creates them as well.
@@ -133,7 +133,7 @@ Begin by putting re-usable, preparatory code in a _setup_ function instead of `b
 
 The `setup()` function returns an object literal
 with the variables, such as `masterService`, that a test might reference.
-You don't define _semi-global_ variables (e.g., `let masterService: MasterService`)
+You don't define _semi-global_ variables (for example, `let masterService: MasterService`)
 in the body of the `describe()`.
 
 Then each test invokes `setup()` in its first line, before continuing

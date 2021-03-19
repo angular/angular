@@ -21,7 +21,7 @@ This sample application is much like the one in the [_Tour of Heroes_ tutorial](
 
 <div class="alert is-helpful">
 
-  For the sample app that the testing guides describe, see the <live-example noDownload>sample app</live-example>.
+  For the sample application that the testing guides describe, see the <live-example noDownload>sample app</live-example>.
 
   For the tests features in the testing guides, see <live-example stackblitz="specs" noDownload>tests</live-example>.
 
@@ -40,7 +40,7 @@ Just run the [`ng test`](cli/test) CLI command:
   ng test
 </code-example>
 
-The `ng test` command builds the app in _watch mode_,
+The `ng test` command builds the application in _watch mode_,
 and launches the [Karma test runner](https://karma-runner.github.io).
 
 The console output looks a bit like this:
@@ -85,7 +85,7 @@ Search the web for more details about Jasmine and Karma configuration.
 
 ### Other test frameworks
 
-You can also unit test an Angular app with other testing libraries and test runners.
+You can also unit test an Angular application with other testing libraries and test runners.
 Each library and runner has its own distinctive installation procedures, configuration, and syntax.
 
 Search the web to learn more.
@@ -145,7 +145,7 @@ Continuous integration (CI) servers let you set up your project repository so th
 There are paid CI services like Circle CI and Travis CI, and you can also host your own for free using Jenkins and others.
 Although Circle CI and Travis CI are paid services, they are provided free for open source projects.
 You can create a public project on GitHub and add these services without paying.
-Contributions to the Angular repo are automatically run through a whole suite of Circle CI tests.
+Contributions to the Angular repository are automatically run through a whole suite of Circle CI tests.
 
 This article explains how to configure your project to run Circle CI and Travis CI, and also update your test configuration to be able to run tests in the Chrome browser in either environment.
 
@@ -335,12 +335,12 @@ Now you can run the following command to use the `--no-sandbox` flag:
 </div>
 
 
-## More info on testing
+## More information on testing
 
-After you've set up your app for testing, you may find the following testing  guides useful.
+After you've set up your application for testing, you may find the following testing  guides useful.
 
 * [Code coverage](guide/testing-code-coverage)&mdash;find out how much of your app your tests are covering and how to specify required amounts.
-* [Testing services](guide/testing-services)&mdash;learn how to test the services your app uses.
+* [Testing services](guide/testing-services)&mdash;learn how to test the services your application uses.
 * [Basics of testing components](guide/testing-components-basics)&mdash;discover the basics of testing Angular components.
 * [Component testing scenarios](guide/testing-components-scenarios)&mdash;read about the various kinds of component testing scenarios and use cases.
 * [Testing attribute directives](guide/testing-attribute-directives)&mdash;learn about how to test your attribute directives.

@@ -187,7 +187,7 @@ without making any hardcoded assumptions about specific questions.
 It adds both control metadata and validation criteria dynamically.
 
 To ensure valid input, the *Save* button is disabled until the form is in a valid state.
-When the form is valid, you can click *Save* and the app renders the current form values as JSON.
+When the form is valid, you can click *Save* and the application renders the current form values as JSON.
 
 The following figure shows the final form.
 
