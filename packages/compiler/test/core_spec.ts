@@ -153,7 +153,8 @@ import * as core from '@angular/core';
       expectToBe(compilerCore.InjectFlags.Default, core.InjectFlags.Default);
       expectToBe(compilerCore.InjectFlags.SkipSelf, core.InjectFlags.SkipSelf);
       expectToBe(compilerCore.InjectFlags.Self, core.InjectFlags.Self);
-
+      expectToBe(compilerCore.InjectFlags.Host, core.InjectFlags.Host);
+      expectToBe(compilerCore.InjectFlags.Optional, core.InjectFlags.Optional);
 
       expectToBe(compilerCore.ArgumentType.Inline, core.ɵArgumentType.Inline);
       expectToBe(compilerCore.ArgumentType.Dynamic, core.ɵArgumentType.Dynamic);

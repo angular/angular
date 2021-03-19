@@ -421,7 +421,7 @@ export function getOrCreateInjectable<T>(
             lookupTokenUsingModuleInjector<T>(lView, token, flags, notFoundValue);
       }
       try {
-        const value = bloomHash();
+        const value = bloomHash(flags);
         if (value == null && !(flags & InjectFlags.Optional)) {
           throwProviderNotFoundError(token);
         } else {
