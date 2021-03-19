@@ -215,6 +215,16 @@ describe('MatSelect', () => {
           expect(select.getAttribute('aria-labelledby')).toBe(`${labelId} ${valueId}`);
         }));
 
+        it('should trim the trigger aria-labelledby when there is no label', fakeAsync(() => {
+          // Reset the `placeholder` which also controls the label of the form field.
+          fixture.componentInstance.select.placeholder = '';
+          fixture.detectChanges();
+
+          // Note that we assert that there are no spaces around the value.
+          const valueId = fixture.nativeElement.querySelector('.mat-select-value').id;
+          expect(select.getAttribute('aria-labelledby')).toBe(`${valueId}`);
+        }));
+
         it('should set the tabindex of the select to 0 by default', fakeAsync(() => {
           expect(select.getAttribute('tabindex')).toEqual('0');
         }));
@@ -977,6 +987,19 @@ describe('MatSelect', () => {
           const labelId = fixture.nativeElement.querySelector('.mat-form-field-label').id;
           const panel = document.querySelector('.mat-select-panel')!;
           expect(panel.getAttribute('aria-labelledby')).toBe(`${labelId} myLabelId`);
+        }));
+
+        it('should trim the custom panel aria-labelledby when there is no label', fakeAsync(() => {
+          // Reset the `placeholder` which also controls the label of the form field.
+          fixture.componentInstance.select.placeholder = '';
+          fixture.componentInstance.ariaLabelledby = 'myLabelId';
+          fixture.componentInstance.select.open();
+          fixture.detectChanges();
+          flush();
+
+          // Note that we assert that there are no spaces around the value.
+          const panel = document.querySelector('.mat-select-panel')!;
+          expect(panel.getAttribute('aria-labelledby')).toBe(`myLabelId`);
         }));
 
         it('should clear aria-labelledby from the panel if an aria-label is set', fakeAsync(() => {

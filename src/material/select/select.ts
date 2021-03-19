@@ -1004,8 +1004,9 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
       return null;
     }
 
-    const labelId = this._getLabelId();
-    return this.ariaLabelledby ? labelId + ' ' + this.ariaLabelledby : labelId;
+    const labelId = this._parentFormField?.getLabelId();
+    const labelExpression = (labelId ? labelId + ' ' : '');
+    return this.ariaLabelledby ? labelExpression + this.ariaLabelledby : labelId;
   }
 
   /** Determines the `aria-activedescendant` to be set on the host. */
@@ -1017,18 +1018,14 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
     return null;
   }
 
-  /** Gets the ID of the element that is labelling the select. */
-  private _getLabelId(): string {
-    return this._parentFormField?.getLabelId() || '';
-  }
-
   /** Gets the aria-labelledby of the select component trigger. */
   private _getTriggerAriaLabelledby(): string | null {
     if (this.ariaLabel) {
       return null;
     }
 
-    let value = this._getLabelId() + ' ' + this._valueId;
+    const labelId = this._parentFormField?.getLabelId();
+    let value = (labelId ? labelId + ' ' : '') + this._valueId;
 
     if (this.ariaLabelledby) {
       value += ' ' + this.ariaLabelledby;
