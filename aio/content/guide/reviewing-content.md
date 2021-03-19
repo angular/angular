@@ -28,7 +28,6 @@ You can review a topic using either the GitHub user interface or in an editor on
 
    If the topic does not have a last reviewed date, you are welcome to add it to the topic. To add a date, use the `YYYY-MM-DD` date format. Example: 
    `@reviewed 2021-03-23`
-   
 
 1. Read through the topic.
 
