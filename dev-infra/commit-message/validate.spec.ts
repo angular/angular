@@ -286,6 +286,11 @@ describe('validate-commit-message.js', () => {
             'BREAKING CHANGE: This is a summary of a breaking change.\n\n' +
             'This is a full description of the breaking change.';
         expectValidationResult(validateCommitMessage(msgWithSummaryAndDescription), VALID);
+
+        const msgWithNonBreaking = 'feat(compiler): this is just an usual commit message tile\n\n' +
+            'This is not a\n' +
+            'breaking change commit.';
+        expectValidationResult(validateCommitMessage(msgWithNonBreaking), VALID);
       });
 
       it('should fail for non-valid breaking change commit descriptions', () => {
