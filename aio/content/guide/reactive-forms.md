@@ -32,7 +32,7 @@ Template-driven forms allow direct access to modify data in your template, but a
 
 There are three steps to using form controls.
 
-1. Register the reactive forms module in your app. This module declares the reactive-form directives that you need to use reactive forms.
+1. Register the reactive forms module in your application. This module declares the reactive-form directives that you need to use reactive forms.
 2. Generate a new `FormControl` instance and save it in the component.
 3. Register the `FormControl` in the template.
 

@@ -334,7 +334,7 @@ However, if `dirWithHostBinding` sets its binding to `null`, the `width` propert
 
 There are cases where you need to differentiate the behavior of a [Component](api/core/Component) or [Directive](api/core/Directive) based on a static value set on the host element as an HTML attribute. For example, you might have a directive that needs to know the `type` of a `<button>` or `<input>` element.
 
-The [Attribute](api/core/Attribute) parameter decorator is great for passing the value of an HTML attribute to a component/directive constructor via [dependency injection](guide/dependency-injection).
+The [Attribute](api/core/Attribute) parameter decorator is great for passing the value of an HTML attribute to a component/directive constructor using [dependency injection](guide/dependency-injection).
 
 <div class="alert is-helpful">
 
