@@ -26,11 +26,11 @@ declare const $localize: LocalizeFn&{TRANSLATIONS: Record<MessageId, ParsedTrans
  * Loading a new translation will overwrite a previous translation if it has the same `MessageId`.
  *
  * Note that `$localize` messages are only processed once, when the tagged string is first
- * encountered and does not provide dynamic language changing without refreshing the browser. So
- * loading new translations later in the application life-cycle will not change the translated text
+ * encountered, and does not provide dynamic language changing without refreshing the browser.
+ * Loading new translations later in the application life-cycle will not change the translated text
  * of messages that have already been translated.
  *
- * The message ids and translations are in the same format as that rendered to "simple JSON"
+ * The message IDs and translations are in the same format as that rendered to "simple JSON"
  * translation files when extracting messages. In particular, placeholders in messages are rendered
  * using the `{$PLACEHOLDER_NAME}` syntax. For example the message from the following template:
  *
@@ -47,11 +47,11 @@ declare const $localize: LocalizeFn&{TRANSLATIONS: Record<MessageId, ParsedTrans
  * }
  * ```
  *
- * @param translations A map from message id to translated message.
+ * @param translations A map from message ID to translated message.
  *
  * These messages are processed and added to a lookup based on their `MessageId`.
  *
- * @see `clearTranslations()` for removing translations loaded via this function.
+ * @see `clearTranslations()` for removing translations loaded using this function.
  * @see `$localize` for tagging messages as needing to be translated.
  * @publicApi
  */

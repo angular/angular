@@ -1,13 +1,13 @@
 The `@angular/localize` package contains helpers and tools for localizing your application.
 
-You should install this package using `ng add @angular/localize` if you wish to tag text in your
-application that you wish to be translatable.
+You should install this package using `ng add @angular/localize` if you need to tag text in your
+application that you want to be translatable.
 
 The approach is based around the concept of tagging strings in code with a [template literal tag handler][tagged-templates]
 called `$localize`. The idea is that strings that need to be translated are “marked” using this tag:
 
 ```ts
-const message = $localize `Hello, World!`;
+const message = $localize`Hello, World!`;
 ```
 
 ---
@@ -20,10 +20,10 @@ the original text with translated text before the code is deployed.
 For example, the following code:
 
 ```ts
-warning = $localize `${this.process} is not right`;
+warning = $localize`${this.process} is not right`;
 ```
 
-could be replace with:
+could be replaced with:
 
 ```ts
 warning = "" + this.process + ", ce n'est pas bon.";
@@ -35,7 +35,7 @@ the translated text.
 ---
 
 The Angular template compiler also generates `$localize` tagged strings rather than doing the translation itself.
-For example the following template:
+For example, the following template:
 
 ```html
 <h1 i18n>Hello, World!</h1>
@@ -44,13 +44,13 @@ For example the following template:
 would be compiled to something like:
 
 ```ts
-ɵɵelementStart(0, "h1");                //  <h1>
-ɵɵi18n(1, $localize`Hello, World!`);    //  Hello, World!
-ɵɵelementEnd();                         //  </h1>
+ɵɵelementStart(0, "h1"); //  <h1>
+ɵɵi18n(1, $localize`Hello, World!`); //  Hello, World!
+ɵɵelementEnd(); //  </h1>
 ```
 
-This means that after the Angular compiler has completed its work all the template text marked with `i18n`
-attributes have been converted to `$localize` tagged strings which can be processed just like any other
+This means that after the Angular compiler has completed its work, all the template text marked with `i18n`
+attributes have been converted to `$localize` tagged strings, which can be processed just like any other
 tagged string.
 
 [tagged-templates]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#Tagged_templates
