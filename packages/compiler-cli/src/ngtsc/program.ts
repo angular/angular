@@ -38,20 +38,6 @@ export class NgtscProgram implements api.Program {
    */
   private tsProgram: ts.Program;
 
-  /**
-   * The TypeScript program to use for the next incremental compilation.
-   *
-   * Once a TS program is used to create another (an incremental compilation operation), it can no
-   * longer be used to do so again.
-   *
-   * Since template type-checking uses the primary program to create a type-checking program, after
-   * this happens the primary program is no longer suitable for starting a subsequent compilation,
-   * and the template type-checking program should be used instead.
-   *
-   * Thus, the program which should be used for the next incremental compilation is tracked in
-   * `reuseTsProgram`, separately from the "primary" program which is always used for emit.
-   */
-  private reuseTsProgram: ts.Program;
   private closureCompilerEnabled: boolean;
   private host: NgCompilerHost;
   private incrementalStrategy: TrackedIncrementalBuildStrategy;
@@ -70,7 +56,7 @@ export class NgtscProgram implements api.Program {
 
     this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
 
-    const reuseProgram = oldProgram?.reuseTsProgram;
+    const reuseProgram = oldProgram?.compiler.getCurrentProgram();
     this.host = NgCompilerHost.wrap(delegateHost, rootNames, options, reuseProgram ?? null);
 
     if (reuseProgram !== undefined) {
@@ -84,7 +70,6 @@ export class NgtscProgram implements api.Program {
     this.tsProgram = perfRecorder.inPhase(
         PerfPhase.TypeScriptProgramCreate,
         () => ts.createProgram(this.host.inputFiles, options, this.host, reuseProgram));
-    this.reuseTsProgram = this.tsProgram;
 
     perfRecorder.phase(PerfPhase.Unaccounted);
     perfRecorder.memory(PerfCheckpoint.TypeScriptProgramCreate);
@@ -137,7 +122,7 @@ export class NgtscProgram implements api.Program {
   }
 
   getReuseTsProgram(): ts.Program {
-    return this.reuseTsProgram;
+    return this.compiler.getCurrentProgram();
   }
 
   getTsOptionDiagnostics(cancellationToken?: ts.CancellationToken|
@@ -220,11 +205,11 @@ export class NgtscProgram implements api.Program {
       }
     }
 
-    const diagnostics = sf === undefined ?
-        this.compiler.getDiagnostics() :
-        this.compiler.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
-    this.reuseTsProgram = this.compiler.getCurrentProgram();
-    return diagnostics;
+    if (sf === undefined) {
+      return this.compiler.getDiagnostics();
+    } else {
+      return this.compiler.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
+    }
   }
 
   /**
