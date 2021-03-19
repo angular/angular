@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {parseCommitMessage, ParsedCommitMessage} from './parse';
+import {getHeaderWithoutFixup, isFixup, isRevert, isSquash, parseCommitMessage} from './parse';
 
 
 const commitValues = {
@@ -14,12 +14,13 @@ const commitValues = {
   type: 'fix',
   scope: 'changed-area',
   summary: 'This is a short summary of the change',
-  body: 'This is a longer description of the change Closes #1',
+  body: 'This is a longer description of the change',
+  footer: 'Closes #1',
 };
 
 function buildCommitMessage(params = {}) {
-  const {prefix, type, scope, summary, body} = {...commitValues, ...params};
-  return `${prefix}${type}${scope ? '(' + scope + ')' : ''}: ${summary}\n\n${body}`;
+  const {prefix, type, scope, summary, body, footer} = {...commitValues, ...params};
+  return `${prefix}${type}${scope ? '(' + scope + ')' : ''}: ${summary}\n${body}\n${footer}`;
 }
 
 
@@ -45,42 +46,9 @@ describe('commit message parsing:', () => {
     expect(parseCommitMessage(message).body).toBe(commitValues.body);
   });
 
-  it('parses the body without Github linking', () => {
-    const body = 'This has linking\nCloses #1';
-    const message = buildCommitMessage({body});
-    expect(parseCommitMessage(message).bodyWithoutLinking).toBe('This has linking\n');
-  });
-
   it('parses the subject', () => {
     const message = buildCommitMessage();
     expect(parseCommitMessage(message).subject).toBe(commitValues.summary);
-  });
-
-  it('identifies if a commit is a fixup', () => {
-    const message1 = buildCommitMessage();
-    expect(parseCommitMessage(message1).isFixup).toBe(false);
-
-    const message2 = buildCommitMessage({prefix: 'fixup! '});
-    expect(parseCommitMessage(message2).isFixup).toBe(true);
-  });
-
-  it('identifies if a commit is a revert', () => {
-    const message1 = buildCommitMessage();
-    expect(parseCommitMessage(message1).isRevert).toBe(false);
-
-    const message2 = buildCommitMessage({prefix: 'revert: '});
-    expect(parseCommitMessage(message2).isRevert).toBe(true);
-
-    const message3 = buildCommitMessage({prefix: 'revert '});
-    expect(parseCommitMessage(message3).isRevert).toBe(true);
-  });
-
-  it('identifies if a commit is a squash', () => {
-    const message1 = buildCommitMessage();
-    expect(parseCommitMessage(message1).isSquash).toBe(false);
-
-    const message2 = buildCommitMessage({prefix: 'squash! '});
-    expect(parseCommitMessage(message2).isSquash).toBe(true);
   });
 
   it('ignores comment lines', () => {
@@ -100,6 +68,41 @@ describe('commit message parsing:', () => {
     expect(parsedMessage.body)
         .toBe(
             'This is line 1 of the actual body.\n' +
-            'This is line 2 of the actual body (and it also contains a # but it not a comment).\n');
+            'This is line 2 of the actual body (and it also contains a # but it not a comment).');
+  });
+
+  describe('parsed commit message utils', () => {
+    it('identifies if a commit is a fixup', () => {
+      const commit1 = parseCommitMessage(buildCommitMessage());
+      expect(isFixup(commit1)).toBe(false);
+
+      const commit2 = parseCommitMessage(buildCommitMessage({prefix: 'fixup! '}));
+      expect(isFixup(commit2)).toBe(true);
+    });
+
+    it('extracts the header from a fixup commit', () => {
+      const commit = parseCommitMessage(buildCommitMessage({prefix: 'fixup! '}));
+      expect(getHeaderWithoutFixup(commit))
+          .toBe(`${commitValues.type}(${commitValues.scope}): ${commitValues.summary}`);
+    });
+
+    it('identifies if a commit is a revert', () => {
+      const message1 = parseCommitMessage(buildCommitMessage());
+      expect(isRevert(message1)).toBe(false);
+
+      const message2 = parseCommitMessage(buildCommitMessage({prefix: 'revert: '}));
+      expect(isRevert(message2)).toBe(true);
+
+      const message3 = parseCommitMessage(buildCommitMessage({prefix: 'revert '}));
+      expect(isRevert(message3)).toBe(true);
+    });
+
+    it('identifies if a commit is a squash', () => {
+      const message1 = parseCommitMessage(buildCommitMessage());
+      expect(isSquash(message1)).toBe(false);
+
+      const message2 = parseCommitMessage(buildCommitMessage({prefix: 'squash! '}));
+      expect(isSquash(message2)).toBe(true);
+    });
   });
 });

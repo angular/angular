@@ -156,22 +156,10 @@ describe('validate-commit-message.js', () => {
     });
 
     describe('(squash)', () => {
-      describe('without `disallowSquash`', () => {
-        it('should return commits as valid', () => {
-          expectValidationResult(validateCommitMessage('squash! feat(core): add feature'), VALID);
-          expectValidationResult(validateCommitMessage('squash! fix: a bug'), VALID);
-          expectValidationResult(validateCommitMessage('squash! fix a typo'), VALID);
-        });
-      });
-
-      describe('with `disallowSquash`', () => {
-        it('should fail', () => {
-          expectValidationResult(
-              validateCommitMessage('fix(core): something', {disallowSquash: true}), VALID);
-          expectValidationResult(
-              validateCommitMessage('squash! fix(core): something', {disallowSquash: true}),
-              INVALID, ['The commit must be manually squashed into the target commit']);
-        });
+      it('should return commits as valid', () => {
+        expectValidationResult(validateCommitMessage('squash! feat(core): add feature'), VALID);
+        expectValidationResult(validateCommitMessage('squash! fix: a bug'), VALID);
+        expectValidationResult(validateCommitMessage('squash! fix a typo'), VALID);
       });
     });
 
@@ -189,21 +177,14 @@ describe('validate-commit-message.js', () => {
           const msg = 'fixup! foo';
 
           expectValidationResult(
-              validateCommitMessage(
-                  msg, {disallowSquash: false, nonFixupCommitHeaders: ['foo', 'bar', 'baz']}),
-              VALID);
+              validateCommitMessage(msg, {nonFixupCommitHeaders: ['foo', 'bar', 'baz']}), VALID);
           expectValidationResult(
-              validateCommitMessage(
-                  msg, {disallowSquash: false, nonFixupCommitHeaders: ['bar', 'baz', 'foo']}),
-              VALID);
+              validateCommitMessage(msg, {nonFixupCommitHeaders: ['bar', 'baz', 'foo']}), VALID);
           expectValidationResult(
-              validateCommitMessage(
-                  msg, {disallowSquash: false, nonFixupCommitHeaders: ['baz', 'foo', 'bar']}),
-              VALID);
+              validateCommitMessage(msg, {nonFixupCommitHeaders: ['baz', 'foo', 'bar']}), VALID);
 
           expectValidationResult(
-              validateCommitMessage(
-                  msg, {disallowSquash: false, nonFixupCommitHeaders: ['qux', 'quux', 'quuux']}),
+              validateCommitMessage(msg, {nonFixupCommitHeaders: ['qux', 'quux', 'quuux']}),
               INVALID,
               ['Unable to find match for fixup commit among prior commits: \n' +
                '      qux\n' +
@@ -213,14 +194,11 @@ describe('validate-commit-message.js', () => {
 
         it('should fail if `nonFixupCommitHeaders` is empty', () => {
           expectValidationResult(
-              validateCommitMessage(
-                  'refactor(core): make reactive',
-                  {disallowSquash: false, nonFixupCommitHeaders: []}),
+              validateCommitMessage('refactor(core): make reactive', {nonFixupCommitHeaders: []}),
               VALID);
           expectValidationResult(
-              validateCommitMessage(
-                  'fixup! foo', {disallowSquash: false, nonFixupCommitHeaders: []}),
-              INVALID, [`Unable to find match for fixup commit among prior commits: -`]);
+              validateCommitMessage('fixup! foo', {nonFixupCommitHeaders: []}), INVALID,
+              [`Unable to find match for fixup commit among prior commits: -`]);
         });
       });
     });

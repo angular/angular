@@ -19,6 +19,7 @@ var fetch = _interopDefault(require('node-fetch'));
 var semver = require('semver');
 var multimatch = require('multimatch');
 var yaml = require('yaml');
+var conventionalCommitsParser = require('conventional-commits-parser');
 var cliProgress = require('cli-progress');
 var os = require('os');
 var minimatch = require('minimatch');
@@ -1685,55 +1686,36 @@ const COMMIT_TYPES = {
  */
 /** Regex determining if a commit is a fixup. */
 const FIXUP_PREFIX_RE = /^fixup! /i;
-/** Regex finding all github keyword links. */
-const GITHUB_LINKING_RE = /((closed?s?)|(fix(es)?(ed)?)|(resolved?s?))\s\#(\d+)/ig;
 /** Regex determining if a commit is a squash. */
 const SQUASH_PREFIX_RE = /^squash! /i;
 /** Regex determining if a commit is a revert. */
 const REVERT_PREFIX_RE = /^revert:? /i;
-/** Regex determining the scope of a commit if provided. */
-const TYPE_SCOPE_RE = /^(\w+)(?:\(([^)]+)\))?\:\s(.+)$/;
-/** Regex determining the entire header line of the commit. */
-const COMMIT_HEADER_RE = /^(.*)/i;
-/** Regex determining the body of the commit. */
-const COMMIT_BODY_RE = /^.*\n\n([\s\S]*)$/;
+var NoteSections;
+(function (NoteSections) {
+    NoteSections["BREAKING_CHANGE"] = "BREAKING_CHANGE";
+    NoteSections["DEPRECATED"] = "DEPRECATED";
+})(NoteSections || (NoteSections = {}));
 /** Parse a full commit message into its composite parts. */
-function parseCommitMessage(commitMsg) {
-    // Ignore comments (i.e. lines starting with `#`). Comments are automatically removed by git and
-    // should not be considered part of the final commit message.
-    commitMsg = commitMsg.split('\n').filter(line => !line.startsWith('#')).join('\n');
-    let header = '';
-    let body = '';
-    let bodyWithoutLinking = '';
-    let type = '';
-    let scope = '';
-    let subject = '';
-    if (COMMIT_HEADER_RE.test(commitMsg)) {
-        header = COMMIT_HEADER_RE.exec(commitMsg)[1]
-            .replace(FIXUP_PREFIX_RE, '')
-            .replace(SQUASH_PREFIX_RE, '');
-    }
-    if (COMMIT_BODY_RE.test(commitMsg)) {
-        body = COMMIT_BODY_RE.exec(commitMsg)[1];
-        bodyWithoutLinking = body.replace(GITHUB_LINKING_RE, '');
-    }
-    if (TYPE_SCOPE_RE.test(header)) {
-        const parsedCommitHeader = TYPE_SCOPE_RE.exec(header);
-        type = parsedCommitHeader[1];
-        scope = parsedCommitHeader[2];
-        subject = parsedCommitHeader[3];
-    }
-    return {
-        header,
-        body,
-        bodyWithoutLinking,
-        type,
-        scope,
-        subject,
-        isFixup: FIXUP_PREFIX_RE.test(commitMsg),
-        isSquash: SQUASH_PREFIX_RE.test(commitMsg),
-        isRevert: REVERT_PREFIX_RE.test(commitMsg),
-    };
+function parseCommitMessage(commit) {
+    const parsedCommit = conventionalCommitsParser.sync(commit, parseOptions);
+    parsedCommit.fullText = commit;
+    return parsedCommit;
+}
+/** Whether the commit is a fixup commit. */
+function isFixup(commit) {
+    return FIXUP_PREFIX_RE.test(commit.header);
+}
+/** Get the header of a commit with the fixup marker. */
+function getHeaderWithoutFixup(commit) {
+    return commit.header.replace(FIXUP_PREFIX_RE, '');
+}
+/** Whether the commit is a squash commit. */
+function isSquash(commit) {
+    return SQUASH_PREFIX_RE.test(commit.header);
+}
+/** Whether the commit is a revert commit. */
+function isRevert(commit) {
+    return REVERT_PREFIX_RE.test(commit.header);
 }
 /** Retrieve and parse each commit message in a provide range. */
 function parseCommitMessagesForRange(range) {
@@ -1759,14 +1741,14 @@ function parseCommitMessagesForRange(range) {
         // Parse each commit message.
         .map(commit => parseCommitMessage(commit));
 }
+/** Configuration options for the commit parser. */
+const parseOptions = {
+    commentChar: '#',
+    headerPattern: /^(\w*)(?:\((?:([^/]+)\/)?(.*)\))?: (.*)$/,
+    headerCorrespondence: ['type', 'package', 'scope', 'subject'],
+    noteKeywords: [NoteSections.BREAKING_CHANGE, NoteSections.DEPRECATED],
+};
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 /** Regex matching a URL for an entire commit body line. */
 const COMMIT_BODY_URL_LINE_RE = /^https?:\/\/.*$/;
 /**
@@ -1786,22 +1768,12 @@ function validateCommitMessage(commitMsg, options = {}) {
     const errors = [];
     /** Perform the validation checks against the parsed commit. */
     function validateCommitAndCollectErrors() {
-        // TODO(josephperrott): Remove early return calls when commit message errors are found
-        var _a;
         ////////////////////////////////////
         // Checking revert, squash, fixup //
         ////////////////////////////////////
-        // All revert commits are considered valid.
-        if (commit.isRevert) {
-            return true;
-        }
-        // All squashes are considered valid, as the commit will be squashed into another in
-        // the git history anyway, unless the options provided to not allow squash commits.
-        if (commit.isSquash) {
-            if (options.disallowSquash) {
-                errors.push('The commit must be manually squashed into the target commit');
-                return false;
-            }
+        var _a;
+        // All squash and revert commits are considered valid.
+        if (isRevert(commit) || isSquash(commit)) {
             return true;
         }
         // Fixups commits are considered valid, unless nonFixupCommitHeaders are provided to check
@@ -1809,8 +1781,10 @@ function validateCommitMessage(commitMsg, options = {}) {
         // non-fixup commit (i.e. a commit whose header is identical to this commit's header after
         // stripping the `fixup! ` prefix), otherwise we assume this verification will happen in another
         // check.
-        if (commit.isFixup) {
-            if (options.nonFixupCommitHeaders && !options.nonFixupCommitHeaders.includes(commit.header)) {
+        if (isFixup(commit)) {
+            const commitHeaderWithoutFixup = getHeaderWithoutFixup(commit);
+            if (options.nonFixupCommitHeaders &&
+                !options.nonFixupCommitHeaders.includes(commitHeaderWithoutFixup)) {
                 errors.push('Unable to find match for fixup commit among prior commits: ' +
                     (options.nonFixupCommitHeaders.map(x => `\n      ${x}`).join('') || '-'));
                 return false;
@@ -1854,12 +1828,12 @@ function validateCommitMessage(commitMsg, options = {}) {
         // Checking commit body //
         //////////////////////////
         if (!((_a = config.minBodyLengthTypeExcludes) === null || _a === void 0 ? void 0 : _a.includes(commit.type)) &&
-            commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
+            (commit.body || '').trim().length < config.minBodyLength) {
             errors.push(`The commit message body does not meet the minimum length of ${config.minBodyLength} characters`);
             return false;
         }
-        const bodyByLine = commit.body.split('\n');
-        const lineExceedsMaxLength = bodyByLine.some(line => {
+        const bodyByLine = (commit.body || '').split('\n');
+        const lineExceedsMaxLength = bodyByLine.some((line) => {
             // Check if any line exceeds the max line length limit. The limit is ignored for
             // lines that just contain an URL (as these usually cannot be wrapped or shortened).
             return line.length > config.maxLineLength && !COMMIT_BODY_URL_LINE_RE.test(line);
@@ -1871,7 +1845,7 @@ function validateCommitMessage(commitMsg, options = {}) {
         // Breaking change
         // Check if the commit message contains a valid break change description.
         // https://github.com/angular/angular/blob/88fbc066775ab1a2f6a8c75f933375b46d8fa9a4/CONTRIBUTING.md#commit-message-footer
-        const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.body);
+        const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.fullText);
         if (hasBreakingChange !== null) {
             const [, breakingChangeDescription] = hasBreakingChange;
             if (!breakingChangeDescription) {
@@ -1987,17 +1961,10 @@ const ValidateFileModule = {
     describe: 'Validate the most recent commit message',
 };
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 // Whether the provided commit is a fixup commit.
-const isNonFixup = (commit) => !commit.isFixup;
+const isNonFixup = (commit) => !isFixup(commit);
 // Extracts commit header (first line of commit message).
-const extractCommitHeader = (commit) => commit.header;
+const extractCommitHeader = (commit) => commit.header || '';
 /** Validate all commits in a provided git commit range. */
 function validateCommitRange(range) {
     /** A list of tuples of the commit header string and a list of error messages for the commit. */
@@ -2011,7 +1978,6 @@ function validateCommitRange(range) {
      */
     const allCommitsInRangeValid = commits.every((commit, i) => {
         const options = {
-            disallowSquash: true,
             nonFixupCommitHeaders: isNonFixup(commit) ?
                 undefined :
                 commits.slice(0, i).filter(isNonFixup).map(extractCommitHeader)

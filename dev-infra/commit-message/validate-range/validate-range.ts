@@ -5,16 +5,17 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {error, info} from '../../utils/console';
+import {Commit} from 'conventional-commits-parser';
 
-import {parseCommitMessagesForRange, ParsedCommitMessage} from '../parse';
+import {error, info} from '../../utils/console';
+import {isFixup, parseCommitMessagesForRange} from '../parse';
 import {printValidationErrors, validateCommitMessage, ValidateCommitMessageOptions} from '../validate';
 
 // Whether the provided commit is a fixup commit.
-const isNonFixup = (commit: ParsedCommitMessage) => !commit.isFixup;
+const isNonFixup = (commit: Commit) => !isFixup(commit);
 
 // Extracts commit header (first line of commit message).
-const extractCommitHeader = (commit: ParsedCommitMessage) => commit.header;
+const extractCommitHeader = (commit: Commit) => commit.header || '';
 
 /** Validate all commits in a provided git commit range. */
 export function validateCommitRange(range: string) {
@@ -30,14 +31,13 @@ export function validateCommitRange(range: string) {
    */
   const allCommitsInRangeValid = commits.every((commit, i) => {
     const options: ValidateCommitMessageOptions = {
-      disallowSquash: true,
       nonFixupCommitHeaders: isNonFixup(commit) ?
           undefined :
           commits.slice(0, i).filter(isNonFixup).map(extractCommitHeader)
     };
     const {valid, errors: localErrors} = validateCommitMessage(commit, options);
     if (localErrors.length) {
-      errors.push([commit.header, localErrors]);
+      errors.push([commit.header!, localErrors]);
     }
     return valid;
   });

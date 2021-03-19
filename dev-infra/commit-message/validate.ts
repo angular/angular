@@ -5,14 +5,15 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {Commit} from 'conventional-commits-parser';
+
 import {error} from '../utils/console';
 
 import {COMMIT_TYPES, getCommitMessageConfig, ScopeRequirement} from './config';
-import {parseCommitMessage, ParsedCommitMessage} from './parse';
+import {getHeaderWithoutFixup, isFixup, isRevert, isSquash, parseCommitMessage} from './parse';
 
 /** Options for commit message validation. */
 export interface ValidateCommitMessageOptions {
-  disallowSquash?: boolean;
   nonFixupCommitHeaders?: string[];
 }
 
@@ -20,7 +21,7 @@ export interface ValidateCommitMessageOptions {
 export interface ValidateCommitMessageResult {
   valid: boolean;
   errors: string[];
-  commit: ParsedCommitMessage;
+  commit: Commit;
 }
 
 /** Regex matching a URL for an entire commit body line. */
@@ -38,7 +39,7 @@ const COMMIT_BODY_BREAKING_CHANGE_RE = /^BREAKING CHANGE(:( |\n{2}))?/m;
 
 /** Validate a commit message against using the local repo's config. */
 export function validateCommitMessage(
-    commitMsg: string|ParsedCommitMessage,
+    commitMsg: string|Commit,
     options: ValidateCommitMessageOptions = {}): ValidateCommitMessageResult {
   const config = getCommitMessageConfig().commitMessage;
   const commit = typeof commitMsg === 'string' ? parseCommitMessage(commitMsg) : commitMsg;
@@ -46,24 +47,12 @@ export function validateCommitMessage(
 
   /** Perform the validation checks against the parsed commit. */
   function validateCommitAndCollectErrors() {
-    // TODO(josephperrott): Remove early return calls when commit message errors are found
-
     ////////////////////////////////////
     // Checking revert, squash, fixup //
     ////////////////////////////////////
 
-    // All revert commits are considered valid.
-    if (commit.isRevert) {
-      return true;
-    }
-
-    // All squashes are considered valid, as the commit will be squashed into another in
-    // the git history anyway, unless the options provided to not allow squash commits.
-    if (commit.isSquash) {
-      if (options.disallowSquash) {
-        errors.push('The commit must be manually squashed into the target commit');
-        return false;
-      }
+    // All squash and revert commits are considered valid.
+    if (isRevert(commit) || isSquash(commit)) {
       return true;
     }
 
@@ -72,8 +61,10 @@ export function validateCommitMessage(
     // non-fixup commit (i.e. a commit whose header is identical to this commit's header after
     // stripping the `fixup! ` prefix), otherwise we assume this verification will happen in another
     // check.
-    if (commit.isFixup) {
-      if (options.nonFixupCommitHeaders && !options.nonFixupCommitHeaders.includes(commit.header)) {
+    if (isFixup(commit)) {
+      const commitHeaderWithoutFixup = getHeaderWithoutFixup(commit);
+      if (options.nonFixupCommitHeaders &&
+          !options.nonFixupCommitHeaders.includes(commitHeaderWithoutFixup)) {
         errors.push(
             'Unable to find match for fixup commit among prior commits: ' +
             (options.nonFixupCommitHeaders.map(x => `\n      ${x}`).join('') || '-'));
@@ -86,7 +77,7 @@ export function validateCommitMessage(
     ////////////////////////////
     // Checking commit header //
     ////////////////////////////
-    if (commit.header.length > config.maxLineLength) {
+    if (commit.header!.length > config.maxLineLength) {
       errors.push(`The commit message header is longer than ${config.maxLineLength} characters`);
       return false;
     }
@@ -133,14 +124,14 @@ export function validateCommitMessage(
     //////////////////////////
 
     if (!config.minBodyLengthTypeExcludes?.includes(commit.type) &&
-        commit.bodyWithoutLinking.trim().length < config.minBodyLength) {
+        (commit.body || '').trim().length < config.minBodyLength) {
       errors.push(`The commit message body does not meet the minimum length of ${
           config.minBodyLength} characters`);
       return false;
     }
 
-    const bodyByLine = commit.body.split('\n');
-    const lineExceedsMaxLength = bodyByLine.some(line => {
+    const bodyByLine = (commit.body || '').split('\n');
+    const lineExceedsMaxLength = bodyByLine.some((line: string) => {
       // Check if any line exceeds the max line length limit. The limit is ignored for
       // lines that just contain an URL (as these usually cannot be wrapped or shortened).
       return line.length > config.maxLineLength && !COMMIT_BODY_URL_LINE_RE.test(line);
@@ -155,7 +146,7 @@ export function validateCommitMessage(
     // Breaking change
     // Check if the commit message contains a valid break change description.
     // https://github.com/angular/angular/blob/88fbc066775ab1a2f6a8c75f933375b46d8fa9a4/CONTRIBUTING.md#commit-message-footer
-    const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.body);
+    const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.fullText!);
     if (hasBreakingChange !== null) {
       const [, breakingChangeDescription] = hasBreakingChange;
       if (!breakingChangeDescription) {
