@@ -8,8 +8,7 @@
 
 import chalk from 'chalk';
 import {writeFileSync} from 'fs';
-import {createPromptModule, ListChoiceOptions, prompt} from 'inquirer';
-import * as inquirerAutocomplete from 'inquirer-autocomplete-prompt';
+import {prompt} from 'inquirer';
 import {join} from 'path';
 import {Arguments} from 'yargs';
 
@@ -31,47 +30,6 @@ export async function promptConfirm(message: string, defaultValue = false): Prom
            default: defaultValue,
          }))
       .result;
-}
-
-/** Prompts the user to select an option from a filterable autocomplete list. */
-export async function promptAutocomplete(
-    message: string, choices: (string|ListChoiceOptions)[]): Promise<string>;
-/**
- * Prompts the user to select an option from a filterable autocomplete list, with an option to
- * choose no value.
- */
-export async function promptAutocomplete(
-    message: string, choices: (string|ListChoiceOptions)[],
-    noChoiceText?: string): Promise<string|false>;
-export async function promptAutocomplete(
-    message: string, choices: (string|ListChoiceOptions)[],
-    noChoiceText?: string): Promise<string|false> {
-  // Creates a local prompt module with an autocomplete prompt type.
-  const prompt = createPromptModule({}).registerPrompt('autocomplete', inquirerAutocomplete);
-  if (noChoiceText) {
-    choices = [noChoiceText, ...choices];
-  }
-  // `prompt` must be cast as `any` as the autocomplete typings are not available.
-  const result = (await (prompt as any)({
-                   type: 'autocomplete',
-                   name: 'result',
-                   message,
-                   source: (_: any, input: string) => {
-                     if (!input) {
-                       return Promise.resolve(choices);
-                     }
-                     return Promise.resolve(choices.filter(choice => {
-                       if (typeof choice === 'string') {
-                         return choice.includes(input);
-                       }
-                       return choice.name!.includes(input);
-                     }));
-                   }
-                 })).result;
-  if (result === noChoiceText) {
-    return false;
-  }
-  return result;
 }
 
 /** Prompts the user for one line of input. */

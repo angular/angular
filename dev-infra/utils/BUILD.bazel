@@ -21,7 +21,6 @@ ts_library(
         "@npm//@types/yargs",
         "@npm//chalk",
         "@npm//inquirer",
-        "@npm//inquirer-autocomplete-prompt",
         "@npm//shelljs",
         "@npm//tslib",
         "@npm//typed-graphqlify",
