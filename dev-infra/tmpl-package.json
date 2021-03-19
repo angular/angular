@@ -18,7 +18,6 @@
     "cli-progress": "<from-root>",
     "glob": "<from-root>",
     "inquirer": "<from-root>",
-    "inquirer-autocomplete-prompt": "<from-root>",
     "minimatch": "<from-root>",
     "multimatch": "<from-root>",
     "node-fetch": "<from-root>",
