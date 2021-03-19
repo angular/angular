@@ -183,10 +183,9 @@
   "cindygk": {
     "name": "Cindy Greene-Kaplan",
     "picture": "cindygreenekaplan.jpg",
-    "twitter": "CindyGK2019",
+    "twitter": "cindykaygk",
     "bio": "Cindy is a Program Manager on the Angular team at Google. She is passionate about improving team processes and overall execution. She enjoys dance fitness, movies and travel.",
-    "groups": ["Angular"],
-    "lead": "juleskremer"
+    "groups": ["Angular"]
   },
   "cironunes": {
     "name": "Ciro Nunes",
@@ -352,8 +351,7 @@
     "twitter": "IgorMinar",
     "website": "https://google.com/+IgorMinar",
     "bio": "Igor is a software engineer at Google. He is a lead on the Angular project, practitioner of test driven development, open source enthusiast, hacker. In his free time, Igor enjoys spending time with his wife and two kids, doing outdoor activities (including but not limited to sports, gardening and building retaining walls).",
-    "groups": ["Angular"],
-    "lead": "juleskremer"
+    "groups": ["Angular"]
   },
   "jbedard": {
     "name": "Jason Bedard",
@@ -458,13 +456,6 @@
     "website": "https://schwarty.com",
     "bio": "Justin (aka Schwarty) is a Google Developer Expert in Web Technologies and Angular, the host and maintainer of the weekly AngularAir live video broadcast, educator, writer and content creator. He has Angular courses available on LinkedIn Learning and Pluralsight and loves passing on years of full stack development knowledge to help empower others to find their inner awesomeness!",
     "groups": ["GDE"]
-  },
-  "juleskremer": {
-    "name": "Jules Kremer",
-    "picture": "juleskremer.jpg",
-    "twitter": "jules_kremer",
-    "bio": "Jules Kremer is the engineering manager for web frameworks at Google including Angular. Jules has over 20 years of experience in technology and has been a software engineer, product manager, developer evangelist, and competitive intelligence lead. Jules has a passion for supporting women in tech, yoga, hiking, cooking, and exploring the jungles of Maui.",
-    "groups": ["Angular"]
   },
   "juristr": {
     "name": "Juri Strumpflohner",
@@ -589,14 +580,6 @@
     "groups": ["GDE",
       "Collaborators"]
   },
-  "manughub": {
-    "name": "Manu Murthy",
-    "picture": "manumurthy.jpg",
-    "twitter": "manu_murthy",
-    "bio": "Manu heads technical program management for Angular at Google. Manu keeps the big picture in focus and works with cross-functional teams to plan, execute and usher programs through the entire lifecycle.",
-    "groups": ["Angular"],
-    "lead": "juleskremer"
-  },
   "martinakraus": {
     "name": "Martina Kraus",
     "picture": "martinakraus.jpg",
@@ -627,8 +610,7 @@
     "twitter": "mgechev",
     "website": "https://blog.mgechev.com/",
     "bio": "Software engineer who enjoys theoretical computer science and its practical applications. Speaker, author of the book 'Switching to Angular', codelyzer, Guess.js, and the Go linter revive. Working for faster and more reliable software.",
-    "groups": ["Angular"],
-    "lead": "stephenfluin"
+    "groups": ["Angular"]
   },
   "mhartington": {
     "name": "Mike Hartington",
@@ -821,15 +803,6 @@
     "website": "https://github.com/srashtisj",
     "bio": "Srashti is Senior Developer at Hvantage Technologies. She's also a Google Developer Expert for Angular and Microsoft MVP (Developer Technologies) based in India. Co-organiser All About Web (@itsAllAboutWeb) and Indore Technical Community (#ngIndore).",
     "groups": ["GDE"]
-  },
-  "stephenfluin": {
-    "name": "Stephen Fluin",
-    "picture": "stephenfluin.jpg",
-    "twitter": "stephenfluin",
-    "website": "https://plus.google.com/+stephenfluin",
-    "bio": "Stephen is a Developer Advocate working on the Angular team. Before joining Google, he was a Google Expert. Stephen loves to help enterprises use technology more effectively.",
-    "groups": ["Angular"],
-    "lead": "juleskremer"
   },
   "stevermeister": {
     "name": "Stepan Suvorov",
