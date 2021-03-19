@@ -263,5 +263,78 @@ describe('validate-commit-message.js', () => {
                VALID);
          });
     });
+
+    describe('breaking change', () => {
+      it('should allow valid breaking change commit descriptions', () => {
+        const msgWithSummary = 'feat(compiler): this is just an usual commit message tile\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'BREAKING CHANGE: This is a summary of a breaking change.';
+        expectValidationResult(validateCommitMessage(msgWithSummary), VALID);
+
+        const msgWithDescription = 'feat(compiler): this is just an usual commit message tile\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'BREAKING CHANGE:\n\n' +
+            'This is a full description of the breaking change.';
+        expectValidationResult(validateCommitMessage(msgWithDescription), VALID);
+
+        const msgWithSummaryAndDescription =
+            'feat(compiler): this is just an usual commit message tile\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'BREAKING CHANGE: This is a summary of a breaking change.\n\n' +
+            'This is a full description of the breaking change.';
+        expectValidationResult(validateCommitMessage(msgWithSummaryAndDescription), VALID);
+      });
+
+      it('should fail for non-valid breaking change commit descriptions', () => {
+        const msgWithSummary = 'feat(compiler): this is just an usual commit message tile\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'BREAKING CHANGE This is a summary of a breaking change.';
+        expectValidationResult(
+            validateCommitMessage(msgWithSummary), INVALID,
+            [`The commit message body contains a non valid breaking change description.`]);
+
+        const msgWithDescription = 'feat(compiler): this is just an usual commit message tile\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'BREAKING CHANGE:\n' +
+            'This is a full description of the breaking change.';
+        expectValidationResult(
+            validateCommitMessage(msgWithDescription), INVALID,
+            [`The commit message body contains a non valid breaking change description.`]);
+
+        const msgWithSummaryAndDescription =
+            'feat(compiler): this is just an usual commit message tile\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'BREAKING CHANGE\n\n' +
+            'This is a full description of the breaking change.';
+        expectValidationResult(
+            validateCommitMessage(msgWithSummaryAndDescription), INVALID,
+            [`The commit message body contains a non valid breaking change description.`]);
+      });
+
+      it('should fail for when "BREAKING CHANGE" is in lowercase.', () => {
+        const msgWithSummary = 'feat(compiler): this is just an usual commit message tile\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'Breaking change: This is a summary of a breaking change.';
+        expectValidationResult(validateCommitMessage(msgWithSummary), INVALID, [
+          `The commit message body contains breaking change description but it doesn't start with 'BREAKING CHANGE'.`
+        ]);
+
+        const msgWithDescription = 'feat(compiler): this is just an usual commit message tile\n\n' +
+            'This is a normal commit message body which does not exceed the max length\n' +
+            'limit. For more details see the following super long URL:\n\n' +
+            'Breaking change\n\n' +
+            'This is a full description of the breaking change.';
+        expectValidationResult(validateCommitMessage(msgWithDescription), INVALID, [
+          `The commit message body contains breaking change description but it doesn't start with 'BREAKING CHANGE'.`
+        ]);
+      });
+    });
   });
 });
