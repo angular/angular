@@ -8,7 +8,7 @@
 
 import {Arguments, Argv, CommandModule} from 'yargs';
 
-import {CommitMsgSource} from '../commit-message-source';
+import {CommitMsgSource} from './commit-message-source';
 
 import {restoreCommitMessage} from './restore-commit-message';
 

@@ -6,15 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {error, info} from '../../utils/console';
-
-import {parseCommitMessagesForRange, ParsedCommitMessage} from '../parse';
+import {Commit, parseCommitMessagesForRange} from '../parse';
 import {printValidationErrors, validateCommitMessage, ValidateCommitMessageOptions} from '../validate';
 
 // Whether the provided commit is a fixup commit.
-const isNonFixup = (commit: ParsedCommitMessage) => !commit.isFixup;
+const isNonFixup = (commit: Commit) => !commit.isFixup;
 
 // Extracts commit header (first line of commit message).
-const extractCommitHeader = (commit: ParsedCommitMessage) => commit.header;
+const extractCommitHeader = (commit: Commit) => commit.header;
 
 /** Validate all commits in a provided git commit range. */
 export function validateCommitRange(range: string) {
