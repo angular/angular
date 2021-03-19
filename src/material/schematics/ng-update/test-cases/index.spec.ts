@@ -1,6 +1,6 @@
 import {getAllVersionNames} from '@angular/cdk/schematics';
 import {defineJasmineTestCases, findBazelVersionTestCases} from '@angular/cdk/schematics/testing';
-import {MIGRATION_PATH} from '../../index.spec';
+import {MIGRATION_PATH} from '../../paths';
 
 describe('Material upgrade test cases', () => {
   const versionNames = getAllVersionNames().map(versionName => versionName.toLowerCase());

@@ -1,5 +1,5 @@
 import {createTestCaseSetup, resolveBazelPath} from '@angular/cdk/schematics/testing';
-import {MIGRATION_PATH} from '../../../index.spec';
+import {MIGRATION_PATH} from '../../../paths';
 
 describe('v6 import misc checks', () => {
   it('should report imports for deleted animation constants', async () => {

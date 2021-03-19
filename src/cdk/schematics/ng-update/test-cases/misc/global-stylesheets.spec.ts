@@ -1,6 +1,6 @@
 import {resolveBazelPath} from '@angular/cdk/schematics/testing';
 import {readFileSync} from 'fs';
-import {MIGRATION_PATH} from '../../../index.spec';
+import {MIGRATION_PATH} from '../../../paths';
 import {createTestCaseSetup} from '../../../testing';
 
 describe('global stylesheets migration', () => {

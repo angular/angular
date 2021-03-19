@@ -1,5 +1,5 @@
 import {defineJasmineTestCases, findBazelVersionTestCases} from '@angular/cdk/schematics/testing';
-import {MIGRATION_PATH} from '../../index.spec';
+import {MIGRATION_PATH} from '../../paths';
 import {getAllVersionNames} from '../../update-tool/target-version';
 
 describe('CDK upgrade test cases', () => {

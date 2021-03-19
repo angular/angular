@@ -3,7 +3,7 @@ import {dedent} from '@angular/cdk/testing/private';
 import {addPackageToPackageJson} from '@angular/cdk/schematics/ng-add/package-config';
 import {createTestCaseSetup, resolveBazelPath} from '@angular/cdk/schematics/testing';
 import {readFileSync} from 'fs';
-import {MIGRATION_PATH} from '../../../../index.spec';
+import {MIGRATION_PATH} from '../../../../paths';
 
 
 interface PackageJson {

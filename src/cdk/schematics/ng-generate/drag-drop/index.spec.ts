@@ -1,5 +1,5 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {COLLECTION_PATH} from '../../index.spec';
+import {COLLECTION_PATH} from '../../paths';
 import {createTestApp, getFileContent} from '../../testing';
 import {Schema} from './schema';
 

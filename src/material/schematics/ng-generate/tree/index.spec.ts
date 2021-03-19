@@ -1,6 +1,6 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {createTestApp, getFileContent} from '@angular/cdk/schematics/testing';
-import {COLLECTION_PATH} from '../../index.spec';
+import {COLLECTION_PATH} from '../../paths';
 import {Schema} from './schema';
 
 describe('Material tree schematic', () => {

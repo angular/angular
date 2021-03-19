@@ -1,5 +1,5 @@
 import {resolveBazelPath} from '@angular/cdk/schematics/testing';
-import {MIGRATION_PATH} from '../../../index.spec';
+import {MIGRATION_PATH} from '../../../paths';
 import {createTestCaseSetup} from '../../../testing';
 
 describe('v6 method call checks', () => {

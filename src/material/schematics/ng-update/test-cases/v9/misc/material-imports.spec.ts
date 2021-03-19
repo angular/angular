@@ -1,5 +1,5 @@
 import {createTestCaseSetup, readFileContent, resolveBazelPath} from '@angular/cdk/schematics/testing';
-import {MIGRATION_PATH} from '../../../../index.spec';
+import {MIGRATION_PATH} from '../../../../paths';
 
 describe('v9 material imports', () => {
   it('should re-map top-level material imports to the proper entry points when top-level ' +

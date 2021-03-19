@@ -1,5 +1,5 @@
 import {createTestCaseSetup, resolveBazelPath} from '@angular/cdk/schematics/testing';
-import {MIGRATION_PATH} from '../../../index.spec';
+import {MIGRATION_PATH} from '../../../paths';
 
 describe('class inheritance misc checks', () => {
   describe('v6 class which extends MatFormFieldControl', () => {

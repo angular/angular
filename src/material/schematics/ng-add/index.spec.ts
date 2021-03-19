@@ -10,7 +10,7 @@ import {
 } from '@angular/cdk/schematics';
 import {createTestApp, createTestLibrary, getFileContent} from '@angular/cdk/schematics/testing';
 import {getWorkspace} from '@schematics/angular/utility/workspace';
-import {COLLECTION_PATH} from '../index.spec';
+import {COLLECTION_PATH} from '../paths';
 import {addPackageToPackageJson} from './package-config';
 
 interface PackageJson {
