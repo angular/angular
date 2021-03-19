@@ -38,7 +38,7 @@
 }
 
 /* Animate items as they're being sorted. */
-.cdk-drop-dragging .cdk-drag {
+.cdk-drop-list-dragging .cdk-drag {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
