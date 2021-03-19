@@ -23,17 +23,21 @@ export interface MapGeocoderResponse {
  */
 @Injectable({providedIn: 'root'})
 export class MapGeocoder {
-  private readonly _geocoder: google.maps.Geocoder;
+  private _geocoder: google.maps.Geocoder|undefined;
 
-  constructor(private readonly _ngZone: NgZone) {
-    this._geocoder = new google.maps.Geocoder();
-  }
+  constructor(private readonly _ngZone: NgZone) {}
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/geocoder#Geocoder.geocode
    */
   geocode(request: google.maps.GeocoderRequest): Observable<MapGeocoderResponse> {
     return new Observable(observer => {
+      // Initialize the `Geocoder` lazily since the Google Maps API may
+      // not have been loaded when the provider is instantiated.
+      if (!this._geocoder) {
+        this._geocoder = new google.maps.Geocoder();
+      }
+
       this._geocoder.geocode(request, (results, status) => {
         this._ngZone.run(() => {
           observer.next({results, status});

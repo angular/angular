@@ -22,7 +22,12 @@ describe('MapGeocoder', () => {
     (window.google as any) = undefined;
   });
 
-  it('initializes the Google Maps Geocoder', () => {
+  it('does not initialize the Google Maps Geocoder immediately', () => {
+    expect(geocoderConstructorSpy).not.toHaveBeenCalled();
+  });
+
+  it('initializes the Google Maps Geocoder after `geocode` is called', () => {
+    geocoder.geocode({}).subscribe();
     expect(geocoderConstructorSpy).toHaveBeenCalled();
   });
 
