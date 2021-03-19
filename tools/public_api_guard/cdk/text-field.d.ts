@@ -31,8 +31,6 @@ export declare class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDe
     set maxRows(value: number);
     get minRows(): number;
     set minRows(value: number);
-    get placeholder(): string;
-    set placeholder(value: string);
     constructor(_elementRef: ElementRef<HTMLElement>, _platform: Platform, _ngZone: NgZone,
     document?: any);
     _noopInputHandler(): void;
@@ -46,7 +44,7 @@ export declare class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDe
     static ngAcceptInputType_enabled: BooleanInput;
     static ngAcceptInputType_maxRows: NumberInput;
     static ngAcceptInputType_minRows: NumberInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkTextareaAutosize, "textarea[cdkTextareaAutosize]", ["cdkTextareaAutosize"], { "minRows": "cdkAutosizeMinRows"; "maxRows": "cdkAutosizeMaxRows"; "enabled": "cdkTextareaAutosize"; "placeholder": "placeholder"; }, {}, never>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkTextareaAutosize, "textarea[cdkTextareaAutosize]", ["cdkTextareaAutosize"], { "minRows": "cdkAutosizeMinRows"; "maxRows": "cdkAutosizeMaxRows"; "enabled": "cdkTextareaAutosize"; }, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkTextareaAutosize, [null, null, null, { optional: true; }]>;
 }
 
