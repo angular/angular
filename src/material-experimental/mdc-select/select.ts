@@ -116,7 +116,7 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
   get shouldLabelFloat(): boolean {
     // Since the panel doesn't overlap the trigger, we
     // want the label to only float when there's a value.
-    return !this.empty;
+    return this.panelOpen || !this.empty;
   }
 
   ngOnInit() {
@@ -147,11 +147,12 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
   open() {
     this._overlayWidth = this._getOverlayWidth();
     super.open();
+    // Required for the MDC form field to pick up when the overlay has been opened.
+    this.stateChanges.next();
   }
 
   close() {
     super.close();
-
     // Required for the MDC form field to pick up when the overlay has been closed.
     this.stateChanges.next();
   }
