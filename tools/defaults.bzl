@@ -125,6 +125,7 @@ def ng_package(name, data = [], deps = [], globals = ROLLUP_GLOBALS, readme_md =
     )
 
 def jasmine_node_test(**kwargs):
+    kwargs["templated_args"] = ["--bazel_patch_module_resolver"] + kwargs.get("templated_args", [])
     _jasmine_node_test(**kwargs)
 
 def ng_test_library(deps = [], tsconfig = None, **kwargs):
