@@ -27,7 +27,7 @@ export declare abstract class _MatAutocompleteBase extends _MatAutocompleteMixin
     template: TemplateRef<any>;
     constructor(_changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>, defaults: MatAutocompleteDefaultOptions, platform?: Platform);
     _emitSelectEvent(option: _MatOptionBase): void;
-    _getPanelAriaLabelledby(labelId: string): string | null;
+    _getPanelAriaLabelledby(labelId: string | null): string | null;
     _getScrollTop(): number;
     _setScrollTop(scrollTop: number): void;
     _setVisibility(): void;

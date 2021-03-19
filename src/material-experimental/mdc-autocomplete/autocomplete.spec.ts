@@ -1513,6 +1513,18 @@ describe('MDC-based MatAutocomplete', () => {
       expect(panel.hasAttribute('aria-label')).toBe(false);
     });
 
+    it('should trim aria-labelledby if the input does not have a label', () => {
+      fixture.componentInstance.hasLabel = false;
+      fixture.detectChanges();
+      fixture.componentInstance.ariaLabelledby = 'myLabelId';
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const panel =
+        fixture.debugElement.query(By.css('.mat-mdc-autocomplete-panel'))!.nativeElement;
+      expect(panel.getAttribute('aria-labelledby')).toBe(`myLabelId`);
+    });
+
     it('should clear aria-labelledby from the panel if an aria-label is set', () => {
       fixture.componentInstance.ariaLabel = 'My label';
       fixture.componentInstance.trigger.openPanel();
@@ -1521,6 +1533,17 @@ describe('MDC-based MatAutocomplete', () => {
       const panel =
         fixture.debugElement.query(By.css('.mat-mdc-autocomplete-panel'))!.nativeElement;
       expect(panel.getAttribute('aria-label')).toBe('My label');
+      expect(panel.hasAttribute('aria-labelledby')).toBe(false);
+    });
+
+    it('should clear aria-labelledby if the form field does not have a label', () => {
+      fixture.componentInstance.hasLabel = false;
+      fixture.detectChanges();
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      const panel =
+        fixture.debugElement.query(By.css('.mat-mdc-autocomplete-panel'))!.nativeElement;
       expect(panel.hasAttribute('aria-labelledby')).toBe(false);
     });
 
@@ -2762,7 +2785,7 @@ describe('MDC-based MatAutocomplete', () => {
 
 const SIMPLE_AUTOCOMPLETE_TEMPLATE = `
   <mat-form-field [floatLabel]="floatLabel" [style.width.px]="width">
-    <mat-label>State</mat-label>
+    <mat-label *ngIf="hasLabel">State</mat-label>
     <input
       matInput
       placeholder="State"
@@ -2795,6 +2818,7 @@ class SimpleAutocomplete implements OnDestroy {
   width: number;
   disableRipple = false;
   autocompleteDisabled = false;
+  hasLabel = true;
   ariaLabel: string;
   ariaLabelledby: string;
   panelClass = 'class-one class-two';

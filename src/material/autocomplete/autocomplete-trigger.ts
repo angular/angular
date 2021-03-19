@@ -574,7 +574,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     if (!overlayRef) {
       this._portal = new TemplatePortal(this.autocomplete.template,
         this._viewContainerRef,
-        {id: this._formField?._labelId});
+        {id: this._formField?.getLabelId()});
       overlayRef = this._overlay.create(this._getOverlayConfig());
       this._overlayRef = overlayRef;
 

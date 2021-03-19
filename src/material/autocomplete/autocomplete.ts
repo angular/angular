@@ -258,12 +258,13 @@ export abstract class _MatAutocompleteBase extends _MatAutocompleteMixinBase imp
   }
 
   /** Gets the aria-labelledby for the autocomplete panel. */
-  _getPanelAriaLabelledby(labelId: string): string | null {
+  _getPanelAriaLabelledby(labelId: string | null): string | null {
     if (this.ariaLabel) {
       return null;
     }
 
-    return this.ariaLabelledby ? labelId + ' ' + this.ariaLabelledby : labelId;
+    const labelExpression = labelId ? labelId + ' ' : '';
+    return this.ariaLabelledby ? labelExpression + this.ariaLabelledby : labelId;
   }
 
 
