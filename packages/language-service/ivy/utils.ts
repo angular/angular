@@ -121,7 +121,7 @@ function getInlineTemplateInfoAtPosition(
 export function getTemplateInfoAtPosition(
     fileName: string, position: number, compiler: NgCompiler): TemplateInfo|undefined {
   if (isTypeScriptFile(fileName)) {
-    const sf = compiler.getNextProgram().getSourceFile(fileName);
+    const sf = compiler.getCurrentProgram().getSourceFile(fileName);
     if (sf === undefined) {
       return undefined;
     }

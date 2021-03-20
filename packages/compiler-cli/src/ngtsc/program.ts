@@ -18,9 +18,9 @@ import {absoluteFrom, AbsoluteFsPath, getFileSystem} from './file_system';
 import {TrackedIncrementalBuildStrategy} from './incremental';
 import {IndexedComponent} from './indexer';
 import {ActivePerfRecorder, PerfCheckpoint as PerfCheckpoint, PerfEvent, PerfPhase} from './perf';
+import {TsCreateProgramDriver} from './program_driver';
 import {DeclarationNode} from './reflection';
 import {retagAllTsFiles, untagAllTsFiles} from './shims';
-import {ReusedProgramStrategy} from './typecheck';
 import {OptimizeFor} from './typecheck/api';
 
 
@@ -95,7 +95,7 @@ export class NgtscProgram implements api.Program {
     // the program.
     untagAllTsFiles(this.tsProgram);
 
-    const reusedProgramStrategy = new ReusedProgramStrategy(
+    const programDriver = new TsCreateProgramDriver(
         this.tsProgram, this.host, this.options, this.host.shimExtensionPrefixes);
 
     this.incrementalStrategy = oldProgram !== undefined ?
@@ -114,14 +114,14 @@ export class NgtscProgram implements api.Program {
     let ticket: CompilationTicket;
     if (oldProgram === undefined) {
       ticket = freshCompilationTicket(
-          this.tsProgram, options, this.incrementalStrategy, reusedProgramStrategy, perfRecorder,
+          this.tsProgram, options, this.incrementalStrategy, programDriver, perfRecorder,
           /* enableTemplateTypeChecker */ false, /* usePoisonedData */ false);
     } else {
       ticket = incrementalFromCompilerTicket(
           oldProgram.compiler,
           this.tsProgram,
           this.incrementalStrategy,
-          reusedProgramStrategy,
+          programDriver,
           modifiedResourceFiles,
           perfRecorder,
       );
@@ -223,7 +223,7 @@ export class NgtscProgram implements api.Program {
     const diagnostics = sf === undefined ?
         this.compiler.getDiagnostics() :
         this.compiler.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
-    this.reuseTsProgram = this.compiler.getNextProgram();
+    this.reuseTsProgram = this.compiler.getCurrentProgram();
     return diagnostics;
   }
 

@@ -282,7 +282,7 @@ export class DefinitionBuilder {
 function getDefinitionForExpressionAtPosition(
     fileName: string, position: number, compiler: NgCompiler): ts.DefinitionInfoAndBoundSpan|
     undefined {
-  const sf = compiler.getNextProgram().getSourceFile(fileName);
+  const sf = compiler.getCurrentProgram().getSourceFile(fileName);
   if (sf === undefined) {
     return;
   }

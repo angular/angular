@@ -11,11 +11,10 @@ import {absoluteFrom, AbsoluteFsPath, getFileSystem, getSourceFileOrError, Logic
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';
 import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {NOOP_PERF_RECORDER} from '../../perf';
+import {TsCreateProgramDriver, UpdateMode} from '../../program_driver';
 import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
-import {ComponentToShimMappingStrategy, UpdateMode} from '../api';
-import {ReusedProgramStrategy} from '../src/augmented_program';
 import {InliningMode, PendingFileTypeCheckingData, TypeCheckContextImpl, TypeCheckingHost} from '../src/context';
 import {TemplateSourceManager} from '../src/source';
 import {TypeCheckFile} from '../src/type_check_file';
@@ -74,8 +73,8 @@ TestClass.ngTypeCtor({value: 'test'});
           new LogicalProjectStrategy(reflectionHost, logicalFs),
         ]);
         const ctx = new TypeCheckContextImpl(
-            ALL_ENABLED_CONFIG, host, new TestMappingStrategy(), emitter, reflectionHost,
-            new TestTypeCheckingHost(), InliningMode.InlineOps, NOOP_PERF_RECORDER);
+            ALL_ENABLED_CONFIG, host, emitter, reflectionHost, new TestTypeCheckingHost(),
+            InliningMode.InlineOps, NOOP_PERF_RECORDER);
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         const pendingFile = makePendingFile();
@@ -113,8 +112,8 @@ TestClass.ngTypeCtor({value: 'test'});
         ]);
         const pendingFile = makePendingFile();
         const ctx = new TypeCheckContextImpl(
-            ALL_ENABLED_CONFIG, host, new TestMappingStrategy(), emitter, reflectionHost,
-            new TestTypeCheckingHost(), InliningMode.InlineOps, NOOP_PERF_RECORDER);
+            ALL_ENABLED_CONFIG, host, emitter, reflectionHost, new TestTypeCheckingHost(),
+            InliningMode.InlineOps, NOOP_PERF_RECORDER);
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(
@@ -128,7 +127,7 @@ TestClass.ngTypeCtor({value: 'test'});
               },
               coercedInputFields: new Set(),
             });
-        const programStrategy = new ReusedProgramStrategy(program, host, options, []);
+        const programStrategy = new TsCreateProgramDriver(program, host, options, []);
         programStrategy.updateFiles(ctx.finalize(), UpdateMode.Complete);
         const TestClassWithCtor = getDeclaration(
             programStrategy.getProgram(), _('/main.ts'), 'TestClass', isNamedClassDeclaration);
@@ -158,8 +157,8 @@ TestClass.ngTypeCtor({value: 'test'});
         ]);
         const pendingFile = makePendingFile();
         const ctx = new TypeCheckContextImpl(
-            ALL_ENABLED_CONFIG, host, new TestMappingStrategy(), emitter, reflectionHost,
-            new TestTypeCheckingHost(), InliningMode.InlineOps, NOOP_PERF_RECORDER);
+            ALL_ENABLED_CONFIG, host, emitter, reflectionHost, new TestTypeCheckingHost(),
+            InliningMode.InlineOps, NOOP_PERF_RECORDER);
         const TestClass =
             getDeclaration(program, _('/main.ts'), 'TestClass', isNamedClassDeclaration);
         ctx.addInlineTypeCtor(
@@ -173,7 +172,7 @@ TestClass.ngTypeCtor({value: 'test'});
               },
               coercedInputFields: new Set(['bar']),
             });
-        const programStrategy = new ReusedProgramStrategy(program, host, options, []);
+        const programStrategy = new TsCreateProgramDriver(program, host, options, []);
         programStrategy.updateFiles(ctx.finalize(), UpdateMode.Complete);
         const TestClassWithCtor = getDeclaration(
             programStrategy.getProgram(), _('/main.ts'), 'TestClass', isNamedClassDeclaration);
@@ -215,10 +214,4 @@ class TestTypeCheckingHost implements TypeCheckingHost {
   recordShimData(): void {}
 
   recordComplete(): void {}
-}
-
-class TestMappingStrategy implements ComponentToShimMappingStrategy {
-  shimPathForComponent(): AbsoluteFsPath {
-    return absoluteFrom('/typecheck.ts');
-  }
 }

@@ -12,9 +12,10 @@ import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {ErrorCode, ngErrorCode} from '@angular/compiler-cli/src/ngtsc/diagnostics';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
+import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 import {isNamedClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
 import {TypeCheckShimGenerator} from '@angular/compiler-cli/src/ngtsc/typecheck';
-import {OptimizeFor, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {OptimizeFor} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {findFirstMatchingNode} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
@@ -41,7 +42,7 @@ interface LanguageServiceConfig {
 export class LanguageService {
   private options: CompilerOptions;
   readonly compilerFactory: CompilerFactory;
-  private readonly strategy: TypeCheckingProgramStrategy;
+  private readonly programDriver: ProgramDriver;
   private readonly adapter: LanguageServiceAdapter;
   private readonly parseConfigHost: LSParseConfigHost;
 
@@ -53,9 +54,9 @@ export class LanguageService {
     this.parseConfigHost = new LSParseConfigHost(project.projectService.host);
     this.options = parseNgCompilerOptions(project, this.parseConfigHost, config);
     logCompilerOptions(project, this.options);
-    this.strategy = createTypeCheckingProgramStrategy(project);
+    this.programDriver = createProgramDriver(project);
     this.adapter = new LanguageServiceAdapter(project);
-    this.compilerFactory = new CompilerFactory(this.adapter, this.strategy, this.options);
+    this.compilerFactory = new CompilerFactory(this.adapter, this.programDriver, this.options);
     this.watchConfigFile(project);
   }
 
@@ -68,7 +69,7 @@ export class LanguageService {
       const ttc = compiler.getTemplateTypeChecker();
       const diagnostics: ts.Diagnostic[] = [];
       if (isTypeScriptFile(fileName)) {
-        const program = compiler.getNextProgram();
+        const program = compiler.getCurrentProgram();
         const sourceFile = program.getSourceFile(fileName);
         if (sourceFile) {
           const ngDiagnostics = compiler.getDiagnosticsForFile(sourceFile, OptimizeFor.SingleFile);
@@ -112,7 +113,7 @@ export class LanguageService {
   getDefinitionAndBoundSpan(fileName: string, position: number): ts.DefinitionInfoAndBoundSpan
       |undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsDefinition, (compiler) => {
-      if (!isInAngularContext(compiler.getNextProgram(), fileName, position)) {
+      if (!isInAngularContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
       return new DefinitionBuilder(this.tsLS, compiler)
@@ -123,7 +124,7 @@ export class LanguageService {
   getTypeDefinitionAtPosition(fileName: string, position: number):
       readonly ts.DefinitionInfo[]|undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsDefinition, (compiler) => {
-      if (!isTemplateContext(compiler.getNextProgram(), fileName, position)) {
+      if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
       return new DefinitionBuilder(this.tsLS, compiler)
@@ -142,7 +143,7 @@ export class LanguageService {
       position: number,
       compiler: NgCompiler,
       ): ts.QuickInfo|undefined {
-    if (!isTemplateContext(compiler.getNextProgram(), fileName, position)) {
+    if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
       return undefined;
     }
 
@@ -166,14 +167,14 @@ export class LanguageService {
 
   getReferencesAtPosition(fileName: string, position: number): ts.ReferenceEntry[]|undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      return new ReferencesAndRenameBuilder(this.strategy, this.tsLS, compiler)
+      return new ReferencesAndRenameBuilder(this.programDriver, this.tsLS, compiler)
           .getReferencesAtPosition(fileName, position);
     });
   }
 
   getRenameInfo(fileName: string, position: number): ts.RenameInfo {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      const renameInfo = new ReferencesAndRenameBuilder(this.strategy, this.tsLS, compiler)
+      const renameInfo = new ReferencesAndRenameBuilder(this.programDriver, this.tsLS, compiler)
                              .getRenameInfo(absoluteFrom(fileName), position);
       if (!renameInfo.canRename) {
         return renameInfo;
@@ -189,7 +190,7 @@ export class LanguageService {
 
   findRenameLocations(fileName: string, position: number): readonly ts.RenameLocation[]|undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsReferencesAndRenames, (compiler) => {
-      return new ReferencesAndRenameBuilder(this.strategy, this.tsLS, compiler)
+      return new ReferencesAndRenameBuilder(this.programDriver, this.tsLS, compiler)
           .findRenameLocations(fileName, position);
     });
   }
@@ -225,7 +226,7 @@ export class LanguageService {
   private getCompletionsAtPositionImpl(
       fileName: string, position: number, options: ts.GetCompletionsAtPositionOptions|undefined,
       compiler: NgCompiler): ts.WithMetadata<ts.CompletionInfo>|undefined {
-    if (!isTemplateContext(compiler.getNextProgram(), fileName, position)) {
+    if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
       return undefined;
     }
 
@@ -241,7 +242,7 @@ export class LanguageService {
       formatOptions: ts.FormatCodeOptions|ts.FormatCodeSettings|undefined,
       preferences: ts.UserPreferences|undefined): ts.CompletionEntryDetails|undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsCompletions, (compiler) => {
-      if (!isTemplateContext(compiler.getNextProgram(), fileName, position)) {
+      if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
 
@@ -256,7 +257,7 @@ export class LanguageService {
   getCompletionEntrySymbol(fileName: string, position: number, entryName: string): ts.Symbol
       |undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsCompletions, (compiler) => {
-      if (!isTemplateContext(compiler.getNextProgram(), fileName, position)) {
+      if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
       }
 
@@ -457,13 +458,9 @@ function parseNgCompilerOptions(
   return options;
 }
 
-function createTypeCheckingProgramStrategy(project: ts.server.Project):
-    TypeCheckingProgramStrategy {
+function createProgramDriver(project: ts.server.Project): ProgramDriver {
   return {
     supportsInlineOperations: false,
-    shimPathForComponent(component: ts.ClassDeclaration): AbsoluteFsPath {
-      return TypeCheckShimGenerator.shimFor(absoluteFromSourceFile(component.getSourceFile()));
-    },
     getProgram(): ts.Program {
       const program = project.getLanguageService().getProgram();
       if (!program) {

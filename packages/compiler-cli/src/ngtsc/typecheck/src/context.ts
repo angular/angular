@@ -15,12 +15,13 @@ import {NoopImportRewriter, Reference, ReferenceEmitter} from '../../imports';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {ImportManager} from '../../translator';
-import {ComponentToShimMappingStrategy, TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
+import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckContext, TypeCheckingConfig, TypeCtorMetadata} from '../api';
 import {makeTemplateDiagnostic, TemplateDiagnostic} from '../diagnostics';
 
 import {DomSchemaChecker, RegistryDomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
+import {TypeCheckShimGenerator} from './shim';
 import {TemplateSourceManager} from './source';
 import {requiresInlineTypeCheckBlock} from './tcb_util';
 import {generateTypeCheckBlock} from './type_check_block';
@@ -178,7 +179,6 @@ export class TypeCheckContextImpl implements TypeCheckContext {
   constructor(
       private config: TypeCheckingConfig,
       private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
-      private componentMappingStrategy: ComponentToShimMappingStrategy,
       private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
       private host: TypeCheckingHost, private inlining: InliningMode, private perf: PerfRecorder) {
     if (inlining === InliningMode.Error && config.useInlineTypeConstructors) {
@@ -410,7 +410,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
 
   private pendingShimForComponent(node: ts.ClassDeclaration): PendingShimData {
     const fileData = this.dataForFile(node.getSourceFile());
-    const shimPath = this.componentMappingStrategy.shimPathForComponent(node);
+    const shimPath = TypeCheckShimGenerator.shimFor(absoluteFromSourceFile(node.getSourceFile()));
     if (!fileData.shimData.has(shimPath)) {
       fileData.shimData.set(shimPath, {
         domSchemaChecker: new RegistryDomSchemaChecker(fileData.sourceManager),

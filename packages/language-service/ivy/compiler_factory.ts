@@ -9,8 +9,7 @@
 import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, resourceChangeTicket} from '@angular/compiler-cli/src/ngtsc/core';
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
 import {TrackedIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
-import {ActivePerfRecorder} from '@angular/compiler-cli/src/ngtsc/perf';
-import {TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {LanguageServiceAdapter} from './adapters';
@@ -32,7 +31,7 @@ export class CompilerFactory {
 
   constructor(
       private readonly adapter: LanguageServiceAdapter,
-      private readonly programStrategy: TypeCheckingProgramStrategy,
+      private readonly programStrategy: ProgramDriver,
       private readonly options: NgCompilerOptions,
   ) {}
 
