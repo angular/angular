@@ -236,10 +236,10 @@ export class Version {
   public readonly patch: string;
 
   constructor(public full: string) {
-    const splits = full.split('.');
-    this.major = splits[0];
-    this.minor = splits[1];
-    this.patch = splits.slice(2).join('.');
+    const [major, minor, ...rest] = full.split('.');
+    this.major = major;
+    this.minor = minor;
+    this.patch = rest.join('.');
   }
 }
 
