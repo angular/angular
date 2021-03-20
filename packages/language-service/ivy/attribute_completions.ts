@@ -257,11 +257,10 @@ export function buildAttributeCompletionTable(
         // a hypothetical version of the element with those attributes. A match indicates that
         // adding that attribute/input/output binding would cause the directive to become present,
         // meaning that such a binding is a valid completion.
-        const selectors = CssSelector.parse(meta.selector);
         const matcher = new SelectorMatcher();
-        matcher.addSelectables(selectors);
+        matcher.addSelectables(meta.selector.selectors);
 
-        for (const selector of selectors) {
+        for (const selector of meta.selector.selectors) {
           for (const [attrName, attrValue] of selectorAttributes(selector)) {
             if (attrValue !== '') {
               // This attribute selector requires a value, which is not supported in completion.
@@ -503,8 +502,7 @@ function getStructuralAttributes(meta: TypeCheckableDirectiveMeta): string[] {
   }
 
   const structuralAttributes: string[] = [];
-  const selectors = CssSelector.parse(meta.selector);
-  for (const selector of selectors) {
+  for (const selector of meta.selector.selectors) {
     if (selector.element !== null && selector.element !== 'ng-template') {
       // This particular selector does not apply under structural directive syntax.
       continue;

@@ -526,7 +526,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const scope = this.getScopeData(component);
     if (scope !== null) {
       for (const directive of scope.directives) {
-        for (const selector of CssSelector.parse(directive.selector)) {
+        for (const selector of directive.selector.selectors) {
           if (selector.element === null || tagMap.has(selector.element)) {
             // Skip this directive if it doesn't match an element tag, or if another directive has
             // already been included with the same element name.

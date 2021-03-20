@@ -1472,7 +1472,7 @@ runInEachFileSystem(() => {
         expect(actualDirectives).toEqual(expectedDirectives);
 
         const expectedSelectors = ['[dir]', '[dir2]', 'div'].sort();
-        const actualSelectors = symbol.directives.map(dir => dir.selector).sort();
+        const actualSelectors = symbol.directives.map(dir => dir.selector.text).sort();
         expect(actualSelectors).toEqual(expectedSelectors);
 
         // Testing this fully requires an integration test with a real `NgCompiler` (like in the

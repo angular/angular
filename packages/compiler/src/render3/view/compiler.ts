@@ -36,7 +36,7 @@ function baseDirectiveFields(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): DefinitionMap {
   const definitionMap = new DefinitionMap();
-  const selectors = core.parseSelectorToR3Selector(meta.selector);
+  const selectors = core.parseSelectorsToR3Selector(meta.selector);
 
   // e.g. `type: MyDirective`
   definitionMap.set('type', meta.internalType);
@@ -61,7 +61,7 @@ function baseDirectiveFields(
   definitionMap.set(
       'hostBindings',
       createHostBindingsFunction(
-          meta.host, meta.typeSourceSpan, bindingParser, constantPool, meta.selector || '',
+          meta.host, meta.typeSourceSpan, bindingParser, constantPool, meta.selector?.text || '',
           meta.name, definitionMap));
 
   // e.g 'inputs: {a: 'a'}`
@@ -132,7 +132,7 @@ export function compileComponentFromMetadata(
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   addFeatures(definitionMap, meta);
 
-  const selector = meta.selector && CssSelector.parse(meta.selector);
+  const selector = meta.selector && meta.selector.selectors;
   const firstSelector = selector && selector[0];
 
   // e.g. `attr: ["class", ".my.app"]`
@@ -155,7 +155,7 @@ export function compileComponentFromMetadata(
   if (meta.directives.length > 0) {
     const matcher = new SelectorMatcher();
     for (const {selector, type} of meta.directives) {
-      matcher.addSelectables(CssSelector.parse(selector), type);
+      matcher.addSelectables(selector.selectors, type);
     }
     directiveMatcher = matcher;
   }
@@ -409,7 +409,7 @@ function stringArrayAsType(arr: ReadonlyArray<string|null>): o.Type {
 export function createDirectiveTypeParams(meta: R3DirectiveMetadata): o.Type[] {
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
   // string literal, which must be on one line.
-  const selectorForType = meta.selector !== null ? meta.selector.replace(/\n/g, '') : null;
+  const selectorForType = meta.selector !== null ? meta.selector.text.replace(/\n/g, '') : null;
 
   return [
     typeWithParameters(meta.type.type, meta.typeArgumentCount),

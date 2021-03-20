@@ -277,7 +277,7 @@ function getDirectiveMatchesForSelector(
     }
 
     const matcher = new SelectorMatcher();
-    matcher.addSelectables(CssSelector.parse(dir.selector));
+    matcher.addSelectables(dir.selector.selectors);
 
     return selectors.some(selector => matcher.match(selector, null));
   }));

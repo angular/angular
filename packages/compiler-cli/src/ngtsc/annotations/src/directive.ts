@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, FactoryTarget, getSafePropertyAccessString, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3ClassMetadata, R3DirectiveMetadata, R3FactoryMetadata, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, CssSelectors, Expression, ExternalExpr, FactoryTarget, getSafePropertyAccessString, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3ClassMetadata, R3DirectiveMetadata, R3FactoryMetadata, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import {emitDistinctChangesOnlyDefaultValue} from '@angular/compiler/src/core';
 import * as ts from 'typescript';
 
@@ -244,10 +244,11 @@ export class DirectiveDecoratorHandler implements
   }
 
   symbol(node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>): DirectiveSymbol {
+    const selector = analysis.meta.selector !== null ? analysis.meta.selector.text : null;
     const typeParameters = extractSemanticTypeParameters(node);
 
     return new DirectiveSymbol(
-        node, analysis.meta.selector, analysis.inputs, analysis.outputs, analysis.meta.exportAs,
+        node, selector, analysis.inputs, analysis.outputs, analysis.meta.exportAs,
         analysis.typeCheckMeta, typeParameters);
   }
 
@@ -504,7 +505,7 @@ export function extractDirectiveMetadata(
     outputs: outputs.toDirectMappedObject(),
     queries,
     viewQueries,
-    selector,
+    selector: CssSelectors.parse(selector),
     fullInheritance: !!(flags & HandlerFlags.FULL_INHERITANCE),
     type,
     internalType,

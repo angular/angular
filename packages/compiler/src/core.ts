@@ -12,7 +12,7 @@
 // This is important to prevent a build cycle, as @angular/core needs to
 // be compiled with the compiler.
 
-import {CssSelector} from './selector';
+import {CssSelector, CssSelectors} from './selector';
 
 export interface Inject {
   token: any;
@@ -410,6 +410,10 @@ function parserSelectorToR3Selector(selector: CssSelector): R3CssSelector {
 
 export function parseSelectorToR3Selector(selector: string|null): R3CssSelectorList {
   return selector ? CssSelector.parse(selector).map(parserSelectorToR3Selector) : [];
+}
+
+export function parseSelectorsToR3Selector(selector: CssSelectors|null): R3CssSelectorList {
+  return selector?.text ? selector.selectors.map(parserSelectorToR3Selector) : [];
 }
 
 // Pasted from render3/interfaces/definition since it cannot be referenced directly

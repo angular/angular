@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, DirectiveMeta, ParseSourceFile} from '@angular/compiler';
+import {BoundTarget, CssSelectors, DirectiveMeta, ParseSourceFile} from '@angular/compiler';
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
 
 export interface ComponentMeta extends DirectiveMeta {
   ref: Reference<ClassDeclaration>;
   /**
-   * Unparsed selector of the directive, or null if the directive does not have a selector.
+   * Selector of the directive, or null if the directive does not have a selector.
    */
-  selector: string|null;
+  selector: CssSelectors|null;
 }
 
 /**

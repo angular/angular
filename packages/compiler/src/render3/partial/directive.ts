@@ -52,7 +52,7 @@ export function createDirectiveDefinitionMap(meta: R3DirectiveMetadata):
 
   // e.g. `selector: 'some-dir'`
   if (meta.selector !== null) {
-    definitionMap.set('selector', o.literal(meta.selector));
+    definitionMap.set('selector', o.literal(meta.selector.text));
   }
 
   definitionMap.set('inputs', conditionallyCreateMapObjectLiteral(meta.inputs, true));

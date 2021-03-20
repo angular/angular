@@ -11,7 +11,7 @@ import * as a from '../../../src/render3/r3_ast';
 import {DirectiveMeta, InputOutputPropertySet} from '../../../src/render3/view/t2_api';
 import {R3TargetBinder} from '../../../src/render3/view/t2_binder';
 import {parseTemplate} from '../../../src/render3/view/template';
-import {CssSelector, SelectorMatcher} from '../../../src/selector';
+import {CssSelector, CssSelectors, SelectorMatcher} from '../../../src/selector';
 
 import {findExpression} from './util';
 
@@ -39,7 +39,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
     outputs: new IdentityInputMapping([]),
     isComponent: false,
     isStructural: true,
-    selector: '[ngFor][ngForOf]',
+    selector: CssSelectors.parse('[ngFor][ngForOf]'),
   });
   matcher.addSelectables(CssSelector.parse('[dir]'), {
     name: 'Dir',
@@ -48,7 +48,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
     outputs: new IdentityInputMapping([]),
     isComponent: false,
     isStructural: false,
-    selector: '[dir]'
+    selector: CssSelectors.parse('[dir]'),
   });
   matcher.addSelectables(CssSelector.parse('[hasOutput]'), {
     name: 'HasOutput',
@@ -57,7 +57,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
     outputs: new IdentityInputMapping(['outputBinding']),
     isComponent: false,
     isStructural: false,
-    selector: '[hasOutput]'
+    selector: CssSelectors.parse('[hasOutput]'),
   });
   matcher.addSelectables(CssSelector.parse('[hasInput]'), {
     name: 'HasInput',
@@ -66,7 +66,7 @@ function makeSelectorMatcher(): SelectorMatcher<DirectiveMeta> {
     outputs: new IdentityInputMapping([]),
     isComponent: false,
     isStructural: false,
-    selector: '[hasInput]'
+    selector: CssSelectors.parse('[hasInput]'),
   });
   return matcher;
 }
@@ -112,7 +112,7 @@ describe('t2 binding', () => {
       outputs: new IdentityInputMapping([]),
       isComponent: false,
       isStructural: false,
-      selector: 'text[dir]'
+      selector: CssSelectors.parse('text[dir]'),
     });
     const binder = new R3TargetBinder(matcher);
     const res = binder.bind({template: template.nodes});

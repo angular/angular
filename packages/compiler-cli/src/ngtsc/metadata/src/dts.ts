@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CssSelectors} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -98,7 +99,7 @@ export class DtsMetadataReader implements MetadataReader {
       ref,
       name: clazz.name.text,
       isComponent,
-      selector: readStringType(def.type.typeArguments[1]),
+      selector: CssSelectors.parse(readStringType(def.type.typeArguments[1])),
       exportAs: readStringArrayType(def.type.typeArguments[2]),
       inputs,
       outputs,

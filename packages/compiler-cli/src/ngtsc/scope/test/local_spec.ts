@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CssSelectors} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Reference, ReferenceEmitter} from '../../imports';
@@ -234,7 +235,7 @@ function fakeDirective(ref: Reference<ClassDeclaration>): DirectiveMeta {
   return {
     ref,
     name,
-    selector: `[${ref.debugName}]`,
+    selector: CssSelectors.parse(`[${ref.debugName}]`),
     isComponent: name.startsWith('Cmp'),
     inputs: ClassPropertyMapping.fromMappedObject({}),
     outputs: ClassPropertyMapping.fromMappedObject({}),

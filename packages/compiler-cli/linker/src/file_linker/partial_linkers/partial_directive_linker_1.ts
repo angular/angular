@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileDirectiveFromMetadata, ConstantPool, makeBindingParser, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
+import {compileDirectiveFromMetadata, ConstantPool, CssSelectors, makeBindingParser, ParseLocation, ParseSourceFile, ParseSourceSpan, R3DeclareDirectiveMetadata, R3DeclareQueryMetadata, R3DirectiveMetadata, R3HostMetadata, R3PartialDeclaration, R3QueryMetadata} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
@@ -63,7 +63,7 @@ export function toR3DirectiveMeta<TExpression>(
         [],
     providers: metaObj.has('providers') ? metaObj.getOpaque('providers') : null,
     fullInheritance: false,
-    selector: metaObj.has('selector') ? metaObj.getString('selector') : null,
+    selector: metaObj.has('selector') ? CssSelectors.parse(metaObj.getString('selector')) : null,
     exportAs: metaObj.has('exportAs') ?
         metaObj.getArray('exportAs').map(entry => entry.getString()) :
         null,

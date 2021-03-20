@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CssSelectors} from '@angular/compiler';
 import {ErrorCode, makeDiagnostic, ngErrorCode} from '../../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
@@ -231,7 +232,8 @@ runInEachFileSystem(() => {
         const entryPoint =
             makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
         const compiler = createCompiler({entryPoint, handlers: [handler]});
-        const decorator = createComponentDecorator(mockClazz, {selector: 'comp', exportAs: null});
+        const decorator = createComponentDecorator(
+            mockClazz, {selector: CssSelectors.parse('comp'), exportAs: null});
         compiler.injectSyntheticDecorator(mockClazz, decorator);
 
         const record = compiler.recordFor(mockClazz)!;

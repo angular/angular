@@ -34,6 +34,20 @@ const enum SelectorRegexp {
   NOT_END = 7,
   SEPARATOR = 8,
 }
+
+export class CssSelectors {
+  static parse(selector: string): CssSelectors;
+  static parse(selector: string|null): CssSelectors|null;
+  static parse(selector: string|null): CssSelectors|null {
+    if (selector === null) {
+      return null;
+    }
+    return new CssSelectors(selector, CssSelector.parse(selector));
+  }
+
+  constructor(readonly text: string, readonly selectors: CssSelector[]) {}
+}
+
 /**
  * A css selector contains an element name,
  * css classes and attribute/value pairs with the purpose

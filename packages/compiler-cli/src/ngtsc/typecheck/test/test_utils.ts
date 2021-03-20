@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CssSelector, ParseSourceFile, ParseSourceSpan, parseTemplate, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, Type} from '@angular/compiler';
+import {CssSelector, CssSelectors, ParseSourceFile, ParseSourceSpan, parseTemplate, R3TargetBinder, SchemaMetadata, SelectorMatcher, TmplAstElement, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError, LogicalFileSystem} from '../../file_system';
@@ -198,7 +198,7 @@ export interface TestDirective extends Partial<Pick<
     TypeCheckableDirectiveMeta,
     Exclude<
         keyof TypeCheckableDirectiveMeta,
-        'ref'|'coercedInputFields'|'restrictedInputFields'|'stringLiteralInputFields'|
+        'ref'|'selector'|'coercedInputFields'|'restrictedInputFields'|'stringLiteralInputFields'|
         'undeclaredInputFields'|'inputs'|'outputs'>>> {
   selector: string;
   name: string;
@@ -539,7 +539,7 @@ function prepareDeclarations(
       name: decl.name,
       ref: new Reference(resolveDeclaration(decl)),
       exportAs: decl.exportAs || null,
-      selector: decl.selector || null,
+      selector: CssSelectors.parse(decl.selector || null),
       hasNgTemplateContextGuard: decl.hasNgTemplateContextGuard || false,
       inputs: ClassPropertyMapping.fromMappedObject(decl.inputs || {}),
       isComponent: decl.isComponent || false,
@@ -598,7 +598,7 @@ function makeScope(program: ts.Program, sf: ts.SourceFile, decls: TestDeclaratio
         ref: new Reference(declClass),
         baseClass: null,
         name: decl.name,
-        selector: decl.selector,
+        selector: CssSelectors.parse(decl.selector),
         queries: [],
         inputs: decl.inputs !== undefined ? ClassPropertyMapping.fromMappedObject(decl.inputs) :
                                             ClassPropertyMapping.empty(),

@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {CssSelector, DirectiveMeta as T2DirectiveMeta, parseTemplate, R3TargetBinder, SelectorMatcher, TmplAstElement} from '@angular/compiler';
+import {CssSelector, CssSelectors, DirectiveMeta as T2DirectiveMeta, parseTemplate, R3TargetBinder, SelectorMatcher, TmplAstElement} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../file_system';
@@ -105,7 +105,7 @@ runInEachFileSystem(() => {
         outputs: analysis.outputs,
         isComponent: false,
         name: 'Dir',
-        selector: '[dir]',
+        selector: CssSelectors.parse('[dir]'),
         isStructural: false,
       };
       matcher.addSelectables(CssSelector.parse('[dir]'), dirMeta);

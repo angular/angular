@@ -5,9 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {CssSelectors} from '@angular/compiler';
 import * as ts from 'typescript';
+
 import {Reference} from '../../../src/ngtsc/imports';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration} from '../../../src/ngtsc/reflection';
+
 import {MigrationHost} from './migration';
 
 export function isClassDeclaration(clazz: ts.Node): clazz is ClassDeclaration<ts.Declaration> {
@@ -43,12 +46,12 @@ export function hasConstructor(host: MigrationHost, clazz: ClassDeclaration): bo
  */
 export function createDirectiveDecorator(
     clazz: ClassDeclaration,
-    metadata?: {selector: string|null, exportAs: string[]|null}): Decorator {
+    metadata?: {selector: CssSelectors|null, exportAs: string[]|null}): Decorator {
   const args: ts.Expression[] = [];
   if (metadata !== undefined) {
     const metaArgs: ts.PropertyAssignment[] = [];
     if (metadata.selector !== null) {
-      metaArgs.push(property('selector', metadata.selector));
+      metaArgs.push(property('selector', metadata.selector.text));
     }
     if (metadata.exportAs !== null) {
       metaArgs.push(property('exportAs', metadata.exportAs.join(', ')));
@@ -70,12 +73,12 @@ export function createDirectiveDecorator(
  */
 export function createComponentDecorator(
     clazz: ClassDeclaration,
-    metadata: {selector: string|null, exportAs: string[]|null}): Decorator {
+    metadata: {selector: CssSelectors|null, exportAs: string[]|null}): Decorator {
   const metaArgs: ts.PropertyAssignment[] = [
     property('template', ''),
   ];
   if (metadata.selector !== null) {
-    metaArgs.push(property('selector', metadata.selector));
+    metaArgs.push(property('selector', metadata.selector.text));
   }
   if (metadata.exportAs !== null) {
     metaArgs.push(property('exportAs', metadata.exportAs.join(', ')));
