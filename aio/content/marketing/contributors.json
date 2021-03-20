@@ -44,6 +44,14 @@
     "picture": "alan-agius4.jpg",
     "bio": "Angular CLI Member, Loves TypeScript, Build Tools, Food, Beer & Coffee :)"
   },
+  "alisaduncan": {
+    "name": "Alisa Duncan",
+    "picture": "alisaduncan.jpg",
+    "twitter": "alisaduncan",
+    "website": "https://github.com/alisaduncan", 
+    "bio": "Alisa is a software engineer and community builder who loves the thrill of learning new things. She is a core member of the ngGirls Team, co-organizes the local AngularKC meetup, and helps women learn web development as the Curriculum Director for the Coding & Cocktails program at Kansas City Women in Technology. When not coding, she enjoys drinking red wine with her husband while sitting on the patio.",
+    "groups": ["GDE"]
+  },
   "alvarocamillont": {
     "name": "Alvaro Camillo Neto",
     "picture": "alvarocamillont.png",
