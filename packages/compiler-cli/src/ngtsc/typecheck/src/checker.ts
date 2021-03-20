@@ -13,16 +13,18 @@ import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath, getSourceFileOrErr
 import {Reference, ReferenceEmitter} from '../../imports';
 import {IncrementalBuild} from '../../incremental/api';
 import {PerfCheckpoint, PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
+import {ProgramDriver, UpdateMode} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 import {ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
 import {getSourceFileOrNull} from '../../util/src/typescript';
-import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, ShimLocation, Symbol, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig, TypeCheckingProgramStrategy, UpdateMode} from '../api';
+import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, ShimLocation, Symbol, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
 import {TemplateDiagnostic} from '../diagnostics';
 
 import {CompletionEngine} from './completion';
 import {InliningMode, ShimTypeCheckingData, TemplateData, TypeCheckContextImpl, TypeCheckingHost} from './context';
 import {shouldReportDiagnostic, translateDiagnostic} from './diagnostics';
+import {TypeCheckShimGenerator} from './shim';
 import {TemplateSourceManager} from './source';
 import {findTypeCheckBlock, getTemplateMapping, TemplateSourceResolver} from './tcb_util';
 import {SymbolBuilder} from './template_symbol_builder';
@@ -76,8 +78,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   private isComplete = false;
 
   constructor(
-      private originalProgram: ts.Program,
-      readonly typeCheckingStrategy: TypeCheckingProgramStrategy,
+      private originalProgram: ts.Program, readonly programDriver: ProgramDriver,
       private typeCheckAdapter: ProgramTypeCheckAdapter, private config: TypeCheckingConfig,
       private refEmitter: ReferenceEmitter, private reflector: ReflectionHost,
       private compilerHost: Pick<ts.CompilerHost, 'getCanonicalFileName'>,
@@ -100,7 +101,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
     const sf = component.getSourceFile();
     const sfPath = absoluteFromSourceFile(sf);
-    const shimPath = this.typeCheckingStrategy.shimPathForComponent(component);
+    const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
 
     const fileRecord = this.getFileData(sfPath);
 
@@ -112,7 +113,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     const shimRecord = fileRecord.shimData.get(shimPath)!;
     const id = fileRecord.sourceManager.getTemplateId(component);
 
-    const program = this.typeCheckingStrategy.getProgram();
+    const program = this.programDriver.getProgram();
     const shimSf = getSourceFileOrNull(program, shimPath);
 
     if (shimSf === null || !fileRecord.shimData.has(shimPath)) {
@@ -157,7 +158,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     }
     const {fileRecord} = records;
 
-    const shimSf = this.typeCheckingStrategy.getProgram().getSourceFile(absoluteFrom(shimPath));
+    const shimSf = this.programDriver.getProgram().getSourceFile(absoluteFrom(shimPath));
     if (shimSf === undefined) {
       return null;
     }
@@ -187,7 +188,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       const sfPath = absoluteFromSourceFile(sf);
       const fileRecord = this.state.get(sfPath)!;
 
-      const typeCheckProgram = this.typeCheckingStrategy.getProgram();
+      const typeCheckProgram = this.programDriver.getProgram();
 
       const diagnostics: (ts.Diagnostic|null)[] = [];
       if (fileRecord.hasInlines) {
@@ -217,7 +218,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return this.perf.inPhase(PerfPhase.TtcDiagnostics, () => {
       const sf = component.getSourceFile();
       const sfPath = absoluteFromSourceFile(sf);
-      const shimPath = this.typeCheckingStrategy.shimPathForComponent(component);
+      const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
 
       const fileRecord = this.getFileData(sfPath);
 
@@ -228,7 +229,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       const templateId = fileRecord.sourceManager.getTemplateId(component);
       const shimRecord = fileRecord.shimData.get(shimPath)!;
 
-      const typeCheckProgram = this.typeCheckingStrategy.getProgram();
+      const typeCheckProgram = this.programDriver.getProgram();
 
       const diagnostics: (TemplateDiagnostic|null)[] = [];
       if (shimRecord.hasInlines) {
@@ -285,7 +286,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
     const sf = clazz.getSourceFile();
     const sfPath = absoluteFromSourceFile(sf);
-    const shimPath = this.typeCheckingStrategy.shimPathForComponent(clazz);
+    const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
     const fileData = this.getFileData(sfPath);
     const templateId = fileData.sourceManager.getTemplateId(clazz);
 
@@ -374,8 +375,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         return;
       }
 
-      const host =
-          new SingleFileTypeCheckingHost(sfPath, fileData, this.typeCheckingStrategy, this);
+      const host = new SingleFileTypeCheckingHost(sfPath, fileData, this);
       const ctx = this.newContext(host);
 
       this.typeCheckAdapter.typeCheck(sf, ctx);
@@ -389,19 +389,18 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   private ensureShimForComponent(component: ts.ClassDeclaration): void {
     const sf = component.getSourceFile();
     const sfPath = absoluteFromSourceFile(sf);
+    const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
 
     this.maybeAdoptPriorResultsForFile(sf);
 
     const fileData = this.getFileData(sfPath);
-    const shimPath = this.typeCheckingStrategy.shimPathForComponent(component);
 
     if (fileData.shimData.has(shimPath)) {
       // All data for this component is available.
       return;
     }
 
-    const host =
-        new SingleShimTypeCheckingHost(sfPath, fileData, this.typeCheckingStrategy, this, shimPath);
+    const host = new SingleShimTypeCheckingHost(sfPath, fileData, this, shimPath);
     const ctx = this.newContext(host);
 
     this.typeCheckAdapter.typeCheck(sf, ctx);
@@ -409,11 +408,10 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
   }
 
   private newContext(host: TypeCheckingHost): TypeCheckContextImpl {
-    const inlining = this.typeCheckingStrategy.supportsInlineOperations ? InliningMode.InlineOps :
-                                                                          InliningMode.Error;
+    const inlining =
+        this.programDriver.supportsInlineOperations ? InliningMode.InlineOps : InliningMode.Error;
     return new TypeCheckContextImpl(
-        this.config, this.compilerHost, this.typeCheckingStrategy, this.refEmitter, this.reflector,
-        host, inlining, this.perf);
+        this.config, this.compilerHost, this.refEmitter, this.reflector, host, inlining, this.perf);
   }
 
   /**
@@ -446,7 +444,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       if (updates.size > 0) {
         this.perf.eventCount(PerfEvent.UpdateTypeCheckProgram);
       }
-      this.typeCheckingStrategy.updateFiles(updates, UpdateMode.Incremental);
+      this.programDriver.updateFiles(updates, UpdateMode.Incremental);
       this.priorBuild.recordSuccessfulTypeCheck(this.state);
       this.perf.memory(PerfCheckpoint.TtcUpdateProgram);
     });
@@ -485,7 +483,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
 
     const builder = new SymbolBuilder(
         shimPath, tcb, data, this.componentScopeReader,
-        () => this.typeCheckingStrategy.getProgram().getTypeChecker());
+        () => this.programDriver.getProgram().getTypeChecker());
     this.symbolBuilderCache.set(component, builder);
     return builder;
   }
@@ -571,7 +569,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
       isPoisoned: scope.compilation.isPoisoned,
     };
 
-    const typeChecker = this.typeCheckingStrategy.getProgram().getTypeChecker();
+    const typeChecker = this.programDriver.getProgram().getTypeChecker();
     for (const dir of scope.compilation.directives) {
       if (dir.selector === null) {
         // Skip this directive, it can't be added to a template anyway.
@@ -664,8 +662,9 @@ class WholeProgramTypeCheckingHost implements TypeCheckingHost {
   }
 
   shouldCheckComponent(node: ts.ClassDeclaration): boolean {
-    const fileData = this.impl.getFileData(absoluteFromSourceFile(node.getSourceFile()));
-    const shimPath = this.impl.typeCheckingStrategy.shimPathForComponent(node);
+    const sfPath = absoluteFromSourceFile(node.getSourceFile());
+    const shimPath = TypeCheckShimGenerator.shimFor(sfPath);
+    const fileData = this.impl.getFileData(sfPath);
     // The component needs to be checked unless the shim which would contain it already exists.
     return !fileData.shimData.has(shimPath);
   }
@@ -691,7 +690,7 @@ class SingleFileTypeCheckingHost implements TypeCheckingHost {
 
   constructor(
       protected sfPath: AbsoluteFsPath, protected fileData: FileTypeCheckingData,
-      protected strategy: TypeCheckingProgramStrategy, protected impl: TemplateTypeCheckerImpl) {}
+      protected impl: TemplateTypeCheckerImpl) {}
 
   private assertPath(sfPath: AbsoluteFsPath): void {
     if (this.sfPath !== sfPath) {
@@ -708,7 +707,7 @@ class SingleFileTypeCheckingHost implements TypeCheckingHost {
     if (this.sfPath !== absoluteFromSourceFile(node.getSourceFile())) {
       return false;
     }
-    const shimPath = this.strategy.shimPathForComponent(node);
+    const shimPath = TypeCheckShimGenerator.shimFor(this.sfPath);
 
     // Only need to generate a TCB for the class if no shim exists for it currently.
     return !this.fileData.shimData.has(shimPath);
@@ -747,9 +746,9 @@ class SingleFileTypeCheckingHost implements TypeCheckingHost {
  */
 class SingleShimTypeCheckingHost extends SingleFileTypeCheckingHost {
   constructor(
-      sfPath: AbsoluteFsPath, fileData: FileTypeCheckingData, strategy: TypeCheckingProgramStrategy,
-      impl: TemplateTypeCheckerImpl, private shimPath: AbsoluteFsPath) {
-    super(sfPath, fileData, strategy, impl);
+      sfPath: AbsoluteFsPath, fileData: FileTypeCheckingData, impl: TemplateTypeCheckerImpl,
+      private shimPath: AbsoluteFsPath) {
+    super(sfPath, fileData, impl);
   }
 
   shouldCheckNode(node: ts.ClassDeclaration): boolean {
@@ -758,7 +757,7 @@ class SingleShimTypeCheckingHost extends SingleFileTypeCheckingHost {
     }
 
     // Only generate a TCB for the component if it maps to the requested shim file.
-    const shimPath = this.strategy.shimPathForComponent(node);
+    const shimPath = TypeCheckShimGenerator.shimFor(this.sfPath);
     if (shimPath !== this.shimPath) {
       return false;
     }

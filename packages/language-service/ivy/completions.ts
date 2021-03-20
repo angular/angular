@@ -47,7 +47,7 @@ export enum CompletionNodeContext {
  * @param N type of the template node in question, narrowed accordingly.
  */
 export class CompletionBuilder<N extends TmplAstNode|AST> {
-  private readonly typeChecker = this.compiler.getNextProgram().getTypeChecker();
+  private readonly typeChecker = this.compiler.getCurrentProgram().getTypeChecker();
   private readonly templateTypeChecker = this.compiler.getTemplateTypeChecker();
   private readonly nodeParent = this.targetDetails.parent;
   private readonly nodeContext = nodeContextFromTarget(this.targetDetails.context);

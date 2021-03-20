@@ -9,7 +9,8 @@ import {AbsoluteSourceSpan, AST, BindingPipe, LiteralPrimitive, MethodCall, Pars
 import {NgCompiler} from '@angular/compiler-cli/src/ngtsc/core';
 import {absoluteFrom, absoluteFromSourceFile, AbsoluteFsPath} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {PerfPhase} from '@angular/compiler-cli/src/ngtsc/perf';
-import {DirectiveSymbol, ShimLocation, SymbolKind, TemplateTypeChecker, TypeCheckingProgramStrategy} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
+import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
+import {DirectiveSymbol, ShimLocation, SymbolKind, TemplateTypeChecker} from '@angular/compiler-cli/src/ngtsc/typecheck/api';
 import {ExpressionIdentifier, hasExpressionIdentifier} from '@angular/compiler-cli/src/ngtsc/typecheck/src/comments';
 import * as ts from 'typescript';
 
@@ -62,8 +63,8 @@ export class ReferencesAndRenameBuilder {
   private readonly ttc = this.compiler.getTemplateTypeChecker();
 
   constructor(
-      private readonly strategy: TypeCheckingProgramStrategy,
-      private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler) {}
+      private readonly driver: ProgramDriver, private readonly tsLS: ts.LanguageService,
+      private readonly compiler: NgCompiler) {}
 
   getRenameInfo(filePath: string, position: number):
       Omit<ts.RenameInfoSuccess, 'kind'|'kindModifiers'>|ts.RenameInfoFailure {
@@ -146,7 +147,7 @@ export class ReferencesAndRenameBuilder {
   }
 
   private getTsNodeAtPosition(filePath: string, position: number): ts.Node|null {
-    const sf = this.strategy.getProgram().getSourceFile(filePath);
+    const sf = this.driver.getProgram().getSourceFile(filePath);
     if (!sf) {
       return null;
     }
@@ -376,7 +377,7 @@ export class ReferencesAndRenameBuilder {
   private convertToTemplateDocumentSpan<T extends ts.DocumentSpan>(
       shimDocumentSpan: T, templateTypeChecker: TemplateTypeChecker, requiredNodeText?: string): T
       |null {
-    const sf = this.strategy.getProgram().getSourceFile(shimDocumentSpan.fileName);
+    const sf = this.driver.getProgram().getSourceFile(shimDocumentSpan.fileName);
     if (sf === undefined) {
       return null;
     }

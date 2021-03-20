@@ -14,7 +14,7 @@ import {createDisplayParts, DisplayInfoKind, SYMBOL_PUNC, SYMBOL_SPACE, SYMBOL_T
 import {filterAliasImports, getDirectiveMatchesForAttribute, getDirectiveMatchesForElementTag, getTextSpanOfNode} from './utils';
 
 export class QuickInfoBuilder {
-  private readonly typeChecker = this.compiler.getNextProgram().getTypeChecker();
+  private readonly typeChecker = this.compiler.getCurrentProgram().getTypeChecker();
 
   constructor(
       private readonly tsLS: ts.LanguageService, private readonly compiler: NgCompiler,

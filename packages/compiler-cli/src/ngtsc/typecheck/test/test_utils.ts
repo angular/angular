@@ -15,14 +15,14 @@ import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy,
 import {NOOP_INCREMENTAL_BUILD} from '../../incremental';
 import {ClassPropertyMapping, CompoundMetadataReader} from '../../metadata';
 import {NOOP_PERF_RECORDER} from '../../perf';
+import {TsCreateProgramDriver} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {ComponentScopeReader, LocalModuleScope, ScopeData, TypeCheckScopeRegistry} from '../../scope';
 import {makeProgram} from '../../testing';
 import {getRootDirs} from '../../util/src/typescript';
 import {ProgramTypeCheckAdapter, TemplateTypeChecker, TypeCheckContext} from '../api';
-import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig, UpdateMode} from '../api/api';
+import {TemplateId, TemplateSourceMapping, TypeCheckableDirectiveMeta, TypeCheckBlockMetadata, TypeCheckingConfig} from '../api/api';
 import {TemplateDiagnostic} from '../diagnostics';
-import {ReusedProgramStrategy} from '../src/augmented_program';
 import {TemplateTypeCheckerImpl} from '../src/checker';
 import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
@@ -347,7 +347,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
 } = {}): {
   templateTypeChecker: TemplateTypeChecker,
   program: ts.Program,
-  programStrategy: ReusedProgramStrategy,
+  programStrategy: TsCreateProgramDriver,
 } {
   const files = [
     typescriptLibDts(),
@@ -462,7 +462,7 @@ export function setup(targets: TypeCheckingTarget[], overrides: {
     }
   });
 
-  const programStrategy = new ReusedProgramStrategy(program, host, options, ['ngtypecheck']);
+  const programStrategy = new TsCreateProgramDriver(program, host, options, ['ngtypecheck']);
   if (overrides.inlining !== undefined) {
     (programStrategy as any).supportsInlineOperations = overrides.inlining;
   }

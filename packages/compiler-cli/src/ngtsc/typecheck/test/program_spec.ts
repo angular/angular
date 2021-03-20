@@ -10,10 +10,10 @@ import * as ts from 'typescript';
 
 import {absoluteFrom, AbsoluteFsPath, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
+import {TsCreateProgramDriver, UpdateMode} from '../../program_driver';
 import {sfExtensionData, ShimReferenceTagger} from '../../shims';
 import {expectCompleteReuse, makeProgram} from '../../testing';
-import {OptimizeFor, UpdateMode} from '../api';
-import {ReusedProgramStrategy} from '../src/augmented_program';
+import {OptimizeFor} from '../api';
 
 import {setup} from './test_utils';
 
@@ -37,7 +37,7 @@ runInEachFileSystem(() => {
 
     it('should have complete reuse if no structural changes are made to shims', () => {
       const {program, host, options, typecheckPath} = makeSingleFileProgramWithTypecheckShim();
-      const programStrategy = new ReusedProgramStrategy(program, host, options, ['ngtypecheck']);
+      const programStrategy = new TsCreateProgramDriver(program, host, options, ['ngtypecheck']);
 
       // Update /main.ngtypecheck.ts without changing its shape. Verify that the old program was
       // reused completely.
@@ -49,7 +49,7 @@ runInEachFileSystem(() => {
 
     it('should have complete reuse if no structural changes are made to input files', () => {
       const {program, host, options, mainPath} = makeSingleFileProgramWithTypecheckShim();
-      const programStrategy = new ReusedProgramStrategy(program, host, options, ['ngtypecheck']);
+      const programStrategy = new TsCreateProgramDriver(program, host, options, ['ngtypecheck']);
 
       // Update /main.ts without changing its shape. Verify that the old program was reused
       // completely.

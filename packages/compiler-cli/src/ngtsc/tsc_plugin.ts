@@ -12,10 +12,10 @@ import {CompilationTicket, freshCompilationTicket, incrementalFromDriverTicket, 
 import {NgCompilerOptions, UnifiedModulesHost} from './core/api';
 import {NodeJSFileSystem, setFileSystem} from './file_system';
 import {PatchedProgramIncrementalBuildStrategy} from './incremental';
-import {ActivePerfRecorder, NOOP_PERF_RECORDER, PerfPhase} from './perf';
+import {ActivePerfRecorder, PerfPhase} from './perf';
+import {TsCreateProgramDriver} from './program_driver';
 import {untagAllTsFiles} from './shims';
 import {OptimizeFor} from './typecheck/api';
-import {ReusedProgramStrategy} from './typecheck/src/augmented_program';
 
 // The following is needed to fix a the chicken-and-egg issue where the sync (into g3) script will
 // refuse to accept this file unless the following string appears:
@@ -106,7 +106,7 @@ export class NgTscPlugin implements TscPlugin {
     }
     this.host.postProgramCreationCleanup();
     untagAllTsFiles(program);
-    const typeCheckStrategy = new ReusedProgramStrategy(
+    const programDriver = new TsCreateProgramDriver(
         program, this.host, this.options, this.host.shimExtensionPrefixes);
     const strategy = new PatchedProgramIncrementalBuildStrategy();
     const oldDriver = oldProgram !== undefined ? strategy.getIncrementalDriver(oldProgram) : null;
@@ -122,12 +122,12 @@ export class NgTscPlugin implements TscPlugin {
 
     if (oldProgram === undefined || oldDriver === null) {
       ticket = freshCompilationTicket(
-          program, this.options, strategy, typeCheckStrategy, perfRecorder,
+          program, this.options, strategy, programDriver, perfRecorder,
           /* enableTemplateTypeChecker */ false, /* usePoisonedData */ false);
     } else {
       strategy.toNextBuildStrategy().getIncrementalDriver(oldProgram);
       ticket = incrementalFromDriverTicket(
-          oldProgram, oldDriver, program, this.options, strategy, typeCheckStrategy,
+          oldProgram, oldDriver, program, this.options, strategy, programDriver,
           modifiedResourceFiles, perfRecorder, false, false);
     }
     this._compiler = NgCompiler.fromTicket(ticket, this.host);
@@ -149,7 +149,7 @@ export class NgTscPlugin implements TscPlugin {
   }
 
   getNextProgram(): ts.Program {
-    return this.compiler.getNextProgram();
+    return this.compiler.getCurrentProgram();
   }
 
   createTransformers(): ts.CustomTransformers {
