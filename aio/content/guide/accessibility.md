@@ -141,15 +141,10 @@ You should avoid situations where focus returns to the `body` element after a ro
 
 * [Rob Dodson A11ycasts](https://www.youtube.com/watch?v=HtTyRajRuyY)
 
-* [Codelyzer](http://codelyzer.com/rules/) provides linting rules that can help you make sure your code meets accessibility standards.
+* [Angular ESLint](https://github.com/angular-eslint/angular-eslint#functionality) provides linting rules that can help you make sure your code meets accessibility standards.
 
 Books
 
 * "A Web for Everyone: Designing Accessible User Experiences", Sarah Horton and Whitney Quesenbery
 
 * "Inclusive Design Patterns", Heydon Pickering
-
-## More on accessibility
-
-You may also be interested in the following:
-* [Audit your Angular app's accessibility with codelyzer](https://web.dev/accessible-angular-with-codelyzer/).
