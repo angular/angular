@@ -107,6 +107,7 @@ export {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBin
 export {compileDeclareComponentFromMetadata} from './render3/partial/component';
 export {compileDeclareDirectiveFromMetadata} from './render3/partial/directive';
 export {compileDeclareFactoryFunction} from './render3/partial/factory';
+export {compileDeclareInjectableFromMetadata} from './render3/partial/injectable';
 export {compileDeclareInjectorFromMetadata} from './render3/partial/injector';
 export {compileDeclareNgModuleFromMetadata} from './render3/partial/ng_module';
 export {compileDeclarePipeFromMetadata} from './render3/partial/pipe';

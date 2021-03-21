@@ -7,10 +7,10 @@
  */
 
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DeclareUsedDirectiveFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectableFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DeclareUsedDirectiveFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
-import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, Type, ViewEncapsulation} from './core';
-import {compileInjectable} from './injectable_compiler_2';
+import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, ViewEncapsulation} from './core';
+import {compileInjectable, createR3ProviderExpression, R3ProviderExpression} from './injectable_compiler_2';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/interpolation_config';
 import {DeclareVarStmt, Expression, literal, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
 import {JitEvaluator} from './output/output_jit';
@@ -60,18 +60,41 @@ export class CompilerFacadeImpl implements CompilerFacade {
   compileInjectable(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
       facade: R3InjectableMetadataFacade): any {
-    const {expression, statements} = compileInjectable({
-      name: facade.name,
-      type: wrapReference(facade.type),
-      internalType: new WrappedNodeExpr(facade.type),
-      typeArgumentCount: facade.typeArgumentCount,
-      providedIn: computeProvidedIn(facade.providedIn),
-      useClass: wrapExpression(facade, USE_CLASS),
-      useFactory: wrapExpression(facade, USE_FACTORY),
-      useValue: wrapExpression(facade, USE_VALUE),
-      useExisting: wrapExpression(facade, USE_EXISTING),
-      userDeps: convertR3DependencyMetadataArray(facade.userDeps) || undefined,
-    });
+    const {expression, statements} = compileInjectable(
+        {
+          name: facade.name,
+          type: wrapReference(facade.type),
+          internalType: new WrappedNodeExpr(facade.type),
+          typeArgumentCount: facade.typeArgumentCount,
+          providedIn: computeProvidedIn(facade.providedIn),
+          useClass: convertToProviderExpression(facade, USE_CLASS),
+          useFactory: wrapExpression(facade, USE_FACTORY),
+          useValue: convertToProviderExpression(facade, USE_VALUE),
+          useExisting: convertToProviderExpression(facade, USE_EXISTING),
+          deps: facade.deps?.map(convertR3DependencyMetadata),
+        },
+        /* resolveForwardRefs */ true);
+
+    return this.jitExpression(expression, angularCoreEnv, sourceMapUrl, statements);
+  }
+
+  compileInjectableDeclaration(
+      angularCoreEnv: CoreEnvironment, sourceMapUrl: string,
+      facade: R3DeclareInjectableFacade): any {
+    const {expression, statements} = compileInjectable(
+        {
+          name: facade.type.name,
+          type: wrapReference(facade.type),
+          internalType: new WrappedNodeExpr(facade.type),
+          typeArgumentCount: 0,
+          providedIn: computeProvidedIn(facade.providedIn),
+          useClass: convertToProviderExpression(facade, USE_CLASS),
+          useFactory: wrapExpression(facade, USE_FACTORY),
+          useValue: convertToProviderExpression(facade, USE_VALUE),
+          useExisting: convertToProviderExpression(facade, USE_EXISTING),
+          deps: facade.deps?.map(convertR3DeclareDependencyMetadata),
+        },
+        /* resolveForwardRefs */ true);
 
     return this.jitExpression(expression, angularCoreEnv, sourceMapUrl, statements);
   }
@@ -446,6 +469,22 @@ function parseJitTemplate(
 type R3DirectiveMetadataFacadeNoPropAndWhitespace =
     Pick<R3DirectiveMetadataFacade, Exclude<keyof R3DirectiveMetadataFacade, 'propMetadata'>>;
 
+/**
+ * Convert the expression, if present to an `R3ProviderExpression`.
+ *
+ * In JIT mode we do not want the compiler to wrap the expression in a `forwardRef()` call because,
+ * if it is referencing a type that has not yet been defined, it will have already been wrapped in
+ * a `forwardRef()` - either by the application developer or during partial-compilation. Thus we can
+ * set `isForwardRef` to `false`.
+ */
+function convertToProviderExpression(obj: any, property: string): R3ProviderExpression|undefined {
+  if (obj.hasOwnProperty(property)) {
+    return createR3ProviderExpression(new WrappedNodeExpr(obj[property]), /* isForwardRef */ false);
+  } else {
+    return undefined;
+  }
+}
+
 function wrapExpression(obj: any, property: string): WrappedNodeExpr<any>|undefined {
   if (obj.hasOwnProperty(property)) {
     return new WrappedNodeExpr(obj[property]);
@@ -454,12 +493,12 @@ function wrapExpression(obj: any, property: string): WrappedNodeExpr<any>|undefi
   }
 }
 
-function computeProvidedIn(providedIn: Type|string|null|undefined): Expression {
-  if (providedIn == null || typeof providedIn === 'string') {
-    return new LiteralExpr(providedIn);
-  } else {
-    return new WrappedNodeExpr(providedIn);
-  }
+function computeProvidedIn(providedIn: Function|string|null|undefined): R3ProviderExpression {
+  const expression = (providedIn == null || typeof providedIn === 'string') ?
+      new LiteralExpr(providedIn ?? null) :
+      new WrappedNodeExpr(providedIn);
+  // See `convertToProviderExpression()` for why `isForwardRef` is false.
+  return createR3ProviderExpression(expression, /* isForwardRef */ false);
 }
 
 function convertR3DependencyMetadataArray(facades: R3DependencyMetadataFacade[]|null|

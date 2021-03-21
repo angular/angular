@@ -66,9 +66,6 @@ export class Identifiers {
   static directiveInject: o.ExternalReference = {name: 'ɵɵdirectiveInject', moduleName: CORE};
   static INJECTOR: o.ExternalReference = {name: 'INJECTOR', moduleName: CORE};
   static Injector: o.ExternalReference = {name: 'Injector', moduleName: CORE};
-  static ɵɵdefineInjectable: o.ExternalReference = {name: 'ɵɵdefineInjectable', moduleName: CORE};
-  static InjectableDeclaration:
-      o.ExternalReference = {name: 'ɵɵInjectableDeclaration', moduleName: CORE};
   static ViewEncapsulation: o.ExternalReference = {
     name: 'ViewEncapsulation',
     moduleName: CORE,

@@ -14,6 +14,7 @@ import {angularCoreEnv} from '../../src/render3/jit/environment';
 const INTERFACE_EXCEPTIONS = new Set<string>([
   'ɵɵComponentDeclaration',
   'ɵɵDirectiveDeclaration',
+  'ɵɵInjectableDeclaration',
   'ɵɵInjectorDeclaration',
   'ɵɵInjectorDef',
   'ɵɵNgModuleDeclaration',
@@ -30,6 +31,7 @@ const PARTIAL_ONLY = new Set<string>([
   'ɵɵngDeclareDirective',
   'ɵɵngDeclareComponent',
   'ɵɵngDeclareFactory',
+  'ɵɵngDeclareInjectable',
   'ɵɵngDeclareInjector',
   'ɵɵngDeclareNgModule',
   'ɵɵngDeclarePipe',

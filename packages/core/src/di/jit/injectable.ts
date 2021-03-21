@@ -24,7 +24,7 @@ import {convertDependencies, reflectDependencies} from './util';
  * Compile an Angular injectable according to its `Injectable` metadata, and patch the resulting
  * injectable def (`ɵprov`) onto the injectable type.
  */
-export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
+export function compileInjectable(type: Type<any>, meta?: Injectable): void {
   let ngInjectableDef: any = null;
   let ngFactoryDef: any = null;
 
@@ -34,8 +34,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
       get: () => {
         if (ngInjectableDef === null) {
           ngInjectableDef = getCompilerFacade().compileInjectable(
-              angularCoreDiEnv, `ng:///${type.name}/ɵprov.js`,
-              getInjectableMetadata(type, srcMeta));
+              angularCoreDiEnv, `ng:///${type.name}/ɵprov.js`, getInjectableMetadata(type, meta));
         }
         return ngInjectableDef;
       },
@@ -47,12 +46,11 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
     Object.defineProperty(type, NG_FACTORY_DEF, {
       get: () => {
         if (ngFactoryDef === null) {
-          const metadata = getInjectableMetadata(type, srcMeta);
           const compiler = getCompilerFacade();
           ngFactoryDef = compiler.compileFactory(angularCoreDiEnv, `ng:///${type.name}/ɵfac.js`, {
-            name: metadata.name,
-            type: metadata.type,
-            typeArgumentCount: metadata.typeArgumentCount,
+            name: type.name,
+            type,
+            typeArgumentCount: 0,  // In JIT mode types are not available nor used.
             deps: reflectDependencies(type),
             target: compiler.FactoryTarget.Injectable
           });
@@ -94,23 +92,19 @@ function getInjectableMetadata(type: Type<any>, srcMeta?: Injectable): R3Injecta
     type: type,
     typeArgumentCount: 0,
     providedIn: meta.providedIn,
-    userDeps: undefined,
   };
   if ((isUseClassProvider(meta) || isUseFactoryProvider(meta)) && meta.deps !== undefined) {
-    compilerMeta.userDeps = convertDependencies(meta.deps);
+    compilerMeta.deps = convertDependencies(meta.deps);
   }
+  // Check to see if the user explicitly provided a `useXxxx` property.
   if (isUseClassProvider(meta)) {
-    // The user explicitly specified useClass, and may or may not have provided deps.
-    compilerMeta.useClass = resolveForwardRef(meta.useClass);
+    compilerMeta.useClass = meta.useClass;
   } else if (isUseValueProvider(meta)) {
-    // The user explicitly specified useValue.
-    compilerMeta.useValue = resolveForwardRef(meta.useValue);
+    compilerMeta.useValue = meta.useValue;
   } else if (isUseFactoryProvider(meta)) {
-    // The user explicitly specified useFactory.
     compilerMeta.useFactory = meta.useFactory;
   } else if (isUseExistingProvider(meta)) {
-    // The user explicitly specified useExisting.
-    compilerMeta.useExisting = resolveForwardRef(meta.useExisting);
+    compilerMeta.useExisting = meta.useExisting;
   }
   return compilerMeta;
 }

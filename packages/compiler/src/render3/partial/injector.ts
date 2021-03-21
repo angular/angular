@@ -22,6 +22,9 @@ export function compileDeclareInjectorFromMetadata(meta: R3InjectorMetadata): R3
   return {expression, type, statements: []};
 }
 
+/**
+ * Gathers the declaration fields for an Injector into a `DefinitionMap`.
+ */
 function createInjectorDefinitionMap(meta: R3InjectorMetadata):
     DefinitionMap<R3DeclareInjectorMetadata> {
   const definitionMap = new DefinitionMap<R3DeclareInjectorMetadata>();

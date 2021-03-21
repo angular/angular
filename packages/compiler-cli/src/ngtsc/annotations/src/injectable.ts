@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileInjectable as compileIvyInjectable, Expression, FactoryTarget, LiteralExpr, R3DependencyMetadata, R3FactoryMetadata, R3InjectableMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclareInjectableFromMetadata, compileInjectable, createR3ProviderExpression, Expression, FactoryTarget, LiteralExpr, R3CompiledExpression, R3DependencyMetadata, R3InjectableMetadata, R3ProviderExpression, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -16,9 +16,9 @@ import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
-import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
+import {compileDeclareFactory, CompileFactoryFn, compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, toFactoryMetadata, unwrapConstructorDependencies, unwrapForwardRef, validateConstructorDependencies, wrapTypeReference} from './util';
+import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, toFactoryMetadata, tryUnwrapForwardRef, unwrapConstructorDependencies, validateConstructorDependencies, wrapTypeReference} from './util';
 
 export interface InjectableHandlerData {
   meta: R3InjectableMetadata;
@@ -28,7 +28,7 @@ export interface InjectableHandlerData {
 }
 
 /**
- * Adapts the `compileIvyInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
+ * Adapts the `compileInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
 export class InjectableDecoratorHandler implements
     DecoratorHandler<Decorator, InjectableHandlerData, null, unknown> {
@@ -95,45 +95,25 @@ export class InjectableDecoratorHandler implements
   }
 
   compileFull(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
-    const res = compileIvyInjectable(analysis.meta);
-    const statements = res.statements;
-    const results: CompileResult[] = [];
-
-    if (analysis.needsFactory) {
-      const meta = analysis.meta;
-      const factoryRes = compileNgFactoryDefField(
-          toFactoryMetadata({...meta, deps: analysis.ctorDeps}, FactoryTarget.Injectable));
-      if (analysis.metadataStmt !== null) {
-        factoryRes.statements.push(analysis.metadataStmt);
-      }
-      results.push(factoryRes);
-    }
-
-    const ɵprov = this.reflector.getMembersOfClass(node).find(member => member.name === 'ɵprov');
-    if (ɵprov !== undefined && this.errorOnDuplicateProv) {
-      throw new FatalDiagnosticError(
-          ErrorCode.INJECTABLE_DUPLICATE_PROV, ɵprov.nameNode || ɵprov.node || node,
-          'Injectables cannot contain a static ɵprov property, because the compiler is going to generate one.');
-    }
-
-    if (ɵprov === undefined) {
-      // Only add a new ɵprov if there is not one already
-      results.push({name: 'ɵprov', initializer: res.expression, statements, type: res.type});
-    }
-
-
-    return results;
+    return this.compile(
+        compileNgFactoryDefField, meta => compileInjectable(meta, false), node, analysis);
   }
 
   compilePartial(node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>):
       CompileResult[] {
-    const res = compileIvyInjectable(analysis.meta);
-    const statements = res.statements;
+    return this.compile(
+        compileDeclareFactory, compileDeclareInjectableFromMetadata, node, analysis);
+  }
+
+  private compile(
+      compileFactoryFn: CompileFactoryFn,
+      compileInjectableFn: (meta: R3InjectableMetadata) => R3CompiledExpression,
+      node: ClassDeclaration, analysis: Readonly<InjectableHandlerData>): CompileResult[] {
     const results: CompileResult[] = [];
 
     if (analysis.needsFactory) {
       const meta = analysis.meta;
-      const factoryRes = compileDeclareFactory(
+      const factoryRes = compileFactoryFn(
           toFactoryMetadata({...meta, deps: analysis.ctorDeps}, FactoryTarget.Injectable));
       if (analysis.metadataStmt !== null) {
         factoryRes.statements.push(analysis.metadataStmt);
@@ -150,7 +130,9 @@ export class InjectableDecoratorHandler implements
 
     if (ɵprov === undefined) {
       // Only add a new ɵprov if there is not one already
-      results.push({name: 'ɵprov', initializer: res.expression, statements, type: res.type});
+      const res = compileInjectableFn(analysis.meta);
+      results.push(
+          {name: 'ɵprov', initializer: res.expression, statements: res.statements, type: res.type});
     }
 
     return results;
@@ -159,7 +141,7 @@ export class InjectableDecoratorHandler implements
 
 /**
  * Read metadata from the `@Injectable` decorator and produce the `IvyInjectableMetadata`, the
- * input metadata needed to run `compileIvyInjectable`.
+ * input metadata needed to run `compileInjectable`.
  *
  * A `null` return value indicates this is @Injectable has invalid data.
  */
@@ -181,7 +163,7 @@ function extractInjectableMetadata(
       type,
       typeArgumentCount,
       internalType,
-      providedIn: new LiteralExpr(null),
+      providedIn: createR3ProviderExpression(new LiteralExpr(null), false),
     };
   } else if (decorator.args.length === 1) {
     const metaNode = decorator.args[0];
@@ -196,12 +178,12 @@ function extractInjectableMetadata(
 
     // Resolve the fields of the literal into a map of field name to expression.
     const meta = reflectObjectLiteral(metaNode);
-    let providedIn: Expression = new LiteralExpr(null);
-    if (meta.has('providedIn')) {
-      providedIn = new WrappedNodeExpr(meta.get('providedIn')!);
-    }
 
-    let userDeps: R3DependencyMetadata[]|undefined = undefined;
+    const providedIn = meta.has('providedIn') ?
+        getProviderExpression(meta.get('providedIn')!, reflector) :
+        createR3ProviderExpression(new LiteralExpr(null), false);
+
+    let deps: R3DependencyMetadata[]|undefined = undefined;
     if ((meta.has('useClass') || meta.has('useFactory')) && meta.has('deps')) {
       const depsExpr = meta.get('deps')!;
       if (!ts.isArrayLiteralExpression(depsExpr)) {
@@ -209,56 +191,40 @@ function extractInjectableMetadata(
             ErrorCode.VALUE_NOT_LITERAL, depsExpr,
             `@Injectable deps metadata must be an inline array`);
       }
-      userDeps = depsExpr.elements.map(dep => getDep(dep, reflector));
+      deps = depsExpr.elements.map(dep => getDep(dep, reflector));
     }
 
+    const result: R3InjectableMetadata = {name, type, typeArgumentCount, internalType, providedIn};
     if (meta.has('useValue')) {
-      return {
-        name,
-        type,
-        typeArgumentCount,
-        internalType,
-        providedIn,
-        useValue: new WrappedNodeExpr(unwrapForwardRef(meta.get('useValue')!, reflector)),
-      };
+      result.useValue = getProviderExpression(meta.get('useValue')!, reflector);
     } else if (meta.has('useExisting')) {
-      return {
-        name,
-        type,
-        typeArgumentCount,
-        internalType,
-        providedIn,
-        useExisting: new WrappedNodeExpr(unwrapForwardRef(meta.get('useExisting')!, reflector)),
-      };
+      result.useExisting = getProviderExpression(meta.get('useExisting')!, reflector);
     } else if (meta.has('useClass')) {
-      return {
-        name,
-        type,
-        typeArgumentCount,
-        internalType,
-        providedIn,
-        useClass: new WrappedNodeExpr(unwrapForwardRef(meta.get('useClass')!, reflector)),
-        userDeps,
-      };
+      result.useClass = getProviderExpression(meta.get('useClass')!, reflector);
+      result.deps = deps;
     } else if (meta.has('useFactory')) {
-      // useFactory is special - the 'deps' property must be analyzed.
-      const factory = new WrappedNodeExpr(meta.get('useFactory')!);
-      return {
-        name,
-        type,
-        typeArgumentCount,
-        internalType,
-        providedIn,
-        useFactory: factory,
-        userDeps,
-      };
-    } else {
-      return {name, type, typeArgumentCount, internalType, providedIn};
+      result.useFactory = new WrappedNodeExpr(meta.get('useFactory')!);
+      result.deps = deps;
     }
+    return result;
   } else {
     throw new FatalDiagnosticError(
         ErrorCode.DECORATOR_ARITY_WRONG, decorator.args[2], 'Too many arguments to @Injectable');
   }
+}
+
+/**
+ * Get the `R3ProviderExpression` for this `expression`.
+ *
+ * The `useValue`, `useExisting` and `useClass` properties might be wrapped in a `ForwardRef`, which
+ * needs to be unwrapped. This function will do that unwrapping and set a flag on the returned
+ * object to indicate whether the value needed unwrapping.
+ */
+function getProviderExpression(
+    expression: ts.Expression, reflector: ReflectionHost): R3ProviderExpression {
+  const forwardRefValue = tryUnwrapForwardRef(expression, reflector);
+  return createR3ProviderExpression(
+      new WrappedNodeExpr(forwardRefValue ?? expression), forwardRefValue !== null);
 }
 
 function extractInjectableCtorDeps(

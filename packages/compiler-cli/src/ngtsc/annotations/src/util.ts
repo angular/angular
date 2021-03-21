@@ -332,36 +332,40 @@ function expandForwardRef(arg: ts.Expression): ts.Expression|null {
   }
 }
 
+
 /**
- * Possibly resolve a forwardRef() expression into the inner value.
+ * If the given `node` is a forwardRef() expression then resolve its inner value, otherwise return
+ * `null`.
  *
  * @param node the forwardRef() expression to resolve
  * @param reflector a ReflectionHost
- * @returns the resolved expression, if the original expression was a forwardRef(), or the original
- * expression otherwise
+ * @returns the resolved expression, if the original expression was a forwardRef(), or `null`
+ *     otherwise.
  */
-export function unwrapForwardRef(node: ts.Expression, reflector: ReflectionHost): ts.Expression {
+export function tryUnwrapForwardRef(node: ts.Expression, reflector: ReflectionHost): ts.Expression|
+    null {
   node = unwrapExpression(node);
   if (!ts.isCallExpression(node) || node.arguments.length !== 1) {
-    return node;
+    return null;
   }
 
   const fn =
       ts.isPropertyAccessExpression(node.expression) ? node.expression.name : node.expression;
   if (!ts.isIdentifier(fn)) {
-    return node;
+    return null;
   }
 
   const expr = expandForwardRef(node.arguments[0]);
   if (expr === null) {
-    return node;
+    return null;
   }
+
   const imp = reflector.getImportOfIdentifier(fn);
   if (imp === null || imp.from !== '@angular/core' || imp.name !== 'forwardRef') {
-    return node;
-  } else {
-    return expr;
+    return null;
   }
+
+  return expr;
 }
 
 /**

@@ -14,6 +14,7 @@ import {LinkerEnvironment} from '../linker_environment';
 import {PartialComponentLinkerVersion1} from './partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from './partial_directive_linker_1';
 import {PartialFactoryLinkerVersion1} from './partial_factory_linker_1';
+import {PartialInjectableLinkerVersion1} from './partial_injectable_linker_1';
 import {PartialInjectorLinkerVersion1} from './partial_injector_linker_1';
 import {PartialLinker} from './partial_linker';
 import {PartialNgModuleLinkerVersion1} from './partial_ng_module_linker_1';
@@ -22,12 +23,13 @@ import {PartialPipeLinkerVersion1} from './partial_pipe_linker_1';
 export const ɵɵngDeclareDirective = 'ɵɵngDeclareDirective';
 export const ɵɵngDeclareComponent = 'ɵɵngDeclareComponent';
 export const ɵɵngDeclareFactory = 'ɵɵngDeclareFactory';
+export const ɵɵngDeclareInjectable = 'ɵɵngDeclareInjectable';
 export const ɵɵngDeclareInjector = 'ɵɵngDeclareInjector';
 export const ɵɵngDeclareNgModule = 'ɵɵngDeclareNgModule';
 export const ɵɵngDeclarePipe = 'ɵɵngDeclarePipe';
 export const declarationFunctions = [
-  ɵɵngDeclareDirective, ɵɵngDeclareComponent, ɵɵngDeclareFactory, ɵɵngDeclareInjector,
-  ɵɵngDeclareNgModule, ɵɵngDeclarePipe
+  ɵɵngDeclareDirective, ɵɵngDeclareComponent, ɵɵngDeclareFactory, ɵɵngDeclareInjectable,
+  ɵɵngDeclareInjector, ɵɵngDeclareNgModule, ɵɵngDeclarePipe
 ];
 
 interface LinkerRange<TExpression> {
@@ -93,6 +95,7 @@ export class PartialLinkerSelector<TStatement, TExpression> {
         environment, createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl,
         code);
     const partialFactoryLinkerVersion1 = new PartialFactoryLinkerVersion1();
+    const partialInjectableLinkerVersion1 = new PartialInjectableLinkerVersion1();
     const partialInjectorLinkerVersion1 = new PartialInjectorLinkerVersion1();
     const partialNgModuleLinkerVersion1 =
         new PartialNgModuleLinkerVersion1(environment.options.linkerJitMode);
@@ -110,6 +113,10 @@ export class PartialLinkerSelector<TStatement, TExpression> {
     linkers.set(ɵɵngDeclareFactory, [
       {range: '0.0.0-PLACEHOLDER', linker: partialFactoryLinkerVersion1},
       {range: '>=11.1.0-next.1', linker: partialFactoryLinkerVersion1},
+    ]);
+    linkers.set(ɵɵngDeclareInjectable, [
+      {range: '0.0.0-PLACEHOLDER', linker: partialInjectableLinkerVersion1},
+      {range: '>=11.1.0-next.1', linker: partialInjectableLinkerVersion1},
     ]);
     linkers.set(ɵɵngDeclareInjector, [
       {range: '0.0.0-PLACEHOLDER', linker: partialInjectorLinkerVersion1},

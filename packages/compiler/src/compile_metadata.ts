@@ -36,6 +36,11 @@ export function identifierName(compileIdentifier: CompileIdentifierMetadata|null
   if (ref['__anonymousType']) {
     return ref['__anonymousType'];
   }
+  if (ref['__forward_ref__']) {
+    // We do not want to try to stringify a `forwardRef()` function because that would cause the
+    // inner function to be evaluated too early, defeating the whole point of the `forwardRef`.
+    return '__forward_ref__';
+  }
   let identifier = stringify(ref);
   if (identifier.indexOf('(') >= 0) {
     // case: anonymous functions!

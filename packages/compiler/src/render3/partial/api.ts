@@ -368,6 +368,53 @@ export enum FactoryTarget {
 }
 
 /**
+ * Describes the shape of the object that the `ɵɵngDeclareInjectable()` function accepts.
+ *
+ * This interface serves primarily as documentation, as conformance to this interface is not
+ * enforced during linking.
+ */
+export interface R3DeclareInjectableMetadata extends R3PartialDeclaration {
+  /**
+   * If provided, specifies that the declared injectable belongs to a particular injector:
+   * - `InjectorType` such as `NgModule`,
+   * - `'root'` the root injector
+   * - `'any'` all injectors.
+   * If not provided, then it does not belong to any injector. Must be explicitly listed in the
+   * providers of an injector.
+   */
+  providedIn?: o.Expression;
+
+  /**
+   * If provided, an expression that evaluates to a class to use when creating an instance of this
+   * injectable.
+   */
+  useClass?: o.Expression;
+
+  /**
+   * If provided, an expression that evaluates to a function to use when creating an instance of
+   * this injectable.
+   */
+  useFactory?: o.Expression;
+
+  /**
+   * If provided, an expression that evaluates to a token of another injectable that this injectable
+   * aliases.
+   */
+  useExisting?: o.Expression;
+
+  /**
+   * If provided, an expression that evaluates to the value of the instance of this injectable.
+   */
+  useValue?: o.Expression;
+
+  /**
+   * An array of dependencies to support instantiating this injectable via `useClass` or
+   * `useFactory`.
+   */
+  deps?: R3DeclareDependencyMetadata[];
+}
+
+/**
  * Metadata indicating how a dependency should be injected into a factory.
  */
 export interface R3DeclareDependencyMetadata {

@@ -17,6 +17,7 @@ import {LinkerEnvironment} from '../../../src/file_linker/linker_environment';
 import {PartialComponentLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_component_linker_1';
 import {PartialDirectiveLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_directive_linker_1';
 import {PartialFactoryLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_factory_linker_1';
+import {PartialInjectableLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_injectable_linker_1';
 import {PartialInjectorLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_injector_linker_1';
 import {PartialLinkerSelector} from '../../../src/file_linker/partial_linkers/partial_linker_selector';
 import {PartialNgModuleLinkerVersion1} from '../../../src/file_linker/partial_linkers/partial_ng_module_linker_1';
@@ -43,6 +44,7 @@ describe('PartialLinkerSelector', () => {
          expect(selector.supportsDeclaration('ɵɵngDeclareDirective')).toBe(true);
          expect(selector.supportsDeclaration('ɵɵngDeclareComponent')).toBe(true);
          expect(selector.supportsDeclaration('ɵɵngDeclareFactory')).toBe(true);
+         expect(selector.supportsDeclaration('ɵɵngDeclareInjectable')).toBe(true);
          expect(selector.supportsDeclaration('ɵɵngDeclareInjector')).toBe(true);
          expect(selector.supportsDeclaration('ɵɵngDeclareNgModule')).toBe(true);
          expect(selector.supportsDeclaration('ɵɵngDeclarePipe')).toBe(true);
@@ -66,6 +68,8 @@ describe('PartialLinkerSelector', () => {
           .toBeInstanceOf(PartialComponentLinkerVersion1);
       expect(selector.getLinker('ɵɵngDeclareFactory', '0.0.0-PLACEHOLDER'))
           .toBeInstanceOf(PartialFactoryLinkerVersion1);
+      expect(selector.getLinker('ɵɵngDeclareInjectable', '0.0.0-PLACEHOLDER'))
+          .toBeInstanceOf(PartialInjectableLinkerVersion1);
       expect(selector.getLinker('ɵɵngDeclareInjector', '0.0.0-PLACEHOLDER'))
           .toBeInstanceOf(PartialInjectorLinkerVersion1);
       expect(selector.getLinker('ɵɵngDeclareNgModule', '0.0.0-PLACEHOLDER'))

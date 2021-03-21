@@ -18,6 +18,7 @@ import {LinkerEnvironment} from '../linker_environment';
 
 import {toR3DirectiveMeta} from './partial_directive_linker_1';
 import {PartialLinker} from './partial_linker';
+import {extractForwardRef} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareComponent()` call expressions.
@@ -81,10 +82,8 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
             const type = directiveExpr.getValue('type');
             const selector = directiveExpr.getString('selector');
 
-            let typeExpr = type.getOpaque();
-            const forwardRefType = extractForwardRef(type);
-            if (forwardRefType !== null) {
-              typeExpr = forwardRefType;
+            const {expression: typeExpr, isForwardRef} = extractForwardRef(type);
+            if (isForwardRef) {
               declarationListEmitMode = DeclarationListEmitMode.Closure;
             }
 
@@ -115,13 +114,11 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
     let pipes = new Map<string, o.Expression>();
     if (metaObj.has('pipes')) {
       pipes = metaObj.getObject('pipes').toMap(pipe => {
-        const forwardRefType = extractForwardRef(pipe);
-        if (forwardRefType !== null) {
+        const {expression: pipeType, isForwardRef} = extractForwardRef(pipe);
+        if (isForwardRef) {
           declarationListEmitMode = DeclarationListEmitMode.Closure;
-          return forwardRefType;
-        } else {
-          return pipe.getOpaque();
         }
+        return pipeType;
       });
     }
 
@@ -276,36 +273,4 @@ function parseChangeDetectionStrategy<TExpression>(
         changeDetectionStrategy.expression, 'Unsupported change detection strategy');
   }
   return enumValue;
-}
-
-/**
- * Extract the type reference expression from a `forwardRef` function call. For example, the
- * expression `forwardRef(function() { return FooDir; })` returns `FooDir`. Note that this
- * expression is required to be wrapped in a closure, as otherwise the forward reference would be
- * resolved before initialization.
- */
-function extractForwardRef<TExpression>(expr: AstValue<unknown, TExpression>):
-    o.WrappedNodeExpr<TExpression>|null {
-  if (!expr.isCallExpression()) {
-    return null;
-  }
-
-  const callee = expr.getCallee();
-  if (callee.getSymbolName() !== 'forwardRef') {
-    throw new FatalLinkerError(
-        callee.expression, 'Unsupported directive type, expected forwardRef or a type reference');
-  }
-
-  const args = expr.getArguments();
-  if (args.length !== 1) {
-    throw new FatalLinkerError(expr, 'Unsupported forwardRef call, expected a single argument');
-  }
-
-  const wrapperFn = args[0] as AstValue<Function, TExpression>;
-  if (!wrapperFn.isFunction()) {
-    throw new FatalLinkerError(
-        wrapperFn, 'Unsupported forwardRef call, expected a function argument');
-  }
-
-  return wrapperFn.getFunctionReturnValue().getOpaque();
 }
