@@ -449,7 +449,7 @@ export declare class RouterOutlet implements OnDestroy, OnInit, RouterOutletCont
     get component(): Object;
     deactivateEvents: EventEmitter<any>;
     get isActivated(): boolean;
-    constructor(parentContexts: ChildrenOutletContexts, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string, changeDetector: ChangeDetectorRef);
+    constructor(parentContexts: ChildrenOutletContexts, location: ViewContainerRef, resolver: ComponentFactoryResolver, name: string, changeDetector: ChangeDetectorRef, ngZone: NgZone);
     activateWith(activatedRoute: ActivatedRoute, resolver: ComponentFactoryResolver | null): void;
     attach(ref: ComponentRef<any>, activatedRoute: ActivatedRoute): void;
     deactivate(): void;
