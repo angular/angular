@@ -23,6 +23,9 @@ export function compileDeclareNgModuleFromMetadata(meta: R3NgModuleMetadata): R3
   return {expression, type, statements: []};
 }
 
+/**
+ * Gathers the declaration fields for an NgModule into a `DefinitionMap`.
+ */
 function createNgModuleDefinitionMap(meta: R3NgModuleMetadata):
     DefinitionMap<R3DeclareNgModuleMetadata> {
   const definitionMap = new DefinitionMap<R3DeclareNgModuleMetadata>();

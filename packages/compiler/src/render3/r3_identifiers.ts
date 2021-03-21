@@ -229,6 +229,11 @@ export class Identifiers {
   static forwardRef: o.ExternalReference = {name: 'forwardRef', moduleName: CORE};
   static resolveForwardRef: o.ExternalReference = {name: 'resolveForwardRef', moduleName: CORE};
 
+  static ɵɵdefineInjectable: o.ExternalReference = {name: 'ɵɵdefineInjectable', moduleName: CORE};
+  static declareInjectable: o.ExternalReference = {name: 'ɵɵngDeclareInjectable', moduleName: CORE};
+  static InjectableDeclaration:
+      o.ExternalReference = {name: 'ɵɵInjectableDeclaration', moduleName: CORE};
+
   static resolveWindow: o.ExternalReference = {name: 'ɵɵresolveWindow', moduleName: CORE};
   static resolveDocument: o.ExternalReference = {name: 'ɵɵresolveDocument', moduleName: CORE};
   static resolveBody: o.ExternalReference = {name: 'ɵɵresolveBody', moduleName: CORE};

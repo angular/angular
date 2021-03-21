@@ -18,7 +18,7 @@ import {DefinitionMap} from '../view/util';
 
 import {R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata} from './api';
 import {createDirectiveDefinitionMap} from './directive';
-import {toOptionalLiteralArray} from './util';
+import {generateForwardRef, toOptionalLiteralArray} from './util';
 
 
 /**
@@ -162,8 +162,4 @@ function compileUsedPipeMetadata(meta: R3ComponentMetadata): o.LiteralMapExpr|nu
     entries.push({key: name, value: wrapType(pipe), quoted: true});
   }
   return o.literalMap(entries);
-}
-
-function generateForwardRef(expr: o.Expression): o.Expression {
-  return o.importExpr(R3.forwardRef).callFn([o.fn([], [new o.ReturnStatement(expr)])]);
 }

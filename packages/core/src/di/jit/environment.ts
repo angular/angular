@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {resolveForwardRef} from '../forward_ref';
 import {ɵɵinject, ɵɵinvalidFactoryDep} from '../injector_compatibility';
 import {ɵɵdefineInjectable, ɵɵdefineInjector} from '../interface/defs';
 
@@ -18,4 +19,5 @@ export const angularCoreDiEnv: {[name: string]: Function} = {
   'ɵɵdefineInjector': ɵɵdefineInjector,
   'ɵɵinject': ɵɵinject,
   'ɵɵinvalidFactoryDep': ɵɵinvalidFactoryDep,
+  'resolveForwardRef': resolveForwardRef,
 };
