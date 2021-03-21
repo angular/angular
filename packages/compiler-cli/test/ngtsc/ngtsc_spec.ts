@@ -208,11 +208,11 @@ function allTests(os: string) {
       expect(jsContents)
           .toContain(
               'Service.ɵfac = function Service_Factory(t) { return new (t || Service)(i0.ɵɵinject(Dep)); };');
-      expect(jsContents).toContain('providedIn: forwardRef(function () { return Mod; }) })');
+      expect(jsContents).toContain('providedIn: i0.forwardRef(function () { return Mod; }) })');
       expect(jsContents).not.toContain('__decorate');
       const dtsContents = env.getContents('test.d.ts');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDef<Dep>;');
-      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDef<Service>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Dep>;');
+      expect(dtsContents).toContain('static ɵprov: i0.ɵɵInjectableDeclaration<Service>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Dep, never>;');
       expect(dtsContents).toContain('static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;');
       expect(dtsContents).toContain('i0.ɵɵFactoryDeclaration<Mod, never>;');

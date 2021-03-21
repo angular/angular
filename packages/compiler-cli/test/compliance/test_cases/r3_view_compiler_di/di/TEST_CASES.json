@@ -138,6 +138,20 @@
       ]
     },
     {
+      "description": "should support forward refs in a providedIn clause",
+      "inputFiles": [
+        "providedin_forwardref.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect factory definition",
+          "files": [
+            "providedin_forwardref.js"
+          ]
+        }
+      ]
+    },
+    {
       "description": "should have the pipe factory take precedence over the injectable factory, if a class has multiple decorators",
       "inputFiles": [
         "pipe_and_injectable.ts"
