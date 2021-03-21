@@ -7,7 +7,7 @@
  */
 
 import {APP_BASE_HREF, DOCUMENT, ɵgetDOM as getDOM} from '@angular/common';
-import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, NgModule} from '@angular/core';
+import {ApplicationRef, Component, CUSTOM_ELEMENTS_SCHEMA, destroyPlatform, NgModule, OnInit} from '@angular/core';
 import {inject} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
@@ -365,6 +365,39 @@ describe('bootstrap', () => {
     await router.navigateByUrl('/aa#marker3');
     expect(window.pageYOffset).toBeGreaterThanOrEqual(8900);
     expect(window.pageYOffset).toBeLessThan(9000);
+    done();
+  });
+
+  it('Should call ngOnInit hook of routed component with NoopNgZone', async (done) => {
+    @Component({selector: 'oninit-cmp', template: 'test'})
+    class OnInitCmp implements OnInit {
+      constructor() {
+        log.push('OnInitCmp');
+      }
+
+      ngOnInit(): void {
+        log.push('ngOnInit');
+      }
+    }
+
+    @NgModule({
+      imports: [
+        BrowserModule, RouterModule.forRoot([{
+          path: '**',
+          component: OnInitCmp,
+        }])
+      ],
+      declarations: [RootCmp, OnInitCmp],
+      bootstrap: [RootCmp],
+      providers: testProviders,
+    })
+    class TestModule {
+    }
+
+    await platformBrowserDynamic([]).bootstrapModule(TestModule, {ngZone: 'noop'});
+
+    expect(log).toEqual(['RootCmp', 'OnInitCmp', 'ngOnInit']);
+
     done();
   });
 

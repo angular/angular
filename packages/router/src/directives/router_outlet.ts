@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
+import {Attribute, ChangeDetectorRef, ComponentFactoryResolver, ComponentRef, Directive, EventEmitter, Injector, NgZone, OnDestroy, OnInit, Output, ViewContainerRef} from '@angular/core';
 
 import {Data} from '../config';
 import {ChildrenOutletContexts} from '../router_outlet_context';
@@ -132,7 +132,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   constructor(
       private parentContexts: ChildrenOutletContexts, private location: ViewContainerRef,
       private resolver: ComponentFactoryResolver, @Attribute('name') name: string,
-      private changeDetector: ChangeDetectorRef) {
+      private changeDetector: ChangeDetectorRef, private ngZone: NgZone) {
     this.name = name || PRIMARY_OUTLET;
     parentContexts.onChildOutletCreated(this.name, this);
   }
@@ -228,9 +228,13 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
     const injector = new OutletInjector(activatedRoute, childContexts, this.location.injector);
     this.activated = this.location.createComponent(factory, this.location.length, injector);
-    // Calling `markForCheck` to make sure we will run the change detection when the
-    // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
-    this.changeDetector.markForCheck();
+    // Calling `markForCheck`/`detectChanges` to make sure we will run the change detection
+    // when the `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
+    if (this.ngZone instanceof NgZone) {
+      this.changeDetector.markForCheck();
+    } else {
+      this.changeDetector.detectChanges();
+    }
     this.activateEvents.emit(this.activated.instance);
   }
 }
