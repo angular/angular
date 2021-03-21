@@ -27,6 +27,7 @@ module.exports = function processPackages(collectPackageContentDocsProcessor) {
             doc.directives = publicExports.filter(doc => doc.docType === 'directive').sort(byId);
             doc.pipes = publicExports.filter(doc => doc.docType === 'pipe').sort(byId);
             doc.types = publicExports.filter(doc => doc.docType === 'type-alias' || doc.docType === 'const').sort(byId);
+            doc.elements = publicExports.filter(doc => doc.docType === 'element').sort(byId);
             if (doc.hasPublicExports && publicExports.every(doc => !!doc.deprecated)) {
               doc.deprecated = 'all exports of this entry point are deprecated.';
             }
