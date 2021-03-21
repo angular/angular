@@ -1530,11 +1530,15 @@ exports.MissingClass2 = MissingClass2;
               break;
             case 'inlined':
               fileHeader =
-                  `var __spread = (this && this.__spread) || function (...args) { /* ... */ }`;
+                  `var __spread = (this && this.__spread) || function (...args) { /* ... */ };\n` +
+                  `var __spreadArray = (this && this.__spreadArray) || function (...args) { /* ... */ };\n` +
+                  `var __read = (this && this.__read) || function (...args) { /* ... */ };\n`;
               break;
             case 'inlined_with_suffix':
               fileHeader =
-                  `var __spread$1 = (this && this.__spread$1) || function (...args) { /* ... */ }`;
+                  `var __spread$1 = (this && this.__spread$1) || function (...args) { /* ... */ };\n` +
+                  `var __spreadArray$1 = (this && this.__spreadArray$1) || function (...args) { /* ... */ };\n` +
+                  `var __read$2 = (this && this.__read$2) || function (...args) { /* ... */ };\n`;
               break;
           }
           const file = {
@@ -1635,11 +1639,33 @@ exports.MissingClass2 = MissingClass2;
             expect(parameters).toBeNull();
           });
 
+          it('recognizes delegate super call using inline spreadArray helper', () => {
+            const parameters = getConstructorParameters(
+                `
+              function TestClass() {
+                return _super.apply(this, __spreadArray([], __read(arguments))) || this;
+              }`,
+                'inlined');
+
+            expect(parameters).toBeNull();
+          });
+
           it('recognizes delegate super call using inline spread helper with suffix', () => {
             const parameters = getConstructorParameters(
                 `
               function TestClass() {
                 return _super.apply(this, __spread$1(arguments)) || this;
+              }`,
+                'inlined_with_suffix');
+
+            expect(parameters).toBeNull();
+          });
+
+          it('recognizes delegate super call using inline spreadArray helper with suffix', () => {
+            const parameters = getConstructorParameters(
+                `
+              function TestClass() {
+                return _super.apply(this, __spreadArray$1([], __read$2(arguments))) || this;
               }`,
                 'inlined_with_suffix');
 
@@ -1657,12 +1683,36 @@ exports.MissingClass2 = MissingClass2;
             expect(parameters).toBeNull();
           });
 
+          it('recognizes delegate super call using imported spreadArray helper', () => {
+            const parameters = getConstructorParameters(
+                `
+              function TestClass() {
+                return _super.apply(this, tslib.__spreadArray([], tslib.__read(arguments))) || this;
+              }`,
+                'imported');
+
+            expect(parameters).toBeNull();
+          });
+
           describe('with class member assignment', () => {
             it('recognizes delegate super call using inline spread helper', () => {
               const parameters = getConstructorParameters(
                   `
                 function TestClass() {
                   var _this = _super.apply(this, __spread(arguments)) || this;
+                  _this.synthesizedProperty = null;
+                  return _this;
+                }`,
+                  'inlined');
+
+              expect(parameters).toBeNull();
+            });
+
+            it('recognizes delegate super call using inline spreadArray helper', () => {
+              const parameters = getConstructorParameters(
+                  `
+                function TestClass() {
+                  var _this = _super.apply(this, __spreadArray([], __read(arguments))) || this;
                   _this.synthesizedProperty = null;
                   return _this;
                 }`,
@@ -1684,11 +1734,37 @@ exports.MissingClass2 = MissingClass2;
               expect(parameters).toBeNull();
             });
 
+            it('recognizes delegate super call using inline spreadArray helper with suffix', () => {
+              const parameters = getConstructorParameters(
+                  `
+                function TestClass() {
+                  var _this = _super.apply(this, __spreadArray$1([], __read$2(arguments))) || this;
+                  _this.synthesizedProperty = null;
+                  return _this;
+                }`,
+                  'inlined_with_suffix');
+
+              expect(parameters).toBeNull();
+            });
+
             it('recognizes delegate super call using imported spread helper', () => {
               const parameters = getConstructorParameters(
                   `
                 function TestClass() {
                   var _this = _super.apply(this, tslib.__spread(arguments)) || this;
+                  _this.synthesizedProperty = null;
+                  return _this;
+                }`,
+                  'imported');
+
+              expect(parameters).toBeNull();
+            });
+
+            it('recognizes delegate super call using imported spreadArray helper', () => {
+              const parameters = getConstructorParameters(
+                  `
+                function TestClass() {
+                  var _this = _super.apply(this, tslib.__spreadArray([], tslib.__read(arguments))) || this;
                   _this.synthesizedProperty = null;
                   return _this;
                 }`,

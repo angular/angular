@@ -1784,6 +1784,8 @@ runInEachFileSystem(() => {
                 }(this, (function (exports) { 'use strict';
 
                   var __spread = (this && this.__spread) || function (...args) { /* ... */ }
+                  var __spreadArray = (this && this.__spreadArray) || function (...args) { /* ... */ }
+                  var __read = (this && this.__read) || function (...args) { /* ... */ }
             `;
               break;
             case 'inlined_with_suffix':
@@ -1795,6 +1797,8 @@ runInEachFileSystem(() => {
                 }(this, (function (exports) { 'use strict';
 
                   var __spread$1 = (this && this.__spread$1) || function (...args) { /* ... */ }
+                  var __spreadArray$1 = (this && this.__spreadArray$1) || function (...args) { /* ... */ }
+                  var __read$2 = (this && this.__read$2) || function (...args) { /* ... */ }
               `;
               break;
           }
@@ -1897,11 +1901,33 @@ runInEachFileSystem(() => {
             expect(parameters).toBeNull();
           });
 
+          it('recognizes delegate super call using inline spreadArray helper', () => {
+            const parameters = getConstructorParameters(
+                `
+            function TestClass() {
+              return _super.apply(this, __spreadArray([], __read(arguments))) || this;
+            }`,
+                'inlined');
+
+            expect(parameters).toBeNull();
+          });
+
           it('recognizes delegate super call using inline spread helper with suffix', () => {
             const parameters = getConstructorParameters(
                 `
             function TestClass() {
               return _super.apply(this, __spread$1(arguments)) || this;
+            }`,
+                'inlined_with_suffix');
+
+            expect(parameters).toBeNull();
+          });
+
+          it('recognizes delegate super call using inline spreadArray helper with suffix', () => {
+            const parameters = getConstructorParameters(
+                `
+            function TestClass() {
+              return _super.apply(this, __spreadArray$1([], __read$2(arguments))) || this;
             }`,
                 'inlined_with_suffix');
 
@@ -1919,12 +1945,36 @@ runInEachFileSystem(() => {
             expect(parameters).toBeNull();
           });
 
+          it('recognizes delegate super call using imported spreadArray helper', () => {
+            const parameters = getConstructorParameters(
+                `
+            function TestClass() {
+              return _super.apply(this, tslib_1.__spreadArray([], tslib.__read(arguments))) || this;
+            }`,
+                'imported');
+
+            expect(parameters).toBeNull();
+          });
+
           describe('with class member assignment', () => {
             it('recognizes delegate super call using inline spread helper', () => {
               const parameters = getConstructorParameters(
                   `
               function TestClass() {
                 var _this = _super.apply(this, __spread(arguments)) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                  'inlined');
+
+              expect(parameters).toBeNull();
+            });
+
+            it('recognizes delegate super call using inline spreadArray helper', () => {
+              const parameters = getConstructorParameters(
+                  `
+              function TestClass() {
+                var _this = _super.apply(this, __spreadArray([], __read(arguments))) || this;
                 _this.synthesizedProperty = null;
                 return _this;
               }`,
@@ -1946,11 +1996,37 @@ runInEachFileSystem(() => {
               expect(parameters).toBeNull();
             });
 
+            it('recognizes delegate super call using inline spreadArray helper with suffix', () => {
+              const parameters = getConstructorParameters(
+                  `
+              function TestClass() {
+                var _this = _super.apply(this, __spreadArray$1([], __read$2(arguments))) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                  'inlined_with_suffix');
+
+              expect(parameters).toBeNull();
+            });
+
             it('recognizes delegate super call using imported spread helper', () => {
               const parameters = getConstructorParameters(
                   `
               function TestClass() {
                 var _this = _super.apply(this, tslib_1.__spread(arguments)) || this;
+                _this.synthesizedProperty = null;
+                return _this;
+              }`,
+                  'imported');
+
+              expect(parameters).toBeNull();
+            });
+
+            it('recognizes delegate super call using imported spreadArray helper', () => {
+              const parameters = getConstructorParameters(
+                  `
+              function TestClass() {
+                var _this = _super.apply(this, tslib_1.__spreadArray([], tslib.__read(arguments))) || this;
                 _this.synthesizedProperty = null;
                 return _this;
               }`,
