@@ -38,6 +38,7 @@ $darkorange: #940;
 $anti-pattern: $brightred;
 
 // API & CODE COLORS
+$amber-200: #AA3000;
 $amber-700: #FFA000;
 $blue-400: #42A5F5;
 $blue-500: #2196F3;
@@ -120,6 +121,10 @@ $api-symbols: (
   pipe: (
     content: 'P',
     background: $blue-grey-600
+  ),
+  element: (
+    content: 'El',
+    background: $amber-200
   ),
   type-alias: (
     content: 'T',

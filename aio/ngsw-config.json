@@ -76,7 +76,7 @@
     "!/**/*__*/**",
     "!/**/stackblitz",
     "!/**/stackblitz.html",
-    "!/api/*/**/*-\\D{0,}",
+    "!/api/*/**/*-(class|directive|var|interface|function|pipe|let|type-alias|decorator)",
     "!/api/**/AnimationStateDeclarationMetadata*",
     "!/api/**/CORE_DIRECTIVES*",
     "!/api/**/DirectiveMetadata*",

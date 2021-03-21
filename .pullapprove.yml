@@ -412,7 +412,8 @@ groups:
           'aio/content/images/guide/user-input/**',
           'aio/content/guide/view-encapsulation.md',
           'aio/content/examples/view-encapsulation/**',
-          'aio/content/images/guide/view-encapsulation/**'
+          'aio/content/images/guide/view-encapsulation/**',
+          'aio/content/special-elements/**'
           ])
     reviewers:
       users:
