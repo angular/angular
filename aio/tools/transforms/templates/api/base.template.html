@@ -20,7 +20,7 @@
   </div>
   {% block header %}
   <header class="api-header">
-    <h1>{$ doc.name $}</h1>
+    <h1>{$ doc.name | escape $}</h1>
     {% if doc.global %}<label class="api-type-label global">global</label>{% endif %}
     <label class="api-type-label {$ doc.docType $}">{$ doc.docType $}</label>
     {% if doc.deprecated !== undefined %}<label class="api-status-label deprecated">deprecated</label>{% endif %}
