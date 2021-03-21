@@ -29,7 +29,7 @@ export class PartialEvaluator {
     const sourceFile = expr.getSourceFile();
     return interpreter.visit(expr, {
       originatingFile: sourceFile,
-      absoluteModuleName: null,
+      absoluteModuleSpecifier: null,
       resolutionContext: sourceFile.fileName,
       scope: new Map<ts.ParameterDeclaration, ResolvedValue>(),
       foreignFunctionResolver,

@@ -8,11 +8,12 @@
 
 import {Expression} from '@angular/compiler';
 import * as ts from 'typescript';
+import {ModuleSpecifier} from '../../reflection';
 
 import {identifierOfNode} from '../../util/src/typescript';
 
 export interface OwningModule {
-  specifier: string;
+  specifier: ModuleSpecifier;
   resolutionContext: string;
 }
 
@@ -67,7 +68,7 @@ export class Reference<T extends ts.Node = ts.Node> {
    * The best guess at which module specifier owns this particular reference, or `null` if there
    * isn't one.
    */
-  get ownedByModuleGuess(): string|null {
+  get ownedByModuleGuess(): ModuleSpecifier|null {
     if (this.bestGuessOwningModule !== null) {
       return this.bestGuessOwningModule.specifier;
     } else {

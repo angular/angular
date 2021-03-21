@@ -725,7 +725,8 @@ runInEachFileSystem(() => {
 
         const decorator = decorators[0];
         expect(decorator.name).toEqual('Directive');
-        expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+        expect(decorator.import)
+            .toEqual({name: 'Directive', from: jasmine.objectContaining({text: '@angular/core'})});
         expect(decorator.args!.map(arg => arg.getText())).toEqual([
           '{ selector: \'[someDirective]\' }',
         ]);
@@ -744,7 +745,8 @@ runInEachFileSystem(() => {
 
         const decorator = decorators[0];
         expect(decorator.name).toEqual('Directive');
-        expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+        expect(decorator.import)
+            .toEqual({name: 'Directive', from: jasmine.objectContaining({text: '@angular/core'})});
         expect(decorator.args!.map(arg => arg.getText())).toEqual([
           '{ selector: \'[someDirective]\' }',
         ]);
@@ -764,7 +766,8 @@ runInEachFileSystem(() => {
 
         const decorator = decorators[0];
         expect(decorator.name).toEqual('Directive');
-        expect(decorator.import).toEqual({name: 'Directive', from: '@angular/core'});
+        expect(decorator.import)
+            .toEqual({name: 'Directive', from: jasmine.objectContaining({text: '@angular/core'})});
         expect(decorator.args!.map(arg => arg.getText())).toEqual([
           '{ selector: \'[someDirective]\' }',
         ]);
@@ -848,7 +851,8 @@ runInEachFileSystem(() => {
         const decorators = host.getDecoratorsOfDeclaration(classNode)!;
 
         expect(decorators.length).toEqual(1);
-        expect(decorators[0].import).toEqual({name: 'Directive', from: '@angular/core'});
+        expect(decorators[0].import)
+            .toEqual({name: 'Directive', from: jasmine.objectContaining({text: '@angular/core'})});
       });
 
       describe('(returned decorators `args`)', () => {
@@ -912,13 +916,15 @@ runInEachFileSystem(() => {
         expect(input1.kind).toEqual(ClassMemberKind.Property);
         expect(input1.isStatic).toEqual(false);
         expect(input1.decorators!.map(d => d.name)).toEqual(['Input']);
-        expect(input1.decorators![0].import).toEqual({name: 'Input', from: '@angular/core'});
+        expect(input1.decorators![0].import)
+            .toEqual({name: 'Input', from: jasmine.objectContaining({text: '@angular/core'})});
 
         const input2 = members.find(member => member.name === 'input2')!;
         expect(input2.kind).toEqual(ClassMemberKind.Property);
         expect(input2.isStatic).toEqual(false);
         expect(input2.decorators!.map(d => d.name)).toEqual(['Input']);
-        expect(input2.decorators![0].import).toEqual({name: 'Input', from: '@angular/core'});
+        expect(input2.decorators![0].import)
+            .toEqual({name: 'Input', from: jasmine.objectContaining({text: '@angular/core'})});
       });
 
       it('should find non decorated properties on a class', () => {
@@ -1450,7 +1456,8 @@ runInEachFileSystem(() => {
           const decorators = parameters[2].decorators!;
 
           expect(decorators.length).toEqual(1);
-          expect(decorators[0].import).toEqual({name: 'Inject', from: '@angular/core'});
+          expect(decorators[0].import)
+              .toEqual({name: 'Inject', from: jasmine.objectContaining({text: '@angular/core'})});
         });
       });
 
@@ -1581,7 +1588,8 @@ runInEachFileSystem(() => {
             getDeclaration(bundle.program, _('/b.js'), 'b', isNamedVariableDeclaration);
         const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
 
-        expect(importOfIdent).toEqual({name: 'a', from: './a.js'});
+        expect(importOfIdent)
+            .toEqual({name: 'a', from: jasmine.objectContaining({text: './a.js'})});
       });
 
       it('should find the name by which the identifier was exported, not imported', () => {
@@ -1592,7 +1600,8 @@ runInEachFileSystem(() => {
             getDeclaration(bundle.program, _('/b.js'), 'c', isNamedVariableDeclaration);
         const importOfIdent = host.getImportOfIdentifier(variableNode.initializer as ts.Identifier);
 
-        expect(importOfIdent).toEqual({name: 'a', from: './a.js'});
+        expect(importOfIdent)
+            .toEqual({name: 'a', from: jasmine.objectContaining({text: './a.js'})});
       });
 
       it('should return null if the identifier was not imported', () => {
@@ -1641,7 +1650,9 @@ runInEachFileSystem(() => {
         const actualDeclaration = host.getDeclarationOfIdentifier(identifierOfDirective);
         expect(actualDeclaration).not.toBe(null);
         expect(actualDeclaration!.node).toBe(expectedDeclarationNode);
-        expect(actualDeclaration!.viaModule).toBe('@angular/core');
+        expect(actualDeclaration!.viaModule).toEqual(jasmine.objectContaining({
+          text: '@angular/core'
+        }));
       });
 
       it('should return the source-file of an import namespace', () => {
@@ -1663,7 +1674,9 @@ runInEachFileSystem(() => {
         const actualDeclaration = host.getDeclarationOfIdentifier(identifier);
         expect(actualDeclaration).not.toBe(null);
         expect(actualDeclaration!.node).toBe(expectedDeclarationNode);
-        expect(actualDeclaration!.viaModule).toBe('@angular/core');
+        expect(actualDeclaration!.viaModule).toEqual(jasmine.objectContaining({
+          text: '@angular/core'
+        }));
       });
 
       it('should return the original declaration of an aliased class', () => {

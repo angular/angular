@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator, ResolvedValueMap} from '../../partial_evaluator';
-import {ReflectionHost} from '../../reflection';
+import {getModuleNameFromSpecifier, ReflectionHost} from '../../reflection';
 
 export interface DtsHandler {
   addTypeReplacement(node: ts.Declaration, type: Type): void;
@@ -130,7 +130,7 @@ export class ModuleWithProvidersScanner {
     }
 
     const importDecl = this.host.getImportOfIdentifier(typeId);
-    if (importDecl === null || importDecl.from !== '@angular/core' ||
+    if (importDecl === null || getModuleNameFromSpecifier(importDecl.from) !== '@angular/core' ||
         importDecl.name !== 'ModuleWithProviders') {
       return ReturnType.OTHER;
     }

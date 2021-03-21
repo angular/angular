@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {InjectableClassRegistry} from '../../metadata';
 import {PerfEvent, PerfRecorder} from '../../perf';
-import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
+import {ClassDeclaration, Decorator, getModuleNameFromSpecifier, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../transform';
 
 import {compileDeclareFactory, CompileFactoryFn, compileNgFactoryDefField} from './factory';
@@ -282,7 +282,7 @@ function getDep(dep: ts.Expression, reflector: ReflectionHost): R3DependencyMeta
   function maybeUpdateDecorator(
       dec: ts.Identifier, reflector: ReflectionHost, token?: ts.Expression): void {
     const source = reflector.getImportOfIdentifier(dec);
-    if (source === null || source.from !== '@angular/core') {
+    if (source === null || getModuleNameFromSpecifier(source.from) !== '@angular/core') {
       return;
     }
     switch (source.name) {

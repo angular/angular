@@ -11,7 +11,7 @@ import {absoluteFrom} from '../../file_system';
 import {TestFile} from '../../file_system/testing';
 import {Reference} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
-import {TypeScriptReflectionHost} from '../../reflection';
+import {getModuleNameFromSpecifier, TypeScriptReflectionHost} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {ForeignFunctionResolver, PartialEvaluator} from '../src/interface';
 import {ResolvedValue} from '../src/result';
@@ -54,7 +54,7 @@ export function evaluate<T extends ResolvedValue>(
 }
 
 export function owningModuleOf(ref: Reference): string|null {
-  return ref.bestGuessOwningModule !== null ? ref.bestGuessOwningModule.specifier : null;
+  return getModuleNameFromSpecifier(ref.ownedByModuleGuess);
 }
 
 export function firstArgFfr(

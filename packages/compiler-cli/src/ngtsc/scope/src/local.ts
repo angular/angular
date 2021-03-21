@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {ErrorCode, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {AliasingHost, Reexport, Reference, ReferenceEmitter} from '../../imports';
 import {DirectiveMeta, MetadataReader, MetadataRegistry, NgModuleMeta, PipeMeta} from '../../metadata';
-import {ClassDeclaration, DeclarationNode} from '../../reflection';
+import {ClassDeclaration, DeclarationNode, getModuleNameFromSpecifier} from '../../reflection';
 import {identifierOfNode, nodeNameForError} from '../../util/src/typescript';
 
 import {ExportScope, RemoteScope, ScopeData} from './api';
@@ -559,7 +559,9 @@ function invalidRef(
       `Appears in the NgModule.${type}s of ${
           nodeNameForError(clazz)}, but could not be resolved to an ${resolveTarget} class.` +
       '\n\n';
-  const library = decl.ownedByModuleGuess !== null ? ` (${decl.ownedByModuleGuess})` : '';
+  const library = decl.ownedByModuleGuess !== null ?
+      ` (${getModuleNameFromSpecifier(decl.ownedByModuleGuess)})` :
+      '';
   const sf = decl.node.getSourceFile();
 
   // Provide extra context to the error for the user.

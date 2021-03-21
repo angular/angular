@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {forwardRefResolver} from '../../../src/ngtsc/annotations';
 import {Reference} from '../../../src/ngtsc/imports';
 import {ResolvedValue, ResolvedValueMap} from '../../../src/ngtsc/partial_evaluator';
-import {ClassDeclaration, Decorator} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, Decorator, getModuleNameFromSpecifier} from '../../../src/ngtsc/reflection';
 
 import {Migration, MigrationHost} from './migration';
 import {createInjectableDecorator, isClassDeclaration} from './utils';
@@ -184,7 +184,8 @@ function needsInjectableDecorator(clazz: ClassDeclaration, host: MigrationHost):
  * null is returned.
  */
 export function getAngularCoreDecoratorName(decorator: Decorator): string|null {
-  if (decorator.import === null || decorator.import.from !== '@angular/core') {
+  if (decorator.import === null ||
+      getModuleNameFromSpecifier(decorator.import.from) !== '@angular/core') {
     return null;
   }
 

@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {absoluteFromSourceFile, AbsoluteFsPath, PathManipulation, toRelativeImport} from '../../../src/ngtsc/file_system';
 import {Reexport} from '../../../src/ngtsc/imports';
+import {getModuleNameFromSpecifier} from '../../../src/ngtsc/reflection';
 import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {isDtsPath} from '../../../src/ngtsc/util/src/typescript';
 import {ModuleWithProvidersInfo} from '../analysis/module_with_providers_analyzer';
@@ -202,7 +203,7 @@ export class EsmRenderingFormatter implements RenderingFormatter {
       const ngModuleFile = absoluteFromSourceFile(info.ngModule.node.getSourceFile());
       const relativePath = this.fs.relative(this.fs.dirname(declarationFile), ngModuleFile);
       const relativeImport = toRelativeImport(relativePath);
-      const importPath = info.ngModule.ownedByModuleGuess ||
+      const importPath = getModuleNameFromSpecifier(info.ngModule.ownedByModuleGuess) ||
           (declarationFile !== ngModuleFile ? stripExtension(relativeImport) : null);
       const ngModule = generateImportString(importManager, importPath, ngModuleName);
 
@@ -274,7 +275,8 @@ export class EsmRenderingFormatter implements RenderingFormatter {
     const id =
         typeName && ts.isIdentifier(typeName) ? this.host.getImportOfIdentifier(typeName) : null;
     return (
-        id && id.name === 'ModuleWithProviders' && (this.isCore || id.from === '@angular/core'));
+        id && id.name === 'ModuleWithProviders' &&
+        (this.isCore || getModuleNameFromSpecifier(id.from) === '@angular/core'));
   }
 }
 

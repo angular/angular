@@ -7,7 +7,8 @@
  */
 
 import * as ts from 'typescript';
-import {ClassDeclaration} from './host';
+
+import {ClassDeclaration, ModuleSpecifier} from './host';
 
 export function isNamedClassDeclaration(node: ts.Node):
     node is ClassDeclaration<ts.ClassDeclaration> {
@@ -26,4 +27,13 @@ export function isNamedVariableDeclaration(node: ts.Node):
 
 function isIdentifier(node: ts.Node|undefined): node is ts.Identifier {
   return node !== undefined && ts.isIdentifier(node);
+}
+
+export function getModuleNameFromSpecifier(specifier: ModuleSpecifier): string;
+export function getModuleNameFromSpecifier(specifier: ModuleSpecifier|null): string|null;
+export function getModuleNameFromSpecifier(specifier: ModuleSpecifier|null): string|null {
+  if (specifier === null) {
+    return null;
+  }
+  return typeof specifier === 'string' ? specifier : specifier.text;
 }

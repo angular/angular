@@ -17,7 +17,7 @@ import {BindingPropertyName, ClassPropertyMapping, ClassPropertyName, DirectiveT
 import {extractDirectiveTypeCheckMeta} from '../../metadata/src/util';
 import {DynamicValue, EnumValue, PartialEvaluator} from '../../partial_evaluator';
 import {PerfEvent, PerfRecorder} from '../../perf';
-import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
+import {ClassDeclaration, ClassMember, ClassMemberKind, Decorator, filterToMembersWithDecorator, getModuleNameFromSpecifier, ReflectionHost, reflectObjectLiteral} from '../../reflection';
 import {LocalModuleScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 
@@ -642,7 +642,7 @@ export function extractQueriesFromDecorator(
           'Decorator query metadata must be an instance of a query type');
     }
     const type = reflector.getImportOfIdentifier(queryType);
-    if (type === null || (!isCore && type.from !== '@angular/core') ||
+    if (type === null || (!isCore && getModuleNameFromSpecifier(type.from) !== '@angular/core') ||
         !QUERY_TYPES.has(type.name)) {
       throw new FatalDiagnosticError(
           ErrorCode.VALUE_HAS_WRONG_TYPE, queryData,

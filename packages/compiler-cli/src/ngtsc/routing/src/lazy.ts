@@ -10,6 +10,7 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ForeignFunctionResolver, PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
+import {getModuleNameFromSpecifier} from '../../reflection';
 
 import {NgModuleRawRouteData} from './analyzer';
 import {entryPointKeyFor, RouterEntryPoint, RouterEntryPointManager} from './route';
@@ -164,9 +165,7 @@ const routerModuleFFR: ForeignFunctionResolver =
         args: ReadonlyArray<ts.Expression>): ts.Expression|null {
   if (!isMethodNodeReference(ref) || !ts.isClassDeclaration(ref.node.parent)) {
     return null;
-  } else if (
-      ref.bestGuessOwningModule === null ||
-      ref.bestGuessOwningModule.specifier !== '@angular/router') {
+  } else if (getModuleNameFromSpecifier(ref.ownedByModuleGuess) !== '@angular/router') {
     return null;
   } else if (ref.node.parent.name === undefined || ref.node.parent.name.text !== 'RouterModule') {
     return null;
@@ -195,6 +194,7 @@ function isMethodNodeReference(
 }
 
 function isRouteToken(ref: ResolvedValue): boolean {
-  return ref instanceof Reference && ref.bestGuessOwningModule !== null &&
-      ref.bestGuessOwningModule.specifier === '@angular/router' && ref.debugName === 'ROUTES';
+  return ref instanceof Reference &&
+      getModuleNameFromSpecifier(ref.ownedByModuleGuess) === '@angular/router' &&
+      ref.debugName === 'ROUTES';
 }

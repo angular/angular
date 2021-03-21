@@ -11,7 +11,7 @@ import {runInEachFileSystem} from '../../file_system/testing';
 import {getDeclaration, makeProgram} from '../../testing';
 import {ClassMember, ClassMemberKind, CtorParameter, DeclarationKind, TypeValueReferenceKind} from '../src/host';
 import {TypeScriptReflectionHost} from '../src/typescript';
-import {isNamedClassDeclaration} from '../src/util';
+import {getModuleNameFromSpecifier, isNamedClassDeclaration} from '../src/util';
 
 runInEachFileSystem(() => {
   describe('reflector', () => {
@@ -260,7 +260,7 @@ runInEachFileSystem(() => {
         const directImport = host.getImportOfIdentifier(Target);
         expect(directImport).toEqual({
           name: 'Target',
-          from: 'absolute',
+          from: jasmine.objectContaining({text: 'absolute'}),
         });
       });
 
@@ -287,7 +287,7 @@ runInEachFileSystem(() => {
         const namespacedImport = host.getImportOfIdentifier(Target);
         expect(namespacedImport).toEqual({
           name: 'Target',
-          from: 'absolute',
+          from: jasmine.objectContaining({text: 'absolute'}),
         });
       });
     });
@@ -332,7 +332,7 @@ runInEachFileSystem(() => {
         expect(targetDecl.node!.getSourceFile())
             .toBe(getSourceFileOrError(program, _('/node_modules/absolute/index.ts')));
         expect(ts.isClassDeclaration(targetDecl.node!)).toBe(true);
-        expect(directTargetDecl.viaModule).toBe('absolute');
+        expect(directTargetDecl.viaModule).toEqual(jasmine.objectContaining({text: 'absolute'}));
         expect(directTargetDecl.node).toBe(targetDecl.node);
       });
 
@@ -363,7 +363,7 @@ runInEachFileSystem(() => {
           kind: DeclarationKind.Concrete,
           node: targetDecl,
           known: null,
-          viaModule: 'absolute',
+          viaModule: jasmine.objectContaining({text: 'absolute'}),
           identity: null,
         });
       });
@@ -394,7 +394,7 @@ runInEachFileSystem(() => {
         expect(decl).toEqual({
           node: targetDecl,
           known: null,
-          viaModule: 'absolute',
+          viaModule: jasmine.objectContaining({text: 'absolute'}),
           identity: null,
           kind: DeclarationKind.Concrete
         });
@@ -571,7 +571,7 @@ runInEachFileSystem(() => {
       expect(param.decorators!.length).toBeGreaterThan(0);
       expect(param.decorators!.some(
                  dec => dec.name === decorator && dec.import !== null &&
-                     dec.import.from === decoratorFrom))
+                     getModuleNameFromSpecifier(dec.import.from) === decoratorFrom))
           .toBe(true);
     }
   }
