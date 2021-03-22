@@ -892,6 +892,14 @@
     "bio": "Ward is an all-around developer with JavaScript, Node.js®, and .net chops. He's a frequent conference speaker and podcaster, trainer, Google Developer Expert for Angular, Microsoft MVP, and PluralSight author. He is also president of IdeaBlade, an enterprise software consulting firm and the makers of breeze.js. He would like to get more sleep and spend more time in the mountains.",
     "groups": ["GDE"]
   },
+  "waterplea": {
+    "name": "Alexander Inkin",
+    "picture": "waterplea.jpg",
+    "twitter": "waterplea",
+    "website": "https://alexander.inkin.ru",
+    "bio": "Alex is a front end dev in love with Angular and declarative approach. He enjoys Web for it's multimedia nature and rich features. Actively creating and contributing to open source ecosystem he also does a lot of tech writing. He is a music and movies fan and a Montessori enthusiast father of two kids.",
+    "groups": ["GDE"]
+  },
   "webdave": {
     "name": "David Muellerchen",
     "picture": "webdave.jpg",
