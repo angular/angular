@@ -1,19 +1,24 @@
 <!-- #docplaster-->
 <!-- #docregion -->
 <h2>{{title}}</h2>
-<p>
-New hero:
-  <input type="text" #box
-          (keyup.enter)="addHero(box.value); box.value=''"
-          placeholder="hero name">
-  <input id="can-fly" type="checkbox" [(ngModel)]="canFly"> can fly
-</p>
-<p>
+
+<label for="hero-name">New hero: </label>
+<input type="text"
+       id="hero-name"
+       #box
+       (keyup.enter)="addHero(box.value); box.value=''"
+       placeholder="hero name">
+<div>
+  <input id="can-fly" type="checkbox" [(ngModel)]="canFly">
+  <label for="can-fly">can fly</label>
+</div>
+
+<div>
   <input id="mutate" type="checkbox" [(ngModel)]="mutate">Mutate array
   <button (click)="reset()">Reset</button>
-</p>
+</div>
 
-<h4>Heroes who fly (piped)</h4>
+<h3>Heroes who fly (piped)</h3>
 <div id="flyers">
 <!-- #docregion template-flying-heroes -->
   <div *ngFor="let hero of (heroes | flyingHeroesImpure)">
@@ -22,7 +27,7 @@ New hero:
 <!-- #enddocregion template-flying-heroes -->
 </div>
 
-<h4>All Heroes (no pipe)</h4>
+<h3>All Heroes (no pipe)</h3>
 <div id="all">
   <div *ngFor="let hero of heroes">
     {{hero.name}}

@@ -7,7 +7,7 @@ import { HEROES } from './heroes';
 @Component({
   selector: 'app-flying-heroes',
   templateUrl: './flying-heroes.component.html',
-  styles: ['#flyers, #all {font-style: italic}']
+  styles: ['#flyers, #all {font-style: italic}', 'button {display: block}', 'input {margin: .25rem .25rem .5rem 0;}']
 })
 // #docregion v1
 export class FlyingHeroesComponent {
@@ -48,7 +48,7 @@ export class FlyingHeroesComponent {
 @Component({
   selector: 'app-flying-heroes-impure',
   templateUrl: './flying-heroes-impure.component.html',
-  styles: ['.flyers, .all {font-style: italic}'],
+  styles: ['#flyers, #all {font-style: italic}', 'button {display: block}', 'input {margin: .25rem .25rem .5rem 0;}'],
 })
 export class FlyingHeroesImpureComponent extends FlyingHeroesComponent {
   title = 'Flying Heroes (impure pipe)';
