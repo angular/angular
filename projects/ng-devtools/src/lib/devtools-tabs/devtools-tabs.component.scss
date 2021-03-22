@@ -42,7 +42,11 @@ button.mat-icon-button {
   height: 30px;
   width: 30px;
   line-height: 30px;
-  margin-right: 5px;
+  margin-right: 0px;
+}
+
+mat-icon {
+  font-size: 16px;
 }
 
 .mat-tab-link {
