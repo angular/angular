@@ -7746,9 +7746,9 @@ istanbul@^0.4.5:
     wordwrap "^1.0.0"
 
 jasmine-core@^3.6.0, jasmine-core@~3.7.0:
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.7.0.tgz#33da871fef5595e9aa43d0f50e009b5fe35f7ef2"
-  integrity sha512-jmeRIgxS/abz8afk9NKJ1yP7n93aZdRaHDWtTHJBlYu6fhbzvErjiO3mMlSSrJefVk1a+26JlABrHS2iBH8Azw==
+  version "3.7.1"
+  resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-3.7.1.tgz#0401327f6249eac993d47bbfa18d4e8efacfb561"
+  integrity sha512-DH3oYDS/AUvvr22+xUBW62m1Xoy7tUlY1tsxKEJvl5JeJ7q8zd1K5bUwiOxdH+erj6l2vAMM3hV25Xs9/WrmuQ==
 
 jasmine-core@~2.8.0:
   version "2.8.0"
