@@ -13,10 +13,21 @@
     typescript "4.1.5"
     webpack-sources "2.2.0"
 
-"@angular-devkit/core@12.0.0-next.4", "@angular-devkit/core@^12.0.0-next.4":
+"@angular-devkit/core@12.0.0-next.4":
   version "12.0.0-next.4"
   resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-12.0.0-next.4.tgz#d12f5ea9195bf6d1c551a9a1808db2fdd93f0f48"
   integrity sha512-sMhcE1/wxLR6BcfpHnHUvqhZPYdzbI/O3uDO4+d9n/5OCpQ5ayw/rUzCtu5MFT957yfdaB9B6rSbJ40ftixevg==
+  dependencies:
+    ajv "6.12.6"
+    fast-json-stable-stringify "2.1.0"
+    magic-string "0.25.7"
+    rxjs "6.6.6"
+    source-map "0.7.3"
+
+"@angular-devkit/core@^12.0.0-next.4":
+  version "12.0.0-next.5"
+  resolved "https://registry.yarnpkg.com/@angular-devkit/core/-/core-12.0.0-next.5.tgz#d553f35db6ccb1e1c75b67f6c478eb339f9a618b"
+  integrity sha512-Jo9aAhrnM4ZpUpW1y42O2FGZTPhLtW6KokGF1E6joBT4mj5JY9KXOIRh8nvvJ+gusiXsOFV4FW+gSJwAU26q4g==
   dependencies:
     ajv "6.12.6"
     fast-json-stable-stringify "2.1.0"
@@ -2331,20 +2342,10 @@ agent-base@^4.1.0:
   dependencies:
     es6-promisify "^5.0.0"
 
-ajv@6.12.6, ajv@^6.12.2:
+ajv@6.12.6, ajv@^6.12.2, ajv@^6.12.3:
   version "6.12.6"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.12.6.tgz#baf5a62e802b07d977034586f8c3baf5adf26df4"
   integrity sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==
-  dependencies:
-    fast-deep-equal "^3.1.1"
-    fast-json-stable-stringify "^2.0.0"
-    json-schema-traverse "^0.4.1"
-    uri-js "^4.2.2"
-
-ajv@^6.12.3:
-  version "6.12.5"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.12.5.tgz#19b0e8bae8f476e5ba666300387775fb1a00a4da"
-  integrity sha512-lRF8RORchjpKG50/WFf8xmg7sgCLFiYNNnqdKflk63whMQcWR5ngGjiSXkL9bjxy6B2npOK2HSMN49jEBMSkag==
   dependencies:
     fast-deep-equal "^3.1.1"
     fast-json-stable-stringify "^2.0.0"
@@ -8648,24 +8649,10 @@ madge@^4.0.0:
     typescript "^3.9.5"
     walkdir "^0.4.1"
 
-magic-string@0.25.7:
+magic-string@0.25.7, magic-string@^0.25.0, magic-string@^0.25.2:
   version "0.25.7"
   resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.7.tgz#3f497d6fd34c669c6798dcb821f2ef31f5445051"
   integrity sha512-4CrMT5DOHTDk4HYDlzmwu4FVCcIYI8gauveasrdCu2IKIFOJ3f0v/8MDGJCDL9oD2ppz/Av1b0Nj345H9M+XIA==
-  dependencies:
-    sourcemap-codec "^1.4.4"
-
-magic-string@^0.25.0:
-  version "0.25.2"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.2.tgz#139c3a729515ec55e96e69e82a11fe890a293ad9"
-  integrity sha512-iLs9mPjh9IuTtRsqqhNGYcZXGei0Nh/A4xirrsqW7c+QhKVFL2vm7U09ru6cHRD22azaP/wMDgI+HCqbETMTtg==
-  dependencies:
-    sourcemap-codec "^1.4.4"
-
-magic-string@^0.25.2:
-  version "0.25.4"
-  resolved "https://registry.yarnpkg.com/magic-string/-/magic-string-0.25.4.tgz#325b8a0a79fc423db109b77fd5a19183b7ba5143"
-  integrity sha512-oycWO9nEVAP2RVPbIoDoA4Y7LFIJ3xRYov93gAyJhZkET1tNuB0u7uWkZS2LpBWTJUWnmau/To8ECWRC+jKNfw==
   dependencies:
     sourcemap-codec "^1.4.4"
 
