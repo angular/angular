@@ -1,10 +1,10 @@
 <hr>
-<h4>{{hero.name}} Detail</h4>
+<h2>{{hero.name}} Detail</h2>
 <div>Id: {{hero.id}}</div>
-<label>Name:
-  <!-- #docregion ngModel -->
-  <input [(ngModel)]="hero.name">
-  <!-- #enddocregion ngModel -->
-</label>
-<br />
-<label>Power: <input [(ngModel)]="hero.power"></label>
+<label for="hero-name">Name: </label>
+<!-- #docregion ngModel -->
+<input type="text" id="hero-name" [(ngModel)]="hero.name">
+<!-- #enddocregion ngModel -->
+
+<label for="hero-power">Power: </label>
+<input type="text" for="hero-name" [(ngModel)]="hero.power">
