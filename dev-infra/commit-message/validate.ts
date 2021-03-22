@@ -51,7 +51,7 @@ export function validateCommitMessage(
     // Checking revert, squash, fixup //
     ////////////////////////////////////
 
-    // All squash and revert commits are considered valid.
+    // All revert commits are considered valid.
     if (commit.isRevert) {
       return true;
     }
@@ -132,13 +132,13 @@ export function validateCommitMessage(
     //////////////////////////
 
     if (!config.minBodyLengthTypeExcludes?.includes(commit.type) &&
-        (commit.body || '').trim().length < config.minBodyLength) {
+        commit.body.trim().length < config.minBodyLength) {
       errors.push(`The commit message body does not meet the minimum length of ${
           config.minBodyLength} characters`);
       return false;
     }
 
-    const bodyByLine = (commit.body || '').split('\n');
+    const bodyByLine = commit.body.split('\n');
     const lineExceedsMaxLength = bodyByLine.some((line: string) => {
       // Check if any line exceeds the max line length limit. The limit is ignored for
       // lines that just contain an URL (as these usually cannot be wrapped or shortened).

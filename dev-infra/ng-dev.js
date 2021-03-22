@@ -1696,13 +1696,30 @@ const FIXUP_PREFIX_RE = /^fixup! /i;
 const SQUASH_PREFIX_RE = /^squash! /i;
 /** Regex determining if a commit is a revert. */
 const REVERT_PREFIX_RE = /^revert:? /i;
-/** Regex pattern for parsing the header line of a commits. */
+/**
+ * Regex pattern for parsing the header line of a commits.
+ *
+ * Several groups are being matched to be used in the parsed commit object, being mapped to the
+ * `headerCorrespondence` object.
+ *
+ * The pattern can be broken down into component parts:
+ * - `(?:(?:fixup!|revert!|squash:?)\s)` - a non-capturing group to detect the presences of a
+ *     fixup/squash/revert commit flag.
+ * - `(\w*)` - a capturing group discovering the type of the commit.
+ * - `(?:\((?:([^/]+)\/)?(.*)\))` - a pair of capturing groups to capture the scope and, optionally
+ *     the npmScope of the commit.
+ * - `(.*)` - a capturing group discovering the subject of the commit.
+ */
 const headerPattern = /^(?:(?:fixup!|revert!|squash:?)\s)?(\w*)(?:\((?:([^/]+)\/)?(.*)\))?: (.*)$/;
+/**
+ * The property names used for the values extracted from the header via the `headerPattern` regex.
+ */
+const headerCorrespondence = ['type', 'npmScope', 'scope', 'subject'];
 /** Configuration options for the commit parser. */
 const parseOptions = {
     commentChar: '#',
     headerPattern,
-    headerCorrespondence: ['type', 'npmScope', 'scope', 'subject'],
+    headerCorrespondence,
     noteKeywords: [NoteSections.BREAKING_CHANGE, NoteSections.DEPRECATED],
 };
 /** Parse a full commit message into its composite parts. */
@@ -1796,7 +1813,7 @@ function validateCommitMessage(commitMsg, options = {}) {
         // Checking revert, squash, fixup //
         ////////////////////////////////////
         var _a;
-        // All squash and revert commits are considered valid.
+        // All revert commits are considered valid.
         if (commit.isRevert) {
             return true;
         }
@@ -1859,11 +1876,11 @@ function validateCommitMessage(commitMsg, options = {}) {
         // Checking commit body //
         //////////////////////////
         if (!((_a = config.minBodyLengthTypeExcludes) === null || _a === void 0 ? void 0 : _a.includes(commit.type)) &&
-            (commit.body || '').trim().length < config.minBodyLength) {
+            commit.body.trim().length < config.minBodyLength) {
             errors.push(`The commit message body does not meet the minimum length of ${config.minBodyLength} characters`);
             return false;
         }
-        const bodyByLine = (commit.body || '').split('\n');
+        const bodyByLine = commit.body.split('\n');
         const lineExceedsMaxLength = bodyByLine.some((line) => {
             // Check if any line exceeds the max line length limit. The limit is ignored for
             // lines that just contain an URL (as these usually cannot be wrapped or shortened).

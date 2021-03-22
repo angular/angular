@@ -54,13 +54,30 @@ const FIXUP_PREFIX_RE = /^fixup! /i;
 const SQUASH_PREFIX_RE = /^squash! /i;
 /** Regex determining if a commit is a revert. */
 const REVERT_PREFIX_RE = /^revert:? /i;
-/** Regex pattern for parsing the header line of a commits. */
+/**
+ * Regex pattern for parsing the header line of a commits.
+ *
+ * Several groups are being matched to be used in the parsed commit object, being mapped to the
+ * `headerCorrespondence` object.
+ *
+ * The pattern can be broken down into component parts:
+ * - `(?:(?:fixup!|revert!|squash:?)\s)` - a non-capturing group to detect the presences of a
+ *     fixup/squash/revert commit flag.
+ * - `(\w*)` - a capturing group discovering the type of the commit.
+ * - `(?:\((?:([^/]+)\/)?(.*)\))` - a pair of capturing groups to capture the scope and, optionally
+ *     the npmScope of the commit.
+ * - `(.*)` - a capturing group discovering the subject of the commit.
+ */
 const headerPattern = /^(?:(?:fixup!|revert!|squash:?)\s)?(\w*)(?:\((?:([^/]+)\/)?(.*)\))?: (.*)$/;
+/**
+ * The property names used for the values extracted from the header via the `headerPattern` regex.
+ */
+const headerCorrespondence = ['type', 'npmScope', 'scope', 'subject'];
 /** Configuration options for the commit parser. */
 const parseOptions: Options = {
   commentChar: '#',
   headerPattern,
-  headerCorrespondence: ['type', 'npmScope', 'scope', 'subject'],
+  headerCorrespondence,
   noteKeywords: [NoteSections.BREAKING_CHANGE, NoteSections.DEPRECATED],
 };
 
