@@ -156,10 +156,22 @@ describe('validate-commit-message.js', () => {
     });
 
     describe('(squash)', () => {
-      it('should return commits as valid', () => {
-        expectValidationResult(validateCommitMessage('squash! feat(core): add feature'), VALID);
-        expectValidationResult(validateCommitMessage('squash! fix: a bug'), VALID);
-        expectValidationResult(validateCommitMessage('squash! fix a typo'), VALID);
+      describe('without `disallowSquash`', () => {
+        it('should return commits as valid', () => {
+          expectValidationResult(validateCommitMessage('squash! feat(core): add feature'), VALID);
+          expectValidationResult(validateCommitMessage('squash! fix: a bug'), VALID);
+          expectValidationResult(validateCommitMessage('squash! fix a typo'), VALID);
+        });
+      });
+
+      describe('with `disallowSquash`', () => {
+        it('should fail', () => {
+          expectValidationResult(
+              validateCommitMessage('fix(core): something', {disallowSquash: true}), VALID);
+          expectValidationResult(
+              validateCommitMessage('squash! fix(core): something', {disallowSquash: true}),
+              INVALID, ['The commit must be manually squashed into the target commit']);
+        });
       });
     });
 
@@ -177,14 +189,21 @@ describe('validate-commit-message.js', () => {
           const msg = 'fixup! foo';
 
           expectValidationResult(
-              validateCommitMessage(msg, {nonFixupCommitHeaders: ['foo', 'bar', 'baz']}), VALID);
+              validateCommitMessage(
+                  msg, {disallowSquash: false, nonFixupCommitHeaders: ['foo', 'bar', 'baz']}),
+              VALID);
           expectValidationResult(
-              validateCommitMessage(msg, {nonFixupCommitHeaders: ['bar', 'baz', 'foo']}), VALID);
+              validateCommitMessage(
+                  msg, {disallowSquash: false, nonFixupCommitHeaders: ['bar', 'baz', 'foo']}),
+              VALID);
           expectValidationResult(
-              validateCommitMessage(msg, {nonFixupCommitHeaders: ['baz', 'foo', 'bar']}), VALID);
+              validateCommitMessage(
+                  msg, {disallowSquash: false, nonFixupCommitHeaders: ['baz', 'foo', 'bar']}),
+              VALID);
 
           expectValidationResult(
-              validateCommitMessage(msg, {nonFixupCommitHeaders: ['qux', 'quux', 'quuux']}),
+              validateCommitMessage(
+                  msg, {disallowSquash: false, nonFixupCommitHeaders: ['qux', 'quux', 'quuux']}),
               INVALID,
               ['Unable to find match for fixup commit among prior commits: \n' +
                '      qux\n' +
@@ -194,11 +213,14 @@ describe('validate-commit-message.js', () => {
 
         it('should fail if `nonFixupCommitHeaders` is empty', () => {
           expectValidationResult(
-              validateCommitMessage('refactor(core): make reactive', {nonFixupCommitHeaders: []}),
+              validateCommitMessage(
+                  'refactor(core): make reactive',
+                  {disallowSquash: false, nonFixupCommitHeaders: []}),
               VALID);
           expectValidationResult(
-              validateCommitMessage('fixup! foo', {nonFixupCommitHeaders: []}), INVALID,
-              [`Unable to find match for fixup commit among prior commits: -`]);
+              validateCommitMessage(
+                  'fixup! foo', {disallowSquash: false, nonFixupCommitHeaders: []}),
+              INVALID, [`Unable to find match for fixup commit among prior commits: -`]);
         });
       });
     });
@@ -240,73 +262,6 @@ describe('validate-commit-message.js', () => {
                    'docs(core): just fixing a typo\n\nThis was just a silly typo.'),
                VALID);
          });
-    });
-
-    describe('breaking change', () => {
-      it('should allow valid breaking change commit descriptions', () => {
-        const msgWithSummary = 'feat(compiler): this is just an usual commit message tile\n\n' +
-            'This is a normal commit message body which does not exceed the max length\n' +
-            'limit. For more details see the following super long URL:\n\n' +
-            'BREAKING CHANGE: This is a summary of a breaking change.';
-        expectValidationResult(validateCommitMessage(msgWithSummary), VALID);
-
-        const msgWithDescription = 'feat(compiler): this is just an usual commit message tile\n\n' +
-            'This is a normal commit message body which does not exceed the max length\n' +
-            'limit. For more details see the following super long URL:\n\n' +
-            'BREAKING CHANGE:\n\n' +
-            'This is a full description of the breaking change.';
-        expectValidationResult(validateCommitMessage(msgWithDescription), VALID);
-
-        const msgWithSummaryAndDescription =
-            'feat(compiler): this is just an usual commit message tile\n\n' +
-            'This is a normal commit message body which does not exceed the max length\n' +
-            'limit. For more details see the following super long URL:\n\n' +
-            'BREAKING CHANGE: This is a summary of a breaking change.\n\n' +
-            'This is a full description of the breaking change.';
-        expectValidationResult(validateCommitMessage(msgWithSummaryAndDescription), VALID);
-
-        const msgWithNonBreaking = 'feat(compiler): this is just an usual commit message tile\n\n' +
-            'This is not a\n' +
-            'breaking change commit.';
-        expectValidationResult(validateCommitMessage(msgWithNonBreaking), VALID);
-      });
-
-      it('should fail for non-valid breaking change commit descriptions', () => {
-        const msgWithSummary = 'feat(compiler): this is just an usual commit message tile\n\n' +
-            'This is a normal commit message body which does not exceed the max length\n' +
-            'limit. For more details see the following super long URL:\n\n' +
-            'BREAKING CHANGE This is a summary of a breaking change.';
-        expectValidationResult(
-            validateCommitMessage(msgWithSummary), INVALID,
-            [`The commit message body contains an invalid breaking change description.`]);
-
-        const msgWithPlural = 'feat(compiler): this is just an usual commit message tile\n\n' +
-            'This is a normal commit message body which does not exceed the max length\n' +
-            'limit. For more details see the following super long URL:\n\n' +
-            'BREAKING CHANGES: This is a summary of a breaking change.';
-        expectValidationResult(
-            validateCommitMessage(msgWithPlural), INVALID,
-            [`The commit message body contains an invalid breaking change description.`]);
-
-        const msgWithDescription = 'feat(compiler): this is just an usual commit message tile\n\n' +
-            'This is a normal commit message body which does not exceed the max length\n' +
-            'limit. For more details see the following super long URL:\n\n' +
-            'BREAKING CHANGE:\n' +
-            'This is a full description of the breaking change.';
-        expectValidationResult(
-            validateCommitMessage(msgWithDescription), INVALID,
-            [`The commit message body contains an invalid breaking change description.`]);
-
-        const msgWithSummaryAndDescription =
-            'feat(compiler): this is just an usual commit message tile\n\n' +
-            'This is a normal commit message body which does not exceed the max length\n' +
-            'limit. For more details see the following super long URL:\n\n' +
-            'BREAKING CHANGE\n\n' +
-            'This is a full description of the breaking change.';
-        expectValidationResult(
-            validateCommitMessage(msgWithSummaryAndDescription), INVALID,
-            [`The commit message body contains an invalid breaking change description.`]);
-      });
     });
   });
 });

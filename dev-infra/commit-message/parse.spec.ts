@@ -6,28 +6,40 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getHeaderWithoutFixup, isFixup, isRevert, isSquash, parseCommitMessage} from './parse';
+import {parseCommitMessage} from './parse';
 
 
 const commitValues = {
   prefix: '',
   type: 'fix',
+  npmScope: '',
   scope: 'changed-area',
   summary: 'This is a short summary of the change',
   body: 'This is a longer description of the change',
   footer: 'Closes #1',
 };
 
-function buildCommitMessage(params = {}) {
-  const {prefix, type, scope, summary, body, footer} = {...commitValues, ...params};
-  return `${prefix}${type}${scope ? '(' + scope + ')' : ''}: ${summary}\n${body}\n${footer}`;
+function buildCommitMessage(params: Partial<typeof commitValues> = {}) {
+  const {prefix, npmScope, type, scope, summary, body, footer} = {...commitValues, ...params};
+  const scopeSlug = npmScope ? `${npmScope}/${scope}` : scope;
+  return `${prefix}${type}${scopeSlug ? '(' + scopeSlug + ')' : ''}: ${summary}\n\n${body}\n\n${
+      footer}`;
 }
 
 
 describe('commit message parsing:', () => {
-  it('parses the scope', () => {
-    const message = buildCommitMessage();
-    expect(parseCommitMessage(message).scope).toBe(commitValues.scope);
+  describe('parses the scope', () => {
+    it('when only a scope is defined', () => {
+      const message = buildCommitMessage();
+      expect(parseCommitMessage(message).scope).toBe(commitValues.scope);
+      expect(parseCommitMessage(message).npmScope).toBe('');
+    });
+
+    it('when an npmScope and scope are defined', () => {
+      const message = buildCommitMessage({npmScope: 'myNpmPackage'});
+      expect(parseCommitMessage(message).scope).toBe(commitValues.scope);
+      expect(parseCommitMessage(message).npmScope).toBe('myNpmPackage');
+    });
   });
 
   it('parses the type', () => {
@@ -71,38 +83,47 @@ describe('commit message parsing:', () => {
             'This is line 2 of the actual body (and it also contains a # but it not a comment).');
   });
 
-  describe('parsed commit message utils', () => {
-    it('identifies if a commit is a fixup', () => {
-      const commit1 = parseCommitMessage(buildCommitMessage());
-      expect(isFixup(commit1)).toBe(false);
+  describe('parses breaking change notes', () => {
+    const breakingChangeText = 'This break things';
 
-      const commit2 = parseCommitMessage(buildCommitMessage({prefix: 'fixup! '}));
-      expect(isFixup(commit2)).toBe(true);
+    it('when multiple new lines are used as a separator', () => {
+      const message = buildCommitMessage({
+        footer: `BREAKING CHANGE:\n\n${breakingChangeText}`,
+      });
+      const parsedMessage = parseCommitMessage(message);
+      expect(parsedMessage.breakingChanges[0].text).toBe(breakingChangeText);
+      expect(parsedMessage.breakingChanges.length).toBe(1);
     });
 
-    it('extracts the header from a fixup commit', () => {
-      const commit = parseCommitMessage(buildCommitMessage({prefix: 'fixup! '}));
-      expect(getHeaderWithoutFixup(commit))
-          .toBe(`${commitValues.type}(${commitValues.scope}): ${commitValues.summary}`);
+    it('when a single space is used as a separator', () => {
+      const message = buildCommitMessage({
+        footer: `BREAKING CHANGE: ${breakingChangeText}`,
+      });
+      const parsedMessage = parseCommitMessage(message);
+      expect(parsedMessage.breakingChanges[0].text).toBe(breakingChangeText);
+      expect(parsedMessage.breakingChanges.length).toBe(1);
+    });
+  });
+
+  describe('parses deprecation notes', () => {
+    const deprecationsText = 'This will break things later';
+
+    it('when multiple new lines are used as a separator', () => {
+      const message = buildCommitMessage({
+        footer: `DEPRECATED:\n\n${deprecationsText}`,
+      });
+      const parsedMessage = parseCommitMessage(message);
+      expect(parsedMessage.deprecations[0].text).toBe(deprecationsText);
+      expect(parsedMessage.deprecations.length).toBe(1);
     });
 
-    it('identifies if a commit is a revert', () => {
-      const message1 = parseCommitMessage(buildCommitMessage());
-      expect(isRevert(message1)).toBe(false);
-
-      const message2 = parseCommitMessage(buildCommitMessage({prefix: 'revert: '}));
-      expect(isRevert(message2)).toBe(true);
-
-      const message3 = parseCommitMessage(buildCommitMessage({prefix: 'revert '}));
-      expect(isRevert(message3)).toBe(true);
-    });
-
-    it('identifies if a commit is a squash', () => {
-      const message1 = parseCommitMessage(buildCommitMessage());
-      expect(isSquash(message1)).toBe(false);
-
-      const message2 = parseCommitMessage(buildCommitMessage({prefix: 'squash! '}));
-      expect(isSquash(message2)).toBe(true);
+    it('when a single space is used as a separator', () => {
+      const message = buildCommitMessage({
+        footer: `DEPRECATED: ${deprecationsText}`,
+      });
+      const parsedMessage = parseCommitMessage(message);
+      expect(parsedMessage.deprecations[0].text).toBe(deprecationsText);
+      expect(parsedMessage.deprecations.length).toBe(1);
     });
   });
 });

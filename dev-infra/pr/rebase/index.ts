@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Commit} from 'conventional-commits-parser';
 import {types as graphQLTypes} from 'typed-graphqlify';
 
-import {parseCommitMessagesForRange} from '../../commit-message/parse';
+import {Commit, parseCommitMessagesForRange} from '../../commit-message/parse';
 import {getConfig, NgDevConfig} from '../../utils/config';
 import {error, info, promptConfirm} from '../../utils/console';
 import {addTokenToGitHttpsUrl} from '../../utils/git/github-urls';

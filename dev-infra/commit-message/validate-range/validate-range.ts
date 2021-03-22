@@ -5,14 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Commit} from 'conventional-commits-parser';
-
 import {error, info} from '../../utils/console';
-import {isFixup, parseCommitMessagesForRange} from '../parse';
+import {Commit, parseCommitMessagesForRange} from '../parse';
 import {printValidationErrors, validateCommitMessage, ValidateCommitMessageOptions} from '../validate';
 
 // Whether the provided commit is a fixup commit.
-const isNonFixup = (commit: Commit) => !isFixup(commit);
+const isNonFixup = (commit: Commit) => !commit.isFixup;
 
 // Extracts commit header (first line of commit message).
 const extractCommitHeader = (commit: Commit) => commit.header || '';

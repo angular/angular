@@ -5,16 +5,16 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Commit} from 'conventional-commits-parser';
 
 import {error} from '../utils/console';
 
 import {COMMIT_TYPES, getCommitMessageConfig, ScopeRequirement} from './config';
-import {getHeaderWithoutFixup, isFixup, isRevert, isSquash, parseCommitMessage} from './parse';
+import {Commit, parseCommitMessage} from './parse';
 
 /** Options for commit message validation. */
 export interface ValidateCommitMessageOptions {
   nonFixupCommitHeaders?: string[];
+  disallowSquash?: boolean;
 }
 
 /** The result of a commit message validation check. */
@@ -52,7 +52,17 @@ export function validateCommitMessage(
     ////////////////////////////////////
 
     // All squash and revert commits are considered valid.
-    if (isRevert(commit) || isSquash(commit)) {
+    if (commit.isRevert) {
+      return true;
+    }
+
+    // All squashes are considered valid, as the commit will be squashed into another in
+    // the git history anyway, unless the options provided to not allow squash commits.
+    if (commit.isSquash) {
+      if (options.disallowSquash) {
+        errors.push('The commit must be manually squashed into the target commit');
+        return false;
+      }
       return true;
     }
 
@@ -61,10 +71,8 @@ export function validateCommitMessage(
     // non-fixup commit (i.e. a commit whose header is identical to this commit's header after
     // stripping the `fixup! ` prefix), otherwise we assume this verification will happen in another
     // check.
-    if (isFixup(commit)) {
-      const commitHeaderWithoutFixup = getHeaderWithoutFixup(commit);
-      if (options.nonFixupCommitHeaders &&
-          !options.nonFixupCommitHeaders.includes(commitHeaderWithoutFixup)) {
+    if (commit.isFixup) {
+      if (options.nonFixupCommitHeaders && !options.nonFixupCommitHeaders.includes(commit.header)) {
         errors.push(
             'Unable to find match for fixup commit among prior commits: ' +
             (options.nonFixupCommitHeaders.map(x => `\n      ${x}`).join('') || '-'));
