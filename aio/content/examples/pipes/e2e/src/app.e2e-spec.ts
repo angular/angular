@@ -102,7 +102,7 @@ describe('Pipes', () => {
   });
 
   it('should show an async hero message', async () => {
-    expect(await element.all(by.tagName('app-hero-message')).get(0).getText()).toContain('hero');
+    expect(await element.all(by.tagName('app-hero-async-message')).get(0).getText()).toContain('hero');
   });
 
 });

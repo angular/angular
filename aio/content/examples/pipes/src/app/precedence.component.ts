@@ -2,8 +2,7 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-precedence',
-  templateUrl: './precedence.component.html',
-  styles: []
+  templateUrl: './precedence.component.html'
 })
 
 export class PrecedenceComponent {
