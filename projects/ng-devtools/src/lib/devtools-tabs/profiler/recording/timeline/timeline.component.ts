@@ -35,7 +35,6 @@ export class TimelineComponent implements OnDestroy {
     });
   }
   @Output() exportProfile = new EventEmitter<void>();
-
   visualizationMode = VisualizationMode.BarGraph;
   changeDetection = false;
   frame: ProfilerFrame | null = null;
