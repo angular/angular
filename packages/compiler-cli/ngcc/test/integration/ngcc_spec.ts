@@ -380,7 +380,7 @@ runInEachFileSystem(() => {
          });
 
          const jsContents = fs.readFile(_(`/node_modules/test-package/esm5/src/index.js`));
-         // Verify that the ES5 bundles does contain the expected downleveling syntax.
+         // Verify that the ES5 bundle does contain the expected downleveling syntax.
          expect(jsContents).toContain('__spreadArray([], __read(arguments))');
          expect(jsContents)
              .toContain(
@@ -419,7 +419,7 @@ runInEachFileSystem(() => {
          });
 
          const jsContents = fs.readFile(_(`/node_modules/test-package/esm5/src/index.js`));
-         // Verify that the ES5 bundles does contain the expected downleveling syntax.
+         // Verify that the ES5 bundle does contain the expected downleveling syntax.
          expect(jsContents).toContain('__spreadArray([], __read(arguments))');
          expect(jsContents)
              .toContain(

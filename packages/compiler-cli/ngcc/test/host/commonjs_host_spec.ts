@@ -1530,15 +1530,15 @@ exports.MissingClass2 = MissingClass2;
               break;
             case 'inlined':
               fileHeader =
-                  `var __spread = (this && this.__spread) || function (...args) { /* ... */ }` +
-                  `var __spreadArray = (this && this.__spreadArray) || function (...args) { /* ... */ }` +
-                  `var __read = (this && this.__read) || function (...args) { /* ... */ }`;
+                  `var __spread = (this && this.__spread) || function (...args) { /* ... */ };\n` +
+                  `var __spreadArray = (this && this.__spreadArray) || function (...args) { /* ... */ };\n` +
+                  `var __read = (this && this.__read) || function (...args) { /* ... */ };\n`;
               break;
             case 'inlined_with_suffix':
               fileHeader =
-                  `var __spread$1 = (this && this.__spread$1) || function (...args) { /* ... */ }` +
-                  `var __spreadArray$1 = (this && this.__spreadArray$1) || function (...args) { /* ... */ }` +
-                  `var __read$2 = (this && this.__read$2) || function (...args) { /* ... */ }`;
+                  `var __spread$1 = (this && this.__spread$1) || function (...args) { /* ... */ };\n` +
+                  `var __spreadArray$1 = (this && this.__spreadArray$1) || function (...args) { /* ... */ };\n` +
+                  `var __read$2 = (this && this.__read$2) || function (...args) { /* ... */ };\n`;
               break;
           }
           const file = {

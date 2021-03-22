@@ -585,7 +585,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       // `__spread(arguments)`
       return call.args.length === 1 && isArgumentsIdentifier(call.args[0]);
     } else if (call.helper === KnownDeclaration.TsHelperSpreadArray) {
-      // `__spread([], __read(arguments))`
+      // `__spreadArray([], __read(arguments))`
       if (call.args.length !== 2) {
         return false;
       }
