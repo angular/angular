@@ -49,7 +49,7 @@ import {GetterFn, MethodFn, SetterFn} from './types';
  * More details can be found in: https://github.com/angular/angular/issues/38453.
  */
 export const ES5_DELEGATE_CTOR =
-    /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*(arguments|(?:[^()]+\(\[\])?[^()]+\(arguments\))\)/;
+    /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*(arguments|(?:[^()]+\(\[\],)?[^()]+\(arguments\))\)/;
 /** Regular expression that detects ES2015 classes which extend from other classes. */
 export const ES2015_INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{/;
 /**
