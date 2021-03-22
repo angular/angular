@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 // Imports
-const {existsSync, readFileSync, statSync} = require('fs');
+const {readdirSync, readFileSync, statSync} = require('fs');
 const {join, resolve} = require('path');
 
 // Constants
@@ -17,17 +17,27 @@ _main();
 // Functions - Definitions
 function _main() {
   const contributors = JSON.parse(readFileSync(CONTRIBUTORS_PATH, 'utf8'));
-
-  // Check that there are no missing images.
   const expectedImages = Object.keys(contributors)
       .filter(key => !!contributors[key].picture)
       .map(key => join(IMAGES_DIR, contributors[key].picture));
-  const missingImages = expectedImages.filter(path => !existsSync(path));
+  const existingImages = readdirSync(IMAGES_DIR)
+      .filter(name => name !== '_no-one.jpg')
+      .map(name => join(IMAGES_DIR, name));
 
+  // Check that there are no missing images.
+  const missingImages = expectedImages.filter(path => !existingImages.includes(path));
   if (missingImages.length > 0) {
     throw new Error(
         'The following pictures are referenced in \'contributors.json\' but do not exist:' +
         missingImages.map(path => `\n  - ${path}`).join(''));
+  }
+
+  // Check that there are no unused images.
+  const unusedImages = existingImages.filter(path => !expectedImages.includes(path));
+  if (unusedImages.length > 0) {
+    throw new Error(
+        'The following pictures are not referenced in \'contributors.json\' and should be deleted:' +
+        unusedImages.map(path => `\n  - ${path}`).join(''));
   }
 
   // Check that there are no images that exceed the size limit.
