@@ -26,7 +26,12 @@ describe('MapDirectionsService', () => {
     (window.google as any) = undefined;
   });
 
-  it('initializes the Google Maps Directions Service', () => {
+  it('does not initialize the Google Maps Directions Service immediately', () => {
+    expect(directionsServiceConstructorSpy).not.toHaveBeenCalled();
+  });
+
+  it('initializes the Google Maps Directions Service when `route` is called', () => {
+    mapDirectionsService.route({}).subscribe();
     expect(directionsServiceConstructorSpy).toHaveBeenCalled();
   });
 

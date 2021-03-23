@@ -25,11 +25,9 @@ export interface MapDirectionsResponse {
  */
 @Injectable({providedIn: 'root'})
 export class MapDirectionsService {
-  private readonly _directionsService: google.maps.DirectionsService;
+  private _directionsService: google.maps.DirectionsService|undefined;
 
-  constructor(private readonly _ngZone: NgZone) {
-    this._directionsService = new google.maps.DirectionsService();
-  }
+  constructor(private readonly _ngZone: NgZone) {}
 
   /**
    * See
@@ -38,6 +36,12 @@ export class MapDirectionsService {
    */
   route(request: google.maps.DirectionsRequest): Observable<MapDirectionsResponse> {
     return new Observable(observer => {
+      // Initialize the `DirectionsService` lazily since the Google Maps API may
+      // not have been loaded when the provider is instantiated.
+      if (!this._directionsService) {
+        this._directionsService = new google.maps.DirectionsService();
+      }
+
       const callback =
           (
             result: google.maps.DirectionsResult|undefined,
