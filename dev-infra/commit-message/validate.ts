@@ -13,8 +13,8 @@ import {Commit, parseCommitMessage} from './parse';
 
 /** Options for commit message validation. */
 export interface ValidateCommitMessageOptions {
-  nonFixupCommitHeaders?: string[];
   disallowSquash?: boolean;
+  nonFixupCommitHeaders?: string[];
 }
 
 /** The result of a commit message validation check. */
@@ -85,7 +85,7 @@ export function validateCommitMessage(
     ////////////////////////////
     // Checking commit header //
     ////////////////////////////
-    if (commit.header!.length > config.maxLineLength) {
+    if (commit.header.length > config.maxLineLength) {
       errors.push(`The commit message header is longer than ${config.maxLineLength} characters`);
       return false;
     }
@@ -154,7 +154,7 @@ export function validateCommitMessage(
     // Breaking change
     // Check if the commit message contains a valid break change description.
     // https://github.com/angular/angular/blob/88fbc066775ab1a2f6a8c75f933375b46d8fa9a4/CONTRIBUTING.md#commit-message-footer
-    const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.fullText!);
+    const hasBreakingChange = COMMIT_BODY_BREAKING_CHANGE_RE.exec(commit.fullText);
     if (hasBreakingChange !== null) {
       const [, breakingChangeDescription] = hasBreakingChange;
       if (!breakingChangeDescription) {

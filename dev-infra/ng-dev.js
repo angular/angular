@@ -1697,30 +1697,34 @@ const SQUASH_PREFIX_RE = /^squash! /i;
 /** Regex determining if a commit is a revert. */
 const REVERT_PREFIX_RE = /^revert:? /i;
 /**
- * Regex pattern for parsing the header line of a commits.
+ * Regex pattern for parsing the header line of a commit.
  *
  * Several groups are being matched to be used in the parsed commit object, being mapped to the
  * `headerCorrespondence` object.
  *
  * The pattern can be broken down into component parts:
- * - `(?:(?:fixup!|revert!|squash:?)\s)` - a non-capturing group to detect the presences of a
- *     fixup/squash/revert commit flag.
  * - `(\w*)` - a capturing group discovering the type of the commit.
  * - `(?:\((?:([^/]+)\/)?(.*)\))` - a pair of capturing groups to capture the scope and, optionally
  *     the npmScope of the commit.
  * - `(.*)` - a capturing group discovering the subject of the commit.
  */
-const headerPattern = /^(?:(?:fixup!|revert!|squash:?)\s)?(\w*)(?:\((?:([^/]+)\/)?(.*)\))?: (.*)$/;
+const headerPattern = /^(\w*)(?:\((?:([^/]+)\/)?(.*)\))?: (.*)$/;
 /**
  * The property names used for the values extracted from the header via the `headerPattern` regex.
  */
 const headerCorrespondence = ['type', 'npmScope', 'scope', 'subject'];
-/** Configuration options for the commit parser. */
+/**
+ * Configuration options for the commit parser.
+ *
+ * NOTE: An extended type from `Options` must be used because the current
+ * @types/conventional-commits-parser version does not include the `notesPattern` field.
+ */
 const parseOptions = {
     commentChar: '#',
     headerPattern,
     headerCorrespondence,
     noteKeywords: [NoteSections.BREAKING_CHANGE, NoteSections.DEPRECATED],
+    notesPattern: (keywords) => new RegExp(`(${keywords})(?:: ?)(.*)`),
 };
 /** Parse a full commit message into its composite parts. */
 function parseCommitMessage(fullText) {
@@ -2019,7 +2023,7 @@ const ValidateFileModule = {
 // Whether the provided commit is a fixup commit.
 const isNonFixup = (commit) => !commit.isFixup;
 // Extracts commit header (first line of commit message).
-const extractCommitHeader = (commit) => commit.header || '';
+const extractCommitHeader = (commit) => commit.header;
 /** Validate all commits in a provided git commit range. */
 function validateCommitRange(range) {
     /** A list of tuples of the commit header string and a list of error messages for the commit. */
@@ -2033,6 +2037,7 @@ function validateCommitRange(range) {
      */
     const allCommitsInRangeValid = commits.every((commit, i) => {
         const options = {
+            disallowSquash: true,
             nonFixupCommitHeaders: isNonFixup(commit) ?
                 undefined :
                 commits.slice(0, i).filter(isNonFixup).map(extractCommitHeader)

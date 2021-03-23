@@ -63,6 +63,33 @@ describe('commit message parsing:', () => {
     expect(parseCommitMessage(message).subject).toBe(commitValues.summary);
   });
 
+  it('identifies if a commit is a fixup', () => {
+    const message1 = buildCommitMessage();
+    expect(parseCommitMessage(message1).isFixup).toBe(false);
+
+    const message2 = buildCommitMessage({prefix: 'fixup! '});
+    expect(parseCommitMessage(message2).isFixup).toBe(true);
+  });
+
+  it('identifies if a commit is a revert', () => {
+    const message1 = buildCommitMessage();
+    expect(parseCommitMessage(message1).isRevert).toBe(false);
+
+    const message2 = buildCommitMessage({prefix: 'revert: '});
+    expect(parseCommitMessage(message2).isRevert).toBe(true);
+
+    const message3 = buildCommitMessage({prefix: 'revert '});
+    expect(parseCommitMessage(message3).isRevert).toBe(true);
+  });
+
+  it('identifies if a commit is a squash', () => {
+    const message1 = buildCommitMessage();
+    expect(parseCommitMessage(message1).isSquash).toBe(false);
+
+    const message2 = buildCommitMessage({prefix: 'squash! '});
+    expect(parseCommitMessage(message2).isSquash).toBe(true);
+  });
+
   it('ignores comment lines', () => {
     const message = buildCommitMessage({
       prefix: '# This is a comment line before the header.\n' +
@@ -84,45 +111,66 @@ describe('commit message parsing:', () => {
   });
 
   describe('parses breaking change notes', () => {
-    const breakingChangeText = 'This break things';
+    const summary = 'This breaks things';
+    const description = 'This is how it breaks things.';
 
-    it('when multiple new lines are used as a separator', () => {
+    it('when only a summary is provided', () => {
       const message = buildCommitMessage({
-        footer: `BREAKING CHANGE:\n\n${breakingChangeText}`,
+        footer: `BREAKING CHANGE: ${summary}`,
       });
       const parsedMessage = parseCommitMessage(message);
-      expect(parsedMessage.breakingChanges[0].text).toBe(breakingChangeText);
+      expect(parsedMessage.breakingChanges[0].text).toBe(summary);
       expect(parsedMessage.breakingChanges.length).toBe(1);
     });
 
-    it('when a single space is used as a separator', () => {
+    it('when only a description is provided', () => {
       const message = buildCommitMessage({
-        footer: `BREAKING CHANGE: ${breakingChangeText}`,
+        footer: `BREAKING CHANGE:\n\n${description}`,
       });
       const parsedMessage = parseCommitMessage(message);
-      expect(parsedMessage.breakingChanges[0].text).toBe(breakingChangeText);
+      expect(parsedMessage.breakingChanges[0].text).toBe(description);
+      expect(parsedMessage.breakingChanges.length).toBe(1);
+    });
+
+    it('when a summary and description are provied', () => {
+      const message = buildCommitMessage({
+        footer: `BREAKING CHANGE: ${summary}\n\n${description}`,
+      });
+      const parsedMessage = parseCommitMessage(message);
+      expect(parsedMessage.breakingChanges[0].text).toBe(`${summary}\n\n${description}`);
       expect(parsedMessage.breakingChanges.length).toBe(1);
     });
   });
 
   describe('parses deprecation notes', () => {
-    const deprecationsText = 'This will break things later';
+    const summary = 'This will break things later';
+    const description = 'This is a long winded explanation of why it \nwill break things later.';
 
-    it('when multiple new lines are used as a separator', () => {
+
+    it('when only a summary is provided', () => {
       const message = buildCommitMessage({
-        footer: `DEPRECATED:\n\n${deprecationsText}`,
+        footer: `DEPRECATED: ${summary}`,
       });
       const parsedMessage = parseCommitMessage(message);
-      expect(parsedMessage.deprecations[0].text).toBe(deprecationsText);
+      expect(parsedMessage.deprecations[0].text).toBe(summary);
       expect(parsedMessage.deprecations.length).toBe(1);
     });
 
-    it('when a single space is used as a separator', () => {
+    it('when only a description is provided', () => {
       const message = buildCommitMessage({
-        footer: `DEPRECATED: ${deprecationsText}`,
+        footer: `DEPRECATED:\n\n${description}`,
       });
       const parsedMessage = parseCommitMessage(message);
-      expect(parsedMessage.deprecations[0].text).toBe(deprecationsText);
+      expect(parsedMessage.deprecations[0].text).toBe(description);
+      expect(parsedMessage.deprecations.length).toBe(1);
+    });
+
+    it('when a summary and description are provied', () => {
+      const message = buildCommitMessage({
+        footer: `DEPRECATED: ${summary}\n\n${description}`,
+      });
+      const parsedMessage = parseCommitMessage(message);
+      expect(parsedMessage.deprecations[0].text).toBe(`${summary}\n\n${description}`);
       expect(parsedMessage.deprecations.length).toBe(1);
     });
   });

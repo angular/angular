@@ -13,7 +13,7 @@ import {printValidationErrors, validateCommitMessage, ValidateCommitMessageOptio
 const isNonFixup = (commit: Commit) => !commit.isFixup;
 
 // Extracts commit header (first line of commit message).
-const extractCommitHeader = (commit: Commit) => commit.header || '';
+const extractCommitHeader = (commit: Commit) => commit.header;
 
 /** Validate all commits in a provided git commit range. */
 export function validateCommitRange(range: string) {
@@ -29,13 +29,14 @@ export function validateCommitRange(range: string) {
    */
   const allCommitsInRangeValid = commits.every((commit, i) => {
     const options: ValidateCommitMessageOptions = {
+      disallowSquash: true,
       nonFixupCommitHeaders: isNonFixup(commit) ?
           undefined :
           commits.slice(0, i).filter(isNonFixup).map(extractCommitHeader)
     };
     const {valid, errors: localErrors} = validateCommitMessage(commit, options);
     if (localErrors.length) {
-      errors.push([commit.header!, localErrors]);
+      errors.push([commit.header, localErrors]);
     }
     return valid;
   });
