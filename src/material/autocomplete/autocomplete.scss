@@ -1,9 +1,7 @@
 @use '../core/style/menu-common';
 @use '../../cdk/a11y/a11y';
 
-/**
- * The max-height of the panel, currently matching mat-select value.
- */
+// The max-height of the panel, currently matching mat-select value.
 $panel-max-height: 256px !default;
 $panel-border-radius: 4px !default;
 

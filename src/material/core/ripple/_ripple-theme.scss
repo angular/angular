@@ -2,7 +2,7 @@
 @use 'sass:meta';
 @use '../theming/theming';
 
-/* Colors for the ripple elements.*/
+// Colors for the ripple elements.
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $foreground: map.get($config, foreground);

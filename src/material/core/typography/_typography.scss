@@ -149,7 +149,7 @@
 }
 
 // Adds the base typography styles, based on a config.
-/* stylelint-disable-next-line material/theme-mixin-api */
+// stylelint-disable-next-line material/theme-mixin-api
 @mixin typography-hierarchy($config-or-theme, $selector: '.mat-typography') {
   $config: private-typography-to-2014-config(theming.get-typography-config($config-or-theme));
 

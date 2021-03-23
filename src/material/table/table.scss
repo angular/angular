@@ -3,9 +3,7 @@
 
 @include table-flex-styles.private-table-flex-styles();
 
-/**
- * Native HTML table structure
- */
+// Native HTML table structure
 table.mat-table {
   border-spacing: 0;
 }

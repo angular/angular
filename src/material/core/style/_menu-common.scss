@@ -3,7 +3,7 @@
 @use './layout-common';
 @use './vendor-prefixes';
 
-/** The mixins below are shared between mat-menu and mat-select */
+// The mixins below are shared between mat-menu and mat-select
 
 // menu width must be a multiple of 56px
 $overlay-min-width: 112px !default;   // 56 * 2

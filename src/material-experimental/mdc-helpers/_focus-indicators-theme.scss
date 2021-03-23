@@ -30,7 +30,7 @@
 ///   .demo-red-theme {
 ///     @include mat-mdc-strong-focus-indicators-theme(#f00);
 ///   }
-/* stylelint-disable-next-line material/theme-mixin-api */
+// stylelint-disable-next-line material/theme-mixin-api
 @mixin theme($theme-or-color) {
   @if meta.type-of($theme-or-color) != 'map' {
     @include _mat-mdc-strong-focus-indicators-border-color($theme-or-color);

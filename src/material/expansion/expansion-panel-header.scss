@@ -66,10 +66,8 @@
   flex-grow: 2;
 }
 
-/**
- * Creates the expansion indicator arrow. Done using ::after rather than having
- * additional nodes in the template.
- */
+// Creates the expansion indicator arrow. Done using ::after
+// rather than havingadditional nodes in the template.
 .mat-expansion-indicator::after {
   border-style: solid;
   border-width: 0 2px 2px 0;

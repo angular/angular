@@ -68,7 +68,7 @@
   // placeholder if the form-field label is set to always float.
   // TODO(devversion): consider getting a mixin or variables for this (currently not available).
   // Stylelint no-prefixes rule disabled because MDC text-field only uses "::placeholder" too.
-  /* stylelint-disable-next-line material/no-prefixes */
+  // stylelint-disable-next-line material/no-prefixes
   .mat-mdc-form-field-label-always-float .mdc-text-field__input::placeholder {
     transition-delay: 40ms;
     transition-duration: 110ms;
