@@ -3,89 +3,43 @@
 Angular supports most recent browsers. This includes the following specific versions:
 
 <table>
-
   <tr>
-
-<th>
-      Browser
-</th>
-
-<th>
-      Supported versions
-</th>
-
+    <th>Browser</th>
+    <th>Supported versions</th>
   </tr>
-
   <tr>
-
-    <td>
-      Chrome
-    </td>
-
-    <td>
-      latest
-    </td>
+    <td>Chrome</td>
+    <td>latest</td>
   </tr>
-
   <tr>
-
-    <td>
-      Firefox
-    </td>
-
-    <td>
-      latest and extended support release (ESR)
-    </td>
+    <td>Firefox</td>
+    <td>latest and extended support release (ESR)</td>
   </tr>
-
   <tr>
-
+    <td>Edge</td>
+    <td>2 most recent major versions</td>
+  </tr>
+  <tr>
+    <td>IE</td>
     <td>
-      Edge
-    </td>
-
-    <td>
-      2 most recent major versions
+      11<br>
+      <em>*deprecated, see the <a href="guide/deprecations#internet-explorer-11">deprecations guide</a></em>
     </td>
   </tr>
   <tr>
-    <td>
-      IE
-    </td>
-    <td>
-      <div>11<br>
-      <em>*deprecated, see the <a href="guide/deprecations#internet-explorer-11">deprecations guide</a></em></div>
-    </td>
-  </tr>
- <tr>
-    <td>
-      Safari
-    </td>
-
-    <td>
-      2 most recent major versions
-    </td>
+    <td>Safari</td>
+    <td>2 most recent major versions</td>
   </tr>
   <tr>
-    <td>
-      iOS
-    </td>
-
-    <td>
-      2 most recent major versions
-    </td>
+    <td>iOS</td>
+    <td>2 most recent major versions</td>
   </tr>
   <tr>
-    <td>
-      Android
-    </td>
-
-    <td>
-      Q (10.0), Pie (9.0), Oreo (8.0), Nougat (7.0)
-    </td>
+    <td>Android</td>
+    <td>Q (10.0), Pie (9.0), Oreo (8.0), Nougat (7.0)</td>
   </tr>
-
 </table>
+
 
 <div class="alert is-helpful">
 
@@ -158,124 +112,70 @@ If the polyfill you want is not already in `polyfills.ts` file, add the `import`
 These are the polyfills required to run an Angular application on each supported browser:
 
 <table>
-
   <tr style="vertical-align: top">
-
-    <th>
-      Browsers (Desktop & Mobile)
-    </th>
-
-    <th>
-      Polyfills Required
-    </th>
-
+    <th>Browsers (Desktop & Mobile)</th>
+    <th>Polyfills Required</th>
   </tr>
-
   <tr style="vertical-align: top">
-
     <td>
       Chrome, Firefox, Edge, <br>
       Safari, Android, IE 11
     </td>
-
     <td>
-
-      [ES2015](guide/browser-support#core-es6)
-
+      <a href="guide/browser-support#core-es6">ES2015</a>
     </td>
-
   </tr>
-
 </table>
-
 
 ### Optional browser features to polyfill
 
 Some features of Angular may require additional polyfills.
 
 <table>
-
   <tr style="vertical-align: top">
-
-    <th>
-      Feature
-    </th>
-
-    <th>
-      Polyfill
-    </th>
-
-    <th style="width: 50%">
-       Browsers (Desktop & Mobile)
-    </th>
-
+    <th>Feature</th>
+    <th>Polyfill</th>
+    <th style="width: 50%">Browsers (Desktop & Mobile)</th>
   </tr>
-
   <tr style="vertical-align: top">
-
     <td>
-
-      [AnimationBuilder](api/animations/AnimationBuilder).
+      <a href="api/animations/AnimationBuilder">AnimationBuilder</a>
       (Standard animation support does not require polyfills.)
-
     </td>
-
     <td>
-
-      [Web Animations](guide/browser-support#web-animations)
-
+      <a href="guide/browser-support#web-animations">Web Animations</a>
     </td>
-
     <td>
       <p>If AnimationBuilder is used, enables scrubbing
       support for IE/Edge and Safari.
       (Chrome and Firefox support this natively).</p>
     </td>
-
   </tr>
 
   <tr style="vertical-align: top">
-
     <td>
-
-       [NgClass](api/common/NgClass) on SVG elements
+      <a href="api/common/NgClass">NgClass</a> on SVG elements
     </td>
-
     <td>
-
-      [classList](guide/browser-support#classlist)
-
+      <a href="guide/browser-support#classlist">classList</a>
     </td>
-
     <td>
       IE 11
     </td>
-
   </tr>
 
   <tr style="vertical-align: top">
-
     <td>
-
-      [Router](guide/router) when using
-      [hash-based routing](guide/router#location-strategy)
+      <a href="guide/router">Router</a> when using <a href="guide/router#location-strategy">hash-based routing</a>
     </td>
-
     <td>
-
-      [ES7/array](guide/browser-support#core-es7-array)
-
+      <a href="guide/browser-support#core-es7-array">ES7/array</a>
     </td>
-
     <td>
       IE 11
     </td>
-
   </tr>
-
 </table>
-
-
 
 ### Suggested polyfills
 
@@ -283,95 +183,62 @@ The following polyfills are used to test the framework itself. They are a good s
 
 
 <table>
-
   <tr>
-
     <th>
       Polyfill
     </th>
-
     <th>
       License
     </th>
-
     <th>
       Size*
     </th>
-
   </tr>
-
   <tr>
-
     <td>
-
       <a id='core-es7-array' href="https://github.com/zloirock/core-js/tree/v2/fn/array">ES7/array</a>
-
     </td>
-
     <td>
       MIT
     </td>
-
     <td>
       0.1KB
     </td>
-
   </tr>
-
   <tr>
-
     <td>
-
       <a id='core-es6' href="https://github.com/zloirock/core-js">ES2015</a>
-
     </td>
-
     <td>
       MIT
     </td>
-
     <td>
       27.4KB
     </td>
-
   </tr>
 
   <tr>
-
     <td>
-
       <a id='classlist' href="https://github.com/eligrey/classList.js">classList</a>
-
     </td>
-
     <td>
       Public domain
     </td>
-
     <td>
       1KB
     </td>
-
   </tr>
-
   <tr>
-
     <td>
-
        <a id='web-animations' href="https://github.com/web-animations/web-animations-js">Web Animations</a>
-
     </td>
-
     <td>
       Apache
     </td>
-
     <td>
       14.8KB
     </td>
-
   </tr>
-
 </table>
 
 
@@ -399,7 +266,6 @@ For example:
     // __Zone_disable_requestAnimationFrame = true; // disable patch requestAnimationFrame
     // __Zone_disable_on_property = true; // disable patch onProperty such as onclick
     // __zone_symbol__UNPATCHED_EVENTS = ['scroll', 'mousemove']; // disable patch specified eventNames
-
     /*
      * in IE/Edge developer tools, the addEventListener will also be wrapped by zone.js
      * with the following flag, it will bypass `zone.js` patch for IE/Edge
@@ -408,6 +274,5 @@ For example:
   &lt;/script>
   &lt;!-- zone.js required by Angular -->
   &lt;script src="node_modules/zone.js/bundles/zone.umd.js">&lt;/script>
-
   &lt;!-- application polyfills -->
 </code-example>
