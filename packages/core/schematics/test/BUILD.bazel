@@ -26,6 +26,7 @@ ts_library(
         "//packages/core/schematics/migrations/undecorated-classes-with-decorated-fields",
         "//packages/core/schematics/migrations/undecorated-classes-with-di",
         "//packages/core/schematics/migrations/wait-for-async",
+        "//packages/core/schematics/migrations/xhr-factory",
         "//packages/core/schematics/utils",
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
