@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {XhrFactory} from '@angular/common';
 import {Injectable} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
@@ -29,37 +30,6 @@ function getResponseUrl(xhr: any): string|null {
     return xhr.getResponseHeader('X-Request-URL');
   }
   return null;
-}
-
-/**
- * A wrapper around the `XMLHttpRequest` constructor.
- *
- * @publicApi
- */
-export abstract class XhrFactory {
-  abstract build(): XMLHttpRequest;
-}
-
-/**
- * A factory for `HttpXhrBackend` that uses the `XMLHttpRequest` browser API.
- *
- */
-@Injectable()
-export class BrowserXhr implements XhrFactory {
-  constructor() {}
-  build(): any {
-    return <any>(new XMLHttpRequest());
-  }
-}
-
-/**
- * Tracks a response from the server that does not yet have a body.
- */
-interface PartialResponse {
-  headers: HttpHeaders;
-  status: number;
-  statusText: string;
-  url: string;
 }
 
 /**

@@ -54,6 +54,9 @@
     "name": "BrowserModule"
   },
   {
+    "name": "BrowserXhr"
+  },
+  {
     "name": "BuiltInControlValueAccessor"
   },
   {

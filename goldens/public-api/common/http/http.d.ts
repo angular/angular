@@ -1947,7 +1947,3 @@ export declare class JsonpInterceptor {
     constructor(jsonp: JsonpClientBackend);
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
 }
-
-export declare abstract class XhrFactory {
-    abstract build(): XMLHttpRequest;
-}

@@ -11,8 +11,8 @@ import {INITIAL_CONFIG, PlatformConfig} from './tokens';
 const xhr2: any = require('xhr2');
 
 import {Injectable, Injector, Provider} from '@angular/core';
-import {PlatformLocation} from '@angular/common';
-import {HttpEvent, HttpRequest, HttpHandler, HttpBackend, XhrFactory, ɵHttpInterceptingHandler as HttpInterceptingHandler} from '@angular/common/http';
+import {PlatformLocation, XhrFactory} from '@angular/common';
+import {HttpEvent, HttpRequest, HttpHandler, HttpBackend, ɵHttpInterceptingHandler as HttpInterceptingHandler} from '@angular/common/http';
 import {Observable, Observer, Subscription} from 'rxjs';
 
 // @see https://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01#URI-syntax
