@@ -16,6 +16,7 @@ ts_library(
     # Visible to //:saucelabs_unit_tests_poc target
     visibility = ["//:__pkg__"],
     deps = [
+        "//packages/common",
         "//packages/common/http",
         "//packages/common/http/testing",
         "//packages/core",

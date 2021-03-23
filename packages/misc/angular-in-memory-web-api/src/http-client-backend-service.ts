@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpBackend, HttpEvent, HttpHeaders, HttpParams, HttpRequest, HttpResponse, HttpXhrBackend, XhrFactory} from '@angular/common/http';
+import {XhrFactory} from '@angular/common';
+import {HttpBackend, HttpEvent, HttpHeaders, HttpParams, HttpRequest, HttpResponse, HttpXhrBackend} from '@angular/common/http';
 import {Inject, Injectable, Optional} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';

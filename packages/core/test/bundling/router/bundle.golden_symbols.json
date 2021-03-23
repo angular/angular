@@ -81,6 +81,9 @@
     "name": "BrowserViewportScroller"
   },
   {
+    "name": "BrowserXhr"
+  },
+  {
     "name": "CIRCULAR"
   },
   {
