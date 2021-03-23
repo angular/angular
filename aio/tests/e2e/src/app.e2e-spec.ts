@@ -144,7 +144,7 @@ describe('site App', () => {
     it('should have contributors listed in each group', async () => {
       // WebDriver calls `scrollIntoView()` on the element to bring it into the visible area of the
       // browser, before clicking it. By default, this aligns the top of the element to the top of
-      // the window. As a result, the element may end up behing the fixed top menu, thus being
+      // the window. As a result, the element may end up behind the fixed top menu, thus being
       // unclickable. To avoid this, we click the element directly using JavaScript instead.
       const clickButton =
           (elementFinder: ElementFinder) => browser.executeScript('arguments[0].click()', elementFinder);

@@ -63,7 +63,7 @@ describe('validate-commit-message.js', () => {
     });
 
     it('should skip max length limit for URLs', () => {
-      const msg = 'fix(compiler): this is just an usual commit message tile\n\n' +
+      const msg = 'fix(compiler): this is just a usual commit message title\n\n' +
           'This is a normal commit message body which does not exceed the max length\n' +
           'limit. For more details see the following super long URL:\n\n' +
           'https://github.com/angular/components/commit/e2ace018ddfad10608e0e32932c43dcfef4095d7#diff-9879d6db96fd29134fc802214163b95a';
@@ -266,13 +266,13 @@ describe('validate-commit-message.js', () => {
 
     describe('breaking change', () => {
       it('should allow valid breaking change commit descriptions', () => {
-        const msgWithSummary = 'feat(compiler): this is just an usual commit message tile\n\n' +
+        const msgWithSummary = 'feat(compiler): this is just a usual commit message title\n\n' +
             'This is a normal commit message body which does not exceed the max length\n' +
             'limit. For more details see the following super long URL:\n\n' +
             'BREAKING CHANGE: This is a summary of a breaking change.';
         expectValidationResult(validateCommitMessage(msgWithSummary), VALID);
 
-        const msgWithDescription = 'feat(compiler): this is just an usual commit message tile\n\n' +
+        const msgWithDescription = 'feat(compiler): this is just a usual commit message title\n\n' +
             'This is a normal commit message body which does not exceed the max length\n' +
             'limit. For more details see the following super long URL:\n\n' +
             'BREAKING CHANGE:\n\n' +
@@ -280,21 +280,21 @@ describe('validate-commit-message.js', () => {
         expectValidationResult(validateCommitMessage(msgWithDescription), VALID);
 
         const msgWithSummaryAndDescription =
-            'feat(compiler): this is just an usual commit message tile\n\n' +
+            'feat(compiler): this is just a usual commit message title\n\n' +
             'This is a normal commit message body which does not exceed the max length\n' +
             'limit. For more details see the following super long URL:\n\n' +
             'BREAKING CHANGE: This is a summary of a breaking change.\n\n' +
             'This is a full description of the breaking change.';
         expectValidationResult(validateCommitMessage(msgWithSummaryAndDescription), VALID);
 
-        const msgWithNonBreaking = 'feat(compiler): this is just an usual commit message tile\n\n' +
+        const msgWithNonBreaking = 'feat(compiler): this is just a usual commit message title\n\n' +
             'This is not a\n' +
             'breaking change commit.';
         expectValidationResult(validateCommitMessage(msgWithNonBreaking), VALID);
       });
 
       it('should fail for non-valid breaking change commit descriptions', () => {
-        const msgWithSummary = 'feat(compiler): this is just an usual commit message tile\n\n' +
+        const msgWithSummary = 'feat(compiler): this is just a usual commit message title\n\n' +
             'This is a normal commit message body which does not exceed the max length\n' +
             'limit. For more details see the following super long URL:\n\n' +
             'BREAKING CHANGE This is a summary of a breaking change.';
@@ -302,7 +302,7 @@ describe('validate-commit-message.js', () => {
             validateCommitMessage(msgWithSummary), INVALID,
             [`The commit message body contains an invalid breaking change description.`]);
 
-        const msgWithPlural = 'feat(compiler): this is just an usual commit message tile\n\n' +
+        const msgWithPlural = 'feat(compiler): this is just a usual commit message title\n\n' +
             'This is a normal commit message body which does not exceed the max length\n' +
             'limit. For more details see the following super long URL:\n\n' +
             'BREAKING CHANGES: This is a summary of a breaking change.';
@@ -310,7 +310,7 @@ describe('validate-commit-message.js', () => {
             validateCommitMessage(msgWithPlural), INVALID,
             [`The commit message body contains an invalid breaking change description.`]);
 
-        const msgWithDescription = 'feat(compiler): this is just an usual commit message tile\n\n' +
+        const msgWithDescription = 'feat(compiler): this is just a usual commit message title\n\n' +
             'This is a normal commit message body which does not exceed the max length\n' +
             'limit. For more details see the following super long URL:\n\n' +
             'BREAKING CHANGE:\n' +
@@ -320,7 +320,7 @@ describe('validate-commit-message.js', () => {
             [`The commit message body contains an invalid breaking change description.`]);
 
         const msgWithSummaryAndDescription =
-            'feat(compiler): this is just an usual commit message tile\n\n' +
+            'feat(compiler): this is just a usual commit message title\n\n' +
             'This is a normal commit message body which does not exceed the max length\n' +
             'limit. For more details see the following super long URL:\n\n' +
             'BREAKING CHANGE\n\n' +
