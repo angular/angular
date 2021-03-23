@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileFactoryFunction, ConstantPool, R3DeclareFactoryMetadata, R3DependencyMetadata, R3FactoryMetadata, R3FactoryTarget, R3PartialDeclaration, R3ResolvedDependencyType} from '@angular/compiler';
+import {compileFactoryFunction, ConstantPool, R3DeclareDependencyMetadata, R3DeclareFactoryMetadata, R3DependencyMetadata, R3FactoryMetadata, R3FactoryTarget, R3PartialDeclaration} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
 
 import {AstObject} from '../../ast/ast_value';
@@ -39,18 +39,14 @@ export function toR3FactoryMeta<TExpression>(
         typeExpr.expression, 'Unsupported type, its name could not be determined');
   }
 
-  const deps = getDeps(metaObj, 'deps');
-
-  const meta: R3FactoryMetadata = {
+  return {
     name: typeName,
     type: wrapReference(typeExpr.getOpaque()),
     internalType: metaObj.getOpaque('type'),
     typeArgumentCount: 0,
     target: parseEnum(metaObj.getValue('target'), R3FactoryTarget),
-    deps,
+    deps: getDeps(metaObj, 'deps'),
   };
-
-  return meta;
 }
 
 function getDeps<TExpression>(
@@ -69,15 +65,24 @@ function getDeps<TExpression>(
   return null;
 }
 
-function getDep<TExpression>(dep: AstObject<R3DependencyMetadata, TExpression>):
+function getDep<TExpression>(depObj: AstObject<R3DeclareDependencyMetadata, TExpression>):
     R3DependencyMetadata {
-  return {
-    token: dep.getOpaque('token'),
-    attribute: null,
-    resolved: parseEnum(dep.getValue('resolved'), R3ResolvedDependencyType),
-    host: dep.has('host') && dep.getBoolean('host'),
-    optional: dep.has('optional') && dep.getBoolean('optional'),
-    self: dep.has('self') && dep.getBoolean('self'),
-    skipSelf: dep.has('skipSelf') && dep.getBoolean('skipSelf'),
+  const isAttribute = depObj.has('attribute') && depObj.getBoolean('attribute');
+  const token = depObj.getOpaque('token');
+  // Normally `attribute` is a string literal and so its `attributeNameType` is the same string
+  // literal. If the `attribute` is some other expression, the `attributeNameType` would be the
+  // `unknown` type. It is not possible to generate this when linking, since it only deals with JS
+  // and not typings. When linking the existence of the `attributeNameType` only acts as a marker to
+  // change the injection instruction that is generated, so we just pass the literal string
+  // `"unknown"`.
+  const attributeNameType = isAttribute ? o.literal('unknown') : null;
+  const dep: R3DependencyMetadata = {
+    token,
+    attributeNameType,
+    host: depObj.has('host') && depObj.getBoolean('host'),
+    optional: depObj.has('optional') && depObj.getBoolean('optional'),
+    self: depObj.has('self') && depObj.getBoolean('self'),
+    skipSelf: depObj.has('skipSelf') && depObj.getBoolean('skipSelf'),
   };
+  return dep;
 }

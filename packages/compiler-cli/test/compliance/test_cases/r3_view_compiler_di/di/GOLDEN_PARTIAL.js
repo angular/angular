@@ -10,10 +10,13 @@ MyService.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyService, fac
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyService, [{
         type: Injectable
     }], null, null); })();
-export class MyComponent {
-    constructor(name, s1, s2, s4, s3, s5, s6) { }
+function dynamicAttrName() {
+    return 'the-attr';
 }
-MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [{ token: 'name', resolved: i0.ɵɵResolvedDependencyType.Attribute }, { token: MyService, resolved: i0.ɵɵResolvedDependencyType.Token }, { token: MyService, resolved: i0.ɵɵResolvedDependencyType.Token, host: true }, { token: MyService, resolved: i0.ɵɵResolvedDependencyType.Token, self: true }, { token: MyService, resolved: i0.ɵɵResolvedDependencyType.Token, skipSelf: true }, { token: MyService, resolved: i0.ɵɵResolvedDependencyType.Token, optional: true }, { token: MyService, resolved: i0.ɵɵResolvedDependencyType.Token, optional: true, self: true }], target: i0.ɵɵFactoryTarget.Component });
+export class MyComponent {
+    constructor(name, other, s1, s2, s4, s3, s5, s6) { }
+}
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [{ token: 'name', attribute: true }, { token: dynamicAttrName(), attribute: true }, { token: MyService }, { token: MyService, host: true }, { token: MyService, self: true }, { token: MyService, skipSelf: true }, { token: MyService, optional: true }, { token: MyService, optional: true, self: true }], target: i0.ɵɵFactoryTarget.Component });
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: ``, isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
@@ -21,6 +24,9 @@ MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", ty
     }], function () { return [{ type: undefined, decorators: [{
                 type: Attribute,
                 args: ['name']
+            }] }, { type: undefined, decorators: [{
+                type: Attribute,
+                args: [dynamicAttrName()]
             }] }, { type: MyService }, { type: MyService, decorators: [{
                 type: Host
             }] }, { type: MyService, decorators: [{
@@ -53,8 +59,8 @@ export declare class MyService {
     static ɵprov: i0.ɵɵInjectableDef<MyService>;
 }
 export declare class MyComponent {
-    constructor(name: string, s1: MyService, s2: MyService, s4: MyService, s3: MyService, s5: MyService, s6: MyService);
-    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, [{ attribute: "name"; }, null, { host: true; }, { self: true; }, { skipSelf: true; }, { optional: true; }, { optional: true; self: true; }]>;
+    constructor(name: string, other: string, s1: MyService, s2: MyService, s4: MyService, s3: MyService, s5: MyService, s6: MyService);
+    static ɵfac: i0.ɵɵFactoryDeclaration<MyComponent, [{ attribute: "name"; }, { attribute: unknown; }, null, { host: true; }, { self: true; }, { skipSelf: true; }, { optional: true; }, { optional: true; self: true; }]>;
     static ɵcmp: i0.ɵɵComponentDeclaration<MyComponent, "my-component", never, {}, {}, never, never>;
 }
 export declare class MyModule {
@@ -73,7 +79,7 @@ class MyDependency {
 export class MyService {
     constructor(dep) { }
 }
-MyService.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, deps: [{ token: MyDependency, resolved: i0.ɵɵResolvedDependencyType.Token }], target: i0.ɵɵFactoryTarget.Injectable });
+MyService.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, deps: [{ token: MyDependency }], target: i0.ɵɵFactoryTarget.Injectable });
 MyService.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyService, factory: MyService.ɵfac });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyService, [{
         type: Injectable
@@ -104,7 +110,7 @@ class MyOptionalDependency {
 export class MyService {
     constructor(dep, optionalDep) { }
 }
-MyService.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, deps: [{ token: MyDependency, resolved: i0.ɵɵResolvedDependencyType.Token }, { token: MyOptionalDependency, resolved: i0.ɵɵResolvedDependencyType.Token, optional: true }], target: i0.ɵɵFactoryTarget.Injectable });
+MyService.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyService, deps: [{ token: MyDependency }, { token: MyOptionalDependency, optional: true }], target: i0.ɵɵFactoryTarget.Injectable });
 MyService.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyService, factory: MyService.ɵfac });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyService, [{
         type: Injectable
@@ -296,7 +302,7 @@ export class MyPipe {
         return value;
     }
 }
-MyPipe.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, deps: [{ token: Service, resolved: i0.ɵɵResolvedDependencyType.Token }], target: i0.ɵɵFactoryTarget.Pipe });
+MyPipe.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, deps: [{ token: Service }], target: i0.ɵɵFactoryTarget.Pipe });
 MyPipe.ɵpipe = i0.ɵɵngDeclarePipe({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyPipe, name: "myPipe" });
 MyPipe.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyPipe, factory: MyPipe.ɵfac });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyPipe, [{
@@ -311,7 +317,7 @@ export class MyOtherPipe {
         return value;
     }
 }
-MyOtherPipe.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOtherPipe, deps: [{ token: Service, resolved: i0.ɵɵResolvedDependencyType.Token }], target: i0.ɵɵFactoryTarget.Pipe });
+MyOtherPipe.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOtherPipe, deps: [{ token: Service }], target: i0.ɵɵFactoryTarget.Pipe });
 MyOtherPipe.ɵpipe = i0.ɵɵngDeclarePipe({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyOtherPipe, name: "myOtherPipe" });
 MyOtherPipe.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyOtherPipe, factory: MyOtherPipe.ɵfac });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyOtherPipe, [{

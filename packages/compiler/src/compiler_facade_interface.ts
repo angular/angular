@@ -60,7 +60,6 @@ export interface CompilerFacade {
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
-  R3ResolvedDependencyType: typeof R3ResolvedDependencyType;
   R3FactoryTarget: typeof R3FactoryTarget;
   ResourceLoader: {new(): ResourceLoader};
 }
@@ -83,12 +82,6 @@ export type StringMapWithRename = {
 
 export type Provider = any;
 
-export enum R3ResolvedDependencyType {
-  Token = 0,
-  Attribute = 1,
-  Invalid = 2,
-}
-
 export enum R3FactoryTarget {
   Directive = 0,
   Component = 1,
@@ -98,17 +91,17 @@ export enum R3FactoryTarget {
 }
 
 export interface R3DependencyMetadataFacade {
-  token: any;
-  resolved: R3ResolvedDependencyType;
+  token: unknown;
+  attribute: string|null;
   host: boolean;
   optional: boolean;
   self: boolean;
-  skipSelf?: boolean;
+  skipSelf: boolean;
 }
 
 export interface R3DeclareDependencyMetadataFacade {
-  token: any;
-  resolved: R3ResolvedDependencyType;
+  token: unknown;
+  attribute?: boolean;
   host?: boolean;
   optional?: boolean;
   self?: boolean;
@@ -118,9 +111,7 @@ export interface R3DeclareDependencyMetadataFacade {
 export interface R3PipeMetadataFacade {
   name: string;
   type: any;
-  typeArgumentCount: number;
   pipeName: string;
-  deps: R3DependencyMetadataFacade[]|null;
   pure: boolean;
 }
 
@@ -156,9 +147,7 @@ export interface R3InjectorMetadataFacade {
 export interface R3DirectiveMetadataFacade {
   name: string;
   type: any;
-  typeArgumentCount: number;
   typeSourceSpan: ParseSourceSpan;
-  deps: R3DependencyMetadataFacade[]|null;
   selector: string|null;
   queries: R3QueryMetadataFacade[];
   host: {[key: string]: string};

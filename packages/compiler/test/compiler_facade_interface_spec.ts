@@ -7,7 +7,7 @@
  */
 
 import * as core from '../../core/src/compiler/compiler_facade_interface';
-import {R3FactoryTarget, R3ResolvedDependencyType} from '../public_api';
+import {R3FactoryTarget} from '../public_api';
 import * as compiler from '../src/compiler_facade_interface';
 
 /**
@@ -44,21 +44,6 @@ const compilerStringMap: compiler.StringMap = null! as core.StringMap;
 
 const coreProvider: core.Provider = null! as compiler.Provider;
 const compilerProvider: compiler.Provider = null! as core.Provider;
-
-const coreR3ResolvedDependencyType: core.R3ResolvedDependencyType =
-    null! as compiler.R3ResolvedDependencyType;
-const compilerR3ResolvedDependencyType: compiler.R3ResolvedDependencyType =
-    null! as core.R3ResolvedDependencyType;
-
-const coreR3ResolvedDependencyType2: R3ResolvedDependencyType =
-    null! as core.R3ResolvedDependencyType;
-const compilerR3ResolvedDependencyType2: R3ResolvedDependencyType =
-    null! as core.R3ResolvedDependencyType;
-
-const coreR3ResolvedDependencyType3: core.R3ResolvedDependencyType =
-    null! as R3ResolvedDependencyType;
-const compilerR3ResolvedDependencyType3: compiler.R3ResolvedDependencyType =
-    null! as R3ResolvedDependencyType;
 
 const coreR3FactoryTarget: core.R3FactoryTarget = null! as compiler.R3FactoryTarget;
 const compilerR3FactoryTarget: compiler.R3FactoryTarget = null! as core.R3FactoryTarget;

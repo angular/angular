@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3CompiledExpression, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, ReadPropExpr, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3CompiledExpression, R3DependencyMetadata, R3Reference, ReadPropExpr, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
@@ -44,9 +44,8 @@ export function getConstructorDependencies(
   }
   ctorParams.forEach((param, idx) => {
     let token = valueReferenceToExpression(param.typeValueReference, defaultImportRecorder);
-    let attribute: Expression|null = null;
+    let attributeNameType: Expression|null = null;
     let optional = false, self = false, skipSelf = false, host = false;
-    let resolved = R3ResolvedDependencyType.Token;
 
     (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
       const name = isCore || dec.import === null ? dec.name : dec.import!.name;
@@ -74,11 +73,11 @@ export function getConstructorDependencies(
         const attributeName = dec.args[0];
         token = new WrappedNodeExpr(attributeName);
         if (ts.isStringLiteralLike(attributeName)) {
-          attribute = new LiteralExpr(attributeName.text);
+          attributeNameType = new LiteralExpr(attributeName.text);
         } else {
-          attribute = new WrappedNodeExpr(ts.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword));
+          attributeNameType =
+              new WrappedNodeExpr(ts.createKeywordTypeNode(ts.SyntaxKind.UnknownKeyword));
         }
-        resolved = R3ResolvedDependencyType.Attribute;
       } else {
         throw new FatalDiagnosticError(
             ErrorCode.DECORATOR_UNEXPECTED, Decorator.nodeForError(dec),
@@ -97,7 +96,7 @@ export function getConstructorDependencies(
         reason: param.typeValueReference.reason,
       });
     } else {
-      deps.push({token, attribute, optional, self, skipSelf, host, resolved});
+      deps.push({token, attributeNameType, optional, self, skipSelf, host});
     }
   });
   if (errors.length === 0) {

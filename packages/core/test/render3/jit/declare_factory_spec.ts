@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, ɵcreateInjector, ɵɵFactoryTarget, ɵɵngDeclareFactory, ɵɵResolvedDependencyType} from '@angular/core';
+import {Injector, ɵcreateInjector, ɵɵFactoryTarget, ɵɵngDeclareFactory} from '@angular/core';
 import {ɵɵdefineInjector} from '@angular/core/src/di';
 import {setCurrentInjector} from '@angular/core/src/di/injector_compatibility';
 
@@ -47,7 +47,7 @@ class DependingClass {
   constructor(readonly testClass: TestClass) {}
   static ɵfac = ɵɵngDeclareFactory({
     type: DependingClass,
-    deps: [{token: TestClass, resolved: ɵɵResolvedDependencyType.Token}],
+    deps: [{token: TestClass}],
     target: ɵɵFactoryTarget.Injectable,
   });
 }
