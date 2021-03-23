@@ -15,6 +15,7 @@ const LOCAL_MARKER_PATH = 'node_modules/_local_.json';
 const ANGULAR_ROOT_DIR = path.resolve(__dirname, '../../..');
 const ANGULAR_DIST_PACKAGES_DIR = path.join(ANGULAR_ROOT_DIR, 'dist/packages-dist');
 const ZONEJS_DIST_PACKAGES_DIR = path.join(ANGULAR_ROOT_DIR, 'dist/zone.js-dist');
+const ANGULAR_MISC_DIST_PACKAGES = path.join(ANGULAR_ROOT_DIR, 'dist/packages-dist/misc');
 const DIST_PACKAGES_BUILD_SCRIPT = path.join(ANGULAR_ROOT_DIR, 'scripts/build/build-packages-dist.js');
 const DIST_PACKAGES_BUILD_CMD = `"${process.execPath}" "${DIST_PACKAGES_BUILD_SCRIPT}"`;
 
@@ -183,7 +184,7 @@ class NgPackagesInstaller {
     } else {
       this._warn([
         'Automatically building the local Angular/Zone.js packages is currently not supported on Windows.',
-        `Please, ensure '${ANGULAR_DIST_PACKAGES_DIR}' and '${ZONEJS_DIST_PACKAGES_DIR}' exist and are up-to-date ` +
+        `Please, ensure '${ANGULAR_DIST_PACKAGES_DIR}', ${ZONEJS_DIST_PACKAGES_DIR} and '${ANGULAR_MISC_DIST_PACKAGES}' exist and are up-to-date ` +
           `(e.g. by running '${DIST_PACKAGES_BUILD_SCRIPT}' in Git Bash for Windows, Windows Subsystem for Linux or ` +
           'a Linux docker container or VM).',
         '',
@@ -222,6 +223,7 @@ class NgPackagesInstaller {
   _getDistPackages() {
     this._log(`Angular distributable directory: ${ANGULAR_DIST_PACKAGES_DIR}.`);
     this._log(`Zone.js distributable directory: ${ZONEJS_DIST_PACKAGES_DIR}.`);
+    this._log(`angular-in-memory-web-api distributable directory: ${ANGULAR_MISC_DIST_PACKAGES}.`);
 
     if (this.buildPackages) {
       this._buildDistPackages();
@@ -260,6 +262,7 @@ class NgPackagesInstaller {
     const packageConfigs = {
       ...collectPackages(ANGULAR_DIST_PACKAGES_DIR),
       ...collectPackages(ZONEJS_DIST_PACKAGES_DIR),
+      ...collectPackages(ANGULAR_MISC_DIST_PACKAGES),
     };
 
     this._log('Found the following Angular distributables:', Object.keys(packageConfigs).map(key => `\n - ${key}`));
