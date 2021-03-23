@@ -12,6 +12,7 @@
 const {buildZoneJsPackage} = require('./zone-js-builder');
 const {buildDevInfraPackage} = require('./dev-infra-builder');
 const {buildTargetPackages} = require('./package-builder');
+const {buildAngularInMemoryWebAPIPackage} = require('./angular-in-memory-web-api');
 
 
 // Build the legacy (view engine) npm packages into `dist/packages-dist/`.
@@ -23,3 +24,7 @@ buildZoneJsPackage('dist/zone.js-dist');
 
 // Build the `angular-dev-infra` npm package into `dist/packages-dist/@angular/dev-infra-private`
 buildDevInfraPackage();
+
+// Build the `angular-in-memory-web-api` npm package into
+// `dist/packages-dist/misc/angular-in-memory-web-api`
+buildAngularInMemoryWebAPIPackage();
