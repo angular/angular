@@ -39,6 +39,10 @@ filegroup(
     # do not sort
     srcs = [
         "@npm//:node_modules/core-js/client/core.js",
+        # Required for browsers that do not natively support Custom Elements.
+        "@npm//:node_modules/@webcomponents/custom-elements/custom-elements.min.js",
+        # Required for ES5 code to work with a native Custom Elements implementation.
+        # (See https://www.npmjs.com/package/@webcomponents/custom-elements#es5-vs-es2015.)
         ":custom_elements_native_shim",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
         "//packages/zone.js/bundles:zone.umd.js",
