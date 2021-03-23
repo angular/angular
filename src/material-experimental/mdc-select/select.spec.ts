@@ -2364,6 +2364,22 @@ describe('MDC-based MatSelect', () => {
       expect(label.classList.contains('mdc-floating-label--float-above'))
           .toBe(true, 'Label should be floating');
     }));
+
+    it('should float the label on focus if it has a placeholder', fakeAsync(() => {
+      const fixture = TestBed.createComponent(FloatLabelSelect);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.placeholder).toBeTruthy();
+
+      fixture.componentInstance.floatLabel = 'auto';
+      fixture.detectChanges();
+
+      dispatchFakeEvent(fixture.nativeElement.querySelector('.mat-mdc-select'), 'focus');
+      fixture.detectChanges();
+
+      const label = fixture.nativeElement.querySelector('.mat-mdc-form-field label');
+      expect(label.classList.contains('mdc-floating-label--float-above'))
+          .toBe(true, 'Label should be floating');
+    }));
   });
 
   describe('with a sibling component that throws an error', () => {
@@ -4123,7 +4139,7 @@ class BasicSelectOnPushPreselected {
   template: `
     <mat-form-field [floatLabel]="floatLabel">
       <mat-label>Select a food</mat-label>
-      <mat-select placeholder="Food I want to eat right now" [formControl]="control">
+      <mat-select [placeholder]="placeholder" [formControl]="control">
         <mat-option *ngFor="let food of foods" [value]="food.value">
           {{ food.viewValue }}
         </mat-option>
@@ -4134,6 +4150,7 @@ class BasicSelectOnPushPreselected {
 class FloatLabelSelect {
   floatLabel: FloatLabelType | null = 'auto';
   control = new FormControl();
+  placeholder = 'Food I want to eat right now';
   foods: any[] = [
     { value: 'steak-0', viewValue: 'Steak' },
     { value: 'pizza-1', viewValue: 'Pizza' },
@@ -4238,7 +4255,7 @@ class BasicSelectWithTheming {
   template: `
     <mat-form-field>
       <mat-label>Select a food</mat-label>
-      <mat-select placeholder="Food" [formControl]="control">
+      <mat-select [formControl]="control">
         <mat-option *ngFor="let food of foods" [value]="food.value">
           {{ food.viewValue }}
         </mat-option>

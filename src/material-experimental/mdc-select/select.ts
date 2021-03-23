@@ -116,7 +116,7 @@ export class MatSelect extends _MatSelectBase<MatSelectChange> implements OnInit
   get shouldLabelFloat(): boolean {
     // Since the panel doesn't overlap the trigger, we
     // want the label to only float when there's a value.
-    return this.panelOpen || !this.empty;
+    return this.panelOpen || !this.empty || (this.focused && !!this.placeholder);
   }
 
   ngOnInit() {
