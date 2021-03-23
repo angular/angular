@@ -173,6 +173,7 @@ export declare class MatMenuTrigger implements AfterContentInit, OnDestroy {
     openMenu(): void;
     toggleMenu(): void;
     triggersSubmenu(): boolean;
+    updatePosition(): void;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatMenuTrigger, "[mat-menu-trigger-for], [matMenuTriggerFor]", ["matMenuTrigger"], { "_deprecatedMatMenuTriggerFor": "mat-menu-trigger-for"; "menu": "matMenuTriggerFor"; "menuData": "matMenuTriggerData"; "restoreFocus": "matMenuTriggerRestoreFocus"; }, { "menuOpened": "menuOpened"; "onMenuOpen": "onMenuOpen"; "menuClosed": "menuClosed"; "onMenuClose": "onMenuClose"; }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatMenuTrigger, [null, null, null, null, { optional: true; }, { optional: true; self: true; }, { optional: true; }, null]>;
 }

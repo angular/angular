@@ -1280,6 +1280,9 @@ describe('MatMenu', () => {
           .toBe(Math.floor(trigger.getBoundingClientRect().bottom), 'Expected menu to open below');
     });
 
+    it('should not throw if a menu reposition is requested while the menu is closed', () => {
+      expect(() => fixture.componentInstance.trigger.updatePosition()).not.toThrow();
+    });
   });
 
   describe('fallback positions', () => {
