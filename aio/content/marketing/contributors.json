@@ -939,6 +939,13 @@
     "website": "https://medium.com/@a.yurich.zuev",
     "bio": "Alexey is a web development addict who likes diving deep into the source code and sharing his knowledge through visualization. Creator of ng-run.com",
     "groups": ["GDE"]
+  },
+  "zarend": {
+    "name": "Zach Arend",
+    "picture": "zach-arend.jpg",
+    "bio": "Zach is a software engineer at Google on the Angular Core team. He is passionate about a good user experience, burritos and puppies.",
+    "groups": ["Angular"],
+    "lead": "jelbourn"
   }
 }
 
