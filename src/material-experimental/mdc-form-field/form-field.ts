@@ -53,6 +53,7 @@ import {MatFormFieldNotchedOutline} from './directives/notched-outline';
 import {MAT_PREFIX, MatPrefix} from './directives/prefix';
 import {MAT_SUFFIX, MatSuffix} from './directives/suffix';
 import {DOCUMENT} from '@angular/common';
+import {BooleanInput, coerceBooleanProperty} from '@angular/cdk/coercion';
 
 /** Type for the available floatLabel values. */
 export type FloatLabelType = 'always' | 'auto';
@@ -151,7 +152,12 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
   @ContentChildren(MatHint, {descendants: true}) _hintChildren: QueryList<MatHint>;
 
   /** Whether the required marker should be hidden. */
-  @Input() hideRequiredMarker: boolean = false;
+  @Input()
+  get hideRequiredMarker(): boolean { return this._hideRequiredMarker; }
+  set hideRequiredMarker(value: boolean) {
+    this._hideRequiredMarker = coerceBooleanProperty(value);
+  }
+  private _hideRequiredMarker: boolean;
 
   /** The color palette for the form-field. */
   @Input() color: ThemePalette = 'primary';
@@ -323,9 +329,7 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
       this.appearance = _defaults.appearance;
     }
 
-    if (_defaults && _defaults.hideRequiredMarker) {
-      this.hideRequiredMarker = true;
-    }
+    this._hideRequiredMarker = _defaults?.hideRequiredMarker ?? false;
   }
 
   ngAfterViewInit() {
@@ -718,4 +722,6 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
     // shadow DOM, however browser that support shadow DOM should support `getRootNode` as well.
     return document.documentElement!.contains(element);
   }
+
+  static ngAcceptInputType_hideRequiredMarker: BooleanInput;
 }
