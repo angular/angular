@@ -61,12 +61,12 @@ const REVERT_PREFIX_RE = /^revert:? /i;
  * `headerCorrespondence` object.
  *
  * The pattern can be broken down into component parts:
- * - `(\w*)` - a capturing group discovering the type of the commit.
- * - `(?:\((?:([^/]+)\/)?(.*)\))` - a pair of capturing groups to capture the scope and, optionally
- *     the npmScope of the commit.
+ * - `(\w+)` - a capturing group discovering the type of the commit.
+ * - `(?:\((?:([^/]+)\/)?([^)]+)\))?` - a pair of capturing groups to capture the scope and,
+ * optionally the npmScope of the commit.
  * - `(.*)` - a capturing group discovering the subject of the commit.
  */
-const headerPattern = /^(\w*)(?:\((?:([^/]+)\/)?(.*)\))?: (.*)$/;
+const headerPattern = /^(\w+)(?:\((?:([^/]+)\/)?([^)]+)\))?: (.*)$/;
 /**
  * The property names used for the values extracted from the header via the `headerPattern` regex.
  */
@@ -89,7 +89,9 @@ const parseOptions: Options&{notesPattern: (keywords: string) => RegExp} = {
 /** Parse a full commit message into its composite parts. */
 export function parseCommitMessage(fullText: string): Commit {
   /** The commit message text with the fixup and squash markers stripped out. */
-  const strippedCommitMsg = fullText.replace(FIXUP_PREFIX_RE, '').replace(SQUASH_PREFIX_RE, '');
+  const strippedCommitMsg = fullText.replace(FIXUP_PREFIX_RE, '')
+                                .replace(SQUASH_PREFIX_RE, '')
+                                .replace(REVERT_PREFIX_RE, '');
   /** The initially parsed commit. */
   const commit = parse(strippedCommitMsg, parseOptions);
   /** A list of breaking change notes from the commit. */
