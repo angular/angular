@@ -55,6 +55,7 @@ mat-icon {
   height: 30px;
   font-size: 13px;
   padding: 0px 10px;
+  opacity: 1;
 }
 
 ::ng-deep {
@@ -76,6 +77,12 @@ mat-icon {
 :host-context(.dark-theme) {
   #version-number {
     color: #5caace;
+  }
+}
+
+:host-context(.light-theme) {
+  mat-icon {
+    color: rgba(0, 0, 0, 0.87);
   }
 }
 
