@@ -3,7 +3,9 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "strict": true,
-    "lib": ["es2015"],
+    "moduleResolution": "node",
+    "target": "es2019",
+    "lib": ["es2019"],
     "types": ["jasmine"],
     "baseUrl": ".",
     "paths": {

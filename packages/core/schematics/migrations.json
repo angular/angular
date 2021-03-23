@@ -89,6 +89,11 @@
       "version": "12.0.0-beta",
       "description": "In Angular version 12, the type of ActivatedRouteSnapshot.fragment is nullable. This migration automatically adds non-null assertions to it.",
       "factory": "./migrations/activated-route-snapshot-fragment/index"
+    },
+    "migration-v12-xhr-factory": {
+      "version": "12.0.0-next.6",
+      "description": "`XhrFactory` has been moved from `@angular/common/http` to `@angular/common`.",
+      "factory": "./migrations/xhr-factory/index"
     }
   }
 }

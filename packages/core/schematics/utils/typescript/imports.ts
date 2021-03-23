@@ -110,7 +110,7 @@ export function replaceImport(
 
 
 /** Finds an import specifier with a particular name. */
-function findImportSpecifier(
+export function findImportSpecifier(
     nodes: ts.NodeArray<ts.ImportSpecifier>, specifierName: string): ts.ImportSpecifier|undefined {
   return nodes.find(element => {
     const {name, propertyName} = element;
