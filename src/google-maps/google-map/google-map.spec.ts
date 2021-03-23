@@ -63,10 +63,7 @@ describe('GoogleMap', () => {
     const container = fixture.debugElement.query(By.css('div'))!;
     expect(container.nativeElement.style.height).toBe(DEFAULT_HEIGHT);
     expect(container.nativeElement.style.width).toBe(DEFAULT_WIDTH);
-    expect(mapConstructorSpy).toHaveBeenCalledWith(container.nativeElement, {
-      ...DEFAULT_OPTIONS,
-      mapTypeId: undefined
-    });
+    expect(mapConstructorSpy).toHaveBeenCalledWith(container.nativeElement, DEFAULT_OPTIONS);
   });
 
   it('sets height and width of the map', () => {
@@ -81,10 +78,7 @@ describe('GoogleMap', () => {
     const container = fixture.debugElement.query(By.css('div'))!;
     expect(container.nativeElement.style.height).toBe('750px');
     expect(container.nativeElement.style.width).toBe('400px');
-    expect(mapConstructorSpy).toHaveBeenCalledWith(container.nativeElement, {
-      ...DEFAULT_OPTIONS,
-      mapTypeId: undefined
-    });
+    expect(mapConstructorSpy).toHaveBeenCalledWith(container.nativeElement, DEFAULT_OPTIONS);
 
     fixture.componentInstance.height = '650px';
     fixture.componentInstance.width = '350px';
@@ -131,7 +125,7 @@ describe('GoogleMap', () => {
   });
 
   it('sets center and zoom of the map', () => {
-    const options = {center: {lat: 3, lng: 5}, zoom: 7, mapTypeId: undefined};
+    const options = {center: {lat: 3, lng: 5}, zoom: 7, mapTypeId: DEFAULT_OPTIONS.mapTypeId};
     mapSpy = createMapSpy(options);
     mapConstructorSpy = createMapConstructorSpy(mapSpy).and.callThrough();
 
@@ -152,7 +146,12 @@ describe('GoogleMap', () => {
   });
 
   it('sets map options', () => {
-    const options = {center: {lat: 3, lng: 5}, zoom: 7, draggable: false, mapTypeId: undefined};
+    const options = {
+      center: {lat: 3, lng: 5},
+      zoom: 7,
+      draggable: false,
+      mapTypeId: DEFAULT_OPTIONS.mapTypeId
+    };
     mapSpy = createMapSpy(options);
     mapConstructorSpy = createMapConstructorSpy(mapSpy).and.callThrough();
 
@@ -211,7 +210,7 @@ describe('GoogleMap', () => {
       center: {lat: 12, lng: 15},
       zoom: 5,
       heading: 170,
-      mapTypeId: undefined
+      mapTypeId: DEFAULT_OPTIONS.mapTypeId
     };
     mapSpy = createMapSpy(correctedOptions);
     mapConstructorSpy = createMapConstructorSpy(mapSpy);
