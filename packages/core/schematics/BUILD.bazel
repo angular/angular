@@ -28,5 +28,6 @@ pkg_npm(
         "//packages/core/schematics/migrations/undecorated-classes-with-decorated-fields",
         "//packages/core/schematics/migrations/undecorated-classes-with-di",
         "//packages/core/schematics/migrations/wait-for-async",
+        "//packages/core/schematics/migrations/xhr-factory",
     ],
 )
