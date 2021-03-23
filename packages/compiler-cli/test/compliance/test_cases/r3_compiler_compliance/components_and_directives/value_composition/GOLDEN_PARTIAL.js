@@ -206,7 +206,7 @@ export class MyComponent {
         this.cdr = cdr;
     }
 }
-MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [{ token: i0.ElementRef, resolved: i0.ɵɵResolvedDependencyType.Token }, { token: i0.ViewContainerRef, resolved: i0.ɵɵResolvedDependencyType.Token }, { token: i0.ChangeDetectorRef, resolved: i0.ɵɵResolvedDependencyType.Token }], target: i0.ɵɵFactoryTarget.Component });
+MyComponent.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyComponent, deps: [{ token: i0.ElementRef }, { token: i0.ViewContainerRef }, { token: i0.ChangeDetectorRef }], target: i0.ɵɵFactoryTarget.Component });
 MyComponent.ɵcmp = i0.ɵɵngDeclareComponent({ version: "0.0.0-PLACEHOLDER", type: MyComponent, selector: "my-component", ngImport: i0, template: '', isInline: true });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(MyComponent, [{
         type: Component,
@@ -249,7 +249,7 @@ import * as i0 from "@angular/core";
 export class IfDirective {
     constructor(template) { }
 }
-IfDirective.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IfDirective, deps: [{ token: i0.TemplateRef, resolved: i0.ɵɵResolvedDependencyType.Token }], target: i0.ɵɵFactoryTarget.Directive });
+IfDirective.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: IfDirective, deps: [{ token: i0.TemplateRef }], target: i0.ɵɵFactoryTarget.Directive });
 IfDirective.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: IfDirective, selector: "[if]", ngImport: i0 });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(IfDirective, [{
         type: Directive,

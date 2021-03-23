@@ -8,9 +8,7 @@
 
 import {StaticSymbol} from '../aot/static_symbol';
 import {CompileTypeMetadata, tokenReference} from '../compile_metadata';
-import {CompileReflector} from '../compile_reflector';
 import {InjectFlags} from '../core';
-import {Identifiers} from '../identifiers';
 import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
 import {OutputContext} from '../util';
@@ -88,54 +86,19 @@ export enum R3FactoryTarget {
   NgModule = 4,
 }
 
-/**
- * Resolved type of a dependency.
- *
- * Occasionally, dependencies will have special significance which is known statically. In that
- * case the `R3ResolvedDependencyType` informs the factory generator that a particular dependency
- * should be generated specially (usually by calling a special injection function instead of the
- * standard one).
- */
-export enum R3ResolvedDependencyType {
-  /**
-   * A normal token dependency.
-   */
-  Token = 0,
-
-  /**
-   * The dependency is for an attribute.
-   *
-   * The token expression is a string representing the attribute name.
-   */
-  Attribute = 1,
-
-  /**
-   * An invalid dependency (no token could be determined). An error should be thrown at runtime.
-   */
-  Invalid = 2,
-}
-
-/**
- * Metadata representing a single dependency to be injected into a constructor or function call.
- */
 export interface R3DependencyMetadata {
   /**
    * An expression representing the token or value to be injected.
+   * Or `null` if the dependency could not be resolved - making it invalid.
    */
-  token: o.Expression;
+  token: o.Expression|null;
 
   /**
    * If an @Attribute decorator is present, this is the literal type of the attribute name, or
    * the unknown type if no literal type is available (e.g. the attribute name is an expression).
-   * Will be null otherwise.
+   * Otherwise it is null;
    */
-  attribute: o.Expression|null;
-
-  /**
-   * An enum indicating whether this dependency has special meaning to Angular and needs to be
-   * injected specially.
-   */
-  resolved: R3ResolvedDependencyType;
+  attributeNameType: o.Expression|null;
 
   /**
    * Whether the dependency has an @Host qualifier.
@@ -266,35 +229,37 @@ function injectDependencies(deps: R3DependencyMetadata[], target: R3FactoryTarge
 function compileInjectDependency(
     dep: R3DependencyMetadata, target: R3FactoryTarget, index: number): o.Expression {
   // Interpret the dependency according to its resolved type.
-  switch (dep.resolved) {
-    case R3ResolvedDependencyType.Token:
-      // Build up the injection flags according to the metadata.
-      const flags = InjectFlags.Default | (dep.self ? InjectFlags.Self : 0) |
-          (dep.skipSelf ? InjectFlags.SkipSelf : 0) | (dep.host ? InjectFlags.Host : 0) |
-          (dep.optional ? InjectFlags.Optional : 0) |
-          (target === R3FactoryTarget.Pipe ? InjectFlags.ForPipe : 0);
+  if (dep.token === null) {
+    return o.importExpr(R3.invalidFactoryDep).callFn([o.literal(index)]);
+  } else if (dep.attributeNameType === null) {
+    // Build up the injection flags according to the metadata.
+    const flags = InjectFlags.Default | (dep.self ? InjectFlags.Self : 0) |
+        (dep.skipSelf ? InjectFlags.SkipSelf : 0) | (dep.host ? InjectFlags.Host : 0) |
+        (dep.optional ? InjectFlags.Optional : 0) |
+        (target === R3FactoryTarget.Pipe ? InjectFlags.ForPipe : 0);
 
-      // If this dependency is optional or otherwise has non-default flags, then additional
-      // parameters describing how to inject the dependency must be passed to the inject function
-      // that's being used.
-      let flagsParam: o.LiteralExpr|null =
-          (flags !== InjectFlags.Default || dep.optional) ? o.literal(flags) : null;
+    // If this dependency is optional or otherwise has non-default flags, then additional
+    // parameters describing how to inject the dependency must be passed to the inject function
+    // that's being used.
+    let flagsParam: o.LiteralExpr|null =
+        (flags !== InjectFlags.Default || dep.optional) ? o.literal(flags) : null;
 
-      // Build up the arguments to the injectFn call.
-      const injectArgs = [dep.token];
-      if (flagsParam) {
-        injectArgs.push(flagsParam);
-      }
-      const injectFn = getInjectFn(target);
-      return o.importExpr(injectFn).callFn(injectArgs);
-    case R3ResolvedDependencyType.Attribute:
-      // In the case of attributes, the attribute name in question is given as the token.
-      return o.importExpr(R3.injectAttribute).callFn([dep.token]);
-    case R3ResolvedDependencyType.Invalid:
-      return o.importExpr(R3.invalidFactoryDep).callFn([o.literal(index)]);
-    default:
-      return unsupported(
-          `Unknown R3ResolvedDependencyType: ${R3ResolvedDependencyType[dep.resolved]}`);
+    // Build up the arguments to the injectFn call.
+    const injectArgs = [dep.token];
+    if (flagsParam) {
+      injectArgs.push(flagsParam);
+    }
+    const injectFn = getInjectFn(target);
+    return o.importExpr(injectFn).callFn(injectArgs);
+  } else {
+    // The `dep.attributeTypeName` value is defined, which indicates that this is an `@Attribute()`
+    // type dependency. For the generated JS we still want to use the `dep.token` value in case the
+    // name given for the attribute is not a string literal. For example given `@Attribute(foo())`,
+    // we want to generate `ɵɵinjectAttribute(foo())`.
+    //
+    // The `dep.attributeTypeName` is only actually used (in `createCtorDepType()`) to generate
+    // typings.
+    return o.importExpr(R3.injectAttribute).callFn([dep.token]);
   }
 }
 
@@ -320,10 +285,8 @@ function createCtorDepsType(deps: R3DependencyMetadata[]): o.Type {
 function createCtorDepType(dep: R3DependencyMetadata): o.LiteralMapExpr|null {
   const entries: {key: string, quoted: boolean, value: o.Expression}[] = [];
 
-  if (dep.resolved === R3ResolvedDependencyType.Attribute) {
-    if (dep.attribute !== null) {
-      entries.push({key: 'attribute', value: dep.attribute, quoted: false});
-    }
+  if (dep.attributeNameType !== null) {
+    entries.push({key: 'attribute', value: dep.attributeNameType, quoted: false});
   }
   if (dep.optional) {
     entries.push({key: 'optional', value: o.literal(true), quoted: false});

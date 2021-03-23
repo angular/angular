@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileInjectable as compileIvyInjectable, Expression, LiteralExpr, R3DependencyMetadata, R3FactoryMetadata, R3FactoryTarget, R3InjectableMetadata, R3ResolvedDependencyType, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileInjectable as compileIvyInjectable, Expression, LiteralExpr, R3DependencyMetadata, R3FactoryMetadata, R3FactoryTarget, R3InjectableMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -320,9 +320,8 @@ function extractInjectableCtorDeps(
 function getDep(dep: ts.Expression, reflector: ReflectionHost): R3DependencyMetadata {
   const meta: R3DependencyMetadata = {
     token: new WrappedNodeExpr(dep),
-    attribute: null,
+    attributeNameType: null,
     host: false,
-    resolved: R3ResolvedDependencyType.Token,
     optional: false,
     self: false,
     skipSelf: false,

@@ -177,7 +177,7 @@ export class BaseService {
     }
     ;
 }
-BaseService.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BaseService, deps: [{ token: Thing, resolved: i0.ɵɵResolvedDependencyType.Token }], target: i0.ɵɵFactoryTarget.Injectable });
+BaseService.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BaseService, deps: [{ token: Thing }], target: i0.ɵɵFactoryTarget.Injectable });
 BaseService.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: BaseService, factory: BaseService.ɵfac });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(BaseService, [{
         type: Injectable
@@ -478,7 +478,7 @@ export class BaseModule {
         this.service = service;
     }
 }
-BaseModule.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BaseModule, deps: [{ token: Service, resolved: i0.ɵɵResolvedDependencyType.Token }], target: i0.ɵɵFactoryTarget.NgModule });
+BaseModule.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BaseModule, deps: [{ token: Service }], target: i0.ɵɵFactoryTarget.NgModule });
 BaseModule.ɵmod = i0.ɵɵngDeclareNgModule({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BaseModule });
 BaseModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BaseModule, providers: [Service] });
 (function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(BaseModule, [{

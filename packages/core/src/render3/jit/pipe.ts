@@ -23,9 +23,13 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
       if (ngFactoryDef === null) {
         const metadata = getPipeMetadata(type, meta);
         const compiler = getCompilerFacade();
-        ngFactoryDef = compiler.compileFactory(
-            angularCoreEnv, `ng:///${metadata.name}/ɵfac.js`,
-            {...metadata, target: compiler.R3FactoryTarget.Pipe});
+        ngFactoryDef = compiler.compileFactory(angularCoreEnv, `ng:///${metadata.name}/ɵfac.js`, {
+          name: metadata.name,
+          type: metadata.type,
+          typeArgumentCount: 0,
+          deps: reflectDependencies(type),
+          target: compiler.R3FactoryTarget.Pipe
+        });
       }
       return ngFactoryDef;
     },
@@ -50,9 +54,7 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
 function getPipeMetadata(type: Type<any>, meta: Pipe): R3PipeMetadataFacade {
   return {
     type: type,
-    typeArgumentCount: 0,
     name: type.name,
-    deps: reflectDependencies(type),
     pipeName: meta.name,
     pure: meta.pure !== undefined ? meta.pure : true
   };

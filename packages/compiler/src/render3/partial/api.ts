@@ -343,24 +343,20 @@ export interface R3DeclarePipeMetadata extends R3PartialDeclaration {
  */
 export interface R3DeclareFactoryMetadata extends R3PartialDeclaration {
   /**
-   * Regardless of whether `fnOrClass` is a constructor function or a user-defined factory, it
-   * may have 0 or more parameters, which will be injected according to the `R3DependencyMetadata`
-   * for those parameters. If this is `null`, then the type's constructor is nonexistent and will
-   * be inherited from `fnOrClass` which is interpreted as the current type. If this is `'invalid'`,
-   * then one or more of the parameters wasn't resolvable and any attempt to use these deps will
-   * result in a runtime error.
+   * A collection of dependencies that this factory relies upon.
+   *
+   * If this is `null`, then the type's constructor is nonexistent and will be inherited from an
+   * ancestor of the type.
+   *
+   * If this is `'invalid'`, then one or more of the parameters wasn't resolvable and any attempt to
+   * use these deps will result in a runtime error.
    */
-  deps: R3DependencyMetadata[]|'invalid'|null;
+  deps: R3DeclareDependencyMetadata[]|'invalid'|null;
 
   /**
    * Type of the target being created by the factory.
    */
   target: R3FactoryTarget;
-}
-
-export enum R3FactoryDelegateType {
-  Class = 0,
-  Function = 1,
 }
 
 export enum R3FactoryTarget {
@@ -372,19 +368,23 @@ export enum R3FactoryTarget {
 }
 
 /**
- * Metadata representing a single dependency to be injected into a constructor or function call.
+ * Metadata indicating how a dependency should be injected into a factory.
  */
-export interface R3DependencyMetadata {
+export interface R3DeclareDependencyMetadata {
   /**
-   * An expression representing the token or value to be injected.
+   * An expression representing the token or value to be injected, or `null` if the dependency is
+   * not valid.
+   *
+   * If this dependency is due to the `@Attribute()` decorator, then this is an expression
+   * evaluating to the name of the attribute.
    */
-  token: o.Expression;
+  token: o.Expression|null;
 
   /**
-   * An enum indicating whether this dependency has special meaning to Angular and needs to be
-   * injected specially.
+   * Whether the dependency is injecting an attribute value.
+   * Default: false.
    */
-  resolved: R3ResolvedDependencyType;
+  attribute?: boolean;
 
   /**
    * Whether the dependency has an @Host qualifier.
@@ -409,31 +409,4 @@ export interface R3DependencyMetadata {
    * Default: false,
    */
   skipSelf?: boolean;
-}
-
-/**
- * Resolved type of a dependency.
- *
- * Occasionally, dependencies will have special significance which is known statically. In that
- * case the `R3ResolvedDependencyType` informs the factory generator that a particular dependency
- * should be generated specially (usually by calling a special injection function instead of the
- * standard one).
- */
-export enum R3ResolvedDependencyType {
-  /**
-   * A normal token dependency.
-   */
-  Token = 0,
-
-  /**
-   * The dependency is for an attribute.
-   *
-   * The token expression is a string representing the attribute name.
-   */
-  Attribute = 1,
-
-  /**
-   * An invalid dependency (no token could be determined). An error should be thrown at runtime.
-   */
-  Invalid = 2,
 }

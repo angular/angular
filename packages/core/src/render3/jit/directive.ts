@@ -210,9 +210,13 @@ function addDirectiveFactoryDef(type: Type<any>, metadata: Directive|Component) 
       if (ngFactoryDef === null) {
         const meta = getDirectiveMetadata(type, metadata);
         const compiler = getCompilerFacade();
-        ngFactoryDef = compiler.compileFactory(
-            angularCoreEnv, `ng:///${type.name}/ɵfac.js`,
-            {...meta.metadata, target: compiler.R3FactoryTarget.Directive});
+        ngFactoryDef = compiler.compileFactory(angularCoreEnv, `ng:///${type.name}/ɵfac.js`, {
+          name: meta.metadata.name,
+          type: meta.metadata.type,
+          typeArgumentCount: 0,
+          deps: reflectDependencies(type),
+          target: compiler.R3FactoryTarget.Directive
+        });
       }
       return ngFactoryDef;
     },
@@ -237,9 +241,7 @@ export function directiveMetadata(type: Type<any>, metadata: Directive): R3Direc
   return {
     name: type.name,
     type: type,
-    typeArgumentCount: 0,
     selector: metadata.selector !== undefined ? metadata.selector : null,
-    deps: reflectDependencies(type),
     host: metadata.host || EMPTY_OBJ,
     propMetadata: propMetadata,
     inputs: metadata.inputs || EMPTY_ARRAY,

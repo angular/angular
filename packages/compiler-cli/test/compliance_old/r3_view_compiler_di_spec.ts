@@ -25,6 +25,10 @@ describe('compiler compliance: dependency injection', () => {
               @Injectable()
               export class MyService {}
 
+              function dynamicAttrName() {
+                return 'the-attr';
+              }
+
               @Component({
                 selector: 'my-component',
                 template: \`\`
@@ -32,6 +36,7 @@ describe('compiler compliance: dependency injection', () => {
               export class MyComponent {
                 constructor(
                   @Attribute('name') name:string,
+                  @Attribute(dynamicAttrName()) other: string,
                   s1: MyService,
                   @Host() s2: MyService,
                   @Self() s4: MyService,
@@ -51,6 +56,7 @@ describe('compiler compliance: dependency injection', () => {
       MyComponent.ɵfac = function MyComponent_Factory(t) {
         return new (t || MyComponent)(
           $r3$.ɵɵinjectAttribute('name'),
+          $r3$.ɵɵinjectAttribute(dynamicAttrName()),
           $r3$.ɵɵdirectiveInject(MyService),
           $r3$.ɵɵdirectiveInject(MyService, 1),
           $r3$.ɵɵdirectiveInject(MyService, 2),

@@ -34,8 +34,6 @@ const PARTIAL_ONLY = new Set<string>([
   'ɵɵngDeclareNgModule',
   'ɵɵngDeclarePipe',
   'ɵɵFactoryTarget',
-  'ɵɵResolvedDependencyType',
-  'ɵɵFactoryDelegateType',
   'ChangeDetectionStrategy',
   'ViewEncapsulation',
 ]);
