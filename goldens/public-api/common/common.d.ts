@@ -433,3 +433,7 @@ export declare enum WeekDay {
     Friday = 5,
     Saturday = 6
 }
+
+export declare abstract class XhrFactory {
+    abstract build(): XMLHttpRequest;
+}

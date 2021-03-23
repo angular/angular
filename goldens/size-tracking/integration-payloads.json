@@ -21,7 +21,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 1485,
-        "main-es2015": 144151,
+        "main-es2015": 144579,
         "polyfills-es2015": 36964
       }
     }
@@ -39,7 +39,7 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 2285,
-        "main-es2015": 240352,
+        "main-es2015": 240874,
         "polyfills-es2015": 36975,
         "5-es2015": 753
       }

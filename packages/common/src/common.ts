@@ -26,3 +26,4 @@ export {AsyncPipe, DatePipe, I18nPluralPipe, I18nSelectPipe, JsonPipe, LowerCase
 export {PLATFORM_BROWSER_ID as ɵPLATFORM_BROWSER_ID, PLATFORM_SERVER_ID as ɵPLATFORM_SERVER_ID, PLATFORM_WORKER_APP_ID as ɵPLATFORM_WORKER_APP_ID, PLATFORM_WORKER_UI_ID as ɵPLATFORM_WORKER_UI_ID, isPlatformBrowser, isPlatformServer, isPlatformWorkerApp, isPlatformWorkerUi} from './platform_id';
 export {VERSION} from './version';
 export {ViewportScroller, NullViewportScroller as ɵNullViewportScroller} from './viewport_scroller';
+export {XhrFactory} from './xhr';
