@@ -384,7 +384,7 @@ runInEachFileSystem(() => {
          expect(jsContents).toContain('__spreadArray([], __read(arguments))');
          expect(jsContents)
              .toContain(
-                 'var ɵSubClass_BaseFactory = /*@__PURE__*/ ɵngcc0.ɵɵgetInheritedFactory(SubClass);');
+                 'var ɵSubClass_BaseFactory; return function SubClass_Factory(t) { return (ɵSubClass_BaseFactory || (ɵSubClass_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(SubClass)))(t || SubClass); };');
        });
 
     it(`should be able to detect synthesized constructors in ES5 with downlevelIteration enabled (emitted helpers)`,
@@ -423,7 +423,7 @@ runInEachFileSystem(() => {
          expect(jsContents).toContain('__spreadArray([], __read(arguments))');
          expect(jsContents)
              .toContain(
-                 'var ɵSubClass_BaseFactory = /*@__PURE__*/ ɵngcc0.ɵɵgetInheritedFactory(SubClass);');
+                 'var ɵSubClass_BaseFactory; return function SubClass_Factory(t) { return (ɵSubClass_BaseFactory || (ɵSubClass_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(SubClass)))(t || SubClass); };');
        });
 
     it('should not add `const` in ES5 generated code', () => {

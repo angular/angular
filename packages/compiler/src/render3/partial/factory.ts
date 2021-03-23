@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '../../output/output_ast';
-import {createFactoryType, R3FactoryMetadata, R3FactoryTarget, R3ResolvedDependencyType} from '../r3_factory';
+import {createFactoryType, R3DependencyMetadata, R3FactoryMetadata, R3FactoryTarget} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {R3CompiledExpression} from '../util';
 import {DefinitionMap} from '../view/util';
 
-import {R3DeclareFactoryMetadata, R3DependencyMetadata} from './api';
+import {R3DeclareDependencyMetadata, R3DeclareFactoryMetadata} from './api';
 
 export function compileDeclareFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpression {
   const definitionMap = new DefinitionMap<R3DeclareFactoryMetadata>();
@@ -40,22 +40,22 @@ function compileDependencies(deps: R3DependencyMetadata[]|'invalid'|null): o.Lit
 }
 
 function compileDependency(dep: R3DependencyMetadata): o.LiteralMapExpr {
-  const depMeta = new DefinitionMap<R3DependencyMetadata>();
+  const depMeta = new DefinitionMap<R3DeclareDependencyMetadata>();
   depMeta.set('token', dep.token);
-  depMeta.set(
-      'resolved',
-      o.importExpr(R3.R3ResolvedDependencyType).prop(R3ResolvedDependencyType[dep.resolved]));
+  if (dep.attributeNameType !== null) {
+    depMeta.set('attribute', o.literal(true));
+  }
   if (dep.host) {
-    depMeta.set('host', o.literal(dep.host));
+    depMeta.set('host', o.literal(true));
   }
   if (dep.optional) {
-    depMeta.set('optional', o.literal(dep.optional));
+    depMeta.set('optional', o.literal(true));
   }
   if (dep.self) {
-    depMeta.set('self', o.literal(dep.self));
+    depMeta.set('self', o.literal(true));
   }
   if (dep.skipSelf) {
-    depMeta.set('skipSelf', o.literal(dep.skipSelf));
+    depMeta.set('skipSelf', o.literal(true));
   }
   return depMeta.toLiteralMap();
 }

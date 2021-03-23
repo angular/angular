@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, getSafePropertyAccessString, Identifiers, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3CompiledExpression, R3DependencyMetadata, R3DirectiveMetadata, R3FactoryMetadata, R3FactoryTarget, R3QueryMetadata, R3ResolvedDependencyType, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, getSafePropertyAccessString, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3FactoryMetadata, R3FactoryTarget, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import {emitDistinctChangesOnlyDefaultValue} from '@angular/compiler/src/core';
 import * as ts from 'typescript';
 
@@ -468,27 +468,19 @@ export function extractDirectiveMetadata(
   }
 
   const rawCtorDeps = getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
-  let ctorDeps: R3DependencyMetadata[]|'invalid'|null;
 
   // Non-abstract directives (those with a selector) require valid constructor dependencies, whereas
   // abstract directives are allowed to have invalid dependencies, given that a subclass may call
   // the constructor explicitly.
-  if (selector !== null) {
-    ctorDeps = validateConstructorDependencies(clazz, rawCtorDeps);
-  } else {
-    ctorDeps = unwrapConstructorDependencies(rawCtorDeps);
-  }
+  const ctorDeps = selector !== null ? validateConstructorDependencies(clazz, rawCtorDeps) :
+                                       unwrapConstructorDependencies(rawCtorDeps);
 
-  const isStructural = ctorDeps !== null && ctorDeps !== 'invalid' && ctorDeps.some(dep => {
-    if (dep.resolved !== R3ResolvedDependencyType.Token || !(dep.token instanceof ExternalExpr)) {
-      return false;
-    }
-    if (dep.token.value.moduleName !== '@angular/core' || dep.token.value.name !== 'TemplateRef') {
-      return false;
-    }
-
-    return true;
-  });
+  // Structural directives must have a `TemplateRef` dependency.
+  const isStructural = ctorDeps !== null && ctorDeps !== 'invalid' &&
+      ctorDeps.some(
+          dep => (dep.token instanceof ExternalExpr) &&
+              dep.token.value.moduleName === '@angular/core' &&
+              dep.token.value.name === 'TemplateRef');
 
   // Detect if the component inherits from another class
   const usesInheritance = reflector.hasBaseClass(clazz);
