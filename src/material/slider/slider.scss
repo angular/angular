@@ -44,6 +44,10 @@ $focus-ring-size: 30px !default;
 
 .mat-slider-wrapper {
   position: absolute;
+
+  // force browser to show background-color when using the print function
+  -webkit-print-color-adjust: exact;
+  color-adjust: exact;
 }
 
 .mat-slider-track-wrapper {
