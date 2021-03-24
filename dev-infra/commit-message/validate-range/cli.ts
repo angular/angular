@@ -14,21 +14,27 @@ import {validateCommitRange} from './validate-range';
 
 
 export interface ValidateRangeOptions {
-  range: string;
+  startingRef: string;
+  endingRef: string;
 }
 
 /** Builds the command. */
 function builder(yargs: Argv) {
-  return yargs.option('range', {
-    description: 'The range of commits to check, e.g. --range abc123..xyz456',
-    demandOption: '  A range must be provided, e.g. --range abc123..xyz456',
-    type: 'string',
-    requiresArg: true,
-  });
+  return yargs
+      .positional('startingRef', {
+        description: 'The first ref in the range to select',
+        type: 'string',
+        demandOption: true,
+      })
+      .positional('endingRef', {
+        description: 'The last ref in the range to select',
+        type: 'string',
+        default: 'HEAD',
+      });
 }
 
 /** Handles the command. */
-async function handler({range}: Arguments<ValidateRangeOptions>) {
+async function handler({startingRef, endingRef}: Arguments<ValidateRangeOptions>) {
   // If on CI, and no pull request number is provided, assume the branch
   // being run on is an upstream branch.
   if (process.env['CI'] && process.env['CI_PULL_REQUEST'] === 'false') {
@@ -38,13 +44,13 @@ async function handler({range}: Arguments<ValidateRangeOptions>) {
     info(`Skipping check of provided commit range`);
     return;
   }
-  validateCommitRange(range);
+  await validateCommitRange(startingRef, endingRef);
 }
 
-/** yargs command module describing the command.  */
+/** yargs command module describing the command. */
 export const ValidateRangeModule: CommandModule<{}, ValidateRangeOptions> = {
   handler,
   builder,
-  command: 'validate-range',
+  command: 'validate-range <starting-ref> [ending-ref]',
   describe: 'Validate a range of commit messages',
 };

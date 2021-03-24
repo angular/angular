@@ -53,7 +53,7 @@ async function handler({error, file, fileEnvVariable}: Arguments<ValidateFileOpt
   validateFile(filePath, error);
 }
 
-/** yargs command module describing the command.  */
+/** yargs command module describing the command. */
 export const ValidateFileModule: CommandModule<{}, ValidateFileOptions> = {
   handler,
   builder,
