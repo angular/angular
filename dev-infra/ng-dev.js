@@ -20,6 +20,9 @@ var semver = require('semver');
 var multimatch = require('multimatch');
 var yaml = require('yaml');
 var conventionalCommitsParser = require('conventional-commits-parser');
+var gitCommits_ = require('git-raw-commits');
+var rxjs = require('rxjs');
+var operators = require('rxjs/operators');
 var cliProgress = require('cli-progress');
 var os = require('os');
 var minimatch = require('minimatch');
@@ -1684,6 +1687,32 @@ const COMMIT_TYPES = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/**
+ * A list of tuples expressing the fields to extract from each commit log entry.  The tuple contains
+ * two values, the first is the key for the property and the second is the template shortcut for the
+ * git log command.
+ */
+const commitFields = {
+    hash: '%H',
+    shortHash: '%h',
+    author: '%aN',
+};
+/** The commit fields described as git log format entries for parsing. */
+const commitFieldsAsFormat = (fields) => {
+    const formatChunks = [];
+    for (const key in commitFields) {
+        formatChunks.push(`%n-${key}-%n${fields[key]}`);
+    }
+    return formatChunks.join('');
+};
+/**
+ * The git log format template to create git log entries for parsing.
+ *
+ * The conventional commits parser expects to parse the standard git log raw body (%B) into its
+ * component parts.  Additionally it will parse additional fields with keys defined by
+ * `-{key name}-` separated by new lines.
+ * */
+const gitLogFormatForParsing = `%B${commitFieldsAsFormat(commitFields)}`;
 /** Markers used to denote the start of a note section in a commit. */
 var NoteSections;
 (function (NoteSections) {
@@ -1728,6 +1757,8 @@ const parseOptions = {
 };
 /** Parse a full commit message into its composite parts. */
 function parseCommitMessage(fullText) {
+    // Ensure the fullText symbol is a `string`, even if a Buffer was provided.
+    fullText = fullText.toString();
     /** The commit message text with the fixup and squash markers stripped out. */
     const strippedCommitMsg = fullText.replace(FIXUP_PREFIX_RE, '')
         .replace(SQUASH_PREFIX_RE, '')
@@ -1763,30 +1794,6 @@ function parseCommitMessage(fullText) {
         isSquash: SQUASH_PREFIX_RE.test(fullText),
         isRevert: REVERT_PREFIX_RE.test(fullText),
     };
-}
-/** Retrieve and parse each commit message in a provide range. */
-function parseCommitMessagesForRange(range) {
-    /** A random number used as a split point in the git log result. */
-    const randomValueSeparator = `${Math.random()}`;
-    /**
-     * Custom git log format that provides the commit header and body, separated as expected with the
-     * custom separator as the trailing value.
-     */
-    const gitLogFormat = `%s%n%n%b${randomValueSeparator}`;
-    // Retrieve the commits in the provided range.
-    const result = exec(`git log --reverse --format=${gitLogFormat} ${range}`);
-    if (result.code) {
-        throw new Error(`Failed to get all commits in the range:\n  ${result.stderr}`);
-    }
-    return result
-        // Separate the commits from a single string into individual commits.
-        .split(randomValueSeparator)
-        // Remove extra space before and after each commit message.
-        .map(l => l.trim())
-        // Remove any superfluous lines which remain from the split.
-        .filter(line => !!line)
-        // Parse each commit message.
-        .map(commit => parseCommitMessage(commit));
 }
 
 /**
@@ -2027,48 +2034,72 @@ const ValidateFileModule = {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+// Set `gitCommits` as this imported value to address "Cannot call a namespace" error.
+const gitCommits = gitCommits_;
+/**
+ * Create an observable emiting a `Commit` for each commit in the range provided.
+ */
+function getCommitsInRange(from, to = 'HEAD') {
+    /** Subject emiting `Commit`s. */
+    const commitSubject = new rxjs.ReplaySubject();
+    /** Stream of raw git commit strings in the range provided. */
+    const commitStream = gitCommits({ from, to, format: gitLogFormatForParsing });
+    // Emit a parsed commit for each commit from the Readable stream, completing the subject when
+    // the Readable stream ends.
+    commitStream.on('data', (commit) => commitSubject.next(parseCommitMessage(commit)));
+    commitStream.on('error', (err) => commitSubject.error(err));
+    commitStream.on('end', () => commitSubject.complete());
+    return commitSubject.asObservable();
+}
+/** A pipable operator which combines an observable of Commit objects into one Commit[]. */
+function toCommitList() {
+    return operators.scan((commits, commit) => [...commits, commit], []);
+}
+
 // Whether the provided commit is a fixup commit.
 const isNonFixup = (commit) => !commit.isFixup;
 // Extracts commit header (first line of commit message).
 const extractCommitHeader = (commit) => commit.header;
 /** Validate all commits in a provided git commit range. */
-function validateCommitRange(range) {
-    /** A list of tuples of the commit header string and a list of error messages for the commit. */
-    const errors = [];
-    /** A list of parsed commit messages from the range. */
-    const commits = parseCommitMessagesForRange(range);
-    info(`Examining ${commits.length} commit(s) in the provided range: ${range}`);
-    /**
-     * Whether all commits in the range are valid, commits are allowed to be fixup commits for other
-     * commits in the provided commit range.
-     */
-    const allCommitsInRangeValid = commits.every((commit, i) => {
-        const options = {
-            disallowSquash: true,
-            nonFixupCommitHeaders: isNonFixup(commit) ?
-                undefined :
-                commits.slice(0, i).filter(isNonFixup).map(extractCommitHeader)
-        };
-        const { valid, errors: localErrors } = validateCommitMessage(commit, options);
-        if (localErrors.length) {
-            errors.push([commit.header, localErrors]);
-        }
-        return valid;
-    });
-    if (allCommitsInRangeValid) {
-        info('√  All commit messages in range valid.');
-    }
-    else {
-        error('✘  Invalid commit message');
-        errors.forEach(([header, validationErrors]) => {
-            error.group(header);
-            printValidationErrors(validationErrors);
-            error.groupEnd();
+function validateCommitRange(from, to) {
+    return tslib.__awaiter(this, void 0, void 0, function* () {
+        /** A list of tuples of the commit header string and a list of error messages for the commit. */
+        const errors = [];
+        /** A list of parsed commit messages from the range. */
+        const commits = yield getCommitsInRange(from, to).pipe(toCommitList()).toPromise();
+        info(`Examining ${commits.length} commit(s) in the provided range: ${from}..${to}`);
+        /**
+         * Whether all commits in the range are valid, commits are allowed to be fixup commits for other
+         * commits in the provided commit range.
+         */
+        const allCommitsInRangeValid = commits.every((commit, i) => {
+            const options = {
+                disallowSquash: true,
+                nonFixupCommitHeaders: isNonFixup(commit) ?
+                    undefined :
+                    commits.slice(i + 1).filter(isNonFixup).map(extractCommitHeader)
+            };
+            const { valid, errors: localErrors } = validateCommitMessage(commit, options);
+            if (localErrors.length) {
+                errors.push([commit.header, localErrors]);
+            }
+            return valid;
         });
-        // Exit with a non-zero exit code if invalid commit messages have
-        // been discovered.
-        process.exit(1);
-    }
+        if (allCommitsInRangeValid) {
+            info(green('√  All commit messages in range valid.'));
+        }
+        else {
+            error(red('✘  Invalid commit message'));
+            errors.forEach(([header, validationErrors]) => {
+                error.group(header);
+                printValidationErrors(validationErrors);
+                error.groupEnd();
+            });
+            // Exit with a non-zero exit code if invalid commit messages have
+            // been discovered.
+            process.exit(1);
+        }
+    });
 }
 
 /**
@@ -2080,15 +2111,20 @@ function validateCommitRange(range) {
  */
 /** Builds the command. */
 function builder$3(yargs) {
-    return yargs.option('range', {
-        description: 'The range of commits to check, e.g. --range abc123..xyz456',
-        demandOption: '  A range must be provided, e.g. --range abc123..xyz456',
+    return yargs
+        .positional('startingRef', {
+        description: 'The first ref in the range to select',
         type: 'string',
-        requiresArg: true,
+        demandOption: true,
+    })
+        .positional('endingRef', {
+        description: 'The last ref in the range to select',
+        type: 'string',
+        default: 'HEAD',
     });
 }
 /** Handles the command. */
-function handler$3({ range }) {
+function handler$3({ startingRef, endingRef }) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         // If on CI, and no pull request number is provided, assume the branch
         // being run on is an upstream branch.
@@ -2099,14 +2135,14 @@ function handler$3({ range }) {
             info(`Skipping check of provided commit range`);
             return;
         }
-        validateCommitRange(range);
+        yield validateCommitRange(startingRef, endingRef);
     });
 }
 /** yargs command module describing the command.  */
 const ValidateRangeModule = {
     handler: handler$3,
     builder: builder$3,
-    command: 'validate-range',
+    command: 'validate-range <starting-ref> [ending-ref]',
     describe: 'Validate a range of commit messages',
 };
 
@@ -4294,7 +4330,7 @@ function rebasePr(prNumber, githubToken, config = getConfig()) {
             info(`Fetching ${fullBaseRef} to rebase #${prNumber} on`);
             git.run(['fetch', '-q', baseRefUrl, baseRefName]);
             const commonAncestorSha = git.run(['merge-base', 'HEAD', 'FETCH_HEAD']).stdout.trim();
-            const commits = parseCommitMessagesForRange(`${commonAncestorSha}..HEAD`);
+            const commits = yield getCommitsInRange(commonAncestorSha, 'HEAD').pipe(toCommitList()).toPromise();
             let squashFixups = commits.filter((commit) => commit.isFixup).length === 0 ?
                 false :
                 yield promptConfirm(`PR #${prNumber} contains fixup commits, would you like to squash them during rebase?`, true);
