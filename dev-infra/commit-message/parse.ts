@@ -8,8 +8,6 @@
 
 import {Commit as ParsedCommit, Options, sync as parse} from 'conventional-commits-parser';
 
-import {exec} from '../utils/shelljs';
-
 
 /** A parsed commit, containing the information needed to validate the commit. */
 export interface Commit {
@@ -43,6 +41,30 @@ export interface Commit {
   isRevert: boolean;
 }
 
+/**
+ * A list of tuples expressing the fields to extract from each commit log entry. The tuple contains
+ * two values, the first is the key for the property and the second is the template shortcut for the
+ * git log command.
+ */
+const commitFields = {
+  hash: '%H',
+  shortHash: '%h',
+  author: '%aN',
+};
+/** The additional fields to be included in commit log entries for parsing. */
+export type CommitFields = typeof commitFields;
+/** The commit fields described as git log format entries for parsing. */
+export const commitFieldsAsFormat = (fields: CommitFields) => {
+  return Object.entries(fields).map(([key, value]) => `%n-${key}-%n${value}`).join('');
+};
+/**
+ * The git log format template to create git log entries for parsing.
+ *
+ * The conventional commits parser expects to parse the standard git log raw body (%B) into its
+ * component parts. Additionally it will parse additional fields with keys defined by
+ * `-{key name}-` separated by new lines.
+ * */
+export const gitLogFormatForParsing = `%B${commitFieldsAsFormat(commitFields)}`;
 /** Markers used to denote the start of a note section in a commit. */
 enum NoteSections {
   BREAKING_CHANGE = 'BREAKING CHANGE',
@@ -87,7 +109,9 @@ const parseOptions: Options&{notesPattern: (keywords: string) => RegExp} = {
 
 
 /** Parse a full commit message into its composite parts. */
-export function parseCommitMessage(fullText: string): Commit {
+export function parseCommitMessage(fullText: string|Buffer): Commit {
+  // Ensure the fullText symbol is a `string`, even if a Buffer was provided.
+  fullText = fullText.toString();
   /** The commit message text with the fixup and squash markers stripped out. */
   const strippedCommitMsg = fullText.replace(FIXUP_PREFIX_RE, '')
                                 .replace(SQUASH_PREFIX_RE, '')
@@ -125,31 +149,4 @@ export function parseCommitMessage(fullText: string): Commit {
     isSquash: SQUASH_PREFIX_RE.test(fullText),
     isRevert: REVERT_PREFIX_RE.test(fullText),
   };
-}
-
-/** Retrieve and parse each commit message in a provide range. */
-export function parseCommitMessagesForRange(range: string): Commit[] {
-  /** A random number used as a split point in the git log result. */
-  const randomValueSeparator = `${Math.random()}`;
-  /**
-   * Custom git log format that provides the commit header and body, separated as expected with the
-   * custom separator as the trailing value.
-   */
-  const gitLogFormat = `%s%n%n%b${randomValueSeparator}`;
-
-  // Retrieve the commits in the provided range.
-  const result = exec(`git log --reverse --format=${gitLogFormat} ${range}`);
-  if (result.code) {
-    throw new Error(`Failed to get all commits in the range:\n  ${result.stderr}`);
-  }
-
-  return result
-      // Separate the commits from a single string into individual commits.
-      .split(randomValueSeparator)
-      // Remove extra space before and after each commit message.
-      .map(l => l.trim())
-      // Remove any superfluous lines which remain from the split.
-      .filter(line => !!line)
-      // Parse each commit message.
-      .map(commit => parseCommitMessage(commit));
 }

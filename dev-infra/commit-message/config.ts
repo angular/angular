@@ -31,7 +31,7 @@ export function getCommitMessageConfig() {
   return config as Required<typeof config>;
 }
 
-/** Scope requirement level to be set for each commit type.  */
+/** Scope requirement level to be set for each commit type. */
 export enum ScopeRequirement {
   Required,
   Optional,
