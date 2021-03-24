@@ -41,7 +41,7 @@ async function handler({pr, githubToken, branchPrompt}: Arguments<MergeCommandOp
   await mergePullRequest(pr, githubToken, {branchPrompt});
 }
 
-/** yargs command module describing the command.  */
+/** yargs command module describing the command. */
 export const MergeCommandModule: CommandModule<{}, MergeCommandOptions> = {
   handler,
   builder,
