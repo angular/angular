@@ -341,50 +341,6 @@ function createCtorDepType(dep: R3DependencyMetadata): o.LiteralMapExpr|null {
   return entries.length > 0 ? o.literalMap(entries) : null;
 }
 
-/**
- * A helper function useful for extracting `R3DependencyMetadata` from a Render2
- * `CompileTypeMetadata` instance.
- */
-export function dependenciesFromGlobalMetadata(
-    type: CompileTypeMetadata, outputCtx: OutputContext,
-    reflector: CompileReflector): R3DependencyMetadata[] {
-  // Use the `CompileReflector` to look up references to some well-known Angular types. These will
-  // be compared with the token to statically determine whether the token has significance to
-  // Angular, and set the correct `R3ResolvedDependencyType` as a result.
-  const injectorRef = reflector.resolveExternalReference(Identifiers.Injector);
-
-  // Iterate through the type's DI dependencies and produce `R3DependencyMetadata` for each of them.
-  const deps: R3DependencyMetadata[] = [];
-  for (let dependency of type.diDeps) {
-    if (dependency.token) {
-      const tokenRef = tokenReference(dependency.token);
-      let resolved: R3ResolvedDependencyType = dependency.isAttribute ?
-          R3ResolvedDependencyType.Attribute :
-          R3ResolvedDependencyType.Token;
-
-      // In the case of most dependencies, the token will be a reference to a type. Sometimes,
-      // however, it can be a string, in the case of older Angular code or @Attribute injection.
-      const token =
-          tokenRef instanceof StaticSymbol ? outputCtx.importExpr(tokenRef) : o.literal(tokenRef);
-
-      // Construct the dependency.
-      deps.push({
-        token,
-        attribute: null,
-        resolved,
-        host: !!dependency.isHost,
-        optional: !!dependency.isOptional,
-        self: !!dependency.isSelf,
-        skipSelf: !!dependency.isSkipSelf,
-      });
-    } else {
-      unsupported('dependency without a token');
-    }
-  }
-
-  return deps;
-}
-
 export function isDelegatedFactoryMetadata(meta: R3FactoryMetadata):
     meta is R3DelegatedFnOrClassMetadata {
   return (meta as any).delegateType !== undefined;
