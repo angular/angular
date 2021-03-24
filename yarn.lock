@@ -7935,10 +7935,10 @@ karma-source-map-support@1.4.0:
   dependencies:
     source-map-support "^0.5.5"
 
-karma@~6.2.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/karma/-/karma-6.2.0.tgz#5302ca36390b146f635b3427982afe0a94c72ff7"
-  integrity sha512-pCB8eNxGgdIdZeC885rbhZ/VyuOPNHUIDNL9EaaMf1NVzpvTjMO8a7zRTn51ZJhOOOxCSpalUdT1A8x76LyVqg==
+karma@~6.3.0:
+  version "6.3.0"
+  resolved "https://registry.yarnpkg.com/karma/-/karma-6.3.0.tgz#8291d1ba329a1f57c160b0bd256fb42ae16bfd8b"
+  integrity sha512-Or+x8T4/TWe7ChBaAkdQARjETSbvxsipp5Y+0UMSu4z0YYzy06OA2UdHAmMIx5gLs4a76X916pY1bzGgYuN7BQ==
   dependencies:
     body-parser "^1.19.0"
     braces "^3.0.2"
