@@ -10,9 +10,12 @@ import {globalSources, patchEventPrototype, patchEventTarget, zoneSymbolEventNam
 import {ADD_EVENT_LISTENER_STR, ArraySlice, attachOriginToPatched, bindArguments, FALSE_STR, isBrowser, isIEOrEdge, isMix, isNode, ObjectCreate, ObjectDefineProperty, ObjectGetOwnPropertyDescriptor, patchClass, patchMacroTask, patchMethod, patchOnProperties, REMOVE_EVENT_LISTENER_STR, TRUE_STR, wrapWithCurrentZone, ZONE_SYMBOL_PREFIX} from '../common/utils';
 
 import {patchCallbacks} from './browser-util';
-import {eventNames, filterProperties} from './property-descriptor';
+import {filterProperties, getOnEventNames} from './property-descriptor';
 
 Zone.__load_patch('util', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
+  // Collect native event names by looking at properties
+  // on the global namespace, e.g. 'onclick'.
+  const eventNames: string[] = getOnEventNames(global);
   api.patchOnProperties = patchOnProperties;
   api.patchMethod = patchMethod;
   api.bindArguments = bindArguments;

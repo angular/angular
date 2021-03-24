@@ -58,7 +58,6 @@ const internalWindow: any = isWindowExists ? window : undefined;
 const _global: any = isWindowExists && internalWindow || typeof self === 'object' && self || global;
 
 const REMOVE_ATTRIBUTE = 'removeAttribute';
-const NULL_ON_PROP_VALUE: [any] = [null];
 
 export function bindArguments(args: any[], source: string): any[] {
   for (let i = args.length - 1; i >= 0; i--) {
@@ -207,22 +206,18 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
     if (!target) {
       return;
     }
-    let previousValue = (target as any)[eventNameSymbol];
-    if (previousValue) {
+
+    const previousValue = (target as any)[eventNameSymbol];
+    if (typeof previousValue === 'function') {
       target.removeEventListener(eventName, wrapFn);
     }
 
     // issue #978, when onload handler was added before loading zone.js
     // we should remove it with originalDescSet
-    if (originalDescSet) {
-      originalDescSet.apply(target, NULL_ON_PROP_VALUE);
-    }
-
+    originalDescSet && originalDescSet.call(target, null);
+    (target as any)[eventNameSymbol] = newValue;
     if (typeof newValue === 'function') {
-      (target as any)[eventNameSymbol] = newValue;
       target.addEventListener(eventName, wrapFn, false);
-    } else {
-      (target as any)[eventNameSymbol] = null;
     }
   };
 
@@ -231,7 +226,7 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
   desc.get = function() {
     // in some of windows's onproperty callback, this is undefined
     // so we need to check it
-    let target = this;
+    let target: any = this;
     if (!target && obj === _global) {
       target = _global;
     }
@@ -248,11 +243,11 @@ export function patchProperty(obj: any, prop: string, prototype?: any) {
       // the onclick will be evaluated when first time event was triggered or
       // the property is accessed, https://github.com/angular/zone.js/issues/525
       // so we should use original native get to retrieve the handler
-      let value = originalDescGet && originalDescGet.call(this);
+      let value = originalDescGet.call(this);
       if (value) {
         desc!.set!.call(this, value);
-        if (typeof (target as any)[REMOVE_ATTRIBUTE] === 'function') {
-          (target as any).removeAttribute(prop);
+        if (typeof target[REMOVE_ATTRIBUTE] === 'function') {
+          target.removeAttribute(prop);
         }
         return value;
       }
