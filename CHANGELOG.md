@@ -1,3 +1,89 @@
+# 12.0.0-next.4 "nylon-girl" (2021-03-24)
+
+## Highlights
+
+Sass style API has been reworked so that clients can take advantage of `@use`. This includes:
+  * A single entry point into `@angular/material` and `@angular/cdk`
+  * Renamed functions, mixins, and variables to be a better reflection of what they do
+ 
+For more information, check out the [new theming guide](https://github.com/angular/components/blob/master/guides/theming.md).
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** add ConfigurableFocusTrapConfig to the public API ([#22138](https://github.com/angular/components/issues/22138)) ([7718947dbc22c703a118db2531e4499908eda326](https://github.com/angular/components/commit/7718947dbc22c703a118db2531e4499908eda326)), closes [#18201](https://github.com/angular/components/issues/18201) [#22136](https://github.com/angular/components/issues/22136) |
+| bug fix |  **a11y:** FocusTrap deprecation docs don't render correctly ([#22137](https://github.com/angular/components/issues/22137)) ([c0286ea50ab5cb1076661e22ea157598d68c0113](https://github.com/angular/components/commit/c0286ea50ab5cb1076661e22ea157598d68c0113)), closes [#18201](https://github.com/angular/components/issues/18201) [#22136](https://github.com/angular/components/issues/22136) |
+| bug fix |  **platform:** avoid error during server-side rendering if document is stubbed out ([#22260](https://github.com/angular/components/issues/22260)) ([50b3207d17ff0cec6e130253ae7ea3effc98b10a](https://github.com/angular/components/commit/50b3207d17ff0cec6e130253ae7ea3effc98b10a)), closes [#22259](https://github.com/angular/components/issues/22259) |
+| bug fix |  **schematics:** update generated css class ([#22270](https://github.com/angular/components/issues/22270)) ([44cbab07eac5b20ec1d6d57aab331b295baef55c](https://github.com/angular/components/commit/44cbab07eac5b20ec1d6d57aab331b295baef55c)), closes [#22269](https://github.com/angular/components/issues/22269) |
+| bug fix |  **text-field:** autosize text areas using the placeholder ([#22197](https://github.com/angular/components/issues/22197)) ([476a90b083532add4b1343c83e6bf4d105094050](https://github.com/angular/components/commit/476a90b083532add4b1343c83e6bf4d105094050)), closes [#22042](https://github.com/angular/components/issues/22042) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **autocomplete:** avoid assigning invalid aria-labelledby values ([#22261](https://github.com/angular/components/issues/22261)) ([ee499222d2d858c223c7bd2c6a3db1248b604065](https://github.com/angular/components/commit/ee499222d2d858c223c7bd2c6a3db1248b604065)), closes [#22256](https://github.com/angular/components/issues/22256) |
+| bug fix |  **grid-list:** remove mat-figure class ([#22231](https://github.com/angular/components/issues/22231)) ([4b11445a91f50ae45c343d71611114c0861b17e6](https://github.com/angular/components/commit/4b11445a91f50ae45c343d71611114c0861b17e6)) |
+| bug fix |  **progress-bar:** Support ChromeVox ([#22166](https://github.com/angular/components/issues/22166)) ([5b7b03ea7d3f2e923e24b6d9286b796173b72582](https://github.com/angular/components/commit/5b7b03ea7d3f2e923e24b6d9286b796173b72582)), closes [#22165](https://github.com/angular/components/issues/22165) |
+| bug fix |  **progress-spinner:** resolve accessibility issue in ChromeVox ([#22219](https://github.com/angular/components/issues/22219)) ([2da7135e434c8eda5f1420c307b0edfebeff5545](https://github.com/angular/components/commit/2da7135e434c8eda5f1420c307b0edfebeff5545)), closes [#22166](https://github.com/angular/components/issues/22166) |
+| bug fix |  **radio:** add high contrast focus indication ([#22145](https://github.com/angular/components/issues/22145)) ([2e1214f87260e0a4fa29e8063235564275adf7ac](https://github.com/angular/components/commit/2e1214f87260e0a4fa29e8063235564275adf7ac)) |
+| bug fix |  **select:** trim aria-labelledby ([#22251](https://github.com/angular/components/issues/22251)) ([9b67d670be8d6c34048a7526819aa4ec0cfa0f71](https://github.com/angular/components/commit/9b67d670be8d6c34048a7526819aa4ec0cfa0f71)), closes [#22192](https://github.com/angular/components/issues/22192) |
+| bug fix |  **stepper:** setting invalid value for visibility ([#22254](https://github.com/angular/components/issues/22254)) ([6db0fa94d58242067d60572ddc8ab3cbb9968855](https://github.com/angular/components/commit/6db0fa94d58242067d60572ddc8ab3cbb9968855)) |
+| feature |  **core:** expose new @use-based Sass API ([#22173](https://github.com/angular/components/issues/22173)) ([40ceda28fd4c8477a368e4631e3eaf945cb99106](https://github.com/angular/components/commit/40ceda28fd4c8477a368e4631e3eaf945cb99106)) |
+| feature |  **menu:** allow updating menu position a la autocomplete ([#22046](https://github.com/angular/components/issues/22046)) ([ad248652e7da31398176fe11878b59805e440b5a](https://github.com/angular/components/commit/ad248652e7da31398176fe11878b59805e440b5a)) |
+| feature |  **slider:** show background-color in print stylesheet ([#11364](https://github.com/angular/components/issues/11364)) ([#22300](https://github.com/angular/components/issues/22300)) ([69a8fb54dc6c616cc2b2b6d158d5234c9e77125d](https://github.com/angular/components/commit/69a8fb54dc6c616cc2b2b6d158d5234c9e77125d)) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  ensure that a mapTypeId is always passed in ([#22098](https://github.com/angular/components/issues/22098)) ([7c9b83a6f18926dc43e684592da5c53fc472e28f](https://github.com/angular/components/commit/7c9b83a6f18926dc43e684592da5c53fc472e28f)), closes [#22082](https://github.com/angular/components/issues/22082) |
+| bug fix |  initialize directions service lazily ([#22302](https://github.com/angular/components/issues/22302)) ([588a50650f4ea042abb7b4c3721153f4ed94ce7c](https://github.com/angular/components/commit/588a50650f4ea042abb7b4c3721153f4ed94ce7c)), closes [#22159](https://github.com/angular/components/issues/22159) |
+| bug fix |  instantiate geocoder lazily ([#22159](https://github.com/angular/components/issues/22159)) ([1fac4918eade8524ab54a21c445db3b907662e57](https://github.com/angular/components/commit/1fac4918eade8524ab54a21c445db3b907662e57)), closes [#22148](https://github.com/angular/components/issues/22148) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-button:** remove unthemed icon color ([#22281](https://github.com/angular/components/issues/22281)) ([08bbd50a6775417459d8283d66d6f918bbc68080](https://github.com/angular/components/commit/08bbd50a6775417459d8283d66d6f918bbc68080)) |
+| bug fix |  **mdc-form-field:** use coercion for boolean input ([#22194](https://github.com/angular/components/issues/22194)) ([75e191dfd35845cf2400f0888dcd970ac1f9b10b](https://github.com/angular/components/commit/75e191dfd35845cf2400f0888dcd970ac1f9b10b)) |
+| bug fix |  **mdc-select:** fix floating label behavior ([#22134](https://github.com/angular/components/issues/22134)) ([16b7adb84623b815dd3aff994a52c7deae9825fb](https://github.com/angular/components/commit/16b7adb84623b815dd3aff994a52c7deae9825fb)) |
+| bug fix |  **mdc-select:** float label on focus if there's a placeholder ([#22187](https://github.com/angular/components/issues/22187)) ([b9943493304123c4b5d0b0d93078069e0a03cbfe](https://github.com/angular/components/commit/b9943493304123c4b5d0b0d93078069e0a03cbfe)), closes [#19517](https://github.com/angular/components/issues/19517) |
+
+## 11.2.6 "wool-mammoth" (2021-03-24)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **a11y:** FocusTrap deprecation docs don't render correctly ([#22137](https://github.com/angular/components/issues/22137)) ([032c4e4acc390a8e8d8cd9cfdea947ce7456794c](https://github.com/angular/components/commit/032c4e4acc390a8e8d8cd9cfdea947ce7456794c)), closes [#18201](https://github.com/angular/components/issues/18201) [#22136](https://github.com/angular/components/issues/22136) |
+| bug fix |  **platform:** avoid error during server-side rendering if document is stubbed out ([#22260](https://github.com/angular/components/issues/22260)) ([7acd695e0b4caa1610b2b64d094c1d3255a5e265](https://github.com/angular/components/commit/7acd695e0b4caa1610b2b64d094c1d3255a5e265)), closes [#22259](https://github.com/angular/components/issues/22259) |
+| bug fix |  **schematics:** update generated css class ([#22270](https://github.com/angular/components/issues/22270)) ([5b94af258d72756591c40245bfb552149cd78251](https://github.com/angular/components/commit/5b94af258d72756591c40245bfb552149cd78251)), closes [#22269](https://github.com/angular/components/issues/22269) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **autocomplete:** avoid assigning invalid aria-labelledby values ([#22261](https://github.com/angular/components/issues/22261)) ([19ca1b21fc66ca838fda81e07532a0ec18cd8916](https://github.com/angular/components/commit/19ca1b21fc66ca838fda81e07532a0ec18cd8916)), closes [#22256](https://github.com/angular/components/issues/22256) |
+| bug fix |  **progress-bar:** Support ChromeVox ([#22166](https://github.com/angular/components/issues/22166)) ([f950c03fef4739b35fb11e0d9b286e5684b2151f](https://github.com/angular/components/commit/f950c03fef4739b35fb11e0d9b286e5684b2151f)), closes [#22165](https://github.com/angular/components/issues/22165) |
+| bug fix |  **progress-spinner:** resolve accessibility issue in ChromeVox ([#22219](https://github.com/angular/components/issues/22219)) ([0e0b84a9ca6d9dfb74c13737477f4cc3585a5ef0](https://github.com/angular/components/commit/0e0b84a9ca6d9dfb74c13737477f4cc3585a5ef0)), closes [#22166](https://github.com/angular/components/issues/22166) |
+| bug fix |  **select:** trim aria-labelledby ([#22251](https://github.com/angular/components/issues/22251)) ([cdbf876b10e3d6d6b9d16a8faa922ec0bc081b7a](https://github.com/angular/components/commit/cdbf876b10e3d6d6b9d16a8faa922ec0bc081b7a)), closes [#22192](https://github.com/angular/components/issues/22192) |
+| bug fix |  **stepper:** setting invalid value for visibility ([#22254](https://github.com/angular/components/issues/22254)) ([3ead2cd49f28868d47d7699ecda52de9f103f01b](https://github.com/angular/components/commit/3ead2cd49f28868d47d7699ecda52de9f103f01b)) |
+| feature |  **slider:** show background-color in print stylesheet ([#11364](https://github.com/angular/components/issues/11364)) ([#22300](https://github.com/angular/components/issues/22300)) ([059214ecaf39d5a974fa3e04de0c5f18687a4355](https://github.com/angular/components/commit/059214ecaf39d5a974fa3e04de0c5f18687a4355)) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  ensure that a mapTypeId is always passed in ([#22098](https://github.com/angular/components/issues/22098)) ([b79a2d53af27f9c0cc64d155219a440c2be2ba6c](https://github.com/angular/components/commit/b79a2d53af27f9c0cc64d155219a440c2be2ba6c)), closes [#22082](https://github.com/angular/components/issues/22082) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-select:** fix floating label behavior ([#22134](https://github.com/angular/components/issues/22134)) ([28d12e460f10b3bc648abeee52404e3d9402c6eb](https://github.com/angular/components/commit/28d12e460f10b3bc648abeee52404e3d9402c6eb)) |
+
+
 # 12.0.0-next.3 "hollandaise-holiday" (2021-03-17)
 
 ### material
