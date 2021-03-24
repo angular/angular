@@ -2,7 +2,7 @@
 
 ## Highlights
 
-Sass style API has been reworked so that clients can take advantage of `@use`. This includes:
+Sass theming API has been reworked so that clients can take advantage of `@use`. This includes:
   * A single entry point into `@angular/material` and `@angular/cdk`
   * Renamed functions, mixins, and variables to be a better reflection of what they do
  
