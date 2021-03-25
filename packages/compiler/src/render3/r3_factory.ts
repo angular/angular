@@ -260,7 +260,6 @@ function injectDependencies(deps: R3DependencyMetadata[], target: R3FactoryTarge
 function compileInjectDependency(
     dep: R3DependencyMetadata, target: R3FactoryTarget, index: number): o.Expression {
   const isPipe = target === R3FactoryTarget.Pipe;
-  const injectFn = getInjectFn(target);
 
   // Interpret the dependency according to its resolved type.
   switch (dep.resolved) {
@@ -287,6 +286,7 @@ function compileInjectDependency(
       if (flagsParam) {
         injectArgs.push(flagsParam);
       }
+      const injectFn = getInjectFn(target);
       return o.importExpr(injectFn).callFn(injectArgs);
     case R3ResolvedDependencyType.Attribute:
       // In the case of attributes, the attribute name in question is given as the token.
