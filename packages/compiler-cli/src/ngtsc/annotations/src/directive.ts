@@ -24,7 +24,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFl
 import {createValueHasWrongTypeError, getDirectiveDiagnostics, getProviderDiagnostics, getUndecoratedClassWithAngularFeaturesDiagnostic} from './diagnostics';
 import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {compileResults, createSourceSpan, findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
+import {compileResults, createSourceSpan, findAngularDecorator, getConstructorDependencies, isAngularDecorator, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, unwrapConstructorDependencies, unwrapExpression, unwrapForwardRef, validateConstructorDependencies, wrapFunctionExpressionsInParens, wrapTypeReference} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 const FIELD_DECORATORS = [
@@ -302,7 +302,8 @@ export class DirectiveDecoratorHandler implements
   compileFull(
       node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
       resolution: Readonly<unknown>, pool: ConstantPool): CompileResult[] {
-    const fac = compileNgFactoryDefField(toDirectiveFactoryMetadata(analysis.meta));
+    const fac =
+        compileNgFactoryDefField(toFactoryMetadata(analysis.meta, R3FactoryTarget.Directive));
     const def = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
     return compileResults(fac, def, analysis.metadataStmt, 'ɵdir');
   }
@@ -310,7 +311,7 @@ export class DirectiveDecoratorHandler implements
   compilePartial(
       node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
       resolution: Readonly<unknown>): CompileResult[] {
-    const fac = compileDeclareFactory(toDirectiveFactoryMetadata(analysis.meta));
+    const fac = compileDeclareFactory(toFactoryMetadata(analysis.meta, R3FactoryTarget.Directive));
     const def = compileDeclareDirectiveFromMetadata(analysis.meta);
     return compileResults(fac, def, analysis.metadataStmt, 'ɵdir');
   }
@@ -919,7 +920,3 @@ const QUERY_TYPES = new Set([
   'ViewChild',
   'ViewChildren',
 ]);
-
-function toDirectiveFactoryMetadata(meta: R3DirectiveMetadata): R3FactoryMetadata {
-  return {...meta, target: R3FactoryTarget.Directive};
-}
