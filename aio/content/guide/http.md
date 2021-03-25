@@ -1079,7 +1079,7 @@ Failing to do so renders Angular's default protection ineffective.
 
 ## Notes
 
-You need to unsubscribe in OnDestroy lifecycle hook, even though the client has an unsubscribe mechanism under the hood
+You need to unsubscribe in OnDestroy lifecycle hook, even though the client has an unsubscribe mechanism under the hood  
 
 ### Configuring custom cookie/header names
 
