@@ -1077,6 +1077,10 @@ Failing to do so renders Angular's default protection ineffective.
 
 </div>
 
+## Notes
+
+You need to unsubscribe in OnDestroy lifecycle hook, even though the client has an unsubscribe mechanism under the hood
+
 ### Configuring custom cookie/header names
 
 If your backend service uses different names for the XSRF token cookie or header,
