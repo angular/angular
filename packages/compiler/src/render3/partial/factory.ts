@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as o from '../../output/output_ast';
-import {createFactoryType, R3DependencyMetadata, R3FactoryMetadata, R3FactoryTarget} from '../r3_factory';
+import {createFactoryType, FactoryTarget, R3DependencyMetadata, R3FactoryMetadata} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {R3CompiledExpression} from '../util';
 import {DefinitionMap} from '../view/util';
@@ -19,7 +19,7 @@ export function compileDeclareFactoryFunction(meta: R3FactoryMetadata): R3Compil
   definitionMap.set('ngImport', o.importExpr(R3.core));
   definitionMap.set('type', meta.internalType);
   definitionMap.set('deps', compileDependencies(meta.deps));
-  definitionMap.set('target', o.importExpr(R3.R3FactoryTarget).prop(R3FactoryTarget[meta.target]));
+  definitionMap.set('target', o.importExpr(R3.FactoryTarget).prop(FactoryTarget[meta.target]));
 
   return {
     expression: o.importExpr(R3.declareFactory).callFn([definitionMap.toLiteralMap()]),

@@ -8,7 +8,7 @@
 
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
-import {compileFactoryFunction, R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata, R3FactoryTarget} from './render3/r3_factory';
+import {compileFactoryFunction, FactoryTarget, R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata} from './render3/r3_factory';
 import {R3Reference, typeWithParameters} from './render3/util';
 import {DefinitionMap} from './render3/view/util';
 
@@ -40,7 +40,7 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
     internalType: meta.internalType,
     typeArgumentCount: meta.typeArgumentCount,
     deps: [],
-    target: R3FactoryTarget.Injectable,
+    target: FactoryTarget.Injectable,
   };
 
   if (meta.useClass !== undefined) {

@@ -60,7 +60,7 @@ export interface CompilerFacade {
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
-  R3FactoryTarget: typeof FactoryTarget;
+  FactoryTarget: typeof FactoryTarget;
   ResourceLoader: {new(): ResourceLoader};
 }
 

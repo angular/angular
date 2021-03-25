@@ -15,7 +15,7 @@ import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from './ml_parser/int
 import {DeclareVarStmt, Expression, literal, LiteralExpr, Statement, StmtModifier, WrappedNodeExpr} from './output/output_ast';
 import {JitEvaluator} from './output/output_jit';
 import {ParseError, ParseSourceSpan, r3JitTypeSourceSpan} from './parse_util';
-import {compileFactoryFunction, R3DependencyMetadata, R3FactoryTarget} from './render3/r3_factory';
+import {compileFactoryFunction, FactoryTarget, R3DependencyMetadata} from './render3/r3_factory';
 import {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
 import {R3JitReflector} from './render3/r3_jit';
 import {compileNgModule, compileNgModuleDeclarationExpression, R3NgModuleMetadata} from './render3/r3_module_compiler';
@@ -28,7 +28,7 @@ import {ResourceLoader} from './resource_loader';
 import {DomElementSchemaRegistry} from './schema/dom_element_schema_registry';
 
 export class CompilerFacadeImpl implements CompilerFacade {
-  R3FactoryTarget = R3FactoryTarget as any;
+  FactoryTarget = FactoryTarget as any;
   ResourceLoader = ResourceLoader;
   private elementSchemaRegistry = new DomElementSchemaRegistry();
 
