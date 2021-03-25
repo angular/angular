@@ -45,7 +45,7 @@ export function ɵɵngDeclareFactory(decl: R3DeclareFactoryFacade): unknown {
 /**
  * These enums are used in the partial factory declaration calls.
  */
-export {R3FactoryTarget} from '../../compiler/compiler_facade';
+export {FactoryTarget} from '../../compiler/compiler_facade';
 
 /**
  * Compiles a partial injector declaration object into a full injector definition object.

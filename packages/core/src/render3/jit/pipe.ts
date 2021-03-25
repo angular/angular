@@ -28,7 +28,7 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
           type: metadata.type,
           typeArgumentCount: 0,
           deps: reflectDependencies(type),
-          target: compiler.R3FactoryTarget.Pipe
+          target: compiler.FactoryTarget.Pipe
         });
       }
       return ngFactoryDef;

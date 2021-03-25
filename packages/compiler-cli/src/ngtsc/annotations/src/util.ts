@@ -8,7 +8,7 @@
 
 import {Expression, ExternalExpr, LiteralExpr, ParseLocation, ParseSourceFile, ParseSourceSpan, R3CompiledExpression, R3DependencyMetadata, R3Reference, ReadPropExpr, Statement, WrappedNodeExpr} from '@angular/compiler';
 import {R3FactoryMetadata} from '@angular/compiler/src/compiler';
-import {R3FactoryTarget} from '@angular/compiler/src/render3/partial/api';
+import {FactoryTarget} from '@angular/compiler/src/render3/partial/api';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
@@ -583,7 +583,7 @@ export function compileResults(
 }
 
 export function toFactoryMetadata(
-    meta: Omit<R3FactoryMetadata, 'target'>, target: R3FactoryTarget): R3FactoryMetadata {
+    meta: Omit<R3FactoryMetadata, 'target'>, target: FactoryTarget): R3FactoryMetadata {
   return {
     name: meta.name,
     type: meta.type,

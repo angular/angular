@@ -149,7 +149,7 @@ export function compileNgModuleDefs(
           name: moduleType.name,
           type: moduleType,
           deps: reflectDependencies(moduleType),
-          target: compiler.R3FactoryTarget.NgModule,
+          target: compiler.FactoryTarget.NgModule,
           typeArgumentCount: 0,
         });
       }

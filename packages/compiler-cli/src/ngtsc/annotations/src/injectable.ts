@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileInjectable as compileIvyInjectable, Expression, LiteralExpr, R3DependencyMetadata, R3FactoryMetadata, R3FactoryTarget, R3InjectableMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileInjectable as compileIvyInjectable, Expression, FactoryTarget, LiteralExpr, R3DependencyMetadata, R3FactoryMetadata, R3InjectableMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -102,7 +102,7 @@ export class InjectableDecoratorHandler implements
     if (analysis.needsFactory) {
       const meta = analysis.meta;
       const factoryRes = compileNgFactoryDefField(
-          toFactoryMetadata({...meta, deps: analysis.ctorDeps}, R3FactoryTarget.Injectable));
+          toFactoryMetadata({...meta, deps: analysis.ctorDeps}, FactoryTarget.Injectable));
       if (analysis.metadataStmt !== null) {
         factoryRes.statements.push(analysis.metadataStmt);
       }
@@ -134,7 +134,7 @@ export class InjectableDecoratorHandler implements
     if (analysis.needsFactory) {
       const meta = analysis.meta;
       const factoryRes = compileDeclareFactory(
-          toFactoryMetadata({...meta, deps: analysis.ctorDeps}, R3FactoryTarget.Injectable));
+          toFactoryMetadata({...meta, deps: analysis.ctorDeps}, FactoryTarget.Injectable));
       if (analysis.metadataStmt !== null) {
         factoryRes.statements.push(analysis.metadataStmt);
       }
