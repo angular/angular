@@ -268,7 +268,7 @@ export {
   transitiveScopesFor as ɵtransitiveScopesFor,
 } from './render3/jit/module';
 export {
-  R3FactoryTarget as ɵɵFactoryTarget,
+  FactoryTarget as ɵɵFactoryTarget,
   ɵɵngDeclareComponent,
   ɵɵngDeclareDirective,
   ɵɵngDeclareFactory,

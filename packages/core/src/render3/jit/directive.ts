@@ -215,7 +215,7 @@ function addDirectiveFactoryDef(type: Type<any>, metadata: Directive|Component) 
           type: meta.metadata.type,
           typeArgumentCount: 0,
           deps: reflectDependencies(type),
-          target: compiler.R3FactoryTarget.Directive
+          target: compiler.FactoryTarget.Directive
         });
       }
       return ngFactoryDef;

@@ -60,7 +60,7 @@ export interface CompilerFacade {
 
   createParseSourceSpan(kind: string, typeName: string, sourceUrl: string): ParseSourceSpan;
 
-  R3FactoryTarget: typeof R3FactoryTarget;
+  FactoryTarget: typeof FactoryTarget;
   ResourceLoader: {new(): ResourceLoader};
 }
 
@@ -82,7 +82,7 @@ export type StringMapWithRename = {
 
 export type Provider = any;
 
-export enum R3FactoryTarget {
+export enum FactoryTarget {
   Directive = 0,
   Component = 1,
   Injectable = 2,
@@ -228,13 +228,13 @@ export interface R3FactoryDefMetadataFacade {
   type: any;
   typeArgumentCount: number;
   deps: R3DependencyMetadataFacade[]|null;
-  target: R3FactoryTarget;
+  target: FactoryTarget;
 }
 
 export interface R3DeclareFactoryFacade {
   type: Function;
   deps: R3DeclareDependencyMetadataFacade[]|null;
-  target: R3FactoryTarget;
+  target: FactoryTarget;
 }
 
 export enum ViewEncapsulation {

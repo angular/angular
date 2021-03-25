@@ -356,10 +356,10 @@ export interface R3DeclareFactoryMetadata extends R3PartialDeclaration {
   /**
    * Type of the target being created by the factory.
    */
-  target: R3FactoryTarget;
+  target: FactoryTarget;
 }
 
-export enum R3FactoryTarget {
+export enum FactoryTarget {
   Directive = 0,
   Component = 1,
   Injectable = 2,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, getSafePropertyAccessString, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3FactoryMetadata, R3FactoryTarget, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclareDirectiveFromMetadata, compileDirectiveFromMetadata, ConstantPool, Expression, ExternalExpr, FactoryTarget, getSafePropertyAccessString, makeBindingParser, ParsedHostBindings, ParseError, parseHostBindings, R3DirectiveMetadata, R3FactoryMetadata, R3QueryMetadata, Statement, verifyHostBindings, WrappedNodeExpr} from '@angular/compiler';
 import {emitDistinctChangesOnlyDefaultValue} from '@angular/compiler/src/core';
 import * as ts from 'typescript';
 
@@ -302,8 +302,7 @@ export class DirectiveDecoratorHandler implements
   compileFull(
       node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
       resolution: Readonly<unknown>, pool: ConstantPool): CompileResult[] {
-    const fac =
-        compileNgFactoryDefField(toFactoryMetadata(analysis.meta, R3FactoryTarget.Directive));
+    const fac = compileNgFactoryDefField(toFactoryMetadata(analysis.meta, FactoryTarget.Directive));
     const def = compileDirectiveFromMetadata(analysis.meta, pool, makeBindingParser());
     return compileResults(fac, def, analysis.metadataStmt, 'ɵdir');
   }
@@ -311,7 +310,7 @@ export class DirectiveDecoratorHandler implements
   compilePartial(
       node: ClassDeclaration, analysis: Readonly<DirectiveHandlerData>,
       resolution: Readonly<unknown>): CompileResult[] {
-    const fac = compileDeclareFactory(toFactoryMetadata(analysis.meta, R3FactoryTarget.Directive));
+    const fac = compileDeclareFactory(toFactoryMetadata(analysis.meta, FactoryTarget.Directive));
     const def = compileDeclareDirectiveFromMetadata(analysis.meta);
     return compileResults(fac, def, analysis.metadataStmt, 'ɵdir');
   }

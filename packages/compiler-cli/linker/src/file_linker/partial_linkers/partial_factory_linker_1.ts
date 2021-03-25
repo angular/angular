@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {compileFactoryFunction, ConstantPool, R3DeclareDependencyMetadata, R3DeclareFactoryMetadata, R3DependencyMetadata, R3FactoryMetadata, R3FactoryTarget, R3PartialDeclaration} from '@angular/compiler';
+import {compileFactoryFunction, ConstantPool, FactoryTarget, R3DeclareDependencyMetadata, R3DeclareFactoryMetadata, R3DependencyMetadata, R3FactoryMetadata, R3PartialDeclaration} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
 
 import {AstObject} from '../../ast/ast_value';
@@ -44,7 +44,7 @@ export function toR3FactoryMeta<TExpression>(
     type: wrapReference(typeExpr.getOpaque()),
     internalType: metaObj.getOpaque('type'),
     typeArgumentCount: 0,
-    target: parseEnum(metaObj.getValue('target'), R3FactoryTarget),
+    target: parseEnum(metaObj.getValue('target'), FactoryTarget),
     deps: getDeps(metaObj, 'deps'),
   };
 }

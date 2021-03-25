@@ -57,7 +57,7 @@ export interface R3ConstructorFactoryMetadata {
   /**
    * Type of the target being created by the factory.
    */
-  target: R3FactoryTarget;
+  target: FactoryTarget;
 }
 
 export enum R3FactoryDelegateType {
@@ -78,7 +78,7 @@ export interface R3ExpressionFactoryMetadata extends R3ConstructorFactoryMetadat
 export type R3FactoryMetadata =
     R3ConstructorFactoryMetadata|R3DelegatedFnOrClassMetadata|R3ExpressionFactoryMetadata;
 
-export enum R3FactoryTarget {
+export enum FactoryTarget {
   Directive = 0,
   Component = 1,
   Injectable = 2,
@@ -222,12 +222,12 @@ export function createFactoryType(meta: R3FactoryMetadata) {
       [typeWithParameters(meta.type.type, meta.typeArgumentCount), ctorDepsType]));
 }
 
-function injectDependencies(deps: R3DependencyMetadata[], target: R3FactoryTarget): o.Expression[] {
+function injectDependencies(deps: R3DependencyMetadata[], target: FactoryTarget): o.Expression[] {
   return deps.map((dep, index) => compileInjectDependency(dep, target, index));
 }
 
 function compileInjectDependency(
-    dep: R3DependencyMetadata, target: R3FactoryTarget, index: number): o.Expression {
+    dep: R3DependencyMetadata, target: FactoryTarget, index: number): o.Expression {
   // Interpret the dependency according to its resolved type.
   if (dep.token === null) {
     return o.importExpr(R3.invalidFactoryDep).callFn([o.literal(index)]);
@@ -236,7 +236,7 @@ function compileInjectDependency(
     const flags = InjectFlags.Default | (dep.self ? InjectFlags.Self : 0) |
         (dep.skipSelf ? InjectFlags.SkipSelf : 0) | (dep.host ? InjectFlags.Host : 0) |
         (dep.optional ? InjectFlags.Optional : 0) |
-        (target === R3FactoryTarget.Pipe ? InjectFlags.ForPipe : 0);
+        (target === FactoryTarget.Pipe ? InjectFlags.ForPipe : 0);
 
     // If this dependency is optional or otherwise has non-default flags, then additional
     // parameters describing how to inject the dependency must be passed to the inject function
@@ -314,14 +314,14 @@ export function isExpressionFactoryMetadata(meta: R3FactoryMetadata):
   return (meta as any).expression !== undefined;
 }
 
-function getInjectFn(target: R3FactoryTarget): o.ExternalReference {
+function getInjectFn(target: FactoryTarget): o.ExternalReference {
   switch (target) {
-    case R3FactoryTarget.Component:
-    case R3FactoryTarget.Directive:
-    case R3FactoryTarget.Pipe:
+    case FactoryTarget.Component:
+    case FactoryTarget.Directive:
+    case FactoryTarget.Pipe:
       return R3.directiveInject;
-    case R3FactoryTarget.NgModule:
-    case R3FactoryTarget.Injectable:
+    case FactoryTarget.NgModule:
+    case FactoryTarget.Injectable:
     default:
       return R3.inject;
   }

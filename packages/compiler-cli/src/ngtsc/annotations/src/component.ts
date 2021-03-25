@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ComponentMetadata, R3FactoryMetadata, R3FactoryTarget, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
+import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, FactoryTarget, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ComponentMetadata, R3FactoryMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../cycles';
@@ -833,7 +833,7 @@ export class ComponentDecoratorHandler implements
       return [];
     }
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
-    const fac = compileNgFactoryDefField(toFactoryMetadata(meta, R3FactoryTarget.Component));
+    const fac = compileNgFactoryDefField(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
     return compileResults(fac, def, analysis.metadataStmt, 'ɵcmp');
   }
@@ -845,7 +845,7 @@ export class ComponentDecoratorHandler implements
       return [];
     }
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
-    const fac = compileDeclareFactory(toFactoryMetadata(meta, R3FactoryTarget.Component));
+    const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
     const def = compileDeclareComponentFromMetadata(meta, analysis.template);
     return compileResults(fac, def, analysis.metadataStmt, 'ɵcmp');
   }
