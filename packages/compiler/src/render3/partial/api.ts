@@ -345,12 +345,8 @@ export interface R3DeclareFactoryMetadata extends R3PartialDeclaration {
   /**
    * A collection of dependencies that this factory relies upon.
    *
-   * Regardless of whether `fnOrClass` is a constructor function or a user-defined factory, it
-   * may have 0 or more parameters, which will be injected according to the
-   * `R3DeclareDependencyMetadata` for those parameters.
-   *
-   * If this is `null`, then the type's constructor is nonexistent and will be inherited from
-   * `fnOrClass` which is interpreted as the current type.
+   * If this is `null`, then the type's constructor is nonexistent and will be inherited from an
+   * ancestor of the type.
    *
    * If this is `'invalid'`, then one or more of the parameters wasn't resolvable and any attempt to
    * use these deps will result in a runtime error.

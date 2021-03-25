@@ -27,14 +27,14 @@ export function convertDependencies(deps: any[]): R3DependencyMetadataFacade[] {
 }
 
 function reflectDependency(dep: any|any[]): R3DependencyMetadataFacade {
-  const meta = {
+  const meta: R3DependencyMetadataFacade = {
     token: null,
     attribute: null,
     host: false,
     optional: false,
     self: false,
     skipSelf: false,
-  } as R3DependencyMetadataFacade;
+  };
 
   if (Array.isArray(dep) && dep.length > 0) {
     for (let j = 0; j < dep.length; j++) {

@@ -100,7 +100,7 @@ export interface R3DependencyMetadataFacade {
 }
 
 export interface R3DeclareDependencyMetadataFacade {
-  token?: unknown;
+  token: unknown;
   attribute?: boolean;
   host?: boolean;
   optional?: boolean;

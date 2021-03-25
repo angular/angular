@@ -479,7 +479,7 @@ function convertR3DependencyMetadata(facade: R3DependencyMetadataFacade): R3Depe
 function convertR3DeclareDependencyMetadata(facade: R3DeclareDependencyMetadataFacade):
     R3DependencyMetadata {
   const isAttributeDep = facade.attribute ?? false;
-  const token = facade.token == null ? null : new WrappedNodeExpr(facade.token);
+  const token = facade.token === null ? null : new WrappedNodeExpr(facade.token);
   return createR3DependencyMetadata(
       token, isAttributeDep, facade.host ?? false, facade.optional ?? false, facade.self ?? false,
       facade.skipSelf ?? false);
