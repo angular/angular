@@ -32,7 +32,7 @@ import {DirectiveSymbol, extractDirectiveMetadata, parseFieldArrayValue} from '.
 import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
 import {NgModuleSymbol} from './ng_module';
-import {compileResults, findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, resolveProvidersRequiringFactory, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
+import {compileResults, findAngularDecorator, isAngularCoreReference, isExpressionForwardReference, readBaseClass, resolveProvidersRequiringFactory, toFactoryMetadata, unwrapExpression, wrapFunctionExpressionsInParens} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 const EMPTY_ARRAY: any[] = [];
@@ -833,7 +833,7 @@ export class ComponentDecoratorHandler implements
       return [];
     }
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
-    const fac = compileNgFactoryDefField(toComponentFactoryMetadata(meta));
+    const fac = compileNgFactoryDefField(toFactoryMetadata(meta, R3FactoryTarget.Component));
     const def = compileComponentFromMetadata(meta, pool, makeBindingParser());
     return compileResults(fac, def, analysis.metadataStmt, 'ɵcmp');
   }
@@ -845,7 +845,7 @@ export class ComponentDecoratorHandler implements
       return [];
     }
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
-    const fac = compileDeclareFactory(toComponentFactoryMetadata(meta));
+    const fac = compileDeclareFactory(toFactoryMetadata(meta, R3FactoryTarget.Component));
     const def = compileDeclareComponentFromMetadata(meta, analysis.template);
     return compileResults(fac, def, analysis.metadataStmt, 'ɵcmp');
   }
@@ -1389,8 +1389,4 @@ function makeCyclicImportInfo(
   const message =
       `The ${type} '${name}' is used in the template but importing it would create a cycle: `;
   return makeRelatedInformation(ref.node, message + path);
-}
-
-function toComponentFactoryMetadata(meta: R3ComponentMetadata): R3FactoryMetadata {
-  return {...meta, target: R3FactoryTarget.Component};
 }

@@ -18,7 +18,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 
 import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, unwrapConstructorDependencies, unwrapForwardRef, validateConstructorDependencies, wrapTypeReference} from './util';
+import {findAngularDecorator, getConstructorDependencies, getValidConstructorDependencies, isAngularCore, toFactoryMetadata, unwrapConstructorDependencies, unwrapForwardRef, validateConstructorDependencies, wrapTypeReference} from './util';
 
 export interface InjectableHandlerData {
   meta: R3InjectableMetadata;
@@ -101,8 +101,8 @@ export class InjectableDecoratorHandler implements
 
     if (analysis.needsFactory) {
       const meta = analysis.meta;
-      const factoryRes =
-          compileNgFactoryDefField(toInjectableFactoryMetadata(meta, analysis.ctorDeps));
+      const factoryRes = compileNgFactoryDefField(
+          toFactoryMetadata({...meta, deps: analysis.ctorDeps}, R3FactoryTarget.Injectable));
       if (analysis.metadataStmt !== null) {
         factoryRes.statements.push(analysis.metadataStmt);
       }
@@ -133,8 +133,8 @@ export class InjectableDecoratorHandler implements
 
     if (analysis.needsFactory) {
       const meta = analysis.meta;
-      const factoryRes =
-          compileDeclareFactory(toInjectableFactoryMetadata(meta, analysis.ctorDeps));
+      const factoryRes = compileDeclareFactory(
+          toFactoryMetadata({...meta, deps: analysis.ctorDeps}, R3FactoryTarget.Injectable));
       if (analysis.metadataStmt !== null) {
         factoryRes.statements.push(analysis.metadataStmt);
       }
@@ -155,18 +155,6 @@ export class InjectableDecoratorHandler implements
 
     return results;
   }
-}
-
-function toInjectableFactoryMetadata(
-    meta: R3InjectableMetadata, deps: R3DependencyMetadata[]|'invalid'|null): R3FactoryMetadata {
-  return {
-    name: meta.name,
-    type: meta.type,
-    internalType: meta.internalType,
-    typeArgumentCount: meta.typeArgumentCount,
-    deps,
-    target: R3FactoryTarget.Injectable,
-  };
 }
 
 /**
