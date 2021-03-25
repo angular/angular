@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileDeclarePipeFromMetadata, compilePipeFromMetadata, R3FactoryMetadata, R3FactoryTarget, R3PipeMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
+import {compileDeclarePipeFromMetadata, compilePipeFromMetadata, R3FactoryTarget, R3PipeMetadata, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
@@ -22,7 +22,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPr
 import {createValueHasWrongTypeError} from './diagnostics';
 import {compileDeclareFactory, compileNgFactoryDefField} from './factory';
 import {generateSetClassMetadataCall} from './metadata';
-import {compileResults, findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, unwrapExpression, wrapTypeReference} from './util';
+import {compileResults, findAngularDecorator, getValidConstructorDependencies, makeDuplicateDeclarationError, toFactoryMetadata, unwrapExpression, wrapTypeReference} from './util';
 
 export interface PipeHandlerData {
   meta: R3PipeMetadata;
@@ -165,18 +165,14 @@ export class PipeDecoratorHandler implements
   }
 
   compileFull(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): CompileResult[] {
-    const fac = compileNgFactoryDefField(toPipeFactoryMetadata(analysis.meta));
+    const fac = compileNgFactoryDefField(toFactoryMetadata(analysis.meta, R3FactoryTarget.Pipe));
     const def = compilePipeFromMetadata(analysis.meta);
     return compileResults(fac, def, analysis.metadataStmt, 'ɵpipe');
   }
 
   compilePartial(node: ClassDeclaration, analysis: Readonly<PipeHandlerData>): CompileResult[] {
-    const fac = compileDeclareFactory(toPipeFactoryMetadata(analysis.meta));
+    const fac = compileDeclareFactory(toFactoryMetadata(analysis.meta, R3FactoryTarget.Pipe));
     const def = compileDeclarePipeFromMetadata(analysis.meta);
     return compileResults(fac, def, analysis.metadataStmt, 'ɵpipe');
   }
-}
-
-function toPipeFactoryMetadata(meta: R3PipeMetadata): R3FactoryMetadata {
-  return {...meta, target: R3FactoryTarget.Pipe};
 }
