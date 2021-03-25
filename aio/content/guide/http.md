@@ -1077,7 +1077,7 @@ Failing to do so renders Angular's default protection ineffective.
 
 </div>
 
-## Notes  
+## Notes
 
 You need to unsubscribe in OnDestroy lifecycle hook, even though the client has an unsubscribe mechanism under the hood  
 
