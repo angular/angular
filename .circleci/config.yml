@@ -261,7 +261,7 @@ jobs:
       - run: yarn -s ts-circular-deps:check
       - run: yarn -s ng-dev pullapprove verify
       - run: yarn -s ng-dev ngbot verify
-      - run: yarn -s ng-dev commit-message validate-range --range $CI_COMMIT_RANGE
+      - run: yarn -s ng-dev commit-message validate-range $CI_GIT_BASE_REVISION $CI_GIT_REVISION
 
   test:
     executor:
