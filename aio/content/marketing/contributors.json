@@ -677,6 +677,14 @@
     "bio": "Nir is a Principal Frontend Consultant & Head of the Angular department at 500Tech, Google Developer Expert and community leader. He organizes the largest Angular meetup group in Israel (Angular-IL), talks and teaches about front-end technologies around the world. He is also the author of two books about Angular and the founder of the 'Frontend Band'.",
     "groups": ["GDE"]
   },
+  "nishugoel": {
+    "name": "Nishu Goel",
+    "picture": "nishugoel.jpg",
+    "twitter": "TheNishuGoel",
+    "website": "https://unravelweb.dev",
+    "bio": "Nishu is a Google Developer Expert for Angular and loves to share her learning with everyone. She is the author of the book Step by Step Angular Routing and has written a code-text based course on educative.io. She is a frontend engineer at The DataWorks, London and is recognized as a Microsoft MVP.",
+    "groups": ["GDE"]
+  },
   "pascalprecht": {
     "name": "Pascal Precht",
     "picture": "pascalprecht.jpg",
