@@ -119,7 +119,8 @@ export function compileInjectable(meta: R3InjectableMetadata): InjectableDef {
   const expression = o.importExpr(Identifiers.ɵɵdefineInjectable)
                          .callFn([injectableProps.toLiteralMap()], undefined, true);
   const type = new o.ExpressionType(o.importExpr(
-      Identifiers.InjectableDef, [typeWithParameters(meta.type.type, meta.typeArgumentCount)]));
+      Identifiers.InjectableDeclaration,
+      [typeWithParameters(meta.type.type, meta.typeArgumentCount)]));
 
   return {
     expression,
