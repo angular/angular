@@ -200,12 +200,8 @@ export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
   template: string;
   isInline?: boolean;
   styles?: string[];
-  directives?: {
-    selector: string; type: OpaqueValue | (() => OpaqueValue);
-    inputs?: string[];
-    outputs?: string[];
-    exportAs?: string[];
-  }[];
+  components?: R3DeclareUsedDirectiveFacade[];
+  directives?: R3DeclareUsedDirectiveFacade[];
   pipes?: {[pipeName: string]: OpaqueValue|(() => OpaqueValue)};
   viewProviders?: OpaqueValue;
   animations?: OpaqueValue;
@@ -213,6 +209,14 @@ export interface R3DeclareComponentFacade extends R3DeclareDirectiveFacade {
   encapsulation?: ViewEncapsulation;
   interpolation?: [string, string];
   preserveWhitespaces?: boolean;
+}
+
+export interface R3DeclareUsedDirectiveFacade {
+  selector: string;
+  type: OpaqueValue|(() => OpaqueValue);
+  inputs?: string[];
+  outputs?: string[];
+  exportAs?: string[];
 }
 
 export interface R3UsedDirectiveMetadata {
