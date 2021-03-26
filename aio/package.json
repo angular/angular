@@ -178,6 +178,6 @@
     "unist-util-visit-parents": "^1.1.1",
     "watchr": "^3.0.1",
     "xregexp": "^4.0.0",
-    "yargs": "^16.1.0"
+    "yargs": "^16.2.0"
   }
 }
