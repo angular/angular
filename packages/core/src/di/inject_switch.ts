@@ -11,7 +11,7 @@ import {throwProviderNotFoundError} from '../render3/errors_di';
 import {assertNotEqual} from '../util/assert';
 import {stringify} from '../util/stringify';
 import {InjectionToken} from './injection_token';
-import {getInjectableDef, ɵɵInjectableDef} from './interface/defs';
+import {getInjectableDef, ɵɵInjectableDeclaration} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 
 
@@ -51,12 +51,12 @@ export function setInjectImplementation(
  *
  * If no injector exists, we can still inject tree-shakable providers which have `providedIn` set to
  * `"root"`. This is known as the limp mode injection. In such case the value is stored in the
- * `InjectableDef`.
+ * injectable definition.
  */
 export function injectRootLimpMode<T>(
     token: Type<T>|AbstractType<T>|InjectionToken<T>, notFoundValue: T|undefined,
     flags: InjectFlags): T|null {
-  const injectableDef: ɵɵInjectableDef<T>|null = getInjectableDef(token);
+  const injectableDef: ɵɵInjectableDeclaration<T>|null = getInjectableDef(token);
   if (injectableDef && injectableDef.providedIn == 'root') {
     return injectableDef.value === undefined ? injectableDef.value = injectableDef.factory() :
                                                injectableDef.value;

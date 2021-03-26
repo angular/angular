@@ -8,7 +8,7 @@
 
 import {DebugElement__PRE_R3__, DebugEventListener, DebugNode__PRE_R3__, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector, resolveForwardRef} from '../di';
-import {getInjectableDef, InjectableType, ɵɵInjectableDef} from '../di/interface/defs';
+import {getInjectableDef, InjectableType, ɵɵInjectableDeclaration} from '../di/interface/defs';
 import {ErrorHandler} from '../error_handler';
 import {Type} from '../interface/type';
 import {ComponentFactory} from '../linker/component_factory';
@@ -174,7 +174,7 @@ const viewDefOverrides = new Map<any, ViewDefinition>();
 
 function debugOverrideProvider(override: ProviderOverride) {
   providerOverrides.set(override.token, override);
-  let injectableDef: ɵɵInjectableDef<any>|null;
+  let injectableDef: ɵɵInjectableDeclaration<any>|null;
   if (typeof override.token === 'function' && (injectableDef = getInjectableDef(override.token)) &&
       typeof injectableDef.providedIn === 'function') {
     providerOverridesWithScope.set(override.token as InjectableType<any>, override);
@@ -197,7 +197,7 @@ function debugClearOverrides() {
 // 1) Locate the providers of an element and check if one of them was overwritten
 // 2) Change the providers of that element
 //
-// We only create new datastructures if we need to, to keep perf impact
+// We only create new data structures if we need to, to keep perf impact
 // reasonable.
 function applyProviderOverridesToView(def: ViewDefinition): ViewDefinition {
   if (providerOverrides.size === 0) {
@@ -253,7 +253,7 @@ function applyProviderOverridesToView(def: ViewDefinition): ViewDefinition {
 }
 
 // Notes about the algorithm:
-// We only create new datastructures if we need to, to keep perf impact
+// We only create new data structures if we need to, to keep perf impact
 // reasonable.
 function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefinition {
   const {hasOverrides, hasDeprecatedOverrides} = calcHasOverrides(def);

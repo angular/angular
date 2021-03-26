@@ -684,14 +684,6 @@ export declare function ɵɵinject<T>(token: Type<T> | AbstractType<T> | Injecti
 export declare function ɵɵinject<T>(token: Type<T> | AbstractType<T> | InjectionToken<T>, flags?: InjectFlags): T | null;
 
 /** @codeGenApi */
-export declare interface ɵɵInjectableDef<T> {
-    factory: (t?: Type<any>) => T;
-    providedIn: InjectorType<any> | 'root' | 'platform' | 'any' | null;
-    token: unknown;
-    value: T | undefined;
-}
-
-/** @codeGenApi */
 export declare function ɵɵinjectAttribute(attrNameToInject: string): string | null;
 
 export declare const PACKAGE_ROOT_URL: InjectionToken<string>;

@@ -218,17 +218,17 @@ FooModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImp
 import * as i0 from "@angular/core";
 export declare class Thing {
     static ɵfac: i0.ɵɵFactoryDeclaration<Thing, never>;
-    static ɵprov: i0.ɵɵInjectableDef<Thing>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<Thing>;
 }
 export declare class BaseService {
     protected thing: Thing;
     constructor(thing: Thing);
     static ɵfac: i0.ɵɵFactoryDeclaration<BaseService, never>;
-    static ɵprov: i0.ɵɵInjectableDef<BaseService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<BaseService>;
 }
 export declare class ChildService extends BaseService {
     static ɵfac: i0.ɵɵFactoryDeclaration<ChildService, never>;
-    static ɵprov: i0.ɵɵInjectableDef<ChildService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<ChildService>;
 }
 export declare class FooModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<FooModule, never>;
@@ -501,7 +501,7 @@ BasicModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngI
 import * as i0 from "@angular/core";
 export declare class Service {
     static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;
-    static ɵprov: i0.ɵɵInjectableDef<Service>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<Service>;
 }
 export declare class BaseModule {
     private service;

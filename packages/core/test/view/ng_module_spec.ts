@@ -151,11 +151,11 @@ describe('NgModuleRef_ injector', () => {
     expect(ref.injector.get(Foo) instanceof Foo).toBeTruthy();
   });
 
-  it('injects an InjectableDef value', () => {
+  it('injects an injectable value', () => {
     expect(ref.injector.get(Bar) instanceof Bar).toBeTruthy();
   });
 
-  it('caches InjectableDef values', () => {
+  it('caches injectable values', () => {
     expect(ref.injector.get(Bar)).toBe(ref.injector.get(Bar));
   });
 

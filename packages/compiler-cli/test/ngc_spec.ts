@@ -2152,7 +2152,7 @@ describe('ngc transformer command-line', () => {
       });
     });
 
-    it('compiles a basic InjectableDef', () => {
+    it('compiles a basic Injectable definition', () => {
       const source = compileService(`
         import {Injectable} from '@angular/core';
         import {Module} from './module';
@@ -2187,7 +2187,7 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/\/\*\* @nocollapse \*\/ Service\.ɵprov =/);
     });
 
-    it('compiles a useValue InjectableDef', () => {
+    it('compiles a useValue Injectable definition', () => {
       const source = compileService(`
         import {Injectable} from '@angular/core';
         import {Module} from './module';
@@ -2203,7 +2203,7 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/ɵprov.*return CONST_SERVICE/);
     });
 
-    it('compiles a useExisting InjectableDef', () => {
+    it('compiles a useExisting Injectable definition', () => {
       const source = compileService(`
         import {Injectable} from '@angular/core';
         import {Module} from './module';
@@ -2220,7 +2220,7 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/ɵprov.*return ..\.ɵɵinject\(Existing\)/);
     });
 
-    it('compiles a useFactory InjectableDef with optional dep', () => {
+    it('compiles a useFactory Injectable definition with optional dep', () => {
       const source = compileService(`
         import {Injectable, Optional} from '@angular/core';
         import {Module} from './module';
@@ -2240,7 +2240,7 @@ describe('ngc transformer command-line', () => {
       expect(source).toMatch(/ɵprov.*return ..\(..\.ɵɵinject\(Existing, 8\)/);
     });
 
-    it('compiles a useFactory InjectableDef with skip-self dep', () => {
+    it('compiles a useFactory Injectable definition with skip-self dep', () => {
       const source = compileService(`
         import {Injectable, SkipSelf} from '@angular/core';
         import {Module} from './module';

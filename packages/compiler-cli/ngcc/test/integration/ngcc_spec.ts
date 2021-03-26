@@ -829,7 +829,7 @@ runInEachFileSystem(() => {
     it('should use the correct type name in typings files when an export has a different name in source files',
        () => {
          // We need to make sure that changes to the typings files use the correct name
-         // static ɵprov: ɵngcc0.ɵɵInjectableDef<ɵangular_packages_common_common_a>;
+         // static ɵprov: ɵngcc0.ɵɵInjectableDeclaration<ɵangular_packages_common_common_a>;
          mainNgcc({
            basePath: '/node_modules',
            targetEntryPointPath: '@angular/common',
