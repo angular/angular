@@ -116,6 +116,11 @@ const coreR3DeclareComponentFacade: core.R3DeclareComponentFacade =
 const compilerR3DeclareComponentFacade: compiler.R3DeclareComponentFacade =
     null! as core.R3DeclareComponentFacade;
 
+const coreR3DeclareUsedDirectiveFacade: core.R3DeclareUsedDirectiveFacade =
+    null! as compiler.R3DeclareUsedDirectiveFacade;
+const compilerR3DeclareUsedDirectiveFacade: compiler.R3DeclareUsedDirectiveFacade =
+    null! as core.R3DeclareUsedDirectiveFacade;
+
 const coreR3UsedDirectiveMetadata: core.R3UsedDirectiveMetadata =
     null! as compiler.R3UsedDirectiveMetadata;
 const compilerR3UsedDirectiveMetadata: compiler.R3UsedDirectiveMetadata =
