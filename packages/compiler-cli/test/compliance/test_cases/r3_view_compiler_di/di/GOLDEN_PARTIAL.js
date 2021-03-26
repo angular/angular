@@ -56,7 +56,7 @@ MyModule.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImpo
 import * as i0 from "@angular/core";
 export declare class MyService {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MyService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
 }
 export declare class MyComponent {
     constructor(name: string, other: string, s1: MyService, s2: MyService, s4: MyService, s3: MyService, s5: MyService, s6: MyService);
@@ -94,7 +94,7 @@ declare class MyDependency {
 export declare class MyService {
     constructor(dep: MyDependency);
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MyService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
 }
 export {};
 
@@ -127,7 +127,7 @@ declare class MyDependency {
 export declare class MyService {
     constructor(dep: MyDependency);
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, [null, { optional: true; }]>;
-    static ɵprov: i0.ɵɵInjectableDef<MyService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
 }
 export {};
 
@@ -156,7 +156,7 @@ MyService.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyService, fac
 import * as i0 from "@angular/core";
 export declare class MyService {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MyService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
 }
 
 /****************************************************************************************************
@@ -188,7 +188,7 @@ MyService.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyService, fac
 import * as i0 from "@angular/core";
 export declare class MyService {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MyService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
 }
 
 /****************************************************************************************************
@@ -218,7 +218,7 @@ MyService.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyService, fac
 import * as i0 from "@angular/core";
 export declare class MyService {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MyService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
 }
 
 /****************************************************************************************************
@@ -255,7 +255,7 @@ MyService.ɵprov = /*@__PURE__*/ i0.ɵɵdefineInjectable({ token: MyService, fac
 import * as i0 from "@angular/core";
 export declare class MyService {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyService, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MyService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MyService>;
 }
 
 /****************************************************************************************************
@@ -351,21 +351,21 @@ import { PipeTransform } from '@angular/core';
 import * as i0 from "@angular/core";
 declare class Service {
     static ɵfac: i0.ɵɵFactoryDeclaration<Service, never>;
-    static ɵprov: i0.ɵɵInjectableDef<Service>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<Service>;
 }
 export declare class MyPipe implements PipeTransform {
     constructor(service: Service);
     transform(value: any, ...args: any[]): any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyPipe, never>;
     static ɵpipe: i0.ɵɵPipeDeclaration<MyPipe, "myPipe">;
-    static ɵprov: i0.ɵɵInjectableDef<MyPipe>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MyPipe>;
 }
 export declare class MyOtherPipe implements PipeTransform {
     constructor(service: Service);
     transform(value: any, ...args: any[]): any;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyOtherPipe, never>;
     static ɵpipe: i0.ɵɵPipeDeclaration<MyOtherPipe, "myOtherPipe">;
-    static ɵprov: i0.ɵɵInjectableDef<MyOtherPipe>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MyOtherPipe>;
 }
 export declare class MyApp {
     static ɵfac: i0.ɵɵFactoryDeclaration<MyApp, never>;

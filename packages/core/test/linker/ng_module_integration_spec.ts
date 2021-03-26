@@ -7,7 +7,7 @@
  */
 
 import {ANALYZE_FOR_ENTRY_COMPONENTS, Compiler, Component, ComponentFactoryResolver, CUSTOM_ELEMENTS_SCHEMA, Directive, forwardRef, getModuleFactory, HostBinding, Inject, Injectable, InjectionToken, Injector, Input, NgModule, NgModuleRef, Optional, Pipe, Provider, Self, Type, ɵivyEnabled as ivyEnabled, ɵɵdefineNgModule as defineNgModule} from '@angular/core';
-import {ɵɵdefineInjectable, ɵɵInjectableDef} from '@angular/core/src/di/interface/defs';
+import {ɵɵdefineInjectable} from '@angular/core/src/di/interface/defs';
 import {getNgModuleDef} from '@angular/core/src/render3/definition';
 import {NgModuleData} from '@angular/core/src/view/types';
 import {tokenKey} from '@angular/core/src/view/util';

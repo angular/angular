@@ -22,7 +22,7 @@
  */
 
 export {ɵɵinject} from './di/injector_compatibility';
-export {ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵInjectableDef} from './di/interface/defs';
+export {ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵInjectableDeclaration} from './di/interface/defs';
 export {NgModuleDef} from './metadata/ng_module_def';
 export {ɵɵdefineNgModule} from './render3/definition';
 export {ɵɵFactoryDeclaration, ɵɵInjectorDeclaration, ɵɵNgModuleDeclaration} from './render3/interfaces/public_definitions';
