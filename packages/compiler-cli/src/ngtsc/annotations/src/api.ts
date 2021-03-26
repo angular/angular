@@ -22,11 +22,6 @@ export interface ResourceLoader {
   canPreload: boolean;
 
   /**
-   * If true, the resource loader is able to preprocess inline resources.
-   */
-  canPreprocessInline: boolean;
-
-  /**
    * Resolve the url of a resource relative to the file that contains the reference to it.
    * The return value of this method can be used in the `load()` and `preload()` methods.
    *
@@ -42,6 +37,7 @@ export interface ResourceLoader {
    * should be cached so it can be accessed synchronously via the `load()` method.
    *
    * @param resolvedUrl The url (resolved by a call to `resolve()`) of the resource to preload.
+   * @param context Information regarding the resource such as the type and containing file.
    * @returns A Promise that is resolved once the resource has been loaded or `undefined`
    * if the file has already been loaded.
    * @throws An Error if pre-loading is not available.

@@ -289,9 +289,9 @@ export class ComponentDecoratorHandler implements
     // Extract all the styleUrls in the decorator.
     const componentStyleUrls = this._extractComponentStyleUrls(component);
 
-    // If preprocessing inline resources is available, extract inline styles and process
+    // Extract inline styles, process, and cache for use in synchronous analyze phase
     let inlineStyles;
-    if (this.resourceLoader.canPreprocessInline && component.has('styles')) {
+    if (component.has('styles')) {
       const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
       if (litStyles !== null) {
         inlineStyles = Promise
@@ -424,7 +424,7 @@ export class ComponentDecoratorHandler implements
     }
 
     // If inline styles were preprocessed use those
-    let inlineStyles: string[]|null = this.preanalyzeStylesCache.get(node) || null;
+    let inlineStyles = this.preanalyzeStylesCache.get(node) || null;
     if (inlineStyles !== null) {
       this.preanalyzeStylesCache.delete(node);
       styles.push(...inlineStyles);

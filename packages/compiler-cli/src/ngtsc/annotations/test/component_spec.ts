@@ -27,7 +27,6 @@ export class StubResourceLoader implements ResourceLoader {
     return v;
   }
   canPreload = false;
-  canPreprocessInline = false;
   load(v: string): string {
     return '';
   }
@@ -281,7 +280,6 @@ runInEachFileSystem(() => {
       ]);
       const {reflectionHost, handler, resourceLoader} = setup(program, options, host);
       resourceLoader.canPreload = true;
-      resourceLoader.canPreprocessInline = true;
       resourceLoader.preprocessInline = async function(data, context) {
         expect(data).toBe('.abc {}');
         expect(context.containingFile).toBe(_('/entry.ts').toLowerCase());

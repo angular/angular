@@ -27,7 +27,6 @@ export class AdapterResourceLoader implements ResourceLoader {
   private lookupResolutionHost = createLookupResolutionHost(this.adapter);
 
   canPreload = !!this.adapter.readResource;
-  canPreprocessInline = !!this.adapter.transformResource;
 
   constructor(private adapter: NgCompilerAdapter, private options: ts.CompilerOptions) {}
 
