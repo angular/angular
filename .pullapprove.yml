@@ -292,7 +292,7 @@ groups:
       users:
         - alxhub
         - crisbeto
-        # OOO as of 2020-09-28 - devversion
+        - devversion
 
 
   # =========================================================
@@ -1208,7 +1208,7 @@ groups:
           ])
     reviewers:
       users:
-        # OOO as of 2020-09-28 - devversion
+        - devversion
         - filipesilva
         - gkalpak
         - IgorMinar
