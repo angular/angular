@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Directive, ElementRef, forwardRef, Pipe, Type, ViewEncapsulation, ɵɵngDeclareComponent} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Directive, ElementRef, forwardRef, Pipe, Type, ViewEncapsulation, ɵɵngDeclareComponent} from '@angular/core';
 import {AttributeMarker, ComponentDef} from '../../../src/render3';
 import {functionContaining} from './matcher';
 
@@ -338,6 +338,21 @@ describe('component declaration jit compilation', () => {
     });
   });
 
+  it('should compile used components', () => {
+    const def = ɵɵngDeclareComponent({
+                  type: TestClass,
+                  template: '<cmp></cmp>',
+                  components: [{
+                    type: TestCmp,
+                    selector: 'cmp',
+                  }],
+                }) as ComponentDef<TestClass>;
+
+    expectComponentDef(def, {
+      directives: [TestCmp],
+    });
+  });
+
   it('should compile used directives', () => {
     const def = ɵɵngDeclareComponent({
                   type: TestClass,
@@ -350,6 +365,25 @@ describe('component declaration jit compilation', () => {
 
     expectComponentDef(def, {
       directives: [TestDir],
+    });
+  });
+
+  it('should compile used directives together with used components', () => {
+    const def = ɵɵngDeclareComponent({
+                  type: TestClass,
+                  template: '<cmp dir></cmp>',
+                  components: [{
+                    type: TestCmp,
+                    selector: 'cmp',
+                  }],
+                  directives: [{
+                    type: TestDir,
+                    selector: '[dir]',
+                  }],
+                }) as ComponentDef<TestClass>;
+
+    expectComponentDef(def, {
+      directives: [TestCmp, TestDir],
     });
   });
 
@@ -532,6 +566,10 @@ class TestClass {}
 
 @Directive({selector: '[dir]'})
 class TestDir {
+}
+
+@Component({selector: 'cmp', template: ''})
+class TestCmp {
 }
 
 @Pipe({name: 'test'})

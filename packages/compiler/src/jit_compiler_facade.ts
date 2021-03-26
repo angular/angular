@@ -7,7 +7,7 @@
  */
 
 
-import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
+import {CompilerFacade, CoreEnvironment, ExportedCompilerFacade, OpaqueValue, R3ComponentMetadataFacade, R3DeclareComponentFacade, R3DeclareDependencyMetadataFacade, R3DeclareDirectiveFacade, R3DeclareFactoryFacade, R3DeclareInjectorFacade, R3DeclareNgModuleFacade, R3DeclarePipeFacade, R3DeclareQueryMetadataFacade, R3DeclareUsedDirectiveFacade, R3DependencyMetadataFacade, R3DirectiveMetadataFacade, R3FactoryDefMetadataFacade, R3InjectableMetadataFacade, R3InjectorMetadataFacade, R3NgModuleMetadataFacade, R3PipeMetadataFacade, R3QueryMetadataFacade, StringMap, StringMapWithRename} from './compiler_facade_interface';
 import {ConstantPool} from './constant_pool';
 import {ChangeDetectionStrategy, HostBinding, HostListener, Input, Output, Type, ViewEncapsulation} from './core';
 import {compileInjectable} from './injectable_compiler_2';
@@ -384,7 +384,9 @@ function convertDeclareComponentFacadeToMetadata(
     ...convertDeclareDirectiveFacadeToMetadata(declaration, typeSourceSpan),
     template,
     styles: declaration.styles ?? [],
-    directives: (declaration.directives ?? []).map(convertUsedDirectiveDeclarationToMetadata),
+    directives: (declaration.components ?? [])
+                    .concat(declaration.directives ?? [])
+                    .map(convertUsedDirectiveDeclarationToMetadata),
     pipes: convertUsedPipesToMetadata(declaration.pipes),
     viewProviders: declaration.viewProviders !== undefined ?
         new WrappedNodeExpr(declaration.viewProviders) :
@@ -400,8 +402,7 @@ function convertDeclareComponentFacadeToMetadata(
   };
 }
 
-function convertUsedDirectiveDeclarationToMetadata(
-    declaration: NonNullable<R3DeclareComponentFacade['directives']>[number]):
+function convertUsedDirectiveDeclarationToMetadata(declaration: R3DeclareUsedDirectiveFacade):
     R3UsedDirectiveMetadata {
   return {
     selector: declaration.selector,
