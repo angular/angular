@@ -106,7 +106,7 @@ The import path is the relative path to the module.
 
 In Angular version 8, the string syntax for the `loadChildren` route specification [was deprecated](https://angular.io/guide/deprecations#loadchildren-string-syntax) in favor of the `import()` syntax. However, you can opt into using string-based lazy loading (`loadChildren: './path/to/module#Module'`) by including the lazy-loaded routes in your `tsconfig` file, which includes the lazy-loaded files in the compilation.
 
-By default the CLI will generate projects which stricter file inclusions intended to be used with the `import()` syntax.
+By default the CLI will generate projects with stricter file inclusions intended to be used with the `import()` syntax.
 
 </div>
 
@@ -171,9 +171,9 @@ Next, take a look at the `customers.module.ts` file. If you’re using the CLI a
 The `customers.module.ts` file imports the `customers-routing.module.ts` and `customers.component.ts` files. `CustomersRoutingModule` is listed in the `@NgModule` `imports` array giving `CustomersModule` access to its own routing module. `CustomersComponent` is in the `declarations` array, which means `CustomersComponent` belongs to the `CustomersModule`.
 
 
-The `app-routing.module.ts` then imports the feature module, `customers.module.ts` using JavaScript's dynamic import.
+The `app-routing.module.ts` then imports the feature module, `customers.module.ts` using TypeScript's dynamic import.
 
-The feature-specific route definition file `customers-routing.module.ts` imports its own feature component defined in the `customers.component.ts` file, along with the other JavaScript import statements. It then maps the empty path to the `CustomersComponent`.
+The feature-specific route definition file `customers-routing.module.ts` imports its own feature component defined in the `customers.component.ts` file, along with the other TypeScript import statements. It then maps the empty path to the `CustomersComponent`.
 
 <code-example path="lazy-loading-ngmodules/src/app/customers/customers-routing.module.ts" id="customers-routing.module.ts" region="customers-routing-module" header="src/app/customers/customers-routing.module.ts"></code-example>
 
