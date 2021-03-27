@@ -3835,8 +3835,9 @@ describe('animation tests', function() {
       TestBed.configureTestingModule({declarations: [Cmp]});
       const comp = TestBed.createComponent(Cmp);
       expect(() => comp.detectChanges())
-          .toThrowError(
-              'Found the synthetic property @myAnimation. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.');
+          .toThrowError(`Found the synthetic property @myAnimation. Possible reasons:
+  - "BrowserAnimationsModule" or "NoopAnimationsModule" are missing in your application.
+  - There is no corresponding configuration for the animation named \`@myAnimation\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`);
     });
 
     it('should throw when using an @prop listener without the animation module', () => {
@@ -3848,9 +3849,25 @@ describe('animation tests', function() {
       TestBed.configureTestingModule({declarations: [Cmp]});
 
       expect(() => TestBed.createComponent(Cmp))
-          .toThrowError(
-              'Found the synthetic listener @myAnimation.start. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.');
+          .toThrowError(`Found the synthetic listener @myAnimation.start. Possible reasons:
+  - "BrowserAnimationsModule" or "NoopAnimationsModule" are missing in your application.
+  - There is no corresponding configuration for the animation named \`@myAnimation.start\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`);
     });
+
+
+    it('should throw when using an @prop listener, BrowserAnimationModule is imported, but there is no animation rule',
+       () => {
+         @Component({template: `<div (@myAnimation.start)="true"></div>`})
+         class Cmp {
+         }
+
+         TestBed.configureTestingModule({declarations: [Cmp], imports: [BrowserAnimationsModule]});
+
+         expect(() => TestBed.createComponent(Cmp))
+             .toThrowError(`Found the synthetic listener @myAnimation.start. Possible reasons:
+  - "BrowserAnimationsModule" or "NoopAnimationsModule" are missing in your application.
+  - There is no corresponding configuration for the animation named \`@myAnimation.start\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`);
+       });
   });
 });
 })();

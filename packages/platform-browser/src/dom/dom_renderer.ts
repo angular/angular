@@ -125,6 +125,7 @@ export class DomRendererFactory2 implements RendererFactory2 {
   }
 
   begin() {}
+
   end() {}
 }
 
@@ -275,8 +276,10 @@ class DefaultDomRenderer2 implements Renderer2 {
 const AT_CHARCODE = (() => '@'.charCodeAt(0))();
 function checkNoSyntheticProp(name: string, nameKind: string) {
   if (name.charCodeAt(0) === AT_CHARCODE) {
-    throw new Error(`Found the synthetic ${nameKind} ${
-        name}. Please include either "BrowserAnimationsModule" or "NoopAnimationsModule" in your application.`);
+    throw new Error(`Found the synthetic ${nameKind} ${name}. Possible reasons:
+  - "BrowserAnimationsModule" or "NoopAnimationsModule" are missing in your application.
+  - There is no corresponding configuration for the animation named \`${
+        name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`);
   }
 }
 
@@ -334,12 +337,15 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   appendChild(parent: any, newChild: any): void {
     return super.appendChild(this.nodeOrShadowRoot(parent), newChild);
   }
+
   insertBefore(parent: any, newChild: any, refChild: any): void {
     return super.insertBefore(this.nodeOrShadowRoot(parent), newChild, refChild);
   }
+
   removeChild(parent: any, oldChild: any): void {
     return super.removeChild(this.nodeOrShadowRoot(parent), oldChild);
   }
+
   parentNode(node: any): any {
     return this.nodeOrShadowRoot(super.parentNode(this.nodeOrShadowRoot(node)));
   }
