@@ -550,7 +550,7 @@ function createHostBindingsFunction(
           securityContexts.indexOf(core.SecurityContext.URL) > -1 &&
           securityContexts.indexOf(core.SecurityContext.RESOURCE_URL) > -1) {
         // Special case for some URL attributes (such as "src" and "href") that may be a part
-        // of different security contexts. In this case we use special santitization function and
+        // of different security contexts. In this case we use special sanitization function and
         // select the actual sanitizer at runtime based on a tag name that is provided while
         // invoking sanitization function.
         sanitizerFn = o.importExpr(R3.sanitizeUrlOrResourceUrl);
