@@ -370,6 +370,12 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements AfterViewInit,
     newEvent.checked = this.checked;
     this._cvaOnChange(this.checked);
     this.change.next(newEvent);
+
+    // Assigning the value again here is redundant, but we have to do it in case it was
+    // changed inside the `change` listener which will cause the input to be out of sync.
+    if (this._nativeCheckbox) {
+      this._nativeCheckbox.nativeElement.checked = this.checked;
+    }
   }
 
   /** Gets the value for the `aria-checked` attribute of the native input. */

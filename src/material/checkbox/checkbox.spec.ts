@@ -355,6 +355,20 @@ describe('MatCheckbox', () => {
       expect(testComponent.onCheckboxChange).not.toHaveBeenCalled();
     }));
 
+    it('should keep the view in sync if the `checked` value changes inside the `change` listener',
+      fakeAsync(() => {
+        spyOn(testComponent, 'onCheckboxChange').and.callFake(() => {
+          checkboxInstance.checked = false;
+        });
+
+        labelElement.click();
+        fixture.detectChanges();
+        flush();
+
+        expect(inputElement.checked).toBe(false);
+        expect(checkboxNativeElement.classList).not.toContain('mat-checkbox-checked');
+      }));
+
     it('should forward the required attribute', () => {
       testComponent.isRequired = true;
       fixture.detectChanges();
