@@ -11,11 +11,11 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEn
 import {removeFromArray} from '../util/array_utils';
 import {assertEqual} from '../util/assert';
 import {collectNativeNodes} from './collect_native_nodes';
-import {checkNoChangesInRootView, checkNoChangesInternal, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
+import {checkNoChangesInRootView, checkNoChangesInternal, destroyLView, detectChangesInRootView, detectChangesInternal, markViewDirty, storeCleanupWithContext} from './instructions/shared';
 import {CONTAINER_HEADER_OFFSET, VIEW_REFS} from './interfaces/container';
 import {isLContainer} from './interfaces/type_checks';
 import {CONTEXT, FLAGS, LView, LViewFlags, PARENT, TVIEW} from './interfaces/view';
-import {destroyLView, detachView, renderDetachView} from './node_manipulation';
+import {detachView, renderDetachView} from './node_manipulation';
 
 
 

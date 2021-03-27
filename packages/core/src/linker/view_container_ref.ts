@@ -9,7 +9,7 @@
 import {Injector} from '../di/injector';
 import {assertNodeInjector} from '../render3/assert';
 import {getParentInjectorLocation, NodeInjector} from '../render3/di';
-import {addToViewTree, createLContainer} from '../render3/instructions/shared';
+import {addToViewTree, createLContainer, destroyLView} from '../render3/instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, VIEW_REFS} from '../render3/interfaces/container';
 import {NodeInjectorOffset} from '../render3/interfaces/injector';
 import {TContainerNode, TDirectiveHostNode, TElementContainerNode, TElementNode, TNodeType} from '../render3/interfaces/node';
@@ -17,7 +17,7 @@ import {RComment, RElement} from '../render3/interfaces/renderer_dom';
 import {isLContainer} from '../render3/interfaces/type_checks';
 import {LView, PARENT, RENDERER, T_HOST, TVIEW} from '../render3/interfaces/view';
 import {assertTNodeType} from '../render3/node_assert';
-import {addViewToContainer, destroyLView, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from '../render3/node_manipulation';
+import {addViewToContainer, detachView, getBeforeNodeForView, insertView, nativeInsertBefore, nativeNextSibling, nativeParentNode} from '../render3/node_manipulation';
 import {getCurrentTNode, getLView} from '../render3/state';
 import {getParentInjectorIndex, getParentInjectorView, hasParentInjector} from '../render3/util/injector_utils';
 import {getNativeByTNode, unwrapRNode, viewAttachedToContainer} from '../render3/util/view_utils';

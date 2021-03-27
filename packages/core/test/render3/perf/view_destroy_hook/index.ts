@@ -8,11 +8,10 @@
 import {OnDestroy} from '@angular/core';
 
 import {ɵɵdefineDirective, ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '../../../../src/render3/index';
-import {createLView, createTNode, createTView} from '../../../../src/render3/instructions/shared';
+import {createLView, createTNode, createTView, destroyLView} from '../../../../src/render3/instructions/shared';
 import {RenderFlags} from '../../../../src/render3/interfaces/definition';
 import {TNodeType} from '../../../../src/render3/interfaces/node';
 import {LViewFlags, TViewType} from '../../../../src/render3/interfaces/view';
-import {destroyLView} from '../../../../src/render3/node_manipulation';
 import {createBenchmark} from '../micro_bench';
 import {createAndRenderLView} from '../setup';
 

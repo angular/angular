@@ -13,7 +13,7 @@ import {ElementRef} from '@angular/core/src/linker/element_ref';
 import {TemplateRef} from '@angular/core/src/linker/template_ref';
 import {ViewContainerRef} from '@angular/core/src/linker/view_container_ref';
 import {Renderer2} from '@angular/core/src/render/api';
-import {createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, renderComponentOrTemplate} from '@angular/core/src/render3/instructions/shared';
+import {createLView, createTView, destroyLView, getOrCreateTComponentView, getOrCreateTNode, renderComponentOrTemplate} from '@angular/core/src/render3/instructions/shared';
 import {TConstants, TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {RComment, RElement, RNode, RText} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {enterView, getLView} from '@angular/core/src/render3/state';
@@ -37,7 +37,6 @@ import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, Ho
 import {PlayerHandler} from '../../src/render3/interfaces/player';
 import {domRendererFactory3, ProceduralRenderer3, Renderer3, RendererFactory3, RendererStyleFlags3} from '../../src/render3/interfaces/renderer';
 import {LView, LViewFlags, TVIEW, TViewType} from '../../src/render3/interfaces/view';
-import {destroyLView} from '../../src/render3/node_manipulation';
 import {getRootView} from '../../src/render3/util/view_traversal_utils';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 

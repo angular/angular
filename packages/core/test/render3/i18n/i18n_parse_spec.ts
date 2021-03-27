@@ -95,22 +95,22 @@ describe('i18n_parse', () => {
 
       fixture.apply(() => {
         applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null);
-        expect(fixture.host.innerHTML).toEqual('before|<!--ICU 20:0-->|after');
+        expect(fixture.host.innerHTML).toEqual('before|<!--ICU 21:0-->|after');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('before|caseA<!--ICU 20:0-->|after');
+        expect(fixture.host.innerHTML).toEqual('before|caseA<!--ICU 21:0-->|after');
       });
       fixture.apply(() => {
         ɵɵi18nExp('x');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('before|otherCase<!--ICU 20:0-->|after');
+        expect(fixture.host.innerHTML).toEqual('before|otherCase<!--ICU 21:0-->|after');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('before|caseA<!--ICU 20:0-->|after');
+        expect(fixture.host.innerHTML).toEqual('before|caseA<!--ICU 21:0-->|after');
       });
     });
 
@@ -122,23 +122,23 @@ describe('i18n_parse', () => {
       }`);
       fixture.apply(() => {
         applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null);
-        expect(fixture.host.innerHTML).toEqual('<!--ICU 20:0-->');
+        expect(fixture.host.innerHTML).toEqual('<!--ICU 21:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('Hello <b>world<i>!</i></b><!--ICU 20:0-->');
+        expect(fixture.host.innerHTML).toEqual('Hello <b>world<i>!</i></b><!--ICU 21:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('x');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
         expect(fixture.host.innerHTML)
-            .toEqual('<div>nestedOther<!--nested ICU 0--></div><!--ICU 20:0-->');
+            .toEqual('<div>nestedOther<!--nested ICU 0--></div><!--ICU 21:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('Hello <b>world<i>!</i></b><!--ICU 20:0-->');
+        expect(fixture.host.innerHTML).toEqual('Hello <b>world<i>!</i></b><!--ICU 21:0-->');
       });
     });
 
@@ -244,7 +244,7 @@ describe('i18n_parse', () => {
 
       fixture.apply(() => {
         applyCreateOpCodes(fixture.lView, tI18n.create, fixture.host, null);
-        expect(fixture.host.innerHTML).toEqual('<!--ICU 20:0-->');
+        expect(fixture.host.innerHTML).toEqual('<!--ICU 21:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
@@ -252,28 +252,28 @@ describe('i18n_parse', () => {
         ɵɵi18nExp('value1');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
         expect(fixture.host.innerHTML)
-            .toEqual('parentA nested0<!--nested ICU 0-->!<!--ICU 20:0-->');
+            .toEqual('parentA nested0<!--nested ICU 0-->!<!--ICU 21:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nExp('x');
         ɵɵi18nExp('value1');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('parentA value1<!--nested ICU 0-->!<!--ICU 20:0-->');
+        expect(fixture.host.innerHTML).toEqual('parentA value1<!--nested ICU 0-->!<!--ICU 21:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('x');
         ɵɵi18nExp('x');
         ɵɵi18nExp('value2');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('parentOther<!--ICU 20:0-->');
+        expect(fixture.host.innerHTML).toEqual('parentOther<!--ICU 21:0-->');
       });
       fixture.apply(() => {
         ɵɵi18nExp('A');
         ɵɵi18nExp('A');
         ɵɵi18nExp('value2');
         ɵɵi18nApply(0);  // index 0 + HEADER_OFFSET = 20;
-        expect(fixture.host.innerHTML).toEqual('parentA value2<!--nested ICU 0-->!<!--ICU 20:0-->');
+        expect(fixture.host.innerHTML).toEqual('parentA value2<!--nested ICU 0-->!<!--ICU 21:0-->');
       });
     });
   });

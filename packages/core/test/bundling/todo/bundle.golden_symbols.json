@@ -1,5 +1,8 @@
 [
   {
+    "name": "ACTIVE_LVIEWS"
+  },
+  {
     "name": "CLEAN_PROMISE"
   },
   {
@@ -267,6 +270,9 @@
     "name": "createLContainer"
   },
   {
+    "name": "createLContext"
+  },
+  {
     "name": "createLFrame"
   },
   {
@@ -339,6 +345,12 @@
     "name": "findStylingValue"
   },
   {
+    "name": "findViaComponent"
+  },
+  {
+    "name": "findViaNativeElement"
+  },
+  {
     "name": "forwardRef"
   },
   {
@@ -379,6 +391,9 @@
   },
   {
     "name": "getLView"
+  },
+  {
+    "name": "getLViewById"
   },
   {
     "name": "getLViewParent"
@@ -739,6 +754,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "traverseNextElement"
   },
   {
     "name": "unwrapRNode"

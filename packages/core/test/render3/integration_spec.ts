@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {getLViewById} from '@angular/core/src/render3/instructions/shared';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {RendererType2} from '../../src/render/api_flags';
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';
@@ -13,7 +14,7 @@ import {AttributeMarker, ɵɵadvance, ɵɵattribute, ɵɵdefineComponent, ɵɵde
 import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart, ɵɵprojection, ɵɵprojectionDef, ɵɵtemplate, ɵɵtext} from '../../src/render3/instructions/all';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {domRendererFactory3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
-import {CONTEXT, HEADER_OFFSET} from '../../src/render3/interfaces/view';
+import {CONTEXT, HEADER_OFFSET, ID, LView} from '../../src/render3/interfaces/view';
 import {ɵɵsanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 import {SecurityContext} from '../../src/sanitization/security';
@@ -399,14 +400,14 @@ describe('element discovery', () => {
 
     const section = fixture.hostElement.querySelector('section')!;
     const sectionContext = getLContext(section)!;
-    const sectionLView = sectionContext.lView!;
+    const sectionLView = getLViewById(sectionContext.lViewId)!;
     expect(sectionContext.nodeIndex).toEqual(HEADER_OFFSET);
     expect(sectionLView.length).toBeGreaterThan(HEADER_OFFSET);
     expect(sectionContext.native).toBe(section);
 
     const div = fixture.hostElement.querySelector('div')!;
     const divContext = getLContext(div)!;
-    const divLView = divContext.lView!;
+    const divLView = getLViewById(divContext.lViewId)!;
     expect(divContext.nodeIndex).toEqual(HEADER_OFFSET + 1);
     expect(divLView.length).toBeGreaterThan(HEADER_OFFSET);
     expect(divContext.native).toBe(div);
@@ -443,7 +444,7 @@ describe('element discovery', () => {
     expect(Array.isArray(result2)).toBeFalsy();
 
     expect(result2).toBe(context);
-    expect(result2.lView).toBe(result1);
+    expect(result2.lViewId).toBe((result1 as LView)[ID]);
   });
 
   it('should cache the element context on an intermediate element that isn\'t pre-emptively monkey-patched',
@@ -608,9 +609,9 @@ describe('element discovery', () => {
        const shadowContext = getLContext(header)!;
        const projectedContext = getLContext(p)!;
 
-       const parentComponentData = parentContext.lView;
-       const shadowComponentData = shadowContext.lView;
-       const projectedComponentData = projectedContext.lView;
+       const parentComponentData = getLViewById(parentContext.lViewId);
+       const shadowComponentData = getLViewById(shadowContext.lViewId);
+       const projectedComponentData = getLViewById(projectedContext.lViewId);
 
        expect(projectedComponentData).toBe(parentComponentData);
        expect(shadowComponentData).not.toBe(parentComponentData);
@@ -682,12 +683,12 @@ describe('element discovery', () => {
     expect(hostLView).toBe(componentLView);
 
     const context1 = getLContext(hostElm)!;
-    expect(context1.lView).toBe(hostLView);
+    expect(getLViewById(context1.lViewId)).toBe(hostLView);
     expect(context1.native).toEqual(hostElm);
 
     const context2 = getLContext(component)!;
     expect(context2).toBe(context1);
-    expect(context2.lView).toBe(hostLView);
+    expect(getLViewById(context2.lViewId)).toBe(hostLView);
     expect(context2.native).toEqual(hostElm);
   });
 
@@ -738,7 +739,7 @@ describe('element discovery', () => {
        const div1 = hostElm.querySelector('div:first-child')! as any;
        const div2 = hostElm.querySelector('div:last-child')! as any;
        const context = getLContext(hostElm)!;
-       const componentView = context.lView[context.nodeIndex];
+       const componentView = getLViewById(context.lViewId)![context.nodeIndex];
 
        expect(componentView).toContain(myDir1Instance);
        expect(componentView).toContain(myDir2Instance);
@@ -752,9 +753,9 @@ describe('element discovery', () => {
        const d2Context = getLContext(myDir2Instance)!;
        const d3Context = getLContext(myDir3Instance)!;
 
-       expect(d1Context.lView).toEqual(componentView);
-       expect(d2Context.lView).toEqual(componentView);
-       expect(d3Context.lView).toEqual(componentView);
+       expect(getLViewById(d1Context.lViewId)).toEqual(componentView);
+       expect(getLViewById(d2Context.lViewId)).toEqual(componentView);
+       expect(getLViewById(d3Context.lViewId)).toEqual(componentView);
 
        expect(readPatchedData(myDir1Instance)).toBe(d1Context);
        expect(readPatchedData(myDir2Instance)).toBe(d2Context);
@@ -917,16 +918,16 @@ describe('element discovery', () => {
        const context = getLContext(child)!;
        expect(readPatchedData(child)).toBeTruthy();
 
-       const componentData = context.lView[context.nodeIndex];
+       const componentData = getLViewById(context.lViewId)![context.nodeIndex];
        const component = componentData[CONTEXT];
        expect(component instanceof ChildComp).toBeTruthy();
-       expect(readPatchedData(component)).toBe(context.lView);
+       expect(readPatchedData(component)).toBe(getLViewById(context.lViewId));
 
        const componentContext = getLContext(component)!;
        expect(readPatchedData(component)).toBe(componentContext);
        expect(componentContext.nodeIndex).toEqual(context.nodeIndex);
        expect(componentContext.native).toEqual(context.native);
-       expect(componentContext.lView).toEqual(context.lView);
+       expect(getLViewById(componentContext.lViewId)).toEqual(getLViewById(context.lViewId));
      });
 });
 

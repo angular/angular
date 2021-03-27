@@ -33,9 +33,9 @@ import {isProceduralRenderer, Renderer3, RendererFactory3} from '../interfaces/r
 import {RComment, RElement, RNode, RText} from '../interfaces/renderer_dom';
 import {SanitizerFn} from '../interfaces/sanitization';
 import {isComponentDef, isComponentHost, isContentQueryHost, isRootView} from '../interfaces/type_checks';
-import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
+import {CHILD_HEAD, CHILD_TAIL, CLEANUP, CONTEXT, DECLARATION_COMPONENT_VIEW, DECLARATION_VIEW, FLAGS, HEADER_OFFSET, HOST, HostBindingOpCodes, ID, InitPhaseState, INJECTOR, LView, LViewFlags, NEXT, PARENT, RENDERER, RENDERER_FACTORY, RootContext, RootContextFlags, SANITIZER, T_HOST, TData, TRANSPLANTED_VIEWS_TO_REFRESH, TVIEW, TView, TViewType} from '../interfaces/view';
 import {assertPureTNodeType, assertTNodeType} from '../node_assert';
-import {updateTextNode} from '../node_manipulation';
+import {applyView, destroyViewTree, updateTextNode, WalkTNodeTreeAction} from '../node_manipulation';
 import {isInlineTemplate, isNodeMatchingSelectorList} from '../node_selector_matcher';
 import {enterView, getBindingsEnabled, getCurrentDirectiveIndex, getCurrentParentTNode, getCurrentTNode, getCurrentTNodePlaceholderOk, getSelectedIndex, isCurrentTNodeParent, isInCheckNoChangesMode, isInI18nBlock, leaveView, setBindingIndex, setBindingRootForHostBindings, setCurrentDirectiveIndex, setCurrentQueryIndex, setCurrentTNode, setIsInCheckNoChangesMode, setSelectedIndex} from '../state';
 import {NO_CHANGE} from '../tokens';
@@ -123,6 +123,8 @@ function renderChildComponents(hostLView: LView, components: number[]): void {
   }
 }
 
+const ACTIVE_LVIEWS: (LView|null)[] = [];
+
 export function createLView<T>(
     parentLView: LView|null, tView: TView, context: T|null, flags: LViewFlags, host: RElement|null,
     tHostNode: TNode|null, rendererFactory: RendererFactory3|null, renderer: Renderer3|null,
@@ -142,6 +144,7 @@ export function createLView<T>(
   lView[SANITIZER] = sanitizer || parentLView && parentLView[SANITIZER] || null!;
   lView[INJECTOR as any] = injector || parentLView && parentLView[INJECTOR] || null;
   lView[T_HOST] = tHostNode;
+  lView[ID] = ACTIVE_LVIEWS.push(lView) - 1;
   ngDevMode &&
       assertEqual(
           tView.type == TViewType.Embedded ? parentLView !== null : true, true,
@@ -150,6 +153,30 @@ export function createLView<T>(
       tView.type == TViewType.Embedded ? parentLView![DECLARATION_COMPONENT_VIEW] : lView;
   ngDevMode && attachLViewDebug(lView);
   return lView;
+}
+
+export function getLViewById(id: number): LView|null {
+  return ACTIVE_LVIEWS[id] || null;
+}
+
+
+/**
+ * A standalone function which destroys an LView,
+ * conducting clean up (e.g. removing listeners, calling onDestroys).
+ *
+ * @param tView The `TView' of the `LView` to be destroyed
+ * @param lView The view to be destroyed.
+ */
+export function destroyLView(tView: TView, lView: LView) {
+  if (!(lView[FLAGS] & LViewFlags.Destroyed)) {
+    const renderer = lView[RENDERER];
+    if (isProceduralRenderer(renderer) && renderer.destroyNode) {
+      applyView(tView, lView, renderer, WalkTNodeTreeAction.Destroy, null, null);
+    }
+
+    destroyViewTree(lView);
+    ACTIVE_LVIEWS[lView[ID]] = null;
+  }
 }
 
 /**

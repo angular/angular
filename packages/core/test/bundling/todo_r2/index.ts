@@ -9,7 +9,7 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ɵNgModuleFactory as NgModuleFactory} from '@angular/core';
+import {Component, Injectable, NgModule, ɵNgModuleFactory as NgModuleFactory, ɵwhenRendered as whenRendered} from '@angular/core';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 class Todo {
@@ -195,5 +195,12 @@ class ToDoAppModule {
   }
 }
 
-(window as any).waitForApp =
+const waitForApp =
     platformBrowser().bootstrapModuleFactory(new NgModuleFactory(ToDoAppModule), {ngZone: 'noop'});
+
+// Re-export these symbols, because they're used within the
+// tests and we want them to come from this bundle.
+module.exports = {
+  whenRendered,
+  waitForApp
+};

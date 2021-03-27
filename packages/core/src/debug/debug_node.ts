@@ -7,7 +7,8 @@
  */
 
 import {Injector} from '../di/injector';
-import {assertTNodeForLView} from '../render3/assert';
+import {assertLView, assertTNodeForLView} from '../render3/assert';
+import {getLViewById} from '../render3/instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
@@ -263,8 +264,9 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   get name(): string {
     try {
       const context = loadLContext(this.nativeNode)!;
-      const lView = context.lView;
-      const tData = lView[TVIEW].data;
+      const lView = getLViewById(context.lViewId);
+      ngDevMode && assertLView(lView);
+      const tData = lView![TVIEW].data;
       const tNode = tData[context.nodeIndex] as TNode;
       return tNode.value!;
     } catch (e) {
@@ -290,8 +292,9 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       return {};
     }
 
-    const lView = context.lView;
-    const tData = lView[TVIEW].data;
+    const lView = getLViewById(context.lViewId);
+    ngDevMode && assertLView(lView);
+    const tData = lView![TVIEW].data;
     const tNode = tData[context.nodeIndex] as TNode;
 
     const properties: {[key: string]: string} = {};
@@ -299,7 +302,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     copyDomProperties(this.nativeElement, properties);
     // Collect properties from the bindings. This is needed for animation renderer which has
     // synthetic properties which don't get reflected into the DOM.
-    collectPropertyBindings(properties, tNode, lView, tData);
+    collectPropertyBindings(properties, tNode, lView!, tData);
     return properties;
   }
 
@@ -316,8 +319,9 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       return {};
     }
 
-    const lView = context.lView;
-    const tNodeAttrs = (lView[TVIEW].data[context.nodeIndex] as TNode).attrs;
+    const lView = getLViewById(context.lViewId);
+    ngDevMode && assertLView(lView);
+    const tNodeAttrs = (lView![TVIEW].data[context.nodeIndex] as TNode).attrs;
     const lowercaseTNodeAttrs: string[] = [];
 
     // For debug nodes we take the element's attribute directly from the DOM since it allows us
@@ -503,9 +507,11 @@ function _queryAllR3(
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
   const context = loadLContext(parentElement.nativeNode, false);
   if (context !== null) {
-    const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
+    const lView = getLViewById(context.lViewId);
+    ngDevMode && assertLView(lView);
+    const parentTNode = lView![TVIEW].data[context.nodeIndex] as TNode;
     _queryNodeChildrenR3(
-        parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
+        parentTNode, lView!, predicate, matches, elementsOnly, parentElement.nativeNode);
   } else {
     // If the context is null, then `parentElement` was either created with Renderer2 or native DOM
     // APIs.

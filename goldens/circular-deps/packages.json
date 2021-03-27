@@ -112,6 +112,33 @@
     "packages/core/src/change_detection/change_detection.ts",
     "packages/core/src/change_detection/change_detector_ref.ts",
     "packages/core/src/render3/view_ref.ts",
+    "packages/core/src/render3/collect_native_nodes.ts",
+    "packages/core/src/render3/node_manipulation.ts",
+    "packages/core/src/render3/context_discovery.ts",
+    "packages/core/src/render3/instructions/shared.ts",
+    "packages/core/src/error_handler.ts",
+    "packages/core/src/errors.ts",
+    "packages/core/src/view/types.ts",
+    "packages/core/src/linker/component_factory.ts"
+  ],
+  [
+    "packages/core/src/change_detection/change_detection.ts",
+    "packages/core/src/change_detection/change_detector_ref.ts",
+    "packages/core/src/render3/view_ref.ts",
+    "packages/core/src/render3/collect_native_nodes.ts",
+    "packages/core/src/render3/node_manipulation.ts",
+    "packages/core/src/render3/util/view_traversal_utils.ts",
+    "packages/core/src/render3/context_discovery.ts",
+    "packages/core/src/render3/instructions/shared.ts",
+    "packages/core/src/error_handler.ts",
+    "packages/core/src/errors.ts",
+    "packages/core/src/view/types.ts",
+    "packages/core/src/linker/component_factory.ts"
+  ],
+  [
+    "packages/core/src/change_detection/change_detection.ts",
+    "packages/core/src/change_detection/change_detector_ref.ts",
+    "packages/core/src/render3/view_ref.ts",
     "packages/core/src/render3/instructions/shared.ts",
     "packages/core/src/error_handler.ts",
     "packages/core/src/errors.ts",
@@ -208,6 +235,10 @@
   [
     "packages/core/src/metadata/ng_module.ts",
     "packages/core/src/render3/jit/module.ts"
+  ],
+  [
+    "packages/core/src/render3/context_discovery.ts",
+    "packages/core/src/render3/instructions/shared.ts"
   ],
   [
     "packages/core/src/render3/interfaces/container.ts",

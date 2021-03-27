@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Component, NgModule, ɵNgModuleFactory as NgModuleFactory} from '@angular/core';
+import {Component, NgModule, ɵNgModuleFactory as NgModuleFactory, ɵwhenRendered as whenRendered} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
@@ -70,5 +70,12 @@ class FormsExampleModule {
   }
 }
 
-(window as any).waitForApp = platformBrowser().bootstrapModuleFactory(
+const waitForApp = platformBrowser().bootstrapModuleFactory(
     new NgModuleFactory(FormsExampleModule), {ngZone: 'noop'});
+
+// Re-export these symbols, because they're used within the
+// tests and we want them to come from this bundle.
+module.exports = {
+  whenRendered,
+  waitForApp
+};

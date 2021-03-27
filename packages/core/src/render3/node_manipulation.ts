@@ -33,7 +33,7 @@ import {getNativeByTNode, unwrapRNode, updateTransplantedViewCount} from './util
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
-const enum WalkTNodeTreeAction {
+export const enum WalkTNodeTreeAction {
   /** node create in the native environment. Run on initial creation. */
   Create = 0,
 
@@ -378,24 +378,6 @@ export function detachView(lContainer: LContainer, removeIndex: number): LView|u
     viewToDetach[FLAGS] &= ~LViewFlags.Attached;
   }
   return viewToDetach;
-}
-
-/**
- * A standalone function which destroys an LView,
- * conducting clean up (e.g. removing listeners, calling onDestroys).
- *
- * @param tView The `TView' of the `LView` to be destroyed
- * @param lView The view to be destroyed.
- */
-export function destroyLView(tView: TView, lView: LView) {
-  if (!(lView[FLAGS] & LViewFlags.Destroyed)) {
-    const renderer = lView[RENDERER];
-    if (isProceduralRenderer(renderer) && renderer.destroyNode) {
-      applyView(tView, lView, renderer, WalkTNodeTreeAction.Destroy, null, null);
-    }
-
-    destroyViewTree(lView);
-  }
 }
 
 /**
@@ -901,13 +883,13 @@ function applyNodes(
  * @param parentRElement parent DOM element for insertion (Removal does not need it).
  * @param beforeNode Before which node the insertions should happen.
  */
-function applyView(
+export function applyView(
     tView: TView, lView: LView, renderer: Renderer3, action: WalkTNodeTreeAction.Destroy,
     parentRElement: null, beforeNode: null): void;
-function applyView(
+export function applyView(
     tView: TView, lView: LView, renderer: Renderer3, action: WalkTNodeTreeAction,
     parentRElement: RElement|null, beforeNode: RNode|null): void;
-function applyView(
+export function applyView(
     tView: TView, lView: LView, renderer: Renderer3, action: WalkTNodeTreeAction,
     parentRElement: RElement|null, beforeNode: RNode|null): void {
   applyNodes(renderer, action, tView.firstChild, lView, parentRElement, beforeNode, false);

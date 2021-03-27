@@ -8,7 +8,6 @@
 
 
 import {RNode} from './renderer_dom';
-import {LView} from './view';
 
 
 /**
@@ -23,9 +22,9 @@ import {LView} from './view';
  */
 export interface LContext {
   /**
-   * The component's parent view data.
+   * ID of the component's parent view data.
    */
-  lView: LView;
+  lViewId: number;
 
   /**
    * The index instance of the node.

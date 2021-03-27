@@ -1,5 +1,8 @@
 [
   {
+    "name": "ACTIVE_LVIEWS"
+  },
+  {
     "name": "ALLOW_MULTIPLE_PLATFORMS"
   },
   {
@@ -933,6 +936,9 @@
     "name": "getLView"
   },
   {
+    "name": "getLViewById"
+  },
+  {
     "name": "getLViewParent"
   },
   {
@@ -1549,6 +1555,9 @@
   },
   {
     "name": "viewAttachedToChangeDetector"
+  },
+  {
+    "name": "waitForApp"
   },
   {
     "name": "wrapListener"

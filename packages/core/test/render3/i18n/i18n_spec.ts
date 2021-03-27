@@ -284,9 +284,9 @@ describe('Runtime i18n', () => {
           ]),
           matchDebug([
             'lView[31] = document.createTextNode("")',
-            '(lView[20] as Element).appendChild(lView[31])',
+            '(lView[21] as Element).appendChild(lView[31])',
             'lView[32] = document.createElement("span")',
-            '(lView[20] as Element).appendChild(lView[32])',
+            '(lView[21] as Element).appendChild(lView[32])',
             'lView[33] = document.createTextNode("emails")',
             '(lView[32] as Element).appendChild(lView[33])',
           ]),
@@ -361,7 +361,7 @@ describe('Runtime i18n', () => {
             'lView[26] = document.createComment("nested ICU 0")',
             `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 6}])`,
             'lView[31] = document.createTextNode("!")',
-            '(lView[20] as Element).appendChild(lView[31])',
+            '(lView[21] as Element).appendChild(lView[31])',
           ]),
         ],
         update: [
@@ -398,7 +398,7 @@ describe('Runtime i18n', () => {
           ]),
           matchDebug([
             'lView[30] = document.createTextNode("animals")',
-            '(lView[20] as Element).appendChild(lView[30])',
+            '(lView[21] as Element).appendChild(lView[30])',
           ]),
         ],
         update: [
@@ -428,7 +428,7 @@ describe('Runtime i18n', () => {
       }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
-        'if (mask & 0b1) { (lView[20] as Element).setAttribute(\'title\', `Hello ${lView[i-1]}!`); }',
+        'if (mask & 0b1) { (lView[21] as Element).setAttribute(\'title\', `Hello ${lView[i-1]}!`); }',
       ]));
     });
 
@@ -444,7 +444,7 @@ describe('Runtime i18n', () => {
       }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
-        'if (mask & 0b11) { (lView[20] as Element).setAttribute(\'title\', `Hello ${lView[i-1]} and ${lView[i-2]}, again ${lView[i-1]}!`); }',
+        'if (mask & 0b11) { (lView[21] as Element).setAttribute(\'title\', `Hello ${lView[i-1]} and ${lView[i-2]}, again ${lView[i-1]}!`); }',
       ]));
     });
 
@@ -460,8 +460,8 @@ describe('Runtime i18n', () => {
       }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
-        'if (mask & 0b1) { (lView[20] as Element).setAttribute(\'title\', `Hello ${lView[i-1]}!`); }',
-        'if (mask & 0b1) { (lView[20] as Element).setAttribute(\'aria-label\', `Hello ${lView[i-1]}!`); }',
+        'if (mask & 0b1) { (lView[21] as Element).setAttribute(\'title\', `Hello ${lView[i-1]}!`); }',
+        'if (mask & 0b1) { (lView[21] as Element).setAttribute(\'aria-label\', `Hello ${lView[i-1]}!`); }',
       ]));
     });
   });

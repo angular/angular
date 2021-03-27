@@ -9,7 +9,8 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
+import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent, ɵwhenRendered as whenRendered} from '@angular/core';
+import {getComponent} from '@angular/core/src/render3';
 
 class Todo {
   editing: boolean;
@@ -133,7 +134,9 @@ class TodoStore {
 class ToDoAppComponent {
   newTodoText = '';
 
-  constructor(public todoStore: TodoStore) {}
+  constructor(public todoStore: TodoStore) {
+    (window as any).todoAppComponent = this;
+  }
 
   cancelEditingTodo(todo: Todo) {
     todo.editing = false;
@@ -200,3 +203,10 @@ class ToDoAppModule {
 }
 
 renderComponent(ToDoAppComponent);
+
+// Re-export these symbols, because they're used within the
+// tests and we want them to come from this bundle.
+module.exports = {
+  getComponent,
+  whenRendered
+};
