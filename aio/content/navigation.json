@@ -886,6 +886,11 @@
                   "tooltip": "The \"angular.json\" file contains workspace and project configuration defaults for Angular CLI commands."
                 },
                 {
+                  "url": "guide/multi-project-workspace",
+                  "title": "Multi-project workspace",
+                  "tooltip": "How to build multi-project Angular workspace"
+                },
+                {
                   "url": "guide/npm-packages",
                   "title": "npm Dependencies",
                   "tooltip": "Description of npm packages required at development time and at runtime."

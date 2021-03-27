@@ -29,10 +29,10 @@ The `ng generate` command creates the `projects/my-lib` folder in your workspace
 
 <div class="alert is-helpful">
 
-     For more details on how a library project is structured, refer to the [Library project files](guide/file-structure#library-project-files) section of the [Project File Structure guide](guide/file-structure).
+     For more details on how a library project is structured, refer to the [Library project files](guide/multi-project-workspace#library-project-files) section of the [Project File Structure guide](guide/file-structure).
 
      Use the monorepo model to use the same workspace for multiple projects.
-     See [Setting up for a multi-project workspace](guide/file-structure#multiple-projects).
+     See [Setting up for a multi-project workspace](guide/multi-project-workspace).
 
 </div>
 

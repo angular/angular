@@ -18,12 +18,12 @@ The root-level application has the same name as the workspace, and the source fi
 This default behavior is suitable for a typical "multi-repo" development style where each application resides in its own workspace.
 Beginners and intermediate users are encouraged to use `ng new` to create a separate workspace for each application.
 
-Angular also supports workspaces with [multiple projects](#multiple-projects).
+Angular also supports workspaces with [multiple projects](guide/multi-project-workspace).
 This type of development environment is suitable for advanced users who are developing [shareable libraries](guide/glossary#library),
 and for enterprises that use a "monorepo" development style, with a single repository and global configuration for all Angular projects.
 
 To set up a monorepo workspace, you should skip the creating the root application.
-See [Setting up for a multi-project workspace](#multiple-projects) below.
+See [Setting up for a multi-project workspace](guide/multi-project-workspace) section.
 
 ## Workspace configuration files
 
@@ -49,7 +49,7 @@ By default, the CLI command `ng new my-app` creates a workspace folder named "my
 A newly generated application contains source files for a root module, with a root component and template.
 
 When the workspace file structure is in place, you can use the `ng generate` command on the command line to add functionality and data to the application.
-This initial root-level application is the *default app* for CLI commands (unless you change the default after creating [additional apps](#multiple-projects)).
+This initial root-level application is the *default app* for CLI commands (unless you change the default after creating [additional apps](guide/multi-project-workspace)).
 
 <div class="alert is-helpful">
 
