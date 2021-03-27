@@ -1,4 +1,8 @@
-@forward './overlay/overlay' show overlay;
+@forward './overlay/overlay' show overlay, $z-index-overlay-container, $z-index-overlay,
+  $z-index-overlay-backdrop, $dark-backdrop-background;
 @forward './a11y/a11y' show a11y-visually-hidden, high-contrast;
 @forward './text-field/text-field' show text-field-autosize, text-field-autofill,
-  text-field-autofill-color;
+  text-field-autofill-color,
+  // `text-field` is deprecated, but we have to export it
+  // here in order for the theming API schematic to work.
+  text-field;

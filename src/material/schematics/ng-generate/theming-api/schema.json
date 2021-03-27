@@ -1,0 +1,7 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicsMaterialThemingApi",
+  "title": "Material Theming API migration",
+  "type": "object",
+  "properties": {}
+}
