@@ -65,9 +65,9 @@ module.exports = new Package('angular-base', [
     readFilesProcessor.sourceFiles = [];
     collectExamples.exampleFolders = [];
 
-    generateKeywordsProcessor.ignoreWordsFile = path.resolve(__dirname, 'ignore.words');
+    generateKeywordsProcessor.ignoreWords = require(path.resolve(__dirname, 'ignore-words'))['en'];
     generateKeywordsProcessor.docTypesToIgnore = ['example-region'];
-    generateKeywordsProcessor.propertiesToIgnore = ['basePath', 'renderedContent'];
+    generateKeywordsProcessor.propertiesToIgnore = ['basePath', 'renderedContent', 'docType', 'searchTitle'];
   })
 
   // Where do we write the output files?
