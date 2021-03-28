@@ -2005,6 +2005,11 @@
   resolved "https://registry.yarnpkg.com/@types/source-list-map/-/source-list-map-0.1.2.tgz#0078836063ffaf17412349bba364087e0ac02ec9"
   integrity sha512-K5K+yml8LTo9bWJI/rECfIPrGgxdpeNbj+d53lwN4QjW1MCwlkhUms+gtdzigTeUyBr09+u8BwOIY3MXvHdcsA==
 
+"@types/stemmer@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/stemmer/-/stemmer-1.0.2.tgz#bd8354f50b3c9b87c351d169240e45cf1fa1f5e8"
+  integrity sha512-2gWEIFqVZjjZxo8/TcugCAl7nW9Jd9ArEDpTAc5nH7d+ZUkreHA7GzuFcLZ0sflLrA5b1PZ+2yDyHJcuP9KWWw==
+
 "@types/unist@*", "@types/unist@^2.0.0", "@types/unist@^2.0.2":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@types/unist/-/unist-2.0.3.tgz#9c088679876f374eb5983f150d4787aa6fb32d7e"
@@ -12801,6 +12806,11 @@ static-extend@^0.1.1:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha1-Fhx9rBd2Wf2YEfQ3cfqZOBR4Yow=
+
+stemmer@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/stemmer/-/stemmer-1.0.5.tgz#fd89beaf8bff5d04b6643bfffcaed0fc420deec0"
+  integrity sha512-SLq7annzSKRDStasOJJoftCSCzBCKmBmH38jC4fDtCunAqOzpTpIm9zmaHmwNJiZ8gLe9qpVdBVbEG2DC5dE2A==
 
 stream-browserify@^2.0.1:
   version "2.0.2"

@@ -1,11 +1,21 @@
+const path = require('canonical-path');
+const Dgeni = require('dgeni');
+
 const testPackage = require('../../helpers/test-package');
 const mockLogger = require('dgeni/lib/mocks/log')(false);
 const processorFactory = require('./generateKeywords');
-const Dgeni = require('dgeni');
 
 const mockReadFilesProcessor = {
   basePath: 'base/path'
 };
+
+const ignoreWords = require(path.resolve(__dirname, '../ignore-words'))['en'];
+
+function createProcessor() {
+  const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+  processor.ignoreWords = ignoreWords;
+  return processor;
+}
 
 describe('generateKeywords processor', () => {
 
@@ -17,30 +27,81 @@ describe('generateKeywords processor', () => {
   });
 
   it('should run after the correct processor', () => {
-    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const processor = createProcessor();
     expect(processor.$runAfter).toEqual(['postProcessHtml']);
   });
 
   it('should run before the correct processor', () => {
-    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const processor = createProcessor();
     expect(processor.$runBefore).toEqual(['writing-files']);
   });
 
   it('should ignore internal and private exports', () => {
-    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const processor = createProcessor();
     const docs = [
       { docType: 'class', name: 'PublicExport' },
       { docType: 'class', name: 'PrivateExport', privateExport: true },
       { docType: 'class', name: 'InternalExport', internal: true }
     ];
     processor.$process(docs);
-    expect(docs[docs.length - 1].data).toEqual([
-      jasmine.objectContaining({ title: 'PublicExport', type: 'class'})
+    expect(docs[docs.length - 1].data.pages).toEqual([
+      jasmine.objectContaining({ title: 'PublicExport', type: 'class' })
     ]);
   });
 
+  it('should ignore docs that are in the `docTypesToIgnore` list', () => {
+    const processor = createProcessor();
+    processor.docTypesToIgnore = ['interface'];
+    const docs = [
+      { docType: 'class', name: 'Class' },
+      { docType: 'interface', name: 'Interface' },
+      { docType: 'content', name: 'Guide' },
+    ];
+    processor.$process(docs);
+    expect(docs[docs.length - 1].data.pages).toEqual([
+      jasmine.objectContaining({ title: 'Class', type: 'class' }),
+      jasmine.objectContaining({ title: 'Guide', type: 'content' }),
+    ]);
+  });
+
+  it('should not collect keywords from properties that are in the `propertiesToIgnore` list', () => {
+    const processor = createProcessor();
+    processor.propertiesToIgnore = ['docType', 'ignore'];
+    const docs = [
+      { docType: 'class', name: 'FooClass', ignore: 'ignore this content' },
+      { docType: 'interface', name: 'BarInterface', capture: 'capture this content' },
+    ];
+    processor.$process(docs);
+    expect(docs[docs.length - 1].data).toEqual({
+      dictionary: [ 'fooclass', 'barinterfac', 'captur', 'content' ],
+      pages: [
+        jasmine.objectContaining({ title: 'FooClass', type: 'class', keywords: [0] }),
+        jasmine.objectContaining({ title: 'BarInterface', type: 'interface', keywords: [1, 2, 3] }),
+      ],
+    });
+  });
+
+  it('should not collect keywords that look like HTML tags', () => {
+    const processor = createProcessor();
+    const docs = [
+      { docType: 'class', name: 'FooClass', content: `
+      <table id="foo">
+        <tr class="moo" id="bar">
+          <td>Content inside a table</td>
+        </tr>
+      </table>` },
+    ];
+    processor.$process(docs);
+    expect(docs[docs.length - 1].data).toEqual({
+      dictionary: ['class', 'fooclass', 'content', 'insid', 'tabl'],
+      pages: [
+        jasmine.objectContaining({keywords: [0, 1, 2, 3, 4] })
+      ],
+    });
+  });
+
   it('should compute `doc.searchTitle` from the doc properties if not already provided', () => {
-    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const processor = createProcessor();
     const docs = [
       { docType: 'class', name: 'A', searchTitle: 'searchTitle A', title: 'title A', vFile: { headings: { h1: ['vFile A'] } } },
       { docType: 'class', name: 'B', title: 'title B', vFile: { headings: { h1: ['vFile B'] } } },
@@ -48,7 +109,7 @@ describe('generateKeywords processor', () => {
       { docType: 'class', name: 'D' },
     ];
     processor.$process(docs);
-    expect(docs[docs.length - 1].data).toEqual([
+    expect(docs[docs.length - 1].data.pages).toEqual([
       jasmine.objectContaining({ title: 'searchTitle A' }),
       jasmine.objectContaining({ title: 'title B' }),
       jasmine.objectContaining({ title: 'vFile C' }),
@@ -57,34 +118,19 @@ describe('generateKeywords processor', () => {
   });
 
   it('should use `doc.searchTitle` as the title in the search index', () => {
-    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const processor = createProcessor();
     const docs = [
       { docType: 'class', name: 'PublicExport', searchTitle: 'class PublicExport' },
     ];
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
-    expect(keywordsDoc.data).toEqual([
-      jasmine.objectContaining({ title: 'class PublicExport', type: 'class'})
+    expect(keywordsDoc.data.pages).toEqual([
+      jasmine.objectContaining({ title: 'class PublicExport', type: 'class' })
     ]);
   });
 
-  it('should add title words to the search terms', () => {
-    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
-    const docs = [
-      {
-        docType: 'class',
-        name: 'PublicExport',
-        searchTitle: 'class PublicExport',
-        vFile: { headings: { h2: ['heading A', 'heading B'] } }
-      },
-    ];
-    processor.$process(docs);
-    const keywordsDoc = docs[docs.length - 1];
-    expect(keywordsDoc.data[0].titleWords).toEqual('class publicexport');
-  });
-
   it('should add heading words to the search terms', () => {
-    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const processor = createProcessor();
     const docs = [
       {
         docType: 'class',
@@ -95,11 +141,16 @@ describe('generateKeywords processor', () => {
     ];
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
-    expect(keywordsDoc.data[0].headingWords).toEqual('heading important secondary');
+    expect(keywordsDoc.data).toEqual({
+      dictionary: ['class', 'publicexport', 'head', 'secondari'],
+      pages: [
+        jasmine.objectContaining({ headings: [2, 3, 2] })
+      ]
+    });
   });
 
   it('should add member doc properties to the search terms', () => {
-    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const processor = createProcessor();
     const docs = [
       {
         docType: 'class',
@@ -123,13 +174,18 @@ describe('generateKeywords processor', () => {
     ];
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
-    expect(keywordsDoc.data[0].members).toEqual(
-      'instancemethoda instancemethodb instancepropertya instancepropertyb staticmethoda staticmethodb staticpropertya staticpropertyb'
-    );
+    expect(keywordsDoc.data).toEqual({
+      dictionary: ['class', 'publicexport', 'content', 'ngclass', 'instancemethoda','instancepropertya','instancemethodb','instancepropertyb','staticmethoda','staticpropertya','staticmethodb','staticpropertyb', 'head'],
+      pages: [
+        jasmine.objectContaining({
+          members: [4, 5, 6, 7, 8, 9, 10, 11]
+        })
+      ]
+    });
   });
 
   it('should add inherited member doc properties to the search terms', () => {
-    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+    const processor = createProcessor();
     const parentClass =       {
       docType: 'class',
       name: 'ParentClass',
@@ -163,13 +219,27 @@ describe('generateKeywords processor', () => {
     const docs = [childClass, parentClass, parentInterface];
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
-    expect(keywordsDoc.data[0].members.split(' ').sort().join(' ')).toEqual(
-      'childmember1 childmember2 parentmember1 parentmember2 parentmember3'
-    );
+    expect(keywordsDoc.data).toEqual({
+      dictionary: ['class', 'child', 'childmember1', 'childmember2', 'parentmember1', 'parentmember2', 'parentmember3', 'parentclass', 'interfac', 'parentinterfac'],
+      pages: [
+        jasmine.objectContaining({
+          title: 'Child',
+          members: [2, 3, 4, 5, 6]
+        }),
+        jasmine.objectContaining({
+          title: 'ParentClass',
+          members: [4, 5]
+        }),
+        jasmine.objectContaining({
+          title: 'ParentInterface',
+          members: [6]
+        })
+      ]
+    });
   });
 
-  it('should process terms prefixed with "ng" to include the term stripped of "ng"', () => {
-    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+  it('should include both stripped and unstripped "ng" prefixed tokens', () => {
+    const processor = createProcessor();
     const docs = [
       {
         docType: 'class',
@@ -181,14 +251,19 @@ describe('generateKeywords processor', () => {
     ];
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
-    expect(keywordsDoc.data[0].titleWords).toEqual('ngcontroller controller');
-    expect(keywordsDoc.data[0].headingWords).toEqual('model ngmodel');
-    expect(keywordsDoc.data[0].keywords).toContain('class');
-    expect(keywordsDoc.data[0].keywords).toContain('ngclass');
+    expect(keywordsDoc.data).toEqual({
+      dictionary: ['class', 'publicexport', 'ngcontrol', 'control', 'content', 'ngclass', 'ngmodel', 'model'],
+      pages: [
+        jasmine.objectContaining({
+          headings: [6, 7],
+          keywords: [0, 1, 2, 3, 4, 5, 0],
+        })
+      ],
+    });
   });
 
-  it('should generate renderedContent property', () => {
-    const processor = processorFactory(mockLogger, mockReadFilesProcessor);
+  it('should generate compressed encoded renderedContent property', () => {
+    const processor = createProcessor();
     const docs = [
       {
         docType: 'class',
@@ -196,19 +271,33 @@ describe('generateKeywords processor', () => {
         description: 'The is the documentation for the SomeClass API.',
         vFile: { headings: { h1: ['SomeClass'], h2: ['Some heading'] } }
       },
+      {
+        docType: 'class',
+        name: 'SomeClass2',
+        description: 'description',
+        members: [
+          { name: 'member1' },
+        ],
+        deprecated: true
+      },
     ];
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
-    expect(JSON.parse(keywordsDoc.renderedContent)).toEqual(
-      [{
+    expect(JSON.parse(keywordsDoc.renderedContent)).toEqual({
+      dictionary: ['class', 'someclass', 'document', 'api', 'head', 'someclass2', 'descript', 'member1'],
+      pages: [{
         'title':'SomeClass',
         'type':'class',
-        'titleWords':'someclass',
-        'headingWords':'heading some someclass',
-        'keywords':'api class documentation for is someclass the',
-        'members':'',
-        'deprecated': false,
+        'headings': [1, 4],
+        'keywords': [0, 1, 2, 1, 3],
+      },
+      {
+        'title':'SomeClass2',
+        'type':'class',
+        'keywords': [0, 5, 6],
+        'members': [7],
+        'deprecated': true,
       }]
-    );
+    });
   });
 });

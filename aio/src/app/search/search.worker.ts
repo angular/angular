@@ -1,10 +1,11 @@
 /// <reference lib="webworker" />
-import { WebWorkerMessage } from '../shared/web-worker-message';
 import * as lunr from 'lunr';
+
+import {WebWorkerMessage} from '../shared/web-worker-message';
 
 const SEARCH_TERMS_URL = '/generated/docs/app/search-data.json';
 let index: lunr.Index;
-const pages: SearchInfo = {};
+const pageMap: SearchInfo = {};
 
 interface SearchInfo {
   [key: string]: PageInfo;
@@ -13,8 +14,25 @@ interface SearchInfo {
 interface PageInfo {
   path: string;
   type: string;
-  titleWords: string;
-  keyWords: string;
+  title: string;
+  headings: string;
+  keywords: string;
+  members: string;
+  topics: string;
+}
+
+interface EncodedPages {
+  dictionary: string[];
+  pages: EncodedPage[];
+}
+
+interface EncodedPage {
+  path: string;
+  type: string;
+  title: string;
+  headings: number[];
+  keywords: number[];
+  members: number[];
   topics: string;
 }
 
@@ -24,42 +42,42 @@ addEventListener('message', handleMessage);
 // the path and search terms for a page
 function createIndex(loadIndexFn: IndexLoader): lunr.Index {
   // The lunr typings are missing QueryLexer so we have to add them here manually.
-  const queryLexer = (lunr as any as { QueryLexer: { termSeparator: RegExp } }).QueryLexer;
+  const queryLexer = (lunr as any as {QueryLexer: {termSeparator: RegExp}}).QueryLexer;
   queryLexer.termSeparator = lunr.tokenizer.separator = /\s+/;
   return lunr(function() {
+    this.pipeline.remove(lunr.stemmer);
     this.ref('path');
-    this.field('topics', { boost: 15 });
-    this.field('titleWords', { boost: 10 });
-    this.field('headingWords', { boost: 5 });
-    this.field('members', { boost: 4 });
-    this.field('keywords', { boost: 2 });
+    this.field('topics', {boost: 15});
+    this.field('title', {boost: 10});
+    this.field('headings', {boost: 5});
+    this.field('members', {boost: 4});
+    this.field('keywords', {boost: 2});
     loadIndexFn(this);
   });
 }
 
 // The worker receives a message to load the index and to query the index
-function handleMessage(message: { data: WebWorkerMessage }): void {
+function handleMessage(message: {data: WebWorkerMessage}): void {
   const type = message.data.type;
   const id = message.data.id;
   const payload = message.data.payload;
   switch (type) {
     case 'load-index':
-      makeRequest(SEARCH_TERMS_URL, (searchInfo: PageInfo[]) => {
-        index = createIndex(loadIndex(searchInfo));
-        postMessage({ type, id, payload: true });
+      makeRequest(SEARCH_TERMS_URL, (encodedPages: EncodedPages) => {
+        index = createIndex(loadIndex(encodedPages));
+        postMessage({type, id, payload: true});
       });
       break;
     case 'query-index':
-      postMessage({ type, id, payload: { query: payload, results: queryIndex(payload) } });
+      postMessage({type, id, payload: {query: payload, results: queryIndex(payload)}});
       break;
     default:
-      postMessage({ type, id, payload: { error: 'invalid message type' } });
+      postMessage({type, id, payload: {error: 'invalid message type'}});
   }
 }
 
 // Use XHR to make a request to the server
 function makeRequest(url: string, callback: (response: any) => void): void {
-
   // The JSON file that is loaded should be an array of PageInfo:
   const searchDataRequest = new XMLHttpRequest();
   searchDataRequest.onload = function() {
@@ -70,15 +88,26 @@ function makeRequest(url: string, callback: (response: any) => void): void {
 }
 
 
-// Create the search index from the searchInfo which contains the information about each page to be indexed
-function loadIndex(pagesData: PageInfo[]): IndexLoader {
+// Create the search index from the searchInfo which contains the information about each page to be
+// indexed
+function loadIndex({dictionary, pages}: EncodedPages): IndexLoader {
   return (indexBuilder: lunr.Builder) => {
     // Store the pages data to be used in mapping query results back to pages
     // Add search terms from each page to the search index
-    pagesData.forEach(page => {
+    pages.forEach(encodedPage => {
+      const page = decodePage(encodedPage, dictionary);
       indexBuilder.add(page);
-      pages[page.path] = page;
+      pageMap[page.path] = page;
     });
+  };
+}
+
+function decodePage(encodedPage: EncodedPage, dictionary: string[]): PageInfo {
+  return {
+    ...encodedPage,
+    headings: encodedPage.headings?.map(i => dictionary[i]).join(' ') ?? '',
+    keywords: encodedPage.keywords?.map(i => dictionary[i]).join(' ') ?? '',
+    members: encodedPage.members?.map(i => dictionary[i]).join(' ') ?? '',
   };
 }
 
@@ -105,7 +134,7 @@ function queryIndex(query: string): PageInfo[] {
       }
 
       // Map the hits into info about each page to be returned as results
-      return results.map(hit => pages[hit.ref]);
+      return results.map(hit => pageMap[hit.ref]);
     }
   } catch (e) {
     // If the search query cannot be parsed the index throws an error
