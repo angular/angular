@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// A re-creation of YT.PlayerState since enum values cannot be bound to the window
-// object.
+// A re-creation of YT.PlayerState since enum values cannot be bound to the window object.
 const playerState = {
   UNSTARTED: -1,
   ENDED: 0,
@@ -15,6 +14,13 @@ const playerState = {
   PAUSED: 2,
   BUFFERING: 3,
   CUED: 5,
+};
+
+// Re-creation of `YT.ModestBranding` since it was changed
+// to a plain enum which we can't reference in tests.
+const modestBranding = {
+  Full: 0,
+  Modest: 1
 };
 
 interface FakeYtNamespace {
@@ -84,6 +90,7 @@ export function createFakeYtNamespace(): FakeYtNamespace {
     namespace: {
       'Player': playerCtorSpy as unknown as typeof YT.Player,
       'PlayerState': playerState,
+      'ModestBranding': modestBranding
     } as typeof YT,
   };
 }

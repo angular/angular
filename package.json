@@ -60,7 +60,7 @@
     "@angular/forms": "^12.0.0-next.5",
     "@angular/platform-browser": "^12.0.0-next.5",
     "@types/googlemaps": "^3.43.1",
-    "@types/youtube": "^0.0.40",
+    "@types/youtube": "^0.0.42",
     "@webcomponents/custom-elements": "^1.1.0",
     "core-js-bundle": "^3.8.2",
     "material-components-web": "11.0.0-canary.0cde52f5a.0",
