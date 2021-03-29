@@ -177,6 +177,10 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnChanges, 
   @Output()
   clusteringend: Observable<void> = this._eventManager.getLazyEmitter<void>('clusteringend');
 
+  /** Emits when a cluster has been clicked. */
+  @Output()
+  clusterClick: Observable<Cluster> = this._eventManager.getLazyEmitter<Cluster>('click');
+
   @ContentChildren(MapMarker, {descendants: true}) _markers: QueryList<MapMarker>;
 
   /**

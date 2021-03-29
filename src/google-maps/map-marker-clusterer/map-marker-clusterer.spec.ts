@@ -260,6 +260,8 @@ describe('MapMarkerClusterer', () => {
         .toHaveBeenCalledWith('clusteringbegin', jasmine.any(Function));
     expect(markerClustererSpy.addListener)
         .not.toHaveBeenCalledWith('clusteringend', jasmine.any(Function));
+    expect(markerClustererSpy.addListener)
+        .toHaveBeenCalledWith('click', jasmine.any(Function));
   });
 });
 
@@ -285,7 +287,8 @@ describe('MapMarkerClusterer', () => {
                                      [zIndex]="zIndex"
                                      [zoomOnClick]="zoomOnClick"
                                      [options]="options"
-                                     (clusteringbegin)="onClusteringBegin()">
+                                     (clusteringbegin)="onClusteringBegin()"
+                                     (clusterClick)="onClusterClick()">
                  <map-marker *ngIf="state === 'state1'"></map-marker>
                  <map-marker *ngIf="state === 'state1' || state === 'state2'"></map-marker>
                  <map-marker *ngIf="state === 'state2'"></map-marker>
@@ -318,4 +321,5 @@ class TestApp {
   state = 'state1';
 
   onClusteringBegin() {}
+  onClusterClick() {}
 }
