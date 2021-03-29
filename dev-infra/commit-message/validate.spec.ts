@@ -253,6 +253,14 @@ describe('validate-commit-message.js', () => {
         ]);
       });
 
+      it('should pass validation even if the total non-header content is longer than `minBodyLength`, even if the body contains a `#` reference usage',
+         () => {
+           expectValidationResult(
+               validateCommitMessage(
+                   'fix(core): something\n\n Explanation of how #123 motivated this change'),
+               VALID);
+         });
+
       it('should pass validation if the body is shorter than `minBodyLength` but the commit type is in the `minBodyLengthTypeExclusions` list',
          () => {
            expectValidationResult(validateCommitMessage('docs: just fixing a typo'), VALID);
