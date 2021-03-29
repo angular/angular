@@ -217,11 +217,10 @@ describe('site App', () => {
     });
 
     it('should search the index for words found in the url', async () => {
-      await page.navigateTo('http/router');
+      await page.navigateTo('common/http');
       const results = await page.getSearchResults();
 
-      expect(results).toContain('HttpRequest');
-      expect(results).toContain('Router');
+      expect(results).toContain('common/http package');
     });
   });
 

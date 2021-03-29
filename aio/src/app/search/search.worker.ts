@@ -84,22 +84,33 @@ function loadIndex(pagesData: PageInfo[]): IndexLoader {
 
 // Query the index and return the processed results
 function queryIndex(query: string): PageInfo[] {
+  // Strip off quotes
+  query = query.replace(/^["']|['"]$/g, '');
   try {
     if (query.length) {
-      let results = index.search(query);
+      // First try a query where every term must be present
+      const queryAll = query.replace(/(^|\s)([^\s]+)/g, '$1+$2');
+      let results = index.search(queryAll);
+
+      // If that was too restrictive just query for any term to be present
       if (results.length === 0) {
-        // Add a relaxed search in the title for the first word in the query
-        // E.g. if the search is "ngCont guide" then we search for "ngCont guide titleWords:ngCont*"
-        const titleQuery = 'titleWords:*' + query.split(' ', 1)[0] + '*';
+        results = index.search(query);
+      }
+
+      // If that is still too restrictive then search in the title for the first word in the query
+      if (results.length === 0) {
+        // E.g. if the search is "ngCont guide" then we search for "ngCont guide title:ngCont*"
+        const titleQuery = 'title:*' + query.split(' ', 1)[0] + '*';
         results = index.search(query + ' ' + titleQuery);
       }
+
       // Map the hits into info about each page to be returned as results
       return results.map(hit => pages[hit.ref]);
     }
   } catch (e) {
     // If the search query cannot be parsed the index throws an error
     // Log it and recover
-    console.log(e);
+    console.error(e);
   }
   return [];
 }
