@@ -80,8 +80,7 @@ sass_binary(
     ],
     deps = [
         "//src/material:theming_bundle",
-        "//src/material-experimental/mdc-theming:all_themes",
-        "//src/material-experimental/mdc-typography:all_typography",
+        "//src/material-experimental:theming_bundle",
         "//src/material/core:theming_scss_lib",
     ],
 )

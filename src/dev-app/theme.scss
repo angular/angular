@@ -1,13 +1,7 @@
 @use '../material' as mat;
-@use '../material/core/density/private/all-density' as private-all-density;
-@use '../material-experimental/column-resize/column-resize';
-@use '../material-experimental/mdc-helpers/focus-indicators-theme' as mdc-focus-indicators-theme;
-@use '../material-experimental/mdc-helpers/focus-indicators' as mdc-focus-indicators;
-@use '../material-experimental/mdc-color/all-color' as mdc-all-color;
-@use '../material-experimental/mdc-theming/all-theme' as mdc-all-theme;
-@use '../material-experimental/mdc-density/all-density' as mdc-all-density;
+@use '../material-experimental' as experimental;
 @use '../material-experimental/mdc-slider/slider-theme' as mdc-slider-theme;
-@use '../material-experimental/popover-edit/popover-edit';
+@use '../material/core/density/private/all-density' as private-all-density;
 
 // Plus imports for other components in your app.
 
@@ -33,20 +27,20 @@ $candy-app-theme: mat.define-light-theme((
 
 // Include the default theme styles.
 @include mat.all-component-themes($candy-app-theme);
-@include mdc-all-theme.all-mdc-component-themes($candy-app-theme);
-@include column-resize.theme($candy-app-theme);
-@include popover-edit.theme($candy-app-theme);
+@include experimental.all-mdc-component-themes($candy-app-theme);
+@include experimental.column-resize-theme($candy-app-theme);
+@include experimental.popover-edit-theme($candy-app-theme);
 // We add this in manually for now, because it isn't included in `all-mdc-component-themes`.
 @include mdc-slider-theme.theme($candy-app-theme);
 
 .demo-strong-focus {
   // Include base styles for strong focus indicators.
   @include mat.strong-focus-indicators();
-  @include mdc-focus-indicators.strong-focus-indicators();
+  @include experimental.mdc-strong-focus-indicators();
 
   // Include the default theme for focus indicators.
   @include mat.strong-focus-indicators-theme($candy-app-theme);
-  @include mdc-focus-indicators-theme.theme($candy-app-theme);
+  @include experimental.mdc-strong-focus-indicators-theme($candy-app-theme);
 }
 
 // Include the alternative theme styles inside of a block with a CSS class. You can make this
@@ -62,16 +56,16 @@ $candy-app-theme: mat.define-light-theme((
 
   // Include the dark theme color styles.
   @include mat.all-component-colors($dark-colors);
-  @include mdc-all-color.all-mdc-component-colors($dark-colors);
-  @include column-resize.color($dark-colors);
-  @include popover-edit.color($dark-colors);
+  @include experimental.all-mdc-component-colors($dark-colors);
+  @include experimental.column-resize-color($dark-colors);
+  @include experimental.popover-edit-color($dark-colors);
   // We add this in manually for now, because it isn't included in `all-mdc-component-themes`.
   @include mdc-slider-theme.color($dark-colors);
 
   // Include the dark theme colors for focus indicators.
   .demo-strong-focus {
     @include mat.strong-focus-indicators-color($dark-colors);
-    @include mdc-focus-indicators-theme.color($dark-colors);
+    @include experimental.mdc-strong-focus-indicators-color($dark-colors);
   }
 }
 
@@ -82,6 +76,6 @@ $density-scales: (-1, -2, minimum, maximum);
 @each $density in $density-scales {
   .demo-density-#{$density} {
     @include private-all-density.all-component-densities($density);
-    @include mdc-all-density.all-mdc-component-densities($density);
+    @include experimental.all-mdc-component-densities($density);
   }
 }

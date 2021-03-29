@@ -108,12 +108,7 @@ sass_binary(
     ],
     deps = [
         "//src/material:theming_bundle",
-        "//src/material-experimental/column-resize:column_resize_scss_lib",
-        "//src/material-experimental/mdc-color:all_color",
-        "//src/material-experimental/mdc-density:all_density",
-        "//src/material-experimental/mdc-theming:all_themes",
-        "//src/material-experimental/mdc-typography:all_typography",
-        "//src/material-experimental/popover-edit:popover_edit_scss_lib",
+        "//src/material-experimental:theming_bundle",
         "//src/material/core:theming_scss_lib",
     ],
 )

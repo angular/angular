@@ -8,7 +8,7 @@
 @use '../../mdc-helpers/mdc-helpers';
 @use '../../../material/core/theming/theming';
 
-@mixin option-color($config-or-theme) {
+@mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
 
   @include mdc-helpers.mat-using-mdc-theme($config) {
@@ -53,7 +53,7 @@
   }
 }
 
-@mixin option-typography($config-or-theme) {
+@mixin typography($config-or-theme) {
   $config: theming.get-typography-config($config-or-theme);
 
   @include mdc-helpers.mat-using-mdc-typography($config) {
@@ -65,11 +65,11 @@
   }
 }
 
-@mixin option-density($config-or-theme) {
+@mixin density($config-or-theme) {
   $density-scale: theming.get-density-config($config-or-theme);
 }
 
-@mixin option-theme($theme-or-color-config) {
+@mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-option') {
     $color: theming.get-color-config($theme);
@@ -77,13 +77,13 @@
     $typography: theming.get-typography-config($theme);
 
     @if $color != null {
-      @include option-color($color);
+      @include color($color);
     }
     @if $density != null {
-      @include option-density($density);
+      @include density($density);
     }
     @if $typography != null {
-      @include option-typography($typography);
+      @include typography($typography);
     }
   }
 }

@@ -9,7 +9,7 @@
   @include mdc-helpers.mat-using-mdc-theme($config) {
     .mat-mdc-optgroup-label {
       // Since this will usually be rendered in an overlay,
-      // we have explicitly set the default color.
+      // we have to explicitly set the default color.
       @include mdc-theme.prop(color, text-primary-on-background);
       @include mdc-list.deprecated-item-disabled-text-color(
         mdc-list.$deprecated-text-disabled-color, $query: mdc-helpers.$mat-theme-styles-query);

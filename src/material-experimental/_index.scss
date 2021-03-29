@@ -1,0 +1,65 @@
+// Structural
+@forward './mdc-helpers/focus-indicators' as mdc-* show mdc-strong-focus-indicators;
+
+// Theme bundles
+@forward './mdc-theming/all-theme' show all-mdc-component-themes;
+@forward './mdc-color/all-color' show all-mdc-component-colors;
+@forward './mdc-typography/all-typography' show all-mdc-component-typographies,
+  define-mdc-typography-config;
+@forward './mdc-density/all-density' show all-mdc-component-densities;
+
+// Component themes
+@forward './column-resize/column-resize-theme' as column-resize-* show column-resize-color,
+  column-resize-typography, column-resize-density, column-resize-theme;
+@forward './popover-edit/popover-edit-theme' as popover-edit-* show popover-edit-color,
+  popover-edit-typography, popover-edit-density, popover-edit-theme;
+
+// MDC-related themes
+@forward './mdc-core/core-theme' as mdc-core-* show mdc-core-theme;
+@forward './mdc-helpers/focus-indicators-theme' as mdc-strong-focus-indicators-* show
+  mdc-strong-focus-indicators-color, mdc-strong-focus-indicators-theme;
+@forward './mdc-core/option/option-theme' as mdc-option-* show mdc-option-color,
+  mdc-option-typography, mdc-option-density, mdc-option-theme;
+@forward './mdc-core/option/optgroup-theme' as mdc-optgroup-* show mdc-optgroup-color,
+  mdc-optgroup-typography, mdc-optgroup-density, mdc-optgroup-theme;
+@forward './mdc-autocomplete/autocomplete-theme' as mdc-autocomplete-* show mdc-autocomplete-color,
+  mdc-autocomplete-typography, mdc-autocomplete-density, mdc-autocomplete-theme;
+@forward './mdc-button/button-theme' as mdc-button-* show mdc-button-color, mdc-button-typography,
+  mdc-button-density, mdc-button-theme;
+@forward './mdc-card/card-theme' as mdc-card-* show mdc-card-color, mdc-card-typography,
+  mdc-card-density, mdc-card-theme;
+@forward './mdc-checkbox/checkbox-theme' as mdc-checkbox-* show mdc-checkbox-color,
+  mdc-checkbox-typography, mdc-checkbox-density, mdc-checkbox-theme;
+@forward './mdc-chips/chips-theme' as mdc-chips-* show mdc-chips-color, mdc-chips-typography,
+  mdc-chips-density, mdc-chips-theme;
+@forward './mdc-dialog/dialog-theme' as mdc-dialog-* show mdc-dialog-color, mdc-dialog-typography,
+  mdc-dialog-density, mdc-dialog-theme;
+@forward './mdc-form-field/form-field-theme' as mdc-form-field-* show mdc-form-field-color,
+  mdc-form-field-typography, mdc-form-field-density, mdc-form-field-theme;
+@forward './mdc-input/input-theme' as mdc-input-* show mdc-input-color, mdc-input-typography,
+  mdc-input-density, mdc-input-theme;
+@forward './mdc-list/list-theme' as mdc-list-* show mdc-list-color, mdc-list-typography,
+  mdc-list-density, mdc-list-theme;
+@forward './mdc-menu/menu-theme' as mdc-menu-* show mdc-menu-color, mdc-menu-typography,
+  mdc-menu-density, mdc-menu-theme;
+@forward './mdc-paginator/paginator-theme' as mdc-paginator-* show mdc-paginator-color,
+  mdc-paginator-typography, mdc-paginator-density, mdc-paginator-theme;
+@forward './mdc-progress-bar/progress-bar-theme' as mdc-progress-bar-* show mdc-progress-bar-color,
+  mdc-progress-bar-typography, mdc-progress-bar-density, mdc-progress-bar-theme;
+@forward './mdc-progress-spinner/progress-spinner-theme' as mdc-progress-spinner-* show
+  mdc-progress-spinner-color, mdc-progress-spinner-typography, mdc-progress-spinner-density,
+  mdc-progress-spinner-theme;
+@forward './mdc-radio/radio-theme' as mdc-radio-* show mdc-radio-color, mdc-radio-typography,
+  mdc-radio-density, mdc-radio-theme;
+@forward './mdc-select/select-theme' as mdc-select-* show mdc-select-color, mdc-select-typography,
+  mdc-select-density, mdc-select-theme;
+@forward './mdc-slide-toggle/slide-toggle-theme' as mdc-slide-toggle-* show mdc-slide-toggle-color,
+  mdc-slide-toggle-typography, mdc-slide-toggle-density, mdc-slide-toggle-theme;
+@forward './mdc-snack-bar/snack-bar-theme' as mdc-snack-bar-* show mdc-snack-bar-color,
+  mdc-snack-bar-typography, mdc-snack-bar-density, mdc-snack-bar-theme;
+@forward './mdc-table/table-theme' as mdc-table-* show mdc-table-color, mdc-table-typography,
+  mdc-table-density, mdc-table-theme;
+@forward './mdc-tabs/tabs-theme' as mdc-tabs-* show mdc-tabs-color, mdc-tabs-typography,
+  mdc-tabs-density, mdc-tabs-theme;
+@forward './mdc-tooltip/tooltip-theme' as mdc-tooltip-* show mdc-tooltip-color,
+  mdc-tooltip-typography, mdc-tooltip-density, mdc-tooltip-theme;

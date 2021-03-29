@@ -7,7 +7,7 @@
 @use '../../material/core/typography/typography';
 @use '../../material/core/typography/typography-utils';
 
-@function mat-edit-hover-content-background($direction, $background-color) {
+@function _hover-content-background($direction, $background-color) {
   @return linear-gradient($direction, rgba($background-color, 0), $background-color 8px);
 }
 
@@ -18,13 +18,15 @@
   $primary: map.get($config, primary);
   $background-color: theming.get-color-from-palette($background, 'card');
 
+  // TODO: these structural styles don't belong in the `color` part of a theme.
+  // We should figure out a better place for them.
   .mat-row-hover-content-host-cell {
     position: relative;
   }
 
   .mat-row-hover-content {
     align-items: center;
-    background: mat-edit-hover-content-background(90deg, $background-color);
+    background: _hover-content-background(90deg, $background-color);
     bottom: 0;
     display: flex;
     opacity: 0;
@@ -36,7 +38,7 @@
   }
 
   .mat-row-hover-content-rtl {
-    background: mat-edit-hover-content-background(270deg, $background-color);
+    background: _hover-content-background(270deg, $background-color);
     left: 0;
     right: auto;
   }
@@ -138,10 +140,10 @@
     flex-wrap: wrap;
     justify-content: flex-end;
     margin: 8px -16px -8px;
+  }
 
-    [mat-edit-fill] + & {
-      margin-top: 16px;
-    }
+  [mat-edit-fill] + [mat-edit-actions] {
+    margin-top: 16px;
   }
 }
 

@@ -9,7 +9,7 @@
   // there won't be multiple warnings. e.g. if `mat-mdc-core-theme` reports a warning, then
   // the imported themes (such as `mat-ripple-theme`) should not report again.
   @include theming.private-check-duplicate-theme-styles($theme, 'mat-mdc-core') {
-    @include option-theme.option-theme($theme);
+    @include option-theme.theme($theme);
     @include optgroup-theme.theme($theme);
   }
 }

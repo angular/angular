@@ -130,7 +130,7 @@ $mat-typography-2018-level-mappings: (
 }
 
 // Converts an Angular Material typography config to an MDC one.
-@function mat-typography-config-to-mdc($mat-config: typography.define-typography-config()) {
+@function mat-typography-config-to-mdc($mat-config: typography.define-mdc-typography-config()) {
   $mdc-config: ();
 
   $mappings: if(typography.private-typography-is-2018-config($mat-config),

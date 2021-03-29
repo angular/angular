@@ -13,6 +13,8 @@
   $resizable-hover-divider: theming.get-color-from-palette($primary, 200);
   $resizable-active-divider: theming.get-color-from-palette($primary, 500);
 
+  // TODO: these styles don't really belong in the `color` part of the theme.
+  // We should figure out a better place for them.
   // Required for resizing to work properly.
   .mat-column-resize-table.cdk-column-resize-with-resized-column {
     table-layout: fixed;

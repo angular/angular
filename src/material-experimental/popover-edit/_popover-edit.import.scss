@@ -2,9 +2,8 @@
 @forward '../../material/core/theming/theming.import';
 @forward '../../cdk/a11y/a11y.import';
 @forward '../../material/core/typography/typography-utils.import';
-@forward 'popover-edit' hide color, density, theme, typography;
-@forward 'popover-edit' as mat-popover-edit-* hide
-mat-popover-edit-mat-edit-hover-content-background;
+@forward 'popover-edit-theme' hide color, density, theme, typography;
+@forward 'popover-edit-theme' as mat-popover-edit-*;
 
 @import '../../cdk/a11y/a11y';
 @import '../../material/core/style/variables';

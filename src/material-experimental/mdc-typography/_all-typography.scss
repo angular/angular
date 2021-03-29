@@ -26,7 +26,7 @@
 /// @param {Map} $button The font settings for the button font level.
 /// @param {Map} $overline The font settings for the overline font level.
 /// @return {Map} A map containing font settings for each of the levels in the Material Design spec.
-@function define-typography-config(
+@function define-mdc-typography-config(
   $font-family: mdc-typography.$font-family,
   $headline-1:  mdc-helpers.mat-typography-config-level-from-mdc(headline1),
   $headline-2:  mdc-helpers.mat-typography-config-level-from-mdc(headline2),
