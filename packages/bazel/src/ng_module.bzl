@@ -731,6 +731,7 @@ NG_MODULE_ATTRIBUTES = {
 
         This attribute is a noop if Ivy is not enabled.
         """,
+        values = ["partial", "full", ""],
         default = "",
     ),
     "no_i18n": attr.bool(default = False),
