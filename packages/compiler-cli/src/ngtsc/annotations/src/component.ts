@@ -294,7 +294,7 @@ export class ComponentDecoratorHandler implements
     if (component.has('styles')) {
       const litStyles = parseFieldArrayValue(component, 'styles', this.evaluator);
       if (litStyles === null) {
-        this.preanalyzeStylesCache.set(node, null)
+        this.preanalyzeStylesCache.set(node, null);
       } else {
         inlineStyles = Promise
                            .all(litStyles.map(
@@ -433,7 +433,7 @@ export class ComponentDecoratorHandler implements
       // This protects against accidental differences in resource contents when preanalysis
       // is not used with a provided transformResource hook on the ResourceHost.
       if (this.resourceLoader.canPreprocess) {
-        throw new Error('Inline resource processing requires asynchronous preanalyze.')
+        throw new Error('Inline resource processing requires asynchronous preanalyze.');
       }
 
       if (component.has('styles')) {
