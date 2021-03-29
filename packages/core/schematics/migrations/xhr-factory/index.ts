@@ -56,8 +56,8 @@ export default function(): Rule {
         continue;
       }
 
-      const commonHttpNamedBinding = httpCommonImport.importClause?.namedBindings;
-      if (commonHttpNamedBinding && ts.isNamedImports(commonHttpNamedBinding)) {
+      const commonHttpNamedBinding = getNamedImports(httpCommonImport);
+      if (commonHttpNamedBinding) {
         const commonHttpNamedImports = commonHttpNamedBinding.elements;
         const xhrFactorySpecifier = findImportSpecifier(commonHttpNamedImports, 'XhrFactory');
 
@@ -89,8 +89,8 @@ export default function(): Rule {
 
         // Import XhrFactory from @angular/common
         const commonImport = findImportDeclaration('@angular/common', allImportDeclarations);
-        const commonNamedBinding = commonImport?.importClause?.namedBindings;
-        if (commonImport && commonNamedBinding && ts.isNamedImports(commonNamedBinding)) {
+        const commonNamedBinding = getNamedImports(commonImport);
+        if (commonNamedBinding) {
           // Already has an import for '@angular/common', just add the named import.
           const index = commonNamedBinding.getStart();
           const length = commonNamedBinding.getWidth();
@@ -119,4 +119,14 @@ function findImportDeclaration(moduleSpecifier: string, importDeclarations: ts.I
     ts.ImportDeclaration|undefined {
   return importDeclarations.find(
       n => ts.isStringLiteral(n.moduleSpecifier) && n.moduleSpecifier.text === moduleSpecifier);
+}
+
+function getNamedImports(importDeclaration: ts.ImportDeclaration|undefined): ts.NamedImports|
+    undefined {
+  const namedBindings = importDeclaration?.importClause?.namedBindings;
+  if (namedBindings && ts.isNamedImports(namedBindings)) {
+    return namedBindings;
+  }
+
+  return undefined;
 }
