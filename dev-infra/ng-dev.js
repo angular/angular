@@ -1881,8 +1881,13 @@ function validateCommitMessage(commitMsg, options = {}) {
         //////////////////////////
         // Checking commit body //
         //////////////////////////
+        // Due to an issue in which conventional-commits-parser considers all parts of a commit after
+        // a `#` reference to be the footer, we check the length of all of the commit content after the
+        // header. In the future, we expect to be able to check only the body once the parser properly
+        // handles this case.
+        const allNonHeaderContent = `${commit.body.trim()}\n${commit.footer.trim()}`;
         if (!((_a = config.minBodyLengthTypeExcludes) === null || _a === void 0 ? void 0 : _a.includes(commit.type)) &&
-            commit.body.trim().length < config.minBodyLength) {
+            allNonHeaderContent.length < config.minBodyLength) {
             errors.push(`The commit message body does not meet the minimum length of ${config.minBodyLength} characters`);
             return false;
         }
