@@ -39,6 +39,7 @@ import {isWithinPackage, NOOP_DEPENDENCY_TRACKER} from './util';
 class NgccResourceLoader implements ResourceLoader {
   constructor(private fs: ReadonlyFileSystem) {}
   canPreload = false;
+  canPreprocess = false;
   preload(): undefined|Promise<void> {
     throw new Error('Not implemented.');
   }

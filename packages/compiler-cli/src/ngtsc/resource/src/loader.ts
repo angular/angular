@@ -27,6 +27,7 @@ export class AdapterResourceLoader implements ResourceLoader {
   private lookupResolutionHost = createLookupResolutionHost(this.adapter);
 
   canPreload = !!this.adapter.readResource;
+  canPreprocess = !!this.adapter.transformResource;
 
   constructor(private adapter: NgCompilerAdapter, private options: ts.CompilerOptions) {}
 
@@ -119,7 +120,7 @@ export class AdapterResourceLoader implements ResourceLoader {
     }
 
     const transformResult = await this.adapter.transformResource(
-        data, {type: 'style', containingFile: context.containingFile});
+        data, {type: 'style', containingFile: context.containingFile, resourceFile: null});
     if (transformResult === null) {
       return data;
     }

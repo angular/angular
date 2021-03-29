@@ -22,6 +22,11 @@ export interface ResourceLoader {
   canPreload: boolean;
 
   /**
+   * If true, the resource loader is able to preprocess inline resources.
+   */
+  canPreprocess: boolean;
+
+  /**
    * Resolve the url of a resource relative to the file that contains the reference to it.
    * The return value of this method can be used in the `load()` and `preload()` methods.
    *

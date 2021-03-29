@@ -76,9 +76,9 @@ export interface ResourceHostContext {
    */
   readonly type: 'style';
   /**
-   * The absolute path to the resource file. If the resource is inline, the value will be undefined.
+   * The absolute path to the resource file. If the resource is inline, the value will be null.
    */
-  readonly resourceFile?: string;
+  readonly resourceFile: string|null;
   /**
    * The absolute path to the file that contains the resource or reference to the resource.
    */
