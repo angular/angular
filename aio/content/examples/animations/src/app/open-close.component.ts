@@ -20,8 +20,8 @@ import { trigger, transition, state, animate, style, AnimationEvent } from '@ang
 // #docregion state2
       state('closed', style({
         height: '100px',
-        opacity: 0.5,
-        backgroundColor: 'green'
+        opacity: 0.8,
+        backgroundColor: '#c6ecff'
       })),
 // #enddocregion state2, trigger-wildcard1
 // #docregion transition1
