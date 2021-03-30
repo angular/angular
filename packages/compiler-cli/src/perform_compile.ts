@@ -229,13 +229,25 @@ function createParseConfigHost(host: ConfigurationHost, fs = getFileSystem()): t
 function getExtendedConfigPath(
     configFile: string, extendsValue: string, host: ConfigurationHost,
     fs: FileSystem): AbsoluteFsPath|null {
-  let extendedConfigPath: AbsoluteFsPath|null = null;
+  const result = getExtendedConfigPathWorker(configFile, extendsValue, host, fs);
+  if (result !== null) {
+    return result;
+  }
 
+  // Try to resolve the paths with a json extension append a json extension to the file in case if
+  // it is missing and the resolution failed. This is to replicate TypeScript behaviour, see:
+  // https://github.com/microsoft/TypeScript/blob/294a5a7d784a5a95a8048ee990400979a6bc3a1c/src/compiler/commandLineParser.ts#L2806
+  return getExtendedConfigPathWorker(configFile, `${extendsValue}.json`, host, fs);
+}
+
+function getExtendedConfigPathWorker(
+    configFile: string, extendsValue: string, host: ConfigurationHost,
+    fs: FileSystem): AbsoluteFsPath|null {
   if (extendsValue.startsWith('.') || fs.isRooted(extendsValue)) {
-    extendedConfigPath = host.resolve(host.dirname(configFile), extendsValue);
-    extendedConfigPath = host.extname(extendedConfigPath) ?
-        extendedConfigPath :
-        absoluteFrom(`${extendedConfigPath}.json`);
+    const extendedConfigPath = host.resolve(host.dirname(configFile), extendsValue);
+    if (host.exists(extendedConfigPath)) {
+      return extendedConfigPath;
+    }
   } else {
     const parseConfigHost = createParseConfigHost(host, fs);
 
@@ -248,16 +260,13 @@ function getExtendedConfigPath(
             {moduleResolution: ts.ModuleResolutionKind.NodeJs, resolveJsonModule: true},
             parseConfigHost);
     if (resolvedModule) {
-      extendedConfigPath = absoluteFrom(resolvedModule.resolvedFileName);
+      return absoluteFrom(resolvedModule.resolvedFileName);
     }
-  }
-
-  if (extendedConfigPath !== null && host.exists(extendedConfigPath)) {
-    return extendedConfigPath;
   }
 
   return null;
 }
+
 export interface PerformCompilationResult {
   diagnostics: Diagnostics;
   program?: api.Program;

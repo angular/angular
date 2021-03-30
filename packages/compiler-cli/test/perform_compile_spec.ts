@@ -103,7 +103,7 @@ describe('perform_compile', () => {
     }));
   });
 
-  it('should merge tsconfig "angularCompilerOptions" when extends point to node package', () => {
+  it('should merge tsconfig "angularCompilerOptions" when extends points to node package', () => {
     support.writeFiles({
       'tsconfig-level-1.json': `{
           "extends": "@angular-ru/tsconfig",
@@ -136,4 +136,62 @@ describe('perform_compile', () => {
       enableIvy: false,
     }));
   });
+
+  it('should merge tsconfig "angularCompilerOptions" when extends points to an extension less non rooted file',
+     () => {
+       support.writeFiles({
+         'tsconfig-level-1.json': `{
+            "extends": "@1stg/tsconfig/angular",
+            "angularCompilerOptions": {
+              "enableIvy": false
+            }
+          }`,
+         'node_modules/@1stg/tsconfig/angular.json': `{
+            "compilerOptions": {
+              "strict": true
+            },
+            "angularCompilerOptions": {
+              "skipMetadataEmit": true
+            }
+          }`,
+         'node_modules/@1stg/tsconfig/package.json': `{
+            "name": "@1stg/tsconfig",
+            "version": "0.0.0"
+          }`,
+       });
+
+       const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
+       expect(options).toEqual(jasmine.objectContaining({
+         strict: true,
+         skipMetadataEmit: true,
+         enableIvy: false,
+       }));
+     });
+
+  it('should merge tsconfig "angularCompilerOptions" when extends points to a non rooted file without json extension',
+     () => {
+       support.writeFiles({
+         'tsconfig-level-1.json': `{
+            "extends": "./tsconfig.app",
+            "angularCompilerOptions": {
+              "enableIvy": false
+            }
+          }`,
+         'tsconfig.app.json': `{
+            "compilerOptions": {
+              "strict": true
+            },
+            "angularCompilerOptions": {
+              "skipMetadataEmit": true
+            }
+          }`,
+       });
+
+       const {options} = readConfiguration(path.resolve(basePath, 'tsconfig-level-1.json'));
+       expect(options).toEqual(jasmine.objectContaining({
+         strict: true,
+         skipMetadataEmit: true,
+         enableIvy: false,
+       }));
+     });
 });
