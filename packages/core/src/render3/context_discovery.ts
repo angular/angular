@@ -158,22 +158,22 @@ function createLContext(lView: LView, nodeIndex: number, native: RNode): LContex
  */
 export function getComponentViewByInstance(componentInstance: {}): LView {
   let patchedData = readPatchedData(componentInstance);
-  let view: LView;
+  let lView: LView;
 
   if (isLView(patchedData)) {
     const nodeIndex = findViaComponent(patchedData, componentInstance);
-    view = getComponentLViewByIndex(nodeIndex, patchedData);
-    const context = createLContext(patchedData, nodeIndex, view[HOST] as RElement);
+    lView = getComponentLViewByIndex(nodeIndex, patchedData);
+    const context = createLContext(patchedData, nodeIndex, lView[HOST] as RElement);
     context.component = componentInstance;
     attachPatchData(componentInstance, context);
     attachPatchData(context.native, context);
   } else {
     const context = patchedData as any as LContext;
-    const lView = getLViewById(context.lViewId)!;
-    ngDevMode && assertLView(lView);
-    view = getComponentLViewByIndex(context.nodeIndex, lView);
+    const contextLView = getLViewById(context.lViewId)!;
+    ngDevMode && assertLView(contextLView);
+    lView = getComponentLViewByIndex(context.nodeIndex, contextLView);
   }
-  return view;
+  return lView;
 }
 
 /**
@@ -187,7 +187,9 @@ const MONKEY_PATCH_KEY_NAME = '__ngContext__';
  */
 export function attachPatchData(target: any, data: LView|LContext) {
   ngDevMode && assertDefined(target, 'Target expected');
-  // Only attach the ID of the view in order to avoid memory leaks (see #41047).
+  // Only attach the ID of the view in order to avoid memory leaks (see #41047). We only do this
+  // for `LView`, because we have control over when an `LView` is created and destroyed, whereas
+  // we can't know when to remove an `LContext`.
   target[MONKEY_PATCH_KEY_NAME] = isLView(data) ? data[ID] : data;
 }
 

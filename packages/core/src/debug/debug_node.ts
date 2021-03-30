@@ -294,9 +294,9 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       return {};
     }
 
-    const lView = getLViewById(context.lViewId);
+    const lView = getLViewById(context.lViewId)!;
     ngDevMode && assertLView(lView);
-    const tData = lView![TVIEW].data;
+    const tData = lView[TVIEW].data;
     const tNode = tData[context.nodeIndex] as TNode;
 
     const properties: {[key: string]: string} = {};
@@ -304,7 +304,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
     copyDomProperties(this.nativeElement, properties);
     // Collect properties from the bindings. This is needed for animation renderer which has
     // synthetic properties which don't get reflected into the DOM.
-    collectPropertyBindings(properties, tNode, lView!, tData);
+    collectPropertyBindings(properties, tNode, lView, tData);
     return properties;
   }
 

@@ -53,7 +53,7 @@ import {getTNode, unwrapRNode} from './view_utils';
  * @globalApi ng
  */
 export function getComponent<T>(element: Element): T|null {
-  assertDomElement(element);
+  ngDevMode && assertDomElement(element);
   const context = getLContext(element);
   if (context === null) return null;
 
@@ -81,8 +81,12 @@ export function getComponent<T>(element: Element): T|null {
  */
 export function getContext<T>(element: Element): T|null {
   assertDomElement(element);
-  const context = getLContext(element)!;
-  const lView = context === null ? null : getLViewById(context.lViewId);
+  const context = getLContext(element);
+  let lView: LView|null = null;
+  if (context !== null) {
+    lView = getLViewById(context.lViewId);
+    ngDevMode && assertLView(lView);
+  }
   return lView === null ? null : lView[CONTEXT] as T;
 }
 
@@ -394,9 +398,9 @@ export interface Listener {
  * @globalApi ng
  */
 export function getListeners(element: Element): Listener[] {
-  assertDomElement(element);
+  ngDevMode && assertDomElement(element);
   const lContext = getLContext(element);
-  const lView = lContext ? getLViewById(lContext.lViewId) : null;
+  const lView = lContext === null ? null : getLViewById(lContext.lViewId);
   if (lView === null) return [];
 
   const tView = lView[TVIEW];

@@ -48,7 +48,7 @@ import {getComponentLViewByIndex, getNativeByIndex, getNativeByTNode, isCreation
 
 import {selectIndexInternal} from './advance';
 import {attachLContainerDebug, attachLViewDebug, cloneToLViewFromTViewBlueprint, cloneToTViewData, LCleanup, LViewBlueprint, MatchesArray, TCleanup, TNodeDebug, TNodeInitialInputs, TNodeLocalNames, TViewComponents, TViewConstructor} from './lview_debug';
-import {trackLView} from './lview_tracking';
+import {registerLView} from './lview_tracking';
 
 
 
@@ -144,7 +144,7 @@ export function createLView<T>(
   lView[SANITIZER] = sanitizer || parentLView && parentLView[SANITIZER] || null!;
   lView[INJECTOR as any] = injector || parentLView && parentLView[INJECTOR] || null;
   lView[T_HOST] = tHostNode;
-  lView[ID] = trackLView(lView);
+  lView[ID] = registerLView(lView);
   ngDevMode &&
       assertEqual(
           tView.type == TViewType.Embedded ? parentLView !== null : true, true,

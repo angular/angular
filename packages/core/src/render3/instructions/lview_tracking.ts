@@ -16,7 +16,7 @@ const TRACKED_LVIEWS = new Map<number, LView>();
 let uniqueIdCounter = 0;
 
 /** Starts tracking an LView and returns a unique ID that can be used for future lookups. */
-export function trackLView(lView: LView): number {
+export function registerLView(lView: LView): number {
   const id = uniqueIdCounter++;
   TRACKED_LVIEWS.set(id, lView);
   return id;
@@ -29,7 +29,7 @@ export function getLViewById(id: number): LView|null {
 }
 
 /** Stops tracking an LView. */
-export function stopTrackingLView(lView: LView): void {
+export function unregisterLView(lView: LView): void {
   ngDevMode && assertNumber(lView[ID], 'Cannot stop tracking an LView that does not have an ID');
   TRACKED_LVIEWS.delete(lView[ID]);
 }
