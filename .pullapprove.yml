@@ -1166,7 +1166,7 @@ groups:
     conditions:
       - *can-be-global-approved
       - >
-        contains_any_globs(files.exclude("packages/compiler-cli/**/BUILD.bazel"), [
+        contains_any_globs(files, [
           '*',
           '.circleci/**',
           '.devcontainer/**',
@@ -1203,8 +1203,7 @@ groups:
           'tools/utils/**',
           'tools/yarn/**',
           'tools/*',
-          '**/*.bzl',
-          '**/*.bazel'
+          '**/*.bzl'
           ])
     reviewers:
       users:
