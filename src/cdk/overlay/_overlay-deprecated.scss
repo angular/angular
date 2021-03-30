@@ -1,0 +1,13 @@
+@use './overlay';
+
+// @deprecated Use `$overlay-container-z-index`.
+$z-index-overlay-container: overlay.$overlay-container-z-index;
+
+// @deprecated Use `$overlay-z-index`.
+$z-index-overlay: overlay.$overlay-z-index;
+
+// @deprecated Use `$overlay-backdrop-color`.
+$dark-backdrop-background: overlay.$overlay-backdrop-color;
+
+// @deprecated Use `$overlay-backdrop-z-index`.
+$z-index-overlay-backdrop: overlay.$overlay-backdrop-z-index;

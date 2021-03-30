@@ -78,10 +78,10 @@ const materialVariables: Record<string, string> = {
 
 /** Mapping of CDK variables that should be renamed. */
 const cdkVariables: Record<string, string> = {
-  'cdk-z-index-overlay-container': 'z-index-overlay-container',
-  'cdk-z-index-overlay': 'z-index-overlay',
-  'cdk-z-index-overlay-backdrop': 'z-index-overlay-backdrop',
-  'cdk-overlay-dark-backdrop-background': 'overlay-dark-backdrop-background',
+  'cdk-z-index-overlay-container': 'overlay-container-z-index',
+  'cdk-z-index-overlay': 'overlay-z-index',
+  'cdk-z-index-overlay-backdrop': 'overlay-backdrop-z-index',
+  'cdk-overlay-dark-backdrop-background': 'overlay-backdrop-color',
 };
 
 /** Mapping of CDK mixins that should be renamed. */

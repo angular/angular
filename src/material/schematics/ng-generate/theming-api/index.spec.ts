@@ -104,7 +104,7 @@ describe('Material theming API schematic', () => {
       `@include cdk.overlay();`,
       ``,
       `.my-dialog {`,
-        `z-index: cdk.$z-index-overlay-container + 1;`,
+        `z-index: cdk.$overlay-container-z-index + 1;`,
       `}`,
       ``,
       `@include cdk.high-contrast(active, off) {`,
@@ -161,7 +161,7 @@ describe('Material theming API schematic', () => {
       `@include mat.all-component-themes($candy-app-theme);`,
 
       `.my-dialog {`,
-        `z-index: cdk.$z-index-overlay-container + 1;`,
+        `z-index: cdk.$overlay-container-z-index + 1;`,
       `}`
     ]);
   });
@@ -284,7 +284,7 @@ describe('Material theming API schematic', () => {
     expect(getFileContent(tree, '/components/dialog.scss').split('\n')).toEqual([
       `@use '~@angular/cdk' as cdk;`,
       `.my-dialog {`,
-        `z-index: cdk.$z-index-overlay-container + 1;`,
+        `z-index: cdk.$overlay-container-z-index + 1;`,
       `}`,
     ]);
   });
