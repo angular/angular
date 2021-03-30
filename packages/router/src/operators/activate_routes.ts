@@ -123,6 +123,11 @@ export class ActivateRoutes {
       context.outlet.deactivate();
       // Destroy the contexts for all the outlets that were in the component
       context.children.onOutletDeactivated();
+      // Clear the information about the attached component on the context but keep the reference to
+      // the outlet.
+      context.attachRef = null;
+      context.resolver = null;
+      context.route = null;
     }
   }
 
