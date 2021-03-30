@@ -9,6 +9,7 @@
 import {Component} from '@angular/core';
 import {getLContext} from '@angular/core/src/render3/context_discovery';
 import {LViewDebug} from '@angular/core/src/render3/instructions/lview_debug';
+import {getLViewById} from '@angular/core/src/render3/instructions/lview_tracking';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
 import {TestBed} from '@angular/core/testing';
@@ -27,7 +28,7 @@ onlyInIvy('Ivy specific').describe('Debug Representation', () => {
     const fixture = TestBed.createComponent(MyComponent);
     fixture.detectChanges();
 
-    const hostView = getLContext(fixture.componentInstance)!.lView.debug!;
+    const hostView = getLViewById(getLContext(fixture.componentInstance)!.lViewId)!.debug!;
     expect(hostView.hostHTML).toEqual(null);
     const myCompView = hostView.childViews[0] as LViewDebug;
     expect(myCompView.hostHTML).toContain('<div id="123">Hello World</div>');
@@ -47,7 +48,7 @@ onlyInIvy('Ivy specific').describe('Debug Representation', () => {
         const fixture = TestBed.createComponent(MyComponent);
         fixture.detectChanges();
 
-        const hostView = getLContext(fixture.componentInstance)!.lView.debug!;
+        const hostView = getLViewById(getLContext(fixture.componentInstance)!.lViewId)!.debug!;
         const myComponentView = hostView.childViews[0] as LViewDebug;
         expect(myComponentView.decls).toEqual({
           start: HEADER_OFFSET,

@@ -9,6 +9,7 @@
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {getLContext} from '@angular/core/src/render3/context_discovery';
+import {getLViewById} from '@angular/core/src/render3/instructions/lview_tracking';
 import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
 import {createNamedArrayType} from '@angular/core/src/util/named_array_type';
 import {TestBed} from '@angular/core/testing';
@@ -32,7 +33,7 @@ onlyInIvy('Debug information exist in ivy only').describe('ngDevMode debug', () 
 
       TestBed.configureTestingModule({declarations: [MyApp], imports: [CommonModule]});
       const fixture = TestBed.createComponent(MyApp);
-      const rootLView = getLContext(fixture.nativeElement)!.lView;
+      const rootLView = getLViewById(getLContext(fixture.nativeElement)!.lViewId)!;
       expect(rootLView.constructor.name).toEqual('LRootView');
 
       const componentLView = getComponentLView(fixture.componentInstance);
@@ -41,7 +42,7 @@ onlyInIvy('Debug information exist in ivy only').describe('ngDevMode debug', () 
       const element: HTMLElement = fixture.nativeElement;
       fixture.detectChanges();
       const li = element.querySelector('li')!;
-      const embeddedLView = getLContext(li)!.lView;
+      const embeddedLView = getLViewById(getLContext(li)!.lViewId)!;
       expect(embeddedLView.constructor.name).toEqual('LEmbeddedView_MyApp_li_1');
     });
   });

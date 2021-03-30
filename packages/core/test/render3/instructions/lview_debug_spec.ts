@@ -242,7 +242,7 @@ describe('lView_debug', () => {
         cumulativeBloom: jasmine.anything(),
         providers: [MyChild.ɵdir],
         viewProviders: [],
-        parentInjectorIndex: 22,
+        parentInjectorIndex: 23,
       });
     });
   });

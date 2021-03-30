@@ -786,6 +786,9 @@
     "name": "TQuery_"
   },
   {
+    "name": "TRACKED_LVIEWS"
+  },
+  {
     "name": "TRANSITION_ID"
   },
   {
@@ -1342,6 +1345,9 @@
   },
   {
     "name": "getLView"
+  },
+  {
+    "name": "getLViewById"
   },
   {
     "name": "getLViewParent"
@@ -2014,6 +2020,9 @@
   },
   {
     "name": "u"
+  },
+  {
+    "name": "uniqueIdCounter"
   },
   {
     "name": "unwrapElementRef"
