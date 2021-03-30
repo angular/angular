@@ -17,7 +17,7 @@ customizable with this system, see [Theming your own components][theme-your-own]
 ### Sass
 
 Angular Material's theming APIs are built with [Sass](https://sass-lang.com). This document assumes
-familiary with CSS and Sass basics, including variables, functions, and mixins.
+familiarity with CSS and Sass basics, including variables, functions, and mixins.
 
 You can use Angular Material without Sass by using a pre-built theme, described in
 [Using a pre-built theme](#using-a-pre-built-theme) below. However, using the library's Sass API
