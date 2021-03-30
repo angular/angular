@@ -262,9 +262,10 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   }
 
   get name(): string {
-    const context = getLContext(this.nativeNode);
-    if (context !== null) {
-      const lView = context.lView;
+    const context = getLContext(this.nativeNode)!;
+    const lView = context ? context.lView : null;
+
+    if (lView !== null) {
       const tData = lView[TVIEW].data;
       const tNode = tData[context.nodeIndex] as TNode;
       return tNode.value!;
@@ -286,12 +287,13 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
    *  - attribute bindings (e.g. `[attr.role]="menu"`)
    */
   get properties(): {[key: string]: any;} {
-    const context = getLContext(this.nativeNode);
-    if (context === null) {
+    const context = getLContext(this.nativeNode)!;
+    const lView = context ? context.lView : null;
+
+    if (lView === null) {
       return {};
     }
 
-    const lView = context.lView;
     const tData = lView[TVIEW].data;
     const tNode = tData[context.nodeIndex] as TNode;
 
@@ -312,12 +314,13 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       return attributes;
     }
 
-    const context = getLContext(element);
-    if (context === null) {
+    const context = getLContext(element)!;
+    const lView = context ? context.lView : null;
+
+    if (lView === null) {
       return {};
     }
 
-    const lView = context.lView;
     const tNodeAttrs = (lView[TVIEW].data[context.nodeIndex] as TNode).attrs;
     const lowercaseTNodeAttrs: string[] = [];
 
@@ -502,11 +505,12 @@ function _queryAllR3(
 function _queryAllR3(
     parentElement: DebugElement, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
-  const context = getLContext(parentElement.nativeNode);
-  if (context !== null) {
-    const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
+  const context = getLContext(parentElement.nativeNode)!;
+  const lView = context ? context.lView : null;
+  if (lView !== null) {
+    const parentTNode = lView[TVIEW].data[context.nodeIndex] as TNode;
     _queryNodeChildrenR3(
-        parentTNode, context.lView, predicate, matches, elementsOnly, parentElement.nativeNode);
+        parentTNode, lView, predicate, matches, elementsOnly, parentElement.nativeNode);
   } else {
     // If the context is null, then `parentElement` was either created with Renderer2 or native DOM
     // APIs.
