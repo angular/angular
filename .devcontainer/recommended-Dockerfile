@@ -1,6 +1,8 @@
 # Image metadata and config.
-FROM circleci/node:10-browsers  # Ideally, the image version should be what we use on CI.
-                                # See `executors > browsers-executor` in `.circleci/config.yml`.
+# Ideally, the image version should be what we use on CI.
+# See `executors > browsers-executor` in `.circleci/config.yml`.
+FROM circleci/node:10-browsers  
+                                
 
 LABEL name="Angular dev environment" \
       description="This image can be used to create a dev environment for building Angular." \
@@ -16,8 +18,10 @@ USER root
 
 # Configure `Node.js`/`npm` and install utilities.
 RUN npm config --global set user root
-RUN npm install --global yarn@latest  # Ideally, the version should be what we use on CI.
-                                      # See `commands > overwrite_yarn` in `.circleci/config.yml`.
+
+# Ideally, the version should be what we use on CI.
+# See `commands > overwrite_yarn` in `.circleci/config.yml`.
+RUN npm install --global yarn@latest
 
 
 # Go! (And keep going.)
