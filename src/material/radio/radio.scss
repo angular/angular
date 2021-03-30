@@ -80,6 +80,10 @@ $ripple-radius: 20px;
   // IE to flash the entire circle for a couple of frames, throwing off the entire animation.
   transform: scale(0.001);
 
+  // force browser to show background-color when using the print function
+  -webkit-print-color-adjust: exact;
+  color-adjust: exact;
+
   ._mat-animation-noopable & {
     transition: none;
   }
