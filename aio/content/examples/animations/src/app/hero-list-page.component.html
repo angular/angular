@@ -2,18 +2,22 @@
 <h2>Filter/Stagger</h2>
 
 <form>
-  <input #criteria (input)="updateCriteria(criteria.value)" placeholder="Search Heroes" />
-</form>    
+  <label for="search">Search heroes: </label>
+  <input type="text"
+         id="search"
+         #criteria (input)="updateCriteria(criteria.value)"
+         placeholder="Search heroes">
+</form>
 
 <!-- #docregion filter-animations -->
 <ul class="heroes" [@filterAnimation]="heroTotal">
-<!-- #enddocregion filter-animations -->  
+<!-- #enddocregion filter-animations -->
   <li *ngFor="let hero of heroes" class="hero">
     <div class="inner">
       <span class="badge">{{ hero.id }}</span>
       <span>{{ hero.name }}</span>
     </div>
   </li>
-<!-- #docregion filter-animations -->  
+<!-- #docregion filter-animations -->
 </ul>
 <!-- #enddocregion filter-animations -->

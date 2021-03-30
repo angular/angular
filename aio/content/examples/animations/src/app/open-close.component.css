@@ -1,5 +1,6 @@
 :host {
   display: block;
+  margin-top: 1rem;
 }
 
 .open-close-container {
