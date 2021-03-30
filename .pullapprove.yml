@@ -209,6 +209,7 @@ groups:
          - pkozlowski-opensource   # Pawel Kozlowski
          - Splaktar                # Michael Prentice
          - twerske                 # Emma Twersky
+         - zarend                  # Zach Arend
 
   # =========================================================
   #  Framework: Animations
@@ -804,6 +805,7 @@ groups:
       users:
         - kyliau
         - atscott
+        - zarend
 
 
   # =========================================================
