@@ -7,7 +7,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {ChangeDetectionStrategy, Component, ContentChild, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, NgModule, TemplateRef, Type, ViewChild, ViewContainerRef} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Router} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
@@ -187,6 +187,46 @@ describe('Integration', () => {
          expect(fixture.nativeElement.innerHTML).toContain('isActive: true');
        }));
   });
+
+  it('should not reactivate a deactivated outlet when destroyed and recreated - #41379',
+     fakeAsync(() => {
+       @Component({template: 'simple'})
+       class SimpleComponent {
+       }
+
+       @Component({template: ` <router-outlet *ngIf="outletVisible" name="aux"></router-outlet> `})
+       class AppComponent {
+         outletVisible = true;
+       }
+
+       TestBed.configureTestingModule({
+         imports: [RouterTestingModule.withRoutes(
+             [{path: ':id', component: SimpleComponent, outlet: 'aux'}])],
+         declarations: [SimpleComponent, AppComponent],
+       });
+
+       const router = TestBed.inject(Router);
+       const fixture = createRoot(router, AppComponent);
+       const componentCdr = fixture.componentRef.injector.get<ChangeDetectorRef>(ChangeDetectorRef);
+
+       router.navigate([{outlets: {aux: ['1234']}}]);
+       advance(fixture);
+       expect(fixture.nativeElement.innerHTML).toContain('simple');
+
+       router.navigate([{outlets: {aux: null}}]);
+       advance(fixture);
+       expect(fixture.nativeElement.innerHTML).not.toContain('simple');
+
+       fixture.componentInstance.outletVisible = false;
+       componentCdr.detectChanges();
+       expect(fixture.nativeElement.innerHTML).not.toContain('simple');
+       expect(fixture.nativeElement.innerHTML).not.toContain('router-outlet');
+
+       fixture.componentInstance.outletVisible = true;
+       componentCdr.detectChanges();
+       expect(fixture.nativeElement.innerHTML).toContain('router-outlet');
+       expect(fixture.nativeElement.innerHTML).not.toContain('simple');
+     }));
 });
 
 function advance<T>(fixture: ComponentFixture<T>): void {
