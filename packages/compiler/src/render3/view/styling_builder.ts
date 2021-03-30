@@ -222,7 +222,7 @@ export class StylingBuilder {
     // CSS custom properties are case-sensitive so we shouldn't normalize them.
     // See: https://www.w3.org/TR/css-variables-1/#defining-variables
     if (!isCssCustomProperty(name)) {
-      name = normalizePropName(name);
+      name = hyphenate(name);
     }
     const {property, hasOverrideFlag, suffix: bindingSuffix} = parseProperty(name);
     suffix = typeof suffix === 'string' && suffix.length !== 0 ? suffix : bindingSuffix;
@@ -611,10 +611,10 @@ function getStylePropInterpolationExpression(interpolation: Interpolation) {
   }
 }
 
-function normalizePropName(prop: string): string {
-  return hyphenate(prop);
-}
-
+/**
+ * Checks whether property name is a custom CSS property.
+ * See: https://www.w3.org/TR/css-variables-1
+ */
 function isCssCustomProperty(name: string): boolean {
   return name.startsWith('--');
 }
