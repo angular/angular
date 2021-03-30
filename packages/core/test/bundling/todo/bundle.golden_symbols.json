@@ -33,6 +33,9 @@
     "name": "IterableDiffers"
   },
   {
+    "name": "LContext"
+  },
+  {
     "name": "NG_COMP_DEF"
   },
   {
@@ -109,6 +112,9 @@
   },
   {
     "name": "SkipSelf"
+  },
+  {
+    "name": "TRACKED_LVIEWS"
   },
   {
     "name": "TemplateRef"
@@ -379,6 +385,9 @@
   },
   {
     "name": "getLView"
+  },
+  {
+    "name": "getLViewById"
   },
   {
     "name": "getLViewParent"
@@ -739,6 +748,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "uniqueIdCounter"
   },
   {
     "name": "unwrapRNode"
