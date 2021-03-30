@@ -294,6 +294,29 @@ describe('styling', () => {
       const header = fixture.nativeElement.querySelector('h1') as HTMLElement;
       expect(getComputedStyle(header).getPropertyValue('width')).toEqual('100px');
     });
+
+    it('should support case-sensitive css variables', () => {
+      // This test only works in browsers which support CSS variables.
+      if (!supportsCssVariables) {
+        return;
+      }
+
+      @Component({
+        template: `
+          <div [style.--MyVar]="'100px'">
+            <span style="width: var(--MyVar)">CONTENT</span>
+          </div>
+        `
+      })
+      class Cmp {
+      }
+      TestBed.configureTestingModule({declarations: [Cmp]});
+      const fixture = TestBed.createComponent(Cmp);
+      fixture.detectChanges();
+
+      const span = fixture.nativeElement.querySelector('span') as HTMLElement;
+      expect(getComputedStyle(span).getPropertyValue('width')).toEqual('100px');
+    });
   });
 
   modifiedInIvy('shadow bindings include static portion')
