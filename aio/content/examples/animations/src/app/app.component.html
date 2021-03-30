@@ -1,6 +1,10 @@
 <h1>Animations</h1>
 
-Toggle All Animations <input type="checkbox" [checked]="!animationsDisabled" (click)="toggleAnimations()"/>
+<input type="checkbox"
+       id="animation-toggle"
+       [checked]="!animationsDisabled"
+       (click)="toggleAnimations()">
+<label for="animation-toggle">Toggle All Animations</label>
 
 <nav>
   <a id="home" routerLink="/home" routerLinkActive="active">Home</a>

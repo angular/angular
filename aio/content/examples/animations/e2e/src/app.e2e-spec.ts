@@ -77,7 +77,7 @@ describe('Animation Tests', () => {
   });
 
   describe('Status Slider Component', () => {
-    const activeColor = 'rgba(255, 165, 0, 1)';
+    const activeColor = 'rgba(117, 70, 0, 1)';
     const inactiveColor = 'rgba(0, 0, 255, 1)';
 
     beforeAll(async () => {

@@ -1,42 +1,25 @@
 .heroes {
-  margin: 0 0 2em 0;
   list-style-type: none;
   padding: 0;
-  width: 15em;
 }
 
 .heroes li {
-  position: relative;
-  height: 2.3em;
   overflow:hidden;
-  margin: .5em;
+  margin: .5em 0;
 }
 
 .heroes li > .inner {
   cursor: pointer;
   background-color: #EEE;
-  padding: .3em 0;
-  height: 1.6em;
+  padding: .3rem 0;
+  height: 1.6rem;
   border-radius: 4px;
-  width: 19em;
 }
 
 .heroes li:hover > .inner {
-  color: #607D8B;
+  color: black;
   background-color: #DDD;
   transform: translateX(.1em);
-}
-
-.heroes a {
-  color: #888;
-  text-decoration: none;
-  position: relative;
-  display: block;
-  width: 250px;
-}
-
-.heroes a:hover {
-  color:#607D8B;
 }
 
 .heroes .badge {
@@ -44,8 +27,7 @@
   font-size: small;
   color: white;
   padding: 0.8em 0.7em 0 0.7em;
-  background-color: #607D8B;
-  line-height: 1em;
+  background-color: #3d5157;
   position: relative;
   left: -1px;
   top: -4px;
@@ -56,38 +38,12 @@
   border-radius: 4px 0 0 4px;
 }
 
-.button {
-  background-color: #eee;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: Arial, sans-serif;
-}
-
-button:hover {
-  background-color: #cfd8dc;
-}
-
-button.delete {
-  position: relative;
-  left: 24em;
-  top: -32px;
-  background-color: gray !important;
-  color: white;
-  display: inherit;
-  padding: 5px 8px;
-  width: 2em;
+label {
+  display: block;
+  padding-bottom: .5rem;
 }
 
 input {
   font-size: 100%;
-  margin-bottom: 2px;
-  width: 11em;
-}
-
-.heroes input {
-  position: relative;
-  top: -3px;
-  width: 12em;
+  margin-bottom: 1rem;
 }
