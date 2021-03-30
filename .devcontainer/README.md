@@ -1,4 +1,4 @@
-# VSCode Remote Development - Developing inside a Containers
+# VSCode Remote Development - Developing inside a Container
 
 This folder contains configuration files that can be used to opt into working on this repository in a [Docker container](https://www.docker.com/resources/what-container) via [VSCode](https://code.visualstudio.com/)'s Remote Development feature (see below).
 
