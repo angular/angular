@@ -6,10 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// TODO(alan-agius4): remove this export once migration has been done in Google3. (Should happen
-// prior to V12 RC).
-export {XhrFactory} from '@angular/common';
-
 export {HttpBackend, HttpHandler} from './src/backend';
 export {HttpClient} from './src/client';
 export {HttpContext, HttpContextToken} from './src/context';
