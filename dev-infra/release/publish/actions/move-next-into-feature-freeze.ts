@@ -46,7 +46,9 @@ export class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
     // pre-release. Finally, cherry-pick the release notes into the next branch in combination
     // with bumping the version to the next minor too.
     await this.waitForPullRequestToBeMerged(stagingPullRequest.id);
-    await this.buildAndPublish(newVersion, newBranch, 'next');
+    // TODO(josephperrott): Rearrange order of tasks within the action to be stage and then release.
+    const publishArtifacts = await this.buildArtifactsForPublish(newVersion, newBranch, 'next');
+    await publishArtifacts();
     await this._createNextBranchUpdatePullRequest(newVersion, newBranch);
   }
 

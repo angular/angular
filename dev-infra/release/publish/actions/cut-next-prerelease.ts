@@ -35,8 +35,9 @@ export class CutNextPrereleaseAction extends ReleaseAction {
     const {id} = await this.checkoutBranchAndStageVersion(newVersion, branchName);
 
     await this.waitForPullRequestToBeMerged(id);
-    await this.buildAndPublish(newVersion, branchName, 'next');
-
+    // TODO(josephperrott): Rearrange order of tasks within the action to be stage and then release.
+    const publishArtifacts = await this.buildArtifactsForPublish(newVersion, branchName, 'next');
+    await publishArtifacts();
     // If the pre-release has been cut from a branch that is not corresponding
     // to the next release-train, cherry-pick the changelog into the primary
     // development branch. i.e. the `next` branch that is usually `master`.

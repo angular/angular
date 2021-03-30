@@ -5821,7 +5821,7 @@ class ReleaseAction {
      * @param publishBranch Name of the branch that contains the new version.
      * @param npmDistTag NPM dist tag where the version should be published to.
      */
-    buildAndPublish(newVersion, publishBranch, npmDistTag) {
+    buildArtifactsForPublish(newVersion, publishBranch, npmDistTag) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const versionBumpCommitSha = yield this._getCommitOfBranch(publishBranch);
             if (!(yield this._isCommitForVersionStaging(newVersion, versionBumpCommitSha))) {
@@ -5842,13 +5842,15 @@ class ReleaseAction {
             const builtPackages = yield invokeReleaseBuildCommand();
             // Verify the packages built are the correct version.
             yield this._verifyPackageVersions(newVersion, builtPackages);
-            // Create a Github release for the new version.
-            yield this._createGithubReleaseForVersion(newVersion, versionBumpCommitSha, npmDistTag === 'next');
-            // Walk through all built packages and publish them to NPM.
-            for (const builtPackage of builtPackages) {
-                yield this._publishBuiltPackageToNpm(builtPackage, npmDistTag);
-            }
-            info(green('  ✓   Published all packages successfully'));
+            return () => tslib.__awaiter(this, void 0, void 0, function* () {
+                // Create a Github release for the new version.
+                yield this._createGithubReleaseForVersion(newVersion, versionBumpCommitSha, npmDistTag === 'next');
+                // Walk through all built packages and publish them to NPM.
+                for (const builtPackage of builtPackages) {
+                    yield this._publishBuiltPackageToNpm(builtPackage, npmDistTag);
+                }
+                info(green('  ✓   Published all packages successfully'));
+            });
         });
     }
     /** Publishes the given built package to NPM with the specified NPM dist tag. */
@@ -5922,7 +5924,9 @@ class CutLongTermSupportPatchAction extends ReleaseAction {
             const newVersion = semverInc(ltsBranch.version, 'patch');
             const { id } = yield this.checkoutBranchAndStageVersion(newVersion, ltsBranch.name);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, ltsBranch.name, ltsBranch.npmDistTag);
+            // TODO(josephperrott): Rearrange order of tasks within the action to be stage and then release.
+            const publishArtifacts = yield this.buildArtifactsForPublish(newVersion, ltsBranch.name, ltsBranch.npmDistTag);
+            yield publishArtifacts();
             yield this.cherryPickChangelogIntoNextBranch(newVersion, ltsBranch.name);
         });
     }
@@ -5999,7 +6003,9 @@ class CutNewPatchAction extends ReleaseAction {
             const newVersion = this._newVersion;
             const { id } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, branchName, 'latest');
+            // TODO(josephperrott): Rearrange order of tasks within the action to be stage and then release.
+            const publishArtifacts = yield this.buildArtifactsForPublish(newVersion, branchName, 'latest');
+            yield publishArtifacts();
             yield this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
         });
     }
@@ -6069,7 +6075,9 @@ class CutNextPrereleaseAction extends ReleaseAction {
             const newVersion = yield this._newVersion;
             const { id } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, branchName, 'next');
+            // TODO(josephperrott): Rearrange order of tasks within the action to be stage and then release.
+            const publishArtifacts = yield this.buildArtifactsForPublish(newVersion, branchName, 'next');
+            yield publishArtifacts();
             // If the pre-release has been cut from a branch that is not corresponding
             // to the next release-train, cherry-pick the changelog into the primary
             // development branch. i.e. the `next` branch that is usually `master`.
@@ -6136,7 +6144,9 @@ class CutReleaseCandidateAction extends ReleaseAction {
             const newVersion = this._newVersion;
             const { id } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, branchName, 'next');
+            // TODO(josephperrott): Rearrange order of tasks within the action to be stage and then release.
+            const publishArtifacts = yield this.buildArtifactsForPublish(newVersion, branchName, 'next');
+            yield publishArtifacts();
             yield this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
         });
     }
@@ -6180,7 +6190,9 @@ class CutStableAction extends ReleaseAction {
             const isNewMajor = (_a = this.active.releaseCandidate) === null || _a === void 0 ? void 0 : _a.isMajor;
             const { id } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, branchName, 'latest');
+            // TODO(josephperrott): Rearrange order of tasks within the action to be stage and then release.
+            const publishArtifacts = yield this.buildArtifactsForPublish(newVersion, branchName, 'latest');
+            yield publishArtifacts();
             // If a new major version is published and becomes the "latest" release-train, we need
             // to set the LTS npm dist tag for the previous latest release-train (the current patch).
             if (isNewMajor) {
@@ -6252,7 +6264,9 @@ class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
             // pre-release. Finally, cherry-pick the release notes into the next branch in combination
             // with bumping the version to the next minor too.
             yield this.waitForPullRequestToBeMerged(stagingPullRequest.id);
-            yield this.buildAndPublish(newVersion, newBranch, 'next');
+            // TODO(josephperrott): Rearrange order of tasks within the action to be stage and then release.
+            const publishArtifacts = yield this.buildArtifactsForPublish(newVersion, newBranch, 'next');
+            yield publishArtifacts();
             yield this._createNextBranchUpdatePullRequest(newVersion, newBranch);
         });
     }

@@ -44,7 +44,10 @@ export class CutLongTermSupportPatchAction extends ReleaseAction {
     const {id} = await this.checkoutBranchAndStageVersion(newVersion, ltsBranch.name);
 
     await this.waitForPullRequestToBeMerged(id);
-    await this.buildAndPublish(newVersion, ltsBranch.name, ltsBranch.npmDistTag);
+    // TODO(josephperrott): Rearrange order of tasks within the action to be stage and then release.
+    const publishArtifacts =
+        await this.buildArtifactsForPublish(newVersion, ltsBranch.name, ltsBranch.npmDistTag);
+    await publishArtifacts();
     await this.cherryPickChangelogIntoNextBranch(newVersion, ltsBranch.name);
   }
 

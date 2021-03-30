@@ -31,7 +31,9 @@ export class CutNewPatchAction extends ReleaseAction {
     const {id} = await this.checkoutBranchAndStageVersion(newVersion, branchName);
 
     await this.waitForPullRequestToBeMerged(id);
-    await this.buildAndPublish(newVersion, branchName, 'latest');
+    // TODO(josephperrott): Rearrange order of tasks within the action to be stage and then release.
+    const publishArtifacts = await this.buildArtifactsForPublish(newVersion, branchName, 'latest');
+    await publishArtifacts();
     await this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
   }
 

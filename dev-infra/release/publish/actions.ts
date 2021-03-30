@@ -497,7 +497,7 @@ export abstract class ReleaseAction {
    * @param publishBranch Name of the branch that contains the new version.
    * @param npmDistTag NPM dist tag where the version should be published to.
    */
-  protected async buildAndPublish(
+  protected async buildArtifactsForPublish(
       newVersion: semver.SemVer, publishBranch: string, npmDistTag: string) {
     const versionBumpCommitSha = await this._getCommitOfBranch(publishBranch);
 
@@ -523,16 +523,18 @@ export abstract class ReleaseAction {
     // Verify the packages built are the correct version.
     await this._verifyPackageVersions(newVersion, builtPackages);
 
-    // Create a Github release for the new version.
-    await this._createGithubReleaseForVersion(
-        newVersion, versionBumpCommitSha, npmDistTag === 'next');
+    return async () => {
+      // Create a Github release for the new version.
+      await this._createGithubReleaseForVersion(
+          newVersion, versionBumpCommitSha, npmDistTag === 'next');
 
-    // Walk through all built packages and publish them to NPM.
-    for (const builtPackage of builtPackages) {
-      await this._publishBuiltPackageToNpm(builtPackage, npmDistTag);
-    }
+      // Walk through all built packages and publish them to NPM.
+      for (const builtPackage of builtPackages) {
+        await this._publishBuiltPackageToNpm(builtPackage, npmDistTag);
+      }
 
-    info(green('  ✓   Published all packages successfully'));
+      info(green('  ✓   Published all packages successfully'));
+    };
   }
 
   /** Publishes the given built package to NPM with the specified NPM dist tag. */
