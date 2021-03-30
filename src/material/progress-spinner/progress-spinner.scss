@@ -38,6 +38,9 @@ $_mat-progress-spinner-default-circumference:
       // SVG colors aren't inverted automatically in high contrast mode. Set the
       // stroke to currentColor in order to respect the user's color settings.
       stroke: currentColor;
+      // currentColor blends in with the background in Chromium-based browsers
+      // so we have to fall back to `CanvasText` which isn't supported on IE.
+      stroke: CanvasText;
     }
   }
 
