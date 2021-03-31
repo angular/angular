@@ -1930,7 +1930,7 @@ export declare interface HttpUserEvent<T> {
 }
 
 export declare class HttpXhrBackend implements HttpBackend {
-    constructor(xhrFactory: XhrFactory);
+    constructor(xhrFactory: XhrFactory_2);
     handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
 
@@ -1947,3 +1947,6 @@ export declare class JsonpInterceptor {
     constructor(jsonp: JsonpClientBackend);
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>;
 }
+
+/** @deprecated */
+export declare type XhrFactory = XhrFactory_2;
