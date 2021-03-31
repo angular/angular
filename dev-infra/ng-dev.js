@@ -1589,11 +1589,11 @@ function handler$1({ fileEnvVariable, file, source }) {
             restoreCommitMessage(fileFromEnv, sourceFromEnv);
             return;
         }
-        throw new Error('No file path and commit message source provide.  Provide values via positional command ' +
+        throw new Error('No file path and commit message source provide. Provide values via positional command ' +
             'arguments, or via the --file-env-variable flag');
     });
 }
-/** yargs command module describing the command.  */
+/** yargs command module describing the command. */
 const RestoreCommitMessageModule = {
     handler: handler$1,
     builder: builder$1,
@@ -1622,7 +1622,7 @@ function getCommitMessageConfig() {
     assertNoErrors(errors);
     return config;
 }
-/** Scope requirement level to be set for each commit type.  */
+/** Scope requirement level to be set for each commit type. */
 var ScopeRequirement;
 (function (ScopeRequirement) {
     ScopeRequirement[ScopeRequirement["Required"] = 0] = "Required";
@@ -1686,7 +1686,7 @@ const COMMIT_TYPES = {
  * found in the LICENSE file at https://angular.io/license
  */
 /**
- * A list of tuples expressing the fields to extract from each commit log entry.  The tuple contains
+ * A list of tuples expressing the fields to extract from each commit log entryThe tuple contains
  * two values, the first is the key for the property and the second is the template shortcut for the
  * git log command.
  */
@@ -1703,7 +1703,7 @@ const commitFieldsAsFormat = (fields) => {
  * The git log format template to create git log entries for parsing.
  *
  * The conventional commits parser expects to parse the standard git log raw body (%B) into its
- * component parts.  Additionally it will parse additional fields with keys defined by
+ * component parts. Additionally it will parse additional fields with keys defined by
  * `-{key name}-` separated by new lines.
  * */
 const gitLogFormatForParsing = `%B${commitFieldsAsFormat(commitFields)}`;
@@ -2013,7 +2013,7 @@ function handler$2({ error, file, fileEnvVariable }) {
         validateFile(filePath, error);
     });
 }
-/** yargs command module describing the command.  */
+/** yargs command module describing the command. */
 const ValidateFileModule = {
     handler: handler$2,
     builder: builder$2,
@@ -2031,7 +2031,7 @@ const ValidateFileModule = {
 // Set `gitCommits` as this imported value to address "Cannot call a namespace" error.
 const gitCommits = gitCommits_;
 /**
- * Create an observable emiting a `Commit` for each commit in the range provided.
+ * Find all commits within the given range and returns an object describing those.
  */
 function getCommitsInRange(from, to = 'HEAD') {
     return new Promise((resolve, reject) => {
@@ -2129,7 +2129,7 @@ function handler$3({ startingRef, endingRef }) {
         yield validateCommitRange(startingRef, endingRef);
     });
 }
-/** yargs command module describing the command.  */
+/** yargs command module describing the command. */
 const ValidateRangeModule = {
     handler: handler$3,
     builder: builder$3,
@@ -4237,7 +4237,7 @@ function handler$6(_a) {
         });
     });
 }
-/** yargs command module describing the command.  */
+/** yargs command module describing the command. */
 var MergeCommandModule = {
     handler: handler$6,
     builder: builder$6,

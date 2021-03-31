@@ -42,7 +42,7 @@ export interface Commit {
 }
 
 /**
- * A list of tuples expressing the fields to extract from each commit log entry.  The tuple contains
+ * A list of tuples expressing the fields to extract from each commit log entryThe tuple contains
  * two values, the first is the key for the property and the second is the template shortcut for the
  * git log command.
  */
@@ -51,7 +51,7 @@ const commitFields = {
   shortHash: '%h',
   author: '%aN',
 };
-/** The additional fields to be included in commit log entries for parsing.  */
+/** The additional fields to be included in commit log entries for parsing. */
 export type CommitFields = typeof commitFields;
 /** The commit fields described as git log format entries for parsing. */
 export const commitFieldsAsFormat = (fields: CommitFields) => {
@@ -61,7 +61,7 @@ export const commitFieldsAsFormat = (fields: CommitFields) => {
  * The git log format template to create git log entries for parsing.
  *
  * The conventional commits parser expects to parse the standard git log raw body (%B) into its
- * component parts.  Additionally it will parse additional fields with keys defined by
+ * component parts. Additionally it will parse additional fields with keys defined by
  * `-{key name}-` separated by new lines.
  * */
 export const gitLogFormatForParsing = `%B${commitFieldsAsFormat(commitFields)}`;

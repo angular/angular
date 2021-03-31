@@ -14,7 +14,7 @@ const gitCommits = gitCommits_;
 
 
 /**
- * Create an observable emiting a `Commit` for each commit in the range provided.
+ * Find all commits within the given range and returns an object describing those.
  */
 export function getCommitsInRange(from: string, to: string = 'HEAD'): Promise<Commit[]> {
   return new Promise((resolve, reject) => {

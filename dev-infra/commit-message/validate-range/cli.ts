@@ -47,7 +47,7 @@ async function handler({startingRef, endingRef}: Arguments<ValidateRangeOptions>
   await validateCommitRange(startingRef, endingRef);
 }
 
-/** yargs command module describing the command.  */
+/** yargs command module describing the command. */
 export const ValidateRangeModule: CommandModule<{}, ValidateRangeOptions> = {
   handler,
   builder,
