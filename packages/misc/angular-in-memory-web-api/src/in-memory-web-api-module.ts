@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {XhrFactory} from '@angular/common';
-import {HttpBackend} from '@angular/common/http';
+import {HttpBackend, XhrFactory} from '@angular/common/http';
 import {ModuleWithProviders, NgModule, Type} from '@angular/core';
 
 import {httpClientInMemBackendServiceFactory} from './http-client-in-memory-web-api-module';
