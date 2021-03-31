@@ -1,3 +1,54 @@
+# 12.0.0-next.5 "glass-gallery" (2021-03-31)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **checkbox:** native input not in sync if checked state is changed inside event ([#22316](https://github.com/angular/components/issues/22316)) ([c6794160261803359cb67715c4f515a20fb7f4ec](https://github.com/angular/components/commit/c6794160261803359cb67715c4f515a20fb7f4ec)), closes [#22149](https://github.com/angular/components/issues/22149) |
+| bug fix |  **progress-spinner:** not visible in high contrast mode on chromium browsers ([#22364](https://github.com/angular/components/issues/22364)) ([03cc48d18c0c8b0315ab0f84b78e3d111a879fbf](https://github.com/angular/components/commit/03cc48d18c0c8b0315ab0f84b78e3d111a879fbf)) |
+| feature |  **schematics:** add migration to switch to the new theming API ([#22304](https://github.com/angular/components/issues/22304)) ([183c59f49035bb19d21b16c058bd358fe4530c51](https://github.com/angular/components/commit/183c59f49035bb19d21b16c058bd358fe4530c51)) |
+
+### google-maps
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  add clusterer click event ([#22345](https://github.com/angular/components/issues/22345)) ([9528120901447ec08008cbc97b6ca2ef3e7a9f1e](https://github.com/angular/components/commit/9528120901447ec08008cbc97b6ca2ef3e7a9f1e)), closes [#22020](https://github.com/angular/components/issues/22020) |
+
+### youtube-player
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  compatibility with latest typings ([#22223](https://github.com/angular/components/issues/22223)) ([0c83adc8f551e54235f69534bf4f352966278005](https://github.com/angular/components/commit/0c83adc8f551e54235f69534bf4f352966278005)) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-tooltip:** add mdc-tooltip__surface-animation class as MDC is splitting up animation and visual styles ([#22346](https://github.com/angular/components/issues/22346)) ([a96c1c37c31ab2546af72a6df4d4de803c207e0e](https://github.com/angular/components/commit/a96c1c37c31ab2546af72a6df4d4de803c207e0e)) |
+
+### radio
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  **checkbox:** show background-color in print stylesheet ([#22298](https://github.com/angular/components/issues/22298)) ([#22299](https://github.com/angular/components/issues/22299)) ([5fd431fe40cb0e33ff81c6faf2ad8899eeaec312](https://github.com/angular/components/commit/5fd431fe40cb0e33ff81c6faf2ad8899eeaec312)) |
+
+
+## 11.2.7 "foam-feather" (2021-03-31)
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **checkbox:** native input not in sync if checked state is changed inside event ([#22316](https://github.com/angular/components/issues/22316)) ([73d0687603bfe817bec9813d3b7a1514840fd9f4](https://github.com/angular/components/commit/73d0687603bfe817bec9813d3b7a1514840fd9f4)), closes [#22149](https://github.com/angular/components/issues/22149) |
+| bug fix |  **progress-spinner:** not visible in high contrast mode on chromium browsers ([#22364](https://github.com/angular/components/issues/22364)) ([6277ee2665163b94cf22707aba8e95e5464001d4](https://github.com/angular/components/commit/6277ee2665163b94cf22707aba8e95e5464001d4)) |
+
+### radio
+
+|            |                       |
+| ---------- | --------------------- |
+| feature |  **checkbox:** show background-color in print stylesheet ([#22298](https://github.com/angular/components/issues/22298)) ([#22299](https://github.com/angular/components/issues/22299)) ([06877802a70439ac8f9984d19b36efbb61187317](https://github.com/angular/components/commit/06877802a70439ac8f9984d19b36efbb61187317)) |
+
+
 # 12.0.0-next.4 "nylon-pylon" (2021-03-24)
 
 ## Highlights
