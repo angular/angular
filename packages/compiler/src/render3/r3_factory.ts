@@ -178,7 +178,6 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): R3CompiledExpre
     retExpr = ctorExpr;
   }
 
-
   if (retExpr === null) {
     // The expression cannot be formed so render an `ɵɵinvalidFactory()` call.
     body.push(o.importExpr(R3.invalidFactory).callFn([]).toStmt());

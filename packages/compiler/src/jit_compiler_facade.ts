@@ -213,6 +213,8 @@ export class CompilerFacadeImpl implements CompilerFacade {
 
   compileFactoryDeclaration(
       angularCoreEnv: CoreEnvironment, sourceMapUrl: string, meta: R3DeclareFactoryFacade) {
+    console.log(meta.type.name);
+    console.log(meta.deps && meta.deps.length);
     const factoryRes = compileFactoryFunction({
       name: meta.type.name,
       type: wrapReference(meta.type),

@@ -357,7 +357,7 @@ jobs:
           command: |
             yarn bazel run //tools/saucelabs:sauce_service_setup
             TESTS=$(./node_modules/.bin/bazelisk query --output label '(kind(karma_web_test, ...) intersect attr("tags", "saucelabs", ...)) except attr("tags", "no-ivy-aot", ...) except attr("tags", "fixme-saucelabs-ivy", ...)')
-            yarn bazel test --config=saucelabs --config=ivy ${TESTS}
+            yarn bazel test --config=saucelabs --config=ivy //packages/core/test/render3:saucelabs_render3_web  --test_output=streamed
             yarn bazel run //tools/saucelabs:sauce_service_stop
           no_output_timeout: 40m
       - notify_webhook_on_fail:
