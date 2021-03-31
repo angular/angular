@@ -13,7 +13,7 @@
   },
   "//engines-comment": "Keep this in sync with /package.json and /aio/package.json",
   "engines": {
-    "node": ">=10.9.0 <13.0.0",
+    "node": ">=10.19.0 <13.0.0",
     "yarn": ">=1.21.1 <2"
   },
   "keywords": [],
