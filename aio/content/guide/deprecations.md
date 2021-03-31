@@ -40,6 +40,7 @@ v12 - v15
 | ----------------------------- | ---------------------------------------------------------------------------   | ----------------- |
 | `@angular/common`             | [`ReflectiveInjector`](#reflectiveinjector)                                   | <!--v8--> v11 |
 | `@angular/common`             | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | <!--v9--> v11 |
+| `@angular/common/http`        | [`XhrFactory`](api/common/http/XhrFactory)                                    | <!--v12--> v15 |
 | `@angular/core`               | [`DefaultIterableDiffer`](#core)                                              | <!--v7--> v11 |
 | `@angular/core`               | [`ReflectiveKey`](#core)                                                      | <!--v8--> v11 |
 | `@angular/core`               | [`RenderComponentType`](#core)                                                | <!--v7--> v11 |
@@ -80,6 +81,14 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | API                                                                                           | Replacement                                         | Deprecation announced | Notes |
 | --------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------- | ----- |
 | [`CurrencyPipe` - `DEFAULT_CURRENCY_CODE`](api/common/CurrencyPipe#currency-code-deprecation) | `{provide: DEFAULT_CURRENCY_CODE, useValue: 'USD'}` | v9                    | From v11 the default code will be extracted from the locale data given by `LOCAL_ID`, rather than `USD`. |
+
+
+{@a common-http}
+### @angular/common/http
+
+| API                                          | Replacement                          | Deprecation announced | Notes |
+| -------------------------------------------- | ------------------------------------ | --------------------- | ----- |
+| [`XhrFactory`](api/common/http/XhrFactory)   | `XhrFactory` in `@angular/common`    | v12                   | The `XhrFactory` has moved from `@angular/common/http` to `@angular/common`. |
 
 
 {@a core}
