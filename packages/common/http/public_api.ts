@@ -6,6 +6,27 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {XhrFactory as XhrFactory_fromAngularCommon} from '@angular/common';
+
+/**
+ * A wrapper around the `XMLHttpRequest` constructor.
+ *
+ * @publicApi
+ * @see `XhrFactory`
+ * @deprecated
+ * `XhrFactory` has moved, please import `XhrFactory` from `@angular/common` instead.
+ */
+export type XhrFactory = XhrFactory_fromAngularCommon;
+/**
+ * A wrapper around the `XMLHttpRequest` constructor.
+ *
+ * @publicApi
+ * @see `XhrFactory`
+ * @deprecated
+ * `XhrFactory` has moved, please import `XhrFactory` from `@angular/common` instead.
+ */
+export const XhrFactory = XhrFactory_fromAngularCommon;
+
 export {HttpBackend, HttpHandler} from './src/backend';
 export {HttpClient} from './src/client';
 export {HttpContext, HttpContextToken} from './src/context';
