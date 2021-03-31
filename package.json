@@ -119,7 +119,7 @@
     "jasmine": "^3.5.0",
     "jasmine-ajax": "^4.0.0",
     "jasmine-core": "^3.5.0",
-    "jquery": "3.0.0",
+    "jquery": "3.5.0",
     "js-levenshtein": "^1.1.6",
     "karma": "~4.4.0",
     "karma-chrome-launcher": "^2.2.0",
@@ -211,7 +211,18 @@
   "// 5": "Ensure a single version of webdriver-manager so it is hoisted as the integration tests depend on it being found at ../../node_modules/webdriver-manager",
   "resolutions": {
     "**/graceful-fs": "4.2.4",
-    "**/webdriver-manager": "12.1.8"
+    "**/webdriver-manager": "12.1.8",
+    "**/lodash": "^4.17.21",
+    "**/ini": "^2.0.0",
+    "**/bl": "^4.1.0",
+    "**/serialize-javascript": "^5.0.1",
+    "**/minimist": "^1.2.5",
+    "**/uglify-js": "^3.13.3",
+    "**/open": "^7.4.2",
+    "**/elliptic": "^6.5.4",
+    "**/http-proxy": "^1.18.1",
+    "**/axios": "^0.21.1",
+    "**/dot-prop": "^5.1.1"
   },
   "cldr-data-coverage": "full"
 }
