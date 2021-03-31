@@ -30,8 +30,8 @@ export class CutReleaseCandidateAction extends ReleaseAction {
 
     await this.waitForPullRequestToBeMerged(id);
     // TODO(josephperrott): Rearrange order of tasks within the action to be stage and then release.
-    const publishArtifacts = await this.buildArtifactsForPublish(newVersion, branchName, 'next');
-    await publishArtifacts();
+    const artifacts = await this.stageArtifactsForPublish(newVersion, branchName, 'next');
+    await this.publishStagedArtifacts(artifacts);
     await this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
   }
 

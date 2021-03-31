@@ -78,8 +78,8 @@ describe('common release action logic', () => {
       // Set up a custom NPM registry.
       releaseConfig.publishRegistry = customRegistryUrl;
 
-      const publish = await instance.testBuildAndPublish(version, branchName, 'latest');
-      await publish();
+      await instance.testBuildAndPublish(version, branchName, 'latest');
+
 
       expect(npm.runNpmPublish).toHaveBeenCalledTimes(2);
       expect(npm.runNpmPublish)
@@ -215,7 +215,8 @@ class TestAction extends ReleaseAction {
   }
 
   async testBuildAndPublish(newVersion: semver.SemVer, publishBranch: string, distTag: string) {
-    return await this.buildArtifactsForPublish(newVersion, publishBranch, distTag);
+    const artifacts = await this.stageArtifactsForPublish(newVersion, publishBranch, distTag);
+    await this.publishStagedArtifacts(artifacts);
   }
 
   async testCherryPickWithPullRequest(version: semver.SemVer, branch: string) {

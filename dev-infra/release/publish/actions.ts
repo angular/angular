@@ -492,13 +492,16 @@ export abstract class ReleaseAction {
   }
 
   /**
-   * Builds and publishes the given version in the specified branch.
+   * Builds the given version in the specified branch as part of staging.
    * @param newVersion The new version to be published.
    * @param publishBranch Name of the branch that contains the new version.
    * @param npmDistTag NPM dist tag where the version should be published to.
+   * @returns A promise containing the staged artifacts and parameters to be provided to the
+   *   publishStagedArtifacts method.
    */
-  protected async buildArtifactsForPublish(
-      newVersion: semver.SemVer, publishBranch: string, npmDistTag: string) {
+  protected async stageArtifactsForPublish(
+      newVersion: semver.SemVer, publishBranch: string,
+      npmDistTag: string): Promise<StagedArtifacts> {
     const versionBumpCommitSha = await this._getCommitOfBranch(publishBranch);
 
     if (!await this._isCommitForVersionStaging(newVersion, versionBumpCommitSha)) {
@@ -523,19 +526,30 @@ export abstract class ReleaseAction {
     // Verify the packages built are the correct version.
     await this._verifyPackageVersions(newVersion, builtPackages);
 
-    return async () => {
-      // Create a Github release for the new version.
-      await this._createGithubReleaseForVersion(
-          newVersion, versionBumpCommitSha, npmDistTag === 'next');
-
-      // Walk through all built packages and publish them to NPM.
-      for (const builtPackage of builtPackages) {
-        await this._publishBuiltPackageToNpm(builtPackage, npmDistTag);
-      }
-
-      info(green('  ✓   Published all packages successfully'));
+    return {
+      version: newVersion,
+      commitSha: versionBumpCommitSha,
+      npmTag: npmDistTag,
+      packages: builtPackages
     };
   }
+
+  /**
+   * Publishes the generated artifacts to NPM and create Github Release.
+   * @param artifacts The artifacts created by the stageArtifactsForPublish method
+   */
+  protected async publishStagedArtifacts({version, commitSha, npmTag, packages}: StagedArtifacts) {
+    // Create a Github release for the new version.
+    await this._createGithubReleaseForVersion(version, commitSha, npmTag === 'next');
+
+    // Walk through all built packages and publish them to NPM.
+    for (const builtPackage of packages) {
+      await this._publishBuiltPackageToNpm(builtPackage, npmTag);
+    }
+
+    info(green('  ✓   Published all packages successfully'));
+  }
+
 
   /** Publishes the given built package to NPM with the specified NPM dist tag. */
   private async _publishBuiltPackageToNpm(pkg: BuiltPackage, npmDistTag: string) {
@@ -575,4 +589,13 @@ export abstract class ReleaseAction {
       }
     }
   }
+}
+
+
+/** The artifacts created in staging to be used for publishing. */
+interface StagedArtifacts {
+  version: semver.SemVer;
+  commitSha: string;
+  npmTag: string;
+  packages: BuiltPackage[];
 }

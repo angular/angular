@@ -35,8 +35,8 @@ export class CutStableAction extends ReleaseAction {
 
     await this.waitForPullRequestToBeMerged(id);
     // TODO(josephperrott): Rearrange order of tasks within the action to be stage and then release.
-    const publishArtifacts = await this.buildArtifactsForPublish(newVersion, branchName, 'latest');
-    await publishArtifacts();
+    const artifacts = await this.stageArtifactsForPublish(newVersion, branchName, 'latest');
+    await this.publishStagedArtifacts(artifacts);
 
     // If a new major version is published and becomes the "latest" release-train, we need
     // to set the LTS npm dist tag for the previous latest release-train (the current patch).
