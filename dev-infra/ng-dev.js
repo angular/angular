@@ -21,8 +21,6 @@ var multimatch = require('multimatch');
 var yaml = require('yaml');
 var conventionalCommitsParser = require('conventional-commits-parser');
 var gitCommits_ = require('git-raw-commits');
-var rxjs = require('rxjs');
-var operators = require('rxjs/operators');
 var cliProgress = require('cli-progress');
 var os = require('os');
 var minimatch = require('minimatch');
@@ -1699,11 +1697,7 @@ const commitFields = {
 };
 /** The commit fields described as git log format entries for parsing. */
 const commitFieldsAsFormat = (fields) => {
-    const formatChunks = [];
-    for (const key in commitFields) {
-        formatChunks.push(`%n-${key}-%n${fields[key]}`);
-    }
-    return formatChunks.join('');
+    return Object.entries(fields).map(([key, value]) => `%n-${key}-%n${value}`).join('');
 };
 /**
  * The git log format template to create git log entries for parsing.
@@ -2040,20 +2034,17 @@ const gitCommits = gitCommits_;
  * Create an observable emiting a `Commit` for each commit in the range provided.
  */
 function getCommitsInRange(from, to = 'HEAD') {
-    /** Subject emiting `Commit`s. */
-    const commitSubject = new rxjs.ReplaySubject();
-    /** Stream of raw git commit strings in the range provided. */
-    const commitStream = gitCommits({ from, to, format: gitLogFormatForParsing });
-    // Emit a parsed commit for each commit from the Readable stream, completing the subject when
-    // the Readable stream ends.
-    commitStream.on('data', (commit) => commitSubject.next(parseCommitMessage(commit)));
-    commitStream.on('error', (err) => commitSubject.error(err));
-    commitStream.on('end', () => commitSubject.complete());
-    return commitSubject.asObservable();
-}
-/** A pipable operator which combines an observable of Commit objects into one Commit[]. */
-function toCommitList() {
-    return operators.scan((commits, commit) => [...commits, commit], []);
+    return new Promise((resolve, reject) => {
+        /** List of parsed commit objects. */
+        const commits = [];
+        /** Stream of raw git commit strings in the range provided. */
+        const commitStream = gitCommits({ from, to, format: gitLogFormatForParsing });
+        // Accumulate the parsed commits for each commit from the Readable stream into an array, then
+        // resolve the promise with the array when the Readable stream ends.
+        commitStream.on('data', (commit) => commits.push(parseCommitMessage(commit)));
+        commitStream.on('error', (err) => reject(err));
+        commitStream.on('end', () => resolve(commits));
+    });
 }
 
 // Whether the provided commit is a fixup commit.
@@ -2066,7 +2057,7 @@ function validateCommitRange(from, to) {
         /** A list of tuples of the commit header string and a list of error messages for the commit. */
         const errors = [];
         /** A list of parsed commit messages from the range. */
-        const commits = yield getCommitsInRange(from, to).pipe(toCommitList()).toPromise();
+        const commits = yield getCommitsInRange(from, to);
         info(`Examining ${commits.length} commit(s) in the provided range: ${from}..${to}`);
         /**
          * Whether all commits in the range are valid, commits are allowed to be fixup commits for other
@@ -4330,7 +4321,7 @@ function rebasePr(prNumber, githubToken, config = getConfig()) {
             info(`Fetching ${fullBaseRef} to rebase #${prNumber} on`);
             git.run(['fetch', '-q', baseRefUrl, baseRefName]);
             const commonAncestorSha = git.run(['merge-base', 'HEAD', 'FETCH_HEAD']).stdout.trim();
-            const commits = yield getCommitsInRange(commonAncestorSha, 'HEAD').pipe(toCommitList()).toPromise();
+            const commits = yield getCommitsInRange(commonAncestorSha, 'HEAD');
             let squashFixups = commits.filter((commit) => commit.isFixup).length === 0 ?
                 false :
                 yield promptConfirm(`PR #${prNumber} contains fixup commits, would you like to squash them during rebase?`, true);

@@ -31,7 +31,6 @@
     "typed-graphqlify": "<from-root>",
     "yaml": "<from-root>",
     "yargs": "<from-root>",
-    "rxjs": "<from-root>",
     "@bazel/buildifier": "<from-root>",
     "clang-format": "<from-root>",
     "protractor": "<from-root>",

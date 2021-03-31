@@ -20,7 +20,6 @@ ts_library(
         "@npm//conventional-commits-parser",
         "@npm//git-raw-commits",
         "@npm//inquirer",
-        "@npm//rxjs",
         "@npm//shelljs",
         "@npm//yargs",
     ],

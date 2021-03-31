@@ -9,7 +9,7 @@
 import {types as graphQLTypes} from 'typed-graphqlify';
 
 import {Commit} from '../../commit-message/parse';
-import {getCommitsInRange, toCommitList} from '../../commit-message/utils';
+import {getCommitsInRange} from '../../commit-message/utils';
 import {getConfig, NgDevConfig} from '../../utils/config';
 import {error, info, promptConfirm} from '../../utils/console';
 import {addTokenToGitHttpsUrl} from '../../utils/git/github-urls';
@@ -94,8 +94,7 @@ export async function rebasePr(
 
     const commonAncestorSha = git.run(['merge-base', 'HEAD', 'FETCH_HEAD']).stdout.trim();
 
-    const commits =
-        await getCommitsInRange(commonAncestorSha, 'HEAD').pipe(toCommitList()).toPromise();
+    const commits = await getCommitsInRange(commonAncestorSha, 'HEAD');
 
     let squashFixups = commits.filter((commit: Commit) => commit.isFixup).length === 0 ?
         false :

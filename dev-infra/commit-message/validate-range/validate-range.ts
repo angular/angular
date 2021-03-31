@@ -7,7 +7,7 @@
  */
 import {error, green, info, red} from '../../utils/console';
 import {Commit} from '../parse';
-import {getCommitsInRange, toCommitList} from '../utils';
+import {getCommitsInRange} from '../utils';
 import {printValidationErrors, validateCommitMessage, ValidateCommitMessageOptions} from '../validate';
 
 // Whether the provided commit is a fixup commit.
@@ -22,7 +22,7 @@ export async function validateCommitRange(from: string, to: string) {
   const errors: [commitHeader: string, errors: string[]][] = [];
 
   /** A list of parsed commit messages from the range. */
-  const commits = await getCommitsInRange(from, to).pipe(toCommitList()).toPromise();
+  const commits = await getCommitsInRange(from, to);
   info(`Examining ${commits.length} commit(s) in the provided range: ${from}..${to}`);
 
   /**

@@ -55,11 +55,7 @@ const commitFields = {
 export type CommitFields = typeof commitFields;
 /** The commit fields described as git log format entries for parsing. */
 export const commitFieldsAsFormat = (fields: CommitFields) => {
-  const formatChunks: string[] = [];
-  for (const key in commitFields) {
-    formatChunks.push(`%n-${key}-%n${fields[key as keyof CommitFields]}`);
-  }
-  return formatChunks.join('');
+  return Object.entries(fields).map(([key, value]) => `%n-${key}-%n${value}`).join('');
 };
 /**
  * The git log format template to create git log entries for parsing.
@@ -113,7 +109,7 @@ const parseOptions: Options&{notesPattern: (keywords: string) => RegExp} = {
 
 
 /** Parse a full commit message into its composite parts. */
-export function parseCommitMessage(fullText: string): Commit {
+export function parseCommitMessage(fullText: string|Buffer): Commit {
   // Ensure the fullText symbol is a `string`, even if a Buffer was provided.
   fullText = fullText.toString();
   /** The commit message text with the fixup and squash markers stripped out. */
