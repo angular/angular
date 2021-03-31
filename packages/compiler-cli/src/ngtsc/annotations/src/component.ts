@@ -10,7 +10,7 @@ import {compileComponentFromMetadata, compileDeclareComponentFromMetadata, Const
 import * as ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../cycles';
-import {ErrorCode, FatalDiagnosticError, makeRelatedInformation} from '../../diagnostics';
+import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
 import {absoluteFrom, relative} from '../../file_system';
 import {DefaultImportRecorder, ImportedFile, ModuleResolver, Reference, ReferenceEmitter} from '../../imports';
 import {DependencyTracker} from '../../incremental/api';
@@ -265,9 +265,15 @@ export class ComponentDecoratorHandler implements
     const resolveStyleUrl =
         (styleUrl: string, nodeForError: ts.Node,
          resourceType: ResourceTypeForDiagnostics): Promise<void>|undefined => {
-          const resourceUrl =
-              this._resolveResourceOrThrow(styleUrl, containingFile, nodeForError, resourceType);
-          return this.resourceLoader.preload(resourceUrl, {type: 'style', containingFile});
+          try {
+            const resourceUrl =
+                this._resolveResourceOrThrow(styleUrl, containingFile, nodeForError, resourceType);
+            return this.resourceLoader.preload(resourceUrl, {type: 'style', containingFile});
+          } catch {
+            // Don't worry about failures to preload. We can handle this problem during analysis by
+            // producing a diagnostic.
+            return undefined;
+          }
         };
 
     // A Promise that waits for the template and all <link>ed styles within it to be preloaded.
@@ -326,6 +332,8 @@ export class ComponentDecoratorHandler implements
     const containingFile = node.getSourceFile().fileName;
     this.literalCache.delete(decorator);
 
+    let diagnostics: ts.Diagnostic[]|undefined;
+    let isPoisoned = false;
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
     const directiveResult = extractDirectiveMetadata(
@@ -411,13 +419,26 @@ export class ComponentDecoratorHandler implements
       const resourceType = styleUrl.source === ResourceTypeForDiagnostics.StylesheetFromDecorator ?
           ResourceTypeForDiagnostics.StylesheetFromDecorator :
           ResourceTypeForDiagnostics.StylesheetFromTemplate;
-      const resourceUrl = this._resolveResourceOrThrow(
-          styleUrl.url, containingFile, styleUrl.nodeForError, resourceType);
-      const resourceStr = this.resourceLoader.load(resourceUrl);
+      try {
+        const resourceUrl = this._resolveResourceOrThrow(
+            styleUrl.url, containingFile, styleUrl.nodeForError, resourceType);
+        const resourceStr = this.resourceLoader.load(resourceUrl);
 
-      styles.push(resourceStr);
-      if (this.depTracker !== null) {
-        this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
+        styles.push(resourceStr);
+
+        if (this.depTracker !== null) {
+          this.depTracker.addResourceDependency(node.getSourceFile(), absoluteFrom(resourceUrl));
+        }
+      } catch (e) {
+        if (e instanceof FatalDiagnosticError) {
+          if (diagnostics === undefined) {
+            diagnostics = [];
+          }
+          diagnostics.push(makeDiagnostic(e.code, e.node, e.message, e.relatedInformation));
+          isPoisoned = true;
+        } else {
+          throw e;
+        }
       }
     }
 
@@ -496,8 +517,9 @@ export class ComponentDecoratorHandler implements
           styles: styleResources,
           template: templateResource,
         },
-        isPoisoned: false,
+        isPoisoned,
       },
+      diagnostics,
     };
     if (changeDetection !== null) {
       output.analysis!.meta.changeDetection = changeDetection;
@@ -837,10 +859,15 @@ export class ComponentDecoratorHandler implements
             styleUrl.source === ResourceTypeForDiagnostics.StylesheetFromDecorator ?
             ResourceTypeForDiagnostics.StylesheetFromDecorator :
             ResourceTypeForDiagnostics.StylesheetFromTemplate;
-        const resolvedStyleUrl = this._resolveResourceOrThrow(
-            styleUrl.url, containingFile, styleUrl.nodeForError, resourceType);
-        const styleText = this.resourceLoader.load(resolvedStyleUrl);
-        styles.push(styleText);
+        try {
+          const resolvedStyleUrl = this._resolveResourceOrThrow(
+              styleUrl.url, containingFile, styleUrl.nodeForError, resourceType);
+          const styleText = this.resourceLoader.load(resolvedStyleUrl);
+          styles.push(styleText);
+        } catch (e) {
+          // Resource resolve failures should already be in the diagnostics list from the analyze
+          // stage. We do not need to do anything with them when updating resources.
+        }
       }
     }
     if (analysis.inlineStyles !== null) {
@@ -978,10 +1005,16 @@ export class ComponentDecoratorHandler implements
     const styleUrlsExpr = component.get('styleUrls');
     if (styleUrlsExpr !== undefined && ts.isArrayLiteralExpression(styleUrlsExpr)) {
       for (const expression of stringLiteralElements(styleUrlsExpr)) {
-        const resourceUrl = this._resolveResourceOrThrow(
-            expression.text, containingFile, expression,
-            ResourceTypeForDiagnostics.StylesheetFromDecorator);
-        styles.add({path: absoluteFrom(resourceUrl), expression});
+        try {
+          const resourceUrl = this._resolveResourceOrThrow(
+              expression.text, containingFile, expression,
+              ResourceTypeForDiagnostics.StylesheetFromDecorator);
+          styles.add({path: absoluteFrom(resourceUrl), expression});
+        } catch {
+          // Errors in style resource extraction do not need to be handled here. We will produce
+          // diagnostics for each one that fails in the analysis, after we evaluate the `styleUrls`
+          // expression to determine _all_ style resources, not just the string literals.
+        }
       }
     }
 
