@@ -88,6 +88,7 @@ export {
   DirectiveType as ɵDirectiveType,
   getDirectives as ɵgetDirectives,
   getHostElement as ɵgetHostElement,
+  getLViewById as ɵgetLViewById,
   LifecycleHooksFeature as ɵLifecycleHooksFeature,
   markDirty as ɵmarkDirty,
   NgModuleFactory as ɵNgModuleFactory,

@@ -168,7 +168,7 @@ export function getComponentViewByInstance(componentInstance: {}): LView {
     attachPatchData(componentInstance, context);
     attachPatchData(context.native, context);
   } else {
-    const context = patchedData as any as LContext;
+    const context = patchedData as unknown as LContext;
     const contextLView = getLViewById(context.lViewId)!;
     ngDevMode && assertLView(contextLView);
     lView = getComponentLViewByIndex(context.nodeIndex, contextLView);

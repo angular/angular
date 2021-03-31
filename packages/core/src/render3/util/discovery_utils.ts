@@ -82,12 +82,12 @@ export function getComponent<T>(element: Element): T|null {
 export function getContext<T>(element: Element): T|null {
   assertDomElement(element);
   const context = getLContext(element);
-  let lView: LView|null = null;
-  if (context !== null) {
-    lView = getLViewById(context.lViewId);
-    ngDevMode && assertLView(lView);
+  if (context === null) {
+    return null;
   }
-  return lView === null ? null : lView[CONTEXT] as T;
+  const lView = getLViewById(context.lViewId)!;
+  ngDevMode && assertLView(lView);
+  return lView[CONTEXT] as T;
 }
 
 /**
@@ -109,9 +109,8 @@ export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
   const context = getLContext(elementOrDir);
   if (context === null) return null;
 
-  let lView = getLViewById(context.lViewId)!;
-  ngDevMode && assertLView(lView);
   let parent: LView|null;
+  let lView = getLViewById(context.lViewId)!;
   ngDevMode && assertLView(lView);
   while (lView[TVIEW].type === TViewType.Embedded && (parent = getLViewParent(lView)!)) {
     lView = parent;

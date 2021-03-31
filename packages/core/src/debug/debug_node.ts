@@ -509,11 +509,11 @@ function _queryAllR3(
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
   const context = getLContext(parentElement.nativeNode);
   if (context !== null) {
-    const lView = getLViewById(context.lViewId);
+    const lView = getLViewById(context.lViewId)!;
     ngDevMode && assertLView(lView);
-    const parentTNode = lView![TVIEW].data[context.nodeIndex] as TNode;
+    const parentTNode = lView[TVIEW].data[context.nodeIndex] as TNode;
     _queryNodeChildrenR3(
-        parentTNode, lView!, predicate, matches, elementsOnly, parentElement.nativeNode);
+        parentTNode, lView, predicate, matches, elementsOnly, parentElement.nativeNode);
   } else {
     // If the context is null, then `parentElement` was either created with Renderer2 or native DOM
     // APIs.
