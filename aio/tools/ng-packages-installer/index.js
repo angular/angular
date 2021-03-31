@@ -262,7 +262,7 @@ class NgPackagesInstaller {
     const packageConfigs = {
       ...collectPackages(ANGULAR_DIST_PACKAGES_DIR),
       ...collectPackages(ZONEJS_DIST_PACKAGES_DIR),
-      ...collectPackages(ANGULAR_MISC_DIST_PACKAGES),
+      //...collectPackages(ANGULAR_MISC_DIST_PACKAGES),
     };
 
     this._log('Found the following Angular distributables:', Object.keys(packageConfigs).map(key => `\n - ${key}`));
