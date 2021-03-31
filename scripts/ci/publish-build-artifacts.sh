@@ -92,6 +92,12 @@ function publishPackages {
 
   for dir in $PKGS_DIST/*/
   do
+    if [[ ! -f "$dir/package.json" ]]; then
+      # Only publish directories that contain a `package.json` file.
+      echo "Skipping $dir, it does not contain a package to be published."
+      continue
+    fi
+
     COMPONENT="$(basename ${dir})"
 
     # Replace _ with - in component name.
