@@ -36,6 +36,17 @@ export interface ReleaseConfig {
   extractReleaseNotesPattern?: (version: semver.SemVer) => RegExp;
   /** The list of github labels to add to the release PRs. */
   releasePrLabels?: string[];
+  /** Configuration for creating release notes during publishing. */
+  // TODO(josephperrott): Make releaseNotes a required attribute on the interface when tooling is
+  // integrated.
+  releaseNotes?: ReleaseNotesConfig;
+}
+
+/** Configuration for creating release notes during publishing. */
+export interface ReleaseNotesConfig {
+  useReleaseTitle?: boolean;
+  hiddenScopes?: string[];
+  groupOrder?: string[];
 }
 
 /** Configuration for releases in the dev-infra configuration. */

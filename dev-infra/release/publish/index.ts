@@ -11,7 +11,7 @@ import {ListChoiceOptions, prompt} from 'inquirer';
 import {GithubConfig} from '../../utils/config';
 import {debug, error, info, log, promptConfirm, red, yellow} from '../../utils/console';
 import {GitClient} from '../../utils/git/index';
-import {ReleaseConfig} from '../config';
+import {ReleaseConfig} from '../config/index';
 import {ActiveReleaseTrains, fetchActiveReleaseTrains, nextBranchName} from '../versioning/active-release-trains';
 import {npmIsLoggedIn, npmLogin, npmLogout} from '../versioning/npm-publish';
 import {printActiveReleaseTrains} from '../versioning/print-active-trains';
