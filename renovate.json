@@ -1,0 +1,84 @@
+{
+    "pinVersions": false,
+    "semanticCommits": true,
+    "semanticPrefix": "build",
+    "commitMessage": "{{semanticPrefix}} update {{#if groupName}}{{{groupName}}} packages{{else}}{{{depName}}} to version {{{newVersion}}}{{/if}}",
+    "separateMajorMinor": false,
+    "prHourlyLimit": 2,
+    "labels": [
+      "target: minor",
+      "comp: build & ci",
+      "action: merge"
+    ],
+    "timezone": "America/Tijuana",
+    "lockFileMaintenance": {
+      "enabled": true
+    },
+    "schedule": [
+      "after 10pm every weekday",
+      "before 4am every weekday",
+      "every weekend"
+    ],
+    "baseBranches": [
+      "master"
+    ],
+    "ignoreDeps": [
+      "@types/node",
+      "@microsoft/api-extractor"
+    ],
+    "packageFiles": [
+      "WORKSPACE",
+      "integration/bazel/WORKSPACE",
+      "package.json",
+      "packages/**/package.json",
+      "tools/ts-api-guardian/package.json",
+      "aio/package.json"
+    ],
+    "packageRules": [
+      {
+        "packagePatterns": [
+          "^@angular/.*",
+          "^@angular-devkit/.*",
+          "^@schematics/.*"
+        ],
+        "groupName": "Angular",
+        "pinVersions": false
+      },
+     {
+        "packagePatterns": [
+          "^@babel/.*"
+        ],
+        "groupName": "Babel",
+        "pinVersions": false
+      },
+      {
+        "packagePatterns": [
+          "^@bazel/.*",
+          "^build_bazel.*",
+          "bazel_toolchains"
+        ],
+        "groupName": "Bazel",
+        "pinVersions": false
+      },
+      {
+        "packageNames": [
+          "typescript",
+          "rxjs",
+          "tslib"
+        ],
+        "separateMinorPatch": true
+      },
+      {
+        "packageNames": [
+          "typescript",
+          "rxjs",
+          "tslib"
+        ],
+        "updateTypes": [
+          "minor",
+          "major"
+        ],
+        "enabled": false
+      }
+    ]
+  }
