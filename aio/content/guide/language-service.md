@@ -62,6 +62,12 @@ In [Visual Studio Code](https://code.visualstudio.com/), install the extension f
 
 The Visual Studio Code integration with the Angular language service is maintained and distributed by the Angular team.
 
+### Visual Studio
+
+In [Visual Studio](https://visualstudio.microsoft.com/), install the extension from the [Extensions: Marketplace](https://marketplace.visualstudio.com/items?itemName=TypeScriptTeam.AngularLanguageService). You can open the marketplace from the editor selecting Extensions on the top menu pane, and then selecting Manage Extensions. In the marketplace, search for Angular Language Service extension, and click the **Install** button.
+
+The Visual Studio integration with the Angular language service is maintained and distributed by Microsoft with help from the Angular team. Check out the project [here](https://github.com/microsoft/vs-ng-language-service)
+
 ### WebStorm
 
 In [WebStorm](https://www.jetbrains.com/webstorm/), enable the plugin [Angular and AngularJS](https://plugins.jetbrains.com/plugin/6971-angular-and-angularjs).
