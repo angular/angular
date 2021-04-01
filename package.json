@@ -15,6 +15,16 @@
     "type": "git",
     "url": "https://github.com/angular/angular.git"
   },
+  "workspaces": {
+    "packages": [
+      "packages/bazel",
+      "packages/compiler-cli",
+      "packages/localize",
+      "packages/platform-server",
+      "packages/misc/angular-in-memory-web-api",
+      "tools/ts-api-guardian"
+    ]
+  },
   "scripts": {
     "/": "",
     "// 1": "Many developer of our checks/scripts/tools have moved to our ng-dev tool",
