@@ -37,23 +37,23 @@
     "packageRules": [
       {
         "packagePatterns": [
-          "^@angular\/.*",
-          "^@angular-devkit\/.*",
-          "^@schematics\/.*"
+          "^@angular/.*",
+          "^@angular-devkit/.*",
+          "^@schematics/.*"
         ],
         "groupName": "Angular",
         "pinVersions": false
       },
      {
         "packagePatterns": [
-          "^@babel\/.*"
+          "^@babel/.*"
         ],
         "groupName": "Babel",
         "pinVersions": false
       },
       {
         "packagePatterns": [
-          "^@bazel\/.*",
+          "^@bazel/.*",
           "^build_bazel.*",
           "bazel_toolchains"
         ],
