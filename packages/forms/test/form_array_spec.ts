@@ -363,8 +363,8 @@ describe('FormArray', () => {
     beforeEach(() => {
       c = new FormControl('');
       c2 = new FormControl('');
-      a = new FormArray<string>([c, c2]);
-      a2 = new FormArray<unknown>([a]);
+      a = new FormArray<any>([c, c2]);
+      a2 = new FormArray<any>([a]);
     });
 
     it('should set its own value', () => {

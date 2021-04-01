@@ -183,7 +183,7 @@ export abstract class AbstractControl<T = any> {
   _updateOn!: FormHooks;
 
   // TODO(issue/24571): remove '!'.
-  private _parent!: FormGroup<any>|FormArray<any>|null = null;
+  private _parent: FormGroup<any>|FormArray<any>|null = null;
   private _asyncValidationSubscription: any;
 
   /**
@@ -1065,12 +1065,20 @@ interface FormGroupCtor {
  */
 export declare interface FormGroup<T extends object = any> extends AbstractControl<T> {
   controls: {[key in keyof T]: AbstractControl<T[key]>};
-  addControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): void;
-  addControl<K extends string>(name: NotAKey<K, T>, control: AbstractControl<any>): void;
+  addControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>, options?: {
+    emitEvent?: boolean
+  }): void;
+  addControl<K extends string>(name: NotAKey<K, T>, control: AbstractControl<any>, options?: {
+    emitEvent?: boolean
+  }): void;
   contains(controlName: keyof T): boolean;
-  removeControl(name: keyof T): void;
-  setControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): void;
-  registerControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>): AbstractControl;
+  removeControl(name: keyof T, options?: {emitEvent?: boolean}): void;
+  setControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>, options?: {
+    emitEvent?: boolean
+  }): void;
+  registerControl<K extends keyof T>(name: K, control: AbstractControl<T[K]>, options?: {
+    emitEvent?: boolean
+  }): AbstractControl;
   getRawValue(): T;
   patchValue<K extends keyof T>(
       value: Partial<T>, options?: {onlySelf?: boolean, emitEvent?: boolean}): void;
@@ -1633,9 +1641,8 @@ class FormGroupImpl<T extends object = any> extends AbstractControl<T> implement
    * @param value The new value for the control that matches the structure of the group.
    * @param options Configuration options that determine how the control propagates changes
    * and emits events after the value changes.
-   * The configuration options are passed to the {
-     @link AbstractControl #updateValueAndValidity * updateValueAndValidity
-   } method.
+   * The configuration options are passed to the {@link AbstractControl #updateValueAndValidity *
+   * updateValueAndValidity} method.
    *
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
    * false.
@@ -1683,19 +1690,15 @@ class FormGroupImpl<T extends object = any> extends AbstractControl<T> implement
    * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
    * `valueChanges` observables emit events with the latest status and value when the control value
    * is updated. When false, no events are emitted. The configuration options are passed to
-   * the {
-     @link AbstractControl #updateValueAndValidity updateValueAndValidity
-   }
-   method.
- */
+   * the {@link AbstractControl #updateValueAndValidity updateValueAndValidity} method.
+   */
   patchValue<K extends keyof T>(
       value: Partial<T>, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    / /
-    Even though the`value` argument type doesn't allow `null` and `undefined` values, the
-        // `patchValue` can be called recursively and inner data structures might have these values, so
-        // we just ignore such cases when a field containing FormGroup instance receives `null` or
-        // `undefined` as a value.
-        if (value == null /* both `null` and `undefined` */) return;
+    // Even though the`value` argument type doesn't allow `null` and `undefined` values, the
+    // `patchValue` can be called recursively and inner data structures might have these values, so
+    // we just ignore such cases when a field containing FormGroup instance receives `null` or
+    // `undefined` as a value.
+    if (value == null /* both `null` and `undefined` */) return;
 
     (Object.keys(value) as K[]).forEach(name => {
       if (this.controls[name]) {
@@ -1965,14 +1968,14 @@ export declare interface FormArray<T = any> extends AbstractControl<T> {
   length: number;
   controls: AbstractControl<T>[];
   at(index: number): AbstractControl<T>;
-  push(control: AbstractControl<T>): void;
-  push(control: AbstractControl): void;
-  removeAt(index: number): void;
-  clear(): void;
-  insert(index: number, control: AbstractControl<T>): void;
-  insert(index: number, control: AbstractControl): void;
+  push(control: AbstractControl<T>, options?: {emitEvent?: boolean}): void;
+  push(control: AbstractControl, options?: {emitEvent?: boolean}): void;
+  removeAt(index: number, options?: {emitEvent?: boolean}): void;
+  clear(options?: {emitEvent?: boolean}): void;
+  insert(index: number, control: AbstractControl<T>, options?: {emitEvent?: boolean}): void;
+  insert(index: number, control: AbstractControl, options?: {emitEvent?: boolean}): void;
   getRawValue(): T[];
-  setControl(index: number, control: AbstractControl<T>): void;
+  setControl(index: number, control: AbstractControl<T>, options?: {emitEvent?: boolean}): void;
 }
 
 interface FormArrayCtor {
