@@ -8,6 +8,7 @@
 
 import * as Octokit from '@octokit/rest';
 import {spawnSync, SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
+import {Options as SemVerOptions, parse, SemVer} from 'semver';
 
 import {getConfig, getRepoBaseDir, NgDevConfig} from '../config';
 import {debug, info, yellow} from '../console';
@@ -179,6 +180,19 @@ export class GitClient {
       this.runGraceful(['reset', '--hard'], {stdio: 'ignore'});
     }
     return this.runGraceful(['checkout', branchOrRevision], {stdio: 'ignore'}).status === 0;
+  }
+
+  /** Gets the latest git tag on the current branch that matches SemVer. */
+  getLatestSemverTag(): SemVer {
+    const semVerOptions: SemVerOptions = {loose: true};
+    const tags = this.runGraceful(['tag', '--sort=-committerdate', '--merged']).stdout.split('\n');
+    const latestTag = tags.find((tag: string) => parse(tag, semVerOptions));
+
+    if (latestTag === undefined) {
+      throw new Error(
+          `Unable to find a SemVer matching tag on "${this.getCurrentBranchOrRevision()}"`);
+    }
+    return new SemVer(latestTag, semVerOptions);
   }
 
   /**
