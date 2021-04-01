@@ -1686,7 +1686,7 @@ const COMMIT_TYPES = {
  * found in the LICENSE file at https://angular.io/license
  */
 /**
- * A list of tuples expressing the fields to extract from each commit log entryThe tuple contains
+ * A list of tuples expressing the fields to extract from each commit log entry. The tuple contains
  * two values, the first is the key for the property and the second is the template shortcut for the
  * git log command.
  */
@@ -2031,7 +2031,7 @@ const ValidateFileModule = {
 // Set `gitCommits` as this imported value to address "Cannot call a namespace" error.
 const gitCommits = gitCommits_;
 /**
- * Find all commits within the given range and returns an object describing those.
+ * Find all commits within the given range and return an object describing those.
  */
 function getCommitsInRange(from, to = 'HEAD') {
     return new Promise((resolve, reject) => {

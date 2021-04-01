@@ -42,7 +42,7 @@ export interface Commit {
 }
 
 /**
- * A list of tuples expressing the fields to extract from each commit log entryThe tuple contains
+ * A list of tuples expressing the fields to extract from each commit log entry. The tuple contains
  * two values, the first is the key for the property and the second is the template shortcut for the
  * git log command.
  */
