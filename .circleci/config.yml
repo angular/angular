@@ -65,6 +65,7 @@ var_10: &only_on_master
 # **NOTE 1**: Pin to exact images using an ID (SHA). See https://circleci.com/docs/2.0/circleci-images/#using-a-docker-image-id-to-pin-an-image-to-a-fixed-version.
 #             (Using the tag in not necessary when pinning by ID, but include it anyway for documentation purposes.)
 # **NOTE 2**: If you change the version of the docker images, also change the `cache_key` suffix.
+# **NOTE 3**: If you change the version of Node.js provided by the docker images, also update `.devcontainer/recommended-Dockerfile` to match the new version.
 executors:
   default-executor:
     parameters:
