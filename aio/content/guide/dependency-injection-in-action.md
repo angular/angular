@@ -210,7 +210,7 @@ Angular sets the constructor's `el` parameter to the injected `ElementRef`.
 (An `ElementRef` is a wrapper around a DOM element,
 whose `nativeElement` property exposes the DOM element for the directive to manipulate.)
 
-The sample code applies the directive's `myHighlight` attribute to two `<div>` tags,
+The sample code applies the directive's `appHighlight` attribute to two `<div>` tags,
 first without a value (yielding the default color) and then with an assigned color value.
 
 <code-example path="dependency-injection-in-action/src/app/app.component.html" region="highlight" header="src/app/app.component.html (highlight)"></code-example>
