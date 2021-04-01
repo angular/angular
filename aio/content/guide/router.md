@@ -1,27 +1,6 @@
 # Common Routing Tasks
 
-<<<<<<< HEAD
 This topic describes how to implement many of the common tasks associated with adding the Angular router to your application.
-=======
-In a single-page application, you change what the user sees by showing or hiding portions of the display that correspond to particular components, rather than going out to the server to get a new page.
-As users perform application tasks, they need to move between the different [views](guide/glossary#view "Definition of view") that you have defined.
-
-To handle the navigation from one [view](guide/glossary#view) to the next, you use the Angular **`Router`**.
-The **`Router`** enables navigation by interpreting a browser URL as an instruction to change the view.
-
-To explore a sample application featuring the router's primary features, see the <live-example></live-example>.
-
-## Prerequisites
-
-Before creating a route, you should be familiar with the following:
-
-* [Basics of components](guide/architecture-components)
-* [Basics of templates](guide/glossary#template)
-* An Angular app&mdash;you can generate a basic Angular application using the [Angular CLI](cli).
-
-For an introduction to Angular with a ready-made app, see [Getting Started](start).
-For a more in-depth experience of building an Angular app, see the [Tour of Heroes](tutorial) tutorial. Both guide you through using component classes and templates.
->>>>>>> 9112c24ec1 (docs: edit to remove jargon)
 
 {@a basics}
 ## Generate an application with routing enabled

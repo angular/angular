@@ -4,7 +4,7 @@ If your tests aren't working as you expect them to, you can inspect and debug th
 
 <div class="alert is-helpful">
 
-  For the sample app that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
+  For the sample application that the testing guides describe, see the <live-example name="testing" embedded-style noDownload>sample app</live-example>.
 
   For the tests features in the testing guides, see <live-example name="testing" stackblitz="specs" noDownload>tests</live-example>.
 
