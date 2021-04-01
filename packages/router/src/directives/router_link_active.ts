@@ -35,6 +35,9 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  *
  * Whenever the URL is either '/user' or '/user/bob', the "active-link" class is
  * added to the anchor tag. If the URL changes, the class is removed.
+ * This directive also supports the
+ * {@link https://www.w3.org/TR/wai-aria-1.1/#aria-current aria-current attribute}
+ * and sets it to 'page' on active links.
  *
  * You can set more than one class using a space-separated string or an array.
  * For example:
@@ -78,6 +81,7 @@ import {RouterLink, RouterLinkWithHref} from './router_link';
  */
 @Directive({
   selector: '[routerLinkActive]',
+  host: {'[attr.aria-current]': 'isActive ? "page" : null'},
   exportAs: 'routerLinkActive',
 })
 export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {

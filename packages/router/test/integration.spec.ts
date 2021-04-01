@@ -4678,6 +4678,34 @@ describe('Integration', () => {
          expect(native.className).toEqual('active');
        })));
 
+    it('should set the aria-current attribute when the link is active',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'team/:id',
+           component: TeamCmp,
+           children: [{
+             path: 'link',
+             component: DummyLinkCmp,
+             children: [{path: 'simple', component: SimpleCmp}, {path: '', component: BlankCmp}]
+           }]
+         }]);
+
+         router.navigateByUrl('/team/22/link');
+         advance(fixture);
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22/link');
+
+         const native = fixture.nativeElement.querySelector('a');
+         expect(native.getAttribute('aria-current')).toEqual('page');
+
+         router.navigateByUrl('/team/22/link/simple');
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22/link/simple');
+         expect(native.getAttribute('aria-current')).toEqual('page');
+       })));
+
     it('should expose an isActive property', fakeAsync(() => {
          @Component({
            template: `<a routerLink="/team" routerLinkActive #rla="routerLinkActive"></a>
