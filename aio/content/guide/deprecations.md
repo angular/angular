@@ -454,7 +454,6 @@ This section contains a complete list all of the currently deprecated CLI flags.
 
 | API/Option                      | May be removed in | Notes                                                                           |
 | ------------------------------- | ----------------- |-------------------------------------------------------------------------------- |
-| `entryComponent`                | <!--v9--> v12     | No longer needed with Ivy.                                                      |
 | `lintFix`                       | <!--v11--> v12    | Deprecated as part of TSLint deprecation.                                      |
 
 {@a removed}
