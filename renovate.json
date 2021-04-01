@@ -6,7 +6,7 @@
     "separateMajorMinor": false,
     "prHourlyLimit": 2,
     "labels": [
-      "target: patch",
+      "target: minor",
       "comp: build & ci",
       "action: merge"
     ],
