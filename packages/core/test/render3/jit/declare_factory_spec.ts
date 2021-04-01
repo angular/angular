@@ -32,7 +32,6 @@ describe('Factory declaration jit compilation', () => {
 
   it('should compile a factory declaration that has inheritance', () => {
     const factory = ChildClass.ɵfac as Function;
-    expect(factory.name).toEqual('ChildClass_Factory');
     const instance = factory();
     expect(instance).toBeInstanceOf(ChildClass);
     expect(instance.testClass).toBeInstanceOf(TestClass);
