@@ -668,10 +668,7 @@ class AngularCompilerProgram implements Program {
     // - we cache all the files in the hostAdapter
     // - new new stubs use the exactly same imports/exports as the old once (we assert that in
     // hostAdapter.updateGeneratedFile).
-    // TS 4.1+ stores the reuse state in the new program
-    const checkReuseProgram =
-        (ts.versionMajorMinor as string) === '4.0' ? tmpProgram : this._tsProgram;
-    if (tsStructureIsReused(checkReuseProgram) !== StructureIsReused.Completely) {
+    if (tsStructureIsReused(this._tsProgram) !== StructureIsReused.Completely) {
       throw new Error(`Internal Error: The structure of the program changed during codegen.`);
     }
   }
