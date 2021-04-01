@@ -153,7 +153,7 @@ Can't bind to 'ngModel' since it isn't a known property of 'input'.
 
 Although `ngModel` is a valid Angular directive, it isn't available by default.
 
-It belongs to the optional `FormsModule` and you must _opt-in_ to using it.
+It belongs to the optional `FormsModule` and you must _opt-in_ before using it.
 
 ## _AppModule_
 
