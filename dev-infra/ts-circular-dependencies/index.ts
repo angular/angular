@@ -58,7 +58,7 @@ export function main(
   const cycles: ReferenceChain[] = [];
   const checkedNodes = new WeakSet<ts.SourceFile>();
 
-  globSync(glob, {absolute: true}).forEach(filePath => {
+  globSync(glob, {absolute: true, ignore: ['**/node_modules/**']}).forEach(filePath => {
     const sourceFile = analyzer.getSourceFile(filePath);
     cycles.push(...analyzer.findCycles(sourceFile, checkedNodes));
   });

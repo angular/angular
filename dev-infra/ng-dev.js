@@ -7068,7 +7068,7 @@ function main(approve, config, printWarnings) {
     const analyzer = new Analyzer(resolveModule);
     const cycles = [];
     const checkedNodes = new WeakSet();
-    glob.sync(glob$1, { absolute: true }).forEach(filePath => {
+    glob.sync(glob$1, { absolute: true, ignore: ['**/node_modules/**'] }).forEach(filePath => {
         const sourceFile = analyzer.getSourceFile(filePath);
         cycles.push(...analyzer.findCycles(sourceFile, checkedNodes));
     });
