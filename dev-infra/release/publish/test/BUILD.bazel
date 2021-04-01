@@ -8,6 +8,7 @@ ts_library(
     ]),
     module_name = "@angular/dev-infra-private/release/test",
     deps = [
+        "//dev-infra/commit-message",
         "//dev-infra/release/config",
         "//dev-infra/release/publish",
         "//dev-infra/release/versioning",

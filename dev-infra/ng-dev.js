@@ -25,6 +25,7 @@ var cliProgress = require('cli-progress');
 var os = require('os');
 var minimatch = require('minimatch');
 var ora = require('ora');
+require('ejs');
 var glob = require('glob');
 var ts = require('typescript');
 
@@ -5580,6 +5581,11 @@ function isCommitClosingPullRequest(api, sha, id) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/** List of types to be included in the release notes. */
+const typesToIncludeInReleaseNotes = Object.values(COMMIT_TYPES)
+    .filter(type => type.releaseNotesLevel === ReleaseNotesLevel.Visible)
+    .map(type => type.name);
+
 /**
  * Gets the default pattern for extracting release notes for the given version.
  * This pattern matches for the conventional-changelog Angular preset.

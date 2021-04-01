@@ -17,6 +17,7 @@
     "chalk": "<from-root>",
     "cli-progress": "<from-root>",
     "conventional-commits-parser": "<from-root>",
+    "ejs": "<from-root>",
     "git-raw-commits": "<from-root>",
     "glob": "<from-root>",
     "inquirer": "<from-root>",
