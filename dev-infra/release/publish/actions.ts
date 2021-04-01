@@ -14,7 +14,7 @@ import * as semver from 'semver';
 import {debug, error, green, info, promptConfirm, red, warn, yellow} from '../../utils/console';
 import {getListCommitsInBranchUrl, getRepositoryGitUrl} from '../../utils/git/github-urls';
 import {GitClient} from '../../utils/git/index';
-import {BuiltPackage, ReleaseConfig} from '../config';
+import {BuiltPackage, ReleaseConfig} from '../config/index';
 import {ActiveReleaseTrains} from '../versioning/active-release-trains';
 import {runNpmPublish} from '../versioning/npm-publish';
 
@@ -24,7 +24,7 @@ import {changelogPath, packageJsonPath, waitForPullRequestInterval} from './cons
 import {invokeBazelCleanCommand, invokeReleaseBuildCommand, invokeYarnInstallCommand} from './external-commands';
 import {findOwnedForksOfRepoQuery} from './graphql-queries';
 import {getPullRequestState} from './pull-request-state';
-import {getDefaultExtractReleaseNotesPattern, getLocalChangelogFilePath} from './release-notes';
+import {getDefaultExtractReleaseNotesPattern, getLocalChangelogFilePath} from './release-notes/release-notes';
 
 /** Interface describing a Github repository. */
 export interface GithubRepo {
