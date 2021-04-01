@@ -257,14 +257,15 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
     return this.getLatestComponentState(component).tcb;
   }
 
-  getGlobalCompletions(context: TmplAstTemplate|null, component: ts.ClassDeclaration):
-      GlobalCompletion|null {
+  getGlobalCompletions(
+      context: TmplAstTemplate|null, component: ts.ClassDeclaration,
+      node: AST|TmplAstNode): GlobalCompletion|null {
     const engine = this.getOrCreateCompletionEngine(component);
     if (engine === null) {
       return null;
     }
     return this.perf.inPhase(
-        PerfPhase.TtcAutocompletion, () => engine.getGlobalCompletions(context));
+        PerfPhase.TtcAutocompletion, () => engine.getGlobalCompletions(context, node));
   }
 
   getExpressionCompletionLocation(
