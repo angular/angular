@@ -441,6 +441,31 @@ function addGithubTokenOption(yargs) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/** Whether the current environment is in dry run mode. */
+function isDryRun() {
+    return process.env['DRY_RUN'] !== undefined;
+}
+/** Error to be thrown when a function or method is called in dryRun mode and shouldn't be. */
+var DryRunError = /** @class */ (function (_super) {
+    tslib.__extends(DryRunError, _super);
+    function DryRunError() {
+        var _this = _super.call(this, 'Cannot call this function in dryRun mode.') || this;
+        // Set the prototype explicitly because in ES5, the prototype is accidentally lost due to
+        // a limitation in down-leveling.
+        // https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work.
+        Object.setPrototypeOf(_this, DryRunError.prototype);
+        return _this;
+    }
+    return DryRunError;
+}(Error));
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 /** Error for failed Github API requests. */
 var GithubApiRequestError = /** @class */ (function (_super) {
     tslib.__extends(GithubApiRequestError, _super);
@@ -604,6 +629,12 @@ var GitClient = /** @class */ (function () {
      */
     GitClient.prototype.runGraceful = function (args, options) {
         if (options === void 0) { options = {}; }
+        /** The git command to be run. */
+        var gitCommand = args[0];
+        if (isDryRun() && gitCommand === 'push') {
+            debug("\"git push\" is not able to be run in dryRun mode.");
+            throw new DryRunError();
+        }
         // To improve the debugging experience in case something fails, we print all executed Git
         // commands to better understand the git actions occuring. Depending on the command being
         // executed, this debugging information should be logged at different logging levels.

@@ -9,7 +9,7 @@
 import {Argv} from 'yargs';
 
 /**
- * Add a --dry-run flag to the available options for the yargs argv object.  When present, sets an
+ * Add a --dry-run flag to the available options for the yargs argv object. When present, sets an
  * environment variable noting dry run mode.
  */
 export function addDryRunFlag<T>(args: Argv<T>) {
