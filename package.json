@@ -22,7 +22,6 @@
       "packages/localize",
       "packages/platform-server",
       "packages/misc/angular-in-memory-web-api",
-      "packages/misc/angular-in-memory-web-api",
       "tools/ts-api-guardian"
     ]
   },

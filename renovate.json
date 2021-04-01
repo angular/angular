@@ -62,7 +62,9 @@
       },
       {
         "packageNames": [
-          "typescript"
+          "typescript",
+          "rxjs",
+          "tslib"
         ],
         "separateMinorPatch": true
       },
