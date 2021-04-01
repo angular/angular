@@ -38,11 +38,17 @@ export enum ScopeRequirement {
   Forbidden,
 }
 
+export enum ReleaseNotesLevel {
+  Hidden,
+  Visible,
+}
+
 /** A commit type */
 export interface CommitType {
   description: string;
   name: string;
   scope: ScopeRequirement;
+  releaseNotesLevel: ReleaseNotesLevel;
 }
 
 /** The valid commit types for Angular commit messages. */
@@ -51,45 +57,54 @@ export const COMMIT_TYPES: {[key: string]: CommitType} = {
     name: 'build',
     description: 'Changes to local repository build system and tooling',
     scope: ScopeRequirement.Optional,
+    releaseNotesLevel: ReleaseNotesLevel.Hidden,
   },
   ci: {
     name: 'ci',
     description: 'Changes to CI configuration and CI specific tooling',
     scope: ScopeRequirement.Forbidden,
+    releaseNotesLevel: ReleaseNotesLevel.Hidden,
   },
   docs: {
     name: 'docs',
     description: 'Changes which exclusively affects documentation.',
     scope: ScopeRequirement.Optional,
+    releaseNotesLevel: ReleaseNotesLevel.Hidden,
   },
   feat: {
     name: 'feat',
     description: 'Creates a new feature',
     scope: ScopeRequirement.Required,
+    releaseNotesLevel: ReleaseNotesLevel.Visible,
   },
   fix: {
     name: 'fix',
     description: 'Fixes a previously discovered failure/bug',
     scope: ScopeRequirement.Required,
+    releaseNotesLevel: ReleaseNotesLevel.Visible,
   },
   perf: {
     name: 'perf',
     description: 'Improves performance without any change in functionality or API',
     scope: ScopeRequirement.Required,
+    releaseNotesLevel: ReleaseNotesLevel.Visible,
   },
   refactor: {
     name: 'refactor',
     description: 'Refactor without any change in functionality or API (includes style changes)',
     scope: ScopeRequirement.Required,
+    releaseNotesLevel: ReleaseNotesLevel.Hidden,
   },
   release: {
     name: 'release',
     description: 'A release point in the repository',
     scope: ScopeRequirement.Forbidden,
+    releaseNotesLevel: ReleaseNotesLevel.Hidden,
   },
   test: {
     name: 'test',
     description: 'Improvements or corrections made to the project\'s test suite',
     scope: ScopeRequirement.Required,
+    releaseNotesLevel: ReleaseNotesLevel.Hidden,
   },
 };
