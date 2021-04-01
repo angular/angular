@@ -7,7 +7,7 @@
  */
 import * as gitCommits_ from 'git-raw-commits';
 
-import {Commit, gitLogFormatForParsing, parseCommitMessage} from './parse';
+import {CommitFromGitLog, gitLogFormatForParsing, parseCommitMessage} from './parse';
 
 // Set `gitCommits` as this imported value to address "Cannot call a namespace" error.
 const gitCommits = gitCommits_;
@@ -16,10 +16,10 @@ const gitCommits = gitCommits_;
 /**
  * Find all commits within the given range and return an object describing those.
  */
-export function getCommitsInRange(from: string, to: string = 'HEAD'): Promise<Commit[]> {
+export function getCommitsInRange(from: string, to: string = 'HEAD'): Promise<CommitFromGitLog[]> {
   return new Promise((resolve, reject) => {
     /** List of parsed commit objects. */
-    const commits: Commit[] = [];
+    const commits: CommitFromGitLog[] = [];
     /** Stream of raw git commit strings in the range provided. */
     const commitStream = gitCommits({from, to, format: gitLogFormatForParsing});
 

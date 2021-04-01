@@ -41,6 +41,13 @@ export interface Commit {
   isRevert: boolean;
 }
 
+/** A parsed commit which originated from a Git Log entry */
+export interface CommitFromGitLog extends Commit {
+  author: string;
+  hash: string;
+  shortHash: string;
+}
+
 /**
  * A list of tuples expressing the fields to extract from each commit log entry. The tuple contains
  * two values, the first is the key for the property and the second is the template shortcut for the
@@ -109,7 +116,9 @@ const parseOptions: Options&{notesPattern: (keywords: string) => RegExp} = {
 
 
 /** Parse a full commit message into its composite parts. */
-export function parseCommitMessage(fullText: string|Buffer): Commit {
+export function parseCommitMessage(fullText: string): Commit;
+export function parseCommitMessage(fullText: Buffer): CommitFromGitLog;
+export function parseCommitMessage(fullText: string|Buffer): CommitFromGitLog|Commit {
   // Ensure the fullText symbol is a `string`, even if a Buffer was provided.
   fullText = fullText.toString();
   /** The commit message text with the fixup and squash markers stripped out. */
@@ -148,5 +157,8 @@ export function parseCommitMessage(fullText: string|Buffer): Commit {
     isFixup: FIXUP_PREFIX_RE.test(fullText),
     isSquash: SQUASH_PREFIX_RE.test(fullText),
     isRevert: REVERT_PREFIX_RE.test(fullText),
+    author: commit.author || undefined,
+    hash: commit.hash || undefined,
+    shortHash: commit.shortHash || undefined,
   };
 }
