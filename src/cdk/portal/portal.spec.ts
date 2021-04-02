@@ -101,6 +101,7 @@ describe('Portals', () => {
           .not.toBe(initialParent, 'Expected portal to be out of the initial parent on attach.');
       expect(hostContainer.contains(innerContent))
           .toBe(true, 'Expected content to be inside the outlet on attach.');
+      expect(testAppComponent.portalOutlet.hasAttached()).toBe(true);
 
       testAppComponent.selectedPortal = undefined;
       fixture.detectChanges();
@@ -109,6 +110,7 @@ describe('Portals', () => {
           .toBe(initialParent, 'Expected portal to be back inside initial parent on detach.');
       expect(hostContainer.contains(innerContent))
           .toBe(false, 'Expected content to be removed from outlet on detach.');
+      expect(testAppComponent.portalOutlet.hasAttached()).toBe(false);
     });
 
     it('should throw when trying to load an element without a parent into a DOM portal', () => {
@@ -624,6 +626,30 @@ describe('Portals', () => {
       expect(() => host.detach()).not.toThrow();
     });
 
+    it('should set hasAttached when the various portal types are attached', () => {
+      const fixture = TestBed.createComponent(PortalTestApp);
+      fixture.detectChanges();
+      const viewContainerRef = fixture.componentInstance.viewContainerRef;
+
+      expect(host.hasAttached()).toBe(false);
+
+      host.attachComponentPortal(new ComponentPortal(PizzaMsg, viewContainerRef));
+      expect(host.hasAttached()).toBe(true);
+
+      host.detach();
+      expect(host.hasAttached()).toBe(false);
+
+      host.attachTemplatePortal(
+          new TemplatePortal(fixture.componentInstance.templateRef, viewContainerRef));
+      expect(host.hasAttached()).toBe(true);
+
+      host.detach();
+      expect(host.hasAttached()).toBe(false);
+
+      host.attachDomPortal(new DomPortal(fixture.componentInstance.domPortalContent));
+      expect(host.hasAttached()).toBe(true);
+    });
+
   });
 });
 
@@ -730,7 +756,7 @@ class PortalTestApp {
   fruits = ['Apple', 'Pineapple', 'Durian'];
   attachedSpy = jasmine.createSpy('attached spy');
 
-  constructor(public injector: Injector) { }
+  constructor(public viewContainerRef: ViewContainerRef, public injector: Injector) { }
 
   get cakePortal() {
     return this.portals.first;

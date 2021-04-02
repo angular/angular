@@ -71,6 +71,7 @@ export class DomPortalOutlet extends BasePortalOutlet {
     // At this point the component has been instantiated, so we move it to the location in the DOM
     // where we want it to be rendered.
     this.outletElement.appendChild(this._getComponentRootNode(componentRef));
+    this._attachedPortal = portal;
 
     return componentRef;
   }
@@ -102,6 +103,8 @@ export class DomPortalOutlet extends BasePortalOutlet {
       }
     }));
 
+    this._attachedPortal = portal;
+
     // TODO(jelbourn): Return locals from view.
     return viewRef;
   }
@@ -130,6 +133,7 @@ export class DomPortalOutlet extends BasePortalOutlet {
 
     element.parentNode!.insertBefore(anchorNode, element);
     this.outletElement.appendChild(element);
+    this._attachedPortal = portal;
 
     super.setDisposeFn(() => {
       // We can't use `replaceWith` here because IE doesn't support it.

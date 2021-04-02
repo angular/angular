@@ -214,6 +214,7 @@ export class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestr
     portal.setAttachedHost(this);
     element.parentNode!.insertBefore(anchorNode, element);
     this._getRootNode().appendChild(element);
+    this._attachedPortal = portal;
 
     super.setDisposeFn(() => {
       if (anchorNode.parentNode) {
