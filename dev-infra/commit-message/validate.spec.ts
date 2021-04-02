@@ -88,7 +88,7 @@ describe('validate-commit-message.js', () => {
           [`'weird' is not an allowed type.\n => TYPES: ${TYPES}`]);
     });
 
-    it('should pass when scope is contains NPM scope', () => {
+    it('should pass when scope contains NPM scope', () => {
       expectValidationResult(
           validateCommitMessage('fix(@angular-devkit/build-angular): something'), true);
     });
