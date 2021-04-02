@@ -2303,6 +2303,22 @@ describe('ngc transformer command-line', () => {
       `);
       expect(source).toMatch(/new Service\(i0\.ɵɵinject\(exports\.TOKEN\)\);/);
     });
+
+    it('compiles an injectable using `forwardRef` inside `providedIn`', () => {
+      const source = compileService(`
+        import {Injectable, forwardRef} from '@angular/core';
+        import {Module} from './module';
+
+        @Injectable({
+          providedIn: forwardRef(() => Module),
+        })
+        export class Service {}
+      `);
+
+      expect(source).toMatch(/ɵprov = .+\.ɵɵdefineInjectable\(/);
+      expect(source).toMatch(/ɵprov.*token: Service/);
+      expect(source).toMatch(/ɵprov.*providedIn: .+\.Module/);
+    });
   });
 
   it('libraries should not break strictMetadataEmit', () => {

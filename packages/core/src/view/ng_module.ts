@@ -138,7 +138,7 @@ function moduleTransitivelyPresent(ngModule: NgModuleData, scope: any): boolean 
 }
 
 function targetsModule(ngModule: NgModuleData, def: ɵɵInjectableDef<any>): boolean {
-  const providedIn = def.providedIn;
+  const providedIn = resolveForwardRef(def.providedIn);
   return providedIn != null &&
       (providedIn === 'any' || providedIn === ngModule._def.scope ||
        moduleTransitivelyPresent(ngModule, providedIn));

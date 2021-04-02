@@ -420,10 +420,12 @@ export class R3Injector {
   private injectableDefInScope(def: ɵɵInjectableDef<any>): boolean {
     if (!def.providedIn) {
       return false;
-    } else if (typeof def.providedIn === 'string') {
-      return def.providedIn === 'any' || (def.providedIn === this.scope);
+    }
+    const providedIn = resolveForwardRef(def.providedIn);
+    if (typeof providedIn === 'string') {
+      return providedIn === 'any' || (providedIn === this.scope);
     } else {
-      return this.injectorDefTypes.has(def.providedIn);
+      return this.injectorDefTypes.has(providedIn);
     }
   }
 }
