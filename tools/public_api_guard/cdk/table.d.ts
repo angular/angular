@@ -198,7 +198,7 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     _contentFooterRowDefs: QueryList<CdkFooterRowDef>;
     _contentHeaderRowDefs: QueryList<CdkHeaderRowDef>;
     _contentRowDefs: QueryList<CdkRowDef<T>>;
-    protected _data: T[] | ReadonlyArray<T>;
+    protected _data: readonly T[];
     protected readonly _differs: IterableDiffers;
     protected readonly _dir: Directionality;
     protected readonly _elementRef: ElementRef;
@@ -361,7 +361,7 @@ export declare class StickyStyler {
 }
 
 export interface StickyUpdate {
-    elements?: ReadonlyArray<HTMLElement[] | undefined>;
+    elements?: readonly (HTMLElement[] | undefined)[];
     offsets?: StickyOffset[];
     sizes: StickySize[];
 }

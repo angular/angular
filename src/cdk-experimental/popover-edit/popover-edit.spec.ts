@@ -3,7 +3,7 @@ import {LEFT_ARROW, UP_ARROW, RIGHT_ARROW, DOWN_ARROW, TAB} from '@angular/cdk/k
 import {CdkTableModule} from '@angular/cdk/table';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
 import {CommonModule} from '@angular/common';
-import {Component, Directive, ElementRef, Type, ViewChild} from '@angular/core';
+import {Component, Directive, ElementRef, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed, tick, inject} from '@angular/core/testing';
 import {FormsModule, NgForm} from '@angular/forms';
 import {BidiModule, Direction} from '@angular/cdk/bidi';
@@ -359,12 +359,12 @@ class CdkTableInCell extends BaseTestComponent {
   }
 }
 
-const testCases: ReadonlyArray<[Type<BaseTestComponent>, string]> = [
+const testCases = [
   [VanillaTableOutOfCell, 'Vanilla HTML table; edit defined outside of cell'],
   [VanillaTableInCell, 'Vanilla HTML table; edit defined within cell'],
   [CdkFlexTableInCell, 'Flex cdk-table; edit defined within cell'],
   [CdkTableInCell, 'Table cdk-table; edit defined within cell'],
-];
+] as const;
 
 describe('CDK Popover Edit', () => {
   for (const [componentClass, label] of testCases) {
@@ -381,7 +381,7 @@ describe('CDK Popover Edit', () => {
         inject([OverlayContainer], (oc: OverlayContainer) => {
           overlayContainer = oc;
         })();
-        fixture = TestBed.createComponent(componentClass);
+        fixture = TestBed.createComponent<BaseTestComponent>(componentClass);
         component = fixture.componentInstance;
         fixture.detectChanges();
         tick(10);

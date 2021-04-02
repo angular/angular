@@ -161,10 +161,10 @@ export class DropListRef<T = any> {
   private _previousSwap = {drag: null as DragRef | null, delta: 0, overlaps: false};
 
   /** Draggable items in the container. */
-  private _draggables: ReadonlyArray<DragRef> = [];
+  private _draggables: readonly DragRef[] = [];
 
   /** Drop lists that are connected to the current one. */
-  private _siblings: ReadonlyArray<DropListRef> = [];
+  private _siblings: readonly DropListRef[] = [];
 
   /** Direction in which the list is oriented. */
   private _orientation: 'horizontal' | 'vertical' = 'vertical';
@@ -413,7 +413,7 @@ export class DropListRef<T = any> {
   }
 
   /** Gets the scrollable parents that are registered with this drop container. */
-  getScrollableParents(): ReadonlyArray<HTMLElement> {
+  getScrollableParents(): readonly HTMLElement[] {
     return this._scrollableElements;
   }
 

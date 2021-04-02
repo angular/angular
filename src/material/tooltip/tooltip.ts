@@ -660,7 +660,7 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
   }
 
   private _addListeners(
-      listeners: ReadonlyArray<readonly [string, EventListenerOrEventListenerObject]>) {
+      listeners: (readonly [string, EventListenerOrEventListenerObject])[]) {
     listeners.forEach(([event, listener]) => {
       this._elementRef.nativeElement.addEventListener(event, listener, passiveListenerOptions);
     });

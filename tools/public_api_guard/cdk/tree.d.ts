@@ -54,7 +54,7 @@ export declare class CdkTree<T, K = T> implements AfterContentChecked, Collectio
     ngAfterContentChecked(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
-    renderNodeChanges(data: T[] | ReadonlyArray<T>, dataDiffer?: IterableDiffer<T>, viewContainer?: ViewContainerRef, parentData?: T): void;
+    renderNodeChanges(data: readonly T[], dataDiffer?: IterableDiffer<T>, viewContainer?: ViewContainerRef, parentData?: T): void;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkTree<any, any>, "cdk-tree", ["cdkTree"], { "dataSource": "dataSource"; "treeControl": "treeControl"; "trackBy": "trackBy"; }, {}, ["_nodeDefs"], never>;
     static ɵfac: i0.ɵɵFactoryDef<CdkTree<any, any>, never>;
 }

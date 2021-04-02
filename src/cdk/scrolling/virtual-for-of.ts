@@ -151,7 +151,7 @@ export class CdkVirtualForOf<T> implements
   }
 
   /** Emits whenever the data in the current DataSource changes. */
-  dataStream: Observable<T[] | ReadonlyArray<T>> = this._dataSourceChanges
+  dataStream: Observable<readonly T[]> = this._dataSourceChanges
   .pipe(
       // Start off with null `DataSource`.
       startWith(null),
@@ -168,7 +168,7 @@ export class CdkVirtualForOf<T> implements
   private _differ: IterableDiffer<T> | null = null;
 
   /** The most recent data emitted from the DataSource. */
-  private _data: T[] | ReadonlyArray<T>;
+  private _data: readonly T[];
 
   /** The currently rendered items. */
   private _renderedItems: T[];
@@ -299,7 +299,7 @@ export class CdkVirtualForOf<T> implements
 
   /** Swap out one `DataSource` for another. */
   private _changeDataSource(oldDs: DataSource<T> | null, newDs: DataSource<T> | null):
-      Observable<T[] | ReadonlyArray<T>> {
+      Observable<readonly T[]> {
 
     if (oldDs) {
       oldDs.disconnect(this);

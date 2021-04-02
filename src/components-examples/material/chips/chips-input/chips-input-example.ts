@@ -19,7 +19,7 @@ export class ChipsInputExample {
   selectable = true;
   removable = true;
   addOnBlur = true;
-  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
+  readonly separatorKeysCodes = [ENTER, COMMA] as const;
   fruits: Fruit[] = [
     {name: 'Lemon'},
     {name: 'Lime'},

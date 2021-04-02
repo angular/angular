@@ -106,7 +106,7 @@ export interface RowOutlet {
  * @docs-private
  */
 type CdkTableDataSourceInput<T> =
-    DataSource<T>|Observable<ReadonlyArray<T>|T[]>|ReadonlyArray<T>|T[];
+    readonly T[]|DataSource<T>|Observable<readonly T[]>;
 
 /**
  * Provides a handle for the table to grab the view container's ng-container to insert data rows.
@@ -227,7 +227,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   private _document: Document;
 
   /** Latest data provided by the data source. */
-  protected _data: T[]|ReadonlyArray<T>;
+  protected _data: readonly T[];
 
   /** Subject that emits when the component has been destroyed. */
   private _onDestroy = new Subject<void>();
@@ -953,7 +953,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
       return;
     }
 
-    let dataStream: Observable<T[]|ReadonlyArray<T>>|undefined;
+    let dataStream: Observable<readonly T[]>|undefined;
 
     if (isDataSource(this.dataSource)) {
       dataStream = this.dataSource.connect(this);

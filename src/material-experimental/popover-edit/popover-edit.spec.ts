@@ -3,7 +3,7 @@ import {LEFT_ARROW, UP_ARROW, RIGHT_ARROW, DOWN_ARROW, TAB} from '@angular/cdk/k
 import {MatTableModule} from '@angular/material/table';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing/private';
 import {CommonModule} from '@angular/common';
-import {Component, Directive, ElementRef, Type, ViewChild} from '@angular/core';
+import {Component, Directive, ElementRef, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed, tick, inject} from '@angular/core/testing';
 import {FormsModule, NgForm} from '@angular/forms';
 import {OverlayContainer} from '@angular/cdk/overlay';
@@ -282,10 +282,10 @@ class MatTableInCell extends BaseTestComponent {
   dataSource = new ElementDataSource();
 }
 
-const testCases: ReadonlyArray<[Type<BaseTestComponent>, string]> = [
+const testCases = [
   [MatFlexTableInCell, 'Flex mat-table; edit defined within cell'],
   [MatTableInCell, 'Table mat-table; edit defined within cell'],
-];
+] as const;
 
 describe('Material Popover Edit', () => {
   for (const [componentClass, label] of testCases) {

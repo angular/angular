@@ -46,8 +46,8 @@ export declare const enum _ViewRepeaterOperation {
 }
 
 export declare class ArrayDataSource<T> extends DataSource<T> {
-    constructor(_data: T[] | ReadonlyArray<T> | Observable<T[] | ReadonlyArray<T>>);
-    connect(): Observable<T[] | ReadonlyArray<T>>;
+    constructor(_data: readonly T[] | Observable<readonly T[]>);
+    connect(): Observable<readonly T[]>;
     disconnect(): void;
 }
 
@@ -56,7 +56,7 @@ export interface CollectionViewer {
 }
 
 export declare abstract class DataSource<T> {
-    abstract connect(collectionViewer: CollectionViewer): Observable<T[] | ReadonlyArray<T>>;
+    abstract connect(collectionViewer: CollectionViewer): Observable<readonly T[]>;
     abstract disconnect(collectionViewer: CollectionViewer): void;
 }
 

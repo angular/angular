@@ -406,7 +406,7 @@ export declare class DropListRef<T = any> {
     enter(item: DragRef, pointerX: number, pointerY: number, index?: number): void;
     exit(item: DragRef): void;
     getItemIndex(item: DragRef): number;
-    getScrollableParents(): ReadonlyArray<HTMLElement>;
+    getScrollableParents(): readonly HTMLElement[];
     isDragging(): boolean;
     isReceiving(): boolean;
     start(): void;

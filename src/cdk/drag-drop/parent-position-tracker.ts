@@ -31,7 +31,7 @@ export class ParentPositionTracker {
   }
 
   /** Caches the positions. Should be called at the beginning of a drag sequence. */
-  cache(elements: HTMLElement[] | ReadonlyArray<HTMLElement>) {
+  cache(elements: readonly HTMLElement[]) {
     this.clear();
     this.positions.set(this._document, {
       scrollPosition: this._viewportRuler.getViewportScrollPosition(),

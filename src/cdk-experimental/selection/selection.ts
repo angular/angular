@@ -93,7 +93,7 @@ export class CdkSelection<T> implements OnInit, AfterContentChecked, CollectionV
       return;
     }
 
-    let dataStream: Observable<T[]|ReadonlyArray<T>>|undefined;
+    let dataStream: Observable<readonly T[]>|undefined;
 
     if (isDataSource(this._dataSource)) {
       dataStream = this._dataSource.connect(this);
@@ -219,4 +219,4 @@ export class CdkSelection<T> implements OnInit, AfterContentChecked, CollectionV
 }
 
 type SelectAllState = 'all'|'none'|'partial';
-type TableDataSource<T> = DataSource<T>|Observable<ReadonlyArray<T>|T[]>|ReadonlyArray<T>|T[];
+type TableDataSource<T> = DataSource<T>|Observable<readonly T[]>|readonly T[];

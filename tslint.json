@@ -8,6 +8,13 @@
     "node_modules/codelyzer"
   ],
   "rules": {
+    "ban-types": [
+      true,
+      [
+        "ReadonlyArray<.+>",
+        "Use 'readonly T[]' instead."
+      ]
+    ],
     "max-line-length": [true, {
       "limit": 100,
       "check-strings": true,

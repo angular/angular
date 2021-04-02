@@ -2,7 +2,6 @@ import {
   Component,
   Directive,
   ElementRef,
-  Type,
   ViewChild,
   ChangeDetectionStrategy,
 } from '@angular/core';
@@ -322,7 +321,7 @@ const approximateMatcher = {
   })
 };
 
-const testCases: ReadonlyArray<[Type<object>, Type<BaseTestComponent>, string]> = [
+const testCases = [
   [MatColumnResizeModule, MatResizeTest, 'opt-in table-based mat-table'],
   [MatColumnResizeModule, MatResizeOnPushTest, 'inside OnPush component'],
   [MatColumnResizeModule, MatResizeFlexTest, 'opt-in flex-based mat-table'],
@@ -342,7 +341,7 @@ const testCases: ReadonlyArray<[Type<object>, Type<BaseTestComponent>, string]> 
     MatDefaultEnabledColumnResizeModule, MatResizeDefaultFlexRtlTest,
     'default enabled rtl flex-based mat-table'
   ],
-];
+] as const;
 
 describe('Material Popover Edit', () => {
   for (const [resizeModule, componentClass, label] of testCases) {

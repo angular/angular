@@ -84,7 +84,7 @@ export declare class CdkVirtualForOf<T> implements CdkVirtualScrollRepeater<T>, 
     set cdkVirtualForTemplateCacheSize(size: number);
     get cdkVirtualForTrackBy(): TrackByFunction<T> | undefined;
     set cdkVirtualForTrackBy(fn: TrackByFunction<T> | undefined);
-    dataStream: Observable<T[] | ReadonlyArray<T>>;
+    dataStream: Observable<readonly T[]>;
     viewChange: Subject<ListRange>;
     constructor(
     _viewContainerRef: ViewContainerRef,
@@ -112,7 +112,7 @@ export declare type CdkVirtualForOfContext<T> = {
 };
 
 export interface CdkVirtualScrollRepeater<T> {
-    dataStream: Observable<T[] | ReadonlyArray<T>>;
+    dataStream: Observable<readonly T[]>;
     measureRangeSize(range: ListRange, orientation: 'horizontal' | 'vertical'): number;
 }
 

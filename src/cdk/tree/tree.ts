@@ -200,7 +200,7 @@ export class CdkTree<T, K = T> implements AfterContentChecked, CollectionViewer,
 
   /** Set up a subscription for the data provided by the data source. */
   private _observeRenderChanges() {
-    let dataStream: Observable<T[] | ReadonlyArray<T>> | undefined;
+    let dataStream: Observable<readonly T[]> | undefined;
 
     if (isDataSource(this._dataSource)) {
       dataStream = this._dataSource.connect(this);
@@ -219,7 +219,7 @@ export class CdkTree<T, K = T> implements AfterContentChecked, CollectionViewer,
   }
 
   /** Check for changes made in the data and render each change (node added/removed/moved). */
-  renderNodeChanges(data: T[] | ReadonlyArray<T>, dataDiffer: IterableDiffer<T> = this._dataDiffer,
+  renderNodeChanges(data: readonly T[], dataDiffer: IterableDiffer<T> = this._dataDiffer,
                     viewContainer: ViewContainerRef = this._nodeOutlet.viewContainer,
                     parentData?: T) {
     const changes = dataDiffer.diff(data);
