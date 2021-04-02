@@ -88,14 +88,27 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     }
   }
 
+  @Input()
+  get placeholder(): string { return this._textareaElement.placeholder; }
+  set placeholder(value: string) {
+    this._cachedPlaceholderHeight = undefined;
+    this._textareaElement.placeholder = value;
+    this._cacheTextareaPlaceholderHeight();
+  }
+
+
   /** Cached height of a textarea with a single row. */
   private _cachedLineHeight: number;
+  /** Cached height of a textarea with only the placeholder. */
+  private _cachedPlaceholderHeight?: number;
 
   /** Used to reference correct document/window */
   protected _document?: Document;
 
   /** Class that should be applied to the textarea while it's being measured. */
   private _measuringClass: string;
+
+  private _isViewInited = false;
 
   constructor(private _elementRef: ElementRef<HTMLElement>,
               private _platform: Platform,
@@ -144,6 +157,9 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
           .pipe(auditTime(16), takeUntil(this._destroyed))
           .subscribe(() => this.resizeToFitContent(true));
       });
+
+      this._isViewInited = true;
+      this.resizeToFitContent(true);
     }
   }
 
@@ -195,6 +211,34 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     this._setMaxHeight();
   }
 
+  private _measureScrollHeight(): number {
+    // Reset the textarea height to auto in order to shrink back to its default size.
+    // Also temporarily force overflow:hidden, so scroll bars do not interfere with calculations.
+    this._textareaElement.classList.add(this._measuringClass);
+    // The measuring class includes a 2px padding to workaround an issue with Chrome,
+    // so we account for that extra space here by subtracting 4 (2px top + 2px bottom).
+    const scrollHeight = this._textareaElement.scrollHeight - 4;
+    this._textareaElement.classList.remove(this._measuringClass);
+
+    return scrollHeight;
+  }
+
+  private _cacheTextareaPlaceholderHeight(): void {
+    if (!this._isViewInited || this._cachedPlaceholderHeight != undefined) {
+      return;
+    }
+    if (!this.placeholder) {
+      this._cachedPlaceholderHeight = 0;
+      return;
+    }
+
+    const value = this._textareaElement.value;
+
+    this._textareaElement.value = this._textareaElement.placeholder;
+    this._cachedPlaceholderHeight = this._measureScrollHeight();
+    this._textareaElement.value = value;
+  }
+
   ngDoCheck() {
     if (this._platform.isBrowser) {
       this.resizeToFitContent();
@@ -213,6 +257,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
     }
 
     this._cacheTextareaLineHeight();
+    this._cacheTextareaPlaceholderHeight();
 
     // If we haven't determined the line-height yet, we know we're still hidden and there's no point
     // in checking the height of the textarea.
@@ -228,24 +273,11 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
       return;
     }
 
-    const placeholderText = textarea.placeholder;
-
-    // Reset the textarea height to auto in order to shrink back to its default size.
-    // Also temporarily force overflow:hidden, so scroll bars do not interfere with calculations.
-    // Long placeholders that are wider than the textarea width may lead to a bigger scrollHeight
-    // value. To ensure that the scrollHeight is not bigger than the content, the placeholders
-    // need to be removed temporarily.
-    textarea.classList.add(this._measuringClass);
-    textarea.placeholder = '';
-
-    // The measuring class includes a 2px padding to workaround an issue with Chrome,
-    // so we account for that extra space here by subtracting 4 (2px top + 2px bottom).
-    const height = textarea.scrollHeight - 4;
+    const scrollHeight = this._measureScrollHeight();
+    const height = Math.max(scrollHeight, this._cachedPlaceholderHeight || 0);
 
     // Use the scrollHeight to know how large the textarea *would* be if fit its entire value.
     textarea.style.height = `${height}px`;
-    textarea.classList.remove(this._measuringClass);
-    textarea.placeholder = placeholderText;
 
     this._ngZone.runOutsideAngular(() => {
       if (typeof requestAnimationFrame !== 'undefined') {

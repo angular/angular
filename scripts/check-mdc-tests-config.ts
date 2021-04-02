@@ -77,7 +77,7 @@ export const config = {
       'should calculate the outline gaps inside the shadow DOM',
       'should be legacy appearance if no default options provided',
       'should be legacy appearance if empty default options provided',
-      'should not calculate wrong content height due to long placeholders',
+      'should adjust height due to long placeholders',
       'should work in a tab',
       'should work in a step'
     ],
