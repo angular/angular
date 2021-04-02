@@ -1871,8 +1871,9 @@ function validateCommitMessage(commitMsg, options = {}) {
             errors.push(`Scopes are required for commits with type '${commit.type}', but no scope was provided.`);
             return false;
         }
-        if (commit.scope && !config.scopes.includes(commit.scope)) {
-            errors.push(`'${commit.scope}' is not an allowed scope.\n => SCOPES: ${config.scopes.join(', ')}`);
+        const fullScope = commit.npmScope ? `${commit.npmScope}/${commit.scope}` : commit.scope;
+        if (fullScope && !config.scopes.includes(fullScope)) {
+            errors.push(`'${fullScope}' is not an allowed scope.\n => SCOPES: ${config.scopes.join(', ')}`);
             return false;
         }
         // Commits with the type of `release` do not require a commit body.
