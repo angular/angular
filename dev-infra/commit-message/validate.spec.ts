@@ -23,6 +23,7 @@ const config: {commitMessage: CommitMessageConfig} = {
       'compiler',
       'core',
       'packaging',
+      '@angular-devkit/build-angular',
     ]
   }
 };
@@ -85,6 +86,11 @@ describe('validate-commit-message.js', () => {
       expectValidationResult(
           validateCommitMessage(msg), INVALID,
           [`'weird' is not an allowed type.\n => TYPES: ${TYPES}`]);
+    });
+
+    it('should pass when scope contains NPM scope', () => {
+      expectValidationResult(
+          validateCommitMessage('fix(@angular-devkit/build-angular): something'), true);
     });
 
     it('should fail when scope is invalid', () => {
