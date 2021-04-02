@@ -27,6 +27,8 @@ export interface CdkDragEnd<T = any> {
   source: CdkDrag<T>;
   /** Distance in pixels that the user has dragged since the drag sequence started. */
   distance: {x: number, y: number};
+  /** Position where the pointer was when the item was dropped */
+  dropPoint: {x: number, y: number};
 }
 
 /** Event emitted when the user moves an item into a new drop container. */
@@ -67,6 +69,8 @@ export interface CdkDragDrop<T, O = T> {
   isPointerOverContainer: boolean;
   /** Distance in pixels that the user has dragged since the drag sequence started. */
   distance: {x: number, y: number};
+  /** Position where the pointer was when the item was dropped */
+  dropPoint: {x: number, y: number};
 }
 
 /** Event emitted as the user is dragging a draggable item. */

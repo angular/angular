@@ -294,7 +294,7 @@ export class DragRef<T = any> {
   released = new Subject<{source: DragRef}>();
 
   /** Emits when the user stops dragging an item in the container. */
-  ended = new Subject<{source: DragRef, distance: Point}>();
+  ended = new Subject<{source: DragRef, distance: Point, dropPoint: Point}>();
 
   /** Emits when the user has moved the item into a new container. */
   entered = new Subject<{container: DropListRef, item: DragRef, currentIndex: number}>();
@@ -310,6 +310,7 @@ export class DragRef<T = any> {
     container: DropListRef;
     previousContainer: DropListRef;
     distance: Point;
+    dropPoint: Point;
     isPointerOverContainer: boolean;
   }>();
 
@@ -764,11 +765,13 @@ export class DragRef<T = any> {
       // the user starts dragging the item, its position will be calculated relatively
       // to the new passive transform.
       this._passiveTransform.x = this._activeTransform.x;
+      const pointerPosition = this._getPointerPositionOnPage(event);
       this._passiveTransform.y = this._activeTransform.y;
       this._ngZone.run(() => {
         this.ended.next({
           source: this,
-          distance: this._getDragDistance(this._getPointerPositionOnPage(event))
+          distance: this._getDragDistance(pointerPosition),
+          dropPoint: pointerPosition
         });
       });
       this._cleanupCachedDimensions();
@@ -910,11 +913,11 @@ export class DragRef<T = any> {
       const container = this._dropContainer!;
       const currentIndex = container.getItemIndex(this);
       const pointerPosition = this._getPointerPositionOnPage(event);
-      const distance = this._getDragDistance(this._getPointerPositionOnPage(event));
+      const distance = this._getDragDistance(pointerPosition);
       const isPointerOverContainer = container._isOverContainer(
         pointerPosition.x, pointerPosition.y);
 
-      this.ended.next({source: this, distance});
+      this.ended.next({source: this, distance, dropPoint: pointerPosition});
       this.dropped.next({
         item: this,
         currentIndex,
@@ -922,10 +925,11 @@ export class DragRef<T = any> {
         container: container,
         previousContainer: this._initialContainer,
         isPointerOverContainer,
-        distance
+        distance,
+        dropPoint: pointerPosition
       });
       container.drop(this, currentIndex, this._initialIndex, this._initialContainer,
-        isPointerOverContainer, distance);
+        isPointerOverContainer, distance, pointerPosition);
       this._dropContainer = this._initialContainer;
     });
   }

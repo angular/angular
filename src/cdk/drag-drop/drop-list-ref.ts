@@ -120,6 +120,7 @@ export class DropListRef<T = any> {
     previousContainer: DropListRef,
     isPointerOverContainer: boolean,
     distance: Point;
+    dropPoint: Point;
   }>();
 
   /** Emits as the user is swapping items while actively dragging. */
@@ -334,7 +335,7 @@ export class DropListRef<T = any> {
    * @param distance Distance the user has dragged since the start of the dragging sequence.
    */
   drop(item: DragRef, currentIndex: number, previousIndex: number, previousContainer: DropListRef,
-    isPointerOverContainer: boolean, distance: Point): void {
+    isPointerOverContainer: boolean, distance: Point, dropPoint: Point): void {
     this._reset();
     this.dropped.next({
       item,
@@ -343,7 +344,8 @@ export class DropListRef<T = any> {
       container: this,
       previousContainer,
       isPointerOverContainer,
-      distance
+      distance,
+      dropPoint
     });
   }
 
