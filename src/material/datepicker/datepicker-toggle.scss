@@ -1,3 +1,5 @@
+@use '../../cdk/a11y/a11y';
+
 .mat-form-field-appearance-legacy {
   .mat-form-field-prefix,
   .mat-form-field-suffix {
@@ -19,5 +21,13 @@
     .mat-icon-button .mat-datepicker-toggle-default-icon {
       margin: auto;
     }
+  }
+}
+
+@include a11y.high-contrast(active, off) {
+  .mat-datepicker-toggle-default-icon {
+    // On Chromium-based browsers the icon doesn't appear to inherit the text color in high
+    // contrast mode so we have to set it explicitly. This is a no-op on IE and Firefox.
+    color: CanvasText;
   }
 }

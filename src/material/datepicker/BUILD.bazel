@@ -60,6 +60,7 @@ sass_binary(
 sass_binary(
     name = "datepicker_toggle_scss",
     src = "datepicker-toggle.scss",
+    deps = ["//src/cdk/a11y:a11y_scss_lib"],
 )
 
 sass_binary(
