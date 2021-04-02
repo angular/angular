@@ -34,8 +34,6 @@ import {MatStepContent} from './step-content';
   ],
   exports: [
     MatCommonModule,
-    MatHorizontalStepper,
-    MatVerticalStepper,
     MatStep,
     MatStepLabel,
     MatStepper,

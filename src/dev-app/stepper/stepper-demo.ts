@@ -21,6 +21,7 @@ export class StepperDemo implements OnInit {
   isNonEditable = false;
   disableRipple = false;
   showLabelBottom = false;
+  isVertical = false;
 
   nameFormGroup: FormGroup;
   emailFormGroup: FormGroup;

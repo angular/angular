@@ -5,6 +5,9 @@
   <mat-checkbox [(ngModel)]="disableRipple">Disable header ripple</mat-checkbox>
 </p>
 <p>
+  <mat-checkbox [(ngModel)]="isVertical">Vertical</mat-checkbox>
+</p>
+<p>
   <button mat-stroked-button (click)="showLabelBottom = !showLabelBottom">
     Toggle label position
   </button>
@@ -18,10 +21,15 @@
   </mat-form-field>
 </p>
 
-<h3>Linear Vertical Stepper Demo using a single form</h3>
+<h3>Linear Stepper Demo using a single form</h3>
 <form [formGroup]="formGroup">
-  <mat-vertical-stepper #linearVerticalStepper="matVerticalStepper" formArrayName="formArray"
-                        [linear]="!isNonLinear" [disableRipple]="disableRipple" [color]="theme">
+  <mat-stepper
+    #linearStepper="matVerticalStepper"
+    formArrayName="formArray"
+    [orientation]="isVertical ? 'vertical' : 'horizontal'"
+    [linear]="!isNonLinear"
+    [disableRipple]="disableRipple"
+    [color]="theme">
     <mat-step formGroupName="0" [stepControl]="formArray?.get([0]) === null ? undefined! : formArray?.get([0])!">
       <ng-template matStepLabel>Fill out your name</ng-template>
       <mat-form-field>
@@ -61,10 +69,10 @@
       Everything seems correct.
       <div>
         <button mat-button>Done</button>
-        <button type="button" mat-button (click)="linearVerticalStepper.reset()">Reset</button>
+        <button type="button" mat-button (click)="linearStepper.reset()">Reset</button>
       </div>
     </mat-step>
-  </mat-vertical-stepper>
+  </mat-stepper>
 </form>
 
 <h3>Linear Horizontal Stepper Demo using a different form for each step</h3>

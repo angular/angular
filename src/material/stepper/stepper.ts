@@ -13,7 +13,7 @@ import {
   CdkStepper,
   StepContentPositionState,
   STEPPER_GLOBAL_OPTIONS,
-  StepperOptions
+  StepperOptions,
 } from '@angular/cdk/stepper';
 import {AnimationEvent} from '@angular/animations';
 import {
@@ -115,8 +115,65 @@ export class MatStep extends CdkStep implements ErrorStateMatcher, AfterContentI
   }
 }
 
+/**
+ * Proxies the public APIs from `MatStepper` to the deprecated `MatHorizontalStepper` and
+ * `MatVerticalStepper`.
+ * @deprecated Use `MatStepper` instead.
+ * @breaking-change 13.0.0
+ * @docs-private
+ */
+@Directive()
+abstract class _MatProxyStepperBase extends CdkStepper {
+  readonly steps: QueryList<MatStep>;
+  readonly animationDone: EventEmitter<void>;
+  disableRipple: boolean;
+  color: ThemePalette;
+  labelPosition: 'bottom' | 'end';
+}
 
-@Directive({selector: '[matStepper]', providers: [{provide: CdkStepper, useExisting: MatStepper}]})
+/**
+ * @deprecated Use `MatStepper` instead.
+ * @breaking-change 13.0.0
+ */
+@Directive({selector: 'mat-horizontal-stepper'})
+export class MatHorizontalStepper extends _MatProxyStepperBase {}
+
+/**
+ * @deprecated Use `MatStepper` instead.
+ * @breaking-change 13.0.0
+ */
+@Directive({selector: 'mat-vertical-stepper'})
+export class MatVerticalStepper extends _MatProxyStepperBase {}
+
+
+@Component({
+  selector: 'mat-stepper, mat-vertical-stepper, mat-horizontal-stepper, [matStepper]',
+  exportAs: 'matStepper, matVerticalStepper, matHorizontalStepper',
+  templateUrl: 'stepper.html',
+  styleUrls: ['stepper.css'],
+  inputs: ['selectedIndex'],
+  host: {
+    '[class.mat-stepper-horizontal]': 'orientation === "horizontal"',
+    '[class.mat-stepper-vertical]': 'orientation === "vertical"',
+    '[class.mat-stepper-label-position-end]':
+        'orientation === "horizontal" && labelPosition == "end"',
+    '[class.mat-stepper-label-position-bottom]':
+        'orientation === "horizontal" && labelPosition == "bottom"',
+    '[attr.aria-orientation]': 'orientation',
+    'role': 'tablist',
+  },
+  animations: [
+    matStepperAnimations.horizontalStepTransition,
+    matStepperAnimations.verticalStepTransition,
+  ],
+  providers: [
+    {provide: CdkStepper, useExisting: MatStepper},
+    {provide: MatHorizontalStepper, useExisting: MatStepper},
+    {provide: MatVerticalStepper, useExisting: MatStepper},
+  ],
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
 export class MatStepper extends CdkStepper implements AfterContentInit {
   /** The list of step headers of the steps in the stepper. */
   @ViewChildren(MatStepHeader) _stepHeader: QueryList<MatStepHeader>;
@@ -139,11 +196,28 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   /** Theme color for all of the steps in stepper. */
   @Input() color: ThemePalette;
 
+  /**
+   * Whether the label should display in bottom or end position.
+   * Only applies in the `horizontal` orientation.
+   */
+  @Input()
+  labelPosition: 'bottom' | 'end' = 'end';
+
   /** Consumer-specified template-refs to be used to override the header icons. */
-  _iconOverrides: {[key: string]: TemplateRef<MatStepperIconContext>} = {};
+  _iconOverrides: Record<string, TemplateRef<MatStepperIconContext>> = {};
 
   /** Stream of animation `done` events when the body expands/collapses. */
   _animationDone = new Subject<AnimationEvent>();
+
+  constructor(
+    @Optional() dir: Directionality,
+    changeDetectorRef: ChangeDetectorRef,
+    elementRef: ElementRef<HTMLElement>,
+    @Inject(DOCUMENT) _document: any) {
+    super(dir, changeDetectorRef, elementRef, _document);
+    const nodeName = elementRef.nativeElement.nodeName.toLowerCase();
+    this.orientation = nodeName === 'mat-vertical-stepper' ? 'vertical' : 'horizontal';
+  }
 
   ngAfterContentInit() {
     super.ngAfterContentInit();
@@ -165,79 +239,6 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
         this.animationDone.emit();
       }
     });
-  }
-
-  protected _updateOrientation() {
-    if ((typeof ngDevMode === 'undefined' || ngDevMode)) {
-      throw Error('Updating the orientation of a Material stepper is not supported.');
-    }
-  }
-
-  static ngAcceptInputType_editable: BooleanInput;
-  static ngAcceptInputType_optional: BooleanInput;
-  static ngAcceptInputType_completed: BooleanInput;
-  static ngAcceptInputType_hasError: BooleanInput;
-}
-
-@Component({
-  selector: 'mat-horizontal-stepper',
-  exportAs: 'matHorizontalStepper',
-  templateUrl: 'stepper-horizontal.html',
-  styleUrls: ['stepper.css'],
-  inputs: ['selectedIndex'],
-  host: {
-    'class': 'mat-stepper-horizontal',
-    '[class.mat-stepper-label-position-end]': 'labelPosition == "end"',
-    '[class.mat-stepper-label-position-bottom]': 'labelPosition == "bottom"',
-    'aria-orientation': 'horizontal',
-    'role': 'tablist',
-  },
-  animations: [matStepperAnimations.horizontalStepTransition],
-  providers: [
-    {provide: MatStepper, useExisting: MatHorizontalStepper},
-    {provide: CdkStepper, useExisting: MatHorizontalStepper}
-  ],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class MatHorizontalStepper extends MatStepper {
-  /** Whether the label should display in bottom or end position. */
-  @Input()
-  labelPosition: 'bottom' | 'end' = 'end';
-
-  static ngAcceptInputType_editable: BooleanInput;
-  static ngAcceptInputType_optional: BooleanInput;
-  static ngAcceptInputType_completed: BooleanInput;
-  static ngAcceptInputType_hasError: BooleanInput;
-}
-
-@Component({
-  selector: 'mat-vertical-stepper',
-  exportAs: 'matVerticalStepper',
-  templateUrl: 'stepper-vertical.html',
-  styleUrls: ['stepper.css'],
-  inputs: ['selectedIndex'],
-  host: {
-    'class': 'mat-stepper-vertical',
-    'aria-orientation': 'vertical',
-    'role': 'tablist',
-  },
-  animations: [matStepperAnimations.verticalStepTransition],
-  providers: [
-    {provide: MatStepper, useExisting: MatVerticalStepper},
-    {provide: CdkStepper, useExisting: MatVerticalStepper}
-  ],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush,
-})
-export class MatVerticalStepper extends MatStepper {
-  constructor(
-    @Optional() dir: Directionality,
-    changeDetectorRef: ChangeDetectorRef,
-    elementRef: ElementRef<HTMLElement>,
-    @Inject(DOCUMENT) _document: any) {
-    super(dir, changeDetectorRef, elementRef, _document);
-    this._orientation = 'vertical';
   }
 
   static ngAcceptInputType_editable: BooleanInput;

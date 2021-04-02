@@ -81,7 +81,7 @@ describe('MatStepper', () => {
     });
 
     it('should throw when a negative `selectedIndex` is assigned', () => {
-      const stepperComponent: MatVerticalStepper = fixture.debugElement
+      const stepperComponent: MatStepper = fixture.debugElement
           .query(By.css('mat-vertical-stepper'))!.componentInstance;
 
       expect(() => {
@@ -91,7 +91,7 @@ describe('MatStepper', () => {
     });
 
     it('should throw when an out-of-bounds `selectedIndex` is assigned', () => {
-      const stepperComponent: MatVerticalStepper = fixture.debugElement
+      const stepperComponent: MatStepper = fixture.debugElement
           .query(By.css('mat-vertical-stepper'))!.componentInstance;
 
       expect(() => {
@@ -360,7 +360,7 @@ describe('MatStepper', () => {
     });
 
     it('should adjust the index when removing a step before the current one', () => {
-      const stepperComponent: MatVerticalStepper = fixture.debugElement
+      const stepperComponent: MatStepper = fixture.debugElement
           .query(By.css('mat-vertical-stepper'))!.componentInstance;
 
       stepperComponent.selectedIndex = 2;
@@ -395,20 +395,12 @@ describe('MatStepper', () => {
           .every(element => element.classList.contains('mat-focus-indicator'))).toBe(true);
     });
 
-    it('should throw when trying to change the orientation of a stepper', () => {
-      const stepperComponent: MatStepper = fixture.debugElement
-          .query(By.css('mat-vertical-stepper'))!.componentInstance;
-
-      expect(() => stepperComponent.orientation = 'horizontal')
-        .toThrowError('Updating the orientation of a Material stepper is not supported.');
-    });
-
   });
 
   describe('basic stepper when attempting to set the selected step too early', () => {
     it('should not throw', () => {
       const fixture = createComponent(SimpleMatVerticalStepperApp);
-      const stepperComponent: MatVerticalStepper = fixture.debugElement
+      const stepperComponent: MatStepper = fixture.debugElement
           .query(By.css('mat-vertical-stepper'))!.componentInstance;
 
       expect(() => stepperComponent.selected).not.toThrow();
@@ -418,7 +410,7 @@ describe('MatStepper', () => {
   describe('basic stepper when attempting to set the selected step too early', () => {
     it('should not throw', () => {
       const fixture = createComponent(SimpleMatVerticalStepperApp);
-      const stepperComponent: MatVerticalStepper = fixture.debugElement
+      const stepperComponent: MatStepper = fixture.debugElement
           .query(By.css('mat-vertical-stepper'))!.componentInstance;
 
       expect(() => stepperComponent.selected = null!).not.toThrow();
@@ -529,7 +521,7 @@ describe('MatStepper', () => {
   describe('linear stepper', () => {
     let fixture: ComponentFixture<LinearMatVerticalStepperApp>;
     let testComponent: LinearMatVerticalStepperApp;
-    let stepperComponent: MatVerticalStepper;
+    let stepperComponent: MatStepper;
 
     beforeEach(() => {
       fixture = createComponent(LinearMatVerticalStepperApp);
@@ -769,13 +761,13 @@ describe('MatStepper', () => {
 
   describe('linear stepper with a pre-defined selectedIndex', () => {
     let preselectedFixture: ComponentFixture<SimplePreselectedMatHorizontalStepperApp>;
-    let stepper: MatHorizontalStepper;
+    let stepper: MatStepper;
 
     beforeEach(() => {
       preselectedFixture = createComponent(SimplePreselectedMatHorizontalStepperApp);
       preselectedFixture.detectChanges();
       stepper = preselectedFixture.debugElement
-          .query(By.directive(MatHorizontalStepper))!.componentInstance;
+          .query(By.directive(MatStepper))!.componentInstance;
     });
 
     it('should not throw', () => {
@@ -798,8 +790,8 @@ describe('MatStepper', () => {
       noStepControlFixture.detectChanges();
     });
     it('should not move to the next step if the current one is not completed ', () => {
-      const stepper: MatHorizontalStepper = noStepControlFixture.debugElement
-          .query(By.directive(MatHorizontalStepper))!.componentInstance;
+      const stepper: MatStepper = noStepControlFixture.debugElement
+          .query(By.directive(MatStepper))!.componentInstance;
 
       const headers = noStepControlFixture.debugElement
           .queryAll(By.css('.mat-horizontal-stepper-header'));
@@ -825,8 +817,8 @@ describe('MatStepper', () => {
         expect(controlAndBindingFixture.componentInstance.steps[0].control.valid).toBe(true);
         expect(controlAndBindingFixture.componentInstance.steps[0].completed).toBe(false);
 
-        const stepper: MatHorizontalStepper = controlAndBindingFixture.debugElement
-            .query(By.directive(MatHorizontalStepper))!.componentInstance;
+        const stepper: MatStepper = controlAndBindingFixture.debugElement
+            .query(By.directive(MatStepper))!.componentInstance;
 
         const headers = controlAndBindingFixture.debugElement
             .queryAll(By.css('.mat-horizontal-stepper-header'));
@@ -841,6 +833,12 @@ describe('MatStepper', () => {
   });
 
   describe('vertical stepper', () => {
+    it('should be able to use the legacy classes in queries', () => {
+      let fixture = createComponent(SimpleMatVerticalStepperApp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.legacyTokenStepper).toBeTruthy();
+    });
+
     it('should set the aria-orientation to "vertical"', () => {
       let fixture = createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
@@ -942,6 +940,12 @@ describe('MatStepper', () => {
   });
 
   describe('horizontal stepper', () => {
+    it('should be able to use the legacy classes in queries', () => {
+      let fixture = createComponent(SimpleMatHorizontalStepperApp);
+      fixture.detectChanges();
+      expect(fixture.componentInstance.legacyTokenStepper).toBeTruthy();
+    });
+
     it('should set the aria-orientation to "horizontal"', () => {
       let fixture = createComponent(SimpleMatHorizontalStepperApp);
       fixture.detectChanges();
@@ -1597,6 +1601,7 @@ class MatHorizontalStepperWithErrorsApp implements OnInit {
   `
 })
 class SimpleMatHorizontalStepperApp {
+  @ViewChild(MatHorizontalStepper) legacyTokenStepper: MatHorizontalStepper;
   inputLabel = 'Step 3';
   disableRipple = false;
   stepperTheme: ThemePalette;
@@ -1633,6 +1638,7 @@ class SimpleMatHorizontalStepperApp {
   `
 })
 class SimpleMatVerticalStepperApp {
+  @ViewChild(MatVerticalStepper) legacyTokenStepper: MatVerticalStepper;
   inputLabel = 'Step 3';
   showStepTwo = true;
   disableRipple = false;

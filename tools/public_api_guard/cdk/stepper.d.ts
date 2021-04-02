@@ -71,7 +71,6 @@ export declare class CdkStepper implements AfterContentInit, AfterViewInit, OnDe
     _getStepLabelId(i: number): string;
     _onKeydown(event: KeyboardEvent): void;
     _stateChanged(): void;
-    protected _updateOrientation(value: StepperOrientation): void;
     next(): void;
     ngAfterContentInit(): void;
     ngAfterViewInit(): void;
@@ -84,7 +83,7 @@ export declare class CdkStepper implements AfterContentInit, AfterViewInit, OnDe
     static ngAcceptInputType_linear: BooleanInput;
     static ngAcceptInputType_optional: BooleanInput;
     static ngAcceptInputType_selectedIndex: NumberInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepper, "[cdkStepper]", ["cdkStepper"], { "linear": "linear"; "selectedIndex": "selectedIndex"; "selected": "selected"; }, { "selectionChange": "selectionChange"; }, ["_steps", "_stepHeader"]>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkStepper, "[cdkStepper]", ["cdkStepper"], { "linear": "linear"; "selectedIndex": "selectedIndex"; "selected": "selected"; "orientation": "orientation"; }, { "selectionChange": "selectionChange"; }, ["_steps", "_stepHeader"]>;
     static ɵfac: i0.ɵɵFactoryDef<CdkStepper, [{ optional: true; }, null, null, null]>;
 }
 

@@ -6,13 +6,8 @@ export declare const MAT_STEPPER_INTL_PROVIDER: {
 
 export declare function MAT_STEPPER_INTL_PROVIDER_FACTORY(parentIntl: MatStepperIntl): MatStepperIntl;
 
-export declare class MatHorizontalStepper extends MatStepper {
-    labelPosition: 'bottom' | 'end';
-    static ngAcceptInputType_completed: BooleanInput;
-    static ngAcceptInputType_editable: BooleanInput;
-    static ngAcceptInputType_hasError: BooleanInput;
-    static ngAcceptInputType_optional: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatHorizontalStepper, "mat-horizontal-stepper", ["matHorizontalStepper"], { "selectedIndex": "selectedIndex"; "labelPosition": "labelPosition"; }, {}, never, never>;
+export declare class MatHorizontalStepper extends _MatProxyStepperBase {
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatHorizontalStepper, "mat-horizontal-stepper", never, {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatHorizontalStepper, never>;
 }
 
@@ -69,24 +64,23 @@ export declare class MatStepLabel extends CdkStepLabel {
 
 export declare class MatStepper extends CdkStepper implements AfterContentInit {
     _animationDone: Subject<AnimationEvent>;
-    _iconOverrides: {
-        [key: string]: TemplateRef<MatStepperIconContext>;
-    };
+    _iconOverrides: Record<string, TemplateRef<MatStepperIconContext>>;
     _icons: QueryList<MatStepperIcon>;
     _stepHeader: QueryList<MatStepHeader>;
     _steps: QueryList<MatStep>;
     readonly animationDone: EventEmitter<void>;
     color: ThemePalette;
     disableRipple: boolean;
+    labelPosition: 'bottom' | 'end';
     readonly steps: QueryList<MatStep>;
-    protected _updateOrientation(): void;
+    constructor(dir: Directionality, changeDetectorRef: ChangeDetectorRef, elementRef: ElementRef<HTMLElement>, _document: any);
     ngAfterContentInit(): void;
     static ngAcceptInputType_completed: BooleanInput;
     static ngAcceptInputType_editable: BooleanInput;
     static ngAcceptInputType_hasError: BooleanInput;
     static ngAcceptInputType_optional: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatStepper, "[matStepper]", never, { "disableRipple": "disableRipple"; "color": "color"; }, { "animationDone": "animationDone"; }, ["_steps", "_icons"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatStepper, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatStepper, "mat-stepper, mat-vertical-stepper, mat-horizontal-stepper, [matStepper]", ["matStepper", "matVerticalStepper", "matHorizontalStepper"], { "selectedIndex": "selectedIndex"; "disableRipple": "disableRipple"; "color": "color"; "labelPosition": "labelPosition"; }, { "animationDone": "animationDone"; }, ["_steps", "_icons"], never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatStepper, [{ optional: true; }, null, null, null]>;
 }
 
 export declare const matStepperAnimations: {
@@ -118,7 +112,7 @@ export declare class MatStepperIntl {
 export declare class MatStepperModule {
     static ɵfac: i0.ɵɵFactoryDef<MatStepperModule, never>;
     static ɵinj: i0.ɵɵInjectorDef<MatStepperModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatStepperModule, [typeof i1.MatHorizontalStepper, typeof i1.MatVerticalStepper, typeof i1.MatStep, typeof i2.MatStepLabel, typeof i1.MatStepper, typeof i3.MatStepperNext, typeof i3.MatStepperPrevious, typeof i4.MatStepHeader, typeof i5.MatStepperIcon, typeof i6.MatStepContent], [typeof i7.MatCommonModule, typeof i8.CommonModule, typeof i9.PortalModule, typeof i10.MatButtonModule, typeof i11.CdkStepperModule, typeof i12.MatIconModule, typeof i7.MatRippleModule], [typeof i7.MatCommonModule, typeof i1.MatHorizontalStepper, typeof i1.MatVerticalStepper, typeof i1.MatStep, typeof i2.MatStepLabel, typeof i1.MatStepper, typeof i3.MatStepperNext, typeof i3.MatStepperPrevious, typeof i4.MatStepHeader, typeof i5.MatStepperIcon, typeof i6.MatStepContent]>;
+    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatStepperModule, [typeof i1.MatHorizontalStepper, typeof i1.MatVerticalStepper, typeof i1.MatStep, typeof i2.MatStepLabel, typeof i1.MatStepper, typeof i3.MatStepperNext, typeof i3.MatStepperPrevious, typeof i4.MatStepHeader, typeof i5.MatStepperIcon, typeof i6.MatStepContent], [typeof i7.MatCommonModule, typeof i8.CommonModule, typeof i9.PortalModule, typeof i10.MatButtonModule, typeof i11.CdkStepperModule, typeof i12.MatIconModule, typeof i7.MatRippleModule], [typeof i7.MatCommonModule, typeof i1.MatStep, typeof i2.MatStepLabel, typeof i1.MatStepper, typeof i3.MatStepperNext, typeof i3.MatStepperPrevious, typeof i4.MatStepHeader, typeof i5.MatStepperIcon, typeof i6.MatStepContent]>;
 }
 
 export declare class MatStepperNext extends CdkStepperNext {
@@ -131,12 +125,7 @@ export declare class MatStepperPrevious extends CdkStepperPrevious {
     static ɵfac: i0.ɵɵFactoryDef<MatStepperPrevious, never>;
 }
 
-export declare class MatVerticalStepper extends MatStepper {
-    constructor(dir: Directionality, changeDetectorRef: ChangeDetectorRef, elementRef: ElementRef<HTMLElement>, _document: any);
-    static ngAcceptInputType_completed: BooleanInput;
-    static ngAcceptInputType_editable: BooleanInput;
-    static ngAcceptInputType_hasError: BooleanInput;
-    static ngAcceptInputType_optional: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatVerticalStepper, "mat-vertical-stepper", ["matVerticalStepper"], { "selectedIndex": "selectedIndex"; }, {}, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatVerticalStepper, [{ optional: true; }, null, null, null]>;
+export declare class MatVerticalStepper extends _MatProxyStepperBase {
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatVerticalStepper, "mat-vertical-stepper", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDef<MatVerticalStepper, never>;
 }

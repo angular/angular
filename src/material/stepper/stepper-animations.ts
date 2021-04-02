@@ -23,7 +23,7 @@ export const matStepperAnimations: {
   readonly verticalStepTransition: AnimationTriggerMetadata;
 } = {
   /** Animation that transitions the step along the X axis in a horizontal stepper. */
-  horizontalStepTransition: trigger('stepTransition', [
+  horizontalStepTransition: trigger('horizontalStepTransition', [
     state('previous', style({transform: 'translate3d(-100%, 0, 0)', visibility: 'hidden'})),
     // Transition to `inherit`, rather than `visible`,
     // because visibility on a child element the one from the parent,
@@ -34,7 +34,7 @@ export const matStepperAnimations: {
   ]),
 
   /** Animation that transitions the step along the Y axis in a vertical stepper. */
-  verticalStepTransition: trigger('stepTransition', [
+  verticalStepTransition: trigger('verticalStepTransition', [
     state('previous', style({height: '0px', visibility: 'hidden'})),
     state('next', style({height: '0px', visibility: 'hidden'})),
     // Transition to `inherit`, rather than `visible`,
