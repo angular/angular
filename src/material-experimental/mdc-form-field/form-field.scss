@@ -37,6 +37,12 @@
   flex-direction: column;
   // This allows the form-field to shrink down when used inside flex or grid layouts.
   min-width: 0;
+  // To avoid problems with text-align.
+  text-align: left;
+
+  [dir='rtl'] & {
+    text-align: right;
+  }
 }
 
 // Container that contains the prefixes, infix and suffixes. These elements should
