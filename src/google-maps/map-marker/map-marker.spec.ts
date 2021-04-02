@@ -45,6 +45,7 @@ describe('MapMarker', () => {
       title: undefined,
       label: undefined,
       clickable: undefined,
+      icon: undefined,
       map: mapSpy,
     });
   });
@@ -55,6 +56,7 @@ describe('MapMarker', () => {
       title: 'marker title',
       label: 'marker label',
       clickable: false,
+      icon: 'icon.png',
       map: mapSpy,
     };
     const markerSpy = createMarkerSpy(options);
@@ -65,6 +67,7 @@ describe('MapMarker', () => {
     fixture.componentInstance.title = options.title;
     fixture.componentInstance.label = options.label;
     fixture.componentInstance.clickable = options.clickable;
+    fixture.componentInstance.icon = 'icon.png';
     fixture.detectChanges();
 
     expect(markerConstructorSpy).toHaveBeenCalledWith(options);
@@ -221,6 +224,7 @@ describe('MapMarker', () => {
                            [label]="label"
                            [clickable]="clickable"
                            [options]="options"
+                           [icon]="icon"
                            (mapClick)="handleClick()"
                            (positionChanged)="handlePositionChanged()">
                </map-marker>
@@ -233,6 +237,7 @@ class TestApp {
   label?: string|google.maps.MarkerLabel;
   clickable?: boolean;
   options?: google.maps.MarkerOptions;
+  icon?: string;
 
   handleClick() {}
 

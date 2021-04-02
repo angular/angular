@@ -96,6 +96,16 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
   private _options: google.maps.MarkerOptions;
 
   /**
+   * Icon to be used for the marker.
+   * See: https://developers.google.com/maps/documentation/javascript/reference/marker#Icon
+   */
+  @Input()
+  set icon(icon: string | google.maps.Icon | google.maps.Symbol) {
+    this._icon = icon;
+  }
+  private _icon: string | google.maps.Icon | google.maps.Symbol;
+
+  /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.animation_changed
    */
@@ -276,7 +286,7 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const {marker, _title, _position, _label, _clickable} = this;
+    const {marker, _title, _position, _label, _clickable, _icon} = this;
 
     if (marker) {
       if (changes['options']) {
@@ -297,6 +307,10 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
 
       if (changes['clickable'] && _clickable !== undefined) {
         marker.setClickable(_clickable);
+      }
+
+      if (changes['icon'] && _icon) {
+        marker.setIcon(_icon);
       }
     }
   }
@@ -430,8 +444,9 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
       title: this._title || options.title,
       position: this._position || options.position,
       label: this._label || options.label,
-      clickable: this._clickable !== undefined ? this._clickable : options.clickable,
+      clickable: this._clickable ?? options.clickable,
       map: this._googleMap.googleMap,
+      icon: this._icon || options.icon
     };
   }
 
