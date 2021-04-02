@@ -13,17 +13,17 @@ describe('Attribute binding example', () => {
   });
 
   it('should display an Aria button', async () => {
-    expect(await element.all(by.css('button')).get(0).getText()).toBe('Go for it with Aria');
+    expect(await element.all(by.css('button')).get(0).getText()).toBe('Create and set an attribute with Aria');
   });
 
-  it('should display a blue background on div', async () => {
+  it('should display a black background on div', async () => {
     const div = element.all(by.css('div')).get(1);
-    expect(await div.getCssValue('background-color')).toEqual('rgba(25, 118, 210, 1)');
+    expect(await div.getCssValue('background-color')).toEqual('rgba(0, 0, 0, 1)');
   });
 
-  it('should display a blue div with a red border', async () => {
+  it('should display a black div with a light blue double border', async () => {
     const div = element.all(by.css('div')).get(1);
-    expect(await div.getCssValue('border')).toEqual('2px solid rgb(212, 30, 46)');
+    expect(await div.getCssValue('border')).toEqual('16px double rgb(87, 209, 255)');
   });
 
   it('should display a div with many classes', async () => {
