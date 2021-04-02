@@ -1,0 +1,45 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ts_library")
+
+ts_library(
+    name = "ng_module_ivy_test_lib",
+    testonly = True,
+    srcs = ["ng_module_ivy_test.ts"],
+    tags = ["ivy-only"],
+)
+
+# `ng_module` with `compilation_mode` explicitly set to `partial`.
+ng_module(
+    name = "test_module_partial_compilation",
+    srcs = ["test_module_partial_compilation.ts"],
+    compilation_mode = "partial",
+    tags = ["ivy-only"],
+    deps = ["//packages/core"],
+)
+
+# `ng_module` with `compilation_mode` explicitly set to `full`.
+ng_module(
+    name = "test_module_full_compilation",
+    srcs = ["test_module_full_compilation.ts"],
+    compilation_mode = "full",
+    tags = ["ivy-only"],
+    deps = ["//packages/core"],
+)
+
+# `ng_module` with no specific `compilation_mode` attribute specified.
+ng_module(
+    name = "test_module_default_compilation",
+    srcs = ["test_module_default_compilation.ts"],
+    tags = ["ivy-only"],
+    deps = ["//packages/core"],
+)
+
+jasmine_node_test(
+    name = "ng_module_ivy_test",
+    srcs = [":ng_module_ivy_test_lib"],
+    data = [
+        ":test_module_default_compilation",
+        ":test_module_full_compilation",
+        ":test_module_partial_compilation",
+    ],
+    tags = ["ivy-only"],
+)
