@@ -166,7 +166,7 @@ export class StaticInjector implements Injector {
       // This means we have never seen this record, see if it is tree shakable provider.
       const injectableDef = getInjectableDef(token);
       if (injectableDef) {
-        const providedIn = injectableDef && injectableDef.providedIn;
+        const providedIn = injectableDef && resolveForwardRef(injectableDef.providedIn);
         if (providedIn === 'any' || providedIn != null && providedIn === this.scope) {
           records.set(
               token,

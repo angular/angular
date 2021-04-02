@@ -7,7 +7,7 @@
  */
 
 import {DebugElement__PRE_R3__, DebugEventListener, DebugNode__PRE_R3__, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
-import {Injector} from '../di';
+import {Injector, resolveForwardRef} from '../di';
 import {getInjectableDef, InjectableType, ɵɵInjectableDef} from '../di/interface/defs';
 import {ErrorHandler} from '../error_handler';
 import {Type} from '../interface/type';
@@ -282,7 +282,7 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
     });
     def.modules.forEach(module => {
       providerOverridesWithScope.forEach((override, token) => {
-        if (getInjectableDef(token)!.providedIn === module) {
+        if (resolveForwardRef(getInjectableDef(token)!.providedIn) === module) {
           hasOverrides = true;
           hasDeprecatedOverrides = hasDeprecatedOverrides || override.deprecatedBehavior;
         }
@@ -310,7 +310,7 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
     if (providerOverridesWithScope.size > 0) {
       let moduleSet = new Set<any>(def.modules);
       providerOverridesWithScope.forEach((override, token) => {
-        if (moduleSet.has(getInjectableDef(token)!.providedIn)) {
+        if (moduleSet.has(resolveForwardRef(getInjectableDef(token)!.providedIn))) {
           let provider = {
             token: token,
             flags:

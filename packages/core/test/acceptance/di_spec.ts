@@ -1951,6 +1951,34 @@ describe('di', () => {
       const platformService = childInjector.get(PlatformService);
       expect(platformService.injector.get(ɵINJECTOR_SCOPE)).toBe('platform');
     });
+
+    it('should create a provider that uses `forwardRef` inside `providedIn`', () => {
+      @Injectable()
+      class ProviderDep {
+        getNumber() {
+          return 3;
+        }
+      }
+
+      @Injectable({providedIn: forwardRef(() => Module)})
+      class Provider {
+        constructor(private _dep: ProviderDep) {}
+        value = this._dep.getNumber() + 2;
+      }
+
+      @Component({template: ''})
+      class Comp {
+        constructor(public provider: Provider) {}
+      }
+
+      @NgModule({declarations: [Comp], exports: [Comp], providers: [ProviderDep]})
+      class Module {
+      }
+
+      TestBed.configureTestingModule({imports: [Module]});
+      const fixture = TestBed.createComponent(Comp);
+      expect(fixture.componentInstance.provider.value).toBe(5);
+    });
   });
 
   describe('service injection', () => {
