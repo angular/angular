@@ -35,19 +35,22 @@
 <!-- The `class.special` binding overrides any value for the `special` class in `classExpression`.  -->
 <div [class.special]="isSpecial" [class]="classExpression">Some text.</div>
 
-<!-- The `style.color` binding overrides any value for the `color` property in `styleExpression`.  -->
-<div [style.color]="color" [style]="styleExpression">Some text.</div>
+<!-- The `style.border` binding overrides any value for the `border` property in `styleExpression`.  -->
+<div [style.border]="border" [style]="styleExpression">Some text.</div>
 <!-- #enddocregion basic-specificity -->
 
 <!-- #docregion source-specificity -->
 <h3>Source specificity</h3>
 
 <!-- The `class.special` template binding overrides any host binding to the `special` class set by `dirWithClassBinding` or `comp-with-host-binding`.-->
-<comp-with-host-binding [class.special]="isSpecial" dirWithClassBinding>Some text.</comp-with-host-binding>
+
+<comp-with-host-binding [class.special]="isSpecial" dirWithClassBinding></comp-with-host-binding>
+
 
 <!-- The `style.color` template binding overrides any host binding to the `color` property set by `dirWithStyleBinding` or `comp-with-host-binding`. -->
-<comp-with-host-binding [style.color]="color" dirWithStyleBinding>Some text.</comp-with-host-binding>
-<!-- #enddocregion source-specificity -->
+<div>
+  <comp-with-host-binding [style.color]="color" dirWithStyleBinding></comp-with-host-binding>
+</div>
 
 <!-- #docregion dynamic-priority -->
 <h3>Dynamic vs static</h3>
@@ -55,15 +58,18 @@
 <!-- If `classExpression` has a value for the `special` class, this value overrides the `class="special"` below -->
 <div class="special" [class]="classExpression">Some text.</div>
 
-<!-- If `styleExpression` has a value for the `color` property, this value overrides the `style="color: blue"` below -->
-<div style="color: blue" [style]="styleExpression">Some text.</div>
+<!-- If `styleExpression` has a value for the `border` property, this value overrides the `style="border: dotted darkblue 3px"` below -->
+<div style="border: dotted darkblue 3px" [style]="styleExpression">Some text.</div>
 
 <!-- #enddocregion dynamic-priority -->
 
-<!-- #docregion style-delegation -->
-<comp-with-host-binding dirWithHostBinding></comp-with-host-binding>
-<!-- #enddocregion style-delegation -->
+<div class="readability">
+  <!-- #docregion style-delegation -->
+  <comp-with-host-binding dirWithHostBinding></comp-with-host-binding>
+  <!-- #enddocregion style-delegation -->
+</div>
 
 <!-- #docregion attribute-decorator -->
 <app-my-input-with-attribute-decorator type="number"></app-my-input-with-attribute-decorator>
 <!-- #enddocregion attribute-decorator -->
+

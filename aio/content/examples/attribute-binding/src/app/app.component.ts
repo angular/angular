@@ -6,10 +6,11 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  actionName = 'Go for it';
+  actionName = 'Create and set an attribute';
   isSpecial = true;
   canSave = true;
   classExpression = 'special clearance';
-  styleExpression = 'color: red';
+  styleExpression = 'border: solid red 3px';
   color = 'blue';
+  border = '.5rem dashed black';
 }
