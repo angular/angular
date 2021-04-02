@@ -71,7 +71,7 @@ There are two types of data binding:
 
 Before a view is displayed, Angular evaluates the directives and resolves the binding syntax in the template to modify the HTML elements and the DOM, according to your program data and logic. Angular supports *two-way data binding*, meaning that changes in the DOM, such as user choices, are also reflected in your program data.
 
-Your templates can use [*pipes*](https://angular.io/guide/pipes) to improve the user experience by transforming values for display.
+Your templates can use [*pipes*](guide/pipes) to improve the user experience by transforming values for display.
 For example, use pipes to display dates and currency values that are appropriate for a user's locale.
 Angular provides predefined pipes for common transformations, and you can also define your own pipes.
 
