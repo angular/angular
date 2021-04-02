@@ -9,11 +9,10 @@ export class CompWithHostBindingComponent {
   isSpecial = false;
 
   @HostBinding('style.color')
-  color = 'green';
+  color = 'pink';
 
   // #docregion hostbinding
   @HostBinding('style.width')
   width = '200px';
   // #enddocregion hostbinding
-
 }
