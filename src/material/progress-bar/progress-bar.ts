@@ -92,6 +92,9 @@ let progressbarId = 0;
     'role': 'progressbar',
     'aria-valuemin': '0',
     'aria-valuemax': '100',
+    // set tab index to -1 so screen readers will read the aria-label
+    // Note: there is a known issue with JAWS that does not read progressbar aria labels on FireFox
+    'tabindex': '-1',
     '[attr.aria-valuenow]': '(mode === "indeterminate" || mode === "query") ? null : value',
     '[attr.mode]': 'mode',
     'class': 'mat-progress-bar',

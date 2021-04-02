@@ -58,6 +58,9 @@ const BASE_STROKE_WIDTH = 10;
   host: {
     'role': 'progressbar',
     'class': 'mat-mdc-progress-spinner mdc-circular-progress',
+    // set tab index to -1 so screen readers will read the aria-label
+    // Note: there is a known issue with JAWS that does not read progressbar aria labels on FireFox
+    'tabindex': '-1',
     '[class._mat-animation-noopable]': `_noopAnimations`,
     '[style.width.px]': 'diameter',
     '[style.height.px]': 'diameter',
