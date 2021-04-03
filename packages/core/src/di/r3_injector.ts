@@ -418,10 +418,11 @@ export class R3Injector {
   }
 
   private injectableDefInScope(def: ɵɵInjectableDef<any>): boolean {
-    const providedIn = resolveForwardRef(def.providedIn);
-    if (!providedIn) {
+    if (!def.providedIn) {
       return false;
-    } else if (typeof providedIn === 'string') {
+    }
+    const providedIn = resolveForwardRef(def.providedIn);
+    if (typeof providedIn === 'string') {
       return providedIn === 'any' || (providedIn === this.scope);
     } else {
       return this.injectorDefTypes.has(providedIn);
