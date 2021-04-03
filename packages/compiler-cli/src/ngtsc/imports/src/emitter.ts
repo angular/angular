@@ -13,6 +13,7 @@ import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, 
 import {stripExtension} from '../../file_system/src/util';
 import {DeclarationNode, ReflectionHost} from '../../reflection';
 import {getSourceFile, isDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript';
+import {shouldExcludeExport} from './exclude';
 
 import {findExportedNameOfNode} from './find_export';
 import {Reference} from './references';
@@ -256,7 +257,9 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
     }
     const exportMap = new Map<DeclarationNode, string>();
     exports.forEach((declaration, name) => {
-      exportMap.set(declaration.node, name);
+      if (!shouldExcludeExport(name)) {
+        exportMap.set(declaration.node, name);
+      }
     });
     return {module: entryPointFile, exportMap};
   }

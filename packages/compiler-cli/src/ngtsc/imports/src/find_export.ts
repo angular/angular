@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 import {ReflectionHost} from '../../reflection';
+import {shouldExcludeExport} from './exclude';
 
 /**
  * Find the name, if any, by which a node is exported from a given file.
@@ -21,6 +22,9 @@ export function findExportedNameOfNode(
   // Look for the export which declares the node.
   const keys = Array.from(exports.keys());
   const name = keys.find(key => {
+    if (shouldExcludeExport(key)) {
+      return false;
+    }
     const decl = exports.get(key);
     return decl !== undefined && decl.node === target;
   });
