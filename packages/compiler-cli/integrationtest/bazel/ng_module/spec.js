@@ -16,7 +16,7 @@ describe('flat module index', () => {
       expect(metadata).toContain('"__symbolic":"module"');
       expect(metadata).toContain('"__symbolic":"reference","module":"@angular/core"');
       expect(metadata).toContain(
-          '"origins":{"Child":"./child","ɵangular_packages_compiler_cli_integrationtest_bazel_ng_module_test_module_a":"./parent"}');
+          '"origins":{"Child":"./child","ɵngve$angular_packages_compiler_cli_integrationtest_bazel_ng_module_test_module_a":"./parent"}');
       expect(metadata).toContain('"importAs":"some_npm_module"');
     });
   });
@@ -27,7 +27,7 @@ describe('flat module index', () => {
 
       expect(dts).toContain('export * from \'./index\';');
       expect(dts).toContain(
-          'export { Parent as ɵangular_packages_compiler_cli_integrationtest_bazel_ng_module_test_module_a } from \'./parent\';');
+          'export { Parent as ɵngve$angular_packages_compiler_cli_integrationtest_bazel_ng_module_test_module_a } from \'./parent\';');
     });
   });
 });

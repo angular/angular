@@ -476,12 +476,12 @@ export declare class RouterPreloader implements OnDestroy {
     setUpPreloading(): void;
 }
 
-export declare class RouterState extends ɵangular_packages_router_router_m<ActivatedRoute> {
+export declare class RouterState extends ɵngve$angular_packages_router_router_m<ActivatedRoute> {
     snapshot: RouterStateSnapshot;
     toString(): string;
 }
 
-export declare class RouterStateSnapshot extends ɵangular_packages_router_router_m<ActivatedRouteSnapshot> {
+export declare class RouterStateSnapshot extends ɵngve$angular_packages_router_router_m<ActivatedRouteSnapshot> {
     url: string;
     toString(): string;
 }

@@ -13,7 +13,7 @@ import {MetadataCache} from '../transformers/metadata_cache';
 import {MetadataCollector} from './collector';
 import {ClassMetadata, ConstructorMetadata, FunctionMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicCallExpression, isMetadataSymbolicExpression, isMethodMetadata, MemberMetadata, METADATA_VERSION, MetadataEntry, MetadataError, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata} from './schema';
 
-
+export const PRIVATE_EXPORT_PREFIX = '\u0275ngve$';
 
 // The character set used to produce private names.
 const PRIVATE_NAME_CHARS = 'abcdefghijklmnopqrstuvwxyz';
@@ -269,7 +269,7 @@ export class MetadataBundler {
           digits.unshift(base[index % base.length]);
           index = Math.floor(index / base.length);
         }
-        const result = `\u0275${prefix}${digits.join('')}`;
+        const result = `${PRIVATE_EXPORT_PREFIX}${prefix}${digits.join('')}`;
         if (!exportedNames.has(result)) return result;
       }
     }

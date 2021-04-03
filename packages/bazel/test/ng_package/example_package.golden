@@ -295,7 +295,7 @@ e.A11yModule=t,Object.defineProperty(e,"__esModule",{value:!0})}));
      */
 
     exports.MyService = MyService;
-    exports.ɵangular_packages_bazel_test_ng_package_example_imports_imports_a = MySecondService;
+    exports.ɵngve$angular_packages_bazel_test_ng_package_example_imports_imports_a = MySecondService;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
@@ -325,7 +325,7 @@ e.A11yModule=t,Object.defineProperty(e,"__esModule",{value:!0})}));
      * Use of this source code is governed by an MIT-style license that can be
      * found in the LICENSE file at https://angular.io/license
      */
-e.MyService=r,e.ɵangular_packages_bazel_test_ng_package_example_imports_imports_a=o,Object.defineProperty(e,"__esModule",{value:!0})}));
+e.MyService=r,e.ɵngve$angular_packages_bazel_test_ng_package_example_imports_imports_a=o,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- bundles/waffels-secondary.umd.js ---
 
@@ -558,8 +558,8 @@ export * from './index';
  * Generated bundle index. Do not edit.
  */
 export * from './index';
-export { MySecondService as ɵangular_packages_bazel_test_ng_package_example_imports_imports_a } from './second';
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW1wb3J0cy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvaW1wb3J0cy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDO0FBRXhCLE9BQU8sRUFBQyxlQUFlLElBQUksaUVBQWlFLEVBQUMsTUFBTSxVQUFVLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuXG5leHBvcnQge015U2Vjb25kU2VydmljZSBhcyDJtWFuZ3VsYXJfcGFja2FnZXNfYmF6ZWxfdGVzdF9uZ19wYWNrYWdlX2V4YW1wbGVfaW1wb3J0c19pbXBvcnRzX2F9IGZyb20gJy4vc2Vjb25kJzsiXX0=
+export { MySecondService as ɵngve$angular_packages_bazel_test_ng_package_example_imports_imports_a } from './second';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW1wb3J0cy5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL2ltcG9ydHMvaW1wb3J0cy50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDO0FBRXhCLE9BQU8sRUFBQyxlQUFlLElBQUksc0VBQXNFLEVBQUMsTUFBTSxVQUFVLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuXG5leHBvcnQge015U2Vjb25kU2VydmljZSBhcyDJtW5ndmUkYW5ndWxhcl9wYWNrYWdlc19iYXplbF90ZXN0X25nX3BhY2thZ2VfZXhhbXBsZV9pbXBvcnRzX2ltcG9ydHNfYX0gZnJvbSAnLi9zZWNvbmQnOyJdfQ==
 
 --- esm2015/imports/index.js ---
 
@@ -818,7 +818,7 @@ MyService.ctorParameters = () => [
  * Generated bundle index. Do not edit.
  */
 
-export { MyService, MySecondService as ɵangular_packages_bazel_test_ng_package_example_imports_imports_a };
+export { MyService, MySecondService as ɵngve$angular_packages_bazel_test_ng_package_example_imports_imports_a };
 //# sourceMappingURL=imports.js.map
 
 
@@ -911,12 +911,12 @@ export { MyModule };
 
 
 export declare class MyService {
-    secondService: ɵangular_packages_bazel_test_ng_package_example_imports_imports_a;
-    constructor(secondService: ɵangular_packages_bazel_test_ng_package_example_imports_imports_a);
+    secondService: ɵngve$angular_packages_bazel_test_ng_package_example_imports_imports_a;
+    constructor(secondService: ɵngve$angular_packages_bazel_test_ng_package_example_imports_imports_a);
 }
 
 
-export declare class ɵangular_packages_bazel_test_ng_package_example_imports_imports_a {
+export declare class ɵngve$angular_packages_bazel_test_ng_package_example_imports_imports_a {
 }
 
 export { }
@@ -924,7 +924,7 @@ export { }
 
 --- imports/imports.metadata.json ---
 
-{"__symbolic":"module","version":4,"metadata":{"MyService":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"Injectable","line":11,"character":1},"arguments":[{"providedIn":"root"}]}],"members":{"__ctor__":[{"__symbolic":"constructor","parameters":[{"__symbolic":"reference","name":"ɵangular_packages_bazel_test_ng_package_example_imports_imports_a"}]}]},"statics":{"ɵprov":{}}},"ɵangular_packages_bazel_test_ng_package_example_imports_imports_a":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"Injectable","line":10,"character":1},"arguments":[{"providedIn":"root"}]}],"members":{},"statics":{"ɵprov":{}}}},"origins":{"MyService":"./imports","ɵangular_packages_bazel_test_ng_package_example_imports_imports_a":"./imports"},"importAs":"example/imports"}
+{"__symbolic":"module","version":4,"metadata":{"MyService":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"Injectable","line":11,"character":1},"arguments":[{"providedIn":"root"}]}],"members":{"__ctor__":[{"__symbolic":"constructor","parameters":[{"__symbolic":"reference","name":"ɵngve$angular_packages_bazel_test_ng_package_example_imports_imports_a"}]}]},"statics":{"ɵprov":{}}},"ɵngve$angular_packages_bazel_test_ng_package_example_imports_imports_a":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"Injectable","line":10,"character":1},"arguments":[{"providedIn":"root"}]}],"members":{},"statics":{"ɵprov":{}}}},"origins":{"MyService":"./imports","ɵngve$angular_packages_bazel_test_ng_package_example_imports_imports_a":"./imports"},"importAs":"example/imports"}
 
 --- imports/package.json ---
 

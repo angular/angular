@@ -12,7 +12,7 @@ export declare class SwPush {
         };
     }>;
     readonly subscription: Observable<PushSubscription | null>;
-    constructor(sw: ɵangular_packages_service_worker_service_worker_a);
+    constructor(sw: ɵngve$angular_packages_service_worker_service_worker_a);
     requestSubscription(options: {
         serverPublicKey: string;
     }): Promise<PushSubscription>;
@@ -30,7 +30,7 @@ export declare class SwUpdate {
     readonly available: Observable<UpdateAvailableEvent>;
     get isEnabled(): boolean;
     readonly unrecoverable: Observable<UnrecoverableStateEvent>;
-    constructor(sw: ɵangular_packages_service_worker_service_worker_a);
+    constructor(sw: ɵngve$angular_packages_service_worker_service_worker_a);
     activateUpdate(): Promise<void>;
     checkForUpdate(): Promise<void>;
 }

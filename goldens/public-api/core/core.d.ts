@@ -832,11 +832,11 @@ export declare interface RendererType2 {
 }
 
 export declare class ResolvedReflectiveFactory {
-    dependencies: ɵangular_packages_core_core_e[];
+    dependencies: ɵngve$angular_packages_core_core_e[];
     factory: Function;
     constructor(
     factory: Function,
-    dependencies: ɵangular_packages_core_core_e[]);
+    dependencies: ɵngve$angular_packages_core_core_e[]);
 }
 
 export declare interface ResolvedReflectiveProvider {

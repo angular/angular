@@ -1939,7 +1939,7 @@ export declare abstract class HttpXsrfTokenExtractor {
 }
 
 export declare class JsonpClientBackend implements HttpBackend {
-    constructor(callbackMap: ɵangular_packages_common_http_http_b, document: any);
+    constructor(callbackMap: ɵngve$angular_packages_common_http_http_b, document: any);
     handle(req: HttpRequest<never>): Observable<HttpEvent<any>>;
 }
 

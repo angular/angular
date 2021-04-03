@@ -195,7 +195,8 @@ describe('metadata bundler', () => {
     const bundler = new MetadataBundler('/lib/index', undefined, host, 'prfx_');
     const result = bundler.getMetadataBundle();
     expect(Object.keys(result.metadata.metadata).sort()).toEqual([
-      'ONE_CLASSES', 'One', 'OneMore', 'TWO_CLASSES', 'Two', 'TwoMore', 'ɵprfx_a', 'ɵprfx_b'
+      'ONE_CLASSES', 'One', 'OneMore', 'TWO_CLASSES', 'Two', 'TwoMore', 'ɵngve$prfx_a',
+      'ɵngve$prfx_b'
     ]);
 
     const originalOne = './src/one';
@@ -207,11 +208,11 @@ describe('metadata bundler', () => {
           {name: 'ONE_CLASSES', value: originalOne}, {name: 'One', value: originalOne},
           {name: 'OneMore', value: originalOne}, {name: 'TWO_CLASSES', value: originalTwo},
           {name: 'Two', value: originalTwo}, {name: 'TwoMore', value: originalTwo},
-          {name: 'ɵprfx_a', value: originalOne}, {name: 'ɵprfx_b', value: originalTwo}
+          {name: 'ɵngve$prfx_a', value: originalOne}, {name: 'ɵngve$prfx_b', value: originalTwo}
         ]);
     expect(result.privates).toEqual([
-      {privateName: 'ɵprfx_a', name: 'PrivateOne', module: originalOne},
-      {privateName: 'ɵprfx_b', name: 'PrivateTwo', module: originalTwo}
+      {privateName: 'ɵngve$prfx_a', name: 'PrivateOne', module: originalOne},
+      {privateName: 'ɵngve$prfx_b', name: 'PrivateTwo', module: originalTwo}
     ]);
   });
 
@@ -261,7 +262,7 @@ describe('metadata bundler', () => {
           __symbolic: 'call',
           expression: {
             __symbolic: 'reference',
-            name: 'ɵa',
+            name: 'ɵngve$a',
           }
         }
       }
@@ -301,11 +302,11 @@ describe('metadata bundler', () => {
     const bundler = new MetadataBundler('/lib/index', undefined, host);
     const result = bundler.getMetadataBundle();
     expect(Object.keys(result.metadata.metadata).sort()).toEqual([
-      'ONE_CLASSES', 'One', 'OneMore', 'TWO_CLASSES', 'Two', 'TwoMore', 'ɵa', 'ɵb'
+      'ONE_CLASSES', 'One', 'OneMore', 'TWO_CLASSES', 'Two', 'TwoMore', 'ɵngve$a', 'ɵngve$b'
     ]);
     expect(result.privates).toEqual([
-      {privateName: 'ɵa', name: 'PrivateOne', module: './src/one'},
-      {privateName: 'ɵb', name: 'PrivateTwo', module: './src/two/index'}
+      {privateName: 'ɵngve$a', name: 'PrivateOne', module: './src/one'},
+      {privateName: 'ɵngve$b', name: 'PrivateTwo', module: './src/two/index'}
     ]);
   });
 
@@ -386,8 +387,8 @@ describe('metadata bundler', () => {
     });
     const bundler = new MetadataBundler('/index', undefined, host);
     const result = bundler.getMetadataBundle();
-    expect(Object.keys(result.metadata.metadata).sort()).toEqual(['Foo', 'ɵa']);
-    expect(result.privates).toEqual([{privateName: 'ɵa', name: 'Bar', module: './bar'}]);
+    expect(Object.keys(result.metadata.metadata).sort()).toEqual(['Foo', 'ɵngve$a']);
+    expect(result.privates).toEqual([{privateName: 'ɵngve$a', name: 'Bar', module: './bar'}]);
   });
 
   it('should be able to bundle a library with re-exported symbols', () => {

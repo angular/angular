@@ -27,10 +27,10 @@ export declare abstract class DomSanitizer implements Sanitizer {
 
 export declare function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T>;
 
-export declare const EVENT_MANAGER_PLUGINS: InjectionToken<ɵangular_packages_platform_browser_platform_browser_g[]>;
+export declare const EVENT_MANAGER_PLUGINS: InjectionToken<ɵngve$angular_packages_platform_browser_platform_browser_g[]>;
 
 export declare class EventManager {
-    constructor(plugins: ɵangular_packages_platform_browser_platform_browser_g[], _zone: NgZone);
+    constructor(plugins: ɵngve$angular_packages_platform_browser_platform_browser_g[], _zone: NgZone);
     addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
     addGlobalEventListener(target: string, eventName: string, handler: Function): Function;
     getZone(): NgZone;
