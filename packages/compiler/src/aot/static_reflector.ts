@@ -672,6 +672,8 @@ export class StaticReflector implements CompileReflector {
                     return left / right;
                   case '%':
                     return left % right;
+                  case '??':
+                    return left ?? right;
                 }
                 return null;
               case 'if':

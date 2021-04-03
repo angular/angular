@@ -399,6 +399,19 @@ runInEachFileSystem(() => {
 
         expect(messages).toEqual([]);
       });
+
+      it('does not produce diagnostic for fallback value using nullish coalescing', () => {
+        const messages = diagnose(`<div>{{ greet(name ?? 'Frodo') }}</div>`, `
+        export class TestComponent {
+          name: string | null;
+
+          greet(name: string) {
+            return 'hello ' + name;
+          }
+        }`);
+
+        expect(messages).toEqual([]);
+      });
     });
 
     it('computes line and column offsets', () => {

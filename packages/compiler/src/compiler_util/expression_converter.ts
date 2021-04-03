@@ -399,6 +399,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       case '>=':
         op = o.BinaryOperator.BiggerEquals;
         break;
+      case '??':
+        return this.convertNullishCoalesce(ast, mode);
       default:
         throw new Error(`Unsupported operation ${ast.operation}`);
     }
@@ -683,7 +685,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
     let guardedExpression = this._visit(leftMostSafe.receiver, _Mode.Expression);
     let temporary: o.ReadVarExpr = undefined!;
-    if (this.needsTemporary(leftMostSafe.receiver)) {
+    if (this.needsTemporaryInSafeAccess(leftMostSafe.receiver)) {
       // If the expression has method calls or pipes then we need to save the result into a
       // temporary variable to avoid calling stateful or impure code more than once.
       temporary = this.allocateTemporary();
@@ -726,6 +728,26 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
 
     // Produce the conditional
     return convertToStatementIfNeeded(mode, condition.conditional(o.literal(null), access));
+  }
+
+  private convertNullishCoalesce(ast: cdAst.Binary, mode: _Mode): any {
+    // Allocate the temporary variable before visiting the LHS and RHS, because they
+    // may allocate temporary variables too and we don't want them to be reused.
+    const temporary = this.allocateTemporary();
+    const left: o.Expression = this._visit(ast.left, _Mode.Expression);
+    const right: o.Expression = this._visit(ast.right, _Mode.Expression);
+    this.releaseTemporary(temporary);
+
+    // Generate the following expression. It is identical to how TS
+    // transpiles binary expressions with a nullish coalescing operator.
+    // let temp;
+    // (temp = a) !== null && temp !== undefined ? temp : b;
+    return convertToStatementIfNeeded(
+        mode,
+        temporary.set(left)
+            .notIdentical(o.NULL_EXPR)
+            .and(temporary.notIdentical(o.literal(undefined)))
+            .conditional(temporary, right));
   }
 
   // Given an expression of the form a?.b.c?.d.e then the left most safe node is
@@ -812,7 +834,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   // Returns true of the AST includes a method or a pipe indicating that, if the
   // expression is used as the target of a safe property or method access then
   // the expression should be stored into a temporary variable.
-  private needsTemporary(ast: cdAst.AST): boolean {
+  private needsTemporaryInSafeAccess(ast: cdAst.AST): boolean {
     const visit = (visitor: cdAst.AstVisitor, ast: cdAst.AST): boolean => {
       return ast && (this._nodeMap.get(ast) || ast).visit(visitor);
     };

@@ -212,7 +212,7 @@ class _Scanner {
       case chars.$CARET:
         return this.scanOperator(start, String.fromCharCode(peek));
       case chars.$QUESTION:
-        return this.scanComplexOperator(start, '?', chars.$PERIOD, '.');
+        return this.scanQuestion(start);
       case chars.$LT:
       case chars.$GT:
         return this.scanComplexOperator(start, String.fromCharCode(peek), chars.$EQ, '=');
@@ -346,6 +346,17 @@ class _Scanner {
     this.advance();  // Skip terminating quote.
 
     return newStringToken(start, this.index, buffer + last);
+  }
+
+  scanQuestion(start: number): Token {
+    this.advance();
+    let str: string = '?';
+    // Either `a ?? b` or 'a?.b'.
+    if (this.peek === chars.$QUESTION || this.peek === chars.$PERIOD) {
+      str += this.peek === chars.$PERIOD ? '.' : '?';
+      this.advance();
+    }
+    return newOperatorToken(start, this.index, str);
   }
 
   error(message: string, offset: number): Token {

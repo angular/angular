@@ -115,7 +115,8 @@ export enum BinaryOperator {
   Lower,
   LowerEquals,
   Bigger,
-  BiggerEquals
+  BiggerEquals,
+  NullishCoalesce,
 }
 
 export function nullSafeIsEquivalent<T extends {isEquivalent(other: T): boolean}>(
@@ -253,6 +254,9 @@ export abstract class Expression {
   }
   cast(type: Type, sourceSpan?: ParseSourceSpan|null): Expression {
     return new CastExpr(this, type, sourceSpan);
+  }
+  nullishCoalesce(rhs: Expression, sourceSpan?: ParseSourceSpan|null): BinaryOperatorExpr {
+    return new BinaryOperatorExpr(BinaryOperator.NullishCoalesce, this, rhs, null, sourceSpan);
   }
 
   toStmt(): Statement {

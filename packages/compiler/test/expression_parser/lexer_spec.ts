@@ -255,6 +255,10 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
       it('should tokenize ?. as operator', () => {
         expectOperatorToken(lex('?.')[0], 0, 2, '?.');
       });
+
+      it('should tokenize ?? as operator', () => {
+        expectOperatorToken(lex('??')[0], 0, 2, '??');
+      });
     });
   });
 }

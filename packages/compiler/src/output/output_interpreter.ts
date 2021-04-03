@@ -332,6 +332,8 @@ class StatementInterpreter implements o.StatementVisitor, o.ExpressionVisitor {
         return lhs() > rhs();
       case o.BinaryOperator.BiggerEquals:
         return lhs() >= rhs();
+      case o.BinaryOperator.NullishCoalesce:
+        return lhs() ?? rhs();
       default:
         throw new Error(`Unknown operator ${ast.operator}`);
     }

@@ -47,6 +47,7 @@ const BINARY_OPERATORS: Record<BinaryOperator, ts.BinaryOperator> = {
   '!==': ts.SyntaxKind.ExclamationEqualsEqualsToken,
   '||': ts.SyntaxKind.BarBarToken,
   '+': ts.SyntaxKind.PlusToken,
+  '??': ts.SyntaxKind.QuestionQuestionToken,
 };
 
 const VAR_TYPES: Record<VariableDeclarationType, ts.NodeFlags> = {
