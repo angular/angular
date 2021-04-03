@@ -510,6 +510,9 @@ export abstract class AbstractEmitterVisitor implements o.StatementVisitor, o.Ex
       case o.BinaryOperator.BiggerEquals:
         opStr = '>=';
         break;
+      case o.BinaryOperator.NullishCoalesce:
+        opStr = '??';
+        break;
       default:
         throw new Error(`Unknown operator ${ast.operator}`);
     }

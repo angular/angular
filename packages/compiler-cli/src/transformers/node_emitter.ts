@@ -672,6 +672,9 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
       case BinaryOperator.Or:
         binaryOperator = ts.SyntaxKind.BarBarToken;
         break;
+      case BinaryOperator.NullishCoalesce:
+        binaryOperator = ts.SyntaxKind.QuestionQuestionToken;
+        break;
       case BinaryOperator.Plus:
         binaryOperator = ts.SyntaxKind.PlusToken;
         break;

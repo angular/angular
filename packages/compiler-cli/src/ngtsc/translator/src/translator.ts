@@ -34,6 +34,7 @@ const BINARY_OPERATORS = new Map<o.BinaryOperator, BinaryOperator>([
   [o.BinaryOperator.NotIdentical, '!=='],
   [o.BinaryOperator.Or, '||'],
   [o.BinaryOperator.Plus, '+'],
+  [o.BinaryOperator.NullishCoalesce, '??'],
 ]);
 
 export type RecordWrappedNodeExprFn<TExpression> = (expr: TExpression) => void;

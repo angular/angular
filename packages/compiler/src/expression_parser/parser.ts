@@ -669,10 +669,21 @@ export class _ParseAST {
   parseLogicalAnd(): AST {
     // '&&'
     const start = this.inputIndex;
-    let result = this.parseEquality();
+    let result = this.parseNullishCoalescing();
     while (this.consumeOptionalOperator('&&')) {
-      const right = this.parseEquality();
+      const right = this.parseNullishCoalescing();
       result = new Binary(this.span(start), this.sourceSpan(start), '&&', result, right);
+    }
+    return result;
+  }
+
+  parseNullishCoalescing(): AST {
+    // '??'
+    const start = this.inputIndex;
+    let result = this.parseEquality();
+    while (this.consumeOptionalOperator('??')) {
+      const right = this.parseEquality();
+      result = new Binary(this.span(start), this.sourceSpan(start), '??', result, right);
     }
     return result;
   }

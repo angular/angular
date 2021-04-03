@@ -39,6 +39,7 @@ export class BabelAstFactory implements AstFactory<t.Statement, t.Expression> {
     switch (operator) {
       case '&&':
       case '||':
+      case '??':
         return t.logicalExpression(operator, leftOperand, rightOperand);
       default:
         return t.binaryExpression(operator, leftOperand, rightOperand);

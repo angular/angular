@@ -81,6 +81,8 @@ describe('parser', () => {
     it('should parse expressions', () => {
       checkAction('true && true');
       checkAction('true || false');
+      checkAction('null ?? 0');
+      checkAction('null ?? undefined ?? 0');
     });
 
     it('should parse grouped expressions', () => {

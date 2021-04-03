@@ -50,6 +50,13 @@ describe('type check blocks', () => {
         .toContain('(((ctx).a) ? ((ctx).b) : ((((ctx).c) ? ((ctx).d) : (((ctx).e)))))');
   });
 
+  it('should handle nullish coalescing operator', () => {
+    expect(tcb('{{ a ?? b }}')).toContain('((((ctx).a)) ?? (((ctx).b)))');
+    expect(tcb('{{ a ?? b ?? c }}')).toContain('(((((ctx).a)) ?? (((ctx).b))) ?? (((ctx).c)))');
+    expect(tcb('{{ (a ?? b) + (c ?? e) }}'))
+        .toContain('(((((ctx).a)) ?? (((ctx).b))) + ((((ctx).c)) ?? (((ctx).e))))');
+  });
+
   it('should handle quote expressions as any type', () => {
     const TEMPLATE = `<span [quote]="sql:expression"></span>`;
     expect(tcb(TEMPLATE)).toContain('null as any');
