@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {copyFileShimData, ShimReferenceTagger} from '../../shims';
-import {RequiredDelegations} from '../../util/src/typescript';
+import {RequiredDelegations, toUnredirectedSourceFile} from '../../util/src/typescript';
 
 /**
  * Delegates all methods of `ts.CompilerHost` to a delegate, with the exception of
@@ -104,12 +104,9 @@ export class TypeCheckProgramHost extends DelegatingCompilerHost {
     } else {
       sf = delegateSf;
     }
-    // TypeScript doesn't allow returning redirect source files. To avoid unforseen errors we
+    // TypeScript doesn't allow returning redirect source files. To avoid unforeseen errors we
     // return the original source file instead of the redirect target.
-    const redirectInfo = (sf as any).redirectInfo;
-    if (redirectInfo !== undefined) {
-      sf = redirectInfo.unredirected;
-    }
+    sf = toUnredirectedSourceFile(sf);
 
     this.shimTagger.tag(sf);
     return sf;

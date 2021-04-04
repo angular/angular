@@ -524,6 +524,58 @@ runInEachFileSystem(() => {
       env.driveMain();
     });
 
+    it('should allow incremental compilation with redirected source files', () => {
+      env.tsconfig({fullTemplateTypeCheck: true});
+
+      // This file structure has an identical version of "a" under the root node_modules and inside
+      // of "b". Because their package.json file indicates it is the exact same version of "a",
+      // TypeScript will transform the source file of "node_modules/b/node_modules/a/index.d.ts"
+      // into a redirect to "node_modules/a/index.d.ts". During incremental compilations, the
+      // redirected "node_modules/b/node_modules/a/index.d.ts" source file should be considered as
+      // its unredirected source file to avoid a change in declaration files.
+      env.write('node_modules/a/index.js', `export class ServiceA {}`);
+      env.write('node_modules/a/index.d.ts', `export declare class ServiceA {}`);
+      env.write('node_modules/a/package.json', `{"name": "a", "version": "1.0"}`);
+      env.write('node_modules/b/node_modules/a/index.js', `export class ServiceA {}`);
+      env.write('node_modules/b/node_modules/a/index.d.ts', `export declare class ServiceA {}`);
+      env.write('node_modules/b/node_modules/a/package.json', `{"name": "a", "version": "1.0"}`);
+      env.write('node_modules/b/index.js', `export {ServiceA as ServiceB} from 'a';`);
+      env.write('node_modules/b/index.d.ts', `export {ServiceA as ServiceB} from 'a';`);
+      env.write('component1.ts', `
+        import {Component} from '@angular/core';
+        import {ServiceA} from 'a';
+        import {ServiceB} from 'b';
+
+        @Component({selector: 'cmp', template: 'cmp'})
+        export class Cmp1 {}
+      `);
+      env.write('component2.ts', `
+        import {Component} from '@angular/core';
+        import {ServiceA} from 'a';
+        import {ServiceB} from 'b';
+
+        @Component({selector: 'cmp2', template: 'cmp'})
+        export class Cmp2 {}
+      `);
+      env.driveMain();
+      env.flushWrittenFileTracking();
+
+      // Now update `component1.ts` and change its imports to avoid complete structure reuse, which
+      // forces recreation of source file redirects.
+      env.write('component1.ts', `
+        import {Component} from '@angular/core';
+        import {ServiceA} from 'a';
+
+        @Component({selector: 'cmp', template: 'cmp'})
+        export class Cmp1 {}
+      `);
+      env.driveMain();
+
+      const written = env.getFilesWrittenSinceLastFlush();
+      expect(written).toContain('/component1.js');
+      expect(written).not.toContain('/component2.js');
+    });
+
     describe('template type-checking', () => {
       beforeEach(() => {
         env.tsconfig({strictTemplates: true});

@@ -13,6 +13,7 @@ import {PerfEvent, PerfPhase, PerfRecorder} from '../../perf';
 import {ClassDeclaration} from '../../reflection';
 import {ClassRecord, TraitCompiler} from '../../transform';
 import {FileTypeCheckingData} from '../../typecheck/src/checker';
+import {toUnredirectedSourceFile} from '../../util/src/typescript';
 import {IncrementalBuild} from '../api';
 import {SemanticDepGraph, SemanticDepGraphUpdater} from '../semantic_graph';
 
@@ -85,12 +86,14 @@ export class IncrementalDriver implements IncrementalBuild<ClassRecord, FileType
       //    avoid leaking memory.
 
       // All files in the old program, for easy detection of changes.
-      const oldFiles = new Set<ts.SourceFile>(oldProgram.getSourceFiles());
+      const oldFiles =
+          new Set<ts.SourceFile>(oldProgram.getSourceFiles().map(toUnredirectedSourceFile));
 
       // Assume all the old files were deleted to begin with. Only TS files are tracked.
       const deletedTsPaths = new Set<string>(tsOnlyFiles(oldProgram).map(sf => sf.fileName));
 
-      for (const newFile of newProgram.getSourceFiles()) {
+      for (const possiblyRedirectedNewFile of newProgram.getSourceFiles()) {
+        const newFile = toUnredirectedSourceFile(possiblyRedirectedNewFile);
         if (!newFile.isDeclarationFile) {
           // This file exists in the new program, so remove it from `deletedTsPaths`.
           deletedTsPaths.delete(newFile.fileName);
