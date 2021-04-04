@@ -125,7 +125,6 @@ export class DomRendererFactory2 implements RendererFactory2 {
   }
 
   begin() {}
-
   end() {}
 }
 
@@ -337,15 +336,12 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
   appendChild(parent: any, newChild: any): void {
     return super.appendChild(this.nodeOrShadowRoot(parent), newChild);
   }
-
   insertBefore(parent: any, newChild: any, refChild: any): void {
     return super.insertBefore(this.nodeOrShadowRoot(parent), newChild, refChild);
   }
-
   removeChild(parent: any, oldChild: any): void {
     return super.removeChild(this.nodeOrShadowRoot(parent), oldChild);
   }
-
   parentNode(node: any): any {
     return this.nodeOrShadowRoot(super.parentNode(this.nodeOrShadowRoot(node)));
   }
