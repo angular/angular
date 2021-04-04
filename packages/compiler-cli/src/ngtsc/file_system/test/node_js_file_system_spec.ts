@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as realFs from 'fs';
-import * as fsExtra from 'fs-extra';
 import * as os from 'os';
 import {NodeJSFileSystem, NodeJSPathManipulation, NodeJSReadonlyFileSystem} from '../src/node_js_file_system';
 import {AbsoluteFsPath, PathSegment} from '../src/types';
@@ -269,10 +268,10 @@ describe('NodeJSFileSystem', () => {
   });
 
   describe('removeDeep()', () => {
-    it('should delegate to fsExtra.remove()', () => {
-      const spy = spyOn(fsExtra, 'removeSync');
+    it('should delegate to rmdirSync()', () => {
+      const spy = spyOn(realFs, 'rmdirSync');
       fs.removeDeep(abcPath);
-      expect(spy).toHaveBeenCalledWith(abcPath);
+      expect(spy).toHaveBeenCalledWith(abcPath, {recursive: true});
     });
   });
 });
