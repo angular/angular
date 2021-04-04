@@ -87,7 +87,7 @@ module.exports = function generateKeywordsProcessor(log) {
 
       // Now process all the search data and collect it up to be used in creating a new document
       const searchData = {
-        dictionary: Array.from(dictionary.keys()),
+        dictionary: Array.from(dictionary.keys()).join(' '),
         pages: filteredDocs.map(page => {
           // Copy the properties from the searchTerms object onto the search data object
           const searchObj = {

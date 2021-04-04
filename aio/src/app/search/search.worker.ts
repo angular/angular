@@ -22,7 +22,7 @@ interface PageInfo {
 }
 
 interface EncodedPages {
-  dictionary: string[];
+  dictionary: string;
   pages: EncodedPage[];
 }
 
@@ -91,11 +91,12 @@ function makeRequest(url: string, callback: (response: any) => void): void {
 // Create the search index from the searchInfo which contains the information about each page to be
 // indexed
 function loadIndex({dictionary, pages}: EncodedPages): IndexLoader {
+  const dictionaryArray = dictionary.split(' ');
   return (indexBuilder: lunr.Builder) => {
     // Store the pages data to be used in mapping query results back to pages
     // Add search terms from each page to the search index
     pages.forEach(encodedPage => {
-      const page = decodePage(encodedPage, dictionary);
+      const page = decodePage(encodedPage, dictionaryArray);
       indexBuilder.add(page);
       pageMap[page.path] = page;
     });
