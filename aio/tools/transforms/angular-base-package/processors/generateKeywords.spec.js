@@ -73,7 +73,7 @@ describe('generateKeywords processor', () => {
     ];
     processor.$process(docs);
     expect(docs[docs.length - 1].data).toEqual({
-      dictionary: [ 'fooclass', 'barinterfac', 'captur', 'content' ],
+      dictionary: 'fooclass barinterfac captur content',
       pages: [
         jasmine.objectContaining({ title: 'FooClass', type: 'class', keywords: [0] }),
         jasmine.objectContaining({ title: 'BarInterface', type: 'interface', keywords: [1, 2, 3] }),
@@ -93,7 +93,7 @@ describe('generateKeywords processor', () => {
     ];
     processor.$process(docs);
     expect(docs[docs.length - 1].data).toEqual({
-      dictionary: ['class', 'fooclass', 'content', 'insid', 'tabl'],
+      dictionary: 'class fooclass content insid tabl',
       pages: [
         jasmine.objectContaining({keywords: [0, 1, 2, 3, 4] })
       ],
@@ -142,7 +142,7 @@ describe('generateKeywords processor', () => {
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
     expect(keywordsDoc.data).toEqual({
-      dictionary: ['class', 'publicexport', 'head', 'secondari'],
+      dictionary: 'class publicexport head secondari',
       pages: [
         jasmine.objectContaining({ headings: [2, 3, 2] })
       ]
@@ -175,7 +175,7 @@ describe('generateKeywords processor', () => {
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
     expect(keywordsDoc.data).toEqual({
-      dictionary: ['class', 'publicexport', 'content', 'ngclass', 'instancemethoda','instancepropertya','instancemethodb','instancepropertyb','staticmethoda','staticpropertya','staticmethodb','staticpropertyb', 'head'],
+      dictionary: 'class publicexport content ngclass instancemethoda instancepropertya instancemethodb instancepropertyb staticmethoda staticpropertya staticmethodb staticpropertyb head',
       pages: [
         jasmine.objectContaining({
           members: [4, 5, 6, 7, 8, 9, 10, 11]
@@ -220,7 +220,7 @@ describe('generateKeywords processor', () => {
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
     expect(keywordsDoc.data).toEqual({
-      dictionary: ['class', 'child', 'childmember1', 'childmember2', 'parentmember1', 'parentmember2', 'parentmember3', 'parentclass', 'interfac', 'parentinterfac'],
+      dictionary: 'class child childmember1 childmember2 parentmember1 parentmember2 parentmember3 parentclass interfac parentinterfac',
       pages: [
         jasmine.objectContaining({
           title: 'Child',
@@ -252,7 +252,7 @@ describe('generateKeywords processor', () => {
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
     expect(keywordsDoc.data).toEqual({
-      dictionary: ['class', 'publicexport', 'ngcontrol', 'control', 'content', 'ngclass', 'ngmodel', 'model'],
+      dictionary: 'class publicexport ngcontrol control content ngclass ngmodel model',
       pages: [
         jasmine.objectContaining({
           headings: [6, 7],
@@ -284,7 +284,7 @@ describe('generateKeywords processor', () => {
     processor.$process(docs);
     const keywordsDoc = docs[docs.length - 1];
     expect(JSON.parse(keywordsDoc.renderedContent)).toEqual({
-      dictionary: ['class', 'someclass', 'document', 'api', 'head', 'someclass2', 'descript', 'member1'],
+      dictionary: 'class someclass document api head someclass2 descript member1',
       pages: [{
         'title':'SomeClass',
         'type':'class',
