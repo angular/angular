@@ -43,10 +43,10 @@ module.exports = function generateKeywordsProcessor(log) {
           .filter(doc => !doc.internal && !doc.privateExport);
 
 
-      for(const doc of filteredDocs) {
+      for (const doc of filteredDocs) {
         // Search each top level property of the document for search terms
         let mainTokens = [];
-        for(const key of Object.keys(doc)) {
+        for (const key of Object.keys(doc)) {
           const value = doc[key];
           if (isString(value) && !propertiesToIgnore.has(key)) {
             mainTokens.push(...tokenize(value, ignoreWords, dictionary));
@@ -58,8 +58,8 @@ module.exports = function generateKeywordsProcessor(log) {
         // Extract all the keywords from the headings
         let headingTokens = [];
         if (doc.vFile && doc.vFile.headings) {
-          for(const headingTag of Object.keys(doc.vFile.headings)) {
-            for(const headingText of doc.vFile.headings[headingTag]) {
+          for (const headingTag of Object.keys(doc.vFile.headings)) {
+            for (const headingText of doc.vFile.headings[headingTag]) {
               headingTokens.push(...tokenize(headingText, ignoreWords, dictionary));
             }
           }
@@ -120,27 +120,37 @@ function isString(value) {
 
 function tokenize(text, ignoreWords, dictionary) {
   // Split on whitespace and things that are likely to be HTML tags (this is not exhaustive but reduces the unwanted tokens that are indexed).
-  const rawTokens = text.split(/[\s/]+|<\/?[a-z]+(?:\s+\w+(?:="[^"]+")?)*>/img);
+  const rawTokens = text.split(new RegExp(
+                                      '[\\s/]+' +                                // whitespace
+                                      '|' +                                      // or
+                                      '</?[a-z]+(?:\\s+\\w+(?:="[^"]+")?)*/?>',  // simple HTML tags (e.g. <td>, <hr/>, </table>, etc.)
+                                      'ig'));
   const tokens = [];
-  for(let token of rawTokens) {
+  for (let token of rawTokens) {
     token = token.trim();
 
-    // Strip off unwanted trivial characters
-    token = token.replace(/^[_\-"'`({[<$*)}\]>.]+/, '').replace(/[_\-"'`({[<$*)}\]>.]+$/, '');
+    // Trim unwanted trivia characters from the start and end of the token
+    const TRIVIA_CHARS = '[\\s_"\'`({[<$*)}\\]>.,-]';
+    // Tokens can contain letters, numbers, underscore, dot or hyphen but not at the start or end.
+    // The leading TRIVIA_CHARS will capture any leading `.`, '-`' or `_` so we don't have to avoid them in this regular expression.
+    // But we do need to ensure we don't capture the at the end of the token.
+    const POSSIBLE_TOKEN = '[a-z0-9_.-]*[a-z0-9]';
+    token = token.replace(new RegExp(`^${TRIVIA_CHARS}*(${POSSIBLE_TOKEN})${TRIVIA_CHARS}*$`, 'i'), '$1');
 
-    // Skip if in the ignored words list
-    if (ignoreWords.has(token.toLowerCase())) {
+    // Skip if blank or in the ignored words list
+    if (token === '' || ignoreWords.has(token.toLowerCase())) {
       continue;
     }
 
     // Skip tokens that contain weird characters
-    if (!/^[\w._-]+$/.test(token)) {
+    if (!/^\w[\w.-]*$/.test(token)) {
       continue;
     }
 
     storeToken(token, tokens, dictionary);
     if (token.startsWith('ng')) {
-      storeToken(token.substr(2), tokens, dictionary);
+      // Strip off `ng`, `ng-`, `ng1`, `ng2`, etc
+      storeToken(token.replace(/^ng[-12]*/, ''), tokens, dictionary);
     }
   }
 
@@ -156,7 +166,7 @@ function storeToken(token, tokens, dictionary) {
 }
 
 function extractMemberTokens(doc, ignoreWords, dictionary) {
-  if (!doc) return '';
+  if (!doc) return [];
 
   let memberContent = [];
 
