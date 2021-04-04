@@ -8,9 +8,7 @@ ts_library(
         "src/**/*.ts",
     ]),
     deps = [
-        "@npm//@types/fs-extra",
         "@npm//@types/node",
-        "@npm//fs-extra",
         "@npm//typescript",
     ],
 )

@@ -31,7 +31,6 @@ nodejs_test(
         "@nodejs//:node",
         "@npm//domino",
         "@npm//chokidar",
-        "@npm//fs-extra",
         "@npm//source-map-support",
         "@npm//shelljs",
         "@npm//typescript",

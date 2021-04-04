@@ -7,7 +7,6 @@
  */
 /// <reference types="node" />
 import * as fs from 'fs';
-import * as fsExtra from 'fs-extra';
 import * as p from 'path';
 import {AbsoluteFsPath, FileStats, FileSystem, PathManipulation, PathSegment, PathString, ReadonlyFileSystem} from './types';
 
@@ -121,7 +120,7 @@ export class NodeJSFileSystem extends NodeJSReadonlyFileSystem implements FileSy
     }
   }
   removeDeep(path: AbsoluteFsPath): void {
-    fsExtra.removeSync(path);
+    fs.rmdirSync(path, {recursive: true});
   }
 
   private safeMkdir(path: AbsoluteFsPath): void {
