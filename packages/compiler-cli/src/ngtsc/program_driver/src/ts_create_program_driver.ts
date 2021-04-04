@@ -8,17 +8,9 @@
 
 import * as ts from 'typescript';
 
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-
 import {AbsoluteFsPath} from '../../file_system';
 import {copyFileShimData, retagAllTsFiles, ShimReferenceTagger, untagAllTsFiles} from '../../shims';
-import {RequiredDelegations} from '../../util/src/typescript';
+import {RequiredDelegations, toUnredirectedSourceFile} from '../../util/src/typescript';
 
 import {ProgramDriver, UpdateMode} from './api';
 
@@ -114,12 +106,9 @@ class UpdatedProgramHost extends DelegatingCompilerHost {
     } else {
       sf = delegateSf;
     }
-    // TypeScript doesn't allow returning redirect source files. To avoid unforseen errors we
+    // TypeScript doesn't allow returning redirect source files. To avoid unforeseen errors we
     // return the original source file instead of the redirect target.
-    const redirectInfo = (sf as any).redirectInfo;
-    if (redirectInfo !== undefined) {
-      sf = redirectInfo.unredirected;
-    }
+    sf = toUnredirectedSourceFile(sf);
 
     this.shimTagger.tag(sf);
     return sf;
