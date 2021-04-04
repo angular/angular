@@ -161,3 +161,23 @@ export type SubsetOfKeys<T, K extends keyof T> = K;
 export type RequiredDelegations<T> = {
   [M in keyof Required<T>]: T[M];
 };
+
+/**
+ * Source files may become redirects to other source files when their package name and version are
+ * identical. TypeScript creates a proxy source file for such source files which has an internal
+ * `redirectInfo` property that refers to the original source file.
+ */
+interface RedirectedSourceFile extends ts.SourceFile {
+  redirectInfo?: {unredirected: ts.SourceFile;};
+}
+
+/**
+ * Obtains the non-redirected source file for `sf`.
+ */
+export function toUnredirectedSourceFile(sf: ts.SourceFile): ts.SourceFile {
+  const redirectInfo = (sf as RedirectedSourceFile).redirectInfo;
+  if (redirectInfo === undefined) {
+    return sf;
+  }
+  return redirectInfo.unredirected;
+}
