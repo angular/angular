@@ -1,37 +1,38 @@
-# Overview of Angular libraries
+# Vista general de librerías para Angular
 
-Many applications need to solve the same general problems, such as presenting a unified user interface, presenting data, and allowing data entry.
-Developers can create general solutions for particular domains that can be adapted for re-use in different apps.
-Such a solution can be built as Angular *libraries* and these libraries can be published and shared as *npm packages*.
+Muchas aplicaciones necesitan resolver los mismos problemas en general, como presentar una interfaz de usuario unificada, mostrar datos, permitir entrada de datos etc.
+Los desarrolladores puede crear soluciones generales para dominios particulares que pueden ser adoptados para re usarse en diferentes aplicaciones.
+Tal solución se puede construir como *librerías* para Angular y estas librerías pueden ser publicadas y compartidas como *paquetes de npm*.
 
-An Angular library is an Angular [project](guide/glossary#project) that differs from an app in that it cannot run on its own.
-A library must be imported and used in an app.
+Una librería de Angular es como un [proyecto](guide/glossary#project) lo que la diferencia de una app es que no puede correr por si sola.
+Una librería debe ser importada y usada en una app.
 
-Libraries extend Angular's base functionality. For example, to add [reactive forms](guide/reactive-forms) to an app, add the library package using `ng add @angular/forms`, then import the `ReactiveFormsModule` from the `@angular/forms` library in your application code.
-Similarly, adding the [service worker](guide/service-worker-intro) library to an Angular application is one of the steps for turning an application into a [Progressive Web App](https://developers.google.com/web/progressive-web-apps/) (PWA).
-[Angular Material](https://material.angular.io/) is an example of a large, general-purpose library that provides sophisticated, reusable, and adaptable UI components.
+Las librerías extienden la funcionalidad base de Angular. Por ejemplo, para agregar [formularios reactivos](guide/reactive-forms) en una app, agregamos la librería usando `ng add @angular/forms`, entonces importamos el `ReactiveFormsModule` desde la librería `@angular/forms` el código de la aplicación.
+De igual manera, agregar la librería [service worker](guide/service-worker-intro) dentro de una aplicación Angular es el primer paso para convertir una aplicación a una [Progressive Web App](https://developers.google.com/web/progressive-web-apps/) (PWA).
+[Angular Material](https://material.angular.io/) es un ejemplo de una gran librería de propósito general que ofrece componentes de UI sofisticados, reutilizables y adaptables.
 
-Any app developer can use these and other libraries that have been published as npm packages by the Angular team or by third parties. See [Using Published Libraries](guide/using-libraries).
+Cualquier desarrollador de apps puede usar estas y otras librerías que han sido publicadas como paquetes de npm por el equipo de Angular o por terceros. Mirá [Usando librerías publicadas](guide/using-libraries).
 
-## Creating libraries
+## Creando librerías
 
-If you have developed functionality that is suitable for reuse, you can create your own libraries.
-These libraries can be used locally in your workspace, or you can publish them as [npm packages](guide/npm-packages) to share with other projects or other Angular developers.
-These packages can be published to the npm registry, a private npm Enterprise registry, or a private package management system that supports npm packages.
-See [Creating Libraries](guide/creating-libraries).
+Si tu tienes funcionalidades desarrolladas que puede ser adecuadas para re usarse tu puedes crear tus propias librerías.
+Estas librerías puede ser usadas localmente en tu espacio de trabajo, o puede ser publicadas como [paquetes de npm](guide/npm-packages) para compartir con otros proyectos o otros desarrolladores Angular.
+Estos paquetes pueden ser publicados en el registro de npm, en un registro empresarial privado de npm, o en un sistema de gestión de paquetes privado que soporte paquetes de npm.
+Mirá [Creando librerías](guide/creating-libraries).
 
-Whether you decide to package functionality as a library is an architectural decision, similar to deciding whether a piece of functionality is a component or a service, or deciding on the scope of a component.
+Si tu decides empaquetar una funcionalidad como una librería es una decisión de arquitectura, similar a decidir entre si una pieza de funcionalidad es un componente o un servicio, o decidir el alcance de un componente.
 
-Packaging functionality as a library forces the artifacts in the library to be decoupled from the application's business logic.
-This can help to avoid various bad practices or architecture mistakes that can make it difficult to decouple and reuse code in the future.
+Empaquetar funcionalidad como una librería fuerza a
+que los artefactos en la librería puedan ser desacoplados de la lógica de negocio de la aplicación.
+Esto puede ayudar a evitar varias malas practicas o errores de arquitectura que puede hacer difícil desacoplar y re usar código en el futuro.
 
-Putting code into a separate library is more complex than simply putting everything in one app.
-It requires more of an investment in time and thought for managing, maintaining, and updating the library.
-This complexity can pay off, however, when the library is being used in multiple apps.
+Poniendo el código dentro de una librería separada es más complejo que simplemente poner todo en una sola aplicación.
+Esto requiere una inversión mayor de tiempo y pensar para administrar, mantener y actualizar la librería.
+Sin embargo esta complejidad puede valer la pena cuando la librería esta siendo usada en múltiples aplicaciones.
 
 <div class="alert is-helpful">
 
-Note that libraries are intended to be used by Angular apps.
-To add Angular functionality to non-Angular web apps, you can use [Angular custom elements](guide/elements).
+Note que las librerías están destinadas para ser usadas por aplicaciones Angular.
+Para agregar funcionalidad de Angular hacia una aplicación web que no es Angular, puedes usar [Angular custom elements](guide/elements).
 
 </div>
