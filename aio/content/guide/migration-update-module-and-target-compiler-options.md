@@ -7,15 +7,15 @@ The changes to each option vary based on the builder or command that uses the Ty
 Unless otherwise noted, changes are only made if the existing value was not changed since the project was created.
 This process helps ensure that intentional changes to the options are kept in place.
 
-TypeScript Configuration File(s) | Changed Property | Existing Value | New Value
-------------- | ------------- | ------------- | ------------- | -------------
-`<workspace base>/tsconfig.json` | `"module"` | `"esnext"` | `"es2020"`
-Used in `browser` builder options (`ng build` for applications) | `"module"` | `"esnext"` | `"es2020"`
-Used in `ng-packgr` builder options (`ng build` for libraries) | `"module"` | `"esnext"` | `"es2020"`
-Used in `karma` builder options (`ng test` for applications) | `"module"` | `"esnext"` | `"es2020"`
-Used in `server` builder options (universal) | `"module"` | `"commonjs"` | _removed_
-Used in `server` builder options (universal) | `"target"` | _any_ | `"es2016"`
-Used in `protractor` builder options (`ng e2e` for applications) | `"target"` | `"es5"` | `"es2018"`
+| TypeScript Configuration File(s)                                 | Changed Property | Existing Value | New Value  |
+| ---------------------------------------------------------------- | ---------------- | -------------- | ---------- |
+| `<workspace base>/tsconfig.json`                                 | `"module"`       | `"esnext"`     | `"es2020"` |
+| Used in `browser` builder options (`ng build` for applications)  | `"module"`       | `"esnext"`     | `"es2020"` |
+| Used in `ng-packagr` builder options (`ng build` for libraries)  | `"module"`       | `"esnext"`     | `"es2020"` |
+| Used in `karma` builder options (`ng test` for applications)     | `"module"`       | `"esnext"`     | `"es2020"` |
+| Used in `server` builder options (universal)                     | `"module"`       | `"commonjs"`   | _removed_  |
+| Used in `server` builder options (universal)                     | `"target"`       | _any_          | `"es2016"` |
+| Used in `protractor` builder options (`ng e2e` for applications) | `"target"`       | `"es5"`        | `"es2018"` |
 
 ## Why is this migration necessary?
 
