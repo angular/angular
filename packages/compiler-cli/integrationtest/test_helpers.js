@@ -46,7 +46,6 @@ const requiredNodeModules = {
   'tslib': resolveNpmTreeArtifact('npm/node_modules/tslib'),
   'domino': resolveNpmTreeArtifact('npm/node_modules/domino'),
   'xhr2': resolveNpmTreeArtifact('npm/node_modules/xhr2'),
-  'fs-extra': resolveNpmTreeArtifact('npm/node_modules/fs-extra'),
 
   // Fine grained dependencies which are used by the integration test Angular modules, and
   // need to be symlinked so that they can be resolved by NodeJS or NGC.

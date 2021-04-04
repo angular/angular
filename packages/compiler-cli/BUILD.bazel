@@ -41,7 +41,6 @@ ts_library(
         "@npm//@bazel/typescript",
         "@npm//@types/node",
         "@npm//chokidar",
-        "@npm//fs-extra",
         "@npm//minimist",
         "@npm//reflect-metadata",
         "@npm//tsickle",
