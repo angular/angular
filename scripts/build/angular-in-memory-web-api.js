@@ -21,6 +21,11 @@ module.exports = {
  * Build the `angular-in-memory-web-api` npm package and copy it to `destDir` for other
  * scripts/tests to use.
  *
+ * NOTE: The `angular-in-memory-web-api` package is not built as part of `package-builder`'s
+ *       `buildTargetPackages()` nor is it copied into the same directory as the Angular packages
+ *       (e.g. `dist/packages-dist/`) despite its source's being inside `packages/`, because it is
+ *       not published to npm under the `@angular` scope (as happens for the rest of the packages).
+ *
  * @param {string} destDir Path to the output directory into which we copy the npm package.
  *     This path should either be absolute or relative to the project root.
  */
