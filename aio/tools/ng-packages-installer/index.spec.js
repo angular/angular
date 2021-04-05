@@ -15,6 +15,7 @@ describe('NgPackagesInstaller', () => {
   const yarnLockPath = path.resolve(absoluteProjectDir, 'yarn.lock');
   const ngRootDir = path.resolve(__dirname, '../../..');
   const packagesDir = path.join(ngRootDir, 'dist/packages-dist');
+  const aimwaDir = path.join(ngRootDir, 'dist/angular-in-memory-web-api-dist');
   const zoneJsDir = path.join(ngRootDir, 'dist/zone.js-dist');
   const toolsDir = path.join(ngRootDir, 'dist/tools/@angular');
   let installer;
@@ -104,6 +105,13 @@ describe('NgPackagesInstaller', () => {
             peerDependencies: { tsickle: '^1.4.0' }
           }
         },
+        'angular-in-memory-web-api': {
+          packageDir: `${aimwaDir}/angular-in-memory-web-api`,
+          packageJsonPath: `${aimwaDir}/angular-in-memory-web-api/package.json`,
+          config: {
+            dependencies: { rxjs: '^6.3.0' }
+          }
+        },
         'zone.js': {
           packageDir: `${zoneJsDir}/zone.js`,
           packageJsonPath: `${zoneJsDir}/zone.js/package.json`,
@@ -124,6 +132,7 @@ describe('NgPackagesInstaller', () => {
         },
         devDependencies: {
           '@angular/compiler-cli': '4.4.1',
+          'angular-in-memory-web-api': '^0.11.0',
           'rxjs-dev': '^6.3.0'
         }
       };
@@ -149,6 +158,7 @@ describe('NgPackagesInstaller', () => {
         },
         devDependencies: {
           '@angular/compiler-cli': `file:${toolsDir}/compiler-cli`,
+          'angular-in-memory-web-api': `file:${aimwaDir}/angular-in-memory-web-api`,
           'rxjs-dev': '^6.3.0',
           'some-package': '5.0.1',
           typescript: '^2.4.2'
@@ -200,10 +210,10 @@ describe('NgPackagesInstaller', () => {
         const stringifyConfig = config => JSON.stringify(config, null, 2);
 
         const allArgs = fs.writeFileSync.calls.allArgs();
-        const firstSixArgs = allArgs.slice(0, 6);
-        const lastSixArgs = allArgs.slice(-6);
+        const firstSevenArgs = allArgs.slice(0, 7);
+        const lastSevenArgs = allArgs.slice(-7);
 
-        expect(firstSixArgs).toEqual([
+        expect(firstSevenArgs).toEqual([
           [
             pkgJsonPathFor('@angular/core'),
             stringifyConfig(overwriteConfigFor('@angular/core', {private: true})),
@@ -231,17 +241,22 @@ describe('NgPackagesInstaller', () => {
             })),
           ],
           [
+            pkgJsonPathFor('angular-in-memory-web-api'),
+            stringifyConfig(overwriteConfigFor('angular-in-memory-web-api', {private: true})),
+          ],
+          [
             pkgJsonPathFor('zone.js'),
             stringifyConfig(overwriteConfigFor('zone.js', {private: true})),
           ],
         ]);
 
-        expect(lastSixArgs).toEqual([
+        expect(lastSevenArgs).toEqual([
           '@angular/core',
           '@angular/common',
           '@angular/compiler',
           '@angular/compiler-cli',
           '@angular/tsc-wrapped',
+          'angular-in-memory-web-api',
           'zone.js',
         ].map(pkgName => [pkgJsonPathFor(pkgName), stringifyConfig(pkgConfigFor(pkgName))]));
       });
