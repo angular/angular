@@ -8,7 +8,7 @@
 
 /// <reference types="rxjs" />
 
-import {Subject, Subscription} from 'rxjs';
+import {PartialObserver, Subject, Subscription} from 'rxjs';
 
 /**
  * Use in components with the `@Output` directive to emit custom events
@@ -115,57 +115,30 @@ class EventEmitter_ extends Subject<any> {
   }
 
   subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription {
-    let schedulerFn: (t: any) => any;
-    let errorFn = (err: any): any => null;
-    let completeFn = (): any => null;
+    let nextFn = observerOrNext;
+    let errorFn = error || (() => null);
+    let completeFn = complete;
 
     if (observerOrNext && typeof observerOrNext === 'object') {
-      schedulerFn = this.__isAsync ? (value: any) => {
-        setTimeout(() => observerOrNext.next(value));
-      } : (value: any) => {
-        observerOrNext.next(value);
-      };
+      const observer = observerOrNext as PartialObserver<unknown>;
+      nextFn = observer.next?.bind(observer);
+      errorFn = observer.error?.bind(observer);
+      completeFn = observer.complete?.bind(observer);
+    }
 
-      if (observerOrNext.error) {
-        errorFn = this.__isAsync ? (err) => {
-          setTimeout(() => observerOrNext.error(err));
-        } : (err) => {
-          observerOrNext.error(err);
-        };
+    if (this.__isAsync) {
+      errorFn = _wrapInTimeout(errorFn);
+
+      if (nextFn) {
+        nextFn = _wrapInTimeout(nextFn);
       }
 
-      if (observerOrNext.complete) {
-        completeFn = this.__isAsync ? () => {
-          setTimeout(() => observerOrNext.complete());
-        } : () => {
-          observerOrNext.complete();
-        };
-      }
-    } else {
-      schedulerFn = this.__isAsync ? (value: any) => {
-        setTimeout(() => observerOrNext(value));
-      } : (value: any) => {
-        observerOrNext(value);
-      };
-
-      if (error) {
-        errorFn = this.__isAsync ? (err) => {
-          setTimeout(() => error(err));
-        } : (err) => {
-          error(err);
-        };
-      }
-
-      if (complete) {
-        completeFn = this.__isAsync ? () => {
-          setTimeout(() => complete());
-        } : () => {
-          complete();
-        };
+      if (completeFn) {
+        completeFn = _wrapInTimeout(completeFn);
       }
     }
 
-    const sink = super.subscribe(schedulerFn, errorFn, completeFn);
+    const sink = super.subscribe({next: nextFn, error: errorFn, complete: completeFn});
 
     if (observerOrNext instanceof Subscription) {
       observerOrNext.add(sink);
@@ -173,6 +146,12 @@ class EventEmitter_ extends Subject<any> {
 
     return sink;
   }
+}
+
+function _wrapInTimeout(fn: (value: unknown) => any) {
+  return (value: unknown) => {
+    setTimeout(fn, undefined, value);
+  };
 }
 
 /**
