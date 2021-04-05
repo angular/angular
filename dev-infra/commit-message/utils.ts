@@ -7,7 +7,7 @@
  */
 import * as gitCommits_ from 'git-raw-commits';
 
-import {CommitFromGitLog, gitLogFormatForParsing, parseCommitMessage} from './parse';
+import {CommitFromGitLog, gitLogFormatForParsing, parseCommitFromGitLog} from './parse';
 
 // Set `gitCommits` as this imported value to address "Cannot call a namespace" error.
 const gitCommits = gitCommits_;
@@ -25,7 +25,7 @@ export function getCommitsInRange(from: string, to: string = 'HEAD'): Promise<Co
 
     // Accumulate the parsed commits for each commit from the Readable stream into an array, then
     // resolve the promise with the array when the Readable stream ends.
-    commitStream.on('data', (commit: Buffer) => commits.push(parseCommitMessage(commit)));
+    commitStream.on('data', (commit: Buffer) => commits.push(parseCommitFromGitLog(commit)));
     commitStream.on('error', (err: Error) => reject(err));
     commitStream.on('end', () => resolve(commits));
   });

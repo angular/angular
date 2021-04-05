@@ -1763,7 +1763,11 @@ const parseOptions = {
     noteKeywords: [NoteSections.BREAKING_CHANGE, NoteSections.DEPRECATED],
     notesPattern: (keywords) => new RegExp(`(${keywords})(?:: ?)(.*)`),
 };
-function parseCommitMessage(fullText) {
+/** Parse a commit message into its composite parts. */
+const parseCommitMessage = parseInternal;
+/** Parse a commit message from a git log entry into its composite parts. */
+const parseCommitFromGitLog = parseInternal;
+function parseInternal(fullText) {
     // Ensure the fullText symbol is a `string`, even if a Buffer was provided.
     fullText = fullText.toString();
     /** The commit message text with the fixup and squash markers stripped out. */
@@ -2057,7 +2061,7 @@ function getCommitsInRange(from, to = 'HEAD') {
         const commitStream = gitCommits({ from, to, format: gitLogFormatForParsing });
         // Accumulate the parsed commits for each commit from the Readable stream into an array, then
         // resolve the promise with the array when the Readable stream ends.
-        commitStream.on('data', (commit) => commits.push(parseCommitMessage(commit)));
+        commitStream.on('data', (commit) => commits.push(parseCommitFromGitLog(commit)));
         commitStream.on('error', (err) => reject(err));
         commitStream.on('end', () => resolve(commits));
     });

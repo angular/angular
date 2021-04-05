@@ -114,11 +114,16 @@ const parseOptions: Options&{notesPattern: (keywords: string) => RegExp} = {
   notesPattern: (keywords: string) => new RegExp(`(${keywords})(?:: ?)(.*)`),
 };
 
+/** Parse a commit message into its composite parts. */
+export const parseCommitMessage: (fullText: string) => Commit = parseInternal;
+
+/** Parse a commit message from a git log entry into its composite parts. */
+export const parseCommitFromGitLog: (fullText: Buffer) => CommitFromGitLog = parseInternal;
 
 /** Parse a full commit message into its composite parts. */
-export function parseCommitMessage(fullText: string): Commit;
-export function parseCommitMessage(fullText: Buffer): CommitFromGitLog;
-export function parseCommitMessage(fullText: string|Buffer): CommitFromGitLog|Commit {
+function parseInternal(fullText: string): Commit;
+function parseInternal(fullText: Buffer): CommitFromGitLog;
+function parseInternal(fullText: string|Buffer): CommitFromGitLog|Commit {
   // Ensure the fullText symbol is a `string`, even if a Buffer was provided.
   fullText = fullText.toString();
   /** The commit message text with the fixup and squash markers stripped out. */
