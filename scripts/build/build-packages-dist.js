@@ -21,9 +21,9 @@ buildTargetPackages('dist/packages-dist', false, 'Production');
 // Build the `angular-dev-infra` npm package into `dist/packages-dist/`.
 buildDevInfraPackage('dist/packages-dist');
 
-// Build the `angular-in-memory-web-api` npm package into `dist/packages-dist/misc/`, because it
-// might be needed by other scripts/targets.
-buildAngularInMemoryWebApiPackage('dist/packages-dist/misc');
+// Build the `angular-in-memory-web-api` npm package into `dist/angular-in-memory-web-api-dist/`,
+// because it might be needed by other scripts/targets.
+buildAngularInMemoryWebApiPackage('dist/angular-in-memory-web-api-dist');
 
 // Build the `zone.js` npm package into `dist/zone.js-dist/`, because it might be needed by other
 // scripts/tests.

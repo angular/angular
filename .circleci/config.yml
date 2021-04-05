@@ -501,6 +501,7 @@ jobs:
           root: *workspace_location
           paths:
             - ng/dist/packages-dist
+            - ng/dist/angular-in-memory-web-api-dist
             - ng/dist/zone.js-dist
 
       # Save dependencies and bazel repository cache to use on subsequent runs.
@@ -527,6 +528,7 @@ jobs:
           root: *workspace_location
           paths:
             - ng/dist/packages-dist-ivy-aot
+            - ng/dist/angular-in-memory-web-api-dist-ivy-aot
             - ng/dist/zone.js-dist-ivy-aot
 
   # This job creates compressed tarballs (`.tgz` files) for all Angular packages and stores them as
@@ -537,6 +539,8 @@ jobs:
   publish_packages_as_artifacts:
     executor: default-executor
     environment:
+      AIMWA_PACKAGES_DIR: &aimwa_packages_dir 'dist/angular-in-memory-web-api-dist'
+      AIMWA_PACKAGES_ARCHIVES_DIR: &aimwa_packages_archives_dir 'dist/angular-in-memory-web-api-dist-archives'
       NG_PACKAGES_DIR: &ng_packages_dir 'dist/packages-dist'
       NG_PACKAGES_ARCHIVES_DIR: &ng_packages_archives_dir 'dist/packages-dist-archives'
       ZONEJS_PACKAGES_DIR: &zonejs_packages_dir 'dist/zone.js-dist'
@@ -551,9 +555,17 @@ jobs:
       - store_artifacts:
           path: *ng_packages_archives_dir
           destination: angular
-      # Publish `zone.js` package.
+      # Publish the `angular-in-memory-web-api` package.
       - run:
-          name: Create artifacts for zone.js package
+          name: Create artifacts for the `angular-in-memory-web-api` package
+          # Need to remove the zone.js.tgz before archive
+          command: ./scripts/ci/create-package-archives.sh $CI_BRANCH $CI_COMMIT $AIMWA_PACKAGES_DIR $AIMWA_PACKAGES_ARCHIVES_DIR
+      - store_artifacts:
+          path: *aimwa_packages_archives_dir
+          destination: angular-in-memory-web-api
+      # Publish the `zone.js` package.
+      - run:
+          name: Create artifacts for the `zone.js` package
           # Need to remove the zone.js.tgz before archive
           command: rm -rf $ZONEJS_PACKAGES_DIR/archive && ./scripts/ci/create-package-archives.sh $CI_BRANCH $CI_COMMIT $ZONEJS_PACKAGES_DIR $ZONEJS_PACKAGES_ARCHIVES_DIR
       - store_artifacts:
