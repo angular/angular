@@ -15,7 +15,7 @@ function createPackage(changedFile) {
   }
 
   const tutorialMatch = /^aio\/content\/tutorial\/([^.]+)\.md/.exec(changedFile);
-  const tutorialExampleMatch = /^aio\/content\/examples\/(toh-[^\/]+)\//.exec(changedFile);
+  const tutorialExampleMatch = /^aio\/content\/examples\/(toh-[^/]+)\//.exec(changedFile);
   if (tutorialMatch || tutorialExampleMatch) {
     const tutorialName = tutorialMatch && tutorialMatch[1] || tutorialExampleMatch[1];
     console.log('Building tutorial docs');
@@ -23,7 +23,7 @@ function createPackage(changedFile) {
   }
 
   const gettingStartedMatch = /^aio\/content\/start\/([^.]+)\.md/.exec(changedFile);
-  const gettingStartedExampleMatch = /^aio\/content\/examples\/getting-started\/([^\/]+)\//.exec(changedFile);
+  const gettingStartedExampleMatch = /^aio\/content\/examples\/getting-started\/([^/]+)\//.exec(changedFile);
   if (gettingStartedMatch || gettingStartedExampleMatch) {
     const gettingStartedName = gettingStartedMatch && gettingStartedMatch[1] || 'index';
     console.log('Building getting started docs');
@@ -31,15 +31,15 @@ function createPackage(changedFile) {
   }
 
   const guideMatch = /^aio\/content\/guide\/([^.]+)\.md/.exec(changedFile);
-  const exampleMatch = /^aio\/content\/examples\/(?:cb-)?([^\/]+)\//.exec(changedFile);
+  const exampleMatch = /^aio\/content\/examples\/(?:cb-)?([^/]+)\//.exec(changedFile);
   if (guideMatch || exampleMatch) {
     const guideName = guideMatch && guideMatch[1] || exampleMatch[1];
     console.log(`Building guide doc: ${guideName}.md`);
     return require('./guide-package').createPackage(guideName);
   }
 
-  const apiExamplesMatch = /^packages\/examples\/([^\/]+)\//.exec(changedFile);
-  const apiMatch = /^packages\/([^\/]+)\//.exec(changedFile);
+  const apiExamplesMatch = /^packages\/examples\/([^/]+)\//.exec(changedFile);
+  const apiMatch = /^packages\/([^/]+)\//.exec(changedFile);
   if (apiExamplesMatch || apiMatch) {
     const packageName = apiExamplesMatch && apiExamplesMatch[1] || apiMatch[1];
     console.log('Building API docs for', packageName);
