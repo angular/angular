@@ -240,9 +240,6 @@
     "name": "Injector"
   },
   {
-    "name": "InnerSubscriber"
-  },
-  {
     "name": "IterableChangeRecord_"
   },
   {
@@ -423,9 +420,6 @@
     "name": "Optional"
   },
   {
-    "name": "OuterSubscriber"
-  },
-  {
     "name": "PLATFORM_ID"
   },
   {
@@ -514,6 +508,12 @@
   },
   {
     "name": "SimpleChange"
+  },
+  {
+    "name": "SimpleInnerSubscriber"
+  },
+  {
+    "name": "SimpleOuterSubscriber"
   },
   {
     "name": "SkipSelf"
@@ -1312,9 +1312,6 @@
   },
   {
     "name": "noSideEffects"
-  },
-  {
-    "name": "noop"
   },
   {
     "name": "noop"

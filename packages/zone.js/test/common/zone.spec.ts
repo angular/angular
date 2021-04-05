@@ -334,23 +334,23 @@ describe('Zone', function() {
         Zone.assertZonePatched();
       });
 
-      xit('should throw error if ZoneAwarePromise has been overwritten', () => {
-        class WrongPromise {
-          static resolve(value: any) {}
+      // xit('should throw error if ZoneAwarePromise has been overwritten', () => {
+      //   class WrongPromise {
+      //     static resolve(value: any) {}
 
-          then() {}
-        }
+      //     then() {}
+      //   }
 
-        const ZoneAwarePromise = global.Promise;
-        try {
-          global.Promise = WrongPromise;
-          expect(Zone.assertZonePatched()).toThrow();
-        } finally {
-          // restore it.
-          global.Promise = ZoneAwarePromise;
-        }
-        Zone.assertZonePatched();
-      });
+      //   const ZoneAwarePromise = global.Promise;
+      //   try {
+      //     global.Promise = WrongPromise;
+      //     expect(Zone.assertZonePatched()).toThrow();
+      //   } finally {
+      //     // restore it.
+      //     global.Promise = ZoneAwarePromise;
+      //   }
+      //   Zone.assertZonePatched();
+      // });
     });
   });
 

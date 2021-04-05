@@ -2555,17 +2555,19 @@ describe('Zone', function() {
            }
            (Zone as any)[zoneSymbol('ignoreConsoleErrorUncaughtError')] = true;
            Zone.root.fork({name: 'promise'}).run(function() {
-             const listener1 = (evt: any) => {
+             function listener1(evt: any) {
                window.removeEventListener('unhandledrejection', listener1);
                expect(evt.type).toEqual('unhandledrejection');
                expect(evt.promise.constructor.name).toEqual('Promise');
                expect(evt.reason.message).toBe('promise error');
+               evt.preventDefault();
              };
-             const listener2 = (evt: any) => {
+             function listener2(evt: any) {
                window.removeEventListener('unhandledrejection', listener2);
                expect(evt.type).toEqual('unhandledrejection');
                expect(evt.promise.constructor.name).toEqual('Promise');
                expect(evt.reason.message).toBe('promise error');
+               evt.preventDefault();
              };
              window.addEventListener('unhandledrejection', listener1);
              window.addEventListener('unhandledrejection', listener2);

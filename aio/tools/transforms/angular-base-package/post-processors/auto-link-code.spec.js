@@ -110,7 +110,8 @@ describe('autoLinkCode post-processor', () => {
             '{ xyz | <a href="a/b/myclass" class="code-anchor">myClass</a> } ' +
             '{ xyz|<a href="a/b/myclass" class="code-anchor">myClass</a> } ' +
             '<a href="a/b/myclass" class="code-anchor">MyClass</a> ' +
-            'myClass OtherClass|<a href="a/b/myclass" class="code-anchor">MyClass</a>' +
+            '<a href="a/b/myclass" class="code-anchor">myClass</a> ' +
+            'OtherClass|<a href="a/b/myclass" class="code-anchor">MyClass</a>' +
             '</code>');
   });
 
