@@ -46,7 +46,7 @@ describe('NgPackagesInstaller', () => {
       fs.existsSync.and.returnValue(true);
       installer.checkDependencies();
       expect(fs.existsSync).toHaveBeenCalledWith(path.resolve(projectDir, 'node_modules/_local_.json'));
-      expect(installer._printWarning).toHaveBeenCalled();
+      expect(installer._printWarning).toHaveBeenCalledWith();
     });
   });
 
@@ -163,7 +163,7 @@ describe('NgPackagesInstaller', () => {
 
       it('should not continue processing', () => {
         installer.installLocalDependencies();
-        expect(installer._checkLocalMarker).toHaveBeenCalled();
+        expect(installer._checkLocalMarker).toHaveBeenCalledWith();
         expect(installer._getDistPackages).not.toHaveBeenCalled();
       });
 
@@ -171,7 +171,7 @@ describe('NgPackagesInstaller', () => {
         installer.force = true;
         installer.installLocalDependencies();
         expect(installer._checkLocalMarker).not.toHaveBeenCalled();
-        expect(installer._getDistPackages).toHaveBeenCalled();
+        expect(installer._getDistPackages).toHaveBeenCalledWith();
       });
     });
 
@@ -180,16 +180,17 @@ describe('NgPackagesInstaller', () => {
 
       beforeEach(() => {
         log = [];
-        fs.writeFileSync.and.callFake((filePath, contents) => filePath === packageJsonPath && log.push(`writeFile: ${contents}`));
+        fs.writeFileSync.and.callFake((filePath, contents) =>
+          filePath === packageJsonPath && log.push(`writeFile: ${contents}`));
         installer._installDeps.and.callFake((...args) => log.push(`installDeps: ${args.join(' ')}`));
         installer._checkLocalMarker.and.returnValue(false);
         installer.installLocalDependencies();
       });
 
       it('should parse the lockfile and get the dist packages', () => {
-        expect(installer._checkLocalMarker).toHaveBeenCalled();
+        expect(installer._checkLocalMarker).toHaveBeenCalledWith();
         expect(installer._parseLockfile).toHaveBeenCalledWith(yarnLockPath);
-        expect(installer._getDistPackages).toHaveBeenCalled();
+        expect(installer._getDistPackages).toHaveBeenCalledWith();
       });
 
       it('should temporarily overwrite the package.json files of local Angular packages', () => {
@@ -260,7 +261,7 @@ describe('NgPackagesInstaller', () => {
       it('should overwrite package.json, then install deps, then restore original package.json', () => {
         expect(log).toEqual([
           `writeFile: ${expectedModifiedPackageJson}`,
-          `installDeps: --pure-lockfile --check-files`,
+          'installDeps: --pure-lockfile --check-files',
           `writeFile: ${dummyPackageJson}`
         ]);
       });
@@ -316,7 +317,8 @@ describe('NgPackagesInstaller', () => {
 
       expect(shelljs.exec).not.toHaveBeenCalled();
       expect(warning).toContain(
-          'Automatically building the local Angular/Zone.js packages is currently not supported on Windows.');
+        'Automatically building the local Angular/angular-in-memory-web-api/zone.js packages is currently not ' +
+        'supported on Windows.');
       expect(warning).toContain('Git Bash for Windows');
       expect(warning).toContain('Windows Subsystem for Linux');
       expect(warning).toContain('Linux docker container or VM');
@@ -340,7 +342,8 @@ describe('NgPackagesInstaller', () => {
       expect(installer._buildDistPackages).toHaveBeenCalledTimes(1);
     });
 
-    it('should not build the local packages by default', () => {
+    it('should not build the local packages, if `buildPackages` is false', () => {
+      installer = new NgPackagesInstaller(projectDir, {buildPackages: false});
       installer._getDistPackages();
       expect(installer._buildDistPackages).not.toHaveBeenCalled();
     });
@@ -506,7 +509,7 @@ describe('NgPackagesInstaller', () => {
     it('should throw if parsing the lockfile fails', () => {
       lockfile.parse.and.returnValue({type: 'not success'});
       expect(() => installer._parseLockfile('/foo/bar/yarn.lock')).toThrowError(
-          '[NgPackagesInstaller]: Error parsing lockfile \'/foo/bar/yarn.lock\' (result type: not success).');
+        '[NgPackagesInstaller]: Error parsing lockfile \'/foo/bar/yarn.lock\' (result type: not success).');
     });
 
     it('should return the parsed lockfile content as an object', () => {
