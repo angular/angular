@@ -120,7 +120,7 @@ function isString(value) {
 
 function tokenize(text, ignoreWords, dictionary) {
   // Split on whitespace and things that are likely to be HTML tags (this is not exhaustive but reduces the unwanted tokens that are indexed).
-  const rawTokens = text.split(/[\s\/]+|<\/?[a-z]+(?:\s+\w+(?:="[^"]+")?)*>/img);
+  const rawTokens = text.split(/[\s/]+|<\/?[a-z]+(?:\s+\w+(?:="[^"]+")?)*>/img);
   const tokens = [];
   for(let token of rawTokens) {
     token = token.trim();
