@@ -55,7 +55,7 @@ describe('default target labels', () => {
    */
   function interceptBranchVersionRequest(branchName: string, version: string) {
     nock(getRepoApiRequestUrl())
-        .get('/contents//package.json')
+        .get('/contents/%2Fpackage.json')
         .query(params => params.ref === branchName)
         .reply(200, {content: Buffer.from(JSON.stringify({version})).toString('base64')});
   }

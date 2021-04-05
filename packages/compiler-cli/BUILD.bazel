@@ -1,10 +1,10 @@
-package(default_visibility = ["//visibility:public"])
-
 load("//tools:defaults.bzl", "pkg_npm", "ts_api_guardian_test", "ts_config", "ts_library")
 
 # Load ng_perf_flag explicitly from ng_perf.bzl as it's private API, and not exposed to other
 # consumers of @angular/bazel.
 load("//packages/bazel/src:ng_perf.bzl", "ng_perf_flag")
+
+package(default_visibility = ["//visibility:public"])
 
 ts_config(
     name = "tsconfig",

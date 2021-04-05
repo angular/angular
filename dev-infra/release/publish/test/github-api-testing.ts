@@ -61,7 +61,7 @@ export class GithubTestingRepo {
   }
 
   expectChangelogFetch(branch: string, content: string): this {
-    nock(this.repoApiUrl).get(`/contents//CHANGELOG.md`).query(p => p.ref === branch).reply(200, {
+    nock(this.repoApiUrl).get(`/contents/%2FCHANGELOG.md`).query(p => p.ref === branch).reply(200, {
       content: new Buffer(content).toString('base64')
     });
     return this;

@@ -4,6 +4,9 @@
   "command": "completionInfo",
   "request_seq": 5,
   "success": true,
+  "performanceData": {
+    "updateGraphDurationMs": 34.82808400003705
+  },
   "body": {
     "isGlobalCompletion": false,
     "isMemberCompletion": false,
@@ -256,6 +259,12 @@
         "insertText": "trim()"
       },
       {
+        "name": "trimEnd",
+        "kind": "method",
+        "sortText": "trimEnd",
+        "insertText": "trimEnd()"
+      },
+      {
         "name": "trimLeft",
         "kind": "method",
         "sortText": "trimLeft",
@@ -266,6 +275,12 @@
         "kind": "method",
         "sortText": "trimRight",
         "insertText": "trimRight()"
+      },
+      {
+        "name": "trimStart",
+        "kind": "method",
+        "sortText": "trimStart",
+        "insertText": "trimStart()"
       },
       {
         "name": "valueOf",

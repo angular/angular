@@ -3,8 +3,8 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 3033,
-        "main-es2015": 450953,
-        "polyfills-es2015": 52215
+        "main-es2015": 451829,
+        "polyfills-es2015": 55230
       }
     }
   },
@@ -12,8 +12,8 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 3033,
-        "main-es2015": 451600,
-        "polyfills-es2015": 52215
+        "main-es2015": 452892,
+        "polyfills-es2015": 55230
       }
     }
   },
@@ -21,8 +21,8 @@
     "master": {
       "uncompressed": {
         "runtime-es2015": 3153,
-        "main-es2015": 437306,
-        "polyfills-es2015": 52493
+        "main-es2015": 438598,
+        "polyfills-es2015": 55230
       }
     }
   }

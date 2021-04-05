@@ -2492,7 +2492,8 @@ describe('Zone', function() {
          }));
     });
 
-    describe('unhandle promise rejection', () => {
+    // TODO: Re-enable via https://github.com/angular/angular/pull/41526
+    xdescribe('unhandle promise rejection', () => {
       const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
       const asyncTest = function(testFn: Function) {
         return (done: Function) => {
@@ -2566,6 +2567,7 @@ describe('Zone', function() {
                expect(evt.type).toEqual('unhandledrejection');
                expect(evt.promise.constructor.name).toEqual('Promise');
                expect(evt.reason.message).toBe('promise error');
+               evt.preventDefault();
              };
              window.addEventListener('unhandledrejection', listener1);
              window.addEventListener('unhandledrejection', listener2);
