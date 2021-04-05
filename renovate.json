@@ -23,8 +23,22 @@
       "master"
     ],
     "ignoreDeps": [
+      "@babel/core",
+      "@babel/generator",
+      "@babel/parser",
+      "@babel/preset-env",
+      "@babel/template",
+      "@babel/traverse",
+      "@babel/types",
+      "@types/babel__core",
+      "@types/babel__generator",
+      "@types/babel__template",
+      "@types/babel__traverse",
       "@types/node",
-      "@microsoft/api-extractor"
+      "@types/selenium-webdriver",
+      "@microsoft/api-extractor",
+      "puppeteer",
+      "selenium-webdriver"
     ],
     "packageFiles": [
       "WORKSPACE",
@@ -41,14 +55,14 @@
           "^@angular-devkit/.*",
           "^@schematics/.*"
         ],
-        "groupName": "Angular",
+        "groupName": "angular",
         "pinVersions": false
       },
      {
         "packagePatterns": [
           "^@babel/.*"
         ],
-        "groupName": "Babel",
+        "groupName": "babel",
         "pinVersions": false
       },
       {
@@ -57,7 +71,15 @@
           "^build_bazel.*",
           "bazel_toolchains"
         ],
-        "groupName": "Bazel",
+        "groupName": "bazel",
+        "pinVersions": false
+      },
+      {
+        "packagePatterns": [
+          "^remark-.*",
+          "remark"
+        ],
+        "groupName": "remark",
         "pinVersions": false
       },
       {
