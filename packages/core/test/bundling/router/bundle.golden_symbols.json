@@ -927,6 +927,9 @@
     "name": "_testabilityGetter"
   },
   {
+    "name": "_wrapInTimeout"
+  },
+  {
     "name": "absoluteRedirect"
   },
   {
