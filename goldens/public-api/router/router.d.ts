@@ -385,6 +385,7 @@ export declare class RouterEvent {
 
 export declare class RouterLink implements OnChanges {
     fragment?: string;
+    navigationSucceeded: EventEmitter<boolean>;
     preserveFragment: boolean;
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;
@@ -418,6 +419,7 @@ export declare class RouterLinkActive implements OnChanges, OnDestroy, AfterCont
 export declare class RouterLinkWithHref implements OnChanges, OnDestroy {
     fragment?: string;
     href: string;
+    navigationSucceeded: EventEmitter<boolean>;
     preserveFragment: boolean;
     queryParams?: Params | null;
     queryParamsHandling?: QueryParamsHandling | null;

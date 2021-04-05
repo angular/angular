@@ -2512,6 +2512,58 @@ describe('Integration', () => {
          const native = fixture.nativeElement.querySelector('area');
          expect(native.getAttribute('href')).toEqual('/home');
        }));
+
+    it('should emit `true` of `navigationSucceeded` output that indicates succeeded navigation',
+       fakeAsync(() => {
+         @Component({
+           selector: 'someRoot',
+           template:
+               `<a routerLink="/home" (navigationSucceeded)="navigationSucceededSpy($event)"></a>`
+         })
+         class RootCmpWithArea {
+           navigationSucceededSpy:
+               (succeeded: boolean) => void = jasmine.createSpy('navigationSucceededFn');
+         }
+
+         TestBed.configureTestingModule({declarations: [RootCmpWithArea]});
+         const router: Router = TestBed.inject(Router);
+
+         const fixture = createRoot(router, RootCmpWithArea);
+
+         router.resetConfig([{path: 'home', component: SimpleCmp}]);
+
+         const anchor = fixture.debugElement.query(By.css('a')).nativeElement;
+         anchor.click();
+         advance(fixture);
+
+         expect(fixture.componentInstance.navigationSucceededSpy).toHaveBeenCalledWith(true);
+       }));
+
+    it('should emit `false` of `navigationSucceeded` output that indicates failed navigation',
+       fakeAsync(() => {
+         @Component({
+           selector: 'someRoot',
+           template:
+               `<a routerLink="/home" (navigationSucceeded)="navigationSucceededSpy($event)"></a>`
+         })
+         class RootCmpWithArea {
+           navigationSucceededSpy:
+               (succeeded: boolean) => void = jasmine.createSpy('navigationSucceededFn');
+         }
+
+         TestBed.configureTestingModule({declarations: [RootCmpWithArea]});
+         const router: Router = TestBed.inject(Router);
+
+         const fixture = createRoot(router, RootCmpWithArea);
+
+         router.resetConfig([{path: 'foo', component: SimpleCmp}]);
+
+         const anchor = fixture.debugElement.query(By.css('a')).nativeElement;
+         anchor.click();
+         advance(fixture);
+
+         expect(fixture.componentInstance.navigationSucceededSpy).toHaveBeenCalledWith(false);
+       }));
   });
 
   describe('redirects', () => {

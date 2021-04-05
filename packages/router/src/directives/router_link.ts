@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges} from '@angular/core';
+import {Attribute, Directive, ElementRef, EventEmitter, HostBinding, HostListener, Input, OnChanges, OnDestroy, Output, Renderer2, SimpleChanges} from '@angular/core';
 import {Subject, Subscription} from 'rxjs';
 
 import {QueryParamsHandling} from '../config';
@@ -180,6 +180,11 @@ export class RouterLink implements OnChanges {
    */
   @Input() relativeTo?: ActivatedRoute|null;
 
+  /**
+   * Emits `true` when navigation succeeded and `false` when navigation failed.
+   */
+  @Output() navigationSucceeded = new EventEmitter<boolean>();
+
   private commands: any[] = [];
   private preserve!: boolean;
 
@@ -225,7 +230,9 @@ export class RouterLink implements OnChanges {
       replaceUrl: attrBoolValue(this.replaceUrl),
       state: this.state,
     };
-    this.router.navigateByUrl(this.urlTree, extras);
+    this.router.navigateByUrl(this.urlTree, extras)
+        .then(
+            () => this.navigationSucceeded.emit(true), () => this.navigationSucceeded.emit(false));
     return true;
   }
 
@@ -320,6 +327,11 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
    */
   @Input() relativeTo?: ActivatedRoute|null;
 
+  /**
+   * Emits `true` when navigation succeeded and `false` when navigation failed.
+   */
+  @Output() navigationSucceeded = new EventEmitter<boolean>();
+
   private commands: any[] = [];
   private subscription: Subscription;
   // TODO(issue/24571): remove '!'.
@@ -387,7 +399,9 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       replaceUrl: attrBoolValue(this.replaceUrl),
       state: this.state
     };
-    this.router.navigateByUrl(this.urlTree, extras);
+    this.router.navigateByUrl(this.urlTree, extras)
+        .then(
+            () => this.navigationSucceeded.emit(true), () => this.navigationSucceeded.emit(false));
     return false;
   }
 
