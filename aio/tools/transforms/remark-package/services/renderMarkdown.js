@@ -56,7 +56,7 @@ module.exports = function renderMarkdown() {
     tokenizeInlineTag.locator = inlineTagLocator;
 
     function tokenizeInlineTag(eat, value, silent) {
-      const match = /^\{@[^\s\}]+[^\}]*\}/.exec(value);
+      const match = /^\{@[^\s}]+[^}]*\}/.exec(value);
 
       if (match) {
         if (silent) {
