@@ -39,7 +39,9 @@ function buildZoneJsPackage(destDir) {
 
   // Create the output directory.
   const absDestDir = resolve(baseDir, destDir);
-  if (!test('-d', absDestDir)) mkdir('-p', absDestDir);
+  if (!test('-d', absDestDir)) {
+    mkdir('-p', absDestDir);
+  }
 
   // Copy artifacts to `destDir`, so they can be easier persisted on CI and used by non-bazel
   // scripts/tests.

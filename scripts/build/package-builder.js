@@ -88,7 +88,9 @@ function buildTargetPackages(destDir, enableIvy, description, isRelease = false)
 
   // Create the output directory.
   const absDestDir = resolve(baseDir, destDir);
-  if (!test('-d', absDestDir)) mkdir('-p', absDestDir);
+  if (!test('-d', absDestDir)) {
+    mkdir('-p', absDestDir);
+  }
 
   targets.forEach(target => {
     const pkg = target.replace(/\/\/packages\/(.*):npm_package/, '$1');

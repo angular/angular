@@ -33,7 +33,9 @@ function buildAngularInMemoryWebApiPackage(destDir) {
 
   // Create the output directory.
   const absDestDir = resolve(baseDir, destDir);
-  if (!test('-d', absDestDir)) mkdir('-p', absDestDir);
+  if (!test('-d', absDestDir)) {
+    mkdir('-p', absDestDir);
+  }
 
   const buildOutputDir = `${bazelBin}/packages/misc/angular-in-memory-web-api/npm_package`;
   const distTargetDir = `${absDestDir}/angular-in-memory-web-api`;

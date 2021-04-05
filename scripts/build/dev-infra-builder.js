@@ -32,7 +32,9 @@ function buildDevInfraPackage(destDir) {
 
   // Create the output directory.
   const absDestDir = resolve(baseDir, destDir);
-  if (!test('-d', absDestDir)) mkdir('-p', absDestDir);
+  if (!test('-d', absDestDir)) {
+    mkdir('-p', absDestDir);
+  }
 
   const buildOutputDir = `${bazelBin}/dev-infra/npm_package`;
   const distTargetDir = `${absDestDir}/dev-infra-private`;
