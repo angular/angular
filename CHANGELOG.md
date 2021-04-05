@@ -32,6 +32,15 @@ import {XhrFactory} from '@angular/common';
 
 
 
+## 11.2.8 (2021-04-01)
+
+
+### Bug Fixes
+
+* **compiler:** handle case-sensitive CSS custom properties ([#41380](https://github.com/angular/angular/issues/41380)) ([f9da272](https://github.com/angular/angular/commit/f9da27214b74d60d398cf46493767711e710635c)), closes [#41364](https://github.com/angular/angular/issues/41364)
+
+
+
 # 12.0.0-next.6 (2021-03-24)
 
 
