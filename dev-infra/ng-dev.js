@@ -3396,7 +3396,7 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                     if (prData === null) {
                         return [2 /*return*/, PullRequestFailure.notFound()];
                     }
-                    labels = prData.labels.map(function (l) { return l.name; });
+                    labels = prData.labels.nodes.map(function (l) { return l.name; });
                     if (!labels.some(function (name) { return matchesPattern(name, config.mergeReadyLabel); })) {
                         return [2 /*return*/, PullRequestFailure.notMergeReady()];
                     }
@@ -3412,36 +3412,34 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                         }
                         throw error;
                     }
-                    return [4 /*yield*/, git.github.repos.getCombinedStatusForRef(tslib.__assign(tslib.__assign({}, git.remoteParams), { ref: prData.head.sha }))];
-                case 2:
-                    state = (_b.sent()).data.state;
-                    if (state === 'failure' && !ignoreNonFatalFailures) {
+                    state = prData.commits.nodes.slice(-1)[0].commit.status.state;
+                    if (state === 'FAILURE' && !ignoreNonFatalFailures) {
                         return [2 /*return*/, PullRequestFailure.failingCiJobs()];
                     }
-                    if (state === 'pending' && !ignoreNonFatalFailures) {
+                    if (state === 'PENDING' && !ignoreNonFatalFailures) {
                         return [2 /*return*/, PullRequestFailure.pendingCiJobs()];
                     }
-                    githubTargetBranch = prData.base.ref;
+                    githubTargetBranch = prData.baseRefOid;
                     requiredBaseSha = config.requiredBaseCommits && config.requiredBaseCommits[githubTargetBranch];
                     needsCommitMessageFixup = !!config.commitMessageFixupLabel &&
                         labels.some(function (name) { return matchesPattern(name, config.commitMessageFixupLabel); });
                     hasCaretakerNote = !!config.caretakerNoteLabel &&
                         labels.some(function (name) { return matchesPattern(name, config.caretakerNoteLabel); });
-                    _b.label = 3;
-                case 3:
-                    _b.trys.push([3, 5, , 6]);
+                    _b.label = 2;
+                case 2:
+                    _b.trys.push([2, 4, , 5]);
                     return [4 /*yield*/, getBranchesFromTargetLabel(targetLabel, githubTargetBranch)];
-                case 4:
+                case 3:
                     targetBranches = _b.sent();
-                    return [3 /*break*/, 6];
-                case 5:
+                    return [3 /*break*/, 5];
+                case 4:
                     error_1 = _b.sent();
                     if (error_1 instanceof InvalidTargetBranchError || error_1 instanceof InvalidTargetLabelError) {
                         return [2 /*return*/, new PullRequestFailure(error_1.failureMessage)];
                     }
                     throw error_1;
-                case 6: return [2 /*return*/, {
-                        url: prData.html_url,
+                case 5: return [2 /*return*/, {
+                        url: prData.url,
                         prNumber: prNumber,
                         labels: labels,
                         requiredBaseSha: requiredBaseSha,
@@ -3450,24 +3448,44 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                         hasCaretakerNote: hasCaretakerNote,
                         targetBranches: targetBranches,
                         title: prData.title,
-                        commitCount: prData.commits,
+                        commitCount: prData.commits.nodes.length,
                     }];
             }
         });
     });
 }
+/* GraphQL schema for the response body the requested PR. */
+var PR_SCHEMA$2 = {
+    url: typedGraphqlify.types.string,
+    number: typedGraphqlify.types.number,
+    commits: typedGraphqlify.params({ first: 100 }, {
+        nodes: [{
+                commit: {
+                    status: {
+                        state: typedGraphqlify.types.oneOf(['FAILURE', 'PENDING', 'SUCCESS']),
+                    },
+                    message: typedGraphqlify.types.string,
+                },
+            }],
+    }),
+    baseRefOid: typedGraphqlify.types.string,
+    title: typedGraphqlify.types.string,
+    labels: typedGraphqlify.params({ first: 100 }, {
+        nodes: [{
+                name: typedGraphqlify.types.string,
+            }]
+    }),
+};
 /** Fetches a pull request from Github. Returns null if an error occurred. */
 function fetchPullRequestFromGithub(git, prNumber) {
     return tslib.__awaiter(this, void 0, void 0, function () {
-        var result, e_1;
+        var e_1;
         return tslib.__generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, git.github.pulls.get(tslib.__assign(tslib.__assign({}, git.remoteParams), { pull_number: prNumber }))];
-                case 1:
-                    result = _a.sent();
-                    return [2 /*return*/, result.data];
+                    return [4 /*yield*/, getPr(PR_SCHEMA$2, prNumber, git)];
+                case 1: return [2 /*return*/, _a.sent()];
                 case 2:
                     e_1 = _a.sent();
                     // If the pull request could not be found, we want to return `null` so
@@ -4315,7 +4333,7 @@ var MergeCommandModule = {
  * found in the LICENSE file at https://angular.io/license
  */
 /* GraphQL schema for the response body for each pending PR. */
-const PR_SCHEMA$2 = {
+const PR_SCHEMA$3 = {
     state: typedGraphqlify.types.string,
     maintainerCanModify: typedGraphqlify.types.boolean,
     viewerDidAuthor: typedGraphqlify.types.boolean,
@@ -4353,7 +4371,7 @@ function rebasePr(prNumber, githubToken, config = getConfig()) {
          */
         const previousBranchOrRevision = git.getCurrentBranchOrRevision();
         /* Get the PR information from Github. */
-        const pr = yield getPr(PR_SCHEMA$2, prNumber, git);
+        const pr = yield getPr(PR_SCHEMA$3, prNumber, git);
         const headRefName = pr.headRef.name;
         const baseRefName = pr.baseRef.name;
         const fullHeadRef = `${pr.headRef.repository.nameWithOwner}:${headRefName}`;

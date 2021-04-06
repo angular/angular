@@ -24,6 +24,7 @@ ts_library(
         "@npm//@types/semver",
         "@npm//@types/yargs",
         "@npm//chalk",
+        "@npm//typed-graphqlify",
     ],
 )
 
