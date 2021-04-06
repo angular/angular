@@ -7,7 +7,7 @@
  */
 
 import {parseCommitMessage} from './parse';
-
+import {commitMessageBuilder} from './test-util';
 
 const commitValues = {
   prefix: '',
@@ -19,12 +19,7 @@ const commitValues = {
   footer: 'Closes #1',
 };
 
-function buildCommitMessage(params: Partial<typeof commitValues> = {}) {
-  const {prefix, npmScope, type, scope, summary, body, footer} = {...commitValues, ...params};
-  const scopeSlug = npmScope ? `${npmScope}/${scope}` : scope;
-  return `${prefix}${type}${scopeSlug ? '(' + scopeSlug + ')' : ''}: ${summary}\n\n${body}\n\n${
-      footer}`;
-}
+const buildCommitMessage = commitMessageBuilder(commitValues);
 
 
 describe('commit message parsing:', () => {
