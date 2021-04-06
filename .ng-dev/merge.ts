@@ -14,6 +14,7 @@ export const merge: DevInfraMergeConfig['merge'] = async api => {
     mergeReadyLabel: /^action: merge(-assistance)?/,
     caretakerNoteLabel: /^(action: merge-assistance)|(PullApprove: disable)/,
     commitMessageFixupLabel: 'commit message fixup',
+    breakingChangeLabel: 'flag: breaking change',
     // We can pick any of the NPM packages as we are in a monorepo where all packages are
     // published together with the same version and branching.
     labels: await getDefaultTargetLabelConfiguration(api, github, release),
