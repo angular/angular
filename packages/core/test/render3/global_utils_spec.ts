@@ -8,7 +8,7 @@
 
 import {setProfiler} from '@angular/core/src/render3/profiler';
 import {applyChanges} from '../../src/render3/util/change_detection_utils';
-import {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
+import {getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
 import {GLOBAL_PUBLISH_EXPANDO_KEY, GlobalDevModeContainer, publishDefaultGlobalUtils, publishGlobalUtil} from '../../src/render3/util/global_utils';
 import {global} from '../../src/util/global';
 
@@ -60,6 +60,10 @@ describe('global utils', () => {
 
     it('should publish applyChanges', () => {
       assertPublished('applyChanges', applyChanges);
+    });
+
+    it('should publish getDirectiveMetadata', () => {
+      assertPublished('getDirectiveMetadata', getDirectiveMetadata);
     });
 
     it('should publish ɵsetProfiler', () => {
