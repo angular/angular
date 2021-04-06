@@ -3360,8 +3360,8 @@ var PullRequestFailure = /** @class */ (function () {
     };
     PullRequestFailure.hasFeatureCommits = function (label) {
         var message = "Cannot merge into branch for \"" + label.pattern + "\" as the pull request has " +
-            'commits with the "feat" type.  New features can only be merged with the "target: minor" or ' +
-            '"target: major" label.';
+            'commits with the "feat" type.  New features can only be merged with the "target: minor" ' +
+            'or "target: major" label.';
         return new this(message);
     };
     return PullRequestFailure;
@@ -3398,7 +3398,7 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
     var git = _a.git, config = _a.config;
     if (ignoreNonFatalFailures === void 0) { ignoreNonFatalFailures = false; }
     return tslib.__awaiter(this, void 0, void 0, function () {
-        var prData, labels, targetLabel, state, githubTargetBranch, requiredBaseSha, needsCommitMessageFixup, hasCaretakerNote, targetBranches, error_1;
+        var prData, labels, targetLabel, commitMessages, state, githubTargetBranch, requiredBaseSha, needsCommitMessageFixup, hasCaretakerNote, targetBranches, error_1;
         return tslib.__generator(this, function (_b) {
             switch (_b.label) {
                 case 0: return [4 /*yield*/, fetchPullRequestFromGithub(git, prNumber)];
@@ -3424,7 +3424,8 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                         throw error;
                     }
                     try {
-                        assertCorrectTargetForChanges(prData.commits.nodes.map(function (n) { return n.commit.message; }), targetLabel);
+                        commitMessages = prData.commits.nodes.map(function (n) { return n.commit.message; });
+                        assertChangesAllowForTargetLabel(commitMessages, targetLabel, config);
                     }
                     catch (error) {
                         return [2 /*return*/, error];
@@ -3524,9 +3525,16 @@ function isPullRequest(v) {
  * Assert the commits provided are allowed to merge to the provided target label, throwing a
  * PullRequestFailure otherwise.
  */
-function assertCorrectTargetForChanges(rawCommits, label) {
-    /** List of ParsedCommits for all of the commits in the pull request. */
-    var commits = rawCommits.map(parseCommitMessage);
+function assertChangesAllowForTargetLabel(rawCommits, label, config) {
+    /**
+     * List of commit scopes which are exempted from target label content requirements. i.e. no `feat`
+     * scopes in patch branches, no breaking changes in minor or patch changes.
+     */
+    var exemptedScopes = config.targetLabelExemptScopes || [];
+    /** List of parsed commits which are subject to content requirements for the target label. */
+    var commits = rawCommits.map(parseCommitMessage).filter(function (commit) {
+        return !exemptedScopes.includes(commit.scope);
+    });
     switch (label.pattern) {
         case 'target: major':
             break;

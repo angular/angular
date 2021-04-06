@@ -12,7 +12,7 @@ import {red, warn} from '../../utils/console';
 
 import {GitClient} from '../../utils/git/index';
 import {getPr} from '../../utils/github';
-import {TargetLabel} from './config';
+import {MergeConfig, TargetLabel} from './config';
 
 import {PullRequestFailure} from './failures';
 import {matchesPattern} from './string-pattern';
@@ -76,7 +76,9 @@ export async function loadAndValidatePullRequest(
   }
 
   try {
-    assertCorrectTargetForChanges(prData.commits.nodes.map(n => n.commit.message), targetLabel);
+    /** Commit message strings for all commits in the PR. */
+    const commitMessages = prData.commits.nodes.map(n => n.commit.message);
+    assertChangesAllowForTargetLabel(commitMessages, targetLabel, config);
   } catch (error) {
     return error;
   }
@@ -174,9 +176,17 @@ export function isPullRequest(v: PullRequestFailure|PullRequest): v is PullReque
  * Assert the commits provided are allowed to merge to the provided target label, throwing a
  * PullRequestFailure otherwise.
  */
-function assertCorrectTargetForChanges(rawCommits: string[], label: TargetLabel) {
-  /** List of ParsedCommits for all of the commits in the pull request. */
-  const commits = rawCommits.map(parseCommitMessage);
+function assertChangesAllowForTargetLabel(
+    rawCommits: string[], label: TargetLabel, config: MergeConfig) {
+  /**
+   * List of commit scopes which are exempted from target label content requirements. i.e. no `feat`
+   * scopes in patch branches, no breaking changes in minor or patch changes.
+   */
+  const exemptedScopes = config.targetLabelExemptScopes || [];
+  /** List of parsed commits which are subject to content requirements for the target label. */
+  let commits = rawCommits.map(parseCommitMessage).filter(commit => {
+    return !exemptedScopes.includes(commit.scope);
+  });
   switch (label.pattern) {
     case 'target: major':
       break;

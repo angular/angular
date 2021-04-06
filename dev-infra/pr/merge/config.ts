@@ -71,6 +71,11 @@ export interface MergeConfig {
    * not support this.
    */
   githubApiMerge: false|GithubApiMergeStrategyConfig;
+  /**
+   * List of commit scopes which are exempted from target label content requirements. i.e. no `feat`
+   * scopes in patch branches, no breaking changes in minor or patch changes.
+   */
+  targetLabelExemptScopes?: string[];
 }
 
 /**
