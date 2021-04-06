@@ -6,7 +6,6 @@
   "author": "Angular",
   "license": "MIT",
   "scripts": {
-    "preinstall": "node ../tools/yarn/check-yarn.js",
     "postinstall": "node tools/cli-patches/patch.js",
     "aio-use-local": "node tools/ng-packages-installer overwrite . --debug --force --build-packages",
     "aio-use-npm": "node tools/ng-packages-installer restore .",
@@ -86,7 +85,8 @@
   "//engines-comment": "Keep this in sync with /package.json and /aio/tools/examples/shared/package.json",
   "engines": {
     "node": ">=10.19.0 <16.0.0",
-    "yarn": ">=1.22.4 <2"
+    "yarn": ">=1.22.4 <2",
+    "npm": "Please use yarn instead of NPM to install dependencies"
   },
   "private": true,
   "dependencies": {
