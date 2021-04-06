@@ -240,8 +240,6 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
   }
 
   static ngAcceptInputType_hideToggle: BooleanInput;
-  static ngAcceptInputType_expanded: BooleanInput;
-  static ngAcceptInputType_disabled: BooleanInput;
 }
 
 /**

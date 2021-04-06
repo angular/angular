@@ -18,10 +18,10 @@ export declare class CdkAccordionItem implements OnDestroy {
     accordion: CdkAccordion;
     closed: EventEmitter<void>;
     destroyed: EventEmitter<void>;
-    get disabled(): any;
-    set disabled(disabled: any);
-    get expanded(): any;
-    set expanded(expanded: any);
+    get disabled(): boolean;
+    set disabled(disabled: boolean);
+    get expanded(): boolean;
+    set expanded(expanded: boolean);
     expandedChange: EventEmitter<boolean>;
     readonly id: string;
     opened: EventEmitter<void>;

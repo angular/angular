@@ -67,8 +67,6 @@ export declare class MatExpansionPanel extends CdkAccordionItem implements After
     ngOnDestroy(): void;
     open(): void;
     toggle(): void;
-    static ngAcceptInputType_disabled: BooleanInput;
-    static ngAcceptInputType_expanded: BooleanInput;
     static ngAcceptInputType_hideToggle: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDefWithMeta<MatExpansionPanel, "mat-expansion-panel", ["matExpansionPanel"], { "disabled": "disabled"; "expanded": "expanded"; "hideToggle": "hideToggle"; "togglePosition": "togglePosition"; }, { "opened": "opened"; "closed": "closed"; "expandedChange": "expandedChange"; "afterExpand": "afterExpand"; "afterCollapse": "afterCollapse"; }, ["_lazyContent"], ["mat-expansion-panel-header", "*", "mat-action-row"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatExpansionPanel, [{ optional: true; skipSelf: true; }, null, null, null, null, { optional: true; }, { optional: true; }]>;
@@ -100,7 +98,7 @@ export declare class MatExpansionPanelDescription {
 export declare class MatExpansionPanelHeader implements AfterViewInit, OnDestroy, FocusableOption {
     _animationMode?: string | undefined;
     collapsedHeight: string;
-    get disabled(): any;
+    get disabled(): boolean;
     expandedHeight: string;
     panel: MatExpansionPanel;
     constructor(panel: MatExpansionPanel, _element: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, defaultOptions?: MatExpansionPanelDefaultOptions, _animationMode?: string | undefined);

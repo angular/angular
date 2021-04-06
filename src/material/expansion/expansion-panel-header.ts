@@ -114,7 +114,7 @@ export class MatExpansionPanelHeader implements AfterViewInit, OnDestroy, Focusa
    * Whether the associated panel is disabled. Implemented as a part of `FocusableOption`.
    * @docs-private
    */
-  get disabled() {
+  get disabled(): boolean {
     return this.panel.disabled;
   }
 
