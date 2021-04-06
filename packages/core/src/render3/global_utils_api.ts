@@ -16,4 +16,4 @@
  */
 
 export {applyChanges} from './util/change_detection_utils';
-export {getComponent, getContext, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents, Listener} from './util/discovery_utils';
+export {ComponentDebugMetadata, DirectiveDebugMetadata, getComponent, getContext, getDirectiveMetadata, getDirectives, getHostElement, getInjector, getListeners, getOwningComponent, getRootComponents, Listener} from './util/discovery_utils';
