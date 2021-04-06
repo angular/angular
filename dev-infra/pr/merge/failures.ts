@@ -77,13 +77,13 @@ export class PullRequestFailure {
 
   static hasBreakingChanges(label: TargetLabel) {
     const message = `Cannot merge into branch for "${label.pattern}" as the pull request has ` +
-        `breaking changes.  Breaking changes can only be merged with the "target: major" label.`;
+        `breaking changes. Breaking changes can only be merged with the "target: major" label.`;
     return new this(message);
   }
 
   static hasFeatureCommits(label: TargetLabel) {
     const message = `Cannot merge into branch for "${label.pattern}" as the pull request has ` +
-        'commits with the "feat" type.  New features can only be merged with the "target: minor" ' +
+        'commits with the "feat" type. New features can only be merged with the "target: minor" ' +
         'or "target: major" label.';
     return new this(message);
   }
