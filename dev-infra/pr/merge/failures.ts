@@ -87,4 +87,16 @@ export class PullRequestFailure {
         'or "target: major" label.';
     return new this(message);
   }
+
+  static missingBreakingChangeLabel() {
+    const message = 'Pull Request has at least one commit containing a breaking change note, but ' +
+        'does not have a breaking change label.';
+    return new this(message);
+  }
+
+  static missingBreakingChangeCommit() {
+    const message = 'Pull Request has a breaking change label, but does not contain any commits ' +
+        'with breaking change notes.';
+    return new this(message);
+  }
 }
