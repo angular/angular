@@ -7,7 +7,7 @@
  */
 
 import {params, types as graphQLTypes} from 'typed-graphqlify';
-import {parseCommitMessage} from '../../commit-message/parse';
+import {Commit, parseCommitMessage} from '../../commit-message/parse';
 import {red, warn} from '../../utils/console';
 
 import {GitClient} from '../../utils/git/index';
@@ -18,6 +18,9 @@ import {PullRequestFailure} from './failures';
 import {matchesPattern} from './string-pattern';
 import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest, InvalidTargetBranchError, InvalidTargetLabelError} from './target-label';
 import {PullRequestMergeTask} from './task';
+
+/** The default label for labeling pull requests containing a breaking change. */
+const BreakingChangeLabel = 'breaking changes';
 
 /** Interface that describes a pull request. */
 export interface PullRequest {
@@ -75,10 +78,12 @@ export async function loadAndValidatePullRequest(
     throw error;
   }
 
+  /** List of parsed commits for all of the commits in the pull request. */
+  const commitsInPr = prData.commits.nodes.map(n => parseCommitMessage(n.commit.message));
+
   try {
-    /** Commit message strings for all commits in the pull request. */
-    const commitMessages = prData.commits.nodes.map(n => n.commit.message);
-    assertChangesAllowForTargetLabel(commitMessages, targetLabel, config);
+    assertChangesAllowForTargetLabel(commitsInPr, targetLabel, config);
+    assertCorrectBreakingChangeLabeling(commitsInPr, labels, config);
   } catch (error) {
     return error;
   }
@@ -182,16 +187,14 @@ export function isPullRequest(v: PullRequestFailure|PullRequest): v is PullReque
  * PullRequestFailure otherwise.
  */
 function assertChangesAllowForTargetLabel(
-    rawCommits: string[], label: TargetLabel, config: MergeConfig) {
+    commits: Commit[], label: TargetLabel, config: MergeConfig) {
   /**
    * List of commit scopes which are exempted from target label content requirements. i.e. no `feat`
    * scopes in patch branches, no breaking changes in minor or patch changes.
    */
   const exemptedScopes = config.targetLabelExemptScopes || [];
-  /** List of parsed commits which are subject to content requirements for the target label. */
-  let commits = rawCommits.map(parseCommitMessage).filter(commit => {
-    return !exemptedScopes.includes(commit.scope);
-  });
+  /** List of commits which are subject to content requirements for the target label. */
+  commits = commits.filter(commit => !exemptedScopes.includes(commit.scope));
   switch (label.pattern) {
     case 'target: major':
       break;
@@ -216,5 +219,25 @@ function assertChangesAllowForTargetLabel(
       warn(red('WARNING: Unable to confirm all commits in the pull request are eligible to be'));
       warn(red(`merged into the target branch: ${label.pattern}`));
       break;
+  }
+}
+
+/**
+ * Assert the pull request has the proper label for breaking changes if there are breaking change
+ * commits, and only has the label if there are breaking change commits.
+ */
+function assertCorrectBreakingChangeLabeling(
+    commits: Commit[], labels: string[], config: MergeConfig) {
+  /** Whether the PR has a label noting a breaking change. */
+  const hasLabel = labels.includes(config.breakingChangeLabel || BreakingChangeLabel);
+  //** Whether the PR has at least one commit which notes a breaking change. */
+  const hasCommit = commits.some(commit => commit.breakingChanges.length !== 0);
+
+  if (!hasLabel && hasCommit) {
+    throw PullRequestFailure.missingBreakingChangeLabel();
+  }
+
+  if (hasLabel && !hasCommit) {
+    throw PullRequestFailure.missingBreakingChangeCommit();
   }
 }
