@@ -729,7 +729,7 @@ jobs:
           # We temporarily ignore the "engines" because the Angular components repository has
           # minimum dependency on NodeJS v12 and Yarn 1.19.1, but the framework repository uses
           # older versions.
-          command: yarn --ignore-engines --cwd ${COMPONENTS_REPO_TMP_DIR} install --frozen-lockfile --non-interactive  --cache-folder ~/.cache/yarn
+          command: yarn --ignore-engines --cwd ${COMPONENTS_REPO_TMP_DIR} install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
       - save_cache:
           key: *components_repo_unit_tests_cache_key
           paths:
