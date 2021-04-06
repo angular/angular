@@ -3353,6 +3353,17 @@ var PullRequestFailure = /** @class */ (function () {
             "your auth token has write access."; }
         return new this(message);
     };
+    PullRequestFailure.hasBreakingChanges = function (label) {
+        var message = "Cannot merge into branch for \"" + label.pattern + "\" as the pull request has " +
+            "breaking changes.  Breaking changes can only be merged with the \"target: major\" label.";
+        return new this(message);
+    };
+    PullRequestFailure.hasFeatureCommits = function (label) {
+        var message = "Cannot merge into branch for \"" + label.pattern + "\" as the pull request has " +
+            'commits with the "feat" type.  New features can only be merged with the "target: minor" or ' +
+            '"target: major" label.';
+        return new this(message);
+    };
     return PullRequestFailure;
 }());
 
@@ -3411,6 +3422,12 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                             return [2 /*return*/, new PullRequestFailure(error.failureMessage)];
                         }
                         throw error;
+                    }
+                    try {
+                        assertCorrectTargetForChanges(prData.commits.nodes.map(function (n) { return n.commit.message; }), targetLabel);
+                    }
+                    catch (error) {
+                        return [2 /*return*/, error];
                     }
                     state = prData.commits.nodes.slice(-1)[0].commit.status.state;
                     if (state === 'FAILURE' && !ignoreNonFatalFailures) {
@@ -3502,6 +3519,39 @@ function fetchPullRequestFromGithub(git, prNumber) {
 /** Whether the specified value resolves to a pull request. */
 function isPullRequest(v) {
     return v.targetBranches !== undefined;
+}
+/**
+ * Assert the commits provided are allowed to merge to the provided target label, throwing a
+ * PullRequestFailure otherwise.
+ */
+function assertCorrectTargetForChanges(rawCommits, label) {
+    /** List of ParsedCommits for all of the commits in the pull request. */
+    var commits = rawCommits.map(parseCommitMessage);
+    switch (label.pattern) {
+        case 'target: major':
+            break;
+        case 'target: minor':
+            // Check if any commits in the PR contains a breaking change.
+            if (commits.some(function (commit) { return commit.breakingChanges.length !== 0; })) {
+                throw PullRequestFailure.hasBreakingChanges(label);
+            }
+            break;
+        case 'target: patch':
+        case 'target: lts':
+            // Check if any commits in the PR contains a breaking change.
+            if (commits.some(function (commit) { return commit.breakingChanges.length !== 0; })) {
+                throw PullRequestFailure.hasBreakingChanges(label);
+            }
+            // Check if any commits in the PR contains a commit type of "feat".
+            if (commits.some(function (commit) { return commit.type === 'feat'; })) {
+                throw PullRequestFailure.hasFeatureCommits(label);
+            }
+            break;
+        default:
+            warn(red('WARNING: Unable to confirm all commits in the PR are eligible to be merged'));
+            warn(red("into the target branch: " + label.pattern));
+            break;
+    }
 }
 
 /**
