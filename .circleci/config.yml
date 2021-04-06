@@ -28,6 +28,10 @@ var_3: &cache_key v4-angular-node-12-{{ checksum ".bazelversion" }}-{{ checksum 
 # be slower due to its growing size.
 var_4: &cache_key_fallback v4-angular-node-12-{{ checksum ".bazelversion" }}
 
+# Windows needs its own cache key because binaries in node_modules are different.
+var_3_win: &cache_key_win v4-angular-win-node-12-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
+var_4_win: &cache_key_win_fallback v4-angular-win-node-12-{{ checksum ".bazelversion" }}
+
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
 var_5: &components_repo_unit_tests_cache_key v1-angular-components-09e68db8ed5b1253f2fe38ff954ef0df019fc25a
@@ -187,7 +191,12 @@ commands:
       - run: ./.circleci/windows-env.ps1
       - run: node --version
       - run: yarn --version
-      - run: yarn install --frozen-lockfile --non-interactive
+      - restore_cache:
+          keys:
+            - *cache_key_win
+            - *cache_key_win_fallback
+      # On Windows `~/` is not resolved when using as a CLI value. `../` results in the same path.
+      - run: yarn install --frozen-lockfile --non-interactive --cache-folder ../.cache/yarn
 
   notify_webhook_on_fail:
     description: Notify a webhook about failure
@@ -784,6 +793,11 @@ jobs:
           name: Test all windows CI targets
           command: yarn bazel test --config=ivy --build_tag_filters=-no-windows --test_tag_filters="-no-ivy-aot,-no-windows,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/... //packages/localize/...
           no_output_timeout: 15m
+      # Save dependencies to use on subsequent runs.
+      - save_cache:
+          key: *cache_key_win
+          paths:
+            - ~/.cache/yarn
 
 
 workflows:
