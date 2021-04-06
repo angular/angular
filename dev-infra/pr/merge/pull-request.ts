@@ -12,7 +12,7 @@ import {red, warn} from '../../utils/console';
 
 import {GitClient} from '../../utils/git/index';
 import {getPr} from '../../utils/github';
-import {TargetLabel} from './config';
+import {MergeConfig, TargetLabel} from './config';
 
 import {PullRequestFailure} from './failures';
 import {matchesPattern} from './string-pattern';
@@ -76,11 +76,14 @@ export async function loadAndValidatePullRequest(
   }
 
   try {
-    assertCorrectTargetForChanges(prData.commits.nodes.map(n => n.commit.message), targetLabel);
+    /** Commit message strings for all commits in the pull request. */
+    const commitMessages = prData.commits.nodes.map(n => n.commit.message);
+    assertChangesAllowForTargetLabel(commitMessages, targetLabel, config);
   } catch (error) {
     return error;
   }
 
+  /** The combined status of the latest commit in the pull request. */
   const state = prData.commits.nodes.slice(-1)[0].commit.status.state;
   if (state === 'FAILURE' && !ignoreNonFatalFailures) {
     return PullRequestFailure.failingCiJobs();
@@ -121,15 +124,18 @@ export async function loadAndValidatePullRequest(
     hasCaretakerNote,
     targetBranches,
     title: prData.title,
-    commitCount: prData.commits.nodes.length,
+    commitCount: prData.commits.totalCount,
   };
 }
 
-/* GraphQL schema for the response body the requested PR. */
+/* GraphQL schema for the response body the requested pull request. */
 const PR_SCHEMA = {
   url: graphQLTypes.string,
   number: graphQLTypes.number,
-  commits: params({first: 100}, {
+  // Only the last 100 commits from a pull request are obtained as we likely will never see a pull
+  // requests with more than 100 commits.
+  commits: params({last: 100}, {
+    totalCount: graphQLTypes.number,
     nodes: [{
       commit: {
         status: {
@@ -154,7 +160,8 @@ const PR_SCHEMA = {
 async function fetchPullRequestFromGithub(
     git: GitClient, prNumber: number): Promise<typeof PR_SCHEMA|null> {
   try {
-    return await getPr(PR_SCHEMA, prNumber, git);
+    const x = await getPr(PR_SCHEMA, prNumber, git);
+    return x;
   } catch (e) {
     // If the pull request could not be found, we want to return `null` so
     // that the error can be handled gracefully.
@@ -174,32 +181,40 @@ export function isPullRequest(v: PullRequestFailure|PullRequest): v is PullReque
  * Assert the commits provided are allowed to merge to the provided target label, throwing a
  * PullRequestFailure otherwise.
  */
-function assertCorrectTargetForChanges(rawCommits: string[], label: TargetLabel) {
-  /** List of ParsedCommits for all of the commits in the pull request. */
-  const commits = rawCommits.map(parseCommitMessage);
+function assertChangesAllowForTargetLabel(
+    rawCommits: string[], label: TargetLabel, config: MergeConfig) {
+  /**
+   * List of commit scopes which are exempted from target label content requirements. i.e. no `feat`
+   * scopes in patch branches, no breaking changes in minor or patch changes.
+   */
+  const exemptedScopes = config.targetLabelExemptScopes || [];
+  /** List of parsed commits which are subject to content requirements for the target label. */
+  let commits = rawCommits.map(parseCommitMessage).filter(commit => {
+    return !exemptedScopes.includes(commit.scope);
+  });
   switch (label.pattern) {
     case 'target: major':
       break;
     case 'target: minor':
-      // Check if any commits in the PR contains a breaking change.
+      // Check if any commits in the pull request contains a breaking change.
       if (commits.some(commit => commit.breakingChanges.length !== 0)) {
         throw PullRequestFailure.hasBreakingChanges(label);
       }
       break;
     case 'target: patch':
     case 'target: lts':
-      // Check if any commits in the PR contains a breaking change.
+      // Check if any commits in the pull request contains a breaking change.
       if (commits.some(commit => commit.breakingChanges.length !== 0)) {
         throw PullRequestFailure.hasBreakingChanges(label);
       }
-      // Check if any commits in the PR contains a commit type of "feat".
+      // Check if any commits in the pull request contains a commit type of "feat".
       if (commits.some(commit => commit.type === 'feat')) {
         throw PullRequestFailure.hasFeatureCommits(label);
       }
       break;
     default:
-      warn(red('WARNING: Unable to confirm all commits in the PR are eligible to be merged'));
-      warn(red(`into the target branch: ${label.pattern}`));
+      warn(red('WARNING: Unable to confirm all commits in the pull request are eligible to be'));
+      warn(red(`merged into the target branch: ${label.pattern}`));
       break;
   }
 }
