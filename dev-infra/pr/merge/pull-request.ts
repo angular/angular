@@ -7,6 +7,8 @@
  */
 
 import {params, types as graphQLTypes} from 'typed-graphqlify';
+import {parseCommitMessage} from '../../commit-message/parse';
+import {red, warn} from '../../utils/console';
 
 import {GitClient} from '../../utils/git/index';
 import {getPr} from '../../utils/github';
@@ -73,6 +75,11 @@ export async function loadAndValidatePullRequest(
     throw error;
   }
 
+  try {
+    assertCorrectTargetForChanges(prData.commits.nodes.map(n => n.commit.message), targetLabel);
+  } catch (error) {
+    return error;
+  }
 
   const state = prData.commits.nodes.slice(-1)[0].commit.status.state;
   if (state === 'FAILURE' && !ignoreNonFatalFailures) {
@@ -126,7 +133,7 @@ const PR_SCHEMA = {
     nodes: [{
       commit: {
         status: {
-          state: graphQLTypes.oneOf(['FAILURE' as const, 'PENDING' as const, 'SUCCESS' as const]),
+          state: graphQLTypes.oneOf(['FAILURE', 'PENDING', 'SUCCESS'] as const),
         },
         message: graphQLTypes.string,
       },
@@ -161,4 +168,38 @@ async function fetchPullRequestFromGithub(
 /** Whether the specified value resolves to a pull request. */
 export function isPullRequest(v: PullRequestFailure|PullRequest): v is PullRequest {
   return (v as PullRequest).targetBranches !== undefined;
+}
+
+/**
+ * Assert the commits provided are allowed to merge to the provided target label, throwing a
+ * PullRequestFailure otherwise.
+ */
+function assertCorrectTargetForChanges(rawCommits: string[], label: TargetLabel) {
+  /** List of ParsedCommits for all of the commits in the pull request. */
+  const commits = rawCommits.map(parseCommitMessage);
+  switch (label.pattern) {
+    case 'target: major':
+      break;
+    case 'target: minor':
+      // Check if any commits in the PR contains a breaking change.
+      if (commits.some(commit => commit.breakingChanges.length !== 0)) {
+        throw PullRequestFailure.hasBreakingChanges(label);
+      }
+      break;
+    case 'target: patch':
+    case 'target: lts':
+      // Check if any commits in the PR contains a breaking change.
+      if (commits.some(commit => commit.breakingChanges.length !== 0)) {
+        throw PullRequestFailure.hasBreakingChanges(label);
+      }
+      // Check if any commits in the PR contains a commit type of "feat".
+      if (commits.some(commit => commit.type === 'feat')) {
+        throw PullRequestFailure.hasFeatureCommits(label);
+      }
+      break;
+    default:
+      warn(red('WARNING: Unable to confirm all commits in the PR are eligible to be merged'));
+      warn(red(`into the target branch: ${label.pattern}`));
+      break;
+  }
 }
