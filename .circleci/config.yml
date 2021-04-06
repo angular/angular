@@ -26,7 +26,7 @@ var_3: &cache_key v1-angular-node-12-{{ checksum ".bazelversion" }}-{{ checksum 
 # We invalidate the cache if the Bazel version changes because otherwise the `bazelisk` cache
 # folder will contain all previously used versions and ultimately cause the cache restoring to
 # be slower due to its growing size.
-var_4: &cache_key_fallback v1-angular-node-12-{{ checksum ".bazelversion" }}
+var_4: &cache_key_fallback v1-angular-node-12-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
