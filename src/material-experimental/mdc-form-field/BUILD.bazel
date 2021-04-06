@@ -65,7 +65,6 @@ sass_library(
         "@npm//:node_modules/@material/line-ripple/mdc-line-ripple.scss",
         "@npm//:node_modules/@material/notched-outline/mdc-notched-outline.scss",
         "@npm//:node_modules/@material/ripple/common.scss",
-        "@npm//:node_modules/@material/textfield/_functions.scss",
         "@npm//:node_modules/@material/textfield/mdc-text-field.scss",
     ],
     deps = [

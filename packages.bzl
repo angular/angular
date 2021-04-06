@@ -2,7 +2,7 @@
 # all in-sync. This map is passed to each ng_package rule to stamp out the appropriate
 # version for the placeholders.
 ANGULAR_PACKAGE_VERSION = "^12.0.0-0 || ^13.0.0-0"
-MDC_PACKAGE_VERSION = "^11.0.0-canary.0cde52f5a.0"
+MDC_PACKAGE_VERSION = "^11.0.0-canary.15604bd0d.0"
 TSLIB_PACKAGE_VERSION = "^2.1.0"
 
 # Each placer holder is used to stamp versions during the build process, replacing the key with it's
