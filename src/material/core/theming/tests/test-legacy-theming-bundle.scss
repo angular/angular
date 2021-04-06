@@ -1,26 +1,28 @@
 // Imports the theming bundle. Needs to be an absolute bin-dir import path as on Windows,
 // runfiles are not symlinked, so the Sass compilation happens in the workspace directory
 // with the include paths being set to the `bazel-bin` directory.
-@use 'src/material' as mat;
+// stylelint-disable-next-line material/no-import
+@import 'src/material/theming';
 
 // Disable theme style duplication warnings. This test intentionally generates
 // the same themes multiple times.
-mat.$theme-ignore-duplication-warnings: true;
+$mat-theme-ignore-duplication-warnings: true;
 
-@include mat.core();
+@include mat-core();
 
-$theme: mat.define-light-theme((
+$theme: mat-light-theme((
   color: (
-    primary: mat.$red-palette,
-    accent: mat.$blue-palette,
+    primary: $mat-red,
+    accent: $mat-blue,
   ),
   density: -2,
 ));
 
 // If one of these mixins is not available, the compilation will fail and the
 // test will be reported as failing.
-@include mat.all-component-themes($theme);
-@include mat.all-component-typographies();
-@include mat.all-component-colors($theme);
-@include mat.core-theme($theme);
-@include mat.button-theme($theme);
+@include angular-material-theme($theme);
+@include angular-material-typography();
+@include angular-material-color($theme);
+@include angular-material-density($theme);
+@include mat-core-theme($theme);
+@include mat-button-theme($theme);
