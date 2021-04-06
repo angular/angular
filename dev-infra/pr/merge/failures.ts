@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {TargetLabel} from './config';
+
 /**
  * Class that can be used to describe pull request failures. A failure
  * is described through a human-readable message and a flag indicating
@@ -70,6 +72,19 @@ export class PullRequestFailure {
   static insufficientPermissionsToMerge(
       message = `Insufficient Github API permissions to merge pull request. Please ensure that ` +
           `your auth token has write access.`) {
+    return new this(message);
+  }
+
+  static hasBreakingChanges(label: TargetLabel) {
+    const message = `Cannot merge into branch for "${label.pattern}" as the pull request has ` +
+        `breaking changes.  Breaking changes can only be merged with the "target: major" label.`;
+    return new this(message);
+  }
+
+  static hasFeatureCommits(label: TargetLabel) {
+    const message = `Cannot merge into branch for "${label.pattern}" as the pull request has ` +
+        'commits with the "feat" type.  New features can only be merged with the "target: minor" ' +
+        'or "target: major" label.';
     return new this(message);
   }
 }
