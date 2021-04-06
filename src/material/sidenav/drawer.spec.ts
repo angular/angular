@@ -642,6 +642,17 @@ describe('MatDrawer', () => {
     }));
 
   });
+
+  it('should mark the drawer content as scrollable', () => {
+    const fixture = TestBed.createComponent(BasicTestApp);
+    fixture.detectChanges();
+
+    const content = fixture.debugElement.query(By.css('.mat-drawer-inner-container'));
+    const scrollable = content.injector.get(CdkScrollable);
+    expect(scrollable).toBeTruthy();
+    expect(scrollable.getElementRef().nativeElement).toBe(content.nativeElement);
+  });
+
 });
 
 describe('MatDrawerContainer', () => {
