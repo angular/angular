@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as Octokit from '@octokit/rest';
+import {params, types as graphQLTypes} from 'typed-graphqlify';
 
 import {GitClient} from '../../utils/git/index';
+import {getPr} from '../../utils/github';
 import {TargetLabel} from './config';
 
 import {PullRequestFailure} from './failures';
@@ -53,7 +54,7 @@ export async function loadAndValidatePullRequest(
     return PullRequestFailure.notFound();
   }
 
-  const labels = prData.labels.map(l => l.name);
+  const labels = prData.labels.nodes.map(l => l.name);
 
   if (!labels.some(name => matchesPattern(name, config.mergeReadyLabel))) {
     return PullRequestFailure.notMergeReady();
@@ -72,17 +73,16 @@ export async function loadAndValidatePullRequest(
     throw error;
   }
 
-  const {data: {state}} =
-      await git.github.repos.getCombinedStatusForRef({...git.remoteParams, ref: prData.head.sha});
 
-  if (state === 'failure' && !ignoreNonFatalFailures) {
+  const state = prData.commits.nodes.slice(-1)[0].commit.status.state;
+  if (state === 'FAILURE' && !ignoreNonFatalFailures) {
     return PullRequestFailure.failingCiJobs();
   }
-  if (state === 'pending' && !ignoreNonFatalFailures) {
+  if (state === 'PENDING' && !ignoreNonFatalFailures) {
     return PullRequestFailure.pendingCiJobs();
   }
 
-  const githubTargetBranch = prData.base.ref;
+  const githubTargetBranch = prData.baseRefOid;
   const requiredBaseSha =
       config.requiredBaseCommits && config.requiredBaseCommits[githubTargetBranch];
   const needsCommitMessageFixup = !!config.commitMessageFixupLabel &&
@@ -105,7 +105,7 @@ export async function loadAndValidatePullRequest(
   }
 
   return {
-    url: prData.html_url,
+    url: prData.url,
     prNumber,
     labels,
     requiredBaseSha,
@@ -114,16 +114,40 @@ export async function loadAndValidatePullRequest(
     hasCaretakerNote,
     targetBranches,
     title: prData.title,
-    commitCount: prData.commits,
+    commitCount: prData.commits.nodes.length,
   };
 }
 
+/* GraphQL schema for the response body the requested PR. */
+const PR_SCHEMA = {
+  url: graphQLTypes.string,
+  number: graphQLTypes.number,
+  commits: params({first: 100}, {
+    nodes: [{
+      commit: {
+        status: {
+          state: graphQLTypes.oneOf(['FAILURE' as const, 'PENDING' as const, 'SUCCESS' as const]),
+        },
+        message: graphQLTypes.string,
+      },
+    }],
+  }),
+  baseRefOid: graphQLTypes.string,
+  title: graphQLTypes.string,
+  labels: params({first: 100}, {
+    nodes: [{
+      name: graphQLTypes.string,
+    }]
+  }),
+};
+
+
+
 /** Fetches a pull request from Github. Returns null if an error occurred. */
 async function fetchPullRequestFromGithub(
-    git: GitClient, prNumber: number): Promise<Octokit.PullsGetResponse|null> {
+    git: GitClient, prNumber: number): Promise<typeof PR_SCHEMA|null> {
   try {
-    const result = await git.github.pulls.get({...git.remoteParams, pull_number: prNumber});
-    return result.data;
+    return await getPr(PR_SCHEMA, prNumber, git);
   } catch (e) {
     // If the pull request could not be found, we want to return `null` so
     // that the error can be handled gracefully.
