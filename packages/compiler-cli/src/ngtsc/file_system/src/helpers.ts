@@ -29,11 +29,21 @@ export function absoluteFrom(path: string): AbsoluteFsPath {
   return fs.resolve(path);
 }
 
+const ABSOLUTE_PATH = Symbol('AbsolutePath');
+
 /**
- * Extract an `AbsoluteFsPath` from a `ts.SourceFile`.
+ * Extract an `AbsoluteFsPath` from a `ts.SourceFile`-like object.
  */
-export function absoluteFromSourceFile(sf: ts.SourceFile): AbsoluteFsPath {
-  return fs.resolve(sf.fileName);
+export function absoluteFromSourceFile(sf: {fileName: string}): AbsoluteFsPath {
+  const sfWithPatch = sf as {fileName: string, [ABSOLUTE_PATH]?: AbsoluteFsPath};
+
+  if (sfWithPatch[ABSOLUTE_PATH] === undefined) {
+    sfWithPatch[ABSOLUTE_PATH] = fs.resolve(sfWithPatch.fileName);
+  }
+
+  // Non-null assertion needed since TS doesn't narrow the type of fields that use a symbol as a key
+  // apparently.
+  return sfWithPatch[ABSOLUTE_PATH]!;
 }
 
 /**
