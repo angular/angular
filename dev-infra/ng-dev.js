@@ -3365,6 +3365,16 @@ var PullRequestFailure = /** @class */ (function () {
             'or "target: major" label.';
         return new this(message);
     };
+    PullRequestFailure.missingBreakingChangeLabel = function () {
+        var message = 'Pull Request has at least one commit containing a breaking change note, but ' +
+            'does not have a breaking change label.';
+        return new this(message);
+    };
+    PullRequestFailure.missingBreakingChangeCommit = function () {
+        var message = 'Pull Request has a breaking change label, but does not contain any commits ' +
+            'with breaking change notes.';
+        return new this(message);
+    };
     return PullRequestFailure;
 }());
 
@@ -3391,6 +3401,8 @@ function getTargettedBranchesConfirmationPromptMessage(pullRequest) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/** The default label for labeling pull requests containing a breaking change. */
+var BreakingChangeLabel = 'breaking changes';
 /**
  * Loads and validates the specified pull request against the given configuration.
  * If the pull requests fails, a pull request failure is returned.
@@ -3399,7 +3411,7 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
     var git = _a.git, config = _a.config;
     if (ignoreNonFatalFailures === void 0) { ignoreNonFatalFailures = false; }
     return tslib.__awaiter(this, void 0, void 0, function () {
-        var prData, labels, targetLabel, commitMessages, state, githubTargetBranch, requiredBaseSha, needsCommitMessageFixup, hasCaretakerNote, targetBranches, error_1;
+        var prData, labels, targetLabel, commitsInPr, state, githubTargetBranch, requiredBaseSha, needsCommitMessageFixup, hasCaretakerNote, targetBranches, error_1;
         return tslib.__generator(this, function (_b) {
             switch (_b.label) {
                 case 0: return [4 /*yield*/, fetchPullRequestFromGithub(git, prNumber)];
@@ -3424,9 +3436,10 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                         }
                         throw error;
                     }
+                    commitsInPr = prData.commits.nodes.map(function (n) { return parseCommitMessage(n.commit.message); });
                     try {
-                        commitMessages = prData.commits.nodes.map(function (n) { return n.commit.message; });
-                        assertChangesAllowForTargetLabel(commitMessages, targetLabel, config);
+                        assertChangesAllowForTargetLabel(commitsInPr, targetLabel, config);
+                        assertCorrectBreakingChangeLabeling(commitsInPr, labels, config);
                     }
                     catch (error) {
                         return [2 /*return*/, error];
@@ -3531,16 +3544,14 @@ function isPullRequest(v) {
  * Assert the commits provided are allowed to merge to the provided target label, throwing a
  * PullRequestFailure otherwise.
  */
-function assertChangesAllowForTargetLabel(rawCommits, label, config) {
+function assertChangesAllowForTargetLabel(commits, label, config) {
     /**
      * List of commit scopes which are exempted from target label content requirements. i.e. no `feat`
      * scopes in patch branches, no breaking changes in minor or patch changes.
      */
     var exemptedScopes = config.targetLabelExemptScopes || [];
-    /** List of parsed commits which are subject to content requirements for the target label. */
-    var commits = rawCommits.map(parseCommitMessage).filter(function (commit) {
-        return !exemptedScopes.includes(commit.scope);
-    });
+    /** List of commits which are subject to content requirements for the target label. */
+    commits = commits.filter(function (commit) { return !exemptedScopes.includes(commit.scope); });
     switch (label.pattern) {
         case 'target: major':
             break;
@@ -3565,6 +3576,22 @@ function assertChangesAllowForTargetLabel(rawCommits, label, config) {
             warn(red('WARNING: Unable to confirm all commits in the pull request are eligible to be'));
             warn(red("merged into the target branch: " + label.pattern));
             break;
+    }
+}
+/**
+ * Assert the pull request has the proper label for breaking changes if there are breaking change
+ * commits, and only has the label if there are breaking change commits.
+ */
+function assertCorrectBreakingChangeLabeling(commits, labels, config) {
+    /** Whether the PR has a label noting a breaking change. */
+    var hasLabel = labels.includes(config.breakingChangeLabel || BreakingChangeLabel);
+    //** Whether the PR has at least one commit which notes a breaking change. */
+    var hasCommit = commits.some(function (commit) { return commit.breakingChanges.length !== 0; });
+    if (!hasLabel && hasCommit) {
+        throw PullRequestFailure.missingBreakingChangeLabel();
+    }
+    if (hasLabel && !hasCommit) {
+        throw PullRequestFailure.missingBreakingChangeCommit();
     }
 }
 

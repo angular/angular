@@ -64,6 +64,8 @@ export interface MergeConfig {
   caretakerNoteLabel?: string|RegExp;
   /** Label which can be applied to fixup commit messages in the merge script. */
   commitMessageFixupLabel: string|RegExp;
+  /** Label that is applied when a breaking change is made in the pull request. */
+  breakingChangeLabel?: string;
   /**
    * Whether pull requests should be merged using the Github API. This can be enabled
    * if projects want to have their pull requests show up as `Merged` in the Github UI.
