@@ -118,7 +118,7 @@ export class TraitCompiler implements ProgramTypeCheckAdapter {
     // type of 'void', so `undefined` is used instead.
     const promises: Promise<void>[] = [];
 
-    const priorWork = this.incrementalBuild.priorWorkFor(sf);
+    const priorWork = this.incrementalBuild.priorAnalysisFor(sf);
     if (priorWork !== null) {
       for (const priorRecord of priorWork) {
         this.adopt(priorRecord);

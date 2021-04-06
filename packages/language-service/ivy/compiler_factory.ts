@@ -8,6 +8,7 @@
 
 import {CompilationTicket, freshCompilationTicket, incrementalFromCompilerTicket, NgCompiler, resourceChangeTicket} from '@angular/compiler-cli/src/ngtsc/core';
 import {NgCompilerOptions} from '@angular/compiler-cli/src/ngtsc/core/api';
+import {AbsoluteFsPath, resolve} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {TrackedIncrementalBuildStrategy} from '@angular/compiler-cli/src/ngtsc/incremental';
 import {ProgramDriver} from '@angular/compiler-cli/src/ngtsc/program_driver';
 
@@ -34,7 +35,10 @@ export class CompilerFactory {
 
   getOrCreate(): NgCompiler {
     const program = this.programStrategy.getProgram();
-    const modifiedResourceFiles = this.adapter.getModifiedResourceFiles() ?? new Set();
+    const modifiedResourceFiles = new Set<AbsoluteFsPath>();
+    for (const fileName of this.adapter.getModifiedResourceFiles() ?? []) {
+      modifiedResourceFiles.add(resolve(fileName));
+    }
 
     if (this.compiler !== null && program === this.compiler.getCurrentProgram()) {
       if (modifiedResourceFiles.size > 0) {
