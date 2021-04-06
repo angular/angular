@@ -1,32 +1,32 @@
-# Contributors page
+# Página de colaboradores
 
-We have an official accounting of who is on the Angular Team, who are "trusted collaborators" (see https://team.angular.io/collaborators), and so on.
+Tenemos una contabilidad oficial de quiénes están en el Angular Team, quiénes son "colaboradores de confianza" (consulte https://team.angular.io/collaborators), etc.
 
-The `contributors.json` should be maintained to keep our "org chart" in a single consistent place.
+El `contributors.json` debe mantenerse para mantener nuestro" organigrama "en un solo lugar coherente.
 
-## GDE listings
+## Lista de GDE
 
-There are two pages:
+Hay dos páginas:
 
 - https://developers.google.com/experts/all/technology/angular
-(Googlers: source at http://google3/googledata/devsite/content/en/experts/all/technology/angular.html)
-which is maintained by Dawid Ostrowski based on a spreadsheet
+(Empleados de Google: fuente en http://google3/googledata/devsite/content/en/experts/all/technology/angular.html)
+que es mantenido por Dawid Ostrowski basado en una hoja de cálculo
 https://docs.google.com/spreadsheets/d/1_Ls2Kle7NxPBIG8f3OEVZ4gJZ8OCTtBxGYwMPb1TUVE/edit#gid=0.
   <!-- gkalpak: That URL doesn't seem to work any more. New URL: https://developers.google.com/programs/experts/directory/ (?) -->
 
-- Ours: https://angular.io/about?group=GDE which is derived from `contributors.json`.
+- Nuestro: https://angular.io/about?group=GDE que se deriva de `contributors.json`.
 
-Alex Eagle is investigating how to reconcile these two lists.
+Alex Eagle está investigando cómo conciliar estas dos listas.
 
-## About the data
+## Sobre los datos
 
-- Keys in `contributors.json` should be GitHub handles. (Most currently are, but not all.)
-  This will allow us to use GitHub as the default source for things like name, avatar, etc.
-- Pictures are stored in `aio/content/images/bios/<picture-filename>`.
+- Las llaves en `contributors.json` deben ser identificadores de GitHub. (La mayoría lo son actualmente, pero no todos).
+   Esto nos permitirá usar GitHub como fuente predeterminada para cosas como nombre, avatar, etc.
+- Las imágenes se almacenan en `aio/content/images/bios/<picture-filename>`.
 
-## Processing the data
+## Procesando los datos
 
-Install https://stedolan.github.io/jq/ which is amazing.
+Instala https://stedolan.github.io/jq/ que es increíble.
 
 ```sh
 for handle in $(jq keys[] --raw-output < aio/content/marketing/contributors.json)
@@ -35,4 +35,4 @@ do echo -e "\n$handle\n---------\n"; curl --silent -H "Authorization: token ${TO
 done
 ```
 
-Relevant scripts are stored in `aio/scripts/contributors/`.
+Los scripts relevantes se almacenan en `aio/scripts/contributors/`.
