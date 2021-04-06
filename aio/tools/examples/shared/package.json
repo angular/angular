@@ -7,14 +7,15 @@
     "http-server": "http-server",
     "protractor": "protractor",
     "webdriver:update": "node ../../../../scripts/webdriver-manager-update.js",
-    "preinstall": "node ../../../../tools/yarn/check-yarn.js",
     "postinstall": "yarn webdriver:update",
     "sync-deps": "node sync-boilerplate-dependencies"
   },
   "//engines-comment": "Keep this in sync with /package.json and /aio/package.json",
   "engines": {
     "node": ">=10.19.0 <16.0.0",
-    "yarn": ">=1.21.1 <2"
+    "yarn": ">=1.21.1 <2",
+    "npm": "Please use yarn instead of NPM to install dependencies"
+
   },
   "keywords": [],
   "author": "",
