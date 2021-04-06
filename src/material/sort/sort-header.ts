@@ -140,7 +140,12 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
   set disableClear(v) { this._disableClear = coerceBooleanProperty(v); }
   private _disableClear: boolean;
 
-  constructor(public _intl: MatSortHeaderIntl,
+  constructor(
+              /**
+               * @deprecated `_intl` parameter isn't being used anymore and it'll be removed.
+               * @breaking-change 13.0.0
+               */
+              public _intl: MatSortHeaderIntl,
               private _changeDetectorRef: ChangeDetectorRef,
               // `MatSort` is not optionally injected, but just asserted manually w/ better error.
               // tslint:disable-next-line: lightweight-tokens

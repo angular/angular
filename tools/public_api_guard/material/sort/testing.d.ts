@@ -7,7 +7,6 @@ export declare class MatSortHarness extends ComponentHarness {
 
 export declare class MatSortHeaderHarness extends ComponentHarness {
     click(): Promise<void>;
-    getAriaLabel(): Promise<string | null>;
     getLabel(): Promise<string>;
     getSortDirection(): Promise<SortDirection>;
     isActive(): Promise<boolean>;

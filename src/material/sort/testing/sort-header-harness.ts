@@ -47,15 +47,6 @@ export class MatSortHeaderHarness extends ComponentHarness {
     return '';
   }
 
-  /**
-   * Gets the aria-label of the sort header.
-   * @deprecated The sort header no longer has an `aria-label`. This method will be removed.
-   * @breaking-change 11.0.0
-   */
-  async getAriaLabel(): Promise<string|null> {
-    return (await this._container()).getAttribute('aria-label');
-  }
-
   /** Gets whether the sort header is currently being sorted by. */
   async isActive(): Promise<boolean> {
     return !!(await this.getSortDirection());
