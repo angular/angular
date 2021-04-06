@@ -127,7 +127,7 @@
     "cross-spawn": "^7.0.3",
     "css-selector-parser": "^1.4.1",
     "dgeni": "^0.4.14",
-    "dgeni-packages": "^0.28.4",
+    "dgeni-packages": "^0.29.0",
     "entities": "^2.2.0",
     "esbuild": "^0.11.4",
     "eslint": "^7.23.0",
@@ -181,10 +181,5 @@
     "watchr": "^6.9.0",
     "xregexp": "^5.0.2",
     "yargs": "^16.2.0"
-  },
-  "// 1": "`dgeni-packages` dependency on `typescript` is too loose which causes an incompatble version to be downloaded.",
-  "// 2": "TODO: remove when it's fixed upstream. (https://github.com/angular/dgeni-packages/pull/304)",
-  "resolutions": {
-    "typescript@>=3.2.0 <4.0": "~3.2.4"
   }
 }
