@@ -940,6 +940,14 @@
     "bio": "Alexey is a web development addict who likes diving deep into the source code and sharing his knowledge through visualization. Creator of ng-run.com",
     "groups": ["GDE"]
   },
+  "zackderose": {
+    "name": "Zack DeRose",
+    "picture": "zack-derose.jpg",
+    "bio": "Zack DeRose is Senior Engineer for Narwhal Technologies, where he works to build a better world through tech! In addition to the enterprise consulting done at Narwhal, Zack is very interested in content creation and teaching others! When not building web applications at scale, Zack enjoys a robust family life at scale, living in Phoenix AZ with his wife and 6 kids.",
+    "groups": ["GDE"],
+    "twitter": "zackderose",
+    "website": "https://zackderose.dev"
+  },
   "zarend": {
     "name": "Zach Arend",
     "picture": "zach-arend.jpg",
