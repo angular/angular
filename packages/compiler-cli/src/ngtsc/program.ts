@@ -253,7 +253,7 @@ export class NgtscProgram implements api.Program {
                   continue;
                 }
 
-                this.compiler.incrementalDriver.recordSuccessfulEmit(writtenSf);
+                this.compiler.incrementalCompilation.recordSuccessfulEmit(writtenSf);
               }
             }
             this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
@@ -274,7 +274,7 @@ export class NgtscProgram implements api.Program {
           continue;
         }
 
-        if (this.compiler.incrementalDriver.safeToSkipEmit(targetSourceFile)) {
+        if (this.compiler.incrementalCompilation.safeToSkipEmit(targetSourceFile)) {
           this.compiler.perfRecorder.eventCount(PerfEvent.EmitSkipSourceFile);
           continue;
         }

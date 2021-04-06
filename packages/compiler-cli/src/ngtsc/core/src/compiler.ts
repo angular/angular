@@ -15,7 +15,7 @@ import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, ngE
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
 import {AbsoluteFsPath, LogicalFileSystem, resolve} from '../../file_system';
 import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
-import {IncrementalBuildStrategy, IncrementalDriver} from '../../incremental';
+import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
 import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, ResourceRegistry} from '../../metadata';
@@ -89,11 +89,10 @@ export interface FreshCompilationTicket {
 export interface IncrementalTypeScriptCompilationTicket {
   kind: CompilationTicketKind.IncrementalTypeScript;
   options: NgCompilerOptions;
-  oldProgram: ts.Program;
   newProgram: ts.Program;
   incrementalBuildStrategy: IncrementalBuildStrategy;
+  incrementalCompilation: IncrementalCompilation;
   programDriver: ProgramDriver;
-  newDriver: IncrementalDriver;
   enableTemplateTypeChecker: boolean;
   usePoisonedData: boolean;
   perfRecorder: ActivePerfRecorder;
@@ -143,10 +142,11 @@ export function freshCompilationTicket(
 export function incrementalFromCompilerTicket(
     oldCompiler: NgCompiler, newProgram: ts.Program,
     incrementalBuildStrategy: IncrementalBuildStrategy, programDriver: ProgramDriver,
-    modifiedResourceFiles: Set<string>, perfRecorder: ActivePerfRecorder|null): CompilationTicket {
+    modifiedResourceFiles: Set<AbsoluteFsPath>,
+    perfRecorder: ActivePerfRecorder|null): CompilationTicket {
   const oldProgram = oldCompiler.getCurrentProgram();
-  const oldDriver = oldCompiler.incrementalStrategy.getIncrementalDriver(oldProgram);
-  if (oldDriver === null) {
+  const oldState = oldCompiler.incrementalStrategy.getIncrementalState(oldProgram);
+  if (oldState === null) {
     // No incremental step is possible here, since no IncrementalDriver was found for the old
     // program.
     return freshCompilationTicket(
@@ -158,8 +158,8 @@ export function incrementalFromCompilerTicket(
     perfRecorder = ActivePerfRecorder.zeroedToNow();
   }
 
-  const newDriver = IncrementalDriver.reconcile(
-      oldProgram, oldDriver, newProgram, modifiedResourceFiles, perfRecorder);
+  const incrementalCompilation = IncrementalCompilation.incremental(
+      newProgram, oldProgram, oldState, modifiedResourceFiles, perfRecorder);
 
   return {
     kind: CompilationTicketKind.IncrementalTypeScript,
@@ -167,9 +167,8 @@ export function incrementalFromCompilerTicket(
     usePoisonedData: oldCompiler.usePoisonedData,
     options: oldCompiler.options,
     incrementalBuildStrategy,
+    incrementalCompilation,
     programDriver,
-    newDriver,
-    oldProgram,
     newProgram,
     perfRecorder,
   };
@@ -179,24 +178,23 @@ export function incrementalFromCompilerTicket(
  * Create a `CompilationTicket` directly from an old `ts.Program` and associated Angular compilation
  * state, along with a new `ts.Program`.
  */
-export function incrementalFromDriverTicket(
-    oldProgram: ts.Program, oldDriver: IncrementalDriver, newProgram: ts.Program,
+export function incrementalFromStateTicket(
+    oldProgram: ts.Program, oldState: IncrementalState, newProgram: ts.Program,
     options: NgCompilerOptions, incrementalBuildStrategy: IncrementalBuildStrategy,
-    programDriver: ProgramDriver, modifiedResourceFiles: Set<string>,
+    programDriver: ProgramDriver, modifiedResourceFiles: Set<AbsoluteFsPath>,
     perfRecorder: ActivePerfRecorder|null, enableTemplateTypeChecker: boolean,
     usePoisonedData: boolean): CompilationTicket {
   if (perfRecorder === null) {
     perfRecorder = ActivePerfRecorder.zeroedToNow();
   }
-  const newDriver = IncrementalDriver.reconcile(
-      oldProgram, oldDriver, newProgram, modifiedResourceFiles, perfRecorder);
+  const incrementalCompilation = IncrementalCompilation.incremental(
+      newProgram, oldProgram, oldState, modifiedResourceFiles, perfRecorder);
   return {
     kind: CompilationTicketKind.IncrementalTypeScript,
-    oldProgram,
     newProgram,
     options,
     incrementalBuildStrategy,
-    newDriver,
+    incrementalCompilation,
     programDriver,
     enableTemplateTypeChecker,
     usePoisonedData,
@@ -284,7 +282,7 @@ export class NgCompiler {
             ticket.tsProgram,
             ticket.programDriver,
             ticket.incrementalBuildStrategy,
-            IncrementalDriver.fresh(ticket.tsProgram),
+            IncrementalCompilation.fresh(ticket.tsProgram),
             ticket.enableTemplateTypeChecker,
             ticket.usePoisonedData,
             ticket.perfRecorder,
@@ -296,7 +294,7 @@ export class NgCompiler {
             ticket.newProgram,
             ticket.programDriver,
             ticket.incrementalBuildStrategy,
-            ticket.newDriver,
+            ticket.incrementalCompilation,
             ticket.enableTemplateTypeChecker,
             ticket.usePoisonedData,
             ticket.perfRecorder,
@@ -314,7 +312,7 @@ export class NgCompiler {
       private inputProgram: ts.Program,
       readonly programDriver: ProgramDriver,
       readonly incrementalStrategy: IncrementalBuildStrategy,
-      readonly incrementalDriver: IncrementalDriver,
+      readonly incrementalCompilation: IncrementalCompilation,
       readonly enableTemplateTypeChecker: boolean,
       readonly usePoisonedData: boolean,
       private livePerfRecorder: ActivePerfRecorder,
@@ -343,7 +341,7 @@ export class NgCompiler {
     this.resourceManager = new AdapterResourceLoader(adapter, this.options);
     this.cycleAnalyzer = new CycleAnalyzer(
         new ImportGraph(inputProgram.getTypeChecker(), this.delegatingPerfRecorder));
-    this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, inputProgram);
+    this.incrementalStrategy.setIncrementalState(this.incrementalCompilation.state, inputProgram);
 
     this.ignoreForDiagnostics =
         new Set(inputProgram.getSourceFiles().filter(sf => this.adapter.isShim(sf)));
@@ -365,6 +363,16 @@ export class NgCompiler {
 
   get perfRecorder(): ActivePerfRecorder {
     return this.livePerfRecorder;
+  }
+
+  /**
+   * Exposes the `IncrementalCompilation` under an old property name that the CLI uses, avoiding a
+   * chicken-and-egg problem with the rename to `incrementalCompilation`.
+   *
+   * TODO(alxhub): remove when the CLI uses the new name.
+   */
+  get incrementalDriver(): IncrementalCompilation {
+    return this.incrementalCompilation;
   }
 
   private updateWithChangedResources(
@@ -411,7 +419,7 @@ export class NgCompiler {
   getResourceDependencies(file: ts.SourceFile): string[] {
     this.ensureAnalyzed();
 
-    return this.incrementalDriver.depGraph.getResourceDependencies(file);
+    return this.incrementalCompilation.depGraph.getResourceDependencies(file);
   }
 
   /**
@@ -684,7 +692,7 @@ export class NgCompiler {
 
       // At this point, analysis is complete and the compiler can now calculate which files need to
       // be emitted, so do that.
-      this.incrementalDriver.recordSuccessfulAnalysis(traitCompiler);
+      this.incrementalCompilation.recordSuccessfulAnalysis(traitCompiler);
 
       this.perfRecorder.memory(PerfCheckpoint.Resolve);
     });
@@ -829,7 +837,7 @@ export class NgCompiler {
     }
 
     const program = this.programDriver.getProgram();
-    this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, program);
+    this.incrementalStrategy.setIncrementalState(this.incrementalCompilation.state, program);
     this.currentProgram = program;
 
     return diagnostics;
@@ -846,7 +854,7 @@ export class NgCompiler {
     }
 
     const program = this.programDriver.getProgram();
-    this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, program);
+    this.incrementalStrategy.setIncrementalState(this.incrementalCompilation.state, program);
     this.currentProgram = program;
 
     return diagnostics;
@@ -935,7 +943,8 @@ export class NgCompiler {
       aliasingHost = new UnifiedModulesAliasingHost(this.adapter.unifiedModulesHost);
     }
 
-    const evaluator = new PartialEvaluator(reflector, checker, this.incrementalDriver.depGraph);
+    const evaluator =
+        new PartialEvaluator(reflector, checker, this.incrementalCompilation.depGraph);
     const dtsReader = new DtsMetadataReader(checker, reflector);
     const localMetaRegistry = new LocalMetadataRegistry();
     const localMetaReader: MetadataReader = localMetaRegistry;
@@ -943,7 +952,7 @@ export class NgCompiler {
     const scopeRegistry =
         new LocalModuleScopeRegistry(localMetaReader, depScopeReader, refEmitter, aliasingHost);
     const scopeReader: ComponentScopeReader = scopeRegistry;
-    const semanticDepGraphUpdater = this.incrementalDriver.getSemanticDepGraphUpdater();
+    const semanticDepGraphUpdater = this.incrementalCompilation.semanticDepGraphUpdater;
     const metaRegistry = new CompoundMetadataRegistry([localMetaRegistry, scopeRegistry]);
     const injectableRegistry = new InjectableClassRegistry(reflector);
 
@@ -992,8 +1001,9 @@ export class NgCompiler {
           this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
           this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
-          cycleHandlingStrategy, refEmitter, this.incrementalDriver.depGraph, injectableRegistry,
-          semanticDepGraphUpdater, this.closureCompilerEnabled, this.delegatingPerfRecorder),
+          cycleHandlingStrategy, refEmitter, this.incrementalCompilation.depGraph,
+          injectableRegistry, semanticDepGraphUpdater, this.closureCompilerEnabled,
+          this.delegatingPerfRecorder),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
@@ -1020,7 +1030,7 @@ export class NgCompiler {
     ];
 
     const traitCompiler = new TraitCompiler(
-        handlers, reflector, this.delegatingPerfRecorder, this.incrementalDriver,
+        handlers, reflector, this.delegatingPerfRecorder, this.incrementalCompilation,
         this.options.compileNonExportedClasses !== false, compilationMode, dtsTransforms,
         semanticDepGraphUpdater);
 
@@ -1028,13 +1038,13 @@ export class NgCompiler {
     // happens, they need to be tracked by the `NgCompiler`.
     const notifyingDriver =
         new NotifyingProgramDriverWrapper(this.programDriver, (program: ts.Program) => {
-          this.incrementalStrategy.setIncrementalDriver(this.incrementalDriver, program);
+          this.incrementalStrategy.setIncrementalState(this.incrementalCompilation.state, program);
           this.currentProgram = program;
         });
 
     const templateTypeChecker = new TemplateTypeCheckerImpl(
         this.inputProgram, notifyingDriver, traitCompiler, this.getTypeCheckingConfig(), refEmitter,
-        reflector, this.adapter, this.incrementalDriver, scopeRegistry, typeCheckScopeRegistry,
+        reflector, this.adapter, this.incrementalCompilation, scopeRegistry, typeCheckScopeRegistry,
         this.delegatingPerfRecorder);
 
     return {
