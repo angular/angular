@@ -197,11 +197,6 @@ commands:
             - *cache_key_win_fallback
       # On Windows `~/` is not resolved when using as a CLI value. `../` results in the same path.
       - run: yarn install --frozen-lockfile --non-interactive --cache-folder ../.cache/yarn
-      # Save dependencies to use on subsequent runs.
-      - save_cache:
-          key: *cache_key_win
-          paths:
-            - ~/.cache/yarn
 
   notify_webhook_on_fail:
     description: Notify a webhook about failure
@@ -798,6 +793,11 @@ jobs:
           name: Test all windows CI targets
           command: yarn bazel test --config=ivy --build_tag_filters=-no-windows --test_tag_filters="-no-ivy-aot,-no-windows,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/... //packages/localize/...
           no_output_timeout: 15m
+      # Save dependencies to use on subsequent runs.
+      - save_cache:
+          key: *cache_key_win
+          paths:
+            - ~/.cache/yarn
 
 
 workflows:
