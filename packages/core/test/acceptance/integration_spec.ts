@@ -1955,6 +1955,41 @@ describe('acceptance integration tests', () => {
     expect(content).toContain(`<span title="Your last name is Baggins">`);
   });
 
+  it('should handle nullish coalescing inside host bindings', () => {
+    const logs: string[] = [];
+
+    @Directive({
+      selector: '[some-dir]',
+      host: {
+        '[attr.first-name]': `'Hello, ' + (firstName ?? 'Frodo') + '!'`,
+        '(click)': `logLastName(lastName ?? lastNameFallback ?? 'unknown')`
+      }
+    })
+    class Dir {
+      firstName: string|null = null;
+      lastName: string|null = null;
+      lastNameFallback = 'Baggins';
+
+      logLastName(name: string) {
+        logs.push(name);
+      }
+    }
+
+    @Component({template: `<button some-dir>Click me</button>`})
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App, Dir]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const button = fixture.nativeElement.querySelector('button');
+    button.click();
+    fixture.detectChanges();
+
+    expect(button.getAttribute('first-name')).toBe('Hello, Frodo!');
+    expect(logs).toEqual(['Baggins']);
+  });
+
   describe('tView.firstUpdatePass', () => {
     function isFirstUpdatePass() {
       const lView = getLView();

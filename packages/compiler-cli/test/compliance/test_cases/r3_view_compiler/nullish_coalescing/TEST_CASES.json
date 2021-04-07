@@ -34,6 +34,23 @@
           "failureMessage": "Incorrect template"
         }
       ]
+    },
+    {
+      "description": "should handle nullish coalescing inside host bindings",
+      "inputFiles": [
+        "nullish_coalescing_host.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "nullish_coalescing_host_bindings.js",
+              "generated": "nullish_coalescing_host.js"
+            }
+          ],
+          "failureMessage": "Incorrect host bindings"
+        }
+      ]
     }
   ]
 }
