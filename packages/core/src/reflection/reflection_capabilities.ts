@@ -65,6 +65,32 @@ export const ES2015_INHERITED_CLASS_WITH_CTOR =
 export const ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR =
     /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(\)\s*{\s*super\(\.\.\.arguments\)/;
 
+function defaultCtorCanonicalizer(ctor: string) {
+  return ctor;
+}
+
+let canonicalizeCtor = defaultCtorCanonicalizer;
+
+/**
+ * Registers a function which computes the canonical form of a constructor function's source code,
+ * to conform with the expected structures as outlined in the above regular expressions.
+ *
+ * This is used in testing environments, where code coverage instrumentation statements have been
+ * injected which need to be removed.
+ *
+ * @param fn The function that implements the canonicalization behavior.
+ */
+export function setCtorCanonicalizer(fn: (ctor: string) => string): void {
+  canonicalizeCtor = fn;
+}
+
+/**
+ * Resets the constructor canonicalization to the default behavior.
+ */
+export function resetCtorCanonicalizer(): void {
+  canonicalizeCtor = defaultCtorCanonicalizer;
+}
+
 /**
  * Determine whether a stringified type is a class which delegates its constructor
  * to its parent.
@@ -74,9 +100,10 @@ export const ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR =
  * an initialized instance property.
  */
 export function isDelegateCtor(typeStr: string): boolean {
-  return ES5_DELEGATE_CTOR.test(typeStr) ||
-      ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR.test(typeStr) ||
-      (ES2015_INHERITED_CLASS.test(typeStr) && !ES2015_INHERITED_CLASS_WITH_CTOR.test(typeStr));
+  const canonical = canonicalizeCtor(typeStr);
+  return ES5_DELEGATE_CTOR.test(canonical) ||
+      ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR.test(canonical) ||
+      (ES2015_INHERITED_CLASS.test(canonical) && !ES2015_INHERITED_CLASS_WITH_CTOR.test(canonical));
 }
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {

@@ -27,12 +27,15 @@ import {
   ɵRender3ComponentFactory as ComponentFactory,
   ɵRender3NgModuleRef as NgModuleRef,
   ɵresetCompiledComponents as resetCompiledComponents,
+  ɵresetCtorCanonicalizer as resetCtorCanonicalizer,
+  ɵsetCtorCanonicalizer as setCtorCanonicalizer,
   ɵstringify as stringify,
 } from '@angular/core';
 
 /* clang-format on */
 
 import {ComponentFixture} from './component_fixture';
+import {stripIstanbulInstrumentationStatements} from './ctor_canonicalizer';
 import {MetadataOverride} from './metadata_override';
 import {R3TestBedCompiler} from './r3_test_bed_compiler';
 import {TestBed} from './test_bed';
@@ -219,6 +222,7 @@ export class TestBedRender3 implements TestBed {
     this.platform = platform;
     this.ngModule = ngModule;
     this._compiler = new R3TestBedCompiler(this.platform, this.ngModule);
+    setCtorCanonicalizer(stripIstanbulInstrumentationStatements);
   }
 
   /**
@@ -231,6 +235,7 @@ export class TestBedRender3 implements TestBed {
     this._compiler = null;
     this.platform = null!;
     this.ngModule = null!;
+    resetCtorCanonicalizer();
   }
 
   resetTestingModule(): void {
