@@ -3355,12 +3355,12 @@ var PullRequestFailure = /** @class */ (function () {
     };
     PullRequestFailure.hasBreakingChanges = function (label) {
         var message = "Cannot merge into branch for \"" + label.pattern + "\" as the pull request has " +
-            "breaking changes.  Breaking changes can only be merged with the \"target: major\" label.";
+            "breaking changes. Breaking changes can only be merged with the \"target: major\" label.";
         return new this(message);
     };
     PullRequestFailure.hasFeatureCommits = function (label) {
         var message = "Cannot merge into branch for \"" + label.pattern + "\" as the pull request has " +
-            'commits with the "feat" type.  New features can only be merged with the "target: minor" ' +
+            'commits with the "feat" type. New features can only be merged with the "target: minor" ' +
             'or "target: major" label.';
         return new this(message);
     };
@@ -3466,17 +3466,20 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                         hasCaretakerNote: hasCaretakerNote,
                         targetBranches: targetBranches,
                         title: prData.title,
-                        commitCount: prData.commits.nodes.length,
+                        commitCount: prData.commits.totalCount,
                     }];
             }
         });
     });
 }
-/* GraphQL schema for the response body the requested PR. */
+/* GraphQL schema for the response body the requested pull request. */
 var PR_SCHEMA$2 = {
     url: typedGraphqlify.types.string,
     number: typedGraphqlify.types.number,
-    commits: typedGraphqlify.params({ first: 100 }, {
+    // Only the last 100 commits from a pull request are obtained as we likely will never see a pull
+    // requests with more than 100 commits.
+    commits: typedGraphqlify.params({ last: 100 }, {
+        totalCount: typedGraphqlify.types.number,
         nodes: [{
                 commit: {
                     status: {
@@ -3497,13 +3500,15 @@ var PR_SCHEMA$2 = {
 /** Fetches a pull request from Github. Returns null if an error occurred. */
 function fetchPullRequestFromGithub(git, prNumber) {
     return tslib.__awaiter(this, void 0, void 0, function () {
-        var e_1;
+        var x, e_1;
         return tslib.__generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     _a.trys.push([0, 2, , 3]);
                     return [4 /*yield*/, getPr(PR_SCHEMA$2, prNumber, git)];
-                case 1: return [2 /*return*/, _a.sent()];
+                case 1:
+                    x = _a.sent();
+                    return [2 /*return*/, x];
                 case 2:
                     e_1 = _a.sent();
                     // If the pull request could not be found, we want to return `null` so
@@ -3539,25 +3544,25 @@ function assertChangesAllowForTargetLabel(rawCommits, label, config) {
         case 'target: major':
             break;
         case 'target: minor':
-            // Check if any commits in the PR contains a breaking change.
+            // Check if any commits in the pull request contains a breaking change.
             if (commits.some(function (commit) { return commit.breakingChanges.length !== 0; })) {
                 throw PullRequestFailure.hasBreakingChanges(label);
             }
             break;
         case 'target: patch':
         case 'target: lts':
-            // Check if any commits in the PR contains a breaking change.
+            // Check if any commits in the pull request contains a breaking change.
             if (commits.some(function (commit) { return commit.breakingChanges.length !== 0; })) {
                 throw PullRequestFailure.hasBreakingChanges(label);
             }
-            // Check if any commits in the PR contains a commit type of "feat".
+            // Check if any commits in the pull request contains a commit type of "feat".
             if (commits.some(function (commit) { return commit.type === 'feat'; })) {
                 throw PullRequestFailure.hasFeatureCommits(label);
             }
             break;
         default:
-            warn(red('WARNING: Unable to confirm all commits in the PR are eligible to be merged'));
-            warn(red("into the target branch: " + label.pattern));
+            warn(red('WARNING: Unable to confirm all commits in the pull request are eligible to be'));
+            warn(red("merged into the target branch: " + label.pattern));
             break;
     }
 }
