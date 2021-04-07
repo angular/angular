@@ -32,7 +32,6 @@
     "// 2": "Find the usage you are looking for with:",
     "// 3": "yarn ng-dev --help",
     "/ ": "",
-    "preinstall": "",
     "postinstall": "node scripts/webdriver-manager-update.js && node --preserve-symlinks --preserve-symlinks-main ./tools/postinstall-patches.js",
     "prepare": "husky install",
     "test-ivy-aot": "bazelisk test --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot --test_tag_filters=-no-ivy-aot,-fixme-ivy-aot",
