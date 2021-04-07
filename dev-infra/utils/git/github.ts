@@ -96,6 +96,7 @@ export class GithubClient extends Octokit {
         authorization: `token ${this._token}`,
       },
     };
+
     return (await graphql(query(queryObject), graphqlRequestParams)) as T;
   }
 
