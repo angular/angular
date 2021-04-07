@@ -47,11 +47,6 @@ INTEGRATION_TESTS = {
         # TODO: (FW-2165) cli-hello-world-lazy fails on a bundle size check with Ivy bundles
         "tags": ["fixme-ivy-aot"],
     },
-    "cli-hello-world-lazy-rollup": {
-        "commands": "payload_size_tracking",
-        # TODO: cli-hello-world-lazy-rollup fails on a bundle size check because Ivy and VE sizes are different
-        "tags": ["no-ivy-aot"],
-    },
     "dynamic-compiler": {"tags": ["no-ivy-aot"]},
     "forms": {
         "commands": "payload_size_tracking",
