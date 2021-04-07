@@ -26,6 +26,17 @@ export interface ProgramDriver {
    * included in the type-checking program.
    */
   updateFiles(contents: Map<AbsoluteFsPath, string>, updateMode: UpdateMode): void;
+
+  /**
+   * Retrieve a string version for a given `ts.SourceFile`, which much change when the contents of
+   * the file have changed.
+   *
+   * If this method is present, the compiler will use these versions in addition to object identity
+   * for `ts.SourceFile`s to determine what's changed between two incremental programs. This is
+   * valuable for some clients (such as the Language Service) that treat `ts.SourceFile`s as mutable
+   * objects.
+   */
+  getSourceFileVersion?(sf: ts.SourceFile): string;
 }
 
 export enum UpdateMode {

@@ -66,6 +66,11 @@ export interface AnalyzedIncrementalState {
    * carried forward from a prior one.
    */
   emitted: Set<AbsoluteFsPath>;
+
+  /**
+   * Map of source file paths to the version of this file as seen in the compilation.
+   */
+  versions: Map<AbsoluteFsPath, string>|null;
 }
 
 /**
