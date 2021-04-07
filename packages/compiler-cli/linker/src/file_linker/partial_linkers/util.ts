@@ -34,8 +34,8 @@ export function parseEnum<TExpression, TEnum>(
 /**
  * Parse a dependency structure from an AST object.
  */
-export function getDep<TExpression>(depObj: AstObject<R3DeclareDependencyMetadata, TExpression>):
-    R3DependencyMetadata {
+export function getDependency<TExpression>(
+    depObj: AstObject<R3DeclareDependencyMetadata, TExpression>): R3DependencyMetadata {
   const isAttribute = depObj.has('attribute') && depObj.getBoolean('attribute');
   const token = depObj.getOpaque('token');
   // Normally `attribute` is a string literal and so its `attributeNameType` is the same string

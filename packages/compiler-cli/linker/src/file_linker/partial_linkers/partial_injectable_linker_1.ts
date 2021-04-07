@@ -12,7 +12,7 @@ import {AstObject} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
 import {PartialLinker} from './partial_linker';
-import {extractForwardRef, getDep, wrapReference} from './util';
+import {extractForwardRef, getDependency, wrapReference} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareInjectable()` call expressions.
@@ -62,7 +62,7 @@ export function toR3InjectableMeta<TExpression>(
   }
 
   if (metaObj.has('deps')) {
-    meta.deps = metaObj.getArray('deps').map(dep => getDep(dep.getObject()));
+    meta.deps = metaObj.getArray('deps').map(dep => getDependency(dep.getObject()));
   }
 
   return meta;

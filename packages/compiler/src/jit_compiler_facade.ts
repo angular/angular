@@ -71,7 +71,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
           useFactory: wrapExpression(facade, USE_FACTORY),
           useValue: convertToProviderExpression(facade, USE_VALUE),
           useExisting: convertToProviderExpression(facade, USE_EXISTING),
-          deps: facade.deps && facade.deps.map(convertR3DependencyMetadata),
+          deps: facade.deps?.map(convertR3DependencyMetadata),
         },
         /* resolveForwardRefs */ true);
 
@@ -92,7 +92,7 @@ export class CompilerFacadeImpl implements CompilerFacade {
           useFactory: wrapExpression(facade, USE_FACTORY),
           useValue: convertToProviderExpression(facade, USE_VALUE),
           useExisting: convertToProviderExpression(facade, USE_EXISTING),
-          deps: facade.deps && facade.deps.map(convertR3DeclareDependencyMetadata),
+          deps: facade.deps?.map(convertR3DeclareDependencyMetadata),
         },
         /* resolveForwardRefs */ true);
 
@@ -470,7 +470,7 @@ type R3DirectiveMetadataFacadeNoPropAndWhitespace =
     Pick<R3DirectiveMetadataFacade, Exclude<keyof R3DirectiveMetadataFacade, 'propMetadata'>>;
 
 /**
- * Convert the expression, if present` to an `R3ProviderExpression`.
+ * Convert the expression, if present to an `R3ProviderExpression`.
  *
  * In JIT mode we do not want the compiler to wrap the expression in a `forwardRef()` call because,
  * if it is referencing a type that has not yet been defined, it will have already been wrapped in

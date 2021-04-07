@@ -50,7 +50,7 @@ export function compileInjectable(type: Type<any>, meta?: Injectable): void {
           ngFactoryDef = compiler.compileFactory(angularCoreDiEnv, `ng:///${type.name}/ɵfac.js`, {
             name: type.name,
             type,
-            typeArgumentCount: 0,
+            typeArgumentCount: 0,  // In JIT mode types are not available nor used.
             deps: reflectDependencies(type),
             target: compiler.FactoryTarget.Injectable
           });

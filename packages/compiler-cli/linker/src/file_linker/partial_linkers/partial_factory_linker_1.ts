@@ -12,7 +12,7 @@ import {AstObject} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 
 import {PartialLinker} from './partial_linker';
-import {getDep, parseEnum, wrapReference} from './util';
+import {getDependency, parseEnum, wrapReference} from './util';
 
 /**
  * A `PartialLinker` that is designed to process `ɵɵngDeclareFactory()` call expressions.
@@ -45,11 +45,11 @@ export function toR3FactoryMeta<TExpression>(
     internalType: metaObj.getOpaque('type'),
     typeArgumentCount: 0,
     target: parseEnum(metaObj.getValue('target'), FactoryTarget),
-    deps: getDeps(metaObj, 'deps'),
+    deps: getDependencies(metaObj, 'deps'),
   };
 }
 
-function getDeps<TExpression>(
+function getDependencies<TExpression>(
     metaObj: AstObject<R3DeclareFactoryMetadata, TExpression>,
     propName: keyof R3DeclareFactoryMetadata): R3DependencyMetadata[]|null|'invalid' {
   if (!metaObj.has(propName)) {
@@ -57,7 +57,7 @@ function getDeps<TExpression>(
   }
   const deps = metaObj.getValue(propName);
   if (deps.isArray()) {
-    return deps.getArray().map(dep => getDep(dep.getObject()));
+    return deps.getArray().map(dep => getDependency(dep.getObject()));
   }
   if (deps.isString()) {
     return 'invalid';

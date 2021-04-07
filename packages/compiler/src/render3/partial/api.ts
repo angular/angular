@@ -383,25 +383,30 @@ export interface R3DeclareInjectableMetadata extends R3PartialDeclaration {
    * providers of an injector.
    */
   providedIn?: o.Expression;
+
   /**
    * If provided, an expression that evaluates to a class to use when creating an instance of this
    * injectable.
    */
   useClass?: o.Expression;
+
   /**
    * If provided, an expression that evaluates to a function to use when creating an instance of
    * this injectable.
    */
   useFactory?: o.Expression;
+
   /**
    * If provided, an expression that evaluates to a token of another injectable that this injectable
    * aliases.
    */
   useExisting?: o.Expression;
+
   /**
    * If provided, an expression that evaluates to the value of the instance of this injectable.
    */
   useValue?: o.Expression;
+
   /**
    * An array of dependencies to support instantiating this injectable via `useClass` or
    * `useFactory`.

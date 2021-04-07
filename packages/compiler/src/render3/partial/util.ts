@@ -54,6 +54,8 @@ export function toOptionalLiteralMap<T>(
 export function compileDependencies(deps: R3DependencyMetadata[]|'invalid'|null): o.LiteralExpr|
     o.LiteralArrayExpr {
   if (deps === 'invalid') {
+    // The `deps` can be set to the string "invalid"  by the `unwrapConstructorDependencies()`
+    // function, which tries to convert `ConstructorDeps` into `R3DependencyMetadata[]`.
     return o.literal('invalid');
   } else if (deps === null) {
     return o.literal(null);
