@@ -49,8 +49,8 @@ export declare class CdkFixedSizeVirtualScroll implements OnChanges {
     static ngAcceptInputType_itemSize: NumberInput;
     static ngAcceptInputType_maxBufferPx: NumberInput;
     static ngAcceptInputType_minBufferPx: NumberInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkFixedSizeVirtualScroll, "cdk-virtual-scroll-viewport[itemSize]", never, { "itemSize": "itemSize"; "minBufferPx": "minBufferPx"; "maxBufferPx": "maxBufferPx"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkFixedSizeVirtualScroll, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkFixedSizeVirtualScroll, "cdk-virtual-scroll-viewport[itemSize]", never, { "itemSize": "itemSize"; "minBufferPx": "minBufferPx"; "maxBufferPx": "maxBufferPx"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkFixedSizeVirtualScroll, never>;
 }
 
 export declare class CdkScrollable implements OnInit, OnDestroy {
@@ -65,14 +65,14 @@ export declare class CdkScrollable implements OnInit, OnDestroy {
     ngOnDestroy(): void;
     ngOnInit(): void;
     scrollTo(options: ExtendedScrollToOptions): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkScrollable, "[cdk-scrollable], [cdkScrollable]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkScrollable, [null, null, null, { optional: true; }]>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkScrollable, "[cdk-scrollable], [cdkScrollable]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkScrollable, [null, null, null, { optional: true; }]>;
 }
 
 export declare class CdkScrollableModule {
-    static ɵfac: i0.ɵɵFactoryDef<CdkScrollableModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<CdkScrollableModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<CdkScrollableModule, [typeof i1.CdkScrollable], never, [typeof i1.CdkScrollable]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkScrollableModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<CdkScrollableModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<CdkScrollableModule, [typeof i1.CdkScrollable], never, [typeof i1.CdkScrollable]>;
 }
 
 export declare class CdkVirtualForOf<T> implements CdkVirtualScrollRepeater<T>, CollectionViewer, DoCheck, OnDestroy {
@@ -96,8 +96,8 @@ export declare class CdkVirtualForOf<T> implements CdkVirtualScrollRepeater<T>, 
     ngDoCheck(): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_cdkVirtualForTemplateCacheSize: NumberInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkVirtualForOf<any>, "[cdkVirtualFor][cdkVirtualForOf]", never, { "cdkVirtualForOf": "cdkVirtualForOf"; "cdkVirtualForTrackBy": "cdkVirtualForTrackBy"; "cdkVirtualForTemplate": "cdkVirtualForTemplate"; "cdkVirtualForTemplateCacheSize": "cdkVirtualForTemplateCacheSize"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkVirtualForOf<any>, [null, null, null, null, { skipSelf: true; }, null]>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkVirtualForOf<any>, "[cdkVirtualFor][cdkVirtualForOf]", never, { "cdkVirtualForOf": "cdkVirtualForOf"; "cdkVirtualForTrackBy": "cdkVirtualForTrackBy"; "cdkVirtualForTemplate": "cdkVirtualForTemplate"; "cdkVirtualForTemplateCacheSize": "cdkVirtualForTemplateCacheSize"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkVirtualForOf<any>, [null, null, null, null, { skipSelf: true; }, null]>;
 }
 
 export declare type CdkVirtualForOfContext<T> = {
@@ -143,8 +143,8 @@ export declare class CdkVirtualScrollViewport extends CdkScrollable implements O
     setRenderedContentOffset(offset: number, to?: 'to-start' | 'to-end'): void;
     setRenderedRange(range: ListRange): void;
     setTotalContentSize(size: number): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<CdkVirtualScrollViewport, "cdk-virtual-scroll-viewport", never, { "orientation": "orientation"; }, { "scrolledIndexChange": "scrolledIndexChange"; }, never, ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkVirtualScrollViewport, [null, null, null, { optional: true; }, { optional: true; }, null, null]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<CdkVirtualScrollViewport, "cdk-virtual-scroll-viewport", never, { "orientation": "orientation"; }, { "scrolledIndexChange": "scrolledIndexChange"; }, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkVirtualScrollViewport, [null, null, null, { optional: true; }, { optional: true; }, null, null]>;
 }
 
 export declare const DEFAULT_RESIZE_TIME = 20;
@@ -177,14 +177,14 @@ export declare class ScrollDispatcher implements OnDestroy {
     ngOnDestroy(): void;
     register(scrollable: CdkScrollable): void;
     scrolled(auditTimeInMs?: number): Observable<CdkScrollable | void>;
-    static ɵfac: i0.ɵɵFactoryDef<ScrollDispatcher, [null, null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ScrollDispatcher, [null, null, { optional: true; }]>;
     static ɵprov: i0.ɵɵInjectableDef<ScrollDispatcher>;
 }
 
 export declare class ScrollingModule {
-    static ɵfac: i0.ɵɵFactoryDef<ScrollingModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<ScrollingModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<ScrollingModule, [typeof i2.CdkFixedSizeVirtualScroll, typeof i3.CdkVirtualForOf, typeof i4.CdkVirtualScrollViewport], [typeof i5.BidiModule, typeof i6.PlatformModule, typeof CdkScrollableModule], [typeof i5.BidiModule, typeof CdkScrollableModule, typeof i2.CdkFixedSizeVirtualScroll, typeof i3.CdkVirtualForOf, typeof i4.CdkVirtualScrollViewport]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ScrollingModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<ScrollingModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<ScrollingModule, [typeof i2.CdkFixedSizeVirtualScroll, typeof i3.CdkVirtualForOf, typeof i4.CdkVirtualScrollViewport], [typeof i5.BidiModule, typeof i6.PlatformModule, typeof CdkScrollableModule], [typeof i5.BidiModule, typeof CdkScrollableModule, typeof i2.CdkFixedSizeVirtualScroll, typeof i3.CdkVirtualForOf, typeof i4.CdkVirtualScrollViewport]>;
 }
 
 export declare class ViewportRuler implements OnDestroy {
@@ -198,7 +198,7 @@ export declare class ViewportRuler implements OnDestroy {
         height: number;
     }>;
     ngOnDestroy(): void;
-    static ɵfac: i0.ɵɵFactoryDef<ViewportRuler, [null, null, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ViewportRuler, [null, null, { optional: true; }]>;
     static ɵprov: i0.ɵɵInjectableDef<ViewportRuler>;
 }
 

@@ -13,14 +13,14 @@ export declare class MatNestedTreeNode<T, K = T> extends CdkNestedTreeNode<T, K>
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatNestedTreeNode<any, any>, "mat-nested-tree-node", ["matNestedTreeNode"], { "role": "role"; "disabled": "disabled"; "tabIndex": "tabIndex"; "node": "matNestedTreeNode"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatNestedTreeNode<any, any>, [null, null, null, { attribute: "tabindex"; }]>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatNestedTreeNode<any, any>, "mat-nested-tree-node", ["matNestedTreeNode"], { "role": "role"; "disabled": "disabled"; "tabIndex": "tabIndex"; "node": "matNestedTreeNode"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatNestedTreeNode<any, any>, [null, null, null, { attribute: "tabindex"; }]>;
 }
 
 export declare class MatTree<T, K = T> extends CdkTree<T, K> {
     _nodeOutlet: MatTreeNodeOutlet;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatTree<any, any>, "mat-tree", ["matTree"], {}, {}, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatTree<any, any>, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatTree<any, any>, "mat-tree", ["matTree"], {}, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatTree<any, any>, never>;
 }
 
 export declare class MatTreeFlatDataSource<T, F, K = F> extends DataSource<F> {
@@ -47,9 +47,9 @@ export declare class MatTreeFlattener<T, F, K = F> {
 }
 
 export declare class MatTreeModule {
-    static ɵfac: i0.ɵɵFactoryDef<MatTreeModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MatTreeModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatTreeModule, [typeof i1.MatNestedTreeNode, typeof i1.MatTreeNodeDef, typeof i2.MatTreeNodePadding, typeof i3.MatTreeNodeToggle, typeof i4.MatTree, typeof i1.MatTreeNode, typeof i5.MatTreeNodeOutlet], [typeof i6.CdkTreeModule, typeof i7.MatCommonModule], [typeof i7.MatCommonModule, typeof i1.MatNestedTreeNode, typeof i1.MatTreeNodeDef, typeof i2.MatTreeNodePadding, typeof i3.MatTreeNodeToggle, typeof i4.MatTree, typeof i1.MatTreeNode, typeof i5.MatTreeNodeOutlet]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatTreeModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MatTreeModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatTreeModule, [typeof i1.MatNestedTreeNode, typeof i1.MatTreeNodeDef, typeof i2.MatTreeNodePadding, typeof i3.MatTreeNodeToggle, typeof i4.MatTree, typeof i1.MatTreeNode, typeof i5.MatTreeNodeOutlet], [typeof i6.CdkTreeModule, typeof i7.MatCommonModule], [typeof i7.MatCommonModule, typeof i1.MatNestedTreeNode, typeof i1.MatTreeNodeDef, typeof i2.MatTreeNodePadding, typeof i3.MatTreeNodeToggle, typeof i4.MatTree, typeof i1.MatTreeNode, typeof i5.MatTreeNodeOutlet]>;
 }
 
 export declare class MatTreeNestedDataSource<T> extends DataSource<T> {
@@ -69,22 +69,22 @@ export declare class MatTreeNode<T, K = T> extends _MatTreeNodeMixinBase<T, K> i
     ngOnInit(): void;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_tabIndex: NumberInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNode<any, any>, "mat-tree-node", ["matTreeNode"], { "role": "role"; "disabled": "disabled"; "tabIndex": "tabIndex"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatTreeNode<any, any>, [null, null, { attribute: "tabindex"; }]>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatTreeNode<any, any>, "mat-tree-node", ["matTreeNode"], { "role": "role"; "disabled": "disabled"; "tabIndex": "tabIndex"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatTreeNode<any, any>, [null, null, { attribute: "tabindex"; }]>;
 }
 
 export declare class MatTreeNodeDef<T> extends CdkTreeNodeDef<T> {
     data: T;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNodeDef<any>, "[matTreeNodeDef]", never, { "when": "matTreeNodeDefWhen"; "data": "matTreeNode"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatTreeNodeDef<any>, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatTreeNodeDef<any>, "[matTreeNodeDef]", never, { "when": "matTreeNodeDefWhen"; "data": "matTreeNode"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatTreeNodeDef<any>, never>;
 }
 
 export declare class MatTreeNodeOutlet implements CdkTreeNodeOutlet {
     _node?: any;
     viewContainer: ViewContainerRef;
     constructor(viewContainer: ViewContainerRef, _node?: any);
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNodeOutlet, "[matTreeNodeOutlet]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatTreeNodeOutlet, [null, { optional: true; }]>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatTreeNodeOutlet, "[matTreeNodeOutlet]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatTreeNodeOutlet, [null, { optional: true; }]>;
 }
 
 export declare class MatTreeNodePadding<T, K = T> extends CdkTreeNodePadding<T, K> {
@@ -92,13 +92,13 @@ export declare class MatTreeNodePadding<T, K = T> extends CdkTreeNodePadding<T, 
     set indent(indent: number | string);
     get level(): number;
     set level(value: number);
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNodePadding<any, any>, "[matTreeNodePadding]", never, { "level": "matTreeNodePadding"; "indent": "matTreeNodePaddingIndent"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatTreeNodePadding<any, any>, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatTreeNodePadding<any, any>, "[matTreeNodePadding]", never, { "level": "matTreeNodePadding"; "indent": "matTreeNodePaddingIndent"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatTreeNodePadding<any, any>, never>;
 }
 
 export declare class MatTreeNodeToggle<T, K = T> extends CdkTreeNodeToggle<T, K> {
     get recursive(): boolean;
     set recursive(value: boolean);
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTreeNodeToggle<any, any>, "[matTreeNodeToggle]", never, { "recursive": "matTreeNodeToggleRecursive"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatTreeNodeToggle<any, any>, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatTreeNodeToggle<any, any>, "[matTreeNodeToggle]", never, { "recursive": "matTreeNodeToggleRecursive"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatTreeNodeToggle<any, any>, never>;
 }

@@ -27,7 +27,7 @@ export declare class MatSnackBar implements OnDestroy {
     open(message: string, action?: string, config?: MatSnackBarConfig): MatSnackBarRef<TextOnlySnackBar>;
     openFromComponent<T>(component: ComponentType<T>, config?: MatSnackBarConfig): MatSnackBarRef<T>;
     openFromTemplate(template: TemplateRef<any>, config?: MatSnackBarConfig): MatSnackBarRef<EmbeddedViewRef<any>>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSnackBar, [null, null, null, null, { optional: true; skipSelf: true; }, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBar, [null, null, null, null, { optional: true; skipSelf: true; }, null]>;
     static ɵprov: i0.ɵɵInjectableDef<MatSnackBar>;
 }
 
@@ -65,8 +65,8 @@ export declare class MatSnackBarContainer extends BasePortalOutlet implements On
     exit(): Observable<void>;
     ngOnDestroy(): void;
     onAnimationEnd(event: AnimationEvent): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSnackBarContainer, "snack-bar-container", never, {}, {}, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSnackBarContainer, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatSnackBarContainer, "snack-bar-container", never, {}, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarContainer, never>;
 }
 
 export interface MatSnackBarDismiss {
@@ -76,9 +76,9 @@ export interface MatSnackBarDismiss {
 export declare type MatSnackBarHorizontalPosition = 'start' | 'center' | 'end' | 'left' | 'right';
 
 export declare class MatSnackBarModule {
-    static ɵfac: i0.ɵɵFactoryDef<MatSnackBarModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MatSnackBarModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSnackBarModule, [typeof i1.MatSnackBarContainer, typeof i2.SimpleSnackBar], [typeof i3.OverlayModule, typeof i4.PortalModule, typeof i5.CommonModule, typeof i6.MatButtonModule, typeof i7.MatCommonModule], [typeof i1.MatSnackBarContainer, typeof i7.MatCommonModule]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBarModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MatSnackBarModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatSnackBarModule, [typeof i1.MatSnackBarContainer, typeof i2.SimpleSnackBar], [typeof i3.OverlayModule, typeof i4.PortalModule, typeof i5.CommonModule, typeof i6.MatButtonModule, typeof i7.MatCommonModule], [typeof i1.MatSnackBarContainer, typeof i7.MatCommonModule]>;
 }
 
 export declare class MatSnackBarRef<T> {
@@ -106,8 +106,8 @@ export declare class SimpleSnackBar implements TextOnlySnackBar {
     snackBarRef: MatSnackBarRef<SimpleSnackBar>;
     constructor(snackBarRef: MatSnackBarRef<SimpleSnackBar>, data: any);
     action(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<SimpleSnackBar, "simple-snack-bar", never, {}, {}, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<SimpleSnackBar, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<SimpleSnackBar, "simple-snack-bar", never, {}, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<SimpleSnackBar, never>;
 }
 
 export interface TextOnlySnackBar {

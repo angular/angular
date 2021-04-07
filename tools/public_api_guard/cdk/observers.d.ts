@@ -9,8 +9,8 @@ export declare class CdkObserveContent implements AfterContentInit, OnDestroy {
     ngOnDestroy(): void;
     static ngAcceptInputType_debounce: NumberInput;
     static ngAcceptInputType_disabled: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkObserveContent, "[cdkObserveContent]", ["cdkObserveContent"], { "disabled": "cdkObserveContentDisabled"; "debounce": "debounce"; }, { "event": "cdkObserveContent"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkObserveContent, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkObserveContent, "[cdkObserveContent]", ["cdkObserveContent"], { "disabled": "cdkObserveContentDisabled"; "debounce": "debounce"; }, { "event": "cdkObserveContent"; }, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkObserveContent, never>;
 }
 
 export declare class ContentObserver implements OnDestroy {
@@ -18,18 +18,18 @@ export declare class ContentObserver implements OnDestroy {
     ngOnDestroy(): void;
     observe(element: Element): Observable<MutationRecord[]>;
     observe(element: ElementRef<Element>): Observable<MutationRecord[]>;
-    static ɵfac: i0.ɵɵFactoryDef<ContentObserver, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ContentObserver, never>;
     static ɵprov: i0.ɵɵInjectableDef<ContentObserver>;
 }
 
 export declare class MutationObserverFactory {
     create(callback: MutationCallback): MutationObserver | null;
-    static ɵfac: i0.ɵɵFactoryDef<MutationObserverFactory, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MutationObserverFactory, never>;
     static ɵprov: i0.ɵɵInjectableDef<MutationObserverFactory>;
 }
 
 export declare class ObserversModule {
-    static ɵfac: i0.ɵɵFactoryDef<ObserversModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<ObserversModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<ObserversModule, [typeof CdkObserveContent], never, [typeof CdkObserveContent]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ObserversModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<ObserversModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<ObserversModule, [typeof CdkObserveContent], never, [typeof CdkObserveContent]>;
 }

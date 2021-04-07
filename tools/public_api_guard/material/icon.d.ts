@@ -42,8 +42,8 @@ export declare class MatIcon extends _MatIconMixinBase implements OnInit, AfterV
     ngOnDestroy(): void;
     ngOnInit(): void;
     static ngAcceptInputType_inline: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatIcon, "mat-icon", ["matIcon"], { "color": "color"; "inline": "inline"; "svgIcon": "svgIcon"; "fontSet": "fontSet"; "fontIcon": "fontIcon"; }, {}, never, ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatIcon, [null, null, { attribute: "aria-hidden"; }, null, null]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatIcon, "mat-icon", ["matIcon"], { "color": "color"; "inline": "inline"; "svgIcon": "svgIcon"; "fontSet": "fontSet"; "fontIcon": "fontIcon"; }, {}, never, ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatIcon, [null, null, { attribute: "aria-hidden"; }, null, null]>;
 }
 
 export interface MatIconLocation {
@@ -51,9 +51,9 @@ export interface MatIconLocation {
 }
 
 export declare class MatIconModule {
-    static ɵfac: i0.ɵɵFactoryDef<MatIconModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MatIconModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatIconModule, [typeof i1.MatIcon], [typeof i2.MatCommonModule], [typeof i1.MatIcon, typeof i2.MatCommonModule]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatIconModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MatIconModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatIconModule, [typeof i1.MatIcon], [typeof i2.MatCommonModule], [typeof i1.MatIcon, typeof i2.MatCommonModule]>;
 }
 
 export declare class MatIconRegistry implements OnDestroy {
@@ -74,7 +74,7 @@ export declare class MatIconRegistry implements OnDestroy {
     ngOnDestroy(): void;
     registerFontClassAlias(alias: string, className?: string): this;
     setDefaultFontSetClass(className: string): this;
-    static ɵfac: i0.ɵɵFactoryDef<MatIconRegistry, [{ optional: true; }, null, { optional: true; }, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatIconRegistry, [{ optional: true; }, null, { optional: true; }, null]>;
     static ɵprov: i0.ɵɵInjectableDef<MatIconRegistry>;
 }
 

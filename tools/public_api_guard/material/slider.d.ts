@@ -72,8 +72,8 @@ export declare class MatSlider extends _MatSliderMixinBase implements ControlVal
     static ngAcceptInputType_tickInterval: NumberInput;
     static ngAcceptInputType_value: NumberInput;
     static ngAcceptInputType_vertical: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatSlider, "mat-slider", ["matSlider"], { "disabled": "disabled"; "color": "color"; "tabIndex": "tabIndex"; "invert": "invert"; "max": "max"; "min": "min"; "step": "step"; "thumbLabel": "thumbLabel"; "tickInterval": "tickInterval"; "value": "value"; "displayWith": "displayWith"; "valueText": "valueText"; "vertical": "vertical"; }, { "change": "change"; "input": "input"; "valueChange": "valueChange"; }, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSlider, [null, null, null, { optional: true; }, { attribute: "tabindex"; }, null, null, { optional: true; }]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatSlider, "mat-slider", ["matSlider"], { "disabled": "disabled"; "color": "color"; "tabIndex": "tabIndex"; "invert": "invert"; "max": "max"; "min": "min"; "step": "step"; "thumbLabel": "thumbLabel"; "tickInterval": "tickInterval"; "value": "value"; "displayWith": "displayWith"; "valueText": "valueText"; "vertical": "vertical"; }, { "change": "change"; "input": "input"; "valueChange": "valueChange"; }, never, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSlider, [null, null, null, { optional: true; }, { attribute: "tabindex"; }, null, null, { optional: true; }]>;
 }
 
 export declare class MatSliderChange {
@@ -82,7 +82,7 @@ export declare class MatSliderChange {
 }
 
 export declare class MatSliderModule {
-    static ɵfac: i0.ɵɵFactoryDef<MatSliderModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MatSliderModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSliderModule, [typeof i1.MatSlider], [typeof i2.CommonModule, typeof i3.MatCommonModule], [typeof i1.MatSlider, typeof i3.MatCommonModule]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSliderModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MatSliderModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatSliderModule, [typeof i1.MatSlider], [typeof i2.CommonModule, typeof i3.MatCommonModule], [typeof i1.MatSlider, typeof i3.MatCommonModule]>;
 }

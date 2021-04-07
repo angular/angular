@@ -35,16 +35,16 @@ export declare abstract class _MatAutocompleteBase extends _MatAutocompleteMixin
     ngOnDestroy(): void;
     static ngAcceptInputType_autoActiveFirstOption: BooleanInput;
     static ngAcceptInputType_disableRipple: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatAutocompleteBase, never, never, { "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "displayWith": "displayWith"; "autoActiveFirstOption": "autoActiveFirstOption"; "panelWidth": "panelWidth"; "classList": "class"; }, { "optionSelected": "optionSelected"; "opened": "opened"; "closed": "closed"; "optionActivated": "optionActivated"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<_MatAutocompleteBase, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatAutocompleteBase, never, never, { "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "displayWith": "displayWith"; "autoActiveFirstOption": "autoActiveFirstOption"; "panelWidth": "panelWidth"; "classList": "class"; }, { "optionSelected": "optionSelected"; "opened": "opened"; "closed": "closed"; "optionActivated": "optionActivated"; }, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatAutocompleteBase, never>;
 }
 
 export declare abstract class _MatAutocompleteOriginBase {
     elementRef: ElementRef<HTMLElement>;
     constructor(
     elementRef: ElementRef<HTMLElement>);
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatAutocompleteOriginBase, never, never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<_MatAutocompleteOriginBase, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatAutocompleteOriginBase, never, never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatAutocompleteOriginBase, never>;
 }
 
 export declare abstract class _MatAutocompleteTriggerBase implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
@@ -76,8 +76,8 @@ export declare abstract class _MatAutocompleteTriggerBase implements ControlValu
     updatePosition(): void;
     writeValue(value: any): void;
     static ngAcceptInputType_autocompleteDisabled: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatAutocompleteTriggerBase, never, never, { "autocomplete": "matAutocomplete"; "position": "matAutocompletePosition"; "connectedTo": "matAutocompleteConnectedTo"; "autocompleteAttribute": "autocomplete"; "autocompleteDisabled": "matAutocompleteDisabled"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<_MatAutocompleteTriggerBase, [null, null, null, null, null, null, { optional: true; }, { optional: true; host: true; }, { optional: true; }, null, { optional: true; }]>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatAutocompleteTriggerBase, never, never, { "autocomplete": "matAutocomplete"; "position": "matAutocompletePosition"; "connectedTo": "matAutocompleteConnectedTo"; "autocompleteAttribute": "autocomplete"; "autocompleteDisabled": "matAutocompleteDisabled"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatAutocompleteTriggerBase, [null, null, null, null, null, null, { optional: true; }, { optional: true; host: true; }, { optional: true; }, null, { optional: true; }]>;
 }
 
 export declare function getMatAutocompleteMissingPanelError(): Error;
@@ -103,8 +103,8 @@ export declare class MatAutocomplete extends _MatAutocompleteBase {
     protected _visibleClass: string;
     optionGroups: QueryList<MatOptgroup>;
     options: QueryList<MatOption>;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatAutocomplete, "mat-autocomplete", ["matAutocomplete"], { "disableRipple": "disableRipple"; }, {}, ["optionGroups", "options"], ["*"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatAutocomplete, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatAutocomplete, "mat-autocomplete", ["matAutocomplete"], { "disableRipple": "disableRipple"; }, {}, ["optionGroups", "options"], ["*"]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatAutocomplete, never>;
 }
 
 export interface MatAutocompleteActivatedEvent {
@@ -118,14 +118,14 @@ export interface MatAutocompleteDefaultOptions {
 }
 
 export declare class MatAutocompleteModule {
-    static ɵfac: i0.ɵɵFactoryDef<MatAutocompleteModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MatAutocompleteModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatAutocompleteModule, [typeof i1.MatAutocomplete, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin], [typeof i4.OverlayModule, typeof i5.MatOptionModule, typeof i5.MatCommonModule, typeof i6.CommonModule], [typeof i1.MatAutocomplete, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin, typeof i7.CdkScrollableModule, typeof i5.MatOptionModule, typeof i5.MatCommonModule]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatAutocompleteModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MatAutocompleteModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatAutocompleteModule, [typeof i1.MatAutocomplete, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin], [typeof i4.OverlayModule, typeof i5.MatOptionModule, typeof i5.MatCommonModule, typeof i6.CommonModule], [typeof i1.MatAutocomplete, typeof i2.MatAutocompleteTrigger, typeof i3.MatAutocompleteOrigin, typeof i7.CdkScrollableModule, typeof i5.MatOptionModule, typeof i5.MatCommonModule]>;
 }
 
 export declare class MatAutocompleteOrigin extends _MatAutocompleteOriginBase {
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatAutocompleteOrigin, "[matAutocompleteOrigin]", ["matAutocompleteOrigin"], {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatAutocompleteOrigin, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatAutocompleteOrigin, "[matAutocompleteOrigin]", ["matAutocompleteOrigin"], {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatAutocompleteOrigin, never>;
 }
 
 export declare class MatAutocompleteSelectedEvent {
@@ -138,6 +138,6 @@ export declare class MatAutocompleteSelectedEvent {
 
 export declare class MatAutocompleteTrigger extends _MatAutocompleteTriggerBase {
     protected _aboveClass: string;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatAutocompleteTrigger, "input[matAutocomplete], textarea[matAutocomplete]", ["matAutocompleteTrigger"], {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatAutocompleteTrigger, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatAutocompleteTrigger, "input[matAutocomplete], textarea[matAutocomplete]", ["matAutocompleteTrigger"], {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatAutocompleteTrigger, never>;
 }

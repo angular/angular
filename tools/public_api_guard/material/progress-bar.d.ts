@@ -26,8 +26,8 @@ export declare class MatProgressBar extends _MatProgressBarMixinBase implements 
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_value: NumberInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatProgressBar, "mat-progress-bar", ["matProgressBar"], { "color": "color"; "value": "value"; "bufferValue": "bufferValue"; "mode": "mode"; }, { "animationEnd": "animationEnd"; }, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatProgressBar, [null, null, { optional: true; }, { optional: true; }]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatProgressBar, "mat-progress-bar", ["matProgressBar"], { "color": "color"; "value": "value"; "bufferValue": "bufferValue"; "mode": "mode"; }, { "animationEnd": "animationEnd"; }, never, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatProgressBar, [null, null, { optional: true; }, { optional: true; }]>;
 }
 
 export interface MatProgressBarLocation {
@@ -35,9 +35,9 @@ export interface MatProgressBarLocation {
 }
 
 export declare class MatProgressBarModule {
-    static ɵfac: i0.ɵɵFactoryDef<MatProgressBarModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MatProgressBarModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatProgressBarModule, [typeof i1.MatProgressBar], [typeof i2.CommonModule, typeof i3.MatCommonModule], [typeof i1.MatProgressBar, typeof i3.MatCommonModule]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatProgressBarModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MatProgressBarModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatProgressBarModule, [typeof i1.MatProgressBar], [typeof i2.CommonModule, typeof i3.MatCommonModule], [typeof i1.MatProgressBar, typeof i3.MatCommonModule]>;
 }
 
 export interface ProgressAnimationEnd {

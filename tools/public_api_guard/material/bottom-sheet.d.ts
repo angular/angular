@@ -10,7 +10,7 @@ export declare class MatBottomSheet implements OnDestroy {
     ngOnDestroy(): void;
     open<T, D = any, R = any>(component: ComponentType<T>, config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
     open<T, D = any, R = any>(template: TemplateRef<T>, config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
-    static ɵfac: i0.ɵɵFactoryDef<MatBottomSheet, [null, null, { optional: true; skipSelf: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatBottomSheet, [null, null, { optional: true; skipSelf: true; }, { optional: true; }]>;
     static ɵprov: i0.ɵɵInjectableDef<MatBottomSheet>;
 }
 
@@ -48,14 +48,14 @@ export declare class MatBottomSheetContainer extends BasePortalOutlet implements
     enter(): void;
     exit(): void;
     ngOnDestroy(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatBottomSheetContainer, "mat-bottom-sheet-container", never, {}, {}, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatBottomSheetContainer, [null, null, null, null, { optional: true; }, null]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatBottomSheetContainer, "mat-bottom-sheet-container", never, {}, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatBottomSheetContainer, [null, null, null, null, { optional: true; }, null]>;
 }
 
 export declare class MatBottomSheetModule {
-    static ɵfac: i0.ɵɵFactoryDef<MatBottomSheetModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MatBottomSheetModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatBottomSheetModule, [typeof i1.MatBottomSheetContainer], [typeof i2.OverlayModule, typeof i3.MatCommonModule, typeof i4.PortalModule], [typeof i1.MatBottomSheetContainer, typeof i3.MatCommonModule]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatBottomSheetModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MatBottomSheetModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatBottomSheetModule, [typeof i1.MatBottomSheetContainer], [typeof i2.OverlayModule, typeof i3.MatCommonModule, typeof i4.PortalModule], [typeof i1.MatBottomSheetContainer, typeof i3.MatCommonModule]>;
 }
 
 export declare class MatBottomSheetRef<T = any, R = any> {

@@ -100,7 +100,7 @@ export declare class UniqueSelectionDispatcher implements OnDestroy {
     listen(listener: UniqueSelectionDispatcherListener): () => void;
     ngOnDestroy(): void;
     notify(id: string, name: string): void;
-    static ɵfac: i0.ɵɵFactoryDef<UniqueSelectionDispatcher, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<UniqueSelectionDispatcher, never>;
     static ɵprov: i0.ɵɵInjectableDef<UniqueSelectionDispatcher>;
 }
 

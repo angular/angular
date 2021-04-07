@@ -21,8 +21,8 @@ export declare const MAT_SUFFIX: InjectionToken<MatSuffix>;
 export declare class MatError {
     id: string;
     constructor(ariaLive: string, elementRef: ElementRef);
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatError, "mat-error", never, { "id": "id"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatError, [{ attribute: "aria-live"; }, null]>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatError, "mat-error", never, { "id": "id"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatError, [{ attribute: "aria-live"; }, null]>;
 }
 
 export declare class MatFormField extends _MatFormFieldMixinBase implements AfterContentInit, AfterContentChecked, AfterViewInit, OnDestroy, CanColor {
@@ -75,8 +75,8 @@ export declare class MatFormField extends _MatFormFieldMixinBase implements Afte
     ngOnDestroy(): void;
     updateOutlineGap(): void;
     static ngAcceptInputType_hideRequiredMarker: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatFormField, "mat-form-field", ["matFormField"], { "color": "color"; "appearance": "appearance"; "hideRequiredMarker": "hideRequiredMarker"; "hintLabel": "hintLabel"; "floatLabel": "floatLabel"; }, {}, ["_controlNonStatic", "_controlStatic", "_labelChildNonStatic", "_labelChildStatic", "_placeholderChild", "_errorChildren", "_hintChildren", "_prefixChildren", "_suffixChildren"], ["[matPrefix]", "*", "mat-placeholder", "mat-label", "[matSuffix]", "mat-error", "mat-hint:not([align='end'])", "mat-hint[align='end']"]>;
-    static ɵfac: i0.ɵɵFactoryDef<MatFormField, [null, null, null, { optional: true; }, { optional: true; }, null, null, { optional: true; }]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatFormField, "mat-form-field", ["matFormField"], { "color": "color"; "appearance": "appearance"; "hideRequiredMarker": "hideRequiredMarker"; "hintLabel": "hintLabel"; "floatLabel": "floatLabel"; }, {}, ["_controlNonStatic", "_controlStatic", "_labelChildNonStatic", "_labelChildStatic", "_placeholderChild", "_errorChildren", "_hintChildren", "_prefixChildren", "_suffixChildren"], ["[matPrefix]", "*", "mat-placeholder", "mat-label", "[matSuffix]", "mat-error", "mat-hint:not([align='end'])", "mat-hint[align='end']"]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormField, [null, null, null, { optional: true; }, { optional: true; }, null, null, { optional: true; }]>;
 }
 
 export declare const matFormFieldAnimations: {
@@ -102,8 +102,8 @@ export declare abstract class MatFormFieldControl<T> {
     value: T | null;
     abstract onContainerClick(event: MouseEvent): void;
     abstract setDescribedByIds(ids: string[]): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatFormFieldControl<any>, never, never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatFormFieldControl<any>, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatFormFieldControl<any>, never, never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormFieldControl<any>, never>;
 }
 
 export interface MatFormFieldDefaultOptions {
@@ -113,34 +113,34 @@ export interface MatFormFieldDefaultOptions {
 }
 
 export declare class MatFormFieldModule {
-    static ɵfac: i0.ɵɵFactoryDef<MatFormFieldModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MatFormFieldModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatFormFieldModule, [typeof i1.MatError, typeof i2.MatFormField, typeof i3.MatHint, typeof i4.MatLabel, typeof i5.MatPlaceholder, typeof i6.MatPrefix, typeof i7.MatSuffix], [typeof i8.CommonModule, typeof i9.MatCommonModule, typeof i10.ObserversModule], [typeof i9.MatCommonModule, typeof i1.MatError, typeof i2.MatFormField, typeof i3.MatHint, typeof i4.MatLabel, typeof i5.MatPlaceholder, typeof i6.MatPrefix, typeof i7.MatSuffix]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatFormFieldModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MatFormFieldModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatFormFieldModule, [typeof i1.MatError, typeof i2.MatFormField, typeof i3.MatHint, typeof i4.MatLabel, typeof i5.MatPlaceholder, typeof i6.MatPrefix, typeof i7.MatSuffix], [typeof i8.CommonModule, typeof i9.MatCommonModule, typeof i10.ObserversModule], [typeof i9.MatCommonModule, typeof i1.MatError, typeof i2.MatFormField, typeof i3.MatHint, typeof i4.MatLabel, typeof i5.MatPlaceholder, typeof i6.MatPrefix, typeof i7.MatSuffix]>;
 }
 
 export declare class MatHint {
     align: 'start' | 'end';
     id: string;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatHint, "mat-hint", never, { "align": "align"; "id": "id"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatHint, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatHint, "mat-hint", never, { "align": "align"; "id": "id"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatHint, never>;
 }
 
 export declare class MatLabel {
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatLabel, "mat-label", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatLabel, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatLabel, "mat-label", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatLabel, never>;
 }
 
 export declare class MatPlaceholder {
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatPlaceholder, "mat-placeholder", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatPlaceholder, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatPlaceholder, "mat-placeholder", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatPlaceholder, never>;
 }
 
 export declare class MatPrefix {
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatPrefix, "[matPrefix]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatPrefix, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatPrefix, "[matPrefix]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatPrefix, never>;
 }
 
 export declare class MatSuffix {
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatSuffix, "[matSuffix]", never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatSuffix, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatSuffix, "[matSuffix]", never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatSuffix, never>;
 }

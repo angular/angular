@@ -43,12 +43,12 @@ export declare class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
     setVolume(volume: number): void;
     stopVideo(): void;
     unMute(): void;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<YouTubePlayer, "youtube-player", never, { "videoId": "videoId"; "height": "height"; "width": "width"; "startSeconds": "startSeconds"; "endSeconds": "endSeconds"; "suggestedQuality": "suggestedQuality"; "playerVars": "playerVars"; "showBeforeIframeApiLoads": "showBeforeIframeApiLoads"; }, { "ready": "ready"; "stateChange": "stateChange"; "error": "error"; "apiChange": "apiChange"; "playbackQualityChange": "playbackQualityChange"; "playbackRateChange": "playbackRateChange"; }, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<YouTubePlayer, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<YouTubePlayer, "youtube-player", never, { "videoId": "videoId"; "height": "height"; "width": "width"; "startSeconds": "startSeconds"; "endSeconds": "endSeconds"; "suggestedQuality": "suggestedQuality"; "playerVars": "playerVars"; "showBeforeIframeApiLoads": "showBeforeIframeApiLoads"; }, { "ready": "ready"; "stateChange": "stateChange"; "error": "error"; "apiChange": "apiChange"; "playbackQualityChange": "playbackQualityChange"; "playbackRateChange": "playbackRateChange"; }, never, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<YouTubePlayer, never>;
 }
 
 export declare class YouTubePlayerModule {
-    static ɵfac: i0.ɵɵFactoryDef<YouTubePlayerModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<YouTubePlayerModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<YouTubePlayerModule, [typeof i1.YouTubePlayer], never, [typeof i1.YouTubePlayer]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<YouTubePlayerModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<YouTubePlayerModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<YouTubePlayerModule, [typeof i1.YouTubePlayer], never, [typeof i1.YouTubePlayer]>;
 }

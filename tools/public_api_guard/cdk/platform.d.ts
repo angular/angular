@@ -19,14 +19,14 @@ export declare class Platform {
     WEBKIT: boolean;
     isBrowser: boolean;
     constructor(_platformId: Object);
-    static ɵfac: i0.ɵɵFactoryDef<Platform, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<Platform, never>;
     static ɵprov: i0.ɵɵInjectableDef<Platform>;
 }
 
 export declare class PlatformModule {
-    static ɵfac: i0.ɵɵFactoryDef<PlatformModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<PlatformModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<PlatformModule, never, never, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<PlatformModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<PlatformModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<PlatformModule, never, never, never>;
 }
 
 export declare const enum RtlScrollAxisType {

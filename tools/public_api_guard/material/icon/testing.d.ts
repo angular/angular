@@ -15,7 +15,7 @@ export declare class FakeMatIconRegistry implements PublicApi<MatIconRegistry>, 
     ngOnDestroy(): void;
     registerFontClassAlias(): this;
     setDefaultFontSetClass(): this;
-    static ɵfac: i0.ɵɵFactoryDef<FakeMatIconRegistry, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<FakeMatIconRegistry, never>;
     static ɵprov: i0.ɵɵInjectableDef<FakeMatIconRegistry>;
 }
 
@@ -40,7 +40,7 @@ export declare class MatIconHarness extends ComponentHarness {
 }
 
 export declare class MatIconTestingModule {
-    static ɵfac: i0.ɵɵFactoryDef<MatIconTestingModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MatIconTestingModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatIconTestingModule, never, never, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatIconTestingModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MatIconTestingModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatIconTestingModule, never, never, never>;
 }

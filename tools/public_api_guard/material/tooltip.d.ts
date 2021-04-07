@@ -39,8 +39,8 @@ export declare abstract class _MatTooltipBase<T extends _TooltipComponentBase> i
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_hideDelay: NumberInput;
     static ngAcceptInputType_showDelay: NumberInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatTooltipBase<any>, never, never, { "position": "matTooltipPosition"; "disabled": "matTooltipDisabled"; "showDelay": "matTooltipShowDelay"; "hideDelay": "matTooltipHideDelay"; "touchGestures": "matTooltipTouchGestures"; "message": "matTooltip"; "tooltipClass": "matTooltipClass"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<_MatTooltipBase<any>, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTooltipBase<any>, never, never, { "position": "matTooltipPosition"; "disabled": "matTooltipDisabled"; "showDelay": "matTooltipShowDelay"; "hideDelay": "matTooltipHideDelay"; "touchGestures": "matTooltipTouchGestures"; "message": "matTooltip"; "tooltipClass": "matTooltipClass"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatTooltipBase<any>, never>;
 }
 
 export declare abstract class _TooltipComponentBase implements OnDestroy {
@@ -61,8 +61,8 @@ export declare abstract class _TooltipComponentBase implements OnDestroy {
     isVisible(): boolean;
     ngOnDestroy(): void;
     show(delay: number): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_TooltipComponentBase, never, never, {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<_TooltipComponentBase, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_TooltipComponentBase, never, never, {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_TooltipComponentBase, never>;
 }
 
 export declare function getMatTooltipInvalidPositionError(position: string): Error;
@@ -84,8 +84,8 @@ export declare const MAT_TOOLTIP_SCROLL_STRATEGY_FACTORY_PROVIDER: {
 export declare class MatTooltip extends _MatTooltipBase<TooltipComponent> {
     protected readonly _tooltipComponent: typeof TooltipComponent;
     constructor(overlay: Overlay, elementRef: ElementRef<HTMLElement>, scrollDispatcher: ScrollDispatcher, viewContainerRef: ViewContainerRef, ngZone: NgZone, platform: Platform, ariaDescriber: AriaDescriber, focusMonitor: FocusMonitor, scrollStrategy: any, dir: Directionality, defaultOptions: MatTooltipDefaultOptions, _document: any);
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatTooltip, "[matTooltip]", ["matTooltip"], {}, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatTooltip, [null, null, null, null, null, null, null, null, null, { optional: true; }, { optional: true; }, null]>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<MatTooltip, "[matTooltip]", ["matTooltip"], {}, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatTooltip, [null, null, null, null, null, null, null, null, null, { optional: true; }, { optional: true; }, null]>;
 }
 
 export declare const matTooltipAnimations: {
@@ -101,9 +101,9 @@ export interface MatTooltipDefaultOptions {
 }
 
 export declare class MatTooltipModule {
-    static ɵfac: i0.ɵɵFactoryDef<MatTooltipModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MatTooltipModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatTooltipModule, [typeof i1.MatTooltip, typeof i1.TooltipComponent], [typeof i2.A11yModule, typeof i3.CommonModule, typeof i4.OverlayModule, typeof i5.MatCommonModule], [typeof i1.MatTooltip, typeof i1.TooltipComponent, typeof i5.MatCommonModule, typeof i6.CdkScrollableModule]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatTooltipModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MatTooltipModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatTooltipModule, [typeof i1.MatTooltip, typeof i1.TooltipComponent], [typeof i2.A11yModule, typeof i3.CommonModule, typeof i4.OverlayModule, typeof i5.MatCommonModule], [typeof i1.MatTooltip, typeof i1.TooltipComponent, typeof i5.MatCommonModule, typeof i6.CdkScrollableModule]>;
 }
 
 export declare const SCROLL_THROTTLE_MS = 20;
@@ -113,8 +113,8 @@ export declare const TOOLTIP_PANEL_CLASS = "mat-tooltip-panel";
 export declare class TooltipComponent extends _TooltipComponentBase {
     _isHandset: Observable<BreakpointState>;
     constructor(changeDetectorRef: ChangeDetectorRef, _breakpointObserver: BreakpointObserver);
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<TooltipComponent, "mat-tooltip-component", never, {}, {}, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<TooltipComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TooltipComponent, "mat-tooltip-component", never, {}, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TooltipComponent, never>;
 }
 
 export declare type TooltipPosition = 'left' | 'right' | 'above' | 'below' | 'before' | 'after';

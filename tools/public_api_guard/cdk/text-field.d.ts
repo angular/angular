@@ -10,7 +10,7 @@ export declare class AutofillMonitor implements OnDestroy {
     ngOnDestroy(): void;
     stopMonitoring(element: Element): void;
     stopMonitoring(element: ElementRef<Element>): void;
-    static ɵfac: i0.ɵɵFactoryDef<AutofillMonitor, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<AutofillMonitor, never>;
     static ɵprov: i0.ɵɵInjectableDef<AutofillMonitor>;
 }
 
@@ -19,8 +19,8 @@ export declare class CdkAutofill implements OnDestroy, OnInit {
     constructor(_elementRef: ElementRef<HTMLElement>, _autofillMonitor: AutofillMonitor);
     ngOnDestroy(): void;
     ngOnInit(): void;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkAutofill, "[cdkAutofill]", never, {}, { "cdkAutofill": "cdkAutofill"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkAutofill, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkAutofill, "[cdkAutofill]", never, {}, { "cdkAutofill": "cdkAutofill"; }, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkAutofill, never>;
 }
 
 export declare class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
@@ -46,12 +46,12 @@ export declare class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDe
     static ngAcceptInputType_enabled: BooleanInput;
     static ngAcceptInputType_maxRows: NumberInput;
     static ngAcceptInputType_minRows: NumberInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkTextareaAutosize, "textarea[cdkTextareaAutosize]", ["cdkTextareaAutosize"], { "minRows": "cdkAutosizeMinRows"; "maxRows": "cdkAutosizeMaxRows"; "enabled": "cdkTextareaAutosize"; "placeholder": "placeholder"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkTextareaAutosize, [null, null, null, { optional: true; }]>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkTextareaAutosize, "textarea[cdkTextareaAutosize]", ["cdkTextareaAutosize"], { "minRows": "cdkAutosizeMinRows"; "maxRows": "cdkAutosizeMaxRows"; "enabled": "cdkTextareaAutosize"; "placeholder": "placeholder"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkTextareaAutosize, [null, null, null, { optional: true; }]>;
 }
 
 export declare class TextFieldModule {
-    static ɵfac: i0.ɵɵFactoryDef<TextFieldModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<TextFieldModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<TextFieldModule, [typeof i1.CdkAutofill, typeof i2.CdkTextareaAutosize], [typeof i3.PlatformModule], [typeof i1.CdkAutofill, typeof i2.CdkTextareaAutosize]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<TextFieldModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<TextFieldModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<TextFieldModule, [typeof i1.CdkAutofill, typeof i2.CdkTextareaAutosize], [typeof i3.PlatformModule], [typeof i1.CdkAutofill, typeof i2.CdkTextareaAutosize]>;
 }

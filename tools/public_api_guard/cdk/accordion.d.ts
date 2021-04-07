@@ -9,8 +9,8 @@ export declare class CdkAccordion implements OnDestroy, OnChanges {
     ngOnDestroy(): void;
     openAll(): void;
     static ngAcceptInputType_multi: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkAccordion, "cdk-accordion, [cdkAccordion]", ["cdkAccordion"], { "multi": "multi"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkAccordion, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkAccordion, "cdk-accordion, [cdkAccordion]", ["cdkAccordion"], { "multi": "multi"; }, {}, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkAccordion, never>;
 }
 
 export declare class CdkAccordionItem implements OnDestroy {
@@ -32,12 +32,12 @@ export declare class CdkAccordionItem implements OnDestroy {
     toggle(): void;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_expanded: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<CdkAccordionItem, "cdk-accordion-item, [cdkAccordionItem]", ["cdkAccordionItem"], { "expanded": "expanded"; "disabled": "disabled"; }, { "closed": "closed"; "opened": "opened"; "destroyed": "destroyed"; "expandedChange": "expandedChange"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<CdkAccordionItem, [{ optional: true; skipSelf: true; }, null, null]>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<CdkAccordionItem, "cdk-accordion-item, [cdkAccordionItem]", ["cdkAccordionItem"], { "expanded": "expanded"; "disabled": "disabled"; }, { "closed": "closed"; "opened": "opened"; "destroyed": "destroyed"; "expandedChange": "expandedChange"; }, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkAccordionItem, [{ optional: true; skipSelf: true; }, null, null]>;
 }
 
 export declare class CdkAccordionModule {
-    static ɵfac: i0.ɵɵFactoryDef<CdkAccordionModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<CdkAccordionModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<CdkAccordionModule, [typeof i1.CdkAccordion, typeof i2.CdkAccordionItem], never, [typeof i1.CdkAccordion, typeof i2.CdkAccordionItem]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkAccordionModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<CdkAccordionModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<CdkAccordionModule, [typeof i1.CdkAccordion, typeof i2.CdkAccordionItem], never, [typeof i1.CdkAccordion, typeof i2.CdkAccordionItem]>;
 }

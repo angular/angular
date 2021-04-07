@@ -39,8 +39,8 @@ export declare abstract class _MatPaginatorBase<O extends {
     static ngAcceptInputType_pageIndex: NumberInput;
     static ngAcceptInputType_pageSize: NumberInput;
     static ngAcceptInputType_showFirstLastButtons: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<_MatPaginatorBase<any>, never, never, { "color": "color"; "pageIndex": "pageIndex"; "length": "length"; "pageSize": "pageSize"; "pageSizeOptions": "pageSizeOptions"; "hidePageSize": "hidePageSize"; "showFirstLastButtons": "showFirstLastButtons"; }, { "page": "page"; }, never>;
-    static ɵfac: i0.ɵɵFactoryDef<_MatPaginatorBase<any>, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatPaginatorBase<any>, never, never, { "color": "color"; "pageIndex": "pageIndex"; "length": "length"; "pageSize": "pageSize"; "pageSizeOptions": "pageSizeOptions"; "hidePageSize": "hidePageSize"; "showFirstLastButtons": "showFirstLastButtons"; }, { "page": "page"; }, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<_MatPaginatorBase<any>, never>;
 }
 
 export declare const MAT_PAGINATOR_DEFAULT_OPTIONS: InjectionToken<MatPaginatorDefaultOptions>;
@@ -56,8 +56,8 @@ export declare function MAT_PAGINATOR_INTL_PROVIDER_FACTORY(parentIntl: MatPagin
 export declare class MatPaginator extends _MatPaginatorBase<MatPaginatorDefaultOptions> {
     _formFieldAppearance?: MatFormFieldAppearance;
     constructor(intl: MatPaginatorIntl, changeDetectorRef: ChangeDetectorRef, defaults?: MatPaginatorDefaultOptions);
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatPaginator, "mat-paginator", ["matPaginator"], { "disabled": "disabled"; }, {}, never, never>;
-    static ɵfac: i0.ɵɵFactoryDef<MatPaginator, [null, null, { optional: true; }]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatPaginator, "mat-paginator", ["matPaginator"], { "disabled": "disabled"; }, {}, never, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatPaginator, [null, null, { optional: true; }]>;
 }
 
 export interface MatPaginatorDefaultOptions {
@@ -76,14 +76,14 @@ export declare class MatPaginatorIntl {
     lastPageLabel: string;
     nextPageLabel: string;
     previousPageLabel: string;
-    static ɵfac: i0.ɵɵFactoryDef<MatPaginatorIntl, never>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatPaginatorIntl, never>;
     static ɵprov: i0.ɵɵInjectableDef<MatPaginatorIntl>;
 }
 
 export declare class MatPaginatorModule {
-    static ɵfac: i0.ɵɵFactoryDef<MatPaginatorModule, never>;
-    static ɵinj: i0.ɵɵInjectorDef<MatPaginatorModule>;
-    static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatPaginatorModule, [typeof i1.MatPaginator], [typeof i2.CommonModule, typeof i3.MatButtonModule, typeof i4.MatSelectModule, typeof i5.MatTooltipModule, typeof i6.MatCommonModule], [typeof i1.MatPaginator]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatPaginatorModule, never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<MatPaginatorModule>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<MatPaginatorModule, [typeof i1.MatPaginator], [typeof i2.CommonModule, typeof i3.MatButtonModule, typeof i4.MatSelectModule, typeof i5.MatTooltipModule, typeof i6.MatCommonModule], [typeof i1.MatPaginator]>;
 }
 
 export declare class PageEvent {
