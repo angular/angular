@@ -79,7 +79,7 @@ xdescribe('MDC-based MatSlider', () => {
     });
 
     // TODO(devversion): MDC slider updates values with right mouse button.
-    // tslint:disable-next-line
+    // tslint:disable-next-line:ban
     xit('should not update when pressing the right mouse button', () => {
       expect(sliderInstance.value).toBe(0);
 
@@ -386,7 +386,7 @@ xdescribe('MDC-based MatSlider', () => {
     });
 
     // TODO(devversion): MDC slider does not support decimal steps.
-    // tslint:disable-next-line
+    // tslint:disable-next-line:ban
     xit('should truncate long decimal values when using a decimal step and the arrow keys', () => {
       fixture.componentInstance.step = 0.1;
       fixture.detectChanges();
@@ -514,7 +514,7 @@ xdescribe('MDC-based MatSlider', () => {
     });
 
     // TODO(devversion): MDC does not refresh value pin if value changes programmatically.
-    // tslint:disable-next-line
+    // tslint:disable-next-line:ban
     xit('should format the thumb label based on the passed-in `displayWith` function if value ' +
         'is updated through binding', () => {
       fixture.componentInstance.value = 200000;
@@ -675,7 +675,7 @@ xdescribe('MDC-based MatSlider', () => {
 
     // TODO(devversion): MDC slider always emits change event on mouseup (regardless of value)
     // Bug tracked with: https://github.com/material-components/material-components-web/issues/5018
-    // tslint:disable-next-line
+    // tslint:disable-next-line:ban
     xit('should not emit multiple changes for same value', () => {
       expect(testComponent.onChange).not.toHaveBeenCalled();
 
@@ -928,7 +928,7 @@ xdescribe('MDC-based MatSlider', () => {
     });
 
     // TODO: MDC slider does not respect modifier keys.
-    // tslint:disable-next-line
+    // tslint:disable-next-line:ban
     xit('should ignore events modifier keys', () => {
       sliderInstance.value = 0;
 

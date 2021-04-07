@@ -60,7 +60,7 @@ export class CdkCopyToClipboard implements OnDestroy {
    * Emits when some text is copied to the clipboard. The
    * emitted value indicates whether copying was successful.
    */
-  @Output('cdkCopyToClipboardCopied') copied = new EventEmitter<boolean>();
+  @Output('cdkCopyToClipboardCopied') readonly copied = new EventEmitter<boolean>();
 
   /** Copies that are currently being attempted. */
   private _pending = new Set<PendingCopy>();

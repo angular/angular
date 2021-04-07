@@ -59,8 +59,7 @@ export class MapKmlLayer implements OnInit, OnDestroy {
   /**
    * See developers.google.com/maps/documentation/javascript/reference/kml#KmlLayer.click
    */
-  @Output()
-  kmlClick: Observable<google.maps.KmlMouseEvent> =
+  @Output() readonly kmlClick: Observable<google.maps.KmlMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.KmlMouseEvent>('click');
 
   /**
@@ -68,15 +67,14 @@ export class MapKmlLayer implements OnInit, OnDestroy {
    * developers.google.com/maps/documentation/javascript/reference/kml
    * #KmlLayer.defaultviewport_changed
    */
-  @Output()
-  defaultviewportChanged: Observable<void> =
+  @Output() readonly defaultviewportChanged: Observable<void> =
       this._eventManager.getLazyEmitter<void>('defaultviewport_changed');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/kml#KmlLayer.status_changed
    */
-  @Output()
-  statusChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('status_changed');
+  @Output() readonly statusChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('status_changed');
 
   constructor(private readonly _map: GoogleMap, private _ngZone: NgZone) {}
 

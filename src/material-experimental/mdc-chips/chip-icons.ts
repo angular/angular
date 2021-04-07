@@ -185,7 +185,7 @@ export class MatChipRemove extends _MatChipRemoveMixinBase implements CanDisable
    * Emits when the user interacts with the icon.
    * @docs-private
    */
-  interaction: Subject<MouseEvent | KeyboardEvent> = new Subject<MouseEvent | KeyboardEvent>();
+  readonly interaction = new Subject<MouseEvent | KeyboardEvent>();
 
   constructor(elementRef: ElementRef) {
     super(elementRef);

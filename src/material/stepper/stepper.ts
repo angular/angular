@@ -207,7 +207,7 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   _iconOverrides: Record<string, TemplateRef<MatStepperIconContext>> = {};
 
   /** Stream of animation `done` events when the body expands/collapses. */
-  _animationDone = new Subject<AnimationEvent>();
+  readonly _animationDone = new Subject<AnimationEvent>();
 
   constructor(
     @Optional() dir: Directionality,

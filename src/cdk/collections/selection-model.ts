@@ -34,7 +34,7 @@ export class SelectionModel<T> {
   }
 
   /** Event emitted when the value has changed. */
-  changed: Subject<SelectionChange<T>> = new Subject();
+  readonly changed = new Subject<SelectionChange<T>>();
 
   constructor(
     private _multiple = false,

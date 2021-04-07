@@ -5,7 +5,7 @@ export declare const MAT_NAV_LIST: InjectionToken<MatNavList>;
 export declare const MAT_SELECTION_LIST_VALUE_ACCESSOR: any;
 
 export declare class MatList extends _MatListMixinBase implements CanDisable, CanDisableRipple, OnChanges, OnDestroy {
-    _stateChanges: Subject<void>;
+    readonly _stateChanges: Subject<void>;
     constructor(_elementRef: ElementRef<HTMLElement>);
     _getListType(): 'list' | 'action-list' | null;
     ngOnChanges(): void;
@@ -94,7 +94,7 @@ export declare class MatListSubheaderCssMatStyler {
 }
 
 export declare class MatNavList extends _MatListMixinBase implements CanDisable, CanDisableRipple, OnChanges, OnDestroy {
-    _stateChanges: Subject<void>;
+    readonly _stateChanges: Subject<void>;
     ngOnChanges(): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_disableRipple: BooleanInput;

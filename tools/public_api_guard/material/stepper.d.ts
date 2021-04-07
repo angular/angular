@@ -63,7 +63,7 @@ export declare class MatStepLabel extends CdkStepLabel {
 }
 
 export declare class MatStepper extends CdkStepper implements AfterContentInit {
-    _animationDone: Subject<AnimationEvent>;
+    readonly _animationDone: Subject<AnimationEvent>;
     _iconOverrides: Record<string, TemplateRef<MatStepperIconContext>>;
     _icons: QueryList<MatStepperIcon>;
     _stepHeader: QueryList<MatStepHeader>;

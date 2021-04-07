@@ -84,8 +84,8 @@ export declare class CdkVirtualForOf<T> implements CdkVirtualScrollRepeater<T>, 
     set cdkVirtualForTemplateCacheSize(size: number);
     get cdkVirtualForTrackBy(): TrackByFunction<T> | undefined;
     set cdkVirtualForTrackBy(fn: TrackByFunction<T> | undefined);
-    dataStream: Observable<readonly T[]>;
-    viewChange: Subject<ListRange>;
+    readonly dataStream: Observable<readonly T[]>;
+    readonly viewChange: Subject<ListRange>;
     constructor(
     _viewContainerRef: ViewContainerRef,
     _template: TemplateRef<CdkVirtualForOfContext<T>>,
@@ -112,7 +112,7 @@ export declare type CdkVirtualForOfContext<T> = {
 };
 
 export interface CdkVirtualScrollRepeater<T> {
-    dataStream: Observable<readonly T[]>;
+    readonly dataStream: Observable<readonly T[]>;
     measureRangeSize(range: ListRange, orientation: 'horizontal' | 'vertical'): number;
 }
 
@@ -123,8 +123,8 @@ export declare class CdkVirtualScrollViewport extends CdkScrollable implements O
     elementRef: ElementRef<HTMLElement>;
     get orientation(): 'horizontal' | 'vertical';
     set orientation(orientation: 'horizontal' | 'vertical');
-    renderedRangeStream: Observable<ListRange>;
-    scrolledIndexChange: Observable<number>;
+    readonly renderedRangeStream: Observable<ListRange>;
+    readonly scrolledIndexChange: Observable<number>;
     constructor(elementRef: ElementRef<HTMLElement>, _changeDetectorRef: ChangeDetectorRef, ngZone: NgZone, _scrollStrategy: VirtualScrollStrategy, dir: Directionality, scrollDispatcher: ScrollDispatcher, viewportRuler: ViewportRuler);
     attach(forOf: CdkVirtualScrollRepeater<any>): void;
     checkViewportSize(): void;

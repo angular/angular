@@ -6,7 +6,7 @@ export declare class BidiModule {
 
 export declare class Dir implements Directionality, AfterContentInit, OnDestroy {
     _rawDir: string;
-    change: EventEmitter<Direction>;
+    readonly change: EventEmitter<Direction>;
     get dir(): Direction;
     set dir(value: Direction);
     get value(): Direction;

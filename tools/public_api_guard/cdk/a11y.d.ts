@@ -37,7 +37,7 @@ export declare class CdkAriaLive implements OnDestroy {
 }
 
 export declare class CdkMonitorFocus implements AfterViewInit, OnDestroy {
-    cdkFocusChange: EventEmitter<FocusOrigin>;
+    readonly cdkFocusChange: EventEmitter<FocusOrigin>;
     constructor(_elementRef: ElementRef<HTMLElement>, _focusMonitor: FocusMonitor);
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
@@ -207,8 +207,8 @@ export declare class IsFocusableConfig {
 export declare class ListKeyManager<T extends ListKeyManagerOption> {
     get activeItem(): T | null;
     get activeItemIndex(): number | null;
-    change: Subject<number>;
-    tabOut: Subject<void>;
+    readonly change: Subject<number>;
+    readonly tabOut: Subject<void>;
     constructor(_items: QueryList<T> | T[]);
     isTyping(): boolean;
     onKeydown(event: KeyboardEvent): void;

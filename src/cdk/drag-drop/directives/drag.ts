@@ -70,7 +70,7 @@ const DRAG_HOST_CLASS = 'cdk-drag';
   providers: [{provide: CDK_DRAG_PARENT, useExisting: CdkDrag}]
 })
 export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
-  private _destroyed = new Subject<void>();
+  private readonly _destroyed = new Subject<void>();
   private static _dragInstances: CdkDrag[] = [];
 
   /** Reference to the underlying drag instance. */
@@ -156,32 +156,34 @@ export class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDestroy {
   @Input('cdkDragPreviewContainer') previewContainer: PreviewContainer;
 
   /** Emits when the user starts dragging the item. */
-  @Output('cdkDragStarted') started: EventEmitter<CdkDragStart> = new EventEmitter<CdkDragStart>();
+  @Output('cdkDragStarted') readonly started: EventEmitter<CdkDragStart> =
+      new EventEmitter<CdkDragStart>();
 
   /** Emits when the user has released a drag item, before any animations have started. */
-  @Output('cdkDragReleased') released: EventEmitter<CdkDragRelease> =
+  @Output('cdkDragReleased') readonly released: EventEmitter<CdkDragRelease> =
       new EventEmitter<CdkDragRelease>();
 
   /** Emits when the user stops dragging an item in the container. */
-  @Output('cdkDragEnded') ended: EventEmitter<CdkDragEnd> = new EventEmitter<CdkDragEnd>();
+  @Output('cdkDragEnded') readonly ended: EventEmitter<CdkDragEnd> = new EventEmitter<CdkDragEnd>();
 
   /** Emits when the user has moved the item into a new container. */
-  @Output('cdkDragEntered') entered: EventEmitter<CdkDragEnter<any>> =
+  @Output('cdkDragEntered') readonly entered: EventEmitter<CdkDragEnter<any>> =
       new EventEmitter<CdkDragEnter<any>>();
 
   /** Emits when the user removes the item its container by dragging it into another container. */
-  @Output('cdkDragExited') exited: EventEmitter<CdkDragExit<any>> =
+  @Output('cdkDragExited') readonly exited: EventEmitter<CdkDragExit<any>> =
       new EventEmitter<CdkDragExit<any>>();
 
   /** Emits when the user drops the item inside a container. */
-  @Output('cdkDragDropped') dropped: EventEmitter<CdkDragDrop<any>> =
+  @Output('cdkDragDropped') readonly dropped: EventEmitter<CdkDragDrop<any>> =
       new EventEmitter<CdkDragDrop<any>>();
 
   /**
    * Emits as the user is dragging the item. Use with caution,
    * because this event will fire for every pixel that the user has dragged.
    */
-  @Output('cdkDragMoved') moved: Observable<CdkDragMove<T>> =
+  @Output('cdkDragMoved')
+  readonly moved:  Observable<CdkDragMove<T>> =
       new Observable((observer: Observer<CdkDragMove<T>>) => {
         const subscription = this._dragRef.moved.pipe(map(movedEvent => ({
           source: this,

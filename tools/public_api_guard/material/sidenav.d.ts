@@ -3,13 +3,13 @@ export declare const MAT_DRAWER_DEFAULT_AUTOSIZE: InjectionToken<boolean>;
 export declare function MAT_DRAWER_DEFAULT_AUTOSIZE_FACTORY(): boolean;
 
 export declare class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestroy {
-    _animationEnd: Subject<AnimationEvent>;
-    _animationStarted: Subject<AnimationEvent>;
+    readonly _animationEnd: Subject<AnimationEvent>;
+    readonly _animationStarted: Subject<AnimationEvent>;
     _animationState: 'open-instant' | 'open' | 'void';
-    _closedStream: Observable<void>;
+    readonly _closedStream: Observable<void>;
     _container?: MatDrawerContainer | undefined;
     readonly _modeChanged: Subject<void>;
-    _openedStream: Observable<void>;
+    readonly _openedStream: Observable<void>;
     get autoFocus(): boolean;
     set autoFocus(value: boolean);
     readonly closedStart: Observable<void>;
@@ -17,7 +17,7 @@ export declare class MatDrawer implements AfterContentInit, AfterContentChecked,
     set disableClose(value: boolean);
     get mode(): MatDrawerMode;
     set mode(value: MatDrawerMode);
-    onPositionChanged: EventEmitter<void>;
+    readonly onPositionChanged: EventEmitter<void>;
     get opened(): boolean;
     set opened(value: boolean);
     readonly openedChange: EventEmitter<boolean>;

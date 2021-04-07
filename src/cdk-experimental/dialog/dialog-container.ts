@@ -104,19 +104,19 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
   @ViewChild(CdkPortalOutlet, {static: true}) _portalHost: CdkPortalOutlet;
 
   /** A subject emitting before the dialog enters the view. */
-  _beforeEnter: Subject<void> = new Subject();
+  readonly _beforeEnter = new Subject<void>();
 
   /** A subject emitting after the dialog enters the view. */
-  _afterEnter: Subject<void> = new Subject();
+  readonly _afterEnter = new Subject<void>();
 
   /** A subject emitting before the dialog exits the view. */
-  _beforeExit: Subject<void> = new Subject();
+  readonly _beforeExit = new Subject<void>();
 
   /** A subject emitting after the dialog exits the view. */
-  _afterExit: Subject<void> = new Subject();
+  readonly _afterExit = new Subject<void>();
 
   /** Stream of animation `done` events. */
-  _animationDone = new Subject<AnimationEvent>();
+  readonly _animationDone = new Subject<AnimationEvent>();
 
   constructor(
     private _elementRef: ElementRef<HTMLElement>,

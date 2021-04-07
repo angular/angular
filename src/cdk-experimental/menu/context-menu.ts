@@ -129,7 +129,7 @@ export class CdkContextMenuTrigger implements OnDestroy {
   private _panelContent: TemplatePortal;
 
   /** Emits when the element is destroyed. */
-  private readonly _destroyed: Subject<void> = new Subject();
+  private readonly _destroyed = new Subject<void>();
 
   /** The menu stack for this trigger and its associated menus. */
   private readonly _menuStack = new MenuStack();

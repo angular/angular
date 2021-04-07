@@ -153,7 +153,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
    * be emitted when animations are disabled, nor will it be emitted for modes with continuous
    * animations (indeterminate and query).
    */
-  @Output() animationEnd = new EventEmitter<ProgressAnimationEnd>();
+  @Output() readonly animationEnd = new EventEmitter<ProgressAnimationEnd>();
 
   /** Reference to animation end subscription to be unsubscribed on destroy. */
   private _animationEndSubscription = Subscription.EMPTY;

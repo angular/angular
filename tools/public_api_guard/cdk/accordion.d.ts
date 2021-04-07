@@ -16,15 +16,15 @@ export declare class CdkAccordion implements OnDestroy, OnChanges {
 export declare class CdkAccordionItem implements OnDestroy {
     protected _expansionDispatcher: UniqueSelectionDispatcher;
     accordion: CdkAccordion;
-    closed: EventEmitter<void>;
-    destroyed: EventEmitter<void>;
+    readonly closed: EventEmitter<void>;
+    readonly destroyed: EventEmitter<void>;
     get disabled(): boolean;
     set disabled(disabled: boolean);
     get expanded(): boolean;
     set expanded(expanded: boolean);
-    expandedChange: EventEmitter<boolean>;
+    readonly expandedChange: EventEmitter<boolean>;
     readonly id: string;
-    opened: EventEmitter<void>;
+    readonly opened: EventEmitter<void>;
     constructor(accordion: CdkAccordion, _changeDetectorRef: ChangeDetectorRef, _expansionDispatcher: UniqueSelectionDispatcher);
     close(): void;
     ngOnDestroy(): void;

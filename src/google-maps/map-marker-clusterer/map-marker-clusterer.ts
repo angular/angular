@@ -167,19 +167,19 @@ export class MapMarkerClusterer implements OnInit, AfterContentInit, OnChanges, 
    * googlemaps.github.io/v3-utility-library/modules/
    * _google_markerclustererplus.html#clusteringbegin
    */
-  @Output()
-  clusteringbegin: Observable<void> = this._eventManager.getLazyEmitter<void>('clusteringbegin');
+  @Output() readonly clusteringbegin: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('clusteringbegin');
 
   /**
    * See
    * googlemaps.github.io/v3-utility-library/modules/_google_markerclustererplus.html#clusteringend
    */
-  @Output()
-  clusteringend: Observable<void> = this._eventManager.getLazyEmitter<void>('clusteringend');
+  @Output() readonly clusteringend: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('clusteringend');
 
   /** Emits when a cluster has been clicked. */
   @Output()
-  clusterClick: Observable<Cluster> = this._eventManager.getLazyEmitter<Cluster>('click');
+  readonly clusterClick: Observable<Cluster> = this._eventManager.getLazyEmitter<Cluster>('click');
 
   @ContentChildren(MapMarker, {descendants: true}) _markers: QueryList<MapMarker>;
 

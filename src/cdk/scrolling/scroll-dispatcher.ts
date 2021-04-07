@@ -33,7 +33,7 @@ export class ScrollDispatcher implements OnDestroy {
   }
 
   /** Subject for notifying that a registered scrollable reference element has been scrolled. */
-  private _scrolled = new Subject<CdkScrollable|void>();
+  private readonly _scrolled = new Subject<CdkScrollable|void>();
 
   /** Keeps track of the global `scroll` and `resize` subscriptions. */
   _globalSubscription: Subscription | null = null;

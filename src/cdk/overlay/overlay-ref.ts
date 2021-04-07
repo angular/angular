@@ -32,9 +32,9 @@ export type ImmutableObject<T> = {
  */
 export class OverlayRef implements PortalOutlet, OverlayReference {
   private _backdropElement: HTMLElement | null = null;
-  private _backdropClick: Subject<MouseEvent> = new Subject();
-  private _attachments = new Subject<void>();
-  private _detachments = new Subject<void>();
+  private readonly _backdropClick = new Subject<MouseEvent>();
+  private readonly _attachments = new Subject<void>();
+  private readonly _detachments = new Subject<void>();
   private _positionStrategy: PositionStrategy | undefined;
   private _scrollStrategy: ScrollStrategy | undefined;
   private _locationChanges: SubscriptionLike = Subscription.EMPTY;
@@ -47,10 +47,10 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
   private _previousHostParent: HTMLElement;
 
   /** Stream of keydown events dispatched to this overlay. */
-  _keydownEvents = new Subject<KeyboardEvent>();
+  readonly _keydownEvents = new Subject<KeyboardEvent>();
 
   /** Stream of mouse outside events dispatched to this overlay. */
-  _outsidePointerEvents = new Subject<MouseEvent>();
+  readonly _outsidePointerEvents = new Subject<MouseEvent>();
 
   constructor(
       private _portalOutlet: PortalOutlet,

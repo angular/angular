@@ -63,37 +63,39 @@ export class MapInfoWindow implements OnInit, OnDestroy {
    * See
    * developers.google.com/maps/documentation/javascript/reference/info-window#InfoWindow.closeclick
    */
-  @Output() closeclick: Observable<void> = this._eventManager.getLazyEmitter<void>('closeclick');
+  @Output() readonly closeclick: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('closeclick');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/info-window
    * #InfoWindow.content_changed
    */
-  @Output()
-  contentChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('content_changed');
+  @Output() readonly contentChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('content_changed');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/info-window#InfoWindow.domready
    */
-  @Output() domready: Observable<void> = this._eventManager.getLazyEmitter<void>('domready');
+  @Output() readonly domready: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('domready');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/info-window
    * #InfoWindow.position_changed
    */
-  @Output()
-  positionChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('position_changed');
+  @Output() readonly positionChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('position_changed');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/info-window
    * #InfoWindow.zindex_changed
    */
-  @Output()
-  zindexChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('zindex_changed');
+  @Output() readonly zindexChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('zindex_changed');
 
   constructor(private readonly _googleMap: GoogleMap,
               private _elementRef: ElementRef<HTMLElement>,

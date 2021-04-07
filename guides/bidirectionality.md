@@ -31,7 +31,7 @@ export class MyCustomComponent {
     this.dir = directionality.value;
 
     directionality.change.subscribe(() => {
-       this.dir = directionality.value;
+      this.dir = directionality.value;
     });
   }
 }

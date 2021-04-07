@@ -241,7 +241,7 @@ export class CdkStep implements OnChanges {
 })
 export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
   /** Emits when the component is destroyed. */
-  protected _destroyed = new Subject<void>();
+  protected readonly _destroyed = new Subject<void>();
 
   /** Used for managing keyboard focus. */
   private _keyManager: FocusKeyManager<FocusableOption>;
@@ -309,8 +309,7 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
   }
 
   /** Event emitted when the selected step has changed. */
-  @Output()
-  selectionChange: EventEmitter<StepperSelectionEvent> = new EventEmitter<StepperSelectionEvent>();
+  @Output() readonly selectionChange = new EventEmitter<StepperSelectionEvent>();
 
   /** Used to track unique ID for each stepper component. */
   _groupId: number;
@@ -560,14 +559,14 @@ interface AbstractControlLike {
   pristine: boolean;
   root: AbstractControlLike;
   status: string;
-  statusChanges: Observable<any>;
+  readonly statusChanges: Observable<any>;
   touched: boolean;
   untouched: boolean;
   updateOn: any;
   valid: boolean;
   validator: ((control: any) => any) | null;
   value: any;
-  valueChanges: Observable<any>;
+  readonly valueChanges: Observable<any>;
   clearAsyncValidators(): void;
   clearValidators(): void;
   disable(opts?: any): void;

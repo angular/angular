@@ -62,78 +62,67 @@ export class MapPolyline implements OnInit, OnDestroy {
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.click
    */
-  @Output()
-  polylineClick: Observable<google.maps.PolyMouseEvent> =
+  @Output() readonly polylineClick: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('click');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dblclick
    */
-  @Output()
-  polylineDblclick: Observable<google.maps.PolyMouseEvent> =
+  @Output() readonly polylineDblclick: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('dblclick');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.drag
    */
-  @Output()
-  polylineDrag: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly polylineDrag: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('drag');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dragend
    */
-  @Output()
-  polylineDragend: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly polylineDragend: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragend');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.dragstart
    */
-  @Output()
-  polylineDragstart: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly polylineDragstart: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragstart');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mousedown
    */
-  @Output()
-  polylineMousedown: Observable<google.maps.PolyMouseEvent> =
+  @Output() readonly polylineMousedown: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mousedown');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mousemove
    */
-  @Output()
-  polylineMousemove: Observable<google.maps.PolyMouseEvent> =
+  @Output() readonly polylineMousemove: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mousemove');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mouseout
    */
-  @Output()
-  polylineMouseout: Observable<google.maps.PolyMouseEvent> =
+  @Output() readonly polylineMouseout: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mouseout');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mouseover
    */
-  @Output()
-  polylineMouseover: Observable<google.maps.PolyMouseEvent> =
+  @Output() readonly polylineMouseover: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mouseover');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.mouseup
    */
-  @Output()
-  polylineMouseup: Observable<google.maps.PolyMouseEvent> =
+  @Output() readonly polylineMouseup: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('mouseup');
 
   /**
    * See developers.google.com/maps/documentation/javascript/reference/polygon#Polyline.rightclick
    */
-  @Output()
-  polylineRightclick: Observable<google.maps.PolyMouseEvent> =
+  @Output() readonly polylineRightclick: Observable<google.maps.PolyMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.PolyMouseEvent>('rightclick');
 
   constructor(

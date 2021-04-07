@@ -112,7 +112,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   private _lastDestroyedChipIndex: number | null = null;
 
   /** Subject that emits when the component has been destroyed. */
-  private _destroyed = new Subject<void>();
+  private readonly _destroyed = new Subject<void>();
 
   /** Subscription to focus changes in the chips. */
   private _chipFocusSubscription: Subscription | null;
@@ -313,15 +313,14 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   }
 
   /** Event emitted when the selected chip list value has been changed by the user. */
-  @Output() readonly change: EventEmitter<MatChipListChange> =
-      new EventEmitter<MatChipListChange>();
+  @Output() readonly change = new EventEmitter<MatChipListChange>();
 
   /**
    * Event that emits whenever the raw value of the chip-list changes. This is here primarily
    * to facilitate the two-way binding for the `value` input.
    * @docs-private
    */
-  @Output() readonly valueChange: EventEmitter<any> = new EventEmitter<any>();
+  @Output() readonly valueChange = new EventEmitter<any>();
 
   /** The chip components contained within this chip list. */
   @ContentChildren(MatChip, {

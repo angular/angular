@@ -71,7 +71,7 @@ export const FOCUS_MONITOR_DEFAULT_OPTIONS =
 
 type MonitoredElementInfo = {
   checkChildren: boolean,
-  subject: Subject<FocusOrigin>,
+  readonly subject: Subject<FocusOrigin>,
   rootNode: HTMLElement|ShadowRoot|Document
 };
 
@@ -604,7 +604,7 @@ function getTarget(event: Event): HTMLElement|null {
 })
 export class CdkMonitorFocus implements AfterViewInit, OnDestroy {
   private _monitorSubscription: Subscription;
-  @Output() cdkFocusChange = new EventEmitter<FocusOrigin>();
+  @Output() readonly cdkFocusChange = new EventEmitter<FocusOrigin>();
 
   constructor(private _elementRef: ElementRef<HTMLElement>, private _focusMonitor: FocusMonitor) {}
 

@@ -149,7 +149,7 @@ export class CustomRangeStrategy {}
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomHeader<D> implements OnDestroy {
-  private _destroyed = new Subject<void>();
+  private readonly _destroyed = new Subject<void>();
 
   constructor(
       private _calendar: MatCalendar<D>, private _dateAdapter: DateAdapter<D>,

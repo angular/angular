@@ -1,7 +1,7 @@
 export interface _SnackBarContainer {
-    _onAnnounce: Subject<any>;
-    _onEnter: Subject<any>;
-    _onExit: Subject<any>;
+    readonly _onAnnounce: Subject<any>;
+    readonly _onEnter: Subject<any>;
+    readonly _onExit: Subject<any>;
     attachComponentPortal: <T>(portal: ComponentPortal<T>) => ComponentRef<T>;
     attachTemplatePortal: <C>(portal: TemplatePortal<C>) => EmbeddedViewRef<C>;
     enter: () => void;

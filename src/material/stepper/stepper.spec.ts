@@ -56,7 +56,7 @@ import {MatInputModule} from '../input/input-module';
 
 
 const VALID_REGEX = /valid/;
-let dir: {value: Direction, change: EventEmitter<Direction>};
+let dir: {value: Direction, readonly change: EventEmitter<Direction>};
 
 describe('MatStepper', () => {
   beforeEach(() => {

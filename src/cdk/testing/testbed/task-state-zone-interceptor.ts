@@ -31,7 +31,7 @@ type PatchedProxyZone = ProxyZone & {
  */
 export class TaskStateZoneInterceptor {
   /** Subject that can be used to emit a new state change. */
-  private _stateSubject: BehaviorSubject<TaskState> = new BehaviorSubject<TaskState>(
+  private readonly _stateSubject = new BehaviorSubject<TaskState>(
       this._lastState ? this._getTaskStateFromInternalZoneState(this._lastState) : {stable: true});
 
   /** Public observable that emits whenever the task state changes. */

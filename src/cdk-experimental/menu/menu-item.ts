@@ -70,7 +70,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
    * If this MenuItem is a regular MenuItem, outputs when it is triggered by a keyboard or mouse
    * event.
    */
-  @Output('cdkMenuItemTriggered') triggered: EventEmitter<void> = new EventEmitter();
+  @Output('cdkMenuItemTriggered') readonly triggered: EventEmitter<void> = new EventEmitter();
 
   /**
    * The tabindex for this menu item managed internally and used for implementing roving a
@@ -79,7 +79,7 @@ export class CdkMenuItem implements FocusableOption, FocusableElement, Toggler, 
   _tabindex: 0 | -1 = -1;
 
   /** Emits when the menu item is destroyed. */
-  private readonly _destroyed: Subject<void> = new Subject();
+  private readonly _destroyed = new Subject<void>();
 
   constructor(
     readonly _elementRef: ElementRef<HTMLElement>,

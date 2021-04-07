@@ -32,7 +32,7 @@ export type AutofillEvent = {
 
 /** Used to track info about currently monitored elements. */
 type MonitoredElementInfo = {
-  subject: Subject<AutofillEvent>;
+  readonly subject: Subject<AutofillEvent>;
   unlisten: () => void;
 };
 
@@ -147,7 +147,7 @@ export class AutofillMonitor implements OnDestroy {
 })
 export class CdkAutofill implements OnDestroy, OnInit {
   /** Emits when the autofill state of the element changes. */
-  @Output() cdkAutofill: EventEmitter<AutofillEvent> = new EventEmitter<AutofillEvent>();
+  @Output() readonly cdkAutofill = new EventEmitter<AutofillEvent>();
 
   constructor(private _elementRef: ElementRef<HTMLElement>,
               private _autofillMonitor: AutofillMonitor) {}

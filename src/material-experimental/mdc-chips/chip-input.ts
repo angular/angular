@@ -105,7 +105,7 @@ export class MatChipInput implements MatChipTextControl, AfterContentInit, OnCha
 
   /** Emitted when a chip is to be added. */
   @Output('matChipInputTokenEnd')
-  chipEnd: EventEmitter<MatChipInputEvent> = new EventEmitter<MatChipInputEvent>();
+  readonly chipEnd: EventEmitter<MatChipInputEvent> = new EventEmitter<MatChipInputEvent>();
 
   /** The input's placeholder text. */
   @Input() placeholder: string = '';

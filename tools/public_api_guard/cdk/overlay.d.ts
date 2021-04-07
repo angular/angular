@@ -6,10 +6,10 @@ export declare class BlockScrollStrategy implements ScrollStrategy {
 }
 
 export declare class CdkConnectedOverlay implements OnDestroy, OnChanges {
-    attach: EventEmitter<void>;
+    readonly attach: EventEmitter<void>;
     backdropClass: string;
-    backdropClick: EventEmitter<MouseEvent>;
-    detach: EventEmitter<void>;
+    readonly backdropClick: EventEmitter<MouseEvent>;
+    readonly detach: EventEmitter<void>;
     get dir(): Direction;
     disableClose: boolean;
     get flexibleDimensions(): boolean;
@@ -29,11 +29,11 @@ export declare class CdkConnectedOverlay implements OnDestroy, OnChanges {
     set offsetY(offsetY: number);
     open: boolean;
     origin: CdkOverlayOrigin;
-    overlayKeydown: EventEmitter<KeyboardEvent>;
-    overlayOutsideClick: EventEmitter<MouseEvent>;
+    readonly overlayKeydown: EventEmitter<KeyboardEvent>;
+    readonly overlayOutsideClick: EventEmitter<MouseEvent>;
     get overlayRef(): OverlayRef;
     panelClass: string | string[];
-    positionChange: EventEmitter<ConnectedOverlayPositionChange>;
+    readonly positionChange: EventEmitter<ConnectedOverlayPositionChange>;
     positionStrategy: FlexibleConnectedPositionStrategy;
     positions: ConnectedPosition[];
     get push(): boolean;
@@ -264,8 +264,8 @@ export declare class OverlayPositionBuilder {
 }
 
 export declare class OverlayRef implements PortalOutlet, OverlayReference {
-    _keydownEvents: Subject<KeyboardEvent>;
-    _outsidePointerEvents: Subject<MouseEvent>;
+    readonly _keydownEvents: Subject<KeyboardEvent>;
+    readonly _outsidePointerEvents: Subject<MouseEvent>;
     get backdropElement(): HTMLElement | null;
     get hostElement(): HTMLElement;
     get overlayElement(): HTMLElement;

@@ -287,7 +287,7 @@ export abstract class _MatSelectBase<C> extends _MatSelectMixinBase implements A
   _valueId = `mat-select-value-${nextUniqueId++}`;
 
   /** Emits when the panel element is finished transforming in. */
-  _panelDoneAnimatingStream = new Subject<string>();
+  readonly _panelDoneAnimatingStream = new Subject<string>();
 
   /** Strategy that will be used to handle scrolling while the select panel is open. */
   _scrollStrategy: ScrollStrategy;

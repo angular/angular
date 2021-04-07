@@ -48,7 +48,7 @@ export declare class CdkStepLabel {
 }
 
 export declare class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
-    protected _destroyed: Subject<void>;
+    protected readonly _destroyed: Subject<void>;
     _groupId: number;
     protected _orientation: StepperOrientation;
     _stepHeader: QueryList<CdkStepHeader>;
@@ -61,7 +61,7 @@ export declare class CdkStepper implements AfterContentInit, AfterViewInit, OnDe
     set selected(step: CdkStep | undefined);
     get selectedIndex(): number;
     set selectedIndex(index: number);
-    selectionChange: EventEmitter<StepperSelectionEvent>;
+    readonly selectionChange: EventEmitter<StepperSelectionEvent>;
     readonly steps: QueryList<CdkStep>;
     constructor(_dir: Directionality, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>, _document: any);
     _getAnimationDirection(index: number): StepContentPositionState;

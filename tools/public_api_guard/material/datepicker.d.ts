@@ -76,7 +76,7 @@ export declare class MatCalendar<D> implements AfterContentInit, AfterViewChecke
     get startAt(): D | null;
     set startAt(value: D | null);
     startView: MatCalendarView;
-    stateChanges: Subject<void>;
+    readonly stateChanges: Subject<void>;
     readonly viewChanged: EventEmitter<MatCalendarView>;
     readonly yearSelected: EventEmitter<D>;
     yearView: MatYearView<D>;
@@ -108,7 +108,7 @@ export declare class MatCalendarBody implements OnChanges, OnDestroy {
     label: string;
     labelMinRequiredCells: number;
     numCols: number;
-    previewChange: EventEmitter<MatCalendarUserEvent<MatCalendarCell<any> | null>>;
+    readonly previewChange: EventEmitter<MatCalendarUserEvent<MatCalendarCell<any> | null>>;
     previewEnd: number | null;
     previewStart: number | null;
     rows: MatCalendarCell[][];
@@ -214,7 +214,7 @@ export declare class MatDatepickerCancel {
 
 export declare class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>> extends _MatDatepickerContentMixinBase implements OnInit, AfterViewInit, OnDestroy, CanColor {
     _actionsPortal: TemplatePortal | null;
-    _animationDone: Subject<void>;
+    readonly _animationDone: Subject<void>;
     _animationState: 'enter' | 'void';
     _calendar: MatCalendar<D>;
     _closeButtonFocused: boolean;
@@ -348,7 +348,7 @@ export declare class MatDateRangeInput<D> implements MatFormFieldControl<DateRan
     set required(value: boolean);
     separator: string;
     get shouldLabelFloat(): boolean;
-    stateChanges: Subject<void>;
+    readonly stateChanges: Subject<void>;
     get value(): DateRange<D> | null;
     constructor(_changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef<HTMLElement>, control: ControlContainer, _dateAdapter: DateAdapter<D>, _formField?: MatFormField | undefined);
     _getAriaLabelledby(): string | null;

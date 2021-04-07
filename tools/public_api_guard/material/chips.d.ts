@@ -76,7 +76,7 @@ export declare class MatChipInput implements MatChipTextControl, OnChanges, OnDe
     protected _elementRef: ElementRef<HTMLInputElement>;
     get addOnBlur(): boolean;
     set addOnBlur(value: boolean);
-    chipEnd: EventEmitter<MatChipInputEvent>;
+    readonly chipEnd: EventEmitter<MatChipInputEvent>;
     set chipList(value: MatChipList);
     get disabled(): boolean;
     set disabled(value: boolean);

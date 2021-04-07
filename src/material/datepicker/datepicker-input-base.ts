@@ -114,7 +114,7 @@ export abstract class MatDatepickerInputBase<S, D = ExtractDateTypeFromSelection
       new EventEmitter<MatDatepickerInputEvent<D, S>>();
 
   /** Emits when the internal state has changed */
-  stateChanges = new Subject<void>();
+  readonly stateChanges = new Subject<void>();
 
   _onTouched = () => {};
   _validatorOnChange = () => {};

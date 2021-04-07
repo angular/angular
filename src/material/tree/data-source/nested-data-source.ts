@@ -18,7 +18,7 @@ import {map} from 'rxjs/operators';
  * or collapse. The expansion/collapsion will be handled by TreeControl and each non-leaf node.
  */
 export class MatTreeNestedDataSource<T> extends DataSource<T> {
-  _data = new BehaviorSubject<T[]>([]);
+  readonly _data = new BehaviorSubject<T[]>([]);
 
   /**
    * Data for the nested tree

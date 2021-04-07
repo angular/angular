@@ -23,7 +23,7 @@ export declare class CdkPortal extends TemplatePortal {
 
 export declare class CdkPortalOutlet extends BasePortalOutlet implements OnInit, OnDestroy {
     attachDomPortal: (portal: DomPortal) => void;
-    attached: EventEmitter<CdkPortalOutletAttachedRef>;
+    readonly attached: EventEmitter<CdkPortalOutletAttachedRef>;
     get attachedRef(): CdkPortalOutletAttachedRef;
     get portal(): Portal<any> | null;
     set portal(portal: Portal<any> | null);

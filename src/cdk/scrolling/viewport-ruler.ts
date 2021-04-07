@@ -31,7 +31,7 @@ export class ViewportRuler implements OnDestroy {
   private _viewportSize: {width: number; height: number};
 
   /** Stream of viewport change events. */
-  private _change = new Subject<Event>();
+  private readonly _change = new Subject<Event>();
 
   /** Event listener that will be used to handle the viewport change events. */
   private _changeListener = (event: Event) => {

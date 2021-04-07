@@ -101,8 +101,7 @@ export class MatChipInput implements MatChipTextControl, OnChanges, OnDestroy, A
       this._defaultOptions.separatorKeyCodes;
 
   /** Emitted when a chip is to be added. */
-  @Output('matChipInputTokenEnd')
-  chipEnd: EventEmitter<MatChipInputEvent> = new EventEmitter<MatChipInputEvent>();
+  @Output('matChipInputTokenEnd') readonly chipEnd = new EventEmitter<MatChipInputEvent>();
 
   /** The input's placeholder text. */
   @Input() placeholder: string = '';

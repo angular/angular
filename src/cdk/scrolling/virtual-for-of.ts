@@ -90,10 +90,10 @@ function getOffset(orientation: 'horizontal' | 'vertical', direction: 'start' | 
 export class CdkVirtualForOf<T> implements
     CdkVirtualScrollRepeater<T>, CollectionViewer, DoCheck, OnDestroy {
   /** Emits when the rendered view of the data changes. */
-  viewChange = new Subject<ListRange>();
+  readonly viewChange = new Subject<ListRange>();
 
   /** Subject that emits when a new DataSource instance is given. */
-  private _dataSourceChanges = new Subject<DataSource<T>>();
+  private readonly _dataSourceChanges = new Subject<DataSource<T>>();
 
   /** The DataSource to display. */
   @Input()
@@ -151,7 +151,7 @@ export class CdkVirtualForOf<T> implements
   }
 
   /** Emits whenever the data in the current DataSource changes. */
-  dataStream: Observable<readonly T[]> = this._dataSourceChanges
+  readonly dataStream: Observable<readonly T[]> = this._dataSourceChanges
   .pipe(
       // Start off with null `DataSource`.
       startWith(null),
@@ -179,7 +179,7 @@ export class CdkVirtualForOf<T> implements
   /** Whether the rendered data should be updated during the next ngDoCheck cycle. */
   private _needsUpdate = false;
 
-  private _destroyed = new Subject<void>();
+  private readonly _destroyed = new Subject<void>();
 
   constructor(
       /** The view container to add items to. */

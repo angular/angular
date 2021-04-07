@@ -2,7 +2,7 @@ export declare const CDK_COPY_TO_CLIPBOARD_CONFIG: InjectionToken<CdkCopyToClipb
 
 export declare class CdkCopyToClipboard implements OnDestroy {
     attempts: number;
-    copied: EventEmitter<boolean>;
+    readonly copied: EventEmitter<boolean>;
     text: string;
     constructor(_clipboard: Clipboard, _ngZone: NgZone, config?: CdkCopyToClipboardConfig);
     copy(attempts?: number): void;

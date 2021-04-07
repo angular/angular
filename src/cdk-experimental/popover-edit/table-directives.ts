@@ -501,7 +501,7 @@ export class CdkEditOpen {
   // In Ivy the `host` metadata will be merged, whereas in ViewEngine it is overridden. In order
   // to avoid double event listeners, we need to use `HostListener`. Once Ivy is the default, we
   // can move this back into `host`.
-  // tslint:disable:no-host-decorator-in-concrete
+  // tslint:disable-next-line:no-host-decorator-in-concrete
   @HostListener('click', ['$event'])
   openEdit(evt: Event): void {
     this.editEventDispatcher.editing.next(closest(this.elementRef.nativeElement!, CELL_SELECTOR));

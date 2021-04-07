@@ -127,11 +127,11 @@ export class MatTreeFlattener<T, F, K = F> {
  * to type `F` for `MatTree` to consume.
  */
 export class MatTreeFlatDataSource<T, F, K = F> extends DataSource<F> {
-  _flattenedData = new BehaviorSubject<F[]>([]);
+  readonly _flattenedData = new BehaviorSubject<F[]>([]);
 
-  _expandedData = new BehaviorSubject<F[]>([]);
+  readonly _expandedData = new BehaviorSubject<F[]>([]);
 
-  _data: BehaviorSubject<T[]>;
+  readonly _data: BehaviorSubject<T[]>;
   get data() { return this._data.value; }
   set data(value: T[]) {
     this._data.next(value);

@@ -30,7 +30,7 @@ export class MatSelection<T> extends CdkSelection<T> {
   set multiple(multiple: boolean) { this._multiple = coerceBooleanProperty(multiple); }
 
   /** Emits when selection changes. */
-  @Output('matSelectionChange') change = new EventEmitter<SelectionChange<T>>();
+  @Output('matSelectionChange') readonly change = new EventEmitter<SelectionChange<T>>();
 }
 
 /**

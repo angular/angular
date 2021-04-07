@@ -15,7 +15,7 @@ export declare abstract class _MatTabBodyBase implements OnInit, OnDestroy {
     readonly _onCentering: EventEmitter<number>;
     abstract _portalHost: CdkPortalOutlet;
     _position: MatTabBodyPositionState;
-    _translateTabComplete: Subject<AnimationEvent>;
+    readonly _translateTabComplete: Subject<AnimationEvent>;
     animationDuration: string;
     origin: number | null;
     set position(position: number);

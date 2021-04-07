@@ -61,7 +61,7 @@ export class MapDirectionsRenderer implements OnInit, OnChanges, OnDestroy {
    * #DirectionsRenderer.directions_changed
    */
   @Output()
-  directionsChanged: Observable<void> =
+  readonly directionsChanged: Observable<void> =
       this._eventManager.getLazyEmitter<void>('directions_changed');
 
   /** The underlying google.maps.DirectionsRenderer object. */

@@ -20,7 +20,8 @@ let nextId = 0;
 @Directive()
 export abstract class CdkMenuItemSelectable extends CdkMenuItem {
   /** Event emitted when the selectable item is clicked */
-  @Output('cdkMenuItemToggled') toggled: EventEmitter<CdkMenuItemSelectable> = new EventEmitter();
+  @Output('cdkMenuItemToggled') readonly toggled: EventEmitter<CdkMenuItemSelectable> =
+      new EventEmitter();
 
   /** Whether the element is checked */
   @Input()

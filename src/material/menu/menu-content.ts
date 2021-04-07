@@ -41,7 +41,7 @@ export class MatMenuContent implements OnDestroy {
   private _outlet: DomPortalOutlet;
 
   /** Emits when the menu content has been attached. */
-  _attached = new Subject<void>();
+  readonly _attached = new Subject<void>();
 
   constructor(
     private _template: TemplateRef<any>,

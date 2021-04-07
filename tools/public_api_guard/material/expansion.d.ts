@@ -45,14 +45,14 @@ export declare class MatExpansionModule {
 export declare class MatExpansionPanel extends CdkAccordionItem implements AfterContentInit, OnChanges, OnDestroy {
     _animationMode: string;
     _body: ElementRef<HTMLElement>;
-    _bodyAnimationDone: Subject<AnimationEvent>;
+    readonly _bodyAnimationDone: Subject<AnimationEvent>;
     _headerId: string;
     readonly _inputChanges: Subject<SimpleChanges>;
     _lazyContent: MatExpansionPanelContent;
     _portal: TemplatePortal;
     accordion: MatAccordionBase;
-    afterCollapse: EventEmitter<void>;
-    afterExpand: EventEmitter<void>;
+    readonly afterCollapse: EventEmitter<void>;
+    readonly afterExpand: EventEmitter<void>;
     get hideToggle(): boolean;
     set hideToggle(value: boolean);
     get togglePosition(): MatAccordionTogglePosition;

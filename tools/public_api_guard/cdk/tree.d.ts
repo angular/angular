@@ -44,7 +44,7 @@ export declare class CdkTree<T, K = T> implements AfterContentChecked, Collectio
     set dataSource(dataSource: DataSource<T> | Observable<T[]> | T[]);
     trackBy: TrackByFunction<T>;
     treeControl: TreeControl<T, K>;
-    viewChange: BehaviorSubject<{
+    readonly viewChange: BehaviorSubject<{
         start: number;
         end: number;
     }>;
@@ -67,8 +67,8 @@ export declare class CdkTreeModule {
 
 export declare class CdkTreeNode<T, K = T> implements DoCheck, FocusableOption, OnDestroy, OnInit {
     protected _data: T;
-    _dataChanges: Subject<void>;
-    protected _destroyed: Subject<void>;
+    readonly _dataChanges: Subject<void>;
+    protected readonly _destroyed: Subject<void>;
     protected _elementRef: ElementRef<HTMLElement>;
     protected _isAriaExpanded: boolean;
     protected _tree: CdkTree<T, K>;

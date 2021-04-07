@@ -168,7 +168,7 @@ export class MatFormField extends _MatFormFieldMixinBase
   /** Whether the outline gap needs to be calculated next time the zone has stabilized. */
   private _outlineGapCalculationNeededOnStable = false;
 
-  private _destroyed = new Subject<void>();
+  private readonly _destroyed = new Subject<void>();
 
   /** The form-field appearance style. */
   @Input()

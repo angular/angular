@@ -123,7 +123,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   _panelAnimationState: 'void' | 'enter' = 'void';
 
   /** Emits whenever an animation on the menu completes. */
-  _animationDone = new Subject<AnimationEvent>();
+  readonly _animationDone = new Subject<AnimationEvent>();
 
   /** Whether the menu is animating. */
   _isAnimating: boolean;
@@ -251,7 +251,7 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
    * @deprecated Switch to `closed` instead
    * @breaking-change 8.0.0
    */
-  @Output() close: EventEmitter<MenuCloseReason> = this.closed;
+  @Output() readonly close: EventEmitter<MenuCloseReason> = this.closed;
 
   readonly panelId = `mat-menu-panel-${menuPanelUid++}`;
 

@@ -208,22 +208,22 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   set push(value: boolean) { this._push = coerceBooleanProperty(value); }
 
   /** Event emitted when the backdrop is clicked. */
-  @Output() backdropClick = new EventEmitter<MouseEvent>();
+  @Output() readonly backdropClick = new EventEmitter<MouseEvent>();
 
   /** Event emitted when the position has changed. */
-  @Output() positionChange = new EventEmitter<ConnectedOverlayPositionChange>();
+  @Output() readonly positionChange = new EventEmitter<ConnectedOverlayPositionChange>();
 
   /** Event emitted when the overlay has been attached. */
-  @Output() attach = new EventEmitter<void>();
+  @Output() readonly attach = new EventEmitter<void>();
 
   /** Event emitted when the overlay has been detached. */
-  @Output() detach = new EventEmitter<void>();
+  @Output() readonly detach = new EventEmitter<void>();
 
   /** Emits when there are keyboard events that are targeted at the overlay. */
-  @Output() overlayKeydown = new EventEmitter<KeyboardEvent>();
+  @Output() readonly overlayKeydown = new EventEmitter<KeyboardEvent>();
 
   /** Emits when there are mouse outside click events that are targeted at the overlay. */
-  @Output() overlayOutsideClick = new EventEmitter<MouseEvent>();
+  @Output() readonly overlayOutsideClick = new EventEmitter<MouseEvent>();
 
   // TODO(jelbourn): inputs for size, scroll behavior, animation, etc.
 

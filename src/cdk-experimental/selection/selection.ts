@@ -60,7 +60,7 @@ export class CdkSelection<T> implements OnInit, AfterContentChecked, CollectionV
   protected _multiple: boolean;
 
   /** Emits when selection changes. */
-  @Output('cdkSelectionChange') change = new EventEmitter<SelectionChange<T>>();
+  @Output('cdkSelectionChange') readonly change = new EventEmitter<SelectionChange<T>>();
 
   /** Latest data provided by the data source. */
   private _data: T[]|readonly T[];

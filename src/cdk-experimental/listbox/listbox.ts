@@ -93,7 +93,7 @@ export class CdkOption<T = unknown> implements ListKeyManagerOption, Highlightab
     this._value = value;
   }
 
-  @Output() readonly selectionChange: EventEmitter<OptionSelectionChangeEvent<T>> =
+  @Output() readonly selectionChange =
       new EventEmitter<OptionSelectionChangeEvent<T>>();
 
   constructor(private readonly _elementRef: ElementRef,
@@ -243,7 +243,7 @@ export class CdkListbox<T> implements AfterContentInit, OnDestroy, OnInit, Contr
 
   @ContentChildren(CdkOption, {descendants: true}) _options: QueryList<CdkOption<T>>;
 
-  @Output() readonly selectionChange: EventEmitter<ListboxSelectionChangeEvent<T>> =
+  @Output() readonly selectionChange =
       new EventEmitter<ListboxSelectionChangeEvent<T>>();
 
   @Input() id = `cdk-listbox-${listboxId++}`;

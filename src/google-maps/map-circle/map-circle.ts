@@ -59,102 +59,91 @@ export class MapCircle implements OnInit, OnDestroy {
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.center_changed
    */
-  @Output()
-  centerChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('center_changed');
+  @Output() readonly centerChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('center_changed');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.click
    */
-  @Output()
-  circleClick: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly circleClick: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('click');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.dblclick
    */
-  @Output()
-  circleDblclick: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly circleDblclick: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dblclick');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.drag
    */
-  @Output()
-  circleDrag: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly circleDrag: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('drag');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.dragend
    */
-  @Output()
-  circleDragend: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly circleDragend: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragend');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.dragstart
    */
-  @Output()
-  circleDragstart: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly circleDragstart: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dragstart');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.mousedown
    */
-  @Output()
-  circleMousedown: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly circleMousedown: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mousedown');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.mousemove
    */
-  @Output()
-  circleMousemove: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly circleMousemove: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mousemove');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.mouseout
    */
-  @Output()
-  circleMouseout: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly circleMouseout: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseout');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.mouseover
    */
-  @Output()
-  circleMouseover: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly circleMouseover: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseover');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.mouseup
    */
-  @Output()
-  circleMouseup: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly circleMouseup: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseup');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.radius_changed
    */
-  @Output()
-  radiusChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('radius_changed');
+  @Output() readonly radiusChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('radius_changed');
 
   /**
    * @see
    * developers.google.com/maps/documentation/javascript/reference/polygon#Circle.rightclick
    */
-  @Output()
-  circleRightclick: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly circleRightclick: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('rightclick');
 
   constructor(private readonly _map: GoogleMap, private readonly _ngZone: NgZone) {}

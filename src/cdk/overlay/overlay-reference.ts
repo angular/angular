@@ -27,6 +27,6 @@ export interface OverlayReference {
   updatePosition: () => void;
   getDirection: () => Direction;
   setDirection: (dir: Direction | Directionality) => void;
-  _outsidePointerEvents: Subject<MouseEvent>;
-  _keydownEvents: Subject<KeyboardEvent>;
+  readonly _outsidePointerEvents: Subject<MouseEvent>;
+  readonly _keydownEvents: Subject<KeyboardEvent>;
 }

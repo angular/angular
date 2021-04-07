@@ -71,10 +71,10 @@ const SCROLL_SCHEDULER =
 })
 export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, OnDestroy {
   /** Emits when the viewport is detached from a CdkVirtualForOf. */
-  private _detachedSubject = new Subject<void>();
+  private readonly _detachedSubject = new Subject<void>();
 
   /** Emits when the rendered range changes. */
-  private _renderedRangeSubject = new Subject<ListRange>();
+  private readonly _renderedRangeSubject = new Subject<ListRange>();
 
   /** The direction the viewport scrolls. */
   @Input()
@@ -94,16 +94,16 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
   // depending on how the strategy calculates the scrolled index, it may come at a cost to
   // performance.
   /** Emits when the index of the first element visible in the viewport changes. */
-  @Output() scrolledIndexChange: Observable<number> =
-      new Observable((observer: Observer<number>) =>
-        this._scrollStrategy.scrolledIndexChange.subscribe(index =>
-            Promise.resolve().then(() => this.ngZone.run(() => observer.next(index)))));
+  @Output()
+  readonly scrolledIndexChange: Observable<number> = new Observable(
+      (observer: Observer<number>) => this._scrollStrategy.scrolledIndexChange.subscribe(
+          index => Promise.resolve().then(() => this.ngZone.run(() => observer.next(index)))));
 
   /** The element that wraps the rendered content. */
   @ViewChild('contentWrapper', {static: true}) _contentWrapper: ElementRef<HTMLElement>;
 
   /** A stream that emits whenever the rendered range changes. */
-  renderedRangeStream: Observable<ListRange> = this._renderedRangeSubject;
+  readonly renderedRangeStream: Observable<ListRange> = this._renderedRangeSubject;
 
   /**
    * The total size of all content (in pixels), including content that is not currently rendered.

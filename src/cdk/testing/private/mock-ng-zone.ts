@@ -18,7 +18,7 @@ import {EventEmitter, Injectable, NgZone} from '@angular/core';
  */
 @Injectable()
 export class MockNgZone extends NgZone {
-  onStable: EventEmitter<any> = new EventEmitter(false);
+  readonly onStable = new EventEmitter(false);
 
   constructor() {
     super({enableLongStackTrace: false});

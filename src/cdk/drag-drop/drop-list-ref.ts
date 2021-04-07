@@ -98,21 +98,21 @@ export class DropListRef<T = any> {
   sortPredicate: (index: number, drag: DragRef, drop: DropListRef) => boolean = () => true;
 
   /** Emits right before dragging has started. */
-  beforeStarted = new Subject<void>();
+  readonly beforeStarted = new Subject<void>();
 
   /**
    * Emits when the user has moved a new drag item into this container.
    */
-  entered = new Subject<{item: DragRef, container: DropListRef, currentIndex: number}>();
+  readonly entered = new Subject<{item: DragRef, container: DropListRef, currentIndex: number}>();
 
   /**
    * Emits when the user removes an item from the container
    * by dragging it into another container.
    */
-  exited = new Subject<{item: DragRef, container: DropListRef}>();
+  readonly exited = new Subject<{item: DragRef, container: DropListRef}>();
 
   /** Emits when the user drops an item inside the container. */
-  dropped = new Subject<{
+  readonly dropped = new Subject<{
     item: DragRef,
     currentIndex: number,
     previousIndex: number,
@@ -124,7 +124,7 @@ export class DropListRef<T = any> {
   }>();
 
   /** Emits as the user is swapping items while actively dragging. */
-  sorted = new Subject<{
+  readonly sorted = new Subject<{
     previousIndex: number,
     currentIndex: number,
     container: DropListRef,
@@ -188,7 +188,7 @@ export class DropListRef<T = any> {
   private _scrollNode: HTMLElement | Window;
 
   /** Used to signal to the current auto-scroll sequence when to stop. */
-  private _stopScrollTimers = new Subject<void>();
+  private readonly _stopScrollTimers = new Subject<void>();
 
   /** Shadow root of the current element. Necessary for `elementFromPoint` to resolve correctly. */
   private _cachedShadowRoot: DocumentOrShadowRoot | null = null;

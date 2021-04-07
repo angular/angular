@@ -8,7 +8,7 @@ export declare class MatProgressBar extends _MatProgressBarMixinBase implements 
     _isNoopAnimation: boolean;
     _primaryValueBar: ElementRef;
     _rectangleFillValue: string;
-    animationEnd: EventEmitter<ProgressAnimationEnd>;
+    readonly animationEnd: EventEmitter<ProgressAnimationEnd>;
     get bufferValue(): number;
     set bufferValue(v: number);
     mode: ProgressBarMode;

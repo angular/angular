@@ -418,7 +418,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements CanD
   _value: string[]|null;
 
   /** Emits when the list has been destroyed. */
-  private _destroyed = new Subject<void>();
+  private readonly _destroyed = new Subject<void>();
 
   /** View to model callback that should be called if the list or its options lost focus. */
   _onTouched: () => void = () => {};

@@ -107,7 +107,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   private _lastPosition: ConnectedPosition | null;
 
   /** Subject that emits whenever the position changes. */
-  private _positionChanges = new Subject<ConnectedOverlayPositionChange>();
+  private readonly _positionChanges = new Subject<ConnectedOverlayPositionChange>();
 
   /** Subscription to viewport size changes. */
   private _resizeSubscription = Subscription.EMPTY;

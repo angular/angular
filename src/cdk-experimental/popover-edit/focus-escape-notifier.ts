@@ -22,7 +22,7 @@ export const enum FocusEscapeNotifierDirection {
  * focus leaves the region.
  */
 export class FocusEscapeNotifier extends FocusTrap {
-  private _escapeSubject = new Subject<FocusEscapeNotifierDirection>();
+  private readonly _escapeSubject = new Subject<FocusEscapeNotifierDirection>();
 
   constructor(
       element: HTMLElement,

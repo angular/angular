@@ -37,7 +37,7 @@ describe('CdkTree', () => {
   let dataSource: FakeDataSource;
   let treeElement: HTMLElement;
   let tree: CdkTree<TestData>;
-  let dir: {value: Direction, change: EventEmitter<Direction>};
+  let dir: {value: Direction, readonly change: EventEmitter<Direction>};
 
   function configureCdkTreeTestingModule(declarations: Type<any>[]) {
     TestBed.configureTestingModule({
@@ -1066,7 +1066,7 @@ export class TestData {
   pizzaBase: string;
   level: number;
   children: TestData[];
-  observableChildren: BehaviorSubject<TestData[]>;
+  readonly observableChildren: BehaviorSubject<TestData[]>;
 
   constructor(pizzaTopping: string, pizzaCheese: string, pizzaBase: string, level: number = 1) {
     this.pizzaTopping = pizzaTopping;

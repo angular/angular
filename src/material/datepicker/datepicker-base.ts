@@ -150,7 +150,7 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
   _animationState: 'enter' | 'void' = 'enter';
 
   /** Emits when an animation has finished. */
-  _animationDone = new Subject<void>();
+  readonly _animationDone = new Subject<void>();
 
   /** Text for the close button. */
   _closeButtonText: string;
@@ -377,10 +377,10 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   @Input() dateClass: MatCalendarCellClassFunction<D>;
 
   /** Emits when the datepicker has been opened. */
-  @Output('opened') openedStream: EventEmitter<void> = new EventEmitter<void>();
+  @Output('opened') readonly openedStream = new EventEmitter<void>();
 
   /** Emits when the datepicker has been closed. */
-  @Output('closed') closedStream: EventEmitter<void> = new EventEmitter<void>();
+  @Output('closed') readonly closedStream = new EventEmitter<void>();
 
   /**
    * Classes to be passed to the date picker panel.

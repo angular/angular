@@ -54,7 +54,7 @@ export class Dialog implements OnDestroy {
   _getAfterAllClosed(): Observable<void> {
     return this._parentDialog ? this._parentDialog.afterAllClosed : this._afterAllClosedBase;
   }
-  _afterAllClosedBase = new Subject<void>();
+  readonly _afterAllClosedBase = new Subject<void>();
 
   // TODO(jelbourn): tighten the type on the right-hand side of this expression.
   afterAllClosed: Observable<void> = defer(() => this.openDialogs.length ?
@@ -64,7 +64,7 @@ export class Dialog implements OnDestroy {
   get afterOpened(): Subject<DialogRef<any>> {
     return this._parentDialog ? this._parentDialog.afterOpened : this._afterOpened;
   }
-  _afterOpened: Subject<DialogRef<any>> = new Subject();
+  readonly _afterOpened = new Subject<DialogRef<any>>();
 
   /** Stream that emits when a dialog is opened. */
   get openDialogs(): DialogRef<any>[] {

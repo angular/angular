@@ -34,7 +34,7 @@ export class VirtualScrollDemo implements OnDestroy {
   decreasingSizeData = Array(10000).fill(0)
       .map((_, i) => (1 + Math.floor((10000 - i) / 1000)) * 20);
   randomData = Array(10000).fill(0).map(() => Math.round(Math.random() * 100));
-  observableData = new BehaviorSubject<number[]>([]);
+  readonly observableData = new BehaviorSubject<number[]>([]);
   states = [
     {name: 'Alabama', capital: 'Montgomery'},
     {name: 'Alaska', capital: 'Juneau'},

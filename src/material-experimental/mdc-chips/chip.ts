@@ -214,7 +214,7 @@ export class MatChip extends _MatChipMixinBase implements AfterContentInit, Afte
   protected _highlighted: boolean = false;
 
   /** Emitted when the user interacts with the chip. */
-  @Output() interaction = new EventEmitter<string>();
+  @Output() readonly interaction = new EventEmitter<string>();
 
   /** Emitted when the chip is destroyed. */
   @Output() readonly destroyed: EventEmitter<MatChipEvent> = new EventEmitter<MatChipEvent>();

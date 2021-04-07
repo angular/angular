@@ -106,12 +106,12 @@ interface PendingPlayerState {
 export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   /** Whether we're currently rendering inside a browser. */
   private _isBrowser: boolean;
-  private _youtubeContainer = new Subject<HTMLElement>();
-  private _destroyed = new Subject<void>();
+  private readonly _youtubeContainer = new Subject<HTMLElement>();
+  private readonly _destroyed = new Subject<void>();
   private _player: Player | undefined;
   private _existingApiReadyCallback: (() => void) | undefined;
   private _pendingPlayerState: PendingPlayerState | undefined;
-  private _playerChanges = new BehaviorSubject<UninitializedPlayer | undefined>(undefined);
+  private readonly _playerChanges = new BehaviorSubject<UninitializedPlayer | undefined>(undefined);
 
   /** YouTube Video ID to view */
   @Input()
@@ -119,7 +119,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   set videoId(videoId: string | undefined) {
     this._videoId.next(videoId);
   }
-  private _videoId = new BehaviorSubject<string | undefined>(undefined);
+  private readonly _videoId = new BehaviorSubject<string | undefined>(undefined);
 
   /** Height of video player */
   @Input()
@@ -127,7 +127,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   set height(height: number | undefined) {
     this._height.next(height || DEFAULT_PLAYER_HEIGHT);
   }
-  private _height = new BehaviorSubject<number>(DEFAULT_PLAYER_HEIGHT);
+  private readonly _height = new BehaviorSubject<number>(DEFAULT_PLAYER_HEIGHT);
 
   /** Width of video player */
   @Input()
@@ -135,28 +135,29 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   set width(width: number | undefined) {
     this._width.next(width || DEFAULT_PLAYER_WIDTH);
   }
-  private _width = new BehaviorSubject<number>(DEFAULT_PLAYER_WIDTH);
+  private readonly _width = new BehaviorSubject<number>(DEFAULT_PLAYER_WIDTH);
 
   /** The moment when the player is supposed to start playing */
   @Input()
   set startSeconds(startSeconds: number | undefined) {
     this._startSeconds.next(startSeconds);
   }
-  private _startSeconds = new BehaviorSubject<number | undefined>(undefined);
+  private readonly _startSeconds = new BehaviorSubject<number | undefined>(undefined);
 
   /** The moment when the player is supposed to stop playing */
   @Input()
   set endSeconds(endSeconds: number | undefined) {
     this._endSeconds.next(endSeconds);
   }
-  private _endSeconds = new BehaviorSubject<number | undefined>(undefined);
+  private readonly _endSeconds = new BehaviorSubject<number | undefined>(undefined);
 
   /** The suggested quality of the player */
   @Input()
   set suggestedQuality(suggestedQuality: YT.SuggestedVideoQuality | undefined) {
     this._suggestedQuality.next(suggestedQuality);
   }
-  private _suggestedQuality = new BehaviorSubject<YT.SuggestedVideoQuality | undefined>(undefined);
+  private readonly _suggestedQuality =
+    new BehaviorSubject<YT.SuggestedVideoQuality | undefined>(undefined);
 
   /**
    * Extra parameters used to configure the player. See:
@@ -177,22 +178,22 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   @Input() showBeforeIframeApiLoads: boolean | undefined;
 
   /** Outputs are direct proxies from the player itself. */
-  @Output() ready: Observable<YT.PlayerEvent> =
+  @Output() readonly ready: Observable<YT.PlayerEvent> =
       this._getLazyEmitter<YT.PlayerEvent>('onReady');
 
-  @Output() stateChange: Observable<YT.OnStateChangeEvent> =
+  @Output() readonly stateChange: Observable<YT.OnStateChangeEvent> =
       this._getLazyEmitter<YT.OnStateChangeEvent>('onStateChange');
 
-  @Output() error: Observable<YT.OnErrorEvent> =
+  @Output() readonly error: Observable<YT.OnErrorEvent> =
       this._getLazyEmitter<YT.OnErrorEvent>('onError');
 
-  @Output() apiChange: Observable<YT.PlayerEvent> =
+  @Output() readonly apiChange: Observable<YT.PlayerEvent> =
       this._getLazyEmitter<YT.PlayerEvent>('onApiChange');
 
-  @Output() playbackQualityChange: Observable<YT.OnPlaybackQualityChangeEvent> =
+  @Output() readonly playbackQualityChange: Observable<YT.OnPlaybackQualityChangeEvent> =
       this._getLazyEmitter<YT.OnPlaybackQualityChangeEvent>('onPlaybackQualityChange');
 
-  @Output() playbackRateChange: Observable<YT.OnPlaybackRateChangeEvent> =
+  @Output() readonly playbackRateChange: Observable<YT.OnPlaybackRateChangeEvent> =
       this._getLazyEmitter<YT.OnPlaybackRateChangeEvent>('onPlaybackRateChange');
 
   /** The element that will be replaced by the iframe. */

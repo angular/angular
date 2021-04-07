@@ -75,7 +75,7 @@ export const CDK_DROP_LIST = new InjectionToken<CdkDropList>('CdkDropList');
 })
 export class CdkDropList<T = any> implements OnDestroy {
   /** Emits when the list has been destroyed. */
-  private _destroyed = new Subject<void>();
+  private readonly _destroyed = new Subject<void>();
 
   /** Whether the element's scrollable parents have been resolved. */
   private _scrollableParentsResolved: boolean;
@@ -148,24 +148,24 @@ export class CdkDropList<T = any> implements OnDestroy {
 
   /** Emits when the user drops an item inside the container. */
   @Output('cdkDropListDropped')
-  dropped: EventEmitter<CdkDragDrop<T, any>> = new EventEmitter<CdkDragDrop<T, any>>();
+  readonly dropped: EventEmitter<CdkDragDrop<T, any>> = new EventEmitter<CdkDragDrop<T, any>>();
 
   /**
    * Emits when the user has moved a new drag item into this container.
    */
   @Output('cdkDropListEntered')
-  entered: EventEmitter<CdkDragEnter<T>> = new EventEmitter<CdkDragEnter<T>>();
+  readonly entered: EventEmitter<CdkDragEnter<T>> = new EventEmitter<CdkDragEnter<T>>();
 
   /**
    * Emits when the user removes an item from the container
    * by dragging it into another container.
    */
   @Output('cdkDropListExited')
-  exited: EventEmitter<CdkDragExit<T>> = new EventEmitter<CdkDragExit<T>>();
+  readonly exited: EventEmitter<CdkDragExit<T>> = new EventEmitter<CdkDragExit<T>>();
 
   /** Emits as the user is swapping items while actively dragging. */
   @Output('cdkDropListSorted')
-  sorted: EventEmitter<CdkDragSortEvent<T>> = new EventEmitter<CdkDragSortEvent<T>>();
+  readonly sorted: EventEmitter<CdkDragSortEvent<T>> = new EventEmitter<CdkDragSortEvent<T>>();
 
   /**
    * Keeps track of the items that are registered with this container. Historically we used to

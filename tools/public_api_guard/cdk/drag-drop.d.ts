@@ -24,22 +24,22 @@ export declare class CdkDrag<T = any> implements AfterViewInit, OnChanges, OnDes
     set disabled(value: boolean);
     dragStartDelay: DragStartDelay;
     dropContainer: CdkDropList;
-    dropped: EventEmitter<CdkDragDrop<any>>;
+    readonly dropped: EventEmitter<CdkDragDrop<any>>;
     element: ElementRef<HTMLElement>;
-    ended: EventEmitter<CdkDragEnd>;
-    entered: EventEmitter<CdkDragEnter<any>>;
-    exited: EventEmitter<CdkDragExit<any>>;
+    readonly ended: EventEmitter<CdkDragEnd>;
+    readonly entered: EventEmitter<CdkDragEnter<any>>;
+    readonly exited: EventEmitter<CdkDragExit<any>>;
     freeDragPosition: {
         x: number;
         y: number;
     };
     lockAxis: DragAxis;
-    moved: Observable<CdkDragMove<T>>;
+    readonly moved: Observable<CdkDragMove<T>>;
     previewClass: string | string[];
     previewContainer: PreviewContainer;
-    released: EventEmitter<CdkDragRelease>;
+    readonly released: EventEmitter<CdkDragRelease>;
     rootElementSelector: string;
-    started: EventEmitter<CdkDragStart>;
+    readonly started: EventEmitter<CdkDragStart>;
     constructor(
     element: ElementRef<HTMLElement>,
     dropContainer: CdkDropList,
@@ -101,7 +101,7 @@ export interface CdkDragExit<T = any, I = T> {
 
 export declare class CdkDragHandle implements OnDestroy {
     _parentDrag: {} | undefined;
-    _stateChanges: Subject<CdkDragHandle>;
+    readonly _stateChanges: Subject<CdkDragHandle>;
     get disabled(): boolean;
     set disabled(value: boolean);
     element: ElementRef<HTMLElement>;
@@ -171,16 +171,16 @@ export declare class CdkDropList<T = any> implements OnDestroy {
     data: T;
     get disabled(): boolean;
     set disabled(value: boolean);
-    dropped: EventEmitter<CdkDragDrop<T, any>>;
+    readonly dropped: EventEmitter<CdkDragDrop<T, any>>;
     element: ElementRef<HTMLElement>;
     enterPredicate: (drag: CdkDrag, drop: CdkDropList) => boolean;
-    entered: EventEmitter<CdkDragEnter<T>>;
-    exited: EventEmitter<CdkDragExit<T>>;
+    readonly entered: EventEmitter<CdkDragEnter<T>>;
+    readonly exited: EventEmitter<CdkDragExit<T>>;
     id: string;
     lockAxis: DragAxis;
     orientation: DropListOrientation;
     sortPredicate: (index: number, drag: CdkDrag, drop: CdkDropList) => boolean;
-    sorted: EventEmitter<CdkDragSortEvent<T>>;
+    readonly sorted: EventEmitter<CdkDragSortEvent<T>>;
     sortingDisabled: boolean;
     constructor(
     element: ElementRef<HTMLElement>, dragDrop: DragDrop, _changeDetectorRef: ChangeDetectorRef, _scrollDispatcher: ScrollDispatcher, _dir?: Directionality | undefined, _group?: CdkDropListGroup<CdkDropList<any>> | undefined, config?: DragDropConfig);
@@ -261,7 +261,7 @@ export declare class DragDropRegistry<I extends {
 }
 
 export declare class DragRef<T = any> {
-    beforeStarted: Subject<void>;
+    readonly beforeStarted: Subject<void>;
     constrainPosition?: (point: Point, dragRef: DragRef) => Point;
     data: T;
     get disabled(): boolean;
@@ -270,7 +270,7 @@ export declare class DragRef<T = any> {
         touch: number;
         mouse: number;
     };
-    dropped: Subject<{
+    readonly dropped: Subject<{
         previousIndex: number;
         currentIndex: number;
         item: DragRef;
@@ -280,22 +280,22 @@ export declare class DragRef<T = any> {
         dropPoint: Point;
         isPointerOverContainer: boolean;
     }>;
-    ended: Subject<{
+    readonly ended: Subject<{
         source: DragRef;
         distance: Point;
         dropPoint: Point;
     }>;
-    entered: Subject<{
+    readonly entered: Subject<{
         container: DropListRef;
         item: DragRef;
         currentIndex: number;
     }>;
-    exited: Subject<{
+    readonly exited: Subject<{
         container: DropListRef;
         item: DragRef;
     }>;
     lockAxis: 'x' | 'y';
-    moved: Observable<{
+    readonly moved: Observable<{
         source: DragRef;
         pointerPosition: {
             x: number;
@@ -309,10 +309,10 @@ export declare class DragRef<T = any> {
         };
     }>;
     previewClass: string | string[] | undefined;
-    released: Subject<{
+    readonly released: Subject<{
         source: DragRef;
     }>;
-    started: Subject<{
+    readonly started: Subject<{
         source: DragRef;
     }>;
     constructor(element: ElementRef<HTMLElement> | HTMLElement, _config: DragRefConfig, _document: Document, _ngZone: NgZone, _viewportRuler: ViewportRuler, _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>);
@@ -355,10 +355,10 @@ export declare type DropListOrientation = 'horizontal' | 'vertical';
 export declare class DropListRef<T = any> {
     autoScrollDisabled: boolean;
     autoScrollStep: number;
-    beforeStarted: Subject<void>;
+    readonly beforeStarted: Subject<void>;
     data: T;
     disabled: boolean;
-    dropped: Subject<{
+    readonly dropped: Subject<{
         item: DragRef;
         currentIndex: number;
         previousIndex: number;
@@ -370,18 +370,18 @@ export declare class DropListRef<T = any> {
     }>;
     element: HTMLElement | ElementRef<HTMLElement>;
     enterPredicate: (drag: DragRef, drop: DropListRef) => boolean;
-    entered: Subject<{
+    readonly entered: Subject<{
         item: DragRef;
         container: DropListRef;
         currentIndex: number;
     }>;
-    exited: Subject<{
+    readonly exited: Subject<{
         item: DragRef;
         container: DropListRef;
     }>;
     lockAxis: 'x' | 'y';
     sortPredicate: (index: number, drag: DragRef, drop: DropListRef) => boolean;
-    sorted: Subject<{
+    readonly sorted: Subject<{
         previousIndex: number;
         currentIndex: number;
         container: DropListRef;

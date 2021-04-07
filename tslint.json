@@ -115,6 +115,7 @@
     "contextual-lifecycle": true,
     "contextual-decorator": true,
     "no-output-on-prefix": true,
+    "prefer-output-readonly": true,
     "template-no-negated-async": true,
     "use-lifecycle-interface": true,
 

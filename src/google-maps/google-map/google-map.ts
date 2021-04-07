@@ -105,127 +105,129 @@ export class GoogleMap implements OnChanges, OnInit, OnDestroy {
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.bounds_changed
    */
-  @Output()
-  boundsChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('bounds_changed');
+  @Output() readonly boundsChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('bounds_changed');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.center_changed
    */
-  @Output()
-  centerChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('center_changed');
+  @Output() readonly centerChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('center_changed');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.click
    */
-  @Output()
-  mapClick: Observable<google.maps.MapMouseEvent|google.maps.IconMouseEvent> = this._eventManager
-      .getLazyEmitter<google.maps.MapMouseEvent|google.maps.IconMouseEvent>('click');
+  @Output() readonly mapClick: Observable<google.maps.MapMouseEvent|google.maps.IconMouseEvent> =
+      this._eventManager
+          .getLazyEmitter<google.maps.MapMouseEvent|google.maps.IconMouseEvent>('click');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.dblclick
    */
-  @Output()
-  mapDblclick: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly mapDblclick: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('dblclick');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.drag
    */
-  @Output() mapDrag: Observable<void> = this._eventManager.getLazyEmitter<void>('drag');
+  @Output() readonly mapDrag: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('drag');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.dragend
    */
-  @Output() mapDragend: Observable<void> = this._eventManager.getLazyEmitter<void>('dragend');
+  @Output() readonly mapDragend: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('dragend');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.dragstart
    */
-  @Output() mapDragstart: Observable<void> = this._eventManager.getLazyEmitter<void>('dragstart');
+  @Output() readonly mapDragstart: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('dragstart');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.heading_changed
    */
-  @Output()
-  headingChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('heading_changed');
+  @Output() readonly headingChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('heading_changed');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.idle
    */
-  @Output() idle: Observable<void> = this._eventManager.getLazyEmitter<void>('idle');
+  @Output() readonly idle: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('idle');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.maptypeid_changed
    */
-  @Output()
-  maptypeidChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('maptypeid_changed');
+  @Output() readonly maptypeidChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('maptypeid_changed');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.mousemove
    */
   @Output()
-  mapMousemove: Observable<google.maps.MapMouseEvent> =
+  readonly mapMousemove: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mousemove');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.mouseout
    */
-  @Output()
-  mapMouseout: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly mapMouseout: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseout');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.mouseover
    */
-  @Output()
-  mapMouseover: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly mapMouseover: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('mouseover');
 
   /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/map#Map.projection_changed
    */
-  @Output()
-  projectionChanged: Observable<void> =
+  @Output() readonly projectionChanged: Observable<void> =
       this._eventManager.getLazyEmitter<void>('projection_changed');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.rightclick
    */
-  @Output()
-  mapRightclick: Observable<google.maps.MapMouseEvent> =
+  @Output() readonly mapRightclick: Observable<google.maps.MapMouseEvent> =
       this._eventManager.getLazyEmitter<google.maps.MapMouseEvent>('rightclick');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.tilesloaded
    */
-  @Output() tilesloaded: Observable<void> = this._eventManager.getLazyEmitter<void>('tilesloaded');
+  @Output() readonly tilesloaded: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('tilesloaded');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.tilt_changed
    */
-  @Output() tiltChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('tilt_changed');
+  @Output() readonly tiltChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('tilt_changed');
 
   /**
    * See
    * https://developers.google.com/maps/documentation/javascript/reference/map#Map.zoom_changed
    */
-  @Output() zoomChanged: Observable<void> = this._eventManager.getLazyEmitter<void>('zoom_changed');
+  @Output() readonly zoomChanged: Observable<void> =
+      this._eventManager.getLazyEmitter<void>('zoom_changed');
 
   constructor(
     private readonly _elementRef: ElementRef,

@@ -1,5 +1,3 @@
-// tslint:disable:no-eval
-
 import {dirname, join} from 'path';
 import {readFileSync, writeFileSync} from 'fs';
 import {sync as glob} from 'glob';
@@ -34,6 +32,7 @@ function inlineStyles(fileContent: string, filePath: string) {
   return fileContent.replace(/styleUrls:\s*(\[[\s\S]*?])/gm, (_match, styleUrlsValue) => {
     // The RegExp matches the array of external style files. This is a string right now and
     // can to be parsed using the `eval` method. The value looks like "['AAA.css', 'BBB.css']"
+    // tslint:disable-next-line:no-eval
     const styleUrls = eval(styleUrlsValue) as string[];
 
     const styleContents = styleUrls

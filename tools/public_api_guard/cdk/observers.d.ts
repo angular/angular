@@ -3,7 +3,7 @@ export declare class CdkObserveContent implements AfterContentInit, OnDestroy {
     set debounce(value: number);
     get disabled(): any;
     set disabled(value: any);
-    event: EventEmitter<MutationRecord[]>;
+    readonly event: EventEmitter<MutationRecord[]>;
     constructor(_contentObserver: ContentObserver, _elementRef: ElementRef<HTMLElement>, _ngZone: NgZone);
     ngAfterContentInit(): void;
     ngOnDestroy(): void;

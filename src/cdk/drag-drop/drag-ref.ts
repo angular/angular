@@ -161,7 +161,7 @@ export class DragRef<T = any> {
   private _parentPositions: ParentPositionTracker;
 
   /** Emits when the item is being moved. */
-  private _moveEvents = new Subject<{
+  private readonly _moveEvents = new Subject<{
     source: DragRef;
     pointerPosition: {x: number, y: number};
     event: MouseEvent | TouchEvent;
@@ -285,25 +285,25 @@ export class DragRef<T = any> {
   private _disabled = false;
 
   /** Emits as the drag sequence is being prepared. */
-  beforeStarted = new Subject<void>();
+  readonly beforeStarted = new Subject<void>();
 
   /** Emits when the user starts dragging the item. */
-  started = new Subject<{source: DragRef}>();
+  readonly started = new Subject<{source: DragRef}>();
 
   /** Emits when the user has released a drag item, before any animations have started. */
-  released = new Subject<{source: DragRef}>();
+  readonly released = new Subject<{source: DragRef}>();
 
   /** Emits when the user stops dragging an item in the container. */
-  ended = new Subject<{source: DragRef, distance: Point, dropPoint: Point}>();
+  readonly ended = new Subject<{source: DragRef, distance: Point, dropPoint: Point}>();
 
   /** Emits when the user has moved the item into a new container. */
-  entered = new Subject<{container: DropListRef, item: DragRef, currentIndex: number}>();
+  readonly entered = new Subject<{container: DropListRef, item: DragRef, currentIndex: number}>();
 
   /** Emits when the user removes the item its container by dragging it into another container. */
-  exited = new Subject<{container: DropListRef, item: DragRef}>();
+  readonly exited = new Subject<{container: DropListRef, item: DragRef}>();
 
   /** Emits when the user drops the item inside a container. */
-  dropped = new Subject<{
+  readonly dropped = new Subject<{
     previousIndex: number;
     currentIndex: number;
     item: DragRef;
@@ -318,7 +318,7 @@ export class DragRef<T = any> {
    * Emits as the user is dragging the item. Use with caution,
    * because this event will fire for every pixel that the user has dragged.
    */
-  moved: Observable<{
+  readonly moved: Observable<{
     source: DragRef;
     pointerPosition: {x: number, y: number};
     event: MouseEvent | TouchEvent;

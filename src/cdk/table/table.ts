@@ -230,7 +230,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
   protected _data: readonly T[];
 
   /** Subject that emits when the component has been destroyed. */
-  private _onDestroy = new Subject<void>();
+  private readonly _onDestroy = new Subject<void>();
 
   /** List of the rendered rows as identified by their `RenderRow` object. */
   private _renderRows: RenderRow<T>[];
@@ -463,7 +463,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
    *
    * @docs-private
    */
-  viewChange: BehaviorSubject<{start: number, end: number}> =
+  readonly viewChange =
       new BehaviorSubject<{start: number, end: number}>({start: 0, end: Number.MAX_VALUE});
 
   // Outlets in the table's template where the header, data rows, and footer will be inserted.

@@ -44,7 +44,7 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
   private _activeItemIndex = -1;
   private _activeItem: T | null = null;
   private _wrap = false;
-  private _letterKeyStream = new Subject<string>();
+  private readonly _letterKeyStream = new Subject<string>();
   private _typeaheadSubscription = Subscription.EMPTY;
   private _vertical = true;
   private _horizontal: 'ltr' | 'rtl' | null;
@@ -82,10 +82,10 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * Stream that emits any time the TAB key is pressed, so components can react
    * when focus is shifted off of the list.
    */
-  tabOut: Subject<void> = new Subject<void>();
+  readonly tabOut = new Subject<void>();
 
   /** Stream that emits whenever the active item of the list manager changes. */
-  change = new Subject<number>();
+  readonly change = new Subject<number>();
 
   /**
    * Sets the predicate function that determines which items should be skipped by the

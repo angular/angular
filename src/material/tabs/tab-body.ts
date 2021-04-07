@@ -116,7 +116,7 @@ export abstract class _MatTabBodyBase implements OnInit, OnDestroy {
   _position: MatTabBodyPositionState;
 
   /** Emits when an animation on the tab is complete. */
-  _translateTabComplete = new Subject<AnimationEvent>();
+  readonly _translateTabComplete = new Subject<AnimationEvent>();
 
   /** Event emitted when the tab begins to animate towards the center as the active tab. */
   @Output() readonly _onCentering: EventEmitter<number> = new EventEmitter<number>();

@@ -1,17 +1,17 @@
 export declare class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
-    apiChange: Observable<YT.PlayerEvent>;
+    readonly apiChange: Observable<YT.PlayerEvent>;
     set endSeconds(endSeconds: number | undefined);
-    error: Observable<YT.OnErrorEvent>;
+    readonly error: Observable<YT.OnErrorEvent>;
     get height(): number | undefined;
     set height(height: number | undefined);
-    playbackQualityChange: Observable<YT.OnPlaybackQualityChangeEvent>;
-    playbackRateChange: Observable<YT.OnPlaybackRateChangeEvent>;
+    readonly playbackQualityChange: Observable<YT.OnPlaybackQualityChangeEvent>;
+    readonly playbackRateChange: Observable<YT.OnPlaybackRateChangeEvent>;
     get playerVars(): YT.PlayerVars | undefined;
     set playerVars(playerVars: YT.PlayerVars | undefined);
-    ready: Observable<YT.PlayerEvent>;
+    readonly ready: Observable<YT.PlayerEvent>;
     showBeforeIframeApiLoads: boolean | undefined;
     set startSeconds(startSeconds: number | undefined);
-    stateChange: Observable<YT.OnStateChangeEvent>;
+    readonly stateChange: Observable<YT.OnStateChangeEvent>;
     set suggestedQuality(suggestedQuality: YT.SuggestedVideoQuality | undefined);
     get videoId(): string | undefined;
     set videoId(videoId: string | undefined);

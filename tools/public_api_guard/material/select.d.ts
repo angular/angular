@@ -10,7 +10,7 @@ export declare abstract class _MatSelectBase<C> extends _MatSelectMixinBase impl
     readonly _openedStream: Observable<void>;
     protected _overlayDir: CdkConnectedOverlay;
     _overlayPanelClass: string | string[];
-    _panelDoneAnimatingStream: Subject<string>;
+    readonly _panelDoneAnimatingStream: Subject<string>;
     protected _parentFormField: MatFormField;
     abstract _positions: ConnectedPosition[];
     _scrollStrategy: ScrollStrategy;

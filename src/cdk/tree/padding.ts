@@ -28,7 +28,7 @@ export class CdkTreeNodePadding<T, K = T> implements OnDestroy {
   private _currentPadding: string|null;
 
   /** Subject that emits when the component has been destroyed. */
-  private _destroyed = new Subject<void>();
+  private readonly _destroyed = new Subject<void>();
 
   /** CSS units used for the indentation value. */
   indentUnits = 'px';

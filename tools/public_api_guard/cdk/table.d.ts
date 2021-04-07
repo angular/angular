@@ -221,7 +221,7 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     protected stickyCssClass: string;
     get trackBy(): TrackByFunction<T>;
     set trackBy(fn: TrackByFunction<T>);
-    viewChange: BehaviorSubject<{
+    readonly viewChange: BehaviorSubject<{
         start: number;
         end: number;
     }>;

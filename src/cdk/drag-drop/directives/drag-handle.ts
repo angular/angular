@@ -41,7 +41,7 @@ export class CdkDragHandle implements OnDestroy {
   _parentDrag: {} | undefined;
 
   /** Emits when the state of the handle has changed. */
-  _stateChanges = new Subject<CdkDragHandle>();
+  readonly _stateChanges = new Subject<CdkDragHandle>();
 
   /** Whether starting to drag through this handle is disabled. */
   @Input('cdkDragHandleDisabled')

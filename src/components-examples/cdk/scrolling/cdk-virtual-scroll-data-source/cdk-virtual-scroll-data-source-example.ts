@@ -18,8 +18,8 @@ export class MyDataSource extends DataSource<string | undefined> {
   private _pageSize = 100;
   private _cachedData = Array.from<string>({length: this._length});
   private _fetchedPages = new Set<number>();
-  private _dataStream = new BehaviorSubject<(string | undefined)[]>(this._cachedData);
-  private _subscription = new Subscription();
+  private readonly _dataStream = new BehaviorSubject<(string | undefined)[]>(this._cachedData);
+  private readonly _subscription = new Subscription();
 
   connect(collectionViewer: CollectionViewer): Observable<(string | undefined)[]> {
     this._subscription.add(collectionViewer.viewChange.subscribe(range => {

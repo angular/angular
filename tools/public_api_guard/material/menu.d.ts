@@ -1,6 +1,6 @@
 export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit, OnDestroy {
     _allItems: QueryList<MatMenuItem>;
-    _animationDone: Subject<AnimationEvent>;
+    readonly _animationDone: Subject<AnimationEvent>;
     _classList: {
         [key: string]: boolean;
     };
@@ -12,7 +12,7 @@ export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatM
     backdropClass: string;
     get classList(): string;
     set classList(classes: string);
-    close: EventEmitter<MenuCloseReason>;
+    readonly close: EventEmitter<MenuCloseReason>;
     readonly closed: EventEmitter<MenuCloseReason>;
     direction: Direction;
     get hasBackdrop(): boolean | undefined;
@@ -80,7 +80,7 @@ export declare const matMenuAnimations: {
 };
 
 export declare class MatMenuContent implements OnDestroy {
-    _attached: Subject<void>;
+    readonly _attached: Subject<void>;
     constructor(_template: TemplateRef<any>, _componentFactoryResolver: ComponentFactoryResolver, _appRef: ApplicationRef, _injector: Injector, _viewContainerRef: ViewContainerRef, _document: any, _changeDetectorRef?: ChangeDetectorRef | undefined);
     attach(context?: any): void;
     detach(): void;
@@ -130,7 +130,7 @@ export declare class MatMenuModule {
 export interface MatMenuPanel<T = any> {
     addItem?: (item: T) => void;
     backdropClass?: string;
-    close: EventEmitter<void | 'click' | 'keydown' | 'tab'>;
+    readonly close: EventEmitter<void | 'click' | 'keydown' | 'tab'>;
     direction?: Direction;
     focusFirstItem: (origin?: FocusOrigin) => void;
     hasBackdrop?: boolean;

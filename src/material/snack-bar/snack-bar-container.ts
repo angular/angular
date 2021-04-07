@@ -39,9 +39,9 @@ import {MatSnackBarConfig} from './snack-bar-config';
  */
 export interface _SnackBarContainer {
   snackBarConfig: MatSnackBarConfig;
-  _onAnnounce: Subject<any>;
-  _onExit: Subject<any>;
-  _onEnter: Subject<any>;
+  readonly _onAnnounce: Subject<any>;
+  readonly _onExit: Subject<any>;
+  readonly _onEnter: Subject<any>;
   enter: () => void;
   exit: () => Observable<void>;
   attachTemplatePortal: <C>(portal: TemplatePortal<C>) => EmbeddedViewRef<C>;

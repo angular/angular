@@ -120,10 +120,10 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
   }
 
   /** An event emitted after the body's expansion animation happens. */
-  @Output() afterExpand = new EventEmitter<void>();
+  @Output() readonly afterExpand = new EventEmitter<void>();
 
   /** An event emitted after the body's collapse animation happens. */
-  @Output() afterCollapse = new EventEmitter<void>();
+  @Output() readonly afterCollapse = new EventEmitter<void>();
 
   /** Stream that emits for changes in `@Input` properties. */
   readonly _inputChanges = new Subject<SimpleChanges>();
@@ -144,7 +144,7 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
   _headerId = `mat-expansion-panel-header-${uniqueId++}`;
 
   /** Stream of body animation done events. */
-  _bodyAnimationDone = new Subject<AnimationEvent>();
+  readonly _bodyAnimationDone = new Subject<AnimationEvent>();
 
   constructor(@Optional() @SkipSelf() @Inject(MAT_ACCORDION) accordion: MatAccordionBase,
               _changeDetectorRef: ChangeDetectorRef,
