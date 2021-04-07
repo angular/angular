@@ -92,7 +92,7 @@ export const COMMIT_TYPES: {[key: string]: CommitType} = {
   refactor: {
     name: 'refactor',
     description: 'Refactor without any change in functionality or API (includes style changes)',
-    scope: ScopeRequirement.Required,
+    scope: ScopeRequirement.Optional,
     releaseNotesLevel: ReleaseNotesLevel.Hidden,
   },
   release: {
@@ -104,7 +104,7 @@ export const COMMIT_TYPES: {[key: string]: CommitType} = {
   test: {
     name: 'test',
     description: 'Improvements or corrections made to the project\'s test suite',
-    scope: ScopeRequirement.Required,
+    scope: ScopeRequirement.Optional,
     releaseNotesLevel: ReleaseNotesLevel.Hidden,
   },
 };
