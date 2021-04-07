@@ -1,6 +1,6 @@
 @forward '../core/theming/theming.import';
 @forward '../core/typography/typography-utils.import';
-@forward '../../cdk/a11y/a11y.import';
+@forward '../../cdk/a11y/index.import';
 @forward 'badge-theme' hide $default-size, $font-size, $font-weight, $large-size, $small-size,
 color, theme, typography;
 @forward 'badge-theme' as mat-badge-* hide mat-badge-density, mat-badge-size;
@@ -8,4 +8,4 @@ color, theme, typography;
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
-@import '../../cdk/a11y/a11y';
+@import '../../cdk/a11y';

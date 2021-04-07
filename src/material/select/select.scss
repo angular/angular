@@ -2,7 +2,7 @@
 @use '../core/style/list-common';
 @use '../core/style/variables';
 @use '../core/style/vendor-prefixes';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 
 $arrow-size: 5px !default;
 $arrow-margin: 4px !default;

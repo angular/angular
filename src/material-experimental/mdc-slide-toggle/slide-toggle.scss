@@ -4,7 +4,7 @@
 @use 'sass:map';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/style/layout-common';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 
 @include mdc-switch.without-ripple($query: mdc-helpers.$mat-base-styles-query);
 @include mdc-form-field.core-styles($query: mdc-helpers.$mat-base-styles-query);

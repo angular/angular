@@ -1,6 +1,6 @@
 @use '@material/snackbar' as mdc-snackbar;
 @use '../mdc-helpers/mdc-helpers';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 
 @include mdc-snackbar.core-styles($query: mdc-helpers.$mat-base-styles-query);
 

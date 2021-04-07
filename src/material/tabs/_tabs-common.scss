@@ -1,7 +1,7 @@
 @use '../core/style/variables';
 @use '../core/style/private';
 @use '../core/style/vendor-prefixes';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 
 $tab-bar-height: 48px !default;
 $tab-animation-duration: 500ms !default;

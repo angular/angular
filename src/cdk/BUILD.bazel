@@ -17,37 +17,29 @@ ts_library(
 # to make it easier for developers to import these styles without needing to know about
 # deep imports in the release output. Note that this is done for backwards compatibility
 # with the Gulp release output. TODO(devversion): consider removing this in the future.
-rerootedStyles = [file for target in CDK_ENTRYPOINTS_WITH_STYLES for file in [
-    [
-        "_%s.scss" % target,
-        target,
-    ],
-    [
-        "_%s.import.scss" % target,
-        target,
-    ],
+prebuiltStyles = [file for target in CDK_ENTRYPOINTS_WITH_STYLES for file in [
     [
         "%s-prebuilt.css" % target,
         target,
     ],
 ]]
 
-# Create genrules which re-root stylesheets from secondary entry-points.
+# Create genrules that output prebuilt stylesheets for secondary entry-points with styles.
 [genrule(
-    name = "%s_rerooted" % file,
+    name = "%s_prebuilt" % file,
     srcs = ["//src/cdk/%s:%s" % (target, file)],
     outs = [file],
     cmd = "cp $< $@",
 ) for [
     file,
     target,
-] in rerootedStyles]
+] in prebuiltStyles]
 
 # List of targets which generate the re-rooted stylesheet files.
-rerootedStyleTargets = ["%s_rerooted" % file for [
+prebuiltStyleTargets = ["%s_prebuilt" % file for [
     file,
     _,
-] in rerootedStyles]
+] in prebuiltStyles]
 
 # Makes the public Sass API bundle available in the release output as `angular/cdk`.
 sass_library(
@@ -59,7 +51,7 @@ sass_library(
 ng_package(
     name = "npm_package",
     srcs = ["package.json"],
-    data = [":sass_index"] + rerootedStyleTargets + CDK_SCSS_LIBS,
+    data = [":sass_index"] + prebuiltStyleTargets + CDK_SCSS_LIBS,
     entry_point = ":public-api.ts",
     nested_packages = [
         "//src/cdk/schematics:npm_package",

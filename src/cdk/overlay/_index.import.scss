@@ -1,0 +1,13 @@
+@forward '../a11y' as cdk-*;
+@forward 'index' hide $dark-backdrop-background, $z-index-overlay, $z-index-overlay-backdrop,
+  $z-index-overlay-container, overlay;
+@forward 'index' as cdk-* hide $cdk-backdrop-animation-duration,
+  $cdk-backdrop-animation-timing-function, $cdk-dark-backdrop-background;
+@forward 'index' as cdk-overlay-* hide $cdk-overlay-backdrop-animation-duration,
+  $cdk-overlay-backdrop-animation-timing-function, $cdk-overlay-z-index-overlay,
+  $cdk-overlay-z-index-overlay-backdrop, $cdk-overlay-z-index-overlay-container,
+  cdk-overlay-overlay;
+@forward './index-deprecated' as cdk-*;
+@forward './index-deprecated' as cdk-overlay-*;
+
+@import '../a11y';

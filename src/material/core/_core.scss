@@ -1,6 +1,6 @@
-@use '../../cdk/overlay/overlay';
-@use '../../cdk/a11y/a11y';
-@use '../../cdk/text-field/text-field';
+@use '../../cdk/overlay';
+@use '../../cdk/a11y';
+@use '../../cdk/text-field';
 
 // Core styles that can be used to apply material design treatments to any element.
 @use './ripple/ripple';

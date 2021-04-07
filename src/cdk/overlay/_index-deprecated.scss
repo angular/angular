@@ -1,4 +1,4 @@
-@use './overlay';
+@use './index' as overlay;
 
 // @deprecated Use `$overlay-container-z-index`.
 $z-index-overlay-container: overlay.$overlay-container-z-index;

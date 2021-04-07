@@ -8,7 +8,7 @@
 @use '../core/theming/theming';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 
 $font-size: 12px;
 $font-weight: 600;

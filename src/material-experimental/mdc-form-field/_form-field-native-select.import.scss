@@ -1,9 +1,9 @@
 @forward '../../material/core/theming/theming.import';
-@forward '../../cdk/a11y/a11y.import';
+@forward '../../cdk/a11y/index.import';
 @forward 'form-field-native-select' hide private-form-field-native-select,
 private-form-field-native-select-color;
 @forward 'form-field-native-select' as mat-mdc-* hide $mat-mdc-mat-form-field-select-arrow-height,
 $mat-mdc-mat-form-field-select-arrow-width, $mat-mdc-mat-form-field-select-horizontal-end-padding;
 
 @import '../../material/core/theming/theming';
-@import '../../cdk/a11y/a11y';
+@import '../../cdk/a11y';

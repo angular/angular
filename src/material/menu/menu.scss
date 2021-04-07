@@ -1,7 +1,7 @@
 // TODO(kara): update vars for desktop when MD team responds
 @use '../core/style/button-common';
 @use '../core/style/menu-common';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 
 $vertical-padding: 8px !default;
 $border-radius: 4px !default;

@@ -1,5 +1,5 @@
 @use 'form-field-sizing';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 
 // Mixin that can be included to override the default MDC text-field
 // styles to fit our needs. See individual comments for context on why

@@ -1,11 +1,11 @@
 @forward '../../material/core/style/private.import';
 @forward '../../material/core/theming/theming.import';
-@forward '../../cdk/a11y/a11y.import';
+@forward '../../cdk/a11y/index.import';
 @forward '../../material/core/typography/typography-utils.import';
 @forward 'popover-edit-theme' hide color, density, theme, typography;
 @forward 'popover-edit-theme' as mat-popover-edit-*;
 
-@import '../../cdk/a11y/a11y';
+@import '../../cdk/a11y';
 @import '../../material/core/style/variables';
 @import '../../material/core/style/private';
 @import '../../material/core/theming/palette';

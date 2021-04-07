@@ -1,5 +1,5 @@
-@forward '../../cdk/overlay/overlay.import';
-@forward '../../cdk/text-field/text-field.import';
+@forward '../../cdk/overlay/index.import';
+@forward '../../cdk/text-field/index.import';
 @forward '../snack-bar/snack-bar-theme.import';
 @forward '../tree/tree-theme.import';
 @forward 'ripple/ripple.import';
@@ -49,9 +49,9 @@
 mat-core-mdc-strong-focus-indicators-positioning;
 @forward 'core-theme' as mat-core-*;
 
-@import '../../cdk/overlay/overlay';
-@import '../../cdk/a11y/a11y';
-@import '../../cdk/text-field/text-field';
+@import '../../cdk/overlay';
+@import '../../cdk/a11y';
+@import '../../cdk/text-field';
 @import './style/private';
 @import './ripple/ripple';
 @import './focus-indicators/focus-indicators';

@@ -20,7 +20,7 @@ $mat-mdc-mdc-text-field-outlined-idle-border, $mat-mdc-mdc-text-field-placeholde
 @forward 'form-field-density' as mat-mdc-*;
 @forward 'form-field-subscript' as mat-mdc-*;
 @forward 'form-field-focus-overlay' as mat-mdc-*;
-@forward '../../cdk/a11y/a11y.import';
+@forward '../../cdk/a11y/index.import';
 @forward 'form-field-theme' hide color, density, theme, typography;
 @forward 'form-field-theme' as mat-mdc-form-field-* hide mat-mdc-form-field-text-field-color-styles;
 

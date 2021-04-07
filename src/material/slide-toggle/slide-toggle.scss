@@ -1,7 +1,7 @@
 @use '../core/style/variables';
 @use '../core/ripple/ripple';
 @use '../core/style/list-common';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 
 $thumb-size: 20px !default;
 $bar-border-radius: 8px !default;

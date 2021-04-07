@@ -2,7 +2,7 @@
 @use '@material/list' as mdc-list;
 @use '../../material/core/style/variables';
 @use '../../material/core/style/vendor-prefixes';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 
 $mat-select-arrow-size: 5px !default;
 $mat-select-arrow-margin: 4px !default;

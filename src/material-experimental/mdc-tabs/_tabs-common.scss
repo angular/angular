@@ -4,7 +4,7 @@
 @use '../../material/core/style/variables';
 @use '../../material/core/style/private';
 @use '../../material/core/style/vendor-prefixes';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 @use '../mdc-helpers/mdc-helpers';
 
 $mat-tab-animation-duration: 500ms !default;

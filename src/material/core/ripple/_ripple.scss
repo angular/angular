@@ -1,4 +1,4 @@
-@use '../../../cdk/a11y/a11y';
+@use '../../../cdk/a11y';
 
 @mixin ripple() {
   // The host element of an mat-ripple directive should always have a position of "absolute" or

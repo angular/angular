@@ -2,7 +2,7 @@
 @use 'sass:map';
 @use '../../mdc-helpers/mdc-helpers';
 @use '../../../material/core/style/vendor-prefixes';
-@use '../../../cdk/a11y/a11y';
+@use '../../../cdk/a11y';
 @use '../../../material/core/style/layout-common';
 
 .mat-mdc-option {

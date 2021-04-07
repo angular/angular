@@ -2,7 +2,7 @@
 @use '../core/style/elevation';
 @use '../core/style/layout-common';
 @use '../core/style/private';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 
 $chip-min-height: 32px;
 $chip-vertical-padding: 7px;

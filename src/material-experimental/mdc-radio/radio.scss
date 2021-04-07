@@ -2,7 +2,7 @@
 @use '@material/radio/radio-theme' as mdc-radio-theme;
 @use '@material/form-field' as mdc-form-field;
 @use '../mdc-helpers/mdc-helpers';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 @use '../../material/core/style/layout-common';
 
 @include mdc-radio.without-ripple($query: mdc-helpers.$mat-base-styles-query);

@@ -1,7 +1,7 @@
 @use '../core/style/variables';
 @use '../core/style/vendor-prefixes';
 @use '../core/style/private';
-@use '../../cdk/a11y/a11y';
+@use '../../cdk/a11y';
 
 $height: 4px !default;
 $full-animation-duration: 2000ms !default;
