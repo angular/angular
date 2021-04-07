@@ -33,7 +33,7 @@ export interface RenderContextData {
 export class RenderContext {
   /** An array of group names in sort order if defined. */
   private readonly groupOrder = this.data.groupOrder || [];
-  /** An array of scopes to hide from the release entry output.  */
+  /** An array of scopes to hide from the release entry output. */
   private readonly hiddenScopes = this.data.hiddenScopes || [];
   /** The title of the release, or `false` if no title should be used. */
   readonly title = this.data.title;
@@ -50,7 +50,7 @@ export class RenderContext {
    * Organizes and sorts the commits into groups of commits.
    *
    * Groups are sorted either by default `Array.sort` order, or using the provided group order from
-   * the configuration.  Commits are order in the same order within each groups commit list as they
+   * the configuration. Commits are order in the same order within each groups commit list as they
    * appear in the provided list of commits.
    * */
   asCommitGroups(commits: CommitFromGitLog[]) {
@@ -66,7 +66,7 @@ export class RenderContext {
     });
 
     /**
-     * Array of CommitGroups containing the discovered commit groups.  Sorted in alphanumeric order
+     * Array of CommitGroups containing the discovered commit groups. Sorted in alphanumeric order
      * of the group title.
      */
     const commitGroups = Array.from(groups.entries())
