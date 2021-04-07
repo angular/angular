@@ -115,23 +115,22 @@ class EventEmitter_ extends Subject<any> {
   }
 
   subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription {
-    const isObserver = observerOrNext && typeof observerOrNext === 'object';
-    let schedulerFn = isObserver ?
-        (observerOrNext as PartialObserver<any>).next?.bind(observerOrNext) :
-        observerOrNext;
-    let errorFn =
-        (isObserver ? (observerOrNext as PartialObserver<any>).error?.bind(observerOrNext) :
-                      error) ||
-        (() => null);
-    let completeFn = isObserver ?
-        (observerOrNext as PartialObserver<any>).complete?.bind(observerOrNext) :
-        complete;
+    let nextFn = observerOrNext;
+    let errorFn = error || (() => null);
+    let completeFn = complete;
+
+    if (observerOrNext && typeof observerOrNext === 'object') {
+      const observer = observerOrNext as PartialObserver<unknown>;
+      nextFn = observer.next?.bind(observer);
+      errorFn = observer.error?.bind(observer);
+      completeFn = observer.complete?.bind(observer);
+    }
 
     if (this.__isAsync) {
       errorFn = _wrapInTimeout(errorFn);
 
-      if (schedulerFn) {
-        schedulerFn = _wrapInTimeout(schedulerFn);
+      if (nextFn) {
+        nextFn = _wrapInTimeout(nextFn);
       }
 
       if (completeFn) {
@@ -139,7 +138,7 @@ class EventEmitter_ extends Subject<any> {
       }
     }
 
-    const sink = super.subscribe({next: schedulerFn, error: errorFn, complete: completeFn});
+    const sink = super.subscribe({next: nextFn, error: errorFn, complete: completeFn});
 
     if (observerOrNext instanceof Subscription) {
       observerOrNext.add(sink);
