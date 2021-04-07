@@ -473,6 +473,9 @@ function createProgramDriver(project: ts.server.Project): ProgramDriver {
         scriptInfo.editContent(0, length, newText);
       }
     },
+    getSourceFileVersion(sf: ts.SourceFile): string {
+      return project.getScriptVersion(sf.fileName);
+    }
   };
 }
 
