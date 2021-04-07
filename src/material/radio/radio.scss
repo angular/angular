@@ -155,6 +155,10 @@ $ripple-radius: 20px;
   height: 100%;
   transform: none;
 
+  // Needs an explicit top/left so it stays aligned no matter how the text is aligned (see #22389).
+  top: 0;
+  left: 0;
+
   .mat-radio-container:hover & {
     opacity: 0.04;
   }
