@@ -76,7 +76,7 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
 
   private constructor(
       state: IncrementalState, readonly depGraph: FileDependencyGraph,
-      private step: IncrementalStep|null) {
+      private versions: Map<AbsoluteFsPath, string>|null, private step: IncrementalStep|null) {
     this._state = state;
 
     // The compilation begins in analysis phase.
@@ -90,26 +90,29 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
   /**
    * Begin a fresh `IncrementalCompilation`.
    */
-  static fresh(program: ts.Program): IncrementalCompilation {
+  static fresh(program: ts.Program, versions: Map<AbsoluteFsPath, string>|null):
+      IncrementalCompilation {
     const state: IncrementalState = {
       kind: IncrementalStateKind.Fresh,
     };
-    return new IncrementalCompilation(state, new FileDependencyGraph(), /* reuse */ null);
+    return new IncrementalCompilation(state, new FileDependencyGraph(), versions, /* reuse */ null);
   }
 
   static incremental(
-      program: ts.Program, oldProgram: ts.Program, oldState: IncrementalState,
-      modifiedResourceFiles: Set<AbsoluteFsPath>|null, perf: PerfRecorder): IncrementalCompilation {
+      program: ts.Program, newVersions: Map<AbsoluteFsPath, string>|null, oldProgram: ts.Program,
+      oldState: IncrementalState, modifiedResourceFiles: Set<AbsoluteFsPath>|null,
+      perf: PerfRecorder): IncrementalCompilation {
     return perf.inPhase(PerfPhase.Reconciliation, () => {
-      let priorAnalysis: AnalyzedIncrementalState;
       const physicallyChangedTsFiles = new Set<AbsoluteFsPath>();
       const changedResourceFiles = new Set<AbsoluteFsPath>(modifiedResourceFiles ?? []);
 
+
+      let priorAnalysis: AnalyzedIncrementalState;
       switch (oldState.kind) {
         case IncrementalStateKind.Fresh:
           // Since this line of program has never been successfully analyzed to begin with, treat
           // this as a fresh compilation.
-          return IncrementalCompilation.fresh(program);
+          return IncrementalCompilation.fresh(program, newVersions);
         case IncrementalStateKind.Analyzed:
           // The most recent program was analyzed successfully, so we can use that as our prior
           // state and don't need to consider any other deltas except changes in the most recent
@@ -129,6 +132,8 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
           break;
       }
 
+      const oldVersions = priorAnalysis.versions;
+
       const oldFilesArray = oldProgram.getSourceFiles().map(sf => toUnredirectedSourceFile(sf));
       const oldFiles = new Set(oldFilesArray);
       const deletedTsFiles = new Set(oldFilesArray.map(sf => absoluteFromSourceFile(sf)));
@@ -141,14 +146,31 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
         deletedTsFiles.delete(sfPath);
 
         if (oldFiles.has(sf)) {
-          // This file hasn't changed.
-          continue;
+          // This source file has the same object identity as in the previous program. We need to
+          // determine if it's really the same file, or if it might have changed versions since the
+          // last program without changing its identity.
+
+          // If there's no version information available, then this is the same file, and we can
+          // skip it.
+          if (oldVersions === null || newVersions === null) {
+            continue;
+          }
+
+          // If a version is available for the file from both the prior and the current program, and
+          // that version is the same, then this is the same file, and we can skip it.
+          if (oldVersions.has(sfPath) && newVersions.has(sfPath) &&
+              oldVersions.get(sfPath)! === newVersions.get(sfPath)!) {
+            continue;
+          }
+
+          // Otherwise, assume that the file has changed. Either its versions didn't match, or we
+          // were missing version information about it on one side for some reason.
         }
 
         // Bail out if a .d.ts file changes - the semantic dep graph is not able to process such
         // changes correctly yet.
         if (sf.isDeclarationFile) {
-          return IncrementalCompilation.fresh(program);
+          return IncrementalCompilation.fresh(program, newVersions);
         }
 
         // The file has changed physically, so record it.
@@ -182,7 +204,7 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
         lastAnalyzedState: priorAnalysis,
       };
 
-      return new IncrementalCompilation(state, depGraph, {
+      return new IncrementalCompilation(state, depGraph, newVersions, {
         priorState: priorAnalysis,
         logicallyChangedTsFiles,
       });
@@ -234,6 +256,7 @@ export class IncrementalCompilation implements IncrementalBuild<ClassRecord, Fil
     // could use this state as a starting point.
     this._state = {
       kind: IncrementalStateKind.Analyzed,
+      versions: this.versions,
       depGraph: this.depGraph,
       semanticDepGraph: newGraph,
       traitCompiler,

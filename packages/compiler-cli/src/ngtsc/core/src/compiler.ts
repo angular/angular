@@ -13,7 +13,7 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {COMPILER_ERRORS_WITH_GUIDES, ERROR_DETAILS_PAGE_BASE_URL, ErrorCode, ngErrorCode} from '../../diagnostics';
 import {checkForPrivateExports, ReferenceGraph} from '../../entry_point';
-import {AbsoluteFsPath, LogicalFileSystem, resolve} from '../../file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath, LogicalFileSystem, resolve} from '../../file_system';
 import {AbsoluteModuleStrategy, AliasingHost, AliasStrategy, DefaultImportTracker, ImportRewriter, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NoopImportRewriter, PrivateExportAliasingHost, R3SymbolsImportRewriter, Reference, ReferenceEmitStrategy, ReferenceEmitter, RelativePathStrategy, UnifiedModulesAliasingHost, UnifiedModulesStrategy} from '../../imports';
 import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from '../../incremental';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
@@ -32,7 +32,7 @@ import {ivySwitchTransform} from '../../switch';
 import {aliasTransformFactory, CompilationMode, declarationTransformFactory, DecoratorHandler, DtsTransformRegistry, ivyTransformFactory, TraitCompiler} from '../../transform';
 import {TemplateTypeCheckerImpl} from '../../typecheck';
 import {OptimizeFor, TemplateTypeChecker, TypeCheckingConfig} from '../../typecheck/api';
-import {getSourceFileOrNull, isDtsPath, resolveModuleName} from '../../util/src/typescript';
+import {getSourceFileOrNull, isDtsPath, resolveModuleName, toUnredirectedSourceFile} from '../../util/src/typescript';
 import {LazyRoute, NgCompilerAdapter, NgCompilerOptions} from '../api';
 
 import {compileUndecoratedClassesWithAngularFeatures} from './config';
@@ -159,7 +159,8 @@ export function incrementalFromCompilerTicket(
   }
 
   const incrementalCompilation = IncrementalCompilation.incremental(
-      newProgram, oldProgram, oldState, modifiedResourceFiles, perfRecorder);
+      newProgram, versionMapFromProgram(newProgram, programDriver), oldProgram, oldState,
+      modifiedResourceFiles, perfRecorder);
 
   return {
     kind: CompilationTicketKind.IncrementalTypeScript,
@@ -188,7 +189,8 @@ export function incrementalFromStateTicket(
     perfRecorder = ActivePerfRecorder.zeroedToNow();
   }
   const incrementalCompilation = IncrementalCompilation.incremental(
-      newProgram, oldProgram, oldState, modifiedResourceFiles, perfRecorder);
+      newProgram, versionMapFromProgram(newProgram, programDriver), oldProgram, oldState,
+      modifiedResourceFiles, perfRecorder);
   return {
     kind: CompilationTicketKind.IncrementalTypeScript,
     newProgram,
@@ -282,7 +284,8 @@ export class NgCompiler {
             ticket.tsProgram,
             ticket.programDriver,
             ticket.incrementalBuildStrategy,
-            IncrementalCompilation.fresh(ticket.tsProgram),
+            IncrementalCompilation.fresh(
+                ticket.tsProgram, versionMapFromProgram(ticket.tsProgram, ticket.programDriver)),
             ticket.enableTemplateTypeChecker,
             ticket.usePoisonedData,
             ticket.perfRecorder,
@@ -1175,4 +1178,20 @@ class NotifyingProgramDriverWrapper implements ProgramDriver {
     this.delegate.updateFiles(contents, updateMode);
     this.notifyNewProgram(this.delegate.getProgram());
   }
+
+  getSourceFileVersion = this.delegate.getSourceFileVersion?.bind(this);
+}
+
+function versionMapFromProgram(
+    program: ts.Program, driver: ProgramDriver): Map<AbsoluteFsPath, string>|null {
+  if (driver.getSourceFileVersion === undefined) {
+    return null;
+  }
+
+  const versions = new Map<AbsoluteFsPath, string>();
+  for (const possiblyRedirectedSourceFile of program.getSourceFiles()) {
+    const sf = toUnredirectedSourceFile(possiblyRedirectedSourceFile);
+    versions.set(absoluteFromSourceFile(sf), driver.getSourceFileVersion(sf));
+  }
+  return versions;
 }
