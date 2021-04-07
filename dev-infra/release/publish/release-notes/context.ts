@@ -35,7 +35,7 @@ export class RenderContext {
   private readonly groupOrder = this.data.groupOrder || [];
   /** An array of scopes to hide from the release entry output.  */
   private readonly hiddenScopes = this.data.hiddenScopes || [];
-  /** The title of the release, or undefined if no title should be used. */
+  /** The title of the release, or `false` if no title should be used. */
   readonly title = this.data.title;
   /** An array of commits in the release period. */
   readonly commits = this.data.commits;
@@ -60,9 +60,9 @@ export class RenderContext {
     // Place each commit in the list into its group.
     commits.forEach(commit => {
       const key = commit.npmScope ? `${commit.npmScope}/${commit.scope}` : commit.scope;
-      const commits = groups.get(key) || [];
-      groups.set(key, commits);
-      commits.push(commit);
+      const groupCommits = groups.get(key) || [];
+      groups.set(key, groupCommits);
+      groupCommits.push(commit);
     });
 
     /**

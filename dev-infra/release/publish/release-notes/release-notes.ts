@@ -44,7 +44,7 @@ export class ReleaseNotes {
   /** The configuration for the release notes generation. */
   // TODO(josephperrott): Remove non-null assertion after usage of ReleaseNotes is integrated into
   // release publish tooling.
-  private readonly config = getReleaseConfig().releaseNotes!;
+  private readonly config = getReleaseConfig().releaseNotes! || {};
   /** A promise resolving to a list of Commits since the latest semver tag on the branch. */
   private commits = getCommitsInRange(this.git.getLatestSemverTag().format(), 'HEAD');
   /** The RenderContext to be used during rendering. */
@@ -74,8 +74,9 @@ export class ReleaseNotes {
     if (this.title === undefined) {
       if (this.config.useReleaseTitle) {
         this.title = await promptInput('Please provide a title for the release:');
+      } else {
+        this.title = false;
       }
-      this.title = false;
     }
     return this.title;
   }

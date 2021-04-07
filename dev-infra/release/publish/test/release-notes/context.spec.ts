@@ -76,7 +76,7 @@ describe('RenderContext', () => {
       expect(generatedGroups.length).toBe(providedGroups.length);
       generatedGroups.forEach(({title, commits}, idx) => {
         expect(title).toBe(providedGroups[idx].title);
-        expect(commits).toEqual(jasmine.arrayContaining(providedGroups[idx].commits));
+        expect(commits).toEqual(jasmine.arrayWithExactContents(providedGroups[idx].commits));
       });
     }
 
@@ -148,21 +148,21 @@ function commitsFromList(...indexes: number[]) {
 
 
 const commits: CommitFromGitLog[] = [
-  buildCommit('fix', 'platform-browser'),   // 0
-  buildCommit('test', 'dev-infra'),         // 1
-  buildCommit('feat', 'dev-infra', true),   // 2
-  buildCommit('build', 'docs-infra'),       // 3
-  buildCommit('docs', 'router'),            // 4
-  buildCommit('feat', 'core'),              // 5
-  buildCommit('feat', 'common'),            // 6
-  buildCommit('refactor', 'compiler'),      // 7
-  buildCommit('fix', 'docs-infra'),         // 8
-  buildCommit('test', 'core'),              // 9
-  buildCommit('feat', 'compiler-cli'),      // 10
-  buildCommit('fix', 'dev-infra'),          // 11
-  buildCommit('perf', 'core'),              // 12
-  buildCommit('docs', 'forms'),             // 13
-  buildCommit('refactor', 'dev-infra'),     // 14
-  buildCommit('feat', 'docs-infra', true),  // 15
-  buildCommit('fix', 'compiler'),           // 16
+  buildCommit('fix', 'platform-browser'),
+  buildCommit('test', 'dev-infra'),
+  buildCommit('feat', 'dev-infra', true),
+  buildCommit('build', 'docs-infra'),
+  buildCommit('docs', 'router'),
+  buildCommit('feat', 'core'),
+  buildCommit('feat', 'common'),
+  buildCommit('refactor', 'compiler'),
+  buildCommit('fix', 'docs-infra'),
+  buildCommit('test', 'core'),
+  buildCommit('feat', 'compiler-cli'),
+  buildCommit('fix', 'dev-infra'),
+  buildCommit('perf', 'core'),
+  buildCommit('docs', 'forms'),
+  buildCommit('refactor', 'dev-infra'),
+  buildCommit('feat', 'docs-infra', true),
+  buildCommit('fix', 'compiler'),
 ];

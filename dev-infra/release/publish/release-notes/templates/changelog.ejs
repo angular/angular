@@ -1,5 +1,5 @@
-<a name="<%= version  _%>"></a>
-# <%= version _%><% if (title) { _%> "<%= title _%>"<% } _%> (<%= dateStamp _%>)
+<a name="<%= version  %>"></a>
+# <%= version %><% if (title) { _%> "<%= title %>"<% } _%> (<%= dateStamp %>)
 
 <%_
 const commitsInChangelog = commits.filter(includeInReleaseNotes());
@@ -7,17 +7,16 @@ for (const group of asCommitGroups(commitsInChangelog)) {
 _%>
 
 ### <%= group.title %>
-| Commit | Description|
+| Commit | Description |
 | -- | -- |
 <%_
   for (const commit of group.commits) {
 _%>
-| <%= commit.shortHash _%> | <%= commit.header _%> |
+| <%= commit.shortHash %> | <%= commit.header %> |
 <%_
   }
 }
 _%>
-
 
 <%_
 const breakingChanges = commits.filter(contains('breakingChanges'));
@@ -28,7 +27,7 @@ _%>
 <%_
   for (const group of asCommitGroups(breakingChanges)) {
 _%>
-### <%= group.title _%>
+### <%= group.title %>
 
 <%_
     for (const commit of group.commits) {
@@ -44,25 +43,34 @@ _%>
 const deprecations = commits.filter(contains('deprecation'));
 if (deprecations.length) {
 _%>
-## Breaking Changes
+## Deprecations
 <%_
   for (const group of asCommitGroups(deprecations)) {
 _%>
-### <%= group.title _%>
+### <%= group.title %>
 
 <%_
     for (const commit of group.commits) {
 _%>
-<%= commit.deprecations[0].text _%>
+<%= commit.deprecations[0].text %>
 <%_
     }
   }
 }
 _%>
 
-
 <%_
 const authors = commits.filter(unique('author')).map(c => c.author).sort();
+if (authors.length === 1) {
 _%>
 ## Special Thanks:
-<%= authors.slice(0, -1).join(', ') %> and <%= authors.slice(-1)[0] _%>
+<%= authors[0]%>
+<%_
+}
+if (authors.length > 1) {
+_%>
+## Special Thanks:
+<%= authors.slice(0, -1).join(', ') %> and <%= authors.slice(-1)[0] %>
+<%_
+}
+_%>
