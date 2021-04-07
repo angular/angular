@@ -23,7 +23,6 @@ integration/cli-hello-world-ivy-compat/node_modules
 integration/cli-hello-world-ivy-i18n/node_modules
 integration/cli-hello-world-ivy-minimal/node_modules
 integration/cli-hello-world-lazy/node_modules
-integration/cli-hello-world-lazy-rollup/node_modules
 integration/dynamic-compiler/node_modules
 integration/hello_world__closure/node_modules
 integration/hello_world__systemjs_umd/node_modules
@@ -51,7 +50,6 @@ integration/cli-hello-world-ivy-compat/.yarn_local_cache
 integration/cli-hello-world-ivy-i18n/.yarn_local_cache
 integration/cli-hello-world-ivy-minimal/.yarn_local_cache
 integration/cli-hello-world-lazy/.yarn_local_cache
-integration/cli-hello-world-lazy-rollup/.yarn_local_cache
 integration/dynamic-compiler/.yarn_local_cache
 integration/hello_world__closure/.yarn_local_cache
 integration/hello_world__systemjs_umd/.yarn_local_cache
@@ -79,7 +77,6 @@ integration/cli-hello-world-ivy-compat/NPM_PACKAGE_MANIFEST.json
 integration/cli-hello-world-ivy-i18n/NPM_PACKAGE_MANIFEST.json
 integration/cli-hello-world-ivy-minimal/NPM_PACKAGE_MANIFEST.json
 integration/cli-hello-world-lazy/NPM_PACKAGE_MANIFEST.json
-integration/cli-hello-world-lazy-rollup/NPM_PACKAGE_MANIFEST.json
 integration/dynamic-compiler/NPM_PACKAGE_MANIFEST.json
 integration/hello_world__closure/NPM_PACKAGE_MANIFEST.json
 integration/hello_world__systemjs_umd/NPM_PACKAGE_MANIFEST.json
