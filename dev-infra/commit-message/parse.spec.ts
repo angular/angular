@@ -7,9 +7,9 @@
  */
 
 import {parseCommitMessage} from './parse';
-import {commitMessageBuilder} from './test-util';
+import {commitMessageBuilder, CommitMessageParts} from './test-util';
 
-const commitValues = {
+const commitValues: CommitMessageParts = {
   prefix: '',
   type: 'fix',
   npmScope: '',

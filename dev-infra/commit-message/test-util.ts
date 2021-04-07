@@ -22,7 +22,7 @@ export interface CommitMessageParts {
  */
 export function commitMessageBuilder(defaults: CommitMessageParts) {
   return (params: Partial<CommitMessageParts> = defaults) => {
-    const {prefix, npmScope, type, scope, summary, body, footer} = {...defaults, ...params};
+    const {prefix, type, npmScope, scope, summary, body, footer} = {...defaults, ...params};
     const scopeSlug = npmScope ? `${npmScope}/${scope}` : scope;
     return `${prefix}${type}${scopeSlug ? '(' + scopeSlug + ')' : ''}: ${summary}\n\n${body}\n\n${
         footer}`;
