@@ -266,7 +266,6 @@ export class LanguageService {
         return undefined;
       }
       const result = builder.getCompletionEntrySymbol(entryName);
-      this.compilerFactory.registerLastKnownProgram();
       return result;
     });
   }
@@ -360,8 +359,6 @@ export class LanguageService {
   private withCompilerAndPerfTracing<T>(phase: PerfPhase, p: (compiler: NgCompiler) => T): T {
     const compiler = this.compilerFactory.getOrCreate();
     const result = compiler.perfRecorder.inPhase(phase, () => p(compiler));
-    this.compilerFactory.registerLastKnownProgram();
-
     const logger = this.project.projectService.logger;
     if (logger.hasLevel(ts.server.LogLevel.verbose)) {
       logger.perftrc(`LanguageService#${PerfPhase[phase]}: ${

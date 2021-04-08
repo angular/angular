@@ -158,8 +158,6 @@ export class Project {
       const ngDiagnostics = ngCompiler.getDiagnosticsForFile(sf, OptimizeFor.WholeProgram);
       expect(ngDiagnostics.map(diag => diag.messageText)).toEqual([]);
     }
-
-    this.ngLS.compilerFactory.registerLastKnownProgram();
   }
 
   expectNoTemplateDiagnostics(projectFileName: string, className: string): void {
@@ -172,7 +170,6 @@ export class Project {
     const component = getClassOrError(sf, className);
 
     const diags = this.getTemplateTypeChecker().getDiagnosticsForComponent(component);
-    this.ngLS.compilerFactory.registerLastKnownProgram();
     expect(diags.map(diag => diag.messageText)).toEqual([]);
   }
 
