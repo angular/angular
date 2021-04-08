@@ -8,7 +8,7 @@
  */
 
 import * as console from '../../utils/console';
-import {buildVirtualGitClient, mockNgDevConfig, VirtualGitClient} from '../../utils/testing';
+import {installVirtualGitClientSpies, mockNgDevConfig} from '../../utils/testing';
 
 import {services, ServicesModule} from './services';
 
@@ -16,20 +16,19 @@ describe('ServicesModule', () => {
   let getStatusFromStandardApiSpy: jasmine.Spy;
   let infoSpy: jasmine.Spy;
   let infoGroupSpy: jasmine.Spy;
-  let virtualGitClient: VirtualGitClient;
 
   services.splice(0, Infinity, {url: 'fakeStatus.com/api.json', name: 'Service Name'});
 
   beforeEach(() => {
     getStatusFromStandardApiSpy = spyOn(ServicesModule.prototype, 'getStatusFromStandardApi');
-    virtualGitClient = buildVirtualGitClient();
+    installVirtualGitClientSpies();
     infoGroupSpy = spyOn(console.info, 'group');
     infoSpy = spyOn(console, 'info');
   });
 
   describe('gathering status', () => {
     it('for each of the services', async () => {
-      new ServicesModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
+      new ServicesModule({caretaker: {}, ...mockNgDevConfig});
 
       expect(getStatusFromStandardApiSpy)
           .toHaveBeenCalledWith({url: 'fakeStatus.com/api.json', name: 'Service Name'});
@@ -54,7 +53,7 @@ describe('ServicesModule', () => {
       ]);
 
 
-      const module = new ServicesModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
+      const module = new ServicesModule({caretaker: {}, ...mockNgDevConfig});
       Object.defineProperty(module, 'data', {value: fakeData});
       await module.printToTerminal();
 

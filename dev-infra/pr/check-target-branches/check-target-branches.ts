@@ -17,8 +17,8 @@ export async function getTargetBranchesForPr(prNumber: number) {
   const config = getConfig();
   /** Repo owner and name for the github repository. */
   const {owner, name: repo} = config.github;
-  /** The git client to get a Github API service instance. */
-  const git = new GitClient(undefined, config);
+  /** The singleton instance of the GitClient. */
+  const git = GitClient.getInstance();
   /** The validated merge config. */
   const {config: mergeConfig, errors} = await loadAndValidateConfig(config, git.github);
   if (errors !== undefined) {

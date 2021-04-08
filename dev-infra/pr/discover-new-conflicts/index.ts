@@ -7,38 +7,37 @@
  */
 
 import {Bar} from 'cli-progress';
-import {types as graphQLTypes} from 'typed-graphqlify';
+import {types as graphqlTypes} from 'typed-graphqlify';
 
-import {getConfig, NgDevConfig} from '../../utils/config';
 import {error, info} from '../../utils/console';
 import {GitClient} from '../../utils/git/index';
 import {getPendingPrs} from '../../utils/github';
 import {exec} from '../../utils/shelljs';
 
 
-/* GraphQL schema for the response body for each pending PR. */
+/* Graphql schema for the response body for each pending PR. */
 const PR_SCHEMA = {
   headRef: {
-    name: graphQLTypes.string,
+    name: graphqlTypes.string,
     repository: {
-      url: graphQLTypes.string,
-      nameWithOwner: graphQLTypes.string,
+      url: graphqlTypes.string,
+      nameWithOwner: graphqlTypes.string,
     },
   },
   baseRef: {
-    name: graphQLTypes.string,
+    name: graphqlTypes.string,
     repository: {
-      url: graphQLTypes.string,
-      nameWithOwner: graphQLTypes.string,
+      url: graphqlTypes.string,
+      nameWithOwner: graphqlTypes.string,
     },
   },
-  updatedAt: graphQLTypes.string,
-  number: graphQLTypes.number,
-  mergeable: graphQLTypes.string,
-  title: graphQLTypes.string,
+  updatedAt: graphqlTypes.string,
+  number: graphqlTypes.number,
+  mergeable: graphqlTypes.string,
+  title: graphqlTypes.string,
 };
 
-/* Pull Request response from Github GraphQL query */
+/* Pull Request response from Github Graphql query */
 type RawPullRequest = typeof PR_SCHEMA;
 
 /** Convert raw Pull Request response from Github to usable Pull Request object. */
@@ -53,9 +52,9 @@ type PullRequest = ReturnType<typeof processPr>;
 const tempWorkingBranch = '__NgDevRepoBaseAfterChange__';
 
 /** Checks if the provided PR will cause new conflicts in other pending PRs. */
-export async function discoverNewConflictsForPr(
-    newPrNumber: number, updatedAfter: number, config: Pick<NgDevConfig, 'github'> = getConfig()) {
-  const git = new GitClient();
+export async function discoverNewConflictsForPr(newPrNumber: number, updatedAfter: number) {
+  /** The singleton instance of the GitClient. */
+  const git = GitClient.getAuthenticatedInstance();
   // If there are any local changes in the current repository state, the
   // check cannot run as it needs to move between branches.
   if (git.hasLocalChanges()) {

@@ -11,11 +11,12 @@ import {CaretakerConfig} from '../config';
 
 /** The BaseModule to extend modules for caretaker checks from. */
 export abstract class BaseModule<Data> {
+  /** The singleton instance of the GitClient. */
+  protected git = GitClient.getAuthenticatedInstance();
   /** The data for the module. */
   readonly data = this.retrieveData();
 
-  constructor(
-      protected git: GitClient, protected config: NgDevConfig<{caretaker: CaretakerConfig}>) {}
+  constructor(protected config: NgDevConfig<{caretaker: CaretakerConfig}>) {}
 
   /** Asyncronously retrieve data for the module. */
   protected abstract retrieveData(): Promise<Data>;

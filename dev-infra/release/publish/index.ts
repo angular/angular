@@ -28,8 +28,8 @@ export enum CompletionState {
 }
 
 export class ReleaseTool {
-  /** Client for interacting with the Github API and the local Git command. */
-  private _git = new GitClient(this._githubToken, {github: this._github}, this._projectRoot);
+  /** The singleton instance of the GitClient. */
+  private _git = GitClient.getAuthenticatedInstance();
   /** The previous git commit to return back to after the release tool runs. */
   private previousGitBranchOrRevision = this._git.getCurrentBranchOrRevision();
 

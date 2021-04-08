@@ -23,15 +23,13 @@ const moduleList = [
 ];
 
 /** Check the status of services which Angular caretakers need to monitor. */
-export async function checkServiceStatuses(githubToken: string) {
+export async function checkServiceStatuses() {
+  // Set the verbose logging state of the GitClient.
+  GitClient.getAuthenticatedInstance().setVerboseLoggingState(false);
   /** The configuration for the caretaker commands. */
   const config = getCaretakerConfig();
-  /** The GitClient for interacting with git and Github. */
-  const git = new GitClient(githubToken, config);
-  // Prevent logging of the git commands being executed during the check.
-  GitClient.LOG_COMMANDS = false;
   /** List of instances of Caretaker Check modules */
-  const caretakerCheckModules = moduleList.map(module => new module(git, config));
+  const caretakerCheckModules = moduleList.map(module => new module(config));
 
   // Module's `data` is casted as Promise<unknown> because the data types of the `module`'s `data`
   // promises do not match typings, however our usage here is only to determine when the promise

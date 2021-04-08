@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Arguments, Argv, CommandModule} from 'yargs';
+import {Argv, CommandModule} from 'yargs';
 
 import {addGithubTokenOption} from '../../utils/git/github-yargs';
 
@@ -23,8 +23,8 @@ function builder(yargs: Argv) {
 }
 
 /** Handles the command. */
-async function handler({githubToken}: Arguments<CaretakerCheckOptions>) {
-  await checkServiceStatuses(githubToken);
+async function handler() {
+  await checkServiceStatuses();
 }
 
 /** yargs command module for checking status information for the repository  */
