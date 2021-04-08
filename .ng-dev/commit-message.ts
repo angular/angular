@@ -8,6 +8,7 @@ export const commitMessage: CommitMessageConfig = {
   minBodyLength: 0,
   minBodyLengthTypeExcludes: ['docs'],
   scopes: [
+    'multiple', // For when a commit applies to multiple components.
     'cdk-experimental/column-resize',
     'cdk-experimental/combobox',
     'cdk-experimental/dialog',
