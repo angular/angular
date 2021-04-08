@@ -7,7 +7,7 @@
  */
 
 import {AbsoluteSourceSpan, ParseSourceSpan} from '@angular/compiler';
-import {ClassDeclaration} from '@angular/compiler-cli/src/ngtsc/reflection';
+import {ClassDeclaration, ReflectionHost} from '@angular/compiler-cli/src/ngtsc/reflection';
 import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
@@ -16,6 +16,7 @@ import {FullTemplateMapping, SourceLocation, TemplateId, TemplateSourceMapping} 
 
 import {hasIgnoreForDiagnosticsMarker, readSpanComment} from './comments';
 import {checkIfClassIsExported, checkIfGenericTypesAreUnbound} from './ts_util';
+import {TypeParameterEmitter} from './type_parameter_emitter';
 
 /**
  * Adapter interface which allows the template type-checking diagnostics code to interpret offsets
@@ -38,25 +39,51 @@ export interface TemplateSourceResolver {
   toParseSourceSpan(id: TemplateId, span: AbsoluteSourceSpan): ParseSourceSpan|null;
 }
 
+/**
+ * Indicates whether a particular component requires an inline type check block.
+ *
+ * This is not a boolean state as inlining might only be required to get the best possible
+ * type-checking, but the component could theoretically still be checked without it.
+ */
+export enum TcbInliningRequirement {
+  /**
+   * There is no way to type check this component without inlining.
+   */
+  MustInline,
+
+  /**
+   * Inlining should be used due to the component's generic bounds, but a non-inlining fallback
+   * method can be used if that's not possible.
+   */
+  ShouldInlineForGenericBounds,
+
+  /**
+   * There is no requirement for this component's TCB to be inlined.
+   */
+  None,
+}
+
 export function requiresInlineTypeCheckBlock(
     node: ClassDeclaration<ts.ClassDeclaration>,
-    usedPipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>): boolean {
+    usedPipes: Map<string, Reference<ClassDeclaration<ts.ClassDeclaration>>>,
+    reflector: ReflectionHost): TcbInliningRequirement {
   // In order to qualify for a declared TCB (not inline) two conditions must be met:
   // 1) the class must be exported
-  // 2) it must not have constrained generic types
+  // 2) it must not have contextual generic type bounds
   if (!checkIfClassIsExported(node)) {
     // Condition 1 is false, the class is not exported.
-    return true;
-  } else if (!checkIfGenericTypesAreUnbound(node)) {
-    // Condition 2 is false, the class has constrained generic types
-    return true;
+    return TcbInliningRequirement.MustInline;
+  } else if (!checkIfGenericTypeBoundsAreContextFree(node, reflector)) {
+    // Condition 2 is false, the class has constrained generic types. It should be checked with an
+    // inline TCB if possible, but can potentially use fallbacks to avoid inlining if not.
+    return TcbInliningRequirement.ShouldInlineForGenericBounds;
   } else if (Array.from(usedPipes.values())
                  .some(pipeRef => !checkIfClassIsExported(pipeRef.node))) {
     // If one of the pipes used by the component is not exported, a non-inline TCB will not be able
     // to import it, so this requires an inline TCB.
-    return true;
+    return TcbInliningRequirement.MustInline;
   } else {
-    return false;
+    return TcbInliningRequirement.None;
   }
 }
 
@@ -146,4 +173,10 @@ function getTemplateId(
     const commentText = sourceFile.text.substring(pos + 2, end - 2);
     return commentText;
   }) as TemplateId || null;
+}
+
+export function checkIfGenericTypeBoundsAreContextFree(
+    node: ClassDeclaration<ts.ClassDeclaration>, reflector: ReflectionHost): boolean {
+  // Generic type parameters are considered context free if they can be emitted into any context.
+  return new TypeParameterEmitter(node.typeParameters, reflector).canEmit();
 }
