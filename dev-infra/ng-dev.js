@@ -3437,7 +3437,7 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                     if (state === 'PENDING' && !ignoreNonFatalFailures) {
                         return [2 /*return*/, PullRequestFailure.pendingCiJobs()];
                     }
-                    githubTargetBranch = prData.baseRefOid;
+                    githubTargetBranch = prData.baseRefName;
                     requiredBaseSha = config.requiredBaseCommits && config.requiredBaseCommits[githubTargetBranch];
                     needsCommitMessageFixup = !!config.commitMessageFixupLabel &&
                         labels.some(function (name) { return matchesPattern(name, config.commitMessageFixupLabel); });
@@ -3489,7 +3489,7 @@ var PR_SCHEMA$2 = {
                 },
             }],
     }),
-    baseRefOid: typedGraphqlify.types.string,
+    baseRefName: typedGraphqlify.types.string,
     title: typedGraphqlify.types.string,
     labels: typedGraphqlify.params({ first: 100 }, {
         nodes: [{
