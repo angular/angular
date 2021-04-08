@@ -154,6 +154,7 @@
     "@types/node-fetch": "^2.5.5",
     "@types/parse5": "^6.0.0",
     "@types/sass": "^1.16.0",
+    "@types/selenium-webdriver": "^3.0.17",
     "@types/semver": "^7.3.4",
     "@types/send": "^0.14.5",
     "@types/stylelint": "^9.10.1",

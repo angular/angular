@@ -2112,7 +2112,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/selenium-webdriver@^3.0.0":
+"@types/selenium-webdriver@^3.0.0", "@types/selenium-webdriver@^3.0.17":
   version "3.0.17"
   resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-3.0.17.tgz#50bea0c3c2acc31c959c5b1e747798b3b3d06d4b"
   integrity sha512-tGomyEuzSC1H28y2zlW6XPCaDaXFaD6soTdb4GNdmte2qfHtrKqhy0ZFs4r/1hpazCfEZqeTSRLvSasmEx89uw==

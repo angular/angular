@@ -21,6 +21,7 @@ CDK_ENTRYPOINTS = [
     "testing",
     "testing/protractor",
     "testing/testbed",
+    "testing/webdriver",
 ]
 
 # List of all entry-point targets of the Angular Material package.

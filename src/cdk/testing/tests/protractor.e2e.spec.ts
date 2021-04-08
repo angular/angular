@@ -7,10 +7,8 @@ import {MainComponentHarness} from './harnesses/main-component-harness';
 
 // Kagekiri is available globally in the browser. We declare it here so we can use it in the
 // browser-side script passed to `by.js`.
-// TODO(mmalerba): Replace with type-only import once TS 3.8 is available, see:
-//  https://devblogs.microsoft.com/typescript/announcing-typescript-3-8-beta/#type-only-imports-exports
 declare const kagekiri: {
-  querySelectorAll: (selector: string, root: Element) => NodeListOf<Element>;
+  querySelectorAll: (selector: string, root: Element) => NodeListOf<Element>
 };
 
 const piercingQueryFn = (selector: string, root: ElementFinder) => protractorElement.all(by.js(

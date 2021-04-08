@@ -1,0 +1,22 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "webdriver",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/cdk/testing/webdriver",
+    deps = [
+        "//src/cdk/testing",
+        "@npm//@types/selenium-webdriver",
+        "@npm//selenium-webdriver",
+    ],
+)
+
+filegroup(
+    name = "source-files",
+    srcs = glob(["**/*.ts"]),
+)

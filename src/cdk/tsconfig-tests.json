@@ -27,6 +27,7 @@
   "exclude": [
     "testing/protractor/**.ts",
     "testing/private/e2e/**.ts",
+    "testing/webdriver/**.ts",
     "**/schematics/**/*.ts",
     "**/*.e2e.spec.ts"
   ]
