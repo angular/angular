@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {BazelAndG3Options, I18nOptions, LegacyNgcOptions, MiscOptions, NgcCompatibilityOptions, StrictTemplateOptions} from './public_options';
+import {BazelAndG3Options, I18nOptions, LegacyNgcOptions, MiscOptions, NgcCompatibilityOptions, StrictTemplateOptions, TargetOptions} from './public_options';
 
 
 /**
@@ -34,22 +34,6 @@ export interface TestOnlyOptions {
    * This is currently not exposed to users as the trace format is still unstable.
    */
   tracePerformance?: string;
-}
-
-/**
- * Options that specify compilation target.
- */
-export interface TargetOptions {
-  /**
-   * Specifies the compilation mode to use. The following modes are available:
-   * - 'full': generates fully AOT compiled code using Ivy instructions.
-   * - 'partial': generates code in a stable, but intermediate form suitable to be published to NPM.
-   *
-   * To become public once the linker is ready.
-   *
-   * @internal
-   */
-  compilationMode?: 'full'|'partial';
 }
 
 /**
