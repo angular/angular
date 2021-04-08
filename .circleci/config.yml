@@ -118,24 +118,24 @@ var_18: &setup_snapshot_builds
     name: "Setting up Angular snapshot builds"
     command: node ./scripts/circleci/setup-angular-snapshots.js master
 
-# Filter to skip a job on builds for pull requests.
-var_19: &skip_on_pull_requests_filter
-  branches:
-      ignore:
-        - /pull\/\d+/
-
 # Filter which ensures that jobs only run for pull requests.
-var_20: &only_on_pull_requests_filter
+var_19: &only_on_pull_requests_filter
   branches:
       only:
         - /pull\/\d+/
 
 # Anchor for a step that notifies Slack when preceding steps failed.
-var_21: &slack_notify_on_failure
+var_20: &slack_notify_on_failure
   run:
     name: "Notifying team about job failure"
     when: on_fail
     command: node ./scripts/circleci/notify-slack-job-failure.js
+
+# Branch filter that only matches the main branch.
+var_21: &only_main_branch_filter
+  branches:
+      only:
+        - master
 
 # -----------------------------
 # Container version of CircleCI
@@ -696,7 +696,7 @@ workflows:
           requires:
             - build_release_packages
       - ngcc_compatibility_snapshot:
-          filters: *skip_on_pull_requests_filter
+          filters: *only_main_branch_filter
           requires:
             - build_release_packages
       - publish_snapshots:
@@ -711,9 +711,12 @@ workflows:
       # Note that we need additional jobs for the cronjob snapshot tests because there
       # is no easy way to detect whether a job runs inside of a cronjob or specific
       # workflow. See: https://circleci.com/ideas/?idea=CCI-I-295
-      - snapshot_tests_local_browsers
-      - view_engine_snapshot_test_cronjob
-      - mdc_snapshot_test_cronjob
+      - snapshot_tests_local_browsers:
+          filters: *only_main_branch_filter
+      - view_engine_snapshot_test_cronjob:
+          filters: *only_main_branch_filter
+      - mdc_snapshot_test_cronjob:
+          filters: *only_main_branch_filter
 
     triggers:
       - schedule:
