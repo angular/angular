@@ -13,7 +13,12 @@ import {MetadataCache} from '../transformers/metadata_cache';
 import {MetadataCollector} from './collector';
 import {ClassMetadata, ConstructorMetadata, FunctionMetadata, isClassMetadata, isConstructorMetadata, isFunctionMetadata, isInterfaceMetadata, isMetadataError, isMetadataGlobalReferenceExpression, isMetadataImportedSymbolReferenceExpression, isMetadataModuleReferenceExpression, isMetadataSymbolicCallExpression, isMetadataSymbolicExpression, isMethodMetadata, MemberMetadata, METADATA_VERSION, MetadataEntry, MetadataError, MetadataMap, MetadataObject, MetadataSymbolicExpression, MetadataSymbolicReferenceExpression, MetadataValue, MethodMetadata, ModuleExportMetadata, ModuleMetadata} from './schema';
 
-export const PRIVATE_EXPORT_PREFIX = '\u0275ngve$';
+/**
+ * Generated exports are prefixed using this identifier such that they can be easily identified.
+ * The Ivy compiler excludes those ViewEngine-generated exports; for this reason it declares the
+ * same prefix in packages/compiler-cli/src/ngtsc/imports/src/exclude.ts.
+ */
+const PRIVATE_EXPORT_PREFIX = '\u0275ngve$';
 
 // The character set used to produce private names.
 const PRIVATE_NAME_CHARS = 'abcdefghijklmnopqrstuvwxyz';
