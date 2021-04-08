@@ -207,7 +207,7 @@ describe('language service adapter', () => {
 });
 
 function getLastKnownProgram(ngLS: LanguageService): ts.Program {
-  const program = ngLS['compilerFactory']['lastKnownProgram'];
+  const program = ngLS['compilerFactory']['compiler']?.getCurrentProgram();
   expect(program).toBeDefined();
   return program!;
 }
