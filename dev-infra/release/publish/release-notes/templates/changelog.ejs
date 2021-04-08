@@ -1,5 +1,5 @@
 <a name="<%- version %>"></a>
-# <%- version %><%_ if (title) { _%> "<%- title %>"<%_ } _%> (<%- dateStamp %>)
+# <%- version %><% if (title) { %> "<%- title %>"<% } %> (<%- dateStamp %>)
 
 <%_
 const commitsInChangelog = commits.filter(includeInReleaseNotes());
