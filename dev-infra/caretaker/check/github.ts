@@ -56,7 +56,7 @@ export class GithubQueriesModule extends BaseModule<GithubQueryResults|void> {
     }
 
     /** The results of the generated github query. */
-    const queryResult = await this.git.github.graphql.query(this.buildGraphqlQuery(queries));
+    const queryResult = await this.git.github.graphql(this.buildGraphqlQuery(queries));
     const results = Object.values(queryResult);
 
     const {owner, name: repo} = this.git.remoteConfig;
@@ -74,16 +74,16 @@ export class GithubQueriesModule extends BaseModule<GithubQueryResults|void> {
   /** Build a Graphql query statement for the provided queries. */
   private buildGraphqlQuery(queries: NonNullable<CaretakerConfig['githubQueries']>) {
     /** The query object for graphql. */
-    const graphQlQuery: GithubQueryResult = {};
+    const graphqlQuery: GithubQueryResult = {};
     const {owner, name: repo} = this.git.remoteConfig;
     /** The Github search filter for the configured repository. */
     const repoFilter = `repo:${owner}/${repo}`;
 
 
     queries.forEach(({name, query}) => {
-      /** The name of the query, with spaces removed to match GraphQL requirements. */
+      /** The name of the query, with spaces removed to match Graphql requirements. */
       const queryKey = alias(name.replace(/ /g, ''), 'search');
-      graphQlQuery[queryKey] = params(
+      graphqlQuery[queryKey] = params(
           {
             type: 'ISSUE',
             first: MAX_RETURNED_ISSUES,
@@ -92,7 +92,7 @@ export class GithubQueriesModule extends BaseModule<GithubQueryResults|void> {
           {...GithubQueryResultFragment});
     });
 
-    return graphQlQuery;
+    return graphqlQuery;
   }
 
   async printToTerminal() {

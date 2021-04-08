@@ -27,13 +27,13 @@ export function getBranchPushMatcher(options: BranchPushMatchParameters) {
   const {targetRepo, targetBranch, baseBranch, baseRepo, expectedCommits} = options;
   return jasmine.objectContaining({
     remote: {
-      repoUrl: `https://github.com/${targetRepo.owner}/${targetRepo.name}.git`,
+      repoUrl: `https://abc123@github.com/${targetRepo.owner}/${targetRepo.name}.git`,
       name: `refs/heads/${targetBranch}`
     },
     head: jasmine.objectContaining({
       newCommits: expectedCommits,
       ref: {
-        repoUrl: `https://github.com/${baseRepo.owner}/${baseRepo.name}.git`,
+        repoUrl: `https://abc123@github.com/${baseRepo.owner}/${baseRepo.name}.git`,
         name: baseBranch,
       },
     })

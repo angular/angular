@@ -37,6 +37,6 @@ export function getRepositoryGitUrl(config: GithubConfig, githubToken?: string):
 }
 
 /** Gets a Github URL that refers to a list of recent commits within a specified branch. */
-export function getListCommitsInBranchUrl({remoteParams}: GitClient, branchName: string) {
+export function getListCommitsInBranchUrl({remoteParams}: GitClient<boolean>, branchName: string) {
   return `https://github.com/${remoteParams.owner}/${remoteParams.repo}/commits/${branchName}`;
 }

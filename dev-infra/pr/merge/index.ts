@@ -29,13 +29,12 @@ import {MergeResult, MergeStatus, PullRequestMergeTask, PullRequestMergeTaskFlag
  * @param projectRoot Path to the local Git project that is used for merging.
  * @param config Configuration for merging pull requests.
  */
-export async function mergePullRequest(
-    prNumber: number, githubToken: string, flags: PullRequestMergeTaskFlags) {
+export async function mergePullRequest(prNumber: number, flags: PullRequestMergeTaskFlags) {
   // Set the environment variable to skip all git commit hooks triggered by husky. We are unable to
   // rely on `--no-verify` as some hooks still run, notably the `prepare-commit-msg` hook.
   process.env['HUSKY'] = '0';
 
-  const api = await createPullRequestMergeTask(githubToken, flags);
+  const api = await createPullRequestMergeTask(flags);
 
   // Perform the merge. Force mode can be activated through a command line flag.
   // Alternatively, if the merge fails with non-fatal failures, the script
@@ -127,10 +126,10 @@ export async function mergePullRequest(
  * and optional explicit configuration. An explicit configuration can be specified
  * when the merge script is used outside of a `ng-dev` configured repository.
  */
-async function createPullRequestMergeTask(githubToken: string, flags: PullRequestMergeTaskFlags) {
-  const projectRoot = getRepoBaseDir();
+async function createPullRequestMergeTask(flags: PullRequestMergeTaskFlags) {
   const devInfraConfig = getConfig();
-  const git = new GitClient(githubToken, devInfraConfig, projectRoot);
+  /** The singleton instance of the GitClient. */
+  const git = GitClient.getAuthenticatedInstance();
   const {config, errors} = await loadAndValidateConfig(devInfraConfig, git.github);
 
   if (errors) {
