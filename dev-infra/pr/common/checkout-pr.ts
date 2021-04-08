@@ -6,31 +6,31 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {types as graphQLTypes} from 'typed-graphqlify';
+import {types as graphqlTypes} from 'typed-graphqlify';
 
 import {info} from '../../utils/console';
 import {addTokenToGitHttpsUrl} from '../../utils/git/github-urls';
 import {GitClient} from '../../utils/git/index';
 import {getPr} from '../../utils/github';
 
-/* GraphQL schema for the response body for a pending PR. */
+/* Graphql schema for the response body for a pending PR. */
 const PR_SCHEMA = {
-  state: graphQLTypes.string,
-  maintainerCanModify: graphQLTypes.boolean,
-  viewerDidAuthor: graphQLTypes.boolean,
-  headRefOid: graphQLTypes.string,
+  state: graphqlTypes.string,
+  maintainerCanModify: graphqlTypes.boolean,
+  viewerDidAuthor: graphqlTypes.boolean,
+  headRefOid: graphqlTypes.string,
   headRef: {
-    name: graphQLTypes.string,
+    name: graphqlTypes.string,
     repository: {
-      url: graphQLTypes.string,
-      nameWithOwner: graphQLTypes.string,
+      url: graphqlTypes.string,
+      nameWithOwner: graphqlTypes.string,
     },
   },
   baseRef: {
-    name: graphQLTypes.string,
+    name: graphqlTypes.string,
     repository: {
-      url: graphQLTypes.string,
-      nameWithOwner: graphQLTypes.string,
+      url: graphqlTypes.string,
+      nameWithOwner: graphqlTypes.string,
     },
   },
 };
@@ -62,8 +62,8 @@ export interface PullRequestCheckoutOptions {
  */
 export async function checkOutPullRequestLocally(
     prNumber: number, githubToken: string, opts: PullRequestCheckoutOptions = {}) {
-  /** Authenticated Git client for git and Github interactions. */
-  const git = new GitClient(githubToken);
+  /** The singleton instance of the GitClient. */
+  const git = GitClient.getAuthenticatedInstance();
 
   // In order to preserve local changes, checkouts cannot occur if local changes are present in the
   // git environment. Checked before retrieving the PR to fail fast.

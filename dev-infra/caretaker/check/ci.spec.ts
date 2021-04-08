@@ -7,11 +7,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {SemVer} from 'semver';
-import {ReleaseTrain} from '../../release/versioning';
 
+import {ReleaseTrain} from '../../release/versioning';
 import * as versioning from '../../release/versioning/active-release-trains';
 import * as console from '../../utils/console';
-import {buildVirtualGitClient, mockNgDevConfig, VirtualGitClient} from '../../utils/testing';
+import {installVirtualGitClientSpies, mockNgDevConfig} from '../../utils/testing';
 
 import {CiModule} from './ci';
 
@@ -20,10 +20,9 @@ describe('CiModule', () => {
   let getBranchStatusFromCiSpy: jasmine.Spy;
   let infoSpy: jasmine.Spy;
   let debugSpy: jasmine.Spy;
-  let virtualGitClient: VirtualGitClient;
 
   beforeEach(() => {
-    virtualGitClient = buildVirtualGitClient();
+    installVirtualGitClientSpies();
     fetchActiveReleaseTrainsSpy = spyOn(versioning, 'fetchActiveReleaseTrains');
     getBranchStatusFromCiSpy = spyOn(CiModule.prototype, 'getBranchStatusFromCi' as any);
     infoSpy = spyOn(console, 'info');
@@ -34,7 +33,7 @@ describe('CiModule', () => {
     it('handles active rc train', async () => {
       const trains = buildMockActiveReleaseTrains(true);
       fetchActiveReleaseTrainsSpy.and.resolveTo(trains);
-      const module = new CiModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
+      const module = new CiModule({caretaker: {}, ...mockNgDevConfig});
       await module.data;
 
       expect(getBranchStatusFromCiSpy).toHaveBeenCalledWith(trains.releaseCandidate.branchName);
@@ -46,7 +45,7 @@ describe('CiModule', () => {
     it('handles an inactive rc train', async () => {
       const trains = buildMockActiveReleaseTrains(false);
       fetchActiveReleaseTrainsSpy.and.resolveTo(trains);
-      const module = new CiModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
+      const module = new CiModule({caretaker: {}, ...mockNgDevConfig});
       await module.data;
 
       expect(getBranchStatusFromCiSpy).toHaveBeenCalledWith(trains.latest.branchName);
@@ -58,7 +57,7 @@ describe('CiModule', () => {
       const trains = buildMockActiveReleaseTrains(false);
       fetchActiveReleaseTrainsSpy.and.resolveTo(trains);
       getBranchStatusFromCiSpy.and.returnValue('success');
-      const module = new CiModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
+      const module = new CiModule({caretaker: {}, ...mockNgDevConfig});
       const data = await module.data;
 
       expect(data[0]).toEqual(
@@ -89,7 +88,7 @@ describe('CiModule', () => {
     ]);
     fetchActiveReleaseTrainsSpy.and.resolveTo([]);
 
-    const module = new CiModule(virtualGitClient, {caretaker: {}, ...mockNgDevConfig});
+    const module = new CiModule({caretaker: {}, ...mockNgDevConfig});
     Object.defineProperty(module, 'data', {value: fakeData});
 
     await module.printToTerminal();

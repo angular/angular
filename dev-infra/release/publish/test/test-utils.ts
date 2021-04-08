@@ -33,7 +33,7 @@ export const testTmpDir: string = process.env['TEST_TMPDIR']!;
 /** Interface describing a test release action. */
 export interface TestReleaseAction<T extends ReleaseAction = ReleaseAction> {
   instance: T;
-  gitClient: VirtualGitClient;
+  gitClient: VirtualGitClient<boolean>;
   repo: GithubTestingRepo;
   fork: GithubTestingRepo;
   testTmpDir: string;
@@ -44,7 +44,7 @@ export interface TestReleaseAction<T extends ReleaseAction = ReleaseAction> {
 /** Gets necessary test mocks for running a release action. */
 export function getTestingMocksForReleaseAction() {
   const githubConfig = {owner: 'angular', name: 'dev-infra-test'};
-  const gitClient = new VirtualGitClient(undefined, {github: githubConfig}, testTmpDir);
+  const gitClient = VirtualGitClient.getAuthenticatedInstance({github: githubConfig});
   const releaseConfig: ReleaseConfig = {
     npmPackages: [
       '@angular/pkg1',

@@ -51,7 +51,7 @@ export class PullRequestMergeTask {
   private flags: PullRequestMergeTaskFlags;
 
   constructor(
-      public config: MergeConfigWithRemote, public git: GitClient,
+      public config: MergeConfigWithRemote, public git: GitClient<true>,
       flags: Partial<PullRequestMergeTaskFlags>) {
     // Update flags property with the provided flags values as patches to the default flag values.
     this.flags = {...defaultPullRequestMergeTaskFlags, ...flags};

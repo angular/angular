@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {params, types as graphQLTypes} from 'typed-graphqlify';
+import {params, types as graphqlTypes} from 'typed-graphqlify';
 import {Commit, parseCommitMessage} from '../../commit-message/parse';
 import {red, warn} from '../../utils/console';
 
@@ -133,28 +133,28 @@ export async function loadAndValidatePullRequest(
   };
 }
 
-/* GraphQL schema for the response body the requested pull request. */
+/* Graphql schema for the response body the requested pull request. */
 const PR_SCHEMA = {
-  url: graphQLTypes.string,
-  number: graphQLTypes.number,
+  url: graphqlTypes.string,
+  number: graphqlTypes.number,
   // Only the last 100 commits from a pull request are obtained as we likely will never see a pull
   // requests with more than 100 commits.
   commits: params({last: 100}, {
-    totalCount: graphQLTypes.number,
+    totalCount: graphqlTypes.number,
     nodes: [{
       commit: {
         status: {
-          state: graphQLTypes.oneOf(['FAILURE', 'PENDING', 'SUCCESS'] as const),
+          state: graphqlTypes.oneOf(['FAILURE', 'PENDING', 'SUCCESS'] as const),
         },
-        message: graphQLTypes.string,
+        message: graphqlTypes.string,
       },
     }],
   }),
-  baseRefName: graphQLTypes.string,
-  title: graphQLTypes.string,
+  baseRefName: graphqlTypes.string,
+  title: graphqlTypes.string,
   labels: params({first: 100}, {
     nodes: [{
-      name: graphQLTypes.string,
+      name: graphqlTypes.string,
     }]
   }),
 };
@@ -163,7 +163,7 @@ const PR_SCHEMA = {
 
 /** Fetches a pull request from Github. Returns null if an error occurred. */
 async function fetchPullRequestFromGithub(
-    git: GitClient, prNumber: number): Promise<typeof PR_SCHEMA|null> {
+    git: GitClient<true>, prNumber: number): Promise<typeof PR_SCHEMA|null> {
   try {
     const x = await getPr(PR_SCHEMA, prNumber, git);
     return x;

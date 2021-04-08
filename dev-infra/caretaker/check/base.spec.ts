@@ -5,6 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {installVirtualGitClientSpies} from '../../utils/testing';
 import {BaseModule} from './base';
 
 /** Data mocking as the "retrieved data". */
@@ -23,17 +24,18 @@ describe('BaseModule', () => {
 
   beforeEach(() => {
     retrieveDataSpy = spyOn(ConcreteBaseModule.prototype, 'retrieveData');
+    installVirtualGitClientSpies();
   });
 
   it('begins retrieving data during construction', () => {
-    new ConcreteBaseModule({} as any, {} as any);
+    new ConcreteBaseModule({} as any);
 
     expect(retrieveDataSpy).toHaveBeenCalled();
   });
 
   it('makes the data available via the data attribute', async () => {
     retrieveDataSpy.and.callThrough();
-    const module = new ConcreteBaseModule({} as any, {} as any);
+    const module = new ConcreteBaseModule({} as any);
 
     expect(await module.data).toBe(exampleData);
   });
