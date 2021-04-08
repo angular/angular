@@ -24,9 +24,6 @@ export declare class MatTree<T, K = T> extends CdkTree<T, K> {
 }
 
 export declare class MatTreeFlatDataSource<T, F, K = F> extends DataSource<F> {
-    readonly _data: BehaviorSubject<T[]>;
-    readonly _expandedData: BehaviorSubject<F[]>;
-    readonly _flattenedData: BehaviorSubject<F[]>;
     get data(): T[];
     set data(value: T[]);
     constructor(_treeControl: FlatTreeControl<F, K>, _treeFlattener: MatTreeFlattener<T, F, K>, initialData?: T[]);
@@ -53,7 +50,6 @@ export declare class MatTreeModule {
 }
 
 export declare class MatTreeNestedDataSource<T> extends DataSource<T> {
-    readonly _data: BehaviorSubject<T[]>;
     get data(): T[];
     set data(value: T[]);
     connect(collectionViewer: CollectionViewer): Observable<T[]>;

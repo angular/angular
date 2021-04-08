@@ -785,10 +785,6 @@ class MatTreeWithNullOrUndefinedChild {
 
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener, TREE_DATA);
 
-  constructor() {
-    this.dataSource.data = TREE_DATA;
-  }
-
   hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
 }
 

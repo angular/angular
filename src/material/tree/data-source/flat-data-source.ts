@@ -127,32 +127,34 @@ export class MatTreeFlattener<T, F, K = F> {
  * to type `F` for `MatTree` to consume.
  */
 export class MatTreeFlatDataSource<T, F, K = F> extends DataSource<F> {
-  readonly _flattenedData = new BehaviorSubject<F[]>([]);
+  private readonly _flattenedData = new BehaviorSubject<F[]>([]);
+  private readonly _expandedData = new BehaviorSubject<F[]>([]);
 
-  readonly _expandedData = new BehaviorSubject<F[]>([]);
-
-  readonly _data: BehaviorSubject<T[]>;
   get data() { return this._data.value; }
   set data(value: T[]) {
     this._data.next(value);
     this._flattenedData.next(this._treeFlattener.flattenNodes(this.data));
     this._treeControl.dataNodes = this._flattenedData.value;
   }
+  private readonly _data = new BehaviorSubject<T[]>([]);
 
   constructor(private _treeControl: FlatTreeControl<F, K>,
               private _treeFlattener: MatTreeFlattener<T, F, K>,
-              initialData: T[] = []) {
+              initialData?: T[]) {
     super();
-    this._data = new BehaviorSubject<T[]>(initialData);
+
+    if (initialData) {
+      // Assign the data through the constructor to ensure that all of the logic is executed.
+      this.data = initialData;
+    }
   }
 
   connect(collectionViewer: CollectionViewer): Observable<F[]> {
-    const changes = [
+    return merge(
       collectionViewer.viewChange,
       this._treeControl.expansionModel.changed,
       this._flattenedData
-    ];
-    return merge(...changes).pipe(map(() => {
+    ).pipe(map(() => {
       this._expandedData.next(
         this._treeFlattener.expandFlattenedNodes(this._flattenedData.value, this._treeControl));
       return this._expandedData.value;
