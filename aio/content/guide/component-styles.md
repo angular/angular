@@ -64,24 +64,34 @@ Component styles have a few special *selectors* from the world of shadow DOM sty
 [W3C](https://www.w3.org) site).
 The following sections describe these selectors.
 
+
 ### :host
 
-Use the `:host` pseudo-class selector to target styles in the element that *hosts* the component (as opposed to
-targeting elements *inside* the component's template).
+The template associated with a component defines the component's _host element_ (the element into which the component's rendered view is projected).
+The `:host` pseudo-class selector may be used to create styles that target the host element itself, as opposed to targeting elements inside the host.
 
+<code-example path="component-styles/src/app/host-selector-example.html" header="src/app/host-selector-example.html"></code-example>
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="host" header="src/app/hero-details.component.css"></code-example>
+Creating the following style for `app-main` component will target the component's host element (in this case, italicizing all contained text).
 
-The `:host` selector is the only way to target the host element. You can't reach
-the host element from inside the component with other selectors because it's not part of the
-component's own template. The host element is in a parent component's template.
+```css
+  :host {
+    font-style: italic;
+  }
+```
+
+The `:host` selector only targets the host element of a component. Any styles within the `:host` block of a child component will *not* affect parent components. In this example, neither `app-root` nor `app-header` is affected by the `:host` style in `app-main`.
 
 Use the *function form* to apply host styles conditionally by
 including another selector inside parentheses after `:host`.
 
-The next example targets the host element again, but only when it also has the `active` CSS class.
+This example targets the same host element again, but this time only when it has the `active` CSS class.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="hostfunction" header="src/app/hero-details.component.css"></code-example>
+```css
+  :host(.active) {
+    font-style: italic;
+  }
+```
 
 The `:host` selector can also be combined with other selectors.
 Add selectors behind the `:host` to select child elements, for example using `:host h2` to target all `<h2>` elements inside a component's view.
@@ -94,18 +104,22 @@ You should not add selectors (other than `:host-context`) in front of the `:host
 
 ### :host-context
 
-Sometimes it's useful to apply styles based on some condition *outside* of a component's view.
+Sometimes it's useful to apply styles based on some condition in an element that is an ancestor of the host element.
 For example, a CSS theme class could be applied to the document `<body>` element, and
 you want to change how your component looks based on that.
 
 Use the `:host-context()` pseudo-class selector, which works just like the function
 form of `:host()`. The `:host-context()` selector looks for a CSS class in any ancestor of the component host element,
-up to the document root. The `:host-context()` selector is useful when combined with another selector.
+up to the document root. The `:host-context()` selector is only useful when combined with another selector.
 
-The following example applies a `background-color` style to all `<h2>` elements *inside* the component, only
-if some ancestor element has the CSS class `theme-light`.
+The following example italicizes all text inside a component, but only
+if some _ancestor_ element of the host element has the CSS class `active`.
 
-<code-example path="component-styles/src/app/hero-details.component.css" region="hostcontext" header="src/app/hero-details.component.css"></code-example>
+```css
+  :host-context(.active) {
+    font-style: italic;
+  }
+```
 
 ### (deprecated) `/deep/`, `>>>`, and `::ng-deep`
 
