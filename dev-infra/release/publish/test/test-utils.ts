@@ -55,6 +55,7 @@ export function getTestingMocksForReleaseAction() {
       throw Error('Not implemented');
     },
   };
+  gitClient.setGithubToken('');
   return {githubConfig, gitClient, releaseConfig};
 }
 

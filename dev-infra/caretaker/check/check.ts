@@ -25,7 +25,9 @@ const moduleList = [
 /** Check the status of services which Angular caretakers need to monitor. */
 export async function checkServiceStatuses(githubToken: string) {
   // Set the github token and verbose logging state of the GitClient.
-  GitClient.getInstance().setGithubToken(githubToken).setVerboseLoggingState(true);
+  const git = GitClient.getInstance();
+  git.setGithubToken(githubToken);
+  git.setVerboseLoggingState(true);
   /** The configuration for the caretaker commands. */
   const config = getCaretakerConfig();
   /** List of instances of Caretaker Check modules */

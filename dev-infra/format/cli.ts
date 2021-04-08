@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as yargs from 'yargs';
-
-import {allChangedFilesSince, allFiles, allStagedFiles} from '../utils/repo-files';
+import {GitClient} from '../utils/git/index';
 
 import {checkFiles, formatFiles} from './format';
 
@@ -25,7 +24,8 @@ export function buildFormatParser(localYargs: yargs.Argv) {
           'all', 'Run the formatter on all files in the repository', args => args,
           ({check}) => {
             const executionCmd = check ? checkFiles : formatFiles;
-            executionCmd(allFiles());
+            const allFiles = GitClient.getInstance().allFiles();
+            executionCmd(allFiles);
           })
       .command(
           'changed [shaOrRef]', 'Run the formatter on files changed since the provided sha/ref',
@@ -33,13 +33,15 @@ export function buildFormatParser(localYargs: yargs.Argv) {
           ({shaOrRef, check}) => {
             const sha = shaOrRef || 'master';
             const executionCmd = check ? checkFiles : formatFiles;
-            executionCmd(allChangedFilesSince(sha));
+            const allChangedFilesSince = GitClient.getInstance().allChangesFilesSince(sha);
+            executionCmd(allChangedFilesSince);
           })
       .command(
           'staged', 'Run the formatter on all staged files', args => args,
           ({check}) => {
             const executionCmd = check ? checkFiles : formatFiles;
-            executionCmd(allStagedFiles());
+            const allStagedFiles = GitClient.getInstance().allStagedFiles();
+            executionCmd(allStagedFiles);
           })
       .command(
           'files <files..>', 'Run the formatter on provided files',
