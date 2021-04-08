@@ -244,11 +244,85 @@ activateRipple() {
 }
 ```
 
+##### Selectors
+* Component selectors should be lowercase and delimited by hyphens. Components should use element
+selectors except when the component API uses a native HTML element.
+* Directive selectors should be camel cased. Exceptions may be made for directives that act like a
+component but would have an empty template, or when the directive is intended to match some
+existing attribute.
+
 #### Inheritance
 
 Avoid using inheritance to apply reusable behaviors to multiple components. This limits how many
 behaviors can be composed. Instead, [TypeScript mixins][ts-mixins] can be used to compose multiple
 common behaviors into a single component.
+
+#### MDC checks
+To ensure backwards compatability, we check that tests written for MDC Components include all of
+the same tests that the non-MDC version had. Similarly, we check that the public API of MDC
+Components match that of the non-MDC version.
+
+In the case where old tests no longer make sense and should be omitted or the public API should be
+changed, you can do so in [scripts/check-mdc-tests-config.ts](https://github.com/angular/components/blob/master/scripts/check-mdc-tests-config.ts) and
+[scripts/check-mdc-exports-config.ts](https://github.com/angular/components/blob/master/scripts/check-mdc-exports-config.ts).
+Remember to leave a comment explaining why the change was necessary.
+
+#### Coercion
+Component and directive inputs for boolean and number values must use a setter to coerce values to
+the expected type using cdk/coercion.
+For example:
+```ts
+@Input() disabled: boolean;
+get disabled(): boolean { return this._disabled; }
+set disabled(v: boolean) { this._disabled = coerceBooleanProperty(v); }
+private _disabled = false;
+
+...
+
+static ngAcceptInputType_value: BooleanInput;
+```
+The above code allows users to set `disabled` similar to how it can be set on native inputs:
+```html
+<component disabled></component>
+```
+Even though an empty string is technically what is being provided as the value of `disabled`,
+`ngAcceptInputType` allows the mismatched type to be provided and `coerceBooleanProperty`
+interprets the given value (an empty string) to the correct type & value, which in this case would
+be `true`.
+
+#### Expose native inputs
+Native inputs used in components should be exposed to developers through `ng-content`. This allows
+developers to interact directly with the input and allows us to avoid providing custom
+implementations for all of the input's native behaviors.
+
+For example:
+
+**Do:**
+
+Implementation
+```html
+<ng-content></ng-content>
+```
+
+Usage
+```html
+<your-component>
+  <input>
+</your-component>
+```
+
+**Don't:**
+
+Implementation
+```html
+<input>
+```
+
+Usage
+```html
+<component></component>
+```
+
 
 ### Angular
 
@@ -354,3 +428,21 @@ When it is not super obvious, include a brief description of what a class repres
 ```
 
 [ts-mixins]: https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#support-for-mix-in-classes
+
+#### Prefer CSS classes to tag names and attributes for styling
+Targeting tag names can cause conflicts with the MDC version of the component. For this reason, use
+CSS class names defined by us instead of tag names. We also prefer classes over attributes for
+consistency.
+```scss
+/** Do: */
+.mat-mdc-slider { ... }
+
+/** Don't: */
+mdc-slider { ... }
+
+/** Do: */
+.mat-mdc-slider-input { ... }
+
+/** Don't: */
+input[type="button"] { ... }
+ ```
