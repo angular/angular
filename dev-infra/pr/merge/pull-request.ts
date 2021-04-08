@@ -92,7 +92,7 @@ export async function loadAndValidatePullRequest(
     return PullRequestFailure.pendingCiJobs();
   }
 
-  const githubTargetBranch = prData.baseRefOid;
+  const githubTargetBranch = prData.baseRefName;
   const requiredBaseSha =
       config.requiredBaseCommits && config.requiredBaseCommits[githubTargetBranch];
   const needsCommitMessageFixup = !!config.commitMessageFixupLabel &&
@@ -145,7 +145,7 @@ const PR_SCHEMA = {
       },
     }],
   }),
-  baseRefOid: graphQLTypes.string,
+  baseRefName: graphQLTypes.string,
   title: graphQLTypes.string,
   labels: params({first: 100}, {
     nodes: [{
