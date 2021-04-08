@@ -37,7 +37,7 @@ const COMMIT_HEADER_SEPARATOR = '\n\n';
  * is properly set, but a notable downside is that PRs cannot use fixup or squash commits.
  */
 export class GithubApiMergeStrategy extends MergeStrategy {
-  constructor(git: GitClient, private _config: GithubApiMergeStrategyConfig) {
+  constructor(git: GitClient<true>, private _config: GithubApiMergeStrategyConfig) {
     super(git);
   }
 

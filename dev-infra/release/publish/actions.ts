@@ -49,7 +49,7 @@ export interface ReleaseActionConstructor<T extends ReleaseAction = ReleaseActio
   /** Whether the release action is currently active. */
   isActive(active: ActiveReleaseTrains): Promise<boolean>;
   /** Constructs a release action. */
-  new(...args: [ActiveReleaseTrains, GitClient, ReleaseConfig, string]): T;
+  new(...args: [ActiveReleaseTrains, GitClient<true>, ReleaseConfig, string]): T;
 }
 
 /**
@@ -76,7 +76,7 @@ export abstract class ReleaseAction {
   private _cachedForkRepo: GithubRepo|null = null;
 
   constructor(
-      protected active: ActiveReleaseTrains, protected git: GitClient,
+      protected active: ActiveReleaseTrains, protected git: GitClient<true>,
       protected config: ReleaseConfig, protected projectDir: string) {}
 
   /** Updates the version in the project top-level `package.json` file. */
@@ -182,7 +182,7 @@ export abstract class ReleaseAction {
     }
 
     const {owner, name} = this.git.remoteConfig;
-    const result = await this.git.github.graphql.query(findOwnedForksOfRepoQuery, {owner, name});
+    const result = await this.git.github.graphql(findOwnedForksOfRepoQuery, {owner, name});
     const forks = result.repository.forks.nodes;
 
     if (forks.length === 0) {
@@ -232,7 +232,7 @@ export abstract class ReleaseAction {
   /** Pushes the current Git `HEAD` to the given remote branch in the configured project. */
   protected async pushHeadToRemoteBranch(branchName: string) {
     // Push the local `HEAD` to the remote branch in the configured project.
-    this.git.run(['push', this.git.repoGitUrl, `HEAD:refs/heads/${branchName}`]);
+    this.git.run(['push', this.git.getRepoGitUrl(), `HEAD:refs/heads/${branchName}`]);
   }
 
   /**
@@ -360,7 +360,7 @@ export abstract class ReleaseAction {
 
   /** Checks out an upstream branch with a detached head. */
   protected async checkoutUpstreamBranch(branchName: string) {
-    this.git.run(['fetch', '-q', this.git.repoGitUrl, branchName]);
+    this.git.run(['fetch', '-q', this.git.getRepoGitUrl(), branchName]);
     this.git.run(['checkout', 'FETCH_HEAD', '--detach']);
   }
 

@@ -11,6 +11,12 @@ import * as Octokit from '@octokit/rest';
 import {RequestParameters} from '@octokit/types';
 import {query, types} from 'typed-graphqlify';
 
+/**
+ * An object representation of a Graphql Query to be used as a response type and
+ * to generate a Graphql query string.
+ */
+export type GraphqlQueryObject = Parameters<typeof query>[1];
+
 /** Interface describing a Github repository. */
 export interface GithubRepo {
   /** Owner login of the repository. */
@@ -26,6 +32,9 @@ export class GithubApiRequestError extends Error {
   }
 }
 
+/** Error for failed Github API requests. */
+export class GithubGraphqlClientError extends Error {}
+
 /**
  * A Github client for interacting with the Github APIs.
  *
@@ -33,13 +42,15 @@ export class GithubApiRequestError extends Error {
  * would provide value from memoized style responses.
  **/
 export class GithubClient extends Octokit {
-  /** The Github GraphQL (v4) API. */
-  graphql: GithubGraphqlClient;
-
   /** The current user based on checking against the Github API. */
   private _currentUser: string|null = null;
+  /** The graphql instance with authentication set during construction. */
+  private _graphql = graphql.defaults({headers: {authorization: `token ${this.token}`}});
 
-  constructor(token?: string) {
+  /**
+   * @param token The github authentication token for Github Rest and Graphql API requests.
+   */
+  constructor(private token?: string) {
     // Pass in authentication token to base Octokit class.
     super({auth: token});
 
@@ -49,8 +60,22 @@ export class GithubClient extends Octokit {
       throw new GithubApiRequestError(error.status, error.message);
     });
 
-    // Create authenticated graphql client.
-    this.graphql = new GithubGraphqlClient(token);
+    // Note: The prototype must be set explictly as Github's Octokit class is a non-standard class
+    // definition which adjusts the prototype chain.
+    // See:
+    //    https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work
+    //    https://github.com/octokit/rest.js/blob/7b51cee4a22b6e52adcdca011f93efdffa5df998/lib/constructor.js
+    Object.setPrototypeOf(this, GithubClient.prototype);
+  }
+
+  /** Perform a query using Github's Graphql API. */
+  async graphql<T extends GraphqlQueryObject>(queryObject: T, params: RequestParameters = {}) {
+    if (this.token === undefined) {
+      throw new GithubGraphqlClientError(
+          'Cannot query via graphql without an authentication token set, use the authenticated ' +
+          '`GitClient` by calling `GitClient.getAuthenticatedInstance()`.');
+    }
+    return (await this._graphql(query(queryObject), params)) as T;
   }
 
   /** Retrieve the login of the current user from Github. */
@@ -59,37 +84,11 @@ export class GithubClient extends Octokit {
     if (this._currentUser !== null) {
       return this._currentUser;
     }
-    const result = await this.graphql.query({
+    const result = await this.graphql({
       viewer: {
         login: types.string,
       }
     });
     return this._currentUser = result.viewer.login;
-  }
-}
-
-/**
- * An object representation of a GraphQL Query to be used as a response type and
- * to generate a GraphQL query string.
- */
-export type GraphQLQueryObject = Parameters<typeof query>[1];
-
-/** A client for interacting with Github's GraphQL API. */
-export class GithubGraphqlClient {
-  /** The Github GraphQL (v4) API. */
-  private graqhql = graphql;
-
-  constructor(token?: string) {
-    // Set the default headers to include authorization with the provided token for all
-    // graphQL calls.
-    if (token) {
-      this.graqhql = this.graqhql.defaults({headers: {authorization: `token ${token}`}});
-    }
-  }
-
-  /** Perform a query using Github's GraphQL API. */
-  async query<T extends GraphQLQueryObject>(queryObject: T, params: RequestParameters = {}) {
-    const queryString = query(queryObject);
-    return (await this.graqhql(queryString, params)) as T;
   }
 }

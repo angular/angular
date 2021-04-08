@@ -22,7 +22,7 @@ export const TEMP_PR_HEAD_BRANCH = 'merge_pr_head';
  * merges it into the determined target branches.
  */
 export abstract class MergeStrategy {
-  constructor(protected git: GitClient) {}
+  constructor(protected git: GitClient<true>) {}
 
   /**
    * Prepares a merge of the given pull request. The strategy by default will
@@ -124,7 +124,8 @@ export abstract class MergeStrategy {
     });
     // Fetch all target branches with a single command. We don't want to fetch them
     // individually as that could cause an unnecessary slow-down.
-    this.git.run(['fetch', '-q', '-f', this.git.repoGitUrl, ...fetchRefspecs, ...extraRefspecs]);
+    this.git.run(
+        ['fetch', '-q', '-f', this.git.getRepoGitUrl(), ...fetchRefspecs, ...extraRefspecs]);
   }
 
   /** Pushes the given target branches upstream. */
@@ -135,6 +136,6 @@ export abstract class MergeStrategy {
     });
     // Push all target branches with a single command if we don't run in dry-run mode.
     // We don't want to push them individually as that could cause an unnecessary slow-down.
-    this.git.run(['push', this.git.repoGitUrl, ...pushRefspecs]);
+    this.git.run(['push', this.git.getRepoGitUrl(), ...pushRefspecs]);
   }
 }

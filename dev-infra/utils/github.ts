@@ -11,10 +11,10 @@ import {params, types} from 'typed-graphqlify';
 import {GitClient} from './git/index';
 
 /** Get a PR from github  */
-export async function getPr<PrSchema>(prSchema: PrSchema, prNumber: number, git: GitClient) {
+export async function getPr<PrSchema>(prSchema: PrSchema, prNumber: number, git: GitClient<true>) {
   /** The owner and name of the repository */
   const {owner, name} = git.remoteConfig;
-  /** The GraphQL query object to get a the PR */
+  /** The Graphql query object to get a the PR */
   const PR_QUERY = params(
       {
         $number: 'Int!',    // The PR number
@@ -27,15 +27,15 @@ export async function getPr<PrSchema>(prSchema: PrSchema, prNumber: number, git:
         })
       });
 
-  const result = (await git.github.graphql.query(PR_QUERY, {number: prNumber, owner, name}));
+  const result = (await git.github.graphql(PR_QUERY, {number: prNumber, owner, name}));
   return result.repository.pullRequest;
 }
 
 /** Get all pending PRs from github  */
-export async function getPendingPrs<PrSchema>(prSchema: PrSchema, git: GitClient) {
+export async function getPendingPrs<PrSchema>(prSchema: PrSchema, git: GitClient<true>) {
   /** The owner and name of the repository */
   const {owner, name} = git.remoteConfig;
-  /** The GraphQL query object to get a page of pending PRs */
+  /** The Graphql query object to get a page of pending PRs */
   const PRS_QUERY = params(
       {
         $first: 'Int',      // How many entries to get with each request
@@ -75,7 +75,7 @@ export async function getPendingPrs<PrSchema>(prSchema: PrSchema, git: GitClient
       owner,
       name,
     };
-    const results = await git.github.graphql.query(PRS_QUERY, params) as typeof PRS_QUERY;
+    const results = await git.github.graphql(PRS_QUERY, params) as typeof PRS_QUERY;
     prs.push(...results.repository.pullRequests.nodes);
     hasNextPage = results.repository.pullRequests.pageInfo.hasNextPage;
     cursor = results.repository.pullRequests.pageInfo.endCursor;
