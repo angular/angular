@@ -38,7 +38,7 @@ export function getLocalChangelogFilePath(projectDir: string): string {
 /** Release note generation. */
 export class ReleaseNotes {
   /** An instance of GitClient. */
-  private git = new GitClient();
+  private git = GitClient.getInstance();
   /** The github configuration. */
   private readonly github = getConfig().github;
   /** The configuration for the release notes generation. */

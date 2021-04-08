@@ -27,7 +27,7 @@ export async function getPr<PrSchema>(prSchema: PrSchema, prNumber: number, git:
         })
       });
 
-  const result = (await git.github.graphql.query(PR_QUERY, {number: prNumber, owner, name}));
+  const result = (await git.github.graphql(PR_QUERY, {number: prNumber, owner, name}));
   return result.repository.pullRequest;
 }
 
@@ -75,7 +75,7 @@ export async function getPendingPrs<PrSchema>(prSchema: PrSchema, git: GitClient
       owner,
       name,
     };
-    const results = await git.github.graphql.query(PRS_QUERY, params) as typeof PRS_QUERY;
+    const results = await git.github.graphql(PRS_QUERY, params) as typeof PRS_QUERY;
     prs.push(...results.repository.pullRequests.nodes);
     hasNextPage = results.repository.pullRequests.pageInfo.hasNextPage;
     cursor = results.repository.pullRequests.pageInfo.endCursor;

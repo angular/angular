@@ -62,8 +62,8 @@ export interface PullRequestCheckoutOptions {
  */
 export async function checkOutPullRequestLocally(
     prNumber: number, githubToken: string, opts: PullRequestCheckoutOptions = {}) {
-  /** Authenticated Git client for git and Github interactions. */
-  const git = new GitClient(githubToken);
+  /** The singleton instance of the GitClient. */
+  const git = GitClient.getInstance().setGithubToken(githubToken);
 
   // In order to preserve local changes, checkouts cannot occur if local changes are present in the
   // git environment. Checked before retrieving the PR to fail fast.

@@ -44,7 +44,8 @@ const PR_SCHEMA = {
  */
 export async function rebasePr(
     prNumber: number, githubToken: string, config: Pick<NgDevConfig, 'github'> = getConfig()) {
-  const git = new GitClient(githubToken);
+  /** The singleton instance of the GitClient. */
+  const git = GitClient.getInstance();
   // TODO: Rely on a common assertNoLocalChanges function.
   if (git.hasLocalChanges()) {
     error('Cannot perform rebase of PR with local changes.');

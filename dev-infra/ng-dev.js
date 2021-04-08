@@ -477,6 +477,14 @@ var GithubApiRequestError = /** @class */ (function (_super) {
     }
     return GithubApiRequestError;
 }(Error));
+/** Error for failed Github API requests. */
+var GithubGraphqlClientError = /** @class */ (function (_super) {
+    tslib.__extends(GithubGraphqlClientError, _super);
+    function GithubGraphqlClientError(msg) {
+        return _super.call(this, msg) || this;
+    }
+    return GithubGraphqlClientError;
+}(Error));
 /**
  * A Github client for interacting with the Github APIs.
  *
@@ -485,21 +493,58 @@ var GithubApiRequestError = /** @class */ (function (_super) {
  **/
 var GithubClient = /** @class */ (function (_super) {
     tslib.__extends(GithubClient, _super);
-    function GithubClient(token) {
-        var _this = 
-        // Pass in authentication token to base Octokit class.
-        _super.call(this, { auth: token }) || this;
+    function GithubClient() {
+        var _this = _super.call(this) || this;
         /** The current user based on checking against the Github API. */
         _this._currentUser = null;
+        /** The github authentication token for Github API requests. */
+        _this._token = null;
         _this.hook.error('request', function (error) {
             // Wrap API errors in a known error class. This allows us to
             // expect Github API errors better and in a non-ambiguous way.
             throw new GithubApiRequestError(error.status, error.message);
         });
-        // Create authenticated graphql client.
-        _this.graphql = new GithubGraphqlClient(token);
+        _this.hook.before('request', function (options) { return tslib.__awaiter(_this, void 0, void 0, function () {
+            return tslib.__generator(this, function (_a) {
+                if (this._token) {
+                    options.headers = tslib.__assign(tslib.__assign({}, options.headers), { authorization: "token " + this._token });
+                }
+                return [2 /*return*/];
+            });
+        }); });
+        // Note: The prototype must be set explictly as Github's Octokit class is a non-standard class
+        // definition which adjusts the prototype chain.
+        // See:
+        //    https://github.com/Microsoft/TypeScript/wiki/FAQ#why-doesnt-extending-built-ins-like-error-array-and-map-work
+        //    https://github.com/octokit/rest.js/blob/7b51cee4a22b6e52adcdca011f93efdffa5df998/lib/constructor.js
+        Object.setPrototypeOf(_this, GithubClient.prototype);
         return _this;
     }
+    /** Set the authentication token for using the Github REST and GraphQL APIs. */
+    GithubClient.prototype.setAuthenticationToken = function (token) {
+        this._token = token;
+    };
+    /** Perform a query using Github's GraphQL API. */
+    GithubClient.prototype.graphql = function (queryObject, params) {
+        if (params === void 0) { params = {}; }
+        return tslib.__awaiter(this, void 0, void 0, function () {
+            var graphqlRequestParams;
+            return tslib.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (this._token === null) {
+                            throw new GithubGraphqlClientError('Cannot query via graphql without setting the authentication token. Set the token using ' +
+                                '`setGithubToken()` method on `GitClient`.');
+                        }
+                        graphqlRequestParams = tslib.__assign(tslib.__assign({}, params), { headers: {
+                                authorization: "token " + this._token,
+                            } });
+                        return [4 /*yield*/, graphql.graphql(typedGraphqlify.query(queryObject), graphqlRequestParams)];
+                    case 1: return [2 /*return*/, (_a.sent())];
+                }
+            });
+        });
+    };
     /** Retrieve the login of the current user from Github. */
     GithubClient.prototype.getCurrentUser = function () {
         return tslib.__awaiter(this, void 0, void 0, function () {
@@ -511,7 +556,7 @@ var GithubClient = /** @class */ (function (_super) {
                         if (this._currentUser !== null) {
                             return [2 /*return*/, this._currentUser];
                         }
-                        return [4 /*yield*/, this.graphql.query({
+                        return [4 /*yield*/, this.graphql({
                                 viewer: {
                                     login: typedGraphqlify.types.string,
                                 }
@@ -525,34 +570,6 @@ var GithubClient = /** @class */ (function (_super) {
     };
     return GithubClient;
 }(Octokit));
-/** A client for interacting with Github's GraphQL API. */
-var GithubGraphqlClient = /** @class */ (function () {
-    function GithubGraphqlClient(token) {
-        /** The Github GraphQL (v4) API. */
-        this.graqhql = graphql.graphql;
-        // Set the default headers to include authorization with the provided token for all
-        // graphQL calls.
-        if (token) {
-            this.graqhql = this.graqhql.defaults({ headers: { authorization: "token " + token } });
-        }
-    }
-    /** Perform a query using Github's GraphQL API. */
-    GithubGraphqlClient.prototype.query = function (queryObject, params) {
-        if (params === void 0) { params = {}; }
-        return tslib.__awaiter(this, void 0, void 0, function () {
-            var queryString;
-            return tslib.__generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        queryString = typedGraphqlify.query(queryObject);
-                        return [4 /*yield*/, this.graqhql(queryString, params)];
-                    case 1: return [2 /*return*/, (_a.sent())];
-                }
-            });
-        });
-    };
-    return GithubGraphqlClient;
-}());
 
 /**
  * @license
@@ -585,20 +602,17 @@ var GitCommandError = /** @class */ (function (_super) {
  *     the dev-infra configuration is loaded with its Github configuration.
  **/
 var GitClient = /** @class */ (function () {
-    function GitClient(githubToken, _config, _projectRoot) {
+    /**
+     * @param _config The configuration, containing the github specific configuration.
+     * @param _projectRoot The full path to the root of the repository base.
+     */
+    function GitClient(_config, _projectRoot) {
         if (_config === void 0) { _config = getConfig(); }
         if (_projectRoot === void 0) { _projectRoot = getRepoBaseDir(); }
-        this.githubToken = githubToken;
         this._config = _config;
         this._projectRoot = _projectRoot;
-        /** Short-hand for accessing the default remote configuration. */
-        this.remoteConfig = this._config.github;
-        /** Octokit request parameters object for targeting the configured remote. */
-        this.remoteParams = { owner: this.remoteConfig.owner, repo: this.remoteConfig.name };
-        /** Git URL that resolves to the configured repository. */
-        this.repoGitUrl = getRepositoryGitUrl(this.remoteConfig, this.githubToken);
-        /** Instance of the authenticated Github octokit API. */
-        this.github = new GithubClient(this.githubToken);
+        /** Whether verbose logging of Git actions should be used. */
+        this.verboseLogging = false;
         /** The OAuth scopes available for the provided Github token. */
         this._cachedOauthScopes = null;
         /**
@@ -606,13 +620,50 @@ var GitClient = /** @class */ (function () {
          * sanitizing the token from Git child process output.
          */
         this._githubTokenRegex = null;
-        // If a token has been specified (and is not empty), pass it to the Octokit API and
-        // also create a regular expression that can be used for sanitizing Git command output
-        // so that it does not print the token accidentally.
-        if (githubToken != null) {
-            this._githubTokenRegex = new RegExp(githubToken, 'g');
-        }
+        /** Short-hand for accessing the default remote configuration. */
+        this.remoteConfig = this._config.github;
+        /** Octokit request parameters object for targeting the configured remote. */
+        this.remoteParams = { owner: this.remoteConfig.owner, repo: this.remoteConfig.name };
+        /** Instance of the authenticated Github octokit API. */
+        this.github = new GithubClient();
     }
+    /**
+     * Static method to get the singleton instance of the GitClient, creating it if it has not yet
+     * been created.
+     */
+    GitClient.getInstance = function () {
+        if (!GitClient.instance) {
+            GitClient.instance = new GitClient();
+        }
+        return GitClient.instance;
+    };
+    /**
+     * Set the github token for use in authentication.
+     *
+     * Pass the token to the GithubClient instance and also create a regular expression that can be
+     * used for sanitizing Git command output so that it does not print the token accidentally.
+     */
+    GitClient.prototype.setGithubToken = function (githubToken) {
+        // If the provided token is the same as the already established token, it does not have to be
+        // reestablished.
+        if (this.githubToken === githubToken) {
+            return this;
+        }
+        // If the token is different than the already established token, throw an error as the
+        // authentication token cannot be changed in the client.
+        if (this.githubToken !== undefined) {
+            throw Error('Cannot change authentication tokens after initial authentication has been set.');
+        }
+        this.githubToken = githubToken;
+        this._githubTokenRegex = new RegExp(githubToken, 'g');
+        this.github.setAuthenticationToken(githubToken);
+        return this;
+    };
+    /** Set the verbose logging state of the GitClient instance. */
+    GitClient.prototype.setVerboseLoggingState = function (verbose) {
+        this.verboseLogging = verbose;
+        return this;
+    };
     /** Executes the given git command. Throws if the command fails. */
     GitClient.prototype.run = function (args, options) {
         var result = this.runGraceful(args, options);
@@ -639,7 +690,7 @@ var GitClient = /** @class */ (function () {
         // To improve the debugging experience in case something fails, we print all executed Git
         // commands to better understand the git actions occuring. Depending on the command being
         // executed, this debugging information should be logged at different logging levels.
-        var printFn = (!GitClient.LOG_COMMANDS || options.stdio === 'ignore') ? debug : info;
+        var printFn = (!this.verboseLogging || options.stdio === 'ignore') ? debug : info;
         // Note that we do not want to print the token if it is contained in the command. It's common
         // to share errors with others if the tool failed, and we do not want to leak tokens.
         printFn('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
@@ -654,6 +705,10 @@ var GitClient = /** @class */ (function () {
             process.stderr.write(this.omitGithubTokenFromMessage(result.stderr));
         }
         return result;
+    };
+    /** Git URL that resolves to the configured repository. */
+    GitClient.prototype.getRepoGitUrl = function () {
+        return getRepositoryGitUrl(this.remoteConfig, this.githubToken);
     };
     /** Whether the given branch contains the specified SHA. */
     GitClient.prototype.hasCommit = function (branchName, sha) {
@@ -760,8 +815,6 @@ var GitClient = /** @class */ (function () {
             return scopes.split(',').map(function (scope) { return scope.trim(); });
         });
     };
-    /** Whether verbose logging of Git actions should be used. */
-    GitClient.LOG_COMMANDS = true;
     return GitClient;
 }());
 
@@ -1091,9 +1144,10 @@ function getLtsNpmDistTagOfMajor(major) {
 
 /** The BaseModule to extend modules for caretaker checks from. */
 class BaseModule {
-    constructor(git, config) {
-        this.git = git;
+    constructor(config) {
         this.config = config;
+        /** The singleton instance of the GitClient. */
+        this.git = GitClient.getInstance().setVerboseLoggingState(false);
         /** The data for the module. */
         this.data = this.retrieveData();
     }
@@ -1332,7 +1386,7 @@ class GithubQueriesModule extends BaseModule {
                 return;
             }
             /** The results of the generated github query. */
-            const queryResult = yield this.git.github.graphql.query(this.buildGraphqlQuery(queries));
+            const queryResult = yield this.git.github.graphql(this.buildGraphqlQuery(queries));
             const results = Object.values(queryResult);
             const { owner, name: repo } = this.git.remoteConfig;
             return results.map((result, i) => {
@@ -1472,14 +1526,12 @@ const moduleList = [
 /** Check the status of services which Angular caretakers need to monitor. */
 function checkServiceStatuses(githubToken) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
+        // Set the github token and verbose logging state of the GitClient.
+        GitClient.getInstance().setGithubToken(githubToken).setVerboseLoggingState(true);
         /** The configuration for the caretaker commands. */
         const config = getCaretakerConfig();
-        /** The GitClient for interacting with git and Github. */
-        const git = new GitClient(githubToken, config);
-        // Prevent logging of the git commands being executed during the check.
-        GitClient.LOG_COMMANDS = false;
         /** List of instances of Caretaker Check modules */
-        const caretakerCheckModules = moduleList.map(module => new module(git, config));
+        const caretakerCheckModules = moduleList.map(module => new module(config));
         // Module's `data` is casted as Promise<unknown> because the data types of the `module`'s `data`
         // promises do not match typings, however our usage here is only to determine when the promise
         // resolves.
@@ -2836,8 +2888,8 @@ function getTargetBranchesForPr(prNumber) {
         const config = getConfig();
         /** Repo owner and name for the github repository. */
         const { owner, name: repo } = config.github;
-        /** The git client to get a Github API service instance. */
-        const git = new GitClient(undefined, config);
+        /** The singleton instance of the GitClient. */
+        const git = GitClient.getInstance();
         /** The validated merge config. */
         const { config: mergeConfig, errors } = yield loadAndValidateConfig(config, git.github);
         if (errors !== undefined) {
@@ -2931,7 +2983,7 @@ function getPr(prSchema, prNumber, git) {
                             pullRequest: typedGraphqlify.params({ number: '$number' }, prSchema),
                         })
                     });
-                    return [4 /*yield*/, git.github.graphql.query(PR_QUERY, { number: prNumber, owner: owner, name: name })];
+                    return [4 /*yield*/, git.github.graphql(PR_QUERY, { number: prNumber, owner: owner, name: name })];
                 case 1:
                     result = (_b.sent());
                     return [2 /*return*/, result.repository.pullRequest];
@@ -2978,7 +3030,7 @@ function getPendingPrs(prSchema, git) {
                         owner: owner,
                         name: name,
                     };
-                    return [4 /*yield*/, git.github.graphql.query(PRS_QUERY, params_1)];
+                    return [4 /*yield*/, git.github.graphql(PRS_QUERY, params_1)];
                 case 2:
                     results = _b.sent();
                     prs.push.apply(prs, tslib.__spreadArray([], tslib.__read(results.repository.pullRequests.nodes)));
@@ -3037,8 +3089,8 @@ class MaintainerModifyAccessError extends Error {
  */
 function checkOutPullRequestLocally(prNumber, githubToken, opts = {}) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        /** Authenticated Git client for git and Github interactions. */
-        const git = new GitClient(githubToken);
+        /** The singleton instance of the GitClient. */
+        const git = GitClient.getInstance().setGithubToken(githubToken);
         // In order to preserve local changes, checkouts cannot occur if local changes are present in the
         // git environment. Checked before retrieving the PR to fail fast.
         if (git.hasLocalChanges()) {
@@ -3160,9 +3212,10 @@ function processPr(pr) {
 /** Name of a temporary local branch that is used for checking conflicts. **/
 const tempWorkingBranch = '__NgDevRepoBaseAfterChange__';
 /** Checks if the provided PR will cause new conflicts in other pending PRs. */
-function discoverNewConflictsForPr(newPrNumber, updatedAfter, config = getConfig()) {
+function discoverNewConflictsForPr(newPrNumber, updatedAfter) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        const git = new GitClient();
+        /** The singleton instance of the GitClient. */
+        const git = GitClient.getInstance();
         // If there are any local changes in the current repository state, the
         // check cannot run as it needs to move between branches.
         if (git.hasLocalChanges()) {
@@ -3696,7 +3749,7 @@ var MergeStrategy = /** @class */ (function () {
         });
         // Fetch all target branches with a single command. We don't want to fetch them
         // individually as that could cause an unnecessary slow-down.
-        this.git.run(tslib.__spreadArray(tslib.__spreadArray(['fetch', '-q', '-f', this.git.repoGitUrl], tslib.__read(fetchRefspecs)), tslib.__read(extraRefspecs)));
+        this.git.run(tslib.__spreadArray(tslib.__spreadArray(['fetch', '-q', '-f', this.git.getRepoGitUrl()], tslib.__read(fetchRefspecs)), tslib.__read(extraRefspecs)));
     };
     /** Pushes the given target branches upstream. */
     MergeStrategy.prototype.pushTargetBranchesUpstream = function (names) {
@@ -3707,7 +3760,7 @@ var MergeStrategy = /** @class */ (function () {
         });
         // Push all target branches with a single command if we don't run in dry-run mode.
         // We don't want to push them individually as that could cause an unnecessary slow-down.
-        this.git.run(tslib.__spreadArray(['push', this.git.repoGitUrl], tslib.__read(pushRefspecs)));
+        this.git.run(tslib.__spreadArray(['push', this.git.getRepoGitUrl()], tslib.__read(pushRefspecs)));
     };
     return MergeStrategy;
 }());
@@ -4318,13 +4371,12 @@ function mergePullRequest(prNumber, githubToken, flags) {
  */
 function createPullRequestMergeTask(githubToken, flags) {
     return tslib.__awaiter(this, void 0, void 0, function () {
-        var projectRoot, devInfraConfig, git, _a, config, errors;
+        var devInfraConfig, git, _a, config, errors;
         return tslib.__generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    projectRoot = getRepoBaseDir();
                     devInfraConfig = getConfig();
-                    git = new GitClient(githubToken, devInfraConfig, projectRoot);
+                    git = GitClient.getInstance();
                     return [4 /*yield*/, loadAndValidateConfig(devInfraConfig, git.github)];
                 case 1:
                     _a = _b.sent(), config = _a.config, errors = _a.errors;
@@ -4423,7 +4475,8 @@ const PR_SCHEMA$3 = {
  */
 function rebasePr(prNumber, githubToken, config = getConfig()) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        const git = new GitClient(githubToken);
+        /** The singleton instance of the GitClient. */
+        const git = GitClient.getInstance();
         // TODO: Rely on a common assertNoLocalChanges function.
         if (git.hasLocalChanges()) {
             error('Cannot perform rebase of PR with local changes.');
@@ -5720,7 +5773,7 @@ class ReleaseAction {
                 return this._cachedForkRepo;
             }
             const { owner, name } = this.git.remoteConfig;
-            const result = yield this.git.github.graphql.query(findOwnedForksOfRepoQuery, { owner, name });
+            const result = yield this.git.github.graphql(findOwnedForksOfRepoQuery, { owner, name });
             const forks = result.repository.forks.nodes;
             if (forks.length === 0) {
                 error(red('  ✘   Unable to find fork for currently authenticated user.'));
@@ -5773,7 +5826,7 @@ class ReleaseAction {
     pushHeadToRemoteBranch(branchName) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             // Push the local `HEAD` to the remote branch in the configured project.
-            this.git.run(['push', this.git.repoGitUrl, `HEAD:refs/heads/${branchName}`]);
+            this.git.run(['push', this.git.getRepoGitUrl(), `HEAD:refs/heads/${branchName}`]);
         });
     }
     /**
@@ -5888,7 +5941,7 @@ class ReleaseAction {
     /** Checks out an upstream branch with a detached head. */
     checkoutUpstreamBranch(branchName) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            this.git.run(['fetch', '-q', this.git.repoGitUrl, branchName]);
+            this.git.run(['fetch', '-q', this.git.getRepoGitUrl(), branchName]);
             this.git.run(['checkout', 'FETCH_HEAD', '--detach']);
         });
     }
@@ -6524,8 +6577,8 @@ class ReleaseTool {
         this._github = _github;
         this._githubToken = _githubToken;
         this._projectRoot = _projectRoot;
-        /** Client for interacting with the Github API and the local Git command. */
-        this._git = new GitClient(this._githubToken, { github: this._github }, this._projectRoot);
+        /** The singleton instance of the GitClient. */
+        this._git = GitClient.getInstance();
         /** The previous git commit to return back to after the release tool runs. */
         this.previousGitBranchOrRevision = this._git.getCurrentBranchOrRevision();
     }

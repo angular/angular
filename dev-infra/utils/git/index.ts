@@ -44,17 +44,24 @@ export class GitCommandError extends Error {
  *     the dev-infra configuration is loaded with its Github configuration.
  **/
 export class GitClient {
-  /** Whether verbose logging of Git actions should be used. */
-  static LOG_COMMANDS = true;
-  /** Short-hand for accessing the default remote configuration. */
-  remoteConfig = this._config.github;
-  /** Octokit request parameters object for targeting the configured remote. */
-  remoteParams = {owner: this.remoteConfig.owner, repo: this.remoteConfig.name};
-  /** Git URL that resolves to the configured repository. */
-  repoGitUrl = getRepositoryGitUrl(this.remoteConfig, this.githubToken);
-  /** Instance of the authenticated Github octokit API. */
-  github = new GithubClient(this.githubToken);
+  /*************************************************
+   * Singleton definition and configuration.       *
+   *************************************************/
+  /** The singleton instance of the GitClient. */
+  private static instance: GitClient;
+  /**
+   * Static method to get the singleton instance of the GitClient, creating it if it has not yet
+   * been created.
+   */
+  static getInstance(): GitClient {
+    if (!GitClient.instance) {
+      GitClient.instance = new GitClient();
+    }
+    return GitClient.instance;
+  }
 
+  /** Whether verbose logging of Git actions should be used. */
+  private verboseLogging = false;
   /** The OAuth scopes available for the provided Github token. */
   private _cachedOauthScopes: Promise<string[]>|null = null;
   /**
@@ -62,16 +69,51 @@ export class GitClient {
    * sanitizing the token from Git child process output.
    */
   private _githubTokenRegex: RegExp|null = null;
+  /** Short-hand for accessing the default remote configuration. */
+  remoteConfig = this._config.github;
+  /** Octokit request parameters object for targeting the configured remote. */
+  remoteParams = {owner: this.remoteConfig.owner, repo: this.remoteConfig.name};
+  /** Instance of the authenticated Github octokit API. */
+  github = new GithubClient();
+  /** The github token used for authentication. */
+  githubToken: string|undefined;
 
-  constructor(
-      public githubToken?: string, private _config: Pick<NgDevConfig, 'github'> = getConfig(),
-      private _projectRoot = getRepoBaseDir()) {
-    // If a token has been specified (and is not empty), pass it to the Octokit API and
-    // also create a regular expression that can be used for sanitizing Git command output
-    // so that it does not print the token accidentally.
-    if (githubToken != null) {
-      this._githubTokenRegex = new RegExp(githubToken, 'g');
+  /**
+   * @param _config The configuration, containing the github specific configuration.
+   * @param _projectRoot The full path to the root of the repository base.
+   */
+  protected constructor(private _config = getConfig(), private _projectRoot = getRepoBaseDir()) {}
+
+  /**
+   * Set the github token for use in authentication.
+   *
+   * Pass the token to the GithubClient instance and also create a regular expression that can be
+   * used for sanitizing Git command output so that it does not print the token accidentally.
+   */
+  setGithubToken(githubToken: string): this {
+    // If the provided token is the same as the already established token, it does not have to be
+    // reestablished.
+    if (this.githubToken === githubToken) {
+      return this;
     }
+
+    // If the token is different than the already established token, throw an error as the
+    // authentication token cannot be changed in the client.
+    if (this.githubToken !== undefined) {
+      throw Error('Cannot change authentication tokens after initial authentication has been set.');
+    }
+
+    this.githubToken = githubToken;
+    this._githubTokenRegex = new RegExp(githubToken, 'g');
+    this.github.setAuthenticationToken(githubToken);
+
+    return this;
+  }
+
+  /** Set the verbose logging state of the GitClient instance. */
+  setVerboseLoggingState(verbose: boolean): this {
+    this.verboseLogging = verbose;
+    return this;
   }
 
   /** Executes the given git command. Throws if the command fails. */
@@ -102,7 +144,7 @@ export class GitClient {
     // To improve the debugging experience in case something fails, we print all executed Git
     // commands to better understand the git actions occuring. Depending on the command being
     // executed, this debugging information should be logged at different logging levels.
-    const printFn = (!GitClient.LOG_COMMANDS || options.stdio === 'ignore') ? debug : info;
+    const printFn = (!this.verboseLogging || options.stdio === 'ignore') ? debug : info;
     // Note that we do not want to print the token if it is contained in the command. It's common
     // to share errors with others if the tool failed, and we do not want to leak tokens.
     printFn('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
@@ -124,6 +166,11 @@ export class GitClient {
     }
 
     return result;
+  }
+
+  /** Git URL that resolves to the configured repository. */
+  getRepoGitUrl() {
+    return getRepositoryGitUrl(this.remoteConfig, this.githubToken);
   }
 
   /** Whether the given branch contains the specified SHA. */

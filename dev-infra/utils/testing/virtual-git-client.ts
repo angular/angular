@@ -59,6 +59,14 @@ export interface Commit {
  * in memory. This allows for convenient test assertions with Git interactions.
  */
 export class VirtualGitClient extends GitClient {
+  static getInstance(config = mockNgDevConfig, tmpDir = testTmpDir): VirtualGitClient {
+    return new VirtualGitClient(config, tmpDir);
+  }
+
+  private constructor(config: NgDevConfig, tmpDir: string) {
+    super(config, tmpDir);
+  }
+
   /** Current Git HEAD that has been previously fetched. */
   fetchHeadRef: RemoteRef|null = null;
   /** List of known branches in the repository. */
@@ -190,10 +198,7 @@ export class VirtualGitClient extends GitClient {
 }
 
 
-/**
- * Builds a Virtual Git Client instance with the provided config and set the temporary test
- * directory.
- */
-export function buildVirtualGitClient(config = mockNgDevConfig, tmpDir = testTmpDir) {
-  return (new VirtualGitClient(undefined, config, tmpDir));
+export function installVirtualGitClientSpy() {
+  const virtualGitClient = VirtualGitClient.getInstance();
+  spyOn(GitClient, 'getInstance').and.returnValue(virtualGitClient);
 }

@@ -56,7 +56,7 @@ export class GithubQueriesModule extends BaseModule<GithubQueryResults|void> {
     }
 
     /** The results of the generated github query. */
-    const queryResult = await this.git.github.graphql.query(this.buildGraphqlQuery(queries));
+    const queryResult = await this.git.github.graphql(this.buildGraphqlQuery(queries));
     const results = Object.values(queryResult);
 
     const {owner, name: repo} = this.git.remoteConfig;

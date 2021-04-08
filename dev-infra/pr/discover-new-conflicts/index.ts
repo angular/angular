@@ -53,9 +53,9 @@ type PullRequest = ReturnType<typeof processPr>;
 const tempWorkingBranch = '__NgDevRepoBaseAfterChange__';
 
 /** Checks if the provided PR will cause new conflicts in other pending PRs. */
-export async function discoverNewConflictsForPr(
-    newPrNumber: number, updatedAfter: number, config: Pick<NgDevConfig, 'github'> = getConfig()) {
-  const git = new GitClient();
+export async function discoverNewConflictsForPr(newPrNumber: number, updatedAfter: number) {
+  /** The singleton instance of the GitClient. */
+  const git = GitClient.getInstance();
   // If there are any local changes in the current repository state, the
   // check cannot run as it needs to move between branches.
   if (git.hasLocalChanges()) {

@@ -128,9 +128,9 @@ export async function mergePullRequest(
  * when the merge script is used outside of a `ng-dev` configured repository.
  */
 async function createPullRequestMergeTask(githubToken: string, flags: PullRequestMergeTaskFlags) {
-  const projectRoot = getRepoBaseDir();
   const devInfraConfig = getConfig();
-  const git = new GitClient(githubToken, devInfraConfig, projectRoot);
+  /** The singleton instance of the GitClient. */
+  const git = GitClient.getInstance();
   const {config, errors} = await loadAndValidateConfig(devInfraConfig, git.github);
 
   if (errors) {
