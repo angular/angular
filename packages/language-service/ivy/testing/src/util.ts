@@ -38,7 +38,7 @@ export function isNgSpecificDiagnostic(diag: ts.Diagnostic): boolean {
 }
 
 function getFirstClassDeclaration(declaration: string) {
-  const matches = declaration.match(/(?:export class )(\w+)(?:\s|\{)/);
+  const matches = declaration.match(/(?:export class )(\w+)(?:\s|\{|<)/);
   if (matches === null || matches.length !== 2) {
     throw new Error(`Did not find exactly one exported class in: ${declaration}`);
   }

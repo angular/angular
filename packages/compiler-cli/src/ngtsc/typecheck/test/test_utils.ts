@@ -28,7 +28,7 @@ import {DomSchemaChecker} from '../src/dom';
 import {Environment} from '../src/environment';
 import {OutOfBandDiagnosticRecorder} from '../src/oob';
 import {TypeCheckShimGenerator} from '../src/shim';
-import {generateTypeCheckBlock} from '../src/type_check_block';
+import {generateTypeCheckBlock, TcbGenericContextBehavior} from '../src/type_check_block';
 import {TypeCheckFile} from '../src/type_check_file';
 
 export function typescriptLibDts(): TestFile {
@@ -290,13 +290,9 @@ export function tcb(
 
   const env = new TypeCheckFile(fileName, fullConfig, refEmmiter, reflectionHost, host);
 
-  const ref = new Reference(clazz);
-
-  const tcb = generateTypeCheckBlock(
-      env, ref, ts.createIdentifier('Test_TCB'), meta, new NoopSchemaChecker(),
-      new NoopOobRecorder());
-
-  env.addTypeCheckBlock(ref, meta, new NoopSchemaChecker(), new NoopOobRecorder());
+  env.addTypeCheckBlock(
+      new Reference(clazz), meta, new NoopSchemaChecker(), new NoopOobRecorder(),
+      TcbGenericContextBehavior.UseEmitter);
 
   const rendered = env.render(!options.emitSpans /* removeComments */);
   return rendered.replace(/\s+/g, ' ');
