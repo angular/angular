@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {compileClassMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
-import {compileClassMetadata} from '../../../../../compiler';
 
 import {absoluteFrom, getSourceFileOrError} from '../../file_system';
 import {runInEachFileSystem, TestFile} from '../../file_system/testing';

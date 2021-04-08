@@ -57,6 +57,10 @@
             {
               "expected": "parameter_decorators_no_decorators.js",
               "generated": "parameter_decorators.js"
+            },
+            {
+              "expected": "parameter_decorators_derived.js",
+              "generated": "parameter_decorators.js"
             }
           ]
         }

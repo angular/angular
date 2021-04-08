@@ -283,26 +283,26 @@ export class Dep {
 }
 Dep.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dep, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
 Dep.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dep });
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Dep, [{
-        type: Injectable
-    }], null, null); })();
+i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Dep, decorators: [{
+            type: Injectable
+        }] });
 export class Service {
     constructor(dep) { }
 }
 Service.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Service, deps: [{ token: Dep }], target: i0.ɵɵFactoryTarget.Injectable });
 Service.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Service, providedIn: i0.forwardRef(function () { return Mod; }) });
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Service, [{
-        type: Injectable,
-        args: [{ providedIn: forwardRef(() => Mod) }]
-    }], function () { return [{ type: Dep }]; }, null); })();
+i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Service, decorators: [{
+            type: Injectable,
+            args: [{ providedIn: forwardRef(() => Mod) }]
+        }], ctorParameters: function () { return [{ type: Dep }]; } });
 export class Mod {
 }
 Mod.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Mod, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
 Mod.ɵmod = i0.ɵɵngDeclareNgModule({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Mod });
 Mod.ɵinj = i0.ɵɵngDeclareInjector({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Mod });
-(function () { (typeof ngDevMode === "undefined" || ngDevMode) && i0.ɵsetClassMetadata(Mod, [{
-        type: NgModule
-    }], null, null); })();
+i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Mod, decorators: [{
+            type: NgModule
+        }] });
 
 /****************************************************************************************************
  * PARTIAL FILE: providedin_forwardref.d.ts

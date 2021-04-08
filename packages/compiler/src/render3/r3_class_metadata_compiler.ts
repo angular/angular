@@ -29,13 +29,14 @@ export interface R3ClassMetadata {
   decorators: o.Expression;
 
   /**
-   * An optional expression representing the Angular decorators applied to constructor parameters.
+   * An expression representing the Angular decorators applied to constructor parameters, or `null`
+   * if there is no constructor.
    */
   ctorParameters: o.Expression|null;
 
   /**
-   * An optional expression representing the Angular decorators that were applied on the properties
-   * of the class.
+   * An expression representing the Angular decorators that were applied on the properties of the
+   * class, or `null` if no properties have decorators.
    */
   propDecorators: o.Expression|null;
 }

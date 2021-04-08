@@ -138,6 +138,7 @@ export declare class MyDir {
     bar: string;
     custom: string;
     mixed: string;
+    none: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MyDir, never>;
     static ɵdir: i0.ɵɵDirectiveDeclaration<MyDir, never, never, { "foo": "foo"; "bar": "baz"; "mixed": "mixed"; }, { "mixed": "mixed"; }, never>;
 }
@@ -183,18 +184,18 @@ import * as i0 from "@angular/core";
 export const TOKEN = new InjectionToken('TOKEN');
 class Service {
 }
-let ParamerizedInjectable = class ParamerizedInjectable {
+let ParameterizedInjectable = class ParameterizedInjectable {
     constructor(service, token, custom, mixed) { }
 };
-ParamerizedInjectable.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ParamerizedInjectable, deps: [{ token: Service }, { token: TOKEN }, { token: Service }, { token: TOKEN, skipSelf: true }], target: i0.ɵɵFactoryTarget.Injectable });
-ParamerizedInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ParamerizedInjectable });
-ParamerizedInjectable = __decorate([
+ParameterizedInjectable.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ParameterizedInjectable, deps: [{ token: Service }, { token: TOKEN }, { token: Service }, { token: TOKEN, skipSelf: true }], target: i0.ɵɵFactoryTarget.Injectable });
+ParameterizedInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ParameterizedInjectable });
+ParameterizedInjectable = __decorate([
     __param(2, CustomParamDecorator()),
     __param(3, CustomParamDecorator()),
     __metadata("design:paramtypes", [Service, String, Service, String])
-], ParamerizedInjectable);
-export { ParamerizedInjectable };
-i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ParamerizedInjectable, decorators: [{
+], ParameterizedInjectable);
+export { ParameterizedInjectable };
+i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ParameterizedInjectable, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return [{ type: Service }, { type: undefined, decorators: [{
                     type: Inject,
@@ -241,6 +242,23 @@ export { CustomInjectable };
 i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return [{ type: Service, decorators: [] }]; } });
+export class DerivedInjectable extends ParameterizedInjectable {
+}
+DerivedInjectable.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectable, deps: null, target: i0.ɵɵFactoryTarget.Injectable });
+DerivedInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectable });
+i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectable, decorators: [{
+            type: Injectable
+        }] });
+export class DerivedInjectableWithCtor extends ParameterizedInjectable {
+    constructor() {
+        super(null, '', null, '');
+    }
+}
+DerivedInjectableWithCtor.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectableWithCtor, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+DerivedInjectableWithCtor.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectableWithCtor });
+i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectableWithCtor, decorators: [{
+            type: Injectable
+        }], ctorParameters: function () { return []; } });
 
 /****************************************************************************************************
  * PARTIAL FILE: parameter_decorators.d.ts
@@ -250,10 +268,10 @@ import * as i0 from "@angular/core";
 export declare const TOKEN: InjectionToken<string>;
 declare class Service {
 }
-export declare class ParamerizedInjectable {
+export declare class ParameterizedInjectable {
     constructor(service: Service, token: string, custom: Service, mixed: string);
-    static ɵfac: i0.ɵɵFactoryDeclaration<ParamerizedInjectable, [null, null, null, { skipSelf: true; }]>;
-    static ɵprov: i0.ɵɵInjectableDeclaration<ParamerizedInjectable>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<ParameterizedInjectable, [null, null, null, { skipSelf: true; }]>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<ParameterizedInjectable>;
 }
 export declare class NoCtor {
     static ɵfac: i0.ɵɵFactoryDeclaration<NoCtor, never>;
@@ -273,6 +291,15 @@ export declare class CustomInjectable {
     constructor(service: Service);
     static ɵfac: i0.ɵɵFactoryDeclaration<CustomInjectable, never>;
     static ɵprov: i0.ɵɵInjectableDeclaration<CustomInjectable>;
+}
+export declare class DerivedInjectable extends ParameterizedInjectable {
+    static ɵfac: i0.ɵɵFactoryDeclaration<DerivedInjectable, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<DerivedInjectable>;
+}
+export declare class DerivedInjectableWithCtor extends ParameterizedInjectable {
+    constructor();
+    static ɵfac: i0.ɵɵFactoryDeclaration<DerivedInjectableWithCtor, never>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<DerivedInjectableWithCtor>;
 }
 export {};
 

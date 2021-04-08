@@ -10,4 +10,6 @@ export class MyDir {
   @CustomPropDecorator() custom!: string;
 
   @Input() @Output() @CustomPropDecorator() mixed!: string;
+
+  none!: string;
 }
