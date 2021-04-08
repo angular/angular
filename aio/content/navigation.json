@@ -651,13 +651,13 @@
           "tooltip": "Roadmap of the Angular team."
         },
         {
-          "title": "Updating to Version 11",
-          "tooltip": "Support for updating your application from version 9 to 10.",
+          "title": "Updating to Version 12",
+          "tooltip": "Support for updating your application from version 11 to 12.",
           "children": [
             {
-              "url": "guide/updating-to-version-11",
+              "url": "guide/updating-to-version-12",
               "title": "Overview",
-              "tooltip": "Everything you need to know for updating your application from version 10 to 11."
+              "tooltip": "Everything you need to know for updating your application from version 11 to 12."
             },
             {
               "url": "guide/ivy-compatibility",
