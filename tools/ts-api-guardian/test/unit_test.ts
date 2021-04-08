@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as chai from 'chai';
 import * as ts from 'typescript';
 
 import {publicApiInternal, SerializationOptions} from '../lib/serializer';
@@ -125,8 +124,8 @@ describe('unit test', () => {
     const expected = `
     `;
     check({'classes_and_interfaces.d.ts': classesAndInterfaces, 'file.d.ts': input}, expected);
-    chai.assert.deepEqual(
-        warnings, ['file.d.ts(1,1): error: No export declaration found for symbol "Foo"']);
+    expect(warnings).toEqual(
+        ['file.d.ts(1,1): error: No export declaration found for symbol "Foo"']);
   });
 
   it('should sort exports', () => {
@@ -634,14 +633,12 @@ function getMockHost(files: {[name: string]: string}): ts.CompilerHost {
 function check(
     files: {[name: string]: string}, expected: string, options: SerializationOptions = {}) {
   const actual = publicApiInternal(getMockHost(files), 'file.d.ts', {}, options);
-  chai.assert.equal(actual.trim(), stripExtraIndentation(expected).trim());
+  expect(actual.trim()).toBe(stripExtraIndentation(expected).trim());
 }
 
 function checkThrows(
     files: {[name: string]: string}, error: string, options: SerializationOptions = {}) {
-  chai.assert.throws(() => {
-    publicApiInternal(getMockHost(files), 'file.d.ts', {}, options);
-  }, error);
+  expect(() => publicApiInternal(getMockHost(files), 'file.d.ts', {}, options)).toThrowError(error);
 }
 
 function stripExtraIndentation(text: string) {

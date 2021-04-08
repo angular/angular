@@ -61,10 +61,8 @@ ts_library(
     tsconfig = "//tools:tsconfig-test",
     deps = [
         ":lib",
-        "@npm//@types/chai",
         "@npm//@types/jasmine",
         "@npm//@types/node",
-        "@npm//chai",
         "@npm//jasmine",
         "@npm//typescript",
     ],

@@ -6,11 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import chai = require('chai');
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
-import {assertFileEqual, unlinkRecursively} from './helpers';
+import {assertFileEqual} from './helpers';
 
 const BINARY_PATH = require.resolve('../ts-api-guardian/bin/ts-api-guardian');
 
@@ -24,38 +23,38 @@ describe('cli: e2e test', () => {
   });
 
   afterEach(() => {
-    unlinkRecursively(outDir);
+    fs.rmdirSync(outDir, {recursive: true});
   });
 
   it('should print usage without any argument', () => {
     const {stderr} = execute([]);
-    chai.assert.match(stderr, /Usage/);
+    expect(stderr).toMatch(/Usage/);
   });
 
   it('should show help message with --help', () => {
     const {stdout} = execute(['--help']);
-    chai.assert.match(stdout, /Usage/);
+    expect(stdout).toMatch(/Usage/);
   });
 
   it('should generate golden file with --out', () => {
     const simpleFile = path.join(outDir, 'simple.d.ts');
     const {status, stderr} = execute(['--out', simpleFile, 'test/fixtures/simple.d.ts']);
-    chai.assert.equal(status, 0, stderr);
+    expect(status).toBe(0, stderr);
     assertFileEqual(simpleFile, 'test/fixtures/simple_expected.d.ts');
   });
 
   it('should verify golden file with --verify and exit cleanly on no difference', () => {
     const {stdout, status} =
         execute(['--verify', 'test/fixtures/simple_expected.d.ts', 'test/fixtures/simple.d.ts']);
-    chai.assert.equal(stdout, '');
-    chai.assert.equal(status, 0);
+    expect(stdout).toBe('');
+    expect(status).toBe(0);
   });
 
   it('should verify golden file with --verify and exit with error on difference', () => {
     const {stdout, status} = execute(
         ['--verify', 'test/fixtures/verify_expected.d.ts', 'test/fixtures/verify_entrypoint.d.ts']);
-    chai.assert.equal(stdout, fs.readFileSync('test/fixtures/verify.patch').toString());
-    chai.assert.equal(status, 1);
+    expect(stdout).toBe(fs.readFileSync('test/fixtures/verify.patch').toString());
+    expect(status).toBe(1);
   });
 
   it('should generate multiple golden files with --outDir and --rootDir', () => {
@@ -63,7 +62,7 @@ describe('cli: e2e test', () => {
       '--outDir', outDir, '--rootDir', 'test/fixtures', 'test/fixtures/simple.d.ts',
       'test/fixtures/sorting.d.ts'
     ]);
-    chai.assert.equal(status, 0);
+    expect(status).toBe(0);
     assertFileEqual(path.join(outDir, 'simple.d.ts'), 'test/fixtures/simple_expected.d.ts');
     assertFileEqual(path.join(outDir, 'sorting.d.ts'), 'test/fixtures/sorting_expected.d.ts');
   });
@@ -75,8 +74,8 @@ describe('cli: e2e test', () => {
       '--verifyDir', outDir, '--rootDir', 'test/fixtures', 'test/fixtures/simple.d.ts',
       'test/fixtures/sorting.d.ts'
     ]);
-    chai.assert.equal(stdout, '');
-    chai.assert.equal(status, 0);
+    expect(stdout).toBe('');
+    expect(status).toBe(0);
   });
 
   it('should generate respecting --stripExportPattern', () => {
@@ -84,7 +83,8 @@ describe('cli: e2e test', () => {
       '--out', path.join(outDir, 'underscored.d.ts'), '--stripExportPattern', '^__.*',
       'test/fixtures/underscored.d.ts'
     ]);
-    chai.assert.equal(status, 0);
+
+    expect(status).toBe(0);
     assertFileEqual(
         path.join(outDir, 'underscored.d.ts'), 'test/fixtures/underscored_expected.d.ts');
   });
@@ -94,7 +94,7 @@ describe('cli: e2e test', () => {
       '--out', path.join(outDir, 'stripped_alias.d.ts'), '--stripExportPattern', '^__.*',
       'test/fixtures/stripped_alias.d.ts'
     ]);
-    chai.assert.equal(status, 0);
+    expect(status).toBe(0);
     assertFileEqual(
         path.join(outDir, 'stripped_alias.d.ts'), 'test/fixtures/stripped_alias_expected.d.ts');
   });
@@ -104,8 +104,8 @@ describe('cli: e2e test', () => {
       '--verify', 'test/fixtures/underscored_expected.d.ts', 'test/fixtures/underscored.d.ts',
       '--stripExportPattern', '^__.*'
     ]);
-    chai.assert.equal(stdout, '');
-    chai.assert.equal(status, 0);
+    expect(stdout).toBe('');
+    expect(status).toBe(0);
   });
 
   it('should respect --allowModuleIdentifiers', () => {
@@ -113,8 +113,8 @@ describe('cli: e2e test', () => {
       '--verify', 'test/fixtures/module_identifier_expected.d.ts', '--allowModuleIdentifiers',
       'foo', 'test/fixtures/module_identifier.d.ts'
     ]);
-    chai.assert.equal(stdout, '');
-    chai.assert.equal(status, 0);
+    expect(stdout).toBe('');
+    expect(status).toBe(0);
   });
 });
 
@@ -136,8 +136,9 @@ function execute(args: string[]): {stdout: string, stderr: string, status: numbe
       'NODE_PATH': nodePath,
     }
   });
-  chai.assert(!output.error, 'Child process failed or timed out: ' + output.error);
-  chai.assert(!output.signal, `Child process killed by signal ${output.signal}`);
+
+  expect(output.error).toBeFalsy(`Child process failed or timed out: ${output.error}`);
+  expect(output.signal).toBeFalsy(`Child process killed by signal ${output.signal}`);
 
   return {
     stdout: output.stdout.toString(),
