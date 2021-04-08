@@ -43,3 +43,7 @@ export interface StrictTemplateOptions {
     strictSafeNavigationTypes?: boolean;
     strictTemplates?: boolean;
 }
+
+export interface TargetOptions {
+    compilationMode?: 'full' | 'partial';
+}

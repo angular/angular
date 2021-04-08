@@ -67,6 +67,15 @@ Modifies how Angular-specific annotations are emitted to improve tree-shaking. N
 When `true`, use [Tsickle](https://github.com/angular/tsickle) to annotate the emitted JavaScript with [JSDoc](https://jsdoc.app/) comments needed by the
 [Closure Compiler](https://github.com/google/closure-compiler). Default is `false`.
 
+### `compilationMode`
+
+Specifies the compilation mode to use. The following modes are available:
+
+- `'full'`: generates fully AOT-compiled code according to the version of Angular that is currently being used.
+- `'partial'`: generates code in a stable, but intermediate form suitable for a published library.
+
+The default value is `'full'`.
+
 ### `disableExpressionLowering`
 
 When `true` (the default), transforms code that is or could be used in an annotation, to allow it to be imported from template factory modules. See [metadata rewriting](guide/aot-compiler#metadata-rewriting) for more information.

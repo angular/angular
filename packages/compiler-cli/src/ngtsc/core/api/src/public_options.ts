@@ -341,6 +341,22 @@ export interface I18nOptions {
 }
 
 /**
+ * Options that specify compilation target.
+ *
+ * @publicApi
+ */
+export interface TargetOptions {
+  /**
+   * Specifies the compilation mode to use. The following modes are available:
+   * - 'full': generates fully AOT compiled code using Ivy instructions.
+   * - 'partial': generates code in a stable, but intermediate form suitable for publication to NPM.
+   *
+   * The default value is 'full'.
+   */
+  compilationMode?: 'full'|'partial';
+}
+
+/**
  * Miscellaneous options that don't fall into any other category
  *
  * @publicApi
