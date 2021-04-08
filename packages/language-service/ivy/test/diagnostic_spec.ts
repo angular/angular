@@ -276,6 +276,26 @@ describe('getSemanticDiagnostics', () => {
     expect(getTextOfDiagnostic(diag)).toBe('user');
   });
 
+  it('should process a component that would otherwise require an inline TCB', () => {
+    const files = {
+      'app.ts': `
+        import {Component, NgModule} from '@angular/core';
+        import {CommonModule} from '@angular/common';
+
+        interface PrivateInterface {}
+
+        @Component({
+          template: 'Simple template',
+        })
+        export class MyComponent<T extends PrivateInterface> {}
+      `
+    };
+
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const diags = project.getDiagnosticsForFile('app.ts');
+    expect(diags.length).toBe(0);
+  });
+
   it('logs perf tracing', () => {
     const files = {
       'app.ts': `

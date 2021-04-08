@@ -21,8 +21,37 @@ import {Environment} from './environment';
 import {astToTypescript, NULL_AS_ANY} from './expression';
 import {OutOfBandDiagnosticRecorder} from './oob';
 import {ExpressionSemanticVisitor} from './template_semantics';
-import {checkIfGenericTypesAreUnbound, tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable} from './ts_util';
+import {tsCallMethod, tsCastToAny, tsCreateElement, tsCreateTypeQueryForCoercedInput, tsCreateVariable, tsDeclareVariable} from './ts_util';
 import {requiresInlineTypeCtor} from './type_constructor';
+import {TypeParameterEmitter} from './type_parameter_emitter';
+
+/**
+ * Controls how generics for the component context class will be handled during TCB generation.
+ */
+export enum TcbGenericContextBehavior {
+  /**
+   * References to generic parameter bounds will be emitted via the `TypeParameterEmitter`.
+   *
+   * The caller must verify that all parameter bounds are emittable in order to use this mode.
+   */
+  UseEmitter,
+
+  /**
+   * Generic parameter declarations will be copied directly from the `ts.ClassDeclaration` of the
+   * component class.
+   *
+   * The caller must only use the generated TCB code in a context where such copies will still be
+   * valid, such as an inline type check block.
+   */
+  CopyClassNodes,
+
+  /**
+   * Any generic parameters for the component context class will be set to `any`.
+   *
+   * Produces a less useful type, but is always safe to use.
+   */
+  FallbackToAny,
+}
 
 /**
  * Given a `ts.ClassDeclaration` for a component, and metadata regarding that component, compose a
@@ -45,11 +74,14 @@ import {requiresInlineTypeCtor} from './type_constructor';
  * and bindings.
  * @param oobRecorder used to record errors regarding template elements which could not be correctly
  * translated into types during TCB generation.
+ * @param genericContextBehavior controls how generic parameters (especially parameters with generic
+ * bounds) will be referenced from the generated TCB code.
  */
 export function generateTypeCheckBlock(
     env: Environment, ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, name: ts.Identifier,
     meta: TypeCheckBlockMetadata, domSchemaChecker: DomSchemaChecker,
-    oobRecorder: OutOfBandDiagnosticRecorder): ts.FunctionDeclaration {
+    oobRecorder: OutOfBandDiagnosticRecorder,
+    genericContextBehavior: TcbGenericContextBehavior): ts.FunctionDeclaration {
   const tcb = new Context(
       env, domSchemaChecker, oobRecorder, meta.id, meta.boundTarget, meta.pipes, meta.schemas);
   const scope = Scope.forNodes(tcb, null, tcb.boundTarget.target.template !, /* guard */ null);
@@ -58,7 +90,34 @@ export function generateTypeCheckBlock(
     throw new Error(
         `Expected TypeReferenceNode when referencing the ctx param for ${ref.debugName}`);
   }
-  const paramList = [tcbCtxParam(ref.node, ctxRawType.typeName, env.config.useContextGenericType)];
+
+  let typeParameters: ts.TypeParameterDeclaration[]|undefined = undefined;
+  let typeArguments: ts.TypeNode[]|undefined = undefined;
+
+  if (ref.node.typeParameters !== undefined) {
+    if (!env.config.useContextGenericType) {
+      genericContextBehavior = TcbGenericContextBehavior.FallbackToAny;
+    }
+
+    switch (genericContextBehavior) {
+      case TcbGenericContextBehavior.UseEmitter:
+        // Guaranteed to emit type parameters since we checked that the class has them above.
+        typeParameters = new TypeParameterEmitter(ref.node.typeParameters, env.reflector)
+                             .emit(typeRef => env.referenceType(typeRef))!;
+        typeArguments = typeParameters.map(param => ts.factory.createTypeReferenceNode(param.name));
+        break;
+      case TcbGenericContextBehavior.CopyClassNodes:
+        typeParameters = [...ref.node.typeParameters];
+        typeArguments = typeParameters.map(param => ts.factory.createTypeReferenceNode(param.name));
+        break;
+      case TcbGenericContextBehavior.FallbackToAny:
+        typeArguments = ref.node.typeParameters.map(
+            () => ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
+        break;
+    }
+  }
+
+  const paramList = [tcbCtxParam(ref.node, ctxRawType.typeName, typeArguments)];
 
   const scopeStatements = scope.render();
   const innerBody = ts.createBlock([
@@ -74,7 +133,7 @@ export function generateTypeCheckBlock(
       /* modifiers */ undefined,
       /* asteriskToken */ undefined,
       /* name */ name,
-      /* typeParameters */ env.config.useContextGenericType ? ref.node.typeParameters : undefined,
+      /* typeParameters */ env.config.useContextGenericType ? typeParameters : undefined,
       /* parameters */ paramList,
       /* type */ undefined,
       /* body */ body);
@@ -1571,27 +1630,13 @@ interface TcbBoundInput {
 }
 
 /**
- * Create the `ctx` parameter to the top-level TCB function.
- *
- * This is a parameter with a type equivalent to the component type, with all generic type
- * parameters listed (without their generic bounds).
+ * Create the `ctx` parameter to the top-level TCB function, with the given generic type arguments.
  */
 function tcbCtxParam(
     node: ClassDeclaration<ts.ClassDeclaration>, name: ts.EntityName,
-    useGenericType: boolean): ts.ParameterDeclaration {
-  let typeArguments: ts.TypeNode[]|undefined = undefined;
-  // Check if the component is generic, and pass generic type parameters if so.
-  if (node.typeParameters !== undefined) {
-    if (useGenericType) {
-      typeArguments =
-          node.typeParameters.map(param => ts.createTypeReferenceNode(param.name, undefined));
-    } else {
-      typeArguments =
-          node.typeParameters.map(() => ts.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword));
-    }
-  }
-  const type = ts.createTypeReferenceNode(name, typeArguments);
-  return ts.createParameter(
+    typeArguments: ts.TypeNode[]|undefined): ts.ParameterDeclaration {
+  const type = ts.factory.createTypeReferenceNode(name, typeArguments);
+  return ts.factory.createParameterDeclaration(
       /* decorators */ undefined,
       /* modifiers */ undefined,
       /* dotDotDotToken */ undefined,

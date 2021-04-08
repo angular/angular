@@ -10,9 +10,9 @@ import * as ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
 import {TypeCtorMetadata} from '../api';
+import {checkIfGenericTypeBoundsAreContextFree} from './tcb_util';
 
 import {tsCreateTypeQueryForCoercedInput} from './ts_util';
-import {TypeParameterEmitter} from './type_parameter_emitter';
 
 export function generateTypeCtorDeclarationFn(
     node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata, nodeTypeRef: ts.EntityName,
@@ -194,12 +194,6 @@ export function requiresInlineTypeCtor(
   // The class requires an inline type constructor if it has generic type bounds that can not be
   // emitted into a different context.
   return !checkIfGenericTypeBoundsAreContextFree(node, host);
-}
-
-function checkIfGenericTypeBoundsAreContextFree(
-    node: ClassDeclaration<ts.ClassDeclaration>, reflector: ReflectionHost): boolean {
-  // Generic type parameters are considered context free if they can be emitted into any context.
-  return new TypeParameterEmitter(node.typeParameters, reflector).canEmit();
 }
 
 /**

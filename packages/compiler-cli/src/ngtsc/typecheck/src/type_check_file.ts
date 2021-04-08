@@ -16,7 +16,7 @@ import {TypeCheckBlockMetadata, TypeCheckingConfig} from '../api';
 import {DomSchemaChecker} from './dom';
 import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder} from './oob';
-import {generateTypeCheckBlock} from './type_check_block';
+import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
 
 
 
@@ -43,9 +43,11 @@ export class TypeCheckFile extends Environment {
 
   addTypeCheckBlock(
       ref: Reference<ClassDeclaration<ts.ClassDeclaration>>, meta: TypeCheckBlockMetadata,
-      domSchemaChecker: DomSchemaChecker, oobRecorder: OutOfBandDiagnosticRecorder): void {
+      domSchemaChecker: DomSchemaChecker, oobRecorder: OutOfBandDiagnosticRecorder,
+      genericContextBehavior: TcbGenericContextBehavior): void {
     const fnId = ts.createIdentifier(`_tcb${this.nextTcbId++}`);
-    const fn = generateTypeCheckBlock(this, ref, fnId, meta, domSchemaChecker, oobRecorder);
+    const fn = generateTypeCheckBlock(
+        this, ref, fnId, meta, domSchemaChecker, oobRecorder, genericContextBehavior);
     this.tcbStatements.push(fn);
   }
 

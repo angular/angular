@@ -23,8 +23,8 @@ import {Environment} from './environment';
 import {OutOfBandDiagnosticRecorder, OutOfBandDiagnosticRecorderImpl} from './oob';
 import {TypeCheckShimGenerator} from './shim';
 import {TemplateSourceManager} from './source';
-import {requiresInlineTypeCheckBlock} from './tcb_util';
-import {generateTypeCheckBlock} from './type_check_block';
+import {requiresInlineTypeCheckBlock, TcbInliningRequirement} from './tcb_util';
+import {generateTypeCheckBlock, TcbGenericContextBehavior} from './type_check_block';
 import {TypeCheckFile} from './type_check_file';
 import {generateInlineTypeCtor, requiresInlineTypeCtor} from './type_constructor';
 
@@ -262,11 +262,12 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       templateDiagnostics,
     });
 
-    const tcbRequiresInline = requiresInlineTypeCheckBlock(ref.node, pipes);
+    const inliningRequirement = requiresInlineTypeCheckBlock(ref.node, pipes, this.reflector);
 
     // If inlining is not supported, but is required for either the TCB or one of its directive
     // dependencies, then exit here with an error.
-    if (this.inlining === InliningMode.Error && tcbRequiresInline) {
+    if (this.inlining === InliningMode.Error &&
+        inliningRequirement === TcbInliningRequirement.MustInline) {
       // This template cannot be supported because the underlying strategy does not support inlining
       // and inlining would be required.
 
@@ -285,13 +286,26 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       schemas,
     };
     this.perf.eventCount(PerfEvent.GenerateTcb);
-    if (tcbRequiresInline) {
+    if (inliningRequirement !== TcbInliningRequirement.None &&
+        this.inlining === InliningMode.InlineOps) {
       // This class didn't meet the requirements for external type checking, so generate an inline
       // TCB for the class.
       this.addInlineTypeCheckBlock(fileData, shimData, ref, meta);
+    } else if (
+        inliningRequirement === TcbInliningRequirement.ShouldInlineForGenericBounds &&
+        this.inlining === InliningMode.Error) {
+      // It's suggested that this TCB should be generated inline due to the component's generic
+      // bounds, but inlining is not supported by the current environment. Use a non-inline type
+      // check block, but fall back to `any` generic parameters since the generic bounds can't be
+      // referenced in that context. This will infer a less useful type for the component, but allow
+      // for type-checking it in an environment where that would not be possible otherwise.
+      shimData.file.addTypeCheckBlock(
+          ref, meta, shimData.domSchemaChecker, shimData.oobRecorder,
+          TcbGenericContextBehavior.FallbackToAny);
     } else {
-      // The class can be type-checked externally as normal.
-      shimData.file.addTypeCheckBlock(ref, meta, shimData.domSchemaChecker, shimData.oobRecorder);
+      shimData.file.addTypeCheckBlock(
+          ref, meta, shimData.domSchemaChecker, shimData.oobRecorder,
+          TcbGenericContextBehavior.UseEmitter);
     }
   }
 
@@ -402,7 +416,7 @@ export class TypeCheckContextImpl implements TypeCheckContext {
       this.opMap.set(sf, []);
     }
     const ops = this.opMap.get(sf)!;
-    ops.push(new TcbOp(
+    ops.push(new InlineTcbOp(
         ref, tcbMeta, this.config, this.reflector, shimData.domSchemaChecker,
         shimData.oobRecorder));
     fileData.hasInlines = true;
@@ -481,9 +495,9 @@ interface Op {
 }
 
 /**
- * A type check block operation which produces type check code for a particular component.
+ * A type check block operation which produces inline type check code for a particular component.
  */
-class TcbOp implements Op {
+class InlineTcbOp implements Op {
   constructor(
       readonly ref: Reference<ClassDeclaration<ts.ClassDeclaration>>,
       readonly meta: TypeCheckBlockMetadata, readonly config: TypeCheckingConfig,
@@ -501,8 +515,12 @@ class TcbOp implements Op {
       string {
     const env = new Environment(this.config, im, refEmitter, this.reflector, sf);
     const fnName = ts.createIdentifier(`_tcb_${this.ref.node.pos}`);
+
+    // Inline TCBs should copy any generic type parameter nodes directly, as the TCB code is inlined
+    // into the class in a context where that will always be legal.
     const fn = generateTypeCheckBlock(
-        env, this.ref, fnName, this.meta, this.domSchemaChecker, this.oobRecorder);
+        env, this.ref, fnName, this.meta, this.domSchemaChecker, this.oobRecorder,
+        TcbGenericContextBehavior.CopyClassNodes);
     return printer.printNode(ts.EmitHint.Unspecified, fn, sf);
   }
 }
