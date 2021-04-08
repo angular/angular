@@ -204,7 +204,7 @@ class ResolvedDeclarationEmitter {
           }
           throw new Error(
               `Symbol "${resolvedSymbol.name}" was aliased as "${s.name}". ` +
-              `Aliases are not supported."`);
+              `Aliases are not supported.`);
         }
 
         return resolvedSymbol;
