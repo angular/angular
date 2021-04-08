@@ -173,4 +173,44 @@ describe('language-service/compiler integration', () => {
     const ngDiagsAfter = project.getDiagnosticsForFile('mod.ts').filter(isNgSpecificDiagnostic);
     expect(ngDiagsAfter.length).toBe(0);
   });
+
+  it('detects source file change in between typecheck programs', () => {
+    const env = LanguageServiceTestEnv.setup();
+    const project = env.addProject('test', {
+      'module.ts': `
+        import {NgModule} from '@angular/core';
+        import {BarCmp} from './bar';
+
+        @NgModule({
+          declarations: [BarCmp],
+        })
+        export class AppModule {}
+      `,
+      'bar.ts': `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '{{ bar }}',
+        })
+        export class BarCmp {
+          readonly bar = 'bar';
+        }
+      `,
+    });
+    // The opening of 'bar.ts' causes its version to change, because the internal
+    // representation switches from TextStorage to ScriptVersionCache.
+    const bar = project.openFile('bar.ts');
+    // When getDiagnostics is called, NgCompiler calls ensureAllShimsForOneFile
+    // and caches the source file for 'bar.ts' in the input program.
+    // The input program has not picked up the version change because the project
+    // is clean (rightly so since there's no user-initiated change).
+    expect(project.getDiagnosticsForFile('bar.ts').length).toBe(0);
+    // A new program is generated due to addition of typecheck file. During
+    // program creation, TS language service does a sweep of all source files,
+    // and detects the version change. Consequently, it creates a new source
+    // file for 'bar.ts'. This is a violation of our assumption that a SourceFile
+    // will never change in between typecheck programs.
+    bar.moveCursorToText(`template: '{{ b¦ar }}'`);
+    expect(bar.getQuickInfoAtPosition()).toBeDefined();
+  });
 });
