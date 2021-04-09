@@ -95,8 +95,7 @@ export class PartialLinkerSelector<TStatement, TExpression> {
     const partialDirectiveLinkerVersion1 = new PartialDirectiveLinkerVersion1(sourceUrl, code);
     const partialClassMetadataLinkerVersion1 = new PartialClassMetadataLinkerVersion1();
     const partialComponentLinkerVersion1 = new PartialComponentLinkerVersion1(
-        environment, createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl,
-        code);
+        createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl, code);
     const partialFactoryLinkerVersion1 = new PartialFactoryLinkerVersion1();
     const partialInjectableLinkerVersion1 = new PartialInjectableLinkerVersion1();
     const partialInjectorLinkerVersion1 = new PartialInjectorLinkerVersion1();
