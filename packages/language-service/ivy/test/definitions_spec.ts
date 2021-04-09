@@ -152,6 +152,31 @@ describe('definitions', () => {
     assertFileNames([def, def2], ['dir2.ts', 'dir.ts']);
   });
 
+  it('should go to the pre-compiled style sheet', () => {
+    initMockFileSystem('Native');
+    const files = {
+      'app.ts': `
+      import {Component} from '@angular/core';
+
+      @Component({
+        template: '',
+        styleUrls: ['./style.css'],
+      })
+      export class AppCmp {}
+      `,
+      'style.scss': '',
+    };
+    const env = LanguageServiceTestEnv.setup();
+    const project = createModuleAndProjectWithDeclarations(env, 'test', files);
+    const appFile = project.openFile('app.ts');
+    appFile.moveCursorToText(`['./styl¦e.css']`);
+    const {textSpan, definitions} = getDefinitionsAndAssertBoundSpan(env, appFile);
+    expect(appFile.contents.substr(textSpan.start, textSpan.length)).toEqual('./style.css');
+
+    expect(definitions.length).toEqual(1);
+    assertFileNames(definitions, ['style.scss']);
+  });
+
   function getDefinitionsAndAssertBoundSpan(env: LanguageServiceTestEnv, file: OpenBuffer) {
     env.expectNoSourceDiagnostics();
     const definitionAndBoundSpan = file.getDefinitionAndBoundSpan();
