@@ -180,7 +180,7 @@ safer coding practices. Trusted Types can also help simplify the auditing of app
 
 <div class="callout is-helpful">
 
-Trusted Types might not yet be available in all browsers your application targets. In the case your Trusted-Types-enabled application runs in a browser that doesn't support Trusted Types, the functionality of the application will be preserved, and your application will be guarded against XSS via Angular's DomSanitizer. See [caniuse.com/trusted-types](https://caniuse.com/trusted-types) for the current browser support.
+Trusted Types might not yet be available in all browsers your application targets. In the case your Trusted-Types-enabled application runs in a browser that doesn't support Trusted Types, the functionality of the application will be preserved, and your application will be guarded against XSS by way of Angular's DomSanitizer. See [caniuse.com/trusted-types](https://caniuse.com/trusted-types) for the current browser support.
 
 </div>
 
