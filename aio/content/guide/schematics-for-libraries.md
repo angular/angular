@@ -202,7 +202,7 @@ For details of these data structures and syntax, see the [Schematics README](htt
 <code-example header="projects/my-lib/schematics/my-service/index.ts (Initial Rule)" path="schematics-for-libraries/projects/my-lib/schematics/my-service/index.1.ts" region="factory">
 </code-example>
 
-This simple rule factory returns the tree without modification.
+This rule factory returns the tree without modification.
 The options are the option values passed through from the `ng generate` command.
 
 ## Define a generation rule
@@ -322,7 +322,7 @@ ng generate my-lib:my-service --name my-data
 
 </code-example>
 
-In the console, you will see that the schematic was run and the `my-data.service.ts` file was created in your app folder.
+In the console, you will see that the schematic was run and the `my-data.service.ts` file was created in your application folder.
 
 <code-example language="bash" hideCopy="true">
 

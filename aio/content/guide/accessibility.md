@@ -12,7 +12,7 @@ work well for all users, including those who rely on assistive technologies.
 
 <div class="alert is-helpful">
 
-  For the sample app that this page describes, see the <live-example></live-example>.
+  For the sample application that this page describes, see the <live-example></live-example>.
 
 </div>
 
@@ -84,7 +84,7 @@ You can see [`MatFormField`](https://material.angular.io/components/form-field/o
 
 ## Case study: Building a custom progress bar
 
-The following example shows how to make a simple progress bar accessible by using host binding to control accessibility-related attributes.
+The following example shows how to make a progress bar accessible by using host binding to control accessibility-related attributes.
 
 * The component defines an accessibility-enabled element with both the standard HTML attribute `role`, and ARIA attributes. The ARIA attribute `aria-valuenow` is bound to the user's input.
 
