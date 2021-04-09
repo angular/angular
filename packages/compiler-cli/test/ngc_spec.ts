@@ -330,6 +330,34 @@ describe('ngc transformer command-line', () => {
     });
   });
 
+  it('should give a specific error when an Angular Ivy NgModule is imported', () => {
+    writeConfig(`{
+      "extends": "./tsconfig-base.json",
+      "files": ["mymodule.ts"]
+    }`);
+    write('node_modules/test/index.d.ts', `
+      export declare class FooModule {
+        static ɵmod = null;
+      }
+    `);
+    write('mymodule.ts', `
+      import {NgModule} from '@angular/core';
+      import {FooModule} from 'test';
+
+      @NgModule({
+        imports: [FooModule],
+      })
+      export class TestModule {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    const message = errorSpy.calls.mostRecent().args[0];
+
+    // The error message should mention Ivy specifically.
+    expect(message).toContain('Angular Ivy');
+  });
+
   describe('compile ngfactory files', () => {
     it('should compile ngfactory files that are not referenced by root files', () => {
       writeConfig(`{
