@@ -9,6 +9,9 @@
       "angularCompilerOptions": {
         "enableI18nLegacyMessageIdFormat": true
       },
+      "compilationModeFilter": [
+        "full compile"
+      ],
       "expectations": [
         {
           "extraChecks": [

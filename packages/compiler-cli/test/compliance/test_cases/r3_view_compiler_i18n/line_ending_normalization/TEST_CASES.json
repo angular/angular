@@ -106,6 +106,9 @@
         "i18nNormalizeLineEndingsInICUs": true,
         "enableI18nLegacyMessageIdFormat": true
       },
+      "compilationModeFilter": [
+        "full compile"
+      ],
       "expectations": [
         {
           "files": [
@@ -130,6 +133,9 @@
         "i18nNormalizeLineEndingsInICUs": false,
         "enableI18nLegacyMessageIdFormat": true
       },
+      "compilationModeFilter": [
+        "full compile"
+      ],
       "expectations": [
         {
           "files": [
@@ -154,6 +160,9 @@
         "i18nNormalizeLineEndingsInICUs": true,
         "enableI18nLegacyMessageIdFormat": true
       },
+      "compilationModeFilter": [
+        "full compile"
+      ],
       "expectations": [
         {
           "extraChecks": [
@@ -172,6 +181,9 @@
         "i18nNormalizeLineEndingsInICUs": false,
         "enableI18nLegacyMessageIdFormat": true
       },
+      "compilationModeFilter": [
+        "full compile"
+      ],
       "expectations": [
         {
           "extraChecks": [
