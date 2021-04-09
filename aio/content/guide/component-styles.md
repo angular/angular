@@ -70,7 +70,19 @@ The following sections describe these selectors.
 The template associated with a component defines the component's _host element_ (the element into which the component's rendered view is projected).
 The `:host` pseudo-class selector may be used to create styles that target the host element itself, as opposed to targeting elements inside the host.
 
-<code-example path="component-styles/src/app/host-selector-example.html" header="src/app/host-selector-example.html"></code-example>
+```html
+  <body>
+    <app-root>
+      <app-header>My App</app-header>
+      <app-main>
+        <h1>It Works!</h1>
+        <div>
+          Start editing to see some magic happen :)
+        </div>
+      </app-main>
+    </app-root>
+  </body>
+```
 
 Creating the following style for `app-main` component will target the component's host element (in this case, italicizing all contained text).
 

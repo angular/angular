@@ -14,26 +14,6 @@ describe('Component Style Tests', () => {
     expect(await externalH1.getCssValue('fontWeight')).not.toMatch(/normal|400/);
   });
 
-
-  it('allows styling :host element', async () => {
-    const host = element(by.css('app-hero-details'));
-
-    expect(await host.getCssValue('borderWidth')).toEqual('1px');
-  });
-
-  it('supports :host() in function form', async () => {
-    const host = element(by.css('app-hero-details'));
-
-    await host.element(by.buttonText('Activate')).click();
-    expect(await host.getCssValue('borderWidth')).toEqual('3px');
-  });
-
-  it('allows conditional :host-context() styling', async () => {
-    const h2 = element(by.css('app-hero-details h2'));
-
-    expect(await h2.getCssValue('backgroundColor')).toEqual('rgba(238, 238, 255, 1)'); // #eeeeff
-  });
-
   it('styles both view and content children with /deep/', async () => {
     const viewH3 = element(by.css('app-hero-team h3'));
     const contentH3 = element(by.css('app-hero-controls h3'));
