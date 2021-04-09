@@ -18,6 +18,8 @@ import * as ts from 'typescript/lib/tsserverlibrary';
 
 import {isTypeScriptFile} from './utils';
 
+const PRE_COMPILED_STYLE_EXTENSIONS = ['.scss', '.sass', '.less', '.styl'];
+
 export class LanguageServiceAdapter implements NgCompilerAdapter {
   readonly entryPoint = null;
   readonly constructionDiagnostics: ts.Diagnostic[] = [];
@@ -35,6 +37,24 @@ export class LanguageServiceAdapter implements NgCompilerAdapter {
 
   constructor(private readonly project: ts.server.Project) {
     this.rootDirs = getRootDirs(this, project.getCompilationSettings());
+  }
+
+  resourceNameToFileName(
+      url: string, fromFile: string,
+      fallbackResolve?: (url: string, fromFile: string) => string | null): string|null {
+    // If we are trying to resolve a `.css` file, see if we can find a pre-compiled file with the
+    // same name instead. That way, we can provide go-to-definition for the pre-compiled files which
+    // would generally be the desired behavior.
+    if (url.endsWith('.css')) {
+      const styleUrl = p.resolve(fromFile, '..', url);
+      for (const ext of PRE_COMPILED_STYLE_EXTENSIONS) {
+        const precompiledFileUrl = styleUrl.replace(/\.css$/, ext);
+        if (this.fileExists(precompiledFileUrl)) {
+          return precompiledFileUrl;
+        }
+      }
+    }
+    return fallbackResolve?.(url, fromFile) ?? null;
   }
 
   isShim(sf: ts.SourceFile): boolean {

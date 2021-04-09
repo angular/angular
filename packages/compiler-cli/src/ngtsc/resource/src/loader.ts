@@ -46,7 +46,8 @@ export class AdapterResourceLoader implements ResourceLoader {
   resolve(url: string, fromFile: string): string {
     let resolvedUrl: string|null = null;
     if (this.adapter.resourceNameToFileName) {
-      resolvedUrl = this.adapter.resourceNameToFileName(url, fromFile);
+      resolvedUrl = this.adapter.resourceNameToFileName(
+          url, fromFile, (url: string, fromFile: string) => this.fallbackResolve(url, fromFile));
     } else {
       resolvedUrl = this.fallbackResolve(url, fromFile);
     }
