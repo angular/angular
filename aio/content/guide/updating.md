@@ -1,8 +1,8 @@
 # Keeping your Angular projects up-to-date
 
-Just like Web and the entire web ecosystem, Angular is continuously improving. Angular balances continuous improvement with a strong focus on stability and making updates easy. Keeping your Angular app up-to-date enables you to take advantage of leading-edge new features, as well as optimizations and bug fixes.
+Just like Web and the entire web ecosystem, Angular is continuously improving. Angular balances continuous improvement with a strong focus on stability and making updates easy. Keeping your Angular application up-to-date enables you to take advantage of leading-edge new features, as well as optimizations and bug fixes.
 
-This document contains information and resources to help you keep your Angular apps and libraries up-to-date.
+This document contains information and resources to help you keep your Angular applications and libraries up-to-date.
 
 For information about our versioning policy and practices&mdash;including
 support and deprecation practices, as well as the release schedule&mdash;see [Angular versioning and releases](guide/releases "Angular versioning and releases").
@@ -31,7 +31,7 @@ To review a complete list of changes, organized by version, see the [Angular cha
 {@a checking-version-app}
 ## Checking your version of Angular
 
-To check your app's version of Angular: From within your project directory, use the `ng version` command.
+To check your application's version of Angular: From within your project directory, use the `ng version` command.
 
 
 {@a checking-version-angular}
