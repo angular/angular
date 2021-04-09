@@ -29,6 +29,18 @@ export type ErrorCollector = (error: any, type?: any) => void;
 
 export const ERROR_COMPONENT_TYPE = 'ngComponentType';
 
+const MISSING_NG_MODULE_METADATA_ERROR_DATA = 'ngMissingNgModuleMetadataErrorData';
+export interface MissingNgModuleMetadataErrorData {
+  fileName: string;
+  className: string;
+}
+
+
+export function getMissingNgModuleMetadataErrorData(error: any): MissingNgModuleMetadataErrorData|
+    null {
+  return error[MISSING_NG_MODULE_METADATA_ERROR_DATA] ?? null;
+}
+
 // Design notes:
 // - don't lazily create metadata:
 //   For some metadata, we need to do async work sometimes,
@@ -563,11 +575,18 @@ export class CompileMetadataResolver {
               this.getNgModuleSummary(importedModuleType, alreadyCollecting);
           alreadyCollecting.delete(importedModuleType);
           if (!importedModuleSummary) {
-            this._reportError(
-                syntaxError(`Unexpected ${this._getTypeDescriptor(importedType)} '${
-                    stringifyType(importedType)}' imported by the module '${
-                    stringifyType(moduleType)}'. Please add a @NgModule annotation.`),
-                moduleType);
+            const err = syntaxError(`Unexpected ${this._getTypeDescriptor(importedType)} '${
+                stringifyType(importedType)}' imported by the module '${
+                stringifyType(moduleType)}'. Please add a @NgModule annotation.`);
+            // If possible, record additional context for this error to enable more useful
+            // diagnostics on the compiler side.
+            if (importedType instanceof StaticSymbol) {
+              (err as any)[MISSING_NG_MODULE_METADATA_ERROR_DATA] = {
+                fileName: importedType.filePath,
+                className: importedType.name,
+              } as MissingNgModuleMetadataErrorData;
+            }
+            this._reportError(err, moduleType);
             return;
           }
           importedModules.push(importedModuleSummary);
