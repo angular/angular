@@ -595,6 +595,39 @@ describe('Integration', () => {
              {},
            ]);
          }));
+
+      it('should work between aux outlets under two levels of empty path parents', fakeAsync(() => {
+           TestBed.configureTestingModule({imports: [TestModule]});
+           const router = TestBed.inject(Router);
+           router.resetConfig([{
+             path: '',
+             children: [
+               {
+                 path: '',
+                 component: NamedOutletHost,
+                 children: [
+                   {path: 'one', component: Child1, outlet: 'first'},
+                   {path: 'two', component: Child2, outlet: 'first'},
+                 ]
+               },
+             ]
+           }]);
+
+           const fixture = createRoot(router, RootCmp);
+
+           router.navigateByUrl('/(first:one)');
+           advance(fixture);
+           expect(log).toEqual(['child1 constructor']);
+
+           log.length = 0;
+           router.navigateByUrl('/(first:two)');
+           advance(fixture);
+           expect(log).toEqual([
+             'child1 destroy',
+             'first deactivate',
+             'child2 constructor',
+           ]);
+         }));
     });
 
     it('should not wait for prior navigations to start a new navigation',
