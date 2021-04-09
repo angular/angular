@@ -41,16 +41,17 @@ The following still have type `any`.
 * The `$event` object.
 * Safe navigation expressions.
 
+
 {@a strict-mode}
 
 ### Strict mode
 
-Angular version 9 maintains the behavior of the `fullTemplateTypeCheck` flag, and introduces a third "strict mode".
+Angular maintains the behavior of the `fullTemplateTypeCheck` flag, and introduces a third "strict mode".
 Strict mode is a superset of full mode, and is accessed by setting the `strictTemplates` flag to true. This flag supersedes the `fullTemplateTypeCheck` flag.
-In strict mode, Angular version 9 adds checks that go beyond the version 8 type-checker.
+In strict mode, Angular uses checks that go beyond the version 8 type-checker.
 Note that strict mode is only available if using Ivy.
 
-In addition to the full mode behavior, Angular version 9:
+In addition to the full mode behavior, Angular does the following:
 
 * Verifies that component/directive bindings are assignable to their `@Input()`s.
 * Obeys TypeScript's `strictNullChecks` flag when validating the above.
@@ -94,7 +95,7 @@ In strict mode, Angular knows that the `user` in the `<span>` has a type of `Use
 
 ## Troubleshooting template errors
 
-When enabling the new strict mode in version 9, you might encounter template errors that didn't arise in either of the previous modes.
+With strict mode, you might encounter template errors that didn't arise in either of the previous modes.
 These errors often represent genuine type mismatches in the templates that were not caught by the previous tooling.
 If this is the case, the error message should make it clear where in the template the problem occurs.
 
@@ -124,10 +125,9 @@ In case of a false positive like these, there are a few options:
 |`strictContextGenerics`|Whether the type parameters of generic components will be inferred correctly (including any generic bounds). If disabled, any type parameters will be `any`.|
 |`strictLiteralTypes`|Whether object and array literals declared in the template will have their type inferred. If disabled, the type of such literals will be `any`.|
 
-
 If you still have issues after troubleshooting with these flags, you can fall back to full mode by disabling `strictTemplates`.
 
-If that doesn't work, an option of last resort is to turn off full mode entirely with `fullTemplateTypeCheck: false`, as we've made a special effort to make Angular version 9 backwards compatible in this case.
+If that doesn't work, an option of last resort is to turn off full mode entirely with `fullTemplateTypeCheck: false`.
 
 A type-checking error that you cannot resolve with any of the recommended methods can be the result of a bug in the template type-checker itself.
 If you get errors that require falling back to basic mode, it is likely to be such a bug.
@@ -135,7 +135,7 @@ If this happens, please [file an issue](https://github.com/angular/angular/issue
 
 ## Inputs and type-checking
 
-In Angular version 9, the template type checker checks whether a binding expression's type is compatible with that of the corresponding directive input.
+The template type checker checks whether a binding expression's type is compatible with that of the corresponding directive input.
 As an example, consider the following component:
 
 ```typescript
