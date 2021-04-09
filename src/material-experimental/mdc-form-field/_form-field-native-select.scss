@@ -1,7 +1,9 @@
 @use 'sass:map';
+@use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
 @use '../../cdk/a11y';
 @use '../../material/core/theming/palette';
+@use '@material/theme/theme-color' as mdc-theme-color;
 
 // Width of the Material Design form-field select arrow.
 $mat-form-field-select-arrow-width: 10px;
@@ -68,7 +70,6 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
       border-right: ($mat-form-field-select-arrow-width / 2) solid transparent;
       border-top: $mat-form-field-select-arrow-height solid;
       position: absolute;
-      top: 50%;
       right: 0;
 
       // Make the arrow non-clickable so the user can click on the form control under it.
@@ -92,20 +93,64 @@ $mat-form-field-select-horizontal-end-padding: $mat-form-field-select-arrow-widt
   }
 }
 
+// Gets the color to use for some text that is highlighted while a select has focus.
+@function _get-focused-arrow-color($palette) {
+  @return rgba(mdc-theme-color.prop-value($palette), 0.87);
+}
+
 @mixin private-form-field-native-select-color($config) {
-  select.mat-mdc-input-element {
-    // On dark themes we set the native `select` color to some shade of white,
-    // however the color propagates to all of the `option` elements, which are
-    // always on a white background inside the dropdown, causing them to blend in.
-    // Since we can't change background of the dropdown, we need to explicitly
-    // reset the color of the options to something dark.
-    @if (map.get($config, is-dark)) {
-      option {
-        color: palette.$dark-primary-text;
+  @include mdc-helpers.mat-using-mdc-theme($config) {
+    // These values are taken from the MDC select implementation:
+    // https://github.com/material-components/material-components-web/blob/master/packages/mdc-select/_select-theme.scss
+    $dropdown-icon-color: rgba(mdc-theme-color.prop-value(on-surface), 0.54);
+    $disabled-dropdown-icon-color: rgba(mdc-theme-color.prop-value(on-surface), 0.38);
+
+    select.mat-mdc-input-element {
+      // On dark themes we set the native `select` color to some shade of white,
+      // however the color propagates to all of the `option` elements, which are
+      // always on a white background inside the dropdown, causing them to blend in.
+      // Since we can't change background of the dropdown, we need to explicitly
+      // reset the color of the options to something dark.
+      @if (map.get($config, is-dark)) {
+        option {
+          color: palette.$dark-primary-text;
+        }
+
+        option:disabled {
+          color: palette.$dark-disabled-text;
+        }
+      }
+    }
+
+    .mat-mdc-form-field-type-mat-native-select {
+      .mat-mdc-form-field-infix::after {
+        color: $dropdown-icon-color;
       }
 
-      option:disabled {
-        color: palette.$dark-disabled-text;
+      &.mat-focused {
+        &.mat-primary {
+          .mat-mdc-form-field-infix::after {
+            color: _get-focused-arrow-color(primary);
+          }
+        }
+
+        &.mat-accent {
+          .mat-mdc-form-field-infix::after {
+            color: _get-focused-arrow-color(secondary);
+          }
+        }
+
+        &.mat-warn {
+          .mat-mdc-form-field-infix::after {
+            color: _get-focused-arrow-color(error);
+          }
+        }
+      }
+
+      &.mat-form-field-disabled {
+        .mat-mdc-form-field-infix::after {
+          color: $disabled-dropdown-icon-color;
+        }
       }
     }
   }
