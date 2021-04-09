@@ -1,7 +1,7 @@
 # Getting started with service workers
 
 
-This document explains how to enable Angular service worker support in projects that you created with the [Angular CLI](cli). It then uses a simple example to show you a service worker in action, demonstrating loading and basic caching.
+This document explains how to enable Angular service worker support in projects that you created with the [Angular CLI](cli). It then uses an example to show you a service worker in action, demonstrating loading and basic caching.
 
 #### Prerequisites
 
@@ -10,7 +10,7 @@ A basic understanding of the information in [Introduction to Angular service wor
 
 ## Adding a service worker to your project
 
-To set up the Angular service worker in your project, use the CLI command `ng add @angular/pwa`. It takes care of configuring your app to use service workers by adding the `service-worker` package along
+To set up the Angular service worker in your project, use the CLI command `ng add @angular/pwa`. It takes care of configuring your application to use service workers by adding the `service-worker` package along
 with setting up the necessary support files.
 
 ```sh
@@ -21,7 +21,7 @@ The above command completes the following actions:
 
 1. Adds the `@angular/service-worker` package to your project.
 2. Enables service worker build support in the CLI.
-3. Imports and registers the service worker in the app module.
+3. Imports and registers the service worker in the application module.
 4. Updates the `index.html` file:
     * Includes a link to add the `manifest.webmanifest` file.
     * Adds meta tags for `theme-color`.
@@ -62,7 +62,7 @@ With the server running, you can point your browser at http://localhost:8080/. Y
 <div class="alert is-helpful">
 
 **Note:**
-If you are not using HTTPS, the service worker will only be registered when accessing the app on `localhost`.
+If you are not using HTTPS, the service worker will only be registered when accessing the application on `localhost`.
 
 </div>
 
@@ -78,7 +78,7 @@ To simulate a network issue, disable network interaction for your application. I
   <img src="generated/images/guide/service-worker/offline-checkbox.png" alt="The offline checkbox in the Network tab is checked">
 </div>
 
-Now the app has no access to network interaction.
+Now the application has no access to network interaction.
 
 For applications that do not use the Angular service worker, refreshing now would display Chrome's Internet disconnected page that says "There is no Internet connection".
 
@@ -154,7 +154,7 @@ If you look at the `http-server` logs, you can see the service worker requesting
   <img src="generated/images/guide/service-worker/welcome-msg-fr.png" alt="The text has changed to say Bienvenue à app!">
 </div>
 
-The service worker installed the updated version of your app *in the background*, and the next time the page is loaded or reloaded, the service worker switches to the latest version.
+The service worker installed the updated version of your application *in the background*, and the next time the page is loaded or reloaded, the service worker switches to the latest version.
 
 ## More on Angular service workers
 
