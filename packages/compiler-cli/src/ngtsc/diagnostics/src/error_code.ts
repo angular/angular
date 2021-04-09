@@ -111,6 +111,12 @@ export enum ErrorCode {
   NGMODULE_DECLARATION_NOT_UNIQUE = 6007,
 
   /**
+   * Not actually raised by the compiler, but reserved for documentation of a View Engine error when
+   * a View Engine build depends on an Ivy-compiled NgModule.
+   */
+  NGMODULE_VE_DEPENDENCY_ON_IVY_LIB = 6999,
+
+  /**
    * An element name failed validation against the DOM schema.
    */
   SCHEMA_INVALID_ELEMENT = 8001,
