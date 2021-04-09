@@ -106,7 +106,7 @@ export class CssKeyframesDriver implements AnimationDriver {
 
     const animationName = `${KEYFRAMES_NAME_PREFIX}${this._count++}`;
     const kfElm = this.buildKeyframeElement(element, animationName, keyframes);
-    const nodeToAppendKfElm = findNodeToAppendKfElm(element);
+    const nodeToAppendKfElm = findNodeToAppendKeyframeElement(element);
     nodeToAppendKfElm.appendChild(kfElm);
 
     const specialStyles = packageNonAnimatableStyles(element, keyframes);
@@ -118,16 +118,12 @@ export class CssKeyframesDriver implements AnimationDriver {
   }
 }
 
-// TODO: Once we drop IE 11 support, method can be simplified
-// to the native browser function `getRootNode`
-function findNodeToAppendKfElm(element: any): Node {
-  while (element && element !== document.documentElement) {
-    if (element.shadowRoot) {
-      return element.shadowRoot;
-    }
-    element = element.parentNode || element.host;
+function findNodeToAppendKeyframeElement(element: any): Node {
+  const rootNode = element.getRootNode?.();
+  if (typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot) {
+    return rootNode;
   }
-  return document.querySelector('head')!;
+  return document.head;
 }
 
 function flattenKeyframesIntoStyles(keyframes: null|{[key: string]: any}|
