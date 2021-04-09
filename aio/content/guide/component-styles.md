@@ -66,8 +66,8 @@ The following sections describe these selectors.
 
 
 ### :host
-
-The template associated with a component defines the component's _host element_ (the element into which the component's template is rendered).
+Every component is associated within an element that matches the component's selector. This element, into which the template is rendered, 
+is called the _host element_.
 The `:host` pseudo-class selector may be used to create styles that target the host element itself, as opposed to targeting elements inside the host.
 
 <code-example path="component-styles/src/app/host-selector-example.component.ts" header="src/app/host-selector-example.component.ts">
@@ -97,7 +97,8 @@ You should not add selectors (other than `:host-context`) in front of the `:host
 
 ### :host-context
 
-Sometimes it's useful to apply styles based on some condition in an element that is an ancestor of the host element.
+Sometimes it's useful to apply styles to elements within a component's template 
+based on some condition in an element that is an ancestor of the host element.
 For example, a CSS theme class could be applied to the document `<body>` element, and
 you want to change how your component looks based on that.
 

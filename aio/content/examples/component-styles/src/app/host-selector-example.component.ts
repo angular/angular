@@ -11,8 +11,6 @@ import { Component } from '@angular/core';
   `
 })
 export class HostSelectorExampleComponent {
-// #enddocregion
 
-// #docregion
 }
 // #enddocregion
