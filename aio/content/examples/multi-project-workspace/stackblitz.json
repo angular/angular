@@ -1,0 +1,15 @@
+{
+  "description": "Multi Project Workspace",
+  "files": [
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "tags": [
+    [
+      "multi",
+      "project",
+      "workspace"
+    ]
+  ]
+}
