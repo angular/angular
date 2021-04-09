@@ -122,8 +122,8 @@ describe('ng-add schematic', () => {
     const buffer = tree.read(expectedStylesPath);
     const themeContent = buffer!.toString();
 
-    expect(themeContent).toContain(`@import '~@angular/material/theming';`);
-    expect(themeContent).toContain(`$app-primary: mat-palette(`);
+    expect(themeContent).toContain(`@use '~@angular/material' as mat;`);
+    expect(themeContent).toContain(`$app-primary: mat.define-palette(`);
   });
 
   it('should create a custom theme file if no SCSS file could be found', async () => {
