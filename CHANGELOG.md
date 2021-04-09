@@ -1,3 +1,37 @@
+<a name="12.0.0"></a>
+# 12.0.0 (2021-04-09)
+
+
+### compiler
+| Commit | Description |
+| -- | -- |
+| ec27bd4ed1 | feat(compiler): support nullish coalescing in templates (#41437) |
+
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| deacc741e0 | fix(compiler-cli): ensure the compiler tracks `ts.Program`s correctly (#41291) |
+
+### dev-infra
+| Commit | Description |
+| -- | -- |
+| 5e0d5a9ec2 | feat(dev-infra): create ReleaseNotes class for generating release notes during publishing (#41476) |
+| 7a40d8cefd | fix(dev-infra): use base ref name rather than sha for the githubTargetBranch (#41523) |
+| c7d86bca21 | feat(dev-infra): add support for `targetLabelExemptScopes` for merging (#41459) |
+| 7dba0711c2 | feat(dev-infra): prevent merges for PRs with invalid breaking changes or commit types (#41459) |
+
+### router
+| Commit | Description |
+| -- | -- |
+| 44a7fae00f | fix(router): handle new navigations from a NavigationEnd event (#41262) |
+| d28a391385 | fix(router): Remove information about attached component when deactivating route (#41381) |
+
+
+
+## Special Thanks:
+Alan Agius, Alex Rickabaugh, Andrew Kushnir, Andrew Scott, Aristeidis Bampakos, Joey Perrott, Keen Yee Liau, Kristiyan Kostadinov, Paul Muriel Biya-Bi, Pete Bacon Darwin and Zack DeRose
+
+
 # 12.0.0-next.8 (2021-04-07)
 
 
