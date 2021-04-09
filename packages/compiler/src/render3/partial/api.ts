@@ -458,6 +458,12 @@ export interface R3DeclareDependencyMetadata {
   skipSelf?: boolean;
 }
 
+/**
+ * Describes the shape of the object that the `ɵɵngDeclareClassMetadata()` function accepts.
+ *
+ * This interface serves primarily as documentation, as conformance to this interface is not
+ * enforced during linking.
+ */
 export interface R3DeclareClassMetadata extends R3PartialDeclaration {
   /**
    * The Angular decorators of the class.
