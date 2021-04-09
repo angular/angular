@@ -1,0 +1,26 @@
+diff --git rules/rbe_repo/util.bzl rules/rbe_repo/util.bzl
+index 71a0e9e..a7db7bb 100644
+--- rules/rbe_repo/util.bzl
++++ rules/rbe_repo/util.bzl
+@@ -136,20 +136,7 @@ def resolve_project_root(ctx):
+     return mount_project_root, export_project_root, use_default_project
+ 
+ def os_family(ctx):
+-    """Retrieve the OS Family of host environment
+-
+-    Args:
+-      ctx: the Bazel context object.
+-
+-    Returns:
+-      Returns the name of the OS Family
+-    """
+-    os_name = ctx.os.name.lower()
+-    if os_name.find("windows") != -1:
+-        return "Windows"
+-    if os_name == "linux":
+-        return "Linux"
+-    return os_name
++    return "Linux"
+ 
+ def validate_host(ctx):
+     """Perform validations of host environment to be able to run the rule.

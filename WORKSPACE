@@ -69,6 +69,11 @@ sass_repositories()
 # Bring in bazel_toolchains for RBE setup configuration.
 http_archive(
     name = "bazel_toolchains",
+    # Patch `bazel-toolchains` to always consider the host platform as Linux. This is necessary
+    # because the RBE configurations are incorrectly based on the host platform and this breaks
+    # cross-platform remote execution. e.g. using RBE on macOS.
+    # See: https://github.com/bazelbuild/bazel-toolchains/issues/895
+    patches = ["//tools:rbe_cross_platform_workaround.patch"],
     sha256 = "1adf5db506a7e3c465a26988514cfc3971af6d5b3c2218925cd6e71ee443fc3f",
     strip_prefix = "bazel-toolchains-4.0.0",
     urls = [
