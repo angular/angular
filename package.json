@@ -160,7 +160,7 @@
     "@types/stylelint": "^9.10.1",
     "@types/yaml": "^1.9.7",
     "autoprefixer": "^6.7.6",
-    "browser-sync": "^2.26.7",
+    "browser-sync": "2.26.13",
     "chalk": "^4.1.0",
     "codelyzer": "^6.0.0-next.2",
     "conventional-changelog": "^3.0.5",
@@ -222,6 +222,7 @@
     "yaml": "^1.10.0"
   },
   "resolutions": {
+    "browser-sync-client" : "2.26.13",
     "dgeni-packages/typescript": "4.2.3"
   }
 }
