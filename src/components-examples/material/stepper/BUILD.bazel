@@ -14,6 +14,7 @@ ng_module(
     ]),
     module_name = "@angular/components-examples/material/stepper",
     deps = [
+        "//src/cdk/layout",
         "//src/cdk/stepper",
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
@@ -22,6 +23,7 @@ ng_module(
         "//src/material/input",
         "//src/material/stepper",
         "//src/material/stepper/testing",
+        "@npm//@angular/common",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
         "@npm//@angular/platform-browser-dynamic",

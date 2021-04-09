@@ -187,6 +187,13 @@ an `ng-template` with the `matStepContent` attribute.
 
 <!-- example(stepper-lazy-content) -->
 
+### Responsive stepper
+If your app supports a wide variety of screens and a stepper's layout doesn't fit a particular
+screen size, you can control its `orientation` dynamically to change the layout based on the
+viewport.
+
+<!-- example(stepper-responsive) -->
+
 ### Keyboard interaction
 - <kbd>LEFT_ARROW</kbd>: Focuses the previous step header
 - <kbd>RIGHT_ARROW</kbd>: Focuses the next step header
