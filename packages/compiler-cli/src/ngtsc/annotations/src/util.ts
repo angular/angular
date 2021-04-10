@@ -12,7 +12,8 @@ import {FactoryTarget} from '@angular/compiler/src/render3/partial/api';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
-import {DefaultImportRecorder, ImportFlags, Reference, ReferenceEmitter} from '../../imports';
+import {ImportFlags, Reference, ReferenceEmitter} from '../../imports';
+import {attachDefaultImportDeclaration} from '../../imports/src/default';
 import {ForeignFunctionResolver, PartialEvaluator} from '../../partial_evaluator';
 import {ClassDeclaration, CtorParameter, Decorator, Import, ImportedTypeValueReference, isNamedClassDeclaration, LocalTypeValueReference, ReflectionHost, TypeValueReference, TypeValueReferenceKind, UnavailableValue, ValueUnavailableKind} from '../../reflection';
 import {DeclarationData} from '../../scope';
@@ -32,8 +33,7 @@ export interface ConstructorDepError {
 }
 
 export function getConstructorDependencies(
-    clazz: ClassDeclaration, reflector: ReflectionHost,
-    defaultImportRecorder: DefaultImportRecorder, isCore: boolean): ConstructorDeps|null {
+    clazz: ClassDeclaration, reflector: ReflectionHost, isCore: boolean): ConstructorDeps|null {
   const deps: R3DependencyMetadata[] = [];
   const errors: ConstructorDepError[] = [];
   let ctorParams = reflector.getConstructorParameters(clazz);
@@ -45,7 +45,7 @@ export function getConstructorDependencies(
     }
   }
   ctorParams.forEach((param, idx) => {
-    let token = valueReferenceToExpression(param.typeValueReference, defaultImportRecorder);
+    let token = valueReferenceToExpression(param.typeValueReference);
     let attributeNameType: Expression|null = null;
     let optional = false, self = false, skipSelf = false, host = false;
 
@@ -115,22 +115,18 @@ export function getConstructorDependencies(
  * references are converted to an `ExternalExpr`. Note that this is only valid in the context of the
  * file in which the `TypeValueReference` originated.
  */
-export function valueReferenceToExpression(
-    valueRef: LocalTypeValueReference|ImportedTypeValueReference,
-    defaultImportRecorder: DefaultImportRecorder): Expression;
-export function valueReferenceToExpression(
-    valueRef: TypeValueReference, defaultImportRecorder: DefaultImportRecorder): Expression|null;
-export function valueReferenceToExpression(
-    valueRef: TypeValueReference, defaultImportRecorder: DefaultImportRecorder): Expression|null {
+export function valueReferenceToExpression(valueRef: LocalTypeValueReference|
+                                           ImportedTypeValueReference): Expression;
+export function valueReferenceToExpression(valueRef: TypeValueReference): Expression|null;
+export function valueReferenceToExpression(valueRef: TypeValueReference): Expression|null {
   if (valueRef.kind === TypeValueReferenceKind.UNAVAILABLE) {
     return null;
   } else if (valueRef.kind === TypeValueReferenceKind.LOCAL) {
-    if (defaultImportRecorder !== null && valueRef.defaultImportStatement !== null &&
-        ts.isIdentifier(valueRef.expression)) {
-      defaultImportRecorder.recordImportedIdentifier(
-          valueRef.expression, valueRef.defaultImportStatement);
+    const expr = new WrappedNodeExpr(valueRef.expression);
+    if (valueRef.defaultImportStatement !== null) {
+      attachDefaultImportDeclaration(expr, valueRef.defaultImportStatement);
     }
-    return new WrappedNodeExpr(valueRef.expression);
+    return expr;
   } else {
     let importExpr: Expression =
         new ExternalExpr({moduleName: valueRef.moduleName, name: valueRef.importedName});
@@ -163,10 +159,10 @@ export function unwrapConstructorDependencies(deps: ConstructorDeps|null): R3Dep
 }
 
 export function getValidConstructorDependencies(
-    clazz: ClassDeclaration, reflector: ReflectionHost,
-    defaultImportRecorder: DefaultImportRecorder, isCore: boolean): R3DependencyMetadata[]|null {
+    clazz: ClassDeclaration, reflector: ReflectionHost, isCore: boolean): R3DependencyMetadata[]|
+    null {
   return validateConstructorDependencies(
-      clazz, getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore));
+      clazz, getConstructorDependencies(clazz, reflector, isCore));
 }
 
 /**

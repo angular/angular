@@ -13,7 +13,7 @@ import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../cycles';
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
+import {ModuleResolver, ReferenceEmitter} from '../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../perf';
@@ -81,7 +81,6 @@ function setup(program: ts.Program, options: ts.CompilerOptions, host: ts.Compil
       cycleAnalyzer,
       CycleHandlingStrategy.UseRemoteScoping,
       refEmitter,
-      NOOP_DEFAULT_IMPORT_RECORDER,
       /* depTracker */ null,
       injectableRegistry,
       /* semanticDepGraphUpdater */ null,

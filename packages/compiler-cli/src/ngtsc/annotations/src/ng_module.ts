@@ -10,7 +10,7 @@ import {compileClassMetadata, compileDeclareClassMetadata, compileDeclareInjecto
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
-import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
+import {Reference, ReferenceEmitter} from '../../imports';
 import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, SemanticSymbol} from '../../incremental/semantic_graph';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
@@ -130,9 +130,7 @@ export class NgModuleDecoratorHandler implements
       private scopeRegistry: LocalModuleScopeRegistry,
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
       private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter,
-      private factoryTracker: FactoryTracker|null,
-      private defaultImportRecorder: DefaultImportRecorder,
-      private annotateForClosureCompiler: boolean,
+      private factoryTracker: FactoryTracker|null, private annotateForClosureCompiler: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
       private localeId?: string) {}
 
@@ -350,8 +348,7 @@ export class NgModuleDecoratorHandler implements
       type,
       internalType,
       typeArgumentCount: 0,
-      deps: getValidConstructorDependencies(
-          node, this.reflector, this.defaultImportRecorder, this.isCore),
+      deps: getValidConstructorDependencies(node, this.reflector, this.isCore),
       target: FactoryTarget.NgModule,
     };
 
@@ -371,8 +368,7 @@ export class NgModuleDecoratorHandler implements
             resolveProvidersRequiringFactory(rawProviders, this.reflector, this.evaluator) :
             null,
         classMetadata: extractClassMetadata(
-            node, this.reflector, this.defaultImportRecorder, this.isCore,
-            this.annotateForClosureCompiler),
+            node, this.reflector, this.isCore, this.annotateForClosureCompiler),
         factorySymbolName: node.name.text,
       },
     };
