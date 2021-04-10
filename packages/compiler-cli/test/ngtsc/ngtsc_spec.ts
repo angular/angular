@@ -4648,7 +4648,7 @@ function allTests(os: string) {
 
       env.driveMain();
       const jsContents = trim(env.getContents('test.js'));
-      expect(jsContents).toContain(`import { KeyCodes } from './keycodes';`);
+      expect(jsContents).toContain(`import * as i1 from "./keycodes";`);
       expect(jsContents).toMatch(setClassMetadataRegExp('type: i1.KeyCodes'));
     });
 
