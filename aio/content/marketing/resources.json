@@ -253,12 +253,6 @@
             "logo": "https://nrwl.io/assets/nx-logo.png",
             "url": "https://nrwl.io/nx"
           },
-          "uijar": {
-            "desc": "A drop in module to automatically create a living style guide based on the test you write for your components.",
-            "logo": "",
-            "title": "UI-jar - Test Driven Style Guide Development",
-            "url": "https://github.com/ui-jar/ui-jar"
-          },
           "protractor": {
             "desc": "The official end to end testing framework for Angular applications.",
             "logo": "",
@@ -565,7 +559,7 @@
             "url": "https://gumroad.com/l/angular-ngrx-book",
             "logo": ""
           },
-		      "testing-angular-guide": {
+          "testing-angular-guide": {
             "title": "Testing Angular",
             "desc": "A Guide to Robust Angular Applications (free online book and e-book)",
             "url": "https://molily.de/testing-angular",
