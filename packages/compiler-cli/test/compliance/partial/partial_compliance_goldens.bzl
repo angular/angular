@@ -48,10 +48,6 @@ def partial_compliance_golden(filePath):
         testonly = True,
         stdout = "%s/this_file_should_not_be_committed" % path,
         link_workspace_root = True,
-        tags = [
-            # TODO(josephperrott): Begin running these tests on windows after updating to rules_nodejs 3.0
-            "no-windows",
-        ],
         visibility = [":__pkg__"],
         data = data,
     )
@@ -60,8 +56,6 @@ def partial_compliance_golden(filePath):
         visibility = ["//visibility:public"],
         tags = [
             "ivy-only",
-            # TODO(josephperrott): Begin running these tests on windows after updating to rules_nodejs 3.0
-            "no-windows",
         ],
         name = "%s.golden" % path,
         src = "//packages/compiler-cli/test/compliance/test_cases:%s/GOLDEN_PARTIAL.js" % path,
