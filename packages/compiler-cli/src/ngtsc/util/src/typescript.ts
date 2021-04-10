@@ -10,7 +10,7 @@ const TS = /\.tsx?$/i;
 const D_TS = /\.d\.ts$/i;
 
 import * as ts from 'typescript';
-import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
+import {AbsoluteFsPath, getFileSystem} from '../../file_system';
 import {DeclarationNode} from '../../reflection';
 
 export function isDtsPath(filePath: string): boolean {
@@ -96,19 +96,21 @@ export function getRootDirs(
     host: Pick<ts.CompilerHost, 'getCurrentDirectory'|'getCanonicalFileName'>,
     options: ts.CompilerOptions): AbsoluteFsPath[] {
   const rootDirs: string[] = [];
+  const cwd = host.getCurrentDirectory();
+  const fs = getFileSystem();
   if (options.rootDirs !== undefined) {
     rootDirs.push(...options.rootDirs);
   } else if (options.rootDir !== undefined) {
     rootDirs.push(options.rootDir);
   } else {
-    rootDirs.push(host.getCurrentDirectory());
+    rootDirs.push(cwd);
   }
 
   // In Windows the above might not always return posix separated paths
   // See:
   // https://github.com/Microsoft/TypeScript/blob/3f7357d37f66c842d70d835bc925ec2a873ecfec/src/compiler/sys.ts#L650
   // Also compiler options might be set via an API which doesn't normalize paths
-  return rootDirs.map(rootDir => absoluteFrom(host.getCanonicalFileName(rootDir)));
+  return rootDirs.map(rootDir => fs.resolve(cwd, host.getCanonicalFileName(rootDir)));
 }
 
 export function nodeDebugInfo(node: ts.Node): string {
