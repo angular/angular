@@ -52,7 +52,6 @@ interface LazyCompilationState {
   routeAnalyzer: NgModuleRouteAnalyzer;
   dtsTransforms: DtsTransformRegistry;
   mwpScanner: ModuleWithProvidersScanner;
-  defaultImportTracker: DefaultImportTracker;
   aliasingHost: AliasingHost|null;
   refEmitter: ReferenceEmitter;
   templateTypeChecker: TemplateTypeChecker;
@@ -613,13 +612,14 @@ export class NgCompiler {
       importRewriter = new NoopImportRewriter();
     }
 
+    const defaultImportTracker = new DefaultImportTracker();
+
     const before = [
       ivyTransformFactory(
-          compilation.traitCompiler, compilation.reflector, importRewriter,
-          compilation.defaultImportTracker, this.delegatingPerfRecorder, compilation.isCore,
-          this.closureCompilerEnabled),
+          compilation.traitCompiler, compilation.reflector, importRewriter, defaultImportTracker,
+          this.delegatingPerfRecorder, compilation.isCore, this.closureCompilerEnabled),
       aliasTransformFactory(compilation.traitCompiler.exportStatements),
-      compilation.defaultImportTracker.importPreservingTransformer(),
+      defaultImportTracker.importPreservingTransformer(),
     ];
 
     const afterDeclarations: ts.TransformerFactory<ts.SourceFile>[] = [];
@@ -971,7 +971,6 @@ export class NgCompiler {
 
     const isCore = isAngularCorePackage(this.inputProgram);
 
-    const defaultImportTracker = new DefaultImportTracker();
     const resourceRegistry = new ResourceRegistry();
 
     const compilationMode =
@@ -993,16 +992,15 @@ export class NgCompiler {
           this.options.i18nUseExternalIds !== false,
           this.options.enableI18nLegacyMessageIdFormat !== false, this.usePoisonedData,
           this.options.i18nNormalizeLineEndingsInICUs, this.moduleResolver, this.cycleAnalyzer,
-          cycleHandlingStrategy, refEmitter, defaultImportTracker, this.incrementalDriver.depGraph,
-          injectableRegistry, semanticDepGraphUpdater, this.closureCompilerEnabled,
-          this.delegatingPerfRecorder),
+          cycleHandlingStrategy, refEmitter, this.incrementalDriver.depGraph, injectableRegistry,
+          semanticDepGraphUpdater, this.closureCompilerEnabled, this.delegatingPerfRecorder),
 
       // TODO(alxhub): understand why the cast here is necessary (something to do with `null`
       // not being assignable to `unknown` when wrapped in `Readonly`).
       // clang-format off
         new DirectiveDecoratorHandler(
             reflector, evaluator, metaRegistry, scopeRegistry, metaReader,
-            defaultImportTracker, injectableRegistry, isCore, semanticDepGraphUpdater,
+            injectableRegistry, isCore, semanticDepGraphUpdater,
           this.closureCompilerEnabled, compileUndecoratedClassesWithAngularFeatures,
           this.delegatingPerfRecorder,
         ) as Readonly<DecoratorHandler<unknown, unknown, SemanticSymbol | null,unknown>>,
@@ -1010,16 +1008,15 @@ export class NgCompiler {
       // Pipe handler must be before injectable handler in list so pipe factories are printed
       // before injectable factories (so injectable factories can delegate to them)
       new PipeDecoratorHandler(
-          reflector, evaluator, metaRegistry, scopeRegistry, defaultImportTracker,
-          injectableRegistry, isCore, this.delegatingPerfRecorder),
+          reflector, evaluator, metaRegistry, scopeRegistry, injectableRegistry, isCore,
+          this.delegatingPerfRecorder),
       new InjectableDecoratorHandler(
-          reflector, defaultImportTracker, isCore, this.options.strictInjectionParameters || false,
-          injectableRegistry, this.delegatingPerfRecorder),
+          reflector, isCore, this.options.strictInjectionParameters || false, injectableRegistry,
+          this.delegatingPerfRecorder),
       new NgModuleDecoratorHandler(
           reflector, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry, isCore,
-          routeAnalyzer, refEmitter, this.adapter.factoryTracker, defaultImportTracker,
-          this.closureCompilerEnabled, injectableRegistry, this.delegatingPerfRecorder,
-          this.options.i18nInLocale),
+          routeAnalyzer, refEmitter, this.adapter.factoryTracker, this.closureCompilerEnabled,
+          injectableRegistry, this.delegatingPerfRecorder, this.options.i18nInLocale),
     ];
 
     const traitCompiler = new TraitCompiler(
@@ -1051,7 +1048,6 @@ export class NgCompiler {
       mwpScanner,
       metaReader,
       typeCheckScopeRegistry,
-      defaultImportTracker,
       aliasingHost,
       refEmitter,
       templateTypeChecker,

@@ -10,7 +10,7 @@ import {compileClassMetadata, compileDeclareClassMetadata, compileDeclarePipeFro
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {DefaultImportRecorder, Reference} from '../../imports';
+import {Reference} from '../../imports';
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {InjectableClassRegistry, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
@@ -55,7 +55,6 @@ export class PipeDecoratorHandler implements
   constructor(
       private reflector: ReflectionHost, private evaluator: PartialEvaluator,
       private metaRegistry: MetadataRegistry, private scopeRegistry: LocalModuleScopeRegistry,
-      private defaultImportRecorder: DefaultImportRecorder,
       private injectableRegistry: InjectableClassRegistry, private isCore: boolean,
       private perf: PerfRecorder) {}
 
@@ -131,12 +130,10 @@ export class PipeDecoratorHandler implements
           internalType,
           typeArgumentCount: this.reflector.getGenericArityOfClass(clazz) || 0,
           pipeName,
-          deps: getValidConstructorDependencies(
-              clazz, this.reflector, this.defaultImportRecorder, this.isCore),
+          deps: getValidConstructorDependencies(clazz, this.reflector, this.isCore),
           pure,
         },
-        classMetadata:
-            extractClassMetadata(clazz, this.reflector, this.defaultImportRecorder, this.isCore),
+        classMetadata: extractClassMetadata(clazz, this.reflector, this.isCore),
       },
     };
   }

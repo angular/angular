@@ -14,7 +14,7 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {CycleAnalyzer, CycleHandlingStrategy, ImportGraph} from '../../../src/ngtsc/cycles';
 import {isFatalDiagnosticError} from '../../../src/ngtsc/diagnostics';
 import {absoluteFromSourceFile, LogicalFileSystem, ReadonlyFileSystem} from '../../../src/ngtsc/file_system';
-import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, NOOP_DEFAULT_IMPORT_RECORDER, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
+import {AbsoluteModuleStrategy, LocalIdentifierStrategy, LogicalProjectStrategy, ModuleResolver, PrivateExportAliasingHost, Reexport, ReferenceEmitter} from '../../../src/ngtsc/imports';
 import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
 import {CompoundMetadataReader, CompoundMetadataRegistry, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, ResourceRegistry} from '../../../src/ngtsc/metadata';
 import {PartialEvaluator} from '../../../src/ngtsc/partial_evaluator';
@@ -107,8 +107,8 @@ export class DecorationAnalyzer {
         /* i18nUseExternalIds */ true, this.bundle.enableI18nLegacyMessageIdFormat,
         /* usePoisonedData */ false,
         /* i18nNormalizeLineEndingsInICUs */ false, this.moduleResolver, this.cycleAnalyzer,
-        CycleHandlingStrategy.UseRemoteScoping, this.refEmitter, NOOP_DEFAULT_IMPORT_RECORDER,
-        NOOP_DEPENDENCY_TRACKER, this.injectableRegistry,
+        CycleHandlingStrategy.UseRemoteScoping, this.refEmitter, NOOP_DEPENDENCY_TRACKER,
+        this.injectableRegistry,
         /* semanticDepGraphUpdater */ null, !!this.compilerOptions.annotateForClosureCompiler,
         NOOP_PERF_RECORDER),
 
@@ -116,7 +116,7 @@ export class DecorationAnalyzer {
     // clang-format off
     new DirectiveDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullRegistry, this.scopeRegistry,
-        this.fullMetaReader, NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore,
+        this.fullMetaReader, this.injectableRegistry, this.isCore,
         /* semanticDepGraphUpdater */ null,
         !!this.compilerOptions.annotateForClosureCompiler,
         // In ngcc we want to compile undecorated classes with Angular features. As of
@@ -131,18 +131,17 @@ export class DecorationAnalyzer {
     // before injectable factories (so injectable factories can delegate to them)
     new PipeDecoratorHandler(
         this.reflectionHost, this.evaluator, this.metaRegistry, this.scopeRegistry,
-        NOOP_DEFAULT_IMPORT_RECORDER, this.injectableRegistry, this.isCore, NOOP_PERF_RECORDER),
+        this.injectableRegistry, this.isCore, NOOP_PERF_RECORDER),
     new InjectableDecoratorHandler(
-        this.reflectionHost, NOOP_DEFAULT_IMPORT_RECORDER, this.isCore,
+        this.reflectionHost, this.isCore,
         /* strictCtorDeps */ false, this.injectableRegistry, NOOP_PERF_RECORDER,
         /* errorOnDuplicateProv */ false),
     new NgModuleDecoratorHandler(
         this.reflectionHost, this.evaluator, this.fullMetaReader, this.fullRegistry,
         this.scopeRegistry, this.referencesRegistry, this.isCore, /* routeAnalyzer */ null,
         this.refEmitter,
-        /* factoryTracker */ null, NOOP_DEFAULT_IMPORT_RECORDER,
-        !!this.compilerOptions.annotateForClosureCompiler, this.injectableRegistry,
-        NOOP_PERF_RECORDER),
+        /* factoryTracker */ null, !!this.compilerOptions.annotateForClosureCompiler,
+        this.injectableRegistry, NOOP_PERF_RECORDER),
   ];
   compiler = new NgccTraitCompiler(this.handlers, this.reflectionHost);
   migrations: Migration[] = [
