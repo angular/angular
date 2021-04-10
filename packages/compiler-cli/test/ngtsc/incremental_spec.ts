@@ -605,6 +605,67 @@ runInEachFileSystem(() => {
         expect(env.driveDiagnostics().length).toBe(1);
       });
 
+      it('should retain default imports that have been converted into a value expression', () => {
+        // This test defines the component `TestCmp` that has a default-imported class as
+        // constructor parameter, and uses `TestDir` in its template. An incremental compilation
+        // updates `TestDir` and changes its inputs, thereby triggering re-emit of `TestCmp` without
+        // performing re-analysis of `TestCmp`. The output of the re-emitted file for `TestCmp`
+        // should continue to have retained the default import.
+        env.write('service.ts', `
+          import {Injectable} from '@angular/core';
+
+          @Injectable({ providedIn: 'root' })
+          export default class DefaultService {}
+        `);
+        env.write('cmp.ts', `
+          import {Component, Directive} from '@angular/core';
+          import DefaultService from './service';
+
+          @Component({
+            template: '<div dir></div>',
+          })
+          export class TestCmp {
+            constructor(service: DefaultService) {}
+          }
+        `);
+        env.write('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({ selector: '[dir]' })
+          export class TestDir {}
+        `);
+        env.write('mod.ts', `
+          import {NgModule} from '@angular/core';
+          import {TestDir} from './dir';
+          import {TestCmp} from './cmp';
+
+          @NgModule({ declarations: [TestDir, TestCmp] })
+          export class TestMod {}
+        `);
+
+        env.driveMain();
+        env.flushWrittenFileTracking();
+
+        // Update `TestDir` to change its inputs, triggering a re-emit of `TestCmp` that uses
+        // `TestDir`.
+        env.write('dir.ts', `
+          import {Directive} from '@angular/core';
+
+          @Directive({ selector: '[dir]', inputs: ['added'] })
+          export class TestDir {}
+        `);
+        env.driveMain();
+
+        // Verify that `TestCmp` was indeed re-emitted.
+        const written = env.getFilesWrittenSinceLastFlush();
+        expect(written).toContain('/dir.js');
+        expect(written).toContain('/cmp.js');
+
+        // Verify that the default import is still present.
+        const content = env.getContents('cmp.js');
+        expect(content).toContain(`import DefaultService from './service';`);
+      });
+
       it('should recompile when a remote change happens to a scope', () => {
         // The premise of this test is that the component Cmp has a template error (a binding to an
         // unknown property). Cmp is in ModuleA, which imports ModuleB, which declares Dir that has
