@@ -145,8 +145,8 @@ commands:
       - run:
           name: Set up environment
           environment:
-              CIRCLE_GIT_BASE_REVISION: << pipeline.git.base_revision >>
-              CIRCLE_GIT_REVISION: << pipeline.git.revision >>
+            CIRCLE_GIT_BASE_REVISION: << pipeline.git.base_revision >>
+            CIRCLE_GIT_REVISION: << pipeline.git.revision >>
           command: ./.circleci/env.sh
       - run:
           # Configure git as the CircleCI `checkout` command does.
@@ -463,7 +463,7 @@ jobs:
   aio_preview:
     executor: default-executor
     environment:
-       AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
+      AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path "aio/tmp/snapshot.tgz"
     steps:
       - custom_attach_workspace
       - init_environment
@@ -486,7 +486,6 @@ jobs:
       - run:
           name: Wait for preview and run tests
           command: node aio/scripts/test-preview.js $CI_PULL_REQUEST $CI_COMMIT $CI_AIO_MIN_PWA_SCORE
-
 
   # The `build-npm-packages` tasks exist for backwards-compatibility with old scripts and
   # tests that rely on the pre-Bazel `dist/packages-dist` output structure (build.sh).
@@ -547,12 +546,12 @@ jobs:
   publish_packages_as_artifacts:
     executor: default-executor
     environment:
-      AIMWA_PACKAGES_DIR: &aimwa_packages_dir 'dist/angular-in-memory-web-api-dist'
-      AIMWA_PACKAGES_ARCHIVES_DIR: &aimwa_packages_archives_dir 'dist/angular-in-memory-web-api-dist-archives'
-      NG_PACKAGES_DIR: &ng_packages_dir 'dist/packages-dist'
-      NG_PACKAGES_ARCHIVES_DIR: &ng_packages_archives_dir 'dist/packages-dist-archives'
-      ZONEJS_PACKAGES_DIR: &zonejs_packages_dir 'dist/zone.js-dist'
-      ZONEJS_PACKAGES_ARCHIVES_DIR: &zonejs_packages_archives_dir 'dist/zone.js-dist-archives'
+      AIMWA_PACKAGES_DIR: &aimwa_packages_dir "dist/angular-in-memory-web-api-dist"
+      AIMWA_PACKAGES_ARCHIVES_DIR: &aimwa_packages_archives_dir "dist/angular-in-memory-web-api-dist-archives"
+      NG_PACKAGES_DIR: &ng_packages_dir "dist/packages-dist"
+      NG_PACKAGES_ARCHIVES_DIR: &ng_packages_archives_dir "dist/packages-dist-archives"
+      ZONEJS_PACKAGES_DIR: &zonejs_packages_dir "dist/zone.js-dist"
+      ZONEJS_PACKAGES_ARCHIVES_DIR: &zonejs_packages_archives_dir "dist/zone.js-dist-archives"
     steps:
       - custom_attach_workspace
       - init_environment
@@ -756,9 +755,9 @@ jobs:
       - run: yarn --cwd packages/zone.js promisetest
       - run: yarn --cwd packages/zone.js promisefinallytest
       - run: yarn bazel build //packages/zone.js:npm_package &&
-             cp dist/bin/packages/zone.js/npm_package/bundles/zone-mix.umd.js ./packages/zone.js/test/extra/ &&
-             cp dist/bin/packages/zone.js/npm_package/bundles/zone-patch-electron.umd.js ./packages/zone.js/test/extra/ &&
-             cp dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js ./packages/zone.js/build/test/closure/zone.js
+          cp dist/bin/packages/zone.js/npm_package/bundles/zone-mix.umd.js ./packages/zone.js/test/extra/ &&
+          cp dist/bin/packages/zone.js/npm_package/bundles/zone-patch-electron.umd.js ./packages/zone.js/test/extra/ &&
+          cp dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js ./packages/zone.js/build/test/closure/zone.js
       - run: yarn --cwd packages/zone.js jest:test
       - run: yarn --cwd packages/zone.js jest:nodetest
       - run: yarn --cwd packages/zone.js electrontest
@@ -774,11 +773,11 @@ jobs:
       - setup_win
       - run:
           name: Build all windows CI targets
-          command: yarn bazel build --build_tag_filters=-ivy-only,-no-windows //packages/compiler-cli/... //tools/ts-api-guardian/...
+          command: yarn bazel build --build_tag_filters=-ivy-only //packages/compiler-cli/... //tools/ts-api-guardian/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: yarn bazel test --build_tag_filters=-no-windows --test_tag_filters="-ivy-only,-no-windows,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/...
+          command: yarn bazel test --test_tag_filters="-ivy-only,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/...
           no_output_timeout: 15m
 
   test_ivy_aot_win:
@@ -787,18 +786,17 @@ jobs:
       - setup_win
       - run:
           name: Build all windows CI targets
-          command: yarn bazel build --config=ivy --build_tag_filters=-no-ivy-aot,-no-windows,-fixme-ivy-aot //packages/compiler-cli/... //tools/ts-api-guardian/...
+          command: yarn bazel build --config=ivy --build_tag_filters=-no-ivy-aot,-fixme-ivy-aot //packages/compiler-cli/... //tools/ts-api-guardian/...
           no_output_timeout: 15m
       - run:
           name: Test all windows CI targets
-          command: yarn bazel test --config=ivy --build_tag_filters=-no-windows --test_tag_filters="-no-ivy-aot,-no-windows,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/... //packages/localize/...
+          command: yarn bazel test --config=ivy --test_tag_filters="-no-ivy-aot,-fixme-ivy-aot,-browser:chromium-local" //packages/compiler-cli/... //tools/ts-api-guardian/... //packages/localize/...
           no_output_timeout: 15m
       # Save dependencies to use on subsequent runs.
       - save_cache:
           key: *cache_key_win
           paths:
             - ~/.cache/yarn
-
 
 workflows:
   version: 2
