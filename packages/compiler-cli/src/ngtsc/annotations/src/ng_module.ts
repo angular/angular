@@ -10,7 +10,7 @@ import {compileInjector, compileNgModule, CUSTOM_ELEMENTS_SCHEMA, Expression, Ex
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError, makeDiagnostic, makeRelatedInformation} from '../../diagnostics';
-import {DefaultImportRecorder, Reference, ReferenceEmitter} from '../../imports';
+import {Reference, ReferenceEmitter} from '../../imports';
 import {isArrayEqual, isReferenceEqual, isSymbolEqual, SemanticReference, SemanticSymbol} from '../../incremental/semantic_graph';
 import {InjectableClassRegistry, MetadataReader, MetadataRegistry} from '../../metadata';
 import {PartialEvaluator, ResolvedValue} from '../../partial_evaluator';
@@ -130,9 +130,7 @@ export class NgModuleDecoratorHandler implements
       private scopeRegistry: LocalModuleScopeRegistry,
       private referencesRegistry: ReferencesRegistry, private isCore: boolean,
       private routeAnalyzer: NgModuleRouteAnalyzer|null, private refEmitter: ReferenceEmitter,
-      private factoryTracker: FactoryTracker|null,
-      private defaultImportRecorder: DefaultImportRecorder,
-      private annotateForClosureCompiler: boolean,
+      private factoryTracker: FactoryTracker|null, private annotateForClosureCompiler: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
       private localeId?: string) {}
 
@@ -351,8 +349,7 @@ export class NgModuleDecoratorHandler implements
         schemas: schemas,
         mod: ngModuleDef,
         inj: ngInjectorDef,
-        deps: getValidConstructorDependencies(
-            node, this.reflector, this.defaultImportRecorder, this.isCore),
+        deps: getValidConstructorDependencies(node, this.reflector, this.isCore),
         declarations: declarationRefs,
         rawDeclarations,
         imports: importRefs,
@@ -362,8 +359,7 @@ export class NgModuleDecoratorHandler implements
             resolveProvidersRequiringFactory(rawProviders, this.reflector, this.evaluator) :
             null,
         metadataStmt: generateSetClassMetadataCall(
-            node, this.reflector, this.defaultImportRecorder, this.isCore,
-            this.annotateForClosureCompiler),
+            node, this.reflector, this.isCore, this.annotateForClosureCompiler),
         factorySymbolName: node.name.text,
       },
     };

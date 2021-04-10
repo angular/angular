@@ -9,7 +9,6 @@
 import {devOnlyGuardedExpression, Expression, ExternalExpr, FunctionExpr, Identifiers, InvokeFunctionExpr, LiteralArrayExpr, LiteralExpr, literalMap, NONE_TYPE, ReturnStatement, Statement, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {DefaultImportRecorder} from '../../imports';
 import {CtorParameter, DeclarationNode, Decorator, ReflectionHost, TypeValueReferenceKind} from '../../reflection';
 
 import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './util';
@@ -24,8 +23,7 @@ import {valueReferenceToExpression, wrapFunctionExpressionsInParens} from './uti
  * as a `Statement` for inclusion along with the class.
  */
 export function generateSetClassMetadataCall(
-    clazz: DeclarationNode, reflection: ReflectionHost,
-    defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
+    clazz: DeclarationNode, reflection: ReflectionHost, isCore: boolean,
     annotateForClosureCompiler?: boolean): Statement|null {
   if (!reflection.isClass(clazz)) {
     return null;
@@ -56,8 +54,7 @@ export function generateSetClassMetadataCall(
   let metaCtorParameters: Expression = new LiteralExpr(null);
   const classCtorParameters = reflection.getConstructorParameters(clazz);
   if (classCtorParameters !== null) {
-    const ctorParameters = classCtorParameters.map(
-        param => ctorParameterToMetadata(param, defaultImportRecorder, isCore));
+    const ctorParameters = classCtorParameters.map(param => ctorParameterToMetadata(param, isCore));
     metaCtorParameters = new FunctionExpr([], [
       new ReturnStatement(new LiteralArrayExpr(ctorParameters)),
     ]);
@@ -101,13 +98,11 @@ export function generateSetClassMetadataCall(
 /**
  * Convert a reflected constructor parameter to metadata.
  */
-function ctorParameterToMetadata(
-    param: CtorParameter, defaultImportRecorder: DefaultImportRecorder,
-    isCore: boolean): Expression {
+function ctorParameterToMetadata(param: CtorParameter, isCore: boolean): Expression {
   // Parameters sometimes have a type that can be referenced. If so, then use it, otherwise
   // its type is undefined.
   const type = param.typeValueReference.kind !== TypeValueReferenceKind.UNAVAILABLE ?
-      valueReferenceToExpression(param.typeValueReference, defaultImportRecorder) :
+      valueReferenceToExpression(param.typeValueReference) :
       new LiteralExpr(undefined);
 
   const mapEntries: {key: string, value: Expression, quoted: false}[] = [

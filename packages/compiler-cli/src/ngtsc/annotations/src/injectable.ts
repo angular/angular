@@ -10,7 +10,6 @@ import {compileInjectable as compileIvyInjectable, Expression, Identifiers, Lite
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
-import {DefaultImportRecorder} from '../../imports';
 import {InjectableClassRegistry} from '../../metadata';
 import {PerfEvent, PerfRecorder} from '../../perf';
 import {ClassDeclaration, Decorator, ReflectionHost, reflectObjectLiteral} from '../../reflection';
@@ -33,8 +32,7 @@ export interface InjectableHandlerData {
 export class InjectableDecoratorHandler implements
     DecoratorHandler<Decorator, InjectableHandlerData, null, unknown> {
   constructor(
-      private reflector: ReflectionHost, private defaultImportRecorder: DefaultImportRecorder,
-      private isCore: boolean, private strictCtorDeps: boolean,
+      private reflector: ReflectionHost, private isCore: boolean, private strictCtorDeps: boolean,
       private injectableRegistry: InjectableClassRegistry, private perf: PerfRecorder,
       /**
        * What to do if the injectable already contains a ɵprov property.
@@ -74,10 +72,8 @@ export class InjectableDecoratorHandler implements
       analysis: {
         meta,
         ctorDeps: extractInjectableCtorDeps(
-            node, meta, decorator, this.reflector, this.defaultImportRecorder, this.isCore,
-            this.strictCtorDeps),
-        metadataStmt: generateSetClassMetadataCall(
-            node, this.reflector, this.defaultImportRecorder, this.isCore),
+            node, meta, decorator, this.reflector, this.isCore, this.strictCtorDeps),
+        metadataStmt: generateSetClassMetadataCall(node, this.reflector, this.isCore),
         // Avoid generating multiple factories if a class has
         // more Angular decorators, apart from Injectable.
         needsFactory: !decorators ||
@@ -239,8 +235,7 @@ function extractInjectableMetadata(
 
 function extractInjectableCtorDeps(
     clazz: ClassDeclaration, meta: R3InjectableMetadata, decorator: Decorator,
-    reflector: ReflectionHost, defaultImportRecorder: DefaultImportRecorder, isCore: boolean,
-    strictCtorDeps: boolean) {
+    reflector: ReflectionHost, isCore: boolean, strictCtorDeps: boolean) {
   if (decorator.args === null) {
     throw new FatalDiagnosticError(
         ErrorCode.DECORATOR_NOT_CALLED, Decorator.nodeForError(decorator),
@@ -259,15 +254,15 @@ function extractInjectableCtorDeps(
     // constructor signature does not work for DI then a factory definition (ɵfac) that throws is
     // generated.
     if (strictCtorDeps) {
-      ctorDeps = getValidConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
+      ctorDeps = getValidConstructorDependencies(clazz, reflector, isCore);
     } else {
-      ctorDeps = unwrapConstructorDependencies(
-          getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore));
+      ctorDeps =
+          unwrapConstructorDependencies(getConstructorDependencies(clazz, reflector, isCore));
     }
 
     return ctorDeps;
   } else if (decorator.args.length === 1) {
-    const rawCtorDeps = getConstructorDependencies(clazz, reflector, defaultImportRecorder, isCore);
+    const rawCtorDeps = getConstructorDependencies(clazz, reflector, isCore);
 
     if (strictCtorDeps && meta.useValue === undefined && meta.useExisting === undefined &&
         meta.useClass === undefined && meta.useFactory === undefined) {

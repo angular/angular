@@ -39,12 +39,10 @@ runInEachFileSystem(() => {
             module: ts.ModuleKind.ES2015,
           });
       const fooClause = getDeclaration(program, _('/test.ts'), 'Foo', ts.isImportClause);
-      const fooId = fooClause.name!;
       const fooDecl = fooClause.parent;
 
       const tracker = new DefaultImportTracker();
-      tracker.recordImportedIdentifier(fooId, fooDecl);
-      tracker.recordUsedIdentifier(fooId);
+      tracker.recordUsedImport(fooDecl);
       program.emit(undefined, undefined, undefined, undefined, {
         before: [tracker.importPreservingTransformer()],
       });
@@ -73,8 +71,7 @@ runInEachFileSystem(() => {
       const fooDecl = fooClause.parent;
 
       const tracker = new DefaultImportTracker();
-      tracker.recordImportedIdentifier(fooId, fooDecl);
-      tracker.recordUsedIdentifier(fooId);
+      tracker.recordUsedImport(fooDecl);
       program.emit(undefined, undefined, undefined, undefined, {
         before: [
           addReferenceTransformer(fooId),

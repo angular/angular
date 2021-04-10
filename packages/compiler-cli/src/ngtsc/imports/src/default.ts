@@ -6,52 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {getSourceFile} from '../../util/src/typescript';
 
-/**
- * Registers and records usages of `ts.Identifer`s that came from default import statements.
- *
- * See `DefaultImportTracker` for details.
- */
-export interface DefaultImportRecorder {
-  /**
-   * Record an association between a `ts.Identifier` which might be emitted and the
-   * `ts.ImportDeclaration` from which it came.
-   *
-   * Alone, this method has no effect as the `ts.Identifier` might not be used in the output.
-   * The identifier must later be marked as used with `recordUsedIdentifier` in order for its
-   * import to be preserved.
-   */
-  recordImportedIdentifier(id: ts.Identifier, decl: ts.ImportDeclaration): void;
+const DefaultImportDeclaration = Symbol('DefaultImportDeclaration');
 
-  /**
-   * Record the fact that the given `ts.Identifer` will be emitted, and thus its
-   * `ts.ImportDeclaration`, if it was a previously registered default import, must be preserved.
-   *
-   * This method can be called safely for any `ts.Identifer`, regardless of its origin. It will only
-   * have an effect if the identifier came from a `ts.ImportDeclaration` default import which was
-   * previously registered with `recordImportedIdentifier`.
-   */
-  recordUsedIdentifier(id: ts.Identifier): void;
+interface WithDefaultImportDeclaration {
+  [DefaultImportDeclaration]?: ts.ImportDeclaration;
 }
 
 /**
- * An implementation of `DefaultImportRecorder` which does nothing.
- *
- * This is useful when default import tracking isn't required, such as when emitting .d.ts code
- * or for ngcc.
+ * Attaches a default import declaration to `expr` to indicate the dependency of `expr` on the
+ * default import.
  */
-export const NOOP_DEFAULT_IMPORT_RECORDER: DefaultImportRecorder = {
-  recordImportedIdentifier: (id: ts.Identifier) => void{},
-  recordUsedIdentifier: (id: ts.Identifier) => void{},
-};
+export function attachDefaultImportDeclaration(
+    expr: WrappedNodeExpr<unknown>, importDecl: ts.ImportDeclaration): void {
+  (expr as WithDefaultImportDeclaration)[DefaultImportDeclaration] = importDecl;
+}
 
-const ImportDeclarationMapping = Symbol('ImportDeclarationMapping');
-
-interface SourceFileWithImportDeclarationMapping extends ts.SourceFile {
-  [ImportDeclarationMapping]?: Map<ts.Identifier, ts.ImportDeclaration>;
+/**
+ * Obtains the default import declaration that `expr` depends on, or `null` if there is no such
+ * dependency.
+ */
+export function getDefaultImportDeclaration(expr: WrappedNodeExpr<unknown>): ts.ImportDeclaration|
+    null {
+  return (expr as WithDefaultImportDeclaration)[DefaultImportDeclaration] ?? null;
 }
 
 /**
@@ -84,45 +65,28 @@ interface SourceFileWithImportDeclarationMapping extends ts.SourceFile {
  * This problem does not exist for non-default imports as the compiler can easily insert
  * "import * as X" style imports for those, and the "X" identifier survives transformation.
  */
-export class DefaultImportTracker implements DefaultImportRecorder {
+export class DefaultImportTracker {
   /**
    * A `Map` which tracks the `Set` of `ts.ImportDeclaration`s for default imports that were used in
    * a given `ts.SourceFile` and need to be preserved.
    */
   private sourceFileToUsedImports = new Map<ts.SourceFile, Set<ts.ImportDeclaration>>();
-  recordImportedIdentifier(id: ts.Identifier, decl: ts.ImportDeclaration): void {
-    const sf = getSourceFile(id) as SourceFileWithImportDeclarationMapping;
-    if (sf[ImportDeclarationMapping] === undefined) {
-      sf[ImportDeclarationMapping] = new Map<ts.Identifier, ts.ImportDeclaration>();
-    }
-    sf[ImportDeclarationMapping]!.set(id, decl);
-  }
 
-  recordUsedIdentifier(id: ts.Identifier): void {
-    const sf = getSourceFile(id) as SourceFileWithImportDeclarationMapping;
-    const identifierToDeclaration = sf[ImportDeclarationMapping];
-    if (identifierToDeclaration === undefined) {
-      // The identifier's source file has no registered default imports at all.
-      return;
-    }
-    if (!identifierToDeclaration.has(id)) {
-      // The identifier isn't from a registered default import.
-      return;
-    }
-    const decl = identifierToDeclaration.get(id)!;
+  recordUsedImport(importDecl: ts.ImportDeclaration): void {
+    const sf = getSourceFile(importDecl);
 
     // Add the default import declaration to the set of used import declarations for the file.
     if (!this.sourceFileToUsedImports.has(sf)) {
       this.sourceFileToUsedImports.set(sf, new Set<ts.ImportDeclaration>());
     }
-    this.sourceFileToUsedImports.get(sf)!.add(decl);
+    this.sourceFileToUsedImports.get(sf)!.add(importDecl);
   }
 
   /**
    * Get a `ts.TransformerFactory` which will preserve default imports that were previously marked
    * as used.
    *
-   * This transformer must run after any other transformers which call `recordUsedIdentifier`.
+   * This transformer must run after any other transformers which call `recordUsedImport`.
    */
   importPreservingTransformer(): ts.TransformerFactory<ts.SourceFile> {
     return (context: ts.TransformationContext) => {
