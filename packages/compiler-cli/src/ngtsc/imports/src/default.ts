@@ -48,6 +48,12 @@ export const NOOP_DEFAULT_IMPORT_RECORDER: DefaultImportRecorder = {
   recordUsedIdentifier: (id: ts.Identifier) => void{},
 };
 
+const ImportDeclarationMapping = Symbol('ImportDeclarationMapping');
+
+interface SourceFileWithImportDeclarationMapping extends ts.SourceFile {
+  [ImportDeclarationMapping]?: Map<ts.Identifier, ts.ImportDeclaration>;
+}
+
 /**
  * TypeScript has trouble with generating default imports inside of transformers for some module
  * formats. The issue is that for the statement:
@@ -80,37 +86,30 @@ export const NOOP_DEFAULT_IMPORT_RECORDER: DefaultImportRecorder = {
  */
 export class DefaultImportTracker implements DefaultImportRecorder {
   /**
-   * A `Map` which tracks the `Map` of default import `ts.Identifier`s to their
-   * `ts.ImportDeclaration`s. These declarations are not guaranteed to be used.
-   */
-  private sourceFileToImportMap =
-      new Map<ts.SourceFile, Map<ts.Identifier, ts.ImportDeclaration>>();
-
-  /**
    * A `Map` which tracks the `Set` of `ts.ImportDeclaration`s for default imports that were used in
    * a given `ts.SourceFile` and need to be preserved.
    */
   private sourceFileToUsedImports = new Map<ts.SourceFile, Set<ts.ImportDeclaration>>();
   recordImportedIdentifier(id: ts.Identifier, decl: ts.ImportDeclaration): void {
-    const sf = getSourceFile(id);
-    if (!this.sourceFileToImportMap.has(sf)) {
-      this.sourceFileToImportMap.set(sf, new Map<ts.Identifier, ts.ImportDeclaration>());
+    const sf = getSourceFile(id) as SourceFileWithImportDeclarationMapping;
+    if (sf[ImportDeclarationMapping] === undefined) {
+      sf[ImportDeclarationMapping] = new Map<ts.Identifier, ts.ImportDeclaration>();
     }
-    this.sourceFileToImportMap.get(sf)!.set(id, decl);
+    sf[ImportDeclarationMapping]!.set(id, decl);
   }
 
   recordUsedIdentifier(id: ts.Identifier): void {
-    const sf = getSourceFile(id);
-    if (!this.sourceFileToImportMap.has(sf)) {
+    const sf = getSourceFile(id) as SourceFileWithImportDeclarationMapping;
+    const identifierToDeclaration = sf[ImportDeclarationMapping];
+    if (identifierToDeclaration === undefined) {
       // The identifier's source file has no registered default imports at all.
       return;
     }
-    const identiferToDeclaration = this.sourceFileToImportMap.get(sf)!;
-    if (!identiferToDeclaration.has(id)) {
+    if (!identifierToDeclaration.has(id)) {
       // The identifier isn't from a registered default import.
       return;
     }
-    const decl = identiferToDeclaration.get(id)!;
+    const decl = identifierToDeclaration.get(id)!;
 
     // Add the default import declaration to the set of used import declarations for the file.
     if (!this.sourceFileToUsedImports.has(sf)) {
@@ -182,7 +181,6 @@ export class DefaultImportTracker implements DefaultImportRecorder {
 
     // Save memory - there's no need to keep these around once the transform has run for the given
     // file.
-    this.sourceFileToImportMap.delete(originalSf);
     this.sourceFileToUsedImports.delete(originalSf);
 
     return ts.updateSourceFileNode(sf, statements);
