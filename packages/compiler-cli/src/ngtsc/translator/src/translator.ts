@@ -36,26 +36,26 @@ const BINARY_OPERATORS = new Map<o.BinaryOperator, BinaryOperator>([
   [o.BinaryOperator.Plus, '+'],
 ]);
 
-export type RecordWrappedNodeExprFn<TExpression> = (expr: TExpression) => void;
+export type RecordWrappedNodeFn<TExpression> = (node: o.WrappedNodeExpr<TExpression>) => void;
 
 export interface TranslatorOptions<TExpression> {
   downlevelTaggedTemplates?: boolean;
   downlevelVariableDeclarations?: boolean;
-  recordWrappedNodeExpr?: RecordWrappedNodeExprFn<TExpression>;
+  recordWrappedNode?: RecordWrappedNodeFn<TExpression>;
 }
 
 export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.ExpressionVisitor,
                                                                              o.StatementVisitor {
   private downlevelTaggedTemplates: boolean;
   private downlevelVariableDeclarations: boolean;
-  private recordWrappedNodeExpr: RecordWrappedNodeExprFn<TExpression>;
+  private recordWrappedNode: RecordWrappedNodeFn<TExpression>;
 
   constructor(
       private factory: AstFactory<TStatement, TExpression>,
       private imports: ImportGenerator<TExpression>, options: TranslatorOptions<TExpression>) {
     this.downlevelTaggedTemplates = options.downlevelTaggedTemplates === true;
     this.downlevelVariableDeclarations = options.downlevelVariableDeclarations === true;
-    this.recordWrappedNodeExpr = options.recordWrappedNodeExpr || (() => {});
+    this.recordWrappedNode = options.recordWrappedNode || (() => {});
   }
 
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, context: Context): TStatement {
@@ -380,7 +380,7 @@ export class ExpressionTranslatorVisitor<TStatement, TExpression> implements o.E
   }
 
   visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, _context: Context): any {
-    this.recordWrappedNodeExpr(ast.node);
+    this.recordWrappedNode(ast);
     return ast.node;
   }
 

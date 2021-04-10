@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
+import {ReferenceEmitter} from '../../imports';
 import {DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {NOOP_PERF_RECORDER} from '../../perf';
@@ -168,8 +168,8 @@ runInEachFileSystem(() => {
         null);
     const injectableRegistry = new InjectableClassRegistry(reflectionHost);
     const handler = new DirectiveDecoratorHandler(
-        reflectionHost, evaluator, scopeRegistry, scopeRegistry, metaReader,
-        NOOP_DEFAULT_IMPORT_RECORDER, injectableRegistry, /*isCore*/ false,
+        reflectionHost, evaluator, scopeRegistry, scopeRegistry, metaReader, injectableRegistry,
+        /*isCore*/ false,
         /*semanticDepGraphUpdater*/ null,
         /*annotateForClosureCompiler*/ false,
         /*detectUndecoratedClassesWithAngularFeatures*/ false, NOOP_PERF_RECORDER);
