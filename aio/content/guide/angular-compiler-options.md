@@ -71,8 +71,8 @@ When `true`, use [Tsickle](https://github.com/angular/tsickle) to annotate the e
 
 Specifies the compilation mode to use. The following modes are available:
 
-- `'full'`: generates fully AOT-compiled code using Ivy instructions.
-- `'partial'`: generates code in a stable, but intermediate form suitable for publication to NPM.
+- `'full'`: generates fully AOT-compiled code according to the version of Angular that is currently being used.
+- `'partial'`: generates code in a stable, but intermediate form suitable for a published library.
 
 The default value is `'full'`.
 
