@@ -276,7 +276,7 @@ const AT_CHARCODE = (() => '@'.charCodeAt(0))();
 function checkNoSyntheticProp(name: string, nameKind: string) {
   if (name.charCodeAt(0) === AT_CHARCODE) {
     throw new Error(`Unexpected synthetic ${nameKind} ${name} found. Please make sure that:
-  - Either "BrowserAnimationsModule" or "NoopAnimationsModule" are imported in your application.
+  - Either \`BrowserAnimationsModule\` or \`NoopAnimationsModule\` are imported in your application.
   - There is corresponding configuration for the animation named \`${
         name}\` defined in the \`animations\` field of the \`@Component\` decorator (see https://angular.io/api/core/Component#animations).`);
   }
