@@ -66,7 +66,7 @@ Zone.__load_patch('EventTarget', (global: any, Zone: ZoneType, api: _ZonePrivate
   // patch XMLHttpRequestEventTarget's addEventListener/removeEventListener
   const XMLHttpRequestEventTarget = (global as any)['XMLHttpRequestEventTarget'];
   if (XMLHttpRequestEventTarget && XMLHttpRequestEventTarget.prototype) {
-    api.patchEventTarget(global, [XMLHttpRequestEventTarget.prototype]);
+    api.patchEventTarget(global, api, [XMLHttpRequestEventTarget.prototype]);
   }
 });
 
