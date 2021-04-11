@@ -8,7 +8,7 @@
 Zone.__load_patch('socketio', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   (Zone as any)[Zone.__symbol__('socketio')] = function patchSocketIO(io: any) {
     // patch io.Socket.prototype event listener related method
-    api.patchEventTarget(global, [io.Socket.prototype], {
+    api.patchEventTarget(global, api, [io.Socket.prototype], {
       useG: false,
       chkDup: false,
       rt: true,
