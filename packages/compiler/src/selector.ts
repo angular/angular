@@ -14,10 +14,10 @@ const _SELECTOR_REGEXP = new RegExp(
         // "-" should appear first in the regexp below as FF31 parses "[.-\w]" as a range
         // 4: attribute; 5: attribute_string; 6: attribute_value
         '(?:\\[([-.\\w$*]+)(?:=([\"\']?)([^\\]\"\']*)\\5)?\\])|' +  // "[name]", "[name=value]",
-                                                                   // "[name="value"]",
-                                                                   // "[name='value']"
-        '(\\))|' +                                                 // 7: ")"
-        '(\\s*,\\s*)',                                             // 8: ","
+                                                                    // "[name="value"]",
+                                                                    // "[name='value']"
+        '(\\))|' +                                                  // 7: ")"
+        '(\\s*,\\s*)',                                              // 8: ","
     'g');
 
 /**
