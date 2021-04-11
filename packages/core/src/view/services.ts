@@ -703,11 +703,15 @@ export class DebugRenderer2 implements Renderer2 {
   }
 
   destroyNode(node: any) {
-    const debugNode = getDebugNode(node)!;
-    removeDebugNodeFromIndex(debugNode);
-    if (debugNode instanceof DebugNode__PRE_R3__) {
-      debugNode.listeners.length = 0;
+    const debugNode = getDebugNode(node);
+
+    if (debugNode) {
+      removeDebugNodeFromIndex(debugNode);
+      if (debugNode instanceof DebugNode__PRE_R3__) {
+        debugNode.listeners.length = 0;
+      }
     }
+
     if (this.delegate.destroyNode) {
       this.delegate.destroyNode(node);
     }
