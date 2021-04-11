@@ -8,7 +8,7 @@
 
 import {patchEventTarget} from '../common/events';
 
-Zone.__load_patch('EventEmitter', (global: any) => {
+Zone.__load_patch('EventEmitter', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   // For EventEmitter
   const EE_ADD_LISTENER = 'addListener';
   const EE_PREPEND_LISTENER = 'prependListener';
@@ -34,7 +34,7 @@ Zone.__load_patch('EventEmitter', (global: any) => {
   };
 
   function patchEventEmitterMethods(obj: any) {
-    const result = patchEventTarget(global, [obj], {
+    const result = patchEventTarget(global, api, [obj], {
       useG: false,
       add: EE_ADD_LISTENER,
       rm: EE_REMOVE_LISTENER,

@@ -20,7 +20,7 @@ Zone.__load_patch('shadydom', (global: any, Zone: ZoneType, api: _ZonePrivate) =
     if (proto && proto.hasOwnProperty('addEventListener')) {
       proto[Zone.__symbol__('addEventListener')] = null;
       proto[Zone.__symbol__('removeEventListener')] = null;
-      api.patchEventTarget(global, [proto]);
+      api.patchEventTarget(global, api, [proto]);
     }
   });
 });
