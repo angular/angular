@@ -259,8 +259,8 @@ After the browser refreshes you can navigate freely between the two views by cli
 {@a hero-details}
 ## Navigating to hero details
 
-The `HeroDetailsComponent` displays details of a selected hero.
-At the moment the `HeroDetailsComponent` is only visible at the bottom of the `HeroesComponent`
+The `HeroDetailComponent` displays details of a selected hero.
+At the moment the `HeroDetailComponent` is only visible at the bottom of the `HeroesComponent`
 
 The user should be able to get to these details in three ways.
 
@@ -268,7 +268,7 @@ The user should be able to get to these details in three ways.
 1. By clicking a hero in the heroes list.
 1. By pasting a "deep link" URL into the browser address bar that identifies the hero to display.
 
-In this section, you'll enable navigation to the `HeroDetailsComponent`
+In this section, you'll enable navigation to the `HeroDetailComponent`
 and liberate it from the `HeroesComponent`.
 
 ### Delete _hero details_ from `HeroesComponent`
