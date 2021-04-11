@@ -13,24 +13,20 @@ interface Decorator {
   args?: any[];
 }
 
-interface HasMetadata extends Type<any> {
-  decorators?: Decorator[];
-  ctorParameters?: () => CtorParameter[];
-  propDecorators?: {[field: string]: Decorator[]};
-}
-
 interface CtorParameter {
   type: any;
   decorators?: Decorator[];
 }
 
-function metadataOf(value: Type<any>): HasMetadata {
-  return value as HasMetadata;
+interface WithMetadata extends Type<any> {
+  decorators?: Decorator[];
+  ctorParameters?: () => CtorParameter[];
+  propDecorators?: {[field: string]: Decorator[]};
 }
 
 describe('class metadata declaration jit compilation', () => {
   it('should attach class decorators', () => {
-    const TestClass = metadataOf(class TestClass {});
+    const TestClass: WithMetadata = class TestClass {};
     ɵɵngDeclareClassMetadata({
       type: TestClass,
       decorators: [{
@@ -46,7 +42,7 @@ describe('class metadata declaration jit compilation', () => {
   });
 
   it('should attach property decorators', () => {
-    const TestClass = metadataOf(class TestClass {});
+    const TestClass: WithMetadata = class TestClass {};
     ɵɵngDeclareClassMetadata({
       type: TestClass,
       decorators: [{
@@ -67,7 +63,7 @@ describe('class metadata declaration jit compilation', () => {
   });
 
   it('should attach constructor parameters', () => {
-    const TestClass = metadataOf(class TestClass {});
+    const TestClass: WithMetadata = class TestClass {};
     ɵɵngDeclareClassMetadata({
       type: TestClass,
       decorators: [{

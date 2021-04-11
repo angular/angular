@@ -477,7 +477,8 @@ export interface R3DeclareClassMetadata extends R3PartialDeclaration {
   ctorParameters?: o.Expression;
 
   /**
-   * The Angular decorators applied to the class properties.
+   * Optionally specifies the Angular decorators applied to the class properties. This property is
+   * omitted if no properties have any decorators.
    */
   propDecorators?: o.Expression;
 }
