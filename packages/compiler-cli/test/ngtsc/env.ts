@@ -30,6 +30,7 @@ export class NgtscTestEnvironment {
   private multiCompileHostExt: MultiCompileHostExt|null = null;
   private oldProgram: Program|null = null;
   private changedResources: Set<string>|null = null;
+  private commandLineArgs = ['-p', this.basePath];
 
   private constructor(
       private fs: FileSystem, readonly outDir: AbsoluteFsPath, readonly basePath: AbsoluteFsPath) {}
@@ -112,6 +113,10 @@ export class NgtscTestEnvironment {
    */
   enablePreloading(): void {
     setWrapHostForTest(makeWrapHost(new ResourceLoadingCompileHost(this.fs)));
+  }
+
+  addCommandLineArgs(...args: string[]): void {
+    this.commandLineArgs.push(...args);
   }
 
   flushWrittenFileTracking(): void {
@@ -214,7 +219,7 @@ export class NgtscTestEnvironment {
       };
     }
     const exitCode = main(
-        ['-p', this.basePath], errorSpy, undefined, customTransformers, reuseProgram,
+        this.commandLineArgs, errorSpy, undefined, customTransformers, reuseProgram,
         this.changedResources);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
@@ -236,7 +241,7 @@ export class NgtscTestEnvironment {
     }
 
     const diags = mainDiagnosticsForTest(
-        ['-p', this.basePath], undefined, reuseProgram, this.changedResources);
+        this.commandLineArgs, undefined, reuseProgram, this.changedResources);
 
 
     if (this.multiCompileHostExt !== null) {
@@ -248,7 +253,7 @@ export class NgtscTestEnvironment {
   }
 
   async driveDiagnosticsAsync(): Promise<ReadonlyArray<ts.Diagnostic>> {
-    const {rootNames, options} = readNgcCommandLineAndConfiguration(['-p', this.basePath]);
+    const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
     await program.loadNgStructureAsync();
@@ -258,14 +263,14 @@ export class NgtscTestEnvironment {
   }
 
   driveRoutes(entryPoint?: string): LazyRoute[] {
-    const {rootNames, options} = readNgcCommandLineAndConfiguration(['-p', this.basePath]);
+    const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
     return program.listLazyRoutes(entryPoint);
   }
 
   driveIndexer(): Map<DeclarationNode, IndexedComponent> {
-    const {rootNames, options} = readNgcCommandLineAndConfiguration(['-p', this.basePath]);
+    const {rootNames, options} = readNgcCommandLineAndConfiguration(this.commandLineArgs);
     const host = createCompilerHost({options});
     const program = createProgram({rootNames, host, options});
     return (program as NgtscProgram).getIndexedComponents();
