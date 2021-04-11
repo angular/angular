@@ -208,6 +208,7 @@ class TestApp {
   width = 200;
   color = 'red';
   isClosed = true;
+  constructor(public renderer: Renderer2) {}
 }
 
 @Component({selector: 'test-cmpt', template: ``})
@@ -616,6 +617,22 @@ class TestCmptWithPropInterpolation {
       fixture.detectChanges();
 
       expect(fixture.debugElement.query(By.css('.myclass'))).toBeTruthy();
+    });
+
+    it('should not throw when calling DebugRenderer2.destroyNode twice in a row', () => {
+      const fixture = TestBed.createComponent(TestApp);
+      fixture.detectChanges();
+      const firstChild = fixture.debugElement.children[0];
+      const renderer = fixture.componentInstance.renderer;
+
+      expect(firstChild).toBeTruthy();
+      expect(() => {
+        // `destroyNode` needs to be null checked, because only ViewEngine provides a
+        // `DebugRenderer2` which has the behavior we're testing for. Ivy provides
+        // `BaseAnimationRenderer` which doesn't have the issue.
+        renderer.destroyNode?.(firstChild);
+        renderer.destroyNode?.(firstChild);
+      }).not.toThrow();
     });
 
     describe('DebugElement.query with dynamically created descendant elements', () => {
