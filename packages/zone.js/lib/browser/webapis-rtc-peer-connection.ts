@@ -22,5 +22,5 @@ Zone.__load_patch('RTCPeerConnection', (global: any, Zone: ZoneType, api: _ZoneP
   RTCPeerConnection.prototype[addSymbol] = null;
   RTCPeerConnection.prototype[removeSymbol] = null;
 
-  api.patchEventTarget(global, [RTCPeerConnection.prototype], {useG: false});
+  api.patchEventTarget(global, api, [RTCPeerConnection.prototype], {useG: false});
 });
