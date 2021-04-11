@@ -2493,92 +2493,109 @@ describe('Zone', function() {
 
       it('should be able to continue to invoke remaining listeners even some listener throw error',
          function(done: DoneFn) {
-           let logs: string[] = [];
-           const listener1 = function() {
-             logs.push('listener1');
-           };
-           const listener2 = function() {
-             throw new Error('test1');
-           };
-           const listener3 = function() {
-             throw new Error('test2');
-           };
-           const listener4 = {
-             handleEvent: function() {
-               logs.push('listener2');
-             }
-           };
+           // override global.onerror to prevent jasmine report error
+           let oriWindowOnError = window.onerror;
+           window.onerror = function() {};
+           try {
+             let logs: string[] = [];
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               throw new Error('test1');
+             };
+             const listener3 = function() {
+               throw new Error('test2');
+             };
+             const listener4 = {
+               handleEvent: function() {
+                 logs.push('listener2');
+               }
+             };
 
-           button.addEventListener('click', listener1);
-           button.addEventListener('click', listener2);
-           button.addEventListener('click', listener3);
-           button.addEventListener('click', listener4);
+             button.addEventListener('click', listener1);
+             button.addEventListener('click', listener2);
+             button.addEventListener('click', listener3);
+             button.addEventListener('click', listener4);
 
-           const mouseEvent = document.createEvent('MouseEvent');
-           mouseEvent.initEvent('click', true, true);
+             const mouseEvent = document.createEvent('MouseEvent');
+             mouseEvent.initEvent('click', true, true);
 
-           const unhandledRejection = (e: PromiseRejectionEvent) => {
-             logs.push(e.reason.message);
-           };
-           window.addEventListener('unhandledrejection', unhandledRejection);
+             const unhandledRejection = (e: PromiseRejectionEvent) => {
+               logs.push(e.reason.message);
+             };
+             window.addEventListener('unhandledrejection', unhandledRejection);
 
-           button.dispatchEvent(mouseEvent);
-           expect(logs).toEqual(['listener1', 'listener2']);
+             button.dispatchEvent(mouseEvent);
+             expect(logs).toEqual(['listener1', 'listener2']);
 
-           setTimeout(() => {
-             expect(logs).toEqual(['listener1', 'listener2', 'test1', 'test2']);
-             window.removeEventListener('unhandledrejection', unhandledRejection);
-             done()
-           });
+             setTimeout(() => {
+               expect(logs).toEqual(['listener1', 'listener2', 'test1', 'test2']);
+               window.removeEventListener('unhandledrejection', unhandledRejection);
+               window.onerror = oriWindowOnError;
+               done()
+             });
+           } catch (e: any) {
+             window.onerror = oriWindowOnError;
+           }
          });
 
       it('should be able to continue to invoke remaining listeners even some listener throw error in the different zones',
          function(done: DoneFn) {
-           let logs: string[] = [];
-           const zone1 = Zone.current.fork({
-             name: 'zone1',
-             onHandleError: (delegate, curr, target, error) => {
-               logs.push(error.message);
-               return false;
-             }
-           });
-           const listener1 = function() {
-             logs.push('listener1');
-           };
-           const listener2 = function() {
-             throw new Error('test1');
-           };
-           const listener3 = function() {
-             throw new Error('test2');
-           };
-           const listener4 = {
-             handleEvent: function() {
-               logs.push('listener2');
-             }
-           };
+           // override global.onerror to prevent jasmine report error
+           let oriWindowOnError = window.onerror;
+           window.onerror = function() {};
+           try {
+             let logs: string[] = [];
+             const zone1 = Zone.current.fork({
+               name: 'zone1',
+               onHandleError: (delegate, curr, target, error) => {
+                 logs.push(error.message);
+                 return false;
+               }
+             });
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               throw new Error('test1');
+             };
+             const listener3 = function() {
+               throw new Error('test2');
+             };
+             const listener4 = {
+               handleEvent: function() {
+                 logs.push('listener2');
+               }
+             };
 
-           button.addEventListener('click', listener1);
-           zone1.run(() => {
-             button.addEventListener('click', listener2);
-           });
-           button.addEventListener('click', listener3);
-           button.addEventListener('click', listener4);
+             button.addEventListener('click', listener1);
+             zone1.run(() => {
+               button.addEventListener('click', listener2);
+             });
+             button.addEventListener('click', listener3);
+             button.addEventListener('click', listener4);
 
-           const mouseEvent = document.createEvent('MouseEvent');
-           mouseEvent.initEvent('click', true, true);
+             const mouseEvent = document.createEvent('MouseEvent');
+             mouseEvent.initEvent('click', true, true);
 
-           const unhandledRejection = (e: PromiseRejectionEvent) => {
-             logs.push(e.reason.message);
-           };
-           window.addEventListener('unhandledrejection', unhandledRejection);
+             const unhandledRejection = (e: PromiseRejectionEvent) => {
+               logs.push(e.reason.message);
+             };
+             window.addEventListener('unhandledrejection', unhandledRejection);
 
-           button.dispatchEvent(mouseEvent);
-           expect(logs).toEqual(['listener1', 'test1', 'listener2']);
+             button.dispatchEvent(mouseEvent);
+             expect(logs).toEqual(['listener1', 'test1', 'listener2']);
 
-           setTimeout(() => {
-             expect(logs).toEqual(['listener1', 'test1', 'listener2', 'test2']);
-             done()
-           });
+             setTimeout(() => {
+               expect(logs).toEqual(['listener1', 'test1', 'listener2', 'test2']);
+               window.removeEventListener('unhandledrejection', unhandledRejection);
+               window.onerror = oriWindowOnError;
+               done()
+             });
+           } catch (e: any) {
+             window.onerror = oriWindowOnError;
+           }
          });
     });
 
