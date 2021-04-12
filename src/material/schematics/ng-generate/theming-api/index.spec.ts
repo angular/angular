@@ -101,6 +101,7 @@ describe('Material theming API schematic', () => {
     const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
     expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
       `@use '~@angular/cdk' as cdk;`,
+      ``,
       `@include cdk.overlay();`,
       ``,
       `.my-dialog {`,
@@ -142,8 +143,8 @@ describe('Material theming API schematic', () => {
 
     const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
     expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
-      `@use '~@angular/cdk' as cdk;`,
       `@use '~@angular/material' as mat;`,
+      `@use '~@angular/cdk' as cdk;`,
       `@import './foo'`,
       ``,
       `@include cdk.overlay();`,
@@ -483,5 +484,26 @@ describe('Material theming API schematic', () => {
       `@include mat.datepicker-theme();`,
     ]);
   });
+
+  it('should not change files if they have an import, but do not use any symbols', async () => {
+    const app = await createTestApp(runner);
+    app.create('/theme.scss', [
+      `@import '~@angular/material/theming';`,
+      ``,
+      `.my-dialog {`,
+        `color: red;`,
+      `}`,
+    ].join('\n'));
+
+    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
+    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+      `@import '~@angular/material/theming';`,
+      ``,
+      `.my-dialog {`,
+        `color: red;`,
+      `}`,
+    ]);
+  });
+
 
 });

@@ -114,33 +114,32 @@ export function migrateFileContent(content: string,
                                    oldCdkPrefix: string,
                                    newMaterialImportPath: string,
                                    newCdkImportPath: string): string {
-  // Drop the CDK imports and detect their namespaces.
-  const cdkResults = detectAndDropImports(content, oldCdkPrefix);
-  content = cdkResults.content;
+  const materialResults = detectImports(content, oldMaterialPrefix);
+  const cdkResults = detectImports(content, oldCdkPrefix);
 
-  // Drop the Material imports and detect their namespaces.
-  const materialResults = detectAndDropImports(content, oldMaterialPrefix);
-  content = materialResults.content;
-
-  // If nothing has changed, then the file doesn't import the Material theming API.
-  if (materialResults.hasChanged || cdkResults.hasChanged) {
-    // Replacing the imports may have resulted in leading whitespace.
-    content = content.replace(/^\s+/, '');
-    content = migrateCdkSymbols(content, newCdkImportPath, cdkResults.namespaces);
+  // If there are no imports, we don't need to go further.
+  if (materialResults.imports.length > 0 || cdkResults.imports.length > 0) {
+    const initialContent = content;
     content = migrateMaterialSymbols(content, newMaterialImportPath, materialResults.namespaces);
+    content = migrateCdkSymbols(content, newCdkImportPath, cdkResults.namespaces);
+
+    // Only drop the imports if any of the symbols were used within the file.
+    if (content !== initialContent) {
+      content = removeStrings(content, materialResults.imports);
+      content = removeStrings(content, cdkResults.imports);
+      content = content.replace(/^\s+/, '');
+    }
   }
 
   return content;
 }
 
 /**
- * Finds all of the imports matching a prefix, removes them from
- * the content string and returns some information about them.
- * @param content Content from which to remove the imports.
+ * Counts the number of imports with a specific prefix and extracts their namespaces.
+ * @param content File content in which to look for imports.
  * @param prefix Prefix that the imports should start with.
  */
-function detectAndDropImports(content: string, prefix: string):
-  {content: string, hasChanged: boolean, namespaces: string[]} {
+function detectImports(content: string, prefix: string): {imports: string[], namespaces: string[]} {
   if (prefix[prefix.length - 1] !== '/') {
     // Some of the logic further down makes assumptions about the import depth.
     throw Error(`Prefix "${prefix}" has to end in a slash.`);
@@ -150,10 +149,13 @@ function detectAndDropImports(content: string, prefix: string):
   // Since we know that the library doesn't have any name collisions, we can treat all of these
   // namespaces as equivalent.
   const namespaces: string[] = [];
+  const imports: string[] = [];
   const pattern = new RegExp(`@(import|use) +['"]${escapeRegExp(prefix)}.*['"].*;?\n`, 'g');
-  let hasChanged = false;
+  let match: RegExpExecArray | null = null;
 
-  content = content.replace(pattern, (fullImport, type: 'import' | 'use') => {
+  while (match = pattern.exec(content)) {
+    const [fullImport, type] = match;
+
     if (type === 'use') {
       const namespace = extractNamespaceFromUseStatement(fullImport);
 
@@ -162,11 +164,10 @@ function detectAndDropImports(content: string, prefix: string):
       }
     }
 
-    hasChanged = true;
-    return '';
-  });
+    imports.push(fullImport);
+  }
 
-  return {content, hasChanged, namespaces};
+  return {imports, namespaces};
 }
 
 /** Migrates the Material symbls in a file. */
@@ -301,6 +302,11 @@ function escapeRegExp(str: string): string {
 /** Used with `Array.prototype.sort` to order strings in descending length. */
 function sortLengthDescending(a: string, b: string) {
   return b.length - a.length;
+}
+
+/** Removes all strings from another string. */
+function removeStrings(content: string, toRemove: string[]): string {
+  return toRemove.reduce((accumulator, current) => accumulator.replace(current, ''), content);
 }
 
 /** Parses out the namespace from a Sass `@use` statement. */
