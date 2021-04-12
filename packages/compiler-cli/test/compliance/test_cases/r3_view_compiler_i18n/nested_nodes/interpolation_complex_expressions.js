@@ -12,7 +12,7 @@ template: function MyComponent_Template(rf, ctx) {
     $r3$.ɵɵelementEnd();
   }
   if (rf & 2) {
-    let $tmp_2_0$ = null;
+    let $tmp_2_0$;
     $r3$.ɵɵadvance(2);
     $r3$.ɵɵi18nExp($r3$.ɵɵpipeBind1(2, 3, ctx.valueA))
                   (ctx.valueA == null ? null : ctx.valueA.a == null ? null : ctx.valueA.a.b)

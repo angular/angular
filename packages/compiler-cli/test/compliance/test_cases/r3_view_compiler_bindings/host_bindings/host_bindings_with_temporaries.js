@@ -5,7 +5,7 @@ HostBindingDir.ɵdir = /*@__PURE__*/ $r3$.ɵɵdefineDirective({
     hostVars: 1,
     hostBindings: function HostBindingDir_HostBindings(rf, ctx) {
       if (rf & 2) {
-        let $tmp0$ = null;
+        let $tmp0$;
         $r3$.ɵɵhostProperty("id", ($tmp0$ = ctx.getData()) == null ? null : $tmp0$.id);
       }
     }

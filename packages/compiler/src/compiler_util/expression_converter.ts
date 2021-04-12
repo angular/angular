@@ -259,8 +259,8 @@ function temporaryName(bindingId: string, temporaryNumber: number): string {
   return `tmp_${bindingId}_${temporaryNumber}`;
 }
 
-export function temporaryDeclaration(bindingId: string, temporaryNumber: number): o.Statement {
-  return new o.DeclareVarStmt(temporaryName(bindingId, temporaryNumber), o.NULL_EXPR);
+function temporaryDeclaration(bindingId: string, temporaryNumber: number): o.Statement {
+  return new o.DeclareVarStmt(temporaryName(bindingId, temporaryNumber));
 }
 
 function prependTemporaryDecls(
@@ -728,15 +728,13 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     }
 
     // Produce the conditional
-    return convertToStatementIfNeeded(mode, condition.conditional(o.literal(null), access));
+    return convertToStatementIfNeeded(mode, condition.conditional(o.NULL_EXPR, access));
   }
 
   private convertNullishCoalesce(ast: cdAst.Binary, mode: _Mode): any {
-    // Allocate the temporary variable before visiting the LHS and RHS, because they
-    // may allocate temporary variables too and we don't want them to be reused.
-    const temporary = this.allocateTemporary();
     const left: o.Expression = this._visit(ast.left, _Mode.Expression);
     const right: o.Expression = this._visit(ast.right, _Mode.Expression);
+    const temporary = this.allocateTemporary();
     this.releaseTemporary(temporary);
 
     // Generate the following expression. It is identical to how TS
