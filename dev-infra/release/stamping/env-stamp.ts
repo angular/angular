@@ -7,8 +7,8 @@
  */
 
 import {join} from 'path';
+import {GitClient} from '../../utils/git/index';
 
-import {getRepoBaseDir} from '../../utils/config';
 import {exec as _exec} from '../../utils/shelljs';
 
 export type EnvStampMode = 'snapshot'|'release';
@@ -51,7 +51,8 @@ function hasLocalChanges() {
  */
 function getSCMVersion(mode: EnvStampMode) {
   if (mode === 'release') {
-    const packageJsonPath = join(getRepoBaseDir(), 'package.json');
+    const git = GitClient.getInstance();
+    const packageJsonPath = join(git.baseDir, 'package.json');
     const {version} = require(packageJsonPath);
     return version;
   }

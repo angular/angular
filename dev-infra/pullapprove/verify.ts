@@ -8,17 +8,17 @@
 import {readFileSync} from 'fs';
 import {resolve} from 'path';
 
-import {getRepoBaseDir} from '../utils/config';
 import {debug, info} from '../utils/console';
-import {allFiles} from '../utils/repo-files';
+import {GitClient} from '../utils/git/index';
 import {logGroup, logHeader} from './logging';
 import {getGroupsFromYaml} from './parse-yaml';
 
 export function verify() {
+  const git = GitClient.getInstance();
   /** Full path to PullApprove config file */
-  const PULL_APPROVE_YAML_PATH = resolve(getRepoBaseDir(), '.pullapprove.yml');
+  const PULL_APPROVE_YAML_PATH = resolve(git.baseDir, '.pullapprove.yml');
   /** All tracked files in the repository. */
-  const REPO_FILES = allFiles();
+  const REPO_FILES = git.allFiles();
   /** The pull approve config file. */
   const pullApproveYamlRaw = readFileSync(PULL_APPROVE_YAML_PATH, 'utf8');
   /** All of the groups defined in the pullapprove yaml. */

@@ -9,13 +9,12 @@ var chalk = _interopDefault(require('chalk'));
 var fs = require('fs');
 var inquirer = require('inquirer');
 var path = require('path');
-var shelljs = require('shelljs');
-var url = require('url');
 var child_process = require('child_process');
 var semver = require('semver');
 var graphql = require('@octokit/graphql');
 var Octokit = require('@octokit/rest');
 var typedGraphqlify = require('typed-graphqlify');
+var url = require('url');
 var fetch = _interopDefault(require('node-fetch'));
 var multimatch = require('multimatch');
 var yaml = require('yaml');
@@ -23,26 +22,12 @@ var conventionalCommitsParser = require('conventional-commits-parser');
 var gitCommits_ = require('git-raw-commits');
 var cliProgress = require('cli-progress');
 var os = require('os');
+var shelljs = require('shelljs');
 var minimatch = require('minimatch');
 var ora = require('ora');
 require('ejs');
 var glob = require('glob');
 var ts = require('typescript');
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/**
- * Runs an given command as child process. By default, child process
- * output will not be printed.
- */
-function exec(cmd, opts) {
-    return shelljs.exec(cmd, tslib.__assign(tslib.__assign({ silent: true }, opts), { async: false }));
-}
 
 /**
  * @license
@@ -83,15 +68,12 @@ var cachedConfig = null;
 var USER_CONFIG_FILE_PATH = '.ng-dev.user';
 /** The local user configuration for ng-dev. */
 var userConfig = null;
-/**
- * Get the configuration from the file system, returning the already loaded
- * copy if it is defined.
- */
-function getConfig() {
+function getConfig(baseDir) {
     // If the global config is not defined, load it from the file system.
     if (cachedConfig === null) {
+        baseDir = baseDir || GitClient.getInstance().getBaseDir();
         // The full path to the configuration file.
-        var configPath = path.join(getRepoBaseDir(), CONFIG_FILE_PATH);
+        var configPath = path.join(baseDir, CONFIG_FILE_PATH);
         // Read the configuration and validate it before caching it for the future.
         cachedConfig = validateCommonConfig(readConfigFile(configPath));
     }
@@ -172,16 +154,6 @@ function assertNoErrors(errors) {
     }
     process.exit(1);
 }
-/** Gets the path of the directory for the repository base. */
-function getRepoBaseDir() {
-    var baseRepoDir = exec("git rev-parse --show-toplevel");
-    if (baseRepoDir.code) {
-        throw Error("Unable to find the path to the base directory of the repository.\n" +
-            "Was the command run from inside of the repo?\n\n" +
-            ("ERROR:\n " + baseRepoDir.stderr));
-    }
-    return baseRepoDir.trim();
-}
 /**
  * Get the local user configuration from the file system, returning the already loaded copy if it is
  * defined.
@@ -192,217 +164,15 @@ function getRepoBaseDir() {
 function getUserConfig() {
     // If the global config is not defined, load it from the file system.
     if (userConfig === null) {
+        var git = GitClient.getInstance();
         // The full path to the configuration file.
-        var configPath = path.join(getRepoBaseDir(), USER_CONFIG_FILE_PATH);
+        var configPath = path.join(git.baseDir, USER_CONFIG_FILE_PATH);
         // Set the global config object.
         userConfig = readConfigFile(configPath, true);
     }
     // Return a clone of the user config to ensure that a new instance of the config is returned
     // each time, preventing unexpected effects of modifications to the config object.
     return tslib.__assign({}, userConfig);
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/** Reexport of chalk colors for convenient access. */
-var red = chalk.red;
-var green = chalk.green;
-var yellow = chalk.yellow;
-var bold = chalk.bold;
-var blue = chalk.blue;
-/** Prompts the user with a confirmation question and a specified message. */
-function promptConfirm(message, defaultValue) {
-    if (defaultValue === void 0) { defaultValue = false; }
-    return tslib.__awaiter(this, void 0, void 0, function () {
-        return tslib.__generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4 /*yield*/, inquirer.prompt({
-                        type: 'confirm',
-                        name: 'result',
-                        message: message,
-                        default: defaultValue,
-                    })];
-                case 1: return [2 /*return*/, (_a.sent())
-                        .result];
-            }
-        });
-    });
-}
-/**
- * Supported levels for logging functions.
- *
- * Levels are mapped to numbers to represent a hierarchy of logging levels.
- */
-var LOG_LEVELS;
-(function (LOG_LEVELS) {
-    LOG_LEVELS[LOG_LEVELS["SILENT"] = 0] = "SILENT";
-    LOG_LEVELS[LOG_LEVELS["ERROR"] = 1] = "ERROR";
-    LOG_LEVELS[LOG_LEVELS["WARN"] = 2] = "WARN";
-    LOG_LEVELS[LOG_LEVELS["LOG"] = 3] = "LOG";
-    LOG_LEVELS[LOG_LEVELS["INFO"] = 4] = "INFO";
-    LOG_LEVELS[LOG_LEVELS["DEBUG"] = 5] = "DEBUG";
-})(LOG_LEVELS || (LOG_LEVELS = {}));
-/** Default log level for the tool. */
-var DEFAULT_LOG_LEVEL = LOG_LEVELS.INFO;
-/** Write to the console for at INFO logging level */
-var info = buildLogLevelFunction(function () { return console.info; }, LOG_LEVELS.INFO);
-/** Write to the console for at ERROR logging level */
-var error = buildLogLevelFunction(function () { return console.error; }, LOG_LEVELS.ERROR);
-/** Write to the console for at DEBUG logging level */
-var debug = buildLogLevelFunction(function () { return console.debug; }, LOG_LEVELS.DEBUG);
-/** Write to the console for at LOG logging level */
-// tslint:disable-next-line: no-console
-var log = buildLogLevelFunction(function () { return console.log; }, LOG_LEVELS.LOG);
-/** Write to the console for at WARN logging level */
-var warn = buildLogLevelFunction(function () { return console.warn; }, LOG_LEVELS.WARN);
-/** Build an instance of a logging function for the provided level. */
-function buildLogLevelFunction(loadCommand, level) {
-    /** Write to stdout for the LOG_LEVEL. */
-    var loggingFunction = function () {
-        var text = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            text[_i] = arguments[_i];
-        }
-        runConsoleCommand.apply(void 0, tslib.__spreadArray([loadCommand, level], tslib.__read(text)));
-    };
-    /** Start a group at the LOG_LEVEL, optionally starting it as collapsed. */
-    loggingFunction.group = function (text, collapsed) {
-        if (collapsed === void 0) { collapsed = false; }
-        var command = collapsed ? console.groupCollapsed : console.group;
-        runConsoleCommand(function () { return command; }, level, text);
-    };
-    /** End the group at the LOG_LEVEL. */
-    loggingFunction.groupEnd = function () {
-        runConsoleCommand(function () { return console.groupEnd; }, level);
-    };
-    return loggingFunction;
-}
-/**
- * Run the console command provided, if the environments logging level greater than the
- * provided logging level.
- *
- * The loadCommand takes in a function which is called to retrieve the console.* function
- * to allow for jasmine spies to still work in testing.  Without this method of retrieval
- * the console.* function, the function is saved into the closure of the created logging
- * function before jasmine can spy.
- */
-function runConsoleCommand(loadCommand, logLevel) {
-    var text = [];
-    for (var _i = 2; _i < arguments.length; _i++) {
-        text[_i - 2] = arguments[_i];
-    }
-    if (getLogLevel() >= logLevel) {
-        loadCommand().apply(void 0, tslib.__spreadArray([], tslib.__read(text)));
-    }
-    printToLogFile.apply(void 0, tslib.__spreadArray([logLevel], tslib.__read(text)));
-}
-/**
- * Retrieve the log level from environment variables, if the value found
- * based on the LOG_LEVEL environment variable is undefined, return the default
- * logging level.
- */
-function getLogLevel() {
-    var logLevelEnvValue = (process.env["LOG_LEVEL"] || '').toUpperCase();
-    var logLevel = LOG_LEVELS[logLevelEnvValue];
-    if (logLevel === undefined) {
-        return DEFAULT_LOG_LEVEL;
-    }
-    return logLevel;
-}
-/** All text to write to the log file. */
-var LOGGED_TEXT = '';
-/** Whether file logging as been enabled. */
-var FILE_LOGGING_ENABLED = false;
-/**
- * The number of columns used in the prepended log level information on each line of the logging
- * output file.
- */
-var LOG_LEVEL_COLUMNS = 7;
-/**
- * Enable writing the logged outputs to the log file on process exit, sets initial lines from the
- * command execution, containing information about the timing and command parameters.
- *
- * This is expected to be called only once during a command run, and should be called by the
- * middleware of yargs to enable the file logging before the rest of the command parsing and
- * response is executed.
- */
-function captureLogOutputForCommand(argv) {
-    if (FILE_LOGGING_ENABLED) {
-        throw Error('`captureLogOutputForCommand` cannot be called multiple times');
-    }
-    /** The date time used for timestamping when the command was invoked. */
-    var now = new Date();
-    /** Header line to separate command runs in log files. */
-    var headerLine = Array(100).fill('#').join('');
-    LOGGED_TEXT += headerLine + "\nCommand: " + argv.$0 + " " + argv._.join(' ') + "\nRan at: " + now + "\n";
-    // On process exit, write the logged output to the appropriate log files
-    process.on('exit', function (code) {
-        LOGGED_TEXT += headerLine + "\n";
-        LOGGED_TEXT += "Command ran in " + (new Date().getTime() - now.getTime()) + "ms\n";
-        LOGGED_TEXT += "Exit Code: " + code + "\n";
-        /** Path to the log file location. */
-        var logFilePath = path.join(getRepoBaseDir(), '.ng-dev.log');
-        // Strip ANSI escape codes from log outputs.
-        LOGGED_TEXT = LOGGED_TEXT.replace(/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]/g, '');
-        fs.writeFileSync(logFilePath, LOGGED_TEXT);
-        // For failure codes greater than 1, the new logged lines should be written to a specific log
-        // file for the command run failure.
-        if (code > 1) {
-            var logFileName = ".ng-dev.err-" + now.getTime() + ".log";
-            console.error("Exit code: " + code + ". Writing full log to " + logFileName);
-            fs.writeFileSync(path.join(getRepoBaseDir(), logFileName), LOGGED_TEXT);
-        }
-    });
-    // Mark file logging as enabled to prevent the function from executing multiple times.
-    FILE_LOGGING_ENABLED = true;
-}
-/** Write the provided text to the log file, prepending each line with the log level.  */
-function printToLogFile(logLevel) {
-    var text = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        text[_i - 1] = arguments[_i];
-    }
-    var logLevelText = (LOG_LEVELS[logLevel] + ":").padEnd(LOG_LEVEL_COLUMNS);
-    LOGGED_TEXT += text.join(' ').split('\n').map(function (l) { return logLevelText + " " + l + "\n"; }).join('');
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
-/** URL to the Github page where personal access tokens can be managed. */
-var GITHUB_TOKEN_SETTINGS_URL = 'https://github.com/settings/tokens';
-/** URL to the Github page where personal access tokens can be generated. */
-var GITHUB_TOKEN_GENERATE_URL = 'https://github.com/settings/tokens/new';
-/** Adds the provided token to the given Github HTTPs remote url. */
-function addTokenToGitHttpsUrl(githubHttpsUrl, token) {
-    var url$1 = new url.URL(githubHttpsUrl);
-    url$1.username = token;
-    return url$1.href;
-}
-/** Gets the repository Git URL for the given github config. */
-function getRepositoryGitUrl(config, githubToken) {
-    if (config.useSsh) {
-        return "git@github.com:" + config.owner + "/" + config.name + ".git";
-    }
-    var baseHttpUrl = "https://github.com/" + config.owner + "/" + config.name + ".git";
-    if (githubToken !== undefined) {
-        return addTokenToGitHttpsUrl(baseHttpUrl, githubToken);
-    }
-    return baseHttpUrl;
-}
-/** Gets a Github URL that refers to a list of recent commits within a specified branch. */
-function getListCommitsInBranchUrl(_a, branchName) {
-    var remoteParams = _a.remoteParams;
-    return "https://github.com/" + remoteParams.owner + "/" + remoteParams.repo + "/commits/" + branchName;
 }
 
 /**
@@ -538,6 +308,40 @@ var GithubClient = /** @class */ (function (_super) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+/** URL to the Github page where personal access tokens can be managed. */
+var GITHUB_TOKEN_SETTINGS_URL = 'https://github.com/settings/tokens';
+/** URL to the Github page where personal access tokens can be generated. */
+var GITHUB_TOKEN_GENERATE_URL = 'https://github.com/settings/tokens/new';
+/** Adds the provided token to the given Github HTTPs remote url. */
+function addTokenToGitHttpsUrl(githubHttpsUrl, token) {
+    var url$1 = new url.URL(githubHttpsUrl);
+    url$1.username = token;
+    return url$1.href;
+}
+/** Gets the repository Git URL for the given github config. */
+function getRepositoryGitUrl(config, githubToken) {
+    if (config.useSsh) {
+        return "git@github.com:" + config.owner + "/" + config.name + ".git";
+    }
+    var baseHttpUrl = "https://github.com/" + config.owner + "/" + config.name + ".git";
+    if (githubToken !== undefined) {
+        return addTokenToGitHttpsUrl(baseHttpUrl, githubToken);
+    }
+    return baseHttpUrl;
+}
+/** Gets a Github URL that refers to a list of recent commits within a specified branch. */
+function getListCommitsInBranchUrl(_a, branchName) {
+    var remoteParams = _a.remoteParams;
+    return "https://github.com/" + remoteParams.owner + "/" + remoteParams.repo + "/commits/" + branchName;
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
 /** Error for failed Git commands. */
 var GitCommandError = /** @class */ (function (_super) {
     tslib.__extends(GitCommandError, _super);
@@ -565,14 +369,10 @@ var GitClient = /** @class */ (function () {
     /**
      * @param githubToken The github token used for authentication, if provided.
      * @param _config The configuration, containing the github specific configuration.
-     * @param _projectRoot The full path to the root of the repository base.
+     * @param baseDir The full path to the root of the repository base.
      */
-    function GitClient(githubToken, _config, _projectRoot) {
-        if (_config === void 0) { _config = getConfig(); }
-        if (_projectRoot === void 0) { _projectRoot = getRepoBaseDir(); }
+    function GitClient(githubToken, config, baseDir) {
         this.githubToken = githubToken;
-        this._config = _config;
-        this._projectRoot = _projectRoot;
         /** Whether verbose logging of Git actions should be used. */
         this.verboseLogging = true;
         /** The OAuth scopes available for the provided Github token. */
@@ -582,12 +382,12 @@ var GitClient = /** @class */ (function () {
          * sanitizing the token from Git child process output.
          */
         this._githubTokenRegex = null;
-        /** Short-hand for accessing the default remote configuration. */
-        this.remoteConfig = this._config.github;
-        /** Octokit request parameters object for targeting the configured remote. */
-        this.remoteParams = { owner: this.remoteConfig.owner, repo: this.remoteConfig.name };
-        /** Instance of the authenticated Github octokit API. */
+        /** Instance of the Github octokit API. */
         this.github = new GithubClient(this.githubToken);
+        this.baseDir = baseDir || this.determineBaseDir();
+        this.config = config || getConfig(this.baseDir);
+        this.remoteConfig = this.config.github;
+        this.remoteParams = { owner: this.remoteConfig.owner, repo: this.remoteConfig.name };
         // If a token has been specified (and is not empty), pass it to the Octokit API and
         // also create a regular expression that can be used for sanitizing Git command output
         // so that it does not print the token accidentally.
@@ -657,7 +457,7 @@ var GitClient = /** @class */ (function () {
         // Note that we do not want to print the token if it is contained in the command. It's common
         // to share errors with others if the tool failed, and we do not want to leak tokens.
         printFn('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
-        var result = child_process.spawnSync('git', args, tslib.__assign(tslib.__assign({ cwd: this._projectRoot, stdio: 'pipe' }, options), { 
+        var result = child_process.spawnSync('git', args, tslib.__assign(tslib.__assign({ cwd: this.baseDir, stdio: 'pipe' }, options), { 
             // Encoding is always `utf8` and not overridable. This ensures that this method
             // always returns `string` as output instead of buffers.
             encoding: 'utf8' }));
@@ -733,6 +533,32 @@ var GitClient = /** @class */ (function () {
         }
         return new semver.SemVer(latestTag, semVerOptions);
     };
+    /** Gets the path of the directory for the repository base. */
+    GitClient.prototype.getBaseDir = function () {
+        var previousVerboseLoggingState = this.verboseLogging;
+        this.setVerboseLoggingState(false);
+        var _a = this.runGraceful(['rev-parse', '--show-toplevel']), stdout = _a.stdout, stderr = _a.stderr, status = _a.status;
+        this.setVerboseLoggingState(previousVerboseLoggingState);
+        if (status !== 0) {
+            throw Error("Unable to find the path to the base directory of the repository.\n" +
+                "Was the command run from inside of the repo?\n\n" +
+                ("ERROR:\n " + stderr));
+        }
+        return stdout.trim();
+    };
+    /** Retrieve a list of all files in the repostitory changed since the provided shaOrRef. */
+    GitClient.prototype.allChangesFilesSince = function (shaOrRef) {
+        if (shaOrRef === void 0) { shaOrRef = 'HEAD'; }
+        return Array.from(new Set(tslib.__spreadArray(tslib.__spreadArray([], tslib.__read(gitOutputAsArray(this.runGraceful(['diff', '--name-only', '--diff-filter=d', shaOrRef])))), tslib.__read(gitOutputAsArray(this.runGraceful(['ls-files', '--others', '--exclude-standard']))))));
+    };
+    /** Retrieve a list of all files currently staged in the repostitory. */
+    GitClient.prototype.allStagedFiles = function () {
+        return gitOutputAsArray(this.runGraceful(['diff', '--name-only', '--diff-filter=ACM', '--staged']));
+    };
+    /** Retrieve a list of all files tracked in the repostitory. */
+    GitClient.prototype.allFiles = function () {
+        return gitOutputAsArray(this.runGraceful(['ls-files']));
+    };
     /**
      * Assert the GitClient instance is using a token with permissions for the all of the
      * provided OAuth scopes.
@@ -778,8 +604,200 @@ var GitClient = /** @class */ (function () {
             return scopes.split(',').map(function (scope) { return scope.trim(); });
         });
     };
+    GitClient.prototype.determineBaseDir = function () {
+        this.setVerboseLoggingState(false);
+        var _a = this.runGraceful(['rev-parse', '--show-toplevel']), stdout = _a.stdout, stderr = _a.stderr, status = _a.status;
+        if (status !== 0) {
+            throw Error("Unable to find the path to the base directory of the repository.\n" +
+                "Was the command run from inside of the repo?\n\n" +
+                ("ERROR:\n " + stderr));
+        }
+        this.setVerboseLoggingState(true);
+        return stdout.trim();
+    };
     return GitClient;
 }());
+/**
+ * Takes the output from `GitClient.run` and `GitClient.runGraceful` and returns an array of strings
+ * for each new line. Git commands typically return multiple output values for a command a set of
+ * strings separated by new lines.
+ *
+ * Note: This is specifically created as a locally available function for usage as convience utility
+ * within `GitClient`'s methods to create outputs as array.
+ */
+function gitOutputAsArray(gitCommandResult) {
+    return gitCommandResult.stdout.split('\n').map(function (x) { return x.trim(); }).filter(function (x) { return !!x; });
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/** Reexport of chalk colors for convenient access. */
+var red = chalk.red;
+var green = chalk.green;
+var yellow = chalk.yellow;
+var bold = chalk.bold;
+var blue = chalk.blue;
+/** Prompts the user with a confirmation question and a specified message. */
+function promptConfirm(message, defaultValue) {
+    if (defaultValue === void 0) { defaultValue = false; }
+    return tslib.__awaiter(this, void 0, void 0, function () {
+        return tslib.__generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, inquirer.prompt({
+                        type: 'confirm',
+                        name: 'result',
+                        message: message,
+                        default: defaultValue,
+                    })];
+                case 1: return [2 /*return*/, (_a.sent())
+                        .result];
+            }
+        });
+    });
+}
+/**
+ * Supported levels for logging functions.
+ *
+ * Levels are mapped to numbers to represent a hierarchy of logging levels.
+ */
+var LOG_LEVELS;
+(function (LOG_LEVELS) {
+    LOG_LEVELS[LOG_LEVELS["SILENT"] = 0] = "SILENT";
+    LOG_LEVELS[LOG_LEVELS["ERROR"] = 1] = "ERROR";
+    LOG_LEVELS[LOG_LEVELS["WARN"] = 2] = "WARN";
+    LOG_LEVELS[LOG_LEVELS["LOG"] = 3] = "LOG";
+    LOG_LEVELS[LOG_LEVELS["INFO"] = 4] = "INFO";
+    LOG_LEVELS[LOG_LEVELS["DEBUG"] = 5] = "DEBUG";
+})(LOG_LEVELS || (LOG_LEVELS = {}));
+/** Default log level for the tool. */
+var DEFAULT_LOG_LEVEL = LOG_LEVELS.INFO;
+/** Write to the console for at INFO logging level */
+var info = buildLogLevelFunction(function () { return console.info; }, LOG_LEVELS.INFO);
+/** Write to the console for at ERROR logging level */
+var error = buildLogLevelFunction(function () { return console.error; }, LOG_LEVELS.ERROR);
+/** Write to the console for at DEBUG logging level */
+var debug = buildLogLevelFunction(function () { return console.debug; }, LOG_LEVELS.DEBUG);
+/** Write to the console for at LOG logging level */
+// tslint:disable-next-line: no-console
+var log = buildLogLevelFunction(function () { return console.log; }, LOG_LEVELS.LOG);
+/** Write to the console for at WARN logging level */
+var warn = buildLogLevelFunction(function () { return console.warn; }, LOG_LEVELS.WARN);
+/** Build an instance of a logging function for the provided level. */
+function buildLogLevelFunction(loadCommand, level) {
+    /** Write to stdout for the LOG_LEVEL. */
+    var loggingFunction = function () {
+        var text = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            text[_i] = arguments[_i];
+        }
+        runConsoleCommand.apply(void 0, tslib.__spreadArray([loadCommand, level], tslib.__read(text)));
+    };
+    /** Start a group at the LOG_LEVEL, optionally starting it as collapsed. */
+    loggingFunction.group = function (text, collapsed) {
+        if (collapsed === void 0) { collapsed = false; }
+        var command = collapsed ? console.groupCollapsed : console.group;
+        runConsoleCommand(function () { return command; }, level, text);
+    };
+    /** End the group at the LOG_LEVEL. */
+    loggingFunction.groupEnd = function () {
+        runConsoleCommand(function () { return console.groupEnd; }, level);
+    };
+    return loggingFunction;
+}
+/**
+ * Run the console command provided, if the environments logging level greater than the
+ * provided logging level.
+ *
+ * The loadCommand takes in a function which is called to retrieve the console.* function
+ * to allow for jasmine spies to still work in testing.  Without this method of retrieval
+ * the console.* function, the function is saved into the closure of the created logging
+ * function before jasmine can spy.
+ */
+function runConsoleCommand(loadCommand, logLevel) {
+    var text = [];
+    for (var _i = 2; _i < arguments.length; _i++) {
+        text[_i - 2] = arguments[_i];
+    }
+    if (getLogLevel() >= logLevel) {
+        loadCommand().apply(void 0, tslib.__spreadArray([], tslib.__read(text)));
+    }
+    printToLogFile.apply(void 0, tslib.__spreadArray([logLevel], tslib.__read(text)));
+}
+/**
+ * Retrieve the log level from environment variables, if the value found
+ * based on the LOG_LEVEL environment variable is undefined, return the default
+ * logging level.
+ */
+function getLogLevel() {
+    var logLevelEnvValue = (process.env["LOG_LEVEL"] || '').toUpperCase();
+    var logLevel = LOG_LEVELS[logLevelEnvValue];
+    if (logLevel === undefined) {
+        return DEFAULT_LOG_LEVEL;
+    }
+    return logLevel;
+}
+/** All text to write to the log file. */
+var LOGGED_TEXT = '';
+/** Whether file logging as been enabled. */
+var FILE_LOGGING_ENABLED = false;
+/**
+ * The number of columns used in the prepended log level information on each line of the logging
+ * output file.
+ */
+var LOG_LEVEL_COLUMNS = 7;
+/**
+ * Enable writing the logged outputs to the log file on process exit, sets initial lines from the
+ * command execution, containing information about the timing and command parameters.
+ *
+ * This is expected to be called only once during a command run, and should be called by the
+ * middleware of yargs to enable the file logging before the rest of the command parsing and
+ * response is executed.
+ */
+function captureLogOutputForCommand(argv) {
+    if (FILE_LOGGING_ENABLED) {
+        throw Error('`captureLogOutputForCommand` cannot be called multiple times');
+    }
+    var git = GitClient.getInstance();
+    /** The date time used for timestamping when the command was invoked. */
+    var now = new Date();
+    /** Header line to separate command runs in log files. */
+    var headerLine = Array(100).fill('#').join('');
+    LOGGED_TEXT += headerLine + "\nCommand: " + argv.$0 + " " + argv._.join(' ') + "\nRan at: " + now + "\n";
+    // On process exit, write the logged output to the appropriate log files
+    process.on('exit', function (code) {
+        LOGGED_TEXT += headerLine + "\n";
+        LOGGED_TEXT += "Command ran in " + (new Date().getTime() - now.getTime()) + "ms\n";
+        LOGGED_TEXT += "Exit Code: " + code + "\n";
+        /** Path to the log file location. */
+        var logFilePath = path.join(git.baseDir, '.ng-dev.log');
+        // Strip ANSI escape codes from log outputs.
+        LOGGED_TEXT = LOGGED_TEXT.replace(/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]/g, '');
+        fs.writeFileSync(logFilePath, LOGGED_TEXT);
+        // For failure codes greater than 1, the new logged lines should be written to a specific log
+        // file for the command run failure.
+        if (code > 1) {
+            var logFileName = ".ng-dev.err-" + now.getTime() + ".log";
+            console.error("Exit code: " + code + ". Writing full log to " + logFileName);
+            fs.writeFileSync(path.join(git.baseDir, logFileName), LOGGED_TEXT);
+        }
+    });
+    // Mark file logging as enabled to prevent the function from executing multiple times.
+    FILE_LOGGING_ENABLED = true;
+}
+/** Write the provided text to the log file, prepending each line with the log level.  */
+function printToLogFile(logLevel) {
+    var text = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        text[_i - 1] = arguments[_i];
+    }
+    var logLevelText = (LOG_LEVELS[logLevel] + ":").padEnd(LOG_LEVEL_COLUMNS);
+    LOGGED_TEXT += text.join(' ').split('\n').map(function (l) { return logLevelText + " " + l + "\n"; }).join('');
+}
 
 /**
  * @license
@@ -1318,7 +1336,7 @@ class G3Module extends BaseModule {
     }
     getG3FileIncludeAndExcludeLists() {
         var _a, _b, _c, _d;
-        const angularRobotFilePath = path.join(getRepoBaseDir(), '.github/angular-robot.yml');
+        const angularRobotFilePath = path.join(this.git.baseDir, '.github/angular-robot.yml');
         if (!fs.existsSync(angularRobotFilePath)) {
             debug('No angular robot configuration file exists, skipping.');
             return null;
@@ -2059,7 +2077,8 @@ function printValidationErrors(errors, print = error) {
  */
 /** Validate commit message at the provided file path. */
 function validateFile(filePath, isErrorMode) {
-    const commitMessage = fs.readFileSync(path.resolve(getRepoBaseDir(), filePath), 'utf8');
+    const git = GitClient.getInstance();
+    const commitMessage = fs.readFileSync(path.resolve(git.baseDir, filePath), 'utf8');
     const { valid, errors } = validateCommitMessage(commitMessage);
     if (valid) {
         info(`${green('√')}  Valid commit message`);
@@ -2267,47 +2286,6 @@ function buildCommitMessageParser(localYargs) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/**
- * A list of all files currently in the repo which have been modified since the provided sha.
- *
- * git diff
- * Deleted files (--diff-filter=d) are not included as they are not longer present in the repo
- * and can not be checked anymore.
- *
- * git ls-files
- * Untracked files (--others), which are not matched by .gitignore (--exclude-standard)
- * as they are expected to become tracked files.
- */
-function allChangedFilesSince(sha) {
-    if (sha === void 0) { sha = 'HEAD'; }
-    var diffFiles = gitOutputAsArray("git diff --name-only --diff-filter=d " + sha);
-    var untrackedFiles = gitOutputAsArray("git ls-files --others --exclude-standard");
-    // Use a set to deduplicate the list as its possible for a file to show up in both lists.
-    return Array.from(new Set(tslib.__spreadArray(tslib.__spreadArray([], tslib.__read(diffFiles)), tslib.__read(untrackedFiles))));
-}
-/**
- * A list of all staged files which have been modified.
- *
- * Only added, created and modified files are listed as others (deleted, renamed, etc) aren't
- * changed or available as content to act upon.
- */
-function allStagedFiles() {
-    return gitOutputAsArray("git diff --staged --name-only --diff-filter=ACM");
-}
-function allFiles() {
-    return gitOutputAsArray("git ls-files");
-}
-function gitOutputAsArray(cmd) {
-    return exec(cmd, { cwd: getRepoBaseDir() }).split('\n').map(function (x) { return x.trim(); }).filter(function (x) { return !!x; });
-}
-
-/**
- * @license
- * Copyright Google LLC All Rights Reserved.
- *
- * Use of this source code is governed by an MIT-style license that can be
- * found in the LICENSE file at https://angular.io/license
- */
 /** Retrieve and validate the config as `FormatConfig`. */
 function getFormatConfig() {
     // List of errors encountered validating the config.
@@ -2351,6 +2329,7 @@ function checkFormatterConfig(key, config, errors) {
 class Formatter {
     constructor(config) {
         this.config = config;
+        this.git = GitClient.getInstance();
     }
     /**
      * Retrieve the command to execute the provided action, including both the binary
@@ -2414,7 +2393,7 @@ class Buildifier extends Formatter {
     constructor() {
         super(...arguments);
         this.name = 'buildifier';
-        this.binaryFilePath = path.join(getRepoBaseDir(), 'node_modules/.bin/buildifier');
+        this.binaryFilePath = path.join(this.git.baseDir, 'node_modules/.bin/buildifier');
         this.defaultFileMatcher = ['**/*.bzl', '**/BUILD.bazel', '**/WORKSPACE', '**/BUILD'];
         this.actions = {
             check: {
@@ -2459,7 +2438,7 @@ class ClangFormat extends Formatter {
     constructor() {
         super(...arguments);
         this.name = 'clang-format';
-        this.binaryFilePath = path.join(getRepoBaseDir(), 'node_modules/.bin/clang-format');
+        this.binaryFilePath = path.join(this.git.baseDir, 'node_modules/.bin/clang-format');
         this.defaultFileMatcher = ['**/*.{t,j}s'];
         this.actions = {
             check: {
@@ -2674,16 +2653,19 @@ function buildFormatParser(localYargs) {
     })
         .command('all', 'Run the formatter on all files in the repository', args => args, ({ check }) => {
         const executionCmd = check ? checkFiles : formatFiles;
-        executionCmd(allFiles());
+        const allFiles = GitClient.getInstance().allFiles();
+        executionCmd(allFiles);
     })
         .command('changed [shaOrRef]', 'Run the formatter on files changed since the provided sha/ref', args => args.positional('shaOrRef', { type: 'string' }), ({ shaOrRef, check }) => {
         const sha = shaOrRef || 'master';
         const executionCmd = check ? checkFiles : formatFiles;
-        executionCmd(allChangedFilesSince(sha));
+        const allChangedFilesSince = GitClient.getInstance().allChangesFilesSince(sha);
+        executionCmd(allChangedFilesSince);
     })
         .command('staged', 'Run the formatter on all staged files', args => args, ({ check }) => {
         const executionCmd = check ? checkFiles : formatFiles;
-        executionCmd(allStagedFiles());
+        const allStagedFiles = GitClient.getInstance().allStagedFiles();
+        executionCmd(allStagedFiles);
     })
         .command('files <files..>', 'Run the formatter on provided files', args => args.positional('files', { array: true, type: 'string' }), ({ check, files }) => {
         const executionCmd = check ? checkFiles : formatFiles;
@@ -2699,8 +2681,9 @@ function buildFormatParser(localYargs) {
  * found in the LICENSE file at https://angular.io/license
  */
 function verify() {
+    const git = GitClient.getInstance();
     /** Full path to NgBot config file */
-    const NGBOT_CONFIG_YAML_PATH = path.resolve(getRepoBaseDir(), '.github/angular-robot.yml');
+    const NGBOT_CONFIG_YAML_PATH = path.resolve(git.baseDir, '.github/angular-robot.yml');
     /** The NgBot config file */
     const ngBotYaml = fs.readFileSync(NGBOT_CONFIG_YAML_PATH, 'utf8');
     try {
@@ -3175,6 +3158,21 @@ const CheckoutCommandModule = {
     command: 'checkout <pr-number>',
     describe: 'Checkout a PR from the upstream repo',
 };
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
+ * Runs an given command as child process. By default, child process
+ * output will not be printed.
+ */
+function exec(cmd, opts) {
+    return shelljs.exec(cmd, tslib.__assign(tslib.__assign({ silent: true }, opts), { async: false }));
+}
 
 /**
  * @license
@@ -4965,10 +4963,11 @@ function getGroupsFromYaml(pullApproveYamlRaw) {
  * found in the LICENSE file at https://angular.io/license
  */
 function verify$1() {
+    const git = GitClient.getInstance();
     /** Full path to PullApprove config file */
-    const PULL_APPROVE_YAML_PATH = path.resolve(getRepoBaseDir(), '.pullapprove.yml');
+    const PULL_APPROVE_YAML_PATH = path.resolve(git.baseDir, '.pullapprove.yml');
     /** All tracked files in the repository. */
-    const REPO_FILES = allFiles();
+    const REPO_FILES = git.allFiles();
     /** The pull approve config file. */
     const pullApproveYamlRaw = fs.readFileSync(PULL_APPROVE_YAML_PATH, 'utf8');
     /** All of the groups defined in the pullapprove yaml. */
@@ -6787,9 +6786,10 @@ function builder$8(argv) {
 /** Yargs command handler for staging a release. */
 function handler$8(args) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
+        const git = GitClient.getInstance();
         const config = getConfig();
         const releaseConfig = getReleaseConfig(config);
-        const projectDir = getRepoBaseDir();
+        const projectDir = git.baseDir;
         const task = new ReleaseTool(releaseConfig, config.github, args.githubToken, projectDir);
         const result = yield task.run();
         switch (result) {
@@ -6916,7 +6916,8 @@ function hasLocalChanges() {
  */
 function getSCMVersion(mode) {
     if (mode === 'release') {
-        const packageJsonPath = path.join(getRepoBaseDir(), 'package.json');
+        const git = GitClient.getInstance();
+        const packageJsonPath = path.join(git.baseDir, 'package.json');
         const { version } = require(packageJsonPath);
         return version;
     }

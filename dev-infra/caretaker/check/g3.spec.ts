@@ -9,7 +9,7 @@
 import {SpawnSyncReturns} from 'child_process';
 
 import * as console from '../../utils/console';
-import {GitClient} from '../../utils/git';
+import {GitClient} from '../../utils/git/index';
 import {installVirtualGitClientSpies, mockNgDevConfig} from '../../utils/testing';
 
 import {G3Module, G3StatsData} from './g3';

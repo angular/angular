@@ -8,15 +8,16 @@
 import {readFileSync} from 'fs';
 import {resolve} from 'path';
 
-import {getRepoBaseDir} from '../../utils/config';
 import {error, green, info, log, red, yellow} from '../../utils/console';
+import {GitClient} from '../../utils/git/index';
 
 import {deleteCommitMessageDraft, saveCommitMessageDraft} from '../restore-commit-message/commit-message-draft';
 import {printValidationErrors, validateCommitMessage} from '../validate';
 
 /** Validate commit message at the provided file path. */
 export function validateFile(filePath: string, isErrorMode: boolean) {
-  const commitMessage = readFileSync(resolve(getRepoBaseDir(), filePath), 'utf8');
+  const git = GitClient.getInstance();
+  const commitMessage = readFileSync(resolve(git.baseDir, filePath), 'utf8');
   const {valid, errors} = validateCommitMessage(commitMessage);
   if (valid) {
     info(`${green('√')}  Valid commit message`);
