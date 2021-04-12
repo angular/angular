@@ -127,6 +127,10 @@ class TraceDynamicValueVisitor implements DynamicValueVisitor<ts.DiagnosticRelat
     return [makeRelatedInformation(value.node, 'Unknown reference.')];
   }
 
+  visitDynamicType(value: DynamicValue): ts.DiagnosticRelatedInformation[] {
+    return [makeRelatedInformation(value.node, 'Dynamic type.')];
+  }
+
   visitUnsupportedSyntax(value: DynamicValue): ts.DiagnosticRelatedInformation[] {
     return [makeRelatedInformation(value.node, 'This syntax is not supported.')];
   }
