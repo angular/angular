@@ -9,8 +9,7 @@
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 
-import {InjectionToken} from '../di/injection_token';
-import {Type} from '../interface/type';
+import {ProviderToken} from '../di/provider_token';
 import {createElementRef, ElementRef as ViewEngine_ElementRef, unwrapElementRef} from '../linker/element_ref';
 import {QueryList} from '../linker/query_list';
 import {createTemplateRef, TemplateRef as ViewEngine_TemplateRef} from '../linker/template_ref';
@@ -88,7 +87,7 @@ class LQueries_ implements LQueries {
 
 class TQueryMetadata_ implements TQueryMetadata {
   constructor(
-      public predicate: Type<any>|InjectionToken<unknown>|string[], public flags: QueryFlags,
+      public predicate: ProviderToken<unknown>|string[], public flags: QueryFlags,
       public read: any = null) {}
 }
 
@@ -456,7 +455,7 @@ export function ɵɵqueryRefresh(queryList: QueryList<any>): boolean {
  * @codeGenApi
  */
 export function ɵɵviewQuery<T>(
-    predicate: Type<any>|InjectionToken<unknown>|string[], flags: QueryFlags, read?: any): void {
+    predicate: ProviderToken<unknown>|string[], flags: QueryFlags, read?: any): void {
   ngDevMode && assertNumber(flags, 'Expecting flags');
   const tView = getTView();
   if (tView.firstCreatePass) {
@@ -481,8 +480,8 @@ export function ɵɵviewQuery<T>(
  * @codeGenApi
  */
 export function ɵɵcontentQuery<T>(
-    directiveIndex: number, predicate: Type<any>|InjectionToken<unknown>|string[],
-    flags: QueryFlags, read?: any): void {
+    directiveIndex: number, predicate: ProviderToken<unknown>|string[], flags: QueryFlags,
+    read?: any): void {
   ngDevMode && assertNumber(flags, 'Expecting flags');
   const tView = getTView();
   if (tView.firstCreatePass) {

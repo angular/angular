@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../../di/injection_token';
 import {InjectFlags} from '../../di/interface/injector';
-import {AbstractType, Type} from '../../interface/type';
+import {ProviderToken} from '../../di/provider_token';
 import {assertDefined, assertEqual} from '../../util/assert';
 
 import {TDirectiveHostNode} from './node';
@@ -176,8 +175,7 @@ export class NodeInjectorFactory {
   /**
    * The inject implementation to be activated when using the factory.
    */
-  injectImpl: null|
-      (<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>, flags?: InjectFlags) => T);
+  injectImpl: null|(<T>(token: ProviderToken<T>, flags?: InjectFlags) => T);
 
   /**
    * Marker set to true during factory invocation to see if we get into recursive loop.
@@ -280,8 +278,7 @@ export class NodeInjectorFactory {
        * Set to `true` if the token is declared in `viewProviders` (or if it is component).
        */
       isViewProvider: boolean,
-      injectImplementation: null|
-      (<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>, flags?: InjectFlags) => T)) {
+      injectImplementation: null|(<T>(token: ProviderToken<T>, flags?: InjectFlags) => T)) {
     ngDevMode && assertDefined(factory, 'Factory not specified');
     ngDevMode && assertEqual(typeof factory, 'function', 'Expected factory function.');
     this.canSeeViewProviders = isViewProvider;

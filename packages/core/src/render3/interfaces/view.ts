@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../../di/injection_token';
 import {Injector} from '../../di/injector';
+import {ProviderToken} from '../../di/provider_token';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
@@ -904,9 +904,8 @@ export type DestroyHookData = (HookEntry|HookData)[];
  *
  * Injector bloom filters are also stored here.
  */
-export type TData =
-    (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|TStylingKey|
-     Type<any>|InjectionToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string)[];
+export type TData = (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|
+                     TStylingKey|ProviderToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

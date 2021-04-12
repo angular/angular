@@ -18,6 +18,7 @@ export {ɵɵdefineInjectable, defineInjectable, ɵɵdefineInjector, InjectableTy
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './forward_ref';
 export {Injectable, InjectableDecorator, InjectableProvider} from './injectable';
 export {Injector} from './injector';
+export {ProviderToken} from './provider_token';
 export {ɵɵinject, inject, ɵɵinvalidFactoryDep} from './injector_compatibility';
 export {INJECTOR} from './injector_token';
 export {ReflectiveInjector} from './reflective_injector';

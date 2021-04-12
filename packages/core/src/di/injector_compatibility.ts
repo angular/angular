@@ -8,16 +8,16 @@
 
 import '../util/ng_dev_mode';
 
-import {AbstractType, Type} from '../interface/type';
+import {Type} from '../interface/type';
 import {getClosureSafeProperty} from '../util/property';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
 import {getInjectImplementation, injectRootLimpMode} from './inject_switch';
-import {InjectionToken} from './injection_token';
 import {Injector} from './injector';
 import {DecoratorFlags, InjectFlags, InternalInjectFlags} from './interface/injector';
 import {ValueProvider} from './interface/provider';
+import {ProviderToken} from './provider_token';
 
 
 const _THROW_IF_NOT_FOUND = {};
@@ -53,11 +53,10 @@ export function setCurrentInjector(injector: Injector|null|undefined): Injector|
   return former;
 }
 
-export function injectInjectorOnly<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>): T;
-export function injectInjectorOnly<T>(
-    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags?: InjectFlags): T|null;
-export function injectInjectorOnly<T>(
-    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
+export function injectInjectorOnly<T>(token: ProviderToken<T>): T;
+export function injectInjectorOnly<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
+export function injectInjectorOnly<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|
+    null {
   if (_currentInjector === undefined) {
     throw new Error(`inject() must be called from an injection context`);
   } else if (_currentInjector === null) {
@@ -80,11 +79,9 @@ export function injectInjectorOnly<T>(
  * @codeGenApi
  * @publicApi This instruction has been emitted by ViewEngine for some time and is deployed to npm.
  */
-export function ɵɵinject<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>): T;
-export function ɵɵinject<T>(
-    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags?: InjectFlags): T|null;
-export function ɵɵinject<T>(
-    token: Type<T>|AbstractType<T>|InjectionToken<T>, flags = InjectFlags.Default): T|null {
+export function ɵɵinject<T>(token: ProviderToken<T>): T;
+export function ɵɵinject<T>(token: ProviderToken<T>, flags?: InjectFlags): T|null;
+export function ɵɵinject<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|null {
   return (getInjectImplementation() || injectInjectorOnly)(resolveForwardRef(token), flags);
 }
 
@@ -138,7 +135,7 @@ Please check that 1) the type for the parameter at index ${
  */
 export const inject = ɵɵinject;
 
-export function injectArgs(types: (Type<any>|InjectionToken<any>|any[])[]): any[] {
+export function injectArgs(types: (ProviderToken<any>|any[])[]): any[] {
   const args: any[] = [];
   for (let i = 0; i < types.length; i++) {
     const arg = resolveForwardRef(types[i]);
