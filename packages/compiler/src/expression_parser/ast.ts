@@ -308,7 +308,8 @@ export class NonNullAssert extends AST {
 export class MethodCall extends ASTWithName {
   constructor(
       span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
-      public receiver: AST, public name: string, public args: any[]) {
+      public receiver: AST, public name: string, public args: any[],
+      public argumentSpan: AbsoluteSourceSpan) {
     super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
@@ -319,7 +320,8 @@ export class MethodCall extends ASTWithName {
 export class SafeMethodCall extends ASTWithName {
   constructor(
       span: ParseSpan, sourceSpan: AbsoluteSourceSpan, nameSpan: AbsoluteSourceSpan,
-      public receiver: AST, public name: string, public args: any[]) {
+      public receiver: AST, public name: string, public args: any[],
+      public argumentSpan: AbsoluteSourceSpan) {
     super(span, sourceSpan, nameSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
@@ -583,13 +585,13 @@ export class AstTransformer implements AstVisitor {
   visitMethodCall(ast: MethodCall, context: any): AST {
     return new MethodCall(
         ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name,
-        this.visitAll(ast.args));
+        this.visitAll(ast.args), ast.argumentSpan);
   }
 
   visitSafeMethodCall(ast: SafeMethodCall, context: any): AST {
     return new SafeMethodCall(
         ast.span, ast.sourceSpan, ast.nameSpan, ast.receiver.visit(this), ast.name,
-        this.visitAll(ast.args));
+        this.visitAll(ast.args), ast.argumentSpan);
   }
 
   visitFunctionCall(ast: FunctionCall, context: any): AST {
@@ -719,7 +721,8 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const receiver = ast.receiver.visit(this);
     const args = this.visitAll(ast.args);
     if (receiver !== ast.receiver || args !== ast.args) {
-      return new MethodCall(ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name, args);
+      return new MethodCall(
+          ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name, args, ast.argumentSpan);
     }
     return ast;
   }
@@ -728,7 +731,8 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
     const receiver = ast.receiver.visit(this);
     const args = this.visitAll(ast.args);
     if (receiver !== ast.receiver || args !== ast.args) {
-      return new SafeMethodCall(ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name, args);
+      return new SafeMethodCall(
+          ast.span, ast.sourceSpan, ast.nameSpan, receiver, ast.name, args, ast.argumentSpan);
     }
     return ast;
   }

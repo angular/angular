@@ -940,14 +940,19 @@ export class _ParseAST {
     const nameSpan = this.sourceSpan(nameStart);
 
     if (this.consumeOptionalCharacter(chars.$LPAREN)) {
+      const argumentStart = this.inputIndex;
       this.rparensExpected++;
       const args = this.parseCallArguments();
+      const argumentSpan =
+          this.span(argumentStart, this.inputIndex).toAbsolute(this.absoluteOffset);
+
       this.expectCharacter(chars.$RPAREN);
       this.rparensExpected--;
       const span = this.span(start);
       const sourceSpan = this.sourceSpan(start);
-      return isSafe ? new SafeMethodCall(span, sourceSpan, nameSpan, receiver, id, args) :
-                      new MethodCall(span, sourceSpan, nameSpan, receiver, id, args);
+      return isSafe ?
+          new SafeMethodCall(span, sourceSpan, nameSpan, receiver, id, args, argumentSpan) :
+          new MethodCall(span, sourceSpan, nameSpan, receiver, id, args, argumentSpan);
 
     } else {
       if (isSafe) {
