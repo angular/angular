@@ -8,7 +8,6 @@
 
 import {join} from 'path';
 
-import {getRepoBaseDir} from '../../utils/config';
 import {error} from '../../utils/console';
 
 import {Formatter} from './base-formatter';
@@ -19,7 +18,7 @@ import {Formatter} from './base-formatter';
 export class Buildifier extends Formatter {
   name = 'buildifier';
 
-  binaryFilePath = join(getRepoBaseDir(), 'node_modules/.bin/buildifier');
+  binaryFilePath = join(this.git.baseDir, 'node_modules/.bin/buildifier');
 
   defaultFileMatcher = ['**/*.bzl', '**/BUILD.bazel', '**/WORKSPACE', '**/BUILD'];
 

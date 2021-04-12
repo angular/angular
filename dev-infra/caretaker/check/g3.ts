@@ -10,7 +10,6 @@ import {existsSync, readFileSync} from 'fs';
 import * as multimatch from 'multimatch';
 import {join} from 'path';
 import {parse as parseYaml} from 'yaml';
-import {getRepoBaseDir} from '../../utils/config';
 import {bold, debug, error, info} from '../../utils/console';
 
 import {BaseModule} from './base';
@@ -121,7 +120,7 @@ export class G3Module extends BaseModule<G3StatsData|void> {
 
 
   private getG3FileIncludeAndExcludeLists() {
-    const angularRobotFilePath = join(getRepoBaseDir(), '.github/angular-robot.yml');
+    const angularRobotFilePath = join(this.git.baseDir, '.github/angular-robot.yml');
     if (!existsSync(angularRobotFilePath)) {
       debug('No angular robot configuration file exists, skipping.');
       return null;

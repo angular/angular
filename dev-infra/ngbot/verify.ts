@@ -9,12 +9,13 @@ import {readFileSync} from 'fs';
 import {resolve} from 'path';
 import {parse as parseYaml} from 'yaml';
 
-import {getRepoBaseDir} from '../utils/config';
 import {error, green, info, red} from '../utils/console';
+import {GitClient} from '../utils/git/index';
 
 export function verify() {
+  const git = GitClient.getInstance();
   /** Full path to NgBot config file */
-  const NGBOT_CONFIG_YAML_PATH = resolve(getRepoBaseDir(), '.github/angular-robot.yml');
+  const NGBOT_CONFIG_YAML_PATH = resolve(git.baseDir, '.github/angular-robot.yml');
 
   /** The NgBot config file */
   const ngBotYaml = readFileSync(NGBOT_CONFIG_YAML_PATH, 'utf8');
