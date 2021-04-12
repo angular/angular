@@ -69,49 +69,89 @@ function toProtractorModifierKeys(modifiers: ModifierKeys): string[] {
   return result;
 }
 
-/** A `TestElement` implementation for Protractor. */
+/**
+ * A `TestElement` implementation for Protractor.
+ * @deprecated
+ * @breaking-change 13.0.0
+ */
 export class ProtractorElement implements TestElement {
   constructor(readonly element: ElementFinder) {}
 
+  /** Blur the element. */
   async blur(): Promise<void> {
     return browser.executeScript('arguments[0].blur()', this.element);
   }
 
+  /** Clear the element's input (for input and textarea elements only). */
   async clear(): Promise<void> {
     return this.element.clear();
   }
 
+  /**
+   * Click the element at the default location for the current environment. If you need to guarantee
+   * the element is clicked at a specific location, consider using `click('center')` or
+   * `click(x, y)` instead.
+   */
+  click(modifiers?: ModifierKeys): Promise<void>;
+  /** Click the element at the element's center. */
+  click(location: 'center', modifiers?: ModifierKeys): Promise<void>;
+  /**
+   * Click the element at the specified coordinates relative to the top-left of the element.
+   * @param relativeX Coordinate within the element, along the X-axis at which to click.
+   * @param relativeY Coordinate within the element, along the Y-axis at which to click.
+   * @param modifiers Modifier keys held while clicking
+   */
+  click(relativeX: number, relativeY: number, modifiers?: ModifierKeys): Promise<void>;
   async click(...args: [ModifierKeys?] | ['center', ModifierKeys?] |
     [number, number, ModifierKeys?]): Promise<void> {
     await this._dispatchClickEventSequence(args, Button.LEFT);
   }
 
+  /**
+   * Right clicks on the element at the specified coordinates relative to the top-left of it.
+   * @param relativeX Coordinate within the element, along the X-axis at which to click.
+   * @param relativeY Coordinate within the element, along the Y-axis at which to click.
+   * @param modifiers Modifier keys held while clicking
+   */
+  rightClick(relativeX: number, relativeY: number, modifiers?: ModifierKeys): Promise<void>;
   async rightClick(...args: [ModifierKeys?] | ['center', ModifierKeys?] |
     [number, number, ModifierKeys?]): Promise<void> {
     await this._dispatchClickEventSequence(args, Button.RIGHT);
   }
 
+  /** Focus the element. */
   async focus(): Promise<void> {
     return browser.executeScript('arguments[0].focus()', this.element);
   }
 
+  /** Get the computed value of the given CSS property for the element. */
   async getCssValue(property: string): Promise<string> {
     return this.element.getCssValue(property);
   }
 
+  /** Hovers the mouse over the element. */
   async hover(): Promise<void> {
     return browser.actions()
         .mouseMove(await this.element.getWebElement())
         .perform();
   }
 
+  /** Moves the mouse away from the element. */
   async mouseAway(): Promise<void> {
     return browser.actions()
         .mouseMove(await this.element.getWebElement(), {x: -1, y: -1})
         .perform();
   }
 
+  /**
+   * Sends the given string to the input as a series of key presses. Also fires input events
+   * and attempts to add the string to the Element's value.
+   */
   async sendKeys(...keys: (string | TestKey)[]): Promise<void>;
+  /**
+   * Sends the given string to the input as a series of key presses. Also fires input events
+   * and attempts to add the string to the Element's value.
+   */
   async sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
   async sendKeys(...modifiersAndKeys: any[]): Promise<void> {
     const first = modifiersAndKeys[0];
@@ -135,6 +175,10 @@ export class ProtractorElement implements TestElement {
     return this.element.sendKeys(...keys);
   }
 
+  /**
+   * Gets the text from the element.
+   * @param options Options that affect what text is included.
+   */
   async text(options?: TextOptions): Promise<string> {
     if (options?.exclude) {
       return browser.executeScript(_getTextWithExcludedElements, this.element, options.exclude);
@@ -142,30 +186,36 @@ export class ProtractorElement implements TestElement {
     return this.element.getText();
   }
 
+  /** Gets the value for the given attribute from the element. */
   async getAttribute(name: string): Promise<string|null> {
     return browser.executeScript(
         `return arguments[0].getAttribute(arguments[1])`, this.element, name);
   }
 
+  /** Checks whether the element has the given class. */
   async hasClass(name: string): Promise<boolean> {
     const classes = (await this.getAttribute('class')) || '';
     return new Set(classes.split(/\s+/).filter(c => c)).has(name);
   }
 
+  /** Gets the dimensions of the element. */
   async getDimensions(): Promise<ElementDimensions> {
     const {width, height} = await this.element.getSize();
     const {x: left, y: top} = await this.element.getLocation();
     return {width, height, left, top};
   }
 
+  /** Gets the value of a property of an element. */
   async getProperty(name: string): Promise<any> {
     return browser.executeScript(`return arguments[0][arguments[1]]`, this.element, name);
   }
 
+  /** Sets the value of a property of an input. */
   async setInputValue(value: string): Promise<void> {
     return browser.executeScript(`arguments[0].value = arguments[1]`, this.element, value);
   }
 
+  /** Selects the options at the specified indexes inside of a native `select` element. */
   async selectOptions(...optionIndexes: number[]): Promise<void> {
     const options = await this.element.all(by.css('option'));
     const indexes = new Set(optionIndexes); // Convert to a set to remove duplicates.
@@ -187,6 +237,7 @@ export class ProtractorElement implements TestElement {
     }
   }
 
+  /** Checks whether this element matches the given selector. */
   async matchesSelector(selector: string): Promise<boolean> {
       return browser.executeScript(`
           return (Element.prototype.matches ||
@@ -194,10 +245,15 @@ export class ProtractorElement implements TestElement {
           `, this.element, selector);
   }
 
+  /** Checks whether the element is focused. */
   async isFocused(): Promise<boolean> {
     return this.element.equals(browser.driver.switchTo().activeElement());
   }
 
+  /**
+   * Dispatches an event with a particular name.
+   * @param name Name of the event to be dispatched.
+   */
   async dispatchEvent(name: string, data?: Record<string, EventData>): Promise<void> {
     return browser.executeScript(_dispatchEvent, name, this.element, data);
   }

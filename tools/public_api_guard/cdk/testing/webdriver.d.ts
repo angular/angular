@@ -5,11 +5,9 @@ export declare class WebDriverElement implements TestElement {
     constructor(element: () => webdriver.WebElement, _stabilize: () => Promise<void>);
     blur(): Promise<void>;
     clear(): Promise<void>;
-    click(...args: [ModifierKeys?] | ['center', ModifierKeys?] | [
-        number,
-        number,
-        ModifierKeys?
-    ]): Promise<void>;
+    click(modifiers?: ModifierKeys): Promise<void>;
+    click(location: 'center', modifiers?: ModifierKeys): Promise<void>;
+    click(relativeX: number, relativeY: number, modifiers?: ModifierKeys): Promise<void>;
     dispatchEvent(name: string, data?: Record<string, EventData>): Promise<void>;
     focus(): Promise<void>;
     getAttribute(name: string): Promise<string | null>;
@@ -21,11 +19,7 @@ export declare class WebDriverElement implements TestElement {
     isFocused(): Promise<boolean>;
     matchesSelector(selector: string): Promise<boolean>;
     mouseAway(): Promise<void>;
-    rightClick(...args: [ModifierKeys?] | ['center', ModifierKeys?] | [
-        number,
-        number,
-        ModifierKeys?
-    ]): Promise<void>;
+    rightClick(relativeX: number, relativeY: number, modifiers?: ModifierKeys): Promise<void>;
     selectOptions(...optionIndexes: number[]): Promise<void>;
     sendKeys(...keys: (string | TestKey)[]): Promise<void>;
     sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;

@@ -145,6 +145,11 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
     return environment.createComponentHarness(harnessType, fixture.nativeElement);
   }
 
+  /**
+   * Flushes change detection and async tasks captured in the Angular zone.
+   * In most cases it should not be necessary to call this manually. However, there may be some edge
+   * cases where it is needed to fully flush animation events.
+   */
   async forceStabilize(): Promise<void> {
     if (!disableAutoChangeDetection) {
       if (this._destroyed) {
@@ -155,6 +160,10 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
     }
   }
 
+  /**
+   * Waits for all scheduled or running async tasks to complete. This allows harness
+   * authors to wait for async tasks outside of the Angular zone.
+   */
   async waitForTasksOutsideAngular(): Promise<void> {
     // If we run in the fake async zone, we run "flush" to run any scheduled tasks. This
     // ensures that the harnesses behave inside of the FakeAsyncTestZone similar to the
@@ -173,18 +182,24 @@ export class TestbedHarnessEnvironment extends HarnessEnvironment<Element> {
     await this._taskState.pipe(takeWhile(state => !state.stable)).toPromise();
   }
 
+  /** Gets the root element for the document. */
   protected getDocumentRoot(): Element {
     return document.body;
   }
 
+  /** Creates a `TestElement` from a raw element. */
   protected createTestElement(element: Element): TestElement {
     return new UnitTestElement(element, () => this.forceStabilize());
   }
 
+  /** Creates a `HarnessLoader` rooted at the given raw element. */
   protected createEnvironment(element: Element): HarnessEnvironment<Element> {
     return new TestbedHarnessEnvironment(element, this._fixture, this._options);
   }
 
+  /**
+   * Gets a list of all elements matching the given selector under this environment's root element.
+   */
   protected async getAllRawElements(selector: string): Promise<Element[]> {
     await this.forceStabilize();
     return Array.from(this._options.queryFn(selector, this.rawRootElement));

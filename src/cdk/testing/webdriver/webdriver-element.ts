@@ -24,49 +24,85 @@ export class WebDriverElement implements TestElement {
       readonly element: () => webdriver.WebElement,
       private _stabilize: () => Promise<void>) {}
 
+  /** Blur the element. */
   async blur(): Promise<void> {
     await this._executeScript(((element: HTMLElement) => element.blur()), this.element());
     await this._stabilize();
   }
 
+  /** Clear the element's input (for input and textarea elements only). */
   async clear(): Promise<void> {
     await this.element().clear();
     await this._stabilize();
   }
 
+  /**
+   * Click the element at the default location for the current environment. If you need to guarantee
+   * the element is clicked at a specific location, consider using `click('center')` or
+   * `click(x, y)` instead.
+   */
+  click(modifiers?: ModifierKeys): Promise<void>;
+  /** Click the element at the element's center. */
+  click(location: 'center', modifiers?: ModifierKeys): Promise<void>;
+  /**
+   * Click the element at the specified coordinates relative to the top-left of the element.
+   * @param relativeX Coordinate within the element, along the X-axis at which to click.
+   * @param relativeY Coordinate within the element, along the Y-axis at which to click.
+   * @param modifiers Modifier keys held while clicking
+   */
+  click(relativeX: number, relativeY: number, modifiers?: ModifierKeys): Promise<void>;
   async click(...args: [ModifierKeys?] | ['center', ModifierKeys?] |
       [number, number, ModifierKeys?]): Promise<void> {
     await this._dispatchClickEventSequence(args, webdriver.Button.LEFT);
     await this._stabilize();
   }
 
+  /**
+   * Right clicks on the element at the specified coordinates relative to the top-left of it.
+   * @param relativeX Coordinate within the element, along the X-axis at which to click.
+   * @param relativeY Coordinate within the element, along the Y-axis at which to click.
+   * @param modifiers Modifier keys held while clicking
+   */
+  rightClick(relativeX: number, relativeY: number, modifiers?: ModifierKeys): Promise<void>;
   async rightClick(...args: [ModifierKeys?] | ['center', ModifierKeys?] |
       [number, number, ModifierKeys?]): Promise<void> {
     await this._dispatchClickEventSequence(args, webdriver.Button.RIGHT);
     await this._stabilize();
   }
 
+  /** Focus the element. */
   async focus(): Promise<void> {
     await this._executeScript((element: HTMLElement) => element.focus(), this.element());
     await this._stabilize();
   }
 
+  /** Get the computed value of the given CSS property for the element. */
   async getCssValue(property: string): Promise<string> {
     await this._stabilize();
     return this.element().getCssValue(property);
   }
 
+  /** Hovers the mouse over the element. */
   async hover(): Promise<void> {
     await this._actions().mouseMove(this.element()).perform();
     await this._stabilize();
   }
 
+  /** Moves the mouse away from the element. */
   async mouseAway(): Promise<void> {
     await this._actions().mouseMove(this.element(), {x: -1, y: -1}).perform();
     await this._stabilize();
   }
 
+  /**
+   * Sends the given string to the input as a series of key presses. Also fires input events
+   * and attempts to add the string to the Element's value.
+   */
   async sendKeys(...keys: (string | TestKey)[]): Promise<void>;
+  /**
+   * Sends the given string to the input as a series of key presses. Also fires input events
+   * and attempts to add the string to the Element's value.
+   */
   async sendKeys(modifiers: ModifierKeys, ...keys: (string | TestKey)[]): Promise<void>;
   async sendKeys(...modifiersAndKeys: any[]): Promise<void> {
     const first = modifiersAndKeys[0];
@@ -91,6 +127,10 @@ export class WebDriverElement implements TestElement {
     await this._stabilize();
   }
 
+  /**
+   * Gets the text from the element.
+   * @param options Options that affect what text is included.
+   */
   async text(options?: TextOptions): Promise<string> {
     await this._stabilize();
     if (options?.exclude) {
@@ -99,6 +139,7 @@ export class WebDriverElement implements TestElement {
     return this.element().getText();
   }
 
+  /** Gets the value for the given attribute from the element. */
   async getAttribute(name: string): Promise<string|null> {
     await this._stabilize();
     return this._executeScript(
@@ -106,12 +147,14 @@ export class WebDriverElement implements TestElement {
         this.element(), name);
   }
 
+  /** Checks whether the element has the given class. */
   async hasClass(name: string): Promise<boolean> {
     await this._stabilize();
     const classes = (await this.getAttribute('class')) || '';
     return new Set(classes.split(/\s+/).filter(c => c)).has(name);
   }
 
+  /** Gets the dimensions of the element. */
   async getDimensions(): Promise<ElementDimensions> {
     await this._stabilize();
     const {width, height} = await this.element().getSize();
@@ -119,6 +162,7 @@ export class WebDriverElement implements TestElement {
     return {width, height, left, top};
   }
 
+  /** Gets the value of a property of an element. */
   async getProperty(name: string): Promise<any> {
     await this._stabilize();
     return this._executeScript(
@@ -126,6 +170,7 @@ export class WebDriverElement implements TestElement {
         this.element(), name);
   }
 
+  /** Sets the value of a property of an input. */
   async setInputValue(newValue: string): Promise<void> {
     await this._executeScript(
         (element: HTMLInputElement, value: string) => element.value = value,
@@ -133,6 +178,7 @@ export class WebDriverElement implements TestElement {
     await this._stabilize();
   }
 
+  /** Selects the options at the specified indexes inside of a native `select` element. */
   async selectOptions(...optionIndexes: number[]): Promise<void> {
     await this._stabilize();
     const options = await this.element().findElements(webdriver.By.css('option'));
@@ -157,6 +203,7 @@ export class WebDriverElement implements TestElement {
     }
   }
 
+  /** Checks whether this element matches the given selector. */
   async matchesSelector(selector: string): Promise<boolean> {
     await this._stabilize();
     return this._executeScript((element: Element, s: string) =>
@@ -165,12 +212,17 @@ export class WebDriverElement implements TestElement {
         this.element(), selector);
   }
 
+  /** Checks whether the element is focused. */
   async isFocused(): Promise<boolean> {
     await this._stabilize();
     return webdriver.WebElement.equals(
         this.element(), this.element().getDriver().switchTo().activeElement());
   }
 
+  /**
+   * Dispatches an event with a particular name.
+   * @param name Name of the event to be dispatched.
+   */
   async dispatchEvent(name: string, data?: Record<string, EventData>): Promise<void> {
     await this._executeScript(dispatchEvent, name, this.element(), data);
     await this._stabilize();

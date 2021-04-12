@@ -145,18 +145,14 @@ export interface TestElement {
   /** Checks whether the element is focused. */
   isFocused(): Promise<boolean>;
 
-  /**
-   * Sets the value of a property of an input.
-   */
+  /** Sets the value of a property of an input. */
   setInputValue(value: string): Promise<void>;
 
   // Note that ideally here we'd be selecting options based on their value, rather than their
   // index, but we're limited by `@angular/forms` which will modify the option value in some cases.
   // Since the value will be truncated, we can't rely on it to do the lookup in the DOM. See:
   // https://github.com/angular/angular/blob/master/packages/forms/src/directives/select_control_value_accessor.ts#L19
-  /**
-   * Selects the options at the specified indexes inside of a native `select` element.
-   */
+  /** Selects the options at the specified indexes inside of a native `select` element. */
   selectOptions(...optionIndexes: number[]): Promise<void>;
 
   /**

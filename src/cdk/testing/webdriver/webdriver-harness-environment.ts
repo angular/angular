@@ -92,23 +92,32 @@ export class WebDriverHarnessEnvironment extends HarnessEnvironment<() => webdri
         () => driver.findElement(webdriver.By.css('body')), options);
   }
 
+  /**
+   * Flushes change detection and async tasks captured in the Angular zone.
+   * In most cases it should not be necessary to call this manually. However, there may be some edge
+   * cases where it is needed to fully flush animation events.
+   */
   async forceStabilize(): Promise<void> {
     await this.rawRootElement().getDriver().executeAsyncScript(whenStable);
   }
 
+  /** @docs-private */
   async waitForTasksOutsideAngular(): Promise<void> {
     // TODO: figure out how we can do this for the webdriver environment.
     //  https://github.com/angular/components/issues/17412
   }
 
+  /** Gets the root element for the document. */
   protected getDocumentRoot(): () => webdriver.WebElement {
     return () => this.rawRootElement().getDriver().findElement(webdriver.By.css('body'));
   }
 
+  /** Creates a `TestElement` from a raw element. */
   protected createTestElement(element: () => webdriver.WebElement): TestElement {
     return new WebDriverElement(element, () => this.forceStabilize());
   }
 
+  /** Creates a `HarnessLoader` rooted at the given raw element. */
   protected createEnvironment(element: () => webdriver.WebElement):
       HarnessEnvironment<() => webdriver.WebElement> {
     return new WebDriverHarnessEnvironment(element, this._options);
@@ -117,6 +126,9 @@ export class WebDriverHarnessEnvironment extends HarnessEnvironment<() => webdri
   // Note: This seems to be working, though we may need to re-evaluate if we encounter issues with
   // stale element references. `() => Promise<webdriver.WebElement[]>` seems like a more correct
   // return type, though supporting it would require changes to the public harness API.
+  /**
+   * Gets a list of all elements matching the given selector under this environment's root element.
+   */
   protected async getAllRawElements(selector: string): Promise<(() => webdriver.WebElement)[]> {
     const els = await this._options.queryFn(selector, this.rawRootElement);
     return els.map((x: webdriver.WebElement) => () => x);
