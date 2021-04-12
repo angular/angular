@@ -181,5 +181,10 @@
     "watchr": "^6.9.0",
     "xregexp": "^5.0.2",
     "yargs": "^16.2.0"
+  },
+  "// 1": "Needed until AIO moves to CLI version 12.",
+  "// 2": "Due to https://github.com/GoogleChromeLabs/worker-plugin/blob/049c3caea9f1fa00983c139480adf06ee24ce5d5/src/index.js#L20-L27 ",
+  "resolutions": {
+    "worker-plugin": "4.0.3"
   }
 }

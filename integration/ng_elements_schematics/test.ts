@@ -45,6 +45,9 @@ for (let p of nodePackages) {
   packages[p] = `file:${bazelMappings[p]}` || `file:${__dirname}/../../node_modules/${p}`;
 }
 
+// TODO(alan-agius4): remove once the main repo dependency on `@angular-devkut/build-angular` is `0.1200.0-next.9` or greater.
+packages['@angular-devkit/build-angular'] = 'file:../../../node_modules/@angular-devkit/build-angular';
+
 // Clean up previously run test
 cd(__dirname);
 rm('-rf', `demo`);
