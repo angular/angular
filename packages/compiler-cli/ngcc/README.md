@@ -26,5 +26,5 @@ yarn bazel test //packages/compiler-cli/ngcc/test
 There are tests that check the behavior of the overall executable:
 
 ```bash
-yarn bazel test //packages/compiler-cli/ngcc/test:integration
+yarn bazel test //packages/compiler-cli/ngcc/test:integration 
 ```
