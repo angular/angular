@@ -395,16 +395,22 @@ describe('Zone', function() {
 
           it('get window onerror should not throw error',
              ifEnvSupports(canPatchOnProperty(window, 'onerror'), function() {
+               const oriOnError = window.onerror;
                const testFn = function() {
-                 let onerror = window.onerror;
-                 window.onerror = function() {};
-                 onerror = window.onerror;
+                 try {
+                   let onerror = window.onerror;
+                   window.onerror = function() {};
+                   onerror = window.onerror;
+                 } finally {
+                   window.onerror = oriOnError;
+                 }
                };
                expect(testFn).not.toThrow();
              }));
 
           it('window.onerror callback signiture should be (message, source, lineno, colno, error)',
              ifEnvSupportsWithDone(canPatchOnProperty(window, 'onerror'), function(done: DoneFn) {
+               const oriOnError = window.onerror;
                let testError = new Error('testError');
                window.onerror = function(
                    message: any, source?: string, lineno?: number, colno?: number, error?: any) {
@@ -413,7 +419,7 @@ describe('Zone', function() {
                    // Edge 14, error will be undefined.
                    expect(error).toBe(testError);
                  }
-                 (window as any).onerror = null;
+                 (window as any).onerror = oriOnError;
                  setTimeout(done);
                  return true;
                };
