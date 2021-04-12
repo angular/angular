@@ -12,7 +12,6 @@
 
 /* clang-format off */
 import {
-  AbstractType,
   Component,
   Directive,
   InjectFlags,
@@ -22,6 +21,7 @@ import {
   NgZone,
   Pipe,
   PlatformRef,
+  ProviderToken,
   Type,
   ɵflushModuleScopingQueueAsMuchAsPossible as flushModuleScopingQueueAsMuchAsPossible,
   ɵRender3ComponentFactory as ComponentFactory,
@@ -156,19 +156,14 @@ export class TestBedRender3 implements TestBed {
     return TestBedRender3 as any as TestBedStatic;
   }
 
-  static inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
-  static inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
-      |null;
-  static inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T|null,
-      flags?: InjectFlags): T|null {
+  static inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  static inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T|null;
+  static inject<T>(token: ProviderToken<T>, notFoundValue?: T|null, flags?: InjectFlags): T|null {
     return _getTestBedRender3().inject(token, notFoundValue, flags);
   }
 
   /** @deprecated from v9.0.0 use TestBed.inject */
-  static get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  static get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
   /** @deprecated from v9.0.0 use TestBed.inject */
   static get(token: any, notFoundValue?: any): any;
   /** @deprecated from v9.0.0 use TestBed.inject */
@@ -263,14 +258,9 @@ export class TestBedRender3 implements TestBed {
     return this.compiler.compileComponents();
   }
 
-  inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
-  inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T
-      |null;
-  inject<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T|null,
-      flags?: InjectFlags): T|null {
+  inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T|null;
+  inject<T>(token: ProviderToken<T>, notFoundValue?: T|null, flags?: InjectFlags): T|null {
     if (token as unknown === TestBedRender3) {
       return this as any;
     }
@@ -281,7 +271,7 @@ export class TestBedRender3 implements TestBed {
   }
 
   /** @deprecated from v9.0.0 use TestBed.inject */
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+  get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
   /** @deprecated from v9.0.0 use TestBed.inject */
   get(token: any, notFoundValue?: any): any;
   /** @deprecated from v9.0.0 use TestBed.inject */

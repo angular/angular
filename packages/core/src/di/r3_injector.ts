@@ -9,7 +9,7 @@
 import '../util/ng_dev_mode';
 
 import {OnDestroy} from '../interface/lifecycle_hooks';
-import {AbstractType, Type} from '../interface/type';
+import {Type} from '../interface/type';
 import {FactoryFn, getFactoryDef} from '../render3/definition_factory';
 import {throwCyclicDependencyError, throwInvalidProviderError, throwMixedMultiProviderError} from '../render3/errors_di';
 import {deepForEach, newArray} from '../util/array_utils';
@@ -25,6 +25,7 @@ import {getInheritedInjectableDef, getInjectableDef, getInjectorDef, InjectorTyp
 import {InjectFlags} from './interface/injector';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './interface/provider';
 import {NullInjector} from './null_injector';
+import {ProviderToken} from './provider_token';
 import {INJECTOR_SCOPE} from './scope';
 
 
@@ -102,7 +103,7 @@ export class R3Injector {
    * - `null` value implies that we don't have the record. Used by tree-shakable injectors
    * to prevent further searches.
    */
-  private records = new Map<Type<any>|AbstractType<any>|InjectionToken<any>, Record<any>|null>();
+  private records = new Map<ProviderToken<any>, Record<any>|null>();
 
   /**
    * The transitive set of `InjectorType`s which define this injector.
@@ -180,7 +181,7 @@ export class R3Injector {
   }
 
   get<T>(
-      token: Type<T>|AbstractType<T>|InjectionToken<T>, notFoundValue: any = THROW_IF_NOT_FOUND,
+      token: ProviderToken<T>, notFoundValue: any = THROW_IF_NOT_FOUND,
       flags = InjectFlags.Default): T {
     this.assertNotDestroyed();
     // Set the injection context.
@@ -404,7 +405,7 @@ export class R3Injector {
     this.records.set(token, record);
   }
 
-  private hydrate<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>, record: Record<T>): T {
+  private hydrate<T>(token: ProviderToken<T>, record: Record<T>): T {
     if (ngDevMode && record.value === CIRCULAR) {
       throwCyclicDependencyError(stringify(token));
     } else if (record.value === NOT_YET) {
@@ -430,8 +431,7 @@ export class R3Injector {
   }
 }
 
-function injectableDefOrInjectorDefFactory(token: Type<any>|AbstractType<any>|
-                                           InjectionToken<any>): FactoryFn<any> {
+function injectableDefOrInjectorDefFactory(token: ProviderToken<any>): FactoryFn<any> {
   // Most tokens will have an injectable def directly on them, which specifies a factory directly.
   const injectableDef = getInjectableDef(token);
   const factory = injectableDef !== null ? injectableDef.factory : getFactoryDef(token);
@@ -560,8 +560,7 @@ function hasOnDestroy(value: any): value is OnDestroy {
       typeof (value as OnDestroy).ngOnDestroy === 'function';
 }
 
-function couldBeInjectableType(value: any): value is Type<any>|AbstractType<any>|
-    InjectionToken<any> {
+function couldBeInjectableType(value: any): value is ProviderToken<any> {
   return (typeof value === 'function') ||
       (typeof value === 'object' && value instanceof InjectionToken);
 }
