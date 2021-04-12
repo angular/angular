@@ -30,9 +30,6 @@
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "typescript": ">=4.2.3 <4.3"
   },
-  "engines": {
-    "node": ">=10.0"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git",
@@ -43,6 +40,9 @@
     "compiler"
   ],
   "license": "MIT",
+  "engines": {
+    "node": ">=12.14.1 <16.0.0"
+  },
   "bugs": {
     "url": "https://github.com/angular/angular/issues"
   },
