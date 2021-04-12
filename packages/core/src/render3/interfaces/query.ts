@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken} from '../../di/injection_token';
-import {Type} from '../../interface/type';
+import {Token} from '../../di/token';
 import {QueryList} from '../../linker/query_list';
 
 import {TNode} from './node';
@@ -17,7 +16,7 @@ import {TView} from './view';
  * An object representing query metadata extracted from query annotations.
  */
 export interface TQueryMetadata {
-  predicate: Type<any>|InjectionToken<unknown>|string[];
+  predicate: Token<unknown>|string[];
   read: any;
   flags: QueryFlags;
 }

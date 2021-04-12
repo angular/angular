@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbstractType, Type} from '../interface/type';
 import {stringify} from '../util/stringify';
 import {resolveForwardRef} from './forward_ref';
-import {InjectionToken} from './injection_token';
 import {catchInjectorError, formatError, NG_TEMP_TOKEN_PATH, setCurrentInjector, THROW_IF_NOT_FOUND, USE_VALUE, ɵɵinject} from './injector_compatibility';
 import {InjectorMarkers} from './injector_marker';
 import {INJECTOR} from './injector_token';
@@ -20,6 +18,7 @@ import {Inject, Optional, Self, SkipSelf} from './metadata';
 import {NullInjector} from './null_injector';
 import {createInjector} from './r3_injector';
 import {INJECTOR_SCOPE} from './scope';
+import {Token} from './token';
 
 export function INJECTOR_IMPL__PRE_R3__(
     providers: StaticProvider[], parent: Injector|undefined, name: string) {
@@ -66,10 +65,9 @@ export abstract class Injector {
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
-  abstract get<T>(
-      token: Type<T>|AbstractType<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  abstract get<T>(token: Token<T>, notFoundValue?: T, flags?: InjectFlags): T;
   /**
-   * @deprecated from v4.0.0 use Type<T>, AbstractType<T> or InjectionToken<T>
+   * @deprecated from v4.0.0 use Token<T>
    * @suppress {duplicate}
    */
   abstract get(token: any, notFoundValue?: any): any;
@@ -156,8 +154,7 @@ export class StaticInjector implements Injector {
     this.scope = recursivelyProcessProviders(records, providers);
   }
 
-  get<T>(token: Type<T>|AbstractType<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags):
-      T;
+  get<T>(token: Token<T>, notFoundValue?: T, flags?: InjectFlags): T;
   get(token: any, notFoundValue?: any): any;
   get(token: any, notFoundValue?: any, flags: InjectFlags = InjectFlags.Default): any {
     const records = this._records;

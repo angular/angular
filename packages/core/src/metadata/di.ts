@@ -7,7 +7,7 @@
  */
 
 import {InjectionToken} from '../di/injection_token';
-import {Type} from '../interface/type';
+import {Token} from '../di/token';
 import {makePropDecorator} from '../util/decorators';
 
 /**
@@ -169,12 +169,12 @@ export interface ContentChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|InjectionToken<unknown>|Function|string, opts?: {
+  (selector: Token<unknown>|Function|string, opts?: {
     descendants?: boolean,
     emitDistinctChangesOnly?: boolean,
     read?: any,
   }): any;
-  new(selector: Type<any>|InjectionToken<unknown>|Function|string,
+  new(selector: Token<unknown>|Function|string,
       opts?: {descendants?: boolean, emitDistinctChangesOnly?: boolean, read?: any}): Query;
 }
 
@@ -240,9 +240,8 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|InjectionToken<unknown>|Function|string,
-   opts?: {read?: any, static?: boolean}): any;
-  new(selector: Type<any>|InjectionToken<unknown>|Function|string,
+  (selector: Token<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
+  new(selector: Token<unknown>|Function|string,
       opts?: {read?: any, static?: boolean}): ContentChild;
 }
 
@@ -304,9 +303,9 @@ export interface ViewChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|InjectionToken<unknown>|Function|string,
+  (selector: Token<unknown>|Function|string,
    opts?: {read?: any, emitDistinctChangesOnly?: boolean}): any;
-  new(selector: Type<any>|InjectionToken<unknown>|Function|string,
+  new(selector: Token<unknown>|Function|string,
       opts?: {read?: any, emitDistinctChangesOnly?: boolean}): ViewChildren;
 }
 
@@ -379,10 +378,8 @@ export interface ViewChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|InjectionToken<unknown>|Function|string,
-   opts?: {read?: any, static?: boolean}): any;
-  new(selector: Type<any>|InjectionToken<unknown>|Function|string,
-      opts?: {read?: any, static?: boolean}): ViewChild;
+  (selector: Token<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
+  new(selector: Token<unknown>|Function|string, opts?: {read?: any, static?: boolean}): ViewChild;
 }
 
 /**
