@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/schema",
-  "id": "SchematicsMaterialNavigation",
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsMaterialNavigation",
   "title": "Material Navigation Options Schema",
   "type": "object",
   "properties": {

@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/schema",
-  "id": "CdkSchematicsDragDrop",
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "CdkSchematicsDragDrop",
   "title": "Angular CDK Drag and Drop schematic",
   "type": "object",
   "properties": {

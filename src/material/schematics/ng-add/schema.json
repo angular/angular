@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/schema",
-  "id": "angular-material-ng-add",
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "angular-material-ng-add",
   "title": "Angular Material ng-add schematic",
   "type": "object",
   "properties": {

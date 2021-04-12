@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/schema",
-  "id": "SchematicsMaterialTable",
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsMaterialTable",
   "title": "Material Table Options Schema",
   "type": "object",
   "properties": {
