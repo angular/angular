@@ -1,8 +1,6 @@
 @use '@material/ripple' as mdc-ripple;
 @use '@material/tab' as mdc-tab;
 @use 'sass:map';
-@use '../../material/core/style/variables';
-@use '../../material/core/style/private';
 @use '../../material/core/style/vendor-prefixes';
 @use '../../cdk/a11y';
 @use '../mdc-helpers/mdc-helpers';

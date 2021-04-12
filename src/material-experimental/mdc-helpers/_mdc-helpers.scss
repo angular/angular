@@ -4,10 +4,8 @@
 
 @use '@material/feature-targeting' as mdc-feature-targeting;
 @use '@material/typography' as mdc-typography;
-@use '@material/theme/functions' as mdc-theme-functions;
 @use '@material/theme/theme-color' as mdc-theme-color;
 @use 'sass:map';
-@use '../../material/core/style/layout-common';
 @use '../../material/core/theming/theming';
 @use '../../material/core/typography/typography';
 @use '../../material/core/typography/typography-utils';

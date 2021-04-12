@@ -1,7 +1,6 @@
 @use 'sass:map';
 @use '../../material/core/style/variables';
 @use '../../material/core/style/vendor-prefixes';
-@use '../../material/core/theming/palette';
 @use '../../material/core/theming/theming';
 
 @mixin color($config-or-theme) {

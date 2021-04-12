@@ -1,7 +1,6 @@
 @use 'sass:map';
 @use 'sass:meta';
 @use 'sass:color';
-@use '../core/theming/palette';
 @use '../core/theming/theming';
 
 // Approximates the correct buffer color by using a mix between the theme color

@@ -2,7 +2,6 @@
 @use '../core/style/private';
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
-@use '../core/theming/palette';
 @use '../core/theming/theming';
 
 @mixin color($config-or-theme) {

@@ -1,8 +1,6 @@
 @use 'sass:map';
-@use '../core/theming/palette';
 @use '../core/theming/theming';
 @use '../core/style/form-common';
-@use '../core/typography/typography-utils';
 
 
 // Theme styles that only apply to the standard appearance of the form-field.

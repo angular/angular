@@ -1,6 +1,5 @@
 @use '@material/ripple' as mdc-ripple;
 @use 'sass:map';
-@use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
 
 // Mixin that provides colors for the various states of an interactive list-item. MDC

@@ -1,5 +1,4 @@
 @use 'sass:map';
-@use '../core/theming/palette';
 @use '../core/theming/theming';
 
 @mixin color($config-or-theme) {

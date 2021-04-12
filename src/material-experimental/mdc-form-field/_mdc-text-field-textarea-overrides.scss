@@ -1,5 +1,3 @@
-@use 'form-field-sizing';
-
 // MDCs default textarea styles cannot be used because they only apply if a special
 // class is applied to the "mdc-text-field" wrapper. Since we cannot know whether the
 // registered form-field control is a textarea and MDC by default does not have styles
