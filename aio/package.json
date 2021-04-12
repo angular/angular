@@ -84,7 +84,7 @@
   },
   "//engines-comment": "Keep this in sync with /package.json and /aio/tools/examples/shared/package.json",
   "engines": {
-    "node": ">=10.19.0 <16.0.0",
+    "node": ">=12.14.1 <16.0.0",
     "yarn": ">=1.22.4 <2",
     "npm": "Please use yarn instead of NPM to install dependencies"
   },
