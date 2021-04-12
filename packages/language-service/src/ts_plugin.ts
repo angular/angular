@@ -136,6 +136,13 @@ export function create(info: tss.server.PluginCreateInfo): NgLanguageService {
     return undefined;
   }
 
+  function getSignatureHelpItems(
+      fileName: string, position: number,
+      options: ts.SignatureHelpItemsOptions|undefined): ts.SignatureHelpItems|undefined {
+    // not implemented in VE Language Service
+    return undefined;
+  }
+
   function getTcb(fileName: string, position: number) {
     // Not implemented in VE Language Service
     return undefined;
@@ -157,6 +164,7 @@ export function create(info: tss.server.PluginCreateInfo): NgLanguageService {
     getDefinitionAndBoundSpan,
     getTypeDefinitionAtPosition,
     getReferencesAtPosition,
+    getSignatureHelpItems,
     findRenameLocations,
     getTcb,
     getComponentLocationsForTemplate,

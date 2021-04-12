@@ -27,6 +27,7 @@ import {CompletionBuilder, CompletionNodeContext} from './completions';
 import {DefinitionBuilder} from './definitions';
 import {QuickInfoBuilder} from './quick_info';
 import {ReferencesAndRenameBuilder} from './references';
+import {getSignatureHelp} from './signature_help';
 import {getTargetAtPosition, TargetContext, TargetNodeKind} from './template_target';
 import {findTightestNode, getClassDeclFromDecoratorProp, getPropertyAssignmentFromValue} from './ts_utils';
 import {getTemplateInfoAtPosition, isTypeScriptFile} from './utils';
@@ -251,6 +252,19 @@ export class LanguageService {
         return undefined;
       }
       return builder.getCompletionEntryDetails(entryName, formatOptions, preferences);
+    });
+  }
+
+  getSignatureHelpItems(fileName: string, position: number, options?: ts.SignatureHelpItemsOptions):
+      ts.SignatureHelpItems|undefined {
+    return this.withCompilerAndPerfTracing(PerfPhase.LsSignatureHelp, compiler => {
+      if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
+        return undefined;
+      }
+
+      return getSignatureHelp(compiler, this.tsLS, fileName, position, options);
+
+      return undefined;
     });
   }
 
