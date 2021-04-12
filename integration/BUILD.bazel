@@ -33,24 +33,33 @@ INTEGRATION_TESTS = {
             "no-ivy-aot",
         ],
     },
-    "cli-elements-universal": {},
-    "cli-hello-world": {"commands": "payload_size_tracking"},
-    "cli-hello-world-ivy-compat": {"commands": "payload_size_tracking"},
+    "cli-elements-universal": {
+        "tags": ["ivy-only"],
+    },
+    "cli-hello-world": {
+        "commands": "payload_size_tracking",
+        "tags": ["ivy-only"],
+    },
+    "cli-hello-world-ivy-compat": {
+        "commands": "payload_size_tracking",
+        "tags": ["ivy-only"],
+    },
     "cli-hello-world-ivy-i18n": {
         "commands": "payload_size_tracking",
-        # TODO: (FW-2165) cli-hello-world-ivy-i18n fails on a bundle size check with Ivy bundles
-        "tags": ["fixme-ivy-aot"],
+        "tags": ["ivy-only"],
     },
-    "cli-hello-world-ivy-minimal": {"commands": "payload_size_tracking"},
+    "cli-hello-world-ivy-minimal": {
+        "commands": "payload_size_tracking",
+        "tags": ["ivy-only"],
+    },
     "cli-hello-world-lazy": {
         "commands": "payload_size_tracking",
-        # TODO: (FW-2165) cli-hello-world-lazy fails on a bundle size check with Ivy bundles
-        "tags": ["fixme-ivy-aot"],
+        "tags": ["ivy-only"],
     },
     "dynamic-compiler": {"tags": ["no-ivy-aot"]},
     "forms": {
         "commands": "payload_size_tracking",
-        "tags": ["no-ivy-aot"],
+        "tags": ["ivy-only"],
     },
     "hello_world__closure": {
         # TODO: Re-enable the payload_size_tracking command:
@@ -68,11 +77,11 @@ INTEGRATION_TESTS = {
     },
     "i18n": {"tags": ["no-ivy-aot"]},
     "injectable-def": {"tags": ["no-ivy-aot"]},
-    "ivy-i18n": {"tags": ["no-ivy-aot"]},
-    "trusted-types": {},
+    "ivy-i18n": {"tags": ["ivy-only"]},
+    "trusted-types": {"tags": ["ivy-only"]},
     "language_service_plugin": {},
     "ng_elements": {"tags": ["no-ivy-aot"]},
-    "ng_elements_schematics": {"tags": ["no-ivy-aot"]},
+    "ng_elements_schematics": {"tags": ["ivy-only"]},
     "ng_update": {},
     "ng_update_migrations": {"tags": ["no-ivy-aot"]},
     "ngcc": {"tags": ["no-ivy-aot"]},
