@@ -1,7 +1,7 @@
 import {platformBrowser} from '@angular/platform-browser';
-import {AppModule} from './app';
+import {AppModuleNgFactory} from './app.ngfactory';
 
-platformBrowser().bootstrapModuleFactory(AppModule, {ngZone: 'noop'});
+platformBrowser().bootstrapModuleFactory(AppModuleNgFactory, {ngZone: 'noop'});
 
 const input = document.querySelector('input')!;
 const helloWorld = document.querySelector('hello-world-el')!;
