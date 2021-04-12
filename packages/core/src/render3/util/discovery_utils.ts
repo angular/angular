@@ -172,7 +172,7 @@ export function getInjectionTokens(element: Element): any[] {
 }
 
 /**
- * Retrieves directive instances associated with a given DOM element. Does not include
+ * Retrieves directive instances associated with a given DOM node. Does not include
  * component instances.
  *
  * @usageNotes
@@ -184,21 +184,35 @@ export function getInjectionTokens(element: Element): any[] {
  * </my-app>
  * ```
  * Calling `getDirectives` on `<button>` will return an array with an instance of the `MyButton`
- * directive that is associated with the DOM element.
+ * directive that is associated with the DOM node.
  *
  * Calling `getDirectives` on `<my-comp>` will return an empty array.
  *
- * @param element DOM element for which to get the directives.
- * @returns Array of directives associated with the element.
+ * @param node DOM node for which to get the directives.
+ * @returns Array of directives associated with the node.
  *
  * @publicApi
  * @globalApi ng
  */
-export function getDirectives(element: Element): {}[] {
-  const context = loadLContext(element)!;
+export function getDirectives(node: Node): {}[] {
+  // Skip text nodes because we can't have directives associated with them.
+  if (node instanceof Text) {
+    return [];
+  }
 
+  const context = loadLContext(node, false);
+  if (context === null) {
+    return [];
+  }
+
+  const lView = context.lView;
+  const tView = lView[TVIEW];
+  const nodeIndex = context.nodeIndex;
+  if (!tView?.data[nodeIndex]) {
+    return [];
+  }
   if (context.directives === undefined) {
-    context.directives = getDirectivesAtNodeIndex(context.nodeIndex, context.lView, false);
+    context.directives = getDirectivesAtNodeIndex(nodeIndex, lView, false);
   }
 
   // The `directives` in this case are a named array called `LComponentView`. Clone the

@@ -386,9 +386,11 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils deprecated', () =>
 
     it('should not throw if it cannot find LContext', () => {
       let result: any;
+
       expect(() => {
         result = getDirectives(document.createElement('div'));
       }).not.toThrow();
+
       expect(result).toEqual([]);
     });
   });
