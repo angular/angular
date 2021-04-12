@@ -32,27 +32,27 @@ import { CustomClassDecorator } from './custom';
 import * as i0 from "@angular/core";
 export class BasicInjectable {
 }
-BasicInjectable.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BasicInjectable, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-BasicInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BasicInjectable });
-i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BasicInjectable, decorators: [{
+BasicInjectable.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BasicInjectable, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+BasicInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BasicInjectable });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: BasicInjectable, decorators: [{
             type: Injectable
         }] });
 export class RootInjectable {
 }
-RootInjectable.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: RootInjectable, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-RootInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: RootInjectable, providedIn: 'root' });
-i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: RootInjectable, decorators: [{
+RootInjectable.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: RootInjectable, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+RootInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: RootInjectable, providedIn: 'root' });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: RootInjectable, decorators: [{
             type: Injectable,
             args: [{ providedIn: 'root' }]
         }] });
 let CustomInjectable = class CustomInjectable {
 };
-CustomInjectable.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-CustomInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable });
+CustomInjectable.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+CustomInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable });
 CustomInjectable = __decorate([
     CustomClassDecorator()
 ], CustomInjectable);
-i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable, decorators: [{
             type: Injectable
         }] });
 
@@ -106,8 +106,8 @@ import { CustomPropDecorator } from './custom';
 import * as i0 from "@angular/core";
 export class MyDir {
 }
-MyDir.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
-MyDir.ɵdir = i0.ɵɵngDeclareDirective({ version: "0.0.0-PLACEHOLDER", type: MyDir, inputs: { foo: "foo", bar: ["baz", "bar"], mixed: "mixed" }, outputs: { mixed: "mixed" }, ngImport: i0 });
+MyDir.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDir, deps: [], target: i0.ɵɵFactoryTarget.Directive });
+MyDir.ɵdir = i0.ɵɵngDeclareDirective({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: MyDir, inputs: { foo: "foo", bar: ["baz", "bar"], mixed: "mixed" }, outputs: { mixed: "mixed" }, ngImport: i0 });
 __decorate([
     CustomPropDecorator(),
     __metadata("design:type", String)
@@ -116,7 +116,7 @@ __decorate([
     CustomPropDecorator(),
     __metadata("design:type", String)
 ], MyDir.prototype, "mixed", void 0);
-i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDir, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: MyDir, decorators: [{
             type: Directive
         }], propDecorators: { foo: [{
                 type: Input
@@ -187,15 +187,15 @@ class Service {
 let ParameterizedInjectable = class ParameterizedInjectable {
     constructor(service, token, custom, mixed) { }
 };
-ParameterizedInjectable.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ParameterizedInjectable, deps: [{ token: Service }, { token: TOKEN }, { token: Service }, { token: TOKEN, skipSelf: true }], target: i0.ɵɵFactoryTarget.Injectable });
-ParameterizedInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ParameterizedInjectable });
+ParameterizedInjectable.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ParameterizedInjectable, deps: [{ token: Service }, { token: TOKEN }, { token: Service }, { token: TOKEN, skipSelf: true }], target: i0.ɵɵFactoryTarget.Injectable });
+ParameterizedInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ParameterizedInjectable });
 ParameterizedInjectable = __decorate([
     __param(2, CustomParamDecorator()),
     __param(3, CustomParamDecorator()),
     __metadata("design:paramtypes", [Service, String, Service, String])
 ], ParameterizedInjectable);
 export { ParameterizedInjectable };
-i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ParameterizedInjectable, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: ParameterizedInjectable, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return [{ type: Service }, { type: undefined, decorators: [{
                     type: Inject,
@@ -208,45 +208,45 @@ i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type
                 }] }]; } });
 export class NoCtor {
 }
-NoCtor.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NoCtor, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-NoCtor.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NoCtor });
-i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NoCtor, decorators: [{
+NoCtor.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NoCtor, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+NoCtor.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NoCtor });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NoCtor, decorators: [{
             type: Injectable
         }] });
 export class EmptyCtor {
     constructor() { }
 }
-EmptyCtor.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: EmptyCtor, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-EmptyCtor.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: EmptyCtor });
-i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: EmptyCtor, decorators: [{
+EmptyCtor.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: EmptyCtor, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+EmptyCtor.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: EmptyCtor });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: EmptyCtor, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return []; } });
 export class NoDecorators {
     constructor(service) { }
 }
-NoDecorators.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NoDecorators, deps: [{ token: Service }], target: i0.ɵɵFactoryTarget.Injectable });
-NoDecorators.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NoDecorators });
-i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NoDecorators, decorators: [{
+NoDecorators.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NoDecorators, deps: [{ token: Service }], target: i0.ɵɵFactoryTarget.Injectable });
+NoDecorators.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NoDecorators });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: NoDecorators, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return [{ type: Service }]; } });
 let CustomInjectable = class CustomInjectable {
     constructor(service) { }
 };
-CustomInjectable.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable, deps: [{ token: Service }], target: i0.ɵɵFactoryTarget.Injectable });
-CustomInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable });
+CustomInjectable.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable, deps: [{ token: Service }], target: i0.ɵɵFactoryTarget.Injectable });
+CustomInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable });
 CustomInjectable = __decorate([
     __param(0, CustomParamDecorator()),
     __metadata("design:paramtypes", [Service])
 ], CustomInjectable);
 export { CustomInjectable };
-i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: CustomInjectable, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return [{ type: Service, decorators: [] }]; } });
 export class DerivedInjectable extends ParameterizedInjectable {
 }
-DerivedInjectable.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectable, deps: null, target: i0.ɵɵFactoryTarget.Injectable });
-DerivedInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectable });
-i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectable, decorators: [{
+DerivedInjectable.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectable, deps: null, target: i0.ɵɵFactoryTarget.Injectable });
+DerivedInjectable.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectable });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectable, decorators: [{
             type: Injectable
         }] });
 export class DerivedInjectableWithCtor extends ParameterizedInjectable {
@@ -254,9 +254,9 @@ export class DerivedInjectableWithCtor extends ParameterizedInjectable {
         super(null, '', null, '');
     }
 }
-DerivedInjectableWithCtor.ɵfac = i0.ɵɵngDeclareFactory({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectableWithCtor, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
-DerivedInjectableWithCtor.ɵprov = i0.ɵɵngDeclareInjectable({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectableWithCtor });
-i0.ɵɵngDeclareClassMetadata({ version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectableWithCtor, decorators: [{
+DerivedInjectableWithCtor.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectableWithCtor, deps: [], target: i0.ɵɵFactoryTarget.Injectable });
+DerivedInjectableWithCtor.ɵprov = i0.ɵɵngDeclareInjectable({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectableWithCtor });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: DerivedInjectableWithCtor, decorators: [{
             type: Injectable
         }], ctorParameters: function () { return []; } });
 

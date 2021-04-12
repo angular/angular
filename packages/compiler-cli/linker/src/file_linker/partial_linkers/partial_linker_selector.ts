@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {satisfies} from 'semver';
+import {intersects, Range, SemVer} from 'semver';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
+import {Logger} from '../../../../src/ngtsc/logging';
 import {createGetSourceFile} from '../get_source_file';
 import {LinkerEnvironment} from '../linker_environment';
 
@@ -34,34 +35,96 @@ export const declarationFunctions = [
   ɵɵngDeclareInjectable, ɵɵngDeclareInjector, ɵɵngDeclareNgModule, ɵɵngDeclarePipe
 ];
 
-interface LinkerRange<TExpression> {
-  range: string;
+export interface LinkerRange<TExpression> {
+  range: Range;
   linker: PartialLinker<TExpression>;
+}
+
+/**
+ * Create a mapping between partial-declaration call name and collections of partial-linkers.
+ *
+ * Each collection of partial-linkers will contain a version range that will be matched against the
+ * `minVersion` of the partial-declaration. (Additionally, a partial-linker may modify its behaviour
+ * internally based on the `version` property of the declaration.)
+ *
+ * Versions should be sorted in ascending order. The most recent partial-linker will be used as the
+ * fallback linker if none of the other version ranges match. For example:
+ *
+ * ```
+ * {range: getRange('<=', '13.0.0'), linker PartialDirectiveLinkerVersion2(...) },
+ * {range: getRange('<=', '13.1.0'), linker PartialDirectiveLinkerVersion3(...) },
+ * {range: getRange('<=', '14.0.0'), linker PartialDirectiveLinkerVersion4(...) },
+ * {range: LATEST_VERSION_RANGE, linker: new PartialDirectiveLinkerVersion1(...)},
+ * ```
+ *
+ * If the `LATEST_VERSION_RANGE` is `<=15.0.0` then the fallback linker would be
+ * `PartialDirectiveLinkerVersion1` for any version greater than `15.0.0`.
+ *
+ * When there is a change to a declaration interface that requires a new partial-linker, the
+ * `minVersion` of the partial-declaration should be updated, the new linker implementation should
+ * be added to the end of the collection, and the version of the previous linker should be updated.
+ */
+export function createLinkerMap<TStatement, TExpression>(
+    environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
+    code: string): Map<string, LinkerRange<TExpression>[]> {
+  const linkers = new Map<string, LinkerRange<TExpression>[]>();
+  const LATEST_VERSION_RANGE = getRange('<=', '0.0.0-PLACEHOLDER');
+
+  linkers.set(ɵɵngDeclareDirective, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialDirectiveLinkerVersion1(sourceUrl, code)},
+  ]);
+  linkers.set(ɵɵngDeclareClassMetadata, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialClassMetadataLinkerVersion1()},
+  ]);
+  linkers.set(ɵɵngDeclareComponent, [
+    {
+      range: LATEST_VERSION_RANGE,
+      linker: new PartialComponentLinkerVersion1(
+          createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl, code)
+    },
+  ]);
+  linkers.set(ɵɵngDeclareFactory, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialFactoryLinkerVersion1()},
+  ]);
+  linkers.set(ɵɵngDeclareInjectable, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialInjectableLinkerVersion1()},
+  ]);
+  linkers.set(ɵɵngDeclareInjector, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialInjectorLinkerVersion1()},
+  ]);
+  linkers.set(ɵɵngDeclareNgModule, [
+    {
+      range: LATEST_VERSION_RANGE,
+      linker: new PartialNgModuleLinkerVersion1(environment.options.linkerJitMode)
+    },
+  ]);
+  linkers.set(ɵɵngDeclarePipe, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialPipeLinkerVersion1()},
+  ]);
+
+  return linkers;
 }
 
 /**
  * A helper that selects the appropriate `PartialLinker` for a given declaration.
  *
  * The selection is made from a database of linker instances, chosen if their given semver range
- * satisfies the version found in the code to be linked.
+ * satisfies the `minVersion` of the partial declaration to be linked.
  *
- * Note that the ranges are checked in order, and the first matching range will be selected, so
- * ranges should be most restrictive first.
+ * Note that the ranges are checked in order, and the first matching range will be selected. So
+ * ranges should be most restrictive first. In practice, since ranges are always `<=X.Y.Z` this
+ * means that ranges should be in ascending order.
  *
- * Also, ranges are matched to include "pre-releases", therefore if the range is `>=11.1.0-next.1`
- * then this includes `11.1.0-next.2` and also `12.0.0-next.1`.
- *
- * Finally, note that we always start with the current version (i.e. `0.0.0-PLACEHOLDER`). This
- * allows the linker to work on local builds effectively.
+ * Note that any "pre-release" versions are stripped from ranges. Therefore if a `minVersion` is
+ * `11.1.0-next.1` then this would match `11.1.0-next.2` and also `12.0.0-next.1`. (This is
+ * different to standard semver range checking, where pre-release versions do not cross full version
+ * boundaries.)
  */
-export class PartialLinkerSelector<TStatement, TExpression> {
-  private readonly linkers: Map<string, LinkerRange<TExpression>[]>;
-
+export class PartialLinkerSelector<TExpression> {
   constructor(
-      environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
-      code: string) {
-    this.linkers = this.createLinkerMap(environment, sourceUrl, code);
-  }
+      private readonly linkers: Map<string, LinkerRange<TExpression>[]>,
+      private readonly logger: Logger,
+      private readonly unknownDeclarationVersionHandling: 'ignore'|'warn'|'error') {}
 
   /**
    * Returns true if there are `PartialLinker` classes that can handle functions with this name.
@@ -74,68 +137,55 @@ export class PartialLinkerSelector<TStatement, TExpression> {
    * Returns the `PartialLinker` that can handle functions with the given name and version.
    * Throws an error if there is none.
    */
-  getLinker(functionName: string, version: string): PartialLinker<TExpression> {
+  getLinker(functionName: string, minVersion: string, version: string): PartialLinker<TExpression> {
     if (!this.linkers.has(functionName)) {
       throw new Error(`Unknown partial declaration function ${functionName}.`);
     }
-    const versions = this.linkers.get(functionName)!;
-    for (const {range, linker} of versions) {
-      if (satisfies(version, range, {includePrerelease: true})) {
+    const linkerRanges = this.linkers.get(functionName)!;
+
+    if (version === '0.0.0-PLACEHOLDER') {
+      // Special case if the `version` is the same as the current compiler version.
+      // This helps with compliance tests where the version placeholders have not been replaced.
+      return linkerRanges[linkerRanges.length - 1].linker;
+    }
+
+    const declarationRange = getRange('>=', minVersion);
+    for (const {range: linkerRange, linker} of linkerRanges) {
+      if (intersects(declarationRange, linkerRange)) {
         return linker;
       }
     }
-    throw new Error(
-        `Unsupported partial declaration version ${version} for ${functionName}.\n` +
-        'Valid version ranges are:\n' + versions.map(v => ` - ${v.range}`).join('\n'));
-  }
 
-  private createLinkerMap(
-      environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
-      code: string): Map<string, LinkerRange<TExpression>[]> {
-    const partialDirectiveLinkerVersion1 = new PartialDirectiveLinkerVersion1(sourceUrl, code);
-    const partialClassMetadataLinkerVersion1 = new PartialClassMetadataLinkerVersion1();
-    const partialComponentLinkerVersion1 = new PartialComponentLinkerVersion1(
-        createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl, code);
-    const partialFactoryLinkerVersion1 = new PartialFactoryLinkerVersion1();
-    const partialInjectableLinkerVersion1 = new PartialInjectableLinkerVersion1();
-    const partialInjectorLinkerVersion1 = new PartialInjectorLinkerVersion1();
-    const partialNgModuleLinkerVersion1 =
-        new PartialNgModuleLinkerVersion1(environment.options.linkerJitMode);
-    const partialPipeLinkerVersion1 = new PartialPipeLinkerVersion1();
+    const message =
+        `This application depends upon a library published using Angular version ${version}, ` +
+        `which requires Angular version ${minVersion} or newer to work correctly.\n` +
+        `Consider upgrading your application to use a more recent version of Angular.`;
 
-    const linkers = new Map<string, LinkerRange<TExpression>[]>();
-    linkers.set(ɵɵngDeclareDirective, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialDirectiveLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialDirectiveLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclareClassMetadata, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialClassMetadataLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialClassMetadataLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclareComponent, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialComponentLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialComponentLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclareFactory, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialFactoryLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialFactoryLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclareInjectable, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialInjectableLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialInjectableLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclareInjector, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialInjectorLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialInjectorLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclareNgModule, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialNgModuleLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialNgModuleLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclarePipe, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialPipeLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialPipeLinkerVersion1},
-    ]);
-    return linkers;
+    if (this.unknownDeclarationVersionHandling === 'error') {
+      throw new Error(message);
+    } else if (this.unknownDeclarationVersionHandling === 'warn') {
+      this.logger.warn(`${message}\nAttempting to continue using this version of Angular.`);
+    }
+
+    // No linker was matched for this declaration, so just use the most recent one.
+    return linkerRanges[linkerRanges.length - 1].linker;
   }
+}
+
+/**
+ * Compute a semver Range from the `version` and comparator.
+ *
+ * The range is computed as any version greater/less than or equal to the given `versionStr`
+ * depending upon the `comparator` (ignoring any prerelease versions).
+ *
+ * @param comparator a string that determines whether the version specifies a minimum or a maximum
+ *     range.
+ * @param versionStr the version given in the partial declaration
+ * @returns A semver range for the provided `version` and comparator.
+ */
+function getRange(comparator: '<='|'>=', versionStr: string): Range {
+  const version = new SemVer(versionStr);
+  // Wipe out any prerelease versions
+  version.prerelease = [];
+  return new Range(`${comparator}${version.format()}`);
 }

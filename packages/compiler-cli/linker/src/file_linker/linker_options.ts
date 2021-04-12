@@ -23,6 +23,20 @@ export interface LinkerOptions {
    * `exports`, etc, which are otherwise not needed.
    */
   linkerJitMode: boolean;
+
+  /**
+   * How to handle a situation where a partial declaration matches none of the supported
+   * partial-linker versions.
+   *
+   * - `error` - the version mismatch is a fatal error.
+   * - `warn` - a warning is sent to the logger but the most recent partial-linker
+   *   will attempt to process the declaration anyway.
+   * - `ignore` - the most recent partial-linker will, silently, attempt to process
+   *   the declaration.
+   *
+   * The default is `error`.
+   */
+  unknownDeclarationVersionHandling: 'ignore'|'warn'|'error';
 }
 
 /**
@@ -31,4 +45,5 @@ export interface LinkerOptions {
 export const DEFAULT_LINKER_OPTIONS: LinkerOptions = {
   sourceMapping: true,
   linkerJitMode: false,
+  unknownDeclarationVersionHandling: 'error',
 };

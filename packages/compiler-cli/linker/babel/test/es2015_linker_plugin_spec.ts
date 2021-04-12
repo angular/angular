@@ -69,9 +69,9 @@ describe('createEs2015LinkerPlugin()', () => {
        transformSync(
            [
              'var core;',
-             `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core, x: 1});`,
-             `ɵɵngDeclareComponent({version: '0.0.0-PLACEHOLDER', ngImport: core, foo: () => ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core, x: 2})});`,
-             `x.qux(() => ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core, x: 3}));`,
+             `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core, x: 1});`,
+             `ɵɵngDeclareComponent({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core, foo: () => ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core, x: 2})});`,
+             `x.qux(() => ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core, x: 3}));`,
              'spread(...x);',
            ].join('\n'),
            {
@@ -81,13 +81,19 @@ describe('createEs2015LinkerPlugin()', () => {
            });
 
        expect(humanizeLinkerCalls(linkSpy.calls)).toEqual([
-         ['ɵɵngDeclareDirective', '{version:\'0.0.0-PLACEHOLDER\',ngImport:core,x:1}'],
+         [
+           'ɵɵngDeclareDirective',
+           '{minVersion:\'0.0.0-PLACEHOLDER\',version:\'0.0.0-PLACEHOLDER\',ngImport:core,x:1}'
+         ],
          [
            'ɵɵngDeclareComponent',
-           '{version:\'0.0.0-PLACEHOLDER\',ngImport:core,foo:()=>ɵɵngDeclareDirective({version:\'0.0.0-PLACEHOLDER\',ngImport:core,x:2})}'
+           '{minVersion:\'0.0.0-PLACEHOLDER\',version:\'0.0.0-PLACEHOLDER\',ngImport:core,foo:()=>ɵɵngDeclareDirective({minVersion:\'0.0.0-PLACEHOLDER\',version:\'0.0.0-PLACEHOLDER\',ngImport:core,x:2})}'
          ],
          // Note we do not process `x:2` declaration since it is nested within another declaration
-         ['ɵɵngDeclareDirective', '{version:\'0.0.0-PLACEHOLDER\',ngImport:core,x:3}']
+         [
+           'ɵɵngDeclareDirective',
+           '{minVersion:\'0.0.0-PLACEHOLDER\',version:\'0.0.0-PLACEHOLDER\',ngImport:core,x:3}'
+         ]
        ]);
      });
 
@@ -125,9 +131,9 @@ describe('createEs2015LinkerPlugin()', () => {
         [
           'import * as core from \'some-module\';',
           'import {id} from \'other-module\';',
-          `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
-          `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
-          `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+          `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+          `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+          `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
         ].join('\n'),
         {
           plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
@@ -149,9 +155,9 @@ describe('createEs2015LinkerPlugin()', () => {
        const result = transformSync(
            [
              'var core;',
-             `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
-             `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
-             `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+             `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+             `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+             `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
            ].join('\n'),
            {
              plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
@@ -174,9 +180,10 @@ describe('createEs2015LinkerPlugin()', () => {
        const result = transformSync(
            [
              'function run(core) {',
-             `  ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
-             `  ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
-             `  ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`, '}'
+             `  ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+             `  ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+             `  ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+             '}'
            ].join('\n'),
            {
              plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
@@ -198,9 +205,9 @@ describe('createEs2015LinkerPlugin()', () => {
        const result = transformSync(
            [
              'function run() {',
-             `  ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
-             `  ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
-             `  ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+             `  ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+             `  ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+             `  ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
              '}',
            ].join('\n'),
            {
@@ -226,7 +233,7 @@ describe('createEs2015LinkerPlugin()', () => {
        const plugin = createEs2015LinkerPlugin({fileSystem, logger});
        const result = transformSync(
            [
-             `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core}); FOO;`,
+             `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core}); FOO;`,
            ].join('\n'),
            {
              plugins: [
@@ -267,7 +274,7 @@ describe('createEs2015LinkerPlugin()', () => {
     const result = transformSync(
         [
           'import * as core from \'some-module\';',
-          `ɵɵngDeclareDirective({version: '0.0.0-PLACEHOLDER', ngImport: core})`,
+          `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core})`,
         ].join('\n'),
         {
           plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
