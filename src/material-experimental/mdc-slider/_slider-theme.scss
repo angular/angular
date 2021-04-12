@@ -1,6 +1,7 @@
 // TODO: disabled until we implement the new MDC slider.
 // @use '@material/slider' as mdc-slider;
 @use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/typography/typography';
 @use '../../material/core/theming/theming';
 
 @mixin color($config-or-theme) {
@@ -24,7 +25,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.private-typography-to-2018-config(
+      theming.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     // TODO: disabled until we implement the new MDC slider.
     // @include mdc-slider-core-styles($query: $mat-typography-styles-query);

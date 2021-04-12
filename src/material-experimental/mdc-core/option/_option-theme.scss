@@ -7,6 +7,7 @@
 @use '@material/ripple' as mdc-ripple;
 @use '../../mdc-helpers/mdc-helpers';
 @use '../../../material/core/theming/theming';
+@use '../../../material/core/typography/typography';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
@@ -54,7 +55,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.private-typography-to-2018-config(
+      theming.get-typography-config($config-or-theme));
 
   @include mdc-helpers.mat-using-mdc-typography($config) {
     // MDC uses the `subtitle1` level for list items, but the spec shows `body1` as the correct

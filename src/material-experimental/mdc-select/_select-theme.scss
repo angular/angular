@@ -4,6 +4,7 @@
 @use '@material/select' as mdc-select;
 @use '@material/typography' as mdc-typography;
 @use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/typography/typography';
 @use '../../material/core/theming/theming';
 
 // Gets the color to use for some text that is highlighted while a select has focus.
@@ -82,7 +83,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.private-typography-to-2018-config(
+      theming.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-menu-surface.core-styles(mdc-helpers.$mat-typography-styles-query);
 

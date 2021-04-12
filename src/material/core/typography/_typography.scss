@@ -126,7 +126,7 @@
   @if $config == null {
     @return null;
   }
-  @if private-typography-is-2014-config($config) {
+  @if not private-typography-is-2018-config($config) {
     @return (
         headline-1: map.get($config, display-4),
         headline-2: map.get($config, display-3),

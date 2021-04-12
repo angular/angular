@@ -6,6 +6,7 @@
 @use '@material/theme/theme';
 @use 'sass:map';
 @use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/typography/typography';
 @use '../../material/core/theming/theming';
 @use '../../material/core/ripple/ripple-theme';
 
@@ -108,7 +109,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.private-typography-to-2018-config(
+      theming.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-checkbox.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
     @include mdc-form-field.core-styles($query: mdc-helpers.$mat-typography-styles-query);

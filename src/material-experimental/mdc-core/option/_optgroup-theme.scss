@@ -2,6 +2,7 @@
 @use '@material/theme/theme' as mdc-theme;
 @use '../../mdc-helpers/mdc-helpers';
 @use '../../../material/core/theming/theming';
+@use '../../../material/core/typography/typography';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
@@ -18,7 +19,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.private-typography-to-2018-config(
+      theming.get-typography-config($config-or-theme));
 }
 
 @mixin density($config-or-theme) {

@@ -3,8 +3,8 @@
 @use '@material/radio/radio' as mdc-radio;
 @use '@material/form-field' as mdc-form-field;
 @use '../mdc-helpers/mdc-helpers';
+@use '../../material/core/typography/typography';
 @use '../../material/core/theming/theming';
-
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
@@ -45,7 +45,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.private-typography-to-2018-config(
+      theming.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include mdc-radio.without-ripple($query: mdc-helpers.$mat-typography-styles-query);
     @include mdc-form-field.core-styles($query: mdc-helpers.$mat-typography-styles-query);

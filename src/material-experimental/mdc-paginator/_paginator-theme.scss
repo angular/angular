@@ -2,6 +2,7 @@
 @use 'sass:map';
 @use '../../material/core/theming/theming';
 @use '../../material/core/density/private/compatibility';
+@use '../../material/core/typography/typography';
 @use '../mdc-helpers/mdc-helpers';
 @use './paginator-variables';
 @use '../../material/core/typography/typography-utils';
@@ -48,7 +49,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.private-typography-to-2018-config(
+      theming.get-typography-config($config-or-theme));
 
   @include mdc-helpers.mat-using-mdc-typography($config) {
     .mat-mdc-paginator {

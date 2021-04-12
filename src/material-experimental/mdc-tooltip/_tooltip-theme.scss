@@ -1,6 +1,7 @@
 @use '@material/tooltip/tooltip';
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
+@use '../../material/core/typography/typography';
 
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
@@ -10,7 +11,8 @@
 }
 
 @mixin typography($config-or-theme) {
-  $config: theming.get-typography-config($config-or-theme);
+  $config: typography.private-typography-to-2018-config(
+      theming.get-typography-config($config-or-theme));
   @include mdc-helpers.mat-using-mdc-typography($config) {
     @include tooltip.core-styles($query: mdc-helpers.$mat-typography-styles-query);
   }

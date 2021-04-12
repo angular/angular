@@ -158,8 +158,8 @@ const plugin = (isEnabled: boolean, _options: never, context: {fix: boolean}) =>
         [
           'typography.private-typography-to-2014-config(' +
               'theming.get-typography-config($config-or-theme))',
-          'theming.get-typography-config($config-or-theme)'
-        ] :
+          'typography.private-typography-to-2018-config(' +
+              'theming.get-typography-config($config-or-theme))',        ] :
         [`theming.get-${type}-config($config-or-theme)`];
       let configExtractionNode: Declaration|null = null;
       let nonCommentNodeCount = 0;
