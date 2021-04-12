@@ -45,7 +45,7 @@ This new rule leverages ngtsc plugin supported by `ts_library`, and it is much f
 
 For the latest recommendations, please refer to the canonical Angular Bazel [repo](https://github.com/bazelbuild/rules_nodejs/tree/master/examples/angular).
 
-For questions, please ask in the `#angular` channel in https://slack.bazel.build/.
+For questions, please ask in the `#angular` channel in http://slack.bazel.build/.
 
 ## Angular CLI
 
