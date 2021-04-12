@@ -229,6 +229,9 @@ export function unparseWithSpan(
       if (ast.hasOwnProperty('nameSpan')) {
         this.recordUnparsed(ast, 'nameSpan', unparsedList);
       }
+      if (ast.hasOwnProperty('argumentSpan')) {
+        this.recordUnparsed(ast, 'argumentSpan', unparsedList);
+      }
       ast.visit(this, unparsedList);
     }
   };

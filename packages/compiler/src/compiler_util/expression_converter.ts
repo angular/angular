@@ -705,7 +705,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
           leftMostSafe,
           new cdAst.MethodCall(
               leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.nameSpan,
-              leftMostSafe.receiver, leftMostSafe.name, leftMostSafe.args));
+              leftMostSafe.receiver, leftMostSafe.name, leftMostSafe.args,
+              leftMostSafe.argumentSpan));
     } else {
       this._nodeMap.set(
           leftMostSafe,
