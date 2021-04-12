@@ -62,6 +62,11 @@ export const enum DynamicValueReason {
   COMPLEX_FUNCTION_CALL,
 
   /**
+   * A type that could not be statically evaluated.
+   */
+  DYNAMIC_TYPE,
+
+  /**
    * A value could not be determined statically for any reason other the above.
    */
   UNKNOWN,
@@ -104,6 +109,10 @@ export class DynamicValue<R = unknown> {
     return new DynamicValue(node, fn, DynamicValueReason.COMPLEX_FUNCTION_CALL);
   }
 
+  static fromDynamicType(node: ts.TypeNode): DynamicValue {
+    return new DynamicValue(node, undefined, DynamicValueReason.DYNAMIC_TYPE);
+  }
+
   static fromUnknown(node: ts.Node): DynamicValue {
     return new DynamicValue(node, undefined, DynamicValueReason.UNKNOWN);
   }
@@ -136,6 +145,10 @@ export class DynamicValue<R = unknown> {
     return this.code === DynamicValueReason.COMPLEX_FUNCTION_CALL;
   }
 
+  isFromDynamicType(this: DynamicValue<R>): this is DynamicValue {
+    return this.code === DynamicValueReason.DYNAMIC_TYPE;
+  }
+
   isFromUnknown(this: DynamicValue<R>): this is DynamicValue {
     return this.code === DynamicValueReason.UNKNOWN;
   }
@@ -158,6 +171,8 @@ export class DynamicValue<R = unknown> {
       case DynamicValueReason.COMPLEX_FUNCTION_CALL:
         return visitor.visitComplexFunctionCall(
             this as unknown as DynamicValue<FunctionDefinition>);
+      case DynamicValueReason.DYNAMIC_TYPE:
+        return visitor.visitDynamicType(this);
       case DynamicValueReason.UNKNOWN:
         return visitor.visitUnknown(this);
     }
@@ -172,5 +187,6 @@ export interface DynamicValueVisitor<R> {
   visitUnknownIdentifier(value: DynamicValue): R;
   visitInvalidExpressionType(value: DynamicValue): R;
   visitComplexFunctionCall(value: DynamicValue<FunctionDefinition>): R;
+  visitDynamicType(value: DynamicValue): R;
   visitUnknown(value: DynamicValue): R;
 }

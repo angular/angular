@@ -276,12 +276,19 @@ export class StaticInterpreter {
       return this.getReference(node, context);
     }
   }
-
   private visitVariableDeclaration(node: ts.VariableDeclaration, context: Context): ResolvedValue {
     const value = this.host.getVariableValue(node);
     if (value !== null) {
       return this.visitExpression(value, context);
     } else if (isVariableDeclarationDeclared(node)) {
+      if (node.type !== undefined) {
+        const evaluatedType = this.visitType(node.type, context);
+        if (!(evaluatedType instanceof DynamicValue)) {
+          return evaluatedType;
+        }
+      }
+      // fallback to returning a reference if this variable declaration does not have a type or we
+      // are unable to evaluate its type
       return this.getReference(node, context);
     } else {
       return undefined;
@@ -680,6 +687,45 @@ export class StaticInterpreter {
 
   private getReference<T extends DeclarationNode>(node: T, context: Context): Reference<T> {
     return new Reference(node, owningModule(context));
+  }
+
+  private visitType(node: ts.TypeNode, context: Context): ResolvedValue {
+    if (ts.isLiteralTypeNode(node)) {
+      return this.visitLiteralType(node, context);
+    } else if (ts.isTupleTypeNode(node)) {
+      return this.visitTupleType(node, context);
+    } else if (ts.isNamedTupleMember(node)) {
+      return this.visitType(node.type, context);
+    }
+
+    return DynamicValue.fromDynamicType(node);
+  }
+
+  private visitLiteralType(node: ts.LiteralTypeNode, context: Context): ResolvedValue {
+    if (ts.isLiteralExpression(node.literal)) {
+      return this.visitExpression(node.literal, context);
+    }
+
+    switch (node.literal.kind) {
+      case ts.SyntaxKind.TrueKeyword:
+        return true;
+      case ts.SyntaxKind.FalseKeyword:
+        return false;
+      case ts.SyntaxKind.NullKeyword:
+        return null;
+      case ts.SyntaxKind.PrefixUnaryExpression:
+        return this.visitExpression(node.literal, context);
+    }
+  }
+
+  private visitTupleType(node: ts.TupleTypeNode, context: Context): ResolvedValueArray {
+    const res: ResolvedValueArray = [];
+
+    for (const elem of node.elements) {
+      res.push(this.visitType(elem, context));
+    }
+
+    return res;
   }
 }
 
