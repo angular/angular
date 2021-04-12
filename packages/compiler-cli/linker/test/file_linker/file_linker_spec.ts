@@ -44,6 +44,7 @@ describe('FileLinker', () => {
       const version = factory.createLiteral('0.0.0-PLACEHOLDER');
       const ngImport = factory.createIdentifier('core');
       const declarationArg = factory.createObjectLiteral([
+        {propertyName: 'minVersion', quoted: false, value: version},
         {propertyName: 'version', quoted: false, value: version},
         {propertyName: 'ngImport', quoted: false, value: ngImport},
       ]);
@@ -53,10 +54,26 @@ describe('FileLinker', () => {
           .toThrowError('Unknown partial declaration function foo.');
     });
 
-    it('should throw an error if the metadata object does not have a `version` property', () => {
+    it('should throw an error if the metadata object does not have a `minVersion` property', () => {
       const {fileLinker} = createFileLinker();
+      const version = factory.createLiteral('0.0.0-PLACEHOLDER');
       const ngImport = factory.createIdentifier('core');
       const declarationArg = factory.createObjectLiteral([
+        {propertyName: 'version', quoted: false, value: version},
+        {propertyName: 'ngImport', quoted: false, value: ngImport},
+      ]);
+      expect(
+          () => fileLinker.linkPartialDeclaration(
+              'ɵɵngDeclareDirective', [declarationArg], new MockDeclarationScope()))
+          .toThrowError(`Expected property 'minVersion' to be present.`);
+    });
+
+    it('should throw an error if the metadata object does not have a `version` property', () => {
+      const {fileLinker} = createFileLinker();
+      const version = factory.createLiteral('0.0.0-PLACEHOLDER');
+      const ngImport = factory.createIdentifier('core');
+      const declarationArg = factory.createObjectLiteral([
+        {propertyName: 'minVersion', quoted: false, value: version},
         {propertyName: 'ngImport', quoted: false, value: ngImport},
       ]);
       expect(
@@ -67,9 +84,10 @@ describe('FileLinker', () => {
 
     it('should throw an error if the metadata object does not have a `ngImport` property', () => {
       const {fileLinker} = createFileLinker();
-      const ngImport = factory.createIdentifier('core');
+      const version = factory.createLiteral('0.0.0-PLACEHOLDER');
       const declarationArg = factory.createObjectLiteral([
-        {propertyName: 'version', quoted: false, value: ngImport},
+        {propertyName: 'minVersion', quoted: false, value: version},
+        {propertyName: 'version', quoted: false, value: version},
       ]);
       expect(
           () => fileLinker.linkPartialDeclaration(
@@ -86,6 +104,7 @@ describe('FileLinker', () => {
       const version = factory.createLiteral('0.0.0-PLACEHOLDER');
       const declarationArg = factory.createObjectLiteral([
         {propertyName: 'ngImport', quoted: false, value: ngImport},
+        {propertyName: 'minVersion', quoted: false, value: version},
         {propertyName: 'version', quoted: false, value: version},
       ]);
 
@@ -107,6 +126,11 @@ describe('FileLinker', () => {
       // constant statements.
       const declarationArg = factory.createObjectLiteral([
         {propertyName: 'ngImport', quoted: false, value: factory.createIdentifier('core')},
+        {
+          propertyName: 'minVersion',
+          quoted: false,
+          value: factory.createLiteral('0.0.0-PLACEHOLDER')
+        },
         {propertyName: 'version', quoted: false, value: factory.createLiteral('0.0.0-PLACEHOLDER')},
       ]);
 
@@ -130,6 +154,11 @@ describe('FileLinker', () => {
          // statements to be emitted in an IIFE rather than added to the shared constant scope.
          const declarationArg = factory.createObjectLiteral([
            {propertyName: 'ngImport', quoted: false, value: factory.createLiteral('not-a-module')},
+           {
+             propertyName: 'minVersion',
+             quoted: false,
+             value: factory.createLiteral('0.0.0-PLACEHOLDER')
+           },
            {
              propertyName: 'version',
              quoted: false,

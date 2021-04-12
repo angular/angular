@@ -5,9 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {satisfies} from 'semver';
+import {intersects, Range, SemVer} from 'semver';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
+import {Logger} from '../../../../src/ngtsc/logging';
 import {createGetSourceFile} from '../get_source_file';
 import {LinkerEnvironment} from '../linker_environment';
 
@@ -34,9 +35,66 @@ export const declarationFunctions = [
   ɵɵngDeclareInjectable, ɵɵngDeclareInjector, ɵɵngDeclareNgModule, ɵɵngDeclarePipe
 ];
 
-interface LinkerRange<TExpression> {
-  range: string;
+export interface LinkerRange<TExpression> {
+  range: Range;
   linker: PartialLinker<TExpression>;
+}
+
+/**
+ * Create a map of partial-linkers by declaration name and version.
+ *
+ * If a new declaration version is defined, which needs a different linker implementation, then
+ * the old linker implementation should be added to the end of the array.
+ *
+ * Versions should be sorted in ascending order. The most recent partial-linker will be used as the
+ * fallback linker if none of the other version ranges match. For example:
+ *
+ * ```
+ * {range: getRange('<=', '13.0.0'), linker PartialDirectiveLinkerVersion2(...) },
+ * {range: getRange('<=', '13.1.0'), linker PartialDirectiveLinkerVersion3(...) },
+ * {range: getRange('<=', '14.0.0'), linker PartialDirectiveLinkerVersion4(...) },
+ * {range: latestLinkerRange, linker: new PartialDirectiveLinkerVersion1(...)},
+ * ```
+ */
+export function createLinkerMap<TStatement, TExpression>(
+    environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
+    code: string): Map<string, LinkerRange<TExpression>[]> {
+  const linkers = new Map<string, LinkerRange<TExpression>[]>();
+  const LATEST_VERSION_RANGE = getRange('<=', '0.0.0-PLACEHOLDER');
+
+  linkers.set(ɵɵngDeclareDirective, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialDirectiveLinkerVersion1(sourceUrl, code)},
+  ]);
+  linkers.set(ɵɵngDeclareClassMetadata, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialClassMetadataLinkerVersion1()},
+  ]);
+  linkers.set(ɵɵngDeclareComponent, [
+    {
+      range: LATEST_VERSION_RANGE,
+      linker: new PartialComponentLinkerVersion1(
+          createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl, code)
+    },
+  ]);
+  linkers.set(ɵɵngDeclareFactory, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialFactoryLinkerVersion1()},
+  ]);
+  linkers.set(ɵɵngDeclareInjectable, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialInjectableLinkerVersion1()},
+  ]);
+  linkers.set(ɵɵngDeclareInjector, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialInjectorLinkerVersion1()},
+  ]);
+  linkers.set(ɵɵngDeclareNgModule, [
+    {
+      range: LATEST_VERSION_RANGE,
+      linker: new PartialNgModuleLinkerVersion1(environment.options.linkerJitMode)
+    },
+  ]);
+  linkers.set(ɵɵngDeclarePipe, [
+    {range: LATEST_VERSION_RANGE, linker: new PartialPipeLinkerVersion1()},
+  ]);
+
+  return linkers;
 }
 
 /**
@@ -55,13 +113,10 @@ interface LinkerRange<TExpression> {
  * allows the linker to work on local builds effectively.
  */
 export class PartialLinkerSelector<TStatement, TExpression> {
-  private readonly linkers: Map<string, LinkerRange<TExpression>[]>;
-
   constructor(
-      environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
-      code: string) {
-    this.linkers = this.createLinkerMap(environment, sourceUrl, code);
-  }
+      private readonly linkers: Map<string, LinkerRange<TExpression>[]>,
+      private readonly logger: Logger,
+      private unknownDeclarationVersionHandling: 'ignore'|'warn'|'error') {}
 
   /**
    * Returns true if there are `PartialLinker` classes that can handle functions with this name.
@@ -74,68 +129,48 @@ export class PartialLinkerSelector<TStatement, TExpression> {
    * Returns the `PartialLinker` that can handle functions with the given name and version.
    * Throws an error if there is none.
    */
-  getLinker(functionName: string, version: string): PartialLinker<TExpression> {
+  getLinker(functionName: string, minVersion: string, version: string): PartialLinker<TExpression> {
     if (!this.linkers.has(functionName)) {
       throw new Error(`Unknown partial declaration function ${functionName}.`);
     }
-    const versions = this.linkers.get(functionName)!;
-    for (const {range, linker} of versions) {
-      if (satisfies(version, range, {includePrerelease: true})) {
+    const linkerRanges = this.linkers.get(functionName)!;
+    const declarationRange = getRange('>=', minVersion);
+    for (const {range: linkerRange, linker} of linkerRanges) {
+      if (intersects(declarationRange, linkerRange)) {
         return linker;
       }
     }
-    throw new Error(
-        `Unsupported partial declaration version ${version} for ${functionName}.\n` +
-        'Valid version ranges are:\n' + versions.map(v => ` - ${v.range}`).join('\n'));
-  }
 
-  private createLinkerMap(
-      environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
-      code: string): Map<string, LinkerRange<TExpression>[]> {
-    const partialDirectiveLinkerVersion1 = new PartialDirectiveLinkerVersion1(sourceUrl, code);
-    const partialClassMetadataLinkerVersion1 = new PartialClassMetadataLinkerVersion1();
-    const partialComponentLinkerVersion1 = new PartialComponentLinkerVersion1(
-        createGetSourceFile(sourceUrl, code, environment.sourceFileLoader), sourceUrl, code);
-    const partialFactoryLinkerVersion1 = new PartialFactoryLinkerVersion1();
-    const partialInjectableLinkerVersion1 = new PartialInjectableLinkerVersion1();
-    const partialInjectorLinkerVersion1 = new PartialInjectorLinkerVersion1();
-    const partialNgModuleLinkerVersion1 =
-        new PartialNgModuleLinkerVersion1(environment.options.linkerJitMode);
-    const partialPipeLinkerVersion1 = new PartialPipeLinkerVersion1();
+    const message = `Unsupported partial declaration version ${version} for ${functionName}.\n` +
+        `The minimum supported partial-linker for this declaration is ${minVersion}.\n` +
+        'Partial-linker version ranges available are:\n' +
+        linkerRanges.map(v => ` - ${v.range}`).join('\n');
 
-    const linkers = new Map<string, LinkerRange<TExpression>[]>();
-    linkers.set(ɵɵngDeclareDirective, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialDirectiveLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialDirectiveLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclareClassMetadata, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialClassMetadataLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialClassMetadataLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclareComponent, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialComponentLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialComponentLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclareFactory, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialFactoryLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialFactoryLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclareInjectable, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialInjectableLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialInjectableLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclareInjector, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialInjectorLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialInjectorLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclareNgModule, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialNgModuleLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialNgModuleLinkerVersion1},
-    ]);
-    linkers.set(ɵɵngDeclarePipe, [
-      {range: '0.0.0-PLACEHOLDER', linker: partialPipeLinkerVersion1},
-      {range: '>=11.1.0-next.1', linker: partialPipeLinkerVersion1},
-    ]);
-    return linkers;
+    if (this.unknownDeclarationVersionHandling === 'error') {
+      throw new Error(message);
+    } else if (this.unknownDeclarationVersionHandling === 'warn') {
+      this.logger.warn(`${message}\nFalling back to the most recent partial-linker.`);
+    }
+
+    // No linker was matched for this declaration, so just use the first one.
+    return linkerRanges[linkerRanges.length - 1].linker;
   }
+}
+
+/**
+ * Compute a semver Range from the `version` and comparator.
+ *
+ * The range is computed as any version greater/less than or equal to the given `version`
+ * depending upon the `comparator` (ignoring any prerelease versions).
+ *
+ * @param comparator a string that determines whether the version specifies a minimum or a maximum
+ *     range.
+ * @param version the version given in the partial declaration
+ * @returns A semver range for the provided `version` and comparator.
+ */
+function getRange(comparator: '<='|'>=', versionStr: string): Range {
+  const version = new SemVer(versionStr);
+  // Wipe out any prerelease versions
+  version.prerelease = [];
+  return new Range(`${comparator}${version.format()}`);
 }

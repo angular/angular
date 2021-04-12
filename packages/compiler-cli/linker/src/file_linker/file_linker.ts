@@ -12,7 +12,7 @@ import {DeclarationScope} from './declaration_scope';
 import {EmitScope} from './emit_scopes/emit_scope';
 import {IifeEmitScope} from './emit_scopes/iife_emit_scope';
 import {LinkerEnvironment} from './linker_environment';
-import {PartialLinkerSelector} from './partial_linkers/partial_linker_selector';
+import {createLinkerMap, PartialLinkerSelector} from './partial_linkers/partial_linker_selector';
 
 export const NO_STATEMENTS: Readonly<any[]> = [] as const;
 
@@ -26,8 +26,9 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
   constructor(
       private linkerEnvironment: LinkerEnvironment<TStatement, TExpression>,
       sourceUrl: AbsoluteFsPath, code: string) {
-    this.linkerSelector =
-        new PartialLinkerSelector<TStatement, TExpression>(this.linkerEnvironment, sourceUrl, code);
+    this.linkerSelector = new PartialLinkerSelector<TStatement, TExpression>(
+        createLinkerMap(this.linkerEnvironment, sourceUrl, code), this.linkerEnvironment.logger,
+        this.linkerEnvironment.options.unknownDeclarationVersionHandling);
   }
 
   /**
@@ -63,8 +64,9 @@ export class FileLinker<TConstantScope, TStatement, TExpression> {
     const ngImport = metaObj.getNode('ngImport');
     const emitScope = this.getEmitScope(ngImport, declarationScope);
 
+    const minVersion = metaObj.getString('minVersion');
     const version = metaObj.getString('version');
-    const linker = this.linkerSelector.getLinker(declarationFn, version);
+    const linker = this.linkerSelector.getLinker(declarationFn, minVersion, version);
     const definition = linker.linkPartialDeclaration(emitScope.constantPool, metaObj);
 
     return emitScope.translateDefinition(definition);

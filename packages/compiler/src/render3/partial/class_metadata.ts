@@ -14,6 +14,7 @@ import {R3DeclareClassMetadata} from './api';
 
 export function compileDeclareClassMetadata(metadata: R3ClassMetadata): o.Expression {
   const definitionMap = new DefinitionMap<R3DeclareClassMetadata>();
+  definitionMap.set('minVersion', o.literal('0.0.0-PLACEHOLDER'));
   definitionMap.set('version', o.literal('0.0.0-PLACEHOLDER'));
   definitionMap.set('ngImport', o.importExpr(R3.core));
   definitionMap.set('type', metadata.type);

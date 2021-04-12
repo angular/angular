@@ -31,6 +31,8 @@ export class LinkerEnvironment<TStatement, TExpression> {
     return new LinkerEnvironment(fileSystem, logger, host, factory, {
       sourceMapping: options.sourceMapping ?? DEFAULT_LINKER_OPTIONS.sourceMapping,
       linkerJitMode: options.linkerJitMode ?? DEFAULT_LINKER_OPTIONS.linkerJitMode,
+      unknownDeclarationVersionHandling: options.unknownDeclarationVersionHandling ??
+          DEFAULT_LINKER_OPTIONS.unknownDeclarationVersionHandling,
     });
   }
 }

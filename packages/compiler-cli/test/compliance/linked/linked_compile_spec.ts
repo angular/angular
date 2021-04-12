@@ -33,6 +33,9 @@ function linkPartials(fileSystem: FileSystem, test: ComplianceTest): CompileResu
     fileSystem,
     logger,
     sourceMapping: test.compilerOptions?.sourceMap === true,
+    // Ignore the versions in these compliance tests, because the 0.0.0-PLACEHOLDER version will
+    // never correctly match.
+    unknownDeclarationVersionHandling: 'ignore',
     ...test.angularCompilerOptions
   });
   const goldenPartialPath = fileSystem.resolve('/GOLDEN_PARTIAL.js');
