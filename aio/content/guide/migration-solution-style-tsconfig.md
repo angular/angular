@@ -1,21 +1,20 @@
-# Solution-style `tsconfig.json` migration
+# Migrar el estilo de solución `tsconfig.json`
 
-## What does this migration do?
+## ¿Qué hace esta migración?
 
-This migration adds support to existing projects for TypeScript's new ["solution-style" tsconfig feature](https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig).
+Esta migración agrega soporte a proyectos existentes la nueva funcionalidad de TypeScript ["estilo de solución" tsconfig](https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig).
 
-Support is added by making two changes:
+El soporte es agregado al realizar dos cambios:
 
-1. Renaming the workspace-level `tsconfig.json` to `tsconfig.base.json`.
-All project [TypeScript configuration files](guide/typescript-configuration) will extend from this base which contains the common options used throughout the workspace.
+1. Renombrando el espacio de trabajo de `tsconfig.json` a `tsconfig.base.json`. Todos los [archivos de configuración de TypeScript](guide/typescript-configuration) se extenderán desde esta base que contiene las opciones comunes utilizadas en todo el espacio de trabajo.
 
-2. Adding the solution `tsconfig.json` file at the root of the workspace.
-This `tsconfig.json` file will only contain references to project-level TypeScript configuration files and is only used by editors/IDEs.
+2. Agregando el archivo de solución `tsconfig.json` a la raíz del espacio de trabajo. Este archivo `tsconfig.json` solo contendrá referencias a archivos de configuración de TypeScript a nivel de proyecto y solo lo usarán editores/IDEs.
 
-As an example, the solution `tsconfig.json` for a new project is as follows:
+Como ejemplo, la solución `tsconfig.json` para un nuevo proyecto es la siguiente:
+
 ```json
-// This is a "Solution Style" tsconfig.json file, and is used by editors and TypeScript’s language server to improve development experience.
-// It is not intended to be used to perform a compilation.
+// Este es un archivo "Estilo de Solución" tsconfig.json, y es usado por editores y servidores del lenguaje TypeScript para mejorar la experiencia de desarrollo.
+// No está destinado para ser utilizado en la ejecución de una compilación
 {
   "files": [],
   "references": [
@@ -32,24 +31,24 @@ As an example, the solution `tsconfig.json` for a new project is as follows:
 }
 ```
 
-## Why is this migration necessary?
+## ¿Por qué es necesaria esta migración?
 
-Solution-style `tsconfig.json` files provide an improved editing experience and fix several long-standing defects when editing files in an IDE.
-IDEs that leverage the TypeScript language service (for example, [Visual Studio Code](https://code.visualstudio.com)), will only use TypeScript configuration files that are named `tsconfig.json`.
-In complex projects, there may be more than one compilation unit and each of these units may have different settings and options.
+Los archivos de estilos de solución `tsconfig.json` brindan una experiencia de edición mejorada y corrigen varios defectos antiguos al editar archivos en un IDE.
+Los IDEs que aprovechan el servicio de lenguaje TypeScript (por ejemplo, [Visual Studio Code](https://code.visualstudio.com)), solo usarán archivos de configuración de TypeScript que se denominan `tsconfig.json`.
+En proyectos complejos, puede haber más de una unidad de compilación y cada una de estas unidades puede tener diferentes configuraciones y opciones.
 
-With the Angular CLI, a project will have application code that will target a browser.
-It will also have unit tests that should not be included within the built application and that also need additional type information present (`jasmine` in this case).
-Both parts of the project also share some but not all of the code within the project.
-As a result, two separate TypeScript configuration files (`tsconfig.app.json` and `tsconfig.spec.json`) are needed to ensure that each part of the application is configured properly and that the right types are used for each part.
-Also if web workers are used within a project, an additional tsconfig (`tsconfig.worker.json`) is needed.
-Web workers use similar but incompatible types to the main browser application.
-This requires the additional configuration file to ensure that the web worker files use the appropriate types and will build successfully.
+Con Angular CLI, un proyecto tendrá un código de la aplicación que tendrá como objetivo un navegador.
+También tendrá pruebas unitarias que no deben incluirse dentro de la aplicación construida y que también necesitan información adicional presente (`jasmine` en este caso).
+Ambas partes del proyecto también comparten parte del código dentro del proyecto, pero no todo.
+Como resultado, se necesitan dos archivos de configuración TypeScript separados (`tsconfig.app.json` y `tsconfig.spec.json`) para garantizar que cada parte de la aplicación esté configurada correctamente y que se usen los tipos correctos para cada parte.
+Además, si se utilizan web workers dentro de un proyecto, se necesita un tsconfig adicional (`tsconfig.worker.json`).
+Los web workers utilizan tipos similares pero incompatibles con la aplicación del navegador principal.
+Esto requiere el archivo de configuración adicional para garantizar que los archivos del web worker utilicen los tipos adecuados y se compilen correctamente.
 
-While the Angular build system knows about all of these TypeScript configuration files, an IDE using TypeScript's language service does not.
-Because of this, an IDE will not be able to properly analyze the code from each part of the project and may generate false errors or make suggestions that are incorrect for certain files.
-By leveraging the new solution-style tsconfig, the IDE can now be aware of the configuration of each part of a project.
-This allows each file to be treated appropriately based on its tsconfig.
-IDE features such as error/warning reporting and auto-suggestion will operate more effectively as well.
+Mientras que el sistema de compilación Angular conoce todos estos archivos de configuración de TypeScript, un IDE que usa el servicio de lenguaje de TypeScript no los conoce.
+Debido a esto, un IDE no podrá analizar correctamente el código de cada parte del proyecto y puede generar errores falsos o hacer sugerencias incorrectas para ciertos archivos.
+Al aprovechar el nuevo estilo de solución tsconfig, el IDE ahora puede conocer la configuración de cada parte de un proyecto.
+Esto permite que cada archivo se trate de forma adecuada basado en su tsconfig.
+Las funcionalidades del IDE, como informes de error/advertencia y las sugerencias automáticas, también funcionarán de manera más eficaz.
 
-The TypeScript 3.9 release [blog post](https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig) also contains some additional information regarding this new feature.
+La [publición en el blog](https://devblogs.microsoft.com/typescript/announcing-typescript-3-9/#solution-style-tsconfig) de la versión 3.9 de TypeScript contiene también información adicional sobre esta nueva funcionalidad.
