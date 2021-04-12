@@ -3401,7 +3401,7 @@ function getTargettedBranchesConfirmationPromptMessage(pullRequest) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** The default label for label pull requests containing a breaking change. */
+/** The default label for labeling pull requests containing a breaking change. */
 var BreakingChangeLabel = 'breaking changes';
 /**
  * Loads and validates the specified pull request against the given configuration.
@@ -3584,7 +3584,7 @@ function assertChangesAllowForTargetLabel(commits, label, config) {
  */
 function assertCorrectBreakingChangeLabeling(commits, labels, config) {
     /** Whether the PR has a label noting a breaking change. */
-    var hasLabel = labels.includes(config.breakingChangesLabel || BreakingChangeLabel);
+    var hasLabel = labels.includes(config.breakingChangeLabel || BreakingChangeLabel);
     //** Whether the PR has at least one commit which notes a breaking change. */
     var hasCommit = commits.some(function (commit) { return commit.breakingChanges.length !== 0; });
     if (!hasLabel && hasCommit) {

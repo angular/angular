@@ -19,7 +19,7 @@ import {matchesPattern} from './string-pattern';
 import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest, InvalidTargetBranchError, InvalidTargetLabelError} from './target-label';
 import {PullRequestMergeTask} from './task';
 
-/** The default label for label pull requests containing a breaking change. */
+/** The default label for labeling pull requests containing a breaking change. */
 const BreakingChangeLabel = 'breaking changes';
 
 /** Interface that describes a pull request. */
@@ -229,7 +229,7 @@ function assertChangesAllowForTargetLabel(
 function assertCorrectBreakingChangeLabeling(
     commits: Commit[], labels: string[], config: MergeConfig) {
   /** Whether the PR has a label noting a breaking change. */
-  const hasLabel = labels.includes(config.breakingChangesLabel || BreakingChangeLabel);
+  const hasLabel = labels.includes(config.breakingChangeLabel || BreakingChangeLabel);
   //** Whether the PR has at least one commit which notes a breaking change. */
   const hasCommit = commits.some(commit => commit.breakingChanges.length !== 0);
 
