@@ -461,6 +461,19 @@ export class _ParseAST {
     if (artificialEndIndex !== undefined && artificialEndIndex > this.currentEndIndex) {
       endIndex = artificialEndIndex;
     }
+
+    // In some unusual parsing scenarios (like when certain tokens are missing and an `EmptyExpr` is
+    // being created), the current token may already be advanced beyond the `currentEndIndex`. This
+    // appears to be a deep-seated parser bug.
+    //
+    // As a workaround for now, swap the start and end indices to ensure a valid `ParseSpan`.
+    // TODO(alxhub): fix the bug upstream in the parser state, and remove this workaround.
+    if (start > endIndex) {
+      const tmp = endIndex;
+      endIndex = start;
+      start = tmp;
+    }
+
     return new ParseSpan(start, endIndex);
   }
 
