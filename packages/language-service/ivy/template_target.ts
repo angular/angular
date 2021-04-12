@@ -49,8 +49,8 @@ export interface TemplateTarget {
 export type TargetContext = SingleNodeTarget|MultiNodeTarget;
 
 /** Contexts which logically target only a single node in the template AST. */
-export type SingleNodeTarget = RawExpression|RawTemplateNode|ElementInBodyContext|
-    ElementInTagContext|AttributeInKeyContext|AttributeInValueContext;
+export type SingleNodeTarget = RawExpression|MethodCallExpressionInArgContext|RawTemplateNode|
+    ElementInBodyContext|ElementInTagContext|AttributeInKeyContext|AttributeInValueContext;
 
 /**
  * Contexts which logically target multiple nodes in the template AST, which cannot be
@@ -65,6 +65,7 @@ export type MultiNodeTarget = TwoWayBindingContext;
  */
 export enum TargetNodeKind {
   RawExpression,
+  MethodCallExpressionInArgContext,
   RawTemplateNode,
   ElementInTagContext,
   ElementInBodyContext,
@@ -79,6 +80,21 @@ export enum TargetNodeKind {
 export interface RawExpression {
   kind: TargetNodeKind.RawExpression;
   node: e.AST;
+  parents: e.AST[];
+}
+
+/**
+ * An `e.MethodCall` or `e.SafeMethodCall` expression with the cursor in a position where an
+ * argument could appear.
+ *
+ * This is returned when the only matching node is the method call expression, but the cursor is
+ * within the method call parentheses. For example, in the expression `foo(|)` there is no argument
+ * expression that the cursor could be targeting, but the cursor is in a position where one could
+ * appear.
+ */
+export interface MethodCallExpressionInArgContext {
+  kind: TargetNodeKind.MethodCallExpressionInArgContext;
+  node: e.MethodCall|e.SafeMethodCall;
 }
 
 /**
@@ -158,10 +174,21 @@ export function getTargetAtPosition(template: t.Node[], position: number): Templ
 
   // Given the candidate node, determine the full targeted context.
   let nodeInContext: TargetContext;
-  if (candidate instanceof e.AST) {
+  if ((candidate instanceof e.MethodCall || candidate instanceof e.SafeMethodCall) &&
+      isWithin(position, candidate.argumentSpan)) {
+    nodeInContext = {
+      kind: TargetNodeKind.MethodCallExpressionInArgContext,
+      node: candidate,
+    };
+  } else if (candidate instanceof e.AST) {
+    const parents = path.filter((value: e.AST|t.Node): value is e.AST => value instanceof e.AST);
+    // Remove the current node from the parents list.
+    parents.pop();
+
     nodeInContext = {
       kind: TargetNodeKind.RawExpression,
       node: candidate,
+      parents,
     };
   } else if (candidate instanceof t.Element) {
     // Elements have two contexts: the tag context (position is within the element tag) or the
