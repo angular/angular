@@ -2,7 +2,7 @@
   "cli-hello-world": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 1485,
+        "runtime-es2015": 1170,
         "main-es2015": 138189,
         "polyfills-es2015": 36964
       }
@@ -11,7 +11,7 @@
   "cli-hello-world-ivy-minimal": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 1485,
+        "runtime-es2015": 1170,
         "main-es2015": 17597,
         "polyfills-es2015": 36709
       }
@@ -20,7 +20,7 @@
   "cli-hello-world-ivy-compat": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 1485,
+        "runtime-es2015": 1170,
         "main-es2015": 144579,
         "polyfills-es2015": 36964
       }
@@ -29,7 +29,7 @@
   "cli-hello-world-ivy-i18n": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 1485,
+        "runtime-es2015": 1170,
         "main-es2015": 136546,
         "polyfills-es2015": 37641
       }
@@ -48,7 +48,7 @@
   "forms": {
     "master": {
       "uncompressed": {
-        "runtime-es2015": 1485,
+        "runtime-es2015": 1170,
         "main-es2015": 162346,
         "polyfills-es2015": 36975
       }
