@@ -22,15 +22,15 @@ version: 2.1
 # **NOTE 1 **: If you change the cache key prefix, also sync the cache_key_fallback to match.
 # **NOTE 2 **: Keep the static part of the cache key as prefix to enable correct fallbacks.
 # See https://circleci.com/docs/2.0/caching/#restoring-cache for how prefixes work in CircleCI.
-var_3: &cache_key v4-angular-node-12-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
+var_3: &cache_key v4-angular-node-14-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
 # We invalidate the cache if the Bazel version changes because otherwise the `bazelisk` cache
 # folder will contain all previously used versions and ultimately cause the cache restoring to
 # be slower due to its growing size.
-var_4: &cache_key_fallback v4-angular-node-12-{{ checksum ".bazelversion" }}
+var_4: &cache_key_fallback v4-angular-node-14-{{ checksum ".bazelversion" }}
 
 # Windows needs its own cache key because binaries in node_modules are different.
-var_3_win: &cache_key_win v4-angular-win-node-12-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
-var_4_win: &cache_key_win_fallback v4-angular-win-node-12-{{ checksum ".bazelversion" }}
+var_3_win: &cache_key_win v4-angular-win-node-14-{{ checksum ".bazelversion" }}-{{ checksum "yarn.lock" }}-{{ checksum "WORKSPACE" }}-{{ checksum "packages/bazel/package.bzl" }}-{{ checksum "aio/yarn.lock" }}
+var_4_win: &cache_key_win_fallback v4-angular-win-node-14-{{ checksum ".bazelversion" }}
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
@@ -77,7 +77,7 @@ executors:
         type: string
         default: medium
     docker:
-      - image: circleci/node:12.14.1@sha256:f9de24fc0017059cc42ef7d07db060008af65a98b1f0cdd1ef3339213226bf6d
+      - image: circleci/node:14.16.1@sha256:951e12268fe692615bfd155c327bd910e10c99db98404badd03879f984c32b31
     resource_class: << parameters.resource_class >>
     working_directory: ~/ng
 
@@ -95,7 +95,7 @@ executors:
     machine:
       # Windows preview image that includes the following:
       # - Visual Studio 2019 build tools
-      # - Node 12
+      # - Node 14
       # - yarn 1.17
       # - Python 3 3.7.4
       image: windows-server-2019-vs2019:201908-02
