@@ -273,4 +273,4 @@ function preR3NgModuleCompile(moduleType: Type<any>, metadata?: NgModule): void 
 
 export const SWITCH_COMPILE_NGMODULE__POST_R3__ = render3CompileNgModule;
 const SWITCH_COMPILE_NGMODULE__PRE_R3__ = preR3NgModuleCompile;
-const SWITCH_COMPILE_NGMODULE: typeof render3CompileNgModule = SWITCH_COMPILE_NGMODULE__PRE_R3__;
+const SWITCH_COMPILE_NGMODULE: typeof render3CompileNgModule = SWITCH_COMPILE_NGMODULE__PRE_R3__; 
