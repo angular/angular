@@ -188,6 +188,13 @@ describe('parser', () => {
         checkAction('a.add(1, 2)');
         checkAction('fn().add(1, 2)');
       });
+
+      it('should parse an EmptyExpr with a correct span for a trailing empty argument', () => {
+        const ast = parseAction('fn(1, )').ast as MethodCall;
+        expect(ast.args[1]).toBeAnInstanceOf(EmptyExpr);
+        const sourceSpan = (ast.args[1] as EmptyExpr).sourceSpan;
+        expect([sourceSpan.start, sourceSpan.end]).toEqual([5, 6]);
+      });
     });
 
     describe('functional calls', () => {
