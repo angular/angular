@@ -357,6 +357,30 @@ runInEachFileSystem(() => {
       expect(value.reason.node.getText()).toEqual('window: any');
     });
 
+    it('supports declarations of primitive constant types', () => {
+      expect(evaluate(`declare const x: 'foo';`, `x`)).toEqual('foo');
+      expect(evaluate(`declare const x: 42;`, `x`)).toEqual(42);
+      expect(evaluate(`declare const x: null;`, `x`)).toEqual(null);
+      expect(evaluate(`declare const x: true;`, `x`)).toEqual(true);
+    });
+
+    it('supports declarations of tuples', () => {
+      expect(evaluate(`declare const x: ['foo', 42, null, true];`, `x`)).toEqual([
+        'foo', 42, null, true
+      ]);
+      expect(evaluate(`declare const x: ['bar'];`, `[...x]`)).toEqual(['bar']);
+    });
+
+    it('evaluates tuple elements it cannot understand to DynamicValue', () => {
+      const value = evaluate(`declare const x: ['foo', string];`, `x`) as [string, DynamicValue];
+
+      expect(Array.isArray(value)).toBeTrue();
+      expect(value[0]).toEqual('foo');
+      expect(value[1] instanceof DynamicValue).toBeTrue();
+      expect(value[1].isFromDynamicType()).toBe(true);
+    });
+
+
     it('imports work', () => {
       const {program} = makeProgram([
         {name: _('/second.ts'), contents: 'export function foo(bar) { return bar; }'},
