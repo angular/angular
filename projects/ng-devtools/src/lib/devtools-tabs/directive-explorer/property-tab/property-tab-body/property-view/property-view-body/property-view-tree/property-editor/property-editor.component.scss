@@ -1,6 +1,8 @@
 .editor {
   cursor: text;
   border: none;
+  min-width: 100px;
+  white-space: pre;
   width: fit-content;
 }
 
