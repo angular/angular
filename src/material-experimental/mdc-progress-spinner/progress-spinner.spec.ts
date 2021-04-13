@@ -323,7 +323,7 @@ describe('MDC-based MatProgressSpinner', () => {
     fixture.componentInstance.value = 37;
     fixture.detectChanges();
 
-    expect(progressElement.nativeElement.getAttribute('aria-valuenow')).toBe('0.37');
+    expect(progressElement.nativeElement.getAttribute('aria-valuenow')).toBe('37');
   });
 
   it('should clear `aria-valuenow` in indeterminate mode', () => {
