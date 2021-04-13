@@ -688,8 +688,8 @@ export class NodeInjector implements Injector {
       private _tNode: TElementNode|TContainerNode|TElementContainerNode|null,
       private _lView: LView) {}
 
-  get(token: any, notFoundValue?: any): any {
-    return getOrCreateInjectable(this._tNode, this._lView, token, undefined, notFoundValue);
+  get(token: any, notFoundValue?: any, flags?: InjectFlags): any {
+    return getOrCreateInjectable(this._tNode, this._lView, token, flags, notFoundValue);
   }
 }
 
