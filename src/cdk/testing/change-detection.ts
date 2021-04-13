@@ -69,7 +69,7 @@ async function batchChangeDetection<T>(fn: () => Promise<T>, triggerBeforeAndAft
 
   // If nothing is handling change detection batching, install the default handler.
   if (!autoChangeDetectionSubscription) {
-    autoChangeDetectionSubject.subscribe(defaultAutoChangeDetectionHandler);
+    handleAutoChangeDetectionStatus(defaultAutoChangeDetectionHandler);
   }
 
   if (triggerBeforeAndAfter) {
