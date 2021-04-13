@@ -1,8 +1,8 @@
 <nav #navBar mat-tab-nav-bar [color]="'accent'">
   <div id="nav-buttons">
     <button mat-icon-button color="primary" (click)="toggleInspector()">
-      <mat-icon>
-        drag_indicator
+      <mat-icon [ngClass]="{ 'inspector-active': inspectorRunning }">
+        pin_end
       </mat-icon>
     </button>
     <button mat-icon-button color="primary" (click)="refresh()">
