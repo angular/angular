@@ -9,7 +9,7 @@ $border-radius: 4px !default;
 $header-size: 40px !default;
 
 .mat-card {
-  @include elevation.transition;
+  @include elevation.elevation-transition;
   @include private.private-animation-noop();
   display: block;
   position: relative;

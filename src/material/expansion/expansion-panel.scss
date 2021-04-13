@@ -11,7 +11,7 @@
   border-radius: $border-radius;
   overflow: hidden;
   transition: margin 225ms variables.$fast-out-slow-in-timing-function,
-      elevation.transition-property-value();
+      elevation.private-transition-property-value();
 
   // Required so that the `box-shadow` works after the focus indicator relatively positions the
   // header.

@@ -83,7 +83,7 @@ $mini-fab-padding: 8px !default;
 
   // Animation.
   transition: background variables.$swift-ease-out-duration
-    variables.$swift-ease-out-timing-function, elevation.transition-property-value();
+    variables.$swift-ease-out-timing-function, elevation.private-transition-property-value();
 }
 
 // Applies styles to fab and mini-fab button types only

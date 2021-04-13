@@ -178,7 +178,7 @@ $prefix: 'mat-elevation-z';
 // .foo {
 //   transition: mat-elevation-transition-property-value(), opacity 100ms ease;
 // }
-@function transition-property-value(
+@function private-transition-property-value(
     $duration: $transition-duration,
     $easing: $transition-timing-function) {
   @return box-shadow #{$duration} #{$easing};
@@ -190,8 +190,8 @@ $prefix: 'mat-elevation-z';
 //
 // NOTE(traviskaufman): Both this mixin and the above function use default parameters so they can
 // be used in the same way by clients.
-@mixin transition(
+@mixin elevation-transition(
     $duration: $transition-duration,
     $easing: $transition-timing-function) {
-  transition: transition-property-value($duration, $easing);
+  transition: private-transition-property-value($duration, $easing);
 }

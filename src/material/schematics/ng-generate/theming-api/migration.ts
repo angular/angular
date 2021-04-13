@@ -18,6 +18,7 @@ const materialMixins: Record<string, string> = {
   'mat-typography-level-to-styles': 'typography-level',
   'mat-elevation': 'elevation',
   'mat-overridable-elevation': 'overridable-elevation',
+  'mat-elevation-transition': 'elevation-transition',
   'mat-ripple': 'ripple',
   'mat-ripple-color': 'ripple-color',
   'mat-ripple-theme': 'ripple-theme',
