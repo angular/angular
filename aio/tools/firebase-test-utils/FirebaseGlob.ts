@@ -60,7 +60,7 @@ export class FirebaseGlob {
 
     const result: { [key: string]: string } = {};
     const names = this.regex.xregexp.captureNames || [];
-    names.forEach(name => result[name] = (match[name]));
+    names.forEach(name => result[name] = match.groups![name]);
     return result;
   }
 }

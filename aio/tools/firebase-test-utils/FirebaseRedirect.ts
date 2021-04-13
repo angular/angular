@@ -12,7 +12,6 @@ export class FirebaseRedirect {
       return undefined;
     }
 
-    XRegExp.uninstall('namespacing');
     const paramReplacers = Object.keys(this.glob.namedParams).map<[RegExp, string]>(name => [ XRegExp(`:${name}`, 'g'), match[name] ]);
     const restReplacers = Object.keys(this.glob.restParams).map<[RegExp, string]>(name => [ XRegExp(`:${name}\\*`, 'g'), match[name] ]);
     return XRegExp.replaceEach(this.destination, [...paramReplacers, ...restReplacers]);
