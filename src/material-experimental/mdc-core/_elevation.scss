@@ -22,7 +22,6 @@ $color: black !default;
 }
 
 @mixin private-theme-elevation($zValue, $config) {
-  @debug $config;
   $foreground: map.get($config, foreground);
   $elevation-color: map.get($foreground, elevation);
   $elevation-color-or-default: if($elevation-color == null, $color, $elevation-color);
