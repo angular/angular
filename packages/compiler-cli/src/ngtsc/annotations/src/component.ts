@@ -302,6 +302,8 @@ export class ComponentDecoratorHandler implements
                              this.preanalyzeStylesCache.set(node, styles);
                            });
       }
+    } else {
+      this.preanalyzeStylesCache.set(node, null);
     }
 
     // Wait for both the template and all styleUrl resources to resolve.
