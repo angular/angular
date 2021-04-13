@@ -151,6 +151,15 @@ describe('quick info', () => {
         expect(toText(documentation)).toBe('This Component provides the `test-comp` selector.');
       });
 
+      it('should work for components with bound attributes', () => {
+        const {documentation} = expectQuickInfo({
+          templateOverride: `<t¦est-comp [attr.id]="'1' + '2'" [attr.name]="'myName'"></test-comp>`,
+          expectedSpanText: `<test-comp [attr.id]="'1' + '2'" [attr.name]="'myName'"></test-comp>`,
+          expectedDisplayString: '(component) AppModule.TestComponent'
+        });
+        expect(toText(documentation)).toBe('This Component provides the `test-comp` selector.');
+      });
+
       it('should work for structural directives', () => {
         const {documentation} = expectQuickInfo({
           templateOverride: `<div *¦ngFor="let item of heroes"></div>`,
