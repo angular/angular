@@ -162,7 +162,7 @@ $calendar-weekday-table-font-size: 11px !default;
   }
 
   .mat-datepicker-content-touch {
-    @include private.private-theme-elevation(0, $config);
+    @include private.private-theme-elevation(24, $config);
   }
 
   .mat-datepicker-toggle-active {

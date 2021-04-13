@@ -57,13 +57,13 @@ $touch-max-height: 788px;
 
 .mat-datepicker-content-touch {
   display: block;
-  // Make sure the dialog scrolls rather than being cropped on ludicrously small screens
   max-height: 80vh;
-  overflow: auto;
 
-  // Offsets the padding of the dialog.
-  // TODO(mmalerba): Remove when we switch away from using dialog.
-  margin: -24px;
+  // Allows for the screen reader close button to be seen in touch UI mode.
+  position: relative;
+
+  // Prevents the content from jumping around on Windows while the animation is running.
+  overflow: visible;
 
   .mat-datepicker-content-container {
     min-height: $touch-min-height;

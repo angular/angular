@@ -30,7 +30,6 @@ import {By} from '@angular/platform-browser';
 import {_supportsShadowDom} from '@angular/cdk/platform';
 import {BrowserDynamicTestingModule} from '@angular/platform-browser-dynamic/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {MAT_DIALOG_DEFAULT_OPTIONS, MatDialogConfig} from '@angular/material/dialog';
 import {Subject} from 'rxjs';
 import {MatInputModule} from '../input/index';
 import {MatDatepicker} from './datepicker';
@@ -122,13 +121,12 @@ describe('MatDatepicker', () => {
         testComponent.touch = true;
         fixture.detectChanges();
 
-        expect(document.querySelector('.mat-datepicker-dialog mat-dialog-container')).toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
 
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        expect(document.querySelector('.mat-datepicker-dialog mat-dialog-container'))
-            .not.toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).not.toBeNull();
       });
 
       it('should not be able to open more than one dialog', fakeAsync(() => {
@@ -172,13 +170,13 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
 
         expect(document.querySelector('.cdk-overlay-pane')).toBeNull();
-        expect(document.querySelector('mat-dialog-container')).toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
 
         testComponent.datepicker.open();
         fixture.detectChanges();
 
         expect(document.querySelector('.cdk-overlay-pane')).toBeNull();
-        expect(document.querySelector('mat-dialog-container')).toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
       });
 
       it('disabled datepicker input should open the calendar if datepicker is enabled', () => {
@@ -258,13 +256,13 @@ describe('MatDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).not.toBeNull();
 
         testComponent.datepicker.close();
         fixture.detectChanges();
         flush();
 
-        expect(document.querySelector('mat-dialog-container')).toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
       }));
 
       it('setting selected via click should update input and close calendar', fakeAsync(() => {
@@ -275,7 +273,7 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
         flush();
 
-        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).not.toBeNull();
         expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 1));
 
         let cells = document.querySelectorAll('.mat-calendar-body-cell');
@@ -283,7 +281,7 @@ describe('MatDatepicker', () => {
         fixture.detectChanges();
         flush();
 
-        expect(document.querySelector('mat-dialog-container')).toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
         expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 2));
       }));
 
@@ -296,7 +294,7 @@ describe('MatDatepicker', () => {
           fixture.detectChanges();
           flush();
 
-          expect(document.querySelector('mat-dialog-container')).not.toBeNull();
+          expect(document.querySelector('.mat-datepicker-dialog')).not.toBeNull();
           expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 1));
 
           let calendarBodyEl = document.querySelector('.mat-calendar-body') as HTMLElement;
@@ -308,7 +306,7 @@ describe('MatDatepicker', () => {
           fixture.detectChanges();
           flush();
 
-          expect(document.querySelector('mat-dialog-container')).toBeNull();
+          expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
           expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 2));
         }));
 
@@ -332,7 +330,7 @@ describe('MatDatepicker', () => {
         }
 
         expect(spy).toHaveBeenCalledTimes(1);
-        expect(document.querySelector('mat-dialog-container')).toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
         expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 2));
         selectedSubscription.unsubscribe();
       }));
@@ -354,7 +352,7 @@ describe('MatDatepicker', () => {
 
         fixture.whenStable().then(() => {
           expect(spy).not.toHaveBeenCalled();
-          expect(document.querySelector('mat-dialog-container')).toBeNull();
+          expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
           expect(testComponent.datepickerInput.value).toEqual(new Date(2020, JAN, 1));
           selectedSubscription.unsubscribe();
         });
@@ -1067,13 +1065,13 @@ describe('MatDatepicker', () => {
       });
 
       it('should open calendar when toggle clicked', () => {
-        expect(document.querySelector('mat-dialog-container')).toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
 
         let toggle = fixture.debugElement.query(By.css('button'))!;
         dispatchMouseEvent(toggle.nativeElement, 'click');
         fixture.detectChanges();
 
-        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).not.toBeNull();
       });
 
       it('should not open calendar when toggle clicked if datepicker is disabled', () => {
@@ -1082,12 +1080,12 @@ describe('MatDatepicker', () => {
         const toggle = fixture.debugElement.query(By.css('button'))!.nativeElement;
 
         expect(toggle.hasAttribute('disabled')).toBe(true);
-        expect(document.querySelector('mat-dialog-container')).toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
 
         dispatchMouseEvent(toggle, 'click');
         fixture.detectChanges();
 
-        expect(document.querySelector('mat-dialog-container')).toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
       });
 
       it('should not open calendar when toggle clicked if input is disabled', () => {
@@ -1098,12 +1096,12 @@ describe('MatDatepicker', () => {
         const toggle = fixture.debugElement.query(By.css('button'))!.nativeElement;
 
         expect(toggle.hasAttribute('disabled')).toBe(true);
-        expect(document.querySelector('mat-dialog-container')).toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
 
         dispatchMouseEvent(toggle, 'click');
         fixture.detectChanges();
 
-        expect(document.querySelector('mat-dialog-container')).toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).toBeNull();
       });
 
       it('should set the `button` type on the trigger to prevent form submissions', () => {
@@ -1550,7 +1548,7 @@ describe('MatDatepicker', () => {
         testComponent.datepicker.open();
         fixture.detectChanges();
 
-        expect(document.querySelector('mat-dialog-container')).not.toBeNull();
+        expect(document.querySelector('.mat-datepicker-dialog')).not.toBeNull();
 
         let cells = document.querySelectorAll('.mat-calendar-body-cell');
         expect(cells[0].classList).toContain('mat-calendar-body-disabled');
@@ -1661,7 +1659,7 @@ describe('MatDatepicker', () => {
           testComponent.datepicker.open();
           fixture.detectChanges();
 
-          expect(document.querySelector('mat-dialog-container')).not.toBeNull();
+          expect(document.querySelector('.mat-datepicker-dialog')).not.toBeNull();
 
           const cells = document.querySelectorAll('.mat-calendar-body-cell');
           dispatchMouseEvent(cells[0], 'click');
@@ -2099,24 +2097,6 @@ describe('MatDatepicker', () => {
     }));
   });
 
-  it('should not pick up values from the global dialog config', () => {
-    const fixture = createComponent(StandardDatepicker, [MatNativeDateModule], [{
-      provide: MAT_DIALOG_DEFAULT_OPTIONS,
-      useValue: {
-        minWidth: '1337px',
-        hasBackdrop: false
-      } as MatDialogConfig
-    }]);
-    fixture.componentInstance.touch = true;
-    fixture.detectChanges();
-    fixture.componentInstance.datepicker.open();
-    fixture.detectChanges();
-
-    const overlay = document.querySelector('.cdk-overlay-pane') as HTMLElement;
-    expect(document.querySelector('.cdk-overlay-backdrop')).toBeTruthy();
-    expect(overlay.style.minWidth).toBeFalsy();
-  });
-
   it('should not trigger validators if new date object for same date is set for `min`', () => {
     const fixture = createComponent(DatepickerInputWithCustomValidator,
       [MatNativeDateModule], undefined, undefined, [CustomValidator]);
@@ -2225,9 +2205,8 @@ describe('MatDatepicker', () => {
       testComponent.datepicker.open();
       fixture.detectChanges();
 
-      const datepickerContent = testComponent.datepicker['_dialogRef']!!.componentInstance;
       const actualClasses =
-          datepickerContent._elementRef.nativeElement.querySelector('.mat-calendar').classList;
+        document.querySelector('.mat-datepicker-content .mat-calendar')!.classList;
       expect(actualClasses.contains('foo')).toBe(true);
       expect(actualClasses.contains('bar')).toBe(true);
     });

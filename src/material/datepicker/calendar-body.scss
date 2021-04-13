@@ -192,12 +192,6 @@ $calendar-range-end-body-cell-size:
   }
 }
 
-// Allows for the screen reader close button to be seen in touch UI mode.
-.mat-datepicker-dialog .mat-dialog-container {
-  position: relative;
-  overflow: visible;
-}
-
 @include a11y.high-contrast(active, off) {
   .mat-datepicker-popup:not(:empty),
   .mat-calendar-body-selected {

@@ -48,7 +48,6 @@ import {
   mixinColor,
   ThemePalette,
 } from '@angular/material/core';
-import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {merge, Subject, Observable, Subscription} from 'rxjs';
 import {filter, take} from 'rxjs/operators';
 import {MatCalendar, MatCalendarView} from './calendar';
@@ -101,9 +100,9 @@ const _MatDatepickerContentMixinBase: CanColorCtor & typeof MatDatepickerContent
     mixinColor(MatDatepickerContentBase);
 
 /**
- * Component used as the content for the datepicker dialog and popup. We use this instead of using
+ * Component used as the content for the datepicker overlay. We use this instead of using
  * MatCalendar directly as the content so we can control the initial focus. This also gives us a
- * place to put additional features of the popup that are not part of the calendar itself in the
+ * place to put additional features of the overlay that are not part of the calendar itself in the
  * future. (e.g. confirmation buttons).
  * @docs-private
  */
@@ -147,7 +146,7 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
   _isAbove: boolean;
 
   /** Current state of the animation. */
-  _animationState: 'enter' | 'void' = 'enter';
+  _animationState: 'enter-dropdown' | 'enter-dialog' | 'void';
 
   /** Emits when an animation has finished. */
   readonly _animationDone = new Subject<void>();
@@ -178,6 +177,7 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
     // otherwise update the global model directly. Note that we want to assign this as soon as
     // possible, but `_actionsPortal` isn't available in the constructor so we do it in `ngOnInit`.
     this._model = this._actionsPortal ? this._globalModel.clone() : this._globalModel;
+    this._animationState = this.datepicker.touchUi ? 'enter-dialog' : 'enter-dropdown';
   }
 
   ngAfterViewInit() {
@@ -211,7 +211,7 @@ export class MatDatepickerContent<S, D = ExtractDateTypeFromSelection<S>>
       this._model.add(value);
     }
 
-    // Delegate closing the popup to the actions.
+    // Delegate closing the overlay to the actions.
     if ((!this._model || this._model.isComplete()) && !this._actionsPortal) {
       this.datepicker.close();
     }
@@ -310,7 +310,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
 
   /**
    * Whether the calendar UI is in touch mode. In touch mode the calendar opens in a dialog rather
-   * than a popup and elements have more padding to allow for bigger touch targets.
+   * than a dropdown and elements have more padding to allow for bigger touch targets.
    */
   @Input()
   get touchUi(): boolean { return this._touchUi; }
@@ -418,14 +418,11 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     return this.datepickerInput && this.datepickerInput.dateFilter;
   }
 
-  /** A reference to the overlay when the calendar is opened as a popup. */
-  private _popupRef: OverlayRef | null;
+  /** A reference to the overlay into which we've rendered the calendar. */
+  private _overlayRef: OverlayRef | null;
 
-  /** A reference to the dialog when the calendar is opened as a dialog. */
-  private _dialogRef: MatDialogRef<MatDatepickerContent<S, D>> | null;
-
-  /** Reference to the component instantiated in popup mode. */
-  private _popupComponentRef: ComponentRef<MatDatepickerContent<S, D>> | null;
+  /** Reference to the component instance rendered in the overlay. */
+  private _componentRef: ComponentRef<MatDatepickerContent<S, D>> | null;
 
   /** The element that was focused before the datepicker was opened. */
   private _focusedElementBeforeOpen: HTMLElement | null = null;
@@ -442,15 +439,20 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   /** Emits when the datepicker's state changes. */
   readonly stateChanges = new Subject<void>();
 
-  constructor(private _dialog: MatDialog,
-              private _overlay: Overlay,
-              private _ngZone: NgZone,
-              private _viewContainerRef: ViewContainerRef,
-              @Inject(MAT_DATEPICKER_SCROLL_STRATEGY) scrollStrategy: any,
-              @Optional() private _dateAdapter: DateAdapter<D>,
-              @Optional() private _dir: Directionality,
-              @Optional() @Inject(DOCUMENT) private _document: any,
-              private _model: MatDateSelectionModel<S, D>) {
+  constructor(
+    /**
+     * @deprecated `_dialog` parameter is no longer being used and it will be removed.
+     * @breaking-change 13.0.0
+     */
+    @Inject(ElementRef) _dialog: any,
+    private _overlay: Overlay,
+    private _ngZone: NgZone,
+    private _viewContainerRef: ViewContainerRef,
+    @Inject(MAT_DATEPICKER_SCROLL_STRATEGY) scrollStrategy: any,
+    @Optional() private _dateAdapter: DateAdapter<D>,
+    @Optional() private _dir: Directionality,
+    @Optional() @Inject(DOCUMENT) private _document: any,
+    private _model: MatDateSelectionModel<S, D>) {
     if (!this._dateAdapter && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw createMissingDateImplError('DateAdapter');
     }
@@ -461,12 +463,15 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   ngOnChanges(changes: SimpleChanges) {
     const positionChange = changes['xPosition'] || changes['yPosition'];
 
-    if (positionChange && !positionChange.firstChange && this._popupRef) {
-      this._setConnectedPositions(
-          this._popupRef.getConfig().positionStrategy as FlexibleConnectedPositionStrategy);
+    if (positionChange && !positionChange.firstChange && this._overlayRef) {
+      const positionStrategy = this._overlayRef.getConfig().positionStrategy;
 
-      if (this.opened) {
-        this._popupRef.updatePosition();
+      if (positionStrategy instanceof FlexibleConnectedPositionStrategy) {
+        this._setConnectedPositions(positionStrategy);
+
+        if (this.opened) {
+          this._overlayRef.updatePosition();
+        }
       }
     }
 
@@ -474,7 +479,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
   }
 
   ngOnDestroy() {
-    this._destroyPopup();
+    this._destroyOverlay();
     this.close();
     this._inputStateChanges.unsubscribe();
     this.stateChanges.complete();
@@ -542,6 +547,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     if (this._opened || this.disabled) {
       return;
     }
+
     if (!this.datepickerInput && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw Error('Attempted to open an MatDatepicker with no associated input.');
     }
@@ -551,7 +557,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     const activeElement: HTMLElement|null = this._document?.activeElement;
     this._focusedElementBeforeOpen =
       activeElement?.shadowRoot?.activeElement as HTMLElement || activeElement;
-    this.touchUi ? this._openAsDialog() : this._openAsPopup();
+    this._openOverlay();
     this._opened = true;
     this.openedStream.emit();
   }
@@ -561,14 +567,11 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     if (!this._opened) {
       return;
     }
-    if (this._popupComponentRef && this._popupRef) {
-      const instance = this._popupComponentRef.instance;
+
+    if (this._componentRef) {
+      const instance = this._componentRef.instance;
       instance._startExitAnimation();
-      instance._animationDone.pipe(take(1)).subscribe(() => this._destroyPopup());
-    }
-    if (this._dialogRef) {
-      this._dialogRef.close();
-      this._dialogRef = null;
+      instance._animationDone.pipe(take(1)).subscribe(() => this._destroyOverlay());
     }
 
     const completeClose = () => {
@@ -595,71 +598,9 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     }
   }
 
-  /** Applies the current pending selection on the popup to the model. */
+  /** Applies the current pending selection on the overlay to the model. */
   _applyPendingSelection() {
-    const instance = this._popupComponentRef?.instance || this._dialogRef?.componentInstance;
-    instance?._applyPendingSelection();
-  }
-
-  /** Open the calendar as a dialog. */
-  private _openAsDialog(): void {
-    // Usually this would be handled by `open` which ensures that we can only have one overlay
-    // open at a time, however since we reset the variables in async handlers some overlays
-    // may slip through if the user opens and closes multiple times in quick succession (e.g.
-    // by holding down the enter key).
-    if (this._dialogRef) {
-      this._dialogRef.close();
-    }
-
-    this._dialogRef = this._dialog.open<MatDatepickerContent<S, D>>(MatDatepickerContent, {
-      direction: this._dir ? this._dir.value : 'ltr',
-      viewContainerRef: this._viewContainerRef,
-      panelClass: 'mat-datepicker-dialog',
-
-      // These values are all the same as the defaults, but we set them explicitly so that the
-      // datepicker dialog behaves consistently even if the user changed the defaults.
-      hasBackdrop: true,
-      disableClose: false,
-      backdropClass: ['cdk-overlay-dark-backdrop', this._backdropHarnessClass],
-      width: '',
-      height: '',
-      minWidth: '',
-      minHeight: '',
-      maxWidth: '80vw',
-      maxHeight: '',
-      position: {},
-
-      // Disable the dialog's automatic focus capturing, because it'll go to the close button
-      // automatically. The calendar will move focus on its own once it renders.
-      autoFocus: false,
-
-      // `MatDialog` has focus restoration built in, however we want to disable it since the
-      // datepicker also has focus restoration for dropdown mode. We want to do this, in order
-      // to ensure that the timing is consistent between dropdown and dialog modes since `MatDialog`
-      // restores focus when the animation is finished, but the datepicker does it immediately.
-      // Furthermore, this avoids any conflicts where the datepicker consumer might move focus
-      // inside the `closed` event which is dispatched immediately.
-      restoreFocus: false
-    });
-
-    this._dialogRef.afterClosed().subscribe(() => this.close());
-    this._forwardContentValues(this._dialogRef.componentInstance);
-  }
-
-  /** Open the calendar as a popup. */
-  private _openAsPopup(): void {
-    const portal = new ComponentPortal<MatDatepickerContent<S, D>>(MatDatepickerContent,
-                                                                   this._viewContainerRef);
-
-    this._destroyPopup();
-    this._createPopup();
-    this._popupComponentRef = this._popupRef!.attach(portal);
-    this._forwardContentValues(this._popupComponentRef.instance);
-
-    // Update the position once the calendar has rendered.
-    this._ngZone.onStable.pipe(take(1)).subscribe(() => {
-      this._popupRef!.updatePosition();
-    });
+    this._componentRef?.instance?._applyPendingSelection();
   }
 
   /** Forwards relevant values from the datepicker to the datepicker content inside the overlay. */
@@ -669,50 +610,69 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     instance._actionsPortal = this._actionsPortal;
   }
 
-  /** Create the popup. */
-  private _createPopup(): void {
-    const positionStrategy = this._overlay.position()
+  /** Opens the overlay with the calendar. */
+  private _openOverlay(): void {
+    this._destroyOverlay();
+
+    const isDialog = this.touchUi;
+    const portal = new ComponentPortal<MatDatepickerContent<S, D>>(MatDatepickerContent,
+      this._viewContainerRef);
+    const overlayRef = this._overlayRef = this._overlay.create(new OverlayConfig({
+      positionStrategy: isDialog ? this._getDialogStrategy() : this._getDropdownStrategy(),
+      hasBackdrop: true,
+      backdropClass: [
+        isDialog ? 'cdk-overlay-dark-backdrop' : 'mat-overlay-transparent-backdrop',
+        this._backdropHarnessClass
+      ],
+      direction: this._dir,
+      scrollStrategy: isDialog ? this._overlay.scrollStrategies.block() : this._scrollStrategy(),
+      panelClass: `mat-datepicker-${isDialog ? 'dialog' : 'popup'}`,
+    }));
+    overlayRef.overlayElement.setAttribute('role', 'dialog');
+
+    if (isDialog) {
+      overlayRef.overlayElement.setAttribute('aria-modal', 'true');
+    }
+
+    this._getCloseStream(overlayRef).subscribe(event => {
+      if (event) {
+        event.preventDefault();
+      }
+      this.close();
+    });
+
+    this._componentRef = overlayRef.attach(portal);
+    this._forwardContentValues(this._componentRef.instance);
+
+    // Update the position once the calendar has rendered. Only relevant in dropdown mode.
+    if (!isDialog) {
+      this._ngZone.onStable.pipe(take(1)).subscribe(() => overlayRef.updatePosition());
+    }
+  }
+
+  /** Destroys the current overlay. */
+  private _destroyOverlay() {
+    if (this._overlayRef) {
+      this._overlayRef.dispose();
+      this._overlayRef = this._componentRef = null;
+    }
+  }
+
+  /** Gets a position strategy that will open the calendar as a dropdown. */
+  private _getDialogStrategy() {
+    return this._overlay.position().global().centerHorizontally().centerVertically();
+  }
+
+  /** Gets a position strategy that will open the calendar as a dropdown. */
+  private _getDropdownStrategy() {
+    const strategy = this._overlay.position()
       .flexibleConnectedTo(this.datepickerInput.getConnectedOverlayOrigin())
       .withTransformOriginOn('.mat-datepicker-content')
       .withFlexibleDimensions(false)
       .withViewportMargin(8)
       .withLockedPosition();
 
-    const overlayConfig = new OverlayConfig({
-      positionStrategy: this._setConnectedPositions(positionStrategy),
-      hasBackdrop: true,
-      backdropClass: ['mat-overlay-transparent-backdrop', this._backdropHarnessClass],
-      direction: this._dir,
-      scrollStrategy: this._scrollStrategy(),
-      panelClass: 'mat-datepicker-popup',
-    });
-
-    this._popupRef = this._overlay.create(overlayConfig);
-    this._popupRef.overlayElement.setAttribute('role', 'dialog');
-
-    merge(
-      this._popupRef.backdropClick(),
-      this._popupRef.detachments(),
-      this._popupRef.keydownEvents().pipe(filter(event => {
-        // Closing on alt + up is only valid when there's an input associated with the datepicker.
-        return (event.keyCode === ESCAPE && !hasModifierKey(event)) || (this.datepickerInput &&
-            hasModifierKey(event, 'altKey') && event.keyCode === UP_ARROW);
-      }))
-    ).subscribe(event => {
-      if (event) {
-        event.preventDefault();
-      }
-
-      this.close();
-    });
-  }
-
-  /** Destroys the current popup overlay. */
-  private _destroyPopup() {
-    if (this._popupRef) {
-      this._popupRef.dispose();
-      this._popupRef = this._popupComponentRef = null;
-    }
+    return this._setConnectedPositions(strategy);
   }
 
   /** Sets the positions of the datepicker in dropdown mode based on the current configuration. */
@@ -748,6 +708,19 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
         overlayY: secondaryY
       }
     ]);
+  }
+
+  /** Gets an observable that will emit when the overlay is supposed to be closed. */
+  private _getCloseStream(overlayRef: OverlayRef) {
+    return merge(
+      overlayRef.backdropClick(),
+      overlayRef.detachments(),
+      overlayRef.keydownEvents().pipe(filter(event => {
+        // Closing on alt + up is only valid when there's an input associated with the datepicker.
+        return (event.keyCode === ESCAPE && !hasModifierKey(event)) || (this.datepickerInput &&
+                hasModifierKey(event, 'altKey') && event.keyCode === UP_ARROW);
+      }))
+    );
   }
 
   static ngAcceptInputType_disabled: BooleanInput;
