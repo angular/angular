@@ -55,9 +55,6 @@ export class PropertyEditorComponent implements AfterViewChecked, OnInit {
 
   accept(): void {
     const parsed = parseValue(this.valueToSubmit);
-    if (!parsed && parsed !== false) {
-      return this.reject();
-    }
     this.updateValue.emit(parsed);
     this._transition(this.readState);
   }
