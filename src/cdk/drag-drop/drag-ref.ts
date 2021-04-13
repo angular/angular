@@ -14,7 +14,12 @@ import {coerceBooleanProperty, coerceElement} from '@angular/cdk/coercion';
 import {Subscription, Subject, Observable} from 'rxjs';
 import {DropListRefInternal as DropListRef} from './drop-list-ref';
 import {DragDropRegistry} from './drag-drop-registry';
-import {extendStyles, toggleNativeDragInteractions, toggleVisibility} from './drag-styling';
+import {
+  combineTransforms,
+  extendStyles,
+  toggleNativeDragInteractions,
+  toggleVisibility,
+} from './drag-styling';
 import {getTransformTransitionDurationInMs} from './transition-duration';
 import {getMutableClientRect, adjustClientRect} from './client-rect';
 import {ParentPositionTracker} from './parent-position-tracker';
@@ -792,7 +797,6 @@ export class DragRef<T = any> {
     if (dropContainer) {
       const element = this._rootElement;
       const parent = element.parentNode as HTMLElement;
-      const preview = this._preview = this._createPreviewElement();
       const placeholder = this._placeholder = this._createPlaceholderElement();
       const anchor = this._anchor = this._anchor || this._document.createComment('');
 
@@ -802,12 +806,20 @@ export class DragRef<T = any> {
       // Insert an anchor node so that we can restore the element's position in the DOM.
       parent.insertBefore(anchor, element);
 
+      // There's no risk of transforms stacking when inside a drop container so
+      // we can keep the initial transform up to date any time dragging starts.
+      this._initialTransform = element.style.transform || '';
+
+      // Create the preview after the initial transform has
+      // been cached, because it can be affected by the transform.
+      this._preview = this._createPreviewElement();
+
       // We move the element out at the end of the body and we make it hidden, because keeping it in
       // place will throw off the consumer's `:last-child` selectors. We can't remove the element
       // from the DOM completely, because iOS will stop firing all subsequent events in the chain.
       toggleVisibility(element, false);
       this._document.body.appendChild(parent.replaceChild(placeholder, element));
-      this._getPreviewInsertionPoint(parent, shadowRoot).appendChild(preview);
+      this._getPreviewInsertionPoint(parent, shadowRoot).appendChild(this._preview);
       this.started.next({source: this}); // Emit before notifying the container.
       dropContainer.start();
       this._initialContainer = dropContainer;
@@ -906,7 +918,7 @@ export class DragRef<T = any> {
 
     this._destroyPreview();
     this._destroyPlaceholder();
-    this._boundaryRect = this._previewRect = undefined;
+    this._boundaryRect = this._previewRect = this._initialTransform = undefined;
 
     // Re-enter the NgZone since we bound `document` events on the outside.
     this._ngZone.run(() => {
@@ -972,8 +984,8 @@ export class DragRef<T = any> {
 
     this._dropContainer!._startScrollingIfNecessary(rawX, rawY);
     this._dropContainer!._sortItem(this, x, y, this._pointerDirectionDelta);
-    this._preview.style.transform =
-        getTransform(x - this._pickupPositionInElement.x, y - this._pickupPositionInElement.y);
+    this._applyPreviewTransform(
+      x - this._pickupPositionInElement.x, y - this._pickupPositionInElement.y);
   }
 
   /**
@@ -1005,6 +1017,10 @@ export class DragRef<T = any> {
       const element = this._rootElement;
       preview = deepCloneNode(element);
       matchElementSize(preview, element.getBoundingClientRect());
+
+      if (this._initialTransform) {
+        preview.style.transform = this._initialTransform;
+      }
     }
 
     extendStyles(preview.style, {
@@ -1050,7 +1066,7 @@ export class DragRef<T = any> {
     this._preview.classList.add('cdk-drag-animating');
 
     // Move the preview to the placeholder position.
-    this._preview.style.transform = getTransform(placeholderRect.left, placeholderRect.top);
+    this._applyPreviewTransform(placeholderRect.left, placeholderRect.top);
 
     // If the element doesn't have a `transition`, the `transitionend` event won't fire. Since
     // we need to trigger a style recalculation in order for the `cdk-drag-animating` class to
@@ -1247,8 +1263,20 @@ export class DragRef<T = any> {
     // Preserve the previous `transform` value, if there was one. Note that we apply our own
     // transform before the user's, because things like rotation can affect which direction
     // the element will be translated towards.
-    this._rootElement.style.transform = this._initialTransform ?
-      transform + ' ' + this._initialTransform  : transform;
+    this._rootElement.style.transform = combineTransforms(transform, this._initialTransform);
+  }
+
+  /**
+   * Applies a `transform` to the preview, taking into account any existing transforms on it.
+   * @param x New transform value along the X axis.
+   * @param y New transform value along the Y axis.
+   */
+  private _applyPreviewTransform(x: number, y: number) {
+    // Only apply the initial transform if the preview is a clone of the original element, otherwise
+    // it could be completely different and the transform might not make sense anymore.
+    const initialTransform = this._previewTemplate?.template ? undefined : this._initialTransform;
+    const transform = getTransform(x, y);
+    this._preview.style.transform = combineTransforms(transform, initialTransform);
   }
 
   /**

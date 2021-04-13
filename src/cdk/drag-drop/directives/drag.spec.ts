@@ -4331,6 +4331,48 @@ describe('CdkDrag', () => {
       }).toThrowError(/^cdkDropList must be attached to an element node/);
     }));
 
+    it('should preserve the original `transform` of items in the list', fakeAsync(() => {
+      const fixture = createComponent(DraggableInScrollableVerticalDropZone);
+      fixture.detectChanges();
+      const items = fixture.componentInstance.dragItems.map(item => item.element.nativeElement);
+      items.forEach(element => element.style.transform = 'rotate(180deg)');
+      const thirdItemRect = items[2].getBoundingClientRect();
+      const hasInitialTransform =
+        (element: HTMLElement) => element.style.transform.indexOf('rotate(180deg)') > -1;
+
+      startDraggingViaMouse(fixture, items[0]);
+      fixture.detectChanges();
+      const preview = document.querySelector('.cdk-drag-preview') as HTMLElement;
+      const placeholder = fixture.nativeElement.querySelector('.cdk-drag-placeholder');
+
+      expect(items.every(hasInitialTransform)).toBe(true,
+        'Expected items to preserve transform when dragging starts.');
+      expect(hasInitialTransform(preview)).toBe(true,
+        'Expected preview to preserve transform when dragging starts.');
+      expect(hasInitialTransform(placeholder)).toBe(true,
+        'Expected placeholder to preserve transform when dragging starts.');
+
+      dispatchMouseEvent(document, 'mousemove', thirdItemRect.left + 1, thirdItemRect.top + 1);
+      fixture.detectChanges();
+      expect(items.every(hasInitialTransform)).toBe(true,
+        'Expected items to preserve transform while dragging.');
+      expect(hasInitialTransform(preview)).toBe(true,
+        'Expected preview to preserve transform while dragging.');
+      expect(hasInitialTransform(placeholder)).toBe(true,
+        'Expected placeholder to preserve transform while dragging.');
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      flush();
+      fixture.detectChanges();
+      expect(items.every(hasInitialTransform)).toBe(true,
+        'Expected items to preserve transform when dragging stops.');
+      expect(hasInitialTransform(preview)).toBe(true,
+        'Expected preview to preserve transform when dragging stops.');
+      expect(hasInitialTransform(placeholder)).toBe(true,
+         'Expected placeholder to preserve transform when dragging stops.');
+    }));
+
   });
 
   describe('in a connected drop container', () => {

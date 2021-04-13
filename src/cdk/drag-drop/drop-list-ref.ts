@@ -23,7 +23,7 @@ import {
   isInsideClientRect,
 } from './client-rect';
 import {ParentPositionTracker} from './parent-position-tracker';
-import {DragCSSStyleDeclaration} from './drag-styling';
+import {combineTransforms, DragCSSStyleDeclaration} from './drag-styling';
 
 /**
  * Proximity, as a ratio to width/height, at which a
@@ -48,6 +48,8 @@ interface CachedItemPosition {
   clientRect: ClientRect;
   /** Amount by which the item has been moved since dragging started. */
   offset: number;
+  /** Inline transform that the drag item had when dragging started. */
+  initialTransform: string;
 }
 
 /** Vertical direction in which we can auto-scroll. */
@@ -513,10 +515,12 @@ export class DropListRef<T = any> {
       if (isHorizontal) {
         // Round the transforms since some browsers will
         // blur the elements, for sub-pixel transforms.
-        elementToOffset.style.transform = `translate3d(${Math.round(sibling.offset)}px, 0, 0)`;
+        elementToOffset.style.transform = combineTransforms(
+          `translate3d(${Math.round(sibling.offset)}px, 0, 0)`, sibling.initialTransform);
         adjustClientRect(sibling.clientRect, 0, offset);
       } else {
-        elementToOffset.style.transform = `translate3d(0, ${Math.round(sibling.offset)}px, 0)`;
+        elementToOffset.style.transform = combineTransforms(
+          `translate3d(0, ${Math.round(sibling.offset)}px, 0)`, sibling.initialTransform);
         adjustClientRect(sibling.clientRect, offset, 0);
       }
     });
@@ -622,7 +626,12 @@ export class DropListRef<T = any> {
 
     this._itemPositions = this._activeDraggables.map(drag => {
       const elementToMeasure = drag.getVisibleElement();
-      return {drag, offset: 0, clientRect: getMutableClientRect(elementToMeasure)};
+      return {
+        drag,
+        offset: 0,
+        initialTransform: elementToMeasure.style.transform || '',
+        clientRect: getMutableClientRect(elementToMeasure),
+      };
     }).sort((a, b) => {
       return isHorizontal ? a.clientRect.left - b.clientRect.left :
                             a.clientRect.top - b.clientRect.top;
@@ -641,7 +650,9 @@ export class DropListRef<T = any> {
       const rootElement = item.getRootElement();
 
       if (rootElement) {
-        rootElement.style.transform = '';
+        const initialTransform = this._itemPositions
+          .find(current => current.drag === item)?.initialTransform;
+        rootElement.style.transform = initialTransform || '';
       }
     });
     this._siblings.forEach(sibling => sibling._stopReceiving(this));

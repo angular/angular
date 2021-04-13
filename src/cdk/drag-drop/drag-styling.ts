@@ -73,3 +73,11 @@ export function toggleVisibility(element: HTMLElement, enable: boolean) {
   styles.top = styles.opacity = enable ? '' : '0';
   styles.left = enable ? '' : '-999em';
 }
+
+/**
+ * Combines a transform string with an optional other transform
+ * that exited before the base transform was applied.
+ */
+export function combineTransforms(transform: string, initialTransform?: string): string {
+  return initialTransform ? (transform + ' ' + initialTransform) : transform;
+}
