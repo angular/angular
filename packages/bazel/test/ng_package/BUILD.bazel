@@ -13,6 +13,7 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/private/testing",
+        "@npm//@bazel/runfiles",
         "@npm//@types/shelljs",
     ],
 )
@@ -34,6 +35,7 @@ ts_library(
     deps = [
         "//packages:types",
         "//packages/private/testing",
+        "@npm//@bazel/runfiles",
         "@npm//@types/shelljs",
     ],
 )
@@ -53,6 +55,7 @@ ts_library(
     srcs = ["example_package.spec.ts"],
     deps = [
         "//packages:types",
+        "@npm//@bazel/runfiles",
         "@npm//@types/diff",
     ],
 )

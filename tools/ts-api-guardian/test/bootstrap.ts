@@ -7,7 +7,7 @@
  */
 
 const path = require('path');
-const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']);
+const {runfiles} = require('@bazel/runfiles');
 
 // Change directories to the path of the ts-api-guardian source tree. We need to resolve an actual
 // path of a tree because we want to determine the path to the directory that includes all
