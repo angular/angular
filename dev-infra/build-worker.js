@@ -203,12 +203,10 @@ var GitClient = /** @class */ (function () {
     /**
      * @param githubToken The github token used for authentication, if provided.
      * @param _config The configuration, containing the github specific configuration.
-     * @param _projectRoot The full path to the root of the repository base.
+     * @param baseDir The full path to the root of the repository base.
      */
-    function GitClient(githubToken, _config, _projectRoot) {
+    function GitClient(githubToken, config, baseDir) {
         this.githubToken = githubToken;
-        this._config = _config;
-        this._projectRoot = _projectRoot;
         /** Whether verbose logging of Git actions should be used. */
         this.verboseLogging = true;
         /** The OAuth scopes available for the provided Github token. */
@@ -220,13 +218,9 @@ var GitClient = /** @class */ (function () {
         this._githubTokenRegex = null;
         /** Instance of the Github octokit API. */
         this.github = new GithubClient(this.githubToken);
-        if (this._projectRoot === undefined) {
-            this._projectRoot = this.getBaseDir();
-        }
-        if (this._config === undefined) {
-            this._config = getConfig(this._projectRoot);
-        }
-        this.remoteConfig = this._config.github;
+        this.baseDir = baseDir || this.determineBaseDir();
+        this.config = config || getConfig(this.baseDir);
+        this.remoteConfig = this.config.github;
         this.remoteParams = { owner: this.remoteConfig.owner, repo: this.remoteConfig.name };
         // If a token has been specified (and is not empty), pass it to the Octokit API and
         // also create a regular expression that can be used for sanitizing Git command output
@@ -297,7 +291,7 @@ var GitClient = /** @class */ (function () {
         // Note that we do not want to print the token if it is contained in the command. It's common
         // to share errors with others if the tool failed, and we do not want to leak tokens.
         printFn('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
-        var result = child_process.spawnSync('git', args, tslib.__assign(tslib.__assign({ cwd: this._projectRoot, stdio: 'pipe' }, options), { 
+        var result = child_process.spawnSync('git', args, tslib.__assign(tslib.__assign({ cwd: this.baseDir, stdio: 'pipe' }, options), { 
             // Encoding is always `utf8` and not overridable. This ensures that this method
             // always returns `string` as output instead of buffers.
             encoding: 'utf8' }));
@@ -444,11 +438,22 @@ var GitClient = /** @class */ (function () {
             return scopes.split(',').map(function (scope) { return scope.trim(); });
         });
     };
+    GitClient.prototype.determineBaseDir = function () {
+        this.setVerboseLoggingState(false);
+        var _a = this.runGraceful(['rev-parse', '--show-toplevel']), stdout = _a.stdout, stderr = _a.stderr, status = _a.status;
+        if (status !== 0) {
+            throw Error("Unable to find the path to the base directory of the repository.\n" +
+                "Was the command run from inside of the repo?\n\n" +
+                ("ERROR:\n " + stderr));
+        }
+        this.setVerboseLoggingState(true);
+        return stdout.trim();
+    };
     return GitClient;
 }());
 /**
  * Takes the output from `GitClient.run` and `GitClient.runGraceful` and returns an array of strings
- * for each new line.  Git commands typically return multiple output values for a command a set of
+ * for each new line. Git commands typically return multiple output values for a command a set of
  * strings separated by new lines.
  *
  * Note: This is specifically created as a locally available function for usage as convience utility

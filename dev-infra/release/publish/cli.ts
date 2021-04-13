@@ -31,7 +31,7 @@ async function handler(args: Arguments<ReleasePublishOptions>) {
   const git = GitClient.getInstance();
   const config = getConfig();
   const releaseConfig = getReleaseConfig(config);
-  const projectDir = git.getBaseDir();
+  const projectDir = git.baseDir;
   const task = new ReleaseTool(releaseConfig, config.github, args.githubToken, projectDir);
   const result = await task.run();
 

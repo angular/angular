@@ -156,7 +156,7 @@ export function getUserConfig() {
   if (userConfig === null) {
     const git = GitClient.getInstance();
     // The full path to the configuration file.
-    const configPath = join(git.getBaseDir(), USER_CONFIG_FILE_PATH);
+    const configPath = join(git.baseDir, USER_CONFIG_FILE_PATH);
     // Set the global config object.
     userConfig = readConfigFile(configPath, true);
   }

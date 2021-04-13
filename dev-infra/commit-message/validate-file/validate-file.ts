@@ -17,7 +17,7 @@ import {printValidationErrors, validateCommitMessage} from '../validate';
 /** Validate commit message at the provided file path. */
 export function validateFile(filePath: string, isErrorMode: boolean) {
   const git = GitClient.getInstance();
-  const commitMessage = readFileSync(resolve(git.getBaseDir(), filePath), 'utf8');
+  const commitMessage = readFileSync(resolve(git.baseDir, filePath), 'utf8');
   const {valid, errors} = validateCommitMessage(commitMessage);
   if (valid) {
     info(`${green('√')}  Valid commit message`);

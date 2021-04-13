@@ -166,7 +166,7 @@ function getUserConfig() {
     if (userConfig === null) {
         var git = GitClient.getInstance();
         // The full path to the configuration file.
-        var configPath = path.join(git.getBaseDir(), USER_CONFIG_FILE_PATH);
+        var configPath = path.join(git.baseDir, USER_CONFIG_FILE_PATH);
         // Set the global config object.
         userConfig = readConfigFile(configPath, true);
     }
@@ -369,12 +369,10 @@ var GitClient = /** @class */ (function () {
     /**
      * @param githubToken The github token used for authentication, if provided.
      * @param _config The configuration, containing the github specific configuration.
-     * @param _projectRoot The full path to the root of the repository base.
+     * @param baseDir The full path to the root of the repository base.
      */
-    function GitClient(githubToken, _config, _projectRoot) {
+    function GitClient(githubToken, config, baseDir) {
         this.githubToken = githubToken;
-        this._config = _config;
-        this._projectRoot = _projectRoot;
         /** Whether verbose logging of Git actions should be used. */
         this.verboseLogging = true;
         /** The OAuth scopes available for the provided Github token. */
@@ -386,13 +384,9 @@ var GitClient = /** @class */ (function () {
         this._githubTokenRegex = null;
         /** Instance of the Github octokit API. */
         this.github = new GithubClient(this.githubToken);
-        if (this._projectRoot === undefined) {
-            this._projectRoot = this.getBaseDir();
-        }
-        if (this._config === undefined) {
-            this._config = getConfig(this._projectRoot);
-        }
-        this.remoteConfig = this._config.github;
+        this.baseDir = baseDir || this.determineBaseDir();
+        this.config = config || getConfig(this.baseDir);
+        this.remoteConfig = this.config.github;
         this.remoteParams = { owner: this.remoteConfig.owner, repo: this.remoteConfig.name };
         // If a token has been specified (and is not empty), pass it to the Octokit API and
         // also create a regular expression that can be used for sanitizing Git command output
@@ -463,7 +457,7 @@ var GitClient = /** @class */ (function () {
         // Note that we do not want to print the token if it is contained in the command. It's common
         // to share errors with others if the tool failed, and we do not want to leak tokens.
         printFn('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
-        var result = child_process.spawnSync('git', args, tslib.__assign(tslib.__assign({ cwd: this._projectRoot, stdio: 'pipe' }, options), { 
+        var result = child_process.spawnSync('git', args, tslib.__assign(tslib.__assign({ cwd: this.baseDir, stdio: 'pipe' }, options), { 
             // Encoding is always `utf8` and not overridable. This ensures that this method
             // always returns `string` as output instead of buffers.
             encoding: 'utf8' }));
@@ -610,11 +604,22 @@ var GitClient = /** @class */ (function () {
             return scopes.split(',').map(function (scope) { return scope.trim(); });
         });
     };
+    GitClient.prototype.determineBaseDir = function () {
+        this.setVerboseLoggingState(false);
+        var _a = this.runGraceful(['rev-parse', '--show-toplevel']), stdout = _a.stdout, stderr = _a.stderr, status = _a.status;
+        if (status !== 0) {
+            throw Error("Unable to find the path to the base directory of the repository.\n" +
+                "Was the command run from inside of the repo?\n\n" +
+                ("ERROR:\n " + stderr));
+        }
+        this.setVerboseLoggingState(true);
+        return stdout.trim();
+    };
     return GitClient;
 }());
 /**
  * Takes the output from `GitClient.run` and `GitClient.runGraceful` and returns an array of strings
- * for each new line.  Git commands typically return multiple output values for a command a set of
+ * for each new line. Git commands typically return multiple output values for a command a set of
  * strings separated by new lines.
  *
  * Note: This is specifically created as a locally available function for usage as convience utility
@@ -769,7 +774,7 @@ function captureLogOutputForCommand(argv) {
         LOGGED_TEXT += "Command ran in " + (new Date().getTime() - now.getTime()) + "ms\n";
         LOGGED_TEXT += "Exit Code: " + code + "\n";
         /** Path to the log file location. */
-        var logFilePath = path.join(git.getBaseDir(), '.ng-dev.log');
+        var logFilePath = path.join(git.baseDir, '.ng-dev.log');
         // Strip ANSI escape codes from log outputs.
         LOGGED_TEXT = LOGGED_TEXT.replace(/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]/g, '');
         fs.writeFileSync(logFilePath, LOGGED_TEXT);
@@ -778,7 +783,7 @@ function captureLogOutputForCommand(argv) {
         if (code > 1) {
             var logFileName = ".ng-dev.err-" + now.getTime() + ".log";
             console.error("Exit code: " + code + ". Writing full log to " + logFileName);
-            fs.writeFileSync(path.join(git.getBaseDir(), logFileName), LOGGED_TEXT);
+            fs.writeFileSync(path.join(git.baseDir, logFileName), LOGGED_TEXT);
         }
     });
     // Mark file logging as enabled to prevent the function from executing multiple times.
@@ -1326,7 +1331,7 @@ class G3Module extends BaseModule {
     }
     getG3FileIncludeAndExcludeLists() {
         var _a, _b, _c, _d;
-        const angularRobotFilePath = path.join(this.git.getBaseDir(), '.github/angular-robot.yml');
+        const angularRobotFilePath = path.join(this.git.baseDir, '.github/angular-robot.yml');
         if (!fs.existsSync(angularRobotFilePath)) {
             debug('No angular robot configuration file exists, skipping.');
             return null;
@@ -2068,7 +2073,7 @@ function printValidationErrors(errors, print = error) {
 /** Validate commit message at the provided file path. */
 function validateFile(filePath, isErrorMode) {
     const git = GitClient.getInstance();
-    const commitMessage = fs.readFileSync(path.resolve(git.getBaseDir(), filePath), 'utf8');
+    const commitMessage = fs.readFileSync(path.resolve(git.baseDir, filePath), 'utf8');
     const { valid, errors } = validateCommitMessage(commitMessage);
     if (valid) {
         info(`${green('√')}  Valid commit message`);
@@ -2383,7 +2388,7 @@ class Buildifier extends Formatter {
     constructor() {
         super(...arguments);
         this.name = 'buildifier';
-        this.binaryFilePath = path.join(this.git.getBaseDir(), 'node_modules/.bin/buildifier');
+        this.binaryFilePath = path.join(this.git.baseDir, 'node_modules/.bin/buildifier');
         this.defaultFileMatcher = ['**/*.bzl', '**/BUILD.bazel', '**/WORKSPACE', '**/BUILD'];
         this.actions = {
             check: {
@@ -2428,7 +2433,7 @@ class ClangFormat extends Formatter {
     constructor() {
         super(...arguments);
         this.name = 'clang-format';
-        this.binaryFilePath = path.join(this.git.getBaseDir(), 'node_modules/.bin/clang-format');
+        this.binaryFilePath = path.join(this.git.baseDir, 'node_modules/.bin/clang-format');
         this.defaultFileMatcher = ['**/*.{t,j}s'];
         this.actions = {
             check: {
@@ -2673,7 +2678,7 @@ function buildFormatParser(localYargs) {
 function verify() {
     const git = GitClient.getInstance();
     /** Full path to NgBot config file */
-    const NGBOT_CONFIG_YAML_PATH = path.resolve(git.getBaseDir(), '.github/angular-robot.yml');
+    const NGBOT_CONFIG_YAML_PATH = path.resolve(git.baseDir, '.github/angular-robot.yml');
     /** The NgBot config file */
     const ngBotYaml = fs.readFileSync(NGBOT_CONFIG_YAML_PATH, 'utf8');
     try {
@@ -4931,7 +4936,7 @@ function getGroupsFromYaml(pullApproveYamlRaw) {
 function verify$1() {
     const git = GitClient.getInstance();
     /** Full path to PullApprove config file */
-    const PULL_APPROVE_YAML_PATH = path.resolve(git.getBaseDir(), '.pullapprove.yml');
+    const PULL_APPROVE_YAML_PATH = path.resolve(git.baseDir, '.pullapprove.yml');
     /** All tracked files in the repository. */
     const REPO_FILES = git.allFiles();
     /** The pull approve config file. */
@@ -6755,7 +6760,7 @@ function handler$8(args) {
         const git = GitClient.getInstance();
         const config = getConfig();
         const releaseConfig = getReleaseConfig(config);
-        const projectDir = git.getBaseDir();
+        const projectDir = git.baseDir;
         const task = new ReleaseTool(releaseConfig, config.github, args.githubToken, projectDir);
         const result = yield task.run();
         switch (result) {
@@ -6883,7 +6888,7 @@ function hasLocalChanges() {
 function getSCMVersion(mode) {
     if (mode === 'release') {
         const git = GitClient.getInstance();
-        const packageJsonPath = path.join(git.getBaseDir(), 'package.json');
+        const packageJsonPath = path.join(git.baseDir, 'package.json');
         const { version } = require(packageJsonPath);
         return version;
     }

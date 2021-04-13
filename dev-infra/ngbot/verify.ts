@@ -15,7 +15,7 @@ import {GitClient} from '../utils/git/index';
 export function verify() {
   const git = GitClient.getInstance();
   /** Full path to NgBot config file */
-  const NGBOT_CONFIG_YAML_PATH = resolve(git.getBaseDir(), '.github/angular-robot.yml');
+  const NGBOT_CONFIG_YAML_PATH = resolve(git.baseDir, '.github/angular-robot.yml');
 
   /** The NgBot config file */
   const ngBotYaml = readFileSync(NGBOT_CONFIG_YAML_PATH, 'utf8');

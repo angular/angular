@@ -16,7 +16,7 @@ import {getGroupsFromYaml} from './parse-yaml';
 export function verify() {
   const git = GitClient.getInstance();
   /** Full path to PullApprove config file */
-  const PULL_APPROVE_YAML_PATH = resolve(git.getBaseDir(), '.pullapprove.yml');
+  const PULL_APPROVE_YAML_PATH = resolve(git.baseDir, '.pullapprove.yml');
   /** All tracked files in the repository. */
   const REPO_FILES = git.allFiles();
   /** The pull approve config file. */

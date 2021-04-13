@@ -52,7 +52,7 @@ function hasLocalChanges() {
 function getSCMVersion(mode: EnvStampMode) {
   if (mode === 'release') {
     const git = GitClient.getInstance();
-    const packageJsonPath = join(git.getBaseDir(), 'package.json');
+    const packageJsonPath = join(git.baseDir, 'package.json');
     const {version} = require(packageJsonPath);
     return version;
   }

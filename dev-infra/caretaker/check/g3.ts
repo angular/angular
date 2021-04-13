@@ -120,7 +120,7 @@ export class G3Module extends BaseModule<G3StatsData|void> {
 
 
   private getG3FileIncludeAndExcludeLists() {
-    const angularRobotFilePath = join(this.git.getBaseDir(), '.github/angular-robot.yml');
+    const angularRobotFilePath = join(this.git.baseDir, '.github/angular-robot.yml');
     if (!existsSync(angularRobotFilePath)) {
       debug('No angular robot configuration file exists, skipping.');
       return null;
