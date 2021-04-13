@@ -17,6 +17,10 @@
   display: flex;
 }
 
+.inspector-active {
+  color: #1a73e8 !important;
+}
+
 #app-angular-version {
   align-self: center;
   margin-left: auto;
@@ -77,6 +81,10 @@ mat-icon {
 :host-context(.dark-theme) {
   #version-number {
     color: #5caace;
+  }
+
+  .inspector-active {
+    color: #4688f1 !important;
   }
 }
 
