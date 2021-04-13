@@ -8,6 +8,7 @@
 
 import {ENTER} from '@angular/cdk/keycodes';
 import {_supportsShadowDom} from '@angular/cdk/platform';
+import {FormControl} from '@angular/forms';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -45,6 +46,7 @@ export class TestMainComponent implements OnDestroy {
   _shadowDomSupported = _supportsShadowDom();
   clickResult = {x: -1, y: -1};
   rightClickResult = {x: -1, y: -1, button: -1};
+  numberControl = new FormControl();
 
   @ViewChild('clickTestElement') clickTestElement: ElementRef<HTMLElement>;
   @ViewChild('taskStateResult') taskStateResultElement: ElementRef<HTMLElement>;

@@ -116,6 +116,7 @@ export const SEMICOLON = 186;       // Firefox (Gecko) fires 59 for SEMICOLON
 export const EQUALS = 187;          // Firefox (Gecko) fires 61 for EQUALS
 export const COMMA = 188;
 export const DASH = 189;            // Firefox (Gecko) fires 173 for DASH/MINUS
+export const PERIOD = 190;
 export const SLASH = 191;
 export const APOSTROPHE = 192;
 export const TILDE = 192;

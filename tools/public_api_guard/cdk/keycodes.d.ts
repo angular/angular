@@ -176,6 +176,8 @@ export declare const PAGE_UP = 33;
 
 export declare const PAUSE = 19;
 
+export declare const PERIOD = 190;
+
 export declare const PLUS_SIGN = 43;
 
 export declare const PRINT_SCREEN = 44;
