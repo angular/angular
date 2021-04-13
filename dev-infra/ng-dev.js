@@ -3379,6 +3379,15 @@ var PullRequestFailure = /** @class */ (function () {
     PullRequestFailure.notMergeReady = function () {
         return new this("Not marked as merge ready.");
     };
+    PullRequestFailure.isDraft = function () {
+        return new this('Pull request is still in draft.');
+    };
+    PullRequestFailure.isClosed = function () {
+        return new this('Pull request is already closed.');
+    };
+    PullRequestFailure.isMerged = function () {
+        return new this('Pull request is already merged.');
+    };
     PullRequestFailure.mismatchingTargetBranch = function (allowedBranches) {
         return new this("Pull request is set to wrong base branch. Please update the PR in the Github UI " +
             ("to one of the following branches: " + allowedBranches.join(', ') + "."));
@@ -3490,6 +3499,7 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                     }
                     commitsInPr = prData.commits.nodes.map(function (n) { return parseCommitMessage(n.commit.message); });
                     try {
+                        assertPendingState(prData);
                         assertChangesAllowForTargetLabel(commitsInPr, targetLabel, config);
                         assertCorrectBreakingChangeLabeling(commitsInPr, labels, config);
                     }
@@ -3541,6 +3551,8 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
 /* Graphql schema for the response body the requested pull request. */
 var PR_SCHEMA$2 = {
     url: typedGraphqlify.types.string,
+    isDraft: typedGraphqlify.types.boolean,
+    state: typedGraphqlify.types.oneOf(['OPEN', 'MERGED', 'CLOSED']),
     number: typedGraphqlify.types.number,
     // Only the last 100 commits from a pull request are obtained as we likely will never see a pull
     // requests with more than 100 commits.
@@ -3644,6 +3656,18 @@ function assertCorrectBreakingChangeLabeling(commits, labels, config) {
     }
     if (hasLabel && !hasCommit) {
         throw PullRequestFailure.missingBreakingChangeCommit();
+    }
+}
+/** Assert the pull request is pending, not closed, merged or in draft. */
+function assertPendingState(pr) {
+    if (pr.isDraft) {
+        throw PullRequestFailure.isDraft();
+    }
+    switch (pr.state) {
+        case 'CLOSED':
+            throw PullRequestFailure.isClosed();
+        case 'MERGED':
+            throw PullRequestFailure.isMerged();
     }
 }
 
