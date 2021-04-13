@@ -70,7 +70,7 @@
     "@types/semver": "^7.1.0",
     "codelyzer": "^6.0.0",
     "cross-env": "^7.0.2",
-    "cypress": "^6.0.0",
+    "cypress": "^7.0.0",
     "cypress-browser-extension-plugin": "^0.1.0",
     "cypress-iframe": "^1.0.1",
     "document-register-element": "^1.7.2",
