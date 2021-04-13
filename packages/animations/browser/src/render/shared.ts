@@ -160,7 +160,6 @@ let _query: (element: any, selector: string, multi: boolean) => any[] =
 // and utility methods exist.
 const _isNode = isNode();
 if (_isNode || typeof Element !== 'undefined') {
-  // this is well supported in all browsers
   if (!isBrowser()) {
     _contains = (elm1, elm2) => elm1.contains(elm2);
   } else {
