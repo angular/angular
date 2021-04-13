@@ -87,6 +87,7 @@ ts_library(
         ":test_harnesses",
         "//src/cdk/testing",
         "//src/cdk/testing/webdriver",
+        "@npm//@bazel/runfiles",
         "@npm//@types/jasmine",
         "@npm//@types/node",
         "@npm//@types/selenium-webdriver",

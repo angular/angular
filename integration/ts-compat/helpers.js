@@ -2,7 +2,7 @@ const {relative, sep, join} = require('path');
 const {readdirSync, readFileSync, existsSync, unlinkSync} = require('fs');
 const {set, ln, rm, mkdir} = require('shelljs');
 const {fork} = require('child_process');
-const runfiles = require(process.env.BAZEL_NODE_RUNFILES_HELPER);
+const {runfiles} = require('@bazel/runfiles');
 
 // Exit if any command fails.
 set('-e');

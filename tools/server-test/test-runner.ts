@@ -3,9 +3,9 @@
  * to that port, and then running tests against it.
  */
 
-const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']!);
 import * as child_process from 'child_process';
 import * as net from 'net';
+import {runfiles} from '@bazel/runfiles';
 
 /** Checks if the given port is free. */
 function isPortFree(port: number) {

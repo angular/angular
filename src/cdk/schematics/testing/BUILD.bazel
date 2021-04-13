@@ -14,6 +14,7 @@ ts_library(
     deps = [
         "@npm//@angular-devkit/core",
         "@npm//@angular-devkit/schematics",
+        "@npm//@bazel/runfiles",
         "@npm//@schematics/angular",
         "@npm//@types/fs-extra",
         "@npm//@types/glob",

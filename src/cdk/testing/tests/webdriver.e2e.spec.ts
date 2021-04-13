@@ -1,3 +1,4 @@
+import {runfiles} from '@bazel/runfiles';
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
 import {waitForAngularReady, WebDriverHarnessEnvironment} from '@angular/cdk/testing/webdriver';
 import * as webdriver from 'selenium-webdriver';
@@ -22,7 +23,6 @@ if (process.env['WEB_TEST_METADATA'] === undefined) {
   process.exit(1);
 }
 
-const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']!);
 const webTestMetadata: WebTestMetadata =
     require(runfiles.resolve(process.env['WEB_TEST_METADATA']));
 const port = process.env['TEST_SERVER_PORT'];

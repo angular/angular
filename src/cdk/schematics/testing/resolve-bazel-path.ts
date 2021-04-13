@@ -18,11 +18,9 @@ export function resolveBazelPath(parent: string, relativePath: string) {
   if (process.env['RUNFILES_MANIFEST_ONLY'] !== '1') {
     return path.join(parent, relativePath);
   }
-  // Imports the runfile helpers from the Bazel NodeJS rules. This should be ideally
-  // a separate package with types. https://github.com/bazelbuild/rules_nodejs/issues/1793.
   // Note: We don't want to import this outside of this function as the runfile helpers are
   // quite large we don't want to load them for every import to `@angular/cdk/testing/private`.
-  const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']!);
+  const {runfiles} = require('@bazel/runfiles');
   const projectDirs = [
     // Workspace symlinked into `@npm//:node_modules/`.
     path.join(runfiles.resolve('npm/node_modules'), runfiles.workspace),
