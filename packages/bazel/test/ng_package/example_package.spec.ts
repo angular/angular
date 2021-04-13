@@ -6,13 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {runfiles} from '@bazel/runfiles';
 import * as crypto from 'crypto';
 import {createPatch} from 'diff';
 import * as fs from 'fs';
 import * as path from 'path';
-
-/** Runfiles helper from bazel to resolve file name paths.  */
-const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']!);
 
 type TestPackage = {
   displayName: string; packagePath: string; goldenFilePath: string;
