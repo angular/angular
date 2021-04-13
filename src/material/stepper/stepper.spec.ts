@@ -45,7 +45,7 @@ import {
 import {MatRipple, ThemePalette} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
-import {Observable, Subject} from 'rxjs';
+import {merge, Observable, Subject} from 'rxjs';
 import {map, take} from 'rxjs/operators';
 import {MatStepHeader, MatStepperModule} from './index';
 import {MatHorizontalStepper, MatStep, MatStepper, MatVerticalStepper} from './stepper';
@@ -1058,6 +1058,32 @@ describe('MatStepper', () => {
       stepper.next();
       fixture.detectChanges();
       expect(stepper.steps.map(step => step.interacted)).toEqual([true, true, true]);
+    });
+
+    it('should emit when the user has interacted with a step', () => {
+      const fixture = createComponent(SimpleMatHorizontalStepperApp);
+      fixture.detectChanges();
+
+      const stepper: MatStepper =
+          fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
+      const interactedSteps: number[] = [];
+      const subscription = merge(...stepper.steps.map(step => step.interactedStream))
+        .subscribe(step => interactedSteps.push(stepper.steps.toArray().indexOf(step as MatStep)));
+
+      expect(interactedSteps).toEqual([]);
+
+      stepper.next();
+      fixture.detectChanges();
+      expect(interactedSteps).toEqual([0]);
+
+      stepper.next();
+      fixture.detectChanges();
+      expect(interactedSteps).toEqual([0, 1]);
+
+      stepper.next();
+      fixture.detectChanges();
+      expect(interactedSteps).toEqual([0, 1, 2]);
+      subscription.unsubscribe();
     });
   });
 

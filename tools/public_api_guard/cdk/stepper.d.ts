@@ -14,6 +14,7 @@ export declare class CdkStep implements OnChanges {
     get hasError(): boolean;
     set hasError(value: boolean);
     interacted: boolean;
+    readonly interactedStream: EventEmitter<CdkStep>;
     label: string;
     get optional(): boolean;
     set optional(value: boolean);
@@ -21,6 +22,7 @@ export declare class CdkStep implements OnChanges {
     stepControl: AbstractControlLike;
     stepLabel: CdkStepLabel;
     constructor(_stepper: CdkStepper, stepperOptions?: StepperOptions);
+    _markAsInteracted(): void;
     ngOnChanges(): void;
     reset(): void;
     select(): void;
@@ -28,7 +30,7 @@ export declare class CdkStep implements OnChanges {
     static ngAcceptInputType_editable: BooleanInput;
     static ngAcceptInputType_hasError: BooleanInput;
     static ngAcceptInputType_optional: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDeclaration<CdkStep, "cdk-step", ["cdkStep"], { "stepControl": "stepControl"; "label": "label"; "errorMessage": "errorMessage"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "state": "state"; "editable": "editable"; "optional": "optional"; "completed": "completed"; "hasError": "hasError"; }, {}, ["stepLabel"], ["*"]>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<CdkStep, "cdk-step", ["cdkStep"], { "stepControl": "stepControl"; "label": "label"; "errorMessage": "errorMessage"; "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "state": "state"; "editable": "editable"; "optional": "optional"; "completed": "completed"; "hasError": "hasError"; }, { "interactedStream": "interacted"; }, ["stepLabel"], ["*"]>;
     static ɵfac: i0.ɵɵFactoryDeclaration<CdkStep, [null, { optional: true; }]>;
 }
 

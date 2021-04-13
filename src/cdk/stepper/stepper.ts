@@ -124,8 +124,12 @@ export class CdkStep implements OnChanges {
   /** The top level abstract control of the step. */
   @Input() stepControl: AbstractControlLike;
 
-  /** Whether user has seen the expanded step content or not. */
+  /** Whether user has attempted to move away from the step. */
   interacted = false;
+
+  /** Emits when the user has attempted to move away from the step. */
+  @Output('interacted')
+  readonly interactedStream: EventEmitter<CdkStep> = new EventEmitter<CdkStep>();
 
   /** Plain text label of the step. */
   @Input() label: string;
@@ -229,6 +233,13 @@ export class CdkStep implements OnChanges {
     this._stepper._stateChanged();
   }
 
+  _markAsInteracted() {
+    if (!this.interacted) {
+      this.interacted = true;
+      this.interactedStream.emit(this);
+    }
+  }
+
   static ngAcceptInputType_editable: BooleanInput;
   static ngAcceptInputType_hasError: BooleanInput;
   static ngAcceptInputType_optional: BooleanInput;
@@ -281,13 +292,7 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
         throw Error('cdkStepper: Cannot assign out-of-bounds value to `selectedIndex`.');
       }
 
-      const selectedStep = this.selected;
-
-      if (selectedStep) {
-        // TODO: this should really be called something like `visited` instead. Just because
-        // the user has seen the step doesn't guarantee that they've interacted with it.
-        selectedStep.interacted = true;
-      }
+      this.selected?._markAsInteracted();
 
       if (this._selectedIndex !== newIndex && !this._anyControlsInvalidOrPending(newIndex) &&
           (newIndex >= this._selectedIndex || this.steps.toArray()[newIndex].editable)) {
