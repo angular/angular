@@ -805,7 +805,12 @@ function addGithubTokenOption(yargs) {
                 error(yellow("You can generate a token here: " + GITHUB_TOKEN_GENERATE_URL));
                 process.exit(1);
             }
-            GitClient.authenticateWithToken(githubToken);
+            try {
+                GitClient.getAuthenticatedInstance();
+            }
+            catch (_a) {
+                GitClient.authenticateWithToken(githubToken);
+            }
             return githubToken;
         },
     })
