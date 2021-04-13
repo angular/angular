@@ -302,6 +302,74 @@ runInEachFileSystem(() => {
       const {analysis} = handler.analyze(TestCmp, detected.metadata);
       expect(analysis?.inlineStyles).toEqual(jasmine.arrayWithExactContents(['.xyz {}']));
     });
+
+    it('should error if canPreprocess is true and async analyze is not used', async () => {
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '',
+            styles: ['.abc {}']
+          }) class TestCmp {}
+      `
+        },
+      ]);
+      const {reflectionHost, handler, resourceLoader} = setup(program, options, host);
+      resourceLoader.canPreload = true;
+      resourceLoader.canPreprocess = true;
+
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+
+      expect(() => handler.analyze(TestCmp, detected.metadata))
+          .toThrowError('Inline resource processing requires asynchronous preanalyze.');
+    });
+
+    it('should not error if component has no inline styles and canPreprocess is true', async () => {
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+
+          @Component({
+            template: '',
+          }) class TestCmp {}
+      `
+        },
+      ]);
+      const {reflectionHost, handler, resourceLoader} = setup(program, options, host);
+      resourceLoader.canPreload = true;
+      resourceLoader.canPreprocess = true;
+      resourceLoader.preprocessInline = async function(data, context) {
+        fail('preprocessInline should not have been called.');
+        return data;
+      };
+
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+
+      await handler.preanalyze(TestCmp, detected.metadata);
+
+      expect(() => handler.analyze(TestCmp, detected.metadata)).not.toThrow();
+    });
   });
 
   function ivyCode(code: ErrorCode): number {
