@@ -29,7 +29,7 @@ load("@build_bazel_rules_nodejs//:index.bzl", "check_bazel_version", "node_repos
 check_bazel_version("4.0.0")
 
 node_repositories(
-    node_version = "12.14.1",
+    node_version = "14.16.1",
     package_json = ["//:package.json"],
 )
 
