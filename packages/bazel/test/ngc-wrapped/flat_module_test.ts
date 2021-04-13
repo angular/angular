@@ -7,11 +7,9 @@
  */
 
 import {obsoleteInIvy, onlyInIvy} from '@angular/private/testing';
+import {runfiles} from '@bazel/runfiles';
 import {existsSync, readFileSync} from 'fs';
 import {dirname, join} from 'path';
-
-/** Runfiles helper from bazel to resolve file name paths.  */
-const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']!);
 
 describe('flat_module ng_module', () => {
   let packageOutput: string;

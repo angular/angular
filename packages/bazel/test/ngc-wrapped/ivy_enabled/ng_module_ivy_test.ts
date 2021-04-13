@@ -6,10 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {runfiles} from '@bazel/runfiles';
 import {readFileSync} from 'fs';
-
-/** Runfiles helper from bazel to resolve file name paths.  */
-const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']!);
 
 describe('ng_module with ivy enabled', () => {
   describe('default compilation mode', () => {
