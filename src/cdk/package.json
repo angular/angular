@@ -20,7 +20,8 @@
   "homepage": "https://github.com/angular/components#readme",
   "peerDependencies": {
     "@angular/core": "0.0.0-NG",
-    "@angular/common": "0.0.0-NG"
+    "@angular/common": "0.0.0-NG",
+    "rxjs": "0.0.0-RXJS"
   },
   "dependencies": {
     "tslib": "0.0.0-TSLIB"

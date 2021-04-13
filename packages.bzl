@@ -4,6 +4,7 @@
 ANGULAR_PACKAGE_VERSION = "^12.0.0-0 || ^13.0.0-0"
 MDC_PACKAGE_VERSION = "^11.0.0-canary.15604bd0d.0"
 TSLIB_PACKAGE_VERSION = "^2.1.0"
+RXJS_PACKAGE_VERSION = "^6.5.3"
 
 # Each placer holder is used to stamp versions during the build process, replacing the key with it's
 # value pair. These replacements occur during building of `npm_package` and `ng_package` stamping in
@@ -17,6 +18,8 @@ VERSION_PLACEHOLDER_REPLACEMENTS = {
     "0.0.0-TSLIB": TSLIB_PACKAGE_VERSION,
     # Version of the local package being built, generated via the `--workspace_status_command` flag.
     "0.0.0-PLACEHOLDER": "{BUILD_SCM_VERSION}",
+    # Version of `rxjs`
+    "0.0.0-RXJS": RXJS_PACKAGE_VERSION,
 }
 
 # List of default Angular library UMD bundles which are not processed by ngcc.

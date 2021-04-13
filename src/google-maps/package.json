@@ -22,7 +22,8 @@
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-NG",
-    "@angular/common": "0.0.0-NG"
+    "@angular/common": "0.0.0-NG",
+    "rxjs": "0.0.0-RXJS"
   },
   "sideEffects": false,
   "publishConfig": {
