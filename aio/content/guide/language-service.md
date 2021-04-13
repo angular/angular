@@ -4,6 +4,20 @@ The Angular Language Service provides code editors with a way to get completions
 hints, and navigation inside Angular templates.
 It works with external templates in separate HTML files, and also with in-line templates.
 
+## Configuring compiler options for the Angular Language Service
+
+To enable the latest Language Service features, set the `strictTemplates` option in `tsconfig.json` by setting `strictTemplates` to `true,` as shown in the following example:
+
+<code-example language="json">
+
+  "angularCompilerOptions": {
+    "strictTemplates": true
+  }
+
+</code-example>
+
+For more information, see the [Angular compiler options](guide/angular-compiler-options) guide.
+
 ## Features
 
 Your editor autodetects that you are opening an Angular file.
