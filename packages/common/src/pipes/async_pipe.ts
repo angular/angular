@@ -7,7 +7,7 @@
  */
 
 import {ChangeDetectorRef, EventEmitter, OnDestroy, Pipe, PipeTransform, ɵisPromise, ɵisSubscribable} from '@angular/core';
-import {Subscribable, Unsubscribable} from 'rxjs';
+import {Observable, Subscribable, Unsubscribable} from 'rxjs';
 
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
@@ -95,10 +95,14 @@ export class AsyncPipe implements OnDestroy, PipeTransform {
     }
   }
 
-  transform<T>(obj: Subscribable<T>|Promise<T>): T|null;
+  // NOTE(@benlesh): Because Observable has deprecated a few call patterns for `subscribe`,
+  // TypeScript has a hard time matching Observable to Subscribable, for more information
+  // see https://github.com/microsoft/TypeScript/issues/43643
+
+  transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>): T|null;
   transform<T>(obj: null|undefined): null;
-  transform<T>(obj: Subscribable<T>|Promise<T>|null|undefined): T|null;
-  transform<T>(obj: Subscribable<T>|Promise<T>|null|undefined): T|null {
+  transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null;
+  transform<T>(obj: Observable<T>|Subscribable<T>|Promise<T>|null|undefined): T|null {
     if (!this._obj) {
       if (obj) {
         this._subscribe(obj);
