@@ -47,6 +47,10 @@ jobs:
           command: yarn cy:ci
           no_output_timeout: '10m'
 
+      - run:
+          name: 'Test Chrome Build'
+          command: yarn build:chrome
+
     artifacts:
       when: always
       paths:

@@ -9,7 +9,7 @@ module.exports = {
     devtools: 'projects/shell-chrome/src/devtools.ts',
   },
   output: {
-    jsonpFunction: '___ngDevToolsRuntime',
+    chunkLoadingGlobal: '___ngDevToolsRuntime',
   },
   plugins: [
     new webpack.DefinePlugin({
