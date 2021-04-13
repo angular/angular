@@ -1225,7 +1225,6 @@ describe('Integration', () => {
          const recordedEvents = [] as Event[];
          router.events.forEach(e => onlyNavigationStartAndEnd(e) && recordedEvents.push(e));
 
-         location.simulateUrlPop('/blocked');
          location.simulateHashChange('/blocked');
 
          advance(fixture);

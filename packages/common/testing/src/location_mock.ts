@@ -65,6 +65,10 @@ export class SpyLocation implements Location {
     // Because we don't prevent the native event, the browser will independently update the path
     this.setInitialPath(pathname);
     this.urlChanges.push('hash: ' + pathname);
+
+    // the browser will automatically fire popstate event before each `hashchange` event, so we need
+    // to simulate it.
+    this._subject.emit({'url': pathname, 'pop': true, 'type': 'popstate'});
     this._subject.emit({'url': pathname, 'pop': true, 'type': 'hashchange'});
   }
 
