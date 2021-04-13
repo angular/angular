@@ -1109,6 +1109,34 @@ describe('MDC-based MatSelectionList with forms', () => {
 
       expect(listOptions.map(option => option.selected)).toEqual([true, true, true, false, false]);
     }));
+
+    it('should dispatch one change event per change when updating a single-selection list',
+      fakeAsync(() => {
+        fixture.destroy();
+        fixture = TestBed.createComponent(SelectionListWithModel);
+        fixture.componentInstance.multiple = false;
+        fixture.componentInstance.selectedOptions = ['opt3'];
+        fixture.detectChanges();
+        const options = fixture.debugElement.queryAll(By.directive(MatListOption))
+          .map(optionDebugEl => optionDebugEl.nativeElement);
+
+        expect(fixture.componentInstance.modelChangeSpy).not.toHaveBeenCalled();
+
+        options[0].click();
+        fixture.detectChanges();
+        tick();
+
+        expect(fixture.componentInstance.modelChangeSpy).toHaveBeenCalledTimes(1);
+        expect(fixture.componentInstance.selectedOptions).toEqual(['opt1']);
+
+        options[1].click();
+        fixture.detectChanges();
+        tick();
+
+        expect(fixture.componentInstance.modelChangeSpy).toHaveBeenCalledTimes(2);
+        expect(fixture.componentInstance.selectedOptions).toEqual(['opt2']);
+      }));
+
   });
 
   describe('and formControl', () => {
@@ -1412,13 +1440,17 @@ class SelectionListWithOnlyOneOption {
 
 @Component({
   template: `
-    <mat-selection-list [(ngModel)]="selectedOptions" (ngModelChange)="modelChangeSpy()">
+    <mat-selection-list
+      [(ngModel)]="selectedOptions"
+      (ngModelChange)="modelChangeSpy()"
+      [multiple]="multiple">
       <mat-list-option *ngFor="let option of options" [value]="option">{{option}}</mat-list-option>
     </mat-selection-list>`
 })
 class SelectionListWithModel {
   modelChangeSpy = jasmine.createSpy('model change spy');
   selectedOptions: string[] = [];
+  multiple = true;
   options = ['opt1', 'opt2', 'opt3'];
 }
 

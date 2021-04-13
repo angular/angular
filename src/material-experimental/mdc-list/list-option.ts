@@ -121,7 +121,10 @@ export class MatListOption extends MatListItemBase implements ListOption, OnInit
 
     if (isSelected !== this._selected) {
       this._setSelected(isSelected);
-      this._selectionList._reportValueChange();
+
+      if (isSelected || this._selectionList.multiple) {
+        this._selectionList._reportValueChange();
+      }
     }
   }
   private _selected = false;
