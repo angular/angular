@@ -5701,7 +5701,7 @@ class ReleaseAction {
         throw Error('Not implemented.');
     }
     /** Updates the version in the project top-level `package.json` file. */
-    updateProjectVersion(newVersion) {
+    updateProjectVersion(newVersion = this.version) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const pkgJsonPath = path.join(this.projectDir, packageJsonPath);
             const pkgJson = JSON.parse(yield fs.promises.readFile(pkgJsonPath, 'utf8'));
@@ -5749,18 +5749,18 @@ class ReleaseAction {
         });
     }
     /** Generates the changelog for the specified for the current `HEAD`. */
-    _generateReleaseNotesForHead(version) {
+    _generateReleaseNotesForHead() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const changelogPath = getLocalChangelogFilePath(this.projectDir);
             yield this.config.generateReleaseNotesForHead(changelogPath);
-            info(green(`  ✓   Updated the changelog to capture changes for "${version}".`));
+            info(green(`  ✓   Updated the changelog to capture changes for "${this.version}".`));
         });
     }
     /** Extract the release notes for the given version from the changelog file. */
-    _extractReleaseNotesForVersion(changelogContent, version) {
+    _extractReleaseNotesForVersion(changelogContent) {
         const pattern = this.config.extractReleaseNotesPattern !== undefined ?
-            this.config.extractReleaseNotesPattern(version) :
-            getDefaultExtractReleaseNotesPattern(version);
+            this.config.extractReleaseNotesPattern(this.version) :
+            getDefaultExtractReleaseNotesPattern(this.version);
         const matchedNotes = pattern.exec(changelogContent);
         return matchedNotes === null ? null : matchedNotes[1];
     }
@@ -5768,7 +5768,7 @@ class ReleaseAction {
      * Prompts the user for potential release notes edits that need to be made. Once
      * confirmed, a new commit for the release point is created.
      */
-    waitForEditsAndCreateReleaseCommit(newVersion) {
+    waitForEditsAndCreateReleaseCommit() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             info(yellow('  ⚠   Please review the changelog and ensure that the log contains only changes ' +
                 'that apply to the public API surface. Manual changes can be made. When done, please ' +
@@ -5777,10 +5777,10 @@ class ReleaseAction {
                 throw new UserAbortedReleaseActionError();
             }
             // Commit message for the release point.
-            const commitMessage = getCommitMessageForRelease(newVersion);
+            const commitMessage = getCommitMessageForRelease(this.version);
             // Create a release staging commit including changelog and version bump.
             yield this.createCommit(commitMessage, [packageJsonPath, changelogPath]);
-            info(green(`  ✓   Created release commit for: "${newVersion}".`));
+            info(green(`  ✓   Created release commit for: "${this.version}".`));
         });
     }
     /**
@@ -5936,11 +5936,11 @@ class ReleaseAction {
      * the current Git `HEAD`. This is useful for cherry-picking the changelog.
      * @returns A boolean indicating whether the release notes have been prepended.
      */
-    prependReleaseNotesFromVersionBranch(version, containingBranch) {
+    prependReleaseNotesFromVersionBranch(containingBranch) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { data } = yield this.git.github.repos.getContents(Object.assign(Object.assign({}, this.git.remoteParams), { path: '/' + changelogPath, ref: containingBranch }));
             const branchChangelog = Buffer.from(data.content, 'base64').toString();
-            let releaseNotes = this._extractReleaseNotesForVersion(branchChangelog, version);
+            let releaseNotes = this._extractReleaseNotesForVersion(branchChangelog);
             // If no release notes could be extracted, return "false" so that the caller
             // can tell that changelog prepending failed.
             if (releaseNotes === null) {
@@ -5981,17 +5981,17 @@ class ReleaseAction {
      * has been pushed to the given branch.
      * @returns a boolean indicating whether the commit has been created successfully.
      */
-    createCherryPickReleaseNotesCommitFrom(version, branchName) {
+    createCherryPickReleaseNotesCommitFrom(branchName) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const commitMessage = getReleaseNoteCherryPickCommitMessage(version);
+            const commitMessage = getReleaseNoteCherryPickCommitMessage(this.version);
             // Fetch, extract and prepend the release notes to the local changelog. If that is not
             // possible, abort so that we can ask the user to manually cherry-pick the changelog.
-            if (!(yield this.prependReleaseNotesFromVersionBranch(version, branchName))) {
+            if (!(yield this.prependReleaseNotesFromVersionBranch(branchName))) {
                 return false;
             }
             // Create a changelog cherry-pick commit.
             yield this.createCommit(commitMessage, [changelogPath]);
-            info(green(`  ✓   Created changelog cherry-pick commit for: "${version}".`));
+            info(green(`  ✓   Created changelog cherry-pick commit for: "${this.version}".`));
             return true;
         });
     }
@@ -6000,12 +6000,12 @@ class ReleaseAction {
      * pull request that targets the given base branch.
      * @returns an object describing the created pull request.
      */
-    stageVersionForBranchAndCreatePullRequest(newVersion, pullRequestBaseBranch) {
+    stageVersionForBranchAndCreatePullRequest(pullRequestBaseBranch) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            yield this.updateProjectVersion(newVersion);
-            yield this._generateReleaseNotesForHead(newVersion);
-            yield this.waitForEditsAndCreateReleaseCommit(newVersion);
-            const pullRequest = yield this.pushChangesToForkAndCreatePullRequest(pullRequestBaseBranch, `release-stage-${newVersion}`, `Bump version to "v${newVersion}" with changelog.`);
+            yield this.updateProjectVersion();
+            yield this._generateReleaseNotesForHead();
+            yield this.waitForEditsAndCreateReleaseCommit();
+            const pullRequest = yield this.pushChangesToForkAndCreatePullRequest(pullRequestBaseBranch, `release-stage-${this.version}`, `Bump version to "v${this.version}" with changelog.`);
             info(green('  ✓   Release staging pull request has been created.'));
             info(yellow(`      Please ask team members to review: ${pullRequest.url}.`));
             return pullRequest;
@@ -6016,11 +6016,11 @@ class ReleaseAction {
      * the specified new version in order to create a pull request.
      * @returns an object describing the created pull request.
      */
-    checkoutBranchAndStageVersion(newVersion, stagingBranch) {
+    checkoutBranchAndStageVersion(stagingBranch) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             yield this.verifyPassingGithubStatus(stagingBranch);
             yield this.checkoutUpstreamBranch(stagingBranch);
-            return yield this.stageVersionForBranchAndCreatePullRequest(newVersion, stagingBranch);
+            return yield this.stageVersionForBranchAndCreatePullRequest(stagingBranch);
         });
     }
     /**
@@ -6028,21 +6028,21 @@ class ReleaseAction {
      * into the `next` primary development branch. A pull request is created for this.
      * @returns a boolean indicating successful creation of the cherry-pick pull request.
      */
-    cherryPickChangelogIntoNextBranch(newVersion, stagingBranch) {
+    cherryPickChangelogIntoNextBranch(stagingBranch) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const nextBranch = this.active.next.branchName;
-            const commitMessage = getReleaseNoteCherryPickCommitMessage(newVersion);
+            const commitMessage = getReleaseNoteCherryPickCommitMessage(this.version);
             // Checkout the next branch.
             yield this.checkoutUpstreamBranch(nextBranch);
             // Cherry-pick the release notes into the current branch. If it fails,
             // ask the user to manually copy the release notes into the next branch.
-            if (!(yield this.createCherryPickReleaseNotesCommitFrom(newVersion, stagingBranch))) {
-                error(yellow(`  ✘   Could not cherry-pick release notes for v${newVersion}.`));
+            if (!(yield this.createCherryPickReleaseNotesCommitFrom(stagingBranch))) {
+                error(yellow(`  ✘   Could not cherry-pick release notes for v${this.version}.`));
                 error(yellow(`      Please copy the release notes manually into the "${nextBranch}" branch.`));
                 return false;
             }
             // Create a cherry-pick pull request that should be merged by the caretaker.
-            const { url, id } = yield this.pushChangesToForkAndCreatePullRequest(nextBranch, `changelog-cherry-pick-${newVersion}`, commitMessage, `Cherry-picks the changelog from the "${stagingBranch}" branch to the next ` +
+            const { url, id } = yield this.pushChangesToForkAndCreatePullRequest(nextBranch, `changelog-cherry-pick-${this.version}`, commitMessage, `Cherry-picks the changelog from the "${stagingBranch}" branch to the next ` +
                 `branch (${nextBranch}).`);
             info(green(`  ✓   Pull request for cherry-picking the changelog into "${nextBranch}" ` +
                 'has been created.'));
@@ -6056,25 +6056,24 @@ class ReleaseAction {
      * Creates a Github release for the specified version in the configured project.
      * The release is created by tagging the specified commit SHA.
      */
-    _createGithubReleaseForVersion(newVersion, versionBumpCommitSha, prerelease) {
+    _createGithubReleaseForVersion(versionBumpCommitSha, prerelease) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const tagName = newVersion.format();
+            const tagName = this.version.format();
             yield this.git.github.git.createRef(Object.assign(Object.assign({}, this.git.remoteParams), { ref: `refs/tags/${tagName}`, sha: versionBumpCommitSha }));
-            info(green(`  ✓   Tagged v${newVersion} release upstream.`));
-            yield this.git.github.repos.createRelease(Object.assign(Object.assign({}, this.git.remoteParams), { name: `v${newVersion}`, tag_name: tagName, prerelease }));
-            info(green(`  ✓   Created v${newVersion} release in Github.`));
+            info(green(`  ✓   Tagged v${this.version} release upstream.`));
+            yield this.git.github.repos.createRelease(Object.assign(Object.assign({}, this.git.remoteParams), { name: `v${this.version}`, tag_name: tagName, prerelease }));
+            info(green(`  ✓   Created v${this.version} release in Github.`));
         });
     }
     /**
      * Builds and publishes the given version in the specified branch.
-     * @param newVersion The new version to be published.
      * @param publishBranch Name of the branch that contains the new version.
      * @param npmDistTag NPM dist tag where the version should be published to.
      */
-    buildAndPublish(newVersion, publishBranch, npmDistTag) {
+    buildAndPublish(publishBranch, npmDistTag) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const versionBumpCommitSha = yield this._getCommitOfBranch(publishBranch);
-            if (!(yield this._isCommitForVersionStaging(newVersion, versionBumpCommitSha))) {
+            if (!(yield this._isCommitForVersionStaging(versionBumpCommitSha))) {
                 error(red(`  ✘   Latest commit in "${publishBranch}" branch is not a staging commit.`));
                 error(red('      Please make sure the staging pull request has been merged.'));
                 throw new FatalReleaseActionError();
@@ -6091,9 +6090,9 @@ class ReleaseAction {
             yield invokeBazelCleanCommand(this.projectDir);
             const builtPackages = yield invokeReleaseBuildCommand();
             // Verify the packages built are the correct version.
-            yield this._verifyPackageVersions(newVersion, builtPackages);
+            yield this._verifyPackageVersions(builtPackages);
             // Create a Github release for the new version.
-            yield this._createGithubReleaseForVersion(newVersion, versionBumpCommitSha, npmDistTag === 'next');
+            yield this._createGithubReleaseForVersion(versionBumpCommitSha, npmDistTag === 'next');
             // Walk through all built packages and publish them to NPM.
             for (const builtPackage of builtPackages) {
                 yield this._publishBuiltPackageToNpm(builtPackage, npmDistTag);
@@ -6120,20 +6119,20 @@ class ReleaseAction {
         });
     }
     /** Checks whether the given commit represents a staging commit for the specified version. */
-    _isCommitForVersionStaging(version, commitSha) {
+    _isCommitForVersionStaging(commitSha) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { data } = yield this.git.github.repos.getCommit(Object.assign(Object.assign({}, this.git.remoteParams), { ref: commitSha }));
-            return data.commit.message.startsWith(getCommitMessageForRelease(version));
+            return data.commit.message.startsWith(getCommitMessageForRelease(this.version));
         });
     }
     /** Verify the version of each generated package exact matches the specified version. */
-    _verifyPackageVersions(version, packages) {
+    _verifyPackageVersions(packages) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             for (const pkg of packages) {
                 const { version: packageJsonVersion } = JSON.parse(yield fs.promises.readFile(path.join(pkg.outputPath, 'package.json'), 'utf8'));
-                if (version.compare(packageJsonVersion) !== 0) {
+                if (this.version.compare(packageJsonVersion) !== 0) {
                     error(red('The built package version does not match the version being released.'));
-                    error(`  Release Version:   ${version.version}`);
+                    error(`  Release Version:   ${this.version.version}`);
                     error(`  Generated Version: ${packageJsonVersion}`);
                     throw new FatalReleaseActionError();
                 }
@@ -6166,14 +6165,17 @@ class CutLongTermSupportPatchAction extends ReleaseAction {
             return `Cut a new release for an active LTS branch (${active.length} active).`;
         });
     }
+    setup() {
+        return tslib.__awaiter(this, void 0, void 0, function* () { });
+    }
     perform() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const ltsBranch = yield this._promptForTargetLtsBranch();
-            const newVersion = semverInc(ltsBranch.version, 'patch');
-            const { id } = yield this.checkoutBranchAndStageVersion(newVersion, ltsBranch.name);
+            this.version = semverInc(ltsBranch.version, 'patch');
+            const { id } = yield this.checkoutBranchAndStageVersion(ltsBranch.name);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, ltsBranch.name, ltsBranch.npmDistTag);
-            yield this.cherryPickChangelogIntoNextBranch(newVersion, ltsBranch.name);
+            yield this.buildAndPublish(ltsBranch.name, ltsBranch.npmDistTag);
+            yield this.cherryPickChangelogIntoNextBranch(ltsBranch.name);
         });
     }
     /** Prompts the user to select an LTS branch for which a patch should but cut. */
@@ -6234,23 +6236,26 @@ class CutLongTermSupportPatchAction extends ReleaseAction {
 class CutNewPatchAction extends ReleaseAction {
     constructor() {
         super(...arguments);
-        this._newVersion = semverInc(this.active.latest.version, 'patch');
+        /** The version being released. */
+        this.version = semverInc(this.active.latest.version, 'patch');
     }
     getDescription() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { branchName } = this.active.latest;
-            const newVersion = this._newVersion;
-            return `Cut a new patch release for the "${branchName}" branch (v${newVersion}).`;
+            return `Cut a new patch release for the "${branchName}" branch (v${this.version}).`;
         });
+    }
+    /** Noop, required by base class. */
+    setup() {
+        return tslib.__awaiter(this, void 0, void 0, function* () { });
     }
     perform() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { branchName } = this.active.latest;
-            const newVersion = this._newVersion;
-            const { id } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
+            const { id } = yield this.checkoutBranchAndStageVersion(branchName);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, branchName, 'latest');
-            yield this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
+            yield this.buildAndPublish(branchName, 'latest');
+            yield this.cherryPickChangelogIntoNextBranch(branchName);
         });
     }
     static isActive(active) {
@@ -6300,31 +6305,29 @@ function computeNewPrereleaseVersionForNext(active, config) {
  * branch can have an arbitrary amount of next pre-releases.
  */
 class CutNextPrereleaseAction extends ReleaseAction {
-    constructor() {
-        super(...arguments);
-        /** Promise resolving with the new version if a NPM next pre-release is cut. */
-        this._newVersion = this._computeNewVersion();
-    }
     getDescription() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { branchName } = this._getActivePrereleaseTrain();
-            const newVersion = yield this._newVersion;
-            return `Cut a new next pre-release for the "${branchName}" branch (v${newVersion}).`;
+            return `Cut a new next pre-release for the "${branchName}" branch (v${this.version}).`;
+        });
+    }
+    setup() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            this.version = yield this._computeNewVersion();
         });
     }
     perform() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const releaseTrain = this._getActivePrereleaseTrain();
             const { branchName } = releaseTrain;
-            const newVersion = yield this._newVersion;
-            const { id } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
+            const { id } = yield this.checkoutBranchAndStageVersion(branchName);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, branchName, 'next');
+            yield this.buildAndPublish(branchName, 'next');
             // If the pre-release has been cut from a branch that is not corresponding
             // to the next release-train, cherry-pick the changelog into the primary
             // development branch. i.e. the `next` branch that is usually `master`.
             if (releaseTrain !== this.active.next) {
-                yield this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
+                yield this.cherryPickChangelogIntoNextBranch(branchName);
             }
         });
     }
@@ -6341,7 +6344,7 @@ class CutNextPrereleaseAction extends ReleaseAction {
             // with respect to special cases surfacing with FF/RC branches. Otherwise, the basic
             // pre-release increment of the version is used as new version.
             if (releaseTrain === this.active.next) {
-                return yield computeNewPrereleaseVersionForNext(this.active, this.config);
+                return computeNewPrereleaseVersionForNext(this.active, this.config);
             }
             else {
                 return semverInc(releaseTrain.version, 'prerelease');
@@ -6372,22 +6375,25 @@ class CutNextPrereleaseAction extends ReleaseAction {
 class CutReleaseCandidateAction extends ReleaseAction {
     constructor() {
         super(...arguments);
-        this._newVersion = semverInc(this.active.releaseCandidate.version, 'prerelease', 'rc');
+        /** The version being released. */
+        this.version = semverInc(this.active.releaseCandidate.version, 'prerelease', 'rc');
     }
     getDescription() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const newVersion = this._newVersion;
-            return `Cut a first release-candidate for the feature-freeze branch (v${newVersion}).`;
+            return `Cut a first release-candidate for the feature-freeze branch (v${this.version}).`;
         });
+    }
+    /** Noop, required by base class. */
+    setup() {
+        return tslib.__awaiter(this, void 0, void 0, function* () { });
     }
     perform() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { branchName } = this.active.releaseCandidate;
-            const newVersion = this._newVersion;
-            const { id } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
+            const { id } = yield this.checkoutBranchAndStageVersion(branchName);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, branchName, 'next');
-            yield this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
+            yield this.buildAndPublish(branchName, 'next');
+            yield this.cherryPickChangelogIntoNextBranch(branchName);
         });
     }
     static isActive(active) {
@@ -6414,23 +6420,26 @@ class CutReleaseCandidateAction extends ReleaseAction {
 class CutStableAction extends ReleaseAction {
     constructor() {
         super(...arguments);
-        this._newVersion = this._computeNewVersion();
+        /** The version being released. */
+        this.version = this._computeNewVersion();
     }
     getDescription() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const newVersion = this._newVersion;
-            return `Cut a stable release for the release-candidate branch (v${newVersion}).`;
+            return `Cut a stable release for the release-candidate branch (v${this.version}).`;
         });
+    }
+    /** Noop, required by base class. */
+    setup() {
+        return tslib.__awaiter(this, void 0, void 0, function* () { });
     }
     perform() {
         var _a;
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { branchName } = this.active.releaseCandidate;
-            const newVersion = this._newVersion;
             const isNewMajor = (_a = this.active.releaseCandidate) === null || _a === void 0 ? void 0 : _a.isMajor;
-            const { id } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
+            const { id } = yield this.checkoutBranchAndStageVersion(branchName);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, branchName, 'latest');
+            yield this.buildAndPublish(branchName, 'latest');
             // If a new major version is published and becomes the "latest" release-train, we need
             // to set the LTS npm dist tag for the previous latest release-train (the current patch).
             if (isNewMajor) {
@@ -6445,7 +6454,7 @@ class CutStableAction extends ReleaseAction {
                 yield invokeYarnInstallCommand(this.projectDir);
                 yield invokeSetNpmDistCommand(ltsTagForPatch, previousPatchVersion);
             }
-            yield this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
+            yield this.cherryPickChangelogIntoNextBranch(branchName);
         });
     }
     /** Gets the new stable version of the release candidate release-train. */
@@ -6477,33 +6486,32 @@ class CutStableAction extends ReleaseAction {
  * cut indicating the started feature-freeze.
  */
 class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
-    constructor() {
-        super(...arguments);
-        this._newVersion = computeNewPrereleaseVersionForNext(this.active, this.config);
-    }
     getDescription() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { branchName } = this.active.next;
-            const newVersion = yield this._newVersion;
-            return `Move the "${branchName}" branch into feature-freeze phase (v${newVersion}).`;
+            return `Move the "${branchName}" branch into feature-freeze phase (v${this.version}).`;
+        });
+    }
+    setup() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            this.version = yield computeNewPrereleaseVersionForNext(this.active, this.config);
         });
     }
     perform() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const newVersion = yield this._newVersion;
-            const newBranch = `${newVersion.major}.${newVersion.minor}.x`;
+            const newBranch = `${this.version.major}.${this.version.minor}.x`;
             // Branch-off the next branch into a feature-freeze branch.
             yield this._createNewVersionBranchFromNext(newBranch);
             // Stage the new version for the newly created branch, and push changes to a
             // fork in order to create a staging pull request. Note that we re-use the newly
             // created branch instead of re-fetching from the upstream.
-            const stagingPullRequest = yield this.stageVersionForBranchAndCreatePullRequest(newVersion, newBranch);
+            const stagingPullRequest = yield this.stageVersionForBranchAndCreatePullRequest(newBranch);
             // Wait for the staging PR to be merged. Then build and publish the feature-freeze next
             // pre-release. Finally, cherry-pick the release notes into the next branch in combination
             // with bumping the version to the next minor too.
             yield this.waitForPullRequestToBeMerged(stagingPullRequest.id);
-            yield this.buildAndPublish(newVersion, newBranch, 'next');
-            yield this._createNextBranchUpdatePullRequest(newVersion, newBranch);
+            yield this.buildAndPublish(newBranch, 'next');
+            yield this._createNextBranchUpdatePullRequest(newBranch);
         });
     }
     /** Creates a new version branch from the next branch. */
@@ -6521,7 +6529,7 @@ class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
      * Creates a pull request for the next branch that bumps the version to the next
      * minor, and cherry-picks the changelog for the newly branched-off feature-freeze version.
      */
-    _createNextBranchUpdatePullRequest(newVersion, newBranch) {
+    _createNextBranchUpdatePullRequest(newBranch) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const { branchName: nextBranch, version } = this.active.next;
             // We increase the version for the next branch to the next minor. The team can decide
@@ -6536,13 +6544,13 @@ class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
             let nextPullRequestMessage = `The previous "next" release-train has moved into the ` +
                 `release-candidate phase. This PR updates the next branch to the subsequent ` +
                 `release-train.`;
-            const hasChangelogCherryPicked = yield this.createCherryPickReleaseNotesCommitFrom(newVersion, newBranch);
+            const hasChangelogCherryPicked = yield this.createCherryPickReleaseNotesCommitFrom(newBranch);
             if (hasChangelogCherryPicked) {
                 nextPullRequestMessage += `\n\nAlso this PR cherry-picks the changelog for ` +
-                    `v${newVersion} into the ${nextBranch} branch so that the changelog is up to date.`;
+                    `v${this.version} into the ${nextBranch} branch so that the changelog is up to date.`;
             }
             else {
-                error(yellow(`  ✘   Could not cherry-pick release notes for v${newVersion}.`));
+                error(yellow(`  ✘   Could not cherry-pick release notes for v${this.version}.`));
                 error(yellow(`      Please copy the release note manually into "${nextBranch}".`));
             }
             const nextUpdatePullRequest = yield this.pushChangesToForkAndCreatePullRequest(nextBranch, `next-release-train-${newNextVersion}`, `Update next branch to reflect new release-train "v${newNextVersion}".`, nextPullRequestMessage);
@@ -6661,6 +6669,7 @@ class ReleaseTool {
             for (let actionType of actions) {
                 if (yield actionType.isActive(activeTrains)) {
                     const action = new actionType(activeTrains, this._git, this._config, this._projectRoot);
+                    yield action.setup();
                     choices.push({ name: yield action.getDescription(), value: action });
                 }
             }

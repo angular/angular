@@ -99,6 +99,7 @@ export class ReleaseTool {
       if (await actionType.isActive(activeTrains)) {
         const action: ReleaseAction =
             new actionType(activeTrains, this._git, this._config, this._projectRoot);
+        await action.setup();
         choices.push({name: await action.getDescription(), value: action});
       }
     }

@@ -19,26 +19,28 @@ import {packageJsonPath} from '../constants';
  * version. This means that major changes can land in the next branch.
  */
 export class ConfigureNextAsMajorAction extends ReleaseAction {
-  private _newVersion = semver.parse(`${this.active.next.version.major + 1}.0.0-next.0`)!;
+  /** The version being released. */
+  version = semver.parse(`${this.active.next.version.major + 1}.0.0-next.0`)!;
 
   async getDescription() {
     const {branchName} = this.active.next;
-    const newVersion = this._newVersion;
-    return `Configure the "${branchName}" branch to be released as major (v${newVersion}).`;
+    return `Configure the "${branchName}" branch to be released as major (v${this.version}).`;
   }
+
+  /** Noop, required by base class. */
+  async setup() {}
 
   async perform() {
     const {branchName} = this.active.next;
-    const newVersion = this._newVersion;
 
     await this.verifyPassingGithubStatus(branchName);
     await this.checkoutUpstreamBranch(branchName);
-    await this.updateProjectVersion(newVersion);
+    await this.updateProjectVersion();
     await this.createCommit(
-        getCommitMessageForNextBranchMajorSwitch(newVersion), [packageJsonPath]);
+        getCommitMessageForNextBranchMajorSwitch(this.version), [packageJsonPath]);
     const pullRequest = await this.pushChangesToForkAndCreatePullRequest(
-        branchName, `switch-next-to-major-${newVersion}`,
-        `Configure next branch to receive major changes for v${newVersion}`);
+        branchName, `switch-next-to-major-${this.version}`,
+        `Configure next branch to receive major changes for v${this.version}`);
 
     info(green('  ✓   Next branch update pull request has been created.'));
     info(yellow(`      Please ask team members to review: ${pullRequest.url}.`));

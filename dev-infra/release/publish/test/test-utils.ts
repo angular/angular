@@ -148,6 +148,7 @@ export async function expectStagingAndPublishWithoutCherryPick(
   // so that the PR can be created properly without collisions.
   fork.expectBranchRequest(expectedStagingForkBranch, null);
 
+  await action.instance.setup();
   await action.instance.perform();
 
   expect(gitClient.pushed.length).toBe(1);
@@ -177,6 +178,7 @@ export async function expectStagingAndPublishWithoutCherryPick(
 export async function expectStagingAndPublishWithCherryPick(
     action: TestReleaseAction, expectedBranch: string, expectedVersion: string,
     expectedNpmDistTag: string) {
+  action.instance.version = new semver.SemVer(expectedVersion);
   const {repo, fork, gitClient, releaseConfig} = action;
   const expectedStagingForkBranch = `release-stage-${expectedVersion}`;
   const expectedCherryPickForkBranch = `changelog-cherry-pick-${expectedVersion}`;
@@ -203,6 +205,7 @@ export async function expectStagingAndPublishWithCherryPick(
   fork.expectBranchRequest(expectedStagingForkBranch, null)
       .expectBranchRequest(expectedCherryPickForkBranch, null);
 
+  await action.instance.setup();
   await action.instance.perform();
 
   expect(gitClient.pushed.length).toBe(2);

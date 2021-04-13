@@ -18,30 +18,32 @@ import {ReleaseAction} from '../actions';
  * branch can have an arbitrary amount of next pre-releases.
  */
 export class CutNextPrereleaseAction extends ReleaseAction {
-  /** Promise resolving with the new version if a NPM next pre-release is cut. */
-  private _newVersion: Promise<semver.SemVer> = this._computeNewVersion();
+  /** The version being released. */
+  version!: semver.SemVer;
 
   async getDescription() {
     const {branchName} = this._getActivePrereleaseTrain();
-    const newVersion = await this._newVersion;
-    return `Cut a new next pre-release for the "${branchName}" branch (v${newVersion}).`;
+    return `Cut a new next pre-release for the "${branchName}" branch (v${this.version}).`;
+  }
+
+  async setup() {
+    this.version = await this._computeNewVersion();
   }
 
   async perform() {
     const releaseTrain = this._getActivePrereleaseTrain();
     const {branchName} = releaseTrain;
-    const newVersion = await this._newVersion;
 
-    const {id} = await this.checkoutBranchAndStageVersion(newVersion, branchName);
+    const {id} = await this.checkoutBranchAndStageVersion(branchName);
 
     await this.waitForPullRequestToBeMerged(id);
-    await this.buildAndPublish(newVersion, branchName, 'next');
+    await this.buildAndPublish(branchName, 'next');
 
     // If the pre-release has been cut from a branch that is not corresponding
     // to the next release-train, cherry-pick the changelog into the primary
     // development branch. i.e. the `next` branch that is usually `master`.
     if (releaseTrain !== this.active.next) {
-      await this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
+      await this.cherryPickChangelogIntoNextBranch(branchName);
     }
   }
 
@@ -51,13 +53,13 @@ export class CutNextPrereleaseAction extends ReleaseAction {
   }
 
   /** Gets the new pre-release version for this release action. */
-  private async _computeNewVersion(): Promise<semver.SemVer> {
+  private async _computeNewVersion() {
     const releaseTrain = this._getActivePrereleaseTrain();
     // If a pre-release is cut for the next release-train, the new version is computed
     // with respect to special cases surfacing with FF/RC branches. Otherwise, the basic
     // pre-release increment of the version is used as new version.
     if (releaseTrain === this.active.next) {
-      return await computeNewPrereleaseVersionForNext(this.active, this.config);
+      return computeNewPrereleaseVersionForNext(this.active, this.config);
     } else {
       return semverInc(releaseTrain.version, 'prerelease');
     }

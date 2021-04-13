@@ -72,6 +72,15 @@ export abstract class ReleaseAction {
    */
   abstract perform(): Promise<void>;
 
+  /**
+   * Sets up the instance for the given release action, allowing for async actions to be used during
+   * the "intiialization" process.
+   */
+  abstract setup(): Promise<void>;
+
+  /** The version being released. */
+  abstract version: semver.SemVer;
+
   /** Cached found fork of the configured project. */
   private _cachedForkRepo: GithubRepo|null = null;
 
@@ -80,7 +89,7 @@ export abstract class ReleaseAction {
       protected config: ReleaseConfig, protected projectDir: string) {}
 
   /** Updates the version in the project top-level `package.json` file. */
-  protected async updateProjectVersion(newVersion: semver.SemVer) {
+  protected async updateProjectVersion(newVersion = this.version) {
     const pkgJsonPath = join(this.projectDir, packageJsonPath);
     const pkgJson =
         JSON.parse(await fs.readFile(pkgJsonPath, 'utf8')) as {version: string, [key: string]: any};
@@ -133,18 +142,17 @@ export abstract class ReleaseAction {
   }
 
   /** Generates the changelog for the specified for the current `HEAD`. */
-  private async _generateReleaseNotesForHead(version: semver.SemVer) {
+  private async _generateReleaseNotesForHead() {
     const changelogPath = getLocalChangelogFilePath(this.projectDir);
     await this.config.generateReleaseNotesForHead(changelogPath);
-    info(green(`  ✓   Updated the changelog to capture changes for "${version}".`));
+    info(green(`  ✓   Updated the changelog to capture changes for "${this.version}".`));
   }
 
   /** Extract the release notes for the given version from the changelog file. */
-  private _extractReleaseNotesForVersion(changelogContent: string, version: semver.SemVer): string
-      |null {
+  private _extractReleaseNotesForVersion(changelogContent: string): string|null {
     const pattern = this.config.extractReleaseNotesPattern !== undefined ?
-        this.config.extractReleaseNotesPattern(version) :
-        getDefaultExtractReleaseNotesPattern(version);
+        this.config.extractReleaseNotesPattern(this.version) :
+        getDefaultExtractReleaseNotesPattern(this.version);
     const matchedNotes = pattern.exec(changelogContent);
     return matchedNotes === null ? null : matchedNotes[1];
   }
@@ -153,7 +161,7 @@ export abstract class ReleaseAction {
    * Prompts the user for potential release notes edits that need to be made. Once
    * confirmed, a new commit for the release point is created.
    */
-  protected async waitForEditsAndCreateReleaseCommit(newVersion: semver.SemVer) {
+  protected async waitForEditsAndCreateReleaseCommit() {
     info(yellow(
         '  ⚠   Please review the changelog and ensure that the log contains only changes ' +
         'that apply to the public API surface. Manual changes can be made. When done, please ' +
@@ -164,11 +172,11 @@ export abstract class ReleaseAction {
     }
 
     // Commit message for the release point.
-    const commitMessage = getCommitMessageForRelease(newVersion);
+    const commitMessage = getCommitMessageForRelease(this.version);
     // Create a release staging commit including changelog and version bump.
     await this.createCommit(commitMessage, [packageJsonPath, changelogPath]);
 
-    info(green(`  ✓   Created release commit for: "${newVersion}".`));
+    info(green(`  ✓   Created release commit for: "${this.version}".`));
   }
 
   /**
@@ -334,12 +342,11 @@ export abstract class ReleaseAction {
    * the current Git `HEAD`. This is useful for cherry-picking the changelog.
    * @returns A boolean indicating whether the release notes have been prepended.
    */
-  protected async prependReleaseNotesFromVersionBranch(
-      version: semver.SemVer, containingBranch: string): Promise<boolean> {
+  protected async prependReleaseNotesFromVersionBranch(containingBranch: string): Promise<boolean> {
     const {data} = await this.git.github.repos.getContents(
         {...this.git.remoteParams, path: '/' + changelogPath, ref: containingBranch});
     const branchChangelog = Buffer.from(data.content, 'base64').toString();
-    let releaseNotes = this._extractReleaseNotesForVersion(branchChangelog, version);
+    let releaseNotes = this._extractReleaseNotesForVersion(branchChangelog);
     // If no release notes could be extracted, return "false" so that the caller
     // can tell that changelog prepending failed.
     if (releaseNotes === null) {
@@ -378,20 +385,19 @@ export abstract class ReleaseAction {
    * has been pushed to the given branch.
    * @returns a boolean indicating whether the commit has been created successfully.
    */
-  protected async createCherryPickReleaseNotesCommitFrom(
-      version: semver.SemVer, branchName: string): Promise<boolean> {
-    const commitMessage = getReleaseNoteCherryPickCommitMessage(version);
+  protected async createCherryPickReleaseNotesCommitFrom(branchName: string): Promise<boolean> {
+    const commitMessage = getReleaseNoteCherryPickCommitMessage(this.version);
 
     // Fetch, extract and prepend the release notes to the local changelog. If that is not
     // possible, abort so that we can ask the user to manually cherry-pick the changelog.
-    if (!await this.prependReleaseNotesFromVersionBranch(version, branchName)) {
+    if (!await this.prependReleaseNotesFromVersionBranch(branchName)) {
       return false;
     }
 
     // Create a changelog cherry-pick commit.
     await this.createCommit(commitMessage, [changelogPath]);
 
-    info(green(`  ✓   Created changelog cherry-pick commit for: "${version}".`));
+    info(green(`  ✓   Created changelog cherry-pick commit for: "${this.version}".`));
     return true;
   }
 
@@ -400,15 +406,15 @@ export abstract class ReleaseAction {
    * pull request that targets the given base branch.
    * @returns an object describing the created pull request.
    */
-  protected async stageVersionForBranchAndCreatePullRequest(
-      newVersion: semver.SemVer, pullRequestBaseBranch: string): Promise<PullRequest> {
-    await this.updateProjectVersion(newVersion);
-    await this._generateReleaseNotesForHead(newVersion);
-    await this.waitForEditsAndCreateReleaseCommit(newVersion);
+  protected async stageVersionForBranchAndCreatePullRequest(pullRequestBaseBranch: string):
+      Promise<PullRequest> {
+    await this.updateProjectVersion();
+    await this._generateReleaseNotesForHead();
+    await this.waitForEditsAndCreateReleaseCommit();
 
     const pullRequest = await this.pushChangesToForkAndCreatePullRequest(
-        pullRequestBaseBranch, `release-stage-${newVersion}`,
-        `Bump version to "v${newVersion}" with changelog.`);
+        pullRequestBaseBranch, `release-stage-${this.version}`,
+        `Bump version to "v${this.version}" with changelog.`);
 
     info(green('  ✓   Release staging pull request has been created.'));
     info(yellow(`      Please ask team members to review: ${pullRequest.url}.`));
@@ -421,11 +427,10 @@ export abstract class ReleaseAction {
    * the specified new version in order to create a pull request.
    * @returns an object describing the created pull request.
    */
-  protected async checkoutBranchAndStageVersion(newVersion: semver.SemVer, stagingBranch: string):
-      Promise<PullRequest> {
+  protected async checkoutBranchAndStageVersion(stagingBranch: string): Promise<PullRequest> {
     await this.verifyPassingGithubStatus(stagingBranch);
     await this.checkoutUpstreamBranch(stagingBranch);
-    return await this.stageVersionForBranchAndCreatePullRequest(newVersion, stagingBranch);
+    return await this.stageVersionForBranchAndCreatePullRequest(stagingBranch);
   }
 
   /**
@@ -433,18 +438,17 @@ export abstract class ReleaseAction {
    * into the `next` primary development branch. A pull request is created for this.
    * @returns a boolean indicating successful creation of the cherry-pick pull request.
    */
-  protected async cherryPickChangelogIntoNextBranch(
-      newVersion: semver.SemVer, stagingBranch: string): Promise<boolean> {
+  protected async cherryPickChangelogIntoNextBranch(stagingBranch: string): Promise<boolean> {
     const nextBranch = this.active.next.branchName;
-    const commitMessage = getReleaseNoteCherryPickCommitMessage(newVersion);
+    const commitMessage = getReleaseNoteCherryPickCommitMessage(this.version);
 
     // Checkout the next branch.
     await this.checkoutUpstreamBranch(nextBranch);
 
     // Cherry-pick the release notes into the current branch. If it fails,
     // ask the user to manually copy the release notes into the next branch.
-    if (!await this.createCherryPickReleaseNotesCommitFrom(newVersion, stagingBranch)) {
-      error(yellow(`  ✘   Could not cherry-pick release notes for v${newVersion}.`));
+    if (!await this.createCherryPickReleaseNotesCommitFrom(stagingBranch)) {
+      error(yellow(`  ✘   Could not cherry-pick release notes for v${this.version}.`));
       error(
           yellow(`      Please copy the release notes manually into the "${nextBranch}" branch.`));
       return false;
@@ -452,7 +456,7 @@ export abstract class ReleaseAction {
 
     // Create a cherry-pick pull request that should be merged by the caretaker.
     const {url, id} = await this.pushChangesToForkAndCreatePullRequest(
-        nextBranch, `changelog-cherry-pick-${newVersion}`, commitMessage,
+        nextBranch, `changelog-cherry-pick-${this.version}`, commitMessage,
         `Cherry-picks the changelog from the "${stagingBranch}" branch to the next ` +
             `branch (${nextBranch}).`);
 
@@ -471,37 +475,34 @@ export abstract class ReleaseAction {
    * Creates a Github release for the specified version in the configured project.
    * The release is created by tagging the specified commit SHA.
    */
-  private async _createGithubReleaseForVersion(
-      newVersion: semver.SemVer, versionBumpCommitSha: string, prerelease: boolean) {
-    const tagName = newVersion.format();
+  private async _createGithubReleaseForVersion(versionBumpCommitSha: string, prerelease: boolean) {
+    const tagName = this.version.format();
     await this.git.github.git.createRef({
       ...this.git.remoteParams,
       ref: `refs/tags/${tagName}`,
       sha: versionBumpCommitSha,
     });
-    info(green(`  ✓   Tagged v${newVersion} release upstream.`));
+    info(green(`  ✓   Tagged v${this.version} release upstream.`));
 
     await this.git.github.repos.createRelease({
       ...this.git.remoteParams,
-      name: `v${newVersion}`,
+      name: `v${this.version}`,
       tag_name: tagName,
       prerelease,
 
     });
-    info(green(`  ✓   Created v${newVersion} release in Github.`));
+    info(green(`  ✓   Created v${this.version} release in Github.`));
   }
 
   /**
    * Builds and publishes the given version in the specified branch.
-   * @param newVersion The new version to be published.
    * @param publishBranch Name of the branch that contains the new version.
    * @param npmDistTag NPM dist tag where the version should be published to.
    */
-  protected async buildAndPublish(
-      newVersion: semver.SemVer, publishBranch: string, npmDistTag: string) {
+  protected async buildAndPublish(publishBranch: string, npmDistTag: string) {
     const versionBumpCommitSha = await this._getCommitOfBranch(publishBranch);
 
-    if (!await this._isCommitForVersionStaging(newVersion, versionBumpCommitSha)) {
+    if (!await this._isCommitForVersionStaging(versionBumpCommitSha)) {
       error(red(`  ✘   Latest commit in "${publishBranch}" branch is not a staging commit.`));
       error(red('      Please make sure the staging pull request has been merged.'));
       throw new FatalReleaseActionError();
@@ -521,11 +522,10 @@ export abstract class ReleaseAction {
     const builtPackages = await invokeReleaseBuildCommand();
 
     // Verify the packages built are the correct version.
-    await this._verifyPackageVersions(newVersion, builtPackages);
+    await this._verifyPackageVersions(builtPackages);
 
     // Create a Github release for the new version.
-    await this._createGithubReleaseForVersion(
-        newVersion, versionBumpCommitSha, npmDistTag === 'next');
+    await this._createGithubReleaseForVersion(versionBumpCommitSha, npmDistTag === 'next');
 
     // Walk through all built packages and publish them to NPM.
     for (const builtPackage of builtPackages) {
@@ -553,21 +553,21 @@ export abstract class ReleaseAction {
   }
 
   /** Checks whether the given commit represents a staging commit for the specified version. */
-  private async _isCommitForVersionStaging(version: semver.SemVer, commitSha: string) {
+  private async _isCommitForVersionStaging(commitSha: string) {
     const {data} =
         await this.git.github.repos.getCommit({...this.git.remoteParams, ref: commitSha});
-    return data.commit.message.startsWith(getCommitMessageForRelease(version));
+    return data.commit.message.startsWith(getCommitMessageForRelease(this.version));
   }
 
   /** Verify the version of each generated package exact matches the specified version. */
-  private async _verifyPackageVersions(version: semver.SemVer, packages: BuiltPackage[]) {
+  private async _verifyPackageVersions(packages: BuiltPackage[]) {
     for (const pkg of packages) {
       const {version: packageJsonVersion} =
           JSON.parse(await fs.readFile(join(pkg.outputPath, 'package.json'), 'utf8')) as
           {version: string, [key: string]: any};
-      if (version.compare(packageJsonVersion) !== 0) {
+      if (this.version.compare(packageJsonVersion) !== 0) {
         error(red('The built package version does not match the version being released.'));
-        error(`  Release Version:   ${version.version}`);
+        error(`  Release Version:   ${this.version.version}`);
         error(`  Generated Version: ${packageJsonVersion}`);
         throw new FatalReleaseActionError();
       }

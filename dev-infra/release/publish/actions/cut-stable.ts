@@ -18,23 +18,25 @@ import {invokeSetNpmDistCommand, invokeYarnInstallCommand} from '../external-com
  * candidate phase. The pre-release release-candidate version label is removed.
  */
 export class CutStableAction extends ReleaseAction {
-  private _newVersion = this._computeNewVersion();
+  /** The version being released. */
+  version = this._computeNewVersion();
 
   async getDescription() {
-    const newVersion = this._newVersion;
-    return `Cut a stable release for the release-candidate branch (v${newVersion}).`;
+    return `Cut a stable release for the release-candidate branch (v${this.version}).`;
   }
+
+  /** Noop, required by base class. */
+  async setup() {}
 
   async perform() {
     const {branchName} = this.active.releaseCandidate!;
-    const newVersion = this._newVersion;
     const isNewMajor = this.active.releaseCandidate?.isMajor;
 
 
-    const {id} = await this.checkoutBranchAndStageVersion(newVersion, branchName);
+    const {id} = await this.checkoutBranchAndStageVersion(branchName);
 
     await this.waitForPullRequestToBeMerged(id);
-    await this.buildAndPublish(newVersion, branchName, 'latest');
+    await this.buildAndPublish(branchName, 'latest');
 
     // If a new major version is published and becomes the "latest" release-train, we need
     // to set the LTS npm dist tag for the previous latest release-train (the current patch).
@@ -52,7 +54,7 @@ export class CutStableAction extends ReleaseAction {
       await invokeSetNpmDistCommand(ltsTagForPatch, previousPatchVersion);
     }
 
-    await this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
+    await this.cherryPickChangelogIntoNextBranch(branchName);
   }
 
   /** Gets the new stable version of the release candidate release-train. */

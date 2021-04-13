@@ -32,20 +32,26 @@ interface LtsBranch {
 export class CutLongTermSupportPatchAction extends ReleaseAction {
   /** Promise resolving an object describing long-term support branches. */
   ltsBranches = fetchLongTermSupportBranchesFromNpm(this.config);
+  /** The version being released. */
+  version!: semver.SemVer;
+  /** The selected long-term support branch to release to. */
+  ltsBranch!: LtsBranch;
 
   async getDescription() {
     const {active} = await this.ltsBranches;
     return `Cut a new release for an active LTS branch (${active.length} active).`;
   }
 
+  async setup() {}
+
   async perform() {
     const ltsBranch = await this._promptForTargetLtsBranch();
-    const newVersion = semverInc(ltsBranch.version, 'patch');
-    const {id} = await this.checkoutBranchAndStageVersion(newVersion, ltsBranch.name);
+    this.version = semverInc(ltsBranch.version, 'patch');
+    const {id} = await this.checkoutBranchAndStageVersion(ltsBranch.name);
 
     await this.waitForPullRequestToBeMerged(id);
-    await this.buildAndPublish(newVersion, ltsBranch.name, ltsBranch.npmDistTag);
-    await this.cherryPickChangelogIntoNextBranch(newVersion, ltsBranch.name);
+    await this.buildAndPublish(ltsBranch.name, ltsBranch.npmDistTag);
+    await this.cherryPickChangelogIntoNextBranch(ltsBranch.name);
   }
 
   /** Prompts the user to select an LTS branch for which a patch should but cut. */

@@ -21,17 +21,20 @@ import {packageJsonPath} from '../constants';
  * cut indicating the started feature-freeze.
  */
 export class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
-  private _newVersion = computeNewPrereleaseVersionForNext(this.active, this.config);
+  /** The version being released. */
+  version!: semver.SemVer;
 
   async getDescription() {
     const {branchName} = this.active.next;
-    const newVersion = await this._newVersion;
-    return `Move the "${branchName}" branch into feature-freeze phase (v${newVersion}).`;
+    return `Move the "${branchName}" branch into feature-freeze phase (v${this.version}).`;
+  }
+
+  async setup() {
+    this.version = await computeNewPrereleaseVersionForNext(this.active, this.config);
   }
 
   async perform() {
-    const newVersion = await this._newVersion;
-    const newBranch = `${newVersion.major}.${newVersion.minor}.x`;
+    const newBranch = `${this.version.major}.${this.version.minor}.x`;
 
     // Branch-off the next branch into a feature-freeze branch.
     await this._createNewVersionBranchFromNext(newBranch);
@@ -39,15 +42,14 @@ export class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
     // Stage the new version for the newly created branch, and push changes to a
     // fork in order to create a staging pull request. Note that we re-use the newly
     // created branch instead of re-fetching from the upstream.
-    const stagingPullRequest =
-        await this.stageVersionForBranchAndCreatePullRequest(newVersion, newBranch);
+    const stagingPullRequest = await this.stageVersionForBranchAndCreatePullRequest(newBranch);
 
     // Wait for the staging PR to be merged. Then build and publish the feature-freeze next
     // pre-release. Finally, cherry-pick the release notes into the next branch in combination
     // with bumping the version to the next minor too.
     await this.waitForPullRequestToBeMerged(stagingPullRequest.id);
-    await this.buildAndPublish(newVersion, newBranch, 'next');
-    await this._createNextBranchUpdatePullRequest(newVersion, newBranch);
+    await this.buildAndPublish(newBranch, 'next');
+    await this._createNextBranchUpdatePullRequest(newBranch);
   }
 
   /** Creates a new version branch from the next branch. */
@@ -64,7 +66,7 @@ export class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
    * Creates a pull request for the next branch that bumps the version to the next
    * minor, and cherry-picks the changelog for the newly branched-off feature-freeze version.
    */
-  private async _createNextBranchUpdatePullRequest(newVersion: semver.SemVer, newBranch: string) {
+  private async _createNextBranchUpdatePullRequest(newBranch: string) {
     const {branchName: nextBranch, version} = this.active.next;
     // We increase the version for the next branch to the next minor. The team can decide
     // later if they want next to be a major through the `Configure Next as Major` release action.
@@ -81,14 +83,13 @@ export class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
     let nextPullRequestMessage = `The previous "next" release-train has moved into the ` +
         `release-candidate phase. This PR updates the next branch to the subsequent ` +
         `release-train.`;
-    const hasChangelogCherryPicked =
-        await this.createCherryPickReleaseNotesCommitFrom(newVersion, newBranch);
+    const hasChangelogCherryPicked = await this.createCherryPickReleaseNotesCommitFrom(newBranch);
 
     if (hasChangelogCherryPicked) {
       nextPullRequestMessage += `\n\nAlso this PR cherry-picks the changelog for ` +
-          `v${newVersion} into the ${nextBranch} branch so that the changelog is up to date.`;
+          `v${this.version} into the ${nextBranch} branch so that the changelog is up to date.`;
     } else {
-      error(yellow(`  ✘   Could not cherry-pick release notes for v${newVersion}.`));
+      error(yellow(`  ✘   Could not cherry-pick release notes for v${this.version}.`));
       error(yellow(`      Please copy the release note manually into "${nextBranch}".`));
     }
 

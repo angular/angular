@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import * as semver from 'semver';
 import {ActiveReleaseTrains} from '../../versioning/active-release-trains';
 import {semverInc} from '../../versioning/inc-semver';
 import {ReleaseAction} from '../actions';
@@ -16,23 +17,25 @@ import {ReleaseAction} from '../actions';
  * for the new patch version, but also needs to be cherry-picked into the next development branch.
  */
 export class CutNewPatchAction extends ReleaseAction {
-  private _newVersion = semverInc(this.active.latest.version, 'patch');
+  /** The version being released. */
+  version: semver.SemVer = semverInc(this.active.latest.version, 'patch');
 
   async getDescription() {
     const {branchName} = this.active.latest;
-    const newVersion = this._newVersion;
-    return `Cut a new patch release for the "${branchName}" branch (v${newVersion}).`;
+    return `Cut a new patch release for the "${branchName}" branch (v${this.version}).`;
   }
+
+  /** Noop, required by base class. */
+  async setup() {}
 
   async perform() {
     const {branchName} = this.active.latest;
-    const newVersion = this._newVersion;
 
-    const {id} = await this.checkoutBranchAndStageVersion(newVersion, branchName);
+    const {id} = await this.checkoutBranchAndStageVersion(branchName);
 
     await this.waitForPullRequestToBeMerged(id);
-    await this.buildAndPublish(newVersion, branchName, 'latest');
-    await this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
+    await this.buildAndPublish(branchName, 'latest');
+    await this.cherryPickChangelogIntoNextBranch(branchName);
   }
 
   static async isActive(active: ActiveReleaseTrains) {

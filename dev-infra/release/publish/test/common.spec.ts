@@ -49,6 +49,7 @@ describe('common release action logic', () => {
       for (const actionCtor of actions) {
         if (await actionCtor.isActive(testReleaseTrain)) {
           const action = new actionCtor(testReleaseTrain, gitClient, releaseConfig, testTmpDir);
+          await action.setup();
           descriptions.push(await action.getDescription());
         }
       }
@@ -66,7 +67,7 @@ describe('common release action logic', () => {
     it('should support a custom NPM registry', async () => {
       const {repo, instance, releaseConfig} =
           setupReleaseActionForTesting(TestAction, baseReleaseTrains);
-      const {version, branchName} = baseReleaseTrains.next;
+      const {version, branchName} = baseReleaseTrains.latest;
       const tagName = version.format();
       const customRegistryUrl = 'https://custom-npm-registry.google.com';
 
@@ -78,7 +79,7 @@ describe('common release action logic', () => {
       // Set up a custom NPM registry.
       releaseConfig.publishRegistry = customRegistryUrl;
 
-      await instance.testBuildAndPublish(version, branchName, 'latest');
+      await instance.testBuildAndPublish(branchName, 'latest');
 
       expect(npm.runNpmPublish).toHaveBeenCalledTimes(2);
       expect(npm.runNpmPublish)
@@ -96,6 +97,7 @@ describe('common release action logic', () => {
     it('should prepend fetched changelog', async () => {
       const {repo, fork, instance, testTmpDir} =
           setupReleaseActionForTesting(TestAction, baseReleaseTrains);
+      await instance.setup();
 
       // Expect the changelog to be fetched and return a fake changelog to test that
       // it is properly appended. Also expect a pull request to be created in the fork.
@@ -107,7 +109,7 @@ describe('common release action logic', () => {
       // Simulate that the fork branch name is available.
       fork.expectBranchRequest(forkBranchName, null);
 
-      await instance.testCherryPickWithPullRequest(version, branchName);
+      await instance.testCherryPickWithPullRequest(branchName);
 
       const changelogContent = readFileSync(join(testTmpDir, changelogPath), 'utf8');
       expect(changelogContent).toEqual(`${fakeReleaseNotes}Existing changelog`);
@@ -116,6 +118,7 @@ describe('common release action logic', () => {
     it('should respect a custom release note extraction pattern', async () => {
       const {repo, fork, instance, testTmpDir, releaseConfig} =
           setupReleaseActionForTesting(TestAction, baseReleaseTrains);
+      await instance.setup();
 
       // Custom pattern matching changelog output sections grouped through
       // basic level-1 markdown headers (compared to the default anchor pattern).
@@ -134,15 +137,16 @@ describe('common release action logic', () => {
       // Simulate that the fork branch name is available.
       fork.expectBranchRequest(forkBranchName, null);
 
-      await instance.testCherryPickWithPullRequest(version, branchName);
+      await instance.testCherryPickWithPullRequest(branchName);
 
       const changelogContent = readFileSync(join(testTmpDir, changelogPath), 'utf8');
       expect(changelogContent).toEqual(`${customReleaseNotes}\n\nExisting changelog`);
     });
 
     it('should print an error if release notes cannot be extracted', async () => {
-      const {repo, fork, instance, testTmpDir, releaseConfig} =
+      const {repo, fork, instance, testTmpDir} =
           setupReleaseActionForTesting(TestAction, baseReleaseTrains);
+      await instance.setup();
 
       // Expect the changelog to be fetched and return a fake changelog to test that
       // it is properly appended. Also expect a pull request to be created in the fork.
@@ -156,11 +160,11 @@ describe('common release action logic', () => {
 
       spyOn(console, 'error');
 
-      await instance.testCherryPickWithPullRequest(version, branchName);
+      await instance.testCherryPickWithPullRequest(branchName);
 
       expect(console.error)
-          .toHaveBeenCalledWith(
-              jasmine.stringMatching(`Could not cherry-pick release notes for v${version}`));
+          .toHaveBeenCalledWith(jasmine.stringMatching(
+              `Could not cherry-pick release notes for v${instance.version}`));
       expect(console.error)
           .toHaveBeenCalledWith(jasmine.stringMatching(
               `Please copy the release notes manually into the "master" branch.`));
@@ -183,7 +187,8 @@ describe('common release action logic', () => {
       // Simulate that the fork branch name is available.
       fork.expectBranchRequest(forkBranchName, null);
 
-      await instance.testCherryPickWithPullRequest(version, branchName);
+      await instance.setup();
+      await instance.testCherryPickWithPullRequest(branchName);
 
       expect(gitClient.pushed.length).toBe(1);
       expect(gitClient.pushed[0]).toEqual(getBranchPushMatcher({
@@ -192,7 +197,7 @@ describe('common release action logic', () => {
         baseBranch: 'master',
         baseRepo: repo,
         expectedCommits: [{
-          message: `docs: release notes for the v${version} release`,
+          message: `docs: release notes for the v${instance.version} release`,
           files: ['CHANGELOG.md'],
         }],
       }));
@@ -205,6 +210,10 @@ describe('common release action logic', () => {
  * release action class. This allows us to add unit tests.
  */
 class TestAction extends ReleaseAction {
+  version = this.active.latest.version;
+
+  async setup() {}
+
   async getDescription() {
     return 'Test action';
   }
@@ -213,11 +222,11 @@ class TestAction extends ReleaseAction {
     throw Error('Not implemented.');
   }
 
-  async testBuildAndPublish(newVersion: semver.SemVer, publishBranch: string, distTag: string) {
-    await this.buildAndPublish(newVersion, publishBranch, distTag);
+  async testBuildAndPublish(publishBranch: string, distTag: string) {
+    await this.buildAndPublish(publishBranch, distTag);
   }
 
-  async testCherryPickWithPullRequest(version: semver.SemVer, branch: string) {
-    await this.cherryPickChangelogIntoNextBranch(version, branch);
+  async testCherryPickWithPullRequest(branch: string) {
+    await this.cherryPickChangelogIntoNextBranch(branch);
   }
 }

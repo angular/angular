@@ -92,6 +92,7 @@ describe('move next into feature-freeze action', () => {
     fork.expectBranchRequest(expectedStagingForkBranch, null)
         .expectBranchRequest(expectedNextUpdateBranch, null);
 
+    await instance.setup();
     await instance.perform();
 
     expect(gitClient.pushed.length).toBe(3);
