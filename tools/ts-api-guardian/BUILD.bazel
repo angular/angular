@@ -61,6 +61,7 @@ ts_library(
     tsconfig = "//tools:tsconfig-test",
     deps = [
         ":lib",
+        "@npm//@bazel/runfiles",
         "@npm//@types/jasmine",
         "@npm//@types/node",
         "@npm//jasmine",

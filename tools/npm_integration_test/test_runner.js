@@ -10,7 +10,7 @@ const spawnSync = require('child_process').spawnSync;
 const fs = require('fs');
 const path = require('path');
 const tmp = require('tmp');
-const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']);
+const {runfiles} = require('@bazel/runfiles');
 
 const VERBOSE_LOGS = !!process.env['VERBOSE_LOGS'];
 
