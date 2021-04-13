@@ -912,6 +912,14 @@ A TypeScript-like syntax that Angular evaluates within a [data binding](#data-bi
 
 Read about how to write template expressions in  [Template expressions](guide/template-syntax#template-expressions).
 
+{@a template-input-variable}
+
+## template input variable
+
+A template input variable is a variable you can reference within a single instance of the template. You declare a template input variable using the let keyword as in let hero.
+
+Read and learn more about [Template Input Variables](template-reference-variables#template-input-variable).
+
 {@a token}
 
 ## token
