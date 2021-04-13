@@ -964,6 +964,27 @@ The following example defines a template reference variable named `#phone`.
 
 For more information, see the [Template reference variable](guide/template-reference-variables) guide.
 
+
+{@a template-input-variable}
+
+## template input variable
+
+A template input variable is a variable you can reference within a single instance of the template. You declare a template input variable using the `let` keyword as in `let customer`.
+
+```
+ <tr *ngFor="let customer of customers;">
+     <td>{{customer.customerNo}}</td>
+     <td>{{customer.name}}</td>
+     <td>{{customer.address}}</td>
+     <td>{{customer.city}}</td>
+     <td>{{customer.state}}</td>
+     <button (click)="selectedCustomer=customer">Select</button>
+   </tr>
+```
+
+Read and learn more about [template input variables](guide/template-reference-variables#template-input-variable).
+
+
 {@a token}
 
 ## token
