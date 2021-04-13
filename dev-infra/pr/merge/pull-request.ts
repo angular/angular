@@ -82,6 +82,7 @@ export async function loadAndValidatePullRequest(
   const commitsInPr = prData.commits.nodes.map(n => parseCommitMessage(n.commit.message));
 
   try {
+    assertPendingState(prData);
     assertChangesAllowForTargetLabel(commitsInPr, targetLabel, config);
     assertCorrectBreakingChangeLabeling(commitsInPr, labels, config);
   } catch (error) {
@@ -136,6 +137,8 @@ export async function loadAndValidatePullRequest(
 /* Graphql schema for the response body the requested pull request. */
 const PR_SCHEMA = {
   url: graphqlTypes.string,
+  isDraft: graphqlTypes.boolean,
+  state: graphqlTypes.oneOf(['OPEN', 'MERGED', 'CLOSED'] as const),
   number: graphqlTypes.number,
   // Only the last 100 commits from a pull request are obtained as we likely will never see a pull
   // requests with more than 100 commits.
@@ -159,11 +162,13 @@ const PR_SCHEMA = {
   }),
 };
 
+/** A pull request retrieved from github via the graphql API. */
+type RawPullRequest = typeof PR_SCHEMA;
 
 
 /** Fetches a pull request from Github. Returns null if an error occurred. */
 async function fetchPullRequestFromGithub(
-    git: GitClient<true>, prNumber: number): Promise<typeof PR_SCHEMA|null> {
+    git: GitClient<true>, prNumber: number): Promise<RawPullRequest|null> {
   try {
     const x = await getPr(PR_SCHEMA, prNumber, git);
     return x;
@@ -239,5 +244,19 @@ function assertCorrectBreakingChangeLabeling(
 
   if (hasLabel && !hasCommit) {
     throw PullRequestFailure.missingBreakingChangeCommit();
+  }
+}
+
+
+/** Assert the pull request is pending, not closed, merged or in draft. */
+function assertPendingState(pr: RawPullRequest) {
+  if (pr.isDraft) {
+    throw PullRequestFailure.isDraft();
+  }
+  switch (pr.state) {
+    case 'CLOSED':
+      throw PullRequestFailure.isClosed();
+    case 'MERGED':
+      throw PullRequestFailure.isMerged();
   }
 }
