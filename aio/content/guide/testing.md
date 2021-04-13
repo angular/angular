@@ -272,6 +272,37 @@ Step 3: Commit your changes and push them to your repository.
 
 * Learn more about GitLab CI testing from [GitLab CI/CD documentation](https://docs.gitlab.com/ee/ci/).
 
+### Configure project for GitHub Actions
+
+Step 1: Create a folder called `.github/workflows` at root of your project
+
+Step 2: In the new folder, create a file called `main.yml` with the following content:
+
+```yml
+name: CI Angular app through Github Actions
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      - name: npm install and test
+        run: |
+          npm ci
+          npm test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+          npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
+```
+
+Step 3: [Sign up for GitHub](https://github.com/join) and [add your project](https://github.com/new). You'll need to push a new commit to trigger a build.
+
+Step 4: Commit your changes and push them to your repository.
+
+* Learn more about GitHub Actions from [GitHub Actions documentation](https://docs.github.com/en/actions).
+
 ### Configure CLI for CI testing in Chrome
 
 When the CLI commands `ng test` and `ng e2e` are generally running the CI tests in your environment, you might still need to adjust your configuration to run the Chrome browser tests.
