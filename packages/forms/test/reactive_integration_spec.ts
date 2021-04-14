@@ -631,6 +631,23 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
              expect(input.nativeElement.disabled).toBe(false);
            });
 
+        it('should remove disabled attribute when control is replaced with enabled one', () => {
+          const fixture = initTest(FormControlComp);
+          const enabledControl = new FormControl('enabled');
+          const disabledControl = new FormControl('disabled');
+          disabledControl.disable();
+          fixture.componentInstance.control = disabledControl;
+          fixture.detectChanges();
+
+          const input = fixture.debugElement.query(By.css('input'));
+          expect(input.nativeElement.disabled).toBe(true);
+
+          fixture.componentInstance.control = enabledControl;
+          fixture.detectChanges();
+
+          expect(input.nativeElement.disabled).toBe(false);
+        });
+
         it('should add disabled attribute to child controls when disable() is called on group',
            () => {
              const fixture = initTest(FormGroupComp);
