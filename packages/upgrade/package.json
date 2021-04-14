@@ -11,7 +11,7 @@
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
-    "@angular/platform-browser-dynamic": "0.0.0-PLACEHOLDER"
+    "@angular/platform-browser-dynamic": "0.0.0-7"
   },
   "repository": {
     "type": "git",

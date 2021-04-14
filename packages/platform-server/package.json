@@ -10,7 +10,7 @@
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
-    "@angular/platform-browser-dynamic": "0.0.0-PLACEHOLDER"
+    "@angular/platform-browser-dynamic": "0.0.0-7"
   },
   "dependencies": {
     "domino": "^2.1.2",
