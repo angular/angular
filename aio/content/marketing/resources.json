@@ -312,6 +312,11 @@
             "title": "ng-bootstrap",
             "url": "https://ng-bootstrap.github.io/"
           },
+          "VuexyAdmin": {
+            "desc": "Vuexy Angular Admin is based on ng-bootstrap, perfect application for your next project with beginner level of Angular knowledge. Using Vuexy you can learn angular and craft Angular apps in no time.",
+            "title": "Vuexy Angular Admin",
+            "url": "https://pixinvent.com/demo/vuexy-angular-admin-dashboard-template/landing/"
+          },
           "4ab": {
             "desc": "Native Angular components & directives for Lightning Design System",
             "logo": "https://ng-lightning.github.io/ng-lightning/assets/images/shield.svg",
