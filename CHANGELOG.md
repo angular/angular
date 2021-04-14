@@ -1,3 +1,14 @@
+<a name="10.2.5"></a>
+## 10.2.5 (2021-04-14)
+
+
+### Bug Fixes
+
+* **compiler-cli:** show a more specific error for Ivy NgModules ([#41534](https://github.com/angular/angular/issues/41534)) ([#41598](https://github.com/angular/angular/issues/41598)) ([f630f33](https://github.com/angular/angular/commit/f630f33))
+* **core:** fix possible XSS attack in development through SSR ([#40525](https://github.com/angular/angular/issues/40525)) ([ba8da74](https://github.com/angular/angular/commit/ba8da74))
+
+
+
 <a name="10.2.4"></a>
 ## 10.2.4 (2020-12-17)
 
