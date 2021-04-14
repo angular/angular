@@ -24,18 +24,6 @@ const DIR_WITH_INPUT = {
   `
 };
 
-const DIR_WITH_UNION_TYPE_INPUT = {
-  'Dir': `
-    @Directive({
-      selector: '[dir]',
-      inputs: ['myInput']
-    })
-    export class Dir {
-      myInput!: 'foo'|42|null|undefined
-    }
-  `
-};
-
 const DIR_WITH_OUTPUT = {
   'Dir': `
     @Directive({
@@ -215,18 +203,6 @@ describe('completions', () => {
       const completions = templateFile.getCompletionsAtPosition();
       expectContain(completions, ts.ScriptElementKind.memberVariableElement, ['title']);
     });
-
-    it('should return completions of string literals, number literals, `true`, `false`, `null` and `undefined`',
-       () => {
-         const {templateFile} = setup(`<input dir [myInput]="">`, '', DIR_WITH_UNION_TYPE_INPUT);
-         templateFile.moveCursorToText('dir [myInput]="¦">');
-
-         const completions = templateFile.getCompletionsAtPosition();
-         expectContain(completions, ts.ScriptElementKind.string, [`'foo'`, '42']);
-         expectContain(completions, ts.ScriptElementKind.keyword, ['null']);
-         expectContain(completions, ts.ScriptElementKind.variableElement, ['undefined']);
-         expectDoesNotContain(completions, ts.ScriptElementKind.parameterElement, ['ctx']);
-       });
   });
 
   describe('in an expression scope', () => {
@@ -813,7 +789,7 @@ function setup(
         export class AppCmp {
           ${classContents}
         }
-
+        
         ${otherDirectiveClassDecls}
 
         @NgModule({
@@ -846,7 +822,7 @@ function setupInlineTemplate(
         export class AppCmp {
           ${classContents}
         }
-
+        
         ${otherDirectiveClassDecls}
 
         @NgModule({
