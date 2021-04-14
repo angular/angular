@@ -41,10 +41,11 @@ export interface LinkerRange<TExpression> {
 }
 
 /**
- * Create a map of partial-linkers by declaration name and version.
+ * Create a mapping between partial-declaration call name and collections of partial-linkers.
  *
- * If a new declaration version is defined, which needs a different linker implementation, then
- * the old linker implementation should be added to the end of the array.
+ * Each collection of partial-linkers will contain a version range that will be matched against the
+ * `minVersion` of the partial-declaration. (Additionally, a partial-linker may modify its behaviour
+ * internally based on the `version` property of the declaration.)
  *
  * Versions should be sorted in ascending order. The most recent partial-linker will be used as the
  * fallback linker if none of the other version ranges match. For example:
@@ -53,8 +54,15 @@ export interface LinkerRange<TExpression> {
  * {range: getRange('<=', '13.0.0'), linker PartialDirectiveLinkerVersion2(...) },
  * {range: getRange('<=', '13.1.0'), linker PartialDirectiveLinkerVersion3(...) },
  * {range: getRange('<=', '14.0.0'), linker PartialDirectiveLinkerVersion4(...) },
- * {range: latestLinkerRange, linker: new PartialDirectiveLinkerVersion1(...)},
+ * {range: LATEST_VERSION_RANGE, linker: new PartialDirectiveLinkerVersion1(...)},
  * ```
+ *
+ * If the `LATEST_VERSION_RANGE` is `<=15.0.0` then the fallback linker would be
+ * `PartialDirectiveLinkerVersion1` for any version greater than `15.0.0`.
+ *
+ * When there is a change to a declaration interface that requires a new partial-linker, the
+ * `minVersion` of the partial-declaration should be updated, the new linker implementation should
+ * be added to the end of the collection, and the version of the previous linker should be updated.
  */
 export function createLinkerMap<TStatement, TExpression>(
     environment: LinkerEnvironment<TStatement, TExpression>, sourceUrl: AbsoluteFsPath,
@@ -101,22 +109,22 @@ export function createLinkerMap<TStatement, TExpression>(
  * A helper that selects the appropriate `PartialLinker` for a given declaration.
  *
  * The selection is made from a database of linker instances, chosen if their given semver range
- * satisfies the version found in the code to be linked.
+ * satisfies the `minVersion` of the partial declaration to be linked.
  *
- * Note that the ranges are checked in order, and the first matching range will be selected, so
- * ranges should be most restrictive first.
+ * Note that the ranges are checked in order, and the first matching range will be selected. So
+ * ranges should be most restrictive first. In practice, since ranges are always `<=X.Y.Z` this
+ * means that ranges should be in ascending order.
  *
- * Also, ranges are matched to include "pre-releases", therefore if the range is `>=11.1.0-next.1`
- * then this includes `11.1.0-next.2` and also `12.0.0-next.1`.
- *
- * Finally, note that we always start with the current version (i.e. `0.0.0-PLACEHOLDER`). This
- * allows the linker to work on local builds effectively.
+ * Note that any "pre-release" versions are stripped from ranges. Therefore if a `minVersion` is
+ * `11.1.0-next.1` then this would match `11.1.0-next.2` and also `12.0.0-next.1`. (This is
+ * different to standard semver range checking, where pre-release versions do not cross full version
+ * boundaries.)
  */
-export class PartialLinkerSelector<TStatement, TExpression> {
+export class PartialLinkerSelector<TExpression> {
   constructor(
       private readonly linkers: Map<string, LinkerRange<TExpression>[]>,
       private readonly logger: Logger,
-      private unknownDeclarationVersionHandling: 'ignore'|'warn'|'error') {}
+      private readonly unknownDeclarationVersionHandling: 'ignore'|'warn'|'error') {}
 
   /**
    * Returns true if there are `PartialLinker` classes that can handle functions with this name.
@@ -134,6 +142,13 @@ export class PartialLinkerSelector<TStatement, TExpression> {
       throw new Error(`Unknown partial declaration function ${functionName}.`);
     }
     const linkerRanges = this.linkers.get(functionName)!;
+
+    if (version === '0.0.0-PLACEHOLDER') {
+      // Special case if the `version` is the same as the current compiler version.
+      // This helps with compliance tests where the version placeholders have not been replaced.
+      return linkerRanges[linkerRanges.length - 1].linker;
+    }
+
     const declarationRange = getRange('>=', minVersion);
     for (const {range: linkerRange, linker} of linkerRanges) {
       if (intersects(declarationRange, linkerRange)) {
@@ -141,18 +156,18 @@ export class PartialLinkerSelector<TStatement, TExpression> {
       }
     }
 
-    const message = `Unsupported partial declaration version ${version} for ${functionName}.\n` +
-        `The minimum supported partial-linker for this declaration is ${minVersion}.\n` +
-        'Partial-linker version ranges available are:\n' +
-        linkerRanges.map(v => ` - ${v.range}`).join('\n');
+    const message =
+        `This application depends upon a library published using Angular version ${version}, ` +
+        `which requires Angular version ${minVersion} or newer to work correctly.\n` +
+        `Consider upgrading your application to use a more recent version of Angular.`;
 
     if (this.unknownDeclarationVersionHandling === 'error') {
       throw new Error(message);
     } else if (this.unknownDeclarationVersionHandling === 'warn') {
-      this.logger.warn(`${message}\nFalling back to the most recent partial-linker.`);
+      this.logger.warn(`${message}\nAttempting to continue using this version of Angular.`);
     }
 
-    // No linker was matched for this declaration, so just use the first one.
+    // No linker was matched for this declaration, so just use the most recent one.
     return linkerRanges[linkerRanges.length - 1].linker;
   }
 }
@@ -160,12 +175,12 @@ export class PartialLinkerSelector<TStatement, TExpression> {
 /**
  * Compute a semver Range from the `version` and comparator.
  *
- * The range is computed as any version greater/less than or equal to the given `version`
+ * The range is computed as any version greater/less than or equal to the given `versionStr`
  * depending upon the `comparator` (ignoring any prerelease versions).
  *
  * @param comparator a string that determines whether the version specifies a minimum or a maximum
  *     range.
- * @param version the version given in the partial declaration
+ * @param versionStr the version given in the partial declaration
  * @returns A semver range for the provided `version` and comparator.
  */
 function getRange(comparator: '<='|'>=', versionStr: string): Range {

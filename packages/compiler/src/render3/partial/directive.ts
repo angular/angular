@@ -19,7 +19,7 @@ import {toOptionalLiteralMap} from './util';
  * must update this constant to prevent old partial-linkers from incorrectly processing the
  * declaration.
  *
- * Do not including any prerelease in these versions as they are ignored.
+ * Do not include any prerelease in these versions as they are ignored.
  */
 const MINIMUM_PARTIAL_LINKER_VERSION = '12.0.0';
 

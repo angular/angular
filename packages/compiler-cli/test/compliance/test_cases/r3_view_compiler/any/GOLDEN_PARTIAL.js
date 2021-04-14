@@ -7,7 +7,7 @@ class Comp {
 }
 Comp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 Comp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: '<div [tabIndex]="$any(10)"></div>', isInline: true });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "0.0.0-PLACEHOLDER", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, decorators: [{
             type: Component,
             args: [{ template: '<div [tabIndex]="$any(10)"></div>' }]
         }] });
@@ -29,7 +29,7 @@ class Comp {
 }
 Comp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, deps: [], target: i0.ɵɵFactoryTarget.Component });
 Comp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: Comp, selector: "ng-component", ngImport: i0, template: '<div [tabIndex]="this.$any(null)"></div>', isInline: true });
-i0.ɵɵngDeclareClassMetadata({ minVersion: "0.0.0-PLACEHOLDER", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, decorators: [{
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: Comp, decorators: [{
             type: Component,
             args: [{ template: '<div [tabIndex]="this.$any(null)"></div>' }]
         }] });

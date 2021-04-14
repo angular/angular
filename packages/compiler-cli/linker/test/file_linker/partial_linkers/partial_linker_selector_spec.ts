@@ -13,10 +13,10 @@ import {LinkerRange, PartialLinkerSelector} from '../../../src/file_linker/parti
 
 describe('PartialLinkerSelector', () => {
   let logger: MockLogger;
-  const linkerA = {} as PartialLinker<unknown>;
-  const linkerA2 = {} as PartialLinker<unknown>;
-  const linkerB = {} as PartialLinker<unknown>;
-  const linkerB2 = {} as PartialLinker<unknown>;
+  const linkerA = {name: 'linkerA'} as any;
+  const linkerA2 = {name: 'linkerA2'} as any;
+  const linkerB = {name: 'linkerB'} as any;
+  const linkerB2 = {name: 'linkerB2'} as any;
 
   beforeEach(() => {
     logger = new MockLogger();
@@ -40,7 +40,8 @@ describe('PartialLinkerSelector', () => {
     it('should return the linker that matches the name and version', () => {
       const selector = createSelector('error');
       expect(selector.getLinker('declareA', '11.1.2', '11.1.4')).toBe(linkerA);
-      expect(selector.getLinker('declareA', '12.0.0', '12.1.0')).toBe(linkerA2);
+      expect(selector.getLinker('declareA', '12.0.0', '12.1.0')).toBe(linkerA);
+      expect(selector.getLinker('declareA', '12.0.1', '12.1.0')).toBe(linkerA2);
       expect(selector.getLinker('declareB', '11.2.5', '11.3.0')).toBe(linkerB);
       expect(selector.getLinker('declareB', '12.0.5', '12.0.5')).toBe(linkerB2);
     });
@@ -49,8 +50,18 @@ describe('PartialLinkerSelector', () => {
       const selector = createSelector('error');
       expect(selector.getLinker('declareA', '11.1.0-next.1', '11.1.0-next.1')).toBe(linkerA);
       expect(selector.getLinker('declareA', '11.1.0-next.7', '11.1.0-next.7')).toBe(linkerA);
-      expect(selector.getLinker('declareA', '12.0.0-next.7', '12.0.0-next.7')).toBe(linkerA2);
+      expect(selector.getLinker('declareA', '12.0.0-next.7', '12.0.0-next.7')).toBe(linkerA);
+      expect(selector.getLinker('declareA', '12.0.1-next.7', '12.0.1-next.7')).toBe(linkerA2);
     });
+
+    it('should return the most recent linker if `version` is `0.0.0-PLACEHOLDER`, regardless of `minVersion`',
+       () => {
+         const selector = createSelector('error');
+         expect(selector.getLinker('declareA', '11.1.2', '0.0.0-PLACEHOLDER')).toBe(linkerA2);
+         expect(selector.getLinker('declareA', '0.0.0-PLACEHOLDER', '11.1.2')).toBe(linkerA);
+         expect(selector.getLinker('declareA', '0.0.0-PLACEHOLDER', '0.0.0-PLACEHOLDER'))
+             .toBe(linkerA2);
+       });
 
     it('should throw an error if there is no linker that matches the given name', () => {
       const selector = createSelector('error');
@@ -73,12 +84,10 @@ describe('PartialLinkerSelector', () => {
           const selector = createSelector('warn');
           expect(selector.getLinker('declareA', '13.1.0', '14.0.5')).toBe(linkerA2);
           expect(logger.logs.warn).toEqual([
-            ['Unsupported partial declaration version 14.0.5 for declareA.\n' +
-             'The minimum supported partial-linker for this declaration is 13.1.0.\n' +
-             'Partial-linker version ranges available are:\n' +
-             ' - <12.0.0\n' +
-             ' - <13.0.0\n' +
-             'Falling back to the most recent partial-linker.']
+            [`This application depends upon a library published using Angular version 14.0.5, ` +
+             `which requires Angular version 13.1.0 or newer to work correctly.\n` +
+             `Consider upgrading your application to use a more recent version of Angular.\n` +
+             'Attempting to continue using this version of Angular.']
           ]);
         });
       });
@@ -88,11 +97,9 @@ describe('PartialLinkerSelector', () => {
           const selector = createSelector('error');
           expect(() => selector.getLinker('declareA', '13.1.0', '14.0.5'))
               .toThrowError(
-                  'Unsupported partial declaration version 14.0.5 for declareA.\n' +
-                  'The minimum supported partial-linker for this declaration is 13.1.0.\n' +
-                  'Partial-linker version ranges available are:\n' +
-                  ' - <12.0.0\n' +
-                  ' - <13.0.0');
+                  `This application depends upon a library published using Angular version 14.0.5, ` +
+                  `which requires Angular version 13.1.0 or newer to work correctly.\n` +
+                  `Consider upgrading your application to use a more recent version of Angular.`);
         });
       });
     });
@@ -104,12 +111,12 @@ describe('PartialLinkerSelector', () => {
   function createSelector(unknownDeclarationVersionHandling: 'error'|'warn'|'ignore') {
     const linkerMap = new Map<string, LinkerRange<unknown>[]>();
     linkerMap.set('declareA', [
-      {range: new Range('<12.0.0'), linker: linkerA},
-      {range: new Range('<13.0.0'), linker: linkerA2}
+      {range: new Range('<=12.0.0'), linker: linkerA},
+      {range: new Range('<=13.0.0'), linker: linkerA2}
     ]);
     linkerMap.set('declareB', [
-      {range: new Range('<12.0.0'), linker: linkerB},
-      {range: new Range('<12.1.0'), linker: linkerB2},
+      {range: new Range('<=12.0.0'), linker: linkerB},
+      {range: new Range('<=12.1.0'), linker: linkerB2},
     ]);
     return new PartialLinkerSelector(linkerMap, logger, unknownDeclarationVersionHandling);
   }

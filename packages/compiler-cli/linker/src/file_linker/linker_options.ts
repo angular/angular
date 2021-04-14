@@ -27,6 +27,13 @@ export interface LinkerOptions {
   /**
    * How to handle a situation where a partial declaration matches none of the supported
    * partial-linker versions.
+   *
+   * - `error` - the version mismatch is a fatal error.
+   * - `warn` - a warning is sent to the logger but the most recent partial-linker
+   *   will attempt to process the declaration anyway.
+   * - `ignore` - the most recent partial-linker will, silently, attempt to process
+   *   the declaration.
+   *
    * The default is `error`.
    */
   unknownDeclarationVersionHandling: 'ignore'|'warn'|'error';
