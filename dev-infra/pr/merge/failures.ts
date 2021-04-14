@@ -87,16 +87,26 @@ export class PullRequestFailure {
     return new this(message);
   }
 
-  static hasBreakingChanges(label: TargetLabel) {
-    const message = `Cannot merge into branch for "${label.pattern}" as the pull request has ` +
-        `breaking changes. Breaking changes can only be merged with the "target: major" label.`;
+  static hasBreakingChanges(label: TargetLabel, isPrerelease: boolean = false) {
+    let message = `Cannot merge into branch for "${label.pattern}" as the pull request has ` +
+        'breaking changes.  ';
+    if (isPrerelease) {
+      message += 'New features cannot be merged during feature freeze or RC periods.';
+    } else {
+      message += 'Breaking changes can only be merged with the "target: major" label.';
+    }
     return new this(message);
   }
 
-  static hasFeatureCommits(label: TargetLabel) {
-    const message = `Cannot merge into branch for "${label.pattern}" as the pull request has ` +
-        'commits with the "feat" type. New features can only be merged with the "target: minor" ' +
-        'or "target: major" label.';
+  static hasFeatureCommits(label: TargetLabel, isPrerelease: boolean = false) {
+    let message = `Cannot merge into branch for "${label.pattern}" as the pull request has ` +
+        'commits with the "feat" type.  ';
+    if (isPrerelease) {
+      message += 'New features cannot be merged during feature freeze or RC periods.';
+    } else {
+      message += 'New features can only be merged with the "target: minor" or "target: major" ' +
+          'label.';
+    }
     return new this(message);
   }
 

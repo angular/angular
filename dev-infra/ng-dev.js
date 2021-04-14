@@ -3418,15 +3418,29 @@ var PullRequestFailure = /** @class */ (function () {
             "your auth token has write access."; }
         return new this(message);
     };
-    PullRequestFailure.hasBreakingChanges = function (label) {
+    PullRequestFailure.hasBreakingChanges = function (label, isPrerelease) {
+        if (isPrerelease === void 0) { isPrerelease = false; }
         var message = "Cannot merge into branch for \"" + label.pattern + "\" as the pull request has " +
-            "breaking changes. Breaking changes can only be merged with the \"target: major\" label.";
+            'breaking changes.  ';
+        if (isPrerelease) {
+            message += 'New features cannot be merged during feature freeze or RC periods.';
+        }
+        else {
+            message += 'Breaking changes can only be merged with the "target: major" label.';
+        }
         return new this(message);
     };
-    PullRequestFailure.hasFeatureCommits = function (label) {
+    PullRequestFailure.hasFeatureCommits = function (label, isPrerelease) {
+        if (isPrerelease === void 0) { isPrerelease = false; }
         var message = "Cannot merge into branch for \"" + label.pattern + "\" as the pull request has " +
-            'commits with the "feat" type. New features can only be merged with the "target: minor" ' +
-            'or "target: major" label.';
+            'commits with the "feat" type.  ';
+        if (isPrerelease) {
+            message += 'New features cannot be merged during feature freeze or RC periods.';
+        }
+        else {
+            message += 'New features can only be merged with the "target: minor" or "target: major" ' +
+                'label.';
+        }
         return new this(message);
     };
     PullRequestFailure.missingBreakingChangeLabel = function () {
@@ -3475,7 +3489,7 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
     var git = _a.git, config = _a.config;
     if (ignoreNonFatalFailures === void 0) { ignoreNonFatalFailures = false; }
     return tslib.__awaiter(this, void 0, void 0, function () {
-        var prData, labels, targetLabel, commitsInPr, state, githubTargetBranch, requiredBaseSha, needsCommitMessageFixup, hasCaretakerNote, targetBranches, error_1;
+        var prData, labels, targetLabel, commitsInPr, releaseTrains, state, githubTargetBranch, requiredBaseSha, needsCommitMessageFixup, hasCaretakerNote, targetBranches, error_1;
         return tslib.__generator(this, function (_b) {
             switch (_b.label) {
                 case 0: return [4 /*yield*/, fetchPullRequestFromGithub(git, prNumber)];
@@ -3501,9 +3515,12 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                         throw error;
                     }
                     commitsInPr = prData.commits.nodes.map(function (n) { return parseCommitMessage(n.commit.message); });
+                    return [4 /*yield*/, fetchActiveReleaseTrains(config.remote)];
+                case 2:
+                    releaseTrains = _b.sent();
                     try {
                         assertPendingState(prData);
-                        assertChangesAllowForTargetLabel(commitsInPr, targetLabel, config);
+                        assertChangesAllowForTargetLabelOnReleaseTrains(commitsInPr, targetLabel, releaseTrains, config);
                         assertCorrectBreakingChangeLabeling(commitsInPr, labels, config);
                     }
                     catch (error) {
@@ -3522,20 +3539,20 @@ function loadAndValidatePullRequest(_a, prNumber, ignoreNonFatalFailures) {
                         labels.some(function (name) { return matchesPattern(name, config.commitMessageFixupLabel); });
                     hasCaretakerNote = !!config.caretakerNoteLabel &&
                         labels.some(function (name) { return matchesPattern(name, config.caretakerNoteLabel); });
-                    _b.label = 2;
-                case 2:
-                    _b.trys.push([2, 4, , 5]);
-                    return [4 /*yield*/, getBranchesFromTargetLabel(targetLabel, githubTargetBranch)];
+                    _b.label = 3;
                 case 3:
-                    targetBranches = _b.sent();
-                    return [3 /*break*/, 5];
+                    _b.trys.push([3, 5, , 6]);
+                    return [4 /*yield*/, getBranchesFromTargetLabel(targetLabel, githubTargetBranch)];
                 case 4:
+                    targetBranches = _b.sent();
+                    return [3 /*break*/, 6];
+                case 5:
                     error_1 = _b.sent();
                     if (error_1 instanceof InvalidTargetBranchError || error_1 instanceof InvalidTargetLabelError) {
                         return [2 /*return*/, new PullRequestFailure(error_1.failureMessage)];
                     }
                     throw error_1;
-                case 5: return [2 /*return*/, {
+                case 6: return [2 /*return*/, {
                         url: prData.url,
                         prNumber: prNumber,
                         labels: labels,
@@ -3611,7 +3628,8 @@ function isPullRequest(v) {
  * Assert the commits provided are allowed to merge to the provided target label, throwing a
  * PullRequestFailure otherwise.
  */
-function assertChangesAllowForTargetLabel(commits, label, config) {
+function assertChangesAllowForTargetLabelOnReleaseTrains(commits, label, trains, config) {
+    var _a, _b;
     /**
      * List of commit scopes which are exempted from target label content requirements. i.e. no `feat`
      * scopes in patch branches, no breaking changes in minor or patch changes.
@@ -3619,23 +3637,35 @@ function assertChangesAllowForTargetLabel(commits, label, config) {
     var exemptedScopes = config.targetLabelExemptScopes || [];
     /** List of commits which are subject to content requirements for the target label. */
     commits = commits.filter(function (commit) { return !exemptedScopes.includes(commit.scope); });
+    /** Whether the pull request contains breaking changes. */
+    var hasBreakingChanges = commits.some(function (commit) { return commit.breakingChanges.length !== 0; });
+    /** Whether the pull request contains feature commits. */
+    var hasFeatureCommits = commits.some(function (commit) { return commit.type === 'feat'; });
     switch (label.pattern) {
         case 'target: major':
+            if ((_a = trains.releaseCandidate) === null || _a === void 0 ? void 0 : _a.isPrerelease) {
+                if (hasBreakingChanges) {
+                    throw PullRequestFailure.hasBreakingChanges(label, true);
+                }
+                if (hasFeatureCommits) {
+                    throw PullRequestFailure.hasFeatureCommits(label, true);
+                }
+            }
             break;
         case 'target: minor':
-            // Check if any commits in the pull request contains a breaking change.
-            if (commits.some(function (commit) { return commit.breakingChanges.length !== 0; })) {
+            if (hasBreakingChanges) {
                 throw PullRequestFailure.hasBreakingChanges(label);
+            }
+            if (((_b = trains.releaseCandidate) === null || _b === void 0 ? void 0 : _b.isPrerelease) && hasFeatureCommits) {
+                throw PullRequestFailure.hasFeatureCommits(label, true);
             }
             break;
         case 'target: patch':
         case 'target: lts':
-            // Check if any commits in the pull request contains a breaking change.
-            if (commits.some(function (commit) { return commit.breakingChanges.length !== 0; })) {
+            if (hasBreakingChanges) {
                 throw PullRequestFailure.hasBreakingChanges(label);
             }
-            // Check if any commits in the pull request contains a commit type of "feat".
-            if (commits.some(function (commit) { return commit.type === 'feat'; })) {
+            if (hasFeatureCommits) {
                 throw PullRequestFailure.hasFeatureCommits(label);
             }
             break;

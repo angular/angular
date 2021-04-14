@@ -8,6 +8,7 @@
 
 import {params, types as graphqlTypes} from 'typed-graphqlify';
 import {Commit, parseCommitMessage} from '../../commit-message/parse';
+import {ActiveReleaseTrains, fetchActiveReleaseTrains} from '../../release/versioning/index';
 import {red, warn} from '../../utils/console';
 
 import {GitClient} from '../../utils/git/index';
@@ -81,9 +82,12 @@ export async function loadAndValidatePullRequest(
   /** List of parsed commits for all of the commits in the pull request. */
   const commitsInPr = prData.commits.nodes.map(n => parseCommitMessage(n.commit.message));
 
+  const releaseTrains = await fetchActiveReleaseTrains(config.remote);
+
   try {
     assertPendingState(prData);
-    assertChangesAllowForTargetLabel(commitsInPr, targetLabel, config);
+    assertChangesAllowForTargetLabelOnReleaseTrains(
+        commitsInPr, targetLabel, releaseTrains, config);
     assertCorrectBreakingChangeLabeling(commitsInPr, labels, config);
   } catch (error) {
     return error;
@@ -191,8 +195,8 @@ export function isPullRequest(v: PullRequestFailure|PullRequest): v is PullReque
  * Assert the commits provided are allowed to merge to the provided target label, throwing a
  * PullRequestFailure otherwise.
  */
-function assertChangesAllowForTargetLabel(
-    commits: Commit[], label: TargetLabel, config: MergeConfig) {
+function assertChangesAllowForTargetLabelOnReleaseTrains(
+    commits: Commit[], label: TargetLabel, trains: ActiveReleaseTrains, config: MergeConfig) {
   /**
    * List of commit scopes which are exempted from target label content requirements. i.e. no `feat`
    * scopes in patch branches, no breaking changes in minor or patch changes.
@@ -200,23 +204,35 @@ function assertChangesAllowForTargetLabel(
   const exemptedScopes = config.targetLabelExemptScopes || [];
   /** List of commits which are subject to content requirements for the target label. */
   commits = commits.filter(commit => !exemptedScopes.includes(commit.scope));
+  /** Whether the pull request contains breaking changes. */
+  const hasBreakingChanges = commits.some(commit => commit.breakingChanges.length !== 0);
+  /** Whether the pull request contains feature commits. */
+  const hasFeatureCommits = commits.some(commit => commit.type === 'feat');
   switch (label.pattern) {
     case 'target: major':
+      if (trains.releaseCandidate?.isPrerelease) {
+        if (hasBreakingChanges) {
+          throw PullRequestFailure.hasBreakingChanges(label, true);
+        }
+        if (hasFeatureCommits) {
+          throw PullRequestFailure.hasFeatureCommits(label, true);
+        }
+      }
       break;
     case 'target: minor':
-      // Check if any commits in the pull request contains a breaking change.
-      if (commits.some(commit => commit.breakingChanges.length !== 0)) {
+      if (hasBreakingChanges) {
         throw PullRequestFailure.hasBreakingChanges(label);
+      }
+      if (trains.releaseCandidate?.isPrerelease && hasFeatureCommits) {
+        throw PullRequestFailure.hasFeatureCommits(label, true);
       }
       break;
     case 'target: patch':
     case 'target: lts':
-      // Check if any commits in the pull request contains a breaking change.
-      if (commits.some(commit => commit.breakingChanges.length !== 0)) {
+      if (hasBreakingChanges) {
         throw PullRequestFailure.hasBreakingChanges(label);
       }
-      // Check if any commits in the pull request contains a commit type of "feat".
-      if (commits.some(commit => commit.type === 'feat')) {
+      if (hasFeatureCommits) {
         throw PullRequestFailure.hasFeatureCommits(label);
       }
       break;
