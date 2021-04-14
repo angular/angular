@@ -93,7 +93,7 @@
     "@webcomponents/custom-elements": "^1.1.0",
     "angular": "npm:angular@1.8",
     "angular-1.5": "npm:angular@1.5",
-    "angular-1.6": "npm:angular@1.6",
+    "angular-1.6": "npm:angular@1.8",
     "angular-1.7": "npm:angular@1.7",
     "angular-mocks": "npm:angular-mocks@1.8",
     "angular-mocks-1.5": "npm:angular-mocks@1.5",

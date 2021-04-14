@@ -2157,10 +2157,10 @@ alphanum-sort@^1.0.0:
   resolved "https://registry.yarnpkg.com/angular/-/angular-1.5.11.tgz#8c5ba7386f15965c9acf3429f6881553aada30d6"
   integrity sha1-jFunOG8VllyazzQp9ogVU6raMNY=
 
-"angular-1.6@npm:angular@1.6":
-  version "1.6.10"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.6.10.tgz#eed3080a34d29d0f681ff119b18ce294e3f74826"
-  integrity sha512-PCZ5/hVdvPQiYyH0VwsPjrErPHRcITnaXxhksceOXgtJeesKHLA7KDu4X/yvcAi+1zdGgGF+9pDxkJvghXI9Wg==
+"angular-1.6@npm:angular@1.8", "angular@npm:angular@1.8":
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/angular/-/angular-1.8.2.tgz#5983bbb5a9fa63e213cb7749199e0d352de3a2f1"
+  integrity sha512-IauMOej2xEe7/7Ennahkbb5qd/HFADiNuLSESz9Q27inmi32zB0lnAsFeLEWcox3Gd1F6YhNd1CP7/9IukJ0Gw==
 
 "angular-1.7@npm:angular@1.7":
   version "1.7.9"
@@ -2186,11 +2186,6 @@ alphanum-sort@^1.0.0:
   version "1.8.2"
   resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.8.2.tgz#dc022420b86978cf317a8447c116c0be73a853bf"
   integrity sha512-I5L3P0l21HPdVsP4A4qWmENt4ePjjbkDFdAzOaM7QiibFySbt14DptPbt2IjeG4vFBr4vSLbhIz8Fk03DISl8Q==
-
-"angular@npm:angular@1.8":
-  version "1.8.2"
-  resolved "https://registry.yarnpkg.com/angular/-/angular-1.8.2.tgz#5983bbb5a9fa63e213cb7749199e0d352de3a2f1"
-  integrity sha512-IauMOej2xEe7/7Ennahkbb5qd/HFADiNuLSESz9Q27inmi32zB0lnAsFeLEWcox3Gd1F6YhNd1CP7/9IukJ0Gw==
 
 ansi-align@^2.0.0:
   version "2.0.0"
