@@ -9,7 +9,7 @@
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
-    "@angular/common": "0.0.0-PLACEHOLDER"
+    "@angular/common": "0.0.0-7"
   },
   "repository": {
     "type": "git",

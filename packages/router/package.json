@@ -22,7 +22,7 @@
   },
   "peerDependencies": {
     "@angular/core": "0.0.0-PLACEHOLDER",
-    "@angular/common": "0.0.0-PLACEHOLDER",
+    "@angular/common": "0.0.0-7",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
     "rxjs": "^6.5.3"
   },
