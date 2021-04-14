@@ -8,11 +8,12 @@
 
 import {Injector} from '../di/injector';
 import {assertTNodeForLView} from '../render3/assert';
+import {getLContext} from '../render3/context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
 import {DECLARATION_COMPONENT_VIEW, LView, PARENT, T_HOST, TData, TVIEW} from '../render3/interfaces/view';
-import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, loadLContext} from '../render3/util/discovery_utils';
+import {getComponent, getContext, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent} from '../render3/util/discovery_utils';
 import {INTERPOLATION_DELIMITER} from '../render3/util/misc_utils';
 import {renderStringify} from '../render3/util/stringify_utils';
 import {getComponentLViewByIndex, getNativeByTNodeOrNull} from '../render3/util/view_utils';
@@ -261,13 +262,13 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   }
 
   get name(): string {
-    try {
-      const context = loadLContext(this.nativeNode)!;
+    const context = getLContext(this.nativeNode);
+    if (context !== null) {
       const lView = context.lView;
       const tData = lView[TVIEW].data;
       const tNode = tData[context.nodeIndex] as TNode;
       return tNode.value!;
-    } catch (e) {
+    } else {
       return this.nativeNode.nodeName;
     }
   }
@@ -285,8 +286,8 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
    *  - attribute bindings (e.g. `[attr.role]="menu"`)
    */
   get properties(): {[key: string]: any;} {
-    const context = loadLContext(this.nativeNode, false);
-    if (context == null) {
+    const context = getLContext(this.nativeNode);
+    if (context === null) {
       return {};
     }
 
@@ -311,8 +312,8 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       return attributes;
     }
 
-    const context = loadLContext(element, false);
-    if (context == null) {
+    const context = getLContext(element);
+    if (context === null) {
       return {};
     }
 
@@ -501,7 +502,7 @@ function _queryAllR3(
 function _queryAllR3(
     parentElement: DebugElement, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
-  const context = loadLContext(parentElement.nativeNode, false);
+  const context = getLContext(parentElement.nativeNode);
   if (context !== null) {
     const parentTNode = context.lView[TVIEW].data[context.nodeIndex] as TNode;
     _queryNodeChildrenR3(

@@ -53,7 +53,7 @@ import {getTNode, unwrapRNode} from './view_utils';
  */
 export function getComponent<T>(element: Element): T|null {
   assertDomElement(element);
-  const context = loadLContext(element, false);
+  const context = getLContext(element);
   if (context === null) return null;
 
   if (context.component === undefined) {
@@ -78,7 +78,7 @@ export function getComponent<T>(element: Element): T|null {
  */
 export function getContext<T>(element: Element): T|null {
   assertDomElement(element);
-  const context = loadLContext(element, false);
+  const context = getLContext(element);
   return context === null ? null : context.lView[CONTEXT] as T;
 }
 
@@ -98,7 +98,7 @@ export function getContext<T>(element: Element): T|null {
  * @globalApi ng
  */
 export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
-  const context = loadLContext(elementOrDir, false);
+  const context = getLContext(elementOrDir);
   if (context === null) return null;
 
   let lView = context.lView;
@@ -136,7 +136,7 @@ export function getRootComponents(elementOrDir: Element|{}): {}[] {
  * @globalApi ng
  */
 export function getInjector(elementOrDir: Element|{}): Injector {
-  const context = loadLContext(elementOrDir, false);
+  const context = getLContext(elementOrDir);
   if (context === null) return Injector.NULL;
 
   const tNode = context.lView[TVIEW].data[context.nodeIndex] as TElementNode;
@@ -149,7 +149,7 @@ export function getInjector(elementOrDir: Element|{}): Injector {
  * @param element Element for which the injection tokens should be retrieved.
  */
 export function getInjectionTokens(element: Element): any[] {
-  const context = loadLContext(element, false);
+  const context = getLContext(element);
   if (context === null) return [];
   const lView = context.lView;
   const tView = lView[TVIEW];
@@ -200,7 +200,7 @@ export function getDirectives(node: Node): {}[] {
     return [];
   }
 
-  const context = loadLContext(node, false);
+  const context = getLContext(node);
   if (context === null) {
     return [];
   }
@@ -285,22 +285,6 @@ export function getDirectiveMetadata(directiveOrComponentInstance: any): Compone
 }
 
 /**
- * Returns LContext associated with a target passed as an argument.
- * Throws if a given target doesn't have associated LContext.
- */
-export function loadLContext(target: {}): LContext;
-export function loadLContext(target: {}, throwOnNotFound: false): LContext|null;
-export function loadLContext(target: {}, throwOnNotFound: boolean = true): LContext|null {
-  const context = getLContext(target);
-  if (!context && throwOnNotFound) {
-    throw new Error(
-        ngDevMode ? `Unable to find context associated with ${stringifyForError(target)}` :
-                    'Invalid ng target');
-  }
-  return context;
-}
-
-/**
  * Retrieve map of local references.
  *
  * The references are retrieved as a map of local reference name to element or directive instance.
@@ -309,7 +293,7 @@ export function loadLContext(target: {}, throwOnNotFound: boolean = true): LCont
  *    the local references.
  */
 export function getLocalRefs(target: {}): {[key: string]: any} {
-  const context = loadLContext(target, false);
+  const context = getLContext(target);
   if (context === null) return {};
 
   if (context.localRefs === undefined) {
@@ -347,11 +331,6 @@ export function getHostElement(componentOrDirective: {}): Element {
 export function getRenderedText(component: any): string {
   const hostElement = getHostElement(component);
   return hostElement.textContent || '';
-}
-
-export function loadLContextFromNode(node: Node): LContext {
-  if (!(node instanceof Node)) throw new Error('Expecting instance of DOM Element');
-  return loadLContext(node)!;
 }
 
 /**
@@ -405,7 +384,7 @@ export interface Listener {
  */
 export function getListeners(element: Element): Listener[] {
   assertDomElement(element);
-  const lContext = loadLContext(element, false);
+  const lContext = getLContext(element);
   if (lContext === null) return [];
 
   const lView = lContext.lView;
@@ -458,9 +437,15 @@ function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
  * @param element DOM element which is owned by an existing component's view.
  */
 export function getDebugNode(element: Element): DebugNode|null {
-  let debugNode: DebugNode|null = null;
+  if (ngDevMode && !(element instanceof Node)) {
+    throw new Error('Expecting instance of DOM Element');
+  }
 
-  const lContext = loadLContextFromNode(element);
+  const lContext = getLContext(element);
+  if (lContext === null) {
+    return null;
+  }
+
   const lView = lContext.lView;
   const nodeIndex = lContext.nodeIndex;
   if (nodeIndex !== -1) {
@@ -471,10 +456,10 @@ export function getDebugNode(element: Element): DebugNode|null {
         isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) : getTNode(lView[TVIEW], nodeIndex);
     ngDevMode &&
         assertEqual(tNode.index, nodeIndex, 'Expecting that TNode at index is same as index');
-    debugNode = buildDebugNode(tNode, lView);
+    return buildDebugNode(tNode, lView);
   }
 
-  return debugNode;
+  return null;
 }
 
 /**
@@ -486,7 +471,7 @@ export function getDebugNode(element: Element): DebugNode|null {
  * @param target DOM element or component instance for which to retrieve the LView.
  */
 export function getComponentLView(target: any): LView {
-  const lContext = loadLContext(target);
+  const lContext = getLContext(target)!;
   const nodeIndx = lContext.nodeIndex;
   const lView = lContext.lView;
   const componentLView = lView[nodeIndx];
