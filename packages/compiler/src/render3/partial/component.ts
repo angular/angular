@@ -42,8 +42,11 @@ export interface DeclareComponentTemplateInfo {
    */
   isInline: boolean;
 
-  /** Expression that resolves to the inline template. */
-  inlineTemplateExpression: o.Expression|null;
+  /**
+   * If the template was defined inline by a direct string literal, then this is that literal
+   * expression. Otherwise `null`, if the template was not defined inline or was not a literal.
+   */
+  inlineTemplateLiteralExpression: o.Expression|null;
 }
 
 /**
@@ -111,19 +114,30 @@ export function createComponentDefinitionMap(
 
 function getTemplateExpression(
     template: ParsedTemplate, templateInfo: DeclareComponentTemplateInfo): o.Expression {
-  if (templateInfo.isInline) {
-    // The template is inline so we can just reuse the current expression node.
-    return templateInfo.inlineTemplateExpression!;
-  } else {
-    // The template is external so we must synthesize an expression node with the appropriate
-    // source-span.
-    const contents = templateInfo.content;
-    const file = new ParseSourceFile(contents, templateInfo.sourceUrl);
-    const start = new ParseLocation(file, 0, 0, 0);
-    const end = computeEndLocation(file, contents);
-    const span = new ParseSourceSpan(start, end);
-    return o.literal(contents, null, span);
+  // If the template has been defined using a direct literal, we use that expression directly
+  // without any modifications. This is ensures proper source mapping from the partially
+  // compiled code to the source file declaring the template. Note that this does not capture
+  // template literals referenced indirectly through an identifier.
+  if (templateInfo.inlineTemplateLiteralExpression !== null) {
+    return templateInfo.inlineTemplateLiteralExpression;
   }
+
+  // If the template is defined inline but not through a literal, the template has been resolved
+  // through static interpretation. We create a literal but cannot provide any source span. Note
+  // that we cannot use the expression defining the template because the linker expects the template
+  // to be defined as a literal in the declaration.
+  if (templateInfo.isInline) {
+    return o.literal(templateInfo.content, null, null);
+  }
+
+  // The template is external so we must synthesize an expression node with
+  // the appropriate source-span.
+  const contents = templateInfo.content;
+  const file = new ParseSourceFile(contents, templateInfo.sourceUrl);
+  const start = new ParseLocation(file, 0, 0, 0);
+  const end = computeEndLocation(file, contents);
+  const span = new ParseSourceSpan(start, end);
+  return o.literal(contents, null, span);
 }
 
 function computeEndLocation(file: ParseSourceFile, contents: string): ParseLocation {

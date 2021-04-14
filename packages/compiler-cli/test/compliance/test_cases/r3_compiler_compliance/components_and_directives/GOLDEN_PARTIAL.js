@@ -493,3 +493,77 @@ export declare class MyModule {
     static ɵinj: i0.ɵɵInjectorDeclaration<MyModule>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: non_literal_template.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+const myTemplate = `<div *ngIf="show">Hello</div>`;
+export class TestCmp {
+}
+TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: "<div *ngIf=\"show\">Hello</div>", isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{ selector: 'test-cmp', template: myTemplate }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: non_literal_template.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestCmp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: non_literal_template_with_substitution.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+const greeting = 'Hello!';
+const myTemplate = `<div *ngIf="show">${greeting}</div>`;
+export class TestCmp {
+}
+TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: "<div *ngIf=\"show\">Hello!</div>", isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{ selector: 'test-cmp', template: myTemplate }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: non_literal_template_with_substitution.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestCmp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+}
+
+/****************************************************************************************************
+ * PARTIAL FILE: non_literal_template_with_concatenation.js
+ ****************************************************************************************************/
+import { Component } from '@angular/core';
+import * as i0 from "@angular/core";
+const greeting = 'Hello!';
+const myTemplate = '<div *ngIf="show">' + greeting + '</div>';
+export class TestCmp {
+}
+TestCmp.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestCmp.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestCmp, selector: "test-cmp", ngImport: i0, template: "<div *ngIf=\"show\">Hello!</div>", isInline: true });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestCmp, decorators: [{
+            type: Component,
+            args: [{ selector: 'test-cmp', template: myTemplate }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: non_literal_template_with_concatenation.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+export declare class TestCmp {
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestCmp, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
+}
+

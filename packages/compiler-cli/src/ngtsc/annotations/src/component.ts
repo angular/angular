@@ -886,8 +886,8 @@ export class ComponentDecoratorHandler implements
       content: analysis.template.content,
       sourceUrl: analysis.template.declaration.resolvedTemplateUrl,
       isInline: analysis.template.declaration.isInline,
-      inlineTemplateExpression: analysis.template.declaration.isInline ?
-          new WrappedNodeExpr(analysis.template.declaration.expression) :
+      inlineTemplateLiteralExpression: analysis.template.sourceMapping.type === 'direct' ?
+          new WrappedNodeExpr(analysis.template.sourceMapping.node) :
           null,
     };
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};

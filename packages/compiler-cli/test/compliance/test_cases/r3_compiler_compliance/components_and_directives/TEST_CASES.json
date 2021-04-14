@@ -160,6 +160,24 @@
           ]
         }
       ]
+    },
+    {
+      "description": "should support inline non-literal templates",
+      "inputFiles": [
+        "non_literal_template.ts"
+      ]
+    },
+    {
+      "description": "should support inline non-literal templates using substitution",
+      "inputFiles": [
+        "non_literal_template_with_substitution.ts"
+      ]
+    },
+    {
+      "description": "should support inline non-literal templates using string concatenation",
+      "inputFiles": [
+        "non_literal_template_with_concatenation.ts"
+      ]
     }
   ]
 }
