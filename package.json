@@ -97,7 +97,7 @@
     "angular-1.7": "npm:angular@1.7",
     "angular-mocks": "npm:angular-mocks@1.8",
     "angular-mocks-1.5": "npm:angular-mocks@1.5",
-    "angular-mocks-1.6": "npm:angular-mocks@1.6",
+    "angular-mocks-1.6": "npm:angular-mocks@1.8",
     "angular-mocks-1.7": "npm:angular-mocks@1.7",
     "base64-js": "1.5.1",
     "bluebird": "^3.7.2",
