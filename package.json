@@ -209,7 +209,7 @@
   "// 5": "Ensure a single version of webdriver-manager so it is hoisted as the integration tests depend on it being found at ../../node_modules/webdriver-manager",
   "// 6": "Ensure that `@babel/*` packages match the below versions to avoid conflicts with `types/babel__*`",
   "resolutions": {
-    "**/graceful-fs": "4.2.4",
+    "**/graceful-fs": "4.2.6",
     "**/webdriver-manager": "12.1.8",
     "@babel/core": "7.8.6",
     "@babel/generator": "7.8.6",
