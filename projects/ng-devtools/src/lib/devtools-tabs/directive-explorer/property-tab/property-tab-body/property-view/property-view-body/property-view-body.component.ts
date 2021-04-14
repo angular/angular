@@ -35,7 +35,7 @@ export class PropertyViewBodyComponent {
         controls: this.directiveOutputControls,
       },
       {
-        title: 'State',
+        title: 'Properties',
         hidden: this.directiveStateControls.dataSource.data.length === 0,
         controls: this.directiveStateControls,
       },
