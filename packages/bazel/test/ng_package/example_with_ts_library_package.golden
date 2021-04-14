@@ -2,16 +2,10 @@ README.md
 bundles
   bundles/example-with-ts-library-portal.umd.js
   bundles/example-with-ts-library-portal.umd.js.map
-  bundles/example-with-ts-library-portal.umd.min.js
-  bundles/example-with-ts-library-portal.umd.min.js.map
   bundles/example-with-ts-library-utils.umd.js
   bundles/example-with-ts-library-utils.umd.js.map
-  bundles/example-with-ts-library-utils.umd.min.js
-  bundles/example-with-ts-library-utils.umd.min.js.map
   bundles/example-with-ts-library.umd.js
   bundles/example-with-ts-library.umd.js.map
-  bundles/example-with-ts-library.umd.min.js
-  bundles/example-with-ts-library.umd.min.js.map
 esm2015
   esm2015/example.externs.js
   esm2015/index.js
@@ -110,30 +104,6 @@ License: MIT
 //# sourceMappingURL=example-with-ts-library-portal.umd.js.map
 
 
---- bundles/example-with-ts-library-portal.umd.min.js ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2021 Google LLC. https://angular.io/
- * License: MIT
- */
-!function(e,r){"object"==typeof exports&&"undefined"!=typeof module?r(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example-with-ts-library/portal",["exports","@angular/core"],r):r(((e=e||self).exampleWithTsLibrary=e.exampleWithTsLibrary||{},e.exampleWithTsLibrary.portal={}),e.ng.core)}(this,(function(e,r){"use strict";
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */var t;(t=function t(){}).decorators=[{type:r.NgModule,args:[{}]}],
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-e.PortalModule=t,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
-
 --- bundles/example-with-ts-library-utils.umd.js ---
 
 /**
@@ -175,30 +145,6 @@ e.PortalModule=t,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
 //# sourceMappingURL=example-with-ts-library-utils.umd.js.map
 
 
---- bundles/example-with-ts-library-utils.umd.min.js ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2021 Google LLC. https://angular.io/
- * License: MIT
- */
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define("example-with-ts-library/utils",["exports"],t):t(((e=e||self).exampleWithTsLibrary=e.exampleWithTsLibrary||{},e.exampleWithTsLibrary.utils={}))}(this,(function(e){"use strict";
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-e.dispatchFakeEvent=function t(e,i){e.dispatchEvent(i)},Object.defineProperty(e,"__esModule",{value:!0})}));
-
 --- bundles/example-with-ts-library.umd.js ---
 
 /**
@@ -229,22 +175,6 @@ e.dispatchFakeEvent=function t(e,i){e.dispatchEvent(i)},Object.defineProperty(e,
 })));
 //# sourceMappingURL=example-with-ts-library.umd.js.map
 
-
---- bundles/example-with-ts-library.umd.min.js ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2021 Google LLC. https://angular.io/
- * License: MIT
- */
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define("example-with-ts-library",["exports"],t):t((e=e||self).exampleWithTsLibrary={})}(this,(function(e){"use strict";
-/**
-	 * @license
-	 * Copyright Google LLC All Rights Reserved.
-	 *
-	 * Use of this source code is governed by an MIT-style license that can be
-	 * found in the LICENSE file at https://angular.io/license
-	 */e.VERSION="0.0.0",Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- esm2015/example.externs.js ---
 

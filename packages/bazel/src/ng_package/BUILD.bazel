@@ -1,6 +1,10 @@
-package(default_visibility = ["//visibility:public"])
-
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+
+# BEGIN-DEV-ONLY
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+# END-DEV-ONLY
+
+package(default_visibility = ["//visibility:public"])
 
 nodejs_binary(
     name = "rollup_for_ng_package",
@@ -40,12 +44,9 @@ nodejs_binary(
 exports_files([
     "ng_package.bzl",
     "rollup.config.js",
-    "terser_config.default.json",
 ])
 
 # BEGIN-DEV-ONLY
-load("@npm//@bazel/typescript:index.bzl", "ts_library")
-
 ts_library(
     name = "lib",
     srcs = glob(["*.ts"]),
@@ -61,7 +62,6 @@ filegroup(
     srcs = glob(["*.bzl"]) + [
         "BUILD.bazel",
         "rollup.config.js",
-        "terser_config.default.json",
     ],
 )
 
