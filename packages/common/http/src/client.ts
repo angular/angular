@@ -608,6 +608,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return  An `Observable` of the response body as an `ArrayBuffer`.
    */
@@ -619,7 +620,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
-  }): Observable<ArrayBuffer>;
+  }, body?: any|null): Observable<ArrayBuffer>;
 
 
   /**
@@ -628,6 +629,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of the response body as a `Blob`.
    */
@@ -639,7 +641,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
-  }): Observable<Blob>;
+  }, body?: any|null): Observable<Blob>;
 
   /**
    * Constructs a `DELETE` request that interprets the body as a text string and returns
@@ -647,6 +649,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of the response, with the response body of type string.
    */
@@ -658,7 +661,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
-  }): Observable<string>;
+  }, body?: any|null): Observable<string>;
 
   /**
    * Constructs a `DELETE` request that interprets the body as an `ArrayBuffer`
@@ -666,6 +669,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of all `HttpEvent`s for the request,
    * with response body as an `ArrayBuffer`.
@@ -677,7 +681,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
-  }): Observable<HttpEvent<ArrayBuffer>>;
+  }, body?: any|null): Observable<HttpEvent<ArrayBuffer>>;
 
   /**
    * Constructs a `DELETE` request that interprets the body as a `Blob`
@@ -685,6 +689,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of all the `HttpEvent`s for the request, with the response body as a
    * `Blob`.
@@ -696,7 +701,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
-  }): Observable<HttpEvent<Blob>>;
+  }, body?: any|null): Observable<HttpEvent<Blob>>;
 
   /**
    * Constructs a `DELETE` request that interprets the body as a text string
@@ -704,6 +709,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of all `HttpEvent`s for the request, with the response
    * body of type string.
@@ -715,7 +721,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
-  }): Observable<HttpEvent<string>>;
+  }, body?: any|null): Observable<HttpEvent<string>>;
 
   /**
    * Constructs a `DELETE` request that interprets the body as a JSON object
@@ -723,6 +729,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of all `HttpEvent`s for the request, with response body of
    * type `Object`.
@@ -735,7 +742,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
-  }): Observable<HttpEvent<Object>>;
+  }, body?: any|null): Observable<HttpEvent<Object>>;
 
   /**
    * Constructs a `DELETE`request that interprets the body as a JSON object
@@ -743,6 +750,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of all the `HttpEvent`s for the request, with a response
    * body in the requested type.
@@ -755,7 +763,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
-  }): Observable<HttpEvent<T>>;
+  }, body?: any|null): Observable<HttpEvent<T>>;
 
   /**
    * Constructs a `DELETE` request that interprets the body as an `ArrayBuffer` and returns
@@ -763,6 +771,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of the full `HttpResponse`, with the response body as an `ArrayBuffer`.
    */
@@ -773,7 +782,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'arraybuffer',
     withCredentials?: boolean,
-  }): Observable<HttpResponse<ArrayBuffer>>;
+  }, body?: any|null): Observable<HttpResponse<ArrayBuffer>>;
 
   /**
    * Constructs a `DELETE` request that interprets the body as a `Blob` and returns the full
@@ -781,6 +790,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of the `HttpResponse`, with the response body of type `Blob`.
    */
@@ -791,7 +801,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'blob',
     withCredentials?: boolean,
-  }): Observable<HttpResponse<Blob>>;
+  }, body?: any|null): Observable<HttpResponse<Blob>>;
 
   /**
    * Constructs a `DELETE` request that interprets the body as a text stream and
@@ -799,6 +809,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of the full `HttpResponse`, with the response body of type string.
    */
@@ -809,7 +820,7 @@ export class HttpClient {
           {[param: string]: string | number | boolean | ReadonlyArray<string|number|boolean>},
     reportProgress?: boolean, responseType: 'text',
     withCredentials?: boolean,
-  }): Observable<HttpResponse<string>>;
+  }, body?: any|null): Observable<HttpResponse<string>>;
 
   /**
    * Constructs a `DELETE` request the interprets the body as a JSON object and returns
@@ -817,6 +828,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of the `HttpResponse`, with the response body of type `Object`.
    *
@@ -829,7 +841,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
-  }): Observable<HttpResponse<Object>>;
+  }, body?: any|null): Observable<HttpResponse<Object>>;
 
   /**
    * Constructs a `DELETE` request that interprets the body as a JSON object
@@ -837,6 +849,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of the `HttpResponse`, with the response body of the requested type.
    */
@@ -848,7 +861,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
-  }): Observable<HttpResponse<T>>;
+  }, body?: any|null): Observable<HttpResponse<T>>;
 
   /**
    * Constructs a `DELETE` request that interprets the body as a JSON object and
@@ -856,6 +869,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of the response, with the response body of type `Object`.
    */
@@ -868,7 +882,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
-  }): Observable<Object>;
+  }, body?: any|null): Observable<Object>;
 
   /**
    * Constructs a DELETE request that interprets the body as a JSON object and returns
@@ -876,6 +890,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    * @return An `Observable` of the `HttpResponse`, with response body in the requested type.
    */
@@ -888,7 +903,7 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'json',
     withCredentials?: boolean,
-  }): Observable<T>;
+  }, body?: any|null): Observable<T>;
 
   /**
    * Constructs an observable that, when subscribed, causes the configured
@@ -897,6 +912,7 @@ export class HttpClient {
    *
    * @param url     The endpoint URL.
    * @param options The HTTP options to send with the request.
+   * @param body    Optional param, The data to send with the request.
    *
    */
   delete(url: string, options: {
@@ -908,8 +924,8 @@ export class HttpClient {
     reportProgress?: boolean,
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
-  } = {}): Observable<any> {
-    return this.request<any>('DELETE', url, options as any);
+  } = {}, body?: any|null): Observable<any> {
+    return this.request<any>('DELETE', url, addBody(options, body));
   }
 
 

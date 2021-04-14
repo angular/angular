@@ -145,6 +145,27 @@ import {toArray} from 'rxjs/operators';
         expect(testReq.request.body).toBe(body);
         testReq.flush('hello world');
       });
+      it('DELETE request with body', done => {
+        const body = {data: 'json body'};
+        client.delete('/test', {observe: 'response', responseType: 'text'}, body).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(200);
+          done();
+        });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(body);
+        testReq.flush('hello world');
+      });
+      it('DELETE request without body', done => {
+        client.delete('/test', {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(200);
+          done();
+        });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(undefined);
+        testReq.flush('hello world');
+      });
       it('with a json body of false', done => {
         client.post('/test', false, {observe: 'response', responseType: 'text'}).subscribe(res => {
           expect(res.ok).toBeTruthy();
