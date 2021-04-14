@@ -11,7 +11,7 @@
     "16": "favicon.ico"
   },
   "browser_action": {
-    "default_popup": "popups/disabled.html"
+    "default_popup": "popups/not-angular.html"
   },
   "devtools_page": "devtools.html",
   "web_accessible_resources": ["backend.js", "runtime.js", "devtools.html"],
