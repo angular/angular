@@ -1,3 +1,59 @@
+# 12.0.0-next.7 "porcelain-daydream" (2021-04-14)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **drag-drop:** preserve initial transform inside drop list ([#22422](https://github.com/angular/components/issues/22422)) ([7508f46e7d1fd2eb0c20fdf8b913aacfcad5ea5a](https://github.com/angular/components/commit/7508f46e7d1fd2eb0c20fdf8b913aacfcad5ea5a)), closes [#22407](https://github.com/angular/components/issues/22407) |
+| bug fix |  **testing:** prevent duplicate subscription ([#22460](https://github.com/angular/components/issues/22460)) ([58b4ab6d7ac30b85ff93f4e7a3b16fc7e6977d07](https://github.com/angular/components/commit/58b4ab6d7ac30b85ff93f4e7a3b16fc7e6977d07)) |
+| bug fix |  **testing:** unable to assign value to number inputs using sendKeys ([#22395](https://github.com/angular/components/issues/22395)) ([2f177b62205beeb20eceba3acd2ad7ab46bd701f](https://github.com/angular/components/commit/2f177b62205beeb20eceba3acd2ad7ab46bd701f)), closes [#22129](https://github.com/angular/components/issues/22129) |
+| feature |  **stepper:** emit event when the user interacts with a step ([#22400](https://github.com/angular/components/issues/22400)) ([9b4c5035c9d44f5196eaa22927f0feb1f5c05afa](https://github.com/angular/components/commit/9b4c5035c9d44f5196eaa22927f0feb1f5c05afa)), closes [#19918](https://github.com/angular/components/issues/19918) |
+| feature |  **testing:** create a webdriver harness environment ([#22410](https://github.com/angular/components/issues/22410)) ([91969f345636d56ba5a05a62f5109434a69666dc](https://github.com/angular/components/commit/91969f345636d56ba5a05a62f5109434a69666dc)), closes [#22321](https://github.com/angular/components/issues/22321) [#22344](https://github.com/angular/components/issues/22344) [#22367](https://github.com/angular/components/issues/22367) [#22375](https://github.com/angular/components/issues/22375) [#22379](https://github.com/angular/components/issues/22379) [#22379](https://github.com/angular/components/issues/22379) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **core:** expose mixin mentioned in the elevation guide ([#22426](https://github.com/angular/components/issues/22426)) ([dd1d28f69c376b71779377e7b464fdb05a1d85f4](https://github.com/angular/components/commit/dd1d28f69c376b71779377e7b464fdb05a1d85f4)) |
+| bug fix |  **list:** dispatching model change event multiple times in single selection mode ([#22376](https://github.com/angular/components/issues/22376)) ([770217726209533f02cd33fd030a947ec9b719c6](https://github.com/angular/components/commit/770217726209533f02cd33fd030a947ec9b719c6)), closes [#22276](https://github.com/angular/components/issues/22276) |
+| bug fix |  **schematics:** don't drop imports in files that do not use theming APIs ([#22438](https://github.com/angular/components/issues/22438)) ([d030a8712adb37cd4e8d5eb83014e1ac23d13774](https://github.com/angular/components/commit/d030a8712adb37cd4e8d5eb83014e1ac23d13774)) |
+| bug fix |  **schematics:** switch custom theme schematic to `[@use](https://github.com/use)` ([#22436](https://github.com/angular/components/issues/22436)) ([0cb27f95c4cd0c562d1ca293fd7161d5e5ab27f6](https://github.com/angular/components/commit/0cb27f95c4cd0c562d1ca293fd7161d5e5ab27f6)) |
+| bug fix |  **tabs:** pagination not updating on resize ([#22442](https://github.com/angular/components/issues/22442)) ([30ea79ae110617515b40f7832cc34ba5d8320b43](https://github.com/angular/components/commit/30ea79ae110617515b40f7832cc34ba5d8320b43)), closes [#22399](https://github.com/angular/components/issues/22399) |
+| bug fix |  **tree:** not rendering initial data from flat data source ([#22340](https://github.com/angular/components/issues/22340)) ([fa7ed4caeff0149933ab5bac4a7c0e0aa0ce623e](https://github.com/angular/components/commit/fa7ed4caeff0149933ab5bac4a7c0e0aa0ce623e)), closes [#22282](https://github.com/angular/components/issues/22282) |
+| feature |  **datepicker:** remove dependency on dialog ([#22383](https://github.com/angular/components/issues/22383)) ([7039d3e00576e632da7f9cb15bc0fa623dd82a1e](https://github.com/angular/components/commit/7039d3e00576e632da7f9cb15bc0fa623dd82a1e)), closes [#13019](https://github.com/angular/components/issues/13019) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-progress-spinner:** fix aria-valuenow ([#22429](https://github.com/angular/components/issues/22429)) ([768534dbc63b829d820c32373fd1788e572bb8c8](https://github.com/angular/components/commit/768534dbc63b829d820c32373fd1788e572bb8c8)) |
+| bug fix |  **mdc-select:** correct some differences between ([#22108](https://github.com/angular/components/issues/22108)) ([10cc9cfa5cb62c87f38ce5ac0aaa68269f5e69cb](https://github.com/angular/components/commit/10cc9cfa5cb62c87f38ce5ac0aaa68269f5e69cb)) |
+| feature |  **mdc-core:** set up MDC-based elevation ([#22397](https://github.com/angular/components/issues/22397)) ([64087316f68764df10a55fabab533ff7bf63e5c3](https://github.com/angular/components/commit/64087316f68764df10a55fabab533ff7bf63e5c3)) |
+
+
+## 11.2.9 "earthenware-nightmare" (2021-04-14)
+
+### cdk
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **testing:** prevent duplicate subscription ([#22460](https://github.com/angular/components/issues/22460)) ([a9e5ad264a0895d871feeef5943473a9d8ca4112](https://github.com/angular/components/commit/a9e5ad264a0895d871feeef5943473a9d8ca4112)) |
+| bug fix |  **testing:** unable to assign value to number inputs using sendKeys ([#22395](https://github.com/angular/components/issues/22395)) ([61eb92ab11896fe8595d73dda95b6267333d22ca](https://github.com/angular/components/commit/61eb92ab11896fe8595d73dda95b6267333d22ca)), closes [#22129](https://github.com/angular/components/issues/22129) |
+
+### material
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **list:** dispatching model change event multiple times in single selection mode ([#22376](https://github.com/angular/components/issues/22376)) ([11ff7ba75a9c899a85706738f9e3ec5c08c5d0b7](https://github.com/angular/components/commit/11ff7ba75a9c899a85706738f9e3ec5c08c5d0b7)), closes [#22276](https://github.com/angular/components/issues/22276) |
+| bug fix |  **tabs:** pagination not updating on resize ([#22442](https://github.com/angular/components/issues/22442)) ([445eb0470f29f0c237fa7eaf8b56b0eb7d617e8e](https://github.com/angular/components/commit/445eb0470f29f0c237fa7eaf8b56b0eb7d617e8e)), closes [#22399](https://github.com/angular/components/issues/22399) |
+
+### material-experimental
+
+|            |                       |
+| ---------- | --------------------- |
+| bug fix |  **mdc-progress-spinner:** fix aria-valuenow ([#22429](https://github.com/angular/components/issues/22429)) ([1ed3e5fbe2006e9cd9da9f6c4714e3cf1ea455c4](https://github.com/angular/components/commit/1ed3e5fbe2006e9cd9da9f6c4714e3cf1ea455c4)) |
+
+
 # 12.0.0-next.6 "bamboo-shampoo" (2021-04-07)
 
 ### cdk
