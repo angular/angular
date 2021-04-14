@@ -7,7 +7,7 @@
  */
 
 import {TmplAstReference, TmplAstTemplate} from '@angular/compiler';
-import {AST, EmptyExpr, MethodCall, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead, TmplAstNode} from '@angular/compiler/src/compiler';
+import {MethodCall, PropertyRead, PropertyWrite, SafeMethodCall, SafePropertyRead} from '@angular/compiler/src/compiler';
 import * as ts from 'typescript';
 
 import {AbsoluteFsPath} from '../../file_system';
@@ -23,77 +23,65 @@ import {TemplateData} from './context';
  * surrounding TS program have changed.
  */
 export class CompletionEngine {
-  private componentContext: ShimLocation|null;
-
   /**
-   * Cache of completions for various levels of the template, including the root template (`null`).
-   * Memoizes `getTemplateContextCompletions`.
+   * Cache of `GlobalCompletion`s for various levels of the template, including the root template
+   * (`null`).
    */
-  private templateContextCache =
-      new Map<TmplAstTemplate|null, Map<string, ReferenceCompletion|VariableCompletion>>();
+  private globalCompletionCache = new Map<TmplAstTemplate|null, GlobalCompletion>();
 
   private expressionCompletionCache =
       new Map<PropertyRead|SafePropertyRead|MethodCall|SafeMethodCall, ShimLocation>();
 
+  constructor(private tcb: ts.Node, private data: TemplateData, private shimPath: AbsoluteFsPath) {}
 
-  constructor(private tcb: ts.Node, private data: TemplateData, private shimPath: AbsoluteFsPath) {
+  /**
+   * Get global completions within the given template context - either a `TmplAstTemplate` embedded
+   * view, or `null` for the root template context.
+   */
+  getGlobalCompletions(context: TmplAstTemplate|null): GlobalCompletion|null {
+    if (this.globalCompletionCache.has(context)) {
+      return this.globalCompletionCache.get(context)!;
+    }
+
     // Find the component completion expression within the TCB. This looks like: `ctx. /* ... */;`
     const globalRead = findFirstMatchingNode(this.tcb, {
       filter: ts.isPropertyAccessExpression,
       withExpressionIdentifier: ExpressionIdentifier.COMPONENT_COMPLETION
     });
 
-    if (globalRead !== null) {
-      this.componentContext = {
+    if (globalRead === null) {
+      return null;
+    }
+
+    const completion: GlobalCompletion = {
+      componentContext: {
         shimPath: this.shimPath,
         // `globalRead.name` is an empty `ts.Identifier`, so its start position immediately follows
         // the `.` in `ctx.`. TS autocompletion APIs can then be used to access completion results
         // for the component context.
         positionInShimFile: globalRead.name.getStart(),
-      };
-    } else {
-      this.componentContext = null;
-    }
-  }
+      },
+      templateContext: new Map<string, ReferenceCompletion|VariableCompletion>(),
+    };
 
-  /**
-   * Get global completions within the given template context and AST node.
-   *
-   * @param context the given template context - either a `TmplAstTemplate` embedded view, or `null`
-   *     for the root
-   * template context.
-   * @param node the given AST node
-   */
-  getGlobalCompletions(context: TmplAstTemplate|null, node: AST|TmplAstNode): GlobalCompletion
-      |null {
-    if (this.componentContext === null) {
-      return null;
-    }
-
-    const templateContext = this.getTemplateContextCompletions(context);
-    if (templateContext === null) {
-      return null;
-    }
-
-    let nodeContext: ShimLocation|null = null;
-    if (node instanceof EmptyExpr) {
-      const nodeLocation = findFirstMatchingNode(this.tcb, {
-        filter: ts.isIdentifier,
-        withSpan: node.sourceSpan,
-      });
-      if (nodeLocation !== null) {
-        nodeContext = {
-          shimPath: this.shimPath,
-          positionInShimFile: nodeLocation.getStart(),
-        };
+    // The bound template already has details about the references and variables in scope in the
+    // `context` template - they just need to be converted to `Completion`s.
+    for (const node of this.data.boundTarget.getEntitiesInTemplateScope(context)) {
+      if (node instanceof TmplAstReference) {
+        completion.templateContext.set(node.name, {
+          kind: CompletionKind.Reference,
+          node,
+        });
+      } else {
+        completion.templateContext.set(node.name, {
+          kind: CompletionKind.Variable,
+          node,
+        });
       }
     }
 
-    return {
-      componentContext: this.componentContext,
-      templateContext,
-      nodeContext,
-    };
+    this.globalCompletionCache.set(context, completion);
+    return completion;
   }
 
   getExpressionCompletionLocation(expr: PropertyRead|PropertyWrite|MethodCall|
@@ -142,37 +130,5 @@ export class CompletionEngine {
     };
     this.expressionCompletionCache.set(expr, res);
     return res;
-  }
-
-  /**
-   * Get global completions within the given template context - either a `TmplAstTemplate` embedded
-   * view, or `null` for the root context.
-   */
-  private getTemplateContextCompletions(context: TmplAstTemplate|null):
-      Map<string, ReferenceCompletion|VariableCompletion>|null {
-    if (this.templateContextCache.has(context)) {
-      return this.templateContextCache.get(context)!;
-    }
-
-    const templateContext = new Map<string, ReferenceCompletion|VariableCompletion>();
-
-    // The bound template already has details about the references and variables in scope in the
-    // `context` template - they just need to be converted to `Completion`s.
-    for (const node of this.data.boundTarget.getEntitiesInTemplateScope(context)) {
-      if (node instanceof TmplAstReference) {
-        templateContext.set(node.name, {
-          kind: CompletionKind.Reference,
-          node,
-        });
-      } else {
-        templateContext.set(node.name, {
-          kind: CompletionKind.Variable,
-          node,
-        });
-      }
-    }
-
-    this.templateContextCache.set(context, templateContext);
-    return templateContext;
   }
 }

@@ -141,7 +141,7 @@ function setupCompletions(
     context = tmpl;
   }
 
-  const completions = templateTypeChecker.getGlobalCompletions(context, SomeCmp, null!)!;
+  const completions = templateTypeChecker.getGlobalCompletions(context, SomeCmp)!;
   expect(completions).toBeDefined();
   return {
     completions,
