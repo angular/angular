@@ -83,6 +83,11 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
     this._onInitFns = [];
   }
 
+  reset() {
+    super.reset();
+    this.__started = false;
+  }
+
   finish(): void {
     super.finish();
     this.__finished = true;

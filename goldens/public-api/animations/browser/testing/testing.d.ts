@@ -31,4 +31,5 @@ export declare class MockAnimationPlayer extends NoopAnimationPlayer {
     finish(): void;
     hasStarted(): boolean;
     play(): void;
+    reset(): void;
 }

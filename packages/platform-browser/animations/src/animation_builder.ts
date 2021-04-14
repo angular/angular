@@ -104,6 +104,7 @@ export class RendererAnimationPlayer implements AnimationPlayer {
 
   reset(): void {
     this._command('reset');
+    this._started = false;
   }
 
   setPosition(p: number): void {
