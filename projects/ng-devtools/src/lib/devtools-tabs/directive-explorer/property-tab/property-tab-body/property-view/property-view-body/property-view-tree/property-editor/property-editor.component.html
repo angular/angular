@@ -7,6 +7,7 @@
     </span>
     <span *ngSwitchCase="writeState">
       <input
+        matInput
         type="text"
         class="editor-input editable"
         (mousedown)="$event.stopPropagation()"
