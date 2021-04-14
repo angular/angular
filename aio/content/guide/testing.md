@@ -290,9 +290,12 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
-      - name: npm install and test
+          
+      - name: Setup
+        run: npm ci
+
+      - name: Test
         run: |
-          npm ci
           npm test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
           npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
