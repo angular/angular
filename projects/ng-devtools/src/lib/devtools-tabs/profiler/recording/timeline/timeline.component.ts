@@ -61,13 +61,13 @@ export class TimelineComponent implements OnDestroy {
 
   getColorByFrameRate(framerate: number): string {
     if (framerate >= 60) {
-      return '#5cadd3';
+      return '#d6f0d1';
     } else if (framerate < 60 && framerate >= 30) {
-      return '#8a1882';
+      return '#f2dca2';
     } else if (framerate < 30 && framerate >= 15) {
-      return '#9b4807';
+      return '#f9cc9d';
     }
-    return '#ce271e';
+    return '#fad1d1';
   }
 
   ngOnDestroy(): void {
