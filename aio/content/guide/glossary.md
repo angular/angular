@@ -964,6 +964,14 @@ The following example defines a template reference variable named `#phone`.
 
 For more information, see the [Template reference variable](guide/template-reference-variables) guide.
 
+{@a template-input-variable}
+
+## template input variable
+
+A template input variable is a variable you can reference within a single instance of the template. You declare a template input variable using the let keyword as in let hero.
+
+Read and learn more about [Template Input Variables](template-reference-variables#template-input-variable).
+
 {@a token}
 
 ## token
