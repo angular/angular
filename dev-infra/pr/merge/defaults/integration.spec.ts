@@ -13,6 +13,7 @@ import {_npmPackageInfoCache, NpmPackageInfo} from '../../../release/versioning/
 import {GithubConfig} from '../../../utils/config';
 import * as console from '../../../utils/console';
 import {GithubClient} from '../../../utils/git/github';
+import {installVirtualGitClientSpies} from '../../../utils/testing';
 import {TargetLabel} from '../config';
 import {getBranchesFromTargetLabel, getTargetLabelFromPullRequest} from '../target-label';
 
@@ -26,6 +27,7 @@ describe('default target labels', () => {
   let releaseConfig: ReleaseConfig;
 
   beforeEach(() => {
+    installVirtualGitClientSpies();
     api = new GithubClient();
     githubConfig = {owner: 'angular', name: 'dev-infra-test'};
     releaseConfig = {

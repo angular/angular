@@ -7,13 +7,9 @@
  */
 
 import * as semver from 'semver';
-import {GithubClient, GithubRepo} from '../../utils/git/github';
 
-/** Type describing a Github repository with corresponding API client. */
-export interface GithubRepoWithApi extends GithubRepo {
-  /** API client that can access the repository. */
-  api: GithubClient;
-}
+import {GithubConfig} from '../../utils/config';
+import {GitClient} from '../../utils/git/index';
 
 /** Type describing a version-branch. */
 export interface VersionBranch {
@@ -32,8 +28,9 @@ const versionBranchNameRegex = /^(\d+)\.(\d+)\.x$/;
 
 /** Gets the version of a given branch by reading the `package.json` upstream. */
 export async function getVersionOfBranch(
-    repo: GithubRepoWithApi, branchName: string): Promise<semver.SemVer> {
-  const {data} = await repo.api.repos.getContents(
+    repo: GithubConfig, branchName: string): Promise<semver.SemVer> {
+  const {github} = GitClient.getInstance();
+  const {data} = await github.repos.getContents(
       {owner: repo.owner, repo: repo.name, path: '/package.json', ref: branchName});
   const {version} = JSON.parse(Buffer.from(data.content, 'base64').toString()) as
       {version: string, [key: string]: any};
@@ -65,9 +62,10 @@ export function getVersionForVersionBranch(branchName: string): semver.SemVer|nu
  * order. i.e. latest version branches first.
  */
 export async function getBranchesForMajorVersions(
-    repo: GithubRepoWithApi, majorVersions: number[]): Promise<VersionBranch[]> {
+    repo: GithubConfig, majorVersions: number[]): Promise<VersionBranch[]> {
+  const {github} = GitClient.getInstance();
   const {data: branchData} =
-      await repo.api.repos.listBranches({owner: repo.owner, repo: repo.name, protected: true});
+      await github.repos.listBranches({owner: repo.owner, repo: repo.name, protected: true});
   const branches: VersionBranch[] = [];
 
   for (const {name} of branchData) {

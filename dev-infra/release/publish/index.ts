@@ -15,7 +15,6 @@ import {ReleaseConfig} from '../config/index';
 import {ActiveReleaseTrains, fetchActiveReleaseTrains, nextBranchName} from '../versioning/active-release-trains';
 import {npmIsLoggedIn, npmLogin, npmLogout} from '../versioning/npm-publish';
 import {printActiveReleaseTrains} from '../versioning/print-active-trains';
-import {GithubRepoWithApi} from '../versioning/version-branches';
 
 import {ReleaseAction} from './actions';
 import {FatalReleaseActionError, UserAbortedReleaseActionError} from './actions-error';
@@ -54,7 +53,7 @@ export class ReleaseTool {
     }
 
     const {owner, name} = this._github;
-    const repo: GithubRepoWithApi = {owner, name, api: this._git.github};
+    const repo = {owner, name};
     const releaseTrains = await fetchActiveReleaseTrains(repo);
 
     // Print the active release trains so that the caretaker can access

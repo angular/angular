@@ -7,9 +7,10 @@
  */
 
 import * as semver from 'semver';
+import {GithubConfig} from '../../utils/config';
 
 import {ReleaseTrain} from './release-trains';
-import {getBranchesForMajorVersions, getVersionOfBranch, GithubRepoWithApi, VersionBranch} from './version-branches';
+import {getBranchesForMajorVersions, getVersionOfBranch, VersionBranch} from './version-branches';
 
 /** Interface describing determined active release trains for a project. */
 export interface ActiveReleaseTrains {
@@ -25,8 +26,7 @@ export interface ActiveReleaseTrains {
 export const nextBranchName = 'master';
 
 /** Fetches the active release trains for the configured project. */
-export async function fetchActiveReleaseTrains(repo: GithubRepoWithApi):
-    Promise<ActiveReleaseTrains> {
+export async function fetchActiveReleaseTrains(repo: GithubConfig): Promise<ActiveReleaseTrains> {
   const nextVersion = await getVersionOfBranch(repo, nextBranchName);
   const next = new ReleaseTrain(nextBranchName, nextVersion);
   const majorVersionsToConsider: number[] = [];
@@ -74,7 +74,7 @@ export async function fetchActiveReleaseTrains(repo: GithubRepoWithApi):
 
 /** Finds the currently active release trains from the specified version branches. */
 export async function findActiveReleaseTrainsFromVersionBranches(
-    repo: GithubRepoWithApi, nextVersion: semver.SemVer, branches: VersionBranch[],
+    repo: GithubConfig, nextVersion: semver.SemVer, branches: VersionBranch[],
     expectedReleaseCandidateMajor: number): Promise<{
   latest: ReleaseTrain | null,
   releaseCandidate: ReleaseTrain | null,

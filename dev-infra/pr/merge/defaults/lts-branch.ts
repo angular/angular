@@ -9,7 +9,8 @@
 import * as semver from 'semver';
 
 import {ReleaseConfig} from '../../../release/config/index';
-import {computeLtsEndDateOfMajor, fetchProjectNpmPackageInfo, getLtsNpmDistTagOfMajor, getVersionOfBranch, GithubRepoWithApi} from '../../../release/versioning';
+import {computeLtsEndDateOfMajor, fetchProjectNpmPackageInfo, getLtsNpmDistTagOfMajor, getVersionOfBranch} from '../../../release/versioning';
+import {GithubConfig} from '../../../utils/config';
 import {promptConfirm, red, warn, yellow} from '../../../utils/console';
 import {InvalidTargetBranchError} from '../target-label';
 
@@ -22,7 +23,7 @@ import {InvalidTargetBranchError} from '../target-label';
  * @param branchName Branch that is checked to be an active LTS version-branch.
  * */
 export async function assertActiveLtsBranch(
-    repo: GithubRepoWithApi, releaseConfig: ReleaseConfig, branchName: string) {
+    repo: GithubConfig, releaseConfig: ReleaseConfig, branchName: string) {
   const version = await getVersionOfBranch(repo, branchName);
   const {'dist-tags': distTags, time} = await fetchProjectNpmPackageInfo(releaseConfig);
 

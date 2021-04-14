@@ -17,14 +17,6 @@ import {query, types} from 'typed-graphqlify';
  */
 export type GraphqlQueryObject = Parameters<typeof query>[1];
 
-/** Interface describing a Github repository. */
-export interface GithubRepo {
-  /** Owner login of the repository. */
-  owner: string;
-  /** Name of the repository. */
-  name: string;
-}
-
 /** Error for failed Github API requests. */
 export class GithubApiRequestError extends Error {
   constructor(public status: number, message: string) {

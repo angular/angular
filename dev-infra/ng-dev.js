@@ -867,7 +867,8 @@ const versionBranchNameRegex = /^(\d+)\.(\d+)\.x$/;
 /** Gets the version of a given branch by reading the `package.json` upstream. */
 function getVersionOfBranch(repo, branchName) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        const { data } = yield repo.api.repos.getContents({ owner: repo.owner, repo: repo.name, path: '/package.json', ref: branchName });
+        const { github } = GitClient.getInstance();
+        const { data } = yield github.repos.getContents({ owner: repo.owner, repo: repo.name, path: '/package.json', ref: branchName });
         const { version } = JSON.parse(Buffer.from(data.content, 'base64').toString());
         const parsedVersion = semver.parse(version);
         if (parsedVersion === null) {
@@ -896,7 +897,8 @@ function getVersionForVersionBranch(branchName) {
  */
 function getBranchesForMajorVersions(repo, majorVersions) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
-        const { data: branchData } = yield repo.api.repos.listBranches({ owner: repo.owner, repo: repo.name, protected: true });
+        const { github } = GitClient.getInstance();
+        const { data: branchData } = yield github.repos.listBranches({ owner: repo.owner, repo: repo.name, protected: true });
         const branches = [];
         for (const { name } of branchData) {
             if (!isVersionBranch(name)) {
@@ -6647,7 +6649,7 @@ class ReleaseTool {
                 return CompletionState.MANUALLY_ABORTED;
             }
             const { owner, name } = this._github;
-            const repo = { owner, name, api: this._git.github };
+            const repo = { owner, name };
             const releaseTrains = yield fetchActiveReleaseTrains(repo);
             // Print the active release trains so that the caretaker can access
             // the current project branching state without switching context.
