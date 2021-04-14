@@ -15,11 +15,11 @@
   },
   "dependencies": {
     "chalk": "^2.3.1",
-    "diff": "^3.5.0",
+    "diff": "^5.0.0",
     "minimist": "^1.2.0"
   },
   "devDependencies": {
-    "@types/diff": "^3.5.1",
+    "@types/diff": "^5.0.0",
     "@types/jasmine": "^2.8.8",
     "@types/minimist": "^1.2.0",
     "@types/node": "^10.9.4",
