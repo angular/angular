@@ -9,7 +9,7 @@
   },
   "peerDependencies": {
     "@angular/animations": "0.0.0-PLACEHOLDER",
-    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/core": "0.0.0-7",
     "@angular/common": "0.0.0-PLACEHOLDER"
   },
   "peerDependenciesMeta": {
