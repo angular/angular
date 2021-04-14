@@ -15,6 +15,7 @@ const DEFAULT_FILL_MODE = 'forwards';
 const DEFAULT_EASING = 'linear';
 
 export const enum AnimatorControlState {
+  RESET = 0,
   INITIALIZED = 1,
   STARTED = 2,
   FINISHED = 3,
@@ -26,7 +27,6 @@ export class CssKeyframesPlayer implements AnimationPlayer {
   private _onStartFns: Function[] = [];
   private _onDestroyFns: Function[] = [];
 
-  private _started = false;
   // TODO(issue/24571): remove '!'.
   private _styler!: ElementAnimationStyleHandler;
 
@@ -139,6 +139,7 @@ export class CssKeyframesPlayer implements AnimationPlayer {
     this.play();
   }
   reset(): void {
+    this._state = AnimatorControlState.RESET;
     this._styler.destroy();
     this._buildStyler();
     this._styler.apply();
