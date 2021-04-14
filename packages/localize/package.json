@@ -34,7 +34,7 @@
     "yargs": "^16.2.0"
   },
   "peerDependencies": {
-    "@angular/compiler": "0.0.0-PLACEHOLDER",
+    "@angular/compiler": "0.0.0-7",
     "@angular/compiler-cli": "0.0.0-PLACEHOLDER"
   },
   "publishConfig": {
