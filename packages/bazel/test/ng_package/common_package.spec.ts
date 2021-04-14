@@ -40,24 +40,14 @@ describe('@angular/common ng_package', () => {
     expect(shx.ls('-R', 'bundles').stdout.split('\n').filter(n => !!n).sort()).toEqual([
       'common-http-testing.umd.js',
       'common-http-testing.umd.js.map',
-      'common-http-testing.umd.min.js',
-      'common-http-testing.umd.min.js.map',
       'common-http.umd.js',
       'common-http.umd.js.map',
-      'common-http.umd.min.js',
-      'common-http.umd.min.js.map',
       'common-testing.umd.js',
       'common-testing.umd.js.map',
-      'common-testing.umd.min.js',
-      'common-testing.umd.min.js.map',
       'common-upgrade.umd.js',
       'common-upgrade.umd.js.map',
-      'common-upgrade.umd.min.js',
-      'common-upgrade.umd.min.js.map',
       'common.umd.js',
       'common.umd.js.map',
-      'common.umd.min.js',
-      'common.umd.min.js.map',
     ]);
   });
 

@@ -11,20 +11,12 @@ arbitrary_genfiles.txt
 bundles
   bundles/waffels-a11y.umd.js
   bundles/waffels-a11y.umd.js.map
-  bundles/waffels-a11y.umd.min.js
-  bundles/waffels-a11y.umd.min.js.map
   bundles/waffels-imports.umd.js
   bundles/waffels-imports.umd.js.map
-  bundles/waffels-imports.umd.min.js
-  bundles/waffels-imports.umd.min.js.map
   bundles/waffels-secondary.umd.js
   bundles/waffels-secondary.umd.js.map
-  bundles/waffels-secondary.umd.min.js
-  bundles/waffels-secondary.umd.min.js.map
   bundles/waffels.umd.js
   bundles/waffels.umd.js.map
-  bundles/waffels.umd.min.js
-  bundles/waffels.umd.min.js.map
 esm2015
   esm2015/a11y
     esm2015/a11y/a11y.externs.js
@@ -206,30 +198,6 @@ Hello
 //# sourceMappingURL=waffels-a11y.umd.js.map
 
 
---- bundles/waffels-a11y.umd.min.js ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2021 Google LLC. https://angular.io/
- * License: MIT
- */
-!function(e,o){"object"==typeof exports&&"undefined"!=typeof module?o(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/a11y",["exports","@angular/core"],o):o(((e=e||self).example=e.example||{},e.example.a11y={}),e.ng.core)}(this,(function(e,o){"use strict";
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */var t;(t=function t(){}).decorators=[{type:o.NgModule,args:[{}]}],
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-e.A11yModule=t,Object.defineProperty(e,"__esModule",{value:!0})}));
-
 --- bundles/waffels-imports.umd.js ---
 
 /**
@@ -303,30 +271,6 @@ e.A11yModule=t,Object.defineProperty(e,"__esModule",{value:!0})}));
 //# sourceMappingURL=waffels-imports.umd.js.map
 
 
---- bundles/waffels-imports.umd.min.js ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2021 Google LLC. https://angular.io/
- * License: MIT
- */
-!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/imports",["exports","@angular/core"],t):t(((e=e||self).example=e.example||{},e.example.imports={}),e.ng.core)}(this,(function(e,t){"use strict";
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */var o,r;(o=function o(){}).ɵprov=t.ɵɵdefineInjectable({factory:function e(){return new o},token:o,providedIn:"root"}),o.decorators=[{type:t.Injectable,args:[{providedIn:"root"}]}],(r=function r(e){this.secondService=e}).ɵprov=t.ɵɵdefineInjectable({factory:function e(){return new r(t.ɵɵinject(o))},token:r,providedIn:"root"}),r.decorators=[{type:t.Injectable,args:[{providedIn:"root"}]}],r.ctorParameters=function(){return[{type:o}]},
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-e.MyService=r,e.ɵangular_packages_bazel_test_ng_package_example_imports_imports_a=o,Object.defineProperty(e,"__esModule",{value:!0})}));
-
 --- bundles/waffels-secondary.umd.js ---
 
 /**
@@ -379,30 +323,6 @@ e.MyService=r,e.ɵangular_packages_bazel_test_ng_package_example_imports_imports
 //# sourceMappingURL=waffels-secondary.umd.js.map
 
 
---- bundles/waffels-secondary.umd.min.js ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2021 Google LLC. https://angular.io/
- * License: MIT
- */
-!function(e,o){"object"==typeof exports&&"undefined"!=typeof module?o(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example/secondary",["exports","@angular/core"],o):o(((e=e||self).example=e.example||{},e.example.secondary={}),e.ng.core)}(this,(function(e,o){"use strict";
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */var n;(n=function n(){}).decorators=[{type:o.NgModule,args:[{}]}],
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-e.SecondaryModule=n,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
-
 --- bundles/waffels.umd.js ---
 
 /**
@@ -452,30 +372,6 @@ e.SecondaryModule=n,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})}));
 })));
 //# sourceMappingURL=waffels.umd.js.map
 
-
---- bundles/waffels.umd.min.js ---
-
-/**
- * @license Angular v0.0.0
- * (c) 2010-2021 Google LLC. https://angular.io/
- * License: MIT
- */
-!function(e,o){"object"==typeof exports&&"undefined"!=typeof module?o(exports,require("@angular/core")):"function"==typeof define&&define.amd?define("example",["exports","@angular/core"],o):o((e=e||self).example={},e.ng.core)}(this,(function(e,o){"use strict";
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */var t;(t=function t(){}).decorators=[{type:o.NgModule,args:[{}]}],
-/**
-     * @license
-     * Copyright Google LLC All Rights Reserved.
-     *
-     * Use of this source code is governed by an MIT-style license that can be
-     * found in the LICENSE file at https://angular.io/license
-     */
-e.MyModule=t,Object.defineProperty(e,"__esModule",{value:!0})}));
 
 --- esm2015/a11y/a11y.externs.js ---
 
