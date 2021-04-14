@@ -9,16 +9,19 @@
     .webtreemap-caption {
       font-size: 0.9em;
     }
+    .webtreemap-node:hover {
+      background: #ebf1fb;
+    }
   }
 }
 
 :host-context(.dark-theme) {
   ::ng-deep {
     .webtreemap-node {
-      background: #424242;
+      background: #202124;
     }
     .webtreemap-node:hover {
-      background: #303030;
+      background: #262d36;
     }
     .webtreemap-caption {
       color: #ffffff;
