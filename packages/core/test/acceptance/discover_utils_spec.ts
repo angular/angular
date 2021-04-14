@@ -17,8 +17,9 @@ import {getElementStyles} from '@angular/core/testing/src/styling';
 import {expect} from '@angular/core/testing/src/testing_internal';
 import {onlyInIvy} from '@angular/private/testing';
 
+import {getLContext} from '../../src/render3/context_discovery';
 import {getHostElement, markDirty} from '../../src/render3/index';
-import {ComponentDebugMetadata, getComponent, getComponentLView, getContext, getDebugNode, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents, loadLContext} from '../../src/render3/util/discovery_utils';
+import {ComponentDebugMetadata, getComponent, getComponentLView, getContext, getDebugNode, getDirectiveMetadata, getDirectives, getInjectionTokens, getInjector, getListeners, getLocalRefs, getOwningComponent, getRootComponents} from '../../src/render3/util/discovery_utils';
 
 onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
   let fixture: ComponentFixture<MyApp>;
@@ -270,9 +271,9 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
     });
   });
 
-  describe('loadLContext', () => {
+  describe('getLContext', () => {
     it('should work on components', () => {
-      const lContext = loadLContext(child[0]);
+      const lContext = getLContext(child[0])!;
       expect(lContext).toBeDefined();
       expect(lContext.native as any).toBe(child[0]);
     });
@@ -280,7 +281,7 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
     it('should work on templates', () => {
       const templateComment = Array.from((fixture.nativeElement as HTMLElement).childNodes)
                                   .find((node: ChildNode) => node.nodeType === Node.COMMENT_NODE)!;
-      const lContext = loadLContext(templateComment);
+      const lContext = getLContext(templateComment)!;
       expect(lContext).toBeDefined();
       expect(lContext.native as any).toBe(templateComment);
     });
@@ -290,7 +291,7 @@ onlyInIvy('Ivy-specific utilities').describe('discovery utils', () => {
                                      .find(
                                          (node: ChildNode) => node.nodeType === Node.COMMENT_NODE &&
                                              node.textContent === `ng-container`)!;
-      const lContext = loadLContext(ngContainerComment);
+      const lContext = getLContext(ngContainerComment)!;
       expect(lContext).toBeDefined();
       expect(lContext.native as any).toBe(ngContainerComment);
     });
