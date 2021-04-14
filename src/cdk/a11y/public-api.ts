@@ -16,6 +16,13 @@ export * from './focus-trap/event-listener-inert-strategy';
 export * from './focus-trap/focus-trap';
 export * from './focus-trap/focus-trap-inert-strategy';
 export * from './interactivity-checker/interactivity-checker';
+export {
+  InputModality,
+  InputModalityDetector,
+  InputModalityDetectorOptions,
+  INPUT_MODALITY_DETECTOR_DEFAULT_OPTIONS,
+  INPUT_MODALITY_DETECTOR_OPTIONS,
+} from './input-modality/input-modality-detector';
 export * from './live-announcer/live-announcer';
 export * from './live-announcer/live-announcer-tokens';
 export * from './focus-monitor/focus-monitor';

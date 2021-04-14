@@ -176,6 +176,7 @@
 /src/dev-app/icon/**                               @jelbourn
 /src/dev-app/input/**                              @mmalerba
 /src/dev-app/layout/**                             @jelbourn
+/src/dev-app/input-modality/**                     @jelbourn @zelliott
 /src/dev-app/list/**                               @jelbourn @crisbeto @devversion
 /src/dev-app/live-announcer/**                     @jelbourn
 /src/dev-app/mdc-button/**                         @andrewseguin

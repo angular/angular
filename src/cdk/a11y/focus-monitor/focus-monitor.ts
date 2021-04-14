@@ -27,11 +27,7 @@ import {
   isFakeMousedownFromScreenReader,
   isFakeTouchstartFromScreenReader,
 } from '../fake-event-detection';
-
-
-// This is the value used by AngularJS Material. Through trial and error (on iPhone 6S) they found
-// that a value of around 650ms seems appropriate.
-export const TOUCH_BUFFER_MS = 650;
+import {TOUCH_BUFFER_MS} from '../input-modality/input-modality-detector';
 
 
 export type FocusOrigin = 'touch' | 'mouse' | 'keyboard' | 'program' | null;

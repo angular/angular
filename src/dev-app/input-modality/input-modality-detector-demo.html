@@ -1,0 +1,40 @@
+<div>
+  <h2>Input Modality</h2>
+
+  <section class="demo-section">
+    <p>
+      Interact with the controls below with keyboard, mouse, or touch to see the detected
+      input modality change.
+    </p>
+
+    <p>
+      Detected input modality:
+      <b>{{_modality || '(unknown)'}}</b>
+    </p>
+
+    <button mat-raised-button>Launch</button>
+    <br><br>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput>
+    </mat-form-field>
+    <br><br>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Food</mat-label>
+      <mat-select>
+        <mat-option>Apple</mat-option>
+        <mat-option>Banana</mat-option>
+        <mat-option>Carrot</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <br><br>
+
+    <mat-radio-group name="color">
+      <mat-radio-button value="red" checked [style.margin-right.px]="16">Red</mat-radio-button>
+      <mat-radio-button value="orange" [style.margin-right.px]="16">Orange</mat-radio-button>
+      <mat-radio-button value="yellow">Yellow</mat-radio-button>
+    </mat-radio-group>
+  </section>
+</div>

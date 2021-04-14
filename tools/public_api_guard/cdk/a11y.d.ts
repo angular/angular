@@ -187,6 +187,25 @@ export interface Highlightable extends ListKeyManagerOption {
     setInactiveStyles(): void;
 }
 
+export declare const INPUT_MODALITY_DETECTOR_DEFAULT_OPTIONS: InputModalityDetectorOptions;
+
+export declare const INPUT_MODALITY_DETECTOR_OPTIONS: InjectionToken<InputModalityDetectorOptions>;
+
+export declare type InputModality = 'keyboard' | 'mouse' | 'touch' | null;
+
+export declare class InputModalityDetector implements OnDestroy {
+    readonly modalityChanges: Observable<InputModality>;
+    get mostRecentModality(): InputModality;
+    constructor(_platform: Platform, ngZone: NgZone, document: Document, options?: InputModalityDetectorOptions);
+    ngOnDestroy(): void;
+    static ɵfac: i0.ɵɵFactoryDeclaration<InputModalityDetector, [null, null, null, { optional: true; }]>;
+    static ɵprov: i0.ɵɵInjectableDef<InputModalityDetector>;
+}
+
+export interface InputModalityDetectorOptions {
+    ignoreKeys?: number[];
+}
+
 export declare class InteractivityChecker {
     constructor(_platform: Platform);
     isDisabled(element: HTMLElement): boolean;
@@ -266,5 +285,3 @@ export interface RegisteredMessage {
     messageElement: Element;
     referenceCount: number;
 }
-
-export declare const TOUCH_BUFFER_MS = 650;

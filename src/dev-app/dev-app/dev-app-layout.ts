@@ -55,6 +55,7 @@ export class DevAppLayout {
     {name: 'Grid List', route: '/grid-list'},
     {name: 'Icon', route: '/icon'},
     {name: 'Input', route: '/input'},
+    {name: 'Input Modality', route: '/input-modality'},
     {name: 'List', route: '/list'},
     {name: 'Layout', route: '/layout'},
     {name: 'Live Announcer', route: '/live-announcer'},

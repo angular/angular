@@ -12,12 +12,12 @@ import {Component, NgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {A11yModule} from '../index';
+import {TOUCH_BUFFER_MS} from '../input-modality/input-modality-detector';
 import {
   FocusMonitor,
   FocusMonitorDetectionMode,
   FocusOrigin,
   FOCUS_MONITOR_DEFAULT_OPTIONS,
-  TOUCH_BUFFER_MS,
 } from './focus-monitor';
 
 

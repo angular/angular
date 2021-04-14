@@ -62,6 +62,11 @@ export const DEV_APP_ROUTES: Routes = [
   {path: 'icon', loadChildren: 'icon/icon-demo-module#IconDemoModule'},
   {path: 'input', loadChildren: 'input/input-demo-module#InputDemoModule'},
   {path: 'layout', loadChildren: 'layout/layout-demo-module#LayoutDemoModule'},
+  {
+    path: 'input-modality',
+    loadChildren:
+      'input-modality/input-modality-detector-demo-module#InputModalityDetectorDemoModule',
+  },
   {path: 'list', loadChildren: 'list/list-demo-module#ListDemoModule'},
   {
     path: 'live-announcer',
