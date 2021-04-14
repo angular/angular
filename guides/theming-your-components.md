@@ -1,135 +1,224 @@
-# Theming your custom component with Angular Material's theming system
+# Theme your own components with Angular Material's theming system
 
-In order to style your own components with Angular Material's tooling, the component's styles must
-be defined with Sass.
+You can use Angular Material's Sass-based theming system for your own custom components.
 
-## 1. Define all color and typography styles in a "theme file" for the component
+## Reading style values from a theme
 
-First, create a Sass mixin that accepts an Angular Material color configuration and
-outputs the color-specific styles for the component. A color configuration is a Sass map.
+As described in the [theming guide][theme-map], a theme is a Sass map that contains style values to
+customize components. Angular Material provides APIs for reading values from this data structure.
 
-For example, if building a custom carousel component:
+[theme-map]: https://material.angular.io/guide/theming#themes
+
+### Reading color values
+
+To read color values from a theme, you can use the `get-color-config` Sass function. This function
+returns a Sass map containing the theme's primary, accent, and warn palettes, as well as a flag
+indicating whether dark mode is set.
+
 ```scss
-// Import library functions for theme creation.
-@import '~@angular/material/theming';
+@use 'sass:map';
+@use '~@angular/material' as mat;
 
-@mixin candy-carousel-color($config-or-theme) {
-  // Extract the color configuration in case a theme has been passed.
-  // This allows consumers to either pass a theme object or a color configuration.
-  $config: mat-get-color-config($config-or-theme);
-  // Extract the palettes you need from the theme definition.
-  $primary: map-get($config, primary);
-  $accent: map-get($config, accent);
+$color-config:    mat.get-color-config($theme);
+$primary-palette: map.get($color-config, 'primary');
+$accent-palette:  map.get($color-config, 'accent');
+$warn-palette:    map.get($color-config, 'warn');
+$is-dark-theme:   map.get($color-config, 'is-dark');
+```
+
+See the [theming guide][theme-read-hues] for more information on reading hues from palettes.
+
+[theme-read-hues]: https://material.angular.io/guide/theming#reading-hues-from-palettes
+
+### Reading typography values
+
+To read typography values from a theme, you can use the `get-typography-config` Sass function. See
+the [Typography guide][typography-config] for more information about the typography config data
+structure and for APIs for reading values from this config.
+
+[typography-config]: https://material.angular.io/guide/typography#typography-config
+
+```scss
+@use '~@angular/material' as mat;
+
+$typography-config: mat.get-typography-config($theme);
+$my-font-family: mat.font-family($typography-config);
+```
+
+## Separating theme styles
+
+Angular Material components each have a Sass file that defines mixins for customizing
+that component's color and typography. For example, `MatButton` has mixins for `button-color` and
+`button-typography`. Each mixin emits all color and typography styles for that component,
+respectively.
+
+You can mirror this structure in your components by defining your own mixins. These mixins
+should accept an Angular Material theme, from which they can read color and typography values. You
+can then include these mixins in your application along with Angular Material's own mixins.
+
+## Step-by-step example
+
+To illustrate participation in Angular Material's theming system, we can look at an example of a
+custom carousel component. The carousel starts with a single file, `carousel.scss`, that contains
+structural, color, and typography styles. This file is included in the `styleUrls` of the component.
+
+```scss
+// carousel.scss
+
+.my-carousel {
+  display: flex;
+  font-family: serif;
+}
+
+.my-carousel-button {
+  border-radius: 50%;
+  color: blue;
+}
+```
+
+### Step 1: Extract theme-based styles to a separate file
+
+To change this file to participate in Angular Material's theming system, we split the styles into
+two files, with the color and typography styles moved into mixins. By convention, the new file
+name ends with `-theme`. Additionally, the file starts with an underscore (`_`), indicating that
+this is a Sass partial file. See the [Sass documentation][sass-partials] for more information about
+partial files.
+
+[sass-partials]: https://sass-lang.com/guide#topic-4
+
+```scss
+// carousel.scss
+
+.my-carousel {
+  display: flex;
+}
+
+.my-carousel-button {
+  border-radius: 50%;
+}
+```
+
+```scss
+// _carousel-theme.scss
+
+@mixin color($theme) {
+  .my-carousel-button {
+    color: blue;
+  }
+}
+
+@mixin typography($theme) {
+  .my-carousel {
+    font-family: serif;
+  }
+}
+```
+
+### Step 2: Use values from the theme
+
+Now that theme theme-based styles reside in mixins, we can extract the values we need from the
+theme passed into the mixins.
+
+```scss
+// _carousel-theme.scss
+
+@use 'sass:map';
+@use '~@angular/material' as mat;
+
+@mixin color($theme) {
+  // Get the color config from the theme.
+  $color-config: mat.get-color-config($theme);
+
+  // Get the primary color palette from the color-config.
+  $primary-palette: map.get($color-config, 'primary');
+
+  .my-carousel-button {
+    // Read the 500 hue from the primary color palette.
+    color: mat.get-color-from-palette($primary-palette, 500);
+  }
+}
+
+@mixin typography($theme) {
+  // Get the typography config from the theme.
+  $typography-config: mat.get-typography-config($theme);
+
+  .my-carousel {
+    font-family: mat.font-family($typography-config);
+  }
+}
+```
+
+### Step 3: Add a theme mixin
+
+For convenience, we can add a `theme` mixin that includes both color and typography.
+This theme mixin should only emit the styles for each color and typography, respectively, if they
+have a config specified.
+
+```scss
+// _carousel-theme.scss
+
+@use 'sass:map';
+@use '~@angular/material' as mat;
+
+@mixin color($theme) {
+  // Get the color config from the theme.
+  $color-config: mat.get-color-config($theme);
   
-  // Define any styles affected by the theme.
-  .candy-carousel {
-    // Use mat-color to extract individual colors from a palette.
-    background-color: mat-color($primary);
-    border-color: mat-color($accent, A400);
+  // Get the primary color palette from the color-config.
+  $primary-palette: map.get($color-config, 'primary');
+  
+  .my-carousel-button {
+    // Read the 500 hue from the primary color palette.
+    color: mat.get-color-from-palette($primary-palette, 500);
+  }
+}
+
+@mixin typography($theme) {
+  // Get the typography config from the theme.
+  $typography-config: mat.get-typography-config($theme);
+
+  .my-carousel {
+    font-family: mat.font-family($typography-config);
+  }
+}
+
+@mixin theme($theme) {
+  $color-config: mat.get-color-config($theme);
+  @if $color-config != null {
+    @include color($theme);
+  }
+
+  $typography-config: mat.get-typography-config($theme);
+  @if $typography-config != null {
+    @include typography($theme);
   }
 }
 ```
 
-Second, create another Sass mixin that accepts an Angular Material typography configuration
-and outputs typographic styles. For example:
+### Step 4: Include the theme mixin in your application
+
+Now that you've defined the carousel component's theme mixin, you can include this mixin along with
+the the other theme mixins in your application.
 
 ```scss
-@mixin candy-carousel-typography($config-or-theme) {
-  // Extract the typography configuration in case a theme has been passed.
-  $config: mat-get-typography-config($config-or-theme);
+@use '~@angular/material' as mat;
+@use './path/to/carousel-theme' as carousel;
 
-  .candy-carousel {
-    font: {
-      family: mat-font-family($config, body-1);
-      size: mat-font-size($config, body-1);
-      weight: mat-font-weight($config, body-1);
-    }
-  }
-}
-```
+@include mat.core();
 
-Finally, create a mixin that accepts an Angular Material theme, and delegates to the individual
-theming system mixins based on the configurations. A theme consists of configurations for
-individual theming systems (`color` and `typography`).
+$my-primary: mat.define-palette(mat.$indigo-palette, 500);
+$my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
 
-```scss
-@mixin candy-carousel-theme($theme) {
-  // Extracts the color and typography configurations from the theme.
-  $color: mat-get-color-config($theme);
-  $typography: mat-get-typography-config($theme);
-
-  // Do not generate styles if configurations for individual theming
-  // systems have been explicitly set to `null`.
-  @if $color != null {
-    @include candy-carousel-color($color); 
-  }
-  @if $typography != null {
-    @include candy-carousel-typography($typography);
-  }
-}
-```
-
-See the [typography guide](https://material.angular.io/guide/typography) for more information on
-typographic customization.
-
-## 2. Define all remaining styles in a normal component stylesheet
-
-Define all styles unaffected by the theme in a separate file referenced directly in the component's
-`styleUrl`.  This generally includes everything except for color and typography styles.
-
-
-## 3. Include the theme mixin in your application
-
-Use the Sass `@include` keyword to include a component's theme mixin wherever you're already
-including Angular Material's built-in theme mixins. 
-
-```scss
-// Import library functions for theme creation.
-@import '~@angular/material/theming';
-
-// Include non-theme styles for core.
-@include mat-core();
-
-// Define your application's custom theme.
-$primary: mat-palette($mat-indigo);
-$accent:  mat-palette($mat-pink, A200, A100, A400);
-$theme: mat-light-theme((
-  color: (
-    primary: $primary,
-    accent: $accent,
-  )
+$my-theme: mat.define-light-theme((
+ color: (
+   primary: $my-primary,
+   accent: $my-accent,
+ ),
+ typography: mat.define-typography-config(
+    $font-family: serif,
+  );
 ));
 
-// Include theme styles for Angular Material components.
-@include angular-material-theme($theme);
-
-// Include theme styles for your custom components.
-@include candy-carousel-theme($theme);
-```
-
-
-## Note: using the `mat-color` function to extract colors from a palette
-
-You can consume the theming functions and Material Design color palettes from
-`@angular/material/theming`. The `mat-color` Sass function extracts a specific color from a palette.
-For example:
-
-```scss
-// Import theming functions
-@import '~@angular/material/theming';
-
-.candy-carousel {
-  // Get the default hue for a palette.
-  color: mat-color($primary);
-  
-  // Get a specific hue for a palette. 
-  // See https://material.io/archive/guidelines/style/color.html#color-color-palette for hues.
-  background-color: mat-color($accent, 300);
-  
-  // Get a relative color for a hue ('lighter' or 'darker')
-  outline-color: mat-color($accent, lighter);
-
-  // Get a contrast color for a hue by adding `-contrast` to any other key.
-  border-color: mat-color($primary, '100-contrast');
-}
+@include mat.all-component-themes($my-theme);
+@include carousel.theme($theme);
 ```

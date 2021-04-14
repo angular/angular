@@ -1,6 +1,7 @@
 // Theming APIs
 @forward './core/theming/theming' show define-light-theme, define-dark-theme,
   define-palette, get-contrast-color-from-palette, get-color-from-palette,
+  get-color-config, get-typography-config, get-density-config,
   $theme-ignore-duplication-warnings;
 @forward './core/theming/palette' show $red-palette, $pink-palette, $indigo-palette,
   $purple-palette, $deep-purple-palette, $blue-palette, $light-blue-palette, $cyan-palette,
