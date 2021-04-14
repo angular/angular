@@ -115,9 +115,8 @@ export async function findActiveReleaseTrainsFromVersionBranches(
 
     const version = await getVersionOfBranch(repo, name);
     const releaseTrain = new ReleaseTrain(name, version);
-    const isPrerelease = version.prerelease[0] === 'rc' || version.prerelease[0] === 'next';
 
-    if (isPrerelease) {
+    if (releaseTrain.isPrerelease) {
       if (releaseCandidate !== null) {
         throw Error(
             `Unable to determine latest release-train. Found two consecutive ` +

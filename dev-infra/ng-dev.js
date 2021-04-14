@@ -852,6 +852,8 @@ class ReleaseTrain {
         this.version = version;
         /** Whether the release train is currently targeting a major. */
         this.isMajor = this.version.minor === 0 && this.version.patch === 0;
+        /** Whether the release train is in a prerelease phase. */
+        this.isPrerelease = ['rc', 'next'].includes(`${this.version.prerelease[0]}`);
     }
 }
 
@@ -1005,8 +1007,7 @@ function findActiveReleaseTrainsFromVersionBranches(repo, nextVersion, branches,
             }
             const version = yield getVersionOfBranch(repo, name);
             const releaseTrain = new ReleaseTrain(name, version);
-            const isPrerelease = version.prerelease[0] === 'rc' || version.prerelease[0] === 'next';
-            if (isPrerelease) {
+            if (releaseTrain.isPrerelease) {
                 if (releaseCandidate !== null) {
                     throw Error(`Unable to determine latest release-train. Found two consecutive ` +
                         `branches in feature-freeze/release-candidate phase. Did not expect both "${name}" ` +

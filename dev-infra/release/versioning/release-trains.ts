@@ -12,6 +12,8 @@ import * as semver from 'semver';
 export class ReleaseTrain {
   /** Whether the release train is currently targeting a major. */
   isMajor = this.version.minor === 0 && this.version.patch === 0;
+  /** Whether the release train is in a prerelease phase. */
+  isPrerelease = ['rc', 'next'].includes(`${this.version.prerelease[0]}`);
 
   constructor(
       /** Name of the branch for this release-train. */

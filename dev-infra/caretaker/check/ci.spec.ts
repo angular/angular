@@ -107,10 +107,11 @@ function buildMockActiveReleaseTrains(withRc: true): versioning.ActiveReleaseTra
 function buildMockActiveReleaseTrains(withRc: boolean): versioning.ActiveReleaseTrains {
   const baseResult = {
     isMajor: false,
+    isPrerelease: false,
     version: new SemVer('0.0.0'),
   };
   return {
-    releaseCandidate: withRc ? {branchName: 'rc-branch', ...baseResult} : null,
+    releaseCandidate: withRc ? {branchName: 'rc-branch', ...baseResult, isPrerelease: true} : null,
     latest: {branchName: 'latest-branch', ...baseResult},
     next: {branchName: 'next-branch', ...baseResult}
   };
