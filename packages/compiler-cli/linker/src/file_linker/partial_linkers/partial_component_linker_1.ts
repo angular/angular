@@ -55,7 +55,6 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
           metaObj.has('preserveWhitespaces') ? metaObj.getBoolean('preserveWhitespaces') : false,
       // We normalize line endings if the template is was inline.
       i18nNormalizeLineEndingsInICUs: isInline,
-      isInline,
     });
     if (template.errors !== null) {
       const errors = template.errors.map(err => err.toString()).join('\n');

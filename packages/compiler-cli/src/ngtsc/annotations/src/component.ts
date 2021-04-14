@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, FactoryTarget, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ClassMetadata, R3ComponentMetadata, R3FactoryMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
+import {compileClassMetadata, compileComponentFromMetadata, compileDeclareClassMetadata, compileDeclareComponentFromMetadata, ConstantPool, CssSelector, DeclarationListEmitMode, DeclareComponentTemplateInfo, DEFAULT_INTERPOLATION_CONFIG, DomElementSchemaRegistry, Expression, ExternalExpr, FactoryTarget, InterpolationConfig, LexerRange, makeBindingParser, ParsedTemplate, ParseSourceFile, parseTemplate, R3ClassMetadata, R3ComponentMetadata, R3TargetBinder, R3UsedDirectiveMetadata, SelectorMatcher, Statement, TmplAstNode, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Cycle, CycleAnalyzer, CycleHandlingStrategy} from '../../cycles';
@@ -390,7 +390,7 @@ export class ComponentDecoratorHandler implements
       template = this.extractTemplate(node, templateDecl);
     }
     const templateResource =
-        template.isInline ? {path: null, expression: component.get('template')!} : {
+        template.declaration.isInline ? {path: null, expression: component.get('template')!} : {
           path: absoluteFrom(template.declaration.resolvedTemplateUrl),
           expression: template.sourceMapping.node
         };
@@ -571,7 +571,7 @@ export class ComponentDecoratorHandler implements
       selector,
       boundTemplate,
       templateMeta: {
-        isInline: analysis.template.isInline,
+        isInline: analysis.template.declaration.isInline,
         file: analysis.template.file,
       },
     });
@@ -882,9 +882,17 @@ export class ComponentDecoratorHandler implements
     if (analysis.template.errors !== null && analysis.template.errors.length > 0) {
       return [];
     }
+    const templateInfo: DeclareComponentTemplateInfo = {
+      content: analysis.template.content,
+      sourceUrl: analysis.template.declaration.resolvedTemplateUrl,
+      isInline: analysis.template.declaration.isInline,
+      inlineTemplateExpression: analysis.template.declaration.isInline ?
+          new WrappedNodeExpr(analysis.template.declaration.expression) :
+          null,
+    };
     const meta: R3ComponentMetadata = {...analysis.meta, ...resolution};
     const fac = compileDeclareFactory(toFactoryMetadata(meta, FactoryTarget.Component));
-    const def = compileDeclareComponentFromMetadata(meta, analysis.template);
+    const def = compileDeclareComponentFromMetadata(meta, analysis.template, templateInfo);
     const classMetadata = analysis.classMetadata !== null ?
         compileDeclareClassMetadata(analysis.classMetadata).toStmt() :
         null;
@@ -1055,10 +1063,9 @@ export class ComponentDecoratorHandler implements
   private extractTemplate(node: ClassDeclaration, template: TemplateDeclaration):
       ParsedTemplateWithSource {
     if (template.isInline) {
-      let templateStr: string;
-      let templateLiteral: ts.Node|null = null;
-      let templateUrl: string = '';
-      let templateRange: LexerRange|null = null;
+      let sourceStr: string;
+      let sourceParseRange: LexerRange|null = null;
+      let templateContent: string;
       let sourceMapping: TemplateSourceMapping;
       let escapedString = false;
       // We only support SourceMaps for inline templates that are simple string literals.
@@ -1066,10 +1073,9 @@ export class ComponentDecoratorHandler implements
           ts.isNoSubstitutionTemplateLiteral(template.expression)) {
         // the start and end of the `templateExpr` node includes the quotation marks, which we must
         // strip
-        templateRange = getTemplateRange(template.expression);
-        templateStr = template.expression.getSourceFile().text;
-        templateLiteral = template.expression;
-        templateUrl = template.templateUrl;
+        sourceParseRange = getTemplateRange(template.expression);
+        sourceStr = template.expression.getSourceFile().text;
+        templateContent = template.expression.text;
         escapedString = true;
         sourceMapping = {
           type: 'direct',
@@ -1081,22 +1087,26 @@ export class ComponentDecoratorHandler implements
           throw createValueHasWrongTypeError(
               template.expression, resolvedTemplate, 'template must be a string');
         }
-        templateStr = resolvedTemplate;
+        // We do not parse the template directly from the source file using a lexer range, so
+        // the template source and content are set to the statically resolved template.
+        sourceStr = resolvedTemplate;
+        templateContent = resolvedTemplate;
         sourceMapping = {
           type: 'indirect',
           node: template.expression,
           componentClass: node,
-          template: templateStr,
+          template: templateContent,
         };
       }
 
       return {
-        ...this._parseTemplate(template, templateStr, templateRange, escapedString),
+        ...this._parseTemplate(template, sourceStr, sourceParseRange, escapedString),
+        content: templateContent,
         sourceMapping,
         declaration: template,
       };
     } else {
-      const templateStr = this.resourceLoader.load(template.resolvedTemplateUrl);
+      const templateContent = this.resourceLoader.load(template.resolvedTemplateUrl);
       if (this.depTracker !== null) {
         this.depTracker.addResourceDependency(
             node.getSourceFile(), absoluteFrom(template.resolvedTemplateUrl));
@@ -1104,15 +1114,16 @@ export class ComponentDecoratorHandler implements
 
       return {
         ...this._parseTemplate(
-            template, templateStr, /* templateRange */ null,
+            template, /* sourceStr */ templateContent, /* sourceParseRange */ null,
             /* escapedString */ false),
+        content: templateContent,
         sourceMapping: {
           type: 'external',
           componentClass: node,
           // TODO(alxhub): TS in g3 is unable to make this inference on its own, so cast it here
           // until g3 is able to figure this out.
           node: (template as ExternalTemplateDeclaration).templateUrlExpression,
-          template: templateStr,
+          template: templateContent,
           templateUrl: template.resolvedTemplateUrl,
         },
         declaration: template,
@@ -1121,19 +1132,18 @@ export class ComponentDecoratorHandler implements
   }
 
   private _parseTemplate(
-      template: TemplateDeclaration, templateStr: string, templateRange: LexerRange|null,
+      template: TemplateDeclaration, sourceStr: string, sourceParseRange: LexerRange|null,
       escapedString: boolean): ParsedComponentTemplate {
     // We always normalize line endings if the template has been escaped (i.e. is inline).
     const i18nNormalizeLineEndingsInICUs = escapedString || this.i18nNormalizeLineEndingsInICUs;
 
-    const parsedTemplate = parseTemplate(templateStr, template.sourceMapUrl, {
+    const parsedTemplate = parseTemplate(sourceStr, template.sourceMapUrl, {
       preserveWhitespaces: template.preserveWhitespaces,
       interpolationConfig: template.interpolationConfig,
-      range: templateRange ?? undefined,
+      range: sourceParseRange ?? undefined,
       escapedString,
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs,
-      isInline: template.isInline,
       alwaysAttemptHtmlToR3AstConversion: this.usePoisonedData,
     });
 
@@ -1152,26 +1162,22 @@ export class ComponentDecoratorHandler implements
     // In order to guarantee the correctness of diagnostics, templates are parsed a second time
     // with the above options set to preserve source mappings.
 
-    const {nodes: diagNodes} = parseTemplate(templateStr, template.sourceMapUrl, {
+    const {nodes: diagNodes} = parseTemplate(sourceStr, template.sourceMapUrl, {
       preserveWhitespaces: true,
       preserveLineEndings: true,
       interpolationConfig: template.interpolationConfig,
-      range: templateRange ?? undefined,
+      range: sourceParseRange ?? undefined,
       escapedString,
       enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
       i18nNormalizeLineEndingsInICUs,
       leadingTriviaChars: [],
-      isInline: template.isInline,
       alwaysAttemptHtmlToR3AstConversion: this.usePoisonedData,
     });
 
     return {
       ...parsedTemplate,
       diagNodes,
-      template: template.isInline ? new WrappedNodeExpr(template.expression) : templateStr,
-      templateUrl: template.resolvedTemplateUrl,
-      isInline: template.isInline,
-      file: new ParseSourceFile(templateStr, template.resolvedTemplateUrl),
+      file: new ParseSourceFile(sourceStr, template.resolvedTemplateUrl),
     };
   }
 
@@ -1364,12 +1370,6 @@ function getTemplateDeclarationNodeForError(declaration: TemplateDeclaration): t
  */
 export interface ParsedComponentTemplate extends ParsedTemplate {
   /**
-   * True if the original template was stored inline;
-   * False if the template was in an external file.
-   */
-  isInline: boolean;
-
-  /**
    * The template AST, parsed in a manner which preserves source map information for diagnostics.
    *
    * Not useful for emit.
@@ -1383,6 +1383,8 @@ export interface ParsedComponentTemplate extends ParsedTemplate {
 }
 
 export interface ParsedTemplateWithSource extends ParsedComponentTemplate {
+  /** The string contents of the template. */
+  content: string;
   sourceMapping: TemplateSourceMapping;
   declaration: TemplateDeclaration;
 }

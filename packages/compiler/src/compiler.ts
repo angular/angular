@@ -106,7 +106,7 @@ export {makeBindingParser, ParsedTemplate, parseTemplate, ParseTemplateOptions} 
 export {R3CompiledExpression, R3Reference, devOnlyGuardedExpression, getSafePropertyAccessString} from './render3/util';
 export {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, ParsedHostBindings, verifyHostBindings} from './render3/view/compiler';
 export {compileDeclareClassMetadata} from './render3/partial/class_metadata';
-export {compileDeclareComponentFromMetadata} from './render3/partial/component';
+export {compileDeclareComponentFromMetadata, DeclareComponentTemplateInfo} from './render3/partial/component';
 export {compileDeclareDirectiveFromMetadata} from './render3/partial/directive';
 export {compileDeclareFactoryFunction} from './render3/partial/factory';
 export {compileDeclareInjectableFromMetadata} from './render3/partial/injectable';
