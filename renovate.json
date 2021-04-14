@@ -101,6 +101,10 @@
           "major"
         ],
         "enabled": false
+      },
+      {
+        "matchCurrentVersion": "0.0.0-PLACEHOLDER",
+        "enabled": false
       }
     ]
   }
