@@ -123,16 +123,14 @@ export class BrowserViewportScroller implements ViewportScroller {
     // TODO(atscott): The correct behavior for `getElementsByName` would be to also verify that the
     // element is an anchor. However, this could be considered a breaking change and should be
     // done in a major version.
-    const elSelected: HTMLElement|undefined =
-        this.document.getElementById(target) ?? this.document.getElementsByName(target)[0];
-    if (elSelected === undefined) {
-      return;
-    }
+    const elSelected = findAnchorFromDocument(this.document, target);
 
-    this.scrollToElement(elSelected);
-    // After scrolling to the element, the spec dictates that we follow the focus steps for the
-    // target. Rather than following the robust steps, simply attempt focus.
-    this.attemptFocus(elSelected);
+    if (elSelected) {
+      this.scrollToElement(elSelected);
+      // After scrolling to the element, the spec dictates that we follow the focus steps for the
+      // target. Rather than following the robust steps, simply attempt focus.
+      this.attemptFocus(elSelected);
+    }
   }
 
   /**
@@ -212,6 +210,40 @@ export class BrowserViewportScroller implements ViewportScroller {
 
 function getScrollRestorationProperty(obj: any): PropertyDescriptor|undefined {
   return Object.getOwnPropertyDescriptor(obj, 'scrollRestoration');
+}
+
+function findAnchorFromDocument(document: Document, target: string): HTMLElement|null {
+  const documentResult = document.getElementById(target) || document.getElementsByName(target)[0];
+
+  if (documentResult) {
+    return documentResult;
+  }
+
+  // `getElementById` and `getElementsByName` won't pierce through the shadow DOM so we
+  // have to traverse the DOM manually and do the lookup through the shadow roots.
+  if (typeof document.createTreeWalker === 'function' && document.body &&
+      ((document.body as any).createShadowRoot || document.body.attachShadow)) {
+    const treeWalker = document.createTreeWalker(document.body, NodeFilter.SHOW_ELEMENT);
+    let currentNode = treeWalker.currentNode as HTMLElement | null;
+
+    while (currentNode) {
+      const shadowRoot = currentNode.shadowRoot;
+
+      if (shadowRoot) {
+        // Note that `ShadowRoot` doesn't support `getElementsByName`
+        // so we have to fall back to `querySelector`.
+        const result =
+            shadowRoot.getElementById(target) || shadowRoot.querySelector(`[name="${target}"]`);
+        if (result) {
+          return result;
+        }
+      }
+
+      currentNode = treeWalker.nextNode() as HTMLElement | null;
+    }
+  }
+
+  return null;
 }
 
 /**
