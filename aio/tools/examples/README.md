@@ -47,9 +47,6 @@ Currently, the following project types are supported:
 There are also the following special folders:
 - `common`: Contains files used in many examples.
   (See the [next section](#example-config) for info on how to exclude common files in certain examples.)
-- `viewengine/cli`: Additional configuration for running CLI-based examples with `ViewEngine` (the pre-Ivy compiler/renderer).
-  This applies to all CLI-based examples, such as `cli-ajs`, `elements`, `getting-started`, etc.
-- `viewengine/systemjs`: Additional configuration for running SystemJS-based examples with `ViewEngine` (the pre-Ivy compiler/renderer).
 
 
 <a name="example-config"></a>

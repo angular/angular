@@ -16,14 +16,5 @@
         "polyfills-es2015": 55230
       }
     }
-  },
-  "aio-local-viewengine": {
-    "master": {
-      "uncompressed": {
-        "runtime-es2015": 3153,
-        "main-es2015": 438824,
-        "polyfills-es2015": 55230
-      }
-    }
   }
 }
