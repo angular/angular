@@ -135,7 +135,7 @@
     "hast-util-to-string": "^1.0.4",
     "html": "^1.0.0",
     "ignore": "^5.1.8",
-    "image-size": "^0.9.7",
+    "image-size": "^1.0.0",
     "jasmine": "~3.7.0",
     "jasmine-core": "~3.7.1",
     "jasmine-spec-reporter": "~6.0.0",
