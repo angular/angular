@@ -976,9 +976,9 @@ Read and learn more about [Template Input Variables](template-reference-variable
 
 ## template input variable
 
-A template input variable is a variable you can reference within a single instance of the template. You declare a template input variable using the let keyword as in let hero.
+A template input variable is a variable you can reference within a single instance of the template. You declare a template input variable using the let keyword as in `let hero`.
 
-Read and learn more about [Template Input Variables](template-reference-variables#template-input-variable).
+Read and learn more about [template input variables](template-reference-variables#template-input-variable).
 
 {@a token}
 
