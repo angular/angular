@@ -37,6 +37,10 @@
     "@types/node",
     "@types/selenium-webdriver",
     "@microsoft/api-extractor",
+    "angular",
+    "angular-1.5",
+    "angular-1.6",
+    "angular-1.7",
     "puppeteer",
     "selenium-webdriver"
   ],
