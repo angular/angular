@@ -407,17 +407,13 @@ jobs:
       - run: yarn --cwd aio deploy-production
 
   test_aio_local:
-    parameters:
-      viewengine:
-        type: boolean
-        default: false
     executor: default-executor
     steps:
       - custom_attach_workspace
       - init_environment
       - install_chrome_libs
         # Build aio (with local Angular packages)
-      - run: yarn --cwd aio build-local<<# parameters.viewengine >>-with-viewengine<</ parameters.viewengine >>-ci
+      - run: yarn --cwd aio build-local-ci
         # Run unit tests
       - run: yarn --cwd aio test --progress=false --watch=false
         # Run e2e tests
@@ -425,7 +421,7 @@ jobs:
         # Run PWA-score tests
       - run: yarn --cwd aio test-pwa-score-localhost $CI_AIO_MIN_PWA_SCORE
         # Check the bundle sizes.
-      - run: yarn --cwd aio payload-size aio-local<<# parameters.viewengine >>-viewengine<</ parameters.viewengine >>
+      - run: yarn --cwd aio payload-size aio-local
 
   test_aio_tools:
     executor: default-executor
@@ -440,10 +436,6 @@ jobs:
       - run: ./aio/aio-builds-setup/scripts/test.sh
 
   test_docs_examples:
-    parameters:
-      viewengine:
-        type: boolean
-        default: false
     executor:
       name: default-executor
       resource_class: xlarge
@@ -457,7 +449,7 @@ jobs:
         # Run examples tests. The "CIRCLE_NODE_INDEX" will be set if "parallelism" is enabled.
         # Since the parallelism is set to "5", there will be five parallel CircleCI containers.
         # with either "0", "1", etc as node index. This can be passed to the "--shard" argument.
-      - run: yarn --cwd aio example-e2e --setup --local <<# parameters.viewengine >>--viewengine<</ parameters.viewengine >> --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
+      - run: yarn --cwd aio example-e2e --setup --local --cliSpecsConcurrency=5 --shard=${CIRCLE_NODE_INDEX}/${CIRCLE_NODE_TOTAL}
 
   # This job should only be run on PR builds, where `CI_PULL_REQUEST` is not `false`.
   aio_preview:
@@ -833,20 +825,10 @@ workflows:
       - test_aio_local:
           requires:
             - build-npm-packages
-      - test_aio_local:
-          name: test_aio_local_viewengine
-          viewengine: true
-          requires:
-            - build-npm-packages
       - test_aio_tools:
           requires:
             - build-npm-packages
       - test_docs_examples:
-          requires:
-            - build-npm-packages
-      - test_docs_examples:
-          name: test_docs_examples_viewengine
-          viewengine: true
           requires:
             - build-npm-packages
       - aio_preview:
@@ -871,9 +853,7 @@ workflows:
             - test_ivy_aot
             # Only publish if `aio`/`docs` tests using the locally built Angular packages pass
             - test_aio_local
-            - test_aio_local_viewengine
             - test_docs_examples
-            - test_docs_examples_viewengine
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
             - build-npm-packages
