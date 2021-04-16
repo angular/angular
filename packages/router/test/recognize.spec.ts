@@ -626,9 +626,16 @@ describe('recognize', () => {
               }]
             }],
             '(c:c)');
-        checkActivatedRoute(s.root.children[0], '', {}, ComponentA);
-        checkActivatedRoute(s.root.children[0].children[0], '', {}, ComponentB);
-        checkActivatedRoute(s.root.children[0].children[0].children[0], 'c', {}, ComponentC, 'c');
+        const [compAConfig] = s.root.children;
+        checkActivatedRoute(compAConfig, '', {}, ComponentA);
+        expect(compAConfig.children.length).toBe(1);
+
+        const [compBConfig] = compAConfig.children;
+        checkActivatedRoute(compBConfig, '', {}, ComponentB);
+        expect(compBConfig.children.length).toBe(1);
+
+        const [compCConfig] = compBConfig.children;
+        checkActivatedRoute(compCConfig, 'c', {}, ComponentC, 'c');
       });
 
       it('should not persist a primary segment beyond the boundary of a named outlet match', () => {

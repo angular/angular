@@ -30,14 +30,7 @@ def _debug(vars, *args):
 
 _DEFAULT_NG_PACKAGER = "//@angular/bazel/bin:packager"
 _DEFAULT_ROLLUP_CONFIG_TMPL = "//:node_modules/@angular/bazel/src/ng_package/rollup.config.js"
-_DEFALUT_TERSER_CONFIG_FILE = "//:node_modules/@angular/bazel/src/ng_package/terser_config.default.json"
 _DEFAULT_ROLLUP = "//@angular/bazel/src/ng_package:rollup_for_ng_package"
-_DEFAULT_TERSER = (
-    # BEGIN-DEV-ONLY
-    "@npm" +
-    # END-DEV-ONLY
-    "//terser/bin:terser"
-)
 
 _NG_PACKAGE_MODULE_MAPPINGS_ATTR = "ng_package_module_mappings"
 
@@ -135,46 +128,6 @@ WELL_KNOWN_GLOBALS = {p: _global_name(p) for p in [
 # skydoc fails with type(depset()) so using "depset" here instead
 # TODO(gregmagolan): clean this up
 _DEPSET_TYPE = "depset"
-
-def _terser(ctx, input, output):
-    """Runs terser on an input file.
-
-    Args:
-      ctx: Bazel rule execution context
-      input: input file
-      output: output file
-
-    Returns:
-      The sourcemap file
-    """
-
-    map_output = ctx.actions.declare_file(output.basename + ".map", sibling = output)
-
-    args = ctx.actions.args()
-
-    args.add(input.path)
-    args.add_all(["--output", output.path])
-
-    # Source mapping options are comma-packed into one argv
-    # see https://github.com/terser-js/terser#command-line-usage
-    source_map_opts = ["includeSources", "base=" + ctx.bin_dir.path]
-
-    # This option doesn't work in the config file, only on the CLI
-    args.add_all(["--source-map", ",".join(source_map_opts)])
-
-    args.add("--comments")
-
-    args.add_all(["--config-file", ctx.file.terser_config_file.path])
-
-    ctx.actions.run(
-        progress_message = "Optimizing JavaScript %s [terser]" % output.short_path,
-        executable = ctx.executable.terser,
-        inputs = [input, ctx.file.terser_config_file],
-        outputs = [output, map_output],
-        arguments = [args],
-    )
-
-    return map_output
 
 def _compute_node_modules_root(ctx):
     """Computes the node_modules root from the node_modules and deps attributes.
@@ -478,11 +431,9 @@ def _ng_package_impl(ctx):
             fesm_output_filename = entry_point.replace("/", "__")
             fesm2015_output = ctx.actions.declare_file("fesm2015/%s.js" % fesm_output_filename)
             umd_output = ctx.actions.declare_file("%s.umd.js" % umd_output_filename)
-            min_output = ctx.actions.declare_file("%s.umd.min.js" % umd_output_filename)
         else:
             fesm2015_output = ctx.outputs.fesm2015
             umd_output = ctx.outputs.umd
-            min_output = ctx.outputs.umd_min
 
         # Also include files from npm fine grained deps as inputs.
         # These deps are identified by the NpmPackageInfo provider.
@@ -525,13 +476,6 @@ def _ng_package_impl(ctx):
                 format = "umd",
             ),
         )
-
-        terser_sourcemap = _terser(
-            ctx,
-            umd_output,
-            min_output,
-        )
-        bundles.append(struct(js = min_output, map = terser_sourcemap))
 
     packager_inputs = (
         ctx.files.srcs +
@@ -715,24 +659,6 @@ _NG_PACKAGE_ATTRS = dict(PKG_NPM_ATTRS, **{
         executable = True,
         cfg = "host",
     ),
-    "terser": attr.label(
-        executable = True,
-        cfg = "host",
-        default = Label(_DEFAULT_TERSER),
-    ),
-    "terser_config_file": attr.label(
-        doc = """A JSON file containing Terser minify() options.
-
-This is the file you would pass to the --config-file argument in terser's CLI.
-https://github.com/terser-js/terser#minify-options documents the content of the file.
-
-If `config_file` isn't supplied, Bazel will use a default config file.
-""",
-        allow_single_file = True,
-        # These defaults match how terser was run in the legacy built-in rollup_bundle rule.
-        # We keep them the same so it's easier for users to migrate.
-        default = Label(_DEFALUT_TERSER_CONFIG_FILE),
-    ),
     "rollup_config_tmpl": attr.label(
         default = Label(_DEFAULT_ROLLUP_CONFIG_TMPL),
         allow_single_file = True,
@@ -794,7 +720,6 @@ def _ng_package_outputs(name, entry_point, entry_point_name):
     outputs = {
         "fesm2015": "fesm2015/%s.js" % basename,
         "umd": "%s.umd.js" % basename,
-        "umd_min": "%s.umd.min.js" % basename,
     }
     for key in PKG_NPM_OUTPUTS:
         # PKG_NPM_OUTPUTS is a "normal" dict-valued outputs so it looks like

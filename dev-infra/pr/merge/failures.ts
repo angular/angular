@@ -36,6 +36,18 @@ export class PullRequestFailure {
     return new this(`Not marked as merge ready.`);
   }
 
+  static isDraft() {
+    return new this('Pull request is still in draft.');
+  }
+
+  static isClosed() {
+    return new this('Pull request is already closed.');
+  }
+
+  static isMerged() {
+    return new this('Pull request is already merged.');
+  }
+
   static mismatchingTargetBranch(allowedBranches: string[]) {
     return new this(
         `Pull request is set to wrong base branch. Please update the PR in the Github UI ` +

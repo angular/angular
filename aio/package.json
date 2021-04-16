@@ -22,7 +22,7 @@
     "build-local-with-viewengine": "yarn ~~build",
     "prebuild-local-with-viewengine-ci": "node scripts/switch-to-viewengine && yarn setup-local-ci",
     "build-local-with-viewengine-ci": "yarn ~~build --progress=false",
-    "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js 37b5f1c99",
+    "extract-cli-command-docs": "node tools/transforms/cli-docs-package/extract-cli-commands.js d902a289b",
     "lint": "yarn check-env && yarn docs-lint && ng lint && yarn example-lint && yarn tools-lint",
     "test": "yarn check-env && ng test",
     "pree2e": "yarn check-env && yarn update-webdriver",
@@ -84,7 +84,7 @@
   },
   "//engines-comment": "Keep this in sync with /package.json and /aio/tools/examples/shared/package.json",
   "engines": {
-    "node": ">=10.19.0 <16.0.0",
+    "node": ">=12.14.1 <16.0.0",
     "yarn": ">=1.22.4 <2",
     "npm": "Please use yarn instead of NPM to install dependencies"
   },

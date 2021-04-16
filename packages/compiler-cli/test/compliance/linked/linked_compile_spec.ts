@@ -32,8 +32,6 @@ function linkPartials(fileSystem: FileSystem, test: ComplianceTest): CompileResu
   const linkerPlugin = createEs2015LinkerPlugin({
     fileSystem,
     logger,
-    // By default we don't render legacy message ids in compliance tests.
-    enableI18nLegacyMessageIdFormat: false,
     sourceMapping: test.compilerOptions?.sourceMap === true,
     ...test.angularCompilerOptions
   });

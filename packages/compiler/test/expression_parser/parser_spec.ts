@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
+import {AbsoluteSourceSpan, ASTWithSource, BindingPipe, EmptyExpr, Interpolation, MethodCall, ParserError, TemplateBinding, VariableBinding} from '@angular/compiler/src/expression_parser/ast';
 import {Lexer} from '@angular/compiler/src/expression_parser/lexer';
 import {IvyParser, Parser, SplitInterpolation} from '@angular/compiler/src/expression_parser/parser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -188,6 +188,13 @@ describe('parser', () => {
         checkAction('a.add(1, 2)');
         checkAction('fn().add(1, 2)');
       });
+
+      it('should parse an EmptyExpr with a correct span for a trailing empty argument', () => {
+        const ast = parseAction('fn(1, )').ast as MethodCall;
+        expect(ast.args[1]).toBeAnInstanceOf(EmptyExpr);
+        const sourceSpan = (ast.args[1] as EmptyExpr).sourceSpan;
+        expect([sourceSpan.start, sourceSpan.end]).toEqual([5, 6]);
+      });
     });
 
     describe('functional calls', () => {
@@ -348,6 +355,11 @@ describe('parser', () => {
       const ast = parseAction('foo()');
       expect(unparseWithSpan(ast)).toContain(['foo()', 'foo()']);
       expect(unparseWithSpan(ast)).toContain(['foo()', '[nameSpan] foo']);
+    });
+
+    it('should record method call argument span', () => {
+      const ast = parseAction('foo(1 + 2)');
+      expect(unparseWithSpan(ast)).toContain(['foo(1 + 2)', '[argumentSpan] 1 + 2']);
     });
 
     it('should record accessed method call span', () => {

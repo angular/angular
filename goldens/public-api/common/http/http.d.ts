@@ -18,7 +18,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
-    }): Observable<ArrayBuffer>;
+    }, body?: any | null): Observable<ArrayBuffer>;
     delete(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -31,7 +31,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
-    }): Observable<Blob>;
+    }, body?: any | null): Observable<Blob>;
     delete(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -44,7 +44,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
-    }): Observable<string>;
+    }, body?: any | null): Observable<string>;
     delete(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -57,7 +57,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
-    }): Observable<HttpEvent<ArrayBuffer>>;
+    }, body?: any | null): Observable<HttpEvent<ArrayBuffer>>;
     delete(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -70,7 +70,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
-    }): Observable<HttpEvent<Blob>>;
+    }, body?: any | null): Observable<HttpEvent<Blob>>;
     delete(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -83,7 +83,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
-    }): Observable<HttpEvent<string>>;
+    }, body?: any | null): Observable<HttpEvent<string>>;
     delete(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -96,7 +96,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
-    }): Observable<HttpEvent<Object>>;
+    }, body?: any | null): Observable<HttpEvent<Object>>;
     delete<T>(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -109,7 +109,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
-    }): Observable<HttpEvent<T>>;
+    }, body?: any | null): Observable<HttpEvent<T>>;
     delete(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -122,7 +122,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType: 'arraybuffer';
         withCredentials?: boolean;
-    }): Observable<HttpResponse<ArrayBuffer>>;
+    }, body?: any | null): Observable<HttpResponse<ArrayBuffer>>;
     delete(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -135,7 +135,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType: 'blob';
         withCredentials?: boolean;
-    }): Observable<HttpResponse<Blob>>;
+    }, body?: any | null): Observable<HttpResponse<Blob>>;
     delete(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -148,7 +148,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType: 'text';
         withCredentials?: boolean;
-    }): Observable<HttpResponse<string>>;
+    }, body?: any | null): Observable<HttpResponse<string>>;
     delete(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -161,7 +161,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
-    }): Observable<HttpResponse<Object>>;
+    }, body?: any | null): Observable<HttpResponse<Object>>;
     delete<T>(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -174,7 +174,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
-    }): Observable<HttpResponse<T>>;
+    }, body?: any | null): Observable<HttpResponse<T>>;
     delete(url: string, options?: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -187,7 +187,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
-    }): Observable<Object>;
+    }, body?: any | null): Observable<Object>;
     delete<T>(url: string, options?: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -200,7 +200,7 @@ export declare class HttpClient {
         reportProgress?: boolean;
         responseType?: 'json';
         withCredentials?: boolean;
-    }): Observable<T>;
+    }, body?: any | null): Observable<T>;
     get(url: string, options: {
         headers?: HttpHeaders | {
             [header: string]: string | string[];
@@ -1740,7 +1740,7 @@ export declare class HttpRequest<T> {
     readonly url: string;
     readonly urlWithParams: string;
     readonly withCredentials: boolean;
-    constructor(method: 'DELETE' | 'GET' | 'HEAD' | 'JSONP' | 'OPTIONS', url: string, init?: {
+    constructor(method: 'GET' | 'HEAD' | 'JSONP' | 'OPTIONS', url: string, init?: {
         headers?: HttpHeaders;
         context?: HttpContext;
         reportProgress?: boolean;
@@ -1748,7 +1748,7 @@ export declare class HttpRequest<T> {
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
     });
-    constructor(method: 'POST' | 'PUT' | 'PATCH', url: string, body: T | null, init?: {
+    constructor(method: 'POST' | 'PUT' | 'PATCH' | 'DELETE', url: string, body: T | null, init?: {
         headers?: HttpHeaders;
         context?: HttpContext;
         reportProgress?: boolean;

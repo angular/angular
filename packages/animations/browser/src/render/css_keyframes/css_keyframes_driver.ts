@@ -20,7 +20,6 @@ const TAB_SPACE = ' ';
 
 export class CssKeyframesDriver implements AnimationDriver {
   private _count = 0;
-  private readonly _head: any = document.querySelector('head');
 
   validateStyleProperty(prop: string): boolean {
     return validateStyleProperty(prop);
@@ -107,7 +106,8 @@ export class CssKeyframesDriver implements AnimationDriver {
 
     const animationName = `${KEYFRAMES_NAME_PREFIX}${this._count++}`;
     const kfElm = this.buildKeyframeElement(element, animationName, keyframes);
-    document.querySelector('head')!.appendChild(kfElm);
+    const nodeToAppendKfElm = findNodeToAppendKeyframeElement(element);
+    nodeToAppendKfElm.appendChild(kfElm);
 
     const specialStyles = packageNonAnimatableStyles(element, keyframes);
     const player = new CssKeyframesPlayer(
@@ -116,6 +116,14 @@ export class CssKeyframesDriver implements AnimationDriver {
     player.onDestroy(() => removeElement(kfElm));
     return player;
   }
+}
+
+function findNodeToAppendKeyframeElement(element: any): Node {
+  const rootNode = element.getRootNode?.();
+  if (typeof ShadowRoot !== 'undefined' && rootNode instanceof ShadowRoot) {
+    return rootNode;
+  }
+  return document.head;
 }
 
 function flattenKeyframesIntoStyles(keyframes: null|{[key: string]: any}|

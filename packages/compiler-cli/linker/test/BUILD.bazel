@@ -16,6 +16,8 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/logging/testing",
         "//packages/compiler-cli/src/ngtsc/translator",
+        "@npm//@types/semver",
+        "@npm//semver",
         "@npm//typescript",
     ],
 )

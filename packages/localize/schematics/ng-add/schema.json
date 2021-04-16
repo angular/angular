@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/schema",
-  "id": "SchematicsAngularLocalizeNgAdd",
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "SchematicsAngularLocalizeNgAdd",
   "title": "Angular Localize Ng Add Schema",
   "type": "object",
   "properties": {

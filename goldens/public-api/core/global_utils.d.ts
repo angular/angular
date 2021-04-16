@@ -1,10 +1,22 @@
 export declare function applyChanges(component: {}): void;
 
+export interface ComponentDebugMetadata extends DirectiveDebugMetadata {
+    changeDetection: ChangeDetectionStrategy;
+    encapsulation: ViewEncapsulation;
+}
+
+export interface DirectiveDebugMetadata {
+    inputs: Record<string, string>;
+    outputs: Record<string, string>;
+}
+
 export declare function getComponent<T>(element: Element): T | null;
 
 export declare function getContext<T>(element: Element): T | null;
 
-export declare function getDirectives(element: Element): {}[];
+export declare function getDirectiveMetadata(directiveOrComponentInstance: any): ComponentDebugMetadata | DirectiveDebugMetadata | null;
+
+export declare function getDirectives(node: Node): {}[];
 
 export declare function getHostElement(componentOrDirective: {}): Element;
 

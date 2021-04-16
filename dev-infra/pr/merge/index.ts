@@ -7,7 +7,7 @@
  */
 
 
-import {getConfig, getRepoBaseDir} from '../../utils/config';
+import {getConfig} from '../../utils/config';
 import {error, green, info, promptConfirm, red, yellow} from '../../utils/console';
 import {GithubApiRequestError} from '../../utils/git/github';
 import {GITHUB_TOKEN_GENERATE_URL} from '../../utils/git/github-urls';

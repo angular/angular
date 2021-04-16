@@ -29,13 +29,10 @@ export class LinkerEnvironment<TStatement, TExpression> {
       factory: AstFactory<TStatement, TExpression>,
       options: Partial<LinkerOptions>): LinkerEnvironment<TStatement, TExpression> {
     return new LinkerEnvironment(fileSystem, logger, host, factory, {
-      enableI18nLegacyMessageIdFormat: options.enableI18nLegacyMessageIdFormat ??
-          DEFAULT_LINKER_OPTIONS.enableI18nLegacyMessageIdFormat,
-      i18nNormalizeLineEndingsInICUs: options.i18nNormalizeLineEndingsInICUs ??
-          DEFAULT_LINKER_OPTIONS.i18nNormalizeLineEndingsInICUs,
-      i18nUseExternalIds: options.i18nUseExternalIds ?? DEFAULT_LINKER_OPTIONS.i18nUseExternalIds,
       sourceMapping: options.sourceMapping ?? DEFAULT_LINKER_OPTIONS.sourceMapping,
       linkerJitMode: options.linkerJitMode ?? DEFAULT_LINKER_OPTIONS.linkerJitMode,
+      unknownDeclarationVersionHandling: options.unknownDeclarationVersionHandling ??
+          DEFAULT_LINKER_OPTIONS.unknownDeclarationVersionHandling,
     });
   }
 }

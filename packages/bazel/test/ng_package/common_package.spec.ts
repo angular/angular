@@ -7,12 +7,10 @@
  */
 
 import {obsoleteInIvy} from '@angular/private/testing';
+import {runfiles} from '@bazel/runfiles';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as shx from 'shelljs';
-
-/** Runfiles helper from bazel to resolve file name paths.  */
-const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']!);
 
 // Resolve the "npm_package" directory by using the runfile resolution. Note that we need to
 // resolve the "package.json" of the package since otherwise NodeJS would resolve the "main"
@@ -42,24 +40,14 @@ describe('@angular/common ng_package', () => {
     expect(shx.ls('-R', 'bundles').stdout.split('\n').filter(n => !!n).sort()).toEqual([
       'common-http-testing.umd.js',
       'common-http-testing.umd.js.map',
-      'common-http-testing.umd.min.js',
-      'common-http-testing.umd.min.js.map',
       'common-http.umd.js',
       'common-http.umd.js.map',
-      'common-http.umd.min.js',
-      'common-http.umd.min.js.map',
       'common-testing.umd.js',
       'common-testing.umd.js.map',
-      'common-testing.umd.min.js',
-      'common-testing.umd.min.js.map',
       'common-upgrade.umd.js',
       'common-upgrade.umd.js.map',
-      'common-upgrade.umd.min.js',
-      'common-upgrade.umd.min.js.map',
       'common.umd.js',
       'common.umd.js.map',
-      'common.umd.min.js',
-      'common.umd.min.js.map',
     ]);
   });
 

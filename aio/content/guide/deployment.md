@@ -13,7 +13,7 @@ Before fully deploying your application, you can test the process, build configu
 ### Building and serving from disk
 
 During development, you typically use the `ng serve` command to build, watch, and serve the application from local memory, using [webpack-dev-server](https://webpack.js.org/guides/development/#webpack-dev-server).
-When you are ready to deploy, however, you must use the `ng build` command to build the app and deploy the build artifacts elsewhere.
+When you are ready to deploy, however, you must use the `ng build` command to build the application and deploy the build artifacts elsewhere.
 
 Both `ng build` and `ng serve` clear the output folder before they build the project, but only the `ng build` command writes the generated build artifacts to the output folder.
 
@@ -82,7 +82,7 @@ In the table below, you can find a list of packages which implement deployment f
 | [NPM](https://npmjs.com/)                                     | [`ngx-deploy-npm`](https://npmjs.org/package/ngx-deploy-npm)                   |
 | [Amazon Cloud S3](https://aws.amazon.com/s3/?nc2=h_ql_prod_st_s3) | [`@jefiozie/ngx-aws-deploy`](https://www.npmjs.com/package/@jefiozie/ngx-aws-deploy) |
 
-If you're deploying to a self-managed server or there's no builder for your favorite cloud platform, you can either create a builder that allows you to use the `ng deploy` command, or read through this guide to learn how to manually deploy your app.
+If you're deploying to a self-managed server or there's no builder for your favorite cloud platform, you can either create a builder that allows you to use the `ng deploy` command, or read through this guide to learn how to manually deploy your application.
 
 ### Basic deployment to a remote server
 
@@ -112,8 +112,8 @@ To deploy your Angular application to [GitHub Pages](https://help.github.com/art
 
 1. [Create a GitHub repository](https://help.github.com/articles/create-a-repo/) for your project.
 
-1. Configure `git` in your local project by adding a remote that specifies the GitHub repo you created in previous step.
-  GitHub provides these commands when you create the repo so that you can copy and paste them at your command prompt.
+1. Configure `git` in your local project by adding a remote that specifies the GitHub repository you created in previous step.
+  GitHub provides these commands when you create the repository so that you can copy and paste them at your command prompt.
   The commands should be similar to the following, though GitHub fills in your project-specific settings for you:
 
   ```sh
@@ -165,17 +165,17 @@ This section covers changes you may have to make to the server or to files deplo
 
 ### Routed apps must fallback to `index.html`
 
-Angular apps are perfect candidates for serving with a simple static HTML server.
+Angular applications are perfect candidates for serving with a simple static HTML server.
 You don't need a server-side engine to dynamically compose application pages because
 Angular does that on the client-side.
 
-If the app uses the Angular router, you must configure the server
+If the application uses the Angular router, you must configure the server
 to return the application's host page (`index.html`) when asked for a file that it does not have.
 
 {@a deep-link}
 
 A routed application should support "deep links".
-A _deep link_ is a URL that specifies a path to a component inside the app.
+A _deep link_ is a URL that specifies a path to a component inside the application.
 For example, `http://www.mysite.com/heroes/42` is a _deep link_ to the hero detail page
 that displays the hero with `id: 42`.
 
@@ -264,7 +264,7 @@ modified to serve `index.html`:
 [directly configure](https://github.com/isaacs/github/issues/408)
 the GitHub Pages server, but you can add a 404 page.
 Copy `index.html` into `404.html`.
-It will still be served as the 404 response, but the browser will process that page and load the app properly.
+It will still be served as the 404 response, but the browser will process that page and load the application properly.
 It's also a good idea to
 [serve from `docs/` on master](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch)
 and to
@@ -315,7 +315,7 @@ See [`ng build`](cli/build) for more about CLI build options and what they do.
 
 ### Enable runtime production mode
 
-In addition to build optimizations, Angular also has a runtime production mode. Angular apps run in development mode by default, as you can see by the following message on the browser console:
+In addition to build optimizations, Angular also has a runtime production mode. Angular applications run in development mode by default, as you can see by the following message on the browser console:
 
 <code-example format="nocode">
 
@@ -333,7 +333,7 @@ runtime production mode.
 ### Lazy loading
 
 You can dramatically reduce launch time by only loading the application modules that
-absolutely must be present when the app starts.
+absolutely must be present when the application starts.
 
 Configure the Angular Router to defer loading of all other modules (and their associated code), either by
 [waiting until the app has launched](guide/router-tutorial-toh#preloading  "Preloading")
@@ -345,7 +345,7 @@ them on demand.
 <header>Don't eagerly import something from a lazy-loaded module</header>
 
 If you mean to lazy-load a module, be careful not to import it
-in a file that's eagerly loaded when the app starts (such as the root `AppModule`).
+in a file that's eagerly loaded when the application starts (such as the root `AppModule`).
 If you do that, the module will be loaded immediately.
 
 The bundling configuration must take lazy loading into consideration.
@@ -366,8 +366,8 @@ which automatically recognizes lazy-loaded `NgModules` and creates separate bund
 You can make better decisions about what to optimize and how when you have a clear and accurate understanding of
 what's making the application slow.
 The cause may not be what you think it is.
-You can waste a lot of time and money optimizing something that has no tangible benefit or even makes the app slower.
-You should measure the app's actual behavior when running in the environments that are important to you.
+You can waste a lot of time and money optimizing something that has no tangible benefit or even makes the application slower.
+You should measure the application's actual behavior when running in the environments that are important to you.
 
 The
 <a href="https://developers.google.com/web/tools/chrome-devtools/network-performance/understanding-resource-timing" title="Chrome DevTools Network Performance">
@@ -391,7 +391,7 @@ Install `source-map-explorer`:
 
 </code-example>
 
-Build your app for production _including the source maps_
+Build your application for production _including the source maps_
 
 <code-example language="none" class="code-shell">
 
@@ -419,7 +419,7 @@ The following example displays the graph for the _main_ bundle.
 The `source-map-explorer` analyzes the source map generated with the bundle and draws a map of all dependencies,
 showing exactly which classes are included in the bundle.
 
-Here's the output for the _main_ bundle of an example app called `cli-quickstart`.
+Here's the output for the _main_ bundle of an example application called `cli-quickstart`.
 
 <div class="lightbox">
   <img src="generated/images/guide/deployment/quickstart-sourcemap-explorer.png" alt="quickstart sourcemap explorer">
@@ -442,13 +442,13 @@ See also the [*APP_BASE_HREF*](api/common/APP_BASE_HREF "API: APP_BASE_HREF") al
 </div>
 
 In development, you typically start the server in the folder that holds `index.html`.
-That's the root folder and you'd add `<base href="/">` near the top of `index.html` because `/` is the root of the app.
+That's the root folder and you'd add `<base href="/">` near the top of `index.html` because `/` is the root of the application.
 
-But on the shared or production server, you might serve the app from a subfolder.
-For example, when the URL to load the app is something like `http://www.mysite.com/my/app/`,
+But on the shared or production server, you might serve the application from a subfolder.
+For example, when the URL to load the application is something like `http://www.mysite.com/my/app/`,
 the subfolder is `my/app/` and you should add `<base href="/my/app/">` to the server version of the `index.html`.
 
-When the `base` tag is mis-configured, the app fails to load and the browser console displays `404 - Not Found` errors
+When the `base` tag is mis-configured, the application fails to load and the browser console displays `404 - Not Found` errors
 for the missing files. Look at where it _tried_ to find those files and adjust the base tag appropriately.
 
 {@a differential-loading}
@@ -655,7 +655,7 @@ In `angular.json` add two new configuration sections under the `build` and `serv
 
 </code-example>
 
-You can then run the `ng serve` command with this configuration. Make sure to replace `<app-name>` (in `"<app-name>:build:es5"`) with the actual name of the app, as it appears under `projects` in `angular.json`. For example, if your app name is `myAngularApp` the config will become `"browserTarget": "myAngularApp:build:es5"`.
+You can then run the `ng serve` command with this configuration. Make sure to replace `<app-name>` (in `"<app-name>:build:es5"`) with the actual name of the app, as it appears under `projects` in `angular.json`. For example, if your application name is `myAngularApp` the configuration will become `"browserTarget": "myAngularApp:build:es5"`.
 
 <code-example language="none" class="code-shell">
 
@@ -727,7 +727,7 @@ Create an [ES5 serve configuration](guide/deployment#configuring-serve-for-es5) 
 
 </code-example>
 
-You can then run the `ng e2e` command with this configuration. Make sure to replace `<app-name>` (in `"<app-name>:serve:es5"`) with the actual name of the app, as it appears under `projects` in `angular.json`. For example, if your app name is `myAngularApp` the config will become `"devServerTarget": "myAngularApp:serve:es5"`.
+You can then run the `ng e2e` command with this configuration. Make sure to replace `<app-name>` (in `"<app-name>:serve:es5"`) with the actual name of the app, as it appears under `projects` in `angular.json`. For example, if your application name is `myAngularApp` the configuration will become `"devServerTarget": "myAngularApp:serve:es5"`.
 
 <code-example language="none" class="code-shell">
 

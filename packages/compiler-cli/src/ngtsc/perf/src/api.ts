@@ -145,6 +145,11 @@ export enum PerfPhase {
   LsComponentLocations,
 
   /**
+   * Time spent by the Angular Language Service calculating signature help.
+   */
+  LsSignatureHelp,
+
+  /**
    * Tracks the number of `PerfPhase`s, and must appear at the end of the list.
    */
   LAST,

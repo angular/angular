@@ -461,6 +461,19 @@ export class _ParseAST {
     if (artificialEndIndex !== undefined && artificialEndIndex > this.currentEndIndex) {
       endIndex = artificialEndIndex;
     }
+
+    // In some unusual parsing scenarios (like when certain tokens are missing and an `EmptyExpr` is
+    // being created), the current token may already be advanced beyond the `currentEndIndex`. This
+    // appears to be a deep-seated parser bug.
+    //
+    // As a workaround for now, swap the start and end indices to ensure a valid `ParseSpan`.
+    // TODO(alxhub): fix the bug upstream in the parser state, and remove this workaround.
+    if (start > endIndex) {
+      const tmp = endIndex;
+      endIndex = start;
+      start = tmp;
+    }
+
     return new ParseSpan(start, endIndex);
   }
 
@@ -940,14 +953,19 @@ export class _ParseAST {
     const nameSpan = this.sourceSpan(nameStart);
 
     if (this.consumeOptionalCharacter(chars.$LPAREN)) {
+      const argumentStart = this.inputIndex;
       this.rparensExpected++;
       const args = this.parseCallArguments();
+      const argumentSpan =
+          this.span(argumentStart, this.inputIndex).toAbsolute(this.absoluteOffset);
+
       this.expectCharacter(chars.$RPAREN);
       this.rparensExpected--;
       const span = this.span(start);
       const sourceSpan = this.sourceSpan(start);
-      return isSafe ? new SafeMethodCall(span, sourceSpan, nameSpan, receiver, id, args) :
-                      new MethodCall(span, sourceSpan, nameSpan, receiver, id, args);
+      return isSafe ?
+          new SafeMethodCall(span, sourceSpan, nameSpan, receiver, id, args, argumentSpan) :
+          new MethodCall(span, sourceSpan, nameSpan, receiver, id, args, argumentSpan);
 
     } else {
       if (isSafe) {

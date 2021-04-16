@@ -33,8 +33,13 @@ export interface ResourceHost {
   /**
    * Converts a file path for a resource that is used in a source file or another resource
    * into a filepath.
+   *
+   * The optional `fallbackResolve` method can be used as a way to attempt a fallback resolution if
+   * the implementation's `resourceNameToFileName` resolution fails.
    */
-  resourceNameToFileName(resourceName: string, containingFilePath: string): string|null;
+  resourceNameToFileName(
+      resourceName: string, containingFilePath: string,
+      fallbackResolve?: (url: string, fromFile: string) => string | null): string|null;
 
   /**
    * Load a referenced resource either statically or asynchronously. If the host returns a

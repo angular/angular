@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ChangeDetectionStrategy} from '../../change_detection/constants';
 import {Injector} from '../../di/injector';
+import {ViewEncapsulation} from '../../metadata/view';
 import {assertEqual} from '../../util/assert';
 import {assertLView} from '../assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
+import {getComponentDef, getDirectiveDef} from '../definition';
 import {NodeInjector} from '../di';
 import {buildDebugNode} from '../instructions/lview_debug';
 import {LContext} from '../interfaces/context';
@@ -169,7 +172,7 @@ export function getInjectionTokens(element: Element): any[] {
 }
 
 /**
- * Retrieves directive instances associated with a given DOM element. Does not include
+ * Retrieves directive instances associated with a given DOM node. Does not include
  * component instances.
  *
  * @usageNotes
@@ -181,26 +184,104 @@ export function getInjectionTokens(element: Element): any[] {
  * </my-app>
  * ```
  * Calling `getDirectives` on `<button>` will return an array with an instance of the `MyButton`
- * directive that is associated with the DOM element.
+ * directive that is associated with the DOM node.
  *
  * Calling `getDirectives` on `<my-comp>` will return an empty array.
  *
- * @param element DOM element for which to get the directives.
- * @returns Array of directives associated with the element.
+ * @param node DOM node for which to get the directives.
+ * @returns Array of directives associated with the node.
  *
  * @publicApi
  * @globalApi ng
  */
-export function getDirectives(element: Element): {}[] {
-  const context = loadLContext(element)!;
+export function getDirectives(node: Node): {}[] {
+  // Skip text nodes because we can't have directives associated with them.
+  if (node instanceof Text) {
+    return [];
+  }
 
+  const context = loadLContext(node, false);
+  if (context === null) {
+    return [];
+  }
+
+  const lView = context.lView;
+  const tView = lView[TVIEW];
+  const nodeIndex = context.nodeIndex;
+  if (!tView?.data[nodeIndex]) {
+    return [];
+  }
   if (context.directives === undefined) {
-    context.directives = getDirectivesAtNodeIndex(context.nodeIndex, context.lView, false);
+    context.directives = getDirectivesAtNodeIndex(nodeIndex, lView, false);
   }
 
   // The `directives` in this case are a named array called `LComponentView`. Clone the
   // result so we don't expose an internal data structure in the user's console.
   return context.directives === null ? [] : [...context.directives];
+}
+
+/**
+ * Partial metadata for a given directive instance.
+ * This information might be useful for debugging purposes or tooling.
+ * Currently only `inputs` and `outputs` metadata is available.
+ *
+ * @publicApi
+ */
+export interface DirectiveDebugMetadata {
+  inputs: Record<string, string>;
+  outputs: Record<string, string>;
+}
+
+/**
+ * Partial metadata for a given component instance.
+ * This information might be useful for debugging purposes or tooling.
+ * Currently the following fields are available:
+ *  - inputs
+ *  - outputs
+ *  - encapsulation
+ *  - changeDetection
+ *
+ * @publicApi
+ */
+export interface ComponentDebugMetadata extends DirectiveDebugMetadata {
+  encapsulation: ViewEncapsulation;
+  changeDetection: ChangeDetectionStrategy;
+}
+
+/**
+ * Returns the debug (partial) metadata for a particular directive or component instance.
+ * The function accepts an instance of a directive or component and returns the corresponding
+ * metadata.
+ *
+ * @param directiveOrComponentInstance Instance of a directive or component
+ * @returns metadata of the passed directive or component
+ *
+ * @publicApi
+ * @globalApi ng
+ */
+export function getDirectiveMetadata(directiveOrComponentInstance: any): ComponentDebugMetadata|
+    DirectiveDebugMetadata|null {
+  const {constructor} = directiveOrComponentInstance;
+  if (!constructor) {
+    throw new Error('Unable to find the instance constructor');
+  }
+  // In case a component inherits from a directive, we may have component and directive metadata
+  // To ensure we don't get the metadata of the directive, we want to call `getComponentDef` first.
+  const componentDef = getComponentDef(constructor);
+  if (componentDef) {
+    return {
+      inputs: componentDef.inputs,
+      outputs: componentDef.outputs,
+      encapsulation: componentDef.encapsulation,
+      changeDetection: componentDef.onPush ? ChangeDetectionStrategy.OnPush :
+                                             ChangeDetectionStrategy.Default
+    };
+  }
+  const directiveDef = getDirectiveDef(constructor);
+  if (directiveDef) {
+    return {inputs: directiveDef.inputs, outputs: directiveDef.outputs};
+  }
+  return null;
 }
 
 /**

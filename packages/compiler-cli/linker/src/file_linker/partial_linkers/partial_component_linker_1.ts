@@ -14,7 +14,6 @@ import {Range} from '../../ast/ast_host';
 import {AstObject, AstValue} from '../../ast/ast_value';
 import {FatalLinkerError} from '../../fatal_linker_error';
 import {GetSourceFileFn} from '../get_source_file';
-import {LinkerEnvironment} from '../linker_environment';
 
 import {toR3DirectiveMeta} from './partial_directive_linker_1';
 import {PartialLinker} from './partial_linker';
@@ -25,14 +24,7 @@ import {extractForwardRef} from './util';
  */
 export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
     PartialLinker<TExpression> {
-  private readonly i18nNormalizeLineEndingsInICUs =
-      this.environment.options.i18nNormalizeLineEndingsInICUs;
-  private readonly enableI18nLegacyMessageIdFormat =
-      this.environment.options.enableI18nLegacyMessageIdFormat;
-  private readonly i18nUseExternalIds = this.environment.options.i18nUseExternalIds;
-
   constructor(
-      private readonly environment: LinkerEnvironment<TStatement, TExpression>,
       private readonly getSourceFile: GetSourceFileFn, private sourceUrl: AbsoluteFsPath,
       private code: string) {}
 
@@ -54,17 +46,15 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
     const isInline = metaObj.has('isInline') ? metaObj.getBoolean('isInline') : false;
     const templateInfo = this.getTemplateInfo(templateSource, isInline);
 
-    // We always normalize line endings if the template is inline.
-    const i18nNormalizeLineEndingsInICUs = isInline || this.i18nNormalizeLineEndingsInICUs;
-
     const template = parseTemplate(templateInfo.code, templateInfo.sourceUrl, {
       escapedString: templateInfo.isEscaped,
       interpolationConfig: interpolation,
       range: templateInfo.range,
-      enableI18nLegacyMessageIdFormat: this.enableI18nLegacyMessageIdFormat,
+      enableI18nLegacyMessageIdFormat: false,
       preserveWhitespaces:
           metaObj.has('preserveWhitespaces') ? metaObj.getBoolean('preserveWhitespaces') : false,
-      i18nNormalizeLineEndingsInICUs,
+      // We normalize line endings if the template is was inline.
+      i18nNormalizeLineEndingsInICUs: isInline,
       isInline,
     });
     if (template.errors !== null) {
@@ -141,7 +131,7 @@ export class PartialComponentLinkerVersion1<TStatement, TExpression> implements
           ChangeDetectionStrategy.Default,
       animations: metaObj.has('animations') ? metaObj.getOpaque('animations') : null,
       relativeContextFilePath: this.sourceUrl,
-      i18nUseExternalIds: this.i18nUseExternalIds,
+      i18nUseExternalIds: false,
       pipes,
       directives,
     };

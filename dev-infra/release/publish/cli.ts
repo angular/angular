@@ -8,9 +8,10 @@
 
 import {Arguments, Argv, CommandModule} from 'yargs';
 
-import {getConfig, getRepoBaseDir} from '../../utils/config';
+import {getConfig} from '../../utils/config';
 import {error, green, info, red, yellow} from '../../utils/console';
 import {addGithubTokenOption} from '../../utils/git/github-yargs';
+import {GitClient} from '../../utils/git/index';
 import {getReleaseConfig} from '../config/index';
 
 import {CompletionState, ReleaseTool} from './index';
@@ -27,9 +28,10 @@ function builder(argv: Argv): Argv<ReleasePublishOptions> {
 
 /** Yargs command handler for staging a release. */
 async function handler(args: Arguments<ReleasePublishOptions>) {
+  const git = GitClient.getInstance();
   const config = getConfig();
   const releaseConfig = getReleaseConfig(config);
-  const projectDir = getRepoBaseDir();
+  const projectDir = git.baseDir;
   const task = new ReleaseTool(releaseConfig, config.github, args.githubToken, projectDir);
   const result = await task.run();
 

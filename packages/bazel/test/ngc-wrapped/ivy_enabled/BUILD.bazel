@@ -5,6 +5,7 @@ ts_library(
     testonly = True,
     srcs = ["ng_module_ivy_test.ts"],
     tags = ["ivy-only"],
+    deps = ["@npm//@bazel/runfiles"],
 )
 
 # `ng_module` with `compilation_mode` explicitly set to `partial`.

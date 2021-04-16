@@ -4,6 +4,9 @@
   "description": "Angular - the compiler library",
   "author": "angular",
   "license": "MIT",
+  "engines": {
+    "node": ">=12.14.1 <16.0.0"
+  },
   "dependencies": {
     "tslib": "^2.1.0"
   },

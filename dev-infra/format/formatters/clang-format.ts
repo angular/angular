@@ -8,7 +8,6 @@
 
 import {join} from 'path';
 
-import {getRepoBaseDir} from '../../utils/config';
 import {error} from '../../utils/console';
 
 import {Formatter} from './base-formatter';
@@ -19,7 +18,7 @@ import {Formatter} from './base-formatter';
 export class ClangFormat extends Formatter {
   name = 'clang-format';
 
-  binaryFilePath = join(getRepoBaseDir(), 'node_modules/.bin/clang-format');
+  binaryFilePath = join(this.git.baseDir, 'node_modules/.bin/clang-format');
 
   defaultFileMatcher = ['**/*.{t,j}s'];
 

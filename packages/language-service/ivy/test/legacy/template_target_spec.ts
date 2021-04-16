@@ -549,6 +549,15 @@ describe('getTargetAtPosition for expression AST', () => {
     expect(node).toBeInstanceOf(e.SafeMethodCall);
   });
 
+  it('should identify when in the argument position in a no-arg method call', () => {
+    const {errors, nodes, position} = parse(`{{ title.toString(¦) }}`);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    expect(context.kind).toEqual(TargetNodeKind.MethodCallExpressionInArgContext);
+    const {node} = context as SingleNodeTarget;
+    expect(node).toBeInstanceOf(e.MethodCall);
+  });
+
   it('should locate literal primitive in interpolation', () => {
     const {errors, nodes, position} = parse(`{{ title.indexOf('t¦') }}`);
     expect(errors).toBe(null);

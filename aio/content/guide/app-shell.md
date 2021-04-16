@@ -1,9 +1,9 @@
 # App shell
 
-App shell is a way to render a portion of your application via a route at build time.
+Application shell is a way to render a portion of your application using a route at build time.
 It can improve the user experience by quickly launching a static rendered page (a skeleton common to all pages) while the browser downloads the full client version and switches to it automatically after the code loads.
 
-This gives users a meaningful first paint of your application that appears quickly because the browser can simply render the HTML and CSS without the need to initialize any JavaScript.
+This gives users a meaningful first paint of your application that appears quickly because the browser can render the HTML and CSS without the need to initialize any JavaScript.
 
 Learn more in [The App Shell Model](https://developers.google.com/web/fundamentals/architecture/app-shell).
 
@@ -18,7 +18,7 @@ For an existing application, you have to manually add the `RouterModule` and def
 
 ## Step 2: Create the app shell
 
-Use the CLI to automatically create the app shell.
+Use the CLI to automatically create the application shell.
 
 <code-example language="bash">
 ng generate app-shell
@@ -87,4 +87,4 @@ Or to use the production configuration.
 ng run my-app:app-shell:production
 </code-example>
 
-To verify the build output, open `dist/my-app/browser/index.html`. Look for default text `app-shell works!` to show that the app shell route was rendered as part of the output.
+To verify the build output, open `dist/my-app/browser/index.html`. Look for default text `app-shell works!` to show that the application shell route was rendered as part of the output.

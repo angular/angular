@@ -13,6 +13,14 @@ import {DefinitionMap} from '../view/util';
 
 import {R3DeclareNgModuleMetadata} from './api';
 
+/**
+ * Every time we make a breaking change to the declaration interface or partial-linker behavior, we
+ * must update this constant to prevent old partial-linkers from incorrectly processing the
+ * declaration.
+ *
+ * Do not include any prerelease in these versions as they are ignored.
+ */
+const MINIMUM_PARTIAL_LINKER_VERSION = '12.0.0';
 
 export function compileDeclareNgModuleFromMetadata(meta: R3NgModuleMetadata): R3CompiledExpression {
   const definitionMap = createNgModuleDefinitionMap(meta);
@@ -30,6 +38,7 @@ function createNgModuleDefinitionMap(meta: R3NgModuleMetadata):
     DefinitionMap<R3DeclareNgModuleMetadata> {
   const definitionMap = new DefinitionMap<R3DeclareNgModuleMetadata>();
 
+  definitionMap.set('minVersion', o.literal(MINIMUM_PARTIAL_LINKER_VERSION));
   definitionMap.set('version', o.literal('0.0.0-PLACEHOLDER'));
   definitionMap.set('ngImport', o.importExpr(R3.core));
   definitionMap.set('type', meta.internalType);

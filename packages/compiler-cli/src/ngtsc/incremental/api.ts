@@ -21,7 +21,7 @@ export interface IncrementalBuild<AnalysisT, FileTypeCheckDataT> {
   /**
    * Retrieve the prior analysis work, if any, done for the given source file.
    */
-  priorWorkFor(sf: ts.SourceFile): AnalysisT[]|null;
+  priorAnalysisFor(sf: ts.SourceFile): AnalysisT[]|null;
 
   /**
    * Retrieve the prior type-checking work, if any, that's been done for the given source file.

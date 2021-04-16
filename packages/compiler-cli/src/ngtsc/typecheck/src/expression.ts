@@ -69,7 +69,9 @@ class AstTranslator implements AstVisitor {
 
     // The `EmptyExpr` doesn't have a dedicated method on `AstVisitor`, so it's special cased here.
     if (ast instanceof EmptyExpr) {
-      return UNDEFINED;
+      const res = ts.factory.createIdentifier('undefined');
+      addParseSpanInfo(res, ast.sourceSpan);
+      return res;
     }
 
     // First attempt to let any custom resolution logic provide a translation for the given node.

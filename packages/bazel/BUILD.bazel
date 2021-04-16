@@ -13,9 +13,6 @@ pkg_npm(
         "//packages/bazel/src/ngc-wrapped:package_assets",
         "//packages/bazel/third_party/github.com/bazelbuild/bazel/src/main/protobuf:package_assets",
     ],
-    nested_packages = [
-        "//packages/bazel/docs",
-    ],
     substitutions = {
         "(#|//)\\s+BEGIN-DEV-ONLY[\\w\\W]+?(#|//)\\s+END-DEV-ONLY": "",
         "//packages/bazel/": "//@angular/bazel/",

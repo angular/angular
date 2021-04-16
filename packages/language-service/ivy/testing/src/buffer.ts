@@ -98,6 +98,10 @@ export class OpenBuffer {
   getRenameInfo() {
     return this.ngLS.getRenameInfo(this.scriptInfo.fileName, this._cursor);
   }
+
+  getSignatureHelpItems() {
+    return this.ngLS.getSignatureHelpItems(this.scriptInfo.fileName, this._cursor);
+  }
 }
 
 /**
