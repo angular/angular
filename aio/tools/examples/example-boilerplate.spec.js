@@ -23,7 +23,7 @@ describe('example-boilerplate tool', () => {
     it('should run `ngcc`', () => {
       exampleBoilerPlate.add();
       expect(shelljs.exec).toHaveBeenCalledWith(
-          `yarn --cwd ${sharedDir} ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points`);
+          `yarn --cwd ${sharedDir} ngcc --properties es2015 main`);
     });
 
     it('should process all the example folders', () => {
