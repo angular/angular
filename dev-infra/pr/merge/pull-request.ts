@@ -200,23 +200,23 @@ function assertChangesAllowForTargetLabel(
   const exemptedScopes = config.targetLabelExemptScopes || [];
   /** List of commits which are subject to content requirements for the target label. */
   commits = commits.filter(commit => !exemptedScopes.includes(commit.scope));
+  const hasBreakingChanges = commits.some(commit => commit.breakingChanges.length !== 0);
+  const hasFeatureCommits = commits.some(commit => commit.type === 'feat');
   switch (label.pattern) {
     case 'target: major':
       break;
     case 'target: minor':
-      // Check if any commits in the pull request contains a breaking change.
-      if (commits.some(commit => commit.breakingChanges.length !== 0)) {
+      if (hasBreakingChanges) {
         throw PullRequestFailure.hasBreakingChanges(label);
       }
       break;
+    case 'target: rc':
     case 'target: patch':
     case 'target: lts':
-      // Check if any commits in the pull request contains a breaking change.
-      if (commits.some(commit => commit.breakingChanges.length !== 0)) {
+      if (hasBreakingChanges) {
         throw PullRequestFailure.hasBreakingChanges(label);
       }
-      // Check if any commits in the pull request contains a commit type of "feat".
-      if (commits.some(commit => commit.type === 'feat')) {
+      if (hasFeatureCommits) {
         throw PullRequestFailure.hasFeatureCommits(label);
       }
       break;
