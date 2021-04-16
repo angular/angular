@@ -4,14 +4,14 @@ import { RTreeStrategy } from './render-tree';
 export { getLViewFromDirectiveOrElementInstance, getDirectiveHostElement, METADATA_PROPERTY_NAME } from './ltree';
 
 // The order of the strategies matters. Lower indices have higher priority.
-const builders = [new RTreeStrategy(), new LTreeStrategy()];
+const strategies = [new RTreeStrategy(), new LTreeStrategy()];
 
 let strategy: null | RTreeStrategy | LTreeStrategy = null;
 
-const selectStrategy = (lView: any) => {
-  for (const builder of builders) {
-    if (builder.supports(lView)) {
-      return builder;
+const selectStrategy = (element: Element) => {
+  for (const s of strategies) {
+    if (s.supports(element)) {
+      return s;
     }
   }
   return null;

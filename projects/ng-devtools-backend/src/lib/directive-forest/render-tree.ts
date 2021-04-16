@@ -1,12 +1,14 @@
 import { ComponentTreeNode } from '../component-tree';
 import { isCustomElement } from '../utils';
 
-const extractViewTree = (node: Node | Element, result: ComponentTreeNode[] = []): ComponentTreeNode[] => {
-  const getComponent = (window as any).ng.getComponent as (element: Element) => {};
-  const getDirectives = (window as any).ng.getDirectives as (node: Node) => {}[];
-
-  const directives = getDirectives(node);
-  if (!directives.length && !(node instanceof Element)) {
+const extractViewTree = (
+  domNode: Node | Element,
+  result: ComponentTreeNode[],
+  getComponent: (element: Element) => {},
+  getDirectives: (node: Node) => {}[]
+): ComponentTreeNode[] => {
+  const directives = getDirectives(domNode);
+  if (!directives.length && !(domNode instanceof Element)) {
     return result;
   }
   const componentTreeNode: ComponentTreeNode = {
@@ -21,7 +23,7 @@ const extractViewTree = (node: Node | Element, result: ComponentTreeNode[] = [])
     element: node.nodeName.toLowerCase(),
     nativeElement: node,
   };
-  if (!(node instanceof Element)) {
+  if (!(domNode instanceof Element)) {
     result.push(componentTreeNode);
     return result;
   }
@@ -37,9 +39,11 @@ const extractViewTree = (node: Node | Element, result: ComponentTreeNode[] = [])
     result.push(componentTreeNode);
   }
   if (componentTreeNode.component || componentTreeNode.directives.length) {
-    node.childNodes.forEach((node) => extractViewTree(node, componentTreeNode.children));
+    domNode.childNodes.forEach((node) =>
+      extractViewTree(node, componentTreeNode.children, getComponent, getDirectives)
+    );
   } else {
-    node.childNodes.forEach((node) => extractViewTree(node, result));
+    domNode.childNodes.forEach((node) => extractViewTree(node, result, getComponent, getDirectives));
   }
   return result;
 };
@@ -52,7 +56,9 @@ export class RTreeStrategy {
   }
 
   build(element: Element): ComponentTreeNode[] {
-    const result = extractViewTree(element);
+    const getComponent = (window as any).ng.getComponent as (element: Element) => {};
+    const getDirectives = (window as any).ng.getDirectives as (node: Node) => {}[];
+    const result = extractViewTree(element, [], getComponent, getDirectives);
     return result;
   }
 }

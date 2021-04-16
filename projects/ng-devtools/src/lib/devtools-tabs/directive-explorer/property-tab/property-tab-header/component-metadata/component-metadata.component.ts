@@ -32,6 +32,6 @@ export class ComponentMetadataComponent {
 
   get changeDetectionStrategy(): string | undefined {
     const onPush = this?.controller?.directiveHasOnPushStrategy;
-    return onPush ? 'On Push' : onPush !== undefined ? 'Default' : undefined;
+    return onPush ? 'OnPush' : onPush !== undefined ? 'Default' : undefined;
   }
 }

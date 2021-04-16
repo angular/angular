@@ -1,6 +1,6 @@
 import { ComponentTreeNode } from './../component-tree';
 import { ElementPosition, LifecycleProfile } from 'protocol';
-import { componentMetadata, runOutsideAngular } from '../utils';
+import { runOutsideAngular } from '../utils';
 import { IdentityTracker, IndexedNode } from './identity-tracker';
 import {
   getLViewFromDirectiveOrElementInstance,
@@ -8,6 +8,9 @@ import {
   METADATA_PROPERTY_NAME,
 } from '../directive-forest';
 import { Subject } from 'rxjs';
+
+// Only used in older Angular versions prior to the introduction of `getDirectiveMetadata`
+const componentMetadata = (instance: any) => instance?.constructor?.ɵcmp;
 
 export type CreationHook = (
   componentOrDirective: any,

@@ -13,7 +13,6 @@
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "e2e": "npm run cy:run",
-    "e2e:watch": "npm run cy:run:watch",
     "cy:verify": "$(npm bin)/cypress verify",
     "cy:version": "$(npm bin)/cypress version",
     "cy:run": "$(yarn bin)/cypress run",

@@ -72,7 +72,7 @@ describe('Search items in component tree', () => {
     checkSearchedNodesLength('.selected', 1);
 
     // should show correct buttons in breadcrumbs
-    const amountOfBreadcrumbButtons = 7;
+    const amountOfBreadcrumbButtons = 4;
     const amountOfScrollButtons = 2;
     cy.get('ng-breadcrumbs')
       .find('button')
