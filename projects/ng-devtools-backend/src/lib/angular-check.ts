@@ -5,7 +5,7 @@ export const appIsAngularInDevMode = (): boolean => {
 };
 
 export const appIsAngularIvy = (): boolean => {
-  return !!(window as any).getAllAngularRootElements?.()?.[0]?.__ngContext__;
+  return typeof (window as any).getAllAngularRootElements?.()?.[0]?.__ngContext__ !== 'undefined';
 };
 
 export const appIsAngular = (): boolean => {

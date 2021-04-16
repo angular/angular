@@ -20,19 +20,19 @@ const extractViewTree = (
         name: dir.constructor.name,
       };
     }),
-    element: node.nodeName.toLowerCase(),
-    nativeElement: node,
+    element: domNode.nodeName.toLowerCase(),
+    nativeElement: domNode,
   };
   if (!(domNode instanceof Element)) {
     result.push(componentTreeNode);
     return result;
   }
-  const component = getComponent(node);
+  const component = getComponent(domNode);
   if (component) {
     componentTreeNode.component = {
       instance: component,
-      isElement: isCustomElement(node),
-      name: node.nodeName.toLowerCase(),
+      isElement: isCustomElement(domNode),
+      name: domNode.nodeName.toLowerCase(),
     };
   }
   if (component || componentTreeNode.directives.length) {
@@ -49,7 +49,7 @@ const extractViewTree = (
 };
 
 export class RTreeStrategy {
-  supports(_: any) {
+  supports(_: any): boolean {
     return ['getDirectiveMetadata', 'getComponent', 'getDirectives'].every(
       (method) => typeof (window as any).ng[method] === 'function'
     );
