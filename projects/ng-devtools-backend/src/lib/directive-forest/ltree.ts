@@ -57,7 +57,7 @@ export const getDirectiveHostElement = (dir: any) => {
   return ctx[components[0]][0];
 };
 
-export class LViewBuilder {
+export class LTreeStrategy {
   supports(element: Element) {
     return (element as any).__ngContext__;
   }
