@@ -1,11 +1,12 @@
-import { LViewBuilder } from './lview';
-import { DebugNodeTreeBuilder } from './lview-debug';
+import { LTreeStrategy } from './ltree';
+import { RTreeStrategy } from './render-tree';
 
-export { getLViewFromDirectiveOrElementInstance, getDirectiveHostElement, METADATA_PROPERTY_NAME } from './lview';
+export { getLViewFromDirectiveOrElementInstance, getDirectiveHostElement, METADATA_PROPERTY_NAME } from './ltree';
 
-const builders = [new DebugNodeTreeBuilder(), new LViewBuilder()];
+// The order of the strategies matters. Lower indices have higher priority.
+const builders = [new RTreeStrategy(), new LTreeStrategy()];
 
-let strategy: null | DebugNodeTreeBuilder | LViewBuilder = null;
+let strategy: null | RTreeStrategy | LTreeStrategy = null;
 
 const selectStrategy = (lView: any) => {
   for (const builder of builders) {
@@ -24,8 +25,5 @@ export const buildDirectiveTree = (element: Element) => {
     console.error('Unable to parse the component tree');
     return [];
   }
-  console.time('tree-start');
-  const result = strategy.build(element);
-  console.timeEnd('tree-start');
-  return result;
+  return strategy.build(element);
 };
