@@ -812,7 +812,7 @@ Neither `tap` nor `finalize` touch the values of the observable stream returned 
 Interceptors can be used to replace the built-in JSON parsing with a custom implementation.
 
 The `CustomJsonInterceptor` in the following example demonstrates how to achieve this.
-If the intercepted request expects a `'json'` response, the `reponseType` is changed to `'text'`
+If the intercepted request expects a `'json'` response, the `responseType` is changed to `'text'`
 to disable the built-in JSON parsing. Then the response is parsed via the injected `JsonParser`.
 
 <code-example
@@ -1197,3 +1197,50 @@ Alternatively, you can call `request.error()` with an `ErrorEvent`.
   path="http/src/testing/http-client.spec.ts"
   region="network-error">
 </code-example>
+
+
+## Passing metadata to interceptors
+
+Many interceptors require or benefit from configuration. Consider an interceptor that retries failed requests.
+By default, the interceptor might retry a request three times, but you might want to override this retry count for particularly error-prone or sensitive requests.
+
+`HttpClient` requests contain a _context_ that can carry metadata about the request.
+This context is available for interceptors to read or modify, though it is not transmitted to the backend server when the request is sent.
+This allows applications or other interceptors to tag requests with configuration parameters, such as how many times to retry a request.
+
+### Creating a context token
+
+Angular stores and retrieves a value in the context using an `HttpContextToken`.
+You can create a context token using the `new` operator, as in the following example:
+
+<code-example path="http/src/app/http-interceptors/retry-interceptor.ts" region="context-token" header="creating a context token"></code-example>
+
+The lambda function `() => 3` passed during the creation of the `HttpContextToken` serves two purposes:
+
+1. It allows TypeScript to infer the type of this token: `HttpContextToken<number>`.
+  The request context is type-safe&mdash;reading a token from a request's context returns a value of the appropriate type.
+
+1. It sets the default value for the token.
+  This is the value that the request context returns if no other value has been set for this token.
+  Using a default value avoids the need to check if a particular value is set.
+
+### Setting context values when making a request
+
+When making a request, you can provide an `HttpContext` instance, in which you have already set the context values.
+
+<code-example path="http/src/app/http-interceptors/retry-interceptor.ts" region="set-context" header="setting context values"></code-example>
+
+### Reading context values in an interceptor
+
+Within an interceptor, you can read the value of a token in a given request's context with `HttpContext.get()`.
+If you have not explicitly set a value for the token, Angular returns the default value specified in the token.
+
+<code-example path="http/src/app/http-interceptors/retry-interceptor.ts" region="reading-context" header="reading context values in an interceptor"></code-example>
+
+### Contexts are mutable
+
+Unlike most other aspects of `HttpRequest` instances, the request context is mutable and persists across other immutable transformations of the request.
+This allows interceptors to coordinate operations through the context.
+For instance, the `RetryInterceptor` example could use a second context token to track how many errors occur during the execution of a given request:
+
+<code-example path="http/src/app/http-interceptors/retry-interceptor.ts" region="mutable-context" header="coordinating operations through the context"></code-example>
