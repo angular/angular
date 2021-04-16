@@ -98,7 +98,7 @@ describe('demo (with TestBed):', () => {
     let valueServiceSpy: jasmine.SpyObj<ValueService>;
 
     beforeEach(() => {
-      const spy = jasmine.createSpyObj('ValueService', ['getValue']);
+      valueServiceSpy = jasmine.createSpyObj('ValueService', ['getValue']);
 
       TestBed.configureTestingModule({
         // Provide both the service-to-test and its (spy) dependency
