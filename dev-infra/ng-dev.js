@@ -3614,23 +3614,23 @@ function assertChangesAllowForTargetLabel(commits, label, config) {
     var exemptedScopes = config.targetLabelExemptScopes || [];
     /** List of commits which are subject to content requirements for the target label. */
     commits = commits.filter(function (commit) { return !exemptedScopes.includes(commit.scope); });
+    var hasBreakingChanges = commits.some(function (commit) { return commit.breakingChanges.length !== 0; });
+    var hasFeatureCommits = commits.some(function (commit) { return commit.type === 'feat'; });
     switch (label.pattern) {
         case 'target: major':
             break;
         case 'target: minor':
-            // Check if any commits in the pull request contains a breaking change.
-            if (commits.some(function (commit) { return commit.breakingChanges.length !== 0; })) {
+            if (hasBreakingChanges) {
                 throw PullRequestFailure.hasBreakingChanges(label);
             }
             break;
+        case 'target: rc':
         case 'target: patch':
         case 'target: lts':
-            // Check if any commits in the pull request contains a breaking change.
-            if (commits.some(function (commit) { return commit.breakingChanges.length !== 0; })) {
+            if (hasBreakingChanges) {
                 throw PullRequestFailure.hasBreakingChanges(label);
             }
-            // Check if any commits in the pull request contains a commit type of "feat".
-            if (commits.some(function (commit) { return commit.type === 'feat'; })) {
+            if (hasFeatureCommits) {
                 throw PullRequestFailure.hasFeatureCommits(label);
             }
             break;
