@@ -244,7 +244,7 @@ When building with the CLI, you must configure the `angular.json` to include _al
 
 Register **global** style files in the `styles` section which, by default, is pre-configured with the global `styles.css` file.
 
-See the [CLI wiki](https://github.com/angular/angular-cli/wiki/stories-global-styles) to learn more.
+See the [Styles configuration guide](guide/workspace-config#styles-and-scripts-configuration) to learn more.
 <!-- 2018-10-16: The link above is still the best source for this information. -->
 
 
