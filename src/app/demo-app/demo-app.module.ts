@@ -7,16 +7,12 @@ import { ZippyComponent } from './zippy/zippy.component';
 import { ZoneUnawareIFrameMessageBus } from 'src/zone-unaware-iframe-message-bus';
 import { HeavyComponent } from './heavy/heavy.component';
 import { createCustomElement } from '@angular/elements';
-import { MatButtonModule } from '@angular/material/button';
-import { PortalModule } from '@angular/cdk/portal';
 
 @NgModule({
   declarations: [DemoAppComponent, HeavyComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   exports: [DemoAppComponent],
   imports: [
-    PortalModule,
-    MatButtonModule,
     RouterModule.forChild([
       {
         path: '',

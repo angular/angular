@@ -10,6 +10,7 @@ import {
   UpdatedStateData,
 } from 'protocol';
 import { buildDirectiveTree, getLViewFromDirectiveOrElementInstance } from './directive-forest';
+import { ChangeDetectionStrategy } from '@angular/core';
 
 const ngDebug = () => (window as any).ng;
 
@@ -72,7 +73,24 @@ const enum DirectiveMetadataKey {
   ON_PUSH = 'onPush',
 }
 
+// Gets directive metadata. For newer versions of Angular (v12+) it uses
+// the global `getDirectiveMetadata`. For prior versions of the framework
+// the method directly interacts with the directive/component definition.
 export const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
+  const getDirectiveMetadata = (window as any).ng.getDirectiveMetadata;
+  if (getDirectiveMetadata) {
+    const metadata = getDirectiveMetadata(dir);
+    if (metadata) {
+      return {
+        inputs: metadata.inputs,
+        outputs: metadata.outputs,
+        encapsulation: metadata.encapsulation,
+        onPush: metadata.changeDetection === ChangeDetectionStrategy.OnPush,
+      };
+    }
+  }
+
+  // Used in older Angular versions, prior to the introduction of `getDirectiveMetadata`.
   const safelyGrabMetadata = (key: DirectiveMetadataKey) => {
     try {
       return dir.constructor.ɵcmp ? dir.constructor.ɵcmp[key] : dir.constructor.ɵdir[key];

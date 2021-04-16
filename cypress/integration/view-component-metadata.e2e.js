@@ -20,7 +20,7 @@ describe('Viewing component metadata', () => {
       cy.get('.meta-data-container')
         .find('.mat-button')
         .last()
-        .should('have.text', ' Change Detection Strategy: On Push');
+        .should('have.text', ' Change Detection Strategy: OnPush');
     });
   });
 

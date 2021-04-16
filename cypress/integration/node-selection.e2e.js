@@ -48,7 +48,7 @@ describe('node selection', () => {
   describe('breadcrumb logic', () => {
     it('should overflow when breadcrumb list is long enough', () => {
       cy.get('.tree-wrapper')
-        .find('.tree-node:contains("app-todo[TooltipDirective]")')
+        .find('.tree-node:contains("div[TooltipDirective]")')
         .last()
         .click({ force: true })
         .then(() => {
@@ -63,7 +63,7 @@ describe('node selection', () => {
 
     it('should scroll right when right scroll button is clicked', () => {
       cy.get('.tree-wrapper')
-        .find('.tree-node:contains("app-todo[TooltipDirective]")')
+        .find('.tree-node:contains("div[TooltipDirective]")')
         .last()
         .click({ force: true })
         .then(() => {
@@ -79,7 +79,7 @@ describe('node selection', () => {
                 .click()
                 .wait(150) // wait for scroll animation to end
                 .then(() => {
-                  expect(scrollLeft()).to.eql(100);
+                  expect(scrollLeft()).to.eql(15);
                 });
             });
         });
@@ -87,7 +87,7 @@ describe('node selection', () => {
 
     it('should scroll left when left scroll button is clicked', () => {
       cy.get('.tree-wrapper')
-        .find('.tree-node:contains("app-todo[TooltipDirective]")')
+        .find('.tree-node:contains("div[TooltipDirective]")')
         .last()
         .click({ force: true })
         .then(() => {
@@ -103,7 +103,7 @@ describe('node selection', () => {
                 .click()
                 .wait(150) // wait for scroll animation to end
                 .then(() => {
-                  expect(scrollLeft()).to.eql(100);
+                  expect(scrollLeft()).to.eql(15);
 
                   cy.get('ng-breadcrumbs')
                     .find('.scroll-button')

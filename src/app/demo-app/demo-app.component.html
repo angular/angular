@@ -1,16 +1,4 @@
 <router-outlet></router-outlet>
 <app-zippy [title]="getTitle()">This is my content</app-zippy>
-<app-heavy>
-  <button mat-button>Button</button>
-</app-heavy>
+<app-heavy></app-heavy>
 <div #elementReference>HTMLElement</div>
-
-<h2>The portal outlet is below:</h2>
-<div class="example-portal-outlet">
-  <ng-template [cdkPortalOutlet]="selectedPortal"></ng-template>
-</div>
-<ng-template #templatePortalContent>Hello, this is a template portal</ng-template>
-
-<button (click)="selectedPortal = componentPortal">Render component portal</button>
-
-<div #domPortalContent>Hello, this is a DOM portal</div>
