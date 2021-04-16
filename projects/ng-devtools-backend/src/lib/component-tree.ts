@@ -77,9 +77,9 @@ const enum DirectiveMetadataKey {
 // the global `getDirectiveMetadata`. For prior versions of the framework
 // the method directly interacts with the directive/component definition.
 export const getDirectiveMetadata = (dir: any): DirectiveMetadata => {
-  const getDirectiveMetadata = (window as any).ng.getDirectiveMetadata;
-  if (getDirectiveMetadata) {
-    const metadata = getDirectiveMetadata(dir);
+  const getMetadata = (window as any).ng.getDirectiveMetadata;
+  if (getMetadata) {
+    const metadata = getMetadata(dir);
     if (metadata) {
       return {
         inputs: metadata.inputs,
@@ -128,7 +128,8 @@ const getRoots = () => {
   const roots = Array.from(document.documentElement.querySelectorAll('[ng-version]'));
   const isTopLevel = (element: HTMLElement) => {
     let parent: HTMLElement | null = element;
-    while ((parent = parent.parentElement)) {
+    while (parent?.parentElement) {
+      parent = parent.parentElement;
       if (parent.hasAttribute('ng-version')) {
         return false;
       }

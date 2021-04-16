@@ -58,8 +58,8 @@ export const getDirectiveHostElement = (dir: any) => {
 };
 
 export class LTreeStrategy {
-  supports(element: Element) {
-    return (element as any).__ngContext__;
+  supports(element: Element): boolean {
+    return typeof (element as any).__ngContext__ !== 'undefined';
   }
 
   private _getNode(lView: any, data: any, idx: number): ComponentTreeNode {
@@ -93,7 +93,7 @@ export class LTreeStrategy {
     };
   }
 
-  private _extract(lViewOrLContainer: any, nodes: ComponentTreeNode[] = []) {
+  private _extract(lViewOrLContainer: any, nodes: ComponentTreeNode[] = []): ComponentTreeNode[] {
     if (isLContainer(lViewOrLContainer)) {
       for (let i = 9; i < lViewOrLContainer.length; i++) {
         if (lViewOrLContainer[i]) {
