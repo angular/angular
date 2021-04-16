@@ -20,7 +20,7 @@ The `UnlessDirective` does the opposite of `NgIf`, and `condition` values can be
 `UnlessDirective` displays the content when the condition is `false`.
 
 Following is the `UnlessDirective` selector, `appUnless`, applied to the paragraph element.
-When `condition` is `true`, the browser displays the sentence.
+When `condition` is `false`, the browser displays the sentence.
 
 <code-example path="structural-directives/src/app/app.component.html" header="src/app/app.component.html (appUnless-1)" region="appUnless-1"></code-example>
 
