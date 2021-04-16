@@ -171,7 +171,13 @@ function runE2eTestsSystemJS(appDir, outputFile) {
   const appBuildSpawnInfo = spawnExt('yarn', [config.build], {cwd: appDir});
   const appRunSpawnInfo = spawnExt('yarn', [config.run, '-s'], {cwd: appDir}, true);
 
-  return runProtractorSystemJS(appBuildSpawnInfo.promise, appDir, appRunSpawnInfo, outputFile);
+  let run = runProtractorSystemJS(appBuildSpawnInfo.promise, appDir, appRunSpawnInfo, outputFile);
+
+  if (fs.existsSync(appDir + '/aot/index.html')) {
+    run = run.then((ok) => ok && runProtractorAoT(appDir, outputFile));
+  }
+
+  return run;
 }
 
 function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile) {

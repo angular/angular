@@ -29,7 +29,7 @@ class ExampleBoilerPlate {
           'Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?');
     }
 
-    shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points`);
+    shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 main`);
 
     exampleFolders.forEach(exampleFolder => {
       const exampleConfig = this.loadJsonFile(path.resolve(exampleFolder, EXAMPLE_CONFIG_FILENAME));
