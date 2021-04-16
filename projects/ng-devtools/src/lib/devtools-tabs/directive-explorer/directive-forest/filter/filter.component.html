@@ -9,7 +9,7 @@
     (keydown.enter)="emitNextMatched()"
     (keydown.shift.enter)="emitPrevMatched()"
     class="filter-input"
-    placeholder="Filter components"
+    placeholder="Search components"
   />
   <div class="up-down-buttons" *ngIf="hasMatched">
     <button mat-icon-button (click)="emitPrevMatched()">
