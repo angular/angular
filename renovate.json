@@ -46,6 +46,7 @@
     "angular-mocks-1.6",
     "angular-mocks-1.7",
     "puppeteer",
+    "rollup",
     "selenium-webdriver"
   ],
   "packageFiles": [
