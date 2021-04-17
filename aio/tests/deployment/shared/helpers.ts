@@ -41,7 +41,10 @@ export function loadRedirects(): FirebaseRedirectConfig[] {
 
 export function loadLegacyUrls() {
   const pathToLegacyUrls = `${__dirname}/URLS_TO_REDIRECT.txt`;
-  const urls = readFileSync(pathToLegacyUrls, 'utf8').split('\n').map(line => line.split('\t'));
+  const urls = readFileSync(pathToLegacyUrls, 'utf8')
+      .split('\n')
+      .filter(line => line.trim() !== '')
+      .map(line => line.split('\t'));
   return urls;
 }
 
