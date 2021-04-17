@@ -13,7 +13,7 @@
   "devDependencies": {
     "@externs/nodejs": "^1.5.0",
     "@types/node": "^10.9.4",
-    "domino": "2.1.2",
+    "domino": "2.1.6",
     "jest": "^26.4",
     "google-closure-compiler": "^20210406.0.0",
     "mocha": "^8.0.0",

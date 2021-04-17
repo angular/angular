@@ -1279,10 +1279,10 @@ domexception@^2.0.1:
   dependencies:
     webidl-conversions "^5.0.0"
 
-domino@2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/domino/-/domino-2.1.2.tgz#70e8367839ee8ad8bde3aeb4857cf3d93bd98b85"
-  integrity sha512-nzg76s4Smji9teyLwOnqqUCdFVOho+OQFqUwp+42Wo+SEZ1FGw7uhemv6OKk2qp8YIgnGB3jVt0sJWU96wbPgA==
+domino@2.1.6:
+  version "2.1.6"
+  resolved "https://registry.yarnpkg.com/domino/-/domino-2.1.6.tgz#fe4ace4310526e5e7b9d12c7de01b7f485a57ffe"
+  integrity sha512-3VdM/SXBZX2omc9JF9nOPCtDaYQ67BGp5CoLpIQlO2KCAPETs8TcDHacF26jXadGbvUteZzRTeos2fhID5+ucQ==
 
 ecc-jsbn@~0.1.1:
   version "0.1.2"
