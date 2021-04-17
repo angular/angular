@@ -1908,9 +1908,12 @@ export function scheduleTick(rootContext: RootContext, flags: RootContextFlags) 
 export function tickRootContext(rootContext: RootContext) {
   for (let i = 0; i < rootContext.components.length; i++) {
     const rootComponent = rootContext.components[i];
-    const lView = readPatchedLView(rootComponent)!;
-    const tView = lView[TVIEW];
-    renderComponentOrTemplate(tView, lView, tView.template, rootComponent);
+    const lView = readPatchedLView(rootComponent);
+    // We might not have an `LView` if the component was destroyed.
+    if (lView !== null) {
+      const tView = lView[TVIEW];
+      renderComponentOrTemplate(tView, lView, tView.template, rootComponent);
+    }
   }
 }
 
