@@ -61,7 +61,7 @@ describe('node selection', () => {
         });
     });
 
-    it('should scroll right when right scroll button is clicked', () => {
+    it.skip('should scroll right when right scroll button is clicked', () => {
       cy.get('.tree-wrapper')
         .find('.tree-node:contains("div[TooltipDirective]")')
         .last()
@@ -85,7 +85,7 @@ describe('node selection', () => {
         });
     });
 
-    it('should scroll left when left scroll button is clicked', () => {
+    it.skip('should scroll left when left scroll button is clicked', () => {
       cy.get('.tree-wrapper')
         .find('.tree-node:contains("div[TooltipDirective]")')
         .last()
