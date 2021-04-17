@@ -1990,6 +1990,27 @@ describe('acceptance integration tests', () => {
     expect(logs).toEqual(['Baggins']);
   });
 
+  it('should render SVG nodes placed inside ng-template', () => {
+    @Component({
+      template: `
+        <svg>
+          <ng-template [ngIf]="condition">
+            <text>Hello</text>
+          </ng-template>
+        </svg>
+      `,
+    })
+    class MyComp {
+      condition = true;
+    }
+
+    TestBed.configureTestingModule({declarations: [MyComp], imports: [CommonModule]});
+    const fixture = TestBed.createComponent(MyComp);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.innerHTML).toContain('<text>Hello</text>');
+  });
+
   describe('tView.firstUpdatePass', () => {
     function isFirstUpdatePass() {
       const lView = getLView();
