@@ -875,17 +875,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.i18n.appendTemplate(template.i18n!, templateIndex);
     }
 
-    const tagName = sanitizeIdentifier(template.tagName || '');
-    const contextName = `${this.contextName}${tagName ? '_' + tagName : ''}_${templateIndex}`;
+    const tagNameWithoutNamespace =
+        template.tagName ? splitNsName(template.tagName)[1] : template.tagName;
+    const contextName = `${this.contextName}${
+        template.tagName ? '_' + sanitizeIdentifier(template.tagName) : ''}_${templateIndex}`;
     const templateName = `${contextName}_Template`;
-
     const parameters: o.Expression[] = [
       o.literal(templateIndex),
       o.variable(templateName),
-
       // We don't care about the tag's namespace here, because we infer
       // it based on the parent nodes inside the template instruction.
-      o.literal(template.tagName ? splitNsName(template.tagName)[1] : template.tagName),
+      o.literal(tagNameWithoutNamespace),
     ];
 
     // find directives matching on a given <ng-template> node
@@ -937,7 +937,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.templatePropertyBindings(templateIndex, template.templateAttrs);
 
     // Only add normal input/output binding instructions on explicit <ng-template> elements.
-    if (template.tagName === NG_TEMPLATE_TAG_NAME) {
+    if (tagNameWithoutNamespace === NG_TEMPLATE_TAG_NAME) {
       const [i18nInputs, inputs] =
           partitionArray<t.BoundAttribute, t.BoundAttribute>(template.inputs, hasI18nMeta);
 
