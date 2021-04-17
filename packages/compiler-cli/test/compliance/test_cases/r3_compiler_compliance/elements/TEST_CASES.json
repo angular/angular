@@ -28,6 +28,23 @@
       ]
     },
     {
+      "description": "should handle SVG with an embedded ng-template",
+      "inputFiles": [
+        "svg_embedded_view.ts"
+      ],
+      "expectations": [
+        {
+          "files": [
+            {
+              "expected": "svg_embedded_view_template.js",
+              "generated": "svg_embedded_view.js"
+            }
+          ],
+          "failureMessage": "Incorrect template."
+        }
+      ]
+    },
+    {
       "description": "should handle MathML",
       "inputFiles": [
         "mathml.ts"
