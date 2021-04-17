@@ -63,7 +63,7 @@
     "@bazel/typescript": "3.4.0",
     "@microsoft/api-extractor": "7.7.11",
     "@octokit/rest": "16.28.7",
-    "@octokit/types": "^5.5.0",
+    "@octokit/types": "^6.0.0",
     "@schematics/angular": "12.0.0-next.9",
     "@types/angular": "^1.6.47",
     "@types/babel__core": "7.1.6",
