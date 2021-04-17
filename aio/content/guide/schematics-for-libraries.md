@@ -42,7 +42,7 @@ Now you are ready to create that schematic.
 A schematic for the `ng add` command can enhance the initial installation process for your users.
 The following steps will define this type of schematic.
 
-1. Go to the <lib-root>/schematics/ng-add/ folder.
+1. Go to the `<lib-root>/schematics/ng-add/` folder.
 
 1. Create the main file, `index.ts`.
 
@@ -66,7 +66,7 @@ Use the `save` option of `ng-add` to configure if the library should be added to
 
 Possible values are:
 
-  * `false` - Don't add the package to package.json
+  * `false` - Don't add the package to `package.json`
   * `true` - Add the package to the dependencies
   * `"dependencies"` - Add the package to the dependencies
   * `"devDependencies"` - Add the package to the devDependencies
