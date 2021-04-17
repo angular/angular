@@ -968,7 +968,7 @@ For more information, see the [Template reference variable](guide/template-refer
 
 ## template input variable
 
-A template input variable is a variable you can reference within a single instance of the template. You declare a template input variable using the let keyword as in `let hero`.
+A template input variable is a variable you can reference within a single instance of the template. You declare a template input variable using the `let` keyword as in `let hero`.
 
 ```
 <ng-template [ngIf]="true">
@@ -980,14 +980,6 @@ A template input variable is a variable you can reference within a single instan
 ```
 
 Read and learn more about [template input variables](guide/template-reference-variables#template-input-variable).
-
-{@a template-input-variable}
-
-## template input variable
-
-A template input variable is a variable you can reference within a single instance of the template. You declare a template input variable using the let keyword as in `let hero`.
-
-Read and learn more about [template input variables](template-reference-variables#template-input-variable).
 
 {@a token}
 
