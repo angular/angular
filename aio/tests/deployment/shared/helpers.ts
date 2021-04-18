@@ -44,7 +44,7 @@ export function loadLegacyUrls() {
   const urls = readFileSync(pathToLegacyUrls, 'utf8')
       .split('\n')
       .filter(line => line.trim() !== '')
-      .map(line => line.split('\t'));
+      .map(line => line.split(/\s*-->\s*/));
   return urls;
 }
 
