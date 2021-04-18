@@ -354,8 +354,8 @@ export class GitClient<Authenticated extends boolean> {
  * for each new line. Git commands typically return multiple output values for a command a set of
  * strings separated by new lines.
  *
- * Note: This is specifically created as a locally available function for usage as convience utility
- * within `GitClient`'s methods to create outputs as array.
+ * Note: This is specifically created as a locally available function for usage as convenience
+ * utility within `GitClient`'s methods to create outputs as array.
  */
 function gitOutputAsArray(gitCommandResult: SpawnSyncReturns<string>): string[] {
   return gitCommandResult.stdout.split('\n').map(x => x.trim()).filter(x => !!x);
