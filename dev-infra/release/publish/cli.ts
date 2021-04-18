@@ -27,12 +27,12 @@ function builder(argv: Argv): Argv<ReleasePublishOptions> {
 }
 
 /** Yargs command handler for staging a release. */
-async function handler(args: Arguments<ReleasePublishOptions>) {
+async function handler() {
   const git = GitClient.getInstance();
   const config = getConfig();
   const releaseConfig = getReleaseConfig(config);
   const projectDir = git.baseDir;
-  const task = new ReleaseTool(releaseConfig, config.github, args.githubToken, projectDir);
+  const task = new ReleaseTool(releaseConfig, config.github, projectDir);
   const result = await task.run();
 
   switch (result) {

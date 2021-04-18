@@ -6619,10 +6619,9 @@ var CompletionState;
     CompletionState[CompletionState["MANUALLY_ABORTED"] = 2] = "MANUALLY_ABORTED";
 })(CompletionState || (CompletionState = {}));
 class ReleaseTool {
-    constructor(_config, _github, _githubToken, _projectRoot) {
+    constructor(_config, _github, _projectRoot) {
         this._config = _config;
         this._github = _github;
-        this._githubToken = _githubToken;
         this._projectRoot = _projectRoot;
         /** The singleton instance of the GitClient. */
         this._git = GitClient.getAuthenticatedInstance();
@@ -6782,13 +6781,13 @@ function builder$8(argv) {
     return addGithubTokenOption(argv);
 }
 /** Yargs command handler for staging a release. */
-function handler$8(args) {
+function handler$8() {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const git = GitClient.getInstance();
         const config = getConfig();
         const releaseConfig = getReleaseConfig(config);
         const projectDir = git.baseDir;
-        const task = new ReleaseTool(releaseConfig, config.github, args.githubToken, projectDir);
+        const task = new ReleaseTool(releaseConfig, config.github, projectDir);
         const result = yield task.run();
         switch (result) {
             case CompletionState.FATAL_ERROR:
