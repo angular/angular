@@ -25,9 +25,7 @@ import {MergeResult, MergeStatus, PullRequestMergeTask, PullRequestMergeTaskFlag
  * See {@link GithubApiMergeStrategy} and {@link AutosquashMergeStrategy}
  *
  * @param prNumber Number of the pull request that should be merged.
- * @param githubToken Github token used for merging (i.e. fetching and pushing)
- * @param projectRoot Path to the local Git project that is used for merging.
- * @param config Configuration for merging pull requests.
+ * @param flags Configuration options for merging pull requests.
  */
 export async function mergePullRequest(prNumber: number, flags: PullRequestMergeTaskFlags) {
   // Set the environment variable to skip all git commit hooks triggered by husky. We are unable to
@@ -122,9 +120,9 @@ export async function mergePullRequest(prNumber: number, flags: PullRequestMerge
 }
 
 /**
- * Creates the pull request merge task from the given Github token, project root
- * and optional explicit configuration. An explicit configuration can be specified
- * when the merge script is used outside of a `ng-dev` configured repository.
+ * Creates the pull request merge task using the given configuration options. Explicit configuration
+ * options can be specified when the merge script is used outside of an `ng-dev` configured
+ * repository.
  */
 async function createPullRequestMergeTask(flags: PullRequestMergeTaskFlags) {
   const devInfraConfig = getConfig();
