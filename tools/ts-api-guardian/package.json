@@ -20,7 +20,7 @@
   },
   "devDependencies": {
     "@types/diff": "^5.0.0",
-    "@types/jasmine": "^2.8.8",
+    "@types/jasmine": "^3.0.0",
     "@types/minimist": "^1.2.0",
     "@types/node": "^10.9.4",
     "jasmine": "^3.1.0",
