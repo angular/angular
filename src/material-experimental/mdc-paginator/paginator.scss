@@ -88,6 +88,10 @@ $button-icon-size: 28px;
   .mat-mdc-icon-button[disabled] .mat-mdc-paginator-icon,
   .mat-mdc-paginator-icon {
     fill: currentColor;
+
+    // On Chromium browsers the `currentColor` blends in with the
+    // background for SVGs so we have to fall back to `CanvasText`.
+    fill: CanvasText;
   }
 
   .mat-mdc-paginator-range-actions .mat-mdc-icon-button {
