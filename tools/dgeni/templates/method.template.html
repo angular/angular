@@ -18,10 +18,10 @@
       </th>
     </tr>
   </thead>
-  {%- if method.description -%}
+  {%- if method.content -%}
   <tr class="docs-api-method-description-row">
     <td colspan="2" class="docs-api-method-description-cell">
-      {$ method.description | marked | safe $}
+      {$ method.content | marked | safe $}
     </td>
   </tr>
   {%- endif -%}
@@ -45,7 +45,7 @@
     </td>
     <td class="docs-api-method-parameter-description-cell">
       <p class="docs-api-method-parameter-description">
-        {$ parameter.description | marked | safe $}
+        {$ parameter.content | marked | safe $}
       </p>
     </td>
   </tr>
