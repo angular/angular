@@ -121,9 +121,7 @@ For SystemJS-based examples, create an `e2e-spec.ts` file inside the example roo
 These apps will be tested with the following command:
 
 ```sh
-yarn protractor aio/tools/examples/shared/protractor.config.js \
-  --specs=<example-folder>/e2e-spec.ts \
-  --params.appDir=<example-folder>
+yarn protractor
 ```
 
 

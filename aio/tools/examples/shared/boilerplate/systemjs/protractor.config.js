@@ -72,8 +72,7 @@ function Reporter(options) {
   var _defaultOutputFile = path.resolve(__dirname, '../../protractor-results.txt');
   options.outputFile = options.outputFile || _defaultOutputFile;
 
-  var _root = { appDir: options.appDir, suites: [] };
-  log('AppDir: ' + options.appDir, +1);
+  var _root = { suites: [] };
   var _currentSuite;
 
   this.suiteStarted = function(suite) {
@@ -128,7 +127,6 @@ function Reporter(options) {
     var indent = '  ';
     var pad = '  ';
     var results = [];
-    results.push('AppDir:' + output.appDir);
     output.suites.forEach(function(suite) {
       results.push(pad + 'Suite: ' + suite.description + ' -- ' + suite.status);
       pad+=indent;
