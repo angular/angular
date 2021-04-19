@@ -8,6 +8,7 @@
 
 import {SpawnSyncOptions, SpawnSyncReturns} from 'child_process';
 import * as parseArgs from 'minimist';
+import {SemVer} from 'semver';
 
 import {NgDevConfig} from '../config';
 import {GitClient} from '../git/index';
@@ -81,6 +82,15 @@ export class VirtualGitClient<Authenticated extends boolean> extends GitClient<A
   head: GitHead = this.branches['master'];
   /** List of pushed heads to a given remote ref. */
   pushed: {remote: RemoteRef, head: GitHead}[] = [];
+
+
+  /**
+   * Override the actual GitClient getLatestSemverTag, as an actual tag cannot be retrieved in
+   * testing.
+   */
+  getLatestSemverTag() {
+    return new SemVer('0.0.0');
+  }
 
   /** Override for the actual Git client command execution. */
   runGraceful(args: string[], options: SpawnSyncOptions = {}): SpawnSyncReturns<string> {
