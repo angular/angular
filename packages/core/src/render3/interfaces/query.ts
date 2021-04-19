@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Token} from '../../di/token';
+import {ProviderToken} from '../../di/provider_token';
 import {QueryList} from '../../linker/query_list';
 
 import {TNode} from './node';
@@ -16,7 +16,7 @@ import {TView} from './view';
  * An object representing query metadata extracted from query annotations.
  */
 export interface TQueryMetadata {
-  predicate: Token<unknown>|string[];
+  predicate: ProviderToken<unknown>|string[];
   read: any;
   flags: QueryFlags;
 }

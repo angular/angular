@@ -10,7 +10,7 @@ import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detec
 import {InjectionToken} from '../di/injection_token';
 import {Injector} from '../di/injector';
 import {InjectFlags} from '../di/interface/injector';
-import {Token} from '../di/token';
+import {ProviderToken} from '../di/provider_token';
 import {Type} from '../interface/type';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -81,7 +81,7 @@ export const SCHEDULER = new InjectionToken<((fn: () => void) => void)>('SCHEDUL
 
 function createChainedInjector(rootViewInjector: Injector, moduleInjector: Injector): Injector {
   return {
-    get: <T>(token: Token<T>, notFoundValue?: T, flags?: InjectFlags): T => {
+    get: <T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T => {
       const value = rootViewInjector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as T, flags);
 
       if (value !== NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR ||

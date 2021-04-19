@@ -7,7 +7,7 @@
  */
 
 import {InjectionToken} from '../di/injection_token';
-import {Token} from '../di/token';
+import {ProviderToken} from '../di/provider_token';
 import {makePropDecorator} from '../util/decorators';
 
 /**
@@ -169,12 +169,12 @@ export interface ContentChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Token<unknown>|Function|string, opts?: {
+  (selector: ProviderToken<unknown>|Function|string, opts?: {
     descendants?: boolean,
     emitDistinctChangesOnly?: boolean,
     read?: any,
   }): any;
-  new(selector: Token<unknown>|Function|string,
+  new(selector: ProviderToken<unknown>|Function|string,
       opts?: {descendants?: boolean, emitDistinctChangesOnly?: boolean, read?: any}): Query;
 }
 
@@ -240,8 +240,8 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: Token<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new(selector: Token<unknown>|Function|string,
+  (selector: ProviderToken<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
+  new(selector: ProviderToken<unknown>|Function|string,
       opts?: {read?: any, static?: boolean}): ContentChild;
 }
 
@@ -303,9 +303,9 @@ export interface ViewChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Token<unknown>|Function|string,
+  (selector: ProviderToken<unknown>|Function|string,
    opts?: {read?: any, emitDistinctChangesOnly?: boolean}): any;
-  new(selector: Token<unknown>|Function|string,
+  new(selector: ProviderToken<unknown>|Function|string,
       opts?: {read?: any, emitDistinctChangesOnly?: boolean}): ViewChildren;
 }
 
@@ -378,8 +378,9 @@ export interface ViewChildDecorator {
    *
    * @Annotation
    */
-  (selector: Token<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new(selector: Token<unknown>|Function|string, opts?: {read?: any, static?: boolean}): ViewChild;
+  (selector: ProviderToken<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
+  new(selector: ProviderToken<unknown>|Function|string,
+      opts?: {read?: any, static?: boolean}): ViewChild;
 }
 
 /**

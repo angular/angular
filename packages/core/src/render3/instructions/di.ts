@@ -8,7 +8,7 @@
 import {InjectFlags, resolveForwardRef} from '../../di';
 import {assertInjectImplementationNotEqual} from '../../di/inject_switch';
 import {ɵɵinject} from '../../di/injector_compatibility';
-import {Token} from '../../di/token';
+import {ProviderToken} from '../../di/provider_token';
 import {getOrCreateInjectable} from '../di';
 import {TDirectiveHostNode} from '../interfaces/node';
 import {getCurrentTNode, getLView} from '../state';
@@ -37,9 +37,9 @@ import {getCurrentTNode, getLView} from '../state';
  *
  * @codeGenApi
  */
-export function ɵɵdirectiveInject<T>(token: Token<T>): T;
-export function ɵɵdirectiveInject<T>(token: Token<T>, flags: InjectFlags): T;
-export function ɵɵdirectiveInject<T>(token: Token<T>, flags = InjectFlags.Default): T|null {
+export function ɵɵdirectiveInject<T>(token: ProviderToken<T>): T;
+export function ɵɵdirectiveInject<T>(token: ProviderToken<T>, flags: InjectFlags): T;
+export function ɵɵdirectiveInject<T>(token: ProviderToken<T>, flags = InjectFlags.Default): T|null {
   const lView = getLView();
   // Fall back to inject() if view hasn't been created. This situation can happen in tests
   // if inject utilities are used before bootstrapping.

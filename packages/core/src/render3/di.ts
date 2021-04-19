@@ -11,7 +11,7 @@ import {injectRootLimpMode, setInjectImplementation} from '../di/inject_switch';
 import {Injector} from '../di/injector';
 import {InjectorMarkers} from '../di/injector_marker';
 import {InjectFlags} from '../di/interface/injector';
-import {Token} from '../di/token';
+import {ProviderToken} from '../di/provider_token';
 import {Type} from '../interface/type';
 import {assertDefined, assertEqual, assertIndexInRange} from '../util/assert';
 import {noSideEffects} from '../util/closure';
@@ -104,7 +104,8 @@ let nextNgElementId = 0;
  * @param tView The TView for the injector's bloom filters
  * @param type The directive token to register
  */
-export function bloomAdd(injectorIndex: number, tView: TView, type: Token<any>|string): void {
+export function bloomAdd(
+    injectorIndex: number, tView: TView, type: ProviderToken<any>|string): void {
   ngDevMode && assertEqual(tView.firstCreatePass, true, 'expected firstCreatePass to be true');
   let id: number|undefined;
   if (typeof type === 'string') {
@@ -261,7 +262,8 @@ export function getParentInjectorLocation(tNode: TNode, lView: LView): RelativeI
  * @param di The node injector in which a directive will be added
  * @param token The type or the injection token to be made public
  */
-export function diPublicInInjector(injectorIndex: number, tView: TView, token: Token<any>): void {
+export function diPublicInInjector(
+    injectorIndex: number, tView: TView, token: ProviderToken<any>): void {
   bloomAdd(injectorIndex, tView, token);
 }
 
@@ -340,8 +342,8 @@ export function injectAttributeImpl(tNode: TNode, attrNameToInject: string): str
 }
 
 
-function notFoundValueOrThrow<T>(notFoundValue: T|null, token: Token<T>, flags: InjectFlags): T|
-    null {
+function notFoundValueOrThrow<T>(
+    notFoundValue: T|null, token: ProviderToken<T>, flags: InjectFlags): T|null {
   if (flags & InjectFlags.Optional) {
     return notFoundValue;
   } else {
@@ -359,7 +361,7 @@ function notFoundValueOrThrow<T>(notFoundValue: T|null, token: Token<T>, flags: 
  * @returns the value from the injector or throws an exception
  */
 function lookupTokenUsingModuleInjector<T>(
-    lView: LView, token: Token<T>, flags: InjectFlags, notFoundValue?: any): T|null {
+    lView: LView, token: ProviderToken<T>, flags: InjectFlags, notFoundValue?: any): T|null {
   if (flags & InjectFlags.Optional && notFoundValue === undefined) {
     // This must be set or the NullInjector will throw for optional deps
     notFoundValue = null;
@@ -401,7 +403,7 @@ function lookupTokenUsingModuleInjector<T>(
  * @returns the value from the injector, `null` when not found, or `notFoundValue` if provided
  */
 export function getOrCreateInjectable<T>(
-    tNode: TDirectiveHostNode|null, lView: LView, token: Token<T>,
+    tNode: TDirectiveHostNode|null, lView: LView, token: ProviderToken<T>,
     flags: InjectFlags = InjectFlags.Default, notFoundValue?: any): T|null {
   if (tNode !== null) {
     const bloomHash = bloomHashBitOrFactory(token);
@@ -501,7 +503,7 @@ export function createNodeInjector(): Injector {
 }
 
 function searchTokensOnInjector<T>(
-    injectorIndex: number, lView: LView, token: Token<T>, previousTView: TView|null,
+    injectorIndex: number, lView: LView, token: ProviderToken<T>, previousTView: TView|null,
     flags: InjectFlags, hostTElementNode: TNode|null) {
   const currentTView = lView[TVIEW];
   const tNode = currentTView.data[injectorIndex + NodeInjectorOffset.TNODE] as TNode;
@@ -548,7 +550,7 @@ function searchTokensOnInjector<T>(
  * @returns Index of a found directive or provider, or null when none found.
  */
 export function locateDirectiveOrProvider<T>(
-    tNode: TNode, tView: TView, token: Token<T>|string, canAccessViewProviders: boolean,
+    tNode: TNode, tView: TView, token: ProviderToken<T>|string, canAccessViewProviders: boolean,
     isHostSpecialCase: boolean|number): number|null {
   const nodeProviderIndexes = tNode.providerIndexes;
   const tInjectables = tView.data;
@@ -563,7 +565,7 @@ export function locateDirectiveOrProvider<T>(
   // When the host special case applies, only the viewProviders and the component are visible
   const endIndex = isHostSpecialCase ? injectablesStart + cptViewProvidersCount : directiveEnd;
   for (let i = startingIndex; i < endIndex; i++) {
-    const providerTokenOrDef = tInjectables[i] as Token<any>| DirectiveDef<any>| string;
+    const providerTokenOrDef = tInjectables[i] as ProviderToken<any>| DirectiveDef<any>| string;
     if (i < directivesStart && token === providerTokenOrDef ||
         i >= directivesStart && (providerTokenOrDef as DirectiveDef<any>).type === token) {
       return i;
@@ -638,7 +640,7 @@ export function getNodeInjectable(
  * @returns the matching bit to check in the bloom filter or `null` if the token is not known.
  *   When the returned value is negative then it represents special values such as `Injector`.
  */
-export function bloomHashBitOrFactory(token: Token<any>|string): number|Function|undefined {
+export function bloomHashBitOrFactory(token: ProviderToken<any>|string): number|Function|undefined {
   ngDevMode && assertDefined(token, 'token must be defined');
   if (typeof token === 'string') {
     return token.charCodeAt(0) || 0;

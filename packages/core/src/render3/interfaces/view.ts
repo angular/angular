@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../../di/injector';
-import {Token} from '../../di/token';
+import {ProviderToken} from '../../di/provider_token';
 import {Type} from '../../interface/type';
 import {SchemaMetadata} from '../../metadata/schema';
 import {Sanitizer} from '../../sanitization/sanitizer';
@@ -905,7 +905,7 @@ export type DestroyHookData = (HookEntry|HookData)[];
  * Injector bloom filters are also stored here.
  */
 export type TData = (TNode|PipeDef<any>|DirectiveDef<any>|ComponentDef<any>|number|TStylingRange|
-                     TStylingKey|Token<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string)[];
+                     TStylingKey|ProviderToken<any>|TI18n|I18nUpdateOpCodes|TIcu|null|string)[];
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

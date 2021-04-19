@@ -16,4 +16,4 @@ import {InjectionToken} from './injection_token';
  *
  * @publicApi
  */
-export type Token<T> = Type<T>|AbstractType<T>|InjectionToken<T>;
+export type ProviderToken<T> = Type<T>|AbstractType<T>|InjectionToken<T>;
