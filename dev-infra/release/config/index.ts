@@ -26,20 +26,10 @@ export interface ReleaseConfig {
   npmPackages: string[];
   /** Builds release packages and returns a list of paths pointing to the output. */
   buildPackages: () => Promise<BuiltPackage[]|null>;
-  /** Generates the release notes from the most recent tag to `HEAD`. */
-  generateReleaseNotesForHead: (outputPath: string) => Promise<void>;
-  /**
-   * Gets a pattern for extracting the release notes of the a given version.
-   * @returns A pattern matching the notes for a given version (including the header).
-   */
-  // TODO: Remove this in favor of a canonical changelog format across the Angular organization.
-  extractReleaseNotesPattern?: (version: semver.SemVer) => RegExp;
   /** The list of github labels to add to the release PRs. */
   releasePrLabels?: string[];
   /** Configuration for creating release notes during publishing. */
-  // TODO(josephperrott): Make releaseNotes a required attribute on the interface when tooling is
-  // integrated.
-  releaseNotes?: ReleaseNotesConfig;
+  releaseNotes: ReleaseNotesConfig;
 }
 
 /** Configuration for creating release notes during publishing. */
@@ -75,8 +65,8 @@ export function getReleaseConfig(config: Partial<DevInfraReleaseConfig> = getCon
   if (config.release?.buildPackages === undefined) {
     errors.push(`No "buildPackages" function configured for releasing.`);
   }
-  if (config.release?.generateReleaseNotesForHead === undefined) {
-    errors.push(`No "generateReleaseNotesForHead" function configured for releasing.`);
+  if (config.release?.releaseNotes === undefined) {
+    errors.push(`No "releaseNotes" configured for releasing.`);
   }
 
   assertNoErrors(errors);

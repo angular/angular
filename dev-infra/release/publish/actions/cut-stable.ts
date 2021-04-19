@@ -31,7 +31,8 @@ export class CutStableAction extends ReleaseAction {
     const isNewMajor = this.active.releaseCandidate?.isMajor;
 
 
-    const {id} = await this.checkoutBranchAndStageVersion(newVersion, branchName);
+    const {pullRequest: {id}, releaseNotes} =
+        await this.checkoutBranchAndStageVersion(newVersion, branchName);
 
     await this.waitForPullRequestToBeMerged(id);
     await this.buildAndPublish(newVersion, branchName, 'latest');
@@ -53,7 +54,7 @@ export class CutStableAction extends ReleaseAction {
       await invokeSetNpmDistCommand(ltsTagForPatch, previousPatch.version);
     }
 
-    await this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
+    await this.cherryPickChangelogIntoNextBranch(releaseNotes, branchName);
   }
 
   /** Gets the new stable version of the release candidate release-train. */

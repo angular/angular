@@ -26,11 +26,12 @@ export class CutReleaseCandidateAction extends ReleaseAction {
     const {branchName} = this.active.releaseCandidate!;
     const newVersion = this._newVersion;
 
-    const {id} = await this.checkoutBranchAndStageVersion(newVersion, branchName);
+    const {pullRequest: {id}, releaseNotes} =
+        await this.checkoutBranchAndStageVersion(newVersion, branchName);
 
     await this.waitForPullRequestToBeMerged(id);
     await this.buildAndPublish(newVersion, branchName, 'next');
-    await this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
+    await this.cherryPickChangelogIntoNextBranch(releaseNotes, branchName);
   }
 
   static async isActive(active: ActiveReleaseTrains) {
