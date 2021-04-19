@@ -192,7 +192,7 @@ function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile)
 
         // Start protractor.
         console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
-        const spawnInfo = spawnExt('yarn', [ 'protractor' ], {cwd: appDir});
+        const spawnInfo = spawnExt('yarn', [ 'protractor', '--params.outputFile=' + outputFile ], {cwd: appDir});
 
         spawnInfo.proc.stderr.on('data', function(data) {
           transpileError = transpileError || /npm ERR! Exit status 100/.test(data.toString());
