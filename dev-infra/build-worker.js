@@ -691,8 +691,8 @@ function getReleaseConfig(config = getConfig()) {
     if (((_b = config.release) === null || _b === void 0 ? void 0 : _b.buildPackages) === undefined) {
         errors.push(`No "buildPackages" function configured for releasing.`);
     }
-    if (((_c = config.release) === null || _c === void 0 ? void 0 : _c.generateReleaseNotesForHead) === undefined) {
-        errors.push(`No "generateReleaseNotesForHead" function configured for releasing.`);
+    if (((_c = config.release) === null || _c === void 0 ? void 0 : _c.releaseNotes) === undefined) {
+        errors.push(`No "releaseNotes" configured for releasing.`);
     }
     assertNoErrors(errors);
     return config.release;

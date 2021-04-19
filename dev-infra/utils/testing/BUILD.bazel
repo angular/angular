@@ -10,6 +10,8 @@ ts_library(
         "@npm//@types/jasmine",
         "@npm//@types/minimist",
         "@npm//@types/node",
+        "@npm//@types/semver",
         "@npm//minimist",
+        "@npm//semver",
     ],
 )
