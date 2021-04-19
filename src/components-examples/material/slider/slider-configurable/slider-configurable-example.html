@@ -51,7 +51,13 @@
 <mat-card class="example-result-card">
   <mat-card-content>
     <h2>Result</h2>
+    <br>
+    <br>
 
+    <div class="example-label-container" [class]="vertical ? 'example-label-vertical' : 'example-label-horizontal'">
+      <label id="example-name-label" class="example-name-label">Max Value</label>
+      <label class="example-value-label">{{value}}</label>
+    </div>
     <mat-slider
         class="example-margin"
         [disabled]="disabled"
@@ -62,7 +68,8 @@
         [thumbLabel]="thumbLabel"
         [tickInterval]="getSliderTickInterval()"
         [(ngModel)]="value"
-        [vertical]="vertical">
+        [vertical]="vertical"
+        aria-labelledby="example-name-label">
     </mat-slider>
   </mat-card-content>
 </mat-card>

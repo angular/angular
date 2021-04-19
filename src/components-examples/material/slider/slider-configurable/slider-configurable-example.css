@@ -28,3 +28,23 @@
 .example-result-card h2 {
   margin: 0 8px;
 }
+
+.example-result-card .example-label-container.example-label-horizontal {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 0 12px 16px;
+  max-width: 284px;
+}
+
+.example-result-card .example-label-container.example-label-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 68px;
+  height: 48px;
+}
+
+.example-result-card .example-value-label {
+  font-weight: 600;
+}
