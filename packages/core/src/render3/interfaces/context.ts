@@ -7,7 +7,9 @@
  */
 
 
+import {getLViewById} from '../instructions/lview_tracking';
 import {RNode} from './renderer_dom';
+import {LView} from './view';
 
 
 /**
@@ -20,35 +22,41 @@ import {RNode} from './renderer_dom';
  * function. The component, element and each directive instance will share the same instance
  * of the context.
  */
-export interface LContext {
-  /**
-   * ID of the component's parent view data.
-   */
-  lViewId: number;
+export class LContext {
+  /** Component's parent view data. */
+  get lView(): LView|null {
+    return getLViewById(this._lViewId);
+  }
 
-  /**
-   * The index instance of the node.
-   */
-  nodeIndex: number;
+  constructor(
+      /**
+       * ID of the component's parent view data.
+       */
+      private _lViewId: number,
 
-  /**
-   * The instance of the DOM node that is attached to the lNode.
-   */
-  native: RNode;
+      /**
+       * The index instance of the node.
+       */
+      public nodeIndex: number,
 
-  /**
-   * The instance of the Component node.
-   */
-  component: {}|null|undefined;
+      /**
+       * The instance of the DOM node that is attached to the lNode.
+       */
+      public native: RNode,
 
-  /**
-   * The list of active directives that exist on this element.
-   */
-  directives: any[]|null|undefined;
+      /**
+       * The instance of the Component node.
+       */
+      public component?: {}|null,
 
-  /**
-   * The map of local references (local reference name => element or directive instance) that exist
-   * on this element.
-   */
-  localRefs: {[key: string]: any}|null|undefined;
+      /**
+       * The list of active directives that exist on this element.
+       */
+      public directives?: any[]|null,
+
+      /**
+       * The map of local references (local reference name => element or directive instance) that
+       * exist on this element.
+       */
+      public localRefs?: {[key: string]: any}|null) {}
 }

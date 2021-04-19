@@ -28,7 +28,7 @@ onlyInIvy('Ivy specific').describe('Debug Representation', () => {
     const fixture = TestBed.createComponent(MyComponent);
     fixture.detectChanges();
 
-    const hostView = getLViewById(getLContext(fixture.componentInstance)!.lViewId)!.debug!;
+    const hostView = getLContext(fixture.componentInstance)!.lView!.debug!;
     expect(hostView.hostHTML).toEqual(null);
     const myCompView = hostView.childViews[0] as LViewDebug;
     expect(myCompView.hostHTML).toContain('<div id="123">Hello World</div>');
@@ -48,7 +48,7 @@ onlyInIvy('Ivy specific').describe('Debug Representation', () => {
         const fixture = TestBed.createComponent(MyComponent);
         fixture.detectChanges();
 
-        const hostView = getLViewById(getLContext(fixture.componentInstance)!.lViewId)!.debug!;
+        const hostView = getLContext(fixture.componentInstance)!.lView!.debug!;
         const myComponentView = hostView.childViews[0] as LViewDebug;
         expect(myComponentView.decls).toEqual({
           start: HEADER_OFFSET,

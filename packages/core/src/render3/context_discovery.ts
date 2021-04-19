@@ -112,7 +112,7 @@ export function getLContext(target: any): LContext|null {
         if (Array.isArray(parentContext)) {
           lView = parentContext as LView;
         } else {
-          lView = getLViewById(parentContext.lViewId);
+          lView = parentContext.lView;
           ngDevMode && assertLView(lView);
         }
 
@@ -140,14 +140,7 @@ export function getLContext(target: any): LContext|null {
  * Creates an empty instance of a `LContext` context
  */
 function createLContext(lView: LView, nodeIndex: number, native: RNode): LContext {
-  return {
-    lViewId: lView[ID],
-    nodeIndex,
-    native,
-    component: undefined,
-    directives: undefined,
-    localRefs: undefined,
-  };
+  return new LContext(lView[ID], nodeIndex, native);
 }
 
 /**
@@ -169,7 +162,7 @@ export function getComponentViewByInstance(componentInstance: {}): LView {
     attachPatchData(context.native, context);
   } else {
     const context = patchedData as unknown as LContext;
-    const contextLView = getLViewById(context.lViewId)!;
+    const contextLView = context.lView!;
     ngDevMode && assertLView(contextLView);
     lView = getComponentLViewByIndex(context.nodeIndex, contextLView);
   }
@@ -209,7 +202,7 @@ export function readPatchedData(target: any): LView|LContext|null {
 export function readPatchedLView(target: any): LView|null {
   const value = readPatchedData(target);
   if (value) {
-    return isLView(value) ? value : getLViewById(value.lViewId);
+    return isLView(value) ? value : value.lView;
   }
   return null;
 }

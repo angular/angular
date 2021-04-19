@@ -264,7 +264,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
 
   get name(): string {
     const context = getLContext(this.nativeNode)!;
-    const lView = context ? getLViewById(context.lViewId) : null;
+    const lView = context ? context.lView : null;
     ngDevMode && assertLView(lView);
 
     if (lView !== null) {
@@ -294,7 +294,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       return {};
     }
 
-    const lView = getLViewById(context.lViewId)!;
+    const lView = context.lView!;
     ngDevMode && assertLView(lView);
     const tData = lView[TVIEW].data;
     const tNode = tData[context.nodeIndex] as TNode;
@@ -321,7 +321,7 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       return {};
     }
 
-    const lView = getLViewById(context.lViewId);
+    const lView = context.lView;
     ngDevMode && assertLView(lView);
     const tNodeAttrs = (lView![TVIEW].data[context.nodeIndex] as TNode).attrs;
     const lowercaseTNodeAttrs: string[] = [];
@@ -509,7 +509,7 @@ function _queryAllR3(
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
   const context = getLContext(parentElement.nativeNode);
   if (context !== null) {
-    const lView = getLViewById(context.lViewId)!;
+    const lView = context.lView!;
     ngDevMode && assertLView(lView);
     const parentTNode = lView[TVIEW].data[context.nodeIndex] as TNode;
     _queryNodeChildrenR3(

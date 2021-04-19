@@ -58,7 +58,7 @@ export function getComponent<T>(element: Element): T|null {
   if (context === null) return null;
 
   if (context.component === undefined) {
-    const lView = getLViewById(context.lViewId)!;
+    const lView = context.lView!;
     ngDevMode && assertLView(lView);
     context.component = getComponentAtNodeIndex(context.nodeIndex, lView);
   }
@@ -85,7 +85,7 @@ export function getContext<T>(element: Element): T|null {
   if (context === null) {
     return null;
   }
-  const lView = getLViewById(context.lViewId)!;
+  const lView = context.lView!;
   ngDevMode && assertLView(lView);
   return lView[CONTEXT] as T;
 }
@@ -110,7 +110,7 @@ export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
   if (context === null) return null;
 
   let parent: LView|null;
-  let lView = getLViewById(context.lViewId)!;
+  let lView = context.lView!;
   ngDevMode && assertLView(lView);
   while (lView[TVIEW].type === TViewType.Embedded && (parent = getLViewParent(lView)!)) {
     lView = parent;
@@ -147,7 +147,7 @@ export function getInjector(elementOrDir: Element|{}): Injector {
   const context = getLContext(elementOrDir);
   if (context === null) return Injector.NULL;
 
-  const lView = getLViewById(context.lViewId)!;
+  const lView = context.lView!;
   ngDevMode && assertLView(lView);
   const tNode = lView[TVIEW].data[context.nodeIndex] as TElementNode;
   return new NodeInjector(tNode, lView);
@@ -161,7 +161,7 @@ export function getInjector(elementOrDir: Element|{}): Injector {
 export function getInjectionTokens(element: Element): any[] {
   const context = getLContext(element);
   if (context === null) return [];
-  const lView = getLViewById(context.lViewId)!;
+  const lView = context.lView!;
   ngDevMode && assertLView(lView);
   const tView = lView[TVIEW];
   const tNode = tView.data[context.nodeIndex] as TNode;
@@ -216,7 +216,7 @@ export function getDirectives(node: Node): {}[] {
     return [];
   }
 
-  const lView = getLViewById(context.lViewId)!;
+  const lView = context.lView!;
   ngDevMode && assertLView(lView);
   const tView = lView[TVIEW];
   const nodeIndex = context.nodeIndex;
@@ -309,7 +309,7 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
   if (context === null) return {};
 
   if (context.localRefs === undefined) {
-    const lView = getLViewById(context.lViewId)!;
+    const lView = context.lView!;
     ngDevMode && assertLView(lView);
     context.localRefs = discoverLocalRefs(lView, context.nodeIndex);
   }
@@ -399,7 +399,7 @@ export interface Listener {
 export function getListeners(element: Element): Listener[] {
   ngDevMode && assertDomElement(element);
   const lContext = getLContext(element);
-  const lView = lContext === null ? null : getLViewById(lContext.lViewId);
+  const lView = lContext === null ? null : lContext.lView;
   if (lView === null) return [];
 
   const tView = lView[TVIEW];
@@ -460,7 +460,7 @@ export function getDebugNode(element: Element): DebugNode|null {
     return null;
   }
 
-  const lView = getLViewById(lContext.lViewId)!;
+  const lView = lContext.lView!;
   ngDevMode && assertLView(lView);
   const nodeIndex = lContext.nodeIndex;
   if (nodeIndex !== -1) {
@@ -488,7 +488,7 @@ export function getDebugNode(element: Element): DebugNode|null {
 export function getComponentLView(target: any): LView {
   const lContext = getLContext(target)!;
   const nodeIndx = lContext.nodeIndex;
-  const lView = getLViewById(lContext.lViewId)!;
+  const lView = lContext.lView!;
   ngDevMode && assertLView(lView);
   const componentLView = lView[nodeIndx];
   ngDevMode && assertLView(componentLView);

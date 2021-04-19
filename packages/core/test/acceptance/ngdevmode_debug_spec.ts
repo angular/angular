@@ -33,7 +33,7 @@ onlyInIvy('Debug information exist in ivy only').describe('ngDevMode debug', () 
 
       TestBed.configureTestingModule({declarations: [MyApp], imports: [CommonModule]});
       const fixture = TestBed.createComponent(MyApp);
-      const rootLView = getLViewById(getLContext(fixture.nativeElement)!.lViewId)!;
+      const rootLView = getLContext(fixture.nativeElement)!.lView!;
       expect(rootLView.constructor.name).toEqual('LRootView');
 
       const componentLView = getComponentLView(fixture.componentInstance);
@@ -42,7 +42,7 @@ onlyInIvy('Debug information exist in ivy only').describe('ngDevMode debug', () 
       const element: HTMLElement = fixture.nativeElement;
       fixture.detectChanges();
       const li = element.querySelector('li')!;
-      const embeddedLView = getLViewById(getLContext(li)!.lViewId)!;
+      const embeddedLView = getLContext(li)!.lView!;
       expect(embeddedLView.constructor.name).toEqual('LEmbeddedView_MyApp_li_1');
     });
   });

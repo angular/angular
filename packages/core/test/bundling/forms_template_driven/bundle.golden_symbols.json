@@ -945,9 +945,6 @@
     "name": "getLView"
   },
   {
-    "name": "getLViewById"
-  },
-  {
     "name": "getLViewParent"
   },
   {
