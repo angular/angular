@@ -46,6 +46,7 @@ describe('MapMarker', () => {
       label: undefined,
       clickable: undefined,
       icon: undefined,
+      visible: undefined,
       map: mapSpy,
     });
   });
@@ -57,6 +58,7 @@ describe('MapMarker', () => {
       label: 'marker label',
       clickable: false,
       icon: 'icon.png',
+      visible: false,
       map: mapSpy,
     };
     const markerSpy = createMarkerSpy(options);
@@ -68,6 +70,7 @@ describe('MapMarker', () => {
     fixture.componentInstance.label = options.label;
     fixture.componentInstance.clickable = options.clickable;
     fixture.componentInstance.icon = 'icon.png';
+    fixture.componentInstance.visible = false;
     fixture.detectChanges();
 
     expect(markerConstructorSpy).toHaveBeenCalledWith(options);
@@ -80,6 +83,7 @@ describe('MapMarker', () => {
       label: 'marker label',
       clickable: false,
       icon: 'icon name',
+      visible: undefined
     };
     const markerSpy = createMarkerSpy(options);
     const markerConstructorSpy = createMarkerConstructorSpy(markerSpy).and.callThrough();
@@ -106,6 +110,7 @@ describe('MapMarker', () => {
       clickable: true,
       icon: 'icon name',
       map: mapSpy,
+      visible: undefined
     };
     const markerSpy = createMarkerSpy(options);
     const markerConstructorSpy = createMarkerConstructorSpy(markerSpy).and.callThrough();
@@ -225,6 +230,7 @@ describe('MapMarker', () => {
                            [clickable]="clickable"
                            [options]="options"
                            [icon]="icon"
+                           [visible]="visible"
                            (mapClick)="handleClick()"
                            (positionChanged)="handlePositionChanged()">
                </map-marker>
@@ -238,6 +244,7 @@ class TestApp {
   clickable?: boolean;
   options?: google.maps.MarkerOptions;
   icon?: string;
+  visible?: boolean;
 
   handleClick() {}
 

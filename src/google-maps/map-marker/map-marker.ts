@@ -106,6 +106,16 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
   private _icon: string | google.maps.Icon | google.maps.Symbol;
 
   /**
+   * Whether the marker is visible.
+   * See: developers.google.com/maps/documentation/javascript/reference/marker#MarkerOptions.visible
+   */
+  @Input()
+  set visible(value: boolean) {
+    this._visible = value;
+  }
+  private _visible: boolean;
+
+  /**
    * See
    * developers.google.com/maps/documentation/javascript/reference/marker#Marker.animation_changed
    */
@@ -278,7 +288,7 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const {marker, _title, _position, _label, _clickable, _icon} = this;
+    const {marker, _title, _position, _label, _clickable, _icon, _visible} = this;
 
     if (marker) {
       if (changes['options']) {
@@ -303,6 +313,10 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
 
       if (changes['icon'] && _icon) {
         marker.setIcon(_icon);
+      }
+
+      if (changes['visible'] && _visible !== undefined) {
+        marker.setVisible(_visible);
       }
     }
   }
@@ -438,7 +452,8 @@ export class MapMarker implements OnInit, OnChanges, OnDestroy, MapAnchorPoint {
       label: this._label || options.label,
       clickable: this._clickable ?? options.clickable,
       map: this._googleMap.googleMap,
-      icon: this._icon || options.icon
+      icon: this._icon || options.icon,
+      visible: this._visible ?? options.visible
     };
   }
 
