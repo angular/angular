@@ -33,5 +33,8 @@ jasmine_node_test(
     # enabled in NodeJS. TODO: Remove this with rules_nodejs 3.x where patching is optional.
     # https://github.com/bazelbuild/rules_nodejs/commit/7d070ffadf9c3b41711382a4737b995f987c14fa.
     args = ["--nobazel_patch_module_resolver"],
+    data = [
+        "//dev-infra/release/publish/release-notes/templates",
+    ],
     deps = [":test_lib"],
 )

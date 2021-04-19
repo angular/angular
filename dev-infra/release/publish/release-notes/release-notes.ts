@@ -10,24 +10,11 @@ import {join} from 'path';
 import * as semver from 'semver';
 
 import {getCommitsInRange} from '../../../commit-message/utils';
-import {getConfig} from '../../../utils/config';
 import {promptInput} from '../../../utils/console';
 import {GitClient} from '../../../utils/git/index';
-import {getReleaseConfig} from '../../config/index';
+import {ReleaseConfig} from '../../config/index';
 import {changelogPath} from '../constants';
 import {RenderContext} from './context';
-
-
-/**
- * Gets the default pattern for extracting release notes for the given version.
- * This pattern matches for the conventional-changelog Angular preset.
- */
-export function getDefaultExtractReleaseNotesPattern(version: semver.SemVer): RegExp {
-  const escapedVersion = version.format().replace('.', '\\.');
-  // TODO: Change this once we have a canonical changelog generation tool. Also update this
-  // based on the conventional-changelog version. They removed anchors in more recent versions.
-  return new RegExp(`(<a name="${escapedVersion}"></a>.*?)(?:<a name="|$)`, 's');
-}
 
 /** Gets the path for the changelog file in a given project. */
 export function getLocalChangelogFilePath(projectDir: string): string {
@@ -37,33 +24,35 @@ export function getLocalChangelogFilePath(projectDir: string): string {
 
 /** Release note generation. */
 export class ReleaseNotes {
+  /** Construct a release note generation instance. */
+  static async fromLatestTagToHead(version: semver.SemVer, config: ReleaseConfig):
+      Promise<ReleaseNotes> {
+    return new ReleaseNotes(version, config);
+  }
+
   /** An instance of GitClient. */
   private git = GitClient.getInstance();
-  /** The github configuration. */
-  private readonly github = getConfig().github;
-  /** The configuration for the release notes generation. */
-  // TODO(josephperrott): Remove non-null assertion after usage of ReleaseNotes is integrated into
-  // release publish tooling.
-  private readonly config = getReleaseConfig().releaseNotes! || {};
-  /** A promise resolving to a list of Commits since the latest semver tag on the branch. */
-  private commits = getCommitsInRange(this.git.getLatestSemverTag().format(), 'HEAD');
   /** The RenderContext to be used during rendering. */
   private renderContext: RenderContext|undefined;
   /** The title to use for the release. */
   private title: string|false|undefined;
+  /** A promise resolving to a list of Commits since the latest semver tag on the branch. */
+  private commits = getCommitsInRange(this.git.getLatestSemverTag().format(), 'HEAD');
 
-  constructor(private version: semver.SemVer) {}
+  private constructor(public readonly version: semver.SemVer, private config: ReleaseConfig) {}
 
   /** Retrieve the release note generated for a Github Release. */
   async getGithubReleaseEntry(): Promise<string> {
-    return await renderFile(
-        join(__dirname, 'templates/github-release.ejs'), await this.generateRenderContext());
+    return renderFile(
+        join(__dirname, 'templates/github-release.ejs'), await this.generateRenderContext(),
+        {rmWhitespace: true});
   }
 
   /** Retrieve the release note generated for a CHANGELOG entry. */
   async getChangelogEntry() {
-    return await renderFile(
-        join(__dirname, 'templates/changelog.ejs'), await this.generateRenderContext());
+    return renderFile(
+        join(__dirname, 'templates/changelog.ejs'), await this.generateRenderContext(),
+        {rmWhitespace: true});
   }
 
   /**
@@ -72,7 +61,7 @@ export class ReleaseNotes {
    */
   async promptForReleaseTitle() {
     if (this.title === undefined) {
-      if (this.config.useReleaseTitle) {
+      if (this.config.releaseNotes.useReleaseTitle) {
         this.title = await promptInput('Please provide a title for the release:');
       } else {
         this.title = false;
@@ -86,10 +75,10 @@ export class ReleaseNotes {
     if (!this.renderContext) {
       this.renderContext = new RenderContext({
         commits: await this.commits,
-        github: getConfig().github,
+        github: this.git.remoteConfig,
         version: this.version.format(),
-        groupOrder: this.config.groupOrder,
-        hiddenScopes: this.config.hiddenScopes,
+        groupOrder: this.config.releaseNotes.groupOrder,
+        hiddenScopes: this.config.releaseNotes.hiddenScopes,
         title: await this.promptForReleaseTitle(),
       });
     }

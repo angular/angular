@@ -41,11 +41,12 @@ export class CutLongTermSupportPatchAction extends ReleaseAction {
   async perform() {
     const ltsBranch = await this._promptForTargetLtsBranch();
     const newVersion = semverInc(ltsBranch.version, 'patch');
-    const {id} = await this.checkoutBranchAndStageVersion(newVersion, ltsBranch.name);
+    const {pullRequest: {id}, releaseNotes} =
+        await this.checkoutBranchAndStageVersion(newVersion, ltsBranch.name);
 
     await this.waitForPullRequestToBeMerged(id);
     await this.buildAndPublish(newVersion, ltsBranch.name, ltsBranch.npmDistTag);
-    await this.cherryPickChangelogIntoNextBranch(newVersion, ltsBranch.name);
+    await this.cherryPickChangelogIntoNextBranch(releaseNotes, ltsBranch.name);
   }
 
   /** Prompts the user to select an LTS branch for which a patch should but cut. */

@@ -24,7 +24,7 @@ import {changelogPath, packageJsonPath, waitForPullRequestInterval} from './cons
 import {invokeBazelCleanCommand, invokeReleaseBuildCommand, invokeYarnInstallCommand} from './external-commands';
 import {findOwnedForksOfRepoQuery} from './graphql-queries';
 import {getPullRequestState} from './pull-request-state';
-import {getDefaultExtractReleaseNotesPattern, getLocalChangelogFilePath} from './release-notes/release-notes';
+import {getLocalChangelogFilePath, ReleaseNotes} from './release-notes/release-notes';
 
 /** Interface describing a Github repository. */
 export interface GithubRepo {
@@ -132,22 +132,6 @@ export abstract class ReleaseAction {
     info(green('  ✓   Upstream commit is passing all github status checks.'));
   }
 
-  /** Generates the changelog for the specified for the current `HEAD`. */
-  private async _generateReleaseNotesForHead(version: semver.SemVer) {
-    const changelogPath = getLocalChangelogFilePath(this.projectDir);
-    await this.config.generateReleaseNotesForHead(changelogPath);
-    info(green(`  ✓   Updated the changelog to capture changes for "${version}".`));
-  }
-
-  /** Extract the release notes for the given version from the changelog file. */
-  private _extractReleaseNotesForVersion(changelogContent: string, version: semver.SemVer): string
-      |null {
-    const pattern = this.config.extractReleaseNotesPattern !== undefined ?
-        this.config.extractReleaseNotesPattern(version) :
-        getDefaultExtractReleaseNotesPattern(version);
-    const matchedNotes = pattern.exec(changelogContent);
-    return matchedNotes === null ? null : matchedNotes[1];
-  }
 
   /**
    * Prompts the user for potential release notes edits that need to be made. Once
@@ -334,28 +318,12 @@ export abstract class ReleaseAction {
    * the current Git `HEAD`. This is useful for cherry-picking the changelog.
    * @returns A boolean indicating whether the release notes have been prepended.
    */
-  protected async prependReleaseNotesFromVersionBranch(
-      version: semver.SemVer, containingBranch: string): Promise<boolean> {
-    const {data} = await this.git.github.repos.getContents(
-        {...this.git.remoteParams, path: '/' + changelogPath, ref: containingBranch});
-    const branchChangelog = Buffer.from(data.content, 'base64').toString();
-    let releaseNotes = this._extractReleaseNotesForVersion(branchChangelog, version);
-    // If no release notes could be extracted, return "false" so that the caller
-    // can tell that changelog prepending failed.
-    if (releaseNotes === null) {
-      return false;
-    }
+  protected async prependReleaseNotesToChangelog(releaseNotes: ReleaseNotes): Promise<void> {
     const localChangelogPath = getLocalChangelogFilePath(this.projectDir);
     const localChangelog = await fs.readFile(localChangelogPath, 'utf8');
-    // If the extracted release notes do not have any new lines at the end and the
-    // local changelog is not empty, we add lines manually so that there is space
-    // between the previous and cherry-picked release notes.
-    if (!/[\r\n]+$/.test(releaseNotes) && localChangelog !== '') {
-      releaseNotes = `${releaseNotes}\n\n`;
-    }
-    // Prepend the extracted release notes to the local changelog and write it back.
-    await fs.writeFile(localChangelogPath, releaseNotes + localChangelog);
-    return true;
+    const releaseNotesEntry = await releaseNotes.getChangelogEntry();
+    await fs.writeFile(localChangelogPath, `${releaseNotesEntry}\n\n${localChangelog}`);
+    info(green(`  ✓   Updated the changelog to capture changes for "${releaseNotes.version}".`));
   }
 
   /** Checks out an upstream branch with a detached head. */
@@ -373,27 +341,6 @@ export abstract class ReleaseAction {
     this.git.run(['commit', '--no-verify', '-m', message, ...files]);
   }
 
-  /**
-   * Creates a cherry-pick commit for the release notes of the specified version that
-   * has been pushed to the given branch.
-   * @returns a boolean indicating whether the commit has been created successfully.
-   */
-  protected async createCherryPickReleaseNotesCommitFrom(
-      version: semver.SemVer, branchName: string): Promise<boolean> {
-    const commitMessage = getReleaseNoteCherryPickCommitMessage(version);
-
-    // Fetch, extract and prepend the release notes to the local changelog. If that is not
-    // possible, abort so that we can ask the user to manually cherry-pick the changelog.
-    if (!await this.prependReleaseNotesFromVersionBranch(version, branchName)) {
-      return false;
-    }
-
-    // Create a changelog cherry-pick commit.
-    await this.createCommit(commitMessage, [changelogPath]);
-
-    info(green(`  ✓   Created changelog cherry-pick commit for: "${version}".`));
-    return true;
-  }
 
   /**
    * Stages the specified new version for the current branch and creates a
@@ -401,9 +348,11 @@ export abstract class ReleaseAction {
    * @returns an object describing the created pull request.
    */
   protected async stageVersionForBranchAndCreatePullRequest(
-      newVersion: semver.SemVer, pullRequestBaseBranch: string): Promise<PullRequest> {
+      newVersion: semver.SemVer, pullRequestBaseBranch: string):
+      Promise<{releaseNotes: ReleaseNotes, pullRequest: PullRequest}> {
+    const releaseNotes = await ReleaseNotes.fromLatestTagToHead(newVersion, this.config);
     await this.updateProjectVersion(newVersion);
-    await this._generateReleaseNotesForHead(newVersion);
+    await this.prependReleaseNotesToChangelog(releaseNotes);
     await this.waitForEditsAndCreateReleaseCommit(newVersion);
 
     const pullRequest = await this.pushChangesToForkAndCreatePullRequest(
@@ -413,7 +362,7 @@ export abstract class ReleaseAction {
     info(green('  ✓   Release staging pull request has been created.'));
     info(yellow(`      Please ask team members to review: ${pullRequest.url}.`));
 
-    return pullRequest;
+    return {releaseNotes, pullRequest};
   }
 
   /**
@@ -422,7 +371,7 @@ export abstract class ReleaseAction {
    * @returns an object describing the created pull request.
    */
   protected async checkoutBranchAndStageVersion(newVersion: semver.SemVer, stagingBranch: string):
-      Promise<PullRequest> {
+      Promise<{releaseNotes: ReleaseNotes, pullRequest: PullRequest}> {
     await this.verifyPassingGithubStatus(stagingBranch);
     await this.checkoutUpstreamBranch(stagingBranch);
     return await this.stageVersionForBranchAndCreatePullRequest(newVersion, stagingBranch);
@@ -434,25 +383,22 @@ export abstract class ReleaseAction {
    * @returns a boolean indicating successful creation of the cherry-pick pull request.
    */
   protected async cherryPickChangelogIntoNextBranch(
-      newVersion: semver.SemVer, stagingBranch: string): Promise<boolean> {
+      releaseNotes: ReleaseNotes, stagingBranch: string): Promise<boolean> {
     const nextBranch = this.active.next.branchName;
-    const commitMessage = getReleaseNoteCherryPickCommitMessage(newVersion);
+    const commitMessage = getReleaseNoteCherryPickCommitMessage(releaseNotes.version);
 
     // Checkout the next branch.
     await this.checkoutUpstreamBranch(nextBranch);
 
-    // Cherry-pick the release notes into the current branch. If it fails,
-    // ask the user to manually copy the release notes into the next branch.
-    if (!await this.createCherryPickReleaseNotesCommitFrom(newVersion, stagingBranch)) {
-      error(yellow(`  ✘   Could not cherry-pick release notes for v${newVersion}.`));
-      error(
-          yellow(`      Please copy the release notes manually into the "${nextBranch}" branch.`));
-      return false;
-    }
+    await this.prependReleaseNotesToChangelog(releaseNotes);
+
+    // Create a changelog cherry-pick commit.
+    await this.createCommit(commitMessage, [changelogPath]);
+    info(green(`  ✓   Created changelog cherry-pick commit for: "${releaseNotes.version}".`));
 
     // Create a cherry-pick pull request that should be merged by the caretaker.
     const {url, id} = await this.pushChangesToForkAndCreatePullRequest(
-        nextBranch, `changelog-cherry-pick-${newVersion}`, commitMessage,
+        nextBranch, `changelog-cherry-pick-${releaseNotes.version}`, commitMessage,
         `Cherry-picks the changelog from the "${stagingBranch}" branch to the next ` +
             `branch (${nextBranch}).`);
 

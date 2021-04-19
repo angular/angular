@@ -11,9 +11,10 @@ import * as nock from 'nock';
 import {join} from 'path';
 import * as semver from 'semver';
 
+import * as commitMessageUtils from '../../../commit-message/utils';
 import {GithubConfig} from '../../../utils/config';
 import * as console from '../../../utils/console';
-import {getBranchPushMatcher, VirtualGitClient} from '../../../utils/testing';
+import {getBranchPushMatcher, installVirtualGitClientSpies, VirtualGitClient} from '../../../utils/testing';
 import {ReleaseConfig} from '../../config/index';
 import {ActiveReleaseTrains} from '../../versioning/active-release-trains';
 import * as npm from '../../versioning/npm-publish';
@@ -21,6 +22,7 @@ import {_npmPackageInfoCache, NpmPackageInfo} from '../../versioning/npm-registr
 import {ReleaseAction, ReleaseActionConstructor} from '../actions';
 import * as constants from '../constants';
 import * as externalCommands from '../external-commands';
+import {buildDateStamp} from '../release-notes/context';
 
 import {GithubTestingRepo} from './github-api-testing';
 
@@ -50,7 +52,7 @@ export function getTestingMocksForReleaseAction() {
       '@angular/pkg1',
       '@angular/pkg2',
     ],
-    generateReleaseNotesForHead: jasmine.createSpy('generateReleaseNotesForHead').and.resolveTo(),
+    releaseNotes: {},
     buildPackages: () => {
       throw Error('Not implemented');
     },
@@ -67,6 +69,9 @@ export function getTestingMocksForReleaseAction() {
 export function setupReleaseActionForTesting<T extends ReleaseAction>(
     actionCtor: ReleaseActionConstructor<T>, active: ActiveReleaseTrains,
     isNextPublishedToNpm = true): TestReleaseAction<T> {
+  installVirtualGitClientSpies();
+  spyOn(commitMessageUtils, 'getCommitsInRange').and.returnValue(Promise.resolve([]));
+
   // Reset existing HTTP interceptors.
   nock.cleanAll();
 
@@ -121,7 +126,7 @@ export function parse(version: string): semver.SemVer {
 
 /** Gets a changelog for the specified version. */
 export function getChangelogForVersion(version: string): string {
-  return `<a name="${version}"></a>Changelog\n\n`;
+  return `<a name="${version}"></a>\n# ${version} (${buildDateStamp()})\n\n\n`;
 }
 
 export async function expectStagingAndPublishWithoutCherryPick(
@@ -166,7 +171,6 @@ export async function expectStagingAndPublishWithoutCherryPick(
           'Expected release staging branch to be created in fork.');
 
   expect(externalCommands.invokeReleaseBuildCommand).toHaveBeenCalledTimes(1);
-  expect(releaseConfig.generateReleaseNotesForHead).toHaveBeenCalledTimes(1);
   expect(npm.runNpmPublish).toHaveBeenCalledTimes(2);
   expect(npm.runNpmPublish)
       .toHaveBeenCalledWith(`${testTmpDir}/dist/pkg1`, expectedNpmDistTag, undefined);
@@ -235,7 +239,6 @@ export async function expectStagingAndPublishWithCherryPick(
           'Expected cherry-pick branch to be created in fork.');
 
   expect(externalCommands.invokeReleaseBuildCommand).toHaveBeenCalledTimes(1);
-  expect(releaseConfig.generateReleaseNotesForHead).toHaveBeenCalledTimes(1);
   expect(npm.runNpmPublish).toHaveBeenCalledTimes(2);
   expect(npm.runNpmPublish)
       .toHaveBeenCalledWith(`${testTmpDir}/dist/pkg1`, expectedNpmDistTag, undefined);

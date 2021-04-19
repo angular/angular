@@ -31,7 +31,7 @@ describe('default target labels', () => {
     releaseConfig = {
       npmPackages: ['@angular/dev-infra-test-pkg'],
       buildPackages: async () => [],
-      generateReleaseNotesForHead: async () => {},
+      releaseNotes: {}
     };
 
     // The label determination will print warn messages. These should not be
