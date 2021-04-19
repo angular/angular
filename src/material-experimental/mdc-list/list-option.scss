@@ -1,5 +1,7 @@
 @use '@material/checkbox' as mdc-checkbox;
+@use '@material/list' as mdc-list;
 @use '../mdc-helpers/mdc-helpers';
+@use '../../cdk/a11y';
 
 // The MDC-based list-option uses the MDC checkbox for the selection indicators.
 // We need to ensure that the checkbox styles are included for the list-option.
@@ -13,4 +15,27 @@
 // toggle the selected styles.
 .mat-mdc-list-option .mdc-checkbox__native-control {
   display: none;
+}
+
+@include a11y.high-contrast(active, off) {
+  // In single selection mode, the selected option is indicated by changing its
+  // background color, but that doesn't work in high contrast mode. We add an
+  // alternate indication by rendering out a circle.
+  .mat-mdc-list-option.mdc-deprecated-list-item--selected::after {
+    $size: 10px;
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: mdc-list.$deprecated-side-padding;
+    transform: translateY(-50%);
+    width: $size;
+    height: 0;
+    border-bottom: solid $size;
+    border-radius: $size;
+  }
+
+  [dir='rtl'] .mat-mdc-list-option.mdc-deprecated-list-item--selected::after {
+    right: auto;
+    left: mdc-list.$deprecated-side-padding;
+  }
 }
