@@ -1,5 +1,6 @@
 @use '@material/circular-progress' as mdc-circular-progress;
 @use '../mdc-helpers/mdc-helpers';
+@use '../../cdk/a11y';
 
 @include mdc-circular-progress.core-styles($query: mdc-helpers.$mat-base-styles-query);
 
@@ -23,6 +24,18 @@
     .mdc-circular-progress__indeterminate-container circle {
       // Render the indeterminate spinner as a complete circle when animations are off
       stroke-dasharray: 0 !important;
+    }
+  }
+
+  @include a11y.high-contrast(active, off) {
+    .mdc-circular-progress__indeterminate-circle-graphic,
+    .mdc-circular-progress__determinate-circle {
+      // SVG colors aren't inverted automatically in high contrast mode. Set the
+      // stroke to currentColor in order to respect the user's color settings.
+      stroke: currentColor;
+      // currentColor blends in with the background in Chromium-based browsers
+      // so we have to fall back to `CanvasText` which isn't supported on IE.
+      stroke: CanvasText;
     }
   }
 }
