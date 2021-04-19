@@ -180,7 +180,7 @@
     "conventional-changelog": "^3.1.24",
     "conventional-commits-parser": "^3.2.1",
     "ejs": "^3.1.6",
-    "firebase-tools": "^7.11.0",
+    "firebase-tools": "^9.0.0",
     "git-raw-commits": "^2.0.10",
     "glob": "7.1.6",
     "gulp": "^4.0.2",
