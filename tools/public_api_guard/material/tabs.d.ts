@@ -41,6 +41,8 @@ export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase imp
     set animationDuration(value: string);
     get backgroundColor(): ThemePalette;
     set backgroundColor(value: ThemePalette);
+    get contentTabIndex(): number | null;
+    set contentTabIndex(value: number | null);
     disablePagination: boolean;
     get dynamicHeight(): boolean;
     set dynamicHeight(value: boolean);
@@ -65,10 +67,11 @@ export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase imp
     ngOnDestroy(): void;
     realignInkBar(): void;
     static ngAcceptInputType_animationDuration: NumberInput;
+    static ngAcceptInputType_contentTabIndex: BooleanInput;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_dynamicHeight: BooleanInput;
     static ngAcceptInputType_selectedIndex: NumberInput;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTabGroupBase, never, never, { "dynamicHeight": "dynamicHeight"; "selectedIndex": "selectedIndex"; "headerPosition": "headerPosition"; "animationDuration": "animationDuration"; "disablePagination": "disablePagination"; "backgroundColor": "backgroundColor"; }, { "selectedIndexChange": "selectedIndexChange"; "focusChange": "focusChange"; "animationDone": "animationDone"; "selectedTabChange": "selectedTabChange"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatTabGroupBase, never, never, { "dynamicHeight": "dynamicHeight"; "selectedIndex": "selectedIndex"; "headerPosition": "headerPosition"; "animationDuration": "animationDuration"; "contentTabIndex": "contentTabIndex"; "disablePagination": "disablePagination"; "backgroundColor": "backgroundColor"; }, { "selectedIndexChange": "selectedIndexChange"; "focusChange": "focusChange"; "animationDone": "animationDone"; "selectedTabChange": "selectedTabChange"; }, never>;
     static ɵfac: i0.ɵɵFactoryDeclaration<_MatTabGroupBase, [null, null, { optional: true; }, { optional: true; }]>;
 }
 
@@ -251,6 +254,7 @@ export declare const matTabsAnimations: {
 
 export interface MatTabsConfig {
     animationDuration?: string;
+    contentTabIndex?: number;
     disablePagination?: boolean;
     dynamicHeight?: boolean;
     fitInkBarToContent?: boolean;

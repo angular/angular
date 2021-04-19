@@ -132,6 +132,19 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
   private _animationDuration: string;
 
   /**
+   * `tabindex` to be set on the inner element that wraps the tab content. Can be used for improved
+   * accessibility when the tab does not have focusable elements or if it has scrollable content.
+   * The `tabindex` will be removed automatically for inactive tabs.
+   * Read more at https://www.w3.org/TR/wai-aria-practices/examples/tabs/tabs-2/tabs.html
+   */
+  @Input()
+  get contentTabIndex(): number | null { return this._contentTabIndex; }
+  set contentTabIndex(value: number | null) {
+    this._contentTabIndex = coerceNumberProperty(value, null);
+  }
+  private _contentTabIndex: number | null;
+
+  /**
    * Whether pagination should be disabled. This can be used to avoid unnecessary
    * layout recalculations if it's known that pagination won't be required.
    */
@@ -182,6 +195,7 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
         defaultConfig.disablePagination : false;
     this.dynamicHeight = defaultConfig && defaultConfig.dynamicHeight != null ?
         defaultConfig.dynamicHeight : false;
+    this.contentTabIndex = defaultConfig?.contentTabIndex ?? null;
   }
 
   /**
@@ -397,6 +411,7 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
   static ngAcceptInputType_animationDuration: NumberInput;
   static ngAcceptInputType_selectedIndex: NumberInput;
   static ngAcceptInputType_disableRipple: BooleanInput;
+  static ngAcceptInputType_contentTabIndex: BooleanInput;
 }
 
 /**

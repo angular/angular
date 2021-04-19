@@ -26,6 +26,9 @@ export interface MatTabsConfig {
 
   /** Whether the tab group should grow to the size of the active tab. */
   dynamicHeight?: boolean;
+
+  /** `tabindex` to be set on the inner element that wraps the tab content. */
+  contentTabIndex?: number;
 }
 
 /** Injection token that can be used to provide the default options the tabs module. */

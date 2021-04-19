@@ -348,6 +348,20 @@ describe('MatTabGroup', () => {
       expect(tabHeader.focusIndex).not.toBe(3);
     });
 
+    it('should be able to set a tabindex on the inner content element', () => {
+      fixture.componentInstance.contentTabIndex = 1;
+      fixture.detectChanges();
+      const contentElements = Array.from<HTMLElement>(fixture.nativeElement
+          .querySelectorAll('mat-tab-body'));
+
+      expect(contentElements.map(e => e.getAttribute('tabindex'))).toEqual([null, '1', null]);
+
+      fixture.componentInstance.selectedIndex = 0;
+      fixture.detectChanges();
+
+      expect(contentElements.map(e => e.getAttribute('tabindex'))).toEqual(['1', null, null]);
+    });
+
   });
 
   describe('aria labelling', () => {
@@ -774,6 +788,7 @@ describe('nested MatTabGroup with enabled animations', () => {
         [(selectedIndex)]="selectedIndex"
         [headerPosition]="headerPosition"
         [disableRipple]="disableRipple"
+        [contentTabIndex]="contentTabIndex"
         (animationDone)="animationDone()"
         (focusChange)="handleFocus($event)"
         (selectedTabChange)="handleSelection($event)">
@@ -799,6 +814,7 @@ class SimpleTabsTestApp {
   focusEvent: any;
   selectEvent: any;
   disableRipple: boolean = false;
+  contentTabIndex: number | null = null;
   headerPosition: MatTabHeaderPosition = 'above';
   handleFocus(event: any) {
     this.focusEvent = event;

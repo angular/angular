@@ -6,6 +6,7 @@
   @include layout-common.fill;
   display: block;
   overflow: hidden;
+  outline: 0;
 
   // Fix for auto content wrapping in IE11
   flex-basis: 100%;
