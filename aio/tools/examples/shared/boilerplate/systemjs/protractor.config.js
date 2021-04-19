@@ -49,7 +49,7 @@ exports.config = {
     // debugging
     // console.log('browser.params:' + JSON.stringify(browser.params));
 
-    jasmine.getEnv().addReporter(new Reporter( browser.params ));
+    jasmine.getEnv().addReporter(new Reporter(browser.params.outputFile));
   },
 
   jasmineNodeOpts: {
@@ -68,12 +68,8 @@ exports.config = {
 };
 
 // See https://jasmine.github.io/2.1/custom_reporter.html
-function Reporter(options) {
-  var _defaultOutputFile = path.resolve(__dirname, '../../protractor-results.txt');
-  options.outputFile = options.outputFile || _defaultOutputFile;
-
-  var _root = { appDir: options.appDir, suites: [] };
-  log('AppDir: ' + options.appDir, +1);
+function Reporter(outputFile) {
+  var _root = { suites: [] };
   var _currentSuite;
 
   this.suiteStarted = function(suite) {
@@ -114,21 +110,18 @@ function Reporter(options) {
     }
   };
 
-  this.jasmineDone = function() {
-    outputFile = options.outputFile;
-    //// Alternate approach - just stringify the _root - not as pretty
-    //// but might be more useful for automation.
-    // var output = JSON.stringify(_root, null, 2);
-    var output = formatOutput(_root);
-    fs.appendFileSync(outputFile, output);
-  };
+  if (outputFile) {
+    this.jasmineDone = function() {
+      var output = formatOutput(_root);
+      fs.appendFileSync(outputFile, output);
+    };
+  }
 
   // for output file output
   function formatOutput(output) {
     var indent = '  ';
     var pad = '  ';
     var results = [];
-    results.push('AppDir:' + output.appDir);
     output.suites.forEach(function(suite) {
       results.push(pad + 'Suite: ' + suite.description + ' -- ' + suite.status);
       pad+=indent;
