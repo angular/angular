@@ -41,6 +41,10 @@
     "angular-1.5",
     "angular-1.6",
     "angular-1.7",
+    "angular-mocks",
+    "angular-mocks-1.5",
+    "angular-mocks-1.6",
+    "angular-mocks-1.7",
     "puppeteer",
     "selenium-webdriver"
   ],

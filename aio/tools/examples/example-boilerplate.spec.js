@@ -23,7 +23,7 @@ describe('example-boilerplate tool', () => {
     it('should run `ngcc`', () => {
       exampleBoilerPlate.add();
       expect(shelljs.exec).toHaveBeenCalledWith(
-          `yarn --cwd ${sharedDir} ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points`);
+          `yarn --cwd ${sharedDir} ngcc --properties es2015 main`);
     });
 
     it('should process all the example folders', () => {
@@ -132,66 +132,6 @@ describe('example-boilerplate tool', () => {
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledTimes(exampleFolders.length);
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledWith(path.resolve('a/b/example-config.json'));
       expect(exampleBoilerPlate.loadJsonFile).toHaveBeenCalledWith(path.resolve('c/d/example-config.json'));
-    });
-
-    describe('(viewengine: true)', () => {
-      it('should not run `ngcc`', () => {
-        exampleBoilerPlate.add(true);
-        expect(shelljs.exec).not.toHaveBeenCalled();
-      });
-
-      it('should copy all the source boilerplate files for systemjs', () => {
-        const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
-        exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'systemjs' });
-
-        exampleBoilerPlate.add(true);
-
-        expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(6);
-        expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-          [`${boilerplateDir}/systemjs`, 'a/b', jasmine.any(Function)],
-          [`${boilerplateDir}/common`, 'a/b', jasmine.any(Function)],
-          [`${boilerplateDir}/viewengine/systemjs`, 'a/b', jasmine.any(Function)],
-          [`${boilerplateDir}/systemjs`, 'c/d', jasmine.any(Function)],
-          [`${boilerplateDir}/common`, 'c/d', jasmine.any(Function)],
-          [`${boilerplateDir}/viewengine/systemjs`, 'c/d', jasmine.any(Function)],
-        ]);
-      });
-
-      it('should copy all the source boilerplate files for cli', () => {
-        const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
-        exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'cli' });
-
-        exampleBoilerPlate.add(true);
-
-        expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(6);
-        expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-          [`${boilerplateDir}/cli`, 'a/b', jasmine.any(Function)],
-          [`${boilerplateDir}/common`, 'a/b', jasmine.any(Function)],
-          [`${boilerplateDir}/viewengine/cli`, 'a/b', jasmine.any(Function)],
-          [`${boilerplateDir}/cli`, 'c/d', jasmine.any(Function)],
-          [`${boilerplateDir}/common`, 'c/d', jasmine.any(Function)],
-          [`${boilerplateDir}/viewengine/cli`, 'c/d', jasmine.any(Function)],
-        ]);
-      });
-
-      it('should copy all the source boilerplate files for elements', () => {
-        const boilerplateDir = path.resolve(sharedDir, 'boilerplate');
-        exampleBoilerPlate.loadJsonFile.and.returnValue({ projectType: 'elements' });
-
-        exampleBoilerPlate.add(true);
-
-        expect(exampleBoilerPlate.copyDirectoryContents).toHaveBeenCalledTimes(8);
-        expect(exampleBoilerPlate.copyDirectoryContents.calls.allArgs()).toEqual([
-          [`${boilerplateDir}/cli`, 'a/b', jasmine.any(Function)],
-          [`${boilerplateDir}/elements`, 'a/b', jasmine.any(Function)],
-          [`${boilerplateDir}/common`, 'a/b', jasmine.any(Function)],
-          [`${boilerplateDir}/viewengine/cli`, 'a/b', jasmine.any(Function)],
-          [`${boilerplateDir}/cli`, 'c/d', jasmine.any(Function)],
-          [`${boilerplateDir}/elements`, 'c/d', jasmine.any(Function)],
-          [`${boilerplateDir}/common`, 'c/d', jasmine.any(Function)],
-          [`${boilerplateDir}/viewengine/cli`, 'c/d', jasmine.any(Function)],
-        ]);
-      });
     });
   });
 

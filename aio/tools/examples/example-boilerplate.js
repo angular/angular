@@ -11,13 +11,12 @@ const SHARED_NODE_MODULES_PATH = path.resolve(SHARED_PATH, 'node_modules');
 const BOILERPLATE_BASE_PATH = path.resolve(SHARED_PATH, 'boilerplate');
 const BOILERPLATE_CLI_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'cli');
 const BOILERPLATE_COMMON_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'common');
-const BOILERPLATE_VIEWENGINE_PATH = path.resolve(BOILERPLATE_BASE_PATH, 'viewengine');
 
 class ExampleBoilerPlate {
   /**
    * Add boilerplate files to all the examples
    */
-  add(viewengine = false) {
+  add() {
     // Get all the examples folders, indicated by those that contain a `example-config.json` file
     const exampleFolders =
         this.getFoldersContaining(EXAMPLES_BASE_PATH, EXAMPLE_CONFIG_FILENAME, 'node_modules');
@@ -30,9 +29,7 @@ class ExampleBoilerPlate {
           'Perhaps you need to run "yarn example-use-npm" or "yarn example-use-local" to install the dependencies?');
     }
 
-    if (!viewengine) {
-      shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 browser module main --first-only --create-ivy-entry-points`);
-    }
+    shelljs.exec(`yarn --cwd ${SHARED_PATH} ngcc --properties es2015 main`);
 
     exampleFolders.forEach(exampleFolder => {
       const exampleConfig = this.loadJsonFile(path.resolve(exampleFolder, EXAMPLE_CONFIG_FILENAME));
@@ -58,13 +55,6 @@ class ExampleBoilerPlate {
       if (exampleConfig.useCommonBoilerplate !== false) {
         this.copyDirectoryContents(BOILERPLATE_COMMON_PATH, exampleFolder, isPathIgnored);
       }
-
-      // Copy ViewEngine (pre-Ivy) specific files
-      if (viewengine) {
-        const veBoilerPlateType = boilerPlateType === 'systemjs' ? 'systemjs' : 'cli';
-        const veBoilerPlateBasePath = path.resolve(BOILERPLATE_VIEWENGINE_PATH, veBoilerPlateType);
-        this.copyDirectoryContents(veBoilerPlateBasePath, exampleFolder, isPathIgnored);
-      }
     });
   }
 
@@ -75,7 +65,7 @@ class ExampleBoilerPlate {
 
   main() {
     yargs.usage('$0 <cmd> [args]')
-        .command('add', 'add the boilerplate to each example', yrgs => this.add(yrgs.argv.viewengine))
+        .command('add', 'add the boilerplate to each example', yrgs => this.add())
         .command('remove', 'remove the boilerplate from each example', () => this.remove())
         .demandCommand(1, 'Please supply a command from the list above')
         .argv;

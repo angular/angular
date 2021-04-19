@@ -470,6 +470,9 @@ Refresh the browser and start clicking.
 Users can navigate around the app, from the dashboard to hero details and back,
 from heroes list to the mini detail to the hero details and back to the heroes again.
 
+The details will look better when you add the private CSS styles to `hero-detail.component.css`
+as listed in one of the ["final code review"](#final-code-review) tabs below.
+
 ## Final code review
 
 Here are the code files discussed on this page.

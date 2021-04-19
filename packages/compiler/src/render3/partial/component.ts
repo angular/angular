@@ -20,13 +20,42 @@ import {R3DeclareComponentMetadata, R3DeclareUsedDirectiveMetadata} from './api'
 import {createDirectiveDefinitionMap} from './directive';
 import {generateForwardRef, toOptionalLiteralArray} from './util';
 
+export interface DeclareComponentTemplateInfo {
+  /**
+   * The string contents of the template.
+   *
+   * This is the "logical" template string, after expansion of any escaped characters (for inline
+   * templates). This may differ from the actual template bytes as they appear in the .ts file.
+   */
+  content: string;
+
+  /**
+   * A full path to the file which contains the template.
+   *
+   * This can be either the original .ts file if the template is inline, or the .html file if an
+   * external file was used.
+   */
+  sourceUrl: string;
+
+  /**
+   * Whether the template was inline (using `template`) or external (using `templateUrl`).
+   */
+  isInline: boolean;
+
+  /**
+   * If the template was defined inline by a direct string literal, then this is that literal
+   * expression. Otherwise `null`, if the template was not defined inline or was not a literal.
+   */
+  inlineTemplateLiteralExpression: o.Expression|null;
+}
 
 /**
  * Compile a component declaration defined by the `R3ComponentMetadata`.
  */
 export function compileDeclareComponentFromMetadata(
-    meta: R3ComponentMetadata, template: ParsedTemplate): R3CompiledExpression {
-  const definitionMap = createComponentDefinitionMap(meta, template);
+    meta: R3ComponentMetadata, template: ParsedTemplate,
+    additionalTemplateInfo: DeclareComponentTemplateInfo): R3CompiledExpression {
+  const definitionMap = createComponentDefinitionMap(meta, template, additionalTemplateInfo);
 
   const expression = o.importExpr(R3.declareComponent).callFn([definitionMap.toLiteralMap()]);
   const type = createComponentType(meta);
@@ -37,13 +66,14 @@ export function compileDeclareComponentFromMetadata(
 /**
  * Gathers the declaration fields for a component into a `DefinitionMap`.
  */
-export function createComponentDefinitionMap(meta: R3ComponentMetadata, template: ParsedTemplate):
-    DefinitionMap<R3DeclareComponentMetadata> {
+export function createComponentDefinitionMap(
+    meta: R3ComponentMetadata, template: ParsedTemplate,
+    templateInfo: DeclareComponentTemplateInfo): DefinitionMap<R3DeclareComponentMetadata> {
   const definitionMap: DefinitionMap<R3DeclareComponentMetadata> =
       createDirectiveDefinitionMap(meta);
 
-  definitionMap.set('template', getTemplateExpression(template));
-  if (template.isInline) {
+  definitionMap.set('template', getTemplateExpression(template, templateInfo));
+  if (templateInfo.isInline) {
     definitionMap.set('isInline', o.literal(true));
   }
 
@@ -82,26 +112,32 @@ export function createComponentDefinitionMap(meta: R3ComponentMetadata, template
   return definitionMap;
 }
 
-function getTemplateExpression(template: ParsedTemplate): o.Expression {
-  if (typeof template.template === 'string') {
-    if (template.isInline) {
-      // The template is inline but not a simple literal string, so give up with trying to
-      // source-map it and just return a simple literal here.
-      return o.literal(template.template);
-    } else {
-      // The template is external so we must synthesize an expression node with the appropriate
-      // source-span.
-      const contents = template.template;
-      const file = new ParseSourceFile(contents, template.templateUrl);
-      const start = new ParseLocation(file, 0, 0, 0);
-      const end = computeEndLocation(file, contents);
-      const span = new ParseSourceSpan(start, end);
-      return o.literal(contents, null, span);
-    }
-  } else {
-    // The template is inline so we can just reuse the current expression node.
-    return template.template;
+function getTemplateExpression(
+    template: ParsedTemplate, templateInfo: DeclareComponentTemplateInfo): o.Expression {
+  // If the template has been defined using a direct literal, we use that expression directly
+  // without any modifications. This is ensures proper source mapping from the partially
+  // compiled code to the source file declaring the template. Note that this does not capture
+  // template literals referenced indirectly through an identifier.
+  if (templateInfo.inlineTemplateLiteralExpression !== null) {
+    return templateInfo.inlineTemplateLiteralExpression;
   }
+
+  // If the template is defined inline but not through a literal, the template has been resolved
+  // through static interpretation. We create a literal but cannot provide any source span. Note
+  // that we cannot use the expression defining the template because the linker expects the template
+  // to be defined as a literal in the declaration.
+  if (templateInfo.isInline) {
+    return o.literal(templateInfo.content, null, null);
+  }
+
+  // The template is external so we must synthesize an expression node with
+  // the appropriate source-span.
+  const contents = templateInfo.content;
+  const file = new ParseSourceFile(contents, templateInfo.sourceUrl);
+  const start = new ParseLocation(file, 0, 0, 0);
+  const end = computeEndLocation(file, contents);
+  const span = new ParseSourceSpan(start, end);
+  return o.literal(contents, null, span);
 }
 
 function computeEndLocation(file: ParseSourceFile, contents: string): ParseLocation {
