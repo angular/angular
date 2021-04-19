@@ -112,7 +112,7 @@ export function eventTargetLegacyPatch(_global: any, api: _ZonePrivate) {
   }
   // vh is validateHandler to check event handler
   // is valid or not(for security check)
-  api.patchEventTarget(_global, api, apiTypes, {
+  api.patchEventTarget(_global, apiTypes, {
     vh: checkIEAndCrossContext,
     transferEventName: (eventName: string) => {
       const pointerEventName = pointerEventsMap[eventName];
