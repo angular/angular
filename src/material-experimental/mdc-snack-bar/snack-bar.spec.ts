@@ -466,6 +466,20 @@ describe('MatSnackBar', () => {
     expect(viewContainerFixture.isStable()).toBe(true);
   }));
 
+  it('should clear the dismiss timeout when dismissed with action', fakeAsync(() => {
+    let config = new MatSnackBarConfig();
+    config.duration = 1000;
+    const snackBarRef = snackBar.open('content', 'test', config);
+
+    setTimeout(() => snackBarRef.dismissWithAction(), 500);
+
+    tick(600);
+    viewContainerFixture.detectChanges();
+    tick();
+
+    expect(viewContainerFixture.isStable()).toBe(true);
+  }));
+
   it('should add extra classes to the container', () => {
     snackBar.open(simpleMessage, simpleActionLabel, { panelClass: ['one', 'two'] });
     viewContainerFixture.detectChanges();

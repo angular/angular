@@ -74,6 +74,7 @@ export class MatSnackBarRef<T> {
       this._onAction.next();
       this._onAction.complete();
     }
+    clearTimeout(this._durationTimeoutId);
   }
 
 
