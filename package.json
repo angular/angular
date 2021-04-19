@@ -189,7 +189,7 @@
     "husky": "6.0.0",
     "inquirer": "^8.0.0",
     "karma-browserstack-launcher": "^1.3.0",
-    "karma-sauce-launcher": "^2.0.2",
+    "karma-sauce-launcher": "^4.0.0",
     "madge": "^4.0.2",
     "multimatch": "^5.0.0",
     "mutation-observer": "^1.0.3",
