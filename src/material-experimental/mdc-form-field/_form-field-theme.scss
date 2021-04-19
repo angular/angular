@@ -16,9 +16,9 @@
 
 // Mixin that overwrites the default MDC text-field color styles to be based on
 // the given theme palette. The MDC text-field is styled using `primary` by default.
-@mixin _mat-mdc-text-field-color-styles($palette-name,
+@mixin _color-styles($palette-name,
   $query: mdc-helpers.$mat-theme-styles-query) {
-  $_mdc-text-field-focused-label-color: mdc-textfield.$focused-label-color;
+  $orig-focused-label-color: mdc-textfield.$focused-label-color;
   mdc-textfield.$focused-label-color: rgba(mdc-theme-color.prop-value($palette-name), 0.87);
 
   @include mdc-textfield.caret-color($palette-name, $query);
@@ -36,7 +36,7 @@
     @include mdc-textfield.focused-outline-color($palette-name, $query);
   }
 
-  mdc-textfield.$focused-label-color: $_mdc-text-field-focused-label-color;
+  mdc-textfield.$focused-label-color: $orig-focused-label-color;
 }
 
 @mixin color($config-or-theme) {
@@ -52,11 +52,11 @@
       @include form-field-native-select.private-form-field-native-select-color($config);
 
       .mat-mdc-form-field.mat-accent {
-        @include _mat-mdc-text-field-color-styles(secondary);
+        @include _color-styles(secondary);
       }
 
       .mat-mdc-form-field.mat-warn {
-        @include _mat-mdc-text-field-color-styles(error);
+        @include _color-styles(error);
       }
     }
   }

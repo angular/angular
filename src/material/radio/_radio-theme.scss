@@ -3,7 +3,7 @@
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 
-@mixin _mat-radio-color($palette) {
+@mixin _color($palette) {
   &.mat-radio-checked .mat-radio-outer-circle {
     border-color: theming.get-color-from-palette($palette);
   }
@@ -30,15 +30,15 @@
 
   .mat-radio-button {
     &.mat-primary {
-      @include _mat-radio-color($primary);
+      @include _color($primary);
     }
 
     &.mat-accent {
-      @include _mat-radio-color($accent);
+      @include _color($accent);
     }
 
     &.mat-warn {
-      @include _mat-radio-color($warn);
+      @include _color($warn);
     }
 
     // This needs extra specificity, because the classes above are combined
@@ -76,7 +76,7 @@
   }
 }
 
-@mixin _mat-radio-density($config-or-theme) {}
+@mixin _density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -89,7 +89,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _mat-radio-density($density);
+      @include _density($density);
     }
     @if $typography != null {
       @include typography($typography);

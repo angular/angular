@@ -4,7 +4,7 @@
 @use '../mdc-helpers/mdc-helpers';
 @use '../../material/core/theming/theming';
 
-@mixin _mat-mdc-progress-bar-color($color) {
+@mixin _palette-styles($color) {
   // TODO(crisbeto): the buffer color should come from somewhere in MDC, however at the time of
   // writing, their buffer color is hardcoded to #e6e6e6 which both doesn't account for theming
   // and doesn't match the Material design spec. For now we approximate the buffer background by
@@ -19,14 +19,14 @@
   $config: theming.get-color-config($config-or-theme);
   @include mdc-helpers.mat-using-mdc-theme($config) {
     .mat-mdc-progress-bar {
-      @include _mat-mdc-progress-bar-color(primary);
+      @include _palette-styles(primary);
 
       &.mat-accent {
-        @include _mat-mdc-progress-bar-color(secondary);
+        @include _palette-styles(secondary);
       }
 
       &.mat-warn {
-        @include _mat-mdc-progress-bar-color(error);
+        @include _palette-styles(error);
       }
     }
   }

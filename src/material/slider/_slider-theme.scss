@@ -4,7 +4,7 @@
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 
-@mixin _mat-slider-inner-content-theme($palette) {
+@mixin _inner-content-theme($palette) {
   .mat-slider-track-fill,
   .mat-slider-thumb,
   .mat-slider-thumb-label {
@@ -53,15 +53,15 @@
   }
 
   .mat-primary {
-    @include _mat-slider-inner-content-theme($primary);
+    @include _inner-content-theme($primary);
   }
 
   .mat-accent {
-    @include _mat-slider-inner-content-theme($accent);
+    @include _inner-content-theme($accent);
   }
 
   .mat-warn {
-    @include _mat-slider-inner-content-theme($warn);
+    @include _inner-content-theme($warn);
   }
 
   .mat-slider:hover,
@@ -180,7 +180,7 @@
   }
 }
 
-@mixin _mat-slider-density($config-or-theme) {}
+@mixin _density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -193,7 +193,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _mat-slider-density($density);
+      @include _density($density);
     }
     @if $typography != null {
       @include typography($typography);

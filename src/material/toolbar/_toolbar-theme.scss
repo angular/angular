@@ -6,7 +6,7 @@
 @use '../core/typography/typography-utils';
 @use './toolbar-variables';
 
-@mixin _mat-toolbar-height($height) {
+@mixin _height($height) {
   .mat-toolbar-multiple-rows {
     min-height: $height;
   }
@@ -15,12 +15,12 @@
   }
 }
 
-@mixin _mat-toolbar-color($palette) {
+@mixin _palette-styles($palette) {
   background: theming.get-color-from-palette($palette);
   color: theming.get-color-from-palette($palette, default-contrast);
 }
 
-@mixin _mat-toolbar-form-field-overrides {
+@mixin _form-field-overrides {
   .mat-form-field-underline,
   .mat-form-field-ripple,
   .mat-focused .mat-form-field-ripple {
@@ -53,18 +53,18 @@
     color: theming.get-color-from-palette($foreground, text);
 
     &.mat-primary {
-      @include _mat-toolbar-color($primary);
+      @include _palette-styles($primary);
     }
 
     &.mat-accent {
-      @include _mat-toolbar-color($accent);
+      @include _palette-styles($accent);
     }
 
     &.mat-warn {
-      @include _mat-toolbar-color($warn);
+      @include _palette-styles($warn);
     }
 
-    @include _mat-toolbar-form-field-overrides;
+    @include _form-field-overrides;
   }
 }
 
@@ -92,13 +92,13 @@
 
   @include compatibility.private-density-legacy-compatibility() {
     // Set the default height for the toolbar.
-    @include _mat-toolbar-height($height-desktop);
+    @include _height($height-desktop);
 
     // As per specs, toolbars should have a different height in mobile devices. This has been
     // specified in the old guidelines and is still observable in the new specifications by
     // looking at the spec images. See: https://material.io/design/components/app-bars-top.html#anatomy
     @media (variables.$xsmall) {
-      @include _mat-toolbar-height($height-mobile);
+      @include _height($height-mobile);
     }
   }
 }

@@ -84,7 +84,7 @@ $calendar-range-end-body-cell-size:
   }
 }
 
-@mixin _mat-calendar-body-range-right-radius {
+@mixin _range-right-radius {
   // Since the range background isn't a perfect circle, we need to
   // resize the end so that it aligns with the main circle.
   width: $calendar-range-end-body-cell-size;
@@ -97,7 +97,7 @@ $calendar-range-end-body-cell-size:
 .mat-calendar-body-comparison-end:not(.mat-calendar-body-comparison-bridge-end)::before,
 .mat-calendar-body-comparison-end::after,
 .mat-calendar-body-preview-end .mat-calendar-body-cell-preview {
-  @include _mat-calendar-body-range-right-radius;
+  @include _range-right-radius;
 
   [dir='rtl'] & {
     left: $calendar-body-cell-content-margin;
@@ -111,7 +111,7 @@ $calendar-range-end-body-cell-size:
 [dir='rtl'] {
   .mat-calendar-body-comparison-bridge-start.mat-calendar-body-range-end::after,
   .mat-calendar-body-comparison-bridge-end.mat-calendar-body-range-start::after {
-    @include _mat-calendar-body-range-right-radius;
+    @include _range-right-radius;
   }
 }
 

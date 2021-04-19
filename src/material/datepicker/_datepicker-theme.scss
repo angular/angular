@@ -15,7 +15,7 @@ $today-fade-amount: 0.2;
 $calendar-body-font-size: 13px !default;
 $calendar-weekday-table-font-size: 11px !default;
 
-@mixin _mat-datepicker-color($palette) {
+@mixin _color($palette) {
   @include date-range-colors(
     theming.get-color-from-palette($palette, default, $range-fade-amount));
 
@@ -46,7 +46,7 @@ $calendar-weekday-table-font-size: 11px !default;
   .cdk-keyboard-focused .mat-calendar-body-active,
   .cdk-program-focused .mat-calendar-body-active {
     & > .mat-calendar-body-cell-content {
-      @include _mat-datepicker-unselected-cell {
+      @include _unselected-cell {
         background-color: theming.get-color-from-palette($palette, 0.3);
       }
     }
@@ -54,7 +54,7 @@ $calendar-weekday-table-font-size: 11px !default;
 }
 
 // Utility mixin to target cells that aren't selected. Used to make selector easier to follow.
-@mixin _mat-datepicker-unselected-cell {
+@mixin _unselected-cell {
   &:not(.mat-calendar-body-selected):not(.mat-calendar-body-comparison-identical) {
     @content;
   }
@@ -97,7 +97,7 @@ $calendar-weekday-table-font-size: 11px !default;
   }
 
   .mat-calendar-body-disabled > .mat-calendar-body-cell-content {
-    @include _mat-datepicker-unselected-cell {
+    @include _unselected-cell {
       color: $disabled-color;
     }
   }
@@ -121,7 +121,7 @@ $calendar-weekday-table-font-size: 11px !default;
   }
 
   .mat-calendar-body-today {
-    @include _mat-datepicker-unselected-cell {
+    @include _unselected-cell {
       // Note: though it's not text, the border is a hint about the fact that this is today's date,
       // so we use the hint color.
       border-color: theming.get-color-from-palette($foreground, hint-text);
@@ -129,7 +129,7 @@ $calendar-weekday-table-font-size: 11px !default;
   }
 
   .mat-calendar-body-disabled > .mat-calendar-body-today {
-    @include _mat-datepicker-unselected-cell {
+    @include _unselected-cell {
       $color: theming.get-color-from-palette($foreground, hint-text);
 
       @if (meta.type-of($color) == color) {
@@ -145,7 +145,7 @@ $calendar-weekday-table-font-size: 11px !default;
     }
   }
 
-  @include _mat-datepicker-color(map.get($config, primary));
+  @include _color(map.get($config, primary));
 
   .mat-datepicker-content {
     @include private.private-theme-elevation(4, $config);
@@ -153,11 +153,11 @@ $calendar-weekday-table-font-size: 11px !default;
     color: theming.get-color-from-palette($foreground, text);
 
     &.mat-accent {
-      @include _mat-datepicker-color(map.get($config, accent));
+      @include _color(map.get($config, accent));
     }
 
     &.mat-warn {
-      @include _mat-datepicker-color(map.get($config, warn));
+      @include _color(map.get($config, warn));
     }
   }
 
@@ -245,7 +245,7 @@ $calendar-weekday-table-font-size: 11px !default;
   }
 }
 
-@mixin _mat-datepicker-density($config-or-theme) {}
+@mixin _density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -258,7 +258,7 @@ $calendar-weekday-table-font-size: 11px !default;
       @include color($color);
     }
     @if $density != null {
-      @include _mat-datepicker-density($density);
+      @include _density($density);
     }
     @if $typography != null {
       @include typography($typography);

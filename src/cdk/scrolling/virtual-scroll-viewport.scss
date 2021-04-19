@@ -2,7 +2,7 @@
 // their container element (e.g. `<table>`, `<ul>`, etc.) needs to be placed in the viewport as
 // well. We reset some properties here to prevent these container elements from introducing
 // additional space that would throw off the scrolling calculations.
-@mixin _cdk-virtual-scroll-clear-container-space($direction) {
+@mixin _clear-container-space($direction) {
   $start: if($direction == horizontal, 'left', 'top');
   $end: if($direction == horizontal, 'right', 'bottom');
 
@@ -57,12 +57,12 @@ cdk-virtual-scroll-viewport {
 
 .cdk-virtual-scroll-orientation-horizontal .cdk-virtual-scroll-content-wrapper {
   min-height: 100%;
-  @include _cdk-virtual-scroll-clear-container-space(horizontal);
+  @include _clear-container-space(horizontal);
 }
 
 .cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
   min-width: 100%;
-  @include _cdk-virtual-scroll-clear-container-space(vertical);
+  @include _clear-container-space(vertical);
 }
 
 // Spacer element that whose width or height will be adjusted to match the size of the entire data

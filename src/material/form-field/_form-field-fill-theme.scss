@@ -51,7 +51,7 @@
 $fill-dedupe: 0;
 
 // Applies a floating label above the form field control itself.
-@mixin _mat-form-field-fill-label-floating($font-scale, $infix-padding, $infix-margin-top) {
+@mixin _label-floating($font-scale, $infix-padding, $infix-margin-top) {
   transform: translateY(-$infix-margin-top - $infix-padding + $fill-dedupe)
              scale($font-scale);
   width: 100% / $font-scale + $fill-dedupe;
@@ -88,7 +88,7 @@ $fill-dedupe: 0;
     &.mat-form-field-can-float {
       &.mat-form-field-should-float .mat-form-field-label,
       .mat-input-server:focus + .mat-form-field-label-wrapper .mat-form-field-label {
-        @include _mat-form-field-fill-label-floating(
+        @include _label-floating(
                 $subscript-font-scale, $infix-padding-top + $fill-appearance-label-offset,
                 $infix-margin-top);
       }
@@ -97,7 +97,7 @@ $fill-dedupe: 0;
       // (used as a pure CSS stand-in for mat-form-field-should-float).
       .mat-input-server[label]:not(:label-shown) + .mat-form-field-label-wrapper
       .mat-form-field-label {
-        @include _mat-form-field-fill-label-floating(
+        @include _label-floating(
                 $subscript-font-scale, $infix-padding-top + $fill-appearance-label-offset,
                 $infix-margin-top);
       }

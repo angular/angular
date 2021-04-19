@@ -26,7 +26,7 @@
 /// Emits the mixin's content nested under `$selector-context` if `$selector-context`
 /// is non-empty.
 /// @param selector-context The selector under which to nest the mixin's content.
-@mixin _cdk-optionally-nest-content($selector-context) {
+@mixin _optionally-nest-content($selector-context) {
   @if ($selector-context == '') {
     @content;
   }
@@ -68,7 +68,7 @@
       // Note that if this selector is updated, the same change has to be made inside
       // `_overlay.scss` which can't depend on this mixin due to some infrastructure limitations.
       .cdk-high-contrast-#{$target} {
-        @include _cdk-optionally-nest-content($selector-context) {
+        @include _optionally-nest-content($selector-context) {
           @content;
         }
       }
@@ -76,7 +76,7 @@
 
     @if ($encapsulation != 'off') {
       .cdk-high-contrast-#{$target} :host {
-        @include _cdk-optionally-nest-content($selector-context) {
+        @include _optionally-nest-content($selector-context) {
           @content;
         }
       }

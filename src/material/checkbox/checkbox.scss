@@ -8,17 +8,17 @@
 @use '../core/style/variables';
 
 // Manual calculation done on SVG
-$_mat-checkbox-mark-path-length: 22.910259;
-$_mat-checkbox-indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1);
+$_path-length: 22.910259;
+$_indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1);
 
 // The ripple size of the checkbox
-$_mat-checkbox-ripple-radius: 20px;
+$_ripple-radius: 20px;
 
 // The amount of spacing between the checkbox and its label.
-$_mat-checkbox-item-spacing: variables.$toggle-padding;
+$_item-spacing: variables.$toggle-padding;
 
 // The width of the line used to draw the checkmark / mixedmark.
-$_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
+$_mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
 
 
 // Fades in the background of the checkbox when it goes from unchecked -> {checked,indeterminate}.
@@ -46,7 +46,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
 // "Draws" in the checkmark when the checkbox goes from unchecked -> checked.
 @keyframes mat-checkbox-unchecked-checked-checkmark-path {
   0%, 50% {
-    stroke-dashoffset: $_mat-checkbox-mark-path-length;
+    stroke-dashoffset: $_path-length;
   }
 
   50% {
@@ -81,7 +81,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
   }
 
   to {
-    stroke-dashoffset: $_mat-checkbox-mark-path-length * -1;
+    stroke-dashoffset: $_path-length * -1;
   }
 }
 
@@ -106,7 +106,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
 // checkmark.
 @keyframes mat-checkbox-indeterminate-checked-checkmark {
   from {
-    animation-timing-function: $_mat-checkbox-indeterminate-checked-easing-function;
+    animation-timing-function: $_indeterminate-checked-easing-function;
     opacity: 0;
     transform: rotate(45deg);
   }
@@ -138,7 +138,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
 // of "morphing" from mixedmark -> checkmark.
 @keyframes mat-checkbox-indeterminate-checked-mixedmark {
   from {
-    animation-timing-function: $_mat-checkbox-indeterminate-checked-easing-function;
+    animation-timing-function: $_indeterminate-checked-easing-function;
     opacity: 1;
     transform: rotate(0deg);
   }
@@ -196,10 +196,10 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
   // potentially overwrite the absolute position of the container.
   .mat-checkbox-ripple {
     position: absolute;
-    left: calc(50% - #{$_mat-checkbox-ripple-radius});
-    top: calc(50% - #{$_mat-checkbox-ripple-radius});
-    height: $_mat-checkbox-ripple-radius * 2;
-    width: $_mat-checkbox-ripple-radius * 2;
+    left: calc(50% - #{$_ripple-radius});
+    top: calc(50% - #{$_ripple-radius});
+    height: $_ripple-radius * 2;
+    width: $_ripple-radius * 2;
     z-index: 1;
     pointer-events: none;
   }
@@ -237,7 +237,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
   height: checkbox-common.$size;
   line-height: 0;
   margin: auto;
-  margin-right: $_mat-checkbox-item-spacing;
+  margin-right: $_item-spacing;
   order: 0;
   position: relative;
   vertical-align: middle;
@@ -247,7 +247,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
 
   [dir='rtl'] & {
     margin: {
-      left: $_mat-checkbox-item-spacing;
+      left: $_item-spacing;
       right: auto;
     }
   }
@@ -343,9 +343,9 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
 
 .mat-checkbox-checkmark-path {
   stroke: {
-    dashoffset: $_mat-checkbox-mark-path-length;
-    dasharray: $_mat-checkbox-mark-path-length;
-    width: $_mat-checkbox-mark-stroke-size;
+    dashoffset: $_path-length;
+    dasharray: $_path-length;
+    width: $_mark-stroke-size;
   }
 
   @include a11y.high-contrast(black-on-white, off) {
@@ -356,7 +356,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
 }
 
 .mat-checkbox-mixedmark {
-  $height: math.floor($_mat-checkbox-mark-stroke-size);
+  $height: math.floor($_mark-stroke-size);
 
   width: calc(100% - 6px);
   height: $height;
@@ -375,14 +375,14 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * checkbox-common.$size !default;
   .mat-checkbox-inner-container {
     order: 1;
     margin: {
-      left: $_mat-checkbox-item-spacing;
+      left: $_item-spacing;
       right: auto;
     }
 
     [dir='rtl'] & {
       margin: {
         left: auto;
-        right: $_mat-checkbox-item-spacing;
+        right: $_item-spacing;
       }
     }
   }

@@ -5,7 +5,7 @@
 @mixin color($config-or-theme) {
   $config: theming.get-color-config($config-or-theme);
   $border-color: theming.get-color-from-palette(map.get($config, primary));
-  @include _mat-strong-focus-indicators-border-color($border-color);
+  @include _border-color($border-color);
 }
 
 /// Mixin that sets the color of the focus indicators.
@@ -26,7 +26,7 @@
 // stylelint-disable-next-line material/theme-mixin-api
 @mixin theme($theme-or-color) {
   @if meta.type-of($theme-or-color) != 'map' {
-    @include _mat-strong-focus-indicators-border-color($theme-or-color);
+    @include _border-color($theme-or-color);
   }
   @else {
     $theme: theming.private-legacy-get-theme($theme-or-color);
@@ -40,7 +40,7 @@
 }
 
 // Mixin that applies the border color for the focus indicators.
-@mixin _mat-strong-focus-indicators-border-color($color) {
+@mixin _border-color($color) {
   .mat-focus-indicator::before {
     border-color: $color;
   }

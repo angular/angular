@@ -16,7 +16,7 @@ $small-size: $default-size - 6;
 $large-size: $default-size + 6;
 
 // Mixin for building offset given different sizes
-@mixin _mat-badge-size($size) {
+@mixin _badge-size($size) {
   .mat-badge-content {
     width: $size;
     height: $size;
@@ -180,13 +180,13 @@ $large-size: $default-size + 6;
   }
 
   .mat-badge-small {
-    @include _mat-badge-size($small-size);
+    @include _badge-size($small-size);
   }
   .mat-badge-medium {
-    @include _mat-badge-size($default-size);
+    @include _badge-size($default-size);
   }
   .mat-badge-large {
-    @include _mat-badge-size($large-size);
+    @include _badge-size($large-size);
   }
 }
 
@@ -209,7 +209,7 @@ $large-size: $default-size + 6;
   }
 }
 
-@mixin _mat-badge-density($config-or-theme) {}
+@mixin _density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -222,7 +222,7 @@ $large-size: $default-size + 6;
       @include color($color);
     }
     @if $density != null {
-      @include _mat-badge-density($density);
+      @include _density($density);
     }
     @if $typography != null {
       @include typography($typography);

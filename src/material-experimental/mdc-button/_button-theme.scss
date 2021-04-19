@@ -19,7 +19,7 @@ $mat-button-state-target: '.mdc-button__ripple';
 $mat-fab-state-target: '.mdc-fab__ripple';
 
 // Applies the disabled theme color to the text color.
-@mixin _mat-button-disabled-color() {
+@mixin _disabled-color() {
   @include mdc-theme.prop(color,
       mdc-theme-color.ink-color-for-fill_(disabled, mdc-theme-color.$background));
 }
@@ -30,7 +30,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
 // previously set theme color, so it must be ordered after the theme styles.
 // TODO(andrewseguin): Discuss with the MDC team to see if we can avoid the :not(:disabled) by
 // manually styling disabled buttons with a [disabled] selector.
-@mixin _mat-button-apply-disabled-style() {
+@mixin _apply-disabled-style() {
   &[disabled][disabled] {
     @content;
   }
@@ -39,7 +39,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
 // The MDC button's ripple ink color is based on the theme color, not on the foreground base
 // which is what the ripple mixin uses. This creates a new theme that sets the color to the
 // foreground base to appropriately color the ink.
-@mixin _mat-button-ripple-ink-color($mdcColor) {
+@mixin _ripple-color($mdcColor) {
   @include ripple-theme.theme((
     foreground: (
       base: mdc-theme-color.prop-value($mdcColor)
@@ -51,7 +51,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
 // mixin `mdc-button--filled`.
 // TODO(andrewseguin): Discuss with the MDC team about providing a variable for the 0.12 value
 // or otherwise have a mixin we can call to apply this style for both button and anchors.
-@mixin _mat-button-disabled-background() {
+@mixin _disabled-background() {
   @include mdc-theme.prop(background-color,
       rgba(mdc-theme-color.prop-value(on-surface), 0.12));
 }
@@ -78,7 +78,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
         @include mdc-ripple-theme.states-base-color(primary,
           $query: mdc-helpers.$mat-theme-styles-query,
           $ripple-target: $mat-button-state-target);
-        @include _mat-button-ripple-ink-color(primary);
+        @include _ripple-color(primary);
       }
 
       &.mat-accent {
@@ -86,7 +86,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
         @include mdc-ripple-theme.states-base-color(secondary,
           $query: mdc-helpers.$mat-theme-styles-query,
           $ripple-target: $mat-button-state-target);
-        @include _mat-button-ripple-ink-color(secondary);
+        @include _ripple-color(secondary);
       }
 
       &.mat-warn {
@@ -94,7 +94,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
         @include mdc-ripple-theme.states-base-color(error,
           $query: mdc-helpers.$mat-theme-styles-query,
           $ripple-target: $mat-button-state-target);
-        @include _mat-button-ripple-ink-color(error);
+        @include _ripple-color(error);
       }
     }
 
@@ -117,7 +117,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
         @include mdc-ripple-theme.states-base-color(on-primary,
           $query: mdc-helpers.$mat-theme-styles-query,
           $ripple-target: $mat-button-state-target);
-        @include _mat-button-ripple-ink-color(on-primary);
+        @include _ripple-color(on-primary);
       }
 
       &.mat-accent {
@@ -128,7 +128,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
         @include mdc-ripple-theme.states-base-color(on-secondary,
           $query: mdc-helpers.$mat-theme-styles-query,
           $ripple-target: $mat-button-state-target);
-        @include _mat-button-ripple-ink-color(on-secondary);
+        @include _ripple-color(on-secondary);
       }
 
       &.mat-warn {
@@ -138,11 +138,11 @@ $mat-fab-state-target: '.mdc-fab__ripple';
         @include mdc-ripple-theme.states-base-color(on-error,
           $query: mdc-helpers.$mat-theme-styles-query,
           $ripple-target: $mat-button-state-target);
-        @include _mat-button-ripple-ink-color(on-error);
+        @include _ripple-color(on-error);
       }
 
-      @include _mat-button-apply-disabled-style() {
-        @include _mat-button-disabled-background();
+      @include _apply-disabled-style() {
+        @include _disabled-background();
       }
     }
 
@@ -167,21 +167,21 @@ $mat-fab-state-target: '.mdc-fab__ripple';
           $query: mdc-helpers.$mat-theme-styles-query);
       }
 
-      @include _mat-button-apply-disabled-style() {
+      @include _apply-disabled-style() {
         @include mdc-theme.prop(border-color,
             mdc-theme-color.ink-color-for-fill_(disabled, mdc-theme-color.$background));
       }
     }
 
     .mat-mdc-raised-button {
-      @include _mat-button-apply-disabled-style() {
+      @include _apply-disabled-style() {
         @include mdc-elevation-theme.elevation(0, $query: mdc-helpers.$mat-theme-styles-query);
       }
     }
 
     .mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-unelevated-button, .mat-mdc-outlined-button {
-      @include _mat-button-apply-disabled-style() {
-        @include _mat-button-disabled-color();
+      @include _apply-disabled-style() {
+        @include _disabled-color();
       }
     }
 
@@ -249,7 +249,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
         @include mdc-fab-theme.container-color(primary,
           $query: mdc-helpers.$mat-theme-styles-query);
         @include mdc-fab-theme.ink-color(on-primary, $query: mdc-helpers.$mat-theme-styles-query);
-        @include _mat-button-ripple-ink-color(on-primary);
+        @include _ripple-color(on-primary);
       }
 
       &.mat-accent {
@@ -259,7 +259,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
         @include mdc-fab-theme.container-color(secondary,
           $query: mdc-helpers.$mat-theme-styles-query);
         @include mdc-fab-theme.ink-color(on-secondary, $query: mdc-helpers.$mat-theme-styles-query);
-        @include _mat-button-ripple-ink-color(on-secondary);
+        @include _ripple-color(on-secondary);
       }
 
       &.mat-warn {
@@ -268,12 +268,12 @@ $mat-fab-state-target: '.mdc-fab__ripple';
           $ripple-target: $mat-fab-state-target);
         @include mdc-fab-theme.container-color(error, $query: mdc-helpers.$mat-theme-styles-query);
         @include mdc-fab-theme.ink-color(on-error, $query: mdc-helpers.$mat-theme-styles-query);
-        @include _mat-button-ripple-ink-color(on-error);
+        @include _ripple-color(on-error);
       }
 
-      @include _mat-button-apply-disabled-style() {
-        @include _mat-button-disabled-color();
-        @include _mat-button-disabled-background();
+      @include _apply-disabled-style() {
+        @include _disabled-color();
+        @include _disabled-background();
         @include mdc-elevation-theme.elevation(0, $query: mdc-helpers.$mat-theme-styles-query);
       }
     }
@@ -324,7 +324,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
           $query: mdc-helpers.$mat-theme-styles-query,
           $ripple-target: $mat-button-state-target);
         @include mdc-icon-button.ink-color(primary, $query: mdc-helpers.$mat-theme-styles-query);
-        @include _mat-button-ripple-ink-color(primary);
+        @include _ripple-color(primary);
       }
 
       &.mat-accent {
@@ -332,7 +332,7 @@ $mat-fab-state-target: '.mdc-fab__ripple';
           $query: mdc-helpers.$mat-theme-styles-query,
           $ripple-target: $mat-button-state-target);
         @include mdc-icon-button.ink-color(secondary, $query: mdc-helpers.$mat-theme-styles-query);
-        @include _mat-button-ripple-ink-color(secondary);
+        @include _ripple-color(secondary);
       }
 
       &.mat-warn {
@@ -340,11 +340,11 @@ $mat-fab-state-target: '.mdc-fab__ripple';
           $query: mdc-helpers.$mat-theme-styles-query,
           $ripple-target: $mat-button-state-target);
         @include mdc-icon-button.ink-color(error, $query: mdc-helpers.$mat-theme-styles-query);
-        @include _mat-button-ripple-ink-color(error);
+        @include _ripple-color(error);
       }
 
-      @include _mat-button-apply-disabled-style() {
-        @include _mat-button-disabled-color();
+      @include _apply-disabled-style() {
+        @include _disabled-color();
       }
     }
 

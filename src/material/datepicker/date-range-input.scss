@@ -4,7 +4,7 @@
 $date-range-input-separator-spacing: 4px;
 $date-range-input-part-max-width: calc(50% - #{$date-range-input-separator-spacing});
 
-@mixin _mat-date-range-input-placeholder-transition($property) {
+@mixin _placeholder-transition($property) {
   transition: #{$property} variables.$swift-ease-out-duration variables.$swift-ease-out-duration / 3
       variables.$swift-ease-out-timing-function;
 }
@@ -23,7 +23,7 @@ $date-range-input-part-max-width: calc(50% - #{$date-range-input-separator-spaci
 
 // Text shown between the two inputs.
 .mat-date-range-input-separator {
-  @include _mat-date-range-input-placeholder-transition(opacity);
+  @include _placeholder-transition(opacity);
   margin: 0 $date-range-input-separator-spacing;
 }
 
@@ -65,7 +65,7 @@ $date-range-input-part-max-width: calc(50% - #{$date-range-input-separator-spaci
   }
 
   @include vendor-prefixes.input-placeholder {
-    @include _mat-date-range-input-placeholder-transition(color);
+    @include _placeholder-transition(color);
   }
 
   .mat-form-field-hide-placeholder &,

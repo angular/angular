@@ -3,7 +3,7 @@
 // The bottom sheet minimum width on larger screen sizes is based
 // on increments of the toolbar, according to the spec. See:
 // https://material.io/guidelines/components/bottom-sheets.html#bottom-sheets-specs
-$_mat-bottom-sheet-width-increment: 64px;
+$_width-increment: 64px;
 $container-vertical-padding: 8px !default;
 $container-horizontal-padding: 16px !default;
 
@@ -30,18 +30,18 @@ $container-horizontal-padding: 16px !default;
 
 .mat-bottom-sheet-container-medium {
   @extend %_mat-bottom-sheet-container-border-radius;
-  min-width: $_mat-bottom-sheet-width-increment * 6;
-  max-width: calc(100vw - #{$_mat-bottom-sheet-width-increment * 2});
+  min-width: $_width-increment * 6;
+  max-width: calc(100vw - #{$_width-increment * 2});
 }
 
 .mat-bottom-sheet-container-large {
   @extend %_mat-bottom-sheet-container-border-radius;
-  min-width: $_mat-bottom-sheet-width-increment * 8;
-  max-width: calc(100vw - #{$_mat-bottom-sheet-width-increment * 4});
+  min-width: $_width-increment * 8;
+  max-width: calc(100vw - #{$_width-increment * 4});
 }
 
 .mat-bottom-sheet-container-xlarge {
   @extend %_mat-bottom-sheet-container-border-radius;
-  min-width: $_mat-bottom-sheet-width-increment * 9;
-  max-width: calc(100vw - #{$_mat-bottom-sheet-width-increment * 6});
+  min-width: $_width-increment * 9;
+  max-width: calc(100vw - #{$_width-increment * 6});
 }

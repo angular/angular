@@ -38,7 +38,7 @@ $handset-vertical-padding:
   }
 }
 
-@mixin _mat-tooltip-density($config-or-theme) {}
+@mixin _density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -51,7 +51,7 @@ $handset-vertical-padding:
       @include color($color);
     }
     @if $density != null {
-      @include _mat-tooltip-density($density);
+      @include _density($density);
     }
     @if $typography != null {
       @include typography($typography);

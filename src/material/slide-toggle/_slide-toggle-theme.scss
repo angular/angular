@@ -5,7 +5,7 @@
 @use '../core/typography/typography';
 @use '../core/typography/typography-utils';
 
-@mixin _mat-slide-toggle-checked($palette, $thumb-checked-hue) {
+@mixin _checked-color($palette, $thumb-checked-hue) {
   &.mat-checked {
     .mat-slide-toggle-thumb {
       background-color: theming.get-color-from-palette($palette, $thumb-checked-hue);
@@ -47,14 +47,14 @@
   $ripple-unchecked-color: theming.get-color-from-palette($foreground, base);
 
   .mat-slide-toggle {
-    @include _mat-slide-toggle-checked($accent, $thumb-checked-hue);
+    @include _checked-color($accent, $thumb-checked-hue);
 
     &.mat-primary {
-      @include _mat-slide-toggle-checked($primary, $thumb-checked-hue);
+      @include _checked-color($primary, $thumb-checked-hue);
     }
 
     &.mat-warn {
-      @include _mat-slide-toggle-checked($warn, $thumb-checked-hue);
+      @include _checked-color($warn, $thumb-checked-hue);
     }
 
     &:not(.mat-checked) .mat-ripple-element {
@@ -82,7 +82,7 @@
   }
 }
 
-@mixin _mat-slide-toggle-density($config-or-theme) {}
+@mixin _density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -95,7 +95,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _mat-slide-toggle-density($density);
+      @include _density($density);
     }
     @if $typography != null {
       @include typography($typography);

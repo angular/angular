@@ -42,7 +42,7 @@
 $legacy-dedupe: 0;
 
 // Applies a floating label above the form field control itself.
-@mixin _mat-form-field-legacy-label-floating($font-scale, $infix-padding, $infix-margin-top) {
+@mixin _label-floating($font-scale, $infix-padding, $infix-margin-top) {
   // We use perspective to fix the text blurriness as described here:
   // http://www.useragentman.com/blog/2014/05/04/fixing-typography-inside-of-2-d-css-transforms/
   // This results in a small jitter after the label floats on Firefox, which the
@@ -60,7 +60,7 @@ $legacy-dedupe: 0;
 }
 
 // Same as mixin above, but omits the translateZ for printing purposes.
-@mixin _mat-form-field-legacy-label-floating-print($font-scale, $infix-padding, $infix-margin-top) {
+@mixin _label-floating-print($font-scale, $infix-padding, $infix-margin-top) {
   // This results in a small jitter after the label floats on Firefox, which the
   // translateZ fixes.
   transform: translateY(-$infix-margin-top - $infix-padding + $legacy-dedupe)
@@ -108,14 +108,14 @@ $legacy-dedupe: 0;
     &.mat-form-field-can-float {
       &.mat-form-field-should-float .mat-form-field-label,
       .mat-input-server:focus + .mat-form-field-label-wrapper .mat-form-field-label {
-        @include _mat-form-field-legacy-label-floating(
+        @include _label-floating(
                 $subscript-font-scale, $infix-padding, $infix-margin-top);
       }
 
       // @breaking-change 8.0.0 will rely on AutofillMonitor instead.
       .mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-label-wrapper
       .mat-form-field-label {
-        @include _mat-form-field-legacy-label-floating(
+        @include _label-floating(
                 $subscript-font-scale, $infix-padding, $infix-margin-top);
       }
 
@@ -123,7 +123,7 @@ $legacy-dedupe: 0;
       // (used as a pure CSS stand-in for mat-form-field-should-float).
       .mat-input-server[label]:not(:label-shown) + .mat-form-field-label-wrapper
       .mat-form-field-label {
-        @include _mat-form-field-legacy-label-floating(
+        @include _label-floating(
                 $subscript-font-scale, $infix-padding, $infix-margin-top);
       }
     }
@@ -154,14 +154,14 @@ $legacy-dedupe: 0;
       &.mat-form-field-can-float {
         &.mat-form-field-should-float .mat-form-field-label,
         .mat-input-server:focus + .mat-form-field-label-wrapper .mat-form-field-label {
-          @include _mat-form-field-legacy-label-floating-print(
+          @include _label-floating-print(
                   $subscript-font-scale, $infix-padding, $infix-margin-top);
         }
 
         // @breaking-change 8.0.0 will rely on AutofillMonitor instead.
         .mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-label-wrapper
         .mat-form-field-label {
-          @include _mat-form-field-legacy-label-floating-print(
+          @include _label-floating-print(
                   $subscript-font-scale, $infix-padding, $infix-margin-top);
         }
 
@@ -169,7 +169,7 @@ $legacy-dedupe: 0;
         // (used as a pure CSS stand-in for mat-form-field-should-float).
         .mat-input-server[label]:not(:label-shown) + .mat-form-field-label-wrapper
         .mat-form-field-label {
-          @include _mat-form-field-legacy-label-floating-print(
+          @include _label-floating-print(
                   $subscript-font-scale, $infix-padding, $infix-margin-top);
         }
       }

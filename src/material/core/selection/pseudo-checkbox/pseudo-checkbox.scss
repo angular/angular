@@ -3,10 +3,10 @@
 @use '../../style/variables';
 
 // Padding inside of a pseudo checkbox.
-$_mat-pseudo-checkbox-padding: checkbox-common.$border-width * 2;
+$_padding: checkbox-common.$border-width * 2;
 
 // Size of the checkmark in a pseudo checkbox.
-$_mat-pseudo-checkmark-size: checkbox-common.$size - (2 * $_mat-pseudo-checkbox-padding);
+$_checkmark-size: checkbox-common.$size - (2 * $_padding);
 
 
 .mat-pseudo-checkbox {
@@ -58,11 +58,11 @@ $_mat-pseudo-checkmark-size: checkbox-common.$size - (2 * $_mat-pseudo-checkbox-
 }
 
 .mat-pseudo-checkbox-checked::after {
-  top: (checkbox-common.$size / 2) - ($_mat-pseudo-checkmark-size / 4) -
+  top: (checkbox-common.$size / 2) - ($_checkmark-size / 4) -
       (checkbox-common.$size / 10) - checkbox-common.$border-width;
-  left: $_mat-pseudo-checkbox-padding - checkbox-common.$border-width * 1.5;
-  width: $_mat-pseudo-checkmark-size;
-  height: ($_mat-pseudo-checkmark-size - checkbox-common.$border-width) / 2;
+  left: $_padding - checkbox-common.$border-width * 1.5;
+  width: $_checkmark-size;
+  height: ($_checkmark-size - checkbox-common.$border-width) / 2;
   border-left: checkbox-common.$border-width solid currentColor;
   transform: rotate(-45deg);
   opacity: 1;

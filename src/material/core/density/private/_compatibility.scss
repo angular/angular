@@ -8,11 +8,11 @@
 // system, and to support arbitrary properties in a density configuration.
 // https://github.com/material-components/material-components-web/blob/master/packages/mdc-density
 
-$_mat-density-interval: 4px !default;
-$_mat-density-minimum-scale: minimum !default;
-$_mat-density-maximum-scale: maximum !default;
-$_mat-density-supported-scales: (default, minimum, maximum) !default;
-$_mat-density-default-scale: 0 !default;
+$_density-interval: 4px !default;
+$_minimum-scale: minimum !default;
+$_maximum-scale: maximum !default;
+$_supported-scales: (default, $_minimum-scale, $_maximum-scale) !default;
+$_default-scale: 0 !default;
 
 // Whether density should be generated at root. This will be temporarily set to `true`
 // whenever density styles for legacy themes are generated.
@@ -47,8 +47,8 @@ $private-density-generate-styles: true;
 
 @function private-density-prop-value($density-config, $density-scale, $property-name) {
   @if (meta.type-of($density-scale) == 'string' and
-      list.index($list: $_mat-density-supported-scales, $value: $density-scale) == null) {
-    @error 'mat-density: Supported density scales #{$_mat-density-supported-scales}, '  +
+      list.index($list: $_supported-scales, $value: $density-scale) == null) {
+    @error 'mat-density: Supported density scales #{$_supported-scales}, '  +
       'but received #{$density-scale}.';
   }
 
@@ -59,11 +59,11 @@ $private-density-generate-styles: true;
     $value: map.get($property-scale-map, $density-scale);
   }
   @else {
-    $value: map.get($property-scale-map, default) + $density-scale * $_mat-density-interval;
+    $value: map.get($property-scale-map, default) + $density-scale * $_density-interval;
   }
 
-  $min-value: map.get($property-scale-map, $_mat-density-minimum-scale);
-  $max-value: map.get($property-scale-map, $_mat-density-maximum-scale);
+  $min-value: map.get($property-scale-map, $_minimum-scale);
+  $max-value: map.get($property-scale-map, $_maximum-scale);
 
   @if ($value < $min-value or $value > $max-value) {
     @error 'mat-density: #{$property-name} must be between #{$min-value} and ' +

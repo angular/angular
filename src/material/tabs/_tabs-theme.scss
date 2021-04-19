@@ -58,13 +58,13 @@
     @each $name, $color in $theme-colors {
       // Set the foreground color of the tabs
       &.mat-#{$name} {
-        @include _mat-tab-label-focus($color);
-        @include _mat-ink-bar($color);
+        @include _label-focus-color($color);
+        @include _ink-bar-color($color);
 
         // Override ink bar when background color is the same
         &.mat-background-#{$name} {
           > .mat-tab-header, > .mat-tab-link-container {
-            @include _mat-ink-bar($color, default-contrast);
+            @include _ink-bar-color($color, default-contrast);
           }
         }
       }
@@ -73,20 +73,20 @@
     @each $name, $color in $theme-colors {
       // Set background color of the tabs and override focus color
       &.mat-background-#{$name} {
-        @include _mat-tab-label-focus($color);
-        @include _mat-tabs-background($color);
+        @include _label-focus-color($color);
+        @include _tabs-background($color);
       }
     }
   }
 }
 
-@mixin _mat-ink-bar($color, $hue: default) {
+@mixin _ink-bar-color($color, $hue: default) {
   .mat-ink-bar {
     background-color: theming.get-color-from-palette($color, $hue);
   }
 }
 
-@mixin _mat-tab-label-focus($tab-focus-color) {
+@mixin _label-focus-color($tab-focus-color) {
   .mat-tab-label,
   .mat-tab-link {
     &.cdk-keyboard-focused,
@@ -98,7 +98,7 @@
   }
 }
 
-@mixin _mat-tabs-background($background-color) {
+@mixin _tabs-background($background-color) {
   // Note that these selectors target direct descendants so
   // that the styles don't apply to any nested tab groups.
 
@@ -151,7 +151,7 @@
   }
 }
 
-@mixin _mat-tabs-density($config-or-theme) {}
+@mixin _density($config-or-theme) {}
 
 @mixin theme($theme-or-color-config) {
   $theme: theming.private-legacy-get-theme($theme-or-color-config);
@@ -164,7 +164,7 @@
       @include color($color);
     }
     @if $density != null {
-      @include _mat-tabs-density($density);
+      @include _density($density);
     }
     @if $typography != null {
       @include typography($typography);

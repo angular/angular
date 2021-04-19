@@ -10,7 +10,7 @@
   // removed when measuring is complete. We use `!important` rules here to make sure user-specified
   // rules do not interfere with the measurement.
   textarea.cdk-textarea-autosize-measuring {
-    @include _cdk-textarea-autosize-measuring-base;
+    @include _autosize-measuring-base;
     height: auto !important;
     overflow: hidden !important;
   }
@@ -22,7 +22,7 @@
   // browsers they are, e.g. Chrome detects longer text and IE does't resize back to normal.
   // Identical issue report: https://bugzilla.mozilla.org/show_bug.cgi?id=448784
   textarea.cdk-textarea-autosize-measuring-firefox {
-    @include _cdk-textarea-autosize-measuring-base;
+    @include _autosize-measuring-base;
     height: 0 !important;
   }
 }
@@ -47,7 +47,7 @@
   }
 }
 
-@mixin _cdk-textarea-autosize-measuring-base {
+@mixin _autosize-measuring-base {
   // Having 2px top and bottom padding seems to fix a bug where Chrome gets an incorrect
   // measurement. We just have to account for it later and subtract it off the final result.
   padding: 2px 0 !important;
@@ -79,8 +79,7 @@ $autofill-color-frame-count: 0;
                cdk-text-field-autofill-color-#{$autofill-color-frame-count} both;
   }
 
-  $autofill-color-frame-count:
-      $autofill-color-frame-count + 1 !global;
+  $autofill-color-frame-count: $autofill-color-frame-count + 1 !global;
 }
 
 // @deprecated Use `autosize` and `autofill` instead.

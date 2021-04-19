@@ -7,9 +7,8 @@
 $stroke-rotate-fallback-duration: 10 * 1000ms !default;
 $stroke-rotate-fallback-ease: cubic-bezier(0.87, 0.03, 0.33, 1) !default;
 
-$_mat-progress-spinner-default-radius: 45px;
-$_mat-progress-spinner-default-circumference:
-  variables.$pi * $_mat-progress-spinner-default-radius * 2;
+$_default-radius: 45px;
+$_default-circumference: variables.$pi * $_default-radius * 2;
 
 .mat-progress-spinner {
   display: block;
@@ -85,8 +84,8 @@ $_mat-progress-spinner-default-circumference:
 }
 
 @at-root {
-  $start: (1 - 0.05) * $_mat-progress-spinner-default-circumference; // start the animation at 5%
-  $end: (1 - 0.8) * $_mat-progress-spinner-default-circumference; // end the animation at 80%
+  $start: (1 - 0.05) * $_default-circumference; // start the animation at 5%
+  $end: (1 - 0.8) * $_default-circumference; // end the animation at 80%
   $fallback-iterations: 4;
 
   @keyframes mat-progress-spinner-stroke-rotate-100 {

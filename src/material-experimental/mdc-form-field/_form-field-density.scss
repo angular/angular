@@ -7,7 +7,7 @@
 // Mixin that sets the vertical spacing for the infix container of filled form fields.
 // We need to apply spacing to the infix container because we removed the input padding
 // provided by MDC in order to support arbitrary form-field controls.
-@mixin _mat-mdc-form-field-infix-vertical-spacing-filled($with-label-padding, $no-label-padding) {
+@mixin _infix-vertical-spacing-filled($with-label-padding, $no-label-padding) {
   .mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined) .mat-mdc-form-field-infix {
     padding-top: map.get($with-label-padding, top);
     padding-bottom: map.get($with-label-padding, bottom);
@@ -23,7 +23,7 @@
 // Mixin that sets the vertical spacing for the infix container of outlined form fields.
 // We need to apply spacing to the infix container because we removed the input padding
 // provided by MDC in order to support arbitrary form-field controls.
-@mixin _mat-mdc-form-field-infix-vertical-spacing-outlined($padding) {
+@mixin _infix-vertical-spacing-outlined($padding) {
   .mat-mdc-text-field-wrapper.mdc-text-field--outlined .mat-mdc-form-field-infix {
     padding-top: map.get($padding, top);
     padding-bottom: map.get($padding, bottom);
@@ -98,13 +98,13 @@
   // aligned as if there is no label. This is done similarly in MDC and is specified in the
   // Material Design specification. Outline form fields position the control as if there is no
   // label. This is because the label overflows the form-field and doesn't need space at the top.
-  @include _mat-mdc-form-field-infix-vertical-spacing-outlined($no-label-padding);
+  @include _infix-vertical-spacing-outlined($no-label-padding);
 
   // MDC hides labels for filled form fields when the form field height decreases. We match
   // this behavior in our custom density styles.
   @if $hide-filled-floating-label {
     // Update the spacing for filled form fields to account for the hidden floating label.
-    @include _mat-mdc-form-field-infix-vertical-spacing-filled(
+    @include _infix-vertical-spacing-filled(
           $no-label-padding, $no-label-padding);
     .mat-mdc-text-field-wrapper:not(.mdc-text-field--outlined) .mdc-floating-label {
         display: none;
@@ -114,7 +114,7 @@
     // By default, filled form fields align their controls differently based on whether there
     // is a label or not. MDC does this too, but we cannot rely on their styles as we support
     // arbitrary form field controls and MDC only applies their spacing to the `<input>` elements.
-    @include _mat-mdc-form-field-infix-vertical-spacing-filled(
+    @include _infix-vertical-spacing-filled(
           $with-label-padding, $no-label-padding);
   }
 }
