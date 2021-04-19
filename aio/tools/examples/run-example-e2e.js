@@ -13,9 +13,7 @@ shelljs.set('-e');
 process.env.CHROME_BIN = require('puppeteer').executablePath();
 
 const AIO_PATH = path.join(__dirname, '../../');
-const SHARED_PATH = path.join(__dirname, '/shared');
 const EXAMPLES_PATH = path.join(AIO_PATH, './content/examples/');
-const PROTRACTOR_CONFIG_FILENAME = path.join(__dirname, './shared/protractor.config.js');
 const SJS_SPEC_FILENAME = 'e2e-spec.ts';
 const CLI_SPEC_FILENAME = 'e2e/src/app.e2e-spec.ts';
 const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
@@ -194,13 +192,7 @@ function runProtractorSystemJS(prepPromise, appDir, appRunSpawnInfo, outputFile)
 
         // Start protractor.
         console.log(`\n\n=========== Running aio example tests for: ${appDir}`);
-        const spawnInfo = spawnExt(
-            'yarn',
-            [
-              'protractor', PROTRACTOR_CONFIG_FILENAME, `--specs=${specFilename}`,
-              '--params.appDir=' + appDir, '--params.outputFile=' + outputFile
-            ],
-            {cwd: SHARED_PATH});
+        const spawnInfo = spawnExt('yarn', [ 'protractor', '--params.outputFile=' + outputFile ], {cwd: appDir});
 
         spawnInfo.proc.stderr.on('data', function(data) {
           transpileError = transpileError || /npm ERR! Exit status 100/.test(data.toString());
