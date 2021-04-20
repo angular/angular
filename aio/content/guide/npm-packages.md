@@ -121,6 +121,8 @@ Package name                               | Description
 **@types/... ** | TypeScript definition files for 3rd party libraries such as Jasmine and Node.js.
 **jasmine/... ** | Packages to support the [Jasmine](https://jasmine.github.io/) test library.
 **karma/... ** | Packages to support the [karma](https://www.npmjs.com/package/karma) test runner.
+[**ts-node**](https://www.npmjs.com/package/ts-node) | TypeScript execution environment and REPL for Node.js.
+[**tslint**](https://www.npmjs.com/package/tslint) | A static analysis tool that checks TypeScript code for readability, maintainability, and functionality errors.
 [**typescript**](https://www.npmjs.com/package/typescript) | The TypeScript language server, including the *tsc* TypeScript compiler.
 
 
