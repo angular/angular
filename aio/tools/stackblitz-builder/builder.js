@@ -254,7 +254,7 @@ class StackblitzBuilder {
 
   _createStackblitzHtml(config, postData) {
     const baseHtml = this._createBaseStackblitzHtml(config);
-    const doc = jsdom.jsdom(baseHtml);
+    const doc = new jsdom.JSDOM(baseHtml).window.document;
     const form = doc.querySelector('form');
 
     for(const [key, value] of Object.entries(postData)) {
