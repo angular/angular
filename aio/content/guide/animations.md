@@ -286,7 +286,7 @@ What it does
 
 <tr>
 <td><code>query()</code></td>
-<td>Use to find one or more inner HTML elements within the current element. </td>
+<td>Finds one or more inner HTML elements within the current element. </td>
 </tr>
 
 <tr>
