@@ -375,6 +375,18 @@
             "title": "Angular Material",
             "url": "https://material.angular.io/"
           },
+          "mdb5": {
+            "desc": "Free components, templates & plugins for the latest Bootstrap 5 styled in accordance with Material Design 2.0 (guidelines introduced in 2020)",
+            "logo": "",
+            "title": "Angular & Material Design 2.0 for Bootstrap 5",
+            "url": "https://mdbootstrap.com/docs/b5/angular/"
+          },
+          "mdb4": {
+            "desc": "Free components, templates & plugins for the latest Bootstrap 4 styled in accordance with Material Design (guidelines introduced in 2015)",
+            "logo": "",
+            "title": "Angular & Material Design for Bootstrap 4",
+            "url": "https://mdbootstrap.com/docs/angular/"
+          },
           "mcc": {
             "desc": "Material components made by the community",
             "logo": "",
