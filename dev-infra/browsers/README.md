@@ -51,7 +51,7 @@ The process of updating the Chrome or Firefox version is not straightforward, bu
     > The version of Chrome does not necessarily correspond exactly with the version of ChromeDriver.
     > For example, you might have to use ChromeDriver v87.0.4280.x to drive Chrome v87.0.4272.x.
 
-3. Update `scripts/puppeteer-chromedriver-versions.js` to include and entry with the new version of puppeteer as key and the new version of ChromeDriver as value (as determined in the two previous steps).
+3. Update `scripts/puppeteer-chromedriver-versions.js` to include an entry with the new version of puppeteer as key and the new version of ChromeDriver as value (as determined in the two previous steps).
 
 4. Update all of the puppeteer versions throughout the repo:
 

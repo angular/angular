@@ -35,7 +35,7 @@ export class ReleaseTool {
 
   constructor(
       protected _config: ReleaseConfig, protected _github: GithubConfig,
-      protected _githubToken: string, protected _projectRoot: string) {}
+      protected _projectRoot: string) {}
 
   /** Runs the interactive release tool. */
   async run(): Promise<CompletionState> {

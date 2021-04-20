@@ -622,8 +622,8 @@ var GitClient = /** @class */ (function () {
  * for each new line. Git commands typically return multiple output values for a command a set of
  * strings separated by new lines.
  *
- * Note: This is specifically created as a locally available function for usage as convience utility
- * within `GitClient`'s methods to create outputs as array.
+ * Note: This is specifically created as a locally available function for usage as convenience
+ * utility within `GitClient`'s methods to create outputs as array.
  */
 function gitOutputAsArray(gitCommandResult) {
     return gitCommandResult.stdout.split('\n').map(function (x) { return x.trim(); }).filter(function (x) { return !!x; });
@@ -4276,9 +4276,7 @@ var PullRequestMergeTask = /** @class */ (function () {
  * See {@link GithubApiMergeStrategy} and {@link AutosquashMergeStrategy}
  *
  * @param prNumber Number of the pull request that should be merged.
- * @param githubToken Github token used for merging (i.e. fetching and pushing)
- * @param projectRoot Path to the local Git project that is used for merging.
- * @param config Configuration for merging pull requests.
+ * @param flags Configuration options for merging pull requests.
  */
 function mergePullRequest(prNumber, flags) {
     return tslib.__awaiter(this, void 0, void 0, function () {
@@ -4413,9 +4411,9 @@ function mergePullRequest(prNumber, flags) {
     });
 }
 /**
- * Creates the pull request merge task from the given Github token, project root
- * and optional explicit configuration. An explicit configuration can be specified
- * when the merge script is used outside of a `ng-dev` configured repository.
+ * Creates the pull request merge task using the given configuration options. Explicit configuration
+ * options can be specified when the merge script is used outside of an `ng-dev` configured
+ * repository.
  */
 function createPullRequestMergeTask(flags) {
     return tslib.__awaiter(this, void 0, void 0, function () {
@@ -6621,10 +6619,9 @@ var CompletionState;
     CompletionState[CompletionState["MANUALLY_ABORTED"] = 2] = "MANUALLY_ABORTED";
 })(CompletionState || (CompletionState = {}));
 class ReleaseTool {
-    constructor(_config, _github, _githubToken, _projectRoot) {
+    constructor(_config, _github, _projectRoot) {
         this._config = _config;
         this._github = _github;
-        this._githubToken = _githubToken;
         this._projectRoot = _projectRoot;
         /** The singleton instance of the GitClient. */
         this._git = GitClient.getAuthenticatedInstance();
@@ -6784,13 +6781,13 @@ function builder$8(argv) {
     return addGithubTokenOption(argv);
 }
 /** Yargs command handler for staging a release. */
-function handler$8(args) {
+function handler$8() {
     return tslib.__awaiter(this, void 0, void 0, function* () {
         const git = GitClient.getInstance();
         const config = getConfig();
         const releaseConfig = getReleaseConfig(config);
         const projectDir = git.baseDir;
-        const task = new ReleaseTool(releaseConfig, config.github, args.githubToken, projectDir);
+        const task = new ReleaseTool(releaseConfig, config.github, projectDir);
         const result = yield task.run();
         switch (result) {
             case CompletionState.FATAL_ERROR:

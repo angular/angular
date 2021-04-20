@@ -87,7 +87,6 @@ h6 {
 p,
 ol,
 ul,
-ol,
 li,
 input,
 a {
@@ -211,7 +210,6 @@ code {
       > a {
         &[href^="http:"],
         &[href^="https:"] {
-          display: inline-flex;
           padding-right: calc(1em + 0.25rem);
           position: relative;
 

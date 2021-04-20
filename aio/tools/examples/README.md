@@ -118,12 +118,10 @@ This will be picked up by the default testing command (see the [example configur
 If you are using a custom test command, make sure e2e specs are picked up (if applicable).
 
 For SystemJS-based examples, create an `e2e-spec.ts` file inside the example root folder.
-These apps will be tested with the following command:
+These apps will be tested with the following command (and an optional `outputFile` to receive log messages):
 
 ```sh
-yarn protractor aio/tools/examples/shared/protractor.config.js \
-  --specs=<example-folder>/e2e-spec.ts \
-  --params.appDir=<example-folder>
+yarn protractor [--params.outputFile=path/to/logfile.txt]
 ```
 
 

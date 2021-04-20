@@ -145,7 +145,8 @@ export interface ContentChildrenDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
-   * * **descendants** - True to include all descendants, otherwise include only direct children.
+   * * **descendants** - If `true` include all descendants of the element. If `false` then only
+   * query direct children of the element.
    * * **emitDistinctChangesOnly** - The ` QueryList#changes` observable will emit new values only
    *   if the QueryList result has changed. When `false` the `changes` observable might emit even
    *   if the QueryList has not changed.
