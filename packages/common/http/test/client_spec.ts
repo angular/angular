@@ -177,6 +177,30 @@ import {toArray} from 'rxjs/operators';
         testReq.flush('hello world');
       });
     });
+    describe('makes a DELETE request', () => {
+      it('with body', done => {
+        const body = {data: 'json body'};
+        client.delete('/test', {observe: 'response', responseType: 'text', body: body})
+            .subscribe(res => {
+              expect(res.ok).toBeTruthy();
+              expect(res.status).toBe(200);
+              done();
+            });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(body);
+        testReq.flush('hello world');
+      });
+      it('without body', done => {
+        client.delete('/test', {observe: 'response', responseType: 'text'}).subscribe(res => {
+          expect(res.ok).toBeTruthy();
+          expect(res.status).toBe(200);
+          done();
+        });
+        const testReq = backend.expectOne('/test');
+        expect(testReq.request.body).toBe(null);
+        testReq.flush('hello world');
+      });
+    });
     describe('makes a JSONP request', () => {
       it('with properly set method and callback', done => {
         client.jsonp('/test', 'myCallback').subscribe(() => done());
