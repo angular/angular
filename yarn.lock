@@ -3462,10 +3462,10 @@ cldr-data-downloader@^0.3.5:
     request "~2.87.0"
     request-progress "0.3.1"
 
-cldr@6.0.0:
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/cldr/-/cldr-6.0.0.tgz#a12c3b8d19d9525d1ac9db5027709064b16e2093"
-  integrity sha512-gXf4exsXJmq50Jq3dbc4oTKZMFJvgaC4J+4wWfsjM6I+ZVyu9VIv4dnu2epDfaod1uB1POcT+UpB4MzzspJbcQ==
+cldr@6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/cldr/-/cldr-6.1.0.tgz#9a385e708ede18762d245b8459565fa55eab5565"
+  integrity sha512-VOTKD20z054xBw1p6Ax1XqM1PEJ96JAVlTHhPH4AgX8E5uaONzuxhoaI2LYcqD1a2pBrX69NGlW6hB0SfaCGlA==
   dependencies:
     escodegen "^2.0.0"
     esprima "^4.0.1"
@@ -3474,7 +3474,7 @@ cldr@6.0.0:
     pegjs "^0.10.0"
     seq "^0.3.5"
     unicoderegexp "^0.4.1"
-    xmldom "^0.4.0"
+    xmldom "^0.6.0"
     xpath "^0.0.32"
 
 cldrjs@0.5.5:
@@ -14274,15 +14274,15 @@ xmlbuilder@~11.0.0:
   resolved "https://registry.yarnpkg.com/xmlbuilder/-/xmlbuilder-11.0.1.tgz#be9bae1c8a046e76b31127726347d0ad7002beb3"
   integrity sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==
 
-xmldom@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.4.0.tgz#8771e482a333af44587e30ce026f0998c23f3830"
-  integrity sha512-2E93k08T30Ugs+34HBSTQLVtpi6mCddaY8uO+pMNk1pqSjV5vElzn4mmh6KLxN3hki8rNcHSYzILoh3TEWORvA==
-
 xmldom@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.5.0.tgz#193cb96b84aa3486127ea6272c4596354cb4962e"
   integrity sha512-Foaj5FXVzgn7xFzsKeNIde9g6aFBxTPi37iwsno8QvApmtg7KYrr+OPyRHcJF7dud2a5nGRBXK3n0dL62Gf7PA==
+
+xmldom@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.6.0.tgz#43a96ecb8beece991cef382c08397d82d4d0c46f"
+  integrity sha512-iAcin401y58LckRZ0TkI4k0VSM1Qg0KGSc3i8rU+xrxe19A/BN1zHyVSJY7uoutVlaTSzYyk/v5AmkewAP7jtg==
 
 xmlhttprequest-ssl@~1.5.4:
   version "1.5.5"

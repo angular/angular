@@ -173,7 +173,7 @@
     "browserstacktunnel-wrapper": "^2.0.4",
     "check-side-effects": "0.0.23",
     "clang-format": "^1.4.0",
-    "cldr": "6.0.0",
+    "cldr": "6.1.0",
     "cldr-data-downloader": "^0.3.5",
     "cldrjs": "0.5.5",
     "cli-progress": "^3.7.0",
