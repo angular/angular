@@ -180,11 +180,12 @@ import {toArray} from 'rxjs/operators';
     describe('makes a DELETE request', () => {
       it('with body', done => {
         const body = {data: 'json body'};
-        client.delete('/test', {observe: 'response', responseType: 'text', body: body}).subscribe(res => {
-          expect(res.ok).toBeTruthy();
-          expect(res.status).toBe(200);
-          done();
-        });
+        client.delete('/test', {observe: 'response', responseType: 'text', body: body})
+            .subscribe(res => {
+              expect(res.ok).toBeTruthy();
+              expect(res.status).toBe(200);
+              done();
+            });
         const testReq = backend.expectOne('/test');
         expect(testReq.request.body).toBe(body);
         testReq.flush('hello world');
