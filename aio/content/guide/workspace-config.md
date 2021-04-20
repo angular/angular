@@ -108,7 +108,6 @@ The schemas configure options for the following builders.
 * dev-server
 * extract-i18n
 * karma
-* protractor
 * server
 * tslint
 

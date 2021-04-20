@@ -91,6 +91,4 @@ Keep current by following the [Angular blog](https://blog.angular.io/ "Angular b
 
 To support your UX/UI development, see [Angular Material](https://material.angular.io/ "Angular Material web site").
 
-To test your Angular applications, see [Angular Protractor](https://protractor.angular.io/ "Angular Protractor web site").
-
 The Angular community also has an extensive [network of third-party tools and libraries](resources "Angular resources list").

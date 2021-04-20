@@ -50,8 +50,8 @@ interface WaitCallback {
 
 /**
  * The Testability service provides testing hooks that can be accessed from
- * the browser and by services such as Protractor. Each bootstrapped Angular
- * application on the page will have an instance of Testability.
+ * the browser. Each bootstrapped Angular application on the page will have
+ * an instance of Testability.
  * @publicApi
  */
 @Injectable()
