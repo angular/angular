@@ -173,7 +173,6 @@ jobs:
           paths:
             - "node_modules"
       - run: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-      - run: npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
 
 This configuration caches `node_modules/` and uses [`npm run`](https://docs.npmjs.com/cli/run-script) to run CLI commands, because `@angular/cli` is not installed globally.
@@ -207,7 +206,6 @@ install:
 
 script:
   - npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-  - npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
 
 This does the same things as the CircleCI configuration, except that Travis doesn't come with Chrome, so use Chromium instead.
@@ -260,7 +258,6 @@ test:
     - export CHROME_BIN=/usr/bin/google-chrome
   script:
     - npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-    - npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
 
 This configuration caches `node_modules/` in the `install` job and re-uses the cached `node_modules/` in the `test` job.
@@ -290,14 +287,13 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14.x
-          
+
       - name: Setup
         run: npm ci
 
       - name: Test
         run: |
           npm test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
-          npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
 ```
 
 Step 3: [Sign up for GitHub](https://github.com/join) and [add your project](https://github.com/new). You'll need to push a new commit to trigger a build.
@@ -308,10 +304,9 @@ Step 4: Commit your changes and push them to your repository.
 
 ### Configure CLI for CI testing in Chrome
 
-When the CLI commands `ng test` and `ng e2e` are generally running the CI tests in your environment, you might still need to adjust your configuration to run the Chrome browser tests.
+While the CLI command `ng test` is generally running the CI tests in your environment, you might still need to adjust your configuration to run the Chrome browser tests.
 
-There are configuration files for both the [Karma JavaScript test runner](https://karma-runner.github.io/latest/config/configuration-file.html)
-and [Protractor](https://www.protractortest.org/#/api-overview) end-to-end testing tool,
+There is a configuration file for the [Karma JavaScript test runner](https://karma-runner.github.io/latest/config/configuration-file.html),
 which you must adjust to start Chrome without sandboxing.
 
 We'll be using [Headless Chrome](https://developers.google.com/web/updates/2017/04/headless-chrome#cli) in these examples.
@@ -327,25 +322,10 @@ customLaunchers: {
 },
 ```
 
-* In the root folder of your e2e tests project, create a new file named `protractor-ci.conf.js`. This new file extends the original `protractor.conf.js`.
-```
-const config = require('./protractor.conf').config;
-
-config.capabilities = {
-  browserName: 'chrome',
-  chromeOptions: {
-    args: ['--headless', '--no-sandbox']
-  }
-};
-
-exports.config = config;
-```
-
-Now you can run the following commands to use the `--no-sandbox` flag:
+Now you can run the following command to use the `--no-sandbox` flag:
 
 <code-example language="sh" class="code-shell">
   ng test --no-watch --no-progress --browsers=ChromeHeadlessCI
-  ng e2e --protractor-config=e2e/protractor-ci.conf.js
 </code-example>
 
 <div class="alert is-helpful">
@@ -367,5 +347,3 @@ After you've set up your app for testing, you may find the following testing  gu
 * [Testing pipes](guide/testing-pipes)&mdash;find out how to test attribute directives.
 * [Debugging tests](guide/test-debugging)&mdash;uncover common testing bugs.
 * [Testing utility APIs](guide/testing-utility-apis)&mdash;get familiar with Angular testing features.
-
-
