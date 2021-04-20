@@ -25,14 +25,19 @@ class StackblitzBuilder {
     // const stackblitzPaths = path.join(this.basePath, '**/testing/*stackblitz.json');
     const stackblitzPaths = path.join(this.basePath, '**/*stackblitz.json');
     const fileNames = globby.sync(stackblitzPaths, { ignore: ['**/node_modules/**'] });
+    let failed = false;
     fileNames.forEach((configFileName) => {
       try {
-        // console.log('***'+configFileName)
         this._buildStackblitzFrom(configFileName);
       } catch (e) {
+        failed = true;
         console.log(e);
       }
     });
+
+    if (failed) {
+      process.exit(1);
+    }
   }
 
   _addDependencies(config, postData) {
