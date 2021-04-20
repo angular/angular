@@ -9,7 +9,6 @@
 import {CommonModule} from '@angular/common';
 import {Component} from '@angular/core';
 import {getLContext} from '@angular/core/src/render3/context_discovery';
-import {getLViewById} from '@angular/core/src/render3/instructions/lview_tracking';
 import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
 import {createNamedArrayType} from '@angular/core/src/util/named_array_type';
 import {TestBed} from '@angular/core/testing';

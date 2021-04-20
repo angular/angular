@@ -11,8 +11,8 @@ import {assertDefined, assertDomNode} from '../util/assert';
 import {EMPTY_ARRAY} from '../util/empty';
 
 import {assertLView} from './assert';
-import {getLViewById} from './instructions/lview_tracking';
 import {LContext} from './interfaces/context';
+import {getLViewById} from './interfaces/lview_tracking';
 import {TNode, TNodeFlags} from './interfaces/node';
 import {RElement, RNode} from './interfaces/renderer_dom';
 import {isLView} from './interfaces/type_checks';
@@ -154,9 +154,10 @@ export function getComponentViewByInstance(componentInstance: {}): LView {
   let lView: LView;
 
   if (isLView(patchedData)) {
-    const nodeIndex = findViaComponent(patchedData, componentInstance);
-    lView = getComponentLViewByIndex(nodeIndex, patchedData);
-    const context = createLContext(patchedData, nodeIndex, lView[HOST] as RElement);
+    const contextLView: LView = patchedData;
+    const nodeIndex = findViaComponent(contextLView, componentInstance);
+    lView = getComponentLViewByIndex(nodeIndex, contextLView);
+    const context = createLContext(contextLView, nodeIndex, lView[HOST] as RElement);
     context.component = componentInstance;
     attachPatchData(componentInstance, context);
     attachPatchData(context.native, context);

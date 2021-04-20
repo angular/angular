@@ -7,7 +7,7 @@
  */
 
 
-import {getLViewById} from '../instructions/lview_tracking';
+import {getLViewById} from './lview_tracking';
 import {RNode} from './renderer_dom';
 import {LView} from './view';
 
@@ -23,6 +23,22 @@ import {LView} from './view';
  * of the context.
  */
 export class LContext {
+  /**
+   * The instance of the Component node.
+   */
+  public component: {}|null|undefined;
+
+  /**
+   * The list of active directives that exist on this element.
+   */
+  public directives: any[]|null|undefined;
+
+  /**
+   * The map of local references (local reference name => element or directive instance) that
+   * exist on this element.
+   */
+  public localRefs: {[key: string]: any}|null|undefined;
+
   /** Component's parent view data. */
   get lView(): LView|null {
     return getLViewById(this._lViewId);
@@ -42,21 +58,5 @@ export class LContext {
       /**
        * The instance of the DOM node that is attached to the lNode.
        */
-      public native: RNode,
-
-      /**
-       * The instance of the Component node.
-       */
-      public component?: {}|null,
-
-      /**
-       * The list of active directives that exist on this element.
-       */
-      public directives?: any[]|null,
-
-      /**
-       * The map of local references (local reference name => element or directive instance) that
-       * exist on this element.
-       */
-      public localRefs?: {[key: string]: any}|null) {}
+      public native: RNode) {}
 }

@@ -9,7 +9,6 @@
 import {Component} from '@angular/core';
 import {getLContext} from '@angular/core/src/render3/context_discovery';
 import {LViewDebug} from '@angular/core/src/render3/instructions/lview_debug';
-import {getLViewById} from '@angular/core/src/render3/instructions/lview_tracking';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
 import {HEADER_OFFSET} from '@angular/core/src/render3/interfaces/view';
 import {TestBed} from '@angular/core/testing';

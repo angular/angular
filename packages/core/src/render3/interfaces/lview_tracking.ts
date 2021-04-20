@@ -7,7 +7,7 @@
  */
 
 import {assertNumber} from '../../util/assert';
-import {ID, LView} from '../interfaces/view';
+import {ID, LView} from './view';
 
 // Keeps track of the currently-active LViews.
 const TRACKED_LVIEWS = new Map<number, LView>();

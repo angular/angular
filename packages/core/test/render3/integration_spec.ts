@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {getLViewById} from '@angular/core/src/render3/instructions/lview_tracking';
 import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
 import {RendererType2} from '../../src/render/api_flags';
 import {getLContext, readPatchedData} from '../../src/render3/context_discovery';

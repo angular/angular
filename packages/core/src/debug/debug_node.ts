@@ -9,7 +9,6 @@
 import {Injector} from '../di/injector';
 import {assertLView, assertTNodeForLView} from '../render3/assert';
 import {getLContext} from '../render3/context_discovery';
-import {getLViewById} from '../render3/instructions/lview_tracking';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
 import {isComponentHost, isLContainer} from '../render3/interfaces/type_checks';
