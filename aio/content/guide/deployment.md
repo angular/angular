@@ -703,34 +703,3 @@ You can then run the tests with this configuration
 ng test --configuration es5
 
 </code-example>
-
-### Configuring the e2e command
-
-Create an [ES5 serve configuration](guide/deployment#configuring-serve-for-es5) as explained above, and configuration an ES5 configuration for the E2E target.
-
-<code-example language="json">
-
-"e2e": {
-  "builder": "@angular-devkit/build-angular:protractor",
-  "options": {
-      ...
-  },
-  "configurations": {
-	  "production": {
-		  ...
-	  },
-    "es5": {
-      "devServerTarget": "&lt;app-name&gt;:serve:es5"
-    }
-  }
-},
-
-</code-example>
-
-You can then run the `ng e2e` command with this configuration. Make sure to replace `<app-name>` (in `"<app-name>:serve:es5"`) with the actual name of the app, as it appears under `projects` in `angular.json`. For example, if your application name is `myAngularApp` the configuration will become `"devServerTarget": "myAngularApp:serve:es5"`.
-
-<code-example language="none" class="code-shell">
-
-ng e2e --configuration es5
-
-</code-example>
