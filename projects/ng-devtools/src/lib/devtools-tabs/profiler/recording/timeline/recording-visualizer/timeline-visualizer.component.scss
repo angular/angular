@@ -1,8 +1,7 @@
 :host {
-  height: calc(100% - 2 * 60px);
   display: block;
   overflow: auto;
-
+  height: 100%;
   ::ng-deep {
     .as-split-gutter-icon {
       display: none;
@@ -29,8 +28,7 @@
   }
 
   section {
-    height: calc(100% - 40px - 23px);
-    width: calc(100% - 20px);
+    height: 100%;
     overflow: auto;
     font-family: Roboto, 'Helvetica Neue', sans-serif;
     padding: 10px;
