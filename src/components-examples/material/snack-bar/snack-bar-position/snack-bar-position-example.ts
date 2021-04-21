@@ -20,8 +20,7 @@ export class SnackBarPositionExample {
   constructor(private _snackBar: MatSnackBar) {}
 
   openSnackBar() {
-    this._snackBar.open('Cannonball!!', 'End now', {
-      duration: 500,
+    this._snackBar.open('Cannonball!!', 'Splash', {
       horizontalPosition: this.horizontalPosition,
       verticalPosition: this.verticalPosition,
     });
