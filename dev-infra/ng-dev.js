@@ -5179,7 +5179,7 @@ const ReleaseBuildCommandModule = {
  * output is captured and returned as resolution on completion. Depending on the chosen
  * output mode, stdout/stderr output is also printed to the console, or only on error.
  *
- * @returns a Promise resolving with captured stdout on success. The promise
+ * @returns a Promise resolving with captured stdout and stderr on success. The promise
  *   rejects on command failure.
  */
 function spawnWithDebugOutput(command, args, options) {
@@ -5191,9 +5191,11 @@ function spawnWithDebugOutput(command, args, options) {
         var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: ['inherit', 'pipe', 'pipe'] }));
         var logOutput = '';
         var stdout = '';
+        var stderr = '';
         // Capture the stdout separately so that it can be passed as resolve value.
         // This is useful if commands return parsable stdout.
         childProcess.stderr.on('data', function (message) {
+            stderr += message;
             logOutput += message;
             // If console output is enabled, print the message directly to the stderr. Note that
             // we intentionally print all output to stderr as stdout should not be polluted.
@@ -5218,7 +5220,7 @@ function spawnWithDebugOutput(command, args, options) {
             // On success, resolve the promise. Otherwise reject with the captured stderr
             // and stdout log output if the output mode was set to `silent`.
             if (status === 0) {
-                resolve({ stdout: stdout });
+                resolve({ stdout: stdout, stderr: stderr });
             }
             else {
                 reject(outputMode === 'silent' ? logOutput : undefined);
@@ -6636,7 +6638,8 @@ class ReleaseTool {
             log(yellow('  Angular Dev-Infra release staging script'));
             log(yellow('--------------------------------------------'));
             log();
-            if (!(yield this._verifyNoUncommittedChanges()) || !(yield this._verifyRunningFromNextBranch())) {
+            if (!(yield this._verifyEnvironmentHasPython3Symlink()) ||
+                !(yield this._verifyNoUncommittedChanges()) || !(yield this._verifyRunningFromNextBranch())) {
                 return CompletionState.FATAL_ERROR;
             }
             if (!(yield this._verifyNpmLoginState())) {
@@ -6710,6 +6713,39 @@ class ReleaseTool {
                 return false;
             }
             return true;
+        });
+    }
+    /**
+     * Verifies the current environment contains /usr/bin/python which points to the Python3
+     * interpreter.  python is required by our tooling in bazel as it contains scripts setting
+     * `#! /usr/bin/env python`.
+     *
+     * @returns a boolean indicating success or failure.
+     */
+    _verifyEnvironmentHasPython3Symlink() {
+        return tslib.__awaiter(this, void 0, void 0, function* () {
+            try {
+                const pyVersion = yield spawnWithDebugOutput('/usr/bin/python', ['--version'], { mode: 'silent' });
+                const version = pyVersion.stdout.trim() || pyVersion.stderr.trim();
+                if (version.startsWith('Python 3.')) {
+                    debug(`Local python version: ${version}`);
+                    return true;
+                }
+                error(red(`  ✘   \`/usr/bin/python\` is currently symlinked to "${version}", please update`));
+                error(red('      the symlink to link instead to Python3'));
+                error();
+                error(red('      Googlers: please run the following command to symlink python to python3:'));
+                error(red('        sudo ln -s /usr/bin/python3 /usr/bin/python'));
+                return false;
+            }
+            catch (_a) {
+                error(red('  ✘   `/usr/bin/python` does not exist, please ensure `/usr/bin/python` is'));
+                error(red('      symlinked to Python3.'));
+                error();
+                error(red('      Googlers: please run the following command to symlink python to python3:'));
+                error(red('        sudo ln -s /usr/bin/python3 /usr/bin/python'));
+            }
+            return false;
         });
     }
     /**
