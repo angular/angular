@@ -743,7 +743,7 @@ describe('MenuBar', () => {
         grabElementsForTesting();
       }
 
-      /** set focus the the MenuBar and run change detection. */
+      /** set focus the MenuBar and run change detection. */
       function focusMenuBar() {
         dispatchKeyboardEvent(document, 'keydown', TAB);
         nativeMenuBar.focus();

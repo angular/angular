@@ -63,7 +63,7 @@ table below.
 
 You can define a typography level with the `define-typography-config` Sass function. This function
 accepts, in order, CSS values for `font-size`, `line-height`, `font-weight`, `font-family`, and
-`letter-spacing`. You can also specify the parameters by name, as demonstrated in the example below. 
+`letter-spacing`. You can also specify the parameters by name, as demonstrated in the example below.
 
 ```scss
 @use '~@angular/material' as mat;
@@ -75,7 +75,7 @@ $my-custom-level: mat.define-typography-level(
   $line-height: 1,
   $letter-spacing: normal,
 );
-``` 
+```
 
 ## Typography config
 
@@ -121,7 +121,7 @@ In addition to the `core` mixin, you can specify your typography config when inc
 mixin, as described in the [theming guide][theming-system]. Because the `core` mixin always emits
 typography styles, specifying a typography config to a theme mixin results in duplicate typography
 CSS. You should only provide a typography config when applying your theme if you need to specify
-multiple typography styles that are conditionally applied based on your application's behavior. 
+multiple typography styles that are conditionally applied based on your application's behavior.
 
 The following example shows a typical theme definition and a "kids theme" that only applies when
 the `".kids-theme"` CSS class is present. You can [see the theming guide for more guidance on
@@ -151,7 +151,7 @@ $my-theme: mat.define-light-theme((
     // Specify "Comic Sans" as the default font family for all levels.
     $font-family: 'Comic Sans',
   );
-  
+
   $kids-theme: mat.define-light-theme((
    color: (
      primary: $my-primary,
@@ -159,7 +159,7 @@ $my-theme: mat.define-light-theme((
    ),
    typography: $kids-typography,
   ));
-  
+
   @include mat.all-component-themes($kids-theme);
 }
 ```
@@ -185,7 +185,7 @@ $kids-typography: mat.define-typography-config(
 In addition to styles shared between components, the `core` mixin includes CSS classes for styling
 your application. These CSS classes correspond to the typography levels in your typography config.
 This mixin also emits styles for native header elements scoped within the `.mat-typography` CSS
-class. The table below lists the the CSS classes emitted and the native elements styled.
+class. The table below lists the CSS classes emitted and the native elements styled.
 
 | CSS class                           | Level name     | Native elements |
 |-------------------------------------|----------------|-----------------|
@@ -218,14 +218,14 @@ The following example demonstrates usage of the typography styles emitted by the
 <body>
   <!-- This header will *not* be styled because it is outside `.mat-typography` -->
   <h1>Top header</h1>
-    
+
   <!-- This paragraph will be styled as `body-1` via the `.mat-body` CSS class applied -->
   <p class="mat-body">Introductory text</p>
-  
+
   <div class="mat-typography">
     <!-- This header will be styled as `title` because it is inside `.mat-typography` -->
     <h2>Inner header</h2>
-    
+
     <!-- This paragraph will be styled as `body-1` because it is inside `.mat-typography` -->
     <p>Some inner text</p>
   </div>

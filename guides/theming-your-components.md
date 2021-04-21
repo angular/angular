@@ -163,10 +163,10 @@ have a config specified.
 @mixin color($theme) {
   // Get the color config from the theme.
   $color-config: mat.get-color-config($theme);
-  
+
   // Get the primary color palette from the color-config.
   $primary-palette: map.get($color-config, 'primary');
-  
+
   .my-carousel-button {
     // Read the 500 hue from the primary color palette.
     color: mat.get-color-from-palette($primary-palette, 500);
@@ -198,7 +198,7 @@ have a config specified.
 ### Step 4: Include the theme mixin in your application
 
 Now that you've defined the carousel component's theme mixin, you can include this mixin along with
-the the other theme mixins in your application.
+the other theme mixins in your application.
 
 ```scss
 @use '~@angular/material' as mat;

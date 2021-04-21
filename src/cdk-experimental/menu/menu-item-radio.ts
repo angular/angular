@@ -15,7 +15,7 @@ import {CDK_MENU, Menu} from './menu-interface';
 import {MENU_AIM, MenuAim} from './menu-aim';
 
 /**
- * A directive providing behavior for the the "menuitemradio" ARIA role, which behaves similarly to
+ * A directive providing behavior for the "menuitemradio" ARIA role, which behaves similarly to
  * a conventional radio-button. Any sibling `CdkMenuItemRadio` instances within the same `CdkMenu`
  * or `CdkMenuGroup` comprise a radio group with unique selection enforced.
  */

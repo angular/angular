@@ -28,7 +28,7 @@ export function runHarnessTests(
     expect(groups.length).toBe(1);
   });
 
-  it('should load the the toggles inside the group', async () => {
+  it('should load the toggles inside the group', async () => {
     const group = await loader.getHarness(buttonToggleGroupHarness);
     const toggles = await group.getToggles();
     expect(toggles.length).toBe(2);

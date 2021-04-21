@@ -3,7 +3,7 @@
 The `MapGeocoder`, like the `google.maps.Geocoder`, has a single method, `geocode`. Normally, the
 `google.maps.Geocoder` takes two arguments, a `google.maps.GeocoderRequest` and a callback that
 takes the `google.maps.GeocoderResult` and `google.maps.GeocoderStatus` as arguments.
-The `MapGeocoder.geocode` method takes takes the `google.maps.GeocoderRequest` as the single
+The `MapGeocoder.geocode` method takes the `google.maps.GeocoderRequest` as the single
 argument, and returns an `Observable` of a `MapGeocoderResponse`, which is an interface defined as
 follows:
 
