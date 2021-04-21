@@ -47,13 +47,18 @@ export class TypeScriptAstHost implements AstHost<ts.Expression> {
     return parseInt(num.text);
   }
 
-  isBooleanLiteral(node: ts.Expression): node is ts.FalseLiteral|ts.TrueLiteral {
-    return node.kind === ts.SyntaxKind.TrueKeyword || node.kind === ts.SyntaxKind.FalseKeyword;
+  isBooleanLiteral(node: ts.Expression): boolean {
+    return isBooleanLiteral(node) || isMinifiedBooleanLiteral(node);
   }
 
   parseBooleanLiteral(bool: ts.Expression): boolean {
-    assert(bool, this.isBooleanLiteral, 'a boolean literal');
-    return bool.kind === ts.SyntaxKind.TrueKeyword;
+    if (isBooleanLiteral(bool)) {
+      return bool.kind === ts.SyntaxKind.TrueKeyword;
+    } else if (isMinifiedBooleanLiteral(bool)) {
+      return !(+bool.operand.text);
+    } else {
+      throw new FatalLinkerError(bool, 'Unsupported syntax, expected a boolean literal.');
+    }
   }
 
   isArrayLiteral = ts.isArrayLiteralExpression;
@@ -159,4 +164,21 @@ function isNotSpreadElement(e: ts.Expression|ts.SpreadElement): e is ts.Expressi
  */
 function isPropertyName(e: ts.PropertyName): e is ts.Identifier|ts.StringLiteral|ts.NumericLiteral {
   return ts.isIdentifier(e) || ts.isStringLiteral(e) || ts.isNumericLiteral(e);
+}
+
+/**
+ * Return true if the node is either `true` or `false` literals.
+ */
+function isBooleanLiteral(node: ts.Expression): node is ts.TrueLiteral|ts.FalseLiteral {
+  return node.kind === ts.SyntaxKind.TrueKeyword || node.kind === ts.SyntaxKind.FalseKeyword;
+}
+
+type MinifiedBooleanLiteral = ts.PrefixUnaryExpression&{operand: ts.NumericLiteral};
+
+/**
+ * Return true if the node is either `!0` or `!1`.
+ */
+function isMinifiedBooleanLiteral(node: ts.Expression): node is MinifiedBooleanLiteral {
+  return ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.ExclamationToken &&
+      ts.isNumericLiteral(node.operand) && (node.operand.text === '0' || node.operand.text === '1');
 }
