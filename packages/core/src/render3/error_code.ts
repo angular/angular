@@ -27,6 +27,7 @@ export const enum RuntimeErrorCode {
   PIPE_NOT_FOUND = '302',
   UNKNOWN_BINDING = '303',
   UNKNOWN_ELEMENT = '304',
+  TEMPLATE_STRUCTURE_ERROR = '305'
 
   // Styling Errors
 
