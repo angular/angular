@@ -14,6 +14,13 @@
 
     .mat-expansion-panel-header {
       padding: 0 15px;
+
+      .docs-link {
+        height: inherit;
+        width: fit-content;
+        font-size: initial;
+        padding-left: 0.1rem;
+      }
     }
 
     .mat-expansion-panel-header-title {
