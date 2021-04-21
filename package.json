@@ -106,7 +106,7 @@
     "chalk": "^2.3.1",
     "chokidar": "^3.5.1",
     "convert-source-map": "^1.5.1",
-    "core-js": "^2.4.1",
+    "core-js": "^3.0.0",
     "dependency-graph": "^0.11.0",
     "diff": "^5.0.0",
     "domino": "~2.1.6",
