@@ -75,7 +75,7 @@ export declare class MatIconRegistry implements OnDestroy {
     registerFontClassAlias(alias: string, className?: string): this;
     setDefaultFontSetClass(className: string): this;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatIconRegistry, [{ optional: true; }, null, { optional: true; }, null]>;
-    static ɵprov: i0.ɵɵInjectableDef<MatIconRegistry>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MatIconRegistry>;
 }
 
 export interface SafeResourceUrlWithIconOptions {

@@ -19,13 +19,13 @@ export declare class ContentObserver implements OnDestroy {
     observe(element: Element): Observable<MutationRecord[]>;
     observe(element: ElementRef<Element>): Observable<MutationRecord[]>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ContentObserver, never>;
-    static ɵprov: i0.ɵɵInjectableDef<ContentObserver>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<ContentObserver>;
 }
 
 export declare class MutationObserverFactory {
     create(callback: MutationCallback): MutationObserver | null;
     static ɵfac: i0.ɵɵFactoryDeclaration<MutationObserverFactory, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MutationObserverFactory>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MutationObserverFactory>;
 }
 
 export declare class ObserversModule {

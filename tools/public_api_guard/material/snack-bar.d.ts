@@ -28,7 +28,7 @@ export declare class MatSnackBar implements OnDestroy {
     openFromComponent<T>(component: ComponentType<T>, config?: MatSnackBarConfig): MatSnackBarRef<T>;
     openFromTemplate(template: TemplateRef<any>, config?: MatSnackBarConfig): MatSnackBarRef<EmbeddedViewRef<any>>;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSnackBar, [null, null, null, null, { optional: true; skipSelf: true; }, null]>;
-    static ɵprov: i0.ɵɵInjectableDef<MatSnackBar>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MatSnackBar>;
 }
 
 export declare const matSnackBarAnimations: {

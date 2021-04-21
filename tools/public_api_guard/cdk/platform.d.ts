@@ -20,7 +20,7 @@ export declare class Platform {
     isBrowser: boolean;
     constructor(_platformId: Object);
     static ɵfac: i0.ɵɵFactoryDeclaration<Platform, never>;
-    static ɵprov: i0.ɵɵInjectableDef<Platform>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<Platform>;
 }
 
 export declare class PlatformModule {

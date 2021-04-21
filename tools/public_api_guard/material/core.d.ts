@@ -127,7 +127,7 @@ export declare const defaultRippleAnimationConfig: {
 export declare class ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<ErrorStateMatcher, never>;
-    static ɵprov: i0.ɵɵInjectableDef<ErrorStateMatcher>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<ErrorStateMatcher>;
 }
 
 export interface GranularSanityChecks {
@@ -319,7 +319,7 @@ export declare class NativeDateAdapter extends DateAdapter<Date> {
     toIso8601(date: Date): string;
     today(): Date;
     static ɵfac: i0.ɵɵFactoryDeclaration<NativeDateAdapter, [{ optional: true; }, null]>;
-    static ɵprov: i0.ɵɵInjectableDef<NativeDateAdapter>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<NativeDateAdapter>;
 }
 
 export declare class NativeDateModule {
@@ -389,7 +389,7 @@ export declare function setLines(lines: QueryList<unknown>, element: ElementRef<
 export declare class ShowOnDirtyErrorStateMatcher implements ErrorStateMatcher {
     isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<ShowOnDirtyErrorStateMatcher, never>;
-    static ɵprov: i0.ɵɵInjectableDef<ShowOnDirtyErrorStateMatcher>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<ShowOnDirtyErrorStateMatcher>;
 }
 
 export declare type ThemePalette = 'primary' | 'accent' | 'warn' | undefined;

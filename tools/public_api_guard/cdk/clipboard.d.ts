@@ -22,7 +22,7 @@ export declare class Clipboard {
     beginCopy(text: string): PendingCopy;
     copy(text: string): boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<Clipboard, never>;
-    static ɵprov: i0.ɵɵInjectableDef<Clipboard>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<Clipboard>;
 }
 
 export declare class ClipboardModule {

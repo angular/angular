@@ -4,7 +4,7 @@ export declare class BreakpointObserver implements OnDestroy {
     ngOnDestroy(): void;
     observe(value: string | readonly string[]): Observable<BreakpointState>;
     static ɵfac: i0.ɵɵFactoryDeclaration<BreakpointObserver, never>;
-    static ɵprov: i0.ɵɵInjectableDef<BreakpointObserver>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<BreakpointObserver>;
 }
 
 export declare const Breakpoints: {
@@ -41,5 +41,5 @@ export declare class MediaMatcher {
     constructor(_platform: Platform);
     matchMedia(query: string): MediaQueryList;
     static ɵfac: i0.ɵɵFactoryDeclaration<MediaMatcher, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MediaMatcher>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MediaMatcher>;
 }

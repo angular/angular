@@ -106,7 +106,7 @@ export declare class MatStepperIntl {
     readonly changes: Subject<void>;
     optionalLabel: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatStepperIntl, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MatStepperIntl>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MatStepperIntl>;
 }
 
 export declare class MatStepperModule {

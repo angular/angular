@@ -178,7 +178,7 @@ export declare class ScrollDispatcher implements OnDestroy {
     register(scrollable: CdkScrollable): void;
     scrolled(auditTimeInMs?: number): Observable<CdkScrollable | void>;
     static ɵfac: i0.ɵɵFactoryDeclaration<ScrollDispatcher, [null, null, { optional: true; }]>;
-    static ɵprov: i0.ɵɵInjectableDef<ScrollDispatcher>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<ScrollDispatcher>;
 }
 
 export declare class ScrollingModule {
@@ -199,7 +199,7 @@ export declare class ViewportRuler implements OnDestroy {
     }>;
     ngOnDestroy(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<ViewportRuler, [null, null, { optional: true; }]>;
-    static ɵprov: i0.ɵɵInjectableDef<ViewportRuler>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<ViewportRuler>;
 }
 
 export interface ViewportScrollPosition {

@@ -34,7 +34,6 @@ import {dirname, join, resolve} from 'path';
 import * as ts from 'typescript';
 import {
   addDeclarationToModule,
-  addEntryComponentToModule,
   addExportToModule,
 } from '../utils/vendored-ast-utils';
 import {getProjectFromWorkspace} from './get-project';
@@ -118,26 +117,6 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
       }
       host.commitUpdate(exportRecorder);
     }
-
-    if (options.entryComponent) {
-      // Need to refresh the AST because we overwrote the file in the host.
-      source = readIntoSourceFile(host, modulePath);
-
-      const entryComponentRecorder = host.beginUpdate(modulePath);
-      const entryComponentChanges = addEntryComponentToModule(
-        source,
-        modulePath,
-        strings.classify(`${options.name}Component`),
-        relativePath);
-
-      for (const change of entryComponentChanges) {
-        if (change instanceof InsertChange) {
-          entryComponentRecorder.insertLeft(change.pos, change.toAdd);
-        }
-      }
-      host.commitUpdate(entryComponentRecorder);
-    }
-
 
     return host;
   };

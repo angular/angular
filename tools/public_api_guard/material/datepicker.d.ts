@@ -22,7 +22,7 @@ export declare class DefaultMatCalendarRangeStrategy<D> implements MatDateRangeS
     createPreview(activeDate: D | null, currentRange: DateRange<D>): DateRange<D>;
     selectionFinished(date: D, currentRange: DateRange<D>): DateRange<D>;
     static ɵfac: i0.ɵɵFactoryDeclaration<DefaultMatCalendarRangeStrategy<any>, never>;
-    static ɵprov: i0.ɵɵInjectableDef<DefaultMatCalendarRangeStrategy<any>>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<DefaultMatCalendarRangeStrategy<any>>;
 }
 
 export declare type ExtractDateTypeFromSelection<T> = T extends DateRange<infer D> ? D : NonNullable<T>;
@@ -286,7 +286,7 @@ export declare class MatDatepickerIntl {
     switchToMultiYearViewLabel: string;
     formatYearRange(start: string, end: string): string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatDatepickerIntl, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MatDatepickerIntl>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MatDatepickerIntl>;
 }
 
 export declare class MatDatepickerModule {
@@ -396,7 +396,7 @@ export declare abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSe
     ngOnDestroy(): void;
     updateSelection(value: S, source: unknown): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatDateSelectionModel<any, any>, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MatDateSelectionModel<any, any>>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MatDateSelectionModel<any, any>>;
 }
 
 export declare class MatEndDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState, DoCheck, OnInit {
@@ -497,7 +497,7 @@ export declare class MatRangeDateSelectionModel<D> extends MatDateSelectionModel
     isComplete(): boolean;
     isValid(): boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatRangeDateSelectionModel<any>, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MatRangeDateSelectionModel<any>>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MatRangeDateSelectionModel<any>>;
 }
 
 export declare class MatSingleDateSelectionModel<D> extends MatDateSelectionModel<D | null, D> {
@@ -507,7 +507,7 @@ export declare class MatSingleDateSelectionModel<D> extends MatDateSelectionMode
     isComplete(): boolean;
     isValid(): boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSingleDateSelectionModel<any>, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MatSingleDateSelectionModel<any>>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MatSingleDateSelectionModel<any>>;
 }
 
 export declare class MatStartDate<D> extends _MatDateRangeInputBase<D> implements CanUpdateErrorState, DoCheck, OnInit {

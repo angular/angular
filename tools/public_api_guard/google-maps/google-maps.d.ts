@@ -140,14 +140,14 @@ export declare class MapDirectionsService {
     constructor(_ngZone: NgZone);
     route(request: google.maps.DirectionsRequest): Observable<MapDirectionsResponse>;
     static ɵfac: i0.ɵɵFactoryDeclaration<MapDirectionsService, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MapDirectionsService>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MapDirectionsService>;
 }
 
 export declare class MapGeocoder {
     constructor(_ngZone: NgZone);
     geocode(request: google.maps.GeocoderRequest): Observable<MapGeocoderResponse>;
     static ɵfac: i0.ɵɵFactoryDeclaration<MapGeocoder, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MapGeocoder>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MapGeocoder>;
 }
 
 export interface MapGeocoderResponse {

@@ -16,7 +16,7 @@ export declare class FakeMatIconRegistry implements PublicApi<MatIconRegistry>, 
     registerFontClassAlias(): this;
     setDefaultFontSetClass(): this;
     static ɵfac: i0.ɵɵFactoryDeclaration<FakeMatIconRegistry, never>;
-    static ɵprov: i0.ɵɵInjectableDef<FakeMatIconRegistry>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<FakeMatIconRegistry>;
 }
 
 export interface IconHarnessFilters extends BaseHarnessFilters {

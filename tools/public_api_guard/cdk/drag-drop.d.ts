@@ -217,7 +217,7 @@ export declare class DragDrop {
     createDrag<T = any>(element: ElementRef<HTMLElement> | HTMLElement, config?: DragRefConfig): DragRef<T>;
     createDropList<T = any>(element: ElementRef<HTMLElement> | HTMLElement): DropListRef<T>;
     static ɵfac: i0.ɵɵFactoryDeclaration<DragDrop, never>;
-    static ɵprov: i0.ɵɵInjectableDef<DragDrop>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<DragDrop>;
 }
 
 export interface DragDropConfig extends Partial<DragRefConfig> {
@@ -257,7 +257,7 @@ export declare class DragDropRegistry<I extends {
     startDragging(drag: I, event: TouchEvent | MouseEvent): void;
     stopDragging(drag: I): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<DragDropRegistry<any, any>, never>;
-    static ɵprov: i0.ɵɵInjectableDef<DragDropRegistry<any, any>>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<DragDropRegistry<any, any>>;
 }
 
 export declare class DragRef<T = any> {

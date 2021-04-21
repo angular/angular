@@ -6,7 +6,7 @@ export declare class _CoalescedStyleScheduler implements OnDestroy {
     schedule(task: () => unknown): void;
     scheduleEnd(task: () => unknown): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<_CoalescedStyleScheduler, never>;
-    static ɵprov: i0.ɵɵInjectableDef<_CoalescedStyleScheduler>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<_CoalescedStyleScheduler>;
 }
 
 export declare class _Schedule {

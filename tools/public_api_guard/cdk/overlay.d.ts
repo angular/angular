@@ -158,7 +158,7 @@ export declare class FullscreenOverlayContainer extends OverlayContainer impleme
     getFullscreenElement(): Element;
     ngOnDestroy(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<FullscreenOverlayContainer, never>;
-    static ɵprov: i0.ɵɵInjectableDef<FullscreenOverlayContainer>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<FullscreenOverlayContainer>;
 }
 
 export declare class GlobalPositionStrategy implements PositionStrategy {
@@ -195,7 +195,7 @@ export declare class Overlay {
     create(config?: OverlayConfig): OverlayRef;
     position(): OverlayPositionBuilder;
     static ɵfac: i0.ɵɵFactoryDeclaration<Overlay, never>;
-    static ɵprov: i0.ɵɵInjectableDef<Overlay>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<Overlay>;
 }
 
 export declare class OverlayConfig {
@@ -229,7 +229,7 @@ export declare class OverlayContainer implements OnDestroy {
     getContainerElement(): HTMLElement;
     ngOnDestroy(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<OverlayContainer, never>;
-    static ɵprov: i0.ɵɵInjectableDef<OverlayContainer>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<OverlayContainer>;
 }
 
 export declare class OverlayKeyboardDispatcher extends BaseOverlayDispatcher {
@@ -237,7 +237,7 @@ export declare class OverlayKeyboardDispatcher extends BaseOverlayDispatcher {
     add(overlayRef: OverlayReference): void;
     protected detach(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<OverlayKeyboardDispatcher, never>;
-    static ɵprov: i0.ɵɵInjectableDef<OverlayKeyboardDispatcher>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<OverlayKeyboardDispatcher>;
 }
 
 export declare class OverlayModule {
@@ -251,7 +251,7 @@ export declare class OverlayOutsideClickDispatcher extends BaseOverlayDispatcher
     add(overlayRef: OverlayReference): void;
     protected detach(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<OverlayOutsideClickDispatcher, never>;
-    static ɵprov: i0.ɵɵInjectableDef<OverlayOutsideClickDispatcher>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<OverlayOutsideClickDispatcher>;
 }
 
 export declare class OverlayPositionBuilder {
@@ -260,7 +260,7 @@ export declare class OverlayPositionBuilder {
     flexibleConnectedTo(origin: FlexibleConnectedPositionStrategyOrigin): FlexibleConnectedPositionStrategy;
     global(): GlobalPositionStrategy;
     static ɵfac: i0.ɵɵFactoryDeclaration<OverlayPositionBuilder, never>;
-    static ɵprov: i0.ɵɵInjectableDef<OverlayPositionBuilder>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<OverlayPositionBuilder>;
 }
 
 export declare class OverlayRef implements PortalOutlet, OverlayReference {
@@ -343,7 +343,7 @@ export declare class ScrollStrategyOptions {
     reposition: (config?: RepositionScrollStrategyConfig | undefined) => RepositionScrollStrategy;
     constructor(_scrollDispatcher: ScrollDispatcher, _viewportRuler: ViewportRuler, _ngZone: NgZone, document: any);
     static ɵfac: i0.ɵɵFactoryDeclaration<ScrollStrategyOptions, never>;
-    static ɵprov: i0.ɵɵInjectableDef<ScrollStrategyOptions>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<ScrollStrategyOptions>;
 }
 
 export declare function validateHorizontalPosition(property: string, value: HorizontalConnectionPos): void;

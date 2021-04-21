@@ -18,7 +18,7 @@ export declare class AriaDescriber implements OnDestroy {
     removeDescription(hostElement: Element, message: string, role?: string): void;
     removeDescription(hostElement: Element, message: HTMLElement): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<AriaDescriber, never>;
-    static ɵprov: i0.ɵɵInjectableDef<AriaDescriber>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<AriaDescriber>;
 }
 
 export declare type AriaLivePoliteness = 'off' | 'polite' | 'assertive';
@@ -80,7 +80,7 @@ export declare class ConfigurableFocusTrapFactory {
     create(element: HTMLElement, config?: ConfigurableFocusTrapConfig): ConfigurableFocusTrap;
     create(element: HTMLElement, deferCaptureElements: boolean): ConfigurableFocusTrap;
     static ɵfac: i0.ɵɵFactoryDeclaration<ConfigurableFocusTrapFactory, [null, null, null, null, { optional: true; }]>;
-    static ɵprov: i0.ɵɵInjectableDef<ConfigurableFocusTrapFactory>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<ConfigurableFocusTrapFactory>;
 }
 
 export declare class EventListenerFocusTrapInertStrategy implements FocusTrapInertStrategy {
@@ -115,7 +115,7 @@ export declare class FocusMonitor implements OnDestroy {
     stopMonitoring(element: HTMLElement): void;
     stopMonitoring(element: ElementRef<HTMLElement>): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<FocusMonitor, [null, null, { optional: true; }, { optional: true; }]>;
-    static ɵprov: i0.ɵɵInjectableDef<FocusMonitor>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<FocusMonitor>;
 }
 
 export declare const enum FocusMonitorDetectionMode {
@@ -159,7 +159,7 @@ export declare class FocusTrapFactory {
     constructor(_checker: InteractivityChecker, _ngZone: NgZone, _document: any);
     create(element: HTMLElement, deferCaptureElements?: boolean): FocusTrap;
     static ɵfac: i0.ɵɵFactoryDeclaration<FocusTrapFactory, never>;
-    static ɵprov: i0.ɵɵInjectableDef<FocusTrapFactory>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<FocusTrapFactory>;
 }
 
 export interface FocusTrapInertStrategy {
@@ -178,7 +178,7 @@ export declare class HighContrastModeDetector {
     _applyBodyHighContrastModeCssClasses(): void;
     getHighContrastMode(): HighContrastMode;
     static ɵfac: i0.ɵɵFactoryDeclaration<HighContrastModeDetector, never>;
-    static ɵprov: i0.ɵɵInjectableDef<HighContrastModeDetector>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<HighContrastModeDetector>;
 }
 
 export interface Highlightable extends ListKeyManagerOption {
@@ -193,7 +193,7 @@ export declare class InteractivityChecker {
     isTabbable(element: HTMLElement): boolean;
     isVisible(element: HTMLElement): boolean;
     static ɵfac: i0.ɵɵFactoryDeclaration<InteractivityChecker, never>;
-    static ɵprov: i0.ɵɵInjectableDef<InteractivityChecker>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<InteractivityChecker>;
 }
 
 export declare function isFakeMousedownFromScreenReader(event: MouseEvent): boolean;
@@ -251,7 +251,7 @@ export declare class LiveAnnouncer implements OnDestroy {
     clear(): void;
     ngOnDestroy(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<LiveAnnouncer, [{ optional: true; }, null, null, { optional: true; }]>;
-    static ɵprov: i0.ɵɵInjectableDef<LiveAnnouncer>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<LiveAnnouncer>;
 }
 
 export interface LiveAnnouncerDefaultOptions {

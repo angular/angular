@@ -11,7 +11,7 @@ export declare class AutofillMonitor implements OnDestroy {
     stopMonitoring(element: Element): void;
     stopMonitoring(element: ElementRef<Element>): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<AutofillMonitor, never>;
-    static ɵprov: i0.ɵɵInjectableDef<AutofillMonitor>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<AutofillMonitor>;
 }
 
 export declare class CdkAutofill implements OnDestroy, OnInit {

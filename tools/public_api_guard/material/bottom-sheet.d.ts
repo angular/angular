@@ -11,7 +11,7 @@ export declare class MatBottomSheet implements OnDestroy {
     open<T, D = any, R = any>(component: ComponentType<T>, config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
     open<T, D = any, R = any>(template: TemplateRef<T>, config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatBottomSheet, [null, null, { optional: true; skipSelf: true; }, { optional: true; }]>;
-    static ɵprov: i0.ɵɵInjectableDef<MatBottomSheet>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MatBottomSheet>;
 }
 
 export declare const matBottomSheetAnimations: {

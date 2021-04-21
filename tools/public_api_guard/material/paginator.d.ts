@@ -77,7 +77,7 @@ export declare class MatPaginatorIntl {
     nextPageLabel: string;
     previousPageLabel: string;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatPaginatorIntl, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MatPaginatorIntl>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MatPaginatorIntl>;
 }
 
 export declare class MatPaginatorModule {

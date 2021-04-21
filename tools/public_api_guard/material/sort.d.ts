@@ -97,7 +97,7 @@ export declare class MatSortHeader extends _MatSortHeaderMixinBase implements Ca
 export declare class MatSortHeaderIntl {
     readonly changes: Subject<void>;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatSortHeaderIntl, never>;
-    static ɵprov: i0.ɵɵInjectableDef<MatSortHeaderIntl>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MatSortHeaderIntl>;
 }
 
 export declare class MatSortModule {

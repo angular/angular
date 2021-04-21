@@ -70,7 +70,7 @@ export declare class MatDialog extends _MatDialogBase<MatDialogContainer> {
     constructor(overlay: Overlay, injector: Injector,
     location: Location, defaultOptions: MatDialogConfig, scrollStrategy: any, parentDialog: MatDialog, overlayContainer: OverlayContainer);
     static ɵfac: i0.ɵɵFactoryDeclaration<MatDialog, [null, null, { optional: true; }, { optional: true; }, null, { optional: true; skipSelf: true; }, null]>;
-    static ɵprov: i0.ɵɵInjectableDef<MatDialog>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<MatDialog>;
 }
 
 export declare class MatDialogActions {
