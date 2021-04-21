@@ -43,10 +43,4 @@ describe('DevtoolsTabsComponent', () => {
     expect(messageBusMock.emit).toHaveBeenCalledWith('inspectorEnd');
     expect(messageBusMock.emit).toHaveBeenCalledWith('removeHighlightOverlay');
   });
-
-  it('calls child refresh method', () => {
-    comp.directiveExplorer = jasmine.createSpyObj('directiveExplorer', ['refresh']);
-    comp.refresh();
-    expect(comp.directiveExplorer.refresh).toHaveBeenCalledTimes(1);
-  });
 });

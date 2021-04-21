@@ -88,10 +88,6 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
     this.inspectorRunning = !this.inspectorRunning;
   }
 
-  refresh(): void {
-    this.directiveExplorer.refresh();
-  }
-
   toggleTimingAPI(change: MatSlideToggleChange): void {
     change.checked ? this._messageBus.emit('enableTimingAPI') : this._messageBus.emit('disableTimingAPI');
   }
