@@ -103,7 +103,7 @@
     "bluebird": "^3.7.2",
     "brotli": "^1.3.2",
     "canonical-path": "1.0.0",
-    "chalk": "^2.3.1",
+    "chalk": "^4.1.0",
     "chokidar": "^3.5.1",
     "convert-source-map": "^1.5.1",
     "core-js": "^2.4.1",

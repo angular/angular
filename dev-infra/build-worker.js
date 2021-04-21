@@ -1,11 +1,9 @@
 'use strict';
 
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
-
 var tslib = require('tslib');
 var fs = require('fs');
 var path = require('path');
-var chalk = _interopDefault(require('chalk'));
+var chalk = require('chalk');
 require('inquirer');
 var child_process = require('child_process');
 var semver = require('semver');
@@ -470,12 +468,7 @@ function gitOutputAsArray(gitCommandResult) {
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-/** Reexport of chalk colors for convenient access. */
-var red = chalk.red;
-var green = chalk.green;
 var yellow = chalk.yellow;
-var bold = chalk.bold;
-var blue = chalk.blue;
 /**
  * Supported levels for logging functions.
  *
