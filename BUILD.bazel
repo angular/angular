@@ -19,7 +19,7 @@ filegroup(
     name = "web_test_bootstrap_scripts",
     # do not sort
     srcs = [
-        "@npm//:node_modules/core-js/client/core.js",
+        "@npm//:node_modules/core-js-bundle/index.js",
         "//packages/zone.js/bundles:zone.umd.js",
         "//packages/zone.js/bundles:zone-testing.umd.js",
         "//packages/zone.js/bundles:task-tracking.umd.js",

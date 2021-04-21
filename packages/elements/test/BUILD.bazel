@@ -38,7 +38,7 @@ filegroup(
     testonly = True,
     # do not sort
     srcs = [
-        "@npm//:node_modules/core-js/client/core.js",
+        "@npm//:node_modules/core-js-bundle/index.js",
         # Required for browsers that do not natively support Custom Elements.
         "@npm//:node_modules/@webcomponents/custom-elements/custom-elements.min.js",
         # Required for ES5 code to work with a native Custom Elements implementation.
