@@ -79,7 +79,6 @@ INTEGRATION_TESTS = {
     "injectable-def": {"tags": ["no-ivy-aot"]},
     "ivy-i18n": {"tags": ["ivy-only"]},
     "trusted-types": {"tags": ["ivy-only"]},
-    "language_service_plugin": {},
     "ng_elements": {"tags": ["no-ivy-aot"]},
     "ng_elements_schematics": {"tags": ["ivy-only"]},
     "ng_update": {},
