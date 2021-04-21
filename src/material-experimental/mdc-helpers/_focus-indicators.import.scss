@@ -1,7 +1,7 @@
 @forward '../../material/core/focus-indicators/focus-indicators.import';
 @forward 'focus-indicators' hide strong-focus-indicators;
 @forward 'focus-indicators-theme' hide color, theme;
-@forward 'focus-indicators' as mat-mdc-* hide mat-mdc-strong-focus-indicators-border-color;
+@forward 'focus-indicators' as mat-mdc-*;
 @forward 'focus-indicators-theme' as mat-mdc-strong-focus-indicators-*;
 
 @import '../../material/core/theming/theming';
