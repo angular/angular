@@ -55,7 +55,7 @@ export const subscribeToClientEvents = (messageBus: MessageBus<Events>): void =>
     // every 250ms
     runOutsideAngular(() => {
       initializeOrGetDirectiveForestHooks()
-        .changeDetection$.pipe(debounceTime(250))
+        .profiler.changeDetection$.pipe(debounceTime(250))
         .subscribe(() => messageBus.emit('componentTreeDirty'));
     });
   }

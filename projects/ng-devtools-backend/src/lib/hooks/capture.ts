@@ -1,9 +1,10 @@
-import { DirectiveForestHooks, Hooks } from './hooks';
+import { DirectiveForestHooks } from './hooks';
 import { ElementPosition, ProfilerFrame, ElementProfile, DirectiveProfile, LifecycleProfile } from 'protocol';
 import { runOutsideAngular, isCustomElement } from '../utils';
 import { getDirectiveName } from '../highlighter';
 import { ComponentTreeNode } from '../component-tree';
 import { initializeOrGetDirectiveForestHooks } from '.';
+import { Hooks } from './profiler';
 
 let inProgress = false;
 let inChangeDetection = false;
@@ -18,13 +19,13 @@ export const start = (onFrame: (frame: ProfilerFrame) => void): void => {
   eventMap = new Map<any, DirectiveProfile>();
   inProgress = true;
   hooks = getHooks(onFrame);
-  initializeOrGetDirectiveForestHooks().subscribe(hooks);
+  initializeOrGetDirectiveForestHooks().profiler.subscribe(hooks);
 };
 
 export const stop = (): ProfilerFrame => {
   const directiveForestHooks = initializeOrGetDirectiveForestHooks();
   const result = flushBuffer(directiveForestHooks);
-  initializeOrGetDirectiveForestHooks().unsubscribe(hooks);
+  initializeOrGetDirectiveForestHooks().profiler.unsubscribe(hooks);
   hooks = {};
   inProgress = false;
   return result;

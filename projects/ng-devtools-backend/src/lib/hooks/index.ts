@@ -36,12 +36,13 @@ export const disableTimingAPI = () => (timingAPIFlag = false);
 
 const timingAPIEnabled = () => timingAPIFlag;
 
-export let directiveForestHooks: DirectiveForestHooks;
+let directiveForestHooks: DirectiveForestHooks;
 export const initializeOrGetDirectiveForestHooks = () => {
   if (directiveForestHooks) {
     return directiveForestHooks;
   }
-  directiveForestHooks = new DirectiveForestHooks({
+  directiveForestHooks = new DirectiveForestHooks();
+  directiveForestHooks.profiler.subscribe({
     onChangeDetectionStart(component: any): void {
       if (!timingAPIEnabled()) {
         return;

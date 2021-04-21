@@ -25,6 +25,5 @@ export class TooltipDirective {
     } else {
       delete (this as any).extraProp;
     }
-    console.log(this);
   }
 }

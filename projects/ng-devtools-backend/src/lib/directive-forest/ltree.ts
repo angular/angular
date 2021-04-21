@@ -47,6 +47,9 @@ export const getDirectiveHostElement = (dir: any) => {
     return false;
   }
   const ctx = dir[METADATA_PROPERTY_NAME];
+  if (!ctx) {
+    return false;
+  }
   if (ctx[0] !== null) {
     return ctx[0];
   }
