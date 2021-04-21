@@ -14,7 +14,7 @@
     "typescript": "~3.9.2"
   },
   "dependencies": {
-    "chalk": "^2.3.1",
+    "chalk": "^4.0.0",
     "diff": "^5.0.0",
     "minimist": "^1.2.0"
   },
