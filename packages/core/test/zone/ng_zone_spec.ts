@@ -11,6 +11,7 @@ import {fakeAsync, flushMicrotasks, waitForAsync} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, expect, inject, it, Log, xit} from '@angular/core/testing/src/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
+import {global} from '../../src/util/global';
 import {scheduleMicroTask} from '../../src/util/microtask';
 import {getNativeRequestAnimationFrame} from '../../src/util/raf';
 import {NoopNgZone} from '../../src/zone/ng_zone';
@@ -982,10 +983,10 @@ function commonTests() {
 
     describe('shouldCoalesceEventChangeDetection = true, shouldCoalesceRunChangeDetection = false', () => {
       let nativeRequestAnimationFrame: (fn: FrameRequestCallback) => void;
-      let nativeSetTimeout: any = (global as any)[Zone.__symbol__('setTimeout')];
-      if (!(global as any).requestAnimationFrame) {
+      let nativeSetTimeout: any = global[Zone.__symbol__('setTimeout')];
+      if (!global.requestAnimationFrame) {
         nativeRequestAnimationFrame = function(fn: Function) {
-          (global as any)[Zone.__symbol__('setTimeout')](fn, 16);
+          global[Zone.__symbol__('setTimeout')](fn, 16);
         };
       } else {
         nativeRequestAnimationFrame = getNativeRequestAnimationFrame().nativeRequestAnimationFrame;
@@ -996,7 +997,7 @@ function commonTests() {
 
       beforeEach(() => {
         patchedImmediate = setImmediate;
-        (global as any).setImmediate = (global as any)[Zone.__symbol__('setImmediate')];
+        global.setImmediate = global[Zone.__symbol__('setImmediate')];
         coalesceZone = new NgZone({shouldCoalesceEventChangeDetection: true});
         logs = [];
         coalesceZone.onMicrotaskEmpty.subscribe(() => {
@@ -1005,7 +1006,7 @@ function commonTests() {
       });
 
       afterEach(() => {
-        (global as any).setImmediate = patchedImmediate;
+        global.setImmediate = patchedImmediate;
       });
 
       it('should run in requestAnimationFrame async', (done: DoneFn) => {
@@ -1121,10 +1122,10 @@ function commonTests() {
 
     describe('shouldCoalesceRunChangeDetection = true', () => {
       let nativeRequestAnimationFrame: (fn: FrameRequestCallback) => void;
-      let nativeSetTimeout: any = (global as any)[Zone.__symbol__('setTimeout')];
-      if (!(global as any).requestAnimationFrame) {
+      let nativeSetTimeout: any = global[Zone.__symbol__('setTimeout')];
+      if (!global.requestAnimationFrame) {
         nativeRequestAnimationFrame = function(fn: Function) {
-          (global as any)[Zone.__symbol__('setTimeout')](fn, 16);
+          global[Zone.__symbol__('setTimeout')](fn, 16);
         };
       } else {
         nativeRequestAnimationFrame = getNativeRequestAnimationFrame().nativeRequestAnimationFrame;
@@ -1135,7 +1136,7 @@ function commonTests() {
 
       beforeEach(() => {
         patchedImmediate = setImmediate;
-        (global as any).setImmediate = (global as any)[Zone.__symbol__('setImmediate')];
+        global.setImmediate = global[Zone.__symbol__('setImmediate')];
         coalesceZone = new NgZone({shouldCoalesceRunChangeDetection: true});
         logs = [];
         coalesceZone.onMicrotaskEmpty.subscribe(() => {
@@ -1144,7 +1145,7 @@ function commonTests() {
       });
 
       afterEach(() => {
-        (global as any).setImmediate = patchedImmediate;
+        global.setImmediate = patchedImmediate;
       });
 
       it('should run in requestAnimationFrame async', (done: DoneFn) => {

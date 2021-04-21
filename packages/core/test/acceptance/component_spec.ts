@@ -14,6 +14,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 import {domRendererFactory3} from '../../src/render3/interfaces/renderer';
+import {global} from '../../src/util/global';
 
 
 describe('component', () => {
@@ -304,7 +305,7 @@ describe('component', () => {
      });
 
   describe('with ngDevMode', () => {
-    const _global: {ngDevMode: any} = global as any;
+    const _global: {ngDevMode: any} = global;
     let saveNgDevMode!: typeof ngDevMode;
     beforeEach(() => saveNgDevMode = ngDevMode);
     afterEach(() => _global.ngDevMode = saveNgDevMode);
