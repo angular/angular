@@ -139,6 +139,8 @@ function getCalleeName(call: NodePath<t.CallExpression>): string|null {
     return callee.name;
   } else if (t.isMemberExpression(callee) && t.isIdentifier(callee.property)) {
     return callee.property.name;
+  } else if (t.isMemberExpression(callee) && t.isStringLiteral(callee.property)) {
+    return callee.property.value;
   } else {
     return null;
   }
