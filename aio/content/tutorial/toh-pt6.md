@@ -22,7 +22,7 @@ Make `HttpClient` available everywhere in the application in two steps. First, a
 <code-example path="toh-pt6/src/app/app.module.ts" region="import-http-client" header="src/app/app.module.ts (HttpClientModule import)">
 </code-example>
 
-Next, still in the `AppModule`, add `HttpClient` to the `imports` array:
+Next, still in the `AppModule`, add `HttpClientModule` to the `imports` array:
 
 <code-example path="toh-pt6/src/app/app.module.ts" region="import-httpclientmodule" header="src/app/app.module.ts (imports array excerpt)">
 </code-example>
