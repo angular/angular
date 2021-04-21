@@ -9,16 +9,28 @@ interface TreeNode {
   children: TreeNode[];
 }
 
-type NodeArray = {
+export type NodeArray = {
   directive: any;
   isComponent: boolean;
 }[];
 
 export class IdentityTracker {
+  private static _instance: IdentityTracker;
+
   private _directiveIdCounter = 0;
   private _currentDirectivePosition = new Map<any, ElementPosition>();
   private _currentDirectiveId = new Map<any, number>();
-  private _isComponent = new Map<any, boolean>();
+  isComponent = new Map<any, boolean>();
+
+  // private constructor for Singleton Pattern
+  private constructor() {}
+
+  static getInstance(): IdentityTracker {
+    if (!IdentityTracker._instance) {
+      IdentityTracker._instance = new IdentityTracker();
+    }
+    return IdentityTracker._instance;
+  }
 
   getDirectivePosition(dir: any): ElementPosition | undefined {
     return this._currentDirectivePosition.get(dir);
@@ -46,7 +58,7 @@ export class IdentityTracker {
     indexedForest.forEach((root) => this._index(root, null, newNodes, allNodes));
     this._currentDirectiveId.forEach((_: number, dir: any) => {
       if (!allNodes.has(dir)) {
-        removedNodes.push({ directive: dir, isComponent: !!this._isComponent.get(dir) });
+        removedNodes.push({ directive: dir, isComponent: !!this.isComponent.get(dir) });
         // We can't clean these up because during profiling
         // they might be requested for removed components
         // this._currentDirectiveId.delete(dir);
@@ -64,12 +76,12 @@ export class IdentityTracker {
   ): void {
     if (node.component) {
       allNodes.add(node.component.instance);
-      this._isComponent.set(node.component.instance, true);
+      this.isComponent.set(node.component.instance, true);
       this._indexNode(node.component.instance, node.position, newNodes);
     }
     (node.directives || []).forEach((dir) => {
       allNodes.add(dir.instance);
-      this._isComponent.set(dir.instance, false);
+      this.isComponent.set(dir.instance, false);
       this._indexNode(dir.instance, node.position, newNodes);
     });
     node.children.forEach((child) => this._index(child, parent, newNodes, allNodes));
@@ -78,7 +90,7 @@ export class IdentityTracker {
   private _indexNode(directive: any, position: ElementPosition, newNodes: NodeArray): void {
     this._currentDirectivePosition.set(directive, position);
     if (!this._currentDirectiveId.has(directive)) {
-      newNodes.push({ directive, isComponent: !!this._isComponent.get(directive) });
+      newNodes.push({ directive, isComponent: !!this.isComponent.get(directive) });
       this._currentDirectiveId.set(directive, this._directiveIdCounter++);
     }
   }
