@@ -2443,6 +2443,21 @@ describe('MatAutocomplete', () => {
       expect(fixture.componentInstance.selectedValue).toBe(1337);
     }));
 
+    it('should not focus the option when DOWN key is pressed', fakeAsync(() => {
+      const fixture = createComponent(SimpleAutocomplete);
+      const input = fixture.debugElement.query(By.css('input'))!.nativeElement;
+      fixture.detectChanges();
+      const spy = spyOn(console, 'error');
+
+      dispatchKeyboardEvent(input, 'keydown', DOWN_ARROW);
+      dispatchKeyboardEvent(input, 'keydown', DOWN_ARROW);
+      fixture.detectChanges();
+
+      // Note: for some reason the error here gets logged using console.error, rather than being
+      // thrown, hence why we use a spy to assert against it, rather than `.not.toThrow`.
+      expect(spy).not.toHaveBeenCalled();
+    }));
+
   });
 
   it('should have correct width when opened', () => {

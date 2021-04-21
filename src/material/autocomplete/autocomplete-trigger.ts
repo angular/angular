@@ -737,7 +737,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
       // scroll the list to the top. This is better UX than scrolling the list to the
       // top of the option, because it allows the user to read the top group's label.
       autocomplete._setScrollTop(0);
-    } else {
+    } else if (autocomplete.panel) {
       const option = autocomplete.options.toArray()[index];
 
       if (option) {
