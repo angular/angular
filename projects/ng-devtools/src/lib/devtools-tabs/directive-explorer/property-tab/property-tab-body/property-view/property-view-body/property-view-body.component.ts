@@ -22,22 +22,25 @@ export class PropertyViewBodyComponent {
 
   categoryOrder = [0, 1, 2];
 
-  get panels(): { title: string; hidden: boolean; controls: DirectiveTreeData }[] {
+  get panels(): { title: string; hidden: boolean; controls: DirectiveTreeData; documentation: string }[] {
     return [
       {
         title: '@Inputs',
         hidden: this.directiveInputControls.dataSource.data.length === 0,
         controls: this.directiveInputControls,
+        documentation: 'https://angular.io/api/core/Input',
       },
       {
         title: '@Outputs',
         hidden: this.directiveOutputControls.dataSource.data.length === 0,
         controls: this.directiveOutputControls,
+        documentation: 'https://angular.io/api/core/Output',
       },
       {
         title: 'Properties',
         hidden: this.directiveStateControls.dataSource.data.length === 0,
         controls: this.directiveStateControls,
+        documentation: 'https://angular.io/guide/property-binding',
       },
     ];
   }
