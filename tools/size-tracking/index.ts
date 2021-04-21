@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import {readFileSync, writeFileSync} from 'fs';
 
 import {compareFileSizeData} from './file_size_compare';
