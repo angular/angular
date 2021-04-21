@@ -1,4 +1,4 @@
-@use '@material/switch' as mdc-switch;
+@use '@material/switch/deprecated' as mdc-switch;
 @use '@material/form-field' as mdc-form-field;
 @use '@material/ripple' as mdc-ripple;
 @use 'sass:map';

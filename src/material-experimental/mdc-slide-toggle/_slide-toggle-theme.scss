@@ -1,5 +1,5 @@
 @use '@material/theme/theme-color' as mdc-theme-color;
-@use '@material/switch' as mdc-switch;
+@use '@material/switch/deprecated' as mdc-switch;
 @use '@material/form-field' as mdc-form-field;
 @use 'sass:map';
 @use '../mdc-helpers/mdc-helpers';

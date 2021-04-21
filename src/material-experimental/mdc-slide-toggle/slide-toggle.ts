@@ -23,7 +23,7 @@ import {
   Inject,
   Optional,
 } from '@angular/core';
-import {MDCSwitchAdapter, MDCSwitchFoundation} from '@material/switch';
+import {deprecated} from '@material/switch';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   BooleanInput,
@@ -96,8 +96,8 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   private _uniqueId: string = `mat-mdc-slide-toggle-${++nextUniqueId}`;
   private _required: boolean = false;
   private _checked: boolean = false;
-  private _foundation: MDCSwitchFoundation;
-  private _adapter: MDCSwitchAdapter = {
+  private _foundation: deprecated.MDCSwitchFoundation;
+  private _adapter: deprecated.MDCSwitchAdapter = {
     addClass: className => this._switchElement.nativeElement.classList.add(className),
     removeClass: className => this._switchElement.nativeElement.classList.remove(className),
     setNativeControlChecked: checked => this._checked = checked,
@@ -207,7 +207,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   }
 
   ngAfterViewInit() {
-    const foundation = this._foundation = new MDCSwitchFoundation(this._adapter);
+    const foundation = this._foundation = new deprecated.MDCSwitchFoundation(this._adapter);
     foundation.setDisabled(this.disabled);
     foundation.setChecked(this.checked);
 
