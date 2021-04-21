@@ -91,7 +91,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
           ],
         });
 
-        const context: any = global || window;
+        const context: any = globalThis;
         const originalDescriptor = Object.getOwnPropertyDescriptor(context, 'navigator');
         const patchedDescriptor = {value: {serviceWorker: undefined}, configurable: true};
 
@@ -120,7 +120,7 @@ import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockS
              ]
            });
 
-           const context: any = global || window;
+           const context: any = globalThis;
            const originalDescriptor = Object.getOwnPropertyDescriptor(context, 'navigator');
            const patchedDescriptor = {value: {serviceWorker: mock}, configurable: true};
 
