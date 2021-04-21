@@ -94,6 +94,11 @@ describe('TypeScriptAstHost', () => {
       expect(host.isBooleanLiteral(expr('false'))).toBe(true);
     });
 
+    it('should return true if the expression is a minified boolean literal', () => {
+      expect(host.isBooleanLiteral(expr('!0'))).toBe(true);
+      expect(host.isBooleanLiteral(expr('!1'))).toBe(true);
+    });
+
     it('should return false if the expression is not a boolean literal', () => {
       expect(host.isBooleanLiteral(expr('"moo"'))).toBe(false);
       expect(host.isBooleanLiteral(expr('\'moo\''))).toBe(false);
@@ -104,6 +109,8 @@ describe('TypeScriptAstHost', () => {
       expect(host.isBooleanLiteral(expr('null'))).toBe(false);
       expect(host.isBooleanLiteral(expr('\'a\' + \'b\''))).toBe(false);
       expect(host.isBooleanLiteral(expr('\`moo\`'))).toBe(false);
+      expect(host.isBooleanLiteral(expr('!2'))).toBe(false);
+      expect(host.isBooleanLiteral(expr('~1'))).toBe(false);
     });
   });
 
@@ -111,6 +118,11 @@ describe('TypeScriptAstHost', () => {
     it('should extract the boolean value', () => {
       expect(host.parseBooleanLiteral(expr('true'))).toEqual(true);
       expect(host.parseBooleanLiteral(expr('false'))).toEqual(false);
+    });
+
+    it('should extract a minified boolean value', () => {
+      expect(host.parseBooleanLiteral(expr('!0'))).toEqual(true);
+      expect(host.parseBooleanLiteral(expr('!1'))).toEqual(false);
     });
 
     it('should error if the value is not a boolean literal', () => {

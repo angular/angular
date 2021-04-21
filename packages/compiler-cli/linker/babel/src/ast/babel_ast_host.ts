@@ -38,11 +38,18 @@ export class BabelAstHost implements AstHost<t.Expression> {
     return num.value;
   }
 
-  isBooleanLiteral = t.isBooleanLiteral;
+  isBooleanLiteral(bool: t.Expression): boolean {
+    return t.isBooleanLiteral(bool) || isMinifiedBooleanLiteral(bool);
+  }
 
   parseBooleanLiteral(bool: t.Expression): boolean {
-    assert(bool, t.isBooleanLiteral, 'a boolean literal');
-    return bool.value;
+    if (t.isBooleanLiteral(bool)) {
+      return bool.value;
+    } else if (isMinifiedBooleanLiteral(bool)) {
+      return !bool.argument.value;
+    } else {
+      throw new FatalLinkerError(bool, 'Unsupported syntax, expected a boolean literal.');
+    }
   }
 
   isArrayLiteral = t.isArrayExpression;
@@ -164,4 +171,14 @@ type ArgumentType = t.CallExpression['arguments'][number];
  */
 function isNotSpreadArgument(arg: ArgumentType): arg is Exclude<ArgumentType, t.SpreadElement> {
   return !t.isSpreadElement(arg);
+}
+
+type MinifiedBooleanLiteral = t.Expression&t.UnaryExpression&{argument: t.NumericLiteral};
+
+/**
+ * Return true if the node is either `!0` or `!1`.
+ */
+function isMinifiedBooleanLiteral(node: t.Expression): node is MinifiedBooleanLiteral {
+  return t.isUnaryExpression(node) && node.prefix && node.operator === '!' &&
+      t.isNumericLiteral(node.argument) && (node.argument.value === 0 || node.argument.value === 1);
 }
