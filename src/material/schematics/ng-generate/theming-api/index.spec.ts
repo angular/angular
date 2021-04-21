@@ -505,5 +505,70 @@ describe('Material theming API schematic', () => {
     ]);
   });
 
+  it('should replace removed variables with their values', async () => {
+    const app = await createTestApp(runner);
+    app.create('/theme.scss', [
+      `@import '~@angular/material/theming';`,
+      ``,
+      `@include mat-button-toggle-theme();`,
+      ``,
+
+      `.my-button-toggle {`,
+        `height: $mat-button-toggle-standard-height + 10px;`,
+        `transition: $swift-ease-out;`,
+      `}`,
+      ``,
+      `@media ($mat-small) {`,
+        `.my-button-toggle {`,
+          `height: $mat-button-toggle-standard-minimum-height;`,
+        `}`,
+      `}`
+    ].join('\n'));
+
+    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
+    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+      `@use '~@angular/material' as mat;`,
+      ``,
+      `@include mat.button-toggle-theme();`,
+      ``,
+
+      `.my-button-toggle {`,
+        `height: 48px + 10px;`,
+        `transition: all 400ms cubic-bezier(0.25, 0.8, 0.25, 1);`,
+      `}`,
+      ``,
+      `@media ('max-width: 959px') {`,
+        `.my-button-toggle {`,
+          `height: 24px;`,
+        `}`,
+      `}`
+    ]);
+  });
+
+  it('should not replace assignments to removed variables', async () => {
+    const app = await createTestApp(runner);
+    app.create('/theme.scss', [
+      `@import '~@angular/material/theming';`,
+      ``,
+      `$mat-button-toggle-standard-height: 50px;`,
+      `$mat-button-toggle-standard-minimum-height   : 12px;`,
+      `$mat-toggle-padding:10px;`,
+      `$mat-toggle-size:     11px;`,
+      ``,
+      `@include mat-button-toggle-theme();`,
+    ].join('\n'));
+
+    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
+    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+      `@use '~@angular/material' as mat;`,
+      ``,
+      `$mat-button-toggle-standard-height: 50px;`,
+      `$mat-button-toggle-standard-minimum-height   : 12px;`,
+      `$mat-toggle-padding:10px;`,
+      `$mat-toggle-size:     11px;`,
+      ``,
+      `@include mat.button-toggle-theme();`,
+    ]);
+  });
 
 });

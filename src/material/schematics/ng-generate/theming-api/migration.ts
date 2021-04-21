@@ -6,95 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/** Mapping of Material mixins that should be renamed. */
-const materialMixins: Record<string, string> = {
-  'mat-core': 'core',
-  'mat-core-color': 'core-color',
-  'mat-core-theme': 'core-theme',
-  'angular-material-theme': 'all-component-themes',
-  'angular-material-typography': 'all-component-typographies',
-  'angular-material-color': 'all-component-colors',
-  'mat-base-typography': 'typography-hierarchy',
-  'mat-typography-level-to-styles': 'typography-level',
-  'mat-elevation': 'elevation',
-  'mat-overridable-elevation': 'overridable-elevation',
-  'mat-elevation-transition': 'elevation-transition',
-  'mat-ripple': 'ripple',
-  'mat-ripple-color': 'ripple-color',
-  'mat-ripple-theme': 'ripple-theme',
-  'mat-strong-focus-indicators': 'strong-focus-indicators',
-  'mat-strong-focus-indicators-color': 'strong-focus-indicators-color',
-  'mat-strong-focus-indicators-theme': 'strong-focus-indicators-theme',
-  'mat-font-shorthand': 'font-shorthand',
-  // The expansion panel is a special case, because the package is called `expansion`, but the
-  // mixins were prefixed with `expansion-panel`. This was corrected by the Sass module migration.
-  'mat-expansion-panel-theme': 'expansion-theme',
-  'mat-expansion-panel-color': 'expansion-color',
-  'mat-expansion-panel-typography': 'expansion-typography',
-};
-
-// The component themes all follow the same pattern so we can spare ourselves some typing.
-[
-  'option', 'optgroup', 'pseudo-checkbox', 'autocomplete', 'badge', 'bottom-sheet', 'button',
-  'button-toggle', 'card', 'checkbox', 'chips', 'divider', 'table', 'datepicker', 'dialog',
-  'grid-list', 'icon', 'input', 'list', 'menu', 'paginator', 'progress-bar', 'progress-spinner',
-  'radio', 'select', 'sidenav', 'slide-toggle', 'slider', 'stepper', 'sort', 'tabs', 'toolbar',
-  'tooltip', 'snack-bar', 'form-field', 'tree'
-].forEach(name => {
-  materialMixins[`mat-${name}-theme`] = `${name}-theme`;
-  materialMixins[`mat-${name}-color`] = `${name}-color`;
-  materialMixins[`mat-${name}-typography`] = `${name}-typography`;
-});
-
-/** Mapping of Material functions that should be renamed. */
-const materialFunctions: Record<string, string> = {
-  'mat-color': 'get-color-from-palette',
-  'mat-contrast': 'get-contrast-color-from-palette',
-  'mat-palette': 'define-palette',
-  'mat-dark-theme': 'define-dark-theme',
-  'mat-light-theme': 'define-light-theme',
-  'mat-typography-level': 'define-typography-level',
-  'mat-typography-config': 'define-typography-config',
-  'mat-font-size': 'font-size',
-  'mat-line-height': 'line-height',
-  'mat-font-weight': 'font-weight',
-  'mat-letter-spacing': 'letter-spacing',
-  'mat-font-family': 'font-family',
-};
-
-/** Mapping of Material variables that should be renamed. */
-const materialVariables: Record<string, string> = {
-  'mat-light-theme-background': 'light-theme-background-palette',
-  'mat-dark-theme-background': 'dark-theme-background-palette',
-  'mat-light-theme-foreground': 'light-theme-foreground-palette',
-  'mat-dark-theme-foreground': 'dark-theme-foreground-palette',
-};
-
-// The palettes all follow the same pattern.
-[
-  'red', 'pink', 'indigo', 'purple', 'deep-purple', 'blue', 'light-blue', 'cyan', 'teal', 'green',
-  'light-green', 'lime', 'yellow', 'amber', 'orange', 'deep-orange', 'brown', 'grey', 'gray',
-  'blue-grey', 'blue-gray'
-].forEach(name => materialVariables[`mat-${name}`] = `${name}-palette`);
-
-/** Mapping of CDK variables that should be renamed. */
-const cdkVariables: Record<string, string> = {
-  'cdk-z-index-overlay-container': 'overlay-container-z-index',
-  'cdk-z-index-overlay': 'overlay-z-index',
-  'cdk-z-index-overlay-backdrop': 'overlay-backdrop-z-index',
-  'cdk-overlay-dark-backdrop-background': 'overlay-backdrop-color',
-};
-
-/** Mapping of CDK mixins that should be renamed. */
-const cdkMixins: Record<string, string> = {
-  'cdk-overlay': 'overlay',
-  'cdk-a11y': 'a11y-visually-hidden',
-  'cdk-high-contrast': 'high-contrast',
-  'cdk-text-field-autofill-color': 'text-field-autofill-color',
-  // This one was split up into two mixins which is trickier to
-  // migrate so for now we forward to the deprecated variant.
-  'cdk-text-field': 'text-field',
-};
+import {
+  materialMixins,
+  materialFunctions,
+  materialVariables,
+  cdkMixins,
+  cdkVariables,
+  removedMaterialVariables
+} from './config';
 
 /**
  * Migrates the content of a file to the new theming API. Note that this migration is using plain
@@ -129,6 +48,7 @@ export function migrateFileContent(content: string,
       content = removeStrings(content, materialResults.imports);
       content = removeStrings(content, cdkResults.imports);
       content = content.replace(/^\s+/, '');
+      content = replaceRemovedVariables(content, removedMaterialVariables);
     }
   }
 
@@ -345,4 +265,20 @@ function extractNamespaceFromUseStatement(fullImport: string): string {
   }
 
   throw Error(`Could not extract namespace from import "${fullImport}".`);
+}
+
+/**
+ * Replaces variables that have been removed with their values.
+ * @param content Content of the file to be migrated.
+ * @param variables Mapping between variable names and their values.
+ */
+function replaceRemovedVariables(content: string, variables: Record<string, string>): string {
+  Object.keys(variables).sort(sortLengthDescending).forEach(variableName => {
+    // Note that the pattern uses a negative lookahead to exclude
+    // variable assignments, because they can't be migrated.
+    const regex = new RegExp(`\\$${escapeRegExp(variableName)}(?!\\s+:|:)`, 'g');
+    content = content.replace(regex, variables[variableName]);
+  });
+
+  return content;
 }
