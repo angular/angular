@@ -112,7 +112,7 @@ async function getAllOrgMembers() {
 
   while (hasNextPage) {
     const {query, params} = queryBuilder(100, cursor);
-    const results = await graphql(query, params) as typeof MEMBERS_QUERY;
+    const results = await graphql(query.toString(), params) as typeof MEMBERS_QUERY;
 
     results.organization.membersWithRole.nodes.forEach(
         (node: {login: string}) => members.push(node.login));
@@ -237,7 +237,7 @@ async function run(date: string) {
     console.info(['Username', ...buildQueryAndParams('', date).labels].join(','));
 
     for (const username of allOrgMembers) {
-      const results = await graphql(buildQueryAndParams(username, date).query);
+      const results = await graphql(buildQueryAndParams(username, date).query.toString());
       const values = Object.values(results).map(result => `${result.issueCount}`);
       console.info([username, ...values].join(','));
     }

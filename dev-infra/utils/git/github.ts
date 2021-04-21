@@ -75,7 +75,7 @@ export class GithubClient extends Octokit {
           'Cannot query via graphql without an authentication token set, use the authenticated ' +
           '`GitClient` by calling `GitClient.getAuthenticatedInstance()`.');
     }
-    return (await this._graphql(query(queryObject), params)) as T;
+    return (await this._graphql(query(queryObject).toString(), params)) as T;
   }
 
   /** Retrieve the login of the current user from Github. */
