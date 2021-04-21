@@ -70,9 +70,10 @@ describe('createEs2015LinkerPlugin()', () => {
            [
              'var core;',
              `ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core, x: 1});`,
-             `ɵɵngDeclareComponent({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core, foo: () => ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core, x: 2})});`,
+             `i0.ɵɵngDeclareComponent({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core, foo: () => ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core, x: 2})});`,
              `x.qux(() => ɵɵngDeclareDirective({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core, x: 3}));`,
              'spread(...x);',
+             `i0['ɵɵngDeclareDirective']({minVersion: '0.0.0-PLACEHOLDER', version: '0.0.0-PLACEHOLDER', ngImport: core, x: 4});`,
            ].join('\n'),
            {
              plugins: [createEs2015LinkerPlugin({fileSystem, logger})],
@@ -93,7 +94,11 @@ describe('createEs2015LinkerPlugin()', () => {
          [
            'ɵɵngDeclareDirective',
            '{minVersion:\'0.0.0-PLACEHOLDER\',version:\'0.0.0-PLACEHOLDER\',ngImport:core,x:3}'
-         ]
+         ],
+         [
+           'ɵɵngDeclareDirective',
+           '{minVersion:\'0.0.0-PLACEHOLDER\',version:\'0.0.0-PLACEHOLDER\',ngImport:core,x:4}'
+         ],
        ]);
      });
 
