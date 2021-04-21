@@ -4116,6 +4116,11 @@ copy-webpack-plugin@8.1.1:
     schema-utils "^3.0.0"
     serialize-javascript "^5.0.1"
 
+core-js-bundle@^3.10.2:
+  version "3.10.2"
+  resolved "https://registry.yarnpkg.com/core-js-bundle/-/core-js-bundle-3.10.2.tgz#16734b2674373afa40f0533b985a1c9e87bd426f"
+  integrity sha512-cU/daFGOLWwtNAdXBksUl2HNqPOaM5g6bMxJ8doMw9PkshbWSzUweog2EEJsIlgmCCAFI0NLDBl4SD2TzZEevw==
+
 core-js-compat@^3.6.2, core-js-compat@^3.8.1:
   version "3.10.0"
   resolved "https://registry.yarnpkg.com/core-js-compat/-/core-js-compat-3.10.0.tgz#3600dc72869673c110215ee7a005a8609dea0fe1"
@@ -4128,11 +4133,6 @@ core-js@3.10.1:
   version "3.10.1"
   resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.10.1.tgz#e683963978b6806dcc6c0a4a8bd4ab0bdaf3f21a"
   integrity sha512-pwCxEXnj27XG47mu7SXAwhLP3L5CrlvCB91ANUkIz40P27kUcvNfSdvyZJ9CLHiVoKSp+TTChMQMSKQEH/IQxA==
-
-core-js@^2.4.1:
-  version "2.6.12"
-  resolved "https://registry.yarnpkg.com/core-js/-/core-js-2.6.12.tgz#d9333dfa7b065e347cc5682219d6f690859cc2ec"
-  integrity sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==
 
 core-util-is@1.0.2, core-util-is@~1.0.0:
   version "1.0.2"

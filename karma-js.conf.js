@@ -37,7 +37,7 @@ module.exports = function(config) {
       {pattern: 'node_modules/angular/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false, watched: false},
 
-      'node_modules/core-js/client/core.js',
+      'node_modules/core-js-bundle/index.js',
       'node_modules/jasmine-ajax/lib/mock-ajax.js',
 
       // Dependencies built by Bazel. See `config.yml` for steps running before
