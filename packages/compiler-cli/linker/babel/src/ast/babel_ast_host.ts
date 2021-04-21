@@ -38,10 +38,15 @@ export class BabelAstHost implements AstHost<t.Expression> {
     return num.value;
   }
 
-  isBooleanLiteral = t.isBooleanLiteral;
+  isBooleanLiteral(bool: t.Expression): bool is t.BooleanLiteral|MinifiedBooleanLiteral {
+    return t.isBooleanLiteral(bool) || isMinifiedBooleanLiteral(bool);
+  }
 
   parseBooleanLiteral(bool: t.Expression): boolean {
-    assert(bool, t.isBooleanLiteral, 'a boolean literal');
+    assert(bool, this.isBooleanLiteral, 'a boolean literal');
+    if (isMinifiedBooleanLiteral(bool)) {
+      return !(bool as MinifiedBooleanLiteral).argument.value;
+    }
     return bool.value;
   }
 
@@ -164,4 +169,14 @@ type ArgumentType = t.CallExpression['arguments'][number];
  */
 function isNotSpreadArgument(arg: ArgumentType): arg is Exclude<ArgumentType, t.SpreadElement> {
   return !t.isSpreadElement(arg);
+}
+
+type MinifiedBooleanLiteral = t.Expression&t.UnaryExpression&{argument: t.NumericLiteral};
+
+/**
+ * Return true if the node is either `!0` or `!1`.
+ */
+function isMinifiedBooleanLiteral(node: t.Expression): node is MinifiedBooleanLiteral {
+  return t.isUnaryExpression(node) && node.prefix && node.operator === '!' &&
+      t.isNumericLiteral(node.argument) && (node.argument.value === 0 || node.argument.value === 1);
 }

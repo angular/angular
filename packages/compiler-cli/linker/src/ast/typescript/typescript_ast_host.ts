@@ -47,12 +47,18 @@ export class TypeScriptAstHost implements AstHost<ts.Expression> {
     return parseInt(num.text);
   }
 
-  isBooleanLiteral(node: ts.Expression): node is ts.FalseLiteral|ts.TrueLiteral {
-    return node.kind === ts.SyntaxKind.TrueKeyword || node.kind === ts.SyntaxKind.FalseKeyword;
+  isBooleanLiteral(node: ts.Expression): node is ts.FalseLiteral|ts.TrueLiteral
+      |MinifiedBooleanLiteral {
+    return node.kind === ts.SyntaxKind.TrueKeyword || node.kind === ts.SyntaxKind.FalseKeyword ||
+        isMinifiedBooleanLiteral(node);
   }
 
   parseBooleanLiteral(bool: ts.Expression): boolean {
     assert(bool, this.isBooleanLiteral, 'a boolean literal');
+    if (isMinifiedBooleanLiteral(bool)) {
+      // Convert the string operand ("0" or "1") to a number and negate it to get the boolean.
+      return !(+bool.operand.text);
+    }
     return bool.kind === ts.SyntaxKind.TrueKeyword;
   }
 
@@ -159,4 +165,14 @@ function isNotSpreadElement(e: ts.Expression|ts.SpreadElement): e is ts.Expressi
  */
 function isPropertyName(e: ts.PropertyName): e is ts.Identifier|ts.StringLiteral|ts.NumericLiteral {
   return ts.isIdentifier(e) || ts.isStringLiteral(e) || ts.isNumericLiteral(e);
+}
+
+type MinifiedBooleanLiteral = ts.PrefixUnaryExpression&{operand: ts.NumericLiteral};
+
+/**
+ * Return true if the node is either `!0` or `!1`.
+ */
+function isMinifiedBooleanLiteral(node: ts.Expression): node is MinifiedBooleanLiteral {
+  return ts.isPrefixUnaryExpression(node) && node.operator === ts.SyntaxKind.ExclamationToken &&
+      ts.isNumericLiteral(node.operand) && (node.operand.text === '0' || node.operand.text === '1');
 }

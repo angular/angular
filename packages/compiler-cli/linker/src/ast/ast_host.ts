@@ -36,11 +36,17 @@ export interface AstHost<TExpression> {
   parseNumericLiteral(num: TExpression): number;
 
   /**
-   * Return `true` if the given expression is a boolean literal, or false otherwise.
+   * Return `true` if the given expression can be considered a boolean literal, or false otherwise.
+   *
+   * Note that this should also cover the special case of some minified code where `true` and
+   * `false` are replaced by `!0` and `!1` respectively.
    */
   isBooleanLiteral(node: TExpression): boolean;
   /**
    * Parse the boolean value from the given expression, or throw if it is not a boolean literal.
+   *
+   * Note that this should also cover the special case of some minified code where `true` and
+   * `false` are replaced by `!0` and `!1` respectively.
    */
   parseBooleanLiteral(bool: TExpression): boolean;
 
