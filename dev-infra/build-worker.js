@@ -106,7 +106,7 @@ var GithubClient = /** @class */ (function (_super) {
                             throw new GithubGraphqlClientError('Cannot query via graphql without an authentication token set, use the authenticated ' +
                                 '`GitClient` by calling `GitClient.getAuthenticatedInstance()`.');
                         }
-                        return [4 /*yield*/, this._graphql(typedGraphqlify.query(queryObject), params)];
+                        return [4 /*yield*/, this._graphql(typedGraphqlify.query(queryObject).toString(), params)];
                     case 1: return [2 /*return*/, (_a.sent())];
                 }
             });

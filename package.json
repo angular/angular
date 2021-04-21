@@ -200,7 +200,7 @@
     "ts-node": "^9.1.1",
     "tslint-eslint-rules": "5.4.0",
     "tslint-no-toplevel-property-access": "0.0.2",
-    "typed-graphqlify": "^2.3.0",
+    "typed-graphqlify": "^3.1.1",
     "vlq": "1.0.1",
     "vrsource-tslint-rules": "6.0.0"
   },
