@@ -1,7 +1,3 @@
-:host {
-  height: 60px;
-}
-
 .visual-controls {
   display: flex;
   flex-direction: column;
@@ -20,7 +16,7 @@
   white-space: nowrap;
   flex-wrap: wrap;
   justify-content: center;
-  padding: 5px;
+  padding: 15px 5px 5px;
 
   button {
     height: 50px;

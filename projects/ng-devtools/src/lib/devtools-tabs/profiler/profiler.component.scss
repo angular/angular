@@ -44,15 +44,9 @@
 }
 
 #profiler-content-wrapper {
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-}
-
-.recording,
-#profiler-content-wrapper {
   margin: 0;
-  height: calc(100% - 24px);
+  height: calc(100% - 30px);
+  width: 100%;
 }
 
 .visualization {

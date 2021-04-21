@@ -2,7 +2,7 @@
 
 <p class="info" *ngIf="!hasFrames && visualizing">There's no information to show.</p>
 
-<div style="margin: 10px; height: 100%;">
+<div class="timeline-wrapper">
   <ng-timeline-controls
     [class.hidden]="!hasFrames"
     [record]="frame"

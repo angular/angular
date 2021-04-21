@@ -2,7 +2,8 @@
   font-size: 11px;
   width: 100%;
   height: 100%;
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 .info {
@@ -17,4 +18,11 @@
     display: none breaks the virtual scroll
   */
   visibility: hidden;
+}
+
+.timeline-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0 10px;
 }
