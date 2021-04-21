@@ -38,7 +38,7 @@
       "aliases": ["material-tree"]
     },
     "addressForm": {
-      "description": "Create a component with a address form",
+      "description": "Create a component with an address form",
       "factory": "./ng-generate/address-form/index",
       "schema": "./ng-generate/address-form/schema.json",
       "aliases": ["address-form", "material-address-form", "material-addressForm"]
