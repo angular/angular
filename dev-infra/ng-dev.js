@@ -5,7 +5,7 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 
 var yargs = require('yargs');
 var tslib = require('tslib');
-var chalk = _interopDefault(require('chalk'));
+var chalk = require('chalk');
 var fs = require('fs');
 var inquirer = require('inquirer');
 var path = require('path');

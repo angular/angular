@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import {writeFileSync} from 'fs';
 import {prompt} from 'inquirer';
 import {join} from 'path';
@@ -15,11 +15,11 @@ import {Arguments} from 'yargs';
 import {GitClient} from './git/index';
 
 /** Reexport of chalk colors for convenient access. */
-export const red: typeof chalk = chalk.red;
-export const green: typeof chalk = chalk.green;
-export const yellow: typeof chalk = chalk.yellow;
-export const bold: typeof chalk = chalk.bold;
-export const blue: typeof chalk = chalk.blue;
+export const red = chalk.red;
+export const green = chalk.green;
+export const yellow = chalk.yellow;
+export const bold = chalk.bold;
+export const blue = chalk.blue;
 
 /** Prompts the user with a confirmation question and a specified message. */
 export async function promptConfirm(message: string, defaultValue = false): Promise<boolean> {
