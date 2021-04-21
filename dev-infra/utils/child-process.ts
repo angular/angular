@@ -19,6 +19,8 @@ export interface SpawnedProcessOptions extends Omit<SpawnOptions, 'stdio'> {
 export interface SpawnedProcessResult {
   /** Captured stdout in string format. */
   stdout: string;
+  /** Captured stderr in string format. */
+  stderr: string;
 }
 
 /**
@@ -26,7 +28,7 @@ export interface SpawnedProcessResult {
  * output is captured and returned as resolution on completion. Depending on the chosen
  * output mode, stdout/stderr output is also printed to the console, or only on error.
  *
- * @returns a Promise resolving with captured stdout on success. The promise
+ * @returns a Promise resolving with captured stdout and stderr on success. The promise
  *   rejects on command failure.
  */
 export function spawnWithDebugOutput(
@@ -42,10 +44,12 @@ export function spawnWithDebugOutput(
         spawn(command, args, {...options, shell: true, stdio: ['inherit', 'pipe', 'pipe']});
     let logOutput = '';
     let stdout = '';
+    let stderr = '';
 
     // Capture the stdout separately so that it can be passed as resolve value.
     // This is useful if commands return parsable stdout.
     childProcess.stderr.on('data', message => {
+      stderr += message;
       logOutput += message;
       // If console output is enabled, print the message directly to the stderr. Note that
       // we intentionally print all output to stderr as stdout should not be polluted.
@@ -73,7 +77,7 @@ export function spawnWithDebugOutput(
       // On success, resolve the promise. Otherwise reject with the captured stderr
       // and stdout log output if the output mode was set to `silent`.
       if (status === 0) {
-        resolve({stdout});
+        resolve({stdout, stderr});
       } else {
         reject(outputMode === 'silent' ? logOutput : undefined);
       }
