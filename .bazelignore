@@ -29,7 +29,6 @@ integration/hello_world__systemjs_umd/node_modules
 integration/i18n/node_modules
 integration/injectable-def/node_modules
 integration/ivy-i18n/node_modules
-integration/language_service_plugin/node_modules
 integration/ng_elements/node_modules
 integration/ng_elements_schematics/node_modules
 integration/ng_update/node_modules
@@ -56,7 +55,6 @@ integration/hello_world__systemjs_umd/.yarn_local_cache
 integration/i18n/.yarn_local_cache
 integration/injectable-def/.yarn_local_cache
 integration/ivy-i18n/.yarn_local_cache
-integration/language_service_plugin/.yarn_local_cache
 integration/ng_elements/.yarn_local_cache
 integration/ng_elements_schematics/.yarn_local_cache
 integration/ng_update/.yarn_local_cache
@@ -83,7 +81,6 @@ integration/hello_world__systemjs_umd/NPM_PACKAGE_MANIFEST.json
 integration/i18n/NPM_PACKAGE_MANIFEST.json
 integration/injectable-def/NPM_PACKAGE_MANIFEST.json
 integration/ivy-i18n/NPM_PACKAGE_MANIFEST.json
-integration/language_service_plugin/NPM_PACKAGE_MANIFEST.json
 integration/ng_elements/NPM_PACKAGE_MANIFEST.json
 integration/ng_elements_schematics/NPM_PACKAGE_MANIFEST.json
 integration/ng_update/NPM_PACKAGE_MANIFEST.json
