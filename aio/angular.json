@@ -31,15 +31,9 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "webWorkerTsConfig": "tsconfig.worker.json",
-            "aot": true,
-            "optimization": true,
-            "buildOptimizer": true,
             "outputHashing": "all",
             "sourceMap": true,
-            "statsJson": true,
-            "extractLicenses": true,
             "namedChunks": true,
-            "vendorChunk": false,
             "assets": [
               "src/assets",
               "src/generated",
@@ -59,6 +53,7 @@
           },
           "configurations": {
             "fast": {
+              "buildOptimizer": false,
               "optimization": false
             },
             "next": {
