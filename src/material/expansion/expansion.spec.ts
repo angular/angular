@@ -37,6 +37,7 @@ describe('MatExpansionPanel', () => {
         LazyPanelWithContent,
         LazyPanelOpenOnLoad,
         PanelWithTwoWayBinding,
+        PanelWithHeaderTabindex,
       ],
     });
     TestBed.compileComponents();
@@ -383,6 +384,14 @@ describe('MatExpansionPanel', () => {
     expect(header.nativeElement.style.height).toBe('10px');
   });
 
+  it('should be able to set a custom tabindex on the header', fakeAsync(() => {
+    const fixture = TestBed.createComponent(PanelWithHeaderTabindex);
+    const headerEl = fixture.nativeElement.querySelector('.mat-expansion-panel-header');
+    fixture.detectChanges();
+
+    expect(headerEl.getAttribute('tabindex')).toBe('7');
+  }));
+
   describe('disabled state', () => {
     let fixture: ComponentFixture<PanelWithContent>;
     let panel: HTMLElement;
@@ -487,6 +496,15 @@ describe('MatExpansionPanel', () => {
         expect(header.classList).not.toContain('mat-expanded');
       });
 
+    it('should update the tabindex if the header becomes disabled', () => {
+      expect(header.getAttribute('tabindex')).toBe('0');
+
+      fixture.componentInstance.disabled = true;
+      fixture.detectChanges();
+
+      expect(header.getAttribute('tabindex')).toBe('-1');
+    });
+
   });
 });
 
@@ -577,4 +595,13 @@ class LazyPanelOpenOnLoad {}
 })
 class PanelWithTwoWayBinding {
   expanded = false;
+}
+
+@Component({
+  template: `
+  <mat-expansion-panel>
+    <mat-expansion-panel-header tabindex="7">Panel Title</mat-expansion-panel-header>
+  </mat-expansion-panel>`
+})
+class PanelWithHeaderTabindex {
 }

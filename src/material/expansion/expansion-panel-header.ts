@@ -10,6 +10,7 @@ import {FocusableOption, FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {ENTER, hasModifierKey, SPACE} from '@angular/cdk/keycodes';
 import {
   AfterViewInit,
+  Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -23,6 +24,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {HasTabIndex, HasTabIndexCtor, mixinTabIndex} from '@angular/material/core';
+import {NumberInput} from '@angular/cdk/coercion';
 import {EMPTY, merge, Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {MatAccordionTogglePosition} from './accordion-base';
@@ -34,6 +37,15 @@ import {
 } from './expansion-panel';
 
 
+// Boilerplate for applying mixins to MatExpansionPanelHeader.
+/** @docs-private */
+abstract class MatExpansionPanelHeaderBase {
+  abstract readonly disabled: boolean;
+}
+const _MatExpansionPanelHeaderMixinBase:
+    HasTabIndexCtor &
+    typeof MatExpansionPanelHeaderBase = mixinTabIndex(MatExpansionPanelHeaderBase);
+
 /**
  * Header element of a `<mat-expansion-panel>`.
  */
@@ -43,6 +55,7 @@ import {
   templateUrl: 'expansion-panel-header.html',
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
+  inputs: ['tabIndex'],
   animations: [
     matExpansionAnimations.indicatorRotate,
   ],
@@ -50,7 +63,7 @@ import {
     'class': 'mat-expansion-panel-header mat-focus-indicator',
     'role': 'button',
     '[attr.id]': 'panel._headerId',
-    '[attr.tabindex]': 'disabled ? -1 : 0',
+    '[attr.tabindex]': 'tabIndex',
     '[attr.aria-controls]': '_getPanelId()',
     '[attr.aria-expanded]': '_isExpanded()',
     '[attr.aria-disabled]': 'panel.disabled',
@@ -63,7 +76,8 @@ import {
     '(keydown)': '_keydown($event)',
   },
 })
-export class MatExpansionPanelHeader implements AfterViewInit, OnDestroy, FocusableOption {
+export class MatExpansionPanelHeader extends _MatExpansionPanelHeaderMixinBase implements
+  AfterViewInit, OnDestroy, FocusableOption, HasTabIndex {
   private _parentChangeSubscription = Subscription.EMPTY;
 
   constructor(
@@ -73,11 +87,14 @@ export class MatExpansionPanelHeader implements AfterViewInit, OnDestroy, Focusa
       private _changeDetectorRef: ChangeDetectorRef,
       @Inject(MAT_EXPANSION_PANEL_DEFAULT_OPTIONS) @Optional()
           defaultOptions?: MatExpansionPanelDefaultOptions,
-      @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+      @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+      @Attribute('tabindex') tabIndex?: string) {
+    super();
     const accordionHideToggleChange = panel.accordion ?
         panel.accordion._stateChanges.pipe(
             filter(changes => !!(changes['hideToggle'] || changes['togglePosition']))) :
         EMPTY;
+    this.tabIndex = parseInt(tabIndex || '') || 0;
 
     // Since the toggle state depends on an @Input on the panel, we
     // need to subscribe and trigger change detection manually.
@@ -210,6 +227,8 @@ export class MatExpansionPanelHeader implements AfterViewInit, OnDestroy, Focusa
     this._parentChangeSubscription.unsubscribe();
     this._focusMonitor.stopMonitoring(this._element);
   }
+
+  static ngAcceptInputType_tabIndex: NumberInput;
 }
 
 /**

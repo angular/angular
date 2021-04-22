@@ -95,13 +95,13 @@ export declare class MatExpansionPanelDescription {
     static ɵfac: i0.ɵɵFactoryDeclaration<MatExpansionPanelDescription, never>;
 }
 
-export declare class MatExpansionPanelHeader implements AfterViewInit, OnDestroy, FocusableOption {
+export declare class MatExpansionPanelHeader extends _MatExpansionPanelHeaderMixinBase implements AfterViewInit, OnDestroy, FocusableOption, HasTabIndex {
     _animationMode?: string | undefined;
     collapsedHeight: string;
     get disabled(): boolean;
     expandedHeight: string;
     panel: MatExpansionPanel;
-    constructor(panel: MatExpansionPanel, _element: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, defaultOptions?: MatExpansionPanelDefaultOptions, _animationMode?: string | undefined);
+    constructor(panel: MatExpansionPanel, _element: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, defaultOptions?: MatExpansionPanelDefaultOptions, _animationMode?: string | undefined, tabIndex?: string);
     _getExpandedState(): string;
     _getHeaderHeight(): string | null;
     _getPanelId(): string;
@@ -113,8 +113,9 @@ export declare class MatExpansionPanelHeader implements AfterViewInit, OnDestroy
     focus(origin?: FocusOrigin, options?: FocusOptions): void;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
-    static ɵcmp: i0.ɵɵComponentDeclaration<MatExpansionPanelHeader, "mat-expansion-panel-header", never, { "expandedHeight": "expandedHeight"; "collapsedHeight": "collapsedHeight"; }, {}, never, ["mat-panel-title", "mat-panel-description", "*"]>;
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatExpansionPanelHeader, [{ host: true; }, null, null, null, { optional: true; }, { optional: true; }]>;
+    static ngAcceptInputType_tabIndex: NumberInput;
+    static ɵcmp: i0.ɵɵComponentDeclaration<MatExpansionPanelHeader, "mat-expansion-panel-header", never, { "tabIndex": "tabIndex"; "expandedHeight": "expandedHeight"; "collapsedHeight": "collapsedHeight"; }, {}, never, ["mat-panel-title", "mat-panel-description", "*"]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatExpansionPanelHeader, [{ host: true; }, null, null, null, { optional: true; }, { optional: true; }, { attribute: "tabindex"; }]>;
 }
 
 export declare type MatExpansionPanelState = 'expanded' | 'collapsed';
