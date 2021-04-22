@@ -85,27 +85,27 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "11.2.10",
-    "@angular/cdk": "11.2.9",
-    "@angular/common": "11.2.10",
-    "@angular/compiler": "11.2.10",
-    "@angular/core": "11.2.10",
-    "@angular/elements": "11.2.10",
-    "@angular/forms": "11.2.10",
-    "@angular/material": "11.2.9",
-    "@angular/platform-browser": "11.2.10",
-    "@angular/platform-browser-dynamic": "11.2.10",
-    "@angular/router": "11.2.10",
-    "@angular/service-worker": "11.2.10",
+    "@angular/animations": "12.0.0-rc.0",
+    "@angular/cdk": "12.0.0-rc.0",
+    "@angular/common": "12.0.0-rc.0",
+    "@angular/compiler": "12.0.0-rc.0",
+    "@angular/core": "12.0.0-rc.0",
+    "@angular/elements": "12.0.0-rc.0",
+    "@angular/forms": "12.0.0-rc.0",
+    "@angular/material": "12.0.0-rc.0",
+    "@angular/platform-browser": "12.0.0-rc.0",
+    "@angular/platform-browser-dynamic": "12.0.0-rc.0",
+    "@angular/router": "12.0.0-rc.0",
+    "@angular/service-worker": "12.0.0-rc.0",
     "@webcomponents/custom-elements": "1.4.3",
     "rxjs": "^6.6.7",
     "tslib": "^2.1.0",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "0.1102.9",
-    "@angular/cli": "11.2.9",
-    "@angular/compiler-cli": "11.2.10",
+    "@angular-devkit/build-angular": "12.0.0-rc.0",
+    "@angular/cli": "12.0.0-rc.0",
+    "@angular/compiler-cli": "12.0.0-rc.0",
     "@swc/cli": "^0.1.36",
     "@swc/core": "^1.2.51",
     "@types/jasmine": "~3.6.9",
@@ -176,10 +176,5 @@
     "watchr": "^6.9.0",
     "xregexp": "^5.0.2",
     "yargs": "^16.2.0"
-  },
-  "// 1": "Needed until AIO moves to CLI version 12.",
-  "// 2": "Due to https://github.com/GoogleChromeLabs/worker-plugin/blob/049c3caea9f1fa00983c139480adf06ee24ce5d5/src/index.js#L20-L27 ",
-  "resolutions": {
-    "worker-plugin": "4.0.3"
   }
 }
