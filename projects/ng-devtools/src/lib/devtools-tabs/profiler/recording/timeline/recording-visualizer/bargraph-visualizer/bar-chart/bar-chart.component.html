@@ -6,7 +6,8 @@
     class="bar"
     [style.backgroundColor]="color"
     [style.width.%]="bar.value"
+    [matTooltip]="bar.label"
   >
-    <span [matTooltip]="bar.label">{{ bar.label }}</span>
+    <span>{{ bar.label }}</span>
   </div>
 </div>

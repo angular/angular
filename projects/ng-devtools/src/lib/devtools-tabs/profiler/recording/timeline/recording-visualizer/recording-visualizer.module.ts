@@ -9,7 +9,7 @@ import { FlamegraphVisualizerComponent } from './flamegraph-visualizer/flamegrap
 import { BargraphVisualizerComponent } from './bargraph-visualizer/bargraph-visualizer.component';
 import { TreeMapVisualizerComponent } from './tree-map-visualizer/tree-map-visualizer.component';
 import { TimelineVisualizerComponent } from './timeline-visualizer.component';
-import { BarChartComponent } from './bar-chart/bar-chart.component';
+import { BarChartComponent } from './bargraph-visualizer/bar-chart/bar-chart.component';
 import { ExecutionDetailsComponent } from './execution-details/execution-details.component';
 import { AngularSplitModule } from 'projects/ng-devtools/src/lib/vendor/angular-split/lib/module';
 import { MatTooltipModule } from '@angular/material/tooltip';
