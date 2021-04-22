@@ -10,7 +10,6 @@ import { ProfilerFrame } from 'protocol';
 export class TimelineControlsComponent {
   @Input() record: ProfilerFrame | undefined;
   @Input() estimatedFrameRate: number;
-  @Input() frameColor: string;
   @Input() visualizationMode: VisualizationMode;
   @Input() empty: boolean;
   @Input() changeDetection: boolean;
