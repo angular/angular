@@ -4,7 +4,7 @@
 const path = require('canonical-path');
 const fs = require('fs-extra');
 const globby = require('globby');
-const jsdom = require('jsdom');
+const { JSDOM } = require('jsdom');
 const json5 = require('json5');
 
 const regionExtractor = require('../transforms/examples-package/services/region-parser');
@@ -30,7 +30,8 @@ class StackblitzBuilder {
         // console.log('***'+configFileName)
         this._buildStackblitzFrom(configFileName);
       } catch (e) {
-        console.log(e);
+        console.error(e);
+        process.exit(1);
       }
     });
   }
@@ -249,7 +250,8 @@ class StackblitzBuilder {
 
   _createStackblitzHtml(config, postData) {
     const baseHtml = this._createBaseStackblitzHtml(config);
-    const doc = jsdom.jsdom(baseHtml);
+    const dom = new JSDOM(baseHtml);
+    const doc = dom.window.document;
     const form = doc.querySelector('form');
 
     for(const [key, value] of Object.entries(postData)) {
