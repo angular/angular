@@ -1,0 +1,57 @@
+load("@bazel_tools//tools/cpp:cc_toolchain_config.bzl", "cc_toolchain_config")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "files",
+    srcs = ["BUILD.bazel"],
+)
+
+cc_toolchain_suite(
+    name = "cc_toolchain_suite",
+    toolchains = {
+        "k8": ":cc_compiler_k8",
+    },
+)
+
+toolchain(
+    name = "cc_toolchain",
+    exec_compatible_with = [
+        "@bazel_tools//platforms:linux",
+        "@bazel_tools//platforms:x86_64",
+        "@bazel_tools//tools/cpp:clang",
+    ],
+    target_compatible_with = [
+        "@bazel_tools//platforms:linux",
+        "@bazel_tools//platforms:x86_64",
+    ],
+    toolchain = ":cc_compiler_k8",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+)
+
+# Basic CC toolchain for k8 remote containers. Based on the default k8
+# toolchain provided in Bazel (but unfortunately internal).
+# https://github.com/bazelbuild/bazel/blob/c951753097b45cfb9be512c02199aa891b9646b8/tools/cpp/BUILD.tools#L298-L311
+cc_toolchain(
+    name = "cc_compiler_k8",
+    all_files = ":empty",
+    ar_files = ":empty",
+    as_files = ":empty",
+    compiler_files = ":empty",
+    dwp_files = ":empty",
+    linker_files = ":empty",
+    objcopy_files = ":empty",
+    strip_files = ":empty",
+    supports_param_files = 1,
+    toolchain_config = ":k8_toolchain_config",
+    toolchain_identifier = "cc-k8-compiler",
+)
+
+cc_toolchain_config(
+    name = "k8_toolchain_config",
+    compiler = "compiler",
+    cpu = "local",
+)
+
+# Empty filegroup used for defining the CC toolchain.
+filegroup(name = "empty")
