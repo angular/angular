@@ -46,7 +46,7 @@
     "@angular-devkit/core": "12.0.0-next.9",
     "@angular-devkit/schematics": "12.0.0-next.9",
     "@angular/cli": "12.0.0-next.9",
-    "@babel/cli": "7.13.14",
+    "@babel/cli": "7.13.16",
     "@babel/core": "7.8.6",
     "@babel/generator": "7.8.6",
     "@babel/parser": "7.9.4",
