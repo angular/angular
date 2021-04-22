@@ -38,16 +38,18 @@ export class BabelAstHost implements AstHost<t.Expression> {
     return num.value;
   }
 
-  isBooleanLiteral(bool: t.Expression): bool is t.BooleanLiteral|MinifiedBooleanLiteral {
+  isBooleanLiteral(bool: t.Expression): boolean {
     return t.isBooleanLiteral(bool) || isMinifiedBooleanLiteral(bool);
   }
 
   parseBooleanLiteral(bool: t.Expression): boolean {
-    assert(bool, this.isBooleanLiteral, 'a boolean literal');
-    if (isMinifiedBooleanLiteral(bool)) {
-      return !(bool as MinifiedBooleanLiteral).argument.value;
+    if (t.isBooleanLiteral(bool)) {
+      return bool.value;
+    } else if (isMinifiedBooleanLiteral(bool)) {
+      return !bool.argument.value;
+    } else {
+      throw new FatalLinkerError(bool, 'Unsupported syntax, expected a boolean literal.');
     }
-    return bool.value;
   }
 
   isArrayLiteral = t.isArrayExpression;

@@ -109,6 +109,8 @@ describe('TypeScriptAstHost', () => {
       expect(host.isBooleanLiteral(expr('null'))).toBe(false);
       expect(host.isBooleanLiteral(expr('\'a\' + \'b\''))).toBe(false);
       expect(host.isBooleanLiteral(expr('\`moo\`'))).toBe(false);
+      expect(host.isBooleanLiteral(expr('!2'))).toBe(false);
+      expect(host.isBooleanLiteral(expr('~1'))).toBe(false);
     });
   });
 
