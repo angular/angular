@@ -19,7 +19,7 @@ import {ReleaseAction} from '../actions';
 import {actions} from '../actions/index';
 import {changelogPath} from '../constants';
 
-import {getChangelogForVersion, getTestingMocksForReleaseAction, parse, setupReleaseActionForTesting, testTmpDir} from './test-utils';
+import {fakeNpmPackageQueryRequest, getChangelogForVersion, getTestingMocksForReleaseAction, parse, setupReleaseActionForTesting, testTmpDir} from './test-utils';
 
 describe('common release action logic', () => {
   const baseReleaseTrains: ActiveReleaseTrains = {
@@ -36,15 +36,11 @@ describe('common release action logic', () => {
     };
 
     it('should not modify release train versions and cause invalid other actions', async () => {
-      // The cached npm package information needs to be deleted as depending on the test order
-      // their may or may not be packages in the cache, causing the number of active LTS branches
-      // in this test to be 2 instead of 0.
-      for (const packageName in _npmPackageInfoCache) {
-        delete _npmPackageInfoCache[packageName];
-      }
-
       const {releaseConfig, gitClient} = getTestingMocksForReleaseAction();
       const descriptions: string[] = [];
+
+      // Fake the NPM package request as otherwise the test would rely on `npmjs.org`.
+      fakeNpmPackageQueryRequest(releaseConfig.npmPackages[0], {'dist-tags': {}});
 
       for (const actionCtor of actions) {
         if (await actionCtor.isActive(testReleaseTrain)) {
