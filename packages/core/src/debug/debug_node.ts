@@ -320,9 +320,9 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       return {};
     }
 
-    const lView = context.lView;
+    const lView = context.lView!;
     ngDevMode && assertLView(lView);
-    const tNodeAttrs = (lView![TVIEW].data[context.nodeIndex] as TNode).attrs;
+    const tNodeAttrs = (lView[TVIEW].data[context.nodeIndex] as TNode).attrs;
     const lowercaseTNodeAttrs: string[] = [];
 
     // For debug nodes we take the element's attribute directly from the DOM since it allows us

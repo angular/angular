@@ -41,14 +41,14 @@ export class LContext {
 
   /** Component's parent view data. */
   get lView(): LView|null {
-    return getLViewById(this._lViewId);
+    return getLViewById(this.lViewId);
   }
 
   constructor(
       /**
        * ID of the component's parent view data.
        */
-      private _lViewId: number,
+      private lViewId: number,
 
       /**
        * The index instance of the node.

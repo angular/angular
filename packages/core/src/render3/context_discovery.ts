@@ -194,10 +194,7 @@ export function attachPatchData(target: any, data: LView|LContext) {
 export function readPatchedData(target: any): LView|LContext|null {
   ngDevMode && assertDefined(target, 'Target expected');
   const data = target[MONKEY_PATCH_KEY_NAME];
-  if (typeof data === 'number') {
-    return getLViewById(data);
-  }
-  return data || null;
+  return (typeof data === 'number') ? getLViewById(data) : data || null;
 }
 
 export function readPatchedLView(target: any): LView|null {
