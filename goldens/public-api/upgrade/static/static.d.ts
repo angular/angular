@@ -22,6 +22,7 @@ export declare function setAngularJSGlobal(ng: any): void;
 export declare function setAngularLib(ng: any): void;
 
 export declare class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
+    protected $componentScope: IScope;
     constructor(name: string, elementRef: ElementRef, injector: Injector);
     ngDoCheck(): void;
     ngOnChanges(changes: SimpleChanges): void;
