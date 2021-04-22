@@ -9,6 +9,10 @@
     position: absolute;
     width: 1px;
 
+    // This works around a Chrome bug that can cause the tab to crash when large amounts of
+    // non-English text get wrapped: https://bugs.chromium.org/p/chromium/issues/detail?id=1201444
+    white-space: nowrap;
+
     // Avoid browsers rendering the focus ring in some cases.
     outline: 0;
 
