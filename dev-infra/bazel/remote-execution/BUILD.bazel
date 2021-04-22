@@ -1,0 +1,28 @@
+package(default_visibility = ["//visibility:public"])
+
+platform(
+    name = "platform",
+    constraint_values = [
+        "@bazel_tools//platforms:linux",
+        "@bazel_tools//platforms:x86_64",
+        "@bazel_tools//tools/cpp:clang",
+    ],
+    remote_execution_properties = """
+        properties: {
+          name: "container-image"
+          value:"docker://gcr.io/cloud-marketplace/google/rbe-ubuntu16-04-webtest@sha256:886a12dc4726f5b991b46386292afa8d943b6703a5496c8a1e07cfde778d9044"
+        }
+        properties: {
+          name: "dockerAddCapabilities"
+          value: "SYS_ADMIN"
+        }
+        """,
+)
+
+filegroup(
+    name = "files",
+    srcs = [
+        "BUILD.bazel",
+        "//dev-infra/bazel/remote-execution/cpp:files",
+    ],
+)

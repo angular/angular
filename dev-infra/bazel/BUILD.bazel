@@ -5,5 +5,6 @@ filegroup(
     srcs = [
         "BUILD.bazel",
         "expand_template.bzl",
+        "//dev-infra/bazel/remote-execution:files",
     ],
 )
