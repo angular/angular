@@ -155,7 +155,7 @@
     "lunr": "^2.3.9",
     "npm-run-all": "^4.1.5",
     "protractor": "~7.0.0",
-    "puppeteer": "5.4.1",
+    "puppeteer": "9.0.0",
     "rehype": "^11.0.0",
     "rehype-slug": "^4.0.1",
     "remark": "^12.0.0",
