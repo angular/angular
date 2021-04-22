@@ -501,7 +501,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     // For literal values of null, undefined, true, or false allow type interference
     // to infer the type.
     const type =
-        ast.value === null || ast.value === undefined || ast.value === true || ast.value === true ?
+        ast.value === null || ast.value === undefined || ast.value === true || ast.value === false ?
         o.INFERRED_TYPE :
         undefined;
     return convertToStatementIfNeeded(
