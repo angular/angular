@@ -114,15 +114,11 @@ build:remote --cpu=k8
 build:remote --host_cpu=k8
 
 # Toolchain and platform related flags
-build:remote --host_javabase=@rbe_ubuntu1604_angular//java:jdk
-build:remote --javabase=@rbe_ubuntu1604_angular//java:jdk
-build:remote --host_java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
-build:remote --java_toolchain=@bazel_tools//tools/jdk:toolchain_hostjdk8
-build:remote --crosstool_top=@rbe_ubuntu1604_angular//cc:toolchain
-build:remote --extra_toolchains=@rbe_ubuntu1604_angular//config:cc-toolchain
-build:remote --extra_execution_platforms=//tools:rbe_ubuntu1604-angular
-build:remote --host_platform=//tools:rbe_ubuntu1604-angular
-build:remote --platforms=//tools:rbe_ubuntu1604-angular
+build:remote --crosstool_top=//dev-infra/bazel/remote-execution/cpp:cc_toolchain_suite
+build:remote --extra_toolchains=//dev-infra/bazel/remote-execution/cpp:cc_toolchain
+build:remote --extra_execution_platforms=//dev-infra/bazel/remote-execution:platform
+build:remote --host_platform=//dev-infra/bazel/remote-execution:platform
+build:remote --platforms=//dev-infra/bazel/remote-execution:platform
 
 # Remote instance and caching
 build:remote --remote_instance_name=projects/internal-200822/instances/default_instance
