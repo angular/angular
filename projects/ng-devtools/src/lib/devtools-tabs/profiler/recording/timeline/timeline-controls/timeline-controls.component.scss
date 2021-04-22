@@ -47,6 +47,10 @@
     label {
       overflow: hidden;
       text-overflow: ellipsis;
+
+      &.warning-label {
+        color: #d83c34;
+      }
     }
 
     .value {
@@ -66,5 +70,9 @@
 :host-context(.dark-theme) {
   .details .value {
     color: #5cadd3;
+  }
+
+  .warning-label {
+    color: #ff625a;
   }
 }

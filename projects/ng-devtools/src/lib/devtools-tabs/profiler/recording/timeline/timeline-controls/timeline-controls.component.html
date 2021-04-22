@@ -12,15 +12,9 @@
 
     <mat-form-field [class.hidden]="!record">
       <mat-select [value]="visualizationMode" (selectionChange)="this.changeVisualizationMode.emit($event.value)">
-        <mat-option [value]="flameGraphMode">
-          Flame graph
-        </mat-option>
-        <mat-option [value]="treeMapMode">
-          Tree map
-        </mat-option>
-        <mat-option [value]="barGraphMode">
-          Bar chart
-        </mat-option>
+        <mat-option [value]="flameGraphMode"> Flame graph </mat-option>
+        <mat-option [value]="treeMapMode"> Tree map </mat-option>
+        <mat-option [value]="barGraphMode"> Bar chart </mat-option>
       </mat-select>
     </mat-form-field>
   </div>
@@ -34,11 +28,11 @@
       Time spent: <span class="value">{{ record?.duration | number }} ms</span>
     </label>
 
-    <label [style.color]="frameColor" *ngIf="estimatedFrameRate < 60 && record">
+    <label class="warning-label" *ngIf="estimatedFrameRate < 60 && record">
       Time spent: <span class="value">{{ record?.duration | number }} ms</span>
     </label>
 
-    <label [style.color]="frameColor" *ngIf="estimatedFrameRate < 60 && record">
+    <label class="warning-label" *ngIf="estimatedFrameRate < 60 && record">
       Frame rate: <span class="value">{{ estimatedFrameRate }} fps</span>
     </label>
 
