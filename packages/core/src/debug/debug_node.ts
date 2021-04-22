@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di/injector';
-import {assertLView, assertTNodeForLView} from '../render3/assert';
+import {assertTNodeForLView} from '../render3/assert';
 import {getLContext} from '../render3/context_discovery';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE} from '../render3/interfaces/container';
 import {TElementNode, TNode, TNodeFlags, TNodeType} from '../render3/interfaces/node';
@@ -264,7 +264,6 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
   get name(): string {
     const context = getLContext(this.nativeNode)!;
     const lView = context ? context.lView : null;
-    ngDevMode && assertLView(lView);
 
     if (lView !== null) {
       const tData = lView[TVIEW].data;
@@ -288,13 +287,13 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
    *  - attribute bindings (e.g. `[attr.role]="menu"`)
    */
   get properties(): {[key: string]: any;} {
-    const context = getLContext(this.nativeNode);
-    if (context === null) {
+    const context = getLContext(this.nativeNode)!;
+    const lView = context ? context.lView : null;
+
+    if (lView === null) {
       return {};
     }
 
-    const lView = context.lView!;
-    ngDevMode && assertLView(lView);
     const tData = lView[TVIEW].data;
     const tNode = tData[context.nodeIndex] as TNode;
 
@@ -315,13 +314,13 @@ class DebugElement__POST_R3__ extends DebugNode__POST_R3__ implements DebugEleme
       return attributes;
     }
 
-    const context = getLContext(element);
-    if (context === null) {
+    const context = getLContext(element)!;
+    const lView = context ? context.lView : null;
+
+    if (lView === null) {
       return {};
     }
 
-    const lView = context.lView!;
-    ngDevMode && assertLView(lView);
     const tNodeAttrs = (lView[TVIEW].data[context.nodeIndex] as TNode).attrs;
     const lowercaseTNodeAttrs: string[] = [];
 
@@ -506,10 +505,9 @@ function _queryAllR3(
 function _queryAllR3(
     parentElement: DebugElement, predicate: Predicate<DebugElement>|Predicate<DebugNode>,
     matches: DebugElement[]|DebugNode[], elementsOnly: boolean) {
-  const context = getLContext(parentElement.nativeNode);
-  if (context !== null) {
-    const lView = context.lView!;
-    ngDevMode && assertLView(lView);
+  const context = getLContext(parentElement.nativeNode)!;
+  const lView = context ? context.lView : null;
+  if (lView !== null) {
     const parentTNode = lView[TVIEW].data[context.nodeIndex] as TNode;
     _queryNodeChildrenR3(
         parentTNode, lView, predicate, matches, elementsOnly, parentElement.nativeNode);

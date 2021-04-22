@@ -108,13 +108,7 @@ export function getLContext(target: any): LContext|null {
     while (parent = parent.parentNode) {
       const parentContext = readPatchedData(parent);
       if (parentContext) {
-        let lView: LView|null;
-        if (Array.isArray(parentContext)) {
-          lView = parentContext as LView;
-        } else {
-          lView = parentContext.lView;
-          ngDevMode && assertLView(lView);
-        }
+        const lView = Array.isArray(parentContext) ? parentContext as LView : parentContext.lView;
 
         // the edge of the app was also reached here through another means
         // (maybe because the DOM was changed manually).
