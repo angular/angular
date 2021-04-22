@@ -13,6 +13,7 @@
 // "chromium_revision": "722234" but this does not map easily to the Chrome version
 // so we use this mapping here instead.
 module.exports = {
+  '9.0.0': '91.0.4472.19',
   '5.4.1': '87.0.4280.0',
   '5.3.1': '86.0.4240.0',
   '5.2.1': '85.0.4182.0',
