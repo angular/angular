@@ -139,7 +139,6 @@
             "karmaConfig": "karma.conf.js",
             "assets": [
               "src/assets",
-              "src/generated",
               "src/pwa-manifest.json",
               "src/google385281288605d160.html"
             ],
