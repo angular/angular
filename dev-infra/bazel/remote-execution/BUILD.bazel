@@ -7,6 +7,11 @@ platform(
         "@bazel_tools//platforms:x86_64",
         "@bazel_tools//tools/cpp:clang",
     ],
+    # We use a basic docker image from the Google Cloud container registry that supports
+    # browser tests. Note that we usually do not use any of the local browsers, but the image
+    # guarantees that necessary dependencies for launching browsers are installed.
+    # Additionally, we set the `SYS_ADMIN` capability so that browsers can be launched with
+    # sandbox mode enabled. Related information: https://developers.google.com/web/tools/puppeteer/troubleshooting#running_puppeteer_in_docker
     remote_execution_properties = """
         properties: {
           name: "container-image"
