@@ -97,7 +97,7 @@ Tip: In the [API reference section](api) of this doc site, deprecated APIs are i
 | API | Replacement | Deprecation announced | Notes |
 | --- | ----------- | --------------------- | ----- |
 | [`DefaultIterableDiffer`](api/core/DefaultIterableDiffer) | n/a | v4 | Not part of public API. |
-| [`ReflectiveInjector`](api/core/ReflectiveInjector) | [`Injector.create`](api/core/Injector#create)  | v5 | See [`ReflectiveInjector`](#reflectiveinjector) |
+| [`ReflectiveInjector`](api/core/ReflectiveInjector) | `{@link Injector#create Injector.create()}` | v5 | See [`ReflectiveInjector`](#reflectiveinjector) |
 | [`ReflectiveKey`](api/core/ReflectiveKey) | none | v5 | none |
 | [`defineInjectable`](api/core/defineInjectable) | `ɵɵdefineInjectable` | v8 | Used only in generated code. No source code should depend on this API. |
 | [`entryComponents`](api/core/NgModule#entryComponents) | none | v9 | See [`entryComponents`](#entryComponents) |
