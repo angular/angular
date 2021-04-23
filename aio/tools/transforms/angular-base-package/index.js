@@ -37,6 +37,7 @@ module.exports = new Package('angular-base', [
   .processor(require('./processors/renderLinkInfo'))
   .processor(require('./processors/checkContentRules'))
   .processor(require('./processors/splitDescription'))
+  .processor(require('./processors/disambiguateDocPaths'))
 
   // overrides base packageInfo and returns the one for the 'angular/angular' repo.
   .factory('packageInfo', function() { return require(path.resolve(PROJECT_ROOT, 'package.json')); })
@@ -66,7 +67,7 @@ module.exports = new Package('angular-base', [
     collectExamples.exampleFolders = [];
 
     generateKeywordsProcessor.ignoreWords = require(path.resolve(__dirname, 'ignore-words'))['en'];
-    generateKeywordsProcessor.docTypesToIgnore = [undefined, 'example-region', 'json-doc', 'api-list-data', 'api-list-data', 'contributors-json', 'navigation-json', 'announcements-json'];
+    generateKeywordsProcessor.docTypesToIgnore = [undefined, 'example-region', 'json-doc', 'api-list-data', 'api-list-data', 'contributors-json', 'navigation-json', 'announcements-json', 'disambiguator'];
     generateKeywordsProcessor.propertiesToIgnore = ['basePath', 'renderedContent', 'docType', 'searchTitle'];
   })
 
@@ -167,5 +168,5 @@ module.exports = new Package('angular-base', [
   })
 
   .config(function(convertToJsonProcessor) {
-    convertToJsonProcessor.docTypes = [];
+    convertToJsonProcessor.docTypes = ['disambiguator'];
   });
