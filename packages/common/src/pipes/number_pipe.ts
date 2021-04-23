@@ -121,6 +121,8 @@ export class DecimalPipe implements PipeTransform {
  * into text strings, according to various format specifications,
  * where the caller's default locale is `en-US`.
  *
+ * See [DecimalPipe](/api/common/DecimalPipe#digitsinfo) for information about the format of the digitsInfo parameter.
+ *
  * <code-example path="common/pipes/ts/percent_pipe.ts" region='PercentPipe'></code-example>
  *
  * @publicApi
@@ -196,6 +198,8 @@ export class PercentPipe implements PipeTransform {
  * The following code shows how the pipe transforms numbers
  * into text strings, according to various format specifications,
  * where the caller's default locale is `en-US`.
+ * 
+ * See [DecimalPipe](/api/common/DecimalPipe#digitsinfo) for information about the format of the digitsInfo parameter.
  *
  * <code-example path="common/pipes/ts/currency_pipe.ts" region='CurrencyPipe'></code-example>
  *
