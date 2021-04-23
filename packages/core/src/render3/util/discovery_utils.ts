@@ -58,8 +58,10 @@ export function getComponent<T>(element: Element): T|null {
   if (context === null) return null;
 
   if (context.component === undefined) {
-    const lView = context.lView!;
-    ngDevMode && assertLView(lView);
+    const lView = context.lView;
+    if (lView === null) {
+      return null;
+    }
     context.component = getComponentAtNodeIndex(context.nodeIndex, lView);
   }
 
@@ -126,7 +128,7 @@ export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
  */
 export function getRootComponents(elementOrDir: Element|{}): {}[] {
   const lView = readPatchedLView(elementOrDir);
-  return lView ? [...getRootContext(lView).components] : [];
+  return lView !== null ? [...getRootContext(lView).components] : [];
 }
 
 /**
@@ -302,8 +304,10 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
   if (context === null) return {};
 
   if (context.localRefs === undefined) {
-    const lView = context.lView!;
-    ngDevMode && assertLView(lView);
+    const lView = context.lView;
+    if (lView === null) {
+      return {};
+    }
     context.localRefs = discoverLocalRefs(lView, context.nodeIndex);
   }
 
@@ -448,13 +452,13 @@ export function getDebugNode(element: Element): DebugNode|null {
     throw new Error('Expecting instance of DOM Element');
   }
 
-  const lContext = getLContext(element);
-  if (lContext === null) {
+  const lContext = getLContext(element)!;
+  const lView = lContext ? lContext.lView : null;
+
+  if (lView === null) {
     return null;
   }
 
-  const lView = lContext.lView!;
-  ngDevMode && assertLView(lView);
   const nodeIndex = lContext.nodeIndex;
   if (nodeIndex !== -1) {
     const valueInLView = lView[nodeIndex];
