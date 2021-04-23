@@ -77,7 +77,7 @@
     {
       "packagePatterns": [
         "^@bazel/.*",
-        "^build_bazel.*",
+        "^build_bazel.*"
       ],
       "groupName": "bazel",
       "pinVersions": false
