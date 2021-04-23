@@ -1,0 +1,15 @@
+{% marked %}
+# {$ doc.title $}
+{% endmarked %}
+
+{% block content %}
+<div class="content">
+  There are multiple pages that match this path:
+  <ul>
+    {% for ambiguousDoc in doc.docs %}<li>
+      <a href="{$ ambiguousDoc.path $}">{$ ambiguousDoc.id $}</a>
+      {$ ambiguousDoc.shortDescription | marked $}
+    </li>{% endfor %}
+  </ul>
+</div>
+{% endblock %}
