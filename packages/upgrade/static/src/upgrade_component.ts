@@ -74,7 +74,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
   private element: Element;
   private $element: IAugmentedJQuery;
-  protected $componentScope: IScope;
+  protected readonly $componentScope: IScope;
 
   private directive: IDirective;
   private bindings: Bindings;
