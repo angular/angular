@@ -8,6 +8,9 @@ module.exports = {
     'eslint:recommended',
     'plugin:jasmine/recommended'
   ],
+  'parserOptions': {
+    'ecmaVersion': 2020,
+  },
   'plugins': [
     'jasmine'
   ],

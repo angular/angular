@@ -1,7 +1,5 @@
 'use strict';
 
-const stem = require('stemmer');
-
 /**
  * @dgProcessor generateKeywordsProcessor
  * @description
@@ -23,7 +21,9 @@ module.exports = function generateKeywordsProcessor(log) {
     },
     $runAfter: ['postProcessHtml'],
     $runBefore: ['writing-files'],
-    $process(docs) {
+    async $process(docs) {
+      const {stemmer: stem} = await import('stemmer');
+
 
       const dictionary = new Map();
 
@@ -110,78 +110,81 @@ module.exports = function generateKeywordsProcessor(log) {
         data: searchData,
         renderedContent: JSON.stringify(searchData)
       });
+
+      return docs;
+
+      // Helpers
+      function tokenize(text, ignoreWords, dictionary) {
+        // Split on whitespace and things that are likely to be HTML tags (this is not exhaustive but reduces the unwanted tokens that are indexed).
+        const rawTokens = text.split(new RegExp(
+                                            '[\\s/]+' +                                // whitespace
+                                            '|' +                                      // or
+                                            '</?[a-z]+(?:\\s+\\w+(?:="[^"]+")?)*/?>',  // simple HTML tags (e.g. <td>, <hr/>, </table>, etc.)
+                                            'ig'));
+        const tokens = [];
+        for (let token of rawTokens) {
+          token = token.trim();
+
+          // Trim unwanted trivia characters from the start and end of the token
+          const TRIVIA_CHARS = '[\\s_"\'`({[<$*)}\\]>.,-]';
+          // Tokens can contain letters, numbers, underscore, dot or hyphen but not at the start or end.
+          // The leading TRIVIA_CHARS will capture any leading `.`, '-`' or `_` so we don't have to avoid them in this regular expression.
+          // But we do need to ensure we don't capture the at the end of the token.
+          const POSSIBLE_TOKEN = '[a-z0-9_.-]*[a-z0-9]';
+          token = token.replace(new RegExp(`^${TRIVIA_CHARS}*(${POSSIBLE_TOKEN})${TRIVIA_CHARS}*$`, 'i'), '$1');
+
+          // Skip if blank or in the ignored words list
+          if (token === '' || ignoreWords.has(token.toLowerCase())) {
+            continue;
+          }
+
+          // Skip tokens that contain weird characters
+          if (!/^\w[\w.-]*$/.test(token)) {
+            continue;
+          }
+
+          storeToken(token, tokens, dictionary);
+          if (token.startsWith('ng')) {
+            // Strip off `ng`, `ng-`, `ng1`, `ng2`, etc
+            storeToken(token.replace(/^ng[-12]*/, ''), tokens, dictionary);
+          }
+        }
+
+        return tokens;
+      }
+
+      function storeToken(token, tokens, dictionary) {
+        token = stem(token);
+        if (!dictionary.has(token)) {
+          dictionary.set(token, dictionary.size);
+        }
+        tokens.push(dictionary.get(token));
+      }
+
+      function extractMemberTokens(doc, ignoreWords, dictionary) {
+        if (!doc) return [];
+
+        let memberContent = [];
+
+        if (doc.members) {
+          doc.members.forEach(member => memberContent.push(...tokenize(member.name, ignoreWords, dictionary)));
+        }
+        if (doc.statics) {
+          doc.statics.forEach(member => memberContent.push(...tokenize(member.name, ignoreWords, dictionary)));
+        }
+        if (doc.extendsClauses) {
+          doc.extendsClauses.forEach(clause => memberContent.push(...extractMemberTokens(clause.doc, ignoreWords, dictionary)));
+        }
+        if (doc.implementsClauses) {
+          doc.implementsClauses.forEach(clause => memberContent.push(...extractMemberTokens(clause.doc, ignoreWords, dictionary)));
+        }
+
+        return memberContent;
+      }
     }
   };
 };
 
 function isString(value) {
   return typeof value == 'string';
-}
-
-function tokenize(text, ignoreWords, dictionary) {
-  // Split on whitespace and things that are likely to be HTML tags (this is not exhaustive but reduces the unwanted tokens that are indexed).
-  const rawTokens = text.split(new RegExp(
-                                      '[\\s/]+' +                                // whitespace
-                                      '|' +                                      // or
-                                      '</?[a-z]+(?:\\s+\\w+(?:="[^"]+")?)*/?>',  // simple HTML tags (e.g. <td>, <hr/>, </table>, etc.)
-                                      'ig'));
-  const tokens = [];
-  for (let token of rawTokens) {
-    token = token.trim();
-
-    // Trim unwanted trivia characters from the start and end of the token
-    const TRIVIA_CHARS = '[\\s_"\'`({[<$*)}\\]>.,-]';
-    // Tokens can contain letters, numbers, underscore, dot or hyphen but not at the start or end.
-    // The leading TRIVIA_CHARS will capture any leading `.`, '-`' or `_` so we don't have to avoid them in this regular expression.
-    // But we do need to ensure we don't capture the at the end of the token.
-    const POSSIBLE_TOKEN = '[a-z0-9_.-]*[a-z0-9]';
-    token = token.replace(new RegExp(`^${TRIVIA_CHARS}*(${POSSIBLE_TOKEN})${TRIVIA_CHARS}*$`, 'i'), '$1');
-
-    // Skip if blank or in the ignored words list
-    if (token === '' || ignoreWords.has(token.toLowerCase())) {
-      continue;
-    }
-
-    // Skip tokens that contain weird characters
-    if (!/^\w[\w.-]*$/.test(token)) {
-      continue;
-    }
-
-    storeToken(token, tokens, dictionary);
-    if (token.startsWith('ng')) {
-      // Strip off `ng`, `ng-`, `ng1`, `ng2`, etc
-      storeToken(token.replace(/^ng[-12]*/, ''), tokens, dictionary);
-    }
-  }
-
-  return tokens;
-}
-
-function storeToken(token, tokens, dictionary) {
-  token = stem(token);
-  if (!dictionary.has(token)) {
-    dictionary.set(token, dictionary.size);
-  }
-  tokens.push(dictionary.get(token));
-}
-
-function extractMemberTokens(doc, ignoreWords, dictionary) {
-  if (!doc) return [];
-
-  let memberContent = [];
-
-  if (doc.members) {
-    doc.members.forEach(member => memberContent.push(...tokenize(member.name, ignoreWords, dictionary)));
-  }
-  if (doc.statics) {
-    doc.statics.forEach(member => memberContent.push(...tokenize(member.name, ignoreWords, dictionary)));
-  }
-  if (doc.extendsClauses) {
-    doc.extendsClauses.forEach(clause => memberContent.push(...extractMemberTokens(clause.doc, ignoreWords, dictionary)));
-  }
-  if (doc.implementsClauses) {
-    doc.implementsClauses.forEach(clause => memberContent.push(...extractMemberTokens(clause.doc, ignoreWords, dictionary)));
-  }
-
-  return memberContent;
 }

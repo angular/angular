@@ -36,42 +36,39 @@ describe('generateKeywords processor', () => {
     expect(processor.$runBefore).toEqual(['writing-files']);
   });
 
-  it('should ignore internal and private exports', () => {
+  it('should ignore internal and private exports', async () => {
     const processor = createProcessor();
-    const docs = [
+    const docs = await processor.$process([
       { docType: 'class', name: 'PublicExport' },
       { docType: 'class', name: 'PrivateExport', privateExport: true },
       { docType: 'class', name: 'InternalExport', internal: true }
-    ];
-    processor.$process(docs);
+    ]);
     expect(docs[docs.length - 1].data.pages).toEqual([
       jasmine.objectContaining({ title: 'PublicExport', type: 'class' })
     ]);
   });
 
-  it('should ignore docs that are in the `docTypesToIgnore` list', () => {
+  it('should ignore docs that are in the `docTypesToIgnore` list', async () => {
     const processor = createProcessor();
     processor.docTypesToIgnore = ['interface'];
-    const docs = [
+    const docs = await processor.$process([
       { docType: 'class', name: 'Class' },
       { docType: 'interface', name: 'Interface' },
       { docType: 'content', name: 'Guide' },
-    ];
-    processor.$process(docs);
+    ]);
     expect(docs[docs.length - 1].data.pages).toEqual([
       jasmine.objectContaining({ title: 'Class', type: 'class' }),
       jasmine.objectContaining({ title: 'Guide', type: 'content' }),
     ]);
   });
 
-  it('should not collect keywords from properties that are in the `propertiesToIgnore` list', () => {
+  it('should not collect keywords from properties that are in the `propertiesToIgnore` list', async () => {
     const processor = createProcessor();
     processor.propertiesToIgnore = ['docType', 'ignore'];
-    const docs = [
+    const docs = await processor.$process([
       { docType: 'class', name: 'FooClass', ignore: 'ignore this content' },
       { docType: 'interface', name: 'BarInterface', capture: 'capture this content' },
-    ];
-    processor.$process(docs);
+    ]);
     expect(docs[docs.length - 1].data).toEqual({
       dictionary: 'fooclass barinterfac captur content',
       pages: [
@@ -81,17 +78,16 @@ describe('generateKeywords processor', () => {
     });
   });
 
-  it('should not collect keywords that look like HTML tags', () => {
+  it('should not collect keywords that look like HTML tags', async () => {
     const processor = createProcessor();
-    const docs = [
+    const docs = await processor.$process([
       { docType: 'class', name: 'FooClass', content: `
       <table id="foo">
         <tr class="moo" id="bar">
           <td>Content inside a table</td>
         </tr>
       </table>` },
-    ];
-    processor.$process(docs);
+    ]);
     expect(docs[docs.length - 1].data).toEqual({
       dictionary: 'class fooclass content insid tabl',
       pages: [
@@ -100,15 +96,14 @@ describe('generateKeywords processor', () => {
     });
   });
 
-  it('should compute `doc.searchTitle` from the doc properties if not already provided', () => {
+  it('should compute `doc.searchTitle` from the doc properties if not already provided', async () => {
     const processor = createProcessor();
-    const docs = [
+    const docs = await processor.$process([
       { docType: 'class', name: 'A', searchTitle: 'searchTitle A', title: 'title A', vFile: { headings: { h1: ['vFile A'] } } },
       { docType: 'class', name: 'B', title: 'title B', vFile: { headings: { h1: ['vFile B'] } } },
       { docType: 'class', name: 'C', vFile: { title: 'vFile C', headings: { h1: ['vFile C'] } } },
       { docType: 'class', name: 'D' },
-    ];
-    processor.$process(docs);
+    ]);
     expect(docs[docs.length - 1].data.pages).toEqual([
       jasmine.objectContaining({ title: 'searchTitle A' }),
       jasmine.objectContaining({ title: 'title B' }),
@@ -117,29 +112,27 @@ describe('generateKeywords processor', () => {
     ]);
   });
 
-  it('should use `doc.searchTitle` as the title in the search index', () => {
+  it('should use `doc.searchTitle` as the title in the search index', async () => {
     const processor = createProcessor();
-    const docs = [
+    const docs = await processor.$process([
       { docType: 'class', name: 'PublicExport', searchTitle: 'class PublicExport' },
-    ];
-    processor.$process(docs);
+    ]);
     const keywordsDoc = docs[docs.length - 1];
     expect(keywordsDoc.data.pages).toEqual([
       jasmine.objectContaining({ title: 'class PublicExport', type: 'class' })
     ]);
   });
 
-  it('should add heading words to the search terms', () => {
+  it('should add heading words to the search terms', async () => {
     const processor = createProcessor();
-    const docs = [
+    const docs = await processor.$process([
       {
         docType: 'class',
         name: 'PublicExport',
         searchTitle: 'class PublicExport',
         vFile: { headings: { h2: ['Important heading', 'Secondary heading'] } }
       },
-    ];
-    processor.$process(docs);
+    ]);
     const keywordsDoc = docs[docs.length - 1];
     expect(keywordsDoc.data).toEqual({
       dictionary: 'class publicexport head secondari',
@@ -149,9 +142,9 @@ describe('generateKeywords processor', () => {
     });
   });
 
-  it('should add member doc properties to the search terms', () => {
+  it('should add member doc properties to the search terms', async () => {
     const processor = createProcessor();
-    const docs = [
+    const docs = await processor.$process([
       {
         docType: 'class',
         name: 'PublicExport',
@@ -171,8 +164,7 @@ describe('generateKeywords processor', () => {
           { name: 'staticPropertyB' },
         ],
       },
-    ];
-    processor.$process(docs);
+    ]);
     const keywordsDoc = docs[docs.length - 1];
     expect(keywordsDoc.data).toEqual({
       dictionary: 'class publicexport content ngclass instancemethoda instancepropertya instancemethodb instancepropertyb staticmethoda staticpropertya staticmethodb staticpropertyb head',
@@ -184,7 +176,7 @@ describe('generateKeywords processor', () => {
     });
   });
 
-  it('should add inherited member doc properties to the search terms', () => {
+  it('should add inherited member doc properties to the search terms', async () => {
     const processor = createProcessor();
     const parentClass =       {
       docType: 'class',
@@ -216,8 +208,7 @@ describe('generateKeywords processor', () => {
       extendsClauses: [{ doc: parentClass }],
       implementsClauses: [{ doc: parentInterface }]
     };
-    const docs = [childClass, parentClass, parentInterface];
-    processor.$process(docs);
+    const docs = await processor.$process([childClass, parentClass, parentInterface]);
     const keywordsDoc = docs[docs.length - 1];
     expect(keywordsDoc.data).toEqual({
       dictionary: 'class child childmember1 childmember2 parentmember1 parentmember2 parentmember3 parentclass interfac parentinterfac',
@@ -238,9 +229,9 @@ describe('generateKeywords processor', () => {
     });
   });
 
-  it('should include both stripped and unstripped "ng" prefixed tokens', () => {
+  it('should include both stripped and unstripped "ng" prefixed tokens', async () => {
     const processor = createProcessor();
-    const docs = [
+    const docs = await processor.$process([
       {
         docType: 'class',
         name: 'PublicExport',
@@ -248,8 +239,7 @@ describe('generateKeywords processor', () => {
         vFile: { headings: { h2: ['ngModel'] } },
         content: 'Some content with ngClass in it.'
       },
-    ];
-    processor.$process(docs);
+    ]);
     const keywordsDoc = docs[docs.length - 1];
     expect(keywordsDoc.data).toEqual({
       dictionary: 'class publicexport ngcontrol control content ngclass ngmodel model',
@@ -262,9 +252,9 @@ describe('generateKeywords processor', () => {
     });
   });
 
-  it('should generate compressed encoded renderedContent property', () => {
+  it('should generate compressed encoded renderedContent property', async () => {
     const processor = createProcessor();
-    const docs = [
+    const docs = await processor.$process([
       {
         docType: 'class',
         name: 'SomeClass',
@@ -280,8 +270,7 @@ describe('generateKeywords processor', () => {
         ],
         deprecated: true
       },
-    ];
-    processor.$process(docs);
+    ]);
     const keywordsDoc = docs[docs.length - 1];
     expect(JSON.parse(keywordsDoc.renderedContent)).toEqual({
       dictionary: 'class someclass document api head someclass2 descript member1',
