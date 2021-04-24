@@ -110,9 +110,30 @@ describe('autoLinkCode post-processor', () => {
             '{ xyz | <a href="a/b/myclass" class="code-anchor">myClass</a> } ' +
             '{ xyz|<a href="a/b/myclass" class="code-anchor">myClass</a> } ' +
             '<a href="a/b/myclass" class="code-anchor">MyClass</a> ' +
-            '<a href="a/b/myclass" class="code-anchor">myClass</a> ' +
+            'myClass ' +
             'OtherClass|<a href="a/b/myclass" class="code-anchor">MyClass</a>' +
             '</code>');
+  });
+
+  it('should ignore generated nodes', () => {
+    const filterAnchors = (docs, words, index) => (words[index].toLowerCase() === 'a') ? [] : docs;
+    autoLinkCode.customFilters = [filterAnchors];
+    autoLinkCode.docTypes = ['directive'];
+
+    aliasMap.addDoc({
+      docType: 'directive',
+      id: 'MyAnchorDirective',
+      aliases: ['MyAnchorDirective', 'a'],
+      path: 'a/b/my-anchor-directive',
+    });
+    const doc = {
+      docType: 'test-doc',
+      renderedContent: '<code>&#x3C;a></code>',
+    };
+
+    processor.$process([doc]);
+
+    expect(doc.renderedContent).toBe('<code>&#x3C;a></code>');
   });
 
   it('should ignore code items that match an internal API doc', () => {
