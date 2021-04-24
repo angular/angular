@@ -38,7 +38,7 @@ System.config({
 System.config({
   map: {
     '@angular': 'dist/all/@angular',
-    'rxjs': 'node_modules/rxjs',
+    'rxjs': 'node_modules/rxjs/dist/cjs',
   },
   packages: {
     '@angular/core/testing': {main: 'index.js', defaultExtension: 'js'},

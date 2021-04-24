@@ -16,8 +16,7 @@ import {Manifest} from '@angular/service-worker/worker/src/manifest';
 import {MockRequest} from '@angular/service-worker/worker/testing/fetch';
 import {MockFileSystemBuilder, MockServerStateBuilder, tmpHashTableForFs} from '@angular/service-worker/worker/testing/mock';
 import {SwTestHarness, SwTestHarnessBuilder} from '@angular/service-worker/worker/testing/scope';
-import {Observable} from 'rxjs';
-import {take} from 'rxjs/operators';
+import {firstValueFrom} from 'rxjs';
 
 (function() {
 // Skip environments that don't support the minimum APIs needed to run the SW tests.
@@ -28,10 +27,6 @@ if (!SwTestHarness.envIsSupported()) {
 const dist = new MockFileSystemBuilder().addFile('/only.txt', 'this is only').build();
 
 const distUpdate = new MockFileSystemBuilder().addFile('/only.txt', 'this is only v2').build();
-
-function obsToSinglePromise<T>(obs: Observable<T>): Promise<T> {
-  return obs.pipe(take(1)).toPromise();
-}
 
 const manifest: Manifest = {
   configVersion: 1,
@@ -118,7 +113,7 @@ describe('ngsw + companion lib', () => {
     scope.updateServerState(serverUpdate);
 
     const gotUpdateNotice = (async () => {
-      const notice = await obsToSinglePromise(update.available);
+      const notice = await firstValueFrom(update.available);
     })();
 
     await update.checkForUpdate();
@@ -130,7 +125,7 @@ describe('ngsw + companion lib', () => {
     scope.updateServerState(serverUpdate);
 
     const gotPushNotice = (async () => {
-      const message = await obsToSinglePromise(push.messages);
+      const message = await firstValueFrom(push.messages);
       expect(message).toEqual({
         test: 'success',
       });
@@ -147,7 +142,7 @@ describe('ngsw + companion lib', () => {
     scope.updateServerState(serverUpdate);
 
     const gotNotificationClick = (async () => {
-      const event: any = await obsToSinglePromise(push.notificationClicks);
+      const event: any = await firstValueFrom(push.notificationClicks);
       expect(event.action).toEqual('clicked');
       expect(event.notification.title).toEqual('This is a test');
     })();

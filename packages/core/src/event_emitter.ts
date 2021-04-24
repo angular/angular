@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/// <reference types="rxjs" />
+/// <reference types="rxjs/dist/types" />
 
 import {PartialObserver, Subject, Subscription} from 'rxjs';
 
@@ -83,6 +83,12 @@ export interface EventEmitter<T> extends Subject<T> {
   emit(value?: T): void;
 
   /**
+   * Emits an event containing a given value.
+   * @param value The value to emit.
+   */
+  next(value?: T): void;  // Backwards compat for calls with zero arguments.
+
+  /**
    * Registers handlers for events emitted by this instance.
    * @param next When supplied, a custom handler for emitted events.
    * @param error When supplied, a custom handler for an error notification from this emitter.
@@ -111,6 +117,10 @@ class EventEmitter_ extends Subject<any> {
   }
 
   emit(value?: any) {
+    super.next(value);
+  }
+
+  next(value?: any) {
     super.next(value);
   }
 

@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {merge, NEVER, Observable, Subject} from 'rxjs';
+import {lastValueFrom, merge, NEVER, Observable, Subject} from 'rxjs';
 import {map, switchMap, take} from 'rxjs/operators';
 
 import {ERR_SW_NOT_SUPPORTED, NgswCommChannel, PushEvent} from './low_level';
@@ -171,8 +171,7 @@ export class SwPush {
     }
     pushOptions.applicationServerKey = applicationServerKey;
 
-    return this.pushManager.pipe(switchMap(pm => pm.subscribe(pushOptions)), take(1))
-        .toPromise()
+    return lastValueFrom(this.pushManager.pipe(switchMap(pm => pm.subscribe(pushOptions)), take(1)))
         .then(sub => {
           this.subscriptionChanges.next(sub);
           return sub;
@@ -204,7 +203,7 @@ export class SwPush {
       });
     };
 
-    return this.subscription.pipe(take(1), switchMap(doUnsubscribe)).toPromise();
+    return lastValueFrom(this.subscription.pipe(take(1), switchMap(doUnsubscribe)));
   }
 
   private decodeBase64(input: string): string {

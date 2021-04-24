@@ -28,7 +28,7 @@
          'npm:@angular/platform-browser/bundles/platform-browser.umd.js',
       '@angular/platform-browser-dynamic':
          'npm:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
-      'rxjs': 'npm:rxjs',
+      'rxjs': 'npm:rxjs/dist/cjs',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/bundles/in-memory-web-api.umd.js',
       'ts': 'npm:plugin-typescript/lib/plugin.js',
       'typescript': 'npm:typescript/lib/typescript.js',

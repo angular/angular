@@ -29,7 +29,7 @@ System.config({
     'xhr2': 'dist/all/@angular/empty.js',
     '@angular/platform-server/src/domino_adapter': 'dist/all/@angular/empty.js',
     'angular-in-memory-web-api': 'dist/all/@angular/misc/angular-in-memory-web-api',
-    'rxjs': 'node_modules/rxjs',
+    'rxjs': 'node_modules/rxjs/dist/cjs',
   },
   packages: {
     '@angular/core/src/render3': {main: 'index.js', defaultExtension: 'js'},

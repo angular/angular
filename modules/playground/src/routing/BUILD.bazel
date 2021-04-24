@@ -24,7 +24,7 @@ ts_devserver(
         # there is only one RxJS UMD bundle that re-exports everything at the root.
         "//modules/playground:systemjs-rxjs-operators.js",
         "//third_party/fonts.google.com/open-sans",
-        "@npm//:node_modules/rxjs/bundles/rxjs.umd.js",
+        "@npm//:node_modules/rxjs/dist/bundles/rxjs.umd.js",
         "@npm//:node_modules/tslib/tslib.js",
         "//packages/zone.js/bundles:zone.umd.js",
         "index.html",

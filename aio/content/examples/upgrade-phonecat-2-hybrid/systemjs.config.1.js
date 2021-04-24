@@ -28,7 +28,7 @@
       // #enddocregion paths
 
       // other libraries
-      'rxjs': 'npm:rxjs',
+      'rxjs': 'npm:rxjs/dist/cjs',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api',
       // #docregion paths
     },

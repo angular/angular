@@ -314,6 +314,7 @@ export declare class ErrorHandler {
 export declare interface EventEmitter<T> extends Subject<T> {
     new (isAsync?: boolean): EventEmitter<T>;
     emit(value?: T): void;
+    next(value?: T): void;
     subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void): Subscription;
     subscribe(observerOrNext?: any, error?: any, complete?: any): Subscription;
 }

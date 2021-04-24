@@ -36,7 +36,7 @@ function benchmarksBootstrap() {
             '/packages-dist/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
         '@angular/upgrade': '/packages-dist/upgrade/bundles/upgrade.umd.js',
         '@angular/router': '/packages-dist/router/bundles/router.umd.js',
-        'rxjs': '/all/benchmarks/vendor/rxjs',
+        'rxjs': '/all/benchmarks/vendor/rxjs/dist/cjs',
       },
       packages: {
         'rxjs/ajax': {main: 'index.js', defaultExtension: 'js'},
@@ -52,7 +52,7 @@ function benchmarksBootstrap() {
 
     System.config({
       defaultJSExtensions: true,
-      map: {'@angular': '/all/@angular', 'rxjs': '/all/benchmarks/vendor/rxjs'},
+      map: {'@angular': '/all/@angular', 'rxjs': '/all/benchmarks/vendor/rxjs/dist/cjs'},
       packages: {
         '@angular/core': {main: 'index.js', defaultExtension: 'js'},
         '@angular/animations': {main: 'index.js', defaultExtension: 'js'},
