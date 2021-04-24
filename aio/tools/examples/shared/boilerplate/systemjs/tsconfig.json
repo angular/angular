@@ -14,8 +14,8 @@
   },
   "compileOnSave": true,
   "exclude": [
-    "node_modules/*",
     "**/*-aot.ts",
-    "universal/*"
+    "node_modules/",
+    "universal/"
   ]
 }
