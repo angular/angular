@@ -89,7 +89,7 @@ describe('autoLinkCode post-processor', () => {
        expect(doc.renderedContent).toEqual('<code>xyz-MyClass</code>');
      });
 
-  it('should ignore code items that are filtered out by custom filters', () => {
+  it('should ignore code items that are filtered out by custom filters (multiple words)', () => {
     autoLinkCode.customFilters = [filterPipes];
     aliasMap.addDoc({
       docType: 'pipe',
@@ -113,6 +113,27 @@ describe('autoLinkCode post-processor', () => {
             'myClass ' +
             'OtherClass|<a href="a/b/myclass" class="code-anchor">MyClass</a>' +
             '</code>');
+  });
+
+  it('should ignore code items that are filtered out by custom filters (single word)', () => {
+    const filterAnchors = (docs, words, index) => (words[index].toLowerCase() === 'a') ? [] : docs;
+    autoLinkCode.customFilters = [filterAnchors];
+    autoLinkCode.docTypes = ['directive'];
+
+    aliasMap.addDoc({
+      docType: 'directive',
+      id: 'MyAnchorDirective',
+      aliases: ['MyAnchorDirective', 'a'],
+      path: 'a/b/my-anchor-directive',
+    });
+    const doc = {
+      docType: 'test-doc',
+      renderedContent: '<code>a</code>',
+    };
+
+    processor.$process([doc]);
+
+    expect(doc.renderedContent).toBe('<code>a</code>');
   });
 
   it('should ignore generated nodes', () => {
