@@ -4,7 +4,7 @@ const Dgeni = require('dgeni');
 describe('disambiguateDocPaths processor', () => {
   let dgeni, injector, processor, docs;
 
-  beforeEach(function() {
+  beforeEach(() => {
     dgeni = new Dgeni([testPackage('angular-base-package')]);
     injector = dgeni.configureInjector();
     processor = injector.get('disambiguateDocPathsProcessor');
@@ -26,7 +26,7 @@ describe('disambiguateDocPaths processor', () => {
     const numDocs = docs.length;
     processor.$process(docs);
     expect(docs.length).toEqual(numDocs + 2);
-    expect(docs[docs.length-2]).toEqual({
+    expect(docs[docs.length - 2]).toEqual({
       docType: 'disambiguator',
       id: 'test-doc-disambiguator',
       title: 'test-doc (disambiguation)',
@@ -35,7 +35,7 @@ describe('disambiguateDocPaths processor', () => {
       outputPath: 'test/doc.json',
       docs: [docs[0], docs[1]],
     });
-    expect(docs[docs.length-1]).toEqual({
+    expect(docs[docs.length - 1]).toEqual({
       docType: 'disambiguator',
       id: 'other-doc-disambiguator',
       title: 'other-doc (disambiguation)',
@@ -50,8 +50,8 @@ describe('disambiguateDocPaths processor', () => {
     processor.$process(docs);
     expect(docs[0].path).toEqual('test/doc-0');
     expect(docs[0].outputPath).toEqual('test/doc-0.json');
-    expect(docs[1].path).toEqual('test/doc-1');
-    expect(docs[1].outputPath).toEqual('test/doc-1.json');
+    expect(docs[1].path).toEqual('TEST/DOC-1');
+    expect(docs[1].outputPath).toEqual('TEST/DOC-1.json');
 
     // The non-ambiguous docs are left alone
     expect(docs[2].outputPath).toEqual('test/Doc.xml');
@@ -59,7 +59,7 @@ describe('disambiguateDocPaths processor', () => {
 
     expect(docs[4].path).toEqual('other/doc-0');
     expect(docs[4].outputPath).toEqual('other/doc-0.json');
-    expect(docs[5].path).toEqual('other/doc-1');
-    expect(docs[5].outputPath).toEqual('other/doc-1.json');
+    expect(docs[5].path).toEqual('other/DOC-1');
+    expect(docs[5].outputPath).toEqual('other/DOC-1.json');
   });
 });

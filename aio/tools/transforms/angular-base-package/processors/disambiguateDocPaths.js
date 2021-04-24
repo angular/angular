@@ -12,7 +12,7 @@ module.exports = function disambiguateDocPathsProcessor(log) {
     $process(docs) {
       // Collect all the ambiguous docs, whose outputPath is are only different by casing.
       const ambiguousDocMap = new Map();
-      for(const doc of docs) {
+      for (const doc of docs) {
         if (!doc.outputPath) {
           continue;
         }
@@ -25,9 +25,8 @@ module.exports = function disambiguateDocPathsProcessor(log) {
       }
 
       // Create a disambiguator doc for each set of such ambiguous docs,
-      // and update the ambigous docs to have unique `path` and `outputPath` properties.
-      for(const outputPath of ambiguousDocMap.keys()) {
-        const ambiguousDocs = ambiguousDocMap.get(outputPath);
+      // and update the ambiguous docs to have unique `path` and `outputPath` properties.
+      for (const [outputPath, ambiguousDocs] of ambiguousDocMap) {
         if (ambiguousDocs.length === 1) {
           continue;
         }
@@ -43,7 +42,7 @@ module.exports = function disambiguateDocPathsProcessor(log) {
 
         // Update the paths
         let count = 0;
-        for(const doc of ambiguousDocs) {
+        for (const doc of ambiguousDocs) {
           doc.path = convertPath(doc.path, count);
           doc.outputPath = convertPath(doc.outputPath, count);
           count += 1;
@@ -53,7 +52,7 @@ module.exports = function disambiguateDocPathsProcessor(log) {
   };
 };
 
-function convertPath(outputPath, count) {
+function convertPath(path, count) {
   // Add the counter before any extension
-  return outputPath.replace(/(\.[^.]*)?$/, `-${count}$1`).toLowerCase();
+  return path.replace(/(\.[^.]*)?$/, `-${count}$1`);
 }
