@@ -4,6 +4,16 @@
  *
  * Ensures that docs that have the same path, other than case changes,
  * are disambiguated.
+ *
+ * For example in Angular there is the `ROUTES` const and a `Routes` type.
+ * In a case-sensitive file-system these would both be stored at the paths
+ *
+ * ```
+ * aio/src/generated/router/Routes.json
+ * aio/src/generated/router/ROUTES.json
+ * ```
+ *
+ * but in a case-insensitive file-system these two paths point to the same file!
  */
 module.exports = function disambiguateDocPathsProcessor(log) {
   return {
