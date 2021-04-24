@@ -46,10 +46,6 @@ module.exports = function autoLinkCode(getDocFromAlias) {
         }
 
         visit(node, 'text', (node, ancestors) => {
-          if (node.addedByAutoLinkCode) {
-            return;
-          }
-
           const isInLink = isInsideLink(ancestors);
           if (isInLink) {
             return;
@@ -67,6 +63,8 @@ module.exports = function autoLinkCode(getDocFromAlias) {
             const nodes = getNodes(node, file);
             // Replace the text node with the links and leftover text nodes
             Array.prototype.splice.apply(parent.children, [index, 1].concat(nodes));
+            // Do not visit this node's children or the newly added nodes
+            return [visit.SKIP, index + nodes.length];
           }
         });
       });
@@ -104,7 +102,7 @@ module.exports = function autoLinkCode(getDocFromAlias) {
               // Create a link wrapping the text node.
               createLinkNode(filteredDocs[0], word) :
               // this is just text so push a new text node
-              {type: 'text', value: word, addedByAutoLinkCode: true};
+              {type: 'text', value: word};
         });
   }
 
