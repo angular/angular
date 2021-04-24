@@ -46,6 +46,10 @@ module.exports = function autoLinkCode(getDocFromAlias) {
         }
 
         visit(node, 'text', (node, ancestors) => {
+          if (node.addedByAutoLinkCode) {
+            return;
+          }
+
           const isInLink = isInsideLink(ancestors);
           if (isInLink) {
             return;
@@ -100,7 +104,7 @@ module.exports = function autoLinkCode(getDocFromAlias) {
               // Create a link wrapping the text node.
               createLinkNode(filteredDocs[0], word) :
               // this is just text so push a new text node
-              {type: 'text', value: word};
+              {type: 'text', value: word, addedByAutoLinkCode: true};
         });
   }
 
