@@ -43,6 +43,21 @@ import {describe, it} from '@angular/core/testing/src/testing_internal';
         expect(new HttpResponse({body: false}).body).toEqual(false);
         expect(new HttpResponse({body: 0}).body).toEqual(0);
       });
+      it('return undefined for 204 status code', () => {
+        const resp = new HttpResponse({
+          headers: new HttpHeaders({
+            'Test': 'Test header',
+          }),
+          status: HttpStatusCode.NoContent,
+          url: '/test',
+        });
+        expect(resp.body).toBe(undefined);
+        expect(resp.headers instanceof HttpHeaders).toBeTruthy();
+        expect(resp.headers.get('Test')).toBe('Test header');
+        expect(resp.status).toBe(HttpStatusCode.NoContent);
+        expect(resp.statusText).toBe('OK');
+        expect(resp.url).toBe('/test');
+      });
     });
     it('.ok is determined by status', () => {
       const good = new HttpResponse({status: 200});

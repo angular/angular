@@ -258,20 +258,20 @@ export class HttpResponse<T> extends HttpResponseBase {
   /**
    * The response body, or `null` if one was not returned.
    */
-  readonly body: T|null;
+  readonly body: T|null|undefined;
 
   /**
    * Construct a new `HttpResponse`.
    */
   constructor(init: {
-    body?: T|null,
+    body?: T|null|undefined,
     headers?: HttpHeaders;
     status?: number;
     statusText?: string;
     url?: string;
   } = {}) {
     super(init);
-    this.body = init.body !== undefined ? init.body : null;
+    this.body = init.body !== undefined ? init.body : init.status === 204 ? undefined : null;
   }
 
   readonly type: HttpEventType.Response = HttpEventType.Response;
