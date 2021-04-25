@@ -6239,10 +6239,18 @@ hast-util-heading-rank@^1.0.0:
   resolved "https://registry.yarnpkg.com/hast-util-heading-rank/-/hast-util-heading-rank-1.0.1.tgz#28dfd8b0724cfb0da48308e2a794b1d9f24fd80d"
   integrity sha512-P6Hq7RCky9syMevlrN90QWpqWDXCxwIVOfQR2rK6P4GpY4bqjKEuCzoWSRORZ7vz+VgRpLnXimh+mkwvVFjbyQ==
 
-hast-util-is-element@^1.0.0, hast-util-is-element@^1.1.0:
+hast-util-is-element@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/hast-util-is-element/-/hast-util-is-element-1.1.0.tgz#3b3ed5159a2707c6137b48637fbfe068e175a425"
   integrity sha512-oUmNua0bFbdrD/ELDSSEadRVtWZOf3iF6Lbv81naqsIV99RnSCieTbWuWCY8BAeEfKJTKl0gRdokv+dELutHGQ==
+
+hast-util-is-element@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/hast-util-is-element/-/hast-util-is-element-2.0.1.tgz#eb8f6db6d06950dc4b99f17d79dea6aa2368f4fe"
+  integrity sha512-j317G/4HBy5g0rstOJpgJTFt55+oIj3bY2NtfLRi0vPPEWGYZUFwZhh7MvWczA5ue0w5K5QflNXKZXk0SgrV4A==
+  dependencies:
+    "@types/hast" "^2.0.0"
+    "@types/unist" "^2.0.0"
 
 hast-util-parse-selector@^2.0.0:
   version "2.2.5"
