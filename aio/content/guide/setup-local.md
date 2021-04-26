@@ -30,8 +30,8 @@ To install Angular on your local system, you need the following:
 {@a nodejs}
 
 * **Node.js**
-  
-  Angular requires a [current, active LTS, or maintenance LTS](https://nodejs.org/about/releases) version of Node.js.
+
+  Angular requires an [active LTS or maintenance LTS](https://nodejs.org/about/releases) version of Node.js.
 
   <div class="alert is-helpful">
 
