@@ -48,7 +48,7 @@
     "name": "Alisa Duncan",
     "picture": "alisaduncan.jpg",
     "twitter": "alisaduncan",
-    "website": "https://github.com/alisaduncan", 
+    "website": "https://github.com/alisaduncan",
     "bio": "Alisa is a software engineer and community builder who loves the thrill of learning new things. She is a core member of the ngGirls Team, co-organizes the local AngularKC meetup, and helps women learn web development as the Curriculum Director for the Coding & Cocktails program at Kansas City Women in Technology. When not coding, she enjoys drinking red wine with her husband while sitting on the patio.",
     "groups": ["GDE"]
   },
@@ -668,6 +668,14 @@
     "bio": "Miles is a software engineer on the Angular Material team at Google. In addition to Javascripting he enjoys eating food and ogling cute puppies.",
     "groups": ["Angular"],
     "lead": "jelbourn"
+  },
+  "nartc": {
+    "name": "Chau Tran",
+    "picture": "nartc.jpg",
+    "twitter": "Nartc1410",
+    "website": "https://nartc.me",
+    "bio": "Chau works to bring the best engineering practices to web application production. He is the creator of AutoMapper TypeScript, @ngneat/tailwind for Angular, and a core member of NestJS. Also, he is one of Angular Vietnam’s founders. He blogs, lives stream, and maintains open-source projects.",
+    "groups": ["GDE"]
   },
   "nirkaufman": {
     "name": "Nir Kaufman",
