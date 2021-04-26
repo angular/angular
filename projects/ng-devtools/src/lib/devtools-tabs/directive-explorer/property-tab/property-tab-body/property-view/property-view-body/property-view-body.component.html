@@ -4,7 +4,12 @@
       <mat-expansion-panel-header collapsedHeight="25px" expandedHeight="25px">
         <mat-panel-title>
           {{ panels[index].title }}
-          <a href="{{ panels[index].documentation }}" target="_blank" class="documentation">
+          <a
+            href="{{ panels[index].documentation }}"
+            target="_blank"
+            class="documentation"
+            (click)="$event.stopPropagation()"
+          >
             <mat-icon class="docs-link"> link </mat-icon>
           </a>
         </mat-panel-title>
