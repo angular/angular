@@ -3313,7 +3313,7 @@ function cleanUpGitState(previousBranchOrRevision) {
  */
 /** Builds the discover-new-conflicts pull request command. */
 function buildDiscoverNewConflictsCommand(yargs) {
-    return yargs
+    return addGithubTokenOption(yargs)
         .option('date', {
         description: 'Only consider PRs updated since provided date',
         defaultDescription: '30 days ago',

@@ -9,6 +9,7 @@
 import {Arguments, Argv} from 'yargs';
 
 import {error} from '../../utils/console';
+import {addGithubTokenOption} from '../../utils/git/github-yargs';
 
 import {discoverNewConflictsForPr} from './index';
 
@@ -21,7 +22,7 @@ export interface DiscoverNewConflictsCommandOptions {
 /** Builds the discover-new-conflicts pull request command. */
 export function buildDiscoverNewConflictsCommand(yargs: Argv):
     Argv<DiscoverNewConflictsCommandOptions> {
-  return yargs
+  return addGithubTokenOption(yargs)
       .option('date', {
         description: 'Only consider PRs updated since provided date',
         defaultDescription: '30 days ago',
