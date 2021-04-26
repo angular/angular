@@ -369,6 +369,18 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(s(css, 'contenta', 'h')).toEqual('[h] > > .x {}');
     });
 
+    it('should strip ::ng-deep and :host from within @font-face', () => {
+      expect(s('@font-face { font-family {} }', 'contenta', 'h'))
+          .toEqual('@font-face { font-family {}}');
+      expect(s('@font-face { ::ng-deep font-family{} }', 'contenta', 'h'))
+          .toEqual('@font-face { font-family{}}');
+      expect(s('@font-face { :host ::ng-deep font-family{} }', 'contenta', 'h'))
+          .toEqual('@font-face { font-family{}}');
+      expect(s('@supports (display: flex) { @font-face { :host ::ng-deep font-family{} } }',
+               'contenta', 'h'))
+          .toEqual('@supports (display:flex) { @font-face { font-family{}}}');
+    });
+
     it('should pass through @import directives', () => {
       const styleStr = '@import url("https://fonts.googleapis.com/css?family=Roboto");';
       const css = s(styleStr, 'contenta');
