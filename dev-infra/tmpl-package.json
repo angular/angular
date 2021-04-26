@@ -46,6 +46,9 @@
     "clang-format": {
       "optional": true
     },
+    "prettier": {
+      "optional": true
+    },
     "protractor": {
       "optional": true
     },

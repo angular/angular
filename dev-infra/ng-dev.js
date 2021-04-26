@@ -2471,11 +2471,59 @@ class ClangFormat extends Formatter {
  * found in the LICENSE file at https://angular.io/license
  */
 /**
+ * Formatter for running prettier against Typescript and Javascript files.
+ */
+class Prettier extends Formatter {
+    constructor() {
+        super(...arguments);
+        this.name = 'prettier';
+        this.binaryFilePath = path.join(this.git.baseDir, 'node_modules/.bin/prettier');
+        this.defaultFileMatcher = ['**/*.{t,j}s'];
+        /**
+         * The configuration path of the pretter config, obtained during construction to prevent needing
+         * to discover it repeatedly for each execution.
+         */
+        this.configPath = this.config['pretter'] ? shelljs.exec(`${this.binaryFilePath} --find-config-path .`).trim() : '';
+        this.actions = {
+            check: {
+                commandFlags: `--config ${this.configPath} --check`,
+                callback: (_, code, stdout) => {
+                    return code !== 0;
+                },
+            },
+            format: {
+                commandFlags: `--config ${this.configPath} --write`,
+                callback: (file, code, _, stderr) => {
+                    if (code !== 0) {
+                        error(`Error running prettier on: ${file}`);
+                        error(stderr);
+                        error();
+                        return true;
+                    }
+                    return false;
+                },
+            },
+        };
+    }
+}
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+/**
  * Get all defined formatters which are active based on the current loaded config.
  */
 function getActiveFormatters() {
     const config = getFormatConfig().format;
-    return [new Buildifier(config), new ClangFormat(config)].filter(formatter => formatter.isEnabled());
+    return [
+        new Prettier(config),
+        new Buildifier(config),
+        new ClangFormat(config),
+    ].filter((formatter) => formatter.isEnabled());
 }
 
 /**

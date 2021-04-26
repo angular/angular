@@ -10,14 +10,18 @@ import {getFormatConfig} from '../config';
 
 import {Buildifier} from './buildifier';
 import {ClangFormat} from './clang-format';
+import {Prettier} from './prettier';
 
 /**
  * Get all defined formatters which are active based on the current loaded config.
  */
 export function getActiveFormatters() {
   const config = getFormatConfig().format;
-  return [new Buildifier(config), new ClangFormat(config)].filter(
-      formatter => formatter.isEnabled());
+  return [
+    new Prettier(config),
+    new Buildifier(config),
+    new ClangFormat(config),
+  ].filter((formatter) => formatter.isEnabled());
 }
 
 // Rexport symbols used for types elsewhere.
