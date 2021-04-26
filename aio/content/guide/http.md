@@ -812,7 +812,7 @@ Neither `tap` nor `finalize` touch the values of the observable stream returned 
 Interceptors can be used to replace the built-in JSON parsing with a custom implementation.
 
 The `CustomJsonInterceptor` in the following example demonstrates how to achieve this.
-If the intercepted request expects a `'json'` response, the `reponseType` is changed to `'text'`
+If the intercepted request expects a `'json'` response, the `responseType` is changed to `'text'`
 to disable the built-in JSON parsing. Then the response is parsed via the injected `JsonParser`.
 
 <code-example
@@ -1213,7 +1213,7 @@ This allows applications or other interceptors to tag requests with configuratio
 Angular stores and retrieves a value in the context using an `HttpContextToken`.
 You can create a context token using the `new` operator, as in the following example:
 
-<code-example path="http/src/app/retry-interceptors.ts" region="context-token" header="creating a context token"></code-example>
+<code-example path="http/src/app/http-interceptors/retry-interceptor.ts" region="context-token" header="creating a context token"></code-example>
 
 The lambda function `() => 3` passed during the creation of the `HttpContextToken` serves two purposes:
 
@@ -1228,14 +1228,14 @@ The lambda function `() => 3` passed during the creation of the `HttpContextToke
 
 When making a request, you can provide an `HttpContext` instance, in which you have already set the context values.
 
-<code-example path="http/src/app/retry-interceptors.ts" region="set-context" header="setting context values"></code-example>
+<code-example path="http/src/app/http-interceptors/retry-interceptor.ts" region="set-context" header="setting context values"></code-example>
 
 ### Reading context values in an interceptor
 
 Within an interceptor, you can read the value of a token in a given request's context with `HttpContext.get()`.
 If you have not explicitly set a value for the token, Angular returns the default value specified in the token.
 
-<code-example path="http/src/app/retry-interceptors.ts" region="reading-context" header="reading context values in an interceptor"></code-example>
+<code-example path="http/src/app/http-interceptors/retry-interceptor.ts" region="reading-context" header="reading context values in an interceptor"></code-example>
 
 ### Contexts are mutable
 
@@ -1243,4 +1243,4 @@ Unlike most other aspects of `HttpRequest` instances, the request context is mut
 This allows interceptors to coordinate operations through the context.
 For instance, the `RetryInterceptor` example could use a second context token to track how many errors occur during the execution of a given request:
 
-<code-example path="http/src/app/retry-interceptors.ts" region="mutable-context" header="coordinatnig operations through the context"></code-example>
+<code-example path="http/src/app/http-interceptors/retry-interceptor.ts" region="mutable-context" header="coordinating operations through the context"></code-example>
