@@ -374,7 +374,36 @@ export class ShadowCss {
           rule.selector.startsWith('@media') || rule.selector.startsWith('@supports') ||
           rule.selector.startsWith('@page') || rule.selector.startsWith('@document')) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
+      } else if (rule.selector.startsWith('@font-face')) {
+        content = this._stripScopingSelectors(rule.content, scopeSelector, hostSelector);
       }
+      return new CssRule(selector, content);
+    });
+  }
+
+  /**
+   * Handle a css text that is within a rule that should not contain scope selectors by simply
+   * removing them! An example of such a rule is `@font-face`.
+   *
+   * `@font-face` rules cannot contain nested selectors. Nor can they be nested under a selector.
+   * Normally this would be a syntax error by the author of the styles. But in some rare cases, such
+   * as importing styles from a library, and applying `:host ::ng-deep` to the imported styles, we
+   * can end up with broken css if the imported styles happen to contain @font-face rules.
+   *
+   * For example:
+   *
+   * ```
+   * :host ::ng-deep {
+   *   import 'some/lib/containing/font-face';
+   * }
+   * ```
+   */
+  private _stripScopingSelectors(cssText: string, scopeSelector: string, hostSelector: string):
+      string {
+    return processRules(cssText, rule => {
+      const selector = rule.selector.replace(_shadowDeepSelectors, ' ')
+                           .replace(_polyfillHostNoCombinatorRe, ' ');
+      const content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       return new CssRule(selector, content);
     });
   }
