@@ -105,7 +105,7 @@ export declare class FocusKeyManager<T> extends ListKeyManager<FocusableOption &
 
 export declare class FocusMonitor implements OnDestroy {
     protected _document?: Document;
-    constructor(_ngZone: NgZone, _platform: Platform,
+    constructor(_ngZone: NgZone, _platform: Platform, _inputModalityDetector: InputModalityDetector,
     document: any | null, options: FocusMonitorOptions | null);
     _onBlur(event: FocusEvent, element: HTMLElement): void;
     focusVia(element: HTMLElement, origin: FocusOrigin, options?: FocusOptions): void;
@@ -115,7 +115,7 @@ export declare class FocusMonitor implements OnDestroy {
     ngOnDestroy(): void;
     stopMonitoring(element: HTMLElement): void;
     stopMonitoring(element: ElementRef<HTMLElement>): void;
-    static ɵfac: i0.ɵɵFactoryDeclaration<FocusMonitor, [null, null, { optional: true; }, { optional: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<FocusMonitor, [null, null, null, { optional: true; }, { optional: true; }]>;
     static ɵprov: i0.ɵɵInjectableDeclaration<FocusMonitor>;
 }
 
@@ -194,12 +194,13 @@ export declare const INPUT_MODALITY_DETECTOR_OPTIONS: InjectionToken<InputModali
 export declare type InputModality = 'keyboard' | 'mouse' | 'touch' | null;
 
 export declare class InputModalityDetector implements OnDestroy {
-    readonly modalityChanges: Observable<InputModality>;
+    readonly modalityChanged: Observable<InputModality>;
+    readonly modalityDetected: Observable<InputModality>;
     get mostRecentModality(): InputModality;
     constructor(_platform: Platform, ngZone: NgZone, document: Document, options?: InputModalityDetectorOptions);
     ngOnDestroy(): void;
     static ɵfac: i0.ɵɵFactoryDeclaration<InputModalityDetector, [null, null, null, { optional: true; }]>;
-    static ɵprov: i0.ɵɵInjectableDef<InputModalityDetector>;
+    static ɵprov: i0.ɵɵInjectableDeclaration<InputModalityDetector>;
 }
 
 export interface InputModalityDetectorOptions {
