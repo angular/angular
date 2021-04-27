@@ -1,9 +1,8 @@
 import { FirebaseRedirect } from './FirebaseRedirect';
 
-export interface FirebaseRedirectConfig {
-  source: string;
-  destination: string;
-}
+export type FirebaseRedirectConfig =
+  { source: string, regex?: undefined, destination: string } |
+  { source?: undefined, regex: string, destination: string };
 
 export class FirebaseRedirector {
   private redirects: FirebaseRedirect[];
