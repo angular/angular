@@ -53,6 +53,29 @@ export class FirebaseRedirectSource {
     }
   }
 
+  static fromRegexPattern(regex: string): FirebaseRedirectSource {
+    try {
+      // NOTE:
+      // Firebase redirect regexes use the [RE2 library](https://github.com/google/re2/wiki/Syntax),
+      // which requires named capture groups to begin with `?P`. See
+      // https://firebase.google.com/docs/hosting/full-config#capture-url-segments-for-redirects.
+
+      if (/\(\?<[^>]+>/.test(regex)) {
+        // Throw if the regex contains a non-RE2 named capture group.
+        throw new Error(
+            'The regular expression pattern contains a named capture group of the format ' +
+            '`(?<name>...)`, which is not compatible with the RE2 library. Use `(?P<name>...)` ' +
+            'instead.');
+      }
+
+      // Replace `(?P<...>` with just `(?<...>` to convert to `XRegExp`-compatible syntax for named
+      // capture groups.
+      return new FirebaseRedirectSource(regex.replace(/(\(\?)P(<[^>]+>)/g, '$1$2'));
+    } catch (err) {
+      throw new Error(`Error in FirebaseRedirectSource: "${regex}" - ${err.message}`);
+    }
+  }
+
   test(url: string): boolean {
     return XRegExp.test(url, this.regex);
   }
