@@ -37,8 +37,8 @@ export class GoogleMapDemo {
   constructor(mapDirectionsService: MapDirectionsService) {
     const request: google.maps.DirectionsRequest = {
       destination: {lat: 12, lng: 4},
-      origin: {lat: 13, lng: 5},
-      travelMode: google.maps.TravelMode.DRIVING,
+      origin: {lat: 14, lng: 8},
+      travelMode: google.maps.TravelMode.DRIVING
     };
     this.directionsResults$ = mapDirectionsService.route(request).pipe(map(response => response.result));
   }
