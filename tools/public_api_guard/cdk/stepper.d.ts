@@ -1,7 +1,6 @@
 export declare class CdkStep implements OnChanges {
     _completedOverride: boolean | null;
     _displayDefaultIndicatorType: boolean;
-    _showError: boolean;
     _stepper: CdkStepper;
     ariaLabel: string;
     ariaLabelledby: string;
@@ -23,6 +22,7 @@ export declare class CdkStep implements OnChanges {
     stepLabel: CdkStepLabel;
     constructor(_stepper: CdkStepper, stepperOptions?: StepperOptions);
     _markAsInteracted(): void;
+    _showError(): boolean;
     ngOnChanges(): void;
     reset(): void;
     select(): void;

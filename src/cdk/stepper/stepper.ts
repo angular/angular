@@ -112,7 +112,6 @@ export interface StepperOptions {
 })
 export class CdkStep implements OnChanges {
   private _stepperOptions: StepperOptions;
-  _showError: boolean;
   _displayDefaultIndicatorType: boolean;
 
   /** Template for step label if it exists. */
@@ -202,7 +201,6 @@ export class CdkStep implements OnChanges {
       @Optional() @Inject(STEPPER_GLOBAL_OPTIONS) stepperOptions?: StepperOptions) {
     this._stepperOptions = stepperOptions ? stepperOptions : {};
     this._displayDefaultIndicatorType = this._stepperOptions.displayDefaultIndicatorType !== false;
-    this._showError = !!this._stepperOptions.showError;
   }
 
   /** Selects this step component. */
@@ -238,6 +236,13 @@ export class CdkStep implements OnChanges {
       this.interacted = true;
       this.interactedStream.emit(this);
     }
+  }
+
+  /** Determines whether the error state can be shown. */
+  _showError(): boolean {
+    // We want to show the error state either if the user opted into/out of it using the
+    // global options, or if they've explicitly set it through the `hasError` input.
+    return this._stepperOptions.showError ?? this._customError != null;
   }
 
   static ngAcceptInputType_editable: BooleanInput;
@@ -442,7 +447,7 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
   }
 
   private _getDefaultIndicatorLogic(step: CdkStep, isCurrentStep: boolean): StepState {
-    if (step._showError && step.hasError && !isCurrentStep) {
+    if (step._showError() && step.hasError && !isCurrentStep) {
       return STEP_STATE.ERROR;
     } else if (!step.completed || isCurrentStep) {
       return STEP_STATE.NUMBER;
@@ -453,7 +458,7 @@ export class CdkStepper implements AfterContentInit, AfterViewInit, OnDestroy {
 
   private _getGuidelineLogic(
       step: CdkStep, isCurrentStep: boolean, state: StepState = STEP_STATE.NUMBER): StepState {
-    if (step._showError && step.hasError && !isCurrentStep) {
+    if (step._showError() && step.hasError && !isCurrentStep) {
       return STEP_STATE.ERROR;
     } else if (step.completed && !isCurrentStep) {
       return STEP_STATE.DONE;

@@ -1168,21 +1168,22 @@ describe('MatStepper', () => {
     let fixture: ComponentFixture<MatHorizontalStepperWithErrorsApp>;
     let stepper: MatStepper;
 
-    beforeEach(() => {
+    function createFixture(showErrorByDefault: boolean|undefined) {
       fixture = createComponent(
         MatHorizontalStepperWithErrorsApp,
         [{
           provide: STEPPER_GLOBAL_OPTIONS,
-          useValue: {showError: true}
+          useValue: {showError: showErrorByDefault}
         }],
         [MatFormFieldModule, MatInputModule]
       );
       fixture.detectChanges();
       stepper = fixture.debugElement
           .query(By.css('mat-horizontal-stepper'))!.componentInstance;
-    });
+    }
 
     it('should show error state', () => {
+      createFixture(true);
       const nextButtonNativeEl = fixture.debugElement
           .queryAll(By.directive(MatStepperNext))[0].nativeElement;
 
@@ -1195,6 +1196,7 @@ describe('MatStepper', () => {
     });
 
     it('should respect a custom falsy hasError value', () => {
+      createFixture(true);
       const nextButtonNativeEl = fixture.debugElement
           .queryAll(By.directive(MatStepperNext))[0].nativeElement;
 
@@ -1208,6 +1210,19 @@ describe('MatStepper', () => {
       fixture.detectChanges();
 
       expect(stepper._getIndicatorType(0)).not.toBe(STEP_STATE.ERROR);
+    });
+
+    it('should show error state if explicitly enabled, even when disabled globally', () => {
+      createFixture(undefined);
+      const nextButtonNativeEl = fixture.debugElement
+          .queryAll(By.directive(MatStepperNext))[0].nativeElement;
+
+      stepper.selectedIndex = 1;
+      stepper.steps.first.hasError = true;
+      nextButtonNativeEl.click();
+      fixture.detectChanges();
+
+      expect(stepper._getIndicatorType(0)).toBe(STEP_STATE.ERROR);
     });
 
   });
