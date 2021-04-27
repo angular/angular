@@ -998,6 +998,7 @@ groups:
           'aio/content/guide/releases.md',
           'aio/content/guide/updating.md',
           'aio/content/guide/deprecations.md',
+          'aio/content/guide/migration-legacy-message-id.md',
           'aio/content/guide/migration-renderer.md',
           'aio/content/guide/migration-undecorated-classes.md',
           'aio/content/guide/migration-dynamic-flag.md',
