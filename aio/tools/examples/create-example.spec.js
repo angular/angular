@@ -24,10 +24,11 @@ describe('create-example tool', () => {
       createEmptyExample('foo-bar', '/path/to/foo-bar');
       expect(writeFileSpy).toHaveBeenCalledTimes(2);
       expect(writeFileSpy)
-          .toHaveBeenCalledWith(`/path/to/foo-bar/${EXAMPLE_CONFIG_FILENAME}`, jasmine.any(String));
+          .toHaveBeenCalledWith(
+              path.resolve(`/path/to/foo-bar/${EXAMPLE_CONFIG_FILENAME}`), jasmine.any(String));
       expect(writeFileSpy)
           .toHaveBeenCalledWith(
-              `/path/to/foo-bar/${STACKBLITZ_CONFIG_FILENAME}`, jasmine.any(String));
+              path.resolve(`/path/to/foo-bar/${STACKBLITZ_CONFIG_FILENAME}`), jasmine.any(String));
     });
   });
 
@@ -51,7 +52,7 @@ describe('create-example tool', () => {
     it('should write a JSON file to disk', () => {
       const spy = spyOn(fs, 'writeFileSync');
       writeExampleConfigFile('/foo/bar');
-      expect(spy).toHaveBeenCalledWith(`/foo/bar/${EXAMPLE_CONFIG_FILENAME}`, '');
+      expect(spy).toHaveBeenCalledWith(path.resolve(`/foo/bar/${EXAMPLE_CONFIG_FILENAME}`), '');
     });
   });
 
@@ -59,7 +60,7 @@ describe('create-example tool', () => {
     it('should write a JSON file to disk', () => {
       const spy = spyOn(fs, 'writeFileSync');
       writeStackBlitzFile('bar-bar', '/foo/bar-bar');
-      expect(spy).toHaveBeenCalledWith(`/foo/bar-bar/${STACKBLITZ_CONFIG_FILENAME}`, [
+      expect(spy).toHaveBeenCalledWith(path.resolve(`/foo/bar-bar/${STACKBLITZ_CONFIG_FILENAME}`), [
         '{',
         '  "description": "Bar Bar",',
         '  "files": [',
@@ -108,13 +109,13 @@ describe('create-example tool', () => {
       expect(readFileSyncSpy).toHaveBeenCalledWith(sourceGitIgnorePath, 'utf8');
 
       expect(ensureDirSyncSpy.calls.allArgs()).toEqual([
-        ['/path/to/test-example/a'],
-        ['/path/to/test-example'],
+        [path.resolve('/path/to/test-example/a')],
+        [path.resolve('/path/to/test-example')],
       ]);
 
       expect(copySyncSpy.calls.allArgs()).toEqual([
-        ['/source/path/a/c', '/path/to/test-example/a/c'],
-        ['/source/path/x.ts', '/path/to/test-example/x.ts'],
+        [path.resolve('/source/path/a/c'), path.resolve('/path/to/test-example/a/c')],
+        [path.resolve('/source/path/x.ts'), path.resolve('/path/to/test-example/x.ts')],
       ]);
     });
   });
