@@ -1,27 +1,26 @@
-# Route transition animations
+# Animaciones para transición de rutas
 
-#### Prerequisites
+#### Prerrequisitos
 
-A basic understanding of the following concepts:
+Una comprensión basica de los siguientes conceptos:
 
-* [Introduction to Angular animations](guide/animations)
-* [Transition and triggers](guide/transition-and-triggers)
-* [Reusable animations](guide/reusable-animations)
+* [Introducción a animaciones en Angular](guide/animations)
+* [Transición y desencadenadores](guide/transition-and-triggers)
+* [Animaciones reutilizables](guide/reusable-animations)
 
 <hr>
 
-Routing enables users to navigate between different routes in an application. When a user navigates from one route to another, the Angular router maps the URL path to a relevant component and displays its view. Animating this route transition can greatly enhance the user experience.
+Enrutar permite a los usuarios navegar entre diferentes rutas de una aplicación. Cuando un usuario navega de una ruta a otra, el enrutador de Angular traza el trayecto de la URL a un componente importante y se muestra en su vista. Animar esta transición de rutas puede mejorar mucho la experiencia del usuario.
 
-The Angular router comes with high-level animation functions that let you animate the transitions between views when a route changes. To produce an animation sequence when switching between routes, you need to define nested animation sequences. Start with the top-level component that hosts the view, and nest additional animations in the components that host the embedded views.
+El enrutador de Angular viene con funciones de animación de alto nivel que te permiten animar las transiciones entre vistas cuando una ruta cambia. Para producir una secuencia de animación al cambiar de ruta, necesitas definir secuencias de animación anidadas. Empieza con los componentes de alto nivel que contienen la vista, y anida animaciones adicionales en los componentes que contienen las vistas integradas.
 
-To enable routing transition animation, do the following:
+Para permitir la animación de transición de rutas, haz lo siguiente:
 
-1. Import the routing module into the application and create a routing configuration that defines the possible routes.
-2. Add a router outlet to tell the Angular router where to place the activated components in the DOM.
-3. Define the animation.
+1. Importa el módulo enrutado dentro de la aplicación y crea una configuración de enrutamiento que defina las posibles rutas.
+2. Añade un punto de salida del enrutador para indicarle al enrutador de Angular donde posicionar los componentes activados en el DOM.
+3. Define la animación.
 
-
-Let's illustrate a router transition animation by navigating between two routes, *Home* and *About* associated with the `HomeComponent` and `AboutComponent` views respectively. Both of these component views are children of the top-most view, hosted by `AppComponent`. We'll implement a router transition animation that slides in the new view to the right and slides out the old view when the user navigates between the two routes.
+Imaginemos un enrutador de animación de transiciones mediante la navegación entre dos rutas, *Home* y *About* asociadas con las vistas `HomeComponent` y `AboutComponent` respectivamente. Estos dos componentes de vista son hijos de la vista superior, contenida por `AppComponent`. Implementaremos un enrutador de animación de transiciones que desliza dentro la nueva vista hacia la derecha y desliza fuera la vista anterior cuando el usuario navega entre las dos rutas.
 
 </br>
 
@@ -29,104 +28,104 @@ Let's illustrate a router transition animation by navigating between two routes,
   <img src="generated/images/guide/animations/route-animation.gif" alt="Animations in action" width="440">
 </div>
 
-## Route configuration
+## Configuración de rutas
 
-To begin, configure a set of routes using methods available in the `RouterModule` class. This route configuration tells the router how to navigate.
+Para empezar, configura un grupo de rutas usando los métodos disponibles en la clase `RouterModule`. Esta configuración de rutas le indica al enrutador cómo navegar.
 
-Use the `RouterModule.forRoot` method to define a set of routes. Also, import this `RouterModule` to the `imports` array of the main module, `AppModule`.
+Usa el método `RouterModule.forRoot` para definir un grupo de rutas. También, importa este `RouterModule` al array `imports` del módulo principal, `AppModule`.
 
 <div class="alert is-helpful">
 
-**Note:** Use the `RouterModule.forRoot` method in the root module, `AppModule`, to register top-level application routes and providers. For feature modules, call the `RouterModule.forChild` method to register additional routes.
+**Nota:** Usa el método `RouterModule.forRoot` en el módulo raíz, `AppModule`, para registrar rutas y proveedores de nivel superior de la aplicación. Para los módulos de funcionalidad, llama el método `RouterModule.forChild` para registrar rutas adicionales.
 
 </div>
 
-The following configuration defines the possible routes for the application.
+La siguiente configuración define las posibles rutas para la aplicación.
 
 <code-example path="animations/src/app/app.module.ts" header="src/app/app.module.ts" region="route-animation-data" language="typescript"></code-example>
 
-The `home` and `about` paths are associated with the `HomeComponent` and `AboutComponent` views. The route configuration tells the Angular router to instantiate the `HomeComponent` and `AboutComponent` views when the navigation matches the corresponding path.
+Las rutas `home` y `about` están asociadas con las vistas `HomeComponent` y `AboutComponent`. La configuración de rutas le indica al enrutador de Angular que instancie las vistas `HomeComponent` y `AboutComponent` cuando la navegación coincide con la ruta correspondiente.
 
-In addition to `path` and `component`, the `data` property of each route defines the key animation-specific configuration associated with a route. The `data` property value is passed into `AppComponent` when the route changes. You can also pass additional data in route config that is consumed within the animation. The data property value has to match the transitions defined in the `routeAnimation` trigger, which we'll define later.
+A parte de `path` y `component`, la propiedad `data` de cada ruta define la configuración clave específica de la animación asociada con la ruta. El valor de la propiedad `data` se pasa a `AppComponent` cuando la ruta cambia. También puedes pasar datos adicionales en la configuración de la ruta que se consumen dentro de la animación. El valor de la propiedad data tiene que coincidir con las transiciones definidas en el desencadenador `routeAnimation`, que definiremos más adelante.
 
 <div class="alert is-helpful">
 
-**Note:** The `data` property names that you use can be arbitrary. For example, the name *animation* used in the example above is an arbitrary choice.
+**Nota:** Los nombres de las propiedades `data` que se utilizan pueden ser arbitrarios. Por ejemplo, el nombre *animación* utilizado en el ejemplo anterior es una elección arbitraria.
 
 </div>
 
-## Router outlet
+## Punto de salida del enrutador
 
-After configuring the routes, tell the Angular router where to render the views when matched with a route. You can set a router outlet by inserting a `<router-outlet>` container inside the root `AppComponent` template.
+Después de configurar las rutas, indícale al enrutador de Angular dónde renderizar las vistas cuando coincidan con una ruta. Puedes establecer un punto de salida del enrutador insertando un contenedor `<router-outlet>` dentro de la plantilla raíz `AppComponent`.
 
-The `<router-outlet>` container has an attribute directive that contains data about active routes and their states, based on the `data` property that we set in the route configuration.
+El contenedor `<router-outlet>` tiene una directiva de atributos que contiene datos sobre las rutas activas y sus estados, basados en la propiedad `data` que establecimos en la configuración de la ruta.
 
 <code-example path="animations/src/app/app.component.html" header="src/app/app.component.html" region="route-animations-outlet"></code-example>
 
-`AppComponent` defines a method that can detect when a view changes. The method assigns an animation state value to the animation trigger (`@routeAnimation`) based on the route configuration `data` property value. Here's an example of an `AppComponent` method that detects when a route change happens.
+El `AppComponent` define un método que puede detectar cuando una vista cambia. El método asigna un valor de estado de animación al desencadenador de animación (`@routeAnimation`) basado en el valor de la propiedad `data` de configuración de la ruta. Aquí tienes un ejemplo de un método de `AppComponent` que detecta cuando se produce un cambio de ruta.
 
 <code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="prepare-router-outlet" language="typescript"></code-example>
 
-Here, the `prepareRoute()` method takes the value of the outlet directive (established through `#outlet="outlet"`) and returns a string value representing the state of the animation based on the custom data of the current active route. You can use this data to control which transition to execute for each route.
+En este caso, el método `prepareRoute()` toma el valor de la directiva del punto de salida (establecido a través de `#outlet="outlet"`) y devuelve un valor de cadena que representa el estado de la animación basado en los datos personalizados de la ruta activa actual. Puedes utilizar estos datos para controlar qué transición ejecutar para cada ruta.
 
-## Animation definition
+## Definición de la animación
 
-Animations can be defined directly inside your components. For this example we are defining the animations in a separate file, which allows us to re-use the animations.
+Las animaciones pueden ser definidas directamente dentro de tus componentes. Para este ejemplo estamos definiendo las animaciones en un archivo separado, lo que nos permite reutilizar las animaciones.
 
-The following code snippet defines a reusable animation named `slideInAnimation`.
-
+El siguiente fragmento de código define una animación reutilizable llamada `slideInAnimation`.
 
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="route-animations" language="typescript"></code-example>
 
-The animation definition does several things:
+La definición de animación hace varias cosas:
 
-* Defines two transitions. A single trigger can define multiple states and transitions.
-* Adjusts the styles of the host and child views to control their relative positions during the transition.
-* Uses `query()` to determine which child view is entering and which is leaving the host view.
+* Define dos transiciones. Un solo desencadenador puede definir múltiples estados y transiciones.
+* Ajusta los estilos de las vistas anfitriona e hija para controlar sus posiciones relativas durante la transición.
+* Utiliza `query()` para determinar qué vista hija está entrando y cuál está saliendo de la vista anfitriona.
 
-A route change activates the animation trigger, and a transition matching the state change is applied.
+Un cambio de ruta activa el desencadenante de la animación, y se aplica una transición que coincide con el cambio de estado.
 
 <div class="alert is-helpful">
 
-**Note:** The transition states must match the `data` property value defined in the route configuration.
+**Nota:** Los estados de transición deben coincidir con el valor de la propiedad `data` definida en la configuración de la ruta.
+
 </div>
 
-Make the animation definition available in your application by adding the reusable animation (`slideInAnimation`) to the `animations` metadata of the `AppComponent`.
+Haz que la definición de la animación esté disponible en tu aplicación añadiendo la animación reutilizable (`slideInAnimation`) a los metadatos `animations` del `AppComponent`.
 
 <code-example path="animations/src/app/app.component.ts" header="src/app/app.component.ts" region="define" language="typescript"></code-example>
 
-### Styling the host and child components
+### Estilos de los componentes anfitrión e hijo
 
-During a transition, a new view is inserted directly after the old one and both elements appear on screen at the same time. To prevent this, apply additional styling to the host view, and to the removed and inserted child views. The host view must use relative positioning, and the child views must use absolute positioning. Adding styling to the views animates the containers in place, without the DOM moving things around.
+Durante una transición, se inserta una nueva vista directamente después de la anterior y ambos elementos aparecen en pantalla al mismo tiempo. Para evitarlo, aplica un estilo adicional a la vista anfitriona y a las vistas hijas eliminadas e insertadas. La vista anfitriona debe utilizar posicionamiento relativo, y las vistas hijas deben utilizar posicionamiento absoluto. Añadir estilos a las vistas anima los contenedores en su lugar, sin que el DOM mueva las cosas.
 
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts" region="style-view" language="typescript"></code-example>
 
-### Querying the view containers
+### Consultas de los contenedores de la vista
 
-Use the `query()` method to find and animate elements within the current host component. The `query(":enter")` statement returns the view that is being inserted, and `query(":leave")` returns the view that is being removed.
+Utiliza el método `query()` para encontrar y animar elementos dentro del componente anfitrión actual. La sentencia `query(":enter")` devuelve la vista que se está insertando, y `query(":leave")` devuelve la vista que se está eliminando.
 
-Let's assume that we are routing from the *Home => About*.
+Supongamos que estamos enrutando desde *Home => About*.
 
 <code-example path="animations/src/app/animations.ts" header="src/app/animations.ts (Continuation from above)" region="query" language="typescript"></code-example>
 
-The animation code does the following after styling the views:
+El código de animación hace lo siguiente después de estilizar las vistas:
 
-* `query(':enter', style({ left: '-100%' }))` matches the view that is added and hides the newly added view by positioning it to the far left.
-* Calls `animateChild()` on the view that is leaving, to run its child animations.
-* Uses `group()` function to make the inner animations run in parallel.
-* Within the `group()` function:
-    * Queries the view that is removed and animates it to slide far to the right.
-    * Slides in the new view by animating the view with an easing function and duration. </br>
-    This animation results in the `about` view sliding from the left to right.
-* Calls the `animateChild()` method on the new view to run its child animations after the main animation completes.
+* `query(':enter', style({ left: '-100%' }))` coincide con la vista que se añade y oculta la nueva vista añadida posicionándola en el extremo izquierdo.
+* Llama a `animateChild()` en la vista que se va, para ejecutar las animaciones de sus hijos.
+* Utiliza la función `group()` para hacer que las animaciones internas se ejecuten en paralelo.
+* Dentro de la función `group()`:
+    * Consulta la vista que se elimina y la anima para que se deslice hacia la derecha.
+    * Desliza la nueva vista animando la vista con una función de suavizado y duración. </br>
+    Esta animación hace que la vista `about` se deslice de izquierda a derecha.
+* Llama al método `animateChild()` en la nueva vista para ejecutar sus animaciones hijas después de que la animación principal se complete.
 
-You now have a basic routable animation that animates routing from one view to another.
+Ahora tienes una animación básica que anima el enrutado de una vista a otra.
 
-## More on Angular animations
+## Más información sobre las animaciones de Angular
 
-You may also be interested in the following:
+También puede interesarte lo siguiente:
 
-* [Introduction to Angular animations](guide/animations)
-* [Transition and triggers](guide/transition-and-triggers)
-* [Complex animation sequences](guide/complex-animation-sequences)
-* [Reusable animations](guide/reusable-animations)
+* [Introducción a las animaciones de Angular](guide/animations)
+* [Transición y desencadenadores](guide/transition-and-triggers)
+* [Secuencias de animación complejas](guide/complex-animation-sequences)
+* [Animaciones reutilizables](guide/reusable-animations)
