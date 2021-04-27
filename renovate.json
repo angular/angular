@@ -2,13 +2,12 @@
   "pinVersions": false,
   "semanticCommits": true,
   "semanticPrefix": "build",
-  "commitMessage": "{{semanticPrefix}} update {{#if groupName}}{{{groupName}}} packages{{else}}{{{depName}}} to version {{{newVersion}}}{{/if}}",
   "separateMajorMinor": false,
   "prHourlyLimit": 2,
   "labels": [
     "target: minor",
     "comp: build & ci",
-    "action: merge"
+    "action: review"
   ],
   "timezone": "America/Tijuana",
   "lockFileMaintenance": {
@@ -47,6 +46,8 @@
     "angular-mocks-1.7",
     "puppeteer",
     "rollup",
+    "remark",
+    "remark-html",
     "selenium-webdriver"
   ],
   "packageFiles": [
@@ -113,6 +114,25 @@
     {
       "matchCurrentVersion": "0.0.0-PLACEHOLDER",
       "enabled": false
+    },
+    {
+      "excludePackagePatterns": [
+        "^@angular/.*",
+        "^@angular-devkit/.*",
+        "^@schematics/.*"
+      ],
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch",
+      "schedule": [
+        "after 1am on Thursday"
+      ]
     }
   ]
 }
