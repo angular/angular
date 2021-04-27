@@ -1,23 +1,21 @@
 
-# Binding syntax: an overview
+# Sintaxis de Enlace: una visión general
 
-Data-binding is a mechanism for coordinating what users see, specifically
-with application data values.
-While you could push values to and pull values from HTML,
-the application is easier to write, read, and maintain if you turn these tasks over to a binding framework.
-You simply declare bindings between binding sources, target HTML elements, and let the framework do the rest.
+El enlace de datos es un mecanismo utilizado para coordinar los valores de los datos que los usuarios visualizan en la aplicación.
+Aunque puedas insertar y actualizar valores en el HTML, la aplicación es más fácil de escribir, leer y mantener si tu le dejas esas tareas al framework de enlace.
+Por lo que simplemente debes declarar enlaces entre los datos del modelo y los elementos HTML y dejar al framework que haga el resto del trabajo.
 
 <div class="alert is-helpful">
 
-See the <live-example></live-example> for a working example containing the code snippets in this guide.
+Consulta la <live-example>aplicación de muestra</live-example> que es un ejemplo funcional que contiene los fragmentos de código utilizados en esta guía.
 
 </div>
 
-Angular provides many kinds of data-binding. Binding types can be grouped into three categories distinguished by the direction of data flow:
+Angular proporciona muchas formas para manejar el enlace de datos. Los tipos de enlace se pueden agrupar en tres categorías que se distinguen de acuerdo a la dirección del flujo de datos:
 
-* From the _source-to-view_
-* From _view-to-source_
-* Two-way sequence: _view-to-source-to-view_
+* Desde el _modelo-hacia-vista_
+* Desde la _vista-hacia-modelo_
+* Secuencia Bidireccional: _vista-hacia-modelo-hacia-vista_
 
 <style>
   td, th {vertical-align: top}
@@ -32,23 +30,23 @@ Angular provides many kinds of data-binding. Binding types can be grouped into t
   </col>
   <tr>
     <th>
-      Type
+      Tipo
     </th>
     <th>
-      Syntax
+      Sintaxis
     </th>
     <th>
-      Category
+      Categoría
     </th>
 
   </tr>
   <tr>
      <td>
-      Interpolation<br>
-      Property<br>
-      Attribute<br>
-      Class<br>
-      Style
+      Interpolación<br>
+      Propiedad<br>
+      Atributo<br>
+      Clase<br>
+      Estilos
     </td>
     <td>
 
@@ -61,11 +59,11 @@ Angular provides many kinds of data-binding. Binding types can be grouped into t
     </td>
 
     <td>
-      One-way<br>from data source<br>to view target
+      Una sola dirección<br>desde el modelo de datos<br>hacia la vista
     </td>
     <tr>
       <td>
-        Event
+        Evento
       </td>
       <td>
         <code-example>
@@ -75,12 +73,12 @@ Angular provides many kinds of data-binding. Binding types can be grouped into t
       </td>
 
       <td>
-        One-way<br>from view target<br>to data source
+        Una sola dirección<br>desde la vista<br>hacia el modelo de datos
       </td>
     </tr>
     <tr>
       <td>
-        Two-way
+        Bidireccional
       </td>
       <td>
         <code-example>
@@ -89,132 +87,123 @@ Angular provides many kinds of data-binding. Binding types can be grouped into t
         </code-example>
       </td>
       <td>
-        Two-way
+        Bidireccional
       </td>
     </tr>
   </tr>
 </table>
 
-Binding types other than interpolation have a **target name** to the left of the equal sign, either surrounded by punctuation, `[]` or `()`,
-or preceded by a prefix: `bind-`, `on-`, `bindon-`.
+Los tipos de enlace distintos a la interporlación tienen un **nombre de destino** hacia la izquierda del signo igual, están rodeados por los signos de puntación `[]` o `()`, o bien están precedidos por el prefijo: `bind-`, `on-`, `bindon-`.
 
-The *target* of a binding is the property or event inside the binding punctuation: `[]`, `()` or `[()]`.
+El *destino* de un enlace es la propiedad o evento situado dentro de los signos de puntuación: `[]`, `()` or `[()]`.
 
-Every public member of a **source** directive is automatically available for binding.
-You don't have to do anything special to access a directive member in a template expression or statement.
+Cada miembro <span class="x x-first x-last">público</span> de una directiva **fuente** <span class="x x-first x-last">está</span> disponible automaticamente para ser utilizada con los enlaces.
+No es necesario hacer nada especial para poder acceder al miembro de una directiva en una expresión o declaración de plantilla.
 
+### Enlace de Datos y el HTML
 
-### Data-binding and HTML
-
-In the normal course of HTML development, you create a visual structure with HTML elements, and
-you modify those elements by setting element attributes with string constants.
+En condiciones normales para un desarrollo HTML, primero se crea la estructura visual con los elementos HTML y luego se modifican dichos elementos estableciendo los atributos de dichos elementos utilizando una cadena de caracteres.
 
 ```html
-<div class="special">Plain old HTML</div>
+<div class="special">HTML Simple</div>
 <img src="images/item.png">
-<button disabled>Save</button>
+<button disabled>Guardar</button>
 ```
 
-With data-binding, you can control things like the state of a button:
+Usando el enlace de datos, puedes controlar cosas como el estado de un botón:
 
 <code-example path="binding-syntax/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html"></code-example>
 
-Notice that the binding is to the `disabled` property of the button's DOM element,
-**not** the attribute. This applies to data-binding in general. Data-binding works with *properties* of DOM elements, components, and directives, not HTML *attributes*.
+Puedes notar que el enlace se realiza a la propiedad `disabled` del elemento botón del DOM,
+**no** al atributo. Esto aplica al enlace de datos en general. El enlace de datos funciona con las *propiedades* de los elementos, componentes y directivas del DOM, no con los *atributos* HTML
 
 {@a html-attribute-vs-dom-property}
 
-### HTML attribute vs. DOM property
+### Atributos HTML vs. Propiedades del DOM
 
-The distinction between an HTML attribute and a DOM property is key to understanding
-how Angular binding works. **Attributes are defined by HTML. Properties are accessed from DOM (Document Object Model) nodes.**
+Distinguir la diferencia entre un atributo HTML y una propiedad del DOM es clave para comprender como funciona el enlace en Angular. **Los attributos son definidos por el HTML. Las propiedades se acceden desde los nodos del DOM (Document Object Model).**
 
-* A few HTML attributes have 1:1 mapping to properties; for example, `id`.
+* Muy pocos atributos HTML tienen una relación 1:1 con las propiedades; por ejemplo el, `id`.
 
-* Some HTML attributes don't have corresponding properties; for example, `aria-*`.
+* Algunos atributos HTML no tienen su correspondencia en propiedades; como por ejemplo, `aria-*`.
 
-* Some DOM properties don't have corresponding attributes; for example, `textContent`.
+* Algunas propiedades del DOM no tienen su correspondencia hacia atributos; como por ejemplo, `textContent`.
 
-It is important to remember that *HTML attribute* and the *DOM property* are different things, even when they have the same name.
-In Angular, the only role of HTML attributes is to initialize element and directive state.
+Es importante recordar que los *atributos HTML* y las *propiedades del DOM* son cosas muy diferentes, incluso cuando tienen el mismo nombre.
+En Angular, el único rol de los atributos HTML es el de inicializar el estado de los elementos y las directivas.
 
-**Template binding works with *properties* and *events*, not *attributes*.**
+**El enlace de plantilla funciona con *propiedades* y *eventos*, no con *atributos*.**
 
-When you write a data-binding, you're dealing exclusively with the *DOM properties* and *events* of the target object.
+Cuando escribes un enlace de datos, se trata exclusivamente sobre las *propiedades del DOM* and *eventos* del objeto de destino.
 
 <div class="alert is-helpful">
 
-This general rule can help you build a mental model of attributes and DOM properties:
-**Attributes initialize DOM properties and then they are done.
-Property values can change; attribute values can't.**
+Esta regla general puede ayudarnos a crear un modelo mental de los atributos y las propiedades del DOM:
+**Los atributos inicializan las propiedades del DOM y cuando eso ya esta hecho, los valores de las propiedades pueden cambiar, mientras que los atributos no lo pueden hacer.**
 
-There is one exception to this rule.
-Attributes can be changed by `setAttribute()`, which re-initializes corresponding DOM properties.
+Solamente hay una excepción a la regla.
+Los atributos pueden cambiarse usando el método `setAttribute()`, el cual re-inicializa las propiedades del DOM correspondientes.
 
 </div>
 
-For more information, see the [MDN Interfaces documentation](https://developer.mozilla.org/en-US/docs/Web/API#Interfaces) which has API docs for all the standard DOM elements and their properties.
-Comparing the [`<td>` attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td) attributes to the [`<td>` properties](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement) provides a helpful example for differentiation.
-In particular, you can navigate from the attributes page to the properties via "DOM interface" link, and navigate the inheritance hierarchy up to `HTMLTableCellElement`.
+Para más información, consulta la [Documentación de Interfaces MDN](https://developer.mozilla.org/en-US/docs/Web/API#Interfaces) que contiene los documentos de la API para todos los elementos estándar del DOM y sus propiedades.
+Comparar los atributos [`<td>` atributos](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td) con las propiedades [`<td>` propiedades](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement) nos proporciona un ejemplo útil para poder diferenciar estos dos términos de una mejor manera.
+En particular, se puede navegar de la página de atributos a la página de propiedades por medio del enlace "Interfaz del DOM", y navegar la jerarquía de la herencia hasta `HTMLTableCellElement`.
 
 
-#### Example 1: an `<input>`
+#### Ejemplo 1: un `<input>`
 
-When the browser renders `<input type="text" value="Sarah">`, it creates a
-corresponding DOM node with a `value` property initialized to "Sarah".
+Cuando el navegador renderiza `<input type="text" value="Sarah">`, este crea un nodo correspondiente en el DOM con la propiedad `value` inicializada con el valor de "Sarah".
 
 ```html
 <input type="text" value="Sarah">
 ```
 
-When the user enters "Sally" into the `<input>`, the DOM element `value` *property* becomes "Sally".
-However, if you look at the HTML attribute `value` using `input.getAttribute('value')`, you can see that the *attribute* remains unchanged&mdash;it returns "Sarah".
+Cuando el usuario ingresa "Sally" dentro del `<input>`, la **propiedad** `value` del elemento del DOM se convierte en "Sally".
+Sin embargo, si tu revisas el atributo HTML `value` usando el método `input.getAttribute('value')`, puedes notar que el *atributo* no ha cambiado&mdash;por lo que returna el valor de "Sarah".
 
-The HTML attribute `value` specifies the *initial* value; the DOM `value` property is the *current* value.
+El atributo HTML `value` especifica el valor *inicial*; la propiedad del DOM `value` es el valor *actual*.
 
-To see attributes versus DOM properties in a functioning app, see the <live-example name="binding-syntax"></live-example> especially for binding syntax.
+Para consultar los atributos vs las propiedades del DOM en una aplicación funcional, consulta la <live-example name="binding-syntax">aplicación</live-example> en especial para repasar la sintaxis de enlace.
 
-#### Example 2: a disabled button
+#### Ejemplo 2: un botón desactivado
 
-The `disabled` attribute is another example. A button's `disabled`
-*property* is `false` by default so the button is enabled.
+El atributo `disabled` es otro ejemplo. La *propiedad* del botón `disabled`
+*property* es `false` por defecto así que el botón esta activo.
 
-When you add the `disabled` *attribute*, its presence alone
-initializes the button's `disabled` *property* to `true`
-so the button is disabled.
+Cuando añades el *atributo* `disabled`, su sola presencia inicializa la *propiedad* del botón `disabled` con el valor de `true` por lo que el botón esta desactivado.
 
 ```html
-<button disabled>Test Button</button>
+<button disabled>Botón de Ejemplo</button>
 ```
 
-Adding and removing the `disabled` *attribute* disables and enables the button.
-However, the value of the *attribute* is irrelevant,
-which is why you cannot enable a button by writing `<button disabled="false">Still Disabled</button>`.
+Añadir y eliminar el *atributo* `disabled` desactiva y activa el botón.
+Sin embargo, el valor del *atributo* es irrelevante,
+lo cual es la razón del por qué no puedes activar un botón escribiendo `<button disabled="false">Todavía Desactivado</button>`.
 
-To control the state of the button, set the `disabled` *property*,
+Para controlar el estado de un botón, establece la *propiedad* `disabled`.
 
 <div class="alert is-helpful">
 
-Though you could technically set the `[attr.disabled]` attribute binding, the values are different in that the property binding requires to a boolean value, while its corresponding attribute binding relies on whether the value is `null` or not. Consider the following:
+Aunque técnicamente podrías establecer el enlace de atributo `[attr.disabled]`, los valores son diferentes ya que el enlace de propiedad necesita un valor booleano, mientras que el enlace de atributo correspondiente depende de que su valor sea `null` o no. Por lo que considera lo siguiente:
 
 ```html
 <input [disabled]="condition ? true : false">
 <input [attr.disabled]="condition ? 'disabled' : null">
 ```
 
-Generally, use property binding over attribute binding as it is more intuitive (being a boolean value), has a shorter syntax, and is more performant.
+Por lo general usa enlace de propiedades sobre enlace de atributos ya que es más intuitivo (siendo un valor booleano), tienen una sintaxis corta y es más eficaz.
 
 </div>
 
+Para ver el ejemplo del botón `disabled`, consulta la <live-example name="binding-syntax">aplicación</live-example> en especial para revisar la sintaxis de enlace. Este ejemplo muestra como alternar la propiedad disabled desde el componente.
 
-To see the `disabled` button example in a functioning app, see the <live-example name="binding-syntax"></live-example> especially for binding syntax. This example shows you how to toggle the disabled property from the component.
+## Tipos de enlace y objetivos
 
-## Binding types and targets
-
-The **target of a data-binding** is something in the DOM.
-Depending on the binding type, the target can be a property (element, component, or directive),
-an event (element, component, or directive), or sometimes an attribute name.
-The following table summarizes the targets for the different binding types.
+El **objetivo de un enlace de datos** se relaciona con algo del DOM.
+Dependiendo del tipo de enlace, el objetivo puede ser una propiedad (elemento, componente, o directiva),
+un evento (elemento, componente o directiva), o incluso algunas veces el nombre de un atributo.
+La siguiente tabla recoge los objetivos para los diferentes tipos de enlace.
 
 <style>
   td, th {vertical-align: top}
@@ -229,23 +218,23 @@ The following table summarizes the targets for the different binding types.
   </col>
   <tr>
     <th>
-      Type
+      Tipo
     </th>
     <th>
-      Target
+      Objetivo
     </th>
     <th>
-      Examples
+      Ejemplos
     </th>
   </tr>
   <tr>
     <td>
-      Property
+      Propiedad
     </td>
     <td>
-      Element&nbsp;property<br>
-      Component&nbsp;property<br>
-      Directive&nbsp;property
+      Propiedad del&nbsp;elemento<br>
+      Propiedad del&nbsp;componente<br>
+      Propiedad de la&nbsp;directiva
     </td>
     <td>
       <code>src</code>, <code>hero</code>, and <code>ngClass</code> in the following:
@@ -255,12 +244,12 @@ The following table summarizes the targets for the different binding types.
   </tr>
   <tr>
     <td>
-      Event
+      Evento
     </td>
     <td>
-      Element&nbsp;event<br>
-      Component&nbsp;event<br>
-      Directive&nbsp;event
+      Evento del &nbsp;elemento<br>
+      Evento del&nbsp;componente<br>
+      Evento de la &nbsp;directiva
     </td>
     <td>
       <code>click</code>, <code>deleteRequest</code>, and <code>myClick</code> in the following:
@@ -271,10 +260,10 @@ The following table summarizes the targets for the different binding types.
   </tr>
   <tr>
     <td>
-      Two-way
+      Bidireccional
     </td>
     <td>
-      Event and property
+      Eventos y propiedades
     </td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1"></code-example>
@@ -282,11 +271,11 @@ The following table summarizes the targets for the different binding types.
   </tr>
   <tr>
     <td>
-      Attribute
+      Atributo
     </td>
     <td>
-      Attribute
-      (the&nbsp;exception)
+      Atributo
+      (la&nbsp;excepción)
     </td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1"></code-example>
@@ -294,10 +283,10 @@ The following table summarizes the targets for the different binding types.
   </tr>
   <tr>
     <td>
-      Class
+      Clase
     </td>
     <td>
-      <code>class</code> property
+    Propiedad de una <code>clase</code>
     </td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1"></code-example>
@@ -305,14 +294,13 @@ The following table summarizes the targets for the different binding types.
   </tr>
   <tr>
     <td>
-      Style
+      Estilos
     </td>
     <td>
-      <code>style</code> property
+     Propiedad de un <code>estilo</code>
     </td>
     <td>
       <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1"></code-example>
     </td>
   </tr>
 </table>
-
