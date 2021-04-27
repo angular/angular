@@ -119,12 +119,9 @@ Package name                               | Description
 [**@angular/cli**](https://github.com/angular/angular-cli/) | The Angular CLI tools.
 **@angular/<br />compiler&#8209;cli** | The Angular compiler, which is invoked by the Angular CLI's `ng build` and `ng serve` commands.
 **@types/... ** | TypeScript definition files for 3rd party libraries such as Jasmine and Node.js.
-[**codelyzer**](https://www.npmjs.com/package/codelyzer) | A linter for Angular apps whose rules conform to the Angular [style guide](guide/styleguide).
 **jasmine/... ** | Packages to support the [Jasmine](https://jasmine.github.io/) test library.
 **karma/... ** | Packages to support the [karma](https://www.npmjs.com/package/karma) test runner.
-[**protractor**](https://www.npmjs.com/package/protractor) | An end-to-end (e2e) framework for Angular apps. Built on top of [WebDriverJS](https://github.com/SeleniumHQ/selenium/wiki/WebDriverJs).
 [**ts-node**](https://www.npmjs.com/package/ts-node) | TypeScript execution environment and REPL for Node.js.
-[**tslint**](https://www.npmjs.com/package/tslint) | A static analysis tool that checks TypeScript code for readability, maintainability, and functionality errors.
 [**typescript**](https://www.npmjs.com/package/typescript) | The TypeScript language server, including the *tsc* TypeScript compiler.
 
 
@@ -134,4 +131,3 @@ Package name                               | Description
 
  * [Building and serving](guide/build) describes how packages come together to create a development build.
  * [Deployment](guide/deployment) describes how packages come together to create a production build.
- 
