@@ -10,7 +10,6 @@ import {join} from 'path';
 import {exec} from 'shelljs';
 
 import {error} from '../../utils/console';
-import {FormatConfig} from '../config';
 
 import {Formatter} from './base-formatter';
 
@@ -18,24 +17,18 @@ import {Formatter} from './base-formatter';
  * Formatter for running prettier against Typescript and Javascript files.
  */
 export class Prettier extends Formatter {
-  /**
-   * The configuration path of the pretter config, obtained during construction to prevent needing
-   * to discover it repeatedly for each execution.
-   */
-  private configPath = '';
-
   name = 'prettier';
 
   binaryFilePath = join(this.git.baseDir, 'node_modules/.bin/prettier');
 
-  constructor(config: FormatConfig) {
-    super(config);
-    if (!!config[this.name]) {
-      this.configPath = exec(`${this.binaryFilePath} --find-config-path .`, {silent: true}).trim();
-    }
-  }
-
   defaultFileMatcher = ['**/*.{t,j}s'];
+
+  /**
+   * The configuration path of the pretter config, obtained during construction to prevent needing
+   * to discover it repeatedly for each execution.
+   */
+  private configPath =
+      this.config['pretter'] ? exec(`${this.binaryFilePath} --find-config-path .`).trim() : '';
 
   actions = {
     check: {

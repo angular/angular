@@ -17,8 +17,11 @@ import {Prettier} from './prettier';
  */
 export function getActiveFormatters() {
   const config = getFormatConfig().format;
-  return [new Prettier(config), new Buildifier(config), new ClangFormat(config)].filter(
-      formatter => formatter.isEnabled());
+  return [
+    new Prettier(config),
+    new Buildifier(config),
+    new ClangFormat(config),
+  ].filter((formatter) => formatter.isEnabled());
 }
 
 // Rexport symbols used for types elsewhere.
