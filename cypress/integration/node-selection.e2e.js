@@ -61,7 +61,7 @@ describe('node selection', () => {
         });
     });
 
-    it.skip('should scroll right when right scroll button is clicked', () => {
+    it('should scroll right when right scroll button is clicked', () => {
       cy.get('.tree-wrapper')
         .find('.tree-node:contains("div[TooltipDirective]")')
         .last()
@@ -69,6 +69,9 @@ describe('node selection', () => {
         .then(() => {
           cy.get('ng-breadcrumbs')
             .find('.breadcrumbs')
+            .then((el) => {
+              el[0].style.scrollBehavior = 'auto';
+            })
             .then((breadcrumbsContainer) => {
               const scrollLeft = () => breadcrumbsContainer[0].scrollLeft;
               expect(scrollLeft()).to.eql(0);
@@ -77,15 +80,14 @@ describe('node selection', () => {
                 .find('.scroll-button')
                 .last()
                 .click()
-                .wait(150) // wait for scroll animation to end
                 .then(() => {
-                  expect(scrollLeft()).to.eql(15);
+                  expect(scrollLeft()).to.be.greaterThan(0);
                 });
             });
         });
     });
 
-    it.skip('should scroll left when left scroll button is clicked', () => {
+    it('should scroll left when left scroll button is clicked', () => {
       cy.get('.tree-wrapper')
         .find('.tree-node:contains("div[TooltipDirective]")')
         .last()
@@ -93,6 +95,9 @@ describe('node selection', () => {
         .then(() => {
           cy.get('ng-breadcrumbs')
             .find('.breadcrumbs')
+            .then((el) => {
+              el[0].style.scrollBehavior = 'auto';
+            })
             .then((breadcrumbsContainer) => {
               const scrollLeft = () => breadcrumbsContainer[0].scrollLeft;
               expect(scrollLeft()).to.eql(0);
@@ -101,15 +106,13 @@ describe('node selection', () => {
                 .find('.scroll-button')
                 .last()
                 .click()
-                .wait(150) // wait for scroll animation to end
                 .then(() => {
-                  expect(scrollLeft()).to.eql(15);
+                  expect(scrollLeft()).to.be.greaterThan(0);
 
                   cy.get('ng-breadcrumbs')
                     .find('.scroll-button')
                     .first()
                     .click()
-                    .wait(150) // wait for scroll animation to end
                     .then(() => {
                       expect(scrollLeft()).to.eql(0);
                     });

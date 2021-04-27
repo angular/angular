@@ -1,6 +1,5 @@
 const prepareHeaderExpansionPanelForAssertions = (selector) => {
   cy.get('.tree-wrapper').find(selector).first().click({ force: true });
-  cy.wait(1000);
   cy.get('.element-header .component-name').click();
 };
 
