@@ -22,6 +22,10 @@ describe('disambiguateDocPaths processor', () => {
     expect(processor).toBeDefined();
   });
 
+  it('should be run before creating the sitemap', () => {
+    expect(processor.$runBefore).toContain('createSitemap');
+  });
+
   it('should create `disambiguator` documents for docs that have ambiguous outputPaths', () => {
     const numDocs = docs.length;
     processor.$process(docs);

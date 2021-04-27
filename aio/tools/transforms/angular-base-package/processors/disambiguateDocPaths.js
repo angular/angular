@@ -18,7 +18,7 @@
 module.exports = function disambiguateDocPathsProcessor(log) {
   return {
     $runAfter: ['paths-computed'],
-    $runBefore: ['rendering-docs'],
+    $runBefore: ['rendering-docs', 'createSitemap'],
     $process(docs) {
       // Collect all the ambiguous docs, whose outputPath is are only different by casing.
       const ambiguousDocMap = new Map();
