@@ -122,7 +122,7 @@
     "cross-spawn": "^7.0.3",
     "css-selector-parser": "^1.4.1",
     "dgeni": "^0.4.14",
-    "dgeni-packages": "^0.29.0",
+    "dgeni-packages": "^0.29.1",
     "entities": "^2.2.0",
     "esbuild": "^0.11.4",
     "eslint": "^7.23.0",
