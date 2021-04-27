@@ -92,11 +92,12 @@
       {"type": 301, "source": "/**/HTTP_PROVIDERS*", "destination": "/api/http/HttpModule"},
 
       // URLs that use the old scheme of adding the type to the end (e.g. `SomeClass-class`)
-      {"type": 301, "source": "/api/:package/:api-*", "destination": "/api/:package/:api"},
-      {"type": 301, "source": "/api/:package/testing/index/:api-*", "destination": "/api/:package/testing/:api"},
-      {"type": 301, "source": "/api/:package/testing/:api-*", "destination": "/api/:package/testing/:api"},
-      {"type": 301, "source": "/api/upgrade/:package/index/:api-*", "destination": "/api/upgrade/:package/:api"},
-      {"type": 301, "source": "/api/upgrade/:package/:api-*", "destination": "/api/upgrade/:package/:api"},
+      // (Exclude disambiguated URLs that might be suffixed with `-\d+` (e.g. `SomeClass-1`))
+      {"type": 301, "regex": "^/api/(?P<package>[^/]+)/(?P<api>[^/]+)-\\D*$", "destination": "/api/:package/:api"},
+      {"type": 301, "regex": "^/api/(?P<package>[^/]+)/testing/index/(?P<api>[^/]+)$", "destination": "/api/:package/testing/:api"},
+      {"type": 301, "regex": "^/api/(?P<package>[^/]+)/testing/(?P<api>[^/]+)-\\D*$", "destination": "/api/:package/testing/:api"},
+      {"type": 301, "regex": "^/api/upgrade/(?P<package>[^/]+)/index/(?P<api>[^/]+)$", "destination": "/api/upgrade/:package/:api"},
+      {"type": 301, "regex": "^/api/upgrade/(?P<package>[^/]+)/(?P<api>[^/]+)-\\D*$", "destination": "/api/upgrade/:package/:api"},
 
       // URLs that use the old scheme before we moved the docs to the angular/angular repo
       {"type": 301, "source": "/docs/*/latest", "destination": "/docs"},
