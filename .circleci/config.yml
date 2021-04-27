@@ -410,28 +410,6 @@ jobs:
           root: dist
           paths:
             - "releases/**/*"
-
-      # Since there is no UMD bundle that includes everything from the CDK, we need to move
-      # all bundles into a directory. This allows us to store all CDK UMD bundles as job
-      # artifacts that can be picked up by the Angular Github bot.
-      - run:
-          name: Prepare CDK artifacts for publish.
-          command: |
-            mkdir -p /tmp/cdk-umd-minified-bundles
-            cp dist/releases/cdk/bundles/*.umd.js /tmp/cdk-umd-minified-bundles
-      # Publish bundle artifacts which will be used to calculate the size change.
-      # Note: Make sure that the size plugin from the Angular robot fetches the artifacts
-      # from this CircleCI job (see .github/angular-robot.yml). Additionally any artifacts need to
-      # be stored with the following path format: "{projectName}/{context}/{fileName}"
-      # This format is necessary because otherwise the bot is not able to pick up the
-      # artifacts from CircleCI. See:
-      # https://github.com/angular/github-robot/blob/master/functions/src/plugins/size.ts#L392-L394
-      - store_artifacts:
-          path: dist/releases/material/bundles/material.umd.js
-          destination: /angular_material/material_release_output/material.umd.js
-      - store_artifacts:
-          path: /tmp/cdk-umd-minified-bundles
-          destination: /angular_material/cdk_release_output/
       - *slack_notify_on_failure
 
   upload_release_packages:
