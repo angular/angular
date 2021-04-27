@@ -33,4 +33,20 @@ describe('firebase.json redirect config', () => {
       });
     });
   });
+
+  it('should not redirect disambiguated URLs', () => {
+    const redirector = getRedirector();
+
+    // Disambiguated URL.
+    const url1 = '/api/core/Foo-0';
+    expect(redirector.redirect(url1)).toBe(url1);
+
+    // Disambiguated URL.
+    const url2 = '/api/core/BAR-1337';
+    expect(redirector.redirect(url2)).toBe(url2);
+
+    // Non-disambiguated URL with dash.
+    const url3 = '/api/core/baz-class';
+    expect(redirector.redirect(url3)).toBe('/api/core/baz');
+  });
 });
