@@ -8,7 +8,7 @@ export interface FirebaseRedirectConfig {
 export class FirebaseRedirector {
   private redirects: FirebaseRedirect[];
   constructor(redirects: FirebaseRedirectConfig[]) {
-    this.redirects = redirects.map(redirect => new FirebaseRedirect(redirect.source, redirect.destination));
+    this.redirects = redirects.map(redirect => new FirebaseRedirect(redirect));
   }
 
   redirect(url: string): string {
