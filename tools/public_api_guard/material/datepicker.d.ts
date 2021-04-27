@@ -356,7 +356,8 @@ export declare class MatDateRangeInput<D> implements MatFormFieldControl<DateRan
     _handleChildValueChange(): void;
     _openDatepicker(): void;
     _shouldHidePlaceholders(): boolean;
-    _shouldHideSeparator(): boolean;
+    _shouldHideSeparator(): boolean | "" | null;
+    _updateFocus(origin: FocusOrigin): void;
     getConnectedOverlayOrigin(): ElementRef;
     getStartValue(): D | null;
     getThemePalette(): ThemePalette;

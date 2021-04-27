@@ -1,7 +1,7 @@
 <div
   class="mat-date-range-input-container"
   cdkMonitorSubtreeFocus
-  (cdkFocusChange)="focused = $event !== null">
+  (cdkFocusChange)="_updateFocus($event)">
   <div class="mat-date-range-input-start-wrapper">
     <ng-content select="input[matStartDate]"></ng-content>
     <span
