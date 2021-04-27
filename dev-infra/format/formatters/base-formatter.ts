@@ -44,7 +44,7 @@ export abstract class Formatter {
   /** The default matchers for the formatter for filtering files to be formatted. */
   abstract defaultFileMatcher: string[];
 
-  constructor(protected config: FormatConfig) {}
+  constructor(private config: FormatConfig) {}
 
   /**
    * Retrieve the command to execute the provided action, including both the binary
