@@ -35,4 +35,18 @@ describe('ServiceWorker navigation URLs', () => {
     navigationUrls.forEach(url => expect(isNavigationUrl(url)).toBeTruthy(url));
     nonNavigationUrls.forEach(url => expect(isNavigationUrl(url)).toBeFalsy(url));
   });
+
+  it('should treat disambiguated URLs as navigation URLs', () => {
+    // Disambiguated URL.
+    const url1 = '/api/core/Foo-0';
+    expect(isNavigationUrl(url1)).toBeTruthy(url1);
+
+    // Disambiguated URL.
+    const url2 = '/api/core/BAR-1337';
+    expect(isNavigationUrl(url2)).toBeTruthy(url2);
+
+    // Non-disambiguated URL with dash.
+    const url3 = '/api/core/baz-class';
+    expect(isNavigationUrl(url3)).toBeFalsy(url3);
+  });
 });
