@@ -6,8 +6,10 @@ export class FirebaseRedirect {
   source: FirebaseRedirectSource;
   destination: string;
 
-  constructor({source, destination}: FirebaseRedirectConfig) {
-    this.source = FirebaseRedirectSource.fromGlobPattern(source);
+  constructor({source, regex, destination}: FirebaseRedirectConfig) {
+    this.source = (typeof source === 'string') ?
+      FirebaseRedirectSource.fromGlobPattern(source) :
+      FirebaseRedirectSource.fromRegexPattern(regex!);
     this.destination = destination;
   }
 
