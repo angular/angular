@@ -1,6 +1,6 @@
-import { FirebaseGlob } from './FirebaseGlob';
-describe('FirebaseGlob', () => {
+import { FirebaseRedirectSource } from './FirebaseRedirectSource';
 
+describe('FirebaseRedirectSource', () => {
   describe('test', () => {
     it('should match * parts', () => {
       testGlob('asdf/*.jpg',
@@ -42,12 +42,12 @@ describe('FirebaseGlob', () => {
     });
 
     it('should error on non-supported choice groups', () => {
-      expect(() => new FirebaseGlob('/!(a|b)/c'))
-        .toThrowError('Error in FirebaseGlob: "/!(a|b)/c" - "not" expansions are not supported: "!(a|b)"');
-      expect(() => new FirebaseGlob('/(a|b)/c'))
-      .toThrowError('Error in FirebaseGlob: "/(a|b)/c" - unknown expansion type: "/" in "/(a|b)"');
-      expect(() => new FirebaseGlob('/&(a|b)/c'))
-        .toThrowError('Error in FirebaseGlob: "/&(a|b)/c" - unknown expansion type: "&" in "&(a|b)"');
+      expect(() => FirebaseRedirectSource.fromGlobPattern('/!(a|b)/c'))
+        .toThrowError('Error in FirebaseRedirectSource: "/!(a|b)/c" - "not" expansions are not supported: "!(a|b)"');
+      expect(() => FirebaseRedirectSource.fromGlobPattern('/(a|b)/c'))
+      .toThrowError('Error in FirebaseRedirectSource: "/(a|b)/c" - unknown expansion type: "/" in "/(a|b)"');
+      expect(() => FirebaseRedirectSource.fromGlobPattern('/&(a|b)/c'))
+        .toThrowError('Error in FirebaseRedirectSource: "/&(a|b)/c" - unknown expansion type: "&" in "&(a|b)"');
     });
 
     // Globs that contain params tested via the match tests below
@@ -176,14 +176,14 @@ describe('FirebaseGlob', () => {
 });
 
 function testGlob(pattern: string, matches: string[], nonMatches: string[]) {
-  const glob = new FirebaseGlob(pattern);
-  matches.forEach(url => expect(glob.test(url)).toBe(true, url));
-  nonMatches.forEach(url => expect(glob.test(url)).toBe(false, url));
+  const redirectSource = FirebaseRedirectSource.fromGlobPattern(pattern);
+  matches.forEach(url => expect(redirectSource.test(url)).toBe(true, url));
+  nonMatches.forEach(url => expect(redirectSource.test(url)).toBe(false, url));
 }
 
 function testMatch(pattern: string, captures: { named?: string[], rest?: string[] }, matches: { [url: string]: object|undefined }) {
-  const glob = new FirebaseGlob(pattern);
-  expect(Object.keys(glob.namedParams)).toEqual(captures.named || []);
-  expect(Object.keys(glob.restParams)).toEqual(captures.rest || []);
-  Object.keys(matches).forEach(url => expect(glob.match(url)).toEqual(matches[url]));
+  const redirectSource = FirebaseRedirectSource.fromGlobPattern(pattern);
+  expect(redirectSource.namedGroups).toEqual(captures.named || []);
+  expect(redirectSource.restNamedGroups).toEqual(captures.rest || []);
+  Object.keys(matches).forEach(url => expect(redirectSource.match(url)).toEqual(matches[url]));
 }
