@@ -1,6 +1,5 @@
 import {SelectionChange} from '@angular/cdk-experimental/selection';
-import {Component, OnDestroy} from '@angular/core';
-import {ReplaySubject} from 'rxjs';
+import {Component} from '@angular/core';
 
 /**
  * @title CDK Selection on a simple list.
@@ -9,26 +8,18 @@ import {ReplaySubject} from 'rxjs';
   selector: 'cdk-selection-list-example',
   templateUrl: 'cdk-selection-list-example.html',
 })
-export class CdkSelectionListExample implements OnDestroy {
-  private readonly _destroyed = new ReplaySubject(1);
-
+export class CdkSelectionListExample {
   data = ELEMENT_NAMES;
-
   selected1: string[] = [];
   selected2: string[] = [];
   selected3: string[] = [];
   selected4: string[] = [];
 
-  ngOnDestroy() {
-    this._destroyed.next();
-    this._destroyed.complete();
-  }
-
   getCurrentSelected(event: SelectionChange<string>) {
     return event.after.map((select) => select.value);
   }
 
-  trackByFn(index: number, value: string) {
+  trackByFn(index: number) {
     return index;
   }
 

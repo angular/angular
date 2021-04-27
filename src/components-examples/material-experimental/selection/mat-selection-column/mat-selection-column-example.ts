@@ -1,6 +1,5 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component} from '@angular/core';
 import {SelectionChange} from '@angular/material-experimental/selection';
-import {ReplaySubject} from 'rxjs';
 
 /**
  * @title Table that uses `matSelectionColumn` which allows users to select rows.
@@ -10,17 +9,10 @@ import {ReplaySubject} from 'rxjs';
   templateUrl: 'mat-selection-column-example.html',
   styleUrls: ['mat-selection-column-example.css'],
 })
-export class MatSelectionColumnExample implements OnDestroy {
-  private readonly _destroyed = new ReplaySubject(1);
-
+export class MatSelectionColumnExample {
   displayedColumns: string[] = ['select', 'position', 'name', 'weight', 'symbol'];
   dataSource = ELEMENT_DATA;
   selected: string[] = [];
-
-  ngOnDestroy() {
-    this._destroyed.next();
-    this._destroyed.complete();
-  }
 
   selectionChanged(event: SelectionChange<PeriodicElement>) {
     this.selected = event.after.map((select) => select.value.name);

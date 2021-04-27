@@ -1,6 +1,5 @@
 import {SelectionChange} from '@angular/cdk-experimental/selection';
-import {Component, OnDestroy} from '@angular/core';
-import {ReplaySubject} from 'rxjs';
+import {Component} from '@angular/core';
 
 /**
  * @title CDK Selection Column on a CDK table.
@@ -10,17 +9,10 @@ import {ReplaySubject} from 'rxjs';
   templateUrl: 'cdk-selection-column-example.html',
   styleUrls: ['cdk-selection-column-example.css'],
 })
-export class CdkSelectionColumnExample implements OnDestroy {
-  private readonly _destroyed = new ReplaySubject(1);
-
+export class CdkSelectionColumnExample {
   displayedColumns: string[] = ['select', 'position', 'name', 'weight', 'symbol'];
   dataSource = ELEMENT_DATA;
   selected: string[] = [];
-
-  ngOnDestroy() {
-    this._destroyed.next();
-    this._destroyed.complete();
-  }
 
   selectionChanged(event: SelectionChange<PeriodicElement>) {
     this.selected = event.after.map((select) => select.value.name);

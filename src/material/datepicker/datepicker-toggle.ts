@@ -23,7 +23,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {MatButton} from '@angular/material/button';
-import {merge, of as observableOf, Subscription} from 'rxjs';
+import {merge, Observable, of as observableOf, Subscription} from 'rxjs';
 import {MatDatepickerIntl} from './datepicker-intl';
 import {MatDatepickerControl, MatDatepickerPanel} from './datepicker-base';
 
@@ -132,7 +132,7 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
     this._stateChanges.unsubscribe();
     this._stateChanges = merge(
       this._intl.changes,
-      datepickerStateChanged,
+      datepickerStateChanged as Observable<void>,
       inputStateChanged,
       datepickerToggled
     ).subscribe(() => this._changeDetectorRef.markForCheck());

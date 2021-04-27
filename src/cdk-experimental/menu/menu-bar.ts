@@ -199,25 +199,27 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
   private _subscribeToMenuStack() {
     this._menuStack.closed
       .pipe(takeUntil(this._destroyed))
-      .subscribe((item: MenuStackItem) => this._closeOpenMenu(item));
+      .subscribe(item => this._closeOpenMenu(item));
 
     this._menuStack.emptied
       .pipe(takeUntil(this._destroyed))
-      .subscribe((event: FocusNext) => this._toggleOpenMenu(event));
+      .subscribe(event => this._toggleOpenMenu(event));
   }
 
   /**
    * Close the open menu if the current active item opened the requested MenuStackItem.
    * @param item the MenuStackItem requested to be closed.
    */
-  private _closeOpenMenu(menu: MenuStackItem) {
+  private _closeOpenMenu(menu: MenuStackItem | undefined) {
     const trigger = this._openItem;
     const keyManager = this._keyManager;
     if (menu === trigger?.getMenuTrigger()?.getMenu()) {
-      trigger.getMenuTrigger()?.closeMenu();
+      trigger?.getMenuTrigger()?.closeMenu();
       // If the user has moused over a sibling item we want to focus the element under mouse focus
       // not the trigger which previously opened the now closed menu.
-      keyManager.setActiveItem(this._pointerTracker?.activeElement || trigger);
+      if (trigger) {
+        keyManager.setActiveItem(this._pointerTracker?.activeElement || trigger);
+      }
     }
   }
 
@@ -225,7 +227,7 @@ export class CdkMenuBar extends CdkMenuGroup implements Menu, AfterContentInit, 
    * Set focus to either the current, previous or next item based on the FocusNext event, then
    * open the previous or next item.
    */
-  private _toggleOpenMenu(event: FocusNext) {
+  private _toggleOpenMenu(event: FocusNext | undefined) {
     const keyManager = this._keyManager;
     switch (event) {
       case FocusNext.nextItem:

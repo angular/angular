@@ -180,7 +180,7 @@ export abstract class MatPaginatedTabHeader implements AfterContentChecked, Afte
   }
 
   ngAfterContentInit() {
-    const dirChange = this._dir ? this._dir.change : observableOf(null);
+    const dirChange = this._dir ? this._dir.change : observableOf('ltr');
     const resize = this._viewportRuler.change(150);
     const realign = () => {
       this.updatePagination();

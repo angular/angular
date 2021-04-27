@@ -39,7 +39,7 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
-import {asapScheduler, merge, of as observableOf, Subscription} from 'rxjs';
+import {asapScheduler, merge, Observable, of as observableOf, Subscription} from 'rxjs';
 import {delay, filter, take, takeUntil} from 'rxjs/operators';
 import {MenuCloseReason, _MatMenuBase} from './menu';
 import {throwMatMenuMissingError, throwMatMenuRecursiveError} from './menu-errors';
@@ -504,7 +504,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
       filter(() => this._menuOpen)
     ) : observableOf();
 
-    return merge(backdrop, parentClose, hover, detachments);
+    return merge(backdrop, parentClose as Observable<MenuCloseReason>, hover, detachments);
   }
 
   /** Handles mouse presses on the trigger. */
