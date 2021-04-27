@@ -1,10 +1,8 @@
-# Sharing modules
+# Compartiendo módulos
 
-Creating shared modules allows you to organize and streamline your code. You can put commonly
-used directives, pipes, and components into one module and then import just that module wherever
-you need it in other parts of your app.
+La creación de módulos compartidos te permite organizar y optimizar tu código. Puedes colocar directivas, `pipes`, y componentes de uso común en un módulo y despues importar solo ese módulo donde lo necesites en otras partes de tu aplicación.
 
-Consider the following module from an imaginary app:
+Considera el siguiente módulo de una aplicación imaginaria:
 
 
 ```typescript
@@ -24,39 +22,33 @@ import { OrdersPipe } from './orders.pipe';
 export class SharedModule { }
 ```
 
-Note the following:
+Ten en cuenta lo siguiente:
 
-* It imports the `CommonModule` because the module's component needs common directives.
-* It declares and exports the utility pipe, directive, and component classes.
-* It re-exports the `CommonModule` and `FormsModule`.
+* Esto importa `CommonModule` porque el componente del módulo necesita directivas comunes.
+* Declara y exporta las clases de componentes, directivas y `pipes`
+* Esto reexporta `CommonModule` y `FormsModule`.
 
-By re-exporting `CommonModule` and `FormsModule`, any other module that imports this
-`SharedModule`, gets access to directives like `NgIf` and `NgFor` from `CommonModule`
-and can bind to component properties with `[(ngModel)]`, a directive in the `FormsModule`.
+Al reexportar `CommonModule` y `FormsModule`, cualquier otro módulo que importe este 
+`SharedModule`, obtiene acceso a directivas como `NgIf` y `NgFor` desde `CommonModule`
+y puede vincularse a las propiedades del componente con `[(ngModel)]`, a una directiva en `FormsModule`.
 
-Even though the components declared by `SharedModule` might not bind
-with `[(ngModel)]` and there may be no need for `SharedModule`
-to import `FormsModule`, `SharedModule` can still export
-`FormsModule` without listing it among its `imports`. This
-way, you can give other modules access to `FormsModule` without
-having to import it directly into the `@NgModule` decorator.
+Aunque los componentes declarados por `SharedModule` pueden no vincularse con `[(ngModel)]` y puede que no sea necesario que `SharedModule` importe `FormsModule`, `SharedModule` aún puede exportar 
+`FormsModule` sin incluirlo entre sus `imports (importaciones)`. De esta manera, puedes  dar acceso a otros módulos a  `FormsModule` sin tener que importarlo directamente al decorador `@NgModule`.
 
-### Using components vs services from other modules
+### Uso de componentes vs servicios de otros módulos
 
-There is an important distinction between using another module's component and
-using a service from another module. Import modules when you want to use
-directives, pipes, and components. Importing a module with services means that you will have a new instance of that service, which typically is not what you need (typically one wants to reuse an existing service). Use module imports to control service instantiation.
+Existe una distinción importante entre usar el componente de otro módulo y utilizar un servicio de otro módulo. Importa módulos cuando quieras usar directivas, `pipes` y componentes. Importar un módulo con servicios significa que tendrá una nueva instancia de ese servicio, que normalmente no es lo que necesitas (normalmente, quieres reutilizar un servicio existente). Utiliza las importaciones de módulos para controlar la creación de instancias de servicios.
 
-The most common way to get a hold of shared services is through Angular
-[dependency injection](guide/dependency-injection), rather than through the module system (importing a module will result in a new service instance, which is not a typical usage).
+La forma más común de obtener servicios compartidos es através de la
+[inyección de dependencia](guide/dependency-injection) en Angular, en lugar de a través del sistema del módulo (la importación de un módulo dará como resultado una nueva instancia de servicio, que no es un uso típico).
 
-To read about sharing services, see [Providers](guide/providers).
+Para leer acerca de compartir servicios, consulta [Proveedores](guide/providers).
 
 
 <hr />
 
-## More on NgModules
+## Más en NgModules
 
-You may also be interested in the following:
-* [Providers](guide/providers).
-* [Types of Feature Modules](guide/module-types).
+También te puede interesar lo siguiente:
+* [Proveedores](guide/providers).
+* [Tipos de Módulos de funciones](guide/module-types).
