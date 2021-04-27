@@ -216,6 +216,10 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
 
       if (!isFirstRun) {
         this.selectedTabChange.emit(this._createChangeEvent(indexToSelect));
+        // Preserve the height so page doesn't scroll up during tab change.
+        // Fixes https://stackblitz.com/edit/mat-tabs-scroll-page-top-on-tab-change
+        const wrapper = this._tabBodyWrapper.nativeElement;
+        wrapper.style.minHeight = wrapper.clientHeight + 'px';
       }
 
       // Changing these values after change detection has run
@@ -225,6 +229,9 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
 
         if (!isFirstRun) {
           this.selectedIndexChange.emit(indexToSelect);
+          // Clear the min-height, this was needed during tab change to avoid
+          // unnecessary scrolling.
+          this._tabBodyWrapper.nativeElement.style.minHeight = '';
         }
       });
     }

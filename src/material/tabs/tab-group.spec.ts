@@ -39,6 +39,7 @@ describe('MatTabGroup', () => {
         TabGroupWithIsActiveBinding,
         NestedTabs,
         TabGroupWithIndirectDescendantTabs,
+        TabGroupWithSpaceAbove,
       ],
     });
 
@@ -700,6 +701,46 @@ describe('MatTabGroup', () => {
     }));
   });
 
+  describe('tall tabs', () => {
+    beforeEach(() => {
+      window.scrollTo({top: 0});
+    });
+
+    it('should not scroll when changing tabs by clicking', fakeAsync(() => {
+      const fixture = TestBed.createComponent(TabGroupWithSpaceAbove);
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      window.scrollBy(0, 250);
+      expect(window.scrollY).toBe(250);
+
+      // select the second tab
+      let tabLabel = fixture.debugElement.queryAll(By.css('.mat-tab-label'))[1];
+      tabLabel.nativeElement.click();
+      checkSelectedIndex(1, fixture);
+
+      expect(window.scrollY).toBe(250);
+      tick();
+    }));
+
+    it('should not scroll when changing tabs programatically', fakeAsync(() => {
+      const fixture = TestBed.createComponent(TabGroupWithSpaceAbove);
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      window.scrollBy(0, 250);
+      expect(window.scrollY).toBe(250);
+
+      fixture.componentInstance.tabGroup.selectedIndex = 1;
+      fixture.detectChanges();
+
+      expect(window.scrollY).toBe(250);
+      tick();
+    }));
+  });
+
   /**
    * Checks that the `selectedIndex` has been updated; checks that the label and body have their
    * respective `active` classes
@@ -1034,5 +1075,26 @@ class TabsWithCustomAnimationDuration {}
   `,
 })
 class TabGroupWithIndirectDescendantTabs {
+  @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
+}
+
+@Component({
+  template: `
+    <div style="height: 300px; background-color: aqua">
+      Top Content here
+    </div>
+    <mat-tab-group>
+      <ng-container>
+        <mat-tab label="One">
+          <div style="height: 3000px; background-color: red"></div>
+        </mat-tab>
+        <mat-tab label="Two">
+          <div style="height: 3000px; background-color: green"></div>
+        </mat-tab>
+      </ng-container>
+    </mat-tab-group>
+  `,
+})
+class TabGroupWithSpaceAbove {
   @ViewChild(MatTabGroup) tabGroup: MatTabGroup;
 }
