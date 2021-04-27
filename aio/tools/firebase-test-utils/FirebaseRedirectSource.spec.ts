@@ -51,7 +51,7 @@ describe('FirebaseRedirectSource', () => {
           .toThrowError('Error in FirebaseRedirectSource: "/&(a|b)/c" - unknown expansion type: "&" in "&(a|b)"');
       });
 
-      // Globs that contain params tested via the match tests below
+      // Globs that contain params are tested via the match tests below
     });
 
     describe('(using regex)', () => {
