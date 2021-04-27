@@ -1,22 +1,25 @@
 @use '@material/linear-progress' as mdc-linear-progress;
 @use '../mdc-helpers/mdc-helpers';
 
-@include mdc-linear-progress.core-styles($query:
-  mdc-helpers.$mat-base-styles-without-animation-query);
+@include mdc-linear-progress.core-styles($query: mdc-helpers.$mat-base-styles-query);
 
 .mat-mdc-progress-bar {
   // Explicitly set to `block` since the browser defaults custom elements to `inline`.
   display: block;
 
   &._mat-animation-noopable {
+    .mdc-linear-progress__buffer-dots,
+    .mdc-linear-progress__primary-bar,
+    .mdc-linear-progress__secondary-bar,
+    .mdc-linear-progress__bar-inner.mdc-linear-progress__bar-inner {
+      // Disable the loading animations.
+      animation: none;
+    }
+
     .mdc-linear-progress__primary-bar {
       // There's a `transitionend` event that depends on this element. Add a very short
       // transition when animations are disabled so that the event can still fire.
       transition: transform 1ms;
     }
-  }
-
-  &:not(._mat-animation-noopable) {
-    @include mdc-linear-progress.core-styles($query: animation);
   }
 }

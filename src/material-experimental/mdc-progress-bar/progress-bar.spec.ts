@@ -23,11 +23,11 @@ describe('MDC-based MatProgressBar', () => {
     const fixture = createComponent(BasicProgressBar);
     const host = fixture.nativeElement as Element;
     const element = host.children[0];
-    expect(element.children.length).toBe(1);
+    const children = element.children;
+    expect(children.length).toBe(3);
 
-    const div = element.querySelector('div')!;
-    expect(div).toBeTruthy();
-    expect(div.getAttribute('aria-hidden')).toBe('true');
+    const ariaHidden = Array.from(children).map(child => child.getAttribute('aria-hidden'));
+    expect(ariaHidden).toEqual(['true', 'true', 'true']);
   });
 
   describe('with animation', () => {

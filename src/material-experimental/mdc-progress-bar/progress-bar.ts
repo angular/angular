@@ -55,7 +55,7 @@ export type ProgressBarMode = 'determinate' | 'indeterminate' | 'buffer' | 'quer
     'tabindex': '-1',
     '[attr.aria-valuenow]': '(mode === "indeterminate" || mode === "query") ? null : value',
     '[attr.mode]': 'mode',
-    'class': 'mat-mdc-progress-bar',
+    'class': 'mat-mdc-progress-bar mdc-linear-progress',
     '[class._mat-animation-noopable]': '_isNoopAnimation',
   },
   inputs: ['color'],
@@ -83,12 +83,16 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
 
   /** Adapter used by MDC to interact with the DOM. */
   private _adapter: MDCLinearProgressAdapter = {
-    addClass: (className: string) => this._rootElement.classList.add(className),
-    forceLayout: () => this._rootElement.offsetWidth,
-    removeAttribute: (name: string) => this._rootElement.removeAttribute(name),
-    setAttribute: (name: string, value: string) => this._rootElement.setAttribute(name, value),
-    hasClass: (className: string) => this._rootElement.classList.contains(className),
-    removeClass: (className: string) => this._rootElement.classList.remove(className),
+    addClass: (className: string) => this._elementRef.nativeElement.classList.add(className),
+    forceLayout: () => this._elementRef.nativeElement.offsetWidth,
+    removeAttribute: (name: string) => this._elementRef.nativeElement.removeAttribute(name),
+    setAttribute: (name: string, value: string) => {
+      if (name !== 'aria-valuenow') {
+        this._elementRef.nativeElement.setAttribute(name, value);
+      }
+    },
+    hasClass: (className: string) => this._elementRef.nativeElement.classList.contains(className),
+    removeClass: (className: string) => this._elementRef.nativeElement.classList.remove(className),
     setPrimaryBarStyle: (styleProperty: string, value: string) => {
       (this._primaryBar.style as any)[styleProperty] = value;
     },
@@ -96,9 +100,9 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
       (this._bufferBar.style as any)[styleProperty] = value;
     },
     setStyle: (styleProperty: string, value: string) => {
-      (this._rootElement.style as any)[styleProperty] = value;
+      (this._elementRef.nativeElement.style as any)[styleProperty] = value;
     },
-    getWidth: () => this._rootElement.offsetWidth,
+    getWidth: () => this._elementRef.nativeElement.offsetWidth,
     attachResizeObserver: (callback) => {
       const resizeObserverConstructor = (typeof window !== 'undefined') &&
                                         (window as unknown as WithMDCResizeObserver).ResizeObserver;
@@ -111,7 +115,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
           // on the constructed `observer`. This should not happen, but adding this check for this
           // edge case.
           if (typeof observer.observe === 'function') {
-            observer.observe(this._rootElement);
+            observer.observe(this._elementRef.nativeElement);
             return observer;
           }
 
@@ -144,7 +148,6 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
   }
   private _bufferValue = 0;
 
-  private _rootElement: HTMLElement;
   private _primaryBar: HTMLElement;
   private _bufferBar: HTMLElement;
 
@@ -181,7 +184,6 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
   ngAfterViewInit() {
     const element = this._elementRef.nativeElement;
 
-    this._rootElement = element.querySelector('.mdc-linear-progress') as HTMLElement;
     this._primaryBar = element.querySelector('.mdc-linear-progress__primary-bar') as HTMLElement;
     this._bufferBar = element.querySelector('.mdc-linear-progress__buffer-bar') as HTMLElement;
 
@@ -221,9 +223,9 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements AfterVie
 
       const reverse = direction === 'rtl' ? mode !== 'query' : mode === 'query';
       const progressDirection = reverse ? 'rtl' : 'ltr';
-      const currentDirection = this._rootElement.getAttribute('dir');
+      const currentDirection = this._elementRef.nativeElement.getAttribute('dir');
       if (currentDirection !== progressDirection) {
-        this._rootElement.setAttribute('dir', progressDirection);
+        this._elementRef.nativeElement.setAttribute('dir', progressDirection);
         foundation.restartAnimation();
       }
 
