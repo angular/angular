@@ -2,20 +2,25 @@ import { getRedirector, loadLegacyUrls, loadLocalSitemapUrls, loadRedirects } fr
 
 describe('firebase.json redirect config', () => {
   describe('with sitemap urls', () => {
+    const redirector = getRedirector();
+
     loadLocalSitemapUrls().forEach(url => {
-      it('should not redirect any urls in the sitemap', () => {
-        expect(getRedirector().redirect(url)).toEqual(url);
+      it(`should not redirect sitemap URL '${url}'`, () => {
+        expect(redirector.redirect(url)).toEqual(url);
       });
     });
   });
 
   describe('with legacy urls', () => {
+    const redirector = getRedirector();
+
     loadLegacyUrls().forEach(urlPair => {
-      it('should redirect the legacy urls', () => {
-        const redirector = getRedirector();
-        expect(redirector.redirect(urlPair[0])).not.toEqual(urlPair[0]);
+      it(`should redirect legacy URL '${urlPair[0]}'`, () => {
+        const redirected = redirector.redirect(urlPair[0]);
+
+        expect(redirected).not.toEqual(urlPair[0]);
         if (urlPair[1]) {
-          expect(redirector.redirect(urlPair[0])).toEqual(urlPair[1]);
+          expect(redirected).toEqual(urlPair[1]);
         }
       });
     });
