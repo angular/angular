@@ -43,7 +43,7 @@ component by following these steps:
 
 4. Use the `MatDialog` service in your components by injecting the service, just like you would
    use the normal dialog.
-   
+
 5. Ensure color and typography styles for `@angular/material-experimental` are set up. Either
    use a custom theme and use the `mat-mdc-dialog-theme` mixin, or use a prebuilt theme
    from `@angular/material-experimental/mdc-theming/prebuilt`.
@@ -57,7 +57,7 @@ longer has outer padding by default.
 If content elements such as `matDialogContent` or `matDialogTitle` are used though, the MDC dialog
 will display as with the current non-experimental dialog. The padding change will only surface if
 you have custom content within the dialog that is not wrapped with `matDialogContent`,
-`matDialogActions` or `matDialogTitle`. 
+`matDialogActions` or `matDialogTitle`.
 
 We provide a backwards compatibility mixin that re-adds the outer padding. The use of this mixin
 is generally not recommended as it results in inefficient CSS for the dialog because padding from
@@ -67,7 +67,7 @@ directly through CSS, or move them into one of the defined sections the Angular 
 provides.
 
 ```scss
-@import '@angular/material-experimental/mdc-dialog/dialog-legacy-padding';
+@use '@angular/material-experimental/mdc-dialog/dialog-legacy-padding' as mat-mdc-dialog;
 
-@include mat-mdc-dialog-legacy-padding();
+@include mat-mdc-dialog.legacy-padding();
 ```

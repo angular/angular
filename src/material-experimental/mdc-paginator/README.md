@@ -53,20 +53,20 @@ component by following these steps:
    the experimental `<mat-paginator>`):
 
    ```scss
-   @import '~@angular/material/theming';
-   @import '~@angular/material-experimental/mdc-paginator/paginator-theme';
+   @use '~@angular/material' as mat;
+   @use '~@angular/material-experimental' as mat-experimental;
 
-   $my-primary: mat-palette($mat-indigo);
-   $my-accent:  mat-palette($mat-pink, A200, A100, A400);
-   $my-theme:   mat-light-theme((
+   $my-primary: mat.define-palette(mat.$indigo-palette);
+   $my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+   $my-theme: mat.define-light-theme((
      color: (
        primary: $my-primary,
        accent: $my-accent
      )
    ));
 
-   @include mat-mdc-paginator-theme($my-theme);
-   @include mat-mdc-paginator-typography($my-theme);
+   @include mat-experimental.mdc-paginator-theme($my-theme);
+   @include mat-experimental.mdc-paginator-typography($my-theme);
    ```
 
 ## API differences

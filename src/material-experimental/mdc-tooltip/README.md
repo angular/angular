@@ -53,20 +53,20 @@ component by following these steps:
    the experimental `matTooltip`):
 
    ```scss
-   @import '~@angular/material/theming';
-   @import '~@angular/material-experimental/mdc-tooltip/tooltip-theme';
+   @use '~@angular/material' as mat;
+   @use '~@angular/material-experimental' as mat-experimental;
 
-   $my-primary: mat-palette($mat-indigo);
-   $my-accent:  mat-palette($mat-pink, A200, A100, A400);
-   $my-theme:   mat-light-theme((
+   $my-primary: mat.define-palette(mat.$indigo-palette);
+   $my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+   $my-theme: mat.define-light-theme((
      color: (
        primary: $my-primary,
        accent: $my-accent
      )
    ));
 
-   @include mat-mdc-tooltip-theme($my-theme);
-   @include mat-mdc-tooltip-typography($my-theme);
+   @include mat-experimental.mdc-tooltip-theme($my-theme);
+   @include mat-experimental.mdc-tooltip-typography($my-theme);
    ```
 
 ## API differences

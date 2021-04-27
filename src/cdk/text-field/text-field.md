@@ -32,26 +32,26 @@ changes.
 
 Note: This service requires some CSS to install animation hooks when the autofill statechanges. If
 you are using Angular Material, this CSS is included as part of the `mat-core` mixin. If you are not
-using Angular Material, you should include this CSS with the `cdk-text-field` mixin.
+using Angular Material, you should include this CSS with the `text-field-autofill` mixin.
 
 ```scss
-@import '~@angular/cdk/text-field/text-field'; 
+@use '~@angular/cdk';
 
-@include cdk-text-field();
+@include cdk.text-field-autofill();
 ```
 
 ### Styling the autofill state of an `<input>`
 
 It can be difficult to override the browser default `background` and `color` properties on an
-autofilled `<input>`. To make this simpler, the CDK includes a mixin `cdk-text-field-autofill-color`
+autofilled `<input>`. To make this simpler, the CDK includes a mixin `text-field-autofill-color`
 which can be used to set these properties. It takes a `background` value as the first parameter and
 an optional `color` value as the second parameter.
 
 ```scss
-@import '~@angular/cdk/text-field/text-field'; 
+@use '~@angular/cdk';
 
-// Set custom-autofill inputs to have no background and red text.
+// Set custom autofill inputs to have no background and red text.
 input.custom-autofill {
-  @include cdk-text-field-autofill-color(transparent, red);
+  @include cdk.text-field-autofill-color(transparent, red);
 }
 ```

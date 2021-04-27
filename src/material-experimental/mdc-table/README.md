@@ -39,44 +39,44 @@ Assuming your application is already up and running using Angular Material, you 
    ```
 
 4. Use the table in your component's template:
-   
-   ```html   
+
+   ```html
      <table mat-table [dataSource]="dataSource">
 
      <ng-container matColumnDef="position">
        <th mat-header-cell *matHeaderCellDef> No. </th>
        <td mat-cell *matCellDef="let data"> {{data.position}} </td>
      </ng-container>
-     
+
      <ng-container matColumnDef="name">
        <th mat-header-cell *matHeaderCellDef> Name </th>
        <td mat-cell *matCellDef="let data"> {{data.name}} </td>
      </ng-container>
-     
+
      <tr mat-header-row *matHeaderRowDef="myColumns"></tr>
      <tr mat-row *matRowDef="let row; columns: myColumns;"></tr>
     </table>
 
 
-   ``` 
-   
+   ```
+
 5. Add the theme mixins to your Sass:
 
    ```scss
-   @import '~@angular/material/theming';
-   @import '~@angular/material-experimental/mdc-table/table-theme';
+   @use '~@angular/material' as mat;
+   @use '~@angular/material-experimental' as mat-experimental;
 
-   $candy-app-primary: mat-palette($mat-indigo);
-   $candy-app-accent:  mat-palette($mat-pink, A200, A100, A400);
-   $candy-app-theme:   mat-light-theme((
+   $candy-app-primary: mat.define-palette(mat.$indigo-palette);
+   $candy-app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+   $candy-app-theme: mat.define-light-theme((
      color: (
        primary: $candy-app-primary,
        accent: $candy-app-accent,
-     ),
+     )
    ));
 
 
-   @include mat-mdc-table-theme($candy-app-theme); 
+   @include mat-experimental.mdc-table-theme($candy-app-theme);
    ```
 
 ## API differences

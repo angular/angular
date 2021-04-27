@@ -53,20 +53,20 @@ component by following these steps:
    the experimental `<mat-checkbox>`):
 
    ```scss
-   @import '~@angular/material/theming';
-   @import '~@angular/material-experimental/mdc-checkbox/checkbox-theme';
+   @use '~@angular/material' as mat;
+   @use '~@angular/material-experimental' as mat-experimental;
 
-   $my-primary: mat-palette($mat-indigo);
-   $my-accent:  mat-palette($mat-pink, A200, A100, A400);
-   $my-theme:   mat-light-theme((
+   $my-primary: mat.define-palette(mat.$indigo-palette);
+   $my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+   $my-theme: mat.define-light-theme((
      color: (
-       primary: $my-primary, 
+       primary: $my-primary,
        accent: $my-accent
      )
    ));
 
-   @include mat-mdc-checkbox-theme($my-theme);
-   @include mat-mdc-checkbox-typography($my-theme);
+   @include mat-experimental.mdc-checkbox-theme($my-theme);
+   @include mat-experimental.mdc-checkbox-typography($my-theme);
    ```
 
 ## API differences

@@ -39,35 +39,35 @@ Assuming your application is already up and running using Angular Material, you 
    ```
 
 4. Open the snack bar from your component:
-   
-   ```ts   
+
+   ```ts
      import {MatSnackBar} from '@angular/material-experimental/mdc-snack-bar';
-     
+
      @Component({ ... })
      export class MySnackBarDemo {
        constructor(public snackBar: MatSnackBar) {
          this.snackBar.open('Hello, world');
        }
      }
-   ``` 
-   
+   ```
+
 5. Add the theme mixins to your Sass:
 
    ```scss
-   @import '~@angular/material/theming';
-   @import '~@angular/material-experimental/mdc-snack-bar/snack-bar-theme';
+   @use '~@angular/material' as mat;
+   @use '~@angular/material-experimental' as mat-experimental;
 
-   $candy-app-primary: mat-palette($mat-indigo);
-   $candy-app-accent:  mat-palette($mat-pink, A200, A100, A400);
-   $candy-app-theme:   mat-light-theme((
+   $candy-app-primary: mat.define-palette(mat.$indigo-palette);
+   $candy-app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+   $candy-app-theme: mat.define-light-theme((
      color: (
        primary: $candy-app-primary,
        accent: $candy-app-accent,
-     ),
+     )
    ));
 
 
-   @include mat-mdc-snack-bar-theme($candy-app-theme); 
+   @include mat-experimental.mdc-snack-bar-theme($candy-app-theme);
    ```
 
 ## API differences

@@ -50,20 +50,20 @@ Assuming your application is already up and running using Angular Material, you 
 5. Add the theme mixins to your Sass:
 
    ```scss
-   @import '~@angular/material/theming';
-   @import '~@angular/material-experimental/mdc-chips/chips-theme';
+   @use '~@angular/material' as mat;
+   @use '~@angular/material-experimental' as mat-experimental;
 
-   $candy-app-primary: mat-palette($mat-indigo);
-   $candy-app-accent:  mat-palette($mat-pink, A200, A100, A400);
-   $candy-app-theme:   mat-light-theme((
+   $candy-app-primary: mat.define-palette(mat.$indigo-palette);
+   $candy-app-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+   $candy-app-theme: mat.define-light-theme((
      color: (
        primary: $candy-app-primary,
        accent: $candy-app-accent,
-     ),
+     )
    ));
 
 
-   @include mat-mdc-chips-theme($candy-app-theme);
+   @include mat-experimental.mdc-chips-theme($candy-app-theme);
    ```
 
 ## API differences
