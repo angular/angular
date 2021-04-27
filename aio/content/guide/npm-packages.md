@@ -1,106 +1,104 @@
-# Workspace npm dependencies
+# Área de trabajo de las dependencias de npm
 
-The Angular Framework, Angular CLI, and components used by Angular applications are packaged as [npm packages](https://docs.npmjs.com/getting-started/what-is-npm "What is npm?") and distributed via the [npm registry](https://docs.npmjs.com/).
+El framework Angular, el CLI de Angular y los componentes usados por las aplicaciones Angular se empaquetan como [paquetes de npm](https://docs.npmjs.com/getting-started/what-is-npm "¿Qué es npm?") y se distribuyen a través del [registro de npm](https://docs.npmjs.com/).
 
-You can download and install these npm packages by using the [npm CLI client](https://docs.npmjs.com/cli/install), which is installed with and runs as a [Node.js®](https://nodejs.org "Nodejs.org") application. By default, the Angular CLI uses the npm client.
+Puedes descargar e instalar esos paquetes de npm utilizando el [cliente CLI de npm](https://docs.npmjs.com/cli/install), el cuál se instala y ejecuta como una aplicación de [Node.js®](https://nodejs.org "Nodejs.org"). Por defecto el CLI de Angular utiliza el cliente de npm.
 
-Alternatively, you can use the [yarn client](https://yarnpkg.com/) for downloading and installing npm packages.
+Alternativamente puedes utilizar el [cliente yarn](https://yarnpkg.com/) para descargar e instalar los paquetes de npm.
 
 
 <div class="alert is-helpful">
 
-See [Local Environment Setup](guide/setup-local "Setting up for Local Development") for information about the required versions and installation of `Node.js` and `npm`.
+Mira [Preparar Entorno Local](guide/setup-local "Preparándose para el desarrollo local") para ver información acerca de la instalación y las versiones requeridas de `Node.js` y `npm`.
 
-If you already have projects running on your machine that use other versions of Node.js and npm, consider using [nvm](https://github.com/creationix/nvm) to manage the multiple versions of Node.js and npm.
+Si ya tenías proyectos anteriores en tu máquina que utilizan otras versiones de Node.js y npm considera usar [nvm](https://github.com/creationix/nvm) para gestionar las diferentes versiones de Node.js y npm.
 
 </div>
 
 
 ## `package.json`
 
-Both `npm` and `yarn` install the packages that are identified in a [`package.json`](https://docs.npmjs.com/files/package.json) file.
+Tanto `npm` como `yarn` instalan los paquetes que están identificados en un archivo [`package.json`](https://docs.npmjs.com/files/package.json).
 
-The CLI command `ng new` creates a `package.json` file when it creates the new workspace.
-This `package.json` is used by all projects in the workspace, including the initial app project that is created by the CLI when it creates the workspace.
+El comando del CLI `ng new` genera un archivo `package.json` al crear el proyecto.
+Este `package.json` es usado por todos los proyectos en el entorno incluyendo el proyecto inicial generado por el CLI al crear este entorno.
 
-Initially, this `package.json` includes _a starter set of packages_, some of which are required by Angular and others that support common application scenarios.
-You add packages to `package.json` as your application evolves.
-You may even remove some.
+Inicialmente este `package.json` incluye _una serie de paquetes_, algunos de ellos necesarios para Angular y otros que soportan escenarios comunes de aplicación.
+Puedes añadir paquetes al `package.json` según tu aplicación crece.
+También puedes borrarlos si es necesario.
 
-The `package.json` is organized into two groups of packages:
+El `package.json` se organiza en dos grupos de paquetes:
 
-* [Dependencies](guide/npm-packages#dependencies) are essential to *running* applications.
-* [DevDependencies](guide/npm-packages#dev-dependencies) are only necessary to *develop* applications.
+* [Dependencies](guide/npm-packages#dependencies) son necesarias para *ejecutar* aplicaciones.
+* [DevDependencies](guide/npm-packages#dev-dependencies) son solo necesarias para *desarrollar* aplicaciones.
 
 <div class="alert is-helpful">
 
-**Library developers:** By default, the CLI command [`ng generate library`](cli/generate) creates a `package.json` for the new library. That `package.json` is used when publishing the library to npm.
-For more information, see the CLI wiki page [Library Support](https://github.com/angular/angular-cli/wiki/stories-create-library).
+**Desarrolladores de librerías:** Por defecto el comando de CLI [`ng generate library`](cli/generate) crea un `package.json` para la nueva librería. Ese `package.json` es usado cuando se publica la librería en npm.
+Para más información leer [Creando librerías](guide/creating-libraries).
 </div>
 
 
 {@a dependencies}
 ## Dependencies
 
-The packages listed in the `dependencies` section of `package.json` are essential to *running* applications.
+Los paquetes listados en la sección `dependencies` del `package.json` son esenciales para *ejecutar* aplicaciones.
 
-The `dependencies` section of `package.json` contains:
+La sección `dependencies` del `package.json` contiene:
 
-* [**Angular packages**](#angular-packages): Angular core and optional modules; their package names begin `@angular/`.
+* [**Paquetes de Angular**](#angular-packages): El núcleo de Angular y módulos opcionales; el nombre de estos paquetes comienza por `@angular/`.
 
-* [**Support packages**](#support-packages): 3rd party libraries that must be present for Angular apps to run.
+* [**Paquetes de soporte**](#support-packages): Librerías de terceros que son necesarias para que las aplicaciones de Angular se puedan ejecutar.
 
-* [**Polyfill packages**](#polyfills): Polyfills plug gaps in a browser's JavaScript implementation.
+* [**Paquetes de Polyfill**](#polyfills): Los Polyfills rellenan huecos en la implementación de Javascript de un navegador.
 
-To add a new dependency, use the [`ng add`](cli/add) command.
+Para añadir una nueva dependencia usa el comando [`ng add`](cli/add).
 
 {@a angular-packages}
-### Angular packages
+### Paquetes de Angular
 
-The following Angular packages are included as dependencies in the default `package.json` file for a new Angular workspace.
-For a complete list of Angular packages, see the [API reference](http://angular.io/api?type=package).
+Los siguientes paquetes de Angular se incluyen como dependencias en el archivo `package.json` por defecto en un nuevo proyecto de Angular.
+Para ver la lista completa de paquetes de Angular visita la siguiente [referencia a la API](api?type=package).
 
-Package name                               | Description
+Nombre del Paquete                               | Descripción
 ----------------------------------------   | --------------------------------------------------
-[**@angular/animations**](api/animations) | Angular's animations library makes it easy to define and apply animation effects such as page and list transitions. For more information, see the [Animations guide](guide/animations).
-[**@angular/common**](api/common) | The commonly-needed services, pipes, and directives provided by the Angular team. The [`HttpClientModule`](api/common/http/HttpClientModule) is also here, in the [`@angular/common/http`](api/common/http) subfolder. For more information, see the [HttpClient guide](guide/http).
-**@angular/compiler** | Angular's template compiler. It understands templates and can convert them to code that makes the application run and render. Typically you don’t interact with the compiler directly; rather, you use it indirectly via `platform-browser-dynamic` when JIT compiling in the browser. For more information, see the [Ahead-of-time Compilation guide](guide/aot-compiler).
-[**@angular/core**](api/core) | Critical runtime parts of the framework that are needed by every application. Includes all metadata decorators, `Component`, `Directive`,  dependency injection, and the component lifecycle hooks.
-[**@angular/forms**](api/forms) | Support for both [template-driven](guide/forms) and [reactive forms](guide/reactive-forms). For information about choosing the best forms approach for your app, see [Introduction to forms](guide/forms-overview).
-[**@angular/<br />platform&#8209;browser**](api/platform-browser) | Everything DOM and browser related, especially the pieces that help render into the DOM. This package also includes the `bootstrapModuleFactory()` method for bootstrapping applications for production builds that pre-compile with [AOT](guide/aot-compiler).
-[**@angular/<br />platform&#8209;browser&#8209;dynamic**](api/platform-browser-dynamic) | Includes [providers](api/core/Provider) and methods to compile and run the app on the client using the [JIT compiler](guide/aot-compiler).
-[**@angular/router**](api/router) | The router module navigates among your app pages when the browser URL changes. For more information, see [Routing and Navigation](guide/router).
+[**@angular/animations**](api/animations) | La librería de animaciones de Angular hace sencillo definir y aplicar efectos animados como transiciones de página y listas. Para más información visita [la guía de animaciones](guide/animations).
+[**@angular/common**](api/common) | Los servicios comunes necesarios, pipes, y directivas proveídas por el equipo de Angular. El [`HttpClientModule`](api/common/http/HttpClientModule) también está aquí, en la subcarpeta [`@angular/common/http`](api/common/http). Para más información visita [la guía de HttpClient](guide/http).
+**@angular/compiler** | El compilador de plantillas de Angular. Entiende las plantillas y las puede convertir a código que hace que la aplicación se ejecute y renderice. Habitualmente no interactúas con el compilador directamente; más bien lo usas indirectamente a través del `platform-browser-dynamic` cuando se compila en el navegador en tiempo de ejecución (JIT). Para más información visita [la guía de compilación AOT (Ahead-of-time)](guide/aot-compiler).
+[**@angular/core**](api/core) | Partes críticas del framework requeridas por cualquier aplicación en el tiempo de ejecución. Incluye todos los decoradores de los metadatos, `Componentes`, `Directivas`, inyección de dependencias y los ciclos de vida de los componentes.
+[**@angular/forms**](api/forms) | Soporte para formularios de tipo [template-driven](guide/forms) y [reactive forms](guide/reactive-forms). Para más información acerca de cuál es la mejor implementación de los formularios para tu aplicación visita [Introducción a los formularios](guide/forms-overview).
+[**@angular/<br />platform&#8209;browser**](api/platform-browser) | Todo lo relacionado con el DOM y el navegador, especialmente las piezas que ayudan a renderizar el DOM. Este paquete también incluye el método `bootstrapModuleFactory()` para cargar aplicaciones para builds de producción que pre-compilan con [AOT](guide/aot-compiler).
+[**@angular/<br />platform&#8209;browser&#8209;dynamic**](api/platform-browser-dynamic) | Incluye [providers](api/core/Provider) y métodos para compilar y ejecutar la aplicación en el cliente utilizando el [compilador JIT](guide/aot-compiler).
+[**@angular/router**](api/router) | El módulo enrutador navega a través de las páginas de tu aplicación cuando la URL cambia. Para más información visita [Enrutado y Navegación](guide/router).
 
 
 {@a support-packages}
-### Support packages
+### Paquetes de soporte
 
-The following support packages are included as dependencies in the default `package.json` file for a new Angular workspace.
+Los siguientes paquetes de soporte están incluidos como dependencias en el archivo `package.json` por defecto para un nuevo proyecto de Angular.
 
 
-Package name                               | Description
+Nombre del Paquete                               | Descripción
 ----------------------------------------   | --------------------------------------------------
-[**rxjs**](https://github.com/ReactiveX/rxjs) | Many Angular APIs return [_observables_](guide/glossary#observable). RxJS is an implementation of the proposed [Observables specification](https://github.com/tc39/proposal-observable) currently before the [TC39](https://www.ecma-international.org/memento/tc39.htm) committee, which determines standards for the JavaScript language.
-[**zone.js**](https://github.com/angular/zone.js) | Angular relies on zone.js to run Angular's change detection processes when native JavaScript operations raise events. Zone.js is an implementation of a [specification](https://gist.github.com/mhevery/63fdcdf7c65886051d55) currently before the [TC39](https://www.ecma-international.org/memento/tc39.htm) committee that determines standards for the JavaScript language.
+[**rxjs**](https://github.com/ReactiveX/rxjs) | Muchas APIs de Angular retornan [_observables_](guide/glossary#observable). RxJS es una implementación de la propuesta actual de [especificación de Observables](https://github.com/tc39/proposal-observable) antes del comité [TC39](https://www.ecma-international.org/memento/tc39.htm) que determina los estándares para el lenguaje JavaScript.
+[**zone.js**](https://github.com/angular/zone.js) | Angular depende de zone.js para ejecutar el proceso de detección de cambios de Angular cuando operaciones de JavaScript nativas lanzan eventos. Zone.js es una implementación actual de la [especificación](https://gist.github.com/mhevery/63fdcdf7c65886051d55) antes del comité [TC39](https://www.ecma-international.org/memento/tc39.htm) que determina los estándares para el lenguaje JavaScript.
 
 
 {@a polyfills}
-### Polyfill packages
+### Paquetes de Polyfill
 
-Many browsers lack native support for some features in the latest HTML standards,
-features that Angular requires.
-[_Polyfills_](https://en.wikipedia.org/wiki/Polyfill_(programming)) can emulate the missing features.
-The [Browser Support](guide/browser-support) guide explains which browsers need polyfills and
-how you can add them.
+Muchos navegadores no tienen soporte de forma nativa para algunas funcionalidades de los últimos estándares de HTML, funcionalidades que Angular necesita.
+Los [_Polyfills_](https://en.wikipedia.org/wiki/Polyfill_(programming)) pueden emular las funcionalidades que falten.
+La guía de [soporte de navegador](guide/browser-support) explica qué navegadores necesitan polyfills y cómo los puedes añadir.
 
 
 {@a dev-dependencies}
 
 ## DevDependencies
 
-The packages listed in the `devDependencies` section of `package.json` help you develop the application on your local machine. You don't deploy them with the production application.
+Los paquetes listados en la sección `devDependencies` del `package.json` te ayudan a desarrollar tu aplicación en tu ordenador. No necesitas desplegarla en un entorno de producción.
 
-To add a new `devDependency`, use either one of the following commands:
+Para añadir una `devDependency` usa uno de los siguientes comandos:
 
 <code-example language="sh" class="code-shell">
   npm install --save-dev &lt;package-name&gt;
@@ -110,28 +108,28 @@ To add a new `devDependency`, use either one of the following commands:
   yarn add --dev &lt;package-name&gt;
 </code-example>
 
-The following `devDependencies` are provided in the default `package.json` file for a new Angular workspace.
+Las siguientes `devDependencies` se proveen en el archivo `package.json` por defecto para un nuevo proyeto de Angular.
 
 
-Package name                               | Description
+Nombre del Paquete                               | Descripción
 ----------------------------------------   | -----------------------------------
-[**@angular&#8209;devkit/<br />build&#8209;angular**](https://github.com/angular/angular-cli/) | The Angular build tools.
-[**@angular/cli**](https://github.com/angular/angular-cli/) | The Angular CLI tools.
-**@angular/<br />compiler&#8209;cli** | The Angular compiler, which is invoked by the Angular CLI's `ng build` and `ng serve` commands.
-**@types/... ** | TypeScript definition files for 3rd party libraries such as Jasmine and Node.js.
-[**codelyzer**](https://www.npmjs.com/package/codelyzer) | A linter for Angular apps whose rules conform to the Angular [style guide](guide/styleguide).
-**jasmine/... ** | Packages to support the [Jasmine](https://jasmine.github.io/) test library.
-**karma/... ** | Packages to support the [karma](https://www.npmjs.com/package/karma) test runner.
-[**protractor**](https://www.npmjs.com/package/protractor) | An end-to-end (e2e) framework for Angular apps. Built on top of [WebDriverJS](https://github.com/SeleniumHQ/selenium/wiki/WebDriverJs).
-[**ts-node**](https://www.npmjs.com/package/ts-node) | TypeScript execution environment and REPL for Node.js.
-[**tslint**](https://www.npmjs.com/package/tslint) | A static analysis tool that checks TypeScript code for readability, maintainability, and functionality errors.
-[**typescript**](https://www.npmjs.com/package/typescript) | The TypeScript language server, including the *tsc* TypeScript compiler.
+[**@angular&#8209;devkit/<br />build&#8209;angular**](https://github.com/angular/angular-cli/) | Las herramientas de creación de Angular.
+[**@angular/cli**](https://github.com/angular/angular-cli/) | Las herramientas del CLI de Angular.
+**@angular/<br />compiler&#8209;cli** | El compilador de Angular, el cual es invocado por el CLI de Angular mediante los comandos `ng build` y `ng serve`.
+**@types/... ** | Archivos Typescript de definición de librerías de terceros como Jasmine y Node.js.
+[**codelyzer**](https://www.npmjs.com/package/codelyzer) | Un linter para las aplicaciones de Angular con las reglas que conforman la [guía de estilos](guide/styleguide) de Angular.
+**jasmine/... ** | Paquetes para añadir soporte para la librería de testing [Jasmine](https://jasmine.github.io/).
+**karma/... ** | Paquetes para añadir soporte para el ejecutador de tests  [karma](https://www.npmjs.com/package/karma).
+[**protractor**](https://www.npmjs.com/package/protractor) | Un framework end-to-end (e2e) para aplicaciones de Angular. Construido sobre [WebDriverJS](https://github.com/SeleniumHQ/selenium/wiki/WebDriverJs).
+[**ts-node**](https://www.npmjs.com/package/ts-node) | Entorno de ejecución de Typescript y REPL para Node.js.
+[**tslint**](https://www.npmjs.com/package/tslint) | Una herramienta de análisis estático de código que comprueba el código Typescript para que sea legible, mantenible y no contenga errores funcionales.
+[**typescript**](https://www.npmjs.com/package/typescript) | El lenguaje de servidor Typescript, incluye el compilador de Typescript *tsc*.
 
 
-## Related information
+## Información relacionada
 
- For information about how the Angular CLI handles packages see the following guides:
+ Para obtener información acerca de cómo el CLI de Angular maneja los paquetes visita las siguientes guías:
 
- * [Building and serving](guide/build) describes how packages come together to create a development build.
- * [Deployment](guide/deployment) describes how packages come together to create a production build.
+ * [Creando y sirviendo](guide/build) describe como los paquetes se unen para crear una build de desarrollo.
+ * [Desplegando](guide/deployment) describe como los paquetes se unen para crear una build de producción.
  
