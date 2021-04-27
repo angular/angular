@@ -77,7 +77,7 @@
     "@types/events": "3.0.0",
     "@types/hammerjs": "2.0.39",
     "@types/inquirer": "^7.3.0",
-    "@types/jasmine": "3.6.9",
+    "@types/jasmine": "3.6.10",
     "@types/jasmine-ajax": "^3.3.1",
     "@types/jasminewd2": "^2.0.8",
     "@types/minimist": "^1.2.0",
