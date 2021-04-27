@@ -2,15 +2,15 @@ import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DemoApplicationOperations } from '../demo-application-operations';
 import { ApplicationEnvironment, ApplicationOperations } from 'ng-devtools';
 import { DemoApplicationEnvironment } from '../demo-application-environment';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
-    BrowserAnimationsModule,
+    environment.animationModule,
     RouterModule.forRoot([
       {
         path: '',
