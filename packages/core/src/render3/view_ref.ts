@@ -98,9 +98,6 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   /**
    * Marks a view and all of its ancestors dirty.
    *
-   * It also triggers change detection by calling `scheduleTick` internally, which coalesces
-   * multiple `markForCheck` calls to into one change detection run.
-   *
    * This can be used to ensure an {@link ChangeDetectionStrategy#OnPush OnPush} component is
    * checked when it needs to be re-rendered but the two normal triggers haven't marked it
    * dirty (i.e. inputs haven't changed and events haven't fired in the view).
