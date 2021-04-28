@@ -46,8 +46,6 @@
     "angular-mocks-1.7",
     "puppeteer",
     "rollup",
-    "remark",
-    "remark-html",
     "selenium-webdriver"
   ],
   "packageFiles": [
