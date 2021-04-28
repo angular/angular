@@ -2480,10 +2480,10 @@ class Prettier extends Formatter {
         this.binaryFilePath = path.join(this.git.baseDir, 'node_modules/.bin/prettier');
         this.defaultFileMatcher = ['**/*.{t,j}s'];
         /**
-         * The configuration path of the pretter config, obtained during construction to prevent needing
+         * The configuration path of the prettier config, obtained during construction to prevent needing
          * to discover it repeatedly for each execution.
          */
-        this.configPath = this.config['pretter'] ? shelljs.exec(`${this.binaryFilePath} --find-config-path .`).trim() : '';
+        this.configPath = this.config['prettier'] ? shelljs.exec(`${this.binaryFilePath} --find-config-path .`).trim() : '';
         this.actions = {
             check: {
                 commandFlags: `--config ${this.configPath} --check`,
