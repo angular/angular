@@ -27,6 +27,7 @@ import { Subscription } from 'rxjs';
 })
 export class DirectiveForestComponent implements OnInit, OnDestroy {
   @Input() set forest(forest: DevToolsNode[]) {
+    this._latestForest = forest;
     const result = this._updateForest(forest);
     const changed = result.movedItems.length || result.newItems.length || result.removedItems.length;
     if (this.currentSelectedElement && changed) {
@@ -34,6 +35,10 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     }
   }
   @Input() currentSelectedElement: IndexedNode;
+  @Input() set showCommentNodes(show: boolean) {
+    this._showCommentNodes = show;
+    this.forest = this._latestForest;
+  }
 
   @Output() selectNode = new EventEmitter<IndexedNode | null>();
   @Output() selectDomElement = new EventEmitter<IndexedNode>();
@@ -52,6 +57,8 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
 
   private _highlightIDinTreeFromElement: number | null = null;
   private _tabUpdateSubscription: Subscription;
+  private _showCommentNodes = false;
+  private _latestForest: DevToolsNode[];
 
   set highlightIDinTreeFromElement(id: number | null) {
     this._highlightIDinTreeFromElement = id;
@@ -169,7 +176,7 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
   private _updateForest(
     forest: DevToolsNode[]
   ): { newItems: FlatNode[]; movedItems: FlatNode[]; removedItems: FlatNode[] } {
-    const result = this.dataSource.update(forest);
+    const result = this.dataSource.update(forest, this._showCommentNodes);
     if (!this._initialized && forest && forest.length) {
       this.treeControl.expandAll();
       this._initialized = true;
