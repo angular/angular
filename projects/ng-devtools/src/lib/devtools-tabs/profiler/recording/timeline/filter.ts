@@ -78,14 +78,27 @@ const queryMap: { [query in QueryType]: Query } = [new DurationQuery(), new Sour
   return map;
 }, {} as { [query in QueryType]: Query });
 
-const queryRe = new RegExp(`(${QueryType.Duration}|${QueryType.Source})$`, 'g');
+const queryRe = new RegExp(`!?\s*(${QueryType.Duration}|${QueryType.Source})$`, 'g');
 
-export const parseFilter = (query: string): [QueryType, QueryArguments][] => {
+type Predicate = true | false;
+type QueryAST = [Predicate, QueryType, QueryArguments];
+
+/**
+ * Parses a query in the form:
+ *  filter := ('!'? query)*
+ *  query := 'sort': [a-z]* | 'duration': operator duration
+ *  operator := '=' | '>' | '<' | '>=' | '<='
+ *  duration := [0-9]* 'ms'?
+ *
+ * @param query string that represents the search query
+ * @returns tuples representing the query type and its arguments
+ */
+export const parseFilter = (query: string): QueryAST[] => {
   const parts = query.split(':').map((part) => part.trim());
   if (parts.length <= 1) {
     return [];
   }
-  const result: [QueryType, QueryArguments][] = [];
+  const result: QueryAST[] = [];
   for (let i = 0; i < parts.length - 1; i++) {
     const part = parts[i];
     if (!queryRe.test(part)) {
@@ -104,7 +117,8 @@ export const parseFilter = (query: string): [QueryType, QueryArguments][] => {
     if (!operand) {
       continue;
     }
-    result.push([operator.name, operand]);
+    const hasNegation = /^(.*?)\s*!\s*\w+/.test(part);
+    result.push([!hasNegation, operator.name, operand]);
   }
   return result;
 };
@@ -112,12 +126,13 @@ export const parseFilter = (query: string): [QueryType, QueryArguments][] => {
 export const createFilter = (query: string) => {
   const queries = parseFilter(query);
   return (frame: GraphNode) => {
-    return queries.every(([queryName, args]) => {
+    return queries.every(([predicate, queryName, args]) => {
       const currentQuery = queryMap[queryName];
       if (!currentQuery) {
         return true;
       }
-      return currentQuery.apply(frame.frame, args);
+      const result = currentQuery.apply(frame.frame, args);
+      return predicate ? result : !result;
     });
   };
 };
