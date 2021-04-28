@@ -1,9 +1,9 @@
 - [Overview](#overview)
   - [Bug reports](#bug-reports)
-  - [Components](#components)
-    - [Exploring the component tree](#exploring-the-component-tree)
-    - [Viewing properties of a Component](#viewing-properties-of-a-component)
-    - [Navigate to DOM node](#navigate-to-dom-node)
+  - [Debugging your application](#debugging-your-application)
+    - [Exploring the structure of the application](#exploring-the-structure-of-the-application)
+    - [Viewing properties](#viewing-properties)
+    - [Navigate to the host node](#navigate-to-the-host-node)
     - [Navigate to source](#navigate-to-source)
     - [Update property value](#update-property-value)
     - [Access selected component in console](#access-selected-component-in-console)
@@ -18,53 +18,61 @@
 
 # Overview
 
-Angular DevTools is a Chrome extension, which provides debugging and profiling experience for **Angular (AngularTS or Angular2) Ivy** projects. To use DevTools, your project must be already compatible with Angular Ivy since the tooling uses Ivy-specific APIs.
+Angular DevTools is a Chrome extension that provides debugging and profiling capabilities for Angular applications. Angular Devtools supports Angular v9 and above, with Ivy enabled.
 
 You can install devtools from Chrome Webstore by searching "Angular Devtools" or can click here.
 
-Once installed, open Chrome DevTools. You should see an "Angular" tab. When you open it, you'll see two additional tabs:
+Once installed, open Chrome DevTools. You should see an "Angular" tab.
 
-- [Components](#components) - provides a component explorer functionality, which lets you preview and modify the component tree of your application.
+![component explorer](assets/open-devtools.gif)
+
+When you open it, you'll see two additional tabs:
+
+- [Components](#components) - allows you to explore the components and directives in your application and preview or edit their state.
 - [Profiler](#profiler) - allows you to profile your application and understand what is the performance bottleneck during change detection execution.
 
 ![devtools](assets/devtools.png)
 
-You will also see the version of Angular your application is using in the top right corner followed by the commit version of Devtools you are using.
+At the top-right corner of Angular DevTools you'll find what is the version of Angular running on the page as well as the latest commit hash for the extension.
 
 ## Bug reports
 
 You can **report issues and feature requests [here](https://github.com/rangle/angular-devtools/issues)**.
 
-If you're reporting issue in the profiler, make sure you export the recording to a JSON file and apply it as an attachment. To help us fix the issue faster, please list the steps which caused it, and share instructions on how to reproduce the problem with your codebase.
+When opening an issue, please follow the issue template provided.
 
-## Components
+If you're reporting an issue with the profiler, export the profiler recording by clicking the "save profile" button, and then attach that export as a file in the issue.
 
-The components tab shows the component tree displaying a hierarchical relationship of the components. You can visualize and inspect the component tree of your application. Additionally, you can also preview and modify the properties of a particular component, view its source, and navigate to the element in Chrome Devtools.
+> Make sure while exporting profiler recording, it does not contain any proprietary information.
 
-### Exploring the component tree
+## Debugging your application
 
-The component tree displays a hierarchical relationship of the _components_. When a _component_ is selected, Devtools presents additional information about the selected _component_.
+The component tab allows you to explore the structure of your application. You can visualize and inspect the component and directive instances and preview or modify their state. In the next a couple of sections we'll look into how you can use this tab effectively to debug your application.
 
-In the screenshot below, you can see the component tree of an application:
+### Exploring the structure of the application
+
+The component tree displays a hierarchical relationship of the _components_ and _directives_ within your application. When you select a component or directive instance, Angular DevTools presents additional information about it.
 
 ![component explorer](assets/component-explorer.png)
 
-### Viewing properties of a Component
+In the screenshot above, you can see the component tree of an application.
 
-You can click on the individual elements to select them and preview their properties. Component properties will get displayed on the left-hand side of the component tree. To navigate in the component tree, you can use the arrows:
+### Viewing properties
 
-- Up & down to select the previous and next nodes.
-- Left & right to collapse and expand a node.
+You can click on the individual components or directives to select them and preview their properties. Component properties will get displayed on the right-hand side of the component tree. To navigate in the component tree, you can use the arrows:
 
-If you have a lot of components and directives, you can look up for a particular element using the search box at the top. It'll perform a case insensitive exact substring match and highlight the found nodes. To navigate to the next search match, just press "Enter." To navigate to the previous search match, press "Shift + Enter."
+- Up and down to select the previous and next nodes.
+- Left and right to collapse and expand a node.
+
+To look up for a component or directive by name use the search box at the top. It'll perform a case insensitive exact substring match and highlight the found nodes. To navigate to the next search match, just press "Enter." To navigate to the previous search match, press "Shift + Enter."
 
 ![search](assets/search.gif)
 
-### Navigate to DOM node
+### Navigate to the host node
 
-To go to the host element of a particular component or directive, just double-click on it. Chrome DevTools will open the Elements tab and select the associated DOM element if available.
+To go to the host element of a particular component or directive, just double-click on it. Chrome DevTools will open the Elements tab and select the associated DOM node.
 
-![navigate dom](assets/navigate-dom.gif)
+![Navigate to DOM](assets/navigate-dom.gif)
 
 ### Navigate to source
 
