@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  Input,
   NgZone,
   OnDestroy,
   OnInit,
@@ -58,14 +59,18 @@ const sameDirectives = (a: IndexedNode, b: IndexedNode) => {
   ],
 })
 export class DirectiveExplorerComponent implements OnInit, OnDestroy {
+  @Input() showCommentNodes = false;
   @Output() toggleInspector = new EventEmitter<void>();
+
+  @ViewChild(DirectiveForestComponent) directiveForest: DirectiveForestComponent;
+  @ViewChild(BreadcrumbsComponent) breadcrumbs: BreadcrumbsComponent;
+  @ViewChild(SplitComponent, { static: true, read: ElementRef }) splitElementRef: ElementRef;
+  @ViewChild('directiveForestSplitArea', { static: true, read: ElementRef }) directiveForestSplitArea: ElementRef;
 
   currentSelectedElement: IndexedNode | null = null;
   forest: DevToolsNode[];
   splitDirection: 'horizontal' | 'vertical' = 'horizontal';
-
-  @ViewChild(SplitComponent, { static: true, read: ElementRef }) splitElementRef: ElementRef;
-  @ViewChild('directiveForestSplitArea', { static: true, read: ElementRef }) directiveForestSplitArea: ElementRef;
+  parents: FlatNode[] | null = null;
 
   private _resizeObserver = new ResizeObserver((entries) =>
     this._ngZone.run(() => {
@@ -85,11 +90,6 @@ export class DirectiveExplorerComponent implements OnInit, OnDestroy {
 
   private _clickedElement: IndexedNode | null = null;
   private _refreshRetryTimeout: any = null;
-
-  parents: FlatNode[] | null = null;
-
-  @ViewChild(DirectiveForestComponent) directiveForest: DirectiveForestComponent;
-  @ViewChild(BreadcrumbsComponent) breadcrumbs: BreadcrumbsComponent;
 
   constructor(
     private _appOperations: ApplicationOperations,

@@ -25,6 +25,7 @@
 
 <div class="tab-content">
   <ng-directive-explorer
+    [showCommentNodes]="showCommentNodes"
     [ngClass]="{ hidden: activeTab !== 'Components' }"
     (toggleInspector)="toggleInspector()"
   ></ng-directive-explorer>
@@ -45,5 +46,14 @@
     (click)="$event.stopPropagation()"
   >
     Dark Mode
+  </mat-slide-toggle>
+  <br />
+  <br />
+  <mat-slide-toggle
+    (change)="showCommentNodes = $event.checked"
+    class="menu-toggle-button"
+    (click)="$event.stopPropagation()"
+  >
+    Show comment nodes
   </mat-slide-toggle>
 </mat-menu>

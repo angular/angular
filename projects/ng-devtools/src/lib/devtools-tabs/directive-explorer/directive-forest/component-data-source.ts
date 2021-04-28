@@ -84,13 +84,20 @@ export class ComponentDataSource extends DataSource<FlatNode> {
     return this._nodeToFlat.get(indexedNode);
   }
 
-  update(forest: DevToolsNode[]): { newItems: FlatNode[]; movedItems: FlatNode[]; removedItems: FlatNode[] } {
+  update(
+    forest: DevToolsNode[],
+    showCommentNodes: boolean
+  ): { newItems: FlatNode[]; movedItems: FlatNode[]; removedItems: FlatNode[] } {
     if (!forest) {
       return { newItems: [], movedItems: [], removedItems: [] };
     }
 
     const indexedForest = indexForest(forest);
-    const flattenedCollection = this._treeFlattener.flattenNodes(indexedForest) as FlatNode[];
+    let flattenedCollection = this._treeFlattener.flattenNodes(indexedForest) as FlatNode[];
+
+    if (!showCommentNodes) {
+      flattenedCollection = flattenedCollection.filter((node) => node.original.element !== '#comment');
+    }
 
     this.data.forEach((i) => (i.newItem = false));
 

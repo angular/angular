@@ -23,6 +23,7 @@ export class DevToolsTabsComponent implements OnInit, OnDestroy, AfterViewInit {
 
   inspectorRunning = false;
   routerTreeEnabled = false;
+  showCommentNodes = false;
 
   private _currentThemeSubscription: Subscription;
   currentTheme: Theme;
