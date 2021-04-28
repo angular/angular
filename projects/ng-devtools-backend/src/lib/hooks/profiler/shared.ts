@@ -1,7 +1,6 @@
-import { ɵProfilerEvent } from '@angular/core';
 import { ElementPosition, LifecycleProfile } from 'protocol';
 import { Subject } from 'rxjs';
-import { IdentityTracker, NodeArray } from '../identity-tracker';
+import { NodeArray } from '../identity-tracker';
 
 type CreationHook = (
   componentOrDirective: any,
@@ -47,8 +46,6 @@ export interface Hooks {
   onLifecycleHookStart: LifecycleStartHook;
   onLifecycleHookEnd: LifecycleEndHook;
 }
-
-export const ngProfilerCallbacks: ((event: ɵProfilerEvent, instanceOrLView: {}, hookOrListener: any) => void)[] = [];
 
 /**
  *  Class for profiling angular applications. Handles hook subscriptions and emitting change detection events.
