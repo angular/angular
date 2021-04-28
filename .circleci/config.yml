@@ -722,11 +722,7 @@ jobs:
       - run:
           # Run yarn install to fetch the Bazel binaries as used in the components repo.
           name: Installing dependencies.
-          # TODO: remove this once the repo has been updated to use NodeJS v12 and Yarn 1.19.1.
-          # We temporarily ignore the "engines" because the Angular components repository has
-          # minimum dependency on NodeJS v12 and Yarn 1.19.1, but the framework repository uses
-          # older versions.
-          command: yarn --ignore-engines --cwd ${COMPONENTS_REPO_TMP_DIR} install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+          command: yarn --cwd ${COMPONENTS_REPO_TMP_DIR} install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
       - save_cache:
           key: *components_repo_unit_tests_cache_key
           paths:
@@ -736,10 +732,14 @@ jobs:
             - "/tmp/angular-components-repo"
       - run:
           # Updates the `angular/components` `package.json` file to refer to the release output
-          # inside the `packages-dist` directory. Note that it's not necessary to perform a yarn
-          # install as Bazel runs Yarn automatically when needed.
+          # inside the `packages-dist` directory.
           name: Setting up release packages.
           command: node scripts/ci/update-deps-to-dist-packages.js ${COMPONENTS_REPO_TMP_DIR}/package.json dist/packages-dist/
+      - run:
+          # Run `yarn install` again to install the Angular packages from `packages-dist/` and update the lockfile.
+          # NOTE: We cannot rely on Bazel to run `yarn install`, because it uses the `--frozen-lockfile` flag and fails.
+          name: Installing local Angular packages.
+          command: yarn --cwd ${COMPONENTS_REPO_TMP_DIR} install --non-interactive --cache-folder ~/.cache/yarn
       - run:
           name: "Running `angular/components` unit tests"
           command: ./scripts/ci/run_angular_components_unit_tests.sh
