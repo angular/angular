@@ -2,25 +2,36 @@ import { ɵProfilerEvent } from '@angular/core';
 import { getDirectiveHostElement } from '../../directive-forest';
 import { runOutsideAngular } from '../../utils';
 import { IdentityTracker, NodeArray } from '../identity-tracker';
-import { getLifeCycleName, Hooks, ngProfilerCallbacks, Profiler } from './shared';
+import { getLifeCycleName, Hooks, Profiler } from './shared';
 
-const setProfilerCallback = (cb: (event: ɵProfilerEvent, instanceOrLView: {}, hookOrListener: any) => void) => {
-  ngProfilerCallbacks.push(cb);
-};
+type ProfilerCallback = (event: ɵProfilerEvent, instanceOrLView: {}, hookOrListener: any) => void;
 
 /** Implementation of Profiler that utilizes framework APIs fire profiler hooks. */
 export class NgProfiler extends Profiler {
   private _tracker = IdentityTracker.getInstance();
+  private _callbacks: ProfilerCallback[] = [];
 
   constructor(config: Partial<Hooks> = {}) {
     super(config);
-    setProfilerCallback((event: ɵProfilerEvent, instanceOrLView: {}, hookOrListener: any) => {
+    this._setProfilerCallback((event: ɵProfilerEvent, instanceOrLView: {}, hookOrListener: any) => {
       if (this[event] === undefined) {
         return;
       }
 
       this[event](instanceOrLView, hookOrListener);
     });
+    this._initialize();
+  }
+
+  private _initialize() {
+    const ng = (window as any).ng;
+    ng.ɵsetProfiler((event: ɵProfilerEvent, instanceOrLView: {}, hookOrListener: any) =>
+      this._callbacks.forEach((cb) => cb(event, instanceOrLView, hookOrListener))
+    );
+  }
+
+  private _setProfilerCallback(callback: ProfilerCallback) {
+    this._callbacks.push(callback);
   }
 
   destroy(): void {
