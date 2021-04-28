@@ -1,21 +1,23 @@
-# Testing Utility APIs
+# APIs de Utilidades de Testing
 
-This page describes the most useful Angular testing features.
+Esta página describe las funciones de testing más útiles de Angular
 
-The Angular testing utilities include the `TestBed`, the `ComponentFixture`, and a handful of functions that control the test environment.
-The [_TestBed_](#testbed-api-summary) and [_ComponentFixture_](#component-fixture-api-summary) classes are covered separately.
+Las funciones de testing de Angular incluyen la `TestBed` , el `ComponentFixture` y varias funciones que controlan el medio de pruebas
 
-Here's a summary of the stand-alone functions, in order of likely utility:
+Las clases  [_TestBed_](#testbed-api-summary) y [_ComponentFixture_](#component-fixture-api-summary) se tratan aparte.
+
+Este es un resumen de todas las funciones autocontenidas, en orden de posible utilidad:
 
 <table>
   <tr>
     <th>
-      Function
+      Función
     </th>
     <th>
-      Description
+      Descripción
     </th>
   </tr>
+
 
   <tr>
     <td style="vertical-align: top">
@@ -23,10 +25,10 @@ Here's a summary of the stand-alone functions, in order of likely utility:
     </td>
 
     <td>
-
-      Runs the body of a test (`it`) or setup (`beforeEach`) function within a special _async test zone_.
-      See [discussion above](guide/testing-components-scenarios#waitForAsync).
-
+    
+      Ejecuta el conjunto de una función test (`it`) o setup (`beforeEach`) desde una _zona de pruebas asíncrona_
+      Consulta [esta discusión](guide/testing-components-scenarios#waitForAsync).
+    
     </td>
   </tr>
 
@@ -36,10 +38,10 @@ Here's a summary of the stand-alone functions, in order of likely utility:
     </td>
 
     <td>
-
-      Runs the body of a test (`it`) within a special _fakeAsync test zone_, enabling
-      a linear control flow coding style. See [discussion above](guide/testing-components-scenarios#fake-async).
-
+    
+      Ejecuta el conjunto de un test (`it`) desde una _zona falsa de pruebas asíncrona_ especial, permitiendo un estilo de código de flujo de control lineal. 
+      Consulta [esta discusión](guide/testing-components-scenarios#fake-async).
+    
     </td>
   </tr>
 
@@ -49,22 +51,19 @@ Here's a summary of the stand-alone functions, in order of likely utility:
     </td>
 
     <td>
-
-      Simulates the passage of time and the completion of pending asynchronous activities
-      by flushing both _timer_ and _micro-task_ queues within the _fakeAsync test zone_.
-
+    
+      Simula el paso del tiempo y completar actividades asíncronas pendientes haciendo flush tanto en el _cronómetro_ como en la _cola de micro-tareas_ desde la _zona falsa de pruebas asíncronas_
+    
       <div class="alert is-helpful">
-
-      The curious, dedicated reader might enjoy this lengthy blog post,
+      Algún lector curioso y dedicado quizá disfrute de la lectura de esta extensa publicación en un blog:
       ["_Tasks, microtasks, queues and schedules_"](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/).
-
+    
       </div>
-
-      Accepts an optional argument that moves the virtual clock forward
-      by the specified number of milliseconds,
-      clearing asynchronous activities scheduled within that timeframe.
-      See [discussion above](guide/testing-components-scenarios#tick).
-
+    
+      Acepta un argumento adicionar que adelanta el reloj virtual según el número especificado de milisegundos, despejando las actividades asíncronas planeadas para ese bloque de tiempo
+      
+      Consulta [esta discusión](guide/testing-components-scenarios#tick).
+    
     </td>
   </tr>
 
@@ -74,11 +73,11 @@ Here's a summary of the stand-alone functions, in order of likely utility:
     </td>
 
     <td>
-
-      Injects one or more services from the current `TestBed` injector into a test function.
-      It cannot inject a service provided by the component itself.
-      See discussion of the [debugElement.injector](guide/testing-components-scenarios#get-injected-services).
-
+    
+      Inyecta uno o más servicios desde la `TestBed` inyectora actual hacia una función de test.
+      No puede inyectar un servicio proveído por el componente en sí.
+      Consulta [debugElement.injector](guide/testing-components-scenarios#get-injected-services).
+    
     </td>
   </tr>
 
@@ -88,14 +87,11 @@ Here's a summary of the stand-alone functions, in order of likely utility:
     </td>
 
     <td>
-
-      When a `fakeAsync()` test ends with pending timer event _tasks_ (queued `setTimeOut` and `setInterval` callbacks),
-      the test fails with a clear error message.
-
-      In general, a test should end with no queued tasks.
-      When pending timer tasks are expected, call `discardPeriodicTasks` to flush the _task_ queue
-      and avoid the error.
-
+    
+      Cuando un `fakeAsync()` test finaliza con tareas cronometradas pendientes (llamadas a `setTimeOut` y `setInterval` en cola), el test finaliza con un mensaje de error vacío.
+    
+      En general, un test debería finalizar sin tareas en cola. Cuando esperamos tareas cronometradas pendientes, llamamos a `discardPeriodicTasks` para hacer flush a la cola de tareas y evitar el error.
+    
     </td>
   </tr>
 
@@ -105,14 +101,10 @@ Here's a summary of the stand-alone functions, in order of likely utility:
     </td>
 
     <td>
-
-      When a `fakeAsync()` test ends with pending _micro-tasks_ such as unresolved promises,
-      the test fails with a clear error message.
-
-      In general, a test should wait for micro-tasks to finish.
-      When pending microtasks are expected, call `flushMicrotasks` to flush the  _micro-task_ queue
-      and avoid the error.
-
+      Cuando un test `fakeAsync()` finaliza con micro-tareas pendientes como promesas sin resolver, el test finaliza con un mensaje de error vacío
+    
+      En general, un test debería esperar a que acaben las micro-tareas. Cuando quedan micro-tareas pendientes en cola, llamamos a `flushMicrotasks` para hacer flush a la cola de micro-tareas y evitar el error.
+    
     </td>
   </tr>
 
@@ -122,9 +114,8 @@ Here's a summary of the stand-alone functions, in order of likely utility:
     </td>
 
     <td>
-
-      A provider token for a service that turns on [automatic change detection](guide/testing-components-scenarios#automatic-change-detection).
-
+      Un token del proveedor que inicia la [detección automática de cambios](guide/testing-components-scenarios#automatic-change-detection).
+    
     </td>
   </tr>
 
@@ -134,29 +125,24 @@ Here's a summary of the stand-alone functions, in order of likely utility:
     </td>
 
     <td>
-
-      Gets the current instance of the `TestBed`.
-      Usually unnecessary because the static class methods of the `TestBed` class are typically sufficient.
-      The `TestBed` instance exposes a few rarely used members that are not available as
-      static methods.
-
+    
+      Toma la instancia actual de la `TestBed`.
+      Normalmente es innecesaria porque los métodos de clase estáticos de `TestBed` suelen ser suficientes.
+      La instancia de `TestBed` muestra algunos miembros menos comunes que no están disponibles como métodos estáticos
+      
     </td>
   </tr>
 </table>
 
 <hr>
 
-{@a testbed-class-summary}
+{@a resumen-clase-testbed}
 
-## _TestBed_ class summary
+## Resumen de la clase _TestBed_ 
 
-The `TestBed` class is one of the principal Angular testing utilities.
-Its API is quite large and can be overwhelming until you've explored it,
-a little at a time. Read the early part of this guide first
-to get the basics before trying to absorb the full API.
+La clase `TestBed`  es una de las utilidades de testing principales de Angular. Su API es bastante grande y puede ser sobrecogedora hasta que la has explorado, ve poco a poco. Puedes leer la parte inicial de esta guía primero para familiarizarte con lo básico antes de intentar aprender toda la API.
 
-The module definition passed to `configureTestingModule`
-is a subset of the `@NgModule` metadata properties.
+La definición del módulo que pasamos a `configureTestingModule` es un subconjunto de las propiedades metadata de `@NgModule`.
 
 <code-example language="javascript">
   type TestModuleMetadata = {
@@ -169,9 +155,8 @@ is a subset of the `@NgModule` metadata properties.
 
 {@a metadata-override-object}
 
-Each override method takes a `MetadataOverride<T>` where `T` is the kind of metadata
-appropriate to the method, that is, the parameter of an `@NgModule`,
-`@Component`, `@Directive`, or `@Pipe`.
+Cada método de sobreescribir toma un `MetadataOverride<T>` donde  `T` es el tipo de metadato apropiado para el método, es decir, el parámetro de un `@NgModule`,
+`@Component`, `@Directive`, o `@Pipe`.
 
 <code-example language="javascript">
   type MetadataOverride&lt;T&gt; = {
@@ -181,27 +166,27 @@ appropriate to the method, that is, the parameter of an `@NgModule`,
   };
 </code-example>
 
-{@a testbed-methods}
+{@a testbed-métodos}
 {@a testbed-api-summary}
 
-The `TestBed` API consists of static class methods that either update or reference a _global_ instance of the `TestBed`.
+La API `TestBed` consiste de métodos de clase estáticos que o actualizan o referencian una instancia global de `TestBed`.
 
-Internally, all static methods cover methods of the current runtime `TestBed` instance,
-which is also returned by the `getTestBed()` function.
+Internamente, todos los métodos estáticos cubren los métodos de la instancia `TestBed` actual, lo cual también es devuelto por la función `getTestBed()`.
 
-Call `TestBed` methods _within_ a `beforeEach()` to ensure a fresh start before each individual test.
+Llama a los métodos `TestBed` *desde* un `beforeEach()` para asegurarte de tener un inicio en blanco antes de cada test individual.
 
-Here are the most important static methods, in order of likely utility.
+Aquí están los métodos estáticos más importantes, en orden de posible utilidad.
 
 <table>
   <tr>
     <th>
-      Methods
+      Métodos
     </th>
     <th>
-      Description
+      Descripción
     </th>
   </tr>
+
 
   <tr>
     <td style="vertical-align: top">
@@ -209,14 +194,12 @@ Here are the most important static methods, in order of likely utility.
     </td>
 
     <td>
-
-      The testing shims (`karma-test-shim`, `browser-test-shim`)
-      establish the [initial test environment](guide/testing) and a default testing module.
-      The default testing module is configured with basic declaratives and some Angular service substitutes that every tester needs.
-
-      Call `configureTestingModule` to refine the testing module configuration for a particular set of tests
-      by adding and removing imports, declarations (of components, directives, and pipes), and providers.
-
+    
+      Los shims de prueba (`karma-test-shim, `browser-test-shim`) establecen el [medio de pruebas inicial](guide/testing)y un módulo de pruebas por defecto.
+      El módulo de pruebas por defecto es configurado con declarativas básicas y algunos servicios sustitutos de Angular que cualquier tester necesitaría.
+      
+      Llama a `configureTestingModule` para refinar la configuración del módulo de pruebas para un conjunto particular de tests, añadiendo o quitando importes, declaraciones (de componentes, directivas, pipes...) y proveedores.
+    
     </td>
   </tr>
 
@@ -226,14 +209,14 @@ Here are the most important static methods, in order of likely utility.
     </td>
 
     <td>
-
-      Compile the testing module asynchronously after you've finished configuring it.
-      You **must** call this method if _any_ of the testing module components have a `templateUrl`
-      or `styleUrls` because fetching component template and style files is necessarily asynchronous.
-      See [above](guide/testing-components-scenarios#compile-components).
-
-      After calling `compileComponents`, the `TestBed` configuration is frozen for the duration of the current spec.
-
+    
+      Compila el módulo de testing de forma asíncrona después de que hayas finalizado configurándolo.
+      Debes llamar este método si cualquiera de los componentes de módulo de testing tiene una `templateUrl` o `styleUrls`, porque traer templates de componentes y archivos de estilo es obligatoriamente asíncrono.
+     
+      Consulta [aquí](guide/testing-components-scenarios#compile-components).
+      
+      Después de llamar a `compileComponents`, la configuración de `TestBed` se congela durante la especificación actual.
+    
     </td>
   </tr>
 
@@ -243,10 +226,10 @@ Here are the most important static methods, in order of likely utility.
     </td>
 
     <td>
-
-      Create an instance of a component of type `T` based on the current `TestBed` configuration.
-      After calling `compileComponent`, the `TestBed` configuration is frozen for the duration of the current spec.
-
+    
+      Crea una instancia de un componente de tipo `T` basado en la configuración de la `TestBed` actual.
+      Despuest de llamar a `compileComponent`, la configuración de `TestBed` se congela durante la especificación actual.
+    
     </td>
   </tr>
 
@@ -256,10 +239,9 @@ Here are the most important static methods, in order of likely utility.
     </td>
     <td>
 
-      Replace metadata for the given `NgModule`. Recall that modules can import other modules.
-      The `overrideModule` method can reach deeply into the current testing module to
-      modify one of these inner modules.
-
+      Reemplaza metadatos del `NgModule` proporcionado. Recuerde que los módulos pueden importar otros módulos.
+      El método `overrideModule` puede ir hasta el fondo del módulo testing actual para modificar alguno de estos módulos internos
+    
     </td>
   </tr>
 
@@ -269,10 +251,9 @@ Here are the most important static methods, in order of likely utility.
     </td>
 
     <td>
-
-      Replace metadata for the given component class, which could be nested deeply
-      within an inner module.
-
+    
+      Reemplaza metadatos para la clase componente dada, la cual puede estar anidada dentro de un módulo interno.
+    
     </td>
   </tr>
 
@@ -282,10 +263,9 @@ Here are the most important static methods, in order of likely utility.
     </td>
 
     <td>
-
-      Replace metadata for the given directive class, which could be nested deeply
-      within an inner module.
-
+      
+      Reemplaza metadatos para la clase directiva dada, la cual puede estar anidada dentro de un módulo interno.
+    
     </td>
   </tr>
 
@@ -295,9 +275,8 @@ Here are the most important static methods, in order of likely utility.
     </td>
     <td>
 
-      Replace metadata for the given pipe class, which could be nested deeply
-      within an inner module.
-
+      Reemplaza metadatos para la clase pipe dada, la cual puede estar anidada dentro de un módulo interno.
+    
     </td>
   </tr>
 
@@ -308,22 +287,19 @@ Here are the most important static methods, in order of likely utility.
     </td>
 
     <td>
-
-      Retrieve a service from the current `TestBed` injector.
-
-      The `inject` function is often adequate for this purpose.
-      But `inject` throws an error if it can't provide the service.
-
-      What if the service is optional?
-
-      The `TestBed.inject()` method takes an optional second parameter,
-      the object to return if Angular can't find the provider
-      (`null` in this example):
-
+    
+      Trae un servicio del inyector `TestBed` actual.
+    
+      La función `inject` normalmente es adecuada para esto, pero lanza un error si no puede proveer el servicio
+    
+      ¿Qué pasa si el servicio es opcional?
+     
+      El método `TestBed.inject()` toma un segundo parámetro opcional, el objeto para devolver si Angular no encuentra el proveedor (nulo, en este ejemplo):
+    
       <code-example path="testing/src/app/demo/demo.testbed.spec.ts" region="testbed-get-w-null" header="app/demo/demo.testbed.spec.ts"></code-example>
-
-      After calling `TestBed.inject`, the `TestBed` configuration is frozen for the duration of the current spec.
-
+    
+      Después de llamar a `TestBed.inject`, la configuración de `TestBed` se congela durante la especificación actual.
+    
     </td>
   </tr>
 
@@ -334,18 +310,16 @@ Here are the most important static methods, in order of likely utility.
     </td>
     <td>
 
-      Initialize the testing environment for the entire test run.
-
-      The testing shims (`karma-test-shim`, `browser-test-shim`) call it for you
-      so there is rarely a reason for you to call it yourself.
-
-      You may call this method _exactly once_. If you must change
-      this default in the middle of your test run, call `resetTestEnvironment` first.
-
-      Specify the Angular compiler factory, a `PlatformRef`, and a default Angular testing module.
-      Alternatives for non-browser platforms are available in the general form
+      Inicializa el medio de testing para todo el test run.
+    
+      Los shims de pruebas (`karma-test-shim`, `browser-test-shim`) lo llaman por ti, así que no suele haber un motivo para usarlo.
+      
+      Puedes llamar este método _exactamente una vez_. Si debes cambiar este valor por defecto en mitad de un test run, utiliza `resetTestEnvironment` primero.
+     
+      Especifica el compilador de fábrica Angular, un `PlatformRef` y un módulo por defecto de pruebas de Angular.
+      Existen alternativas para plataformas no basadas en navegador en el formulario general siguiente:
       `@angular/platform-<platform_name>/testing/<platform_name>`.
-
+    
     </td>
   </tr>
 
@@ -355,39 +329,35 @@ Here are the most important static methods, in order of likely utility.
     </td>
     <td>
 
-      Reset the initial test environment, including the default testing module.
-
+      Resetea el medio de pruebas inicial, incluyendo el módulo de pruebas por defecto.
+    
     </td>
   </tr>
 </table>
 
-A few of the `TestBed` instance methods are not covered by static `TestBed` _class_ methods.
-These are rarely needed.
+Algunos de los métodos de instancia de `TestBed` no son cubiertos por los métodos estáticos de clase de  `TestBed`. Estos no suelen utilizarse.
 
 {@a component-fixture-api-summary}
 
-## The _ComponentFixture_
+## El _ComponentFixture_
 
-The `TestBed.createComponent<T>`
-creates an instance of the component `T`
-and returns a strongly typed `ComponentFixture` for that component.
+ `TestBed.createComponent<T>` crea una instancia de un componente `T` y devuelve un `ComponentFixture` fuertemente tipificado para ese componente
 
-The `ComponentFixture` properties and methods provide access to the component,
-its DOM representation, and aspects of its Angular environment.
+Las propiedades y métodos de `ComponentFixture` permiten acceso al componente, su representación DOM y algunos aspectos del medio Angular.
 
-{@a component-fixture-properties}
+{@a componentes-fixture-propiedades}
 
-### _ComponentFixture_ properties
+### Propiedades de _ComponentFixture_
 
-Here are the most important properties for testers, in order of likely utility.
+Aquí están las propiedades más importantes para testers, en orden de posible utilidad.
 
 <table>
   <tr>
     <th>
-      Properties
+      Propiedades
     </th>
     <th>
-      Description
+      Descripción
     </th>
   </tr>
 
@@ -397,9 +367,9 @@ Here are the most important properties for testers, in order of likely utility.
     </td>
 
     <td>
-
-      The instance of the component class created by `TestBed.createComponent`.
-
+    
+      La instancia de la clase componente creada por `TestBed.createComponent`.
+    
     </td>
   </tr>
 
@@ -409,12 +379,13 @@ Here are the most important properties for testers, in order of likely utility.
     </td>
 
     <td>
-
-      The `DebugElement` associated with the root element of the component.
-
-      The `debugElement` provides insight into the component and its DOM element during test and debugging.
-      It's a critical property for testers. The most interesting members are covered [below](#debug-element-details).
-
+    
+      El `DebugElement` asociado con el elemento raíz del componente.
+    
+      El `DebugElement` da información sobre el componente y su elemento DOM durante el test y debug.
+      
+      Es una propiedad crítica para los testers. Los miembros más interesantes están cubiertos [aquí](#debug-element-details).
+    
     </td>
   </tr>
 
@@ -424,9 +395,9 @@ Here are the most important properties for testers, in order of likely utility.
     </td>
 
     <td>
-
-      The native DOM element at the root of the component.
-
+    
+      El elemento DOM nativo en la raíz del componente.
+    
     </td>
   </tr>
 
@@ -436,35 +407,33 @@ Here are the most important properties for testers, in order of likely utility.
     </td>
 
     <td>
-
-      The `ChangeDetectorRef` for the component.
-
-      The `ChangeDetectorRef` is most valuable when testing a
-      component that has the `ChangeDetectionStrategy.OnPush` method
-      or the component's change detection is under your programmatic control.
-
+    
+      El `ChangeDetectorRef` para el componente.
+     
+      El `ChangeDetectorRef` es más valioso cuando testeamos un componente que tiene el  método`ChangeDetectionStrategy.OnPush` o cuando la detección de cambios del componente está bajo tu control programático.
+    
     </td>
   </tr>
 </table>
 
-{@a component-fixture-methods}
+{@a componente-fixture-métodos}
 
-### _ComponentFixture_ methods
+### Métodos de _ComponentFixture_
 
-The _fixture_ methods cause Angular to perform certain tasks on the component tree.
-Call these method to trigger Angular behavior in response to simulated user action.
+Los métodos fixture hacen que Angular ejecute mejor ciertas tareas  en el árbol de componentes. Llama a estos métodos para iniciar el comportamiento de Angular en respuesta a una acción de usuario simulada.
 
-Here are the most useful methods for testers.
+Aquí están los métodos más útiles para los testers.
 
 <table>
   <tr>
     <th>
-      Methods
+      Métodos
     </th>
     <th>
-      Description
+      Descripción
     </th>
   </tr>
+
 
   <tr>
     <td style="vertical-align: top">
@@ -472,17 +441,14 @@ Here are the most useful methods for testers.
     </td>
 
     <td>
-
-      Trigger a change detection cycle for the component.
-
-      Call it to initialize the component (it calls `ngOnInit`) and after your
-      test code, change the component's data bound property values.
-      Angular can't see that you've changed `personComponent.name` and won't update the `name`
-      binding until you call `detectChanges`.
-
-      Runs `checkNoChanges` afterwards to confirm that there are no circular updates unless
-      called as `detectChanges(false)`;
-
+    
+      Inicia un ciclo de detección de cambios para el componente.
+    
+      Llámalo para inicializar el componente (que llama a `ngOnInit`) y después de tu código de pruebas, cambia los valores de propiedad asociados a los datos de los componentes. 
+      Angular no puede ver que has cambiado `personComponent.name` y no actualizará el `name` hasta que llames a `detectChanges`.
+    
+      Ejecuta `checkNoChanges` después para confirmar que no hay actualizaciones circulares, a no se que se llame así: `detectChanges(false)`
+    
     </td>
   </tr>
 
@@ -492,18 +458,15 @@ Here are the most useful methods for testers.
     </td>
 
     <td>
-
+    
+      Poner esto a `true` cuando quieras que el fixture detecte los cambios automáticamente.
       Set this to `true` when you want the fixture to detect changes automatically.
-
-      When autodetect is `true`, the test fixture calls `detectChanges` immediately
-      after creating the component. Then it listens for pertinent zone events
-      and calls `detectChanges` accordingly.
-      When your test code modifies component property values directly,
-      you probably still have to call `fixture.detectChanges` to trigger data binding updates.
-
-      The default is `false`. Testers who prefer fine control over test behavior
-      tend to keep it `false`.
-
+    
+      Cuando autodetect es `true`, el fixture de pruebas llama a `detectChanges` inmediatamente después de crear el componente. Después comprueba los eventos de zona pertinentes y llama a `detectChanges` de forma acorde.
+      Cuando tu código de pruebas modifique los valores de propiedad de un componente de forma directa, probablemente tengas que llamar a `fixture.detectChanges` para iniciar las actualizaciones de unificación de datos.
+      
+      El valor por defecto es `false`. Los testers que prefieren tener un control mayor sobre el comportamiento de pruebas suelen dejarlo en `false`.
+    
     </td>
   </tr>
 
@@ -513,9 +476,10 @@ Here are the most useful methods for testers.
     </td>
 
     <td>
-
-      Do a change detection run to make sure there are no pending changes.
-      Throws an exceptions if there are.
+    
+      Corre el programa para detectar cambios y asegurarse de que no hay cambios pendientes.
+      Lanza una excepción si los hay.
+      
     </td>
   </tr>
 
@@ -525,10 +489,10 @@ Here are the most useful methods for testers.
     </td>
 
     <td>
-
-      If the fixture is currently _stable_, returns `true`.
-      If there are async tasks that have not completed, returns `false`.
-
+    
+      Si el fixture es actualmente estable, devuelve `true`.
+      Si hay tareas asíncronas no completadas, devuelve `false`.
+      
     </td>
   </tr>
 
@@ -538,13 +502,13 @@ Here are the most useful methods for testers.
     </td>
 
     <td>
-
-      Returns a promise that resolves when the fixture is stable.
-
-      To resume testing after completion of asynchronous activity or
-      asynchronous change detection, hook that promise.
-      See [above](guide/testing-components-scenarios#when-stable).
-
+    
+      Devuelve una promesa que resuelve cuando el fixture es estable.
+      
+      Para volver al testing después de completar actividad asíncrona o detección de cambios asíncronos, añade esta promesa.
+      
+      Consulta [aquí](guide/testing-components-scenarios#when-stable).
+    
     </td>
   </tr>
 
@@ -554,31 +518,30 @@ Here are the most useful methods for testers.
     </td>
 
     <td>
-
-      Trigger component destruction.
-
+    
+      Inicia la destrucción del componente
+    
     </td>
   </tr>
 </table>
 
-{@a debug-element-details}
+{@a debug-elementos-detalles}
 
 #### _DebugElement_
 
-The `DebugElement` provides crucial insights into the component's DOM representation.
+El `DebugElement` proporciona información crucial para la representación DOM de los componentes.
 
-From the test root component's `DebugElement` returned by `fixture.debugElement`,
-you can walk (and query) the fixture's entire element and component subtrees.
+Desde el `DebugElement` del componente test raíz, devuelto por `fixture.debugElement`, puedes llegar a todo elemento y subárbol de componentes del fixture
 
-Here are the most useful `DebugElement` members for testers, in approximate order of utility:
+Aquí están los miembros  `DebugElement`  más útiles para los testers, en orden de posible utilidad:
 
 <table>
   <tr>
     <th>
-      Member
+      Miembro
     </th>
     <th>
-      Description
+      Descripción
     </th>
   </tr>
 
@@ -588,9 +551,8 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
 
     <td>
-
-      The corresponding DOM element in the browser (null for WebWorkers).
-
+      El elemento DOM correspondiente en el navegador (nulo para WebWorkers).
+    
     </td>
   </tr>
 
@@ -600,10 +562,8 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
 
     <td>
-
-      Calling `query(predicate: Predicate<DebugElement>)` returns the first `DebugElement`
-      that matches the [predicate](#query-predicate) at any depth in the subtree.
-
+      Llamar a `query(predicate: Predicate<DebugElement>)` devuelbe el primer `DebugElement` que coincida con el [predicado](#query-predicate) a cualquier profundidad en el subárbol
+     
     </td>
   </tr>
 
@@ -613,10 +573,8 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
 
     <td>
-
-      Calling `queryAll(predicate: Predicate<DebugElement>)` returns all `DebugElements`
-      that matches the [predicate](#query-predicate) at any depth in subtree.
-
+      Llamar a `queryAll(predicate: Predicate<DebugElement>)` devuelve todos los `DebugElements` que coincidan con el [predicado](#query-predicate) a cualquier profundidad en el subárbol
+    
     </td>
   </tr>
 
@@ -626,10 +584,8 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
 
     <td>
-
-      The host dependency injector.
-      For example, the root element's component instance injector.
-
+      El inyector de dependecia del host. Por ejemplo, el inyector de la instancia del componente del elemento
+      
     </td>
   </tr>
 
@@ -639,9 +595,8 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
 
     <td>
-
-      The element's own component instance, if it has one.
-
+      La instancia del componente del propio elemento, si tiene.
+    
     </td>
   </tr>
 
@@ -651,14 +606,12 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
 
     <td>
-
-      An object that provides parent context for this element.
-      Often an ancestor component instance that governs this element.
-
-      When an element is repeated within `*ngFor`, the context is an `NgForRow` whose `$implicit`
-      property is the value of the row instance value.
-      For example, the `hero` in `*ngFor="let hero of heroes"`.
-
+    
+      Un objeto que provee contexto del padre para este elemento.
+      En muchas ocasiones una instancia del componente ancestro gobierna este elemento.
+      
+      Cuando un elemento se repite en `*ngFor`, el contexto es un `NgForRow` cuya propiedad `$implicit` es el valor de la instancia de la fila. Por ejemplo, el `hero` en *ngFor="let hero of heroes"`.
+    
     </td>
   </tr>
 
@@ -668,15 +621,14 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
 
     <td>
-
-      The immediate `DebugElement` children. Walk the tree by descending through `children`.
-
+    
+      Los hijos `DebugElement` inmediatos. Recorre el árbol descendiendo a través de los hijos.
+    
       <div class="alert is-helpful">
-
-      `DebugElement` also has `childNodes`, a list of `DebugNode` objects.
-      `DebugElement` derives from `DebugNode` objects and there are often
-      more nodes than elements. Testers can usually ignore plain nodes.
-
+    
+      `DebugElement` también tiene `childNodes`, una lista de objetos `DebugNode`.
+      `DebugElement` deriva de los objetos `DebugNode` y suele haber más nodos que elementos. Los tester normalmente ignoran los nodos planos.
+    
       </div>
     </td>
   </tr>
@@ -687,8 +639,8 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
     <td>
 
-      The `DebugElement` parent. Null if this is the root element.
-
+      El `DebugElement` padre. Es nulo si este es el elemento raíz.
+    
     </td>
   </tr>
 
@@ -698,9 +650,8 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
 
     <td>
-
-      The element tag name, if it is an element.
-
+      El tag name del elemento, si es que es un elemento.
+    
     </td>
   </tr>
 
@@ -710,14 +661,13 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
     <td>
 
-      Triggers the event by its name if there is a corresponding listener
-      in the element's `listeners` collection.
-      The second parameter is the _event object_ expected by the handler.
-      See [above](guide/testing-components-scenarios#trigger-event-handler).
-
-      If the event lacks a listener or there's some other problem,
-      consider calling `nativeElement.dispatchEvent(eventObject)`.
-
+      Inicia el evento por su nombre si hay un receptor correspondiente en la colección `listeners` del elemento.
+      El segundo parámetro es el _objeto evento_ esperado por el handler.
+      
+      Consulta [aquí](guide/testing-components-scenarios#trigger-event-handler).
+    
+      Si el evento no tiene un receptor o hay algún problema, considera llamar a `nativeElement.dispatchEvent(eventObject)`.
+    
     </td>
   </tr>
 
@@ -727,9 +677,9 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
 
     <td>
-
-      The callbacks attached to the component's `@Output` properties and/or the element's event properties.
-
+    
+      Los callbacks insertados al `@Output` del componente, sus propiedades y/o las propiedades de evento del elemento.
+    
     </td>
   </tr>
 
@@ -739,10 +689,9 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
 
     <td>
-
-      This component's injector lookup tokens.
-      Includes the component itself plus the tokens that the component lists in its `providers` metadata.
-
+      Los token de búsqueda del inyector de este componente.
+      Include el componente en sí mismo además de los tokens que el componente lista en la parte "proveedores" de sus metadatos.
+    
     </td>
   </tr>
 
@@ -752,9 +701,8 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
 
     <td>
-
-      Where to find this element in the source component template.
-
+      Dónde encontrar este elemento en el componente template fuente.
+     
     </td>
   </tr>
 
@@ -764,31 +712,28 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
     </td>
 
     <td>
-
-      Dictionary of objects associated with template local variables (e.g. `#foo`),
-      keyed by the local variable name.
-
+      Diccionario de objetos asociados a variables locales template (e.g. `#foo`), acuñado por el nombre de la variable local
+    
     </td>
   </tr>
 </table>
 
 {@a query-predicate}
 
-The `DebugElement.query(predicate)` and `DebugElement.queryAll(predicate)` methods take a
-predicate that filters the source element's subtree for matching `DebugElement`.
+Los métodos `DebugElement.query(predicate)` y`DebugElement.queryAll(predicate)` toman un predicado que filtra el subárbol del elemento fuente para igualar a `DebugElement`.
 
-The predicate is any method that takes a `DebugElement` and returns a _truthy_ value.
-The following example finds all `DebugElements` with a reference to a template local variable named "content":
+El predicado es cualquier método que tome el `DebugElement` y devuelva un valor verdadero.
+
+El siguiente ejemplo encuentra todos los `DebugElement` con una referencia a una variable local template llamada "content":
 
 <code-example path="testing/src/app/demo/demo.testbed.spec.ts" region="custom-predicate" header="app/demo/demo.testbed.spec.ts"></code-example>
 
-The Angular `By` class has three static methods for common predicates:
+La clase Angular `By` tiene tres métodos estáticos para predicados comunes:
 
-- `By.all` - return all elements.
-- `By.css(selector)` - return elements with matching CSS selectors.
-- `By.directive(directive)` - return elements that Angular matched to an instance of the directive class.
+- `By.all` - devuelve todos los elementos
+- `By.css(selector)` - devuelve los elementos con selectores CSS coincidentes
+- `By.directive(directive)` - devuelve elementos que Angular ha unido a una instancia de la clase directiva.
 
 <code-example path="testing/src/app/hero/hero-list.component.spec.ts" region="by" header="app/hero/hero-list.component.spec.ts"></code-example>
 
 <hr>
-
