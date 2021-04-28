@@ -24,11 +24,11 @@ export class Prettier extends Formatter {
   defaultFileMatcher = ['**/*.{t,j}s'];
 
   /**
-   * The configuration path of the pretter config, obtained during construction to prevent needing
+   * The configuration path of the prettier config, obtained during construction to prevent needing
    * to discover it repeatedly for each execution.
    */
   private configPath =
-      this.config['pretter'] ? exec(`${this.binaryFilePath} --find-config-path .`).trim() : '';
+      this.config['prettier'] ? exec(`${this.binaryFilePath} --find-config-path .`).trim() : '';
 
   actions = {
     check: {
