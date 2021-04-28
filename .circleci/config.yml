@@ -36,7 +36,7 @@ var_4_win: &cache_key_win_fallback v4-angular-win-node-14-{{ checksum "month.txt
 
 # Cache key for the `components-repo-unit-tests` job. **Note** when updating the SHA in the
 # cache keys also update the SHA for the "COMPONENTS_REPO_COMMIT" environment variable.
-var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-09e68db8ed5b1253f2fe38ff954ef0df019fc25a
+var_5: &components_repo_unit_tests_cache_key v1-angular-components-{{ checksum "month.txt" }}-7cc42f5d835b7971e9ff73e220b801cf7834d515
 var_6: &components_repo_unit_tests_cache_key_fallback v1-angular-components-{{ checksum "month.txt" }}
 
 # Workspace initially persisted by the `setup` job, and then enhanced by `build-npm-packages` and
@@ -722,11 +722,7 @@ jobs:
       - run:
           # Run yarn install to fetch the Bazel binaries as used in the components repo.
           name: Installing dependencies.
-          # TODO: remove this once the repo has been updated to use NodeJS v12 and Yarn 1.19.1.
-          # We temporarily ignore the "engines" because the Angular components repository has
-          # minimum dependency on NodeJS v12 and Yarn 1.19.1, but the framework repository uses
-          # older versions.
-          command: yarn --ignore-engines --cwd ${COMPONENTS_REPO_TMP_DIR} install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
+          command: yarn --cwd ${COMPONENTS_REPO_TMP_DIR} install --frozen-lockfile --non-interactive --cache-folder ~/.cache/yarn
       - save_cache:
           key: *components_repo_unit_tests_cache_key
           paths:
@@ -736,10 +732,14 @@ jobs:
             - "/tmp/angular-components-repo"
       - run:
           # Updates the `angular/components` `package.json` file to refer to the release output
-          # inside the `packages-dist` directory. Note that it's not necessary to perform a yarn
-          # install as Bazel runs Yarn automatically when needed.
+          # inside the `packages-dist` directory.
           name: Setting up release packages.
           command: node scripts/ci/update-deps-to-dist-packages.js ${COMPONENTS_REPO_TMP_DIR}/package.json dist/packages-dist/
+      - run:
+          # Run `yarn install` again to install the Angular packages from `packages-dist/` and update the lockfile.
+          # NOTE: We cannot rely on Bazel to run `yarn install`, because it uses the `--frozen-lockfile` flag and fails.
+          name: Installing local Angular packages.
+          command: yarn --cwd ${COMPONENTS_REPO_TMP_DIR} install --non-interactive --cache-folder ~/.cache/yarn
       - run:
           name: "Running `angular/components` unit tests"
           command: ./scripts/ci/run_angular_components_unit_tests.sh
@@ -870,16 +870,9 @@ workflows:
             - build-npm-packages
             - build-ivy-npm-packages
             - legacy-unit-tests-saucelabs
-      # Temporarily disabled components-repo-unit-tests to update rules_nodejs to 2.0.0. Breaking changes in
-      # rules_nodejs create a dependency sandwich between angular/angular & angular/components that are very
-      # difficult and time consuming to resolve and involve patching @angular/bazel in components repo such
-      # as https://github.com/angular/components/commit/9e7ba251207df77164d73d66620e619bcbc4d2ad. It is simpler to
-      # 1) land angular/angular upgrade to rule_nodejs 2.0.0 which has breaking changes
-      # 2) land angular/components upgrade to rules_nodejs 2.0.0 using the @angular/bazel builds snapshot
-      # 3) update angular/angular to the landed components commit and re-enable these tests
-      # - components-repo-unit-tests:
-      #     requires:
-      #       - build-npm-packages
+      - components-repo-unit-tests:
+          requires:
+            - build-npm-packages
       - test_zonejs:
           requires:
             - setup
