@@ -12,7 +12,7 @@ import {UnifiedModulesHost} from '../../core/api';
 import {absoluteFromSourceFile, dirname, LogicalFileSystem, LogicalProjectPath, relative, toRelativeImport} from '../../file_system';
 import {stripExtension} from '../../file_system/src/util';
 import {DeclarationNode, ReflectionHost} from '../../reflection';
-import {getSourceFile, isDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript';
+import {getSourceFile, isDeclaration, isNamedDeclaration, isTypeDeclaration, nodeNameForError} from '../../util/src/typescript';
 
 import {findExportedNameOfNode} from './find_export';
 import {Reference} from './references';
@@ -255,9 +255,20 @@ export class AbsoluteModuleStrategy implements ReferenceEmitStrategy {
       return null;
     }
     const exportMap = new Map<DeclarationNode, string>();
-    exports.forEach((declaration, name) => {
+    for (const [name, declaration] of exports) {
+      if (exportMap.has(declaration.node)) {
+        // An export for this declaration has already been registered. We prefer an export that
+        // has the same name as the declared name, i.e. is not an aliased export. This is relevant
+        // for partial compilations where emitted references should import symbols using a stable
+        // name. This is particularly relevant for declarations inside VE-generated libraries, as
+        // such libraries contain private, unstable reexports of symbols.
+        const existingExport = exportMap.get(declaration.node)!;
+        if (isNamedDeclaration(declaration.node) && declaration.node.name.text === existingExport) {
+          continue;
+        }
+      }
       exportMap.set(declaration.node, name);
-    });
+    }
     return {module: entryPointFile, exportMap};
   }
 }
