@@ -7,8 +7,8 @@
  */
 
 import {ListChoiceOptions, prompt} from 'inquirer';
-import {spawnWithDebugOutput} from '../../utils/child-process';
 
+import {spawnWithDebugOutput} from '../../utils/child-process';
 import {GithubConfig} from '../../utils/config';
 import {debug, error, info, log, promptConfirm, red, yellow} from '../../utils/console';
 import {GitClient} from '../../utils/git/index';

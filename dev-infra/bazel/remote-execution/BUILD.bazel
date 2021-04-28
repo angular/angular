@@ -14,7 +14,7 @@ platform(
     # frequently. There are rare cases where it needs to be updated. e.g. for a more recent Bash
     # version, or new system settings that are required for launching browsers. In order to do that,
     # we need to either see if the `rbe-ubuntu16-04-webtest` image can be updated, or if we need to
-    # build and publish our own image to the Google cloud image registry. Additionally, we set th
+    # build and publish our own image to the Google cloud image registry. Additionally, we set the
     # `SYS_ADMIN` capability so that browsers can be launched with sandbox mode enabled. Related
     # information: https://developers.google.com/web/tools/puppeteer/troubleshooting#running_puppeteer_in_docker
     remote_execution_properties = """
