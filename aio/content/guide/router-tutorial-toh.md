@@ -14,16 +14,16 @@ For a working example of the final version of the app, see the <live-example nam
 This guide describes development of a multi-page routed sample application.
 Along the way, it highlights key features of the router such as:
 
-* Organizing the application features into modules.
-* Navigating to a component (*Heroes* link to "Heroes List").
-* Including a route parameter (passing the Hero `id` while routing to the "Hero Detail").
-* Child routes (the *Crisis Center* has its own routes).
-* The `CanActivate` guard (checking route access).
-* The `CanActivateChild` guard (checking child route access).
-* The `CanDeactivate` guard (ask permission to discard unsaved changes).
-* The `Resolve` guard (pre-fetching route data).
-* Lazy loading an `NgModule`.
-* The `CanLoad` guard (check before loading feature module assets).
+- Organizing the application features into modules.
+- Navigating to a component (_Heroes_ link to "Heroes List").
+- Including a route parameter (passing the Hero `id` while routing to the "Hero Detail").
+- Child routes (the _Crisis Center_ has its own routes).
+- The `CanActivate` guard (checking route access).
+- The `CanActivateChild` guard (checking child route access).
+- The `CanDeactivate` guard (ask permission to discard unsaved changes).
+- The `Resolve` guard (pre-fetching route data).
+- Lazy loading an `NgModule`.
+- The `CanLoad` guard (check before loading feature module assets).
 
 This guide proceeds as a sequence of milestones as if you were building the app step-by-step, but assumes you are familiar with basic [Angular concepts](guide/architecture).
 For a general introduction to angular, see the [Getting Started](start). For a more in-depth overview, see the [Tour of Heroes](tutorial) tutorial.
@@ -32,13 +32,12 @@ For a general introduction to angular, see the [Getting Started](start). For a m
 
 To complete this tutorial, you should have a basic understanding of the following concepts:
 
-* JavaScript
-* HTML
-* CSS
-* [Angular CLI](/cli)
+- JavaScript
+- HTML
+- CSS
+- [Angular CLI](/cli)
 
 You might find the [Tour of Heroes tutorial](/tutorial) helpful, but it is not required.
-
 
 ## The sample application in action
 
@@ -46,28 +45,23 @@ The sample application for this tutorial helps the Hero Employment Agency find c
 
 The application has three main feature areas:
 
-1. A *Crisis Center* for maintaining the list of crises for assignment to heroes.
-1. A *Heroes* area for maintaining the list of heroes employed by the agency.
-1. An *Admin* area to manage the list of crises and heroes.
+1. A _Crisis Center_ for maintaining the list of crises for assignment to heroes.
+1. A _Heroes_ area for maintaining the list of heroes employed by the agency.
+1. An _Admin_ area to manage the list of crises and heroes.
 
 Try it by clicking on this <live-example name="router" title="Hero Employment Agency Live Example">live example link</live-example>.
 
-The app renders with a row of navigation buttons and the *Heroes* view with its list of heroes.
-
+The app renders with a row of navigation buttons and the _Heroes_ view with its list of heroes.
 
 <div class="lightbox">
   <img src='generated/images/guide/router/hero-list.png' alt="Hero List">
 </div>
-
-
 
 Select one hero and the app takes you to a hero editing screen.
 
 <div class="lightbox">
   <img src='generated/images/guide/router/hero-detail.png' alt="Crisis Center Detail">
 </div>
-
-
 
 Alter the name.
 Click the "Back" button and the app returns to the heroes list which displays the changed hero name.
@@ -76,8 +70,7 @@ Notice that the name change took effect immediately.
 Had you clicked the browser's back button instead of the app's "Back" button, the app would have returned you to the heroes list as well.
 Angular app navigation updates the browser history as normal web navigation does.
 
-Now click the *Crisis Center* link for a list of ongoing crises.
-
+Now click the _Crisis Center_ link for a list of ongoing crises.
 
 <div class="lightbox">
   <img src='generated/images/guide/router/crisis-center-list.png' alt="Crisis Center List">
@@ -89,23 +82,18 @@ The _Crisis Detail_ appears in a child component on the same page, beneath the l
 Alter the name of a crisis.
 Notice that the corresponding name in the crisis list does _not_ change.
 
-
 <div class="lightbox">
   <img src='generated/images/guide/router/crisis-center-detail.png' alt="Crisis Center Detail">
 </div>
 
-
-Unlike *Hero Detail*, which updates as you type, *Crisis Detail* changes are temporary until you either save or discard them by pressing the "Save" or "Cancel" buttons.
-Both buttons navigate back to the *Crisis Center* and its list of crises.
+Unlike _Hero Detail_, which updates as you type, _Crisis Detail_ changes are temporary until you either save or discard them by pressing the "Save" or "Cancel" buttons.
+Both buttons navigate back to the _Crisis Center_ and its list of crises.
 
 Click the browser back button or the "Heroes" link to activate a dialog.
-
 
 <div class="lightbox">
   <img src='generated/images/guide/router/confirm-dialog.png' alt="Confirm Dialog">
 </div>
-
-
 
 You can say "OK" and lose your changes or click "Cancel" and continue editing.
 
@@ -114,13 +102,11 @@ The guard gives you a chance to clean-up or ask the user's permission before nav
 
 The `Admin` and `Login` buttons illustrate other router capabilities covered later in the guide.
 
-
 {@a getting-started}
 
 ## Milestone 1: Getting started
 
 Begin with a basic version of the app that navigates between two empty views.
-
 
 <div class="lightbox">
   <img src='generated/images/guide/router/router-1-anim.gif' alt="App in action">
@@ -144,9 +130,9 @@ The router draws upon its registry of definitions when the browser URL changes o
 
 The first route does the following:
 
-* When the browser's location URL changes to match the path segment `/crisis-center`, then the router activates an instance of the `CrisisListComponent` and displays its view.
+- When the browser's location URL changes to match the path segment `/crisis-center`, then the router activates an instance of the `CrisisListComponent` and displays its view.
 
-* When the application requests navigation to the path `/crisis-center`, the router activates an instance of `CrisisListComponent`, displays its view, and updates the browser's address location and history with the URL for that path.
+- When the application requests navigation to the path `/crisis-center`, the router activates an instance of `CrisisListComponent`, displays its view, and updates the browser's address location and history with the URL for that path.
 
 The first configuration defines an array of two routes with minimal paths leading to the `CrisisListComponent` and `HeroListComponent`.
 
@@ -183,7 +169,7 @@ Once the application is bootstrapped, the `Router` performs the initial navigati
 
 <div class="alert is-important">
 
-  **Note:** The `RouterModule.forRoot()` method is a pattern used to register application-wide providers. Read more about application-wide providers in the [Singleton services](guide/singleton-services#forRoot-router) guide.
+**Note:** The `RouterModule.forRoot()` method is a pattern used to register application-wide providers. Read more about application-wide providers in the [Singleton services](guide/singleton-services#forRoot-router) guide.
 
 </div>
 
@@ -229,7 +215,6 @@ A wildcard route has a path consisting of two asterisks.
 It matches every URL.
 Thus, the router selects this wildcard route if it can't match a route earlier in the configuration.
 A wildcard route can navigate to a custom "404 Not Found" component or [redirect](#redirect) to an existing route.
-
 
 <div class="alert is-helpful">
 
@@ -280,13 +265,12 @@ Add a `redirect` route that translates the initial relative URL (`''`) to the de
 Add the default route somewhere _above_ the wildcard route.
 It's just above the wildcard route in the following excerpt showing the complete `appRoutes` for this milestone.
 
-
 <code-example path="router/src/app/app-routing.module.1.ts" header="src/app/app-routing.module.ts (appRoutes)" region="appRoutes"></code-example>
 
 The browser address bar shows `.../heroes` as if you'd navigated there directly.
 
 A redirect route requires a `pathMatch` property to tell the router how to match a URL to the path of a route.
-In this app, the router should select the route to the `HeroListComponent` only when the *entire URL* matches `''`, so set the `pathMatch` value to `'full'`.
+In this app, the router should select the route to the `HeroListComponent` only when the _entire URL_ matches `''`, so set the `pathMatch` value to `'full'`.
 
 {@a pathmatch}
 
@@ -294,24 +278,24 @@ In this app, the router should select the route to the `HeroListComponent` only 
 
   <header>Spotlight on pathMatch</header>
 
-  Technically, `pathMatch = 'full'` results in a route hit when the *remaining*, unmatched  segments of the URL match `''`.
-  In this example, the redirect is in a top level route so the *remaining* URL and the  *entire* URL are the same thing.
+Technically, `pathMatch = 'full'` results in a route hit when the _remaining_, unmatched segments of the URL match `''`.
+In this example, the redirect is in a top level route so the _remaining_ URL and the _entire_ URL are the same thing.
 
-  The other possible `pathMatch` value is `'prefix'` which tells the router to match the  redirect route when the remaining URL begins with the redirect route's prefix  path.
-  This doesn't apply to this sample app because if the `pathMatch` value were `'prefix'`,   every URL would match `''`.
+The other possible `pathMatch` value is `'prefix'` which tells the router to match the redirect route when the remaining URL begins with the redirect route's prefix path.
+This doesn't apply to this sample app because if the `pathMatch` value were `'prefix'`, every URL would match `''`.
 
-  Try setting it to `'prefix'` and clicking the `Go to sidekicks` button.
-  Since that's a bad URL, you should see the "Page not found" page.
-  Instead, you're still on the "Heroes" page.
-  Enter a bad URL in the browser address bar.
-  You're instantly re-routed to `/heroes`.
-  Every URL, good or bad, that falls through to this route definition is a match.
+Try setting it to `'prefix'` and clicking the `Go to sidekicks` button.
+Since that's a bad URL, you should see the "Page not found" page.
+Instead, you're still on the "Heroes" page.
+Enter a bad URL in the browser address bar.
+You're instantly re-routed to `/heroes`.
+Every URL, good or bad, that falls through to this route definition is a match.
 
-  The default route should redirect to the `HeroListComponent` only when the entire url is    `''`.
-  Remember to restore the redirect to `pathMatch = 'full'`.
+The default route should redirect to the `HeroListComponent` only when the entire url is `''`.
+Remember to restore the redirect to `pathMatch = 'full'`.
 
-  Learn more in Victor Savkin's
-  [post on redirects](https://vsavkin.tumblr.com/post/146722301646/angular-router-empty-paths-componentless-routes).
+Learn more in Victor Savkin's
+[post on redirects](https://vsavkin.tumblr.com/post/146722301646/angular-router-empty-paths-componentless-routes).
 
 </div>
 
@@ -321,13 +305,13 @@ Your sample app can switch between two views when the user clicks a link.
 
 Milestone 1 has covered how to do the following:
 
-* Load the router library.
-* Add a nav bar to the shell template with anchor tags, `routerLink`  and `routerLinkActive` directives.
-* Add a `router-outlet` to the shell template where views are displayed.
-* Configure the router module with `RouterModule.forRoot()`.
-* Set the router to compose HTML5 browser URLs.
-* Handle invalid routes with a `wildcard` route.
-* Navigate to the default route when the app launches with an empty path.
+- Load the router library.
+- Add a nav bar to the shell template with anchor tags, `routerLink` and `routerLinkActive` directives.
+- Add a `router-outlet` to the shell template where views are displayed.
+- Configure the router module with `RouterModule.forRoot()`.
+- Set the router to compose HTML5 browser URLs.
+- Handle invalid routes with a `wildcard` route.
+- Navigate to the default route when the app launches with an empty path.
 
 The starter app's structure looks like this:
 
@@ -477,10 +461,7 @@ The starter app's structure looks like this:
 
 </div>
 
-
-
 Here are the files in this milestone.
-
 
 <code-tabs>
 
@@ -510,19 +491,18 @@ Here are the files in this milestone.
 
 </code-tabs>
 
-
 {@a routing-module}
 
-## Milestone 2: *Routing module*
+## Milestone 2: _Routing module_
 
-This milestone shows you how to configure a special-purpose module called a *Routing Module*, which holds your app's routing configuration.
+This milestone shows you how to configure a special-purpose module called a _Routing Module_, which holds your app's routing configuration.
 
 The Routing Module has several characteristics:
 
-* Separates routing concerns from other application concerns.
-* Provides a module to replace or remove when testing the application.
-* Provides a well-known location for routing service providers such as guards and resolvers.
-* Does not declare components.
+- Separates routing concerns from other application concerns.
+- Provides a module to replace or remove when testing the application.
+- Provides a well-known location for routing service providers such as guards and resolvers.
+- Does not declare components.
 
 {@a integrate-routing}
 
@@ -544,7 +524,6 @@ This creates a separate file named `my-module-routing.module.ts` to store the Ng
 The file includes an empty `Routes` object that you can fill with routes to different components and NgModules.
 
 {@a routing-refactor}
-
 
 ### Refactor the routing configuration into a routing module
 
@@ -599,9 +578,9 @@ It is where developers expect to find and expand routing configuration.
 
 This milestone covers the following:
 
-* Organizing the app and routes into feature areas using modules.
-* Navigating imperatively from one component to another.
-* Passing required and optional information in route parameters.
+- Organizing the app and routes into feature areas using modules.
+- Navigating imperatively from one component to another.
+- Passing required and optional information in route parameters.
 
 This sample app recreates the heroes feature in the "Services" section of the [Tour of Heroes tutorial](tutorial/toh-pt4 "Tour of Heroes: Services"), and reuses much of the code from the <live-example name="toh-pt4" title="Tour of Heroes: Services example code"></live-example>.
 
@@ -617,45 +596,44 @@ A typical application has multiple feature areas, each dedicated to a particular
 
 This section shows you how refactor the app into different feature modules, import them into the main module and navigate among them.
 
-
 {@a heroes-functionality}
 
 ### Add heroes functionality
 
 Follow these steps:
 
-* To manage the heroes, create a `HeroesModule` with routing in the heroes folder and register it with the root `AppModule`.
+- To manage the heroes, create a `HeroesModule` with routing in the heroes folder and register it with the root `AppModule`.
 
 <code-example language="none" class="code-shell">
   ng generate module heroes/heroes --module app --flat --routing
 </code-example>
 
-* Move the placeholder `hero-list` folder that's in the `app` folder into the `heroes` folder.
-* Copy the contents of the `heroes/heroes.component.html` from
+- Move the placeholder `hero-list` folder that's in the `app` folder into the `heroes` folder.
+- Copy the contents of the `heroes/heroes.component.html` from
   the <live-example name="toh-pt4" title="Tour of Heroes: Services example code">"Services" tutorial</live-example> into the `hero-list.component.html` template.
 
-  * Re-label the `<h2>` to `<h2>HEROES</h2>`.
-  * Delete the `<app-hero-detail>` component at the bottom of the template.
+  - Re-label the `<h2>` to `<h2>HEROES</h2>`.
+  - Delete the `<app-hero-detail>` component at the bottom of the template.
 
-* Copy the contents of the `heroes/heroes.component.css` from the live example into the `hero-list.component.css` file.
-* Copy the contents of the `heroes/heroes.component.ts` from the live example into the `hero-list.component.ts` file.
+- Copy the contents of the `heroes/heroes.component.css` from the live example into the `hero-list.component.css` file.
+- Copy the contents of the `heroes/heroes.component.ts` from the live example into the `hero-list.component.ts` file.
 
-  * Change the component class name to `HeroListComponent`.
-  * Change the `selector` to `app-hero-list`.
+  - Change the component class name to `HeroListComponent`.
+  - Change the `selector` to `app-hero-list`.
 
 <div class="alert is-helpful">
 
-   Selectors are not required for routed components because components are dynamically inserted when the page is rendered. However, they are useful for identifying and targeting them in your HTML element tree.
+Selectors are not required for routed components because components are dynamically inserted when the page is rendered. However, they are useful for identifying and targeting them in your HTML element tree.
 
 </div>
 
-* Copy the `hero-detail` folder, the `hero.ts`, `hero.service.ts`,  and `mock-heroes.ts` files into the `heroes` subfolder.
-* Copy the `message.service.ts` into the `src/app` folder.
-* Update the relative path import to the `message.service` in the `hero.service.ts` file.
+- Copy the `hero-detail` folder, the `hero.ts`, `hero.service.ts`, and `mock-heroes.ts` files into the `heroes` subfolder.
+- Copy the `message.service.ts` into the `src/app` folder.
+- Update the relative path import to the `message.service` in the `hero.service.ts` file.
 
 Next, update the `HeroesModule` metadata.
 
-  * Import and add the `HeroDetailComponent` and `HeroListComponent` to the `declarations` array in the `HeroesModule`.
+- Import and add the `HeroDetailComponent` and `HeroListComponent` to the `declarations` array in the `HeroesModule`.
 
 <code-example path="router/src/app/heroes/heroes.module.ts" header="src/app/heroes/heroes.module.ts"></code-example>
 
@@ -752,7 +730,6 @@ Now that you have routes for the `Heroes` module, register them with the `Router
 In the `AppRoutingModule`, you used the static `RouterModule.forRoot()` method to register the routes and application level service providers.
 In a feature module you use the static `forChild()` method.
 
-
 <div class="alert is-helpful">
 
 Only call `RouterModule.forRoot()` in the root `AppRoutingModule`
@@ -763,9 +740,7 @@ In any other module, you must call the `RouterModule.forChild()` method to regis
 
 The updated `HeroesRoutingModule` looks like this:
 
-
 <code-example path="router/src/app/heroes/heroes-routing.module.1.ts" header="src/app/heroes/heroes-routing.module.ts"></code-example>
-
 
 <div class="alert is-helpful">
 
@@ -774,9 +749,7 @@ Though the feature routes are currently minimal, routes have a tendency to grow 
 
 </div>
 
-
 {@a remove-duplicate-hero-routes}
-
 
 #### Remove duplicate hero routes
 
@@ -811,7 +784,6 @@ Notice that in the module `imports` array, the `AppRoutingModule` is last and co
 
 <code-example path="router/src/app/app.module.3.ts" region="module-imports" header="src/app/app.module.ts (module-imports)"></code-example>
 
-
 The order of route configuration is important because the router accepts the first route that matches a navigation request path.
 
 When all routes were in one `AppRoutingModule`, you put the default and [wildcard](#wildcard) routes last, after the `/heroes` route, so that the router had a chance to match a URL to the `/heroes` route _before_ hitting the wildcard route and navigating to "Page not found".
@@ -819,7 +791,6 @@ When all routes were in one `AppRoutingModule`, you put the default and [wildcar
 Each routing module augments the route configuration in the order of import.
 If you listed `AppRoutingModule` first, the wildcard route would be registered _before_ the hero routes.
 The wildcard route&mdash;which matches _every_ URL&mdash;would intercept the attempt to navigate to a hero route.
-
 
 <div class="alert is-helpful">
 
@@ -840,20 +811,16 @@ The route to `HeroDetailComponent` has an `:id` token in the path.
 <code-example path="router/src/app/heroes/heroes-routing.module.1.ts" header="src/app/heroes/heroes-routing.module.ts (excerpt)" region="hero-detail-route"></code-example>
 
 The `:id` token creates a slot in the path for a Route Parameter.
-In this case,  this configuration causes the router to insert the `id` of a hero into that slot.
+In this case, this configuration causes the router to insert the `id` of a hero into that slot.
 
 If you tell the router to navigate to the detail component and display "Magneta", you expect a hero id to appear in the browser URL like this:
-
 
 <code-example format="nocode">
   localhost:4200/hero/15
 
 </code-example>
 
-
-
 If a user enters that URL into the browser address bar, the router should recognize the pattern and go to the same "Magneta" detail view.
-
 
 <div class="callout is-helpful">
 
@@ -861,10 +828,9 @@ If a user enters that URL into the browser address bar, the router should recogn
   Route parameter: Required or optional?
 </header>
 
-Embedding the route parameter token, `:id`, in the route definition path is a good choice for this scenario because the `id` is *required* by the `HeroDetailComponent` and because the value `15` in the path clearly distinguishes the route to "Magneta" from a route for some other hero.
+Embedding the route parameter token, `:id`, in the route definition path is a good choice for this scenario because the `id` is _required_ by the `HeroDetailComponent` and because the value `15` in the path clearly distinguishes the route to "Magneta" from a route for some other hero.
 
 </div>
-
 
 {@a route-parameters}
 
@@ -882,7 +848,6 @@ The router composes the destination URL from the array like this: `localhost:420
 
 The router extracts the route parameter (`id:15`) from the URL and supplies it to
 the `HeroDetailComponent` via the `ActivatedRoute` service.
-
 
 {@a activated-route-in-action}
 
@@ -903,7 +868,6 @@ Add the services as private variables to the constructor so that Angular injects
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (constructor)" region="ctor"></code-example>
 
 In the `ngOnInit()` method, use the `ActivatedRoute` service to retrieve the parameters for the route, pull the hero `id` from the parameters, and retrieve the hero to display.
-
 
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.3.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (ngOnInit)" region="ngOnInit"></code-example>
 
@@ -930,6 +894,7 @@ It provides methods to handle parameter access for both route parameters (`param
     <th>
       Description
     </th>
+
   </tr>
 
   <tr>
@@ -941,6 +906,7 @@ It provides methods to handle parameter access for both route parameters (`param
     Returns `true` if the parameter name is in the map of parameters.
 
     </td>
+
   </tr>
 
   <tr>
@@ -952,6 +918,7 @@ It provides methods to handle parameter access for both route parameters (`param
     Returns the parameter name value (a `string`) if present, or `null` if the parameter name is not in the map. Returns the _first_ element if the parameter value is actually an array of values.
 
     </td>
+
   </tr>
 
   <tr>
@@ -963,6 +930,7 @@ It provides methods to handle parameter access for both route parameters (`param
     Returns a `string array` of the parameter name value if found, or an empty `array` if the parameter name value is not in the map. Use `getAll` when a single parameter could have multiple values.
 
     </td>
+
   </tr>
 
   <tr>
@@ -974,6 +942,7 @@ It provides methods to handle parameter access for both route parameters (`param
     Returns a `string array` of all parameter names in the map.
 
     </td>
+
   </tr>
 </table>
 
@@ -995,7 +964,6 @@ You wouldn't want the router to remove the current `HeroDetailComponent` instanc
 For better UX, the router re-uses the same component instance and updates the parameter.
 
 Since `ngOnInit()` is only called once per component instantiation, you can detect when the route parameters change from _within the same instance_ using the observable `paramMap` property.
-
 
 <div class="alert is-helpful">
 
@@ -1039,9 +1007,7 @@ The `HeroDetailComponent` "Back" button uses the `gotoHeroes()` method that navi
 The router `navigate()` method takes the same one-item _link parameters array_ that you can bind to a `[routerLink]` directive.
 It holds the path to the `HeroListComponent`:
 
-
 <code-example path="router/src/app/heroes/hero-detail/hero-detail.component.1.ts" header="src/app/heroes/hero-detail/hero-detail.component.ts (excerpt)" region="gotoHeroes"></code-example>
-
 
 {@a optional-route-parameters}
 
@@ -1050,13 +1016,10 @@ It holds the path to the `HeroListComponent`:
 Use [route parameters](#route-parameters) to specify a required parameter value within the route URL
 as you do when navigating to the `HeroDetailComponent` in order to view the hero with `id` 15:
 
-
 <code-example format="nocode">
   localhost:4200/hero/15
 
 </code-example>
-
-
 
 You can also add optional information to a route request.
 For example, when returning to the `hero-detail.component.ts` list from the hero detail view, it would be nice if the viewed hero were preselected in the list.
@@ -1069,10 +1032,10 @@ You implement this feature by including the viewed hero's `id` in the URL as an 
 
 Optional information can also include other forms such as:
 
-* Loosely structured search criteria; for example, `name='wind*'`.
-* Multiple values;  for example, `after='12/31/2015' & before='1/1/2017'`&mdash;in no
-particular order&mdash;`before='1/1/2017' & after='12/31/2015'`&mdash; in a
-variety of formats&mdash;`during='currentYear'`.
+- Loosely structured search criteria; for example, `name='wind*'`.
+- Multiple values; for example, `after='12/31/2015' & before='1/1/2017'`&mdash;in no
+  particular order&mdash;`before='1/1/2017' & after='12/31/2015'`&mdash; in a
+  variety of formats&mdash;`during='currentYear'`.
 
 As these kinds of parameters don't fit easily in a URL path, you can use optional parameters for conveying arbitrarily complex information during navigation.
 Optional parameters aren't involved in pattern matching and afford flexibility of expression.
@@ -1209,11 +1172,11 @@ Create an `animations.ts` file in the root `src/app/` folder. The contents look 
 
 This file does the following:
 
-* Imports the animation symbols that build the animation triggers, control state, and manage transitions between states.
+- Imports the animation symbols that build the animation triggers, control state, and manage transitions between states.
 
-* Exports a constant named `slideInAnimation` set to an animation trigger named `routeAnimation`.
+- Exports a constant named `slideInAnimation` set to an animation trigger named `routeAnimation`.
 
-* Defines one transition when switching back and forth from the `heroes` and `hero` routes to ease the component in from the left of the screen as it enters the application view (`:enter`), the other to animate the component to the right as it leaves the application view (`:leave`).
+- Defines one transition when switching back and forth from the `heroes` and `hero` routes to ease the component in from the left of the screen as it enters the application view (`:enter`), the other to animate the component to the right as it leaves the application view (`:leave`).
 
 Back in the `AppComponent`, import the `RouterOutlet` token from the `@angular/router` package and the `slideInAnimation` from `'./animations.ts`.
 
@@ -1242,11 +1205,11 @@ When switching between the two routes, the `HeroDetailComponent` and `HeroListCo
 
 This section has covered the following:
 
-* Organizing the app into feature areas.
-* Navigating imperatively from one component to another.
-* Passing information along in route parameters and subscribe to them in the component.
-* Importing the feature area NgModule into the `AppModule`.
-* Applying routable animations based on the page.
+- Organizing the app into feature areas.
+- Navigating imperatively from one component to another.
+- Passing information along in route parameters and subscribe to them in the component.
+- Importing the feature area NgModule into the `AppModule`.
+- Applying routable animations based on the page.
 
 After these changes, the folder structure is as follows:
 
@@ -1506,11 +1469,7 @@ Here are the relevant files for this version of the sample application.
 
 </code-tabs>
 
-
-
 {@a milestone-4}
-
-
 
 ## Milestone 4: Crisis center feature
 
@@ -1518,10 +1477,10 @@ This section shows you how to add child routes and use relative routing in your 
 
 To add more features to the app's current crisis center, take similar steps as for the heroes feature:
 
-* Create a `crisis-center` subfolder in the `src/app` folder.
-* Copy the files and folders from `app/heroes` into the new `crisis-center` folder.
-* In the new files, change every mention of "hero" to "crisis", and "heroes" to "crises".
-* Rename the NgModule files to `crisis-center.module.ts` and `crisis-center-routing.module.ts`.
+- Create a `crisis-center` subfolder in the `src/app` folder.
+- Copy the files and folders from `app/heroes` into the new `crisis-center` folder.
+- In the new files, change every mention of "hero" to "crisis", and "heroes" to "crises".
+- Rename the NgModule files to `crisis-center.module.ts` and `crisis-center-routing.module.ts`.
 
 Use mock crises instead of mock heroes:
 
@@ -1542,23 +1501,19 @@ In keeping with the <a href="https://blog.8thlight.com/uncle-bob/2014/05/08/Sing
 
 This section shows you how to organize the crisis center to conform to the following recommended pattern for Angular applications:
 
-* Each feature area resides in its own folder.
-* Each feature has its own Angular feature module.
-* Each area has its own area root component.
-* Each area root component has its own router outlet and child routes.
-* Feature area routes rarely (if ever) cross with routes of other features.
+- Each feature area resides in its own folder.
+- Each feature has its own Angular feature module.
+- Each area has its own area root component.
+- Each area root component has its own router outlet and child routes.
+- Feature area routes rarely (if ever) cross with routes of other features.
 
 If your app had many feature areas, the app component trees might look like this:
-
 
 <div class="lightbox">
   <img src='generated/images/guide/router/component-tree.png' alt="Component Tree">
 </div>
 
-
-
 {@a child-routing-component}
-
 
 ### Child routing component
 
@@ -1574,8 +1529,8 @@ Update the component template with the following markup:
 
 The `CrisisCenterComponent` has the following in common with the `AppComponent`:
 
-* It is the root of the crisis center area, just as `AppComponent` is the root of the entire application.
-* It is a shell for the crisis management feature area, just as the `AppComponent` is a shell to manage the high-level workflow.
+- It is the root of the crisis center area, just as `AppComponent` is the root of the entire application.
+- It is a shell for the crisis management feature area, just as the `AppComponent` is a shell to manage the high-level workflow.
 
 Like most shells, the `CrisisCenterComponent` class is minimal because it has no business logic, and its template has no links, just a title and `<router-outlet>` for the crisis center child component.
 
@@ -1621,10 +1576,10 @@ you add a slash followed by the route path, unless the path is empty.
 
 Apply that logic to navigation within the crisis center for which the parent path is `/crisis-center`.
 
-* To navigate to the `CrisisCenterHomeComponent`, the full URL is `/crisis-center` (`/crisis-center` + `''` + `''`).
+- To navigate to the `CrisisCenterHomeComponent`, the full URL is `/crisis-center` (`/crisis-center` + `''` + `''`).
 
-* To navigate to the `CrisisDetailComponent` for a crisis with `id=2`, the full URL is
-`/crisis-center/2` (`/crisis-center` + `''` +  `'/2'`).
+- To navigate to the `CrisisDetailComponent` for a crisis with `id=2`, the full URL is
+  `/crisis-center/2` (`/crisis-center` + `''` + `'/2'`).
 
 The absolute URL for the latter example, including the `localhost` origin, is as follows:
 
@@ -1646,7 +1601,7 @@ _before_ the `AppRoutingModule`:
 
 <code-tabs>
 
-  <code-pane path="router/src/app/crisis-center/crisis-center.module.ts"header="src/app/crisis-center/crisis-center.module.ts">
+<code-pane path="router/src/app/crisis-center/crisis-center.module.ts"header="src/app/crisis-center/crisis-center.module.ts">
 
   </code-pane>
 
@@ -1717,7 +1672,7 @@ Update the `gotoCrises()` method of the `CrisisDetailComponent` to navigate back
 <code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (relative navigation)" region="gotoCrises-navigate"></code-example>
 
 Notice that the path goes up a level using the `../` syntax.
-If the current crisis `id` is `3`, the resulting path back to the crisis list is  `/crisis-center/;id=3;foo=foo`.
+If the current crisis `id` is `3`, the resulting path back to the crisis list is `/crisis-center/;id=3;foo=foo`.
 
 {@a named-outlets}
 
@@ -1747,14 +1702,14 @@ That's where a popup will go, once you learn how to route a popup component to i
 
 #### Secondary routes
 
-Named outlets are the targets of  _secondary routes_.
+Named outlets are the targets of _secondary routes_.
 
 Secondary routes look like primary routes and you configure them the same way.
 They differ in a few key respects.
 
-* They are independent of each other.
-* They work in combination with other routes.
-* They are displayed in named outlets.
+- They are independent of each other.
+- They work in combination with other routes.
+- They are displayed in named outlets.
 
 Generate a new component to compose the message.
 
@@ -1841,9 +1796,9 @@ you should see something like the following URL in the browser address bar.
 
 The relevant part of the URL follows the `...`:
 
-* The `crisis-center` is the primary navigation.
-* Parentheses surround the secondary route.
-* The secondary route consists of an outlet name (`popup`), a `colon` separator, and the secondary route path (`compose`).
+- The `crisis-center` is the primary navigation.
+- Parentheses surround the secondary route.
+- The secondary route consists of an outlet name (`popup`), a `colon` separator, and the secondary route path (`compose`).
 
 Click the _Heroes_ link and look at the URL again.
 
@@ -1857,7 +1812,7 @@ The router is keeping track of two separate branches in a navigation tree and ge
 
 You can add many more outlets and routes, at the top level and in nested levels, creating a navigation tree with many branches and the router will generate the URLs to go with it.
 
-You can tell the router to navigate an entire tree at once by filling out the `outlets` object and then pass that object inside a _link parameters array_  to the `router.navigate` method.
+You can tell the router to navigate an entire tree at once by filling out the `outlets` object and then pass that object inside a _link parameters array_ to the `router.navigate` method.
 
 {@a clear-secondary-routes}
 
@@ -1888,24 +1843,23 @@ Setting the popup `RouterOutlet` to `null` clears the outlet and removes the sec
 
 {@a milestone-5-route-guards}
 
-
 ## Milestone 5: Route guards
 
 At the moment, any user can navigate anywhere in the application anytime, but sometimes you need to control access to different parts of your app for various reasons. Some of which may include the following:
 
-* Perhaps the user is not authorized to navigate to the target component.
-* Maybe the user must login (authenticate) first.
-* Maybe you should fetch some data before you display the target component.
-* You might want to save pending changes before leaving a component.
-* You might ask the user if it's OK to discard pending changes rather than save them.
+- Perhaps the user is not authorized to navigate to the target component.
+- Maybe the user must login (authenticate) first.
+- Maybe you should fetch some data before you display the target component.
+- You might want to save pending changes before leaving a component.
+- You might ask the user if it's OK to discard pending changes rather than save them.
 
 You add guards to the route configuration to handle these scenarios.
 
 A guard's return value controls the router's behavior:
 
-* If it returns `true`, the navigation process continues.
-* If it returns `false`, the navigation process stops and the user stays put.
-* If it returns a `UrlTree`, the current navigation cancels and a new navigation is initiated to the `UrlTree` returned.
+- If it returns `true`, the navigation process continues.
+- If it returns `false`, the navigation process stops and the user stays put.
+- If it returns a `UrlTree`, the current navigation cancels and a new navigation is initiated to the `UrlTree` returned.
 
 <div class="alert is-helpful">
 
@@ -1930,16 +1884,15 @@ router will wait for the observable to resolve to `true` or `false`.
 
 The router supports multiple guard interfaces:
 
-* [`CanActivate`](api/router/CanActivate) to mediate navigation *to* a route.
+- [`CanActivate`](api/router/CanActivate) to mediate navigation _to_ a route.
 
-* [`CanActivateChild`](api/router/CanActivateChild) to mediate navigation *to* a child route.
+- [`CanActivateChild`](api/router/CanActivateChild) to mediate navigation _to_ a child route.
 
-* [`CanDeactivate`](api/router/CanDeactivate) to mediate navigation *away* from the current route.
+- [`CanDeactivate`](api/router/CanDeactivate) to mediate navigation _away_ from the current route.
 
-* [`Resolve`](api/router/Resolve) to perform route data retrieval *before* route activation.
+- [`Resolve`](api/router/Resolve) to perform route data retrieval _before_ route activation.
 
-* [`CanLoad`](api/router/CanLoad) to mediate navigation *to* a feature module loaded _asynchronously_.
-
+- [`CanLoad`](api/router/CanLoad) to mediate navigation _to_ a feature module loaded _asynchronously_.
 
 You can have multiple guards at every level of a routing hierarchy.
 The router checks the `CanDeactivate` and `CanActivateChild` guards first, from the deepest child route to the top.
@@ -1989,7 +1942,6 @@ Next, generate the supporting components.
 </code-example>
 
 The admin feature file structure looks like this:
-
 
 <div class='filetree'>
 
@@ -2231,7 +2183,6 @@ There is nothing new about this component or the way you use it in the router co
 Register a `/login` route in the `auth/auth-routing.module.ts`.
 In `app.module.ts`, import and add the `AuthModule` to the `AppModule` imports.
 
-
 <code-tabs>
 
   <code-pane header="src/app/app.module.ts" path="router/src/app/app.module.ts" region="auth">
@@ -2251,7 +2202,6 @@ In `app.module.ts`, import and add the `AuthModule` to the `AppModule` imports.
   </code-pane>
 
 </code-tabs>
-
 
 {@a can-activate-child-guard}
 
@@ -2279,7 +2229,6 @@ instead of adding the `AuthGuard` to each route individually.
 <code-example path="router/src/app/admin/admin-routing.module.3.ts" header="src/app/admin/admin-routing.module.ts (excerpt)" region="can-activate-child"></code-example>
 
 {@a can-deactivate-guard}
-
 
 ### `CanDeactivate`: handling unsaved changes
 
@@ -2387,7 +2336,6 @@ It'd be better to send the user back to the `Crisis List` that shows only valid 
 
 In summary, you want to delay rendering the routed component until all necessary data has been fetched.
 
-
 {@a fetch-before-navigating}
 
 #### Fetch data before navigating
@@ -2430,15 +2378,15 @@ Import this resolver in the `crisis-center-routing.module.ts` and add a `resolve
 
 The `CrisisDetailComponent` should no longer fetch the crisis.
 When you re-configured the route, you changed where the crisis is.
-Update the `CrisisDetailComponent` to get the crisis from the  `ActivatedRoute.data.crisis` property instead;
+Update the `CrisisDetailComponent` to get the crisis from the `ActivatedRoute.data.crisis` property instead;
 
 <code-example path="router/src/app/crisis-center/crisis-detail/crisis-detail.component.ts" header="src/app/crisis-center/crisis-detail/crisis-detail.component.ts (ngOnInit v2)" region="ngOnInit"></code-example>
 
 Note the following three important points:
 
 1. The router's `Resolve` interface is optional.
-The `CrisisDetailResolverService` doesn't inherit from a base class.
-The router looks for that method and calls it if found.
+   The `CrisisDetailResolverService` doesn't inherit from a base class.
+   The router looks for that method and calls it if found.
 
 1. The router calls the resolver in any case where the user could navigate away so you don't have to code for each use case.
 
@@ -2529,7 +2477,7 @@ Add the `NavigationExtras` object to the `router.navigate()` method that navigat
 <code-example path="router/src/app/auth/auth.guard.4.ts" header="src/app/auth/auth.guard.ts (v3)"></code-example>
 
 You can also preserve query parameters and fragments across navigations without having to provide them again when navigating.
-In the `LoginComponent`, you'll add an *object* as the second argument in the `router.navigateUrl()` function and provide the `queryParamsHandling` and `preserveFragment` to pass along the current query parameters and fragment to the next route.
+In the `LoginComponent`, you'll add an _object_ as the second argument in the `router.navigateUrl()` function and provide the `queryParamsHandling` and `preserveFragment` to pass along the current query parameters and fragment to the next route.
 
 <code-example path="router/src/app/auth/login/login.component.ts" header="src/app/auth/login/login.component.ts (preserve)" region="preserve"></code-example>
 
@@ -2560,7 +2508,6 @@ the `queryParamsHandling` and `preserveFragment` bindings respectively.
 
 </div>
 
-
 {@a asynchronous-routing}
 
 ## Milestone 6: Asynchronous routing
@@ -2571,9 +2518,9 @@ At some point you'll reach a point where the application takes a long time to lo
 To remedy this issue, use asynchronous routing, which loads feature modules lazily, on request.
 Lazy loading has multiple benefits.
 
-* You can load feature areas only when requested by the user.
-* You can speed up load time for users that only visit certain areas of the application.
-* You can continue expanding lazy loaded feature areas without increasing the size of the initial load bundle.
+- You can load feature areas only when requested by the user.
+- You can speed up load time for users that only visit certain areas of the application.
+- You can continue expanding lazy loaded feature areas without increasing the size of the initial load bundle.
 
 You're already part of the way there.
 By organizing the application into modules&mdash;`AppModule`,
@@ -2605,7 +2552,7 @@ After the code is requested and loaded, the `Promise` resolves an object that co
 
 <div class="alert is-important">
 
-*Note*: When using absolute paths, the `NgModule` file location must begin with `src/app` in order to resolve correctly. For custom [path mapping with absolute paths](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping), you must configure the `baseUrl` and `paths` properties in the project `tsconfig.json`.
+_Note_: When using absolute paths, the `NgModule` file location must begin with `src/app` in order to resolve correctly. For custom [path mapping with absolute paths](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping), you must configure the `baseUrl` and `paths` properties in the project `tsconfig.json`.
 
 </div>
 
@@ -2614,7 +2561,6 @@ Then it adds the `AdminModule` routes to its current route configuration.
 Finally, it loads the requested route to the destination admin component.
 
 The lazy loading and re-configuration happen just once, when the route is first requested; the module and routes are available immediately for subsequent requests.
-
 
 <div class="alert is-helpful">
 
@@ -2688,8 +2634,8 @@ Whether it preloads a module, and which modules it preloads, depends upon the pr
 
 The `Router` offers two preloading strategies:
 
-* No preloading, which is the default. Lazy loaded feature areas are still loaded on-demand.
-* Preloading of all lazy loaded feature areas.
+- No preloading, which is the default. Lazy loaded feature areas are still loaded on-demand.
+- Preloading of all lazy loaded feature areas.
 
 The router either never preloads, or preloads every lazy loaded module.
 The `Router` also supports [custom preloading strategies](#custom-preloading) for fine control over which modules to preload and when.
@@ -2711,9 +2657,7 @@ Take the same steps you used to configure `AdminModule` for lazy loading.
 
 1. Remove all mention of the `CrisisCenterModule` from `app.module.ts`.
 
-
 Here are the updated modules _before enabling preload_:
-
 
 <code-tabs>
 
@@ -2731,7 +2675,7 @@ Here are the updated modules _before enabling preload_:
 
 </code-tabs>
 
-You could try this now and confirm that the  `CrisisCenterModule` loads after you click the "Crisis Center" button.
+You could try this now and confirm that the `CrisisCenterModule` loads after you click the "Crisis Center" button.
 
 To enable preloading of all lazy loaded modules, import the `PreloadAllModules` token from the Angular router package.
 
@@ -2793,7 +2737,7 @@ An implementation of `preload` must return an `Observable`.
 If the route does preload, it returns the observable returned by calling the loader function.
 If the route does not preload, it returns an `Observable` of `null`.
 
-In this sample, the  `preload()` method loads the route if the route's `data.preload` flag is truthy.
+In this sample, the `preload()` method loads the route if the route's `data.preload` flag is truthy.
 
 As a side-effect, `SelectivePreloadingStrategyService` logs the `path` of a selected route in its public `preloadedModules` array.
 
@@ -2803,7 +2747,6 @@ But first, make a few changes to the `AppRoutingModule`.
 
 1. Import `SelectivePreloadingStrategyService` into `AppRoutingModule`.
 1. Replace the `PreloadAllModules` strategy in the call to `forRoot()` with this `SelectivePreloadingStrategyService`.
-1. Add the `SelectivePreloadingStrategyService` strategy to the `AppRoutingModule` providers array so you can inject it elsewhere in the app.
 
 Now edit the `AdminDashboardComponent` to display the log of preloaded routes.
 
@@ -2839,7 +2782,7 @@ The `Router` checks for redirects in your configuration before navigating, so ea
 <code-example path="router/src/app/heroes/heroes-routing.module.ts" header="src/app/heroes/heroes-routing.module.ts (heroes redirects)"></code-example>
 
 Notice two different types of redirects.
-The first change is from  `/heroes` to `/superheroes` without any parameters.
+The first change is from `/heroes` to `/superheroes` without any parameters.
 The second change is from `/hero/:id` to `/superhero/:id`, which includes the `:id` route parameter.
 Router redirects also use powerful pattern-matching, so the `Router` inspects the URL and replaces route parameters in the `path` with their appropriate destination.
 Previously, you navigated to a URL such as `/hero/15` with a route parameter `id` of `15`.
@@ -2848,8 +2791,8 @@ Previously, you navigated to a URL such as `/hero/15` with a route parameter `id
 
 The `Router` also supports [query parameters](#query-parameters) and the [fragment](#fragment) when using redirects.
 
-* When using absolute redirects, the `Router` will use the query parameters and the fragment from the `redirectTo` in the route config.
-* When using relative redirects, the `Router` use the query params and the fragment from the source URL.
+- When using absolute redirects, the `Router` will use the query parameters and the fragment from the `redirectTo` in the route config.
+- When using relative redirects, the `Router` use the query params and the fragment from the source URL.
 
 </div>
 
