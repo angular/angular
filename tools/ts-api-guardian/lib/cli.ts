@@ -7,14 +7,11 @@
  */
 
 // tslint:disable:no-console
-
-// TODO(alexeagle): why not import chalk from 'chalk'?
-// Something to do with TS default export in UMD emit...
-const chalk = require('chalk');
+import * as chalk from 'chalk';
 import * as minimist from 'minimist';
 import * as path from 'path';
 
-import {SerializationOptions, generateGoldenFile, verifyAgainstGoldenFile, discoverAllEntrypoints} from './main';
+import {discoverAllEntrypoints, generateGoldenFile, SerializationOptions, verifyAgainstGoldenFile} from './main';
 
 /** Name of the CLI */
 const CMD = 'ts-api-guardian';
