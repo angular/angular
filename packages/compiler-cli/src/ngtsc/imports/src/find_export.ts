@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 import {ReflectionHost} from '../../reflection';
+import {isNamedDeclaration} from '../../util/src/typescript';
 
 /**
  * Find the name, if any, by which a node is exported from a given file.
@@ -18,18 +19,29 @@ export function findExportedNameOfNode(
   if (exports === null) {
     return null;
   }
-  // Look for the export which declares the node.
-  const keys = Array.from(exports.keys());
-  const name = keys.find(key => {
-    const decl = exports.get(key);
-    return decl !== undefined && decl.node === target;
-  });
 
-  if (name === undefined) {
+  const declaredName = isNamedDeclaration(target) ? target.name.text : null;
+
+  // Look for the export which declares the node.
+  let foundExportName: string|null = null;
+  for (const [exportName, declaration] of exports) {
+    if (declaration.node !== target) {
+      continue;
+    }
+
+    if (exportName === declaredName) {
+      // A non-alias export exists which is always preferred, so use that one.
+      return exportName;
+    }
+
+    foundExportName = exportName;
+  }
+
+  if (foundExportName === null) {
     throw new Error(
         `Failed to find exported name of node (${target.getText()}) in '${file.fileName}'.`);
   }
-  return name;
+  return foundExportName;
 }
 
 /**

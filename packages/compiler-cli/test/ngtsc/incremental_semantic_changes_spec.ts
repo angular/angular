@@ -1217,7 +1217,7 @@ runInEachFileSystem(() => {
             selector: 'cmp-dep',
             template: 'Dep',
           })
-          export class CmpDep {}
+          class CmpDep {}
         `);
         env.write('module.ts', `
           import {NgModule} from '@angular/core';
@@ -1246,7 +1246,7 @@ runInEachFileSystem(() => {
             selector: 'cmp-dep',
             template: 'Dep',
           })
-          export class CmpDep {}
+          class CmpDep {}
         `);
         env.write('module.ts', `
           import {NgModule} from '@angular/core';

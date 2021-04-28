@@ -83,6 +83,11 @@ export function isTypeDeclaration(node: ts.Node): node is ts.EnumDeclaration|
       ts.isInterfaceDeclaration(node);
 }
 
+export function isNamedDeclaration(node: ts.Node): node is ts.Declaration&{name: ts.Identifier} {
+  const namedNode = node as {name?: ts.Identifier};
+  return namedNode.name !== undefined && ts.isIdentifier(namedNode.name);
+}
+
 export function isExported(node: DeclarationNode): boolean {
   let topLevel: ts.Node = node;
   if (ts.isVariableDeclaration(node) && ts.isVariableDeclarationList(node.parent)) {

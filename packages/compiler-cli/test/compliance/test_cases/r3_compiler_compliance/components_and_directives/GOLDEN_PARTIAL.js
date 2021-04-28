@@ -567,3 +567,55 @@ export declare class TestCmp {
     static ɵcmp: i0.ɵɵComponentDeclaration<TestCmp, "test-cmp", never, {}, {}, never, never>;
 }
 
+/****************************************************************************************************
+ * PARTIAL FILE: library_exports.js
+ ****************************************************************************************************/
+// This test verifies that a directive from an external library is emitted using its declared name,
+// even in the presence of alias exports that could have been chosen.
+// See https://github.com/angular/angular/issues/41277.
+import { Component, NgModule } from '@angular/core';
+import { LibModule } from 'external_library';
+import * as i0 from "@angular/core";
+import * as i1 from "external_library";
+export class TestComponent {
+}
+TestComponent.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComponent, deps: [], target: i0.ɵɵFactoryTarget.Component });
+TestComponent.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", type: TestComponent, selector: "ng-component", ngImport: i0, template: `
+    <lib-dir></lib-dir>
+  `, isInline: true, directives: [{ type: i1.LibDirective, selector: "lib-dir" }] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestComponent, decorators: [{
+            type: Component,
+            args: [{
+                    template: `
+    <lib-dir></lib-dir>
+  `,
+                }]
+        }] });
+export class TestModule {
+}
+TestModule.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestModule, deps: [], target: i0.ɵɵFactoryTarget.NgModule });
+TestModule.ɵmod = i0.ɵɵngDeclareNgModule({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestModule, declarations: [TestComponent], imports: [LibModule] });
+TestModule.ɵinj = i0.ɵɵngDeclareInjector({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestModule, imports: [[LibModule]] });
+i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "0.0.0-PLACEHOLDER", ngImport: i0, type: TestModule, decorators: [{
+            type: NgModule,
+            args: [{
+                    declarations: [TestComponent],
+                    imports: [LibModule],
+                }]
+        }] });
+
+/****************************************************************************************************
+ * PARTIAL FILE: library_exports.d.ts
+ ****************************************************************************************************/
+import * as i0 from "@angular/core";
+import * as i1 from "external_library";
+export declare class TestComponent {
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestComponent, never>;
+    static ɵcmp: i0.ɵɵComponentDeclaration<TestComponent, "ng-component", never, {}, {}, never, never>;
+}
+export declare class TestModule {
+    static ɵfac: i0.ɵɵFactoryDeclaration<TestModule, never>;
+    static ɵmod: i0.ɵɵNgModuleDeclaration<TestModule, [typeof TestComponent], [typeof i1.LibModule], never>;
+    static ɵinj: i0.ɵɵInjectorDeclaration<TestModule>;
+}
+

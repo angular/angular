@@ -178,6 +178,27 @@
       "inputFiles": [
         "non_literal_template_with_concatenation.ts"
       ]
+    },
+    {
+      "description": "should not use reexport names inside declarations when a direct export is available",
+      "inputFiles": [
+        "external_library.d.ts",
+        "library_exports.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Invalid list of directives",
+          "files": [
+            "library_exports.js"
+          ]
+        }
+      ],
+      "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+          "external_library": ["./external_library"]
+        }
+      }
     }
   ]
 }
