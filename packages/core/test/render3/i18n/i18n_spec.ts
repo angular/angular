@@ -127,9 +127,8 @@ describe('Runtime i18n', () => {
         ɵɵelementEnd();
       }, undefined, nbConsts, HEADER_OFFSET + index);
 
-      expect((opCodes as any).update.debug).toEqual([
-        'if (mask & 0b1) { (lView[23] as Text).textContent = `Hello ${lView[i-1]}!`; }'
-      ]);
+      expect((opCodes as any).update.debug).toEqual([`if (mask & 0b1) { (lView[${
+          HEADER_OFFSET + 2}] as Text).textContent = \`Hello \${lView[i-1]}!\`; }`]);
 
       expect(opCodes).toEqual({
         create: matchDebug([
@@ -137,7 +136,8 @@ describe('Runtime i18n', () => {
           `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
         ]),
         update: matchDebug([
-          'if (mask & 0b1) { (lView[23] as Text).textContent = `Hello ${lView[i-1]}!`; }',
+          `if (mask & 0b1) { (lView[${
+              HEADER_OFFSET + 2}] as Text).textContent = \`Hello \${lView[i-1]}!\`; }`,
         ]),
       });
     });
@@ -158,7 +158,9 @@ describe('Runtime i18n', () => {
           `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
         ]),
         update: matchDebug([
-          'if (mask & 0b11) { (lView[23] as Text).textContent = `Hello ${lView[i-1]} and ${lView[i-2]}, again ${lView[i-1]}!`; }',
+          `if (mask & 0b11) { (lView[${
+              HEADER_OFFSET +
+              2}] as Text).textContent = \`Hello \${lView[i-1]} and \${lView[i-2]}, again \${lView[i-1]}!\`; }`,
         ]),
       });
     });
@@ -193,7 +195,8 @@ describe('Runtime i18n', () => {
           `parent.appendChild(lView[${HEADER_OFFSET + 4}]);`,
         ]),
         update: matchDebug([
-          'if (mask & 0b1) { (lView[24] as Text).textContent = `${lView[i-1]} is rendered as: `; }',
+          `if (mask & 0b1) { (lView[${
+              HEADER_OFFSET + 3}] as Text).textContent = \`\${lView[i-1]} is rendered as: \`; }`,
         ]),
       });
 
@@ -249,26 +252,26 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         create: matchDebug([
-          `lView[${HEADER_OFFSET + 2}] = document.createComment("ICU 22:0");`,
+          `lView[${HEADER_OFFSET + 2}] = document.createComment("ICU ${HEADER_OFFSET + 1}:0");`,
           `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
         ]),
         update: matchDebug([
-          'if (mask & 0b1) { icuSwitchCase(23, `${lView[i-1]}`); }',
-          'if (mask & 0b1) { icuUpdateCase(23); }',
+          `if (mask & 0b1) { icuSwitchCase(${HEADER_OFFSET + 2}, \`\${lView[i-1]}\`); }`,
+          `if (mask & 0b1) { icuUpdateCase(${HEADER_OFFSET + 2}); }`,
         ]),
       });
-      expect(getTIcu(tView, 23)).toEqual(<TIcu>{
+      expect(getTIcu(tView, HEADER_OFFSET + 2)).toEqual(<TIcu>{
         type: 1,
-        currentCaseLViewIndex: 24,
-        anchorIdx: 23,
+        currentCaseLViewIndex: HEADER_OFFSET + 3,
+        anchorIdx: HEADER_OFFSET + 2,
         cases: ['0', '1', 'other'],
         create: [
           matchDebug([
             `lView[${HEADER_OFFSET + 4}] = document.createTextNode("no ")`,
             `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 4}])`,
-            'lView[26] = document.createElement("b")',
+            `lView[${HEADER_OFFSET + 5}] = document.createElement("b")`,
             `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 5}])`,
-            '(lView[26] as Element).setAttribute("title", "none")',
+            `(lView[${HEADER_OFFSET + 5}] as Element).setAttribute("title", "none")`,
             `lView[${HEADER_OFFSET + 6}] = document.createTextNode("emails")`,
             `(lView[${HEADER_OFFSET + 5}] as Element).appendChild(lView[${HEADER_OFFSET + 6}])`,
             `lView[${HEADER_OFFSET + 7}] = document.createTextNode("!")`,
@@ -277,41 +280,43 @@ describe('Runtime i18n', () => {
           matchDebug([
             `lView[${HEADER_OFFSET + 8}] = document.createTextNode("one ")`,
             `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 8}])`,
-            'lView[30] = document.createElement("i")',
+            `lView[${HEADER_OFFSET + 9}] = document.createElement("i")`,
             `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 9}])`,
-            'lView[31] = document.createTextNode("email")',
-            '(lView[30] as Element).appendChild(lView[31])',
+            `lView[${HEADER_OFFSET + 10}] = document.createTextNode("email")`,
+            `(lView[${HEADER_OFFSET + 9}] as Element).appendChild(lView[${HEADER_OFFSET + 10}])`,
           ]),
           matchDebug([
-            'lView[32] = document.createTextNode("")',
-            '(lView[21] as Element).appendChild(lView[32])',
-            'lView[33] = document.createElement("span")',
-            '(lView[21] as Element).appendChild(lView[33])',
-            'lView[34] = document.createTextNode("emails")',
-            '(lView[33] as Element).appendChild(lView[34])',
+            `lView[${HEADER_OFFSET + 11}] = document.createTextNode("")`,
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 11}])`,
+            `lView[${HEADER_OFFSET + 12}] = document.createElement("span")`,
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 12}])`,
+            `lView[${HEADER_OFFSET + 13}] = document.createTextNode("emails")`,
+            `(lView[${HEADER_OFFSET + 12}] as Element).appendChild(lView[${HEADER_OFFSET + 13}])`,
           ]),
         ],
         remove: [
           matchDebug([
-            'remove(lView[25])',
-            'remove(lView[26])',
-            'remove(lView[28])',
+            `remove(lView[${HEADER_OFFSET + 4}])`,
+            `remove(lView[${HEADER_OFFSET + 5}])`,
+            `remove(lView[${HEADER_OFFSET + 7}])`,
           ]),
           matchDebug([
-            'remove(lView[29])',
-            'remove(lView[30])',
+            `remove(lView[${HEADER_OFFSET + 8}])`,
+            `remove(lView[${HEADER_OFFSET + 9}])`,
           ]),
           matchDebug([
-            'remove(lView[32])',
-            'remove(lView[33])',
+            `remove(lView[${HEADER_OFFSET + 11}])`,
+            `remove(lView[${HEADER_OFFSET + 12}])`,
           ]),
         ],
         update: [
           matchDebug([]),
           matchDebug([]),
           matchDebug([
-            'if (mask & 0b1) { (lView[32] as Text).textContent = `${lView[i-1]} `; }',
-            'if (mask & 0b10) { (lView[33] as Element).setAttribute(\'title\', `${lView[i-2]}`); }',
+            `if (mask & 0b1) { (lView[${
+                HEADER_OFFSET + 11}] as Text).textContent = \`\${lView[i-1]} \`; }`,
+            `if (mask & 0b10) { (lView[${
+                HEADER_OFFSET + 12}] as Element).setAttribute('title', \`\${lView[i-2]}\`); }`,
           ]),
         ]
       });
@@ -336,19 +341,19 @@ describe('Runtime i18n', () => {
 
       expect(opCodes).toEqual({
         create: matchDebug([
-          `lView[${HEADER_OFFSET + 2}] = document.createComment("ICU 22:0");`,
+          `lView[${HEADER_OFFSET + 2}] = document.createComment("ICU ${HEADER_OFFSET + 1}:0");`,
           `parent.appendChild(lView[${HEADER_OFFSET + 2}]);`,
         ]),
         update: matchDebug([
-          'if (mask & 0b1) { icuSwitchCase(23, `${lView[i-1]}`); }',
-          'if (mask & 0b10) { icuSwitchCase(27, `${lView[i-2]}`); }',
-          'if (mask & 0b1) { icuUpdateCase(23); }',
+          `if (mask & 0b1) { icuSwitchCase(${HEADER_OFFSET + 2}, \`\${lView[i-1]}\`); }`,
+          `if (mask & 0b10) { icuSwitchCase(${HEADER_OFFSET + 6}, \`\${lView[i-2]}\`); }`,
+          `if (mask & 0b1) { icuUpdateCase(${HEADER_OFFSET + 2}); }`,
         ]),
       });
-      expect(getTIcu(tView, 23)).toEqual({
+      expect(getTIcu(tView, HEADER_OFFSET + 2)).toEqual({
         type: 1,
-        anchorIdx: 23,
-        currentCaseLViewIndex: 24,
+        anchorIdx: HEADER_OFFSET + 2,
+        currentCaseLViewIndex: HEADER_OFFSET + 3,
         cases: ['0', 'other'],
         create: [
           matchDebug([
@@ -358,34 +363,35 @@ describe('Runtime i18n', () => {
           matchDebug([
             `lView[${HEADER_OFFSET + 5}] = document.createTextNode("")`,
             `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 5}])`,
-            'lView[27] = document.createComment("nested ICU 0")',
+            `lView[${HEADER_OFFSET + 6}] = document.createComment("nested ICU 0")`,
             `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 6}])`,
-            'lView[32] = document.createTextNode("!")',
-            '(lView[21] as Element).appendChild(lView[32])',
+            `lView[${HEADER_OFFSET + 11}] = document.createTextNode("!")`,
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 11}])`,
           ]),
         ],
         update: [
           matchDebug([]),
           matchDebug([
-            'if (mask & 0b1) { (lView[26] as Text).textContent = `${lView[i-1]} `; }',
+            `if (mask & 0b1) { (lView[${
+                HEADER_OFFSET + 5}] as Text).textContent = \`\${lView[i-1]} \`; }`,
           ]),
         ],
         remove: [
           matchDebug([
-            'remove(lView[25])',
+            `remove(lView[${HEADER_OFFSET + 4}])`,
           ]),
           matchDebug([
-            'remove(lView[26])',
-            'removeNestedICU(27)',
-            'remove(lView[27])',
-            'remove(lView[32])',
+            `remove(lView[${HEADER_OFFSET + 5}])`,
+            `removeNestedICU(${HEADER_OFFSET + 6})`,
+            `remove(lView[${HEADER_OFFSET + 6}])`,
+            `remove(lView[${HEADER_OFFSET + 11}])`,
           ]),
         ],
       });
-      expect(tView.data[27]).toEqual({
+      expect(tView.data[HEADER_OFFSET + 6]).toEqual({
         type: 0,
-        anchorIdx: 27,
-        currentCaseLViewIndex: 28,
+        anchorIdx: HEADER_OFFSET + 6,
+        currentCaseLViewIndex: HEADER_OFFSET + 7,
         cases: ['cat', 'dog', 'other'],
         create: [
           matchDebug([
@@ -397,8 +403,8 @@ describe('Runtime i18n', () => {
             `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 9}])`,
           ]),
           matchDebug([
-            'lView[31] = document.createTextNode("animals")',
-            '(lView[21] as Element).appendChild(lView[31])',
+            `lView[${HEADER_OFFSET + 10}] = document.createTextNode("animals")`,
+            `(lView[${HEADER_OFFSET + 0}] as Element).appendChild(lView[${HEADER_OFFSET + 10}])`,
           ]),
         ],
         update: [
@@ -407,9 +413,9 @@ describe('Runtime i18n', () => {
           matchDebug([]),
         ],
         remove: [
-          matchDebug(['remove(lView[29])']),
-          matchDebug(['remove(lView[30])']),
-          matchDebug(['remove(lView[31])']),
+          matchDebug([`remove(lView[${HEADER_OFFSET + 8}])`]),
+          matchDebug([`remove(lView[${HEADER_OFFSET + 9}])`]),
+          matchDebug([`remove(lView[${HEADER_OFFSET + 10}])`]),
         ],
       });
     });
@@ -428,7 +434,8 @@ describe('Runtime i18n', () => {
       }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
-        'if (mask & 0b1) { (lView[21] as Element).setAttribute(\'title\', `Hello ${lView[i-1]}!`); }',
+        `if (mask & 0b1) { (lView[${
+            HEADER_OFFSET + 0}] as Element).setAttribute('title', \`Hello \$\{lView[i-1]}!\`); }`,
       ]));
     });
 
@@ -444,7 +451,9 @@ describe('Runtime i18n', () => {
       }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
-        'if (mask & 0b11) { (lView[21] as Element).setAttribute(\'title\', `Hello ${lView[i-1]} and ${lView[i-2]}, again ${lView[i-1]}!`); }',
+        `if (mask & 0b11) { (lView[${
+            HEADER_OFFSET +
+            0}] as Element).setAttribute('title', \`Hello \$\{lView[i-1]} and \$\{lView[i-2]}, again \$\{lView[i-1]}!\`); }`,
       ]));
     });
 
@@ -460,8 +469,11 @@ describe('Runtime i18n', () => {
       }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
-        'if (mask & 0b1) { (lView[21] as Element).setAttribute(\'title\', `Hello ${lView[i-1]}!`); }',
-        'if (mask & 0b1) { (lView[21] as Element).setAttribute(\'aria-label\', `Hello ${lView[i-1]}!`); }',
+        `if (mask & 0b1) { (lView[${
+            HEADER_OFFSET + 0}] as Element).setAttribute('title', \`Hello \$\{lView[i-1]}!\`); }`,
+        `if (mask & 0b1) { (lView[${
+            HEADER_OFFSET +
+            0}] as Element).setAttribute('aria-label', \`Hello \$\{lView[i-1]}!\`); }`,
       ]));
     });
   });
@@ -702,8 +714,10 @@ describe('Runtime i18n', () => {
         ],
       }));
       expect(ti18n.update).toEqual(matchDebug([
-        'if (mask & 0b1) { (lView[51] as Text).textContent = `${lView[i-1]} `; }',
-        'if (mask & 0b10) { (lView[52] as Text).textContent = `${lView[i-2]}`; }'
+        `if (mask & 0b1) { (lView[${
+            HEADER_OFFSET + 30}] as Text).textContent = \`\${lView[i-1]} \`; }`,
+        `if (mask & 0b10) { (lView[${
+            HEADER_OFFSET + 31}] as Text).textContent = \`\${lView[i-2]}\`; }`
       ]));
       const lViewDebug = fixture.lView.debug!;
       expect(lViewDebug.template).toEqual('<div>{{?}}<Placeholder>{{?}}</Placeholder>!</div>');
@@ -714,16 +728,16 @@ describe('Runtime i18n', () => {
           fixture.tView, 0, fixture.lView, HEADER_OFFSET + 1, 'Hello �*2:1�World�/*2:1�!', -1);
       const ti18n = fixture.tView.data[HEADER_OFFSET + 1] as TI18n;
       expect(ti18n.create.debug).toEqual([
-        'lView[51] = document.createText("Hello ");',
-        'parent.appendChild(lView[51]);',
-        'lView[52] = document.createText("!");',
-        'parent.appendChild(lView[52]);',
+        `lView[${HEADER_OFFSET + 30}] = document.createText("Hello ");`,
+        `parent.appendChild(lView[${HEADER_OFFSET + 30}]);`,
+        `lView[${HEADER_OFFSET + 31}] = document.createText("!");`,
+        `parent.appendChild(lView[${HEADER_OFFSET + 31}]);`,
       ]);
       // Leave behind `Placeholder` to be picked up by `TNode` creation.
       // It should insert itself in front of "!"
       expect(fixture.tView.data[HEADER_OFFSET + 2]).toEqual(matchTNode({
         type: TNodeType.Placeholder,
-        insertBeforeIndex: 52,
+        insertBeforeIndex: HEADER_OFFSET + 31,
       }));
     });
   });
