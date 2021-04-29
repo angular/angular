@@ -444,7 +444,7 @@ groups:
       - *can-be-global-approved
       - *can-be-global-docs-approved
       - >
-        contains_any_globs(files.exclude("packages/core/schematics/**"), [
+        contains_any_globs(files.exclude("packages/core/schematics/**").exclude("packages/common/http/**"), [
           'packages/common/**',
           'packages/examples/common/**',
           ])
