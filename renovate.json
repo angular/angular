@@ -126,6 +126,7 @@
         "minor",
         "patch"
       ],
+      "matchCurrentVersion": "!/^0\\./",
       "groupName": "all non-major dependencies",
       "groupSlug": "all-minor-patch",
       "schedule": [
