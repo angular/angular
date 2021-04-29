@@ -112,11 +112,16 @@ export interface LifecycleProfile {
   ngAfterViewChecked?: number;
 }
 
+export interface OutputProfile {
+  [outputName: string]: number;
+}
+
 export interface DirectiveProfile {
   name: string;
   isElement: boolean;
   isComponent: boolean;
   lifecycle: LifecycleProfile;
+  outputs: OutputProfile;
   changeDetection?: number;
 }
 

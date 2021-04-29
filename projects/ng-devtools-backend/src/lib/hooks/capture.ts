@@ -43,7 +43,7 @@ const getEventStart = (map: { [key: string]: number }, directive: any, label: st
   return map[key];
 };
 
-const getHooks = (onFrame: (frame: ProfilerFrame) => void) => {
+const getHooks = (onFrame: (frame: ProfilerFrame) => void): Partial<Hooks> => {
   const timeStartMap: { [key: string]: number } = {};
   return {
     // We flush here because it's possible the current node to overwrite
@@ -54,6 +54,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void) => {
         name: getDirectiveName(directive),
         isComponent,
         lifecycle: {},
+        outputs: {},
       });
     },
     onChangeDetectionStart(component: any, node: Node): void {
@@ -75,6 +76,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void) => {
           isComponent: true,
           changeDetection: 0,
           lifecycle: {},
+          outputs: {},
         });
       }
     },
@@ -104,6 +106,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void) => {
           name: getDirectiveName(directive),
           isComponent,
           lifecycle: {},
+          outputs: {},
         });
       }
     },
@@ -121,6 +124,7 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void) => {
           name: getDirectiveName(directive),
           isComponent,
           lifecycle: {},
+          outputs: {},
         });
       }
     },
@@ -136,6 +140,33 @@ const getHooks = (onFrame: (frame: ProfilerFrame) => void) => {
       }
       const duration = performance.now() - startTimestamp;
       dir.lifecycle[hookName] = (dir.lifecycle[hookName] || 0) + duration;
+      frameDuration += duration;
+    },
+    onOutputStart(componentOrDirective: any, outputName: string, node: Node, isComponent: boolean): void {
+      startEvent(timeStartMap, componentOrDirective, outputName);
+      if (!eventMap.has(componentOrDirective)) {
+        eventMap.set(componentOrDirective, {
+          isElement: isCustomElement(node),
+          name: getDirectiveName(componentOrDirective),
+          isComponent,
+          lifecycle: {},
+          outputs: {},
+        });
+      }
+    },
+    onOutputEnd(componentOrDirective: any, outputName: string): void {
+      const name = outputName;
+      const entry = eventMap.get(componentOrDirective);
+      const startTimestamp = getEventStart(timeStartMap, componentOrDirective, name);
+      if (startTimestamp === undefined) {
+        return;
+      }
+      if (!entry) {
+        console.warn('Could not find directive or component in onOutputEnd callback', componentOrDirective, outputName);
+        return;
+      }
+      const duration = performance.now() - startTimestamp;
+      entry.outputs[name] = (entry.outputs[name] || 0) + duration;
       frameDuration += duration;
     },
   };
@@ -156,6 +187,12 @@ const insertOrMerge = (lastFrame: ElementProfile, profile: DirectiveProfile) => 
           d.lifecycle[key] = 0;
         }
         d.lifecycle[key] += profile.lifecycle[key];
+      }
+      for (const key of Object.keys(profile.outputs)) {
+        if (!d.outputs[key]) {
+          d.outputs[key] = 0;
+        }
+        d.outputs[key] += profile.outputs[key];
       }
     }
   });
@@ -214,6 +251,7 @@ const prepareInitialFrame = (source: string, duration: number) => {
         isComponent: false,
         isElement: false,
         name: getDirectiveName(d.instance),
+        outputs: {},
         lifecycle: {},
       };
     });
@@ -222,6 +260,7 @@ const prepareInitialFrame = (source: string, duration: number) => {
         isElement: node.component.isElement,
         isComponent: true,
         lifecycle: {},
+        outputs: {},
         name: getDirectiveName(node.component.instance),
       });
     }

@@ -6,7 +6,7 @@ const markName = (s: string, method: Method) => `🅰️ ${s}#${method}`;
 
 const supportsPerformance = globalThis.performance && typeof globalThis.performance.getEntriesByName === 'function';
 
-type Method = keyof LifecycleProfile | 'changeDetection';
+type Method = keyof LifecycleProfile | 'changeDetection' | string;
 
 const recordMark = (s: string, method: Method) => {
   if (supportsPerformance) {
@@ -66,6 +66,18 @@ export const initializeOrGetDirectiveForestHooks = () => {
         return;
       }
       endMark(getDirectiveName(component), lifecyle);
+    },
+    onOutputStart(component: any, output: string): void {
+      if (!timingAPIEnabled()) {
+        return;
+      }
+      recordMark(getDirectiveName(component), output);
+    },
+    onOutputEnd(component: any, output: string): void {
+      if (!timingAPIEnabled()) {
+        return;
+      }
+      endMark(getDirectiveName(component), output);
     },
   });
   directiveForestHooks.initialize();

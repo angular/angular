@@ -38,6 +38,9 @@ type DestroyHook = (
   position: ElementPosition
 ) => void;
 
+type OutputStartHook = (componentOrDirective: any, outputName: string, node: Node, isComponent: boolean) => void;
+type OutputEndHook = (componentOrDirective: any, outputName: string, node: Node, isComponent: boolean) => void;
+
 export interface Hooks {
   onCreate: CreationHook;
   onDestroy: DestroyHook;
@@ -45,6 +48,8 @@ export interface Hooks {
   onChangeDetectionEnd: ChangeDetectionEndHook;
   onLifecycleHookStart: LifecycleStartHook;
   onLifecycleHookEnd: LifecycleEndHook;
+  onOutputStart: OutputStartHook;
+  onOutputEnd: OutputEndHook;
 }
 
 /**
@@ -148,10 +153,24 @@ export abstract class Profiler {
     this._invokeCallback('onLifecycleHookEnd', arguments);
   }
 
+  protected _onOutputStart(_: any, __: string, ___: Node, id: number | undefined, ____: boolean): void {
+    if (id === undefined) {
+      return;
+    }
+    this._invokeCallback('onOutputStart', arguments);
+  }
+
+  protected _onOutputEnd(_: any, __: string, ___: Node, id: number | undefined, ____: boolean): void {
+    if (id === undefined) {
+      return;
+    }
+    this._invokeCallback('onOutputEnd', arguments);
+  }
+
   private _invokeCallback(name: keyof Hooks, args: IArguments): void {
     this._hooks.forEach((config) => {
       const cb = config[name];
-      if (cb) {
+      if (typeof cb === 'function') {
         cb.apply(null, args);
       }
     });
