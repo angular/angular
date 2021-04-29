@@ -322,9 +322,9 @@ export class HttpRequest<T> {
     if (this.body instanceof HttpParams) {
       return 'application/x-www-form-urlencoded;charset=UTF-8';
     }
-    // Arrays, objects, and numbers will be encoded as JSON.
+    // Arrays, objects, boolean and numbers will be encoded as JSON.
     if (typeof this.body === 'object' || typeof this.body === 'number' ||
-        Array.isArray(this.body)) {
+        typeof this.body === 'boolean') {
       return 'application/json';
     }
     // No type could be inferred.
