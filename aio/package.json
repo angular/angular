@@ -158,7 +158,7 @@
     "puppeteer": "9.0.0",
     "rehype": "^11.0.0",
     "rehype-slug": "^4.0.1",
-    "remark": "^12.0.0",
+    "remark": "^13.0.0",
     "remark-html": "^13.0.0",
     "rimraf": "^3.0.2",
     "semver": "^7.3.5",
