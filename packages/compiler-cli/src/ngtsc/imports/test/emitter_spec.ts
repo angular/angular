@@ -232,7 +232,6 @@ runInEachFileSystem(() => {
       const decl = getDeclaration(program, _('/index.ts'), 'Foo', ts.isClassDeclaration);
       const context = program.getSourceFile(_('/context.ts'))!;
       const emitted = strategy.emit(new Reference(decl), context);
-      expect(emitted).not.toBeNull();
       if (emitted === null) {
         return fail('Reference should be emitted');
       }
@@ -266,7 +265,6 @@ runInEachFileSystem(() => {
       const decl = getDeclaration(program, _('/index.ts'), 'Foo', ts.isClassDeclaration);
       const context = program.getSourceFile(_('/context.ts'))!;
       const emitted = strategy.emit(new Reference(decl), context);
-      expect(emitted).not.toBeNull();
       if (emitted === null) {
         return fail('Reference should be emitted');
       }
@@ -305,7 +303,6 @@ runInEachFileSystem(() => {
       const decl = getDeclaration(program, _('/index.ts'), 'Foo', ts.isClassDeclaration);
       const context = program.getSourceFile(_('/context.ts'))!;
       const emitted = strategy.emit(new Reference(decl), context);
-      expect(emitted).not.toBeNull();
       if (emitted === null) {
         return fail('Reference should be emitted');
       }
