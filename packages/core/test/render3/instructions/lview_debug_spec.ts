@@ -13,7 +13,7 @@ import {ɵɵelement, ɵɵelementEnd, ɵɵelementStart} from '@angular/core/src/r
 import {TNodeDebug} from '@angular/core/src/render3/instructions/lview_debug';
 import {createTNode, createTView} from '@angular/core/src/render3/instructions/shared';
 import {TNodeType} from '@angular/core/src/render3/interfaces/node';
-import {LView, LViewDebug, TView, TViewType} from '@angular/core/src/render3/interfaces/view';
+import {HEADER_OFFSET, LView, LViewDebug, TView, TViewType} from '@angular/core/src/render3/interfaces/view';
 import {enterView, leaveView} from '@angular/core/src/render3/state';
 import {insertTStylingBinding} from '@angular/core/src/render3/styling/style_binding_list';
 import {getComponentLView} from '@angular/core/src/render3/util/discovery_utils';
@@ -242,7 +242,7 @@ describe('lView_debug', () => {
         cumulativeBloom: jasmine.anything(),
         providers: [MyChild.ɵdir],
         viewProviders: [],
-        parentInjectorIndex: 23,
+        parentInjectorIndex: HEADER_OFFSET + 2,
       });
     });
   });
