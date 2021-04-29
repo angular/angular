@@ -21,8 +21,16 @@ export const appIsSupportedAngularVersion = (): boolean => {
   return appIsAngular() && (major >= 9 || major === 0);
 };
 
+/**
+ * We check if the global `window.ng` is an object and if this object
+ * has the `getComponent` method attached to it. In some g3 apps processed
+ * with Closure, `ng` is a function, which means that `typeof ng !== 'undefined'`
+ * is not a sufficient check.
+ *
+ * @returns if the app has global ng debug object
+ */
 const appHasGlobalNgDebugObject = (): boolean => {
-  return typeof ng !== 'undefined';
+  return typeof ng === 'object' && typeof ng.getComponent === 'function';
 };
 
 export const getAngularVersion = (): string | null => {
