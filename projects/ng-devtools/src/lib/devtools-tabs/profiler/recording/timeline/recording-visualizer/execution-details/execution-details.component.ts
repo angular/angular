@@ -1,10 +1,5 @@
 import { Component, Input } from '@angular/core';
-
-export interface GraphNode {
-  directive: string;
-  method: string;
-  value: number;
-}
+import { SelectedDirective } from '../timeline-visualizer.component';
 
 @Component({
   selector: 'ng-execution-details',
@@ -12,5 +7,5 @@ export interface GraphNode {
   styleUrls: ['./execution-details.component.scss'],
 })
 export class ExecutionDetailsComponent {
-  @Input() data: GraphNode[];
+  @Input() data: SelectedDirective[];
 }

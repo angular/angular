@@ -10,12 +10,7 @@ import { ProfilerFrame } from 'protocol';
 import { SelectedDirective, SelectedEntry } from '../timeline-visualizer.component';
 import { Theme, ThemeService } from 'projects/ng-devtools/src/lib/theme-service';
 import { Subscription } from 'rxjs';
-
-export interface GraphNode {
-  directive: string;
-  method: string;
-  value: number;
-}
+import { formatDirectiveProfile } from '../formatter';
 
 @Component({
   selector: 'ng-flamegraph-visualizer',
@@ -85,25 +80,7 @@ export class FlamegraphVisualizerComponent implements OnInit, OnDestroy {
   }
 
   formatEntryData(flameGraphNode: FlamegraphNode): SelectedDirective[] {
-    const graphData: SelectedDirective[] = [];
-    flameGraphNode.original.directives.forEach((node) => {
-      const changeDetection = node.changeDetection;
-      if (changeDetection !== undefined) {
-        graphData.push({
-          directive: node.name,
-          method: 'changes',
-          value: parseFloat(changeDetection.toFixed(2)),
-        });
-      }
-      Object.keys(node.lifecycle).forEach((key) => {
-        graphData.push({
-          directive: node.name,
-          method: key,
-          value: +node.lifecycle[key].toFixed(2),
-        });
-      });
-    });
-    return graphData;
+    return formatDirectiveProfile(flameGraphNode.original.directives);
   }
 
   private _selectFrame(): void {

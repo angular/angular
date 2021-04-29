@@ -4,6 +4,7 @@ import { ProfilerFrame } from 'protocol';
 import { SelectedDirective, SelectedEntry } from '../timeline-visualizer.component';
 import { Theme, ThemeService } from 'projects/ng-devtools/src/lib/theme-service';
 import { Subscription } from 'rxjs';
+import { formatDirectiveProfile } from '../formatter';
 
 @Component({
   selector: 'ng-bargraph-visualizer',
@@ -38,25 +39,7 @@ export class BargraphVisualizerComponent implements OnInit, OnDestroy {
   }
 
   formatEntryData(bargraphNode: BargraphNode): SelectedDirective[] {
-    const graphData: SelectedDirective[] = [];
-    bargraphNode.original.directives.forEach((node) => {
-      const { changeDetection } = node;
-      if (changeDetection) {
-        graphData.push({
-          directive: node.name,
-          method: 'changes',
-          value: parseFloat(changeDetection.toFixed(2)),
-        });
-      }
-      Object.keys(node.lifecycle).forEach((key) => {
-        graphData.push({
-          directive: node.name,
-          method: key,
-          value: +node.lifecycle[key].toFixed(2),
-        });
-      });
-    });
-    return graphData;
+    return formatDirectiveProfile(bargraphNode.original.directives);
   }
 
   selectNode(node: BargraphNode): void {
