@@ -8,7 +8,12 @@ export const runOutsideAngular = (f: () => any): void => {
     w.Zone.current.run(f);
     return;
   }
-  w.Zone.current._parent.run(f);
+  const parent = w.Zone.current._parent;
+  if (parent && parent.run) {
+    parent.run(f);
+    return;
+  }
+  f();
 };
 
 export const isCustomElement = (node: Node) => {
