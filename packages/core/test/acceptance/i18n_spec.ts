@@ -1624,17 +1624,23 @@ onlyInIvy('Ivy i18n logic').describe('runtime i18n', () => {
     });
 
     it('multiple attributes', () => {
-      loadTranslations({[computeMsgId('hello {$INTERPOLATION}')]: 'bonjour {$INTERPOLATION}'});
+      loadTranslations({
+        [computeMsgId('hello {$INTERPOLATION} - {$INTERPOLATION_1}')]:
+            'bonjour {$INTERPOLATION} - {$INTERPOLATION_1}',
+        [computeMsgId('bye {$INTERPOLATION} - {$INTERPOLATION_1}')]:
+            'au revoir {$INTERPOLATION} - {$INTERPOLATION_1}',
+      });
       const fixture = initWithTemplate(
           AppComp,
-          `<input i18n i18n-title title="hello {{name}}" i18n-placeholder placeholder="hello {{name}}">`);
+          `<input i18n i18n-title title="hello {{name}} - {{count}}" i18n-placeholder placeholder="bye {{count}} - {{name}}">`);
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<input title="bonjour Angular" placeholder="bonjour Angular">`);
+          .toEqual(`<input title="bonjour Angular - 0" placeholder="au revoir 0 - Angular">`);
 
       fixture.componentRef.instance.name = 'John';
+      fixture.componentRef.instance.count = 5;
       fixture.detectChanges();
       expect(fixture.nativeElement.innerHTML)
-          .toEqual(`<input title="bonjour John" placeholder="bonjour John">`);
+          .toEqual(`<input title="bonjour John - 5" placeholder="au revoir 5 - John">`);
     });
 
     it('on removed elements', () => {

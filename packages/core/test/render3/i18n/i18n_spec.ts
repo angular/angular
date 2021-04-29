@@ -458,9 +458,10 @@ describe('Runtime i18n', () => {
     });
 
     it('for multiple attributes', () => {
-      const message = `Hello �0�!`;
-      const attrs = ['title', message, 'aria-label', message];
-      const nbConsts = 2;
+      const message1 = `Hello �0� - �1�!`;
+      const message2 = `Bye �0� - �1�!`;
+      const attrs = ['title', message1, 'aria-label', message2];
+      const nbConsts = 4;
       const index = 1;
       const opCodes = getOpCodes(attrs, () => {
         ɵɵelementStart(0, 'div');
@@ -469,11 +470,10 @@ describe('Runtime i18n', () => {
       }, undefined, nbConsts, HEADER_OFFSET + index);
 
       expect(opCodes).toEqual(matchDebug([
-        `if (mask & 0b1) { (lView[${
-            HEADER_OFFSET + 0}] as Element).setAttribute('title', \`Hello \$\{lView[i-1]}!\`); }`,
-        `if (mask & 0b1) { (lView[${
-            HEADER_OFFSET +
-            0}] as Element).setAttribute('aria-label', \`Hello \$\{lView[i-1]}!\`); }`,
+        `if (mask & 0b11) { (lView[${HEADER_OFFSET + 0}] as Element).` +
+            'setAttribute(\'title\', `Hello ${lView[i-1]} - ${lView[i-2]}!`); }',
+        `if (mask & 0b1100) { (lView[${HEADER_OFFSET + 0}] as Element).` +
+            'setAttribute(\'aria-label\', `Bye ${lView[i-3]} - ${lView[i-4]}!`); }',
       ]));
     });
   });
