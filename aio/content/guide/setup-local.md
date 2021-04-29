@@ -35,7 +35,7 @@ To install Angular on your local system, you need the following:
 
   <div class="alert is-helpful">
 
-  For information about specific version requirements, see the `engines` key in the [package.json](https://unpkg.com/@angular/core/package.json) file.
+  For information about specific version requirements, see the `engines` key in the [package.json](https://unpkg.com/browse/@angular/core/package.json) file.
 
   </div>
 
