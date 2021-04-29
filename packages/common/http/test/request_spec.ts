@@ -129,6 +129,10 @@ const TEST_STRING = `I'm a body!`;
         const req = baseReq.clone({body: {data: 'test data'}});
         expect(req.detectContentTypeHeader()).toBe('application/json');
       });
+      it('handles boolean as json', () => {
+        const req = baseReq.clone({body: true});
+        expect(req.detectContentTypeHeader()).toBe('application/json');
+      });
     });
     describe('body serialization', () => {
       const baseReq = new HttpRequest('POST', '/test', null);
