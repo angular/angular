@@ -117,7 +117,6 @@ merge:
     requiredStatuses:
       - "ci/circleci: build"
       - "ci/circleci: lint"
-      - "ci/circleci: publish_snapshot"
       - "ci/angular: size"
       - "cla/google"
       - "google3"
