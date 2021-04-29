@@ -73,6 +73,7 @@ describe('getLabel cases', () => {
           isElement: false,
           isComponent: true,
           lifecycle: {},
+          outputs: {},
           name: 'AppComponent',
         },
       ],
@@ -89,6 +90,7 @@ describe('getLabel cases', () => {
           isElement: false,
           name: 'RouterOutlet',
           lifecycle: {},
+          outputs: {},
           changeDetection: 0,
         },
       ],
@@ -100,8 +102,15 @@ describe('getLabel cases', () => {
     element = {
       children: [],
       directives: [
-        { isComponent: false, isElement: false, name: 'TooltipDirective', lifecycle: {}, changeDetection: 0 },
-        { changeDetection: 0, isElement: false, isComponent: true, lifecycle: {}, name: 'TodoComponent' },
+        {
+          isComponent: false,
+          isElement: false,
+          name: 'TooltipDirective',
+          lifecycle: {},
+          outputs: {},
+          changeDetection: 0,
+        },
+        { changeDetection: 0, isElement: false, isComponent: true, lifecycle: {}, outputs: {}, name: 'TodoComponent' },
       ],
     };
     expect(formatter.getLabel(element)).toBe('TodoComponent[TooltipDirective]');
@@ -111,9 +120,23 @@ describe('getLabel cases', () => {
     element = {
       children: [],
       directives: [
-        { isComponent: false, isElement: false, name: 'TooltipDirective', lifecycle: {}, changeDetection: 0 },
-        { isComponent: false, isElement: false, name: 'RandomDirective', lifecycle: {}, changeDetection: 0 },
-        { changeDetection: 0, isElement: false, isComponent: true, lifecycle: {}, name: 'TodoComponent' },
+        {
+          isComponent: false,
+          isElement: false,
+          name: 'TooltipDirective',
+          lifecycle: {},
+          outputs: {},
+          changeDetection: 0,
+        },
+        {
+          isComponent: false,
+          isElement: false,
+          name: 'RandomDirective',
+          lifecycle: {},
+          outputs: {},
+          changeDetection: 0,
+        },
+        { changeDetection: 0, isElement: false, isComponent: true, lifecycle: {}, outputs: {}, name: 'TodoComponent' },
       ],
     };
     expect(formatter.getLabel(element)).toBe('TodoComponent[TooltipDirective, RandomDirective]');

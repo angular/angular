@@ -1,6 +1,25 @@
 import { DirectiveProfile } from 'protocol';
 import { SelectedDirective } from './timeline-visualizer.component';
 
+const ignore = /^([A-Z]|listener|\d|listener)/;
+
+const formatOutput = (outputName: string) => {
+  const parts = outputName.split('_');
+  const output: string[] = [];
+  let idx = parts.length;
+  while (idx >= 0) {
+    idx--;
+    if (ignore.test(parts[idx]) && parts[idx] !== 'HostBindingHandler') {
+      continue;
+    }
+    output.push(parts[idx]);
+  }
+  return output
+    .filter((el) => !!el)
+    .reverse()
+    .join('-');
+};
+
 export const formatDirectiveProfile = (nodes: DirectiveProfile[]) => {
   const graphData: SelectedDirective[] = [];
   nodes.forEach((node) => {
@@ -22,7 +41,7 @@ export const formatDirectiveProfile = (nodes: DirectiveProfile[]) => {
     Object.keys(node.outputs).forEach((key) => {
       graphData.push({
         directive: node.name,
-        method: key,
+        method: formatOutput(key),
         value: +node.outputs[key].toFixed(2),
       });
     });

@@ -4,7 +4,7 @@ import { ProfilerFrame } from 'protocol';
 import { SelectedDirective, SelectedEntry } from '../timeline-visualizer.component';
 import { Theme, ThemeService } from 'projects/ng-devtools/src/lib/theme-service';
 import { Subscription } from 'rxjs';
-import { formatDirectiveProfile } from '../formatter';
+import { formatDirectiveProfile } from '../profile-formatter';
 
 @Component({
   selector: 'ng-bargraph-visualizer',
