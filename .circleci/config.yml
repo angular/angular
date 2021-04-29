@@ -66,6 +66,14 @@ var_10: &only_on_master
       only:
         - master
 
+# Filter to run a job on all releasable branches.
+var_11: &only_release_branches
+  filters:
+    branches:
+      only:
+        - master
+        - /\d+\.\d+\.x/
+
 # Executor Definitions
 # https://circleci.com/docs/2.0/reusing-config/#authoring-reusable-executors
 # **NOTE 1**: Pin to exact images using an ID (SHA). See https://circleci.com/docs/2.0/circleci-images/#using-a-docker-image-id-to-pin-an-image-to-a-fixed-version.
@@ -587,18 +595,6 @@ jobs:
   publish_snapshot:
     executor: default-executor
     steps:
-      # See below - ideally this job should not trigger for non-upstream builds.
-      # But since it does, we have to check this condition.
-      - run:
-          name: Skip this job for Pull Requests and Fork builds
-          # Note: Using `CIRCLE_*` env variables (instead of those defined in `env.sh` so that this
-          #       step can be run before `init_environment`.
-          command: >
-            if [[ -n "${CIRCLE_PR_NUMBER}" ]] ||
-                [[ "$CIRCLE_PROJECT_USERNAME" != "angular" ]] ||
-                [[ "$CIRCLE_PROJECT_REPONAME" != "angular" ]]; then
-              circleci step halt
-            fi
       - custom_attach_workspace
       - init_environment
       # CircleCI has a config setting to force SSH for all github connections
@@ -854,10 +850,7 @@ workflows:
           requires:
             - build-npm-packages
       - publish_snapshot:
-          # Note: no filters on this job because we want it to run for all upstream branches
-          # We'd really like to filter out pull requests here, but not yet available:
-          # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
-          # Instead, the job just exits immediately at the first step.
+          <<: *only_release_branches
           requires:
             # Only publish if tests and integration tests pass
             - test
