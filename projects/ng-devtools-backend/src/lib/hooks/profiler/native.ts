@@ -23,14 +23,14 @@ export class NgProfiler extends Profiler {
     this._initialize();
   }
 
-  private _initialize() {
+  private _initialize(): void {
     const ng = (window as any).ng;
     ng.ɵsetProfiler((event: ɵProfilerEvent, instanceOrLView: {}, hookOrListener: any) =>
       this._callbacks.forEach((cb) => cb(event, instanceOrLView, hookOrListener))
     );
   }
 
-  private _setProfilerCallback(callback: ProfilerCallback) {
+  private _setProfilerCallback(callback: ProfilerCallback): void {
     this._callbacks.push(callback);
   }
 
@@ -110,14 +110,14 @@ export class NgProfiler extends Profiler {
     this._onLifecycleHookEnd(directive, lifecycleHookName, element, id, isComponent);
   }
 
-  [ɵProfilerEvent.OutputStart](componentOrDirective: any, listener: Function): void {
+  [ɵProfilerEvent.OutputStart](componentOrDirective: any, listener: () => void): void {
     const isComponent = !!this._tracker.isComponent.get(componentOrDirective);
     const node = getDirectiveHostElement(componentOrDirective);
     const id = this._tracker.getDirectiveId(componentOrDirective);
     this._onOutputStart(componentOrDirective, listener.name, node, id, isComponent);
   }
 
-  [ɵProfilerEvent.OutputEnd](componentOrDirective: any, listener: Function): void {
+  [ɵProfilerEvent.OutputEnd](componentOrDirective: any, listener: () => void): void {
     const isComponent = !!this._tracker.isComponent.get(componentOrDirective);
     const node = getDirectiveHostElement(componentOrDirective);
     const id = this._tracker.getDirectiveId(componentOrDirective);
