@@ -32,7 +32,7 @@ export declare const EVENT_MANAGER_PLUGINS: InjectionToken<ɵangular_packages_pl
 export declare class EventManager {
     constructor(plugins: ɵangular_packages_platform_browser_platform_browser_g[], _zone: NgZone);
     addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
-    addGlobalEventListener(target: string, eventName: string, handler: Function): Function;
+    /** @deprecated */ addGlobalEventListener(target: string, eventName: string, handler: Function): Function;
     getZone(): NgZone;
 }
 

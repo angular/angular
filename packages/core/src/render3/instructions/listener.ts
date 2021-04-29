@@ -8,7 +8,6 @@
 
 
 import {assertIndexInRange} from '../../util/assert';
-import {EMPTY_OBJ} from '../../util/empty';
 import {isObservable} from '../../util/lang';
 import {PropertyAliasValue, TNode, TNodeFlags, TNodeType} from '../interfaces/node';
 import {GlobalTargetResolver, isProceduralRenderer, Renderer3} from '../interfaces/renderer';
@@ -39,13 +38,14 @@ import {getOrCreateLViewCleanup, getOrCreateTViewCleanup, handleError, loadCompo
  * @codeGenApi
  */
 export function ɵɵlistener(
-    eventName: string, listenerFn: (e?: any) => any, useCapture = false,
+    eventName: string, listenerFn: (e?: any) => any, useCapture?: boolean,
     eventTargetResolver?: GlobalTargetResolver): typeof ɵɵlistener {
   const lView = getLView();
   const tView = getTView();
   const tNode = getCurrentTNode()!;
   listenerInternal(
-      tView, lView, lView[RENDERER], tNode, eventName, listenerFn, useCapture, eventTargetResolver);
+      tView, lView, lView[RENDERER], tNode, eventName, listenerFn, !!useCapture,
+      eventTargetResolver);
   return ɵɵlistener;
 }
 
@@ -71,15 +71,13 @@ export function ɵɵlistener(
  * @codeGenApi
  */
 export function ɵɵsyntheticHostListener(
-    eventName: string, listenerFn: (e?: any) => any, useCapture = false,
-    eventTargetResolver?: GlobalTargetResolver): typeof ɵɵsyntheticHostListener {
+    eventName: string, listenerFn: (e?: any) => any): typeof ɵɵsyntheticHostListener {
   const tNode = getCurrentTNode()!;
   const lView = getLView();
   const tView = getTView();
   const currentDef = getCurrentDirectiveDef(tView.data);
   const renderer = loadComponentRenderer(currentDef, tNode, lView);
-  listenerInternal(
-      tView, lView, renderer, tNode, eventName, listenerFn, useCapture, eventTargetResolver);
+  listenerInternal(tView, lView, renderer, tNode, eventName, listenerFn, false);
   return ɵɵsyntheticHostListener;
 }
 
@@ -117,7 +115,7 @@ function findExistingListener(
 
 function listenerInternal(
     tView: TView, lView: LView, renderer: Renderer3, tNode: TNode, eventName: string,
-    listenerFn: (e?: any) => any, useCapture = false,
+    listenerFn: (e?: any) => any, useCapture: boolean,
     eventTargetResolver?: GlobalTargetResolver): void {
   const isTNodeDirectiveHost = isDirectiveHost(tNode);
   const firstCreatePass = tView.firstCreatePass;
@@ -136,11 +134,10 @@ function listenerInternal(
   // add native event listener - applicable to elements only
   if (tNode.type & TNodeType.AnyRNode) {
     const native = getNativeByTNode(tNode, lView) as RElement;
-    const resolved = eventTargetResolver ? eventTargetResolver(native) : EMPTY_OBJ as any;
-    const target = resolved.target || native;
+    const target = eventTargetResolver ? eventTargetResolver(native) : native;
     const lCleanupIndex = lCleanup.length;
     const idxOrTargetGetter = eventTargetResolver ?
-        (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index])).target :
+        (_lView: LView) => eventTargetResolver(unwrapRNode(_lView[tNode.index])) :
         tNode.index;
 
     // In order to match current behavior, native DOM event listeners must be added for all
@@ -176,11 +173,8 @@ function listenerInternal(
         (<any>existingListener).__ngLastListenerFn__ = listenerFn;
         processOutputs = false;
       } else {
-        // The first argument of `listen` function in Procedural Renderer is:
-        // - either a target name (as a string) in case of global target (window, document, body)
-        // - or element reference (in all other cases)
         listenerFn = wrapListener(tNode, lView, context, listenerFn, false /** preventDefault */);
-        const cleanupFn = renderer.listen(resolved.name || target, eventName, listenerFn);
+        const cleanupFn = renderer.listen(target as RElement, eventName, listenerFn);
         ngDevMode && ngDevMode.rendererAddEventListener++;
 
         lCleanup.push(listenerFn, cleanupFn);
