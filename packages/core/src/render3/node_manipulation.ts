@@ -396,7 +396,6 @@ export function destroyLView(tView: TView, lView: LView) {
     }
 
     destroyViewTree(lView);
-    unregisterLView(lView);
   }
 }
 
@@ -443,6 +442,9 @@ function cleanUpView(tView: TView, lView: LView): void {
         lQueries.detachView(tView);
       }
     }
+
+    // Deregister the view once everything else has been cleaned up.
+    unregisterLView(lView);
   }
 }
 
