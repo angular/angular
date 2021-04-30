@@ -256,21 +256,6 @@ export class GitClient<Authenticated extends boolean> {
     return new SemVer(latestTag, semVerOptions);
   }
 
-  /** Gets the path of the directory for the repository base. */
-  getBaseDir(): string {
-    const previousVerboseLoggingState = this.verboseLogging;
-    this.setVerboseLoggingState(false);
-    const {stdout, stderr, status} = this.runGraceful(['rev-parse', '--show-toplevel']);
-    this.setVerboseLoggingState(previousVerboseLoggingState);
-    if (status !== 0) {
-      throw Error(
-          `Unable to find the path to the base directory of the repository.\n` +
-          `Was the command run from inside of the repo?\n\n` +
-          `ERROR:\n ${stderr}`);
-    }
-    return stdout.trim();
-  }
-
   /** Retrieve a list of all files in the repostitory changed since the provided shaOrRef. */
   allChangesFilesSince(shaOrRef = 'HEAD'): string[] {
     return Array.from(new Set([
