@@ -47,7 +47,6 @@ export const DECLARATION_COMPONENT_VIEW = 16;
 export const DECLARATION_LCONTAINER = 17;
 export const PREORDER_HOOK_FLAGS = 18;
 export const QUERIES = 19;
-export const ID = 20;
 /**
  * Size of LView's header. Necessary to adjust for it when setting slots.
  *
@@ -55,7 +54,7 @@ export const ID = 20;
  * instruction index into `LView` index. All other indexes should be in the `LView` index space and
  * there should be no need to refer to `HEADER_OFFSET` anywhere else.
  */
-export const HEADER_OFFSET = 21;
+export const HEADER_OFFSET = 20;
 
 
 // This interface replaces the real LView interface if it is an arg or a
@@ -327,9 +326,6 @@ export interface LView extends Array<any> {
    * are not `Dirty`/`CheckAlways`.
    */
   [TRANSPLANTED_VIEWS_TO_REFRESH]: number;
-
-  /** Unique ID of the view. Used for `__ngContext__` lookups in the `LView` registry. */
-  [ID]: number;
 }
 
 /** Flags associated with an LView (saved in LView[FLAGS]) */

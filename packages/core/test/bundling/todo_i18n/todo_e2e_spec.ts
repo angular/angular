@@ -8,6 +8,8 @@
 import '@angular/localize/init';
 import '@angular/compiler';
 
+import {ɵwhenRendered as whenRendered} from '@angular/core';
+import {getComponent} from '@angular/core/src/render3';
 import {clearTranslations} from '@angular/localize';
 import {withBody} from '@angular/private/testing';
 import * as path from 'path';
@@ -20,7 +22,8 @@ describe('functional test for todo i18n', () => {
     describe(bundle, () => {
       it('should render todo i18n', withBody('<todo-app></todo-app>', async () => {
            clearTranslations();
-           const {whenRendered} = require(path.join(PACKAGE, bundle));
+           require(path.join(PACKAGE, bundle));
+           const toDoAppComponent = getComponent(document.querySelector('todo-app')!);
            expect(document.body.textContent).toContain('liste de tâches');
            expect(document.body.textContent).toContain('Démontrer les components');
            expect(document.body.textContent).toContain('Démontrer NgModules');
@@ -28,7 +31,7 @@ describe('functional test for todo i18n', () => {
            expect(document.querySelector('.new-todo')!.getAttribute('placeholder'))
                .toEqual(`Qu'y a-t-il à faire ?`);
            document.querySelector('button')!.click();
-           await whenRendered((window as any).todoAppComponent);
+           await whenRendered(toDoAppComponent);
            expect(document.body.textContent).toContain('3 tâches restantes');
          }));
     });
