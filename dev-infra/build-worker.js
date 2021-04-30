@@ -365,19 +365,6 @@ var GitClient = /** @class */ (function () {
         }
         return new semver.SemVer(latestTag, semVerOptions);
     };
-    /** Gets the path of the directory for the repository base. */
-    GitClient.prototype.getBaseDir = function () {
-        var previousVerboseLoggingState = this.verboseLogging;
-        this.setVerboseLoggingState(false);
-        var _a = this.runGraceful(['rev-parse', '--show-toplevel']), stdout = _a.stdout, stderr = _a.stderr, status = _a.status;
-        this.setVerboseLoggingState(previousVerboseLoggingState);
-        if (status !== 0) {
-            throw Error("Unable to find the path to the base directory of the repository.\n" +
-                "Was the command run from inside of the repo?\n\n" +
-                ("ERROR:\n " + stderr));
-        }
-        return stdout.trim();
-    };
     /** Retrieve a list of all files in the repostitory changed since the provided shaOrRef. */
     GitClient.prototype.allChangesFilesSince = function (shaOrRef) {
         if (shaOrRef === void 0) { shaOrRef = 'HEAD'; }
@@ -599,7 +586,7 @@ var cachedConfig = null;
 function getConfig(baseDir) {
     // If the global config is not defined, load it from the file system.
     if (cachedConfig === null) {
-        baseDir = baseDir || GitClient.getInstance().getBaseDir();
+        baseDir = baseDir || GitClient.getInstance().baseDir;
         // The full path to the configuration file.
         var configPath = path.join(baseDir, CONFIG_FILE_PATH);
         // Read the configuration and validate it before caching it for the future.
