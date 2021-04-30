@@ -1,55 +1,48 @@
 ---
-name: "📚 Docs or angular.io issue report"
+name: "Docs or angular.io Bug Report"
 about: Report an issue in Angular's documentation or angular.io application
-
 ---
-<!--🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅
+<!--
 
-Oh hi there! 😄
+Oh hi there!
 
 To expedite issue processing please search open and closed issues before submitting a new one.
 Existing issues often contain information about workarounds, resolution, or progress updates.
 
-🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅🔅-->
+-->
 
-# 📚 Docs or angular.io bug report
+# Docs or angular.io Bug Report
 
 ### Description
 
-<!-- ✍️edit:--> A clear and concise description of the problem...
+<!-- edit: --> A clear and concise description of the problem...
 
 
-## 🔬 Minimal Reproduction
+## Minimal Reproduction
 
 ### What's the affected URL?**
-<!-- ✍️edit:--> https://angular.io/...
+<!-- edit: --> https://angular.io/...
 
 ### Reproduction Steps**
 <!-- If applicable please list the steps to take to reproduce the issue -->
-<!-- ✍️edit:-->
 
 ### Expected vs Actual Behavior**
 <!-- If applicable please describe the difference between the expected and actual behavior after following the repro steps. -->
-<!-- ✍️edit:-->
 
-
-## 📷Screenshot
+## Screenshot
 <!-- Often a screenshot can help to capture the issue better than a long description. -->
-<!-- ✍️upload a screenshot:-->
+<!-- upload a screenshot:-->
 
-
-## 🔥 Exception or Error
+## Exception or Error
 <pre><code>
 <!-- If the issue is accompanied by an exception or an error, please share it below: -->
-<!-- ✍️-->
 
 </code></pre>
 
-
-## 🌍  Your Environment
+## Your Environment
 
 ### Browser info
-<!-- ✍️Is this a browser specific issue? If so, please specify the device, browser, and version. -->
+<!-- Is this a browser specific issue? If so, please specify the device, browser, and version. -->
 
 ### Anything else relevant?
-<!-- ✍️Please provide additional info if necessary. -->
+<!-- Please provide additional info if necessary. -->
