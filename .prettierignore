@@ -1,8 +1,10 @@
+dist
 /bazel-out/
-/dist
 /goldens/public-api
 /integration
 third_party/
-aio/content/examples/
-aio/tools/transforms/templates/
+/aio/src/generated
+/aio/content/examples
+/aio/tools/transforms/templates
+/aio/tools/examples/shared
 /CHANGELOG.md
