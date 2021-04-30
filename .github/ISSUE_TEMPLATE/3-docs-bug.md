@@ -1,7 +1,6 @@
 ---
 name: "Docs or angular.io Bug Report"
 about: Report an issue in Angular's documentation or angular.io application
-
 ---
 <!--
 
