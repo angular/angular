@@ -9,7 +9,7 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent, ɵwhenRendered as whenRendered} from '@angular/core';
+import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
 
 class Todo {
   editing: boolean;
@@ -133,9 +133,7 @@ class TodoStore {
 class ToDoAppComponent {
   newTodoText = '';
 
-  constructor(public todoStore: TodoStore) {
-    (window as any).todoAppComponent = this;
-  }
+  constructor(public todoStore: TodoStore) {}
 
   cancelEditingTodo(todo: Todo) {
     todo.editing = false;
@@ -202,8 +200,3 @@ class ToDoAppModule {
 }
 
 renderComponent(ToDoAppComponent);
-
-// This bundle includes `@angular/core` within it which means that the test asserting
-// against it will load a different core bundle. These symbols are exposed so that they
-// can interact with the correct `@angular/core` instance.
-module.exports = {whenRendered};

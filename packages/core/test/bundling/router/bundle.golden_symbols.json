@@ -786,9 +786,6 @@
     "name": "TQuery_"
   },
   {
-    "name": "TRACKED_LVIEWS"
-  },
-  {
     "name": "TRANSITION_ID"
   },
   {
@@ -2017,9 +2014,6 @@
   },
   {
     "name": "u"
-  },
-  {
-    "name": "uniqueIdCounter"
   },
   {
     "name": "unwrapElementRef"

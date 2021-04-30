@@ -42,9 +42,6 @@
     "name": "SimpleChange"
   },
   {
-    "name": "TRACKED_LVIEWS"
-  },
-  {
     "name": "ViewEncapsulation"
   },
   {
@@ -177,9 +174,6 @@
     "name": "isInCheckNoChangesMode"
   },
   {
-    "name": "isLView"
-  },
-  {
     "name": "isProceduralRenderer"
   },
   {
@@ -241,9 +235,6 @@
   },
   {
     "name": "setSelectedIndex"
-  },
-  {
-    "name": "uniqueIdCounter"
   },
   {
     "name": "updateTransplantedViewCount"
