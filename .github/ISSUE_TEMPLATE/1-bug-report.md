@@ -1,5 +1,5 @@
 ---
-name: "Bug report"
+name: "Bug Report"
 about: Report a bug in the Angular Framework
 ---
 <!--
@@ -12,7 +12,7 @@ Existing issues often contain information about workarounds, resolution, or prog
 -->
 
 
-# bug report
+# Bug Report
 
 ### Affected Package
 <!-- Can you pin-point one or more @angular/* packages as the source of the bug? -->
@@ -22,19 +22,18 @@ Existing issues often contain information about workarounds, resolution, or prog
 ### Is this a regression?
 
 <!-- Did this behavior use to work in the previous version? -->
-<!-- --> Yes, the previous version in which this bug was not present was: ....
+<!-- edit: --> Yes, the previous version in which this bug was not present was: ....
 
 
 ### Description
-
-<!-- --> A clear and concise description of the problem...
+<!-- edit: --> A clear and concise description of the problem...
 
 
 ## Minimal Reproduction
 <!--
 Please create and share minimal reproduction of the issue starting with this template: https://stackblitz.com/fork/angular-ivy
 -->
-<!-- --> https://stackblitz.com/...
+<!-- edit: --> https://stackblitz.com/...
 
 <!--
 If StackBlitz is not suitable for reproduction of your issue, please create a minimal GitHub repository with the reproduction of the issue.
@@ -49,7 +48,6 @@ You can read more about issue submission guidelines here: https://github.com/ang
 ## Exception or Error
 <pre><code>
 <!-- If the issue is accompanied by an exception or an error, please share it below: -->
-<!-- -->
 
 </code></pre>
 
@@ -59,7 +57,6 @@ You can read more about issue submission guidelines here: https://github.com/ang
 **Angular Version:**
 <pre><code>
 <!-- run `ng version` and paste output below -->
-<!-- -->
 
 </code></pre>
 
