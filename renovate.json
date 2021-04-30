@@ -46,7 +46,8 @@
     "angular-mocks-1.7",
     "puppeteer",
     "rollup",
-    "selenium-webdriver"
+    "selenium-webdriver",
+    "watchr"
   ],
   "packageFiles": [
     "WORKSPACE",
