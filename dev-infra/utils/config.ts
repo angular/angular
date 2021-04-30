@@ -69,7 +69,7 @@ export function getConfig(baseDir?: string): NgDevConfig;
 export function getConfig(baseDir?: string): NgDevConfig {
   // If the global config is not defined, load it from the file system.
   if (cachedConfig === null) {
-    baseDir = baseDir || GitClient.getInstance().getBaseDir();
+    baseDir = baseDir || GitClient.getInstance().baseDir;
     // The full path to the configuration file.
     const configPath = join(baseDir, CONFIG_FILE_PATH);
     // Read the configuration and validate it before caching it for the future.
