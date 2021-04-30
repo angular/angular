@@ -1,5 +1,4 @@
 import {join} from 'path';
-import {exec} from 'shelljs';
 import {ReleaseConfig} from '../dev-infra/release/config';
 
 /** Configuration for the `ng-dev release` command. */
@@ -29,9 +28,8 @@ export const release: ReleaseConfig = {
     const {buildTargetPackages} = require(join(__dirname, '../scripts/build/package-builder'));
     return buildTargetPackages('dist/release-output', false, 'Release', true);
   },
-  // TODO: This can be removed once there is an org-wide tool for changelog generation.
-  generateReleaseNotesForHead: async () => {
-    exec('yarn -s gulp changelog', {cwd: join(__dirname, '../')});
+  releaseNotes: {
+    hiddenScopes: ['aio', 'dev-infra', 'docs-infra', 'zone.js'],
   },
   releasePrLabels: ['comp: build & ci', 'action: merge', 'PullApprove: disable'],
 };
