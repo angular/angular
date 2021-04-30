@@ -6,27 +6,26 @@
     - [Navigate to the host node](#navigate-to-the-host-node)
     - [Navigate to source](#navigate-to-source)
     - [Update property value](#update-property-value)
-    - [Access selected component in console](#access-selected-component-in-console)
-    - [Selecting DOM Node](#selecting-dom-node)
-  - [Profiler](#profiler)
-    - [Default profiler view](#default-profiler-view)
-    - [Directive details](#directive-details)
-    - [Flame graph view](#flame-graph-view)
+    - [Access selected component or directive in console](#access-selected-component-or-directive-in-console)
+    - [Selecting a directive or component](#selecting-a-directive-or-component)
+  - [Profiling your application](#profiling-your-application)
+    - [Understanding your application's execution](#understanding-your-applications-execution)
+    - [Understanding component's execution](#understanding-components-execution)
+    - [Hierarchical views](#hierarchical-views)
     - [Debugging OnPush](#debugging-onpush)
-    - [Treemap view](#treemap-view)
     - [Import recording](#import-recording)
 
 # Overview
 
-Angular DevTools is a Chrome extension that provides debugging and profiling capabilities for Angular applications. Angular Devtools supports Angular v9 and above, with Ivy enabled.
+Angular DevTools is a Chrome DevTools extension that provides debugging and profiling capabilities for Angular applications. Angular DevTools supports Angular Ivy applications v9 and above.
 
-You can install devtools from Chrome Webstore by searching "Angular Devtools" or can click here.
+You can find Angular DevTools in the [Chrome Web Store](...).
 
-Once installed, open Chrome DevTools. You should see an "Angular" tab.
+Once you install Angular DevTools, you can find the extension under the "Angular" tab in Chrome DevTools.
 
 ![component explorer](assets/open-devtools.gif)
 
-When you open it, you'll see two additional tabs:
+When you open the extension, you'll see two additional tabs:
 
 - [Components](#components) - allows you to explore the components and directives in your application and preview or edit their state.
 - [Profiler](#profiler) - allows you to profile your application and understand what is the performance bottleneck during change detection execution.
@@ -37,13 +36,11 @@ At the top-right corner of Angular DevTools you'll find what is the version of A
 
 ## Bug reports
 
-You can **report issues and feature requests [here](https://github.com/rangle/angular-devtools/issues)**.
-
-When opening an issue, please follow the issue template provided.
+You can **report issues and feature requests on [GitHub](https://github.com/rangle/angular-devtools/issues)**.
 
 If you're reporting an issue with the profiler, export the profiler recording by clicking the "save profile" button, and then attach that export as a file in the issue.
 
-> Make sure while exporting profiler recording, it does not contain any proprietary information.
+> Make sure while exporting profiler recording, it does not contain any confidential information.
 
 ## Debugging your application
 
@@ -51,15 +48,17 @@ The component tab allows you to explore the structure of your application. You c
 
 ### Exploring the structure of the application
 
-The component tree displays a hierarchical relationship of the _components_ and _directives_ within your application. When you select a component or directive instance, Angular DevTools presents additional information about it.
-
 ![component explorer](assets/component-explorer.png)
 
 In the screenshot above, you can see the component tree of an application.
 
+The component tree displays a hierarchical relationship of the _components_ and _directives_ within your application. When you select a component or a directive instance, Angular DevTools presents additional information about it.
+
 ### Viewing properties
 
-You can click on the individual components or directives to select them and preview their properties. Component properties will get displayed on the right-hand side of the component tree. To navigate in the component tree, you can use the arrows:
+You can click on the individual components or directives to select them and preview their properties. Angular DevTools will display their properties and metadata on the right-hand side of the component tree.
+
+You can navigate in the component tree using the mouse or the following keyboard shortcuts:
 
 - Up and down to select the previous and next nodes.
 - Left and right to collapse and expand a node.
@@ -82,37 +81,35 @@ For components, Angular DevTools would also allow you to navigate to the compone
 
 ### Update property value
 
-Like Chrome DevTools, the property view allows you to edit the value of an input, output, or state property. Right-click on the property value. If edit functionality is available for this value type, you'll see a text input. Type the new value and press enter.
+Like Chrome DevTools, the property view allows you to edit the value of an input, output, or another property. Right-click on the property value. If edit functionality is available for this value type, you'll see a text input. Type the new value and press enter.
 
 ![update property](assets/update-property.gif)
 
-### Access selected component in console
+### Access selected component or directive in console
 
-As a shortcut in the console, Angular DevTools provides you access to the currently selected component. Just type `$ng0` to get a reference to the instance of the selected component. DevTools keeps references to the last 5 selections in the variables `$ng0`, `$ng1`, `$ng2`, `$ng3`, and `$ng4`.
+As a shortcut in the console, Angular DevTools provides you access to the instances of the recently selected components or directives. Type `$ng0` to get a reference to the instance of the currently selected component or directive, `$ng1` for the previously selected instance, etc.
 
 ![access console](assets/access-console.gif)
 
-### Selecting DOM Node
+### Selecting a directive or component
 
-Like Chrome Devtools you can use selection to hover over the rendered components on the page and select the component within the component tree.
+Similarly to Chrome DevTools you can inspect the page to select a particular component or directive. Click on the directive explorer and hover a DOM element on the page. Angular DevTools will recognize the associated directives and/or components and allow you to select the corresponding entry in the component explorer.
 
 ![selecting dom node](assets/selecting-dom-node.gif)
 
-## Profiler
+## Profiling your application
 
-The profiler tab allows you to preview the execution time of Angular's change detection and your component's lifecycle hooks.
-
-Currently, Angular DevTools does not allow profiling of component and the directive's outputs.
+The profiler tab allows you to preview the execution of Angular's change detection.
 
 ![profiler](assets/profiler.png)
 
-The profiler allows you to start profiling or import an existing profile. You can start profiling your application by clicking on the circle at the top left.
+The profiler allows you to start profiling or import an existing profile. You can start profiling your application by clicking on the circle at the top-left.
 
 During profiling, Angular DevTools will capture execution events, such as change detection and lifecycle hook execution. To finish recording, click on the same button.
 
 You can also import an existing recording. Read more about this feature at the [Import recording](#import-recording) section.
 
-### Default profiler view
+### Understanding your application's execution
 
 On the screenshot below, you can find the default view of the profiler once you complete recording.
 
@@ -122,31 +119,27 @@ At the top, you can see a sequence of bars, each one of them symbolizing change 
 
 ![profiler selected bar](assets/profiler-selected-bar.png)
 
-Above the change detection cycle visualization, you can find how much time exactly Angular spent in this cycle. Angular DevTools will also try to estimate the frame drop at this point so that it can indicate when you should consider
-optimizing your component tree.
+Above the change detection timeline, you can find how much time Angular spent in this cycle. Angular DevTools will also try to estimate the frame drop at this point so that it can indicate when the execution of your application may impact the user experience.
 
-Additionally, Angular DevTools will also indicate what triggered the change detection (i.e., change detection's source).
+Angular DevTools will also indicate what triggered the change detection (i.e., change detection's source).
 
-### Directive details
+### Understanding component's execution
 
-You can easily notice how much time you spend on the individual components/directives. When you click on a bar, you'll see detailed view about your selection:
+When you click on a bar, you'll find a detailed view about how much time your application spent in the particular directive or component:
 
 ![directive details](assets/directive-details.gif)
 
-On the screenshot above you can find a pie chart showing how much time the specific directive/component spent in change detection versus lifecycle hooks and also, its parent hierarchy, so that you can efficiently allocate it in the
-component tree.
+### Hierarchical views
 
-### Flame graph view
+![flame graph view](assets/flame-graph-view.gif)
 
-You can also preview the change detection execution in a flame graph. Each tile in the graph represents an element on the screen at a specific position in the DOM tree.
+You can also preview the change detection execution in a flame graph-like view. Each tile in the graph represents an element on the screen at a specific position in the render tree.
 
-> For example, if during one change detection cycle at a specific position in the component tree we had `ComponentA`, this component was removed, and on its place Angular rendered `ComponentB`; you'll see both components at the same tile.
+For example, if during one change detection cycle at a specific position in the component tree we had `ComponentA`, this component was removed, and on its place Angular rendered `ComponentB`; you'll see both components at the same tile.
 
 Each tile is colored depending on how much time Angular has spent there. DevTools determines the intensity of the color by the time spent relative to the tile where we've spent the most time in change detection.
 
 When you click on a certain tile, you'll see details about it in the panel on the right. Double click on the tile, will zoom it in so you can preview the nested children:
-
-![flame graph view](assets/flame-graph-view.gif)
 
 ### Debugging OnPush
 
@@ -155,12 +148,6 @@ To preview in which components Angular did change detection, check the "Change d
 This view will color in green all the tiles in which Angular change detection, and in gray the rest:
 
 ![debugging onpush](assets/debugging-onpush.gif)
-
-### Treemap view
-
-The treemap view is experimental. It aims to show in which component in the component tree you spent the most time during the selected change detection cycle.
-
-![ree map](assets/tree-map.gif)
 
 ### Import recording
 
