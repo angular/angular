@@ -57,7 +57,7 @@ export class BrowserDomAdapter extends GenericBrowserDomAdapter {
     return node instanceof DocumentFragment;
   }
 
-  /** @deprecated No longer being used in Ivy code. To be removed in a future version. */
+  /** @deprecated No longer being used in Ivy code. To be removed in version 14. */
   getGlobalEventTarget(doc: Document, target: string): EventTarget|null {
     if (target === 'window') {
       return window;
