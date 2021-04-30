@@ -1,27 +1,64 @@
-# AngularDevtools
+# Angular DevTools
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.0-rc.5.
+## Table of content
 
-## Development server
+- [Angular DevTools](#angular-devtools)
+  - [Table of content](#table-of-content)
+  - [Introduction](#introduction)
+  - [Inspecting Code](#inspecting-code)
+  - [Supported version](#supported-version)
+  - [Working on Angular DevTools](#working-on-angular-devtools)
+    - [Installing and Running locally](#installing-and-running-locally)
+    - [Build and Install on Chrome locally](#build-and-install-on-chrome-locally)
+  - [Reporting issues](#reporting-issues)
+  - [Contributing](#contributing)
+    - [General guidelines](#general-guidelines)
+    - [License](#license)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Introduction
 
-## Code scaffolding
+Angular DevTools is a Chrome DevTools extension for debugging and profiling Angular applications.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+You can install the extension from: [Chrome Web Store](#)
 
-## Build
+## Inspecting Code
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Angular DevTools is a Chrome extension that provides debugging and profiling capabilities for Angular applications. A hard requirement is that the Angular application is running in development mode.
 
-## Running unit tests
+## Supported version
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Angular DevTools supports Angular v9 and above, with Ivy enabled.
 
-## Running end-to-end tests
+## Working on Angular DevTools
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+### Installing and Running locally
 
-## Further help
+To setup your local development environment for Angular DevTools, perform the following steps:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+```bash
+git clone git://github.com/rangle/angular-devtools
+cd angular-devtools
+npm install
+npm run start
+```
+
+### Build and Install on Chrome locally
+
+1. After installation, genrate chrome build by running `npm run build:chrome`
+2. Navigate to `chrome://extensions` and enable Developer mode.
+3. Choose "Load unpacked extension".
+4. In the dialog, select the directory `dist/shell-chrome`.
+
+## Reporting issues
+
+Please search to make sure your issue is not already been reported. When opening an issue, please follow the issue template provided.
+
+## Contributing
+
+### General guidelines
+
+If you'd like to help out, please read our [Development Guidelines](DEVELOPING.md) and [Contributing Guidelines](CONTRIBUTING.md).
+
+### License
+
+[MIT](LICENSE)
