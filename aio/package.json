@@ -174,7 +174,7 @@
     "unist-util-source": "^3.0.0",
     "unist-util-visit": "^2.0.3",
     "unist-util-visit-parents": "^3.1.1",
-    "watchr": "^6.9.0",
+    "watchr": "^3.0.1",
     "xregexp": "^5.0.2",
     "yargs": "^16.2.0"
   }
