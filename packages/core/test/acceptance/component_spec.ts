@@ -141,6 +141,47 @@ describe('component', () => {
        expect(fixture.nativeElement.textContent.trim()).toBe('hello');
      });
 
+  onlyInIvy('ViewEngine has a specific error for this while Ivy does not')
+      .it('should not throw when calling `detectChanges` on the ChangeDetectorRef of a destroyed view',
+          () => {
+            @Component({template: 'hello'})
+            class HelloComponent {
+            }
+
+            // TODO: This module is only used to declare the `entryComponets` since
+            //  `configureTestingModule` doesn't support it. The module can be removed
+            // once ViewEngine is removed.
+            @NgModule({
+              declarations: [HelloComponent],
+              exports: [HelloComponent],
+              entryComponents: [HelloComponent]
+            })
+            class HelloModule {
+            }
+
+            @Component({template: `<div #insertionPoint></div>`})
+            class App {
+              @ViewChild('insertionPoint', {read: ViewContainerRef})
+              viewContainerRef!: ViewContainerRef;
+              constructor(public componentFactoryResolver: ComponentFactoryResolver) {}
+            }
+
+            TestBed.configureTestingModule({declarations: [App], imports: [HelloModule]});
+            const fixture = TestBed.createComponent(App);
+            fixture.detectChanges();
+
+            const instance = fixture.componentInstance;
+            const factory =
+                instance.componentFactoryResolver.resolveComponentFactory(HelloComponent);
+            const componentRef = instance.viewContainerRef.createComponent(factory);
+            fixture.detectChanges();
+
+            expect(() => {
+              componentRef.destroy();
+              componentRef.changeDetectorRef.detectChanges();
+            }).not.toThrow();
+          });
+
   // TODO: add tests with Native once tests run in real browser (domino doesn't support shadow root)
   describe('encapsulation', () => {
     @Component({
