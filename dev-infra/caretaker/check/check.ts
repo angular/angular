@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {GitClient} from '../../utils/git/index';
 import {getCaretakerConfig} from '../config';
 
 import {CiModule} from './ci';
@@ -24,8 +23,6 @@ const moduleList = [
 
 /** Check the status of services which Angular caretakers need to monitor. */
 export async function checkServiceStatuses() {
-  // Set the verbose logging state of the GitClient.
-  GitClient.getAuthenticatedInstance().setVerboseLoggingState(false);
   /** The configuration for the caretaker commands. */
   const config = getCaretakerConfig();
   /** List of instances of Caretaker Check modules */

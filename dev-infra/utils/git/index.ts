@@ -34,6 +34,11 @@ export class GitCommandError extends Error {
   }
 }
 
+/** The options available for `GitClient`'s `run` and `runGraceful` methods. */
+type GitClientRunOptions = SpawnSyncOptions&{
+  verboseLogging?: boolean;
+};
+
 /**
  * Common client for performing Git interactions with a given remote.
  *
@@ -83,10 +88,15 @@ export class GitClient<Authenticated extends boolean> {
     GitClient.authenticated = new GitClient(token);
   }
 
+  /** Set the verbose logging state of the GitClient class. */
+  static setVerboseLoggingState(verbose: boolean) {
+    this.verboseLogging = verbose;
+  }
+
+  /** Whether verbose logging of Git actions should be used. */
+  private static verboseLogging = false;
   /** The configuration, containing the github specific configuration. */
   private config: NgDevConfig;
-  /** Whether verbose logging of Git actions should be used. */
-  private verboseLogging = true;
   /** The OAuth scopes available for the provided Github token. */
   private _cachedOauthScopes: Promise<string[]>|null = null;
   /**
@@ -124,14 +134,8 @@ export class GitClient<Authenticated extends boolean> {
     }
   }
 
-  /** Set the verbose logging state of the GitClient instance. */
-  setVerboseLoggingState(verbose: boolean): this {
-    this.verboseLogging = verbose;
-    return this;
-  }
-
   /** Executes the given git command. Throws if the command fails. */
-  run(args: string[], options?: SpawnSyncOptions): Omit<SpawnSyncReturns<string>, 'status'> {
+  run(args: string[], options?: GitClientRunOptions): Omit<SpawnSyncReturns<string>, 'status'> {
     const result = this.runGraceful(args, options);
     if (result.status !== 0) {
       throw new GitCommandError(this, args);
@@ -146,7 +150,7 @@ export class GitClient<Authenticated extends boolean> {
    * if there is any stderr output, the output will be printed. This makes it easier to
    * info failed commands.
    */
-  runGraceful(args: string[], options: SpawnSyncOptions = {}): SpawnSyncReturns<string> {
+  runGraceful(args: string[], options: GitClientRunOptions = {}): SpawnSyncReturns<string> {
     /** The git command to be run. */
     const gitCommand = args[0];
 
@@ -156,9 +160,10 @@ export class GitClient<Authenticated extends boolean> {
     }
 
     // To improve the debugging experience in case something fails, we print all executed Git
-    // commands to better understand the git actions occuring. Depending on the command being
-    // executed, this debugging information should be logged at different logging levels.
-    const printFn = (!this.verboseLogging || options.stdio === 'ignore') ? debug : info;
+    // commands at the DEBUG level to better understand the git actions occuring. Verbose logging,
+    // always logging at the INFO level, can be enabled either by setting the verboseLogging
+    // property on the GitClient class or the options object provided to the method.
+    const printFn = (GitClient.verboseLogging || options.verboseLogging) ? info : debug;
     // Note that we do not want to print the token if it is contained in the command. It's common
     // to share errors with others if the tool failed, and we do not want to leak tokens.
     printFn('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
@@ -321,7 +326,6 @@ export class GitClient<Authenticated extends boolean> {
   }
 
   private determineBaseDir() {
-    this.setVerboseLoggingState(false);
     const {stdout, stderr, status} = this.runGraceful(['rev-parse', '--show-toplevel']);
     if (status !== 0) {
       throw Error(
@@ -329,7 +333,6 @@ export class GitClient<Authenticated extends boolean> {
           `Was the command run from inside of the repo?\n\n` +
           `ERROR:\n ${stderr}`);
     }
-    this.setVerboseLoggingState(true);
     return stdout.trim();
   }
 }
