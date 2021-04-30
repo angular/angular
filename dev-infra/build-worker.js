@@ -205,8 +205,6 @@ var GitClient = /** @class */ (function () {
      */
     function GitClient(githubToken, config, baseDir) {
         this.githubToken = githubToken;
-        /** Whether verbose logging of Git actions should be used. */
-        this.verboseLogging = true;
         /** The OAuth scopes available for the provided Github token. */
         this._cachedOauthScopes = null;
         /**
@@ -254,10 +252,9 @@ var GitClient = /** @class */ (function () {
         }
         GitClient.authenticated = new GitClient(token);
     };
-    /** Set the verbose logging state of the GitClient instance. */
-    GitClient.prototype.setVerboseLoggingState = function (verbose) {
+    /** Set the verbose logging state of the GitClient class. */
+    GitClient.setVerboseLoggingState = function (verbose) {
         this.verboseLogging = verbose;
-        return this;
     };
     /** Executes the given git command. Throws if the command fails. */
     GitClient.prototype.run = function (args, options) {
@@ -283,9 +280,10 @@ var GitClient = /** @class */ (function () {
             throw new DryRunError();
         }
         // To improve the debugging experience in case something fails, we print all executed Git
-        // commands to better understand the git actions occuring. Depending on the command being
-        // executed, this debugging information should be logged at different logging levels.
-        var printFn = (!this.verboseLogging || options.stdio === 'ignore') ? debug : info;
+        // commands at the DEBUG level to better understand the git actions occuring. Verbose logging,
+        // always logging at the INFO level, can be enabled either by setting the verboseLogging
+        // property on the GitClient class or the options object provided to the method.
+        var printFn = (GitClient.verboseLogging || options.verboseLogging) ? info : debug;
         // Note that we do not want to print the token if it is contained in the command. It's common
         // to share errors with others if the tool failed, and we do not want to leak tokens.
         printFn('Executing: git', this.omitGithubTokenFromMessage(args.join(' ')));
@@ -424,16 +422,16 @@ var GitClient = /** @class */ (function () {
         });
     };
     GitClient.prototype.determineBaseDir = function () {
-        this.setVerboseLoggingState(false);
         var _a = this.runGraceful(['rev-parse', '--show-toplevel']), stdout = _a.stdout, stderr = _a.stderr, status = _a.status;
         if (status !== 0) {
             throw Error("Unable to find the path to the base directory of the repository.\n" +
                 "Was the command run from inside of the repo?\n\n" +
                 ("ERROR:\n " + stderr));
         }
-        this.setVerboseLoggingState(true);
         return stdout.trim();
     };
+    /** Whether verbose logging of Git actions should be used. */
+    GitClient.verboseLogging = false;
     return GitClient;
 }());
 /**
