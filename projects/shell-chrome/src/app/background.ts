@@ -1,5 +1,15 @@
 import { AngularDetection } from './ng-validate';
 
+// By default use the black and white icon.
+// Replace it only when we detect an Angular app.
+chrome.browserAction.setIcon({
+  path: {
+    16: `assets/icon-bw16.png`,
+    48: `assets/icon-bw48.png`,
+    128: `assets/icon-bw128.png`,
+  },
+});
+
 const ports: {
   [tab: string]:
     | {
@@ -113,7 +123,9 @@ chrome.runtime.onMessage.addListener((req, sender) => {
     chrome.browserAction.setIcon({
       tabId: sender.tab.id,
       path: {
-        16: `assets/favicon.ico`,
+        16: `assets/icon16.png`,
+        48: `assets/icon48.png`,
+        128: `assets/icon128.png`,
       },
     });
   }

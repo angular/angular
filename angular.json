@@ -24,7 +24,7 @@
             "tsConfig": "tsconfig.app.json",
             "vendorChunk": false,
             "aot": true,
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": ["src/assets"],
             "styles": ["src/styles.scss"],
             "scripts": []
           },
@@ -92,7 +92,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
-            "assets": ["src/favicon.ico", "src/assets"],
+            "assets": ["src/assets"],
             "styles": ["src/styles.scss"],
             "scripts": []
           }
@@ -141,7 +141,6 @@
             "vendorChunk": false,
             "aot": true,
             "assets": [
-              "projects/shell-chrome/src/favicon.ico",
               "projects/shell-chrome/src/assets",
               "projects/shell-chrome/src/manifest.json",
               "projects/shell-chrome/src/devtools.html",
@@ -208,7 +207,7 @@
             "polyfills": "projects/shell-chrome/src/polyfills.ts",
             "tsConfig": "projects/shell-chrome/tsconfig.spec.json",
             "karmaConfig": "projects/shell-chrome/karma.conf.js",
-            "assets": ["projects/shell-chrome/src/favicon.ico", "projects/shell-chrome/src/assets"],
+            "assets": ["projects/shell-chrome/src/assets"],
             "styles": ["projects/shell-chrome/src/styles.scss"],
             "scripts": []
           }
@@ -393,7 +392,7 @@
             "main": "projects/demo-no-zone/src/main.ts",
             "polyfills": "projects/demo-no-zone/src/polyfills.ts",
             "tsConfig": "projects/demo-no-zone/tsconfig.app.json",
-            "assets": ["projects/demo-no-zone/src/favicon.ico", "projects/demo-no-zone/src/assets"],
+            "assets": ["projects/demo-no-zone/src/assets"],
             "styles": ["projects/demo-no-zone/src/styles.css"],
             "scripts": []
           },
@@ -448,7 +447,7 @@
             "polyfills": "projects/demo-no-zone/src/polyfills.ts",
             "tsConfig": "projects/demo-no-zone/tsconfig.spec.json",
             "karmaConfig": "projects/demo-no-zone/karma.conf.js",
-            "assets": ["projects/demo-no-zone/src/favicon.ico", "projects/demo-no-zone/src/assets"],
+            "assets": ["projects/demo-no-zone/src/assets"],
             "styles": ["projects/demo-no-zone/src/styles.css"],
             "scripts": []
           }
