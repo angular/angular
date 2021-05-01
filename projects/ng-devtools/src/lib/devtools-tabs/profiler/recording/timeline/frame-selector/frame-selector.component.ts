@@ -36,6 +36,8 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
   selectedFrameIndexes = new Set<number>();
   frameCount: number;
 
+  private _viewportScrollState = { scrollLeft: 0, xCoordinate: 0, isDragScrolling: false };
+
   get itemWidth(): number {
     return ITEM_WIDTH;
   }
@@ -158,5 +160,27 @@ export class FrameSelectorComponent implements OnInit, OnDestroy {
     } else if (right < itemLeft + this.itemWidth) {
       scrollParent.scrollTo({ left: itemLeft - scrollParent.offsetWidth + this.itemWidth });
     }
+  }
+
+  stopDragScrolling(): void {
+    this._viewportScrollState.isDragScrolling = false;
+  }
+
+  startDragScroll(event: MouseEvent): void {
+    this._viewportScrollState = {
+      xCoordinate: event.clientX,
+      scrollLeft: this.viewport.elementRef.nativeElement.scrollLeft,
+      isDragScrolling: true,
+    };
+  }
+
+  dragScroll(event: MouseEvent): void {
+    if (!this._viewportScrollState.isDragScrolling) {
+      return;
+    }
+
+    const dragScrollSpeed = 2;
+    const dx = event.clientX - this._viewportScrollState.xCoordinate;
+    this.viewport.elementRef.nativeElement.scrollLeft = this._viewportScrollState.scrollLeft - dx * dragScrollSpeed;
   }
 }
