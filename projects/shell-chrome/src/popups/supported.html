@@ -1,5 +1,6 @@
 <html>
   <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <style>
       * {
         margin: 0;
@@ -42,6 +43,11 @@
       p:not(:last-child) {
         margin-bottom: 10px;
       }
+
+      .material-icons {
+        color: rgb(107, 107, 107);
+        margin-right: 7px;
+      }
     </style>
   </head>
 
@@ -50,12 +56,12 @@
       <h4 class="header-text">Angular DevTools</h4>
       <div class="message">
         <section class="section-content">
-          <img class="icon" src="/assets/check.png" />
+          <span class="material-icons md-48">check</span>
           <p>Angular application running development mode.</p>
         </section>
         <br />
         <section class="section-content">
-          <img class="icon" src="/assets/gear.png" />
+          <span class="material-icons md-48">settings</span>
           <p>Open developer tools, and select the Angular tab.</p>
         </section>
       </div>
