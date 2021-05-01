@@ -6,7 +6,16 @@
     <mat-icon>chevron_left</mat-icon>
   </button>
 
-  <cdk-virtual-scroll-viewport #barContainer orientation="horizontal" [itemSize]="itemWidth" class="bar-container">
+  <cdk-virtual-scroll-viewport
+    #barContainer
+    orientation="horizontal"
+    [itemSize]="itemWidth"
+    class="bar-container"
+    (mouseleave)="stopDragScrolling()"
+    (mousedown)="startDragScroll($event)"
+    (mouseup)="stopDragScrolling()"
+    (mousemove)="dragScroll($event)"
+  >
     <div
       *cdkVirtualFor="let d of graphData$ | async; let i = index"
       [ngStyle]="d.style"
