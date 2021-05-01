@@ -1,5 +1,6 @@
 <html>
   <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <style>
       * {
         margin: 0;
@@ -40,6 +41,11 @@
       p:not(:last-child) {
         margin-bottom: 10px;
       }
+
+      .material-icons {
+        color: rgb(107, 107, 107);
+        margin-right: 7px;
+      }
     </style>
   </head>
 
@@ -48,11 +54,11 @@
       <h4 class="header-text">Angular DevTools</h4>
       <div class="message">
         <section>
-          <img class="icon" src="/assets/check.png" />
+          <span class="material-icons md-48">check</span>
           <p>This page is using Angular.</p>
         </section>
         <section>
-          <img class="icon" src="/assets/gear.png" />
+          <span class="material-icons md-48">settings</span>
           <p>You can use DevTools with Angular v9+ <a href="https://angular.io/guide/ivy">Ivy.</a></p>
         </section>
       </div>

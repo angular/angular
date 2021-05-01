@@ -1,5 +1,6 @@
 <html>
   <head>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
     <style>
       * {
         margin: 0;
@@ -36,6 +37,11 @@
       p:not(:last-child) {
         margin-bottom: 10px;
       }
+
+      .material-icons {
+        color: rgb(107, 107, 107);
+        margin-right: 7px;
+      }
     </style>
   </head>
 
@@ -43,7 +49,7 @@
     <div class="modal-content">
       <h4 class="header-text">Angular DevTools</h4>
       <div class="message">
-        <img class="icon" src="/assets/cross.png" />
+        <span class="material-icons md-48">cancel</span>
         <p>This page is not using Angular, or it has a strict extension policy.</p>
       </div>
     </div>
