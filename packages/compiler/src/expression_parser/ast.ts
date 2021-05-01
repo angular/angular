@@ -164,6 +164,15 @@ export class KeyedRead extends AST {
   }
 }
 
+export class SafeKeyedRead extends AST {
+  constructor(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public obj: AST, public key: AST) {
+    super(span, sourceSpan);
+  }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitSafeKeyedRead(this, context);
+  }
+}
+
 export class KeyedWrite extends AST {
   constructor(
       span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public obj: AST, public key: AST,
@@ -453,6 +462,7 @@ export interface AstVisitor {
   visitQuote(ast: Quote, context: any): any;
   visitSafeMethodCall(ast: SafeMethodCall, context: any): any;
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any;
+  visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
   /**
    * This function is optionally defined to allow classes that implement this
@@ -539,6 +549,10 @@ export class RecursiveAstVisitor implements AstVisitor {
   visitSafeMethodCall(ast: SafeMethodCall, context: any): any {
     this.visit(ast.receiver, context);
     this.visitAll(ast.args, context);
+  }
+  visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any {
+    this.visit(ast.obj, context);
+    this.visit(ast.key, context);
   }
   visitQuote(ast: Quote, context: any): any {}
   // This is not part of the AstVisitor interface, just a helper method
@@ -667,6 +681,10 @@ export class AstTransformer implements AstVisitor {
   visitQuote(ast: Quote, context: any): AST {
     return new Quote(
         ast.span, ast.sourceSpan, ast.prefix, ast.uninterpretedExpression, ast.location);
+  }
+
+  visitSafeKeyedRead(ast: SafeKeyedRead, context: any): AST {
+    return new SafeKeyedRead(ast.span, ast.sourceSpan, ast.obj.visit(this), ast.key.visit(this));
   }
 }
 
@@ -861,6 +879,15 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
   }
 
   visitQuote(ast: Quote, context: any): AST {
+    return ast;
+  }
+
+  visitSafeKeyedRead(ast: SafeKeyedRead, context: any): AST {
+    const obj = ast.obj.visit(this);
+    const key = ast.key.visit(this);
+    if (obj !== ast.obj || key !== ast.key) {
+      return new SafeKeyedRead(ast.span, ast.sourceSpan, obj, key);
+    }
     return ast;
   }
 }

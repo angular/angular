@@ -127,6 +127,14 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
         expectCharacterToken(tokens[3], 3, 4, ']');
       });
 
+      it('should tokenize a safe indexed operator', () => {
+        const tokens: number[] = lex('j?.[k]');
+        expect(tokens.length).toBe(5);
+        expectOperatorToken(tokens[1], 1, 3, '?.');
+        expectCharacterToken(tokens[2], 3, 4, '[');
+        expectCharacterToken(tokens[4], 5, 6, ']');
+      });
+
       it('should tokenize numbers', () => {
         const tokens: number[] = lex('88');
         expect(tokens.length).toEqual(1);

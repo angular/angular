@@ -114,6 +114,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
     this.recordAst(ast);
     super.visitQuote(ast, null);
   }
+  visitSafeKeyedRead(ast: e.SafeKeyedRead) {
+    this.recordAst(ast);
+    super.visitSafeKeyedRead(ast, null);
+  }
 
   visitTemplate(ast: t.Template) {
     t.visitAll(this, ast.children);

@@ -114,6 +114,10 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Templ
     this.recordAst(ast);
     super.visitQuote(ast, null);
   }
+  visitSafeKeyedRead(ast: e.SafeKeyedRead) {
+    this.recordAst(ast);
+    super.visitSafeKeyedRead(ast, null);
+  }
 
   visitNgContent(ast: t.NgContentAst) {}
   visitEmbeddedTemplate(ast: t.EmbeddedTemplateAst) {

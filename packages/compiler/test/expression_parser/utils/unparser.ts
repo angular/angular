@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead, ThisReceiver, Unary} from '../../../src/expression_parser/ast';
+import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeKeyedRead, SafeMethodCall, SafePropertyRead, ThisReceiver, Unary} from '../../../src/expression_parser/ast';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml_parser/interpolation_config';
 
 class Unparser implements AstVisitor {
@@ -191,6 +191,13 @@ class Unparser implements AstVisitor {
 
   visitQuote(ast: Quote, context: any) {
     this._expression += `${ast.prefix}:${ast.uninterpretedExpression}`;
+  }
+
+  visitSafeKeyedRead(ast: SafeKeyedRead, context: any) {
+    this._visit(ast.obj);
+    this._expression += '?.[';
+    this._visit(ast.key);
+    this._expression += ']';
   }
 
   private _visit(ast: AST) {

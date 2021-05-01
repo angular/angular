@@ -74,6 +74,7 @@ export function getExpressionCompletions(
       result = undefined;
     },
     visitKeyedRead(_ast) {},
+    visitSafeKeyedRead(_ast) {},
     visitKeyedWrite(_ast) {},
     visitLiteralArray(_ast) {},
     visitLiteralMap(_ast) {},
@@ -168,6 +169,7 @@ export function getExpressionSymbol(
     visitThisReceiver(_ast) {},
     visitInterpolation(_ast) {},
     visitKeyedRead(_ast) {},
+    visitSafeKeyedRead(_ast) {},
     visitKeyedWrite(_ast) {},
     visitLiteralArray(_ast) {},
     visitLiteralMap(_ast) {},

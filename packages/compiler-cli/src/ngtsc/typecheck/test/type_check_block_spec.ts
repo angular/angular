@@ -997,12 +997,13 @@ describe('type check blocks', () => {
     });
 
     describe('config.strictSafeNavigationTypes', () => {
-      const TEMPLATE = `{{a?.b}} {{a?.method()}}`;
+      const TEMPLATE = `{{a?.b}} {{a?.method()}} {{a?.[0]}}`;
 
       it('should use undefined for safe navigation operations when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain('(null as any ? (((ctx).a))!.method() : undefined)');
         expect(block).toContain('(null as any ? (((ctx).a))!.b : undefined)');
+        expect(block).toContain('(null as any ? (((ctx).a))![0] : undefined)');
       });
       it('should use an \'any\' type for safe navigation operations when disabled', () => {
         const DISABLED_CONFIG:
@@ -1010,15 +1011,17 @@ describe('type check blocks', () => {
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('((((ctx).a))!.method() as any)');
         expect(block).toContain('((((ctx).a))!.b as any)');
+        expect(block).toContain('(((((ctx).a))![0] as any)');
       });
     });
 
     describe('config.strictSafeNavigationTypes (View Engine bug emulation)', () => {
-      const TEMPLATE = `{{a.method()?.b}} {{a()?.method()}}`;
+      const TEMPLATE = `{{a.method()?.b}} {{a()?.method()}} {{a.method()?.[0]}}`;
       it('should check the presence of a property/method on the receiver when enabled', () => {
         const block = tcb(TEMPLATE, DIRECTIVES);
         expect(block).toContain('(null as any ? ((((ctx).a)).method())!.b : undefined)');
         expect(block).toContain('(null as any ? ((ctx).a())!.method() : undefined)');
+        expect(block).toContain('(null as any ? ((((ctx).a)).method())![0] : undefined)');
       });
       it('should not check the presence of a property/method on the receiver when disabled', () => {
         const DISABLED_CONFIG:
@@ -1026,6 +1029,7 @@ describe('type check blocks', () => {
         const block = tcb(TEMPLATE, DIRECTIVES, DISABLED_CONFIG);
         expect(block).toContain('(((((ctx).a)).method()) as any).b');
         expect(block).toContain('(((ctx).a()) as any).method()');
+        expect(block).toContain('(((((ctx).a)).method()) as any)[0]');
       });
     });
 

@@ -412,6 +412,18 @@ runInEachFileSystem(() => {
 
         expect(messages).toEqual([]);
       });
+
+      it('does not produce diagnostic for safe keyed access', () => {
+        const messages =
+            diagnose(`<div [class.red-text]="person.favoriteColors?.[0] === 'red'"></div>`, `
+              export class TestComponent {
+                person: {
+                  favoriteColors?: string[];
+                };
+              }`);
+
+        expect(messages).toEqual([]);
+      });
     });
 
     it('computes line and column offsets', () => {

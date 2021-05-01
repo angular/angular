@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
+import {AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeKeyedRead, SafeMethodCall, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {TypeCheckingConfig} from '../api';
@@ -330,6 +330,30 @@ class AstTranslator implements AstVisitor {
     addParseSpanInfo(node, ast.sourceSpan);
     return node;
   }
+
+  visitSafeKeyedRead(ast: SafeKeyedRead): ts.Expression {
+    const receiver = wrapForDiagnostics(this.translate(ast.obj));
+    const key = this.translate(ast.key);
+    let node: ts.Expression;
+
+    // The form of safe property reads depends on whether strictness is in use.
+    if (this.config.strictSafeNavigationTypes) {
+      // "a?.[...]" becomes (null as any ? a![...] : undefined)
+      const expr = ts.createElementAccess(ts.createNonNullExpression(receiver), key);
+      addParseSpanInfo(expr, ast.sourceSpan);
+      node = ts.createParen(ts.createConditional(NULL_AS_ANY, expr, UNDEFINED));
+    } else if (VeSafeLhsInferenceBugDetector.veWillInferAnyFor(ast)) {
+      // "a?.[...]" becomes (a as any)[...]
+      node = ts.createElementAccess(tsCastToAny(receiver), key);
+    } else {
+      // "a?.[...]" becomes (a!.[...] as any)
+      const expr = ts.createElementAccess(ts.createNonNullExpression(receiver), key);
+      addParseSpanInfo(expr, ast.sourceSpan);
+      node = tsCastToAny(expr);
+    }
+    addParseSpanInfo(node, ast.sourceSpan);
+    return node;
+  }
 }
 
 /**
@@ -348,8 +372,9 @@ class AstTranslator implements AstVisitor {
 class VeSafeLhsInferenceBugDetector implements AstVisitor {
   private static SINGLETON = new VeSafeLhsInferenceBugDetector();
 
-  static veWillInferAnyFor(ast: SafeMethodCall|SafePropertyRead) {
-    return ast.receiver.visit(VeSafeLhsInferenceBugDetector.SINGLETON);
+  static veWillInferAnyFor(ast: SafeMethodCall|SafePropertyRead|SafeKeyedRead) {
+    const visitor = VeSafeLhsInferenceBugDetector.SINGLETON;
+    return ast instanceof SafeKeyedRead ? ast.obj.visit(visitor) : ast.receiver.visit(visitor);
   }
 
   visitUnary(ast: Unary): boolean {
@@ -416,6 +441,9 @@ class VeSafeLhsInferenceBugDetector implements AstVisitor {
     return true;
   }
   visitSafePropertyRead(ast: SafePropertyRead): boolean {
+    return false;
+  }
+  visitSafeKeyedRead(ast: SafeKeyedRead): boolean {
     return false;
   }
 }

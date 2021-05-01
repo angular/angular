@@ -220,6 +220,12 @@ describe('parser', () => {
         checkAction('a.a["a"]');
       });
 
+      it('should parse safe keyed reads', () => {
+        checkAction('a?.["a"]');
+        checkAction('this.a?.["a"]', 'a?.["a"]');
+        checkAction('a.a?.["a"]');
+      });
+
       describe('malformed keyed reads', () => {
         it('should recover on missing keys', () => {
           checkActionWithError('a[]', 'a[]', 'Key access cannot be empty');
@@ -246,6 +252,10 @@ describe('parser', () => {
         checkAction('a["a"] = 1 + 2');
         checkAction('this.a["a"] = 1 + 2', 'a["a"] = 1 + 2');
         checkAction('a.a["a"] = 1 + 2');
+      });
+
+      it('should report on safe keyed writes', () => {
+        expectActionError('a?.["a"] = 123', 'cannot be used in the assignment');
       });
 
       describe('malformed keyed writes', () => {
