@@ -8,7 +8,7 @@
     "start": "cross-env LATEST_SHA=`git rev-parse --short HEAD` ng serve",
     "build": "ng build",
     "build:chrome": "cross-env LATEST_SHA=`git rev-parse --short HEAD` ng build shell-chrome",
-    "release": "node projects/shell-chrome/set-version.js && cross-env LATEST_SHA=`git rev-parse --short HEAD` ng build shell-chrome --prod",
+    "release": "node projects/shell-chrome/set-version.js && cross-env LATEST_SHA=`git rev-parse --short HEAD` ng build shell-chrome --configuration production",
     "test": "ng test",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
