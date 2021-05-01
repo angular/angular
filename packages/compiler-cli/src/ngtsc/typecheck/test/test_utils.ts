@@ -44,6 +44,7 @@ export function typescriptLibDts(): TestFile {
         call(...args: any[]): any;
       }
       declare interface Array<T> {
+        [index: number]: T;
         length: number;
       }
       declare interface String {

@@ -156,7 +156,8 @@ export class SafePropertyRead extends ASTWithName {
 }
 
 export class KeyedRead extends AST {
-  constructor(span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public obj: AST, public key: AST) {
+  constructor(
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public key: AST) {
     super(span, sourceSpan);
   }
   visit(visitor: AstVisitor, context: any = null): any {
@@ -164,9 +165,19 @@ export class KeyedRead extends AST {
   }
 }
 
+export class SafeKeyedRead extends AST {
+  constructor(
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public key: AST) {
+    super(span, sourceSpan);
+  }
+  visit(visitor: AstVisitor, context: any = null): any {
+    return visitor.visitSafeKeyedRead(this, context);
+  }
+}
+
 export class KeyedWrite extends AST {
   constructor(
-      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public obj: AST, public key: AST,
+      span: ParseSpan, sourceSpan: AbsoluteSourceSpan, public receiver: AST, public key: AST,
       public value: AST) {
     super(span, sourceSpan);
   }
@@ -453,6 +464,7 @@ export interface AstVisitor {
   visitQuote(ast: Quote, context: any): any;
   visitSafeMethodCall(ast: SafeMethodCall, context: any): any;
   visitSafePropertyRead(ast: SafePropertyRead, context: any): any;
+  visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any;
   visitASTWithSource?(ast: ASTWithSource, context: any): any;
   /**
    * This function is optionally defined to allow classes that implement this
@@ -501,11 +513,11 @@ export class RecursiveAstVisitor implements AstVisitor {
     this.visitAll(ast.expressions, context);
   }
   visitKeyedRead(ast: KeyedRead, context: any): any {
-    this.visit(ast.obj, context);
+    this.visit(ast.receiver, context);
     this.visit(ast.key, context);
   }
   visitKeyedWrite(ast: KeyedWrite, context: any): any {
-    this.visit(ast.obj, context);
+    this.visit(ast.receiver, context);
     this.visit(ast.key, context);
     this.visit(ast.value, context);
   }
@@ -539,6 +551,10 @@ export class RecursiveAstVisitor implements AstVisitor {
   visitSafeMethodCall(ast: SafeMethodCall, context: any): any {
     this.visit(ast.receiver, context);
     this.visitAll(ast.args, context);
+  }
+  visitSafeKeyedRead(ast: SafeKeyedRead, context: any): any {
+    this.visit(ast.receiver, context);
+    this.visit(ast.key, context);
   }
   visitQuote(ast: Quote, context: any): any {}
   // This is not part of the AstVisitor interface, just a helper method
@@ -644,12 +660,13 @@ export class AstTransformer implements AstVisitor {
   }
 
   visitKeyedRead(ast: KeyedRead, context: any): AST {
-    return new KeyedRead(ast.span, ast.sourceSpan, ast.obj.visit(this), ast.key.visit(this));
+    return new KeyedRead(ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.key.visit(this));
   }
 
   visitKeyedWrite(ast: KeyedWrite, context: any): AST {
     return new KeyedWrite(
-        ast.span, ast.sourceSpan, ast.obj.visit(this), ast.key.visit(this), ast.value.visit(this));
+        ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.key.visit(this),
+        ast.value.visit(this));
   }
 
   visitAll(asts: any[]): any[] {
@@ -667,6 +684,11 @@ export class AstTransformer implements AstVisitor {
   visitQuote(ast: Quote, context: any): AST {
     return new Quote(
         ast.span, ast.sourceSpan, ast.prefix, ast.uninterpretedExpression, ast.location);
+  }
+
+  visitSafeKeyedRead(ast: SafeKeyedRead, context: any): AST {
+    return new SafeKeyedRead(
+        ast.span, ast.sourceSpan, ast.receiver.visit(this), ast.key.visit(this));
   }
 }
 
@@ -822,19 +844,19 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
   }
 
   visitKeyedRead(ast: KeyedRead, context: any): AST {
-    const obj = ast.obj.visit(this);
+    const obj = ast.receiver.visit(this);
     const key = ast.key.visit(this);
-    if (obj !== ast.obj || key !== ast.key) {
+    if (obj !== ast.receiver || key !== ast.key) {
       return new KeyedRead(ast.span, ast.sourceSpan, obj, key);
     }
     return ast;
   }
 
   visitKeyedWrite(ast: KeyedWrite, context: any): AST {
-    const obj = ast.obj.visit(this);
+    const obj = ast.receiver.visit(this);
     const key = ast.key.visit(this);
     const value = ast.value.visit(this);
-    if (obj !== ast.obj || key !== ast.key || value !== ast.value) {
+    if (obj !== ast.receiver || key !== ast.key || value !== ast.value) {
       return new KeyedWrite(ast.span, ast.sourceSpan, obj, key, value);
     }
     return ast;
@@ -861,6 +883,15 @@ export class AstMemoryEfficientTransformer implements AstVisitor {
   }
 
   visitQuote(ast: Quote, context: any): AST {
+    return ast;
+  }
+
+  visitSafeKeyedRead(ast: SafeKeyedRead, context: any): AST {
+    const obj = ast.receiver.visit(this);
+    const key = ast.key.visit(this);
+    if (obj !== ast.receiver || key !== ast.key) {
+      return new SafeKeyedRead(ast.span, ast.sourceSpan, obj, key);
+    }
     return ast;
   }
 }

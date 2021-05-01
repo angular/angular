@@ -471,6 +471,15 @@ describe('getTargetAtPosition for expression AST', () => {
     expect(node).toBeInstanceOf(e.KeyedRead);
   });
 
+  it('should locate safe keyed read', () => {
+    const {errors, nodes, position} = parse(`{{ foo?.['bar']¦ }}`);
+    expect(errors).toBe(null);
+    const {context} = getTargetAtPosition(nodes, position)!;
+    const {node} = context as SingleNodeTarget;
+    expect(isExpressionNode(node!)).toBe(true);
+    expect(node).toBeInstanceOf(e.SafeKeyedRead);
+  });
+
   it('should locate property write', () => {
     const {errors, nodes, position} = parse(`<div (foo)="b¦ar=$event"></div>`);
     expect(errors).toBe(null);

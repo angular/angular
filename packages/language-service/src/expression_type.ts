@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, AstVisitor, ASTWithName, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
+import {AST, AstVisitor, ASTWithName, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeKeyedRead, SafeMethodCall, SafePropertyRead, ThisReceiver, Unary} from '@angular/compiler';
 
 import {createDiagnostic, Diagnostic} from './diagnostic_messages';
 import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
@@ -271,7 +271,7 @@ export class AstType implements AstVisitor {
   }
 
   visitKeyedRead(ast: KeyedRead): Symbol {
-    const targetType = this.getType(ast.obj);
+    const targetType = this.getType(ast.receiver);
     const keyType = this.getType(ast.key);
     const result = targetType.indexed(
         keyType, ast.key instanceof LiteralPrimitive ? ast.key.value : undefined);
@@ -377,6 +377,14 @@ export class AstType implements AstVisitor {
 
   visitSafePropertyRead(ast: SafePropertyRead) {
     return this.resolvePropertyRead(this.query.getNonNullableType(this.getType(ast.receiver)), ast);
+  }
+
+  visitSafeKeyedRead(ast: SafeKeyedRead): Symbol {
+    const targetType = this.query.getNonNullableType(this.getType(ast.receiver));
+    const keyType = this.getType(ast.key);
+    const result = targetType.indexed(
+        keyType, ast.key instanceof LiteralPrimitive ? ast.key.value : undefined);
+    return result || this.anyType;
   }
 
   /**

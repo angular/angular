@@ -478,12 +478,13 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
       return this.convertSafeAccess(ast, leftMostSafe, mode);
     } else {
       return convertToStatementIfNeeded(
-          mode, this._visit(ast.obj, _Mode.Expression).key(this._visit(ast.key, _Mode.Expression)));
+          mode,
+          this._visit(ast.receiver, _Mode.Expression).key(this._visit(ast.key, _Mode.Expression)));
     }
   }
 
   visitKeyedWrite(ast: cdAst.KeyedWrite, mode: _Mode): any {
-    const obj: o.Expression = this._visit(ast.obj, _Mode.Expression);
+    const obj: o.Expression = this._visit(ast.receiver, _Mode.Expression);
     const key: o.Expression = this._visit(ast.key, _Mode.Expression);
     const value: o.Expression = this._visit(ast.value, _Mode.Expression);
     return convertToStatementIfNeeded(mode, obj.key(key).set(value));
@@ -627,6 +628,10 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
     return this.convertSafeAccess(ast, this.leftMostSafeNode(ast), mode);
   }
 
+  visitSafeKeyedRead(ast: cdAst.SafeKeyedRead, mode: _Mode): any {
+    return this.convertSafeAccess(ast, this.leftMostSafeNode(ast), mode);
+  }
+
   visitAll(asts: cdAst.AST[], mode: _Mode): any {
     return asts.map(ast => this._visit(ast, mode));
   }
@@ -643,7 +648,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   }
 
   private convertSafeAccess(
-      ast: cdAst.AST, leftMostSafe: cdAst.SafeMethodCall|cdAst.SafePropertyRead, mode: _Mode): any {
+      ast: cdAst.AST, leftMostSafe: cdAst.SafeMethodCall|cdAst.SafePropertyRead|cdAst.SafeKeyedRead,
+      mode: _Mode): any {
     // If the expression contains a safe access node on the left it needs to be converted to
     // an expression that guards the access to the member by checking the receiver for blank. As
     // execution proceeds from left to right, the left most part of the expression must be guarded
@@ -707,6 +713,11 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
               leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.nameSpan,
               leftMostSafe.receiver, leftMostSafe.name, leftMostSafe.args,
               leftMostSafe.argumentSpan));
+    } else if (leftMostSafe instanceof cdAst.SafeKeyedRead) {
+      this._nodeMap.set(
+          leftMostSafe,
+          new cdAst.KeyedRead(
+              leftMostSafe.span, leftMostSafe.sourceSpan, leftMostSafe.receiver, leftMostSafe.key));
     } else {
       this._nodeMap.set(
           leftMostSafe,
@@ -756,7 +767,8 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
   //   a == null ? null : a.c.b.c?.d.e
   // then to:
   //   a == null ? null : a.b.c == null ? null : a.b.c.d.e
-  private leftMostSafeNode(ast: cdAst.AST): cdAst.SafePropertyRead|cdAst.SafeMethodCall {
+  private leftMostSafeNode(ast: cdAst.AST): cdAst.SafePropertyRead|cdAst.SafeMethodCall
+      |cdAst.SafeKeyedRead {
     const visit = (visitor: cdAst.AstVisitor, ast: cdAst.AST): any => {
       return (this._nodeMap.get(ast) || ast).visit(visitor);
     };
@@ -786,7 +798,7 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         return null;
       },
       visitKeyedRead(ast: cdAst.KeyedRead) {
-        return visit(this, ast.obj);
+        return visit(this, ast.receiver);
       },
       visitKeyedWrite(ast: cdAst.KeyedWrite) {
         return null;
@@ -825,6 +837,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         return visit(this, ast.receiver) || ast;
       },
       visitSafePropertyRead(ast: cdAst.SafePropertyRead) {
+        return visit(this, ast.receiver) || ast;
+      },
+      visitSafeKeyedRead(ast: cdAst.SafeKeyedRead) {
         return visit(this, ast.receiver) || ast;
       }
     });
@@ -905,6 +920,9 @@ class _AstToIrVisitor implements cdAst.AstVisitor {
         return true;
       },
       visitSafePropertyRead(ast: cdAst.SafePropertyRead) {
+        return false;
+      },
+      visitSafeKeyedRead(ast: cdAst.SafeKeyedRead) {
         return false;
       }
     });

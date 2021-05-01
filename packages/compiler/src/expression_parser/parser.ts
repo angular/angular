@@ -9,7 +9,7 @@
 import * as chars from '../chars';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';
 
-import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, ExpressionBinding, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeMethodCall, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
+import {AbsoluteSourceSpan, AST, AstVisitor, ASTWithSource, Binary, BindingPipe, Chain, Conditional, EmptyExpr, ExpressionBinding, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralMapKey, LiteralPrimitive, MethodCall, NonNullAssert, ParserError, ParseSpan, PrefixNot, PropertyRead, PropertyWrite, Quote, RecursiveAstVisitor, SafeKeyedRead, SafeMethodCall, SafePropertyRead, TemplateBinding, TemplateBindingIdentifier, ThisReceiver, Unary, VariableBinding} from './ast';
 import {EOF, isIdentifier, isQuote, Lexer, Token, TokenType} from './lexer';
 
 export interface InterpolationPiece {
@@ -822,24 +822,11 @@ export class _ParseAST {
         result = this.parseAccessMemberOrMethodCall(result, start, false);
 
       } else if (this.consumeOptionalOperator('?.')) {
-        result = this.parseAccessMemberOrMethodCall(result, start, true);
-
+        result = this.consumeOptionalCharacter(chars.$LBRACKET) ?
+            this.parseKeyedReadOrWrite(result, start, true) :
+            this.parseAccessMemberOrMethodCall(result, start, true);
       } else if (this.consumeOptionalCharacter(chars.$LBRACKET)) {
-        this.withContext(ParseContextFlags.Writable, () => {
-          this.rbracketsExpected++;
-          const key = this.parsePipe();
-          if (key instanceof EmptyExpr) {
-            this.error(`Key access cannot be empty`);
-          }
-          this.rbracketsExpected--;
-          this.expectCharacter(chars.$RBRACKET);
-          if (this.consumeOptionalOperator('=')) {
-            const value = this.parseConditional();
-            result = new KeyedWrite(this.span(start), this.sourceSpan(start), result, key, value);
-          } else {
-            result = new KeyedRead(this.span(start), this.sourceSpan(start), result, key);
-          }
-        });
+        result = this.parseKeyedReadOrWrite(result, start, false);
       } else if (this.consumeOptionalCharacter(chars.$LPAREN)) {
         this.rparensExpected++;
         const args = this.parseCallArguments();
@@ -954,7 +941,7 @@ export class _ParseAST {
     return new LiteralMap(this.span(start), this.sourceSpan(start), keys, values);
   }
 
-  parseAccessMemberOrMethodCall(receiver: AST, start: number, isSafe: boolean = false): AST {
+  parseAccessMemberOrMethodCall(receiver: AST, start: number, isSafe: boolean): AST {
     const nameStart = this.inputIndex;
     const id = this.withContext(ParseContextFlags.Writable, () => {
       const id = this.expectIdentifierOrKeyword() ?? '';
@@ -1093,6 +1080,31 @@ export class _ParseAST {
     }
 
     return new TemplateBindingParseResult(bindings, [] /* warnings */, this.errors);
+  }
+
+  parseKeyedReadOrWrite(receiver: AST, start: number, isSafe: boolean): AST {
+    return this.withContext(ParseContextFlags.Writable, () => {
+      this.rbracketsExpected++;
+      const key = this.parsePipe();
+      if (key instanceof EmptyExpr) {
+        this.error(`Key access cannot be empty`);
+      }
+      this.rbracketsExpected--;
+      this.expectCharacter(chars.$RBRACKET);
+      if (this.consumeOptionalOperator('=')) {
+        if (isSafe) {
+          this.error('The \'?.\' operator cannot be used in the assignment');
+        } else {
+          const value = this.parseConditional();
+          return new KeyedWrite(this.span(start), this.sourceSpan(start), receiver, key, value);
+        }
+      } else {
+        return isSafe ? new SafeKeyedRead(this.span(start), this.sourceSpan(start), receiver, key) :
+                        new KeyedRead(this.span(start), this.sourceSpan(start), receiver, key);
+      }
+
+      return new EmptyExpr(this.span(start), this.sourceSpan(start));
+    });
   }
 
   /**
@@ -1333,6 +1345,8 @@ class SimpleExpressionChecker implements AstVisitor {
   visitChain(ast: Chain, context: any) {}
 
   visitQuote(ast: Quote, context: any) {}
+
+  visitSafeKeyedRead(ast: SafeKeyedRead, context: any) {}
 }
 
 /**
