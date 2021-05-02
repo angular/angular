@@ -135,8 +135,6 @@
 export class ShadowCss {
   strictStyling: boolean = true;
 
-  constructor() {}
-
   /*
    * Shim some cssText with the given selector. Returns cssText that can
    * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
@@ -367,12 +365,12 @@ export class ShadowCss {
     return processRules(cssText, (rule: CssRule) => {
       let selector = rule.selector;
       let content = rule.content;
-      if (rule.selector[0] != '@') {
+      if (rule.selector[0] !== '@') {
         selector =
             this._scopeSelector(rule.selector, scopeSelector, hostSelector, this.strictStyling);
       } else if (
           rule.selector.startsWith('@media') || rule.selector.startsWith('@supports') ||
-          rule.selector.startsWith('@page') || rule.selector.startsWith('@document')) {
+          rule.selector.startsWith('@document')) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       } else if (rule.selector.startsWith('@font-face')) {
         content = this._stripScopingSelectors(rule.content, scopeSelector, hostSelector);
@@ -792,7 +790,7 @@ function combineHostContextSelectors(contextSelectors: string[], otherSelectors:
  *     in-place.
  * @param multiples The number of times the current groups should appear.
  */
-export function repeatGroups<T>(groups: string[][], multiples: number): void {
+export function repeatGroups(groups: string[][], multiples: number): void {
   const length = groups.length;
   for (let i = 1; i < multiples; i++) {
     for (let j = 0; j < length; j++) {
