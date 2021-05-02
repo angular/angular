@@ -7,15 +7,28 @@
  */
 
 import {NgModuleResolver} from '@angular/compiler/src/ng_module_resolver';
-import {ɵstringify as stringify} from '@angular/core';
-import {NgModule} from '@angular/core/src/metadata';
+import {Component, Directive, Injectable, NgModule, ɵstringify as stringify} from '@angular/core';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
-class SomeClass1 {}
-class SomeClass2 {}
-class SomeClass3 {}
-class SomeClass4 {}
-class SomeClass5 {}
+@Directive()
+class SomeClass1 {
+}
+
+@NgModule()
+class SomeClass2 {
+}
+
+@NgModule()
+class SomeClass3 {
+}
+
+@Injectable()
+class SomeClass4 {
+}
+
+@Component({template: ''})
+class SomeClass5 {
+}
 
 @NgModule({
   declarations: [SomeClass1],
