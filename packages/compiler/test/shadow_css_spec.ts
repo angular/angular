@@ -14,8 +14,11 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
     function s(css: string, contentAttr: string, hostAttr: string = '') {
       const shadowCss = new ShadowCss();
       const shim = shadowCss.shimCssText(css, contentAttr, hostAttr);
-      const nlRegexp = /\n/g;
-      return normalizeCSS(shim.replace(nlRegexp, ''));
+      return normalize(shim);
+    }
+
+    function normalize(value: string): string {
+      return normalizeCSS(value.replace(/\n/g, '')).trim();
     }
 
     it('should handle empty string', () => {
@@ -53,10 +56,49 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(s(css, 'contenta')).toEqual(expected);
     });
 
-    it('should handle page rules', () => {
-      const css = '@page {div {font-size:50px;}}';
-      const expected = '@page {div[contenta] {font-size:50px;}}';
-      expect(s(css, 'contenta')).toEqual(expected);
+    // @page rules use a special set of at-rules and selectors and they can't be scoped.
+    // See: https://www.w3.org/TR/css-page-3
+    it('should preserve @page rules', () => {
+      const contentAttr = 'contenta';
+      const css = `
+        @page {
+          margin-right: 4in;
+
+          @top-left {
+            content: "Hamlet";
+          }
+
+          @top-right {
+            content: "Page " counter(page);
+          }
+        }
+
+        @page main {
+          margin-left: 4in;
+        }
+
+        @page :left {
+          margin-left: 3cm;
+          margin-right: 4cm;
+        }
+
+        @page :right {
+          margin-left: 4cm;
+          margin-right: 3cm;
+        }
+      `;
+      const result = s(css, contentAttr);
+      expect(result).toEqual(normalize(css));
+      expect(result).not.toContain(contentAttr);
+    });
+
+    it('should strip ::ng-deep and :host from within @page rules', () => {
+      expect(s('@page { margin-right: 4in; }', 'contenta', 'h'))
+          .toEqual('@page { margin-right:4in;}');
+      expect(s('@page { ::ng-deep @top-left { content: "Hamlet";}}', 'contenta', 'h'))
+          .toEqual('@page { @top-left { content:"Hamlet";}}');
+      expect(s('@page { :host ::ng-deep @top-left { content:"Hamlet";}}', 'contenta', 'h'))
+          .toEqual('@page { @top-left { content:"Hamlet";}}');
     });
 
     it('should handle document rules', () => {

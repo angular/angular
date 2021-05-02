@@ -135,8 +135,6 @@
 export class ShadowCss {
   strictStyling: boolean = true;
 
-  constructor() {}
-
   /*
    * Shim some cssText with the given selector. Returns cssText that can
    * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
@@ -367,15 +365,15 @@ export class ShadowCss {
     return processRules(cssText, (rule: CssRule) => {
       let selector = rule.selector;
       let content = rule.content;
-      if (rule.selector[0] != '@') {
+      if (rule.selector[0] !== '@') {
         selector =
             this._scopeSelector(rule.selector, scopeSelector, hostSelector, this.strictStyling);
       } else if (
           rule.selector.startsWith('@media') || rule.selector.startsWith('@supports') ||
-          rule.selector.startsWith('@page') || rule.selector.startsWith('@document')) {
+          rule.selector.startsWith('@document')) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
-      } else if (rule.selector.startsWith('@font-face')) {
-        content = this._stripScopingSelectors(rule.content, scopeSelector, hostSelector);
+      } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
+        content = this._stripScopingSelectors(rule.content);
       }
       return new CssRule(selector, content);
     });
@@ -396,15 +394,17 @@ export class ShadowCss {
    * :host ::ng-deep {
    *   import 'some/lib/containing/font-face';
    * }
+   *
+   * Similar logic applies to `@page` rules which can contain a particular set of properties,
+   * as well as some specific at-rules. Since they can't be encapsulated, we have to strip
+   * any scoping selectors from them. For more information: https://www.w3.org/TR/css-page-3
    * ```
    */
-  private _stripScopingSelectors(cssText: string, scopeSelector: string, hostSelector: string):
-      string {
+  private _stripScopingSelectors(cssText: string): string {
     return processRules(cssText, rule => {
       const selector = rule.selector.replace(_shadowDeepSelectors, ' ')
                            .replace(_polyfillHostNoCombinatorRe, ' ');
-      const content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
-      return new CssRule(selector, content);
+      return new CssRule(selector, rule.content);
     });
   }
 
@@ -792,7 +792,7 @@ function combineHostContextSelectors(contextSelectors: string[], otherSelectors:
  *     in-place.
  * @param multiples The number of times the current groups should appear.
  */
-export function repeatGroups<T>(groups: string[][], multiples: number): void {
+export function repeatGroups(groups: string[][], multiples: number): void {
   const length = groups.length;
   for (let i = 1; i < multiples; i++) {
     for (let j = 0; j < length; j++) {
