@@ -12457,11 +12457,13 @@ unist-util-remove-position@^2.0.0:
   dependencies:
     unist-util-visit "^2.0.0"
 
-unist-util-source@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/unist-util-source/-/unist-util-source-3.0.0.tgz#c5dde07fabf6b46f9f7e2af46c42880d5d5dddca"
-  integrity sha512-G2GXkoPDN9Ai2MLNFgk0bx7VI8YaRC87cYSoGtHEfWMD2nuUG8kdZ8CJ8Ep/D4v7PYwy/LnGgNy28kmEc/dmhA==
+unist-util-source@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/unist-util-source/-/unist-util-source-4.0.0.tgz#723e76d4d214aae01bd83e1673ff0fde2bc6516f"
+  integrity sha512-J56jUnEGMuv75HZ/HikSDuKhnv2liWfd7O6JI7PCE5hc6X/veZMOszbRcr2IfHqlUR+zbkfyZF3EFcTuVxJ9og==
   dependencies:
+    "@types/unist" "^2.0.0"
+    vfile "^4.0.0"
     vfile-location "^3.0.0"
 
 unist-util-stringify-position@^1.0.0, unist-util-stringify-position@^1.1.1:
