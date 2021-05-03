@@ -421,16 +421,8 @@ var GitClient = /** @class */ (function () {
         GitClient.authenticated = new GitClient(token);
     };
     /** Set the verbose logging state of the GitClient class. */
-    GitClient.setVerboseLoggingStae = function (verbose) {
+    GitClient.setVerboseLoggingState = function (verbose) {
         this.verboseLogging = verbose;
-    };
-    /**
-     * Set the verbose logging state of the GitClient class and get back the specific GitClient
-     * instance the verbose state was set via.
-     */
-    GitClient.prototype.setVerboseLoggingState = function (verbose) {
-        GitClient.setVerboseLoggingStae(verbose);
-        return this;
     };
     /** Executes the given git command. Throws if the command fails. */
     GitClient.prototype.run = function (args, options) {

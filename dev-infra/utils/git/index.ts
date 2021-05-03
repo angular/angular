@@ -89,7 +89,7 @@ export class GitClient<Authenticated extends boolean> {
   }
 
   /** Set the verbose logging state of the GitClient class. */
-  static setVerboseLoggingStae(verbose: boolean) {
+  static setVerboseLoggingState(verbose: boolean) {
     this.verboseLogging = verbose;
   }
 
@@ -132,15 +132,6 @@ export class GitClient<Authenticated extends boolean> {
     if (typeof githubToken === 'string') {
       this._githubTokenRegex = new RegExp(githubToken, 'g');
     }
-  }
-
-  /**
-   * Set the verbose logging state of the GitClient class and get back the specific GitClient
-   * instance the verbose state was set via.
-   */
-  setVerboseLoggingState(verbose: boolean): this {
-    GitClient.setVerboseLoggingStae(verbose);
-    return this;
   }
 
   /** Executes the given git command. Throws if the command fails. */
