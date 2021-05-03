@@ -14,7 +14,7 @@ import {ContentOrigin} from './content_origin';
 import {MapAndPath, RawSourceMap, SourceMapInfo} from './raw_source_map';
 import {SourceFile} from './source_file';
 
-const SCHEME_MATCHER = /^([a-z][a-z0-9.-]*):\/\//i;
+const SCHEME_MATCHER = /^([a-z][a-z0-9.-]*):\/\/(.*)$/i;
 
 /**
  * This class can be used to load a source file, its associated source map and any upstream sources.
@@ -268,6 +268,8 @@ export class SourceFileLoader {
    */
   private replaceSchemeWithPath(path: string): string {
     return path.replace(
-        SCHEME_MATCHER, (_: string, scheme: string) => this.schemeMap[scheme.toLowerCase()] || '');
+        SCHEME_MATCHER,
+        (_: string, scheme: string, rest: string) =>
+            this.fs.join(this.schemeMap[scheme.toLowerCase()] || '/', rest));
   }
 }
