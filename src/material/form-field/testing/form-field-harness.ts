@@ -15,15 +15,19 @@ import {
   parallel,
   TestElement
 } from '@angular/cdk/testing';
+import {
+  MatDatepickerInputHarness,
+  MatDateRangeInputHarness,
+} from '@angular/material/datepicker/testing';
 import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
 import {MatInputHarness} from '@angular/material/input/testing';
 import {MatSelectHarness} from '@angular/material/select/testing';
 import {FormFieldHarnessFilters} from './form-field-harness-filters';
 
-// TODO(devversion): support datepicker harness once developed (COMP-203).
-// Also support chip list harness.
+// TODO(devversion): support support chip list harness
 /** Possible harnesses of controls which can be bound to a form-field. */
-export type FormFieldControlHarness = MatInputHarness|MatSelectHarness;
+export type FormFieldControlHarness =
+  MatInputHarness|MatSelectHarness|MatDatepickerInputHarness|MatDateRangeInputHarness;
 
 export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFieldControlHarness>
   extends ComponentHarness {
@@ -34,6 +38,8 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
   protected abstract _hints: AsyncFactoryFn<TestElement[]>;
   protected abstract _inputControl: AsyncFactoryFn<ControlHarness|null>;
   protected abstract _selectControl: AsyncFactoryFn<ControlHarness|null>;
+  protected abstract _datepickerInputControl: AsyncFactoryFn<ControlHarness|null>;
+  protected abstract _dateRangeInputControl: AsyncFactoryFn<ControlHarness|null>;
 
   /** Gets the appearance of the form-field. */
   abstract getAppearance(): Promise<string>;
@@ -91,8 +97,15 @@ export abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFie
     if (type) {
       return this.locatorForOptional(type)();
     }
-    const [select, input] = await parallel(() => [this._selectControl(), this._inputControl()]);
-    return select || input;
+    const [select, input, datepickerInput, dateRangeInput] = await parallel(() => [
+      this._selectControl(),
+      this._inputControl(),
+      this._datepickerInputControl(),
+      this._dateRangeInputControl()
+    ]);
+
+    // Match the datepicker inputs first since they can also have a `MatInput`.
+    return datepickerInput || dateRangeInput || select || input;
   }
 
   /** Gets the theme color of the form-field. */
@@ -234,6 +247,8 @@ export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldContr
   protected _hints = this.locatorForAll('mat-hint, .mat-hint');
   protected _inputControl = this.locatorForOptional(MatInputHarness);
   protected _selectControl = this.locatorForOptional(MatSelectHarness);
+  protected _datepickerInputControl = this.locatorForOptional(MatDatepickerInputHarness);
+  protected _dateRangeInputControl = this.locatorForOptional(MatDateRangeInputHarness);
 
   /** Gets the appearance of the form-field. */
   async getAppearance(): Promise<'legacy'|'standard'|'fill'|'outline'> {

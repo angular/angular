@@ -1,4 +1,6 @@
 export declare abstract class _MatFormFieldHarnessBase<ControlHarness extends MatFormFieldControlHarness> extends ComponentHarness {
+    protected abstract _dateRangeInputControl: AsyncFactoryFn<ControlHarness | null>;
+    protected abstract _datepickerInputControl: AsyncFactoryFn<ControlHarness | null>;
     protected abstract _errors: AsyncFactoryFn<TestElement[]>;
     protected abstract _hints: AsyncFactoryFn<TestElement[]>;
     protected abstract _inputControl: AsyncFactoryFn<ControlHarness | null>;
@@ -29,7 +31,7 @@ export declare abstract class _MatFormFieldHarnessBase<ControlHarness extends Ma
     abstract isLabelFloating(): Promise<boolean>;
 }
 
-export declare type FormFieldControlHarness = MatInputHarness | MatSelectHarness;
+export declare type FormFieldControlHarness = MatInputHarness | MatSelectHarness | MatDatepickerInputHarness | MatDateRangeInputHarness;
 
 export interface FormFieldHarnessFilters extends BaseHarnessFilters {
     floatingLabelText?: string | RegExp;
@@ -37,6 +39,8 @@ export interface FormFieldHarnessFilters extends BaseHarnessFilters {
 }
 
 export declare class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldControlHarness> {
+    protected _dateRangeInputControl: AsyncFactoryFn<MatDateRangeInputHarness | null>;
+    protected _datepickerInputControl: AsyncFactoryFn<MatDatepickerInputHarness | null>;
     protected _errors: AsyncFactoryFn<TestElement[]>;
     protected _hints: AsyncFactoryFn<TestElement[]>;
     protected _inputControl: AsyncFactoryFn<MatInputHarness | null>;

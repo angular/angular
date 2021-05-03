@@ -13,11 +13,15 @@ import {
 } from '@angular/material/form-field/testing';
 import {MatInputHarness} from '@angular/material-experimental/mdc-input/testing';
 import {MatSelectHarness} from '@angular/material-experimental/mdc-select/testing';
+import {
+  MatDatepickerInputHarness,
+  MatDateRangeInputHarness,
+} from '@angular/material/datepicker/testing';
 
-// TODO(devversion): support datepicker harness once developed (COMP-203).
-// Also support chip list harness.
+// TODO(devversion): support support chip list harness
 /** Possible harnesses of controls which can be bound to a form-field. */
-export type FormFieldControlHarness = MatInputHarness|MatSelectHarness;
+export type FormFieldControlHarness =
+  MatInputHarness|MatSelectHarness|MatDatepickerInputHarness|MatDateRangeInputHarness;
 
 /** Harness for interacting with a MDC-based form-field's in tests. */
 export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldControlHarness> {
@@ -44,6 +48,8 @@ export class MatFormFieldHarness extends _MatFormFieldHarnessBase<FormFieldContr
   protected _hints = this.locatorForAll('.mat-mdc-form-field-hint');
   protected _inputControl = this.locatorForOptional(MatInputHarness);
   protected _selectControl = this.locatorForOptional(MatSelectHarness);
+  protected _datepickerInputControl = this.locatorForOptional(MatDatepickerInputHarness);
+  protected _dateRangeInputControl = this.locatorForOptional(MatDateRangeInputHarness);
   private _mdcTextField = this.locatorFor('.mat-mdc-text-field-wrapper');
 
   /** Gets the appearance of the form-field. */

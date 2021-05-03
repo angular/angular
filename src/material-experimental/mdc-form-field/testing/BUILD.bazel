@@ -13,6 +13,7 @@ ts_library(
         "//src/cdk/testing",
         "//src/material-experimental/mdc-input/testing",
         "//src/material-experimental/mdc-select/testing",
+        "//src/material/datepicker/testing",
         "//src/material/form-field/testing",
         "//src/material/form-field/testing/control",
     ],
@@ -32,11 +33,14 @@ ng_test_library(
     deps = [
         ":testing",
         "//src/material-experimental/mdc-autocomplete",
+        "//src/material-experimental/mdc-core",
         "//src/material-experimental/mdc-form-field",
         "//src/material-experimental/mdc-input",
         "//src/material-experimental/mdc-input/testing",
         "//src/material-experimental/mdc-select",
         "//src/material-experimental/mdc-select/testing",
+        "//src/material/datepicker",
+        "//src/material/datepicker/testing",
         "//src/material/form-field/testing:harness_tests_lib",
     ],
 )

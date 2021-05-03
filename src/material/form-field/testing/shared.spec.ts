@@ -9,10 +9,19 @@ import {MatFormFieldHarness} from './form-field-harness';
 
 /** Shared tests to run on both the original and MDC-based form-field's. */
 export function runHarnessTests(
-    modules: Type<any>[], {formFieldHarness, inputHarness, selectHarness, isMdcImplementation}: {
+    modules: Type<any>[], {
+      formFieldHarness,
+      inputHarness,
+      selectHarness,
+      datepickerInputHarness,
+      dateRangeInputHarness,
+      isMdcImplementation,
+    }: {
       formFieldHarness: typeof MatFormFieldHarness,
       inputHarness: Type<any>,
       selectHarness: Type<any>,
+      datepickerInputHarness: Type<any>,
+      dateRangeInputHarness: Type<any>
       isMdcImplementation: boolean
     }) {
   let fixture: ComponentFixture<FormFieldHarnessTest>;
@@ -34,7 +43,7 @@ export function runHarnessTests(
 
   it('should be able to load harnesses', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
-    expect(formFields.length).toBe(5);
+    expect(formFields.length).toBe(7);
   });
 
   it('should be able to load form-field that matches specific selector', async () => {
@@ -60,6 +69,8 @@ export function runHarnessTests(
     expect(await formFields[2].getControl() instanceof selectHarness).toBe(true);
     expect(await formFields[3].getControl() instanceof inputHarness).toBe(true);
     expect(await formFields[4].getControl() instanceof inputHarness).toBe(true);
+    expect(await formFields[5].getControl() instanceof datepickerInputHarness).toBe(true);
+    expect(await formFields[6].getControl() instanceof dateRangeInputHarness).toBe(true);
   });
 
   it('should be able to get custom control of form-field', async () => {
@@ -189,13 +200,13 @@ export function runHarnessTests(
   it('should be able to get the prefix text of a form-field', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
     const prefixTexts = await parallel(() => formFields.map(f => f.getPrefixText()));
-    expect(prefixTexts).toEqual(['prefix_textprefix_text_2', '', '', '', '']);
+    expect(prefixTexts).toEqual(['prefix_textprefix_text_2', '', '', '', '', '', '']);
   });
 
   it('should be able to get the suffix text of a form-field', async () => {
     const formFields = await loader.getAllHarnesses(formFieldHarness);
     const suffixTexts = await parallel(() => formFields.map(f => f.getSuffixText()));
-    expect(suffixTexts).toEqual(['suffix_text', '', '', '', '']);
+    expect(suffixTexts).toEqual(['suffix_text', '', '', '', '', '', '']);
   });
 
   it('should be able to check if form field has been touched', async () => {
@@ -280,6 +291,21 @@ export function runHarnessTests(
     <mat-form-field id="last-form-field" [floatLabel]="shouldLabelFloat">
       <mat-label>Label</mat-label>
       <input matInput>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="datepicker">
+      <mat-datepicker #datepicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Date range</mat-label>
+      <mat-date-range-input [rangePicker]="rangePicker">
+        <input matStartDate placeholder="Start date"/>
+        <input matEndDate placeholder="End date"/>
+      </mat-date-range-input>
+      <mat-date-range-picker #rangePicker></mat-date-range-picker>
     </mat-form-field>
   `
 })

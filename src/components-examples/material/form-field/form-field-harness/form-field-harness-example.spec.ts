@@ -47,7 +47,7 @@ describe('FormFieldHarnessExample', () => {
     expect(await formField.getTextHints()).toEqual(['Hint']);
 
     fixture.componentInstance.requiredControl.setValue('');
-    await (await formField.getControl())?.blur();
+    await ((await formField.getControl() as MatInputHarness))?.blur();
     expect(await formField.getTextErrors()).toEqual(['Error']);
     expect(await formField.getTextHints()).toEqual([]);
   });

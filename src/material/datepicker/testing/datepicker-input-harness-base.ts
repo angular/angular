@@ -9,8 +9,8 @@
 import {
   ComponentHarnessConstructor,
   HarnessPredicate,
-  ComponentHarness,
 } from '@angular/cdk/testing';
+import {MatFormFieldControlHarness} from '@angular/material/form-field/testing/control';
 import {DatepickerInputHarnessFilters} from './datepicker-harness-filters';
 
 /** Sets up the filter predicates for a datepicker input harness. */
@@ -28,7 +28,7 @@ export function getInputPredicate<T extends MatDatepickerInputHarnessBase>(
 }
 
 /** Base class for datepicker input harnesses. */
-export abstract class MatDatepickerInputHarnessBase extends ComponentHarness {
+export abstract class MatDatepickerInputHarnessBase extends MatFormFieldControlHarness {
   /** Whether the input is disabled. */
   async isDisabled(): Promise<boolean> {
     return (await this.host()).getProperty('disabled')!;
