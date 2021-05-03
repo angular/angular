@@ -91,6 +91,9 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
   @Input('matRippleDisabled')
   get disabled() { return this._disabled; }
   set disabled(value: boolean) {
+    if (value) {
+      this.fadeOutAllNonPersistent();
+    }
     this._disabled = value;
     this._setupTriggerEventsIfEnabled();
   }
@@ -139,6 +142,11 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
   /** Fades out all currently showing ripple elements. */
   fadeOutAll() {
     this._rippleRenderer.fadeOutAll();
+  }
+
+  /** Fades out all currently showing non-persistent ripple elements. */
+  fadeOutAllNonPersistent() {
+    this._rippleRenderer.fadeOutAllNonPersistent();
   }
 
   /**

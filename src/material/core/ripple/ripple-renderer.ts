@@ -206,6 +206,15 @@ export class RippleRenderer implements EventListenerObject {
     this._activeRipples.forEach(ripple => ripple.fadeOut());
   }
 
+  /** Fades out all currently active non-persistent ripples. */
+  fadeOutAllNonPersistent() {
+    this._activeRipples.forEach(ripple => {
+      if (!ripple.config.persistent) {
+        ripple.fadeOut();
+      }
+    });
+  }
+
   /** Sets up the trigger event listeners */
   setupTriggerEvents(elementOrElementRef: HTMLElement | ElementRef<HTMLElement>) {
     const element = coerceElement(elementOrElementRef);

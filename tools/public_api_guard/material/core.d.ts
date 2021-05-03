@@ -266,6 +266,7 @@ export declare class MatRipple implements OnInit, OnDestroy, RippleTarget {
     unbounded: boolean;
     constructor(_elementRef: ElementRef<HTMLElement>, ngZone: NgZone, platform: Platform, globalOptions?: RippleGlobalOptions, _animationMode?: string | undefined);
     fadeOutAll(): void;
+    fadeOutAllNonPersistent(): void;
     launch(config: RippleConfig): RippleRef;
     launch(x: number, y: number, config?: RippleConfig): RippleRef;
     ngOnDestroy(): void;
@@ -365,6 +366,7 @@ export declare class RippleRenderer implements EventListenerObject {
     _removeTriggerEvents(): void;
     fadeInRipple(x: number, y: number, config?: RippleConfig): RippleRef;
     fadeOutAll(): void;
+    fadeOutAllNonPersistent(): void;
     fadeOutRipple(rippleRef: RippleRef): void;
     handleEvent(event: Event): void;
     setupTriggerEvents(elementOrElementRef: HTMLElement | ElementRef<HTMLElement>): void;
