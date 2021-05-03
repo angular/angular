@@ -206,5 +206,9 @@ const mutateComponentOrDirective = (updatedStateData: UpdatedStateData, compOrDi
     parentObjectOfValueToUpdate = parentObjectOfValueToUpdate[key];
   });
 
-  parentObjectOfValueToUpdate[valueKey] = updatedStateData.newValue;
+  // When we try to set a property which only has a getter
+  // the line below could throw an error.
+  try {
+    parentObjectOfValueToUpdate[valueKey] = updatedStateData.newValue;
+  } catch {}
 };
