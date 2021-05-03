@@ -1,6 +1,6 @@
 // Structural
 @forward './mdc-helpers/focus-indicators' as mdc-* show mdc-strong-focus-indicators;
-@forward './mdc-core/elevation' show elevation, overridable-elevation;
+@forward './mdc-core/elevation' as mdc-* show mdc-elevation, mdc-overridable-elevation;
 
 // Theme bundles
 @forward './mdc-theming/all-theme' show all-mdc-component-themes;
