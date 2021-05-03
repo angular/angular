@@ -7,8 +7,8 @@
  */
 import {transformSync} from '@babel/core';
 
-describe('createEs2015LinkerPlugin()', () => {
-  it('should work', () => {
+describe('babel plugin entry-point', () => {
+  it('should work as a Babel plugin using the module specifier', () => {
     const result = transformSync(
         `
         import * as i0 from "@angular/core";
