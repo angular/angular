@@ -10,6 +10,11 @@
         settings
       </mat-icon>
     </button>
+    <button mat-icon-button color="primary" [matMenuTriggerFor]="info">
+      <mat-icon>
+        info
+      </mat-icon>
+    </button>
   </div>
   <a class="mat-tab-link" mat-tab-link *ngFor="let tab of tabs" (click)="changeTab(tab)" [active]="activeTab === tab">
     {{ tab }}
@@ -56,4 +61,26 @@
   >
     Show comment nodes
   </mat-slide-toggle>
+</mat-menu>
+
+<mat-menu #info="matMenu">
+  <div class="info-menu">
+    <a
+      mat-button
+      class="menu-toggle-button"
+      href="https://github.com/rangle/angular-devtools/blob/main/docs/overview.md"
+      target="_blank"
+    >
+      <mat-icon>library_books</mat-icon>
+      Guide
+    </a>
+    <a mat-button class="menu-toggle-button" href="https://github.com/rangle/angular-devtools" target="_blank">
+      <mat-icon>launch</mat-icon>
+      GitHub
+    </a>
+    <a mat-button class="menu-toggle-button" href="https://github.com/rangle/angular-devtools/issues" target="_blank">
+      <mat-icon>bug_report</mat-icon>
+      Issues
+    </a>
+  </div>
 </mat-menu>
