@@ -261,6 +261,16 @@ export class MatStartDate<D> extends _MatDateRangeInputBase<D> implements
     return modelValue.start;
   }
 
+  protected _shouldHandleChangeEvent(change: DateSelectionModelChange<DateRange<D>>): boolean {
+    if (!super._shouldHandleChangeEvent(change)) {
+      return false;
+    } else {
+      return !change.oldValue?.start ? !!change.selection.start :
+        !change.selection.start ||
+        !!this._dateAdapter.compareDate(change.oldValue.start, change.selection.start);
+    }
+  }
+
   protected _assignValueToModel(value: D | null) {
     if (this._model) {
       const range = new DateRange(value, this._model.selection.end);
@@ -363,6 +373,16 @@ export class MatEndDate<D> extends _MatDateRangeInputBase<D> implements
 
   protected _getValueFromModel(modelValue: DateRange<D>) {
     return modelValue.end;
+  }
+
+  protected _shouldHandleChangeEvent(change: DateSelectionModelChange<DateRange<D>>): boolean {
+    if (!super._shouldHandleChangeEvent(change)) {
+      return false;
+    } else {
+      return !change.oldValue?.end ? !!change.selection.end :
+        !change.selection.end ||
+        !!this._dateAdapter.compareDate(change.oldValue.end, change.selection.end);
+    }
   }
 
   protected _assignValueToModel(value: D | null) {

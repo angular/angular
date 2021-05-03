@@ -42,6 +42,9 @@ export interface DateSelectionModelChange<S> {
 
   /** Object that triggered the change. */
   source: unknown;
+
+  /** Previous value */
+  oldValue?: S;
 }
 
 /**
@@ -69,8 +72,9 @@ export abstract class MatDateSelectionModel<S, D = ExtractDateTypeFromSelection<
    * @param source Object that triggered the selection change.
    */
   updateSelection(value: S, source: unknown) {
+    const oldValue = (this as {selection: S}).selection;
     (this as {selection: S}).selection = value;
-    this._selectionChanged.next({selection: value, source});
+    this._selectionChanged.next({selection: value, source, oldValue});
   }
 
   ngOnDestroy() {

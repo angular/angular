@@ -865,6 +865,60 @@ describe('MatDateRangeInput', () => {
     expect(endInput.errorStateMatcher).toBe(matcher);
   });
 
+
+  it('should only update model for input that changed', fakeAsync(() => {
+    const fixture = createComponent(RangePickerNgModel);
+
+    fixture.detectChanges();
+    tick();
+
+    expect(fixture.componentInstance.startDateModelChangeCount).toBe(0);
+    expect(fixture.componentInstance.endDateModelChangeCount).toBe(0);
+
+    fixture.componentInstance.rangePicker.open();
+    fixture.detectChanges();
+    tick();
+
+    const fromDate = new Date(2020, 0, 1);
+    const toDate = new Date(2020, 0, 2);
+    fixture.componentInstance.rangePicker.select(fromDate);
+    fixture.detectChanges();
+    tick();
+
+    expect(fixture.componentInstance.startDateModelChangeCount).toBe(1, 'Start Date set once');
+    expect(fixture.componentInstance.endDateModelChangeCount).toBe(0, 'End Date not set');
+
+    fixture.componentInstance.rangePicker.select(toDate);
+    fixture.detectChanges();
+    tick();
+
+    expect(fixture.componentInstance.startDateModelChangeCount).toBe(1,
+      'Start Date unchanged (set once)');
+    expect(fixture.componentInstance.endDateModelChangeCount).toBe(1, 'End Date set once');
+
+    fixture.componentInstance.rangePicker.open();
+    fixture.detectChanges();
+    tick();
+
+    const fromDate2 = new Date(2021, 0, 1);
+    const toDate2 = new Date(2021, 0, 2);
+    fixture.componentInstance.rangePicker.select(fromDate2);
+    fixture.detectChanges();
+    tick();
+
+    expect(fixture.componentInstance.startDateModelChangeCount).toBe(2, 'Start Date set twice');
+    expect(fixture.componentInstance.endDateModelChangeCount).toBe(2,
+      'End Date set twice (nulled)');
+
+    fixture.componentInstance.rangePicker.select(toDate2);
+    fixture.detectChanges();
+    tick();
+
+    expect(fixture.componentInstance.startDateModelChangeCount).toBe(2,
+      'Start Date unchanged (set twice)');
+    expect(fixture.componentInstance.endDateModelChangeCount).toBe(3, 'End date set three times');
+  }));
+
 });
 
 @Component({
@@ -959,8 +1013,24 @@ class RangePickerNgModel {
   @ViewChild(MatStartDate, {read: ElementRef}) startInput: ElementRef<HTMLInputElement>;
   @ViewChild(MatEndDate, {read: ElementRef}) endInput: ElementRef<HTMLInputElement>;
   @ViewChild(MatDateRangePicker) rangePicker: MatDateRangePicker<Date>;
-  start: Date | null = null;
-  end: Date | null = null;
+  private _start: Date|null = null;
+  get start(): Date|null {
+    return this._start;
+  }
+  set start(aStart: Date|null) {
+    this.startDateModelChangeCount++;
+    this._start = aStart;
+  }
+  private _end: Date|null = null;
+  get end(): Date|null {
+    return this._end;
+  }
+  set end(anEnd: Date|null) {
+    this.endDateModelChangeCount++;
+    this._end = anEnd;
+  }
+  startDateModelChangeCount = 0;
+  endDateModelChangeCount = 0;
 }
 
 

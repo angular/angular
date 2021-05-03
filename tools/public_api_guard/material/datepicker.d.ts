@@ -13,6 +13,7 @@ export declare class DateRange<D> {
 }
 
 export interface DateSelectionModelChange<S> {
+    oldValue?: S;
     selection: S;
     source: unknown;
 }
@@ -406,6 +407,7 @@ export declare class MatEndDate<D> extends _MatDateRangeInputBase<D> implements 
     protected _assignValueToModel(value: D | null): void;
     protected _getValueFromModel(modelValue: DateRange<D>): D | null;
     _onKeydown(event: KeyboardEvent): void;
+    protected _shouldHandleChangeEvent(change: DateSelectionModelChange<DateRange<D>>): boolean;
     ngDoCheck(): void;
     ngOnInit(): void;
     static ngAcceptInputType_disabled: BooleanInput;
@@ -517,6 +519,7 @@ export declare class MatStartDate<D> extends _MatDateRangeInputBase<D> implement
     protected _assignValueToModel(value: D | null): void;
     protected _formatValue(value: D | null): void;
     protected _getValueFromModel(modelValue: DateRange<D>): D | null;
+    protected _shouldHandleChangeEvent(change: DateSelectionModelChange<DateRange<D>>): boolean;
     getMirrorValue(): string;
     ngDoCheck(): void;
     ngOnInit(): void;
