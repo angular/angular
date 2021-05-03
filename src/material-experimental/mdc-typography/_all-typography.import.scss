@@ -94,6 +94,7 @@ $mat-mdc-mdc-text-field-outlined-idle-border, $mat-mdc-mdc-text-field-placeholde
 @forward '../mdc-theming/all-theme';
 @forward 'all-typography' hide define-mdc-typography-config, all-mdc-component-typographies;
 @forward 'all-typography' as mat-mdc-typography-* hide
-mat-mdc-typography-all-mdc-component-typographies;
+mat-mdc-typography-all-mdc-component-typographies, mat-mdc-typography-define-mdc-typography-config,
+mat-mdc-typography-mat-mdc-typography-config;
 
 @import '../mdc-theming/all-theme';

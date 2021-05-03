@@ -92,3 +92,8 @@
 @mixin angular-material-mdc-typography($config-or-theme: null) {
   @include all-mdc-component-typographies($config-or-theme);
 }
+
+// @deprecated Use `define-mdc-typography-config`.
+@function mat-mdc-typography-config($args...) {
+  @return define-mdc-typography-config($args...);
+}
