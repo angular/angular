@@ -113,13 +113,6 @@ export const config = {
       'should dispatch the selectionChange event when selecting via ctrl + a'
 
     ],
-    'mdc-menu': [
-      // Disabled since we don't have equivalents to our elevation classes in the MDC packages.
-      'should not remove mat-elevation class from overlay when panelClass is changed',
-      'should increase the sub-menu elevation based on its depth',
-      'should update the elevation when the same menu is opened at a different depth',
-      'should not increase the elevation if the user specified a custom one'
-    ],
     'mdc-progress-bar': [
       // These tests are verifying implementation details that are not relevant for MDC.
       'should return the transform attribute for bufferValue and mode',

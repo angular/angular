@@ -1,9 +1,11 @@
 export declare class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit, OnDestroy {
     _allItems: QueryList<MatMenuItem>;
     readonly _animationDone: Subject<AnimationEvent>;
+    protected _baseElevation: number;
     _classList: {
         [key: string]: boolean;
     };
+    protected _elevationPrefix: string;
     _isAnimating: boolean;
     _panelAnimationState: 'void' | 'enter';
     ariaDescribedby: string;
@@ -69,6 +71,8 @@ export declare const MAT_MENU_PANEL: InjectionToken<MatMenuPanel<any>>;
 export declare const MAT_MENU_SCROLL_STRATEGY: InjectionToken<() => ScrollStrategy>;
 
 export declare class MatMenu extends _MatMenuBase {
+    protected _baseElevation: number;
+    protected _elevationPrefix: string;
     constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone, defaultOptions: MatMenuDefaultOptions);
     static ɵcmp: i0.ɵɵComponentDeclaration<MatMenu, "mat-menu", ["matMenu"], {}, {}, never, ["*"]>;
     static ɵfac: i0.ɵɵFactoryDeclaration<MatMenu, never>;

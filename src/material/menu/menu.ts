@@ -85,14 +85,8 @@ export function MAT_MENU_DEFAULT_OPTIONS_FACTORY(): MatMenuDefaultOptions {
     backdropClass: 'cdk-overlay-transparent-backdrop',
   };
 }
-/**
- * Start elevation for the menu panel.
- * @docs-private
- */
-const MAT_MENU_BASE_ELEVATION = 4;
 
 let menuPanelUid = 0;
-
 
 /** Reason why the menu was closed. */
 export type MenuCloseReason = void | 'click' | 'keydown' | 'tab';
@@ -106,6 +100,8 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   private _xPosition: MenuPositionX = this._defaultOptions.xPosition;
   private _yPosition: MenuPositionY = this._defaultOptions.yPosition;
   private _previousElevation: string;
+  protected _elevationPrefix: string;
+  protected _baseElevation: number;
 
   /** All items inside the menu. Includes items nested inside another menu. */
   @ContentChildren(MatMenuItem, {descendants: true}) _allItems: QueryList<MatMenuItem>;
@@ -404,9 +400,11 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   setElevation(depth: number): void {
     // The elevation starts at the base and increases by one for each level.
     // Capped at 24 because that's the maximum elevation defined in the Material design spec.
-    const elevation = Math.min(MAT_MENU_BASE_ELEVATION + depth, 24);
-    const newElevation = `mat-elevation-z${elevation}`;
-    const customElevation = Object.keys(this._classList).find(c => c.startsWith('mat-elevation-z'));
+    const elevation = Math.min(this._baseElevation + depth, 24);
+    const newElevation = `${this._elevationPrefix}${elevation}`;
+    const customElevation = Object.keys(this._classList).find(className => {
+      return className.startsWith(this._elevationPrefix);
+    });
 
     if (!customElevation || customElevation === this._previousElevation) {
       if (this._previousElevation) {
@@ -506,6 +504,9 @@ export class _MatMenuBase implements AfterContentInit, MatMenuPanel<MatMenuItem>
   ]
 })
 export class MatMenu extends _MatMenuBase {
+  protected _elevationPrefix = 'mat-elevation-z';
+  protected _baseElevation = 4;
+
   constructor(elementRef: ElementRef<HTMLElement>, ngZone: NgZone,
       @Inject(MAT_MENU_DEFAULT_OPTIONS) defaultOptions: MatMenuDefaultOptions) {
     super(elementRef, ngZone, defaultOptions);
