@@ -68,6 +68,17 @@ mat-icon {
     padding: 1rem 1.25rem;
   }
 
+  .info-menu {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .info-menu mat-icon {
+    height: unset;
+    width: unset;
+  }
+
   body.dark-theme .menu-toggle-button {
     color: white;
   }
