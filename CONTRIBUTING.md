@@ -68,7 +68,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 - Make your changes in a new git branch:
 
   ```shell
-  git checkout -b my-fix-branch master
+  git checkout -b my-fix-branch main
   ```
 
 - Create your patch, **including appropriate test cases**.
@@ -89,7 +89,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
   git push origin my-fix-branch
   ```
 
-- In GitHub, send a pull request to `angular-devtools:master`.
+- In GitHub, send a pull request to `angular-devtools:main`.
 - If we suggest changes then:
 
   - Make the required updates.
@@ -97,7 +97,7 @@ Before you submit your Pull Request (PR) consider the following guidelines:
   - Rebase your branch and force push to your GitHub repository (this will update your Pull Request):
 
     ```shell
-    git rebase master -i
+    git rebase main -i
     git push -f
     ```
 
@@ -114,10 +114,10 @@ from the main (upstream) repository:
   git push origin --delete my-fix-branch
   ```
 
-- Check out the master branch:
+- Check out the main branch:
 
   ```shell
-  git checkout master -f
+  git checkout main -f
   ```
 
 - Delete the local branch:
@@ -126,10 +126,10 @@ from the main (upstream) repository:
   git branch -D my-fix-branch
   ```
 
-- Update your master with the latest upstream version:
+- Update your main with the latest upstream version:
 
   ```shell
-  git pull --ff upstream master
+  git pull --ff upstream main
   ```
 
 ## <a name="rules"></a> Coding Rules
@@ -165,7 +165,7 @@ to read on GitHub as well as in various git tools.
 
 Footer should contain a [closing reference to an issue](https://help.github.com/articles/closing-issues-via-commit-messages/) if any.
 
-Samples: (even more [samples](https://github.com/rangle/angular-devtools/commits/master))
+Samples: (even more [samples](https://github.com/rangle/angular-devtools/commits/main))
 
 ```
 docs(changelog): update change log to beta.5
