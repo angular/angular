@@ -970,6 +970,15 @@
     "bio": "Zach is a software engineer at Google on the Angular Core team. He is passionate about a good user experience, burritos and puppies.",
     "groups": ["Angular"],
     "lead": "jelbourn"
+  },
+  "dylhunn": {
+    "name": "Dylan Hunn",
+    "picture": "dylan-hunn.jpg",
+    "twitter": "dylhunn",
+    "website": "https://hunn.io",
+    "bio": "Dylan is a software engineer at Google on the Angular Core team. He loves board games, the open web, and adorable rabbits.",
+    "groups": ["Angular"],
+    "lead": "jelbourn"
   }
 }
 
