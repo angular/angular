@@ -195,6 +195,23 @@ describe('Material theming API schematic', () => {
     ]);
   });
 
+  it('should migrate files that import the Material APIs transitively', async () => {
+    const app = await createTestApp(runner);
+    app.create('/theme.scss', [
+      `@import 're-exports-material-symbols';`,
+      `@include mat-core();`,
+      `@include mat-button-theme();`,
+    ].join('\n'));
+
+    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
+    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+      `@use '~@angular/material' as mat;`,
+      `@import 're-exports-material-symbols';`,
+      `@include mat.core();`,
+      `@include mat.button-theme();`,
+    ]);
+  });
+
   it('should allow an arbitrary number of spaces after @include and @import', async () => {
     const app = await createTestApp(runner);
     app.create('/theme.scss', [
@@ -485,7 +502,7 @@ describe('Material theming API schematic', () => {
     ]);
   });
 
-  it('should not change files if they have an import, but do not use any symbols', async () => {
+  it('should drop the old import path even if the file is not using any symbols', async () => {
     const app = await createTestApp(runner);
     app.create('/theme.scss', [
       `@import '~@angular/material/theming';`,
@@ -497,8 +514,6 @@ describe('Material theming API schematic', () => {
 
     const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
     expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
-      `@import '~@angular/material/theming';`,
-      ``,
       `.my-dialog {`,
         `color: red;`,
       `}`,
@@ -537,7 +552,7 @@ describe('Material theming API schematic', () => {
         `transition: all 400ms cubic-bezier(0.25, 0.8, 0.25, 1);`,
       `}`,
       ``,
-      `@media ('max-width: 959px') {`,
+      `@media (max-width: 959px) {`,
         `.my-button-toggle {`,
           `height: 24px;`,
         `}`,
@@ -568,6 +583,24 @@ describe('Material theming API schematic', () => {
       `$mat-toggle-size:     11px;`,
       ``,
       `@include mat.button-toggle-theme();`,
+    ]);
+  });
+
+  it('should not migrate files in the node_modules', async () => {
+    const app = await createTestApp(runner);
+    app.create('/node_modules/theme.scss', [
+      `@import '~@angular/material/theming';`,
+      ``,
+      `@include mat-button-toggle-theme();`,
+      ``,
+    ].join('\n'));
+
+    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
+    expect(getFileContent(tree, '/node_modules/theme.scss').split('\n')).toEqual([
+      `@import '~@angular/material/theming';`,
+      ``,
+      `@include mat-button-toggle-theme();`,
+      ``,
     ]);
   });
 

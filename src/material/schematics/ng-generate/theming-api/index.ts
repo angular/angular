@@ -14,7 +14,7 @@ import {migrateFileContent} from './migration';
 export default function(_options: Schema): Rule {
   return (tree: Tree) => {
     tree.visit((path, entry) => {
-      if (extname(path) === '.scss') {
+      if (extname(path) === '.scss' && path.indexOf('node_modules') === -1) {
         const content = entry?.content.toString();
         const migratedContent = content ? migrateFileContent(content,
           '~@angular/material/', '~@angular/cdk/', '~@angular/material', '~@angular/cdk') : content;

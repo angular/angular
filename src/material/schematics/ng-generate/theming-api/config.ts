@@ -103,8 +103,8 @@ export const cdkMixins: Record<string, string> = {
 export const removedMaterialVariables: Record<string, string> = {
   // Note: there's also a usage of a variable called `$pi`, but the name is short enough that
   // it matches things like `$mat-pink`. Don't migrate it since it's unlikely to be used.
-  'mat-xsmall': `'max-width: 599px'`,
-  'mat-small': `'max-width: 959px'`,
+  'mat-xsmall': 'max-width: 599px',
+  'mat-small': 'max-width: 959px',
   'mat-toggle-padding': '8px',
   'mat-toggle-size': '20px',
   'mat-linear-out-slow-in-timing-function': 'cubic-bezier(0, 0, 0.2, 0.1)',

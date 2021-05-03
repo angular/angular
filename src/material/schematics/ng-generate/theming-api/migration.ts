@@ -37,19 +37,21 @@ export function migrateFileContent(content: string,
   const materialResults = detectImports(content, oldMaterialPrefix);
   const cdkResults = detectImports(content, oldCdkPrefix);
 
-  // If there are no imports, we don't need to go further.
-  if (materialResults.imports.length > 0 || cdkResults.imports.length > 0) {
-    const initialContent = content;
-    content = migrateMaterialSymbols(content, newMaterialImportPath, materialResults.namespaces);
-    content = migrateCdkSymbols(content, newCdkImportPath, cdkResults.namespaces);
+  // Try to migrate the symbols even if there are no imports. This is used
+  // to cover the case where the Components symbols were used transitively.
+  content = migrateMaterialSymbols(content, newMaterialImportPath, materialResults.namespaces);
+  content = migrateCdkSymbols(content, newCdkImportPath, cdkResults.namespaces);
+  content = replaceRemovedVariables(content, removedMaterialVariables);
 
-    // Only drop the imports if any of the symbols were used within the file.
-    if (content !== initialContent) {
-      content = removeStrings(content, materialResults.imports);
-      content = removeStrings(content, cdkResults.imports);
-      content = content.replace(/^\s+/, '');
-      content = replaceRemovedVariables(content, removedMaterialVariables);
-    }
+  // We can assume that the migration has taken care of any Components symbols that were
+  // imported transitively so we can always drop the old imports. We also assume that imports
+  // to the new entry points have been added already.
+  if (materialResults.imports.length) {
+    content = removeStrings(content, materialResults.imports);
+  }
+
+  if (cdkResults.imports.length) {
+    content = removeStrings(content, cdkResults.imports);
   }
 
   return content;
@@ -227,7 +229,9 @@ function sortLengthDescending(a: string, b: string) {
 
 /** Removes all strings from another string. */
 function removeStrings(content: string, toRemove: string[]): string {
-  return toRemove.reduce((accumulator, current) => accumulator.replace(current, ''), content);
+  return toRemove
+    .reduce((accumulator, current) => accumulator.replace(current, ''), content)
+    .replace(/^\s+/, '');
 }
 
 /** Parses out the namespace from a Sass `@use` statement. */
