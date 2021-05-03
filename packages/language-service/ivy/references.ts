@@ -366,9 +366,7 @@ export class ReferencesAndRenameBuilder {
           entries.set(createLocationKey(entry), entry);
         }
       } else {
-        // TODO(atscott): uncomment when VSCode deduplicates results on their end
-        // https://github.com/microsoft/vscode/issues/117095
-        // entries.set(createLocationKey(ref), ref);
+        entries.set(createLocationKey(ref), ref);
       }
     }
     return Array.from(entries.values());
