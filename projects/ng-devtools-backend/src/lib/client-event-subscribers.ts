@@ -8,10 +8,8 @@ import {
   ComponentType,
   ProfilerFrame,
   ComponentExplorerViewQuery,
-  Route,
 } from 'protocol';
 import { ComponentTreeNode, getLatestComponentState, queryDirectiveForest, updateState } from './component-tree';
-import { parseRoutes } from './router-tree';
 import { start as startProfiling, stop as stopProfiling } from './hooks/capture';
 import { serializeDirectiveState } from './state-serializer/state-serializer';
 import { ComponentInspector } from './component-inspector/component-inspector';
@@ -139,13 +137,11 @@ const getNestedPropertiesCallback = (messageBus: MessageBus<Events>) => (
 //
 // Subscribe Helpers
 //
+
+// todo: parse router tree with framework APIs after they are developed
 const getRoutes = (messageBus: MessageBus<Events>) => {
-  const node = queryDirectiveForest([0], initializeOrGetDirectiveForestHooks().getIndexedDirectiveForest());
-  let routes: Route[] = [];
-  if (node?.component?.instance?.router) {
-    routes = [parseRoutes(node?.component?.instance?.router)];
-  }
-  messageBus.emit('updateRouterTree', [routes]);
+  // Return empty router tree to disable tab.
+  messageBus.emit('updateRouterTree', [[]]);
 };
 
 const checkForAngular = (messageBus: MessageBus<Events>): void => {
