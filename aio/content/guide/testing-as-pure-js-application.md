@@ -1,13 +1,13 @@
 ## Unit Testing Angular App As Pure JS Application
 
-Unit testing is the low level testing. It's goal is to tests units. Unit means any simple part of application.
-It can be module as unit / component as unit or method as unit.
+Unit testing is low-level testing. A unit can be any simple part of an application.
+It can be a module as a unit, or a component as a unit, or a method as a unit.
 
-In JavaScript unit-testing mostly means testing of methods. In this context the goal of this testing is to cover <b>only tested methods functionality</b>.
+In JavaScript, unit testing mostly means testing of methods. In this context, the goal of this testing is to cover <b>only tested methods functionality</b>.
 
-To simplify the tests and make them more stable and predictable they should be independent.
+To simplify the tests and make them more stable and predictable, they should be independent.
 
-Independence in JavaScript mostly compatible to Functional Programming e.g pure functions.
+Independence in JavaScript is mostly compatible with Functional Programming; for example, pure functions.
 Each pure function should return the same result with the same passed arguments and does not have any side effects (e.g. closures)
 ```javascript
  const pureFunction = (arg) => arg;
@@ -162,8 +162,8 @@ In the test we need to follow the same principe to simplify it.
  })
 ```
 
-7. Common tips
-- do not forget any angular's component (e.g. services/directives etc.) are simple classes (function constructor) with specific annotations
+7. Common tips:
+- Do not forget that any Angular components (such as services, directives, etc.) are simple classes (function constructors) with specific annotations.
 ```typescript
  import { Component, Injectable } from '@angular/core';
  
@@ -187,7 +187,7 @@ In the test we need to follow the same principe to simplify it.
  expect(service.serviceMethod).toBe(angularService.serviceMethod);
 ```
 
-- name dependencies and their methods as in production code to simplify their search/debug
+- Name dependencies and their methods as in production code to simplify their search or debug.
 ```typescript
  // for tested instances
  let component = new CustomNameComponent(); // valid
@@ -205,7 +205,7 @@ In the test we need to follow the same principe to simplify it.
  let dependencyMethodSpy: any; // invalid
 ```
 
-- use named only spies and directly assigned dependencies methods for auto-completing and simpler debug
+- Use named-only spies and directly assigned dependencies methods for auto-completing and simpler debugging.
 ```typescript
  // spies 
  let validSpy = jasmine.createSpy('spy'); // valid
@@ -216,7 +216,7 @@ In the test we need to follow the same principe to simplify it.
   // DI.-> auto com-completing
 ```
 
-- do not forget validate arguments to prevent regressions in their changes
+- Do not forget to validate arguments to prevent regressions in their changes.
 ```typescript
  let spy = jasmine.createSpy('spy');
  spy(param);
