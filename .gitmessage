@@ -1,0 +1,145 @@
+<type>(<scope>): <summary>
+
+<Describe the motivation behind this change - explain WHY you are making this change. Wrap all lines
+at 100 characters.>
+
+Fixes #<issue number>
+
+# ────────────────────────────────────────── 100 chars ────────────────────────────────────────────┤
+
+
+# Example Commit Messages
+# =======================
+
+
+# ─── Example: Simple refactor ────────────────────────────────────────────────────────────────────┤
+# refactor(core): rename refreshDynamicEmbeddedViews to refreshEmbeddedViews
+#
+# Improve code readability. The original name no longer matches how the function is used.
+# ─────────────────────────────────────────────────────────────────────────────────────────────────┤
+
+
+# ─── Example: Simple docs change ─────────────────────────────────────────────────────────────────┤
+# docs: clarify the service limitation in providers.md guide
+#
+# Fixes #36332
+# ─────────────────────────────────────────────────────────────────────────────────────────────────┤
+
+
+# ─── Example: A bug fix ──────────────────────────────────────────────────────────────────────────┤
+# fix(ngcc): ensure lockfile is removed when `analyzeFn` fails
+#
+# Previously an error thrown in the `analyzeFn` would cause the ngcc process to exit immediately
+# without removing the lockfile, and potentially before the unlocker process had been successfully
+# spawned resulting in the lockfile being orphaned and left behind.
+#
+# Now we catch these errors and remove the lockfile as needed.
+# ─────────────────────────────────────────────────────────────────────────────────────────────────┤
+
+
+# ─── Example: Breaking change ────────────────────────────────────────────────────────────────────┤
+# feat(bazel): simplify ng_package by dropping esm5 and fesm5
+#
+# esm5 and fesm5 distributions are no longer needed and have been deprecated in the past.
+#
+# https://v9.angular.io/guide/deprecations#esm5-and-fesm5-code-formats-in-angular-npm-packages
+#
+# This commit modifies ng_package to no longer distribute these two formats in npm packages built by
+# ng_package (e.g. @angular/core).
+#
+# This commit intentionally doesn't fully clean up the ng_package rule to remove all traces of esm5
+# and fems5 build artifacts as that is a bigger cleanup and currently we are narrowing down the
+# scope of this change to the MVP needed for v10, which in this case is 'do not put esm5 and fesm5'
+# into the npm packages.
+#
+# More cleanup to follow: https://angular-team.atlassian.net/browse/FW-2143
+#
+# BREAKING CHANGE: esm5 and fesm5 format is no longer distributed in Angular's npm packages e.g.
+# @angular/core
+#
+# Angular CLI will automatically downlevel the code to es5 if differential loading is enabled in the
+# Angular project, so no action is required from Angular CLI users.
+#
+# If you are not using Angular CLI to build your application or library, and you need to be able to
+# build es5 artifacts, then you will need to downlevel the distributed Angular code to es5 on your
+# own.
+#
+#
+# Fixes #1234
+# ─────────────────────────────────────────────────────────────────────────────────────────────────┤
+
+
+
+# Angular Commit Message Format
+# =============================
+#
+# The full specification of the Angular Commit Message Format can be found at
+# https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit
+#
+# The following is an excerpt of the specification with the most commonly needed info.
+#
+# Each commit message consists of a *header*, a *body*, and a *footer*.
+#
+# <header>
+# <BLANK LINE>
+# <body>
+# <BLANK LINE>
+# <footer>
+#
+# The header is mandatory.
+#
+# The body is mandatory for all commits except for those of scope "docs". When the body is required
+# it must be at least 20 characters long.
+#
+# The footer is optional.
+#
+# Any line of the commit message cannot be longer than 100 characters.
+#
+#
+# Commit Message Header
+# ---------------------
+#
+# <type>(<scope>): <short summary>
+#   │       │             │
+#   │       │             └─⫸ Summary in present tense. Not capitalized. No period at the end.
+#   │       │
+#   │       └─⫸ Commit Scope: animations|bazel|benchpress|common|compiler|compiler-cli|core|
+#   │                          elements|forms|http|language-service|localize|platform-browser|
+#   │                          platform-browser-dynamic|platform-server|router|service-worker|
+#   │                          upgrade|zone.js|packaging|changelog|dev-infra|docs-infra|migrations|
+#   │                          ngcc|ve
+#   │                          https://github.com/angular/angular/blob/master/CONTRIBUTING.md#scope
+#   │
+#   └─⫸ Commit Type: build|ci|docs|feat|fix|perf|refactor|style|test
+#                     https://github.com/angular/angular/blob/master/CONTRIBUTING.md#type
+#
+#
+# Commit Message Body
+# ---------------------
+#
+# Just as in the summary, use the imperative, present tense: "fix" not "fixed" nor "fixes".
+#
+# Explain the motivation for the change in the commit message body. This commit message should
+# explain WHY you are making the change. You can include a comparison of the previous behavior with
+# the new behavior in order to illustrate the impact of the change.
+#
+#
+# Commit Message Footer
+# ---------------------
+#
+# The footer can contain information about breaking changes and is also the place to reference
+# GitHub issues, Jira tickets, and other PRs that this commit closes or is related to.
+#
+# ```
+# BREAKING CHANGE: <breaking change summary>
+# <BLANK LINE>
+# <breaking change description + migration instructions>
+# <BLANK LINE>
+# <BLANK LINE>
+# Fixes #<issue number>
+# ```
+#
+# Breaking Change section should start with the phrase "BREAKING CHANGE: " followed by a summary of
+# the breaking change, a blank line, and a detailed description of the breaking change that also
+# includes migration instructions.
+#

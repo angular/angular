@@ -11,8 +11,8 @@ export class AppComponent {
   currentItem = { name: 'teapot'} ;
   clickMessage = '';
 
-  onSave(event?: KeyboardEvent) {
-    const evtMsg = event ? ' Event target is ' + (<HTMLElement>event.target).textContent : '';
+  onSave(event?: MouseEvent) {
+    const evtMsg = event ? ' Event target is ' + (event.target as HTMLElement).textContent : '';
     alert('Saved.' + evtMsg);
     if (event) { event.stopPropagation(); }
   }
@@ -21,9 +21,14 @@ export class AppComponent {
     alert(`Delete the ${item.name}.`);
   }
 
-  onClickMe(event?: KeyboardEvent) {
-    const evtMsg = event ? ' Event target class is ' + (<HTMLElement>event.target).className  : '';
+  onClickMe(event?: MouseEvent) {
+    const evtMsg = event ? ' Event target class is ' + (event.target as HTMLElement).className  : '';
     alert('Click me.' + evtMsg);
   }
 
+  // #docregion getValue
+  getValue(target: EventTarget): string {
+    return (target as HTMLInputElement).value;
+  }
+  // #enddocregion getValue
 }

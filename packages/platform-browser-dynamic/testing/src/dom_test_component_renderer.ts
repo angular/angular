@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,26 +15,19 @@ import {TestComponentRenderer} from '@angular/core/testing';
  */
 @Injectable()
 export class DOMTestComponentRenderer extends TestComponentRenderer {
-  constructor(@Inject(DOCUMENT) private _doc: any) { super(); }
+  constructor(@Inject(DOCUMENT) private _doc: any) {
+    super();
+  }
 
   insertRootElement(rootElId: string) {
-    const template = getDOM().getDefaultDocument().createElement('template');
-    template.innerHTML = `<div id="${rootElId}"></div>`;
-    const rootEl = <HTMLElement>getContent(template).firstChild;
+    const rootElement = getDOM().getDefaultDocument().createElement('div');
+    rootElement.setAttribute('id', rootElId);
 
     // TODO(juliemr): can/should this be optional?
     const oldRoots = this._doc.querySelectorAll('[id^=root]');
     for (let i = 0; i < oldRoots.length; i++) {
       getDOM().remove(oldRoots[i]);
     }
-    this._doc.body.appendChild(rootEl);
-  }
-}
-
-function getContent(node: Node): Node {
-  if ('content' in node) {
-    return (<any>node).content;
-  } else {
-    return node;
+    this._doc.body.appendChild(rootElement);
   }
 }

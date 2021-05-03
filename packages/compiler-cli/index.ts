@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,5 +22,6 @@ export {CompilerOptions as AngularCompilerOptions} from './src/transformers/api'
 
 export {ngToTsDiagnostic} from './src/transformers/util';
 export {NgTscPlugin} from './src/ngtsc/tsc_plugin';
+export {NgtscProgram} from './src/ngtsc/program';
 
 setFileSystem(new NodeJSFileSystem());

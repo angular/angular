@@ -1,36 +1,50 @@
 /* Global Styles */
-h1 {
-  color: #369;
+* {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 250%;
+}
+h1 {
+  color: #264D73;
+  font-size: 2.5rem;
 }
 h2, h3 {
   color: #444;
-  font-family: Arial, Helvetica, sans-serif;
   font-weight: lighter;
 }
-body {
-  margin: 2em;
+h3 {
+  font-size: 1.3rem;
 }
-body, input[text], button {
+body {
+  padding: .5rem;
+  max-width: 1000px;
+  margin: auto;
+}
+@media (min-width: 600px) {
+  body {
+    padding: 2rem;
+  }
+}
+body, input[text] {
   color: #333;
-  font-family: Cambria, Georgia;
+  font-family: Cambria, Georgia, serif;
 }
 a {
   cursor: pointer;
-  cursor: hand;
 }
 button {
-  font-family: Arial;
   background-color: #eee;
   border: none;
-  padding: 5px 10px;
   border-radius: 4px;
   cursor: pointer;
-  cursor: hand;
+  color: black;
+  font-size: 1.2rem;
+  padding: 1rem;
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 button:hover {
-  background-color: #cfd8dc;
+  background-color: black;
+  color: white;
 }
 button:disabled {
   background-color: #eee;
@@ -45,21 +59,24 @@ nav a {
   margin-right: 10px;
   margin-top: 10px;
   display: inline-block;
-  background-color: #eee;
+  background-color: #e8e8e8;
+  color: #3d3d3d;
   border-radius: 4px;
 }
-nav a:visited, a:link {
-  color: #607D8B;
-}
+
 nav a:hover {
-  color: #039be5;
-  background-color: #CFD8DC;
+  color: white;
+  background-color:  #42545C;
 }
 nav a.active {
-  color: #039be5;
+  background-color: black;
+  color: white;
 }
-
-/* everywhere else */
-* {
-  font-family: Arial, Helvetica, sans-serif;
+hr {
+  margin: 1.5rem 0;
+}
+input[type="text"] {
+  box-sizing: border-box;
+  width: 100%;
+  padding: .5rem;
 }

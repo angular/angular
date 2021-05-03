@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef, isDevMode} from '@angular/core';
+import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef} from '@angular/core';
 
 /**
  * @publicApi
@@ -14,13 +14,21 @@ import {Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, Iterab
 export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
   constructor(public $implicit: T, public ngForOf: U, public index: number, public count: number) {}
 
-  get first(): boolean { return this.index === 0; }
+  get first(): boolean {
+    return this.index === 0;
+  }
 
-  get last(): boolean { return this.index === this.count - 1; }
+  get last(): boolean {
+    return this.index === this.count - 1;
+  }
 
-  get even(): boolean { return this.index % 2 === 0; }
+  get even(): boolean {
+    return this.index % 2 === 0;
+  }
 
-  get odd(): boolean { return !this.even; }
+  get odd(): boolean {
+    return !this.even;
+  }
 }
 
 /**
@@ -30,7 +38,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * of the cloned templates.
  *
  * The `ngForOf` directive is generally used in the
- * [shorthand form](guide/structural-directives#the-asterisk--prefix) `*ngFor`.
+ * [shorthand form](guide/structural-directives#asterisk) `*ngFor`.
  * In this form, the template to be rendered for each iteration is the content
  * of an anchor element containing the directive.
  *
@@ -59,11 +67,11 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * context according to its lexical position.
  *
  * When using the shorthand syntax, Angular allows only [one structural directive
- * on an element](guide/structural-directives#one-structural-directive-per-host-element).
+ * on an element](guide/built-in-directives#one-per-element).
  * If you want to iterate conditionally, for example,
  * put the `*ngIf` on a container element that wraps the `*ngFor` element.
  * For futher discussion, see
- * [Structural Directives](guide/structural-directives#one-per-element).
+ * [Structural Directives](guide/built-in-directives#one-per-element).
  *
  * @usageNotes
  *
@@ -85,6 +93,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
  * more complex then a property access, for example when using the async pipe (`userStreams |
  * async`).
  * - `index: number`: The index of the current item in the iterable.
+ * - `count: number`: The length of the iterable.
  * - `first: boolean`: True when the item is the first item in the iterable.
  * - `last: boolean`: True when the item is the last item in the iterable.
  * - `even: boolean`: True when the item has an even index in the iterable.
@@ -124,7 +133,7 @@ export class NgForOfContext<T, U extends NgIterable<T> = NgIterable<T>> {
 export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCheck {
   /**
    * The value of the iterable expression, which can be used as a
-   * [template input variable](guide/structural-directives#template-input-variable).
+   * [template input variable](guide/structural-directives#shorthand).
    */
   @Input()
   set ngForOf(ngForOf: U&NgIterable<T>|undefined|null) {
@@ -146,11 +155,11 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
    * rather than the identity of the object itself.
    *
    * The function receives two inputs,
-   * the iteration index and the node object ID.
+   * the iteration index and the associated node data.
    */
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
-    if (isDevMode() && fn != null && typeof fn !== 'function') {
+    if ((typeof ngDevMode === 'undefined' || ngDevMode) && fn != null && typeof fn !== 'function') {
       // TODO(vicb): use a log service once there is a public one available
       if (<any>console && <any>console.warn) {
         console.warn(
@@ -161,13 +170,15 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
     this._trackByFn = fn;
   }
 
-  get ngForTrackBy(): TrackByFunction<T> { return this._trackByFn; }
+  get ngForTrackBy(): TrackByFunction<T> {
+    return this._trackByFn;
+  }
 
   private _ngForOf: U|undefined|null = null;
   private _ngForOfDirty: boolean = true;
   private _differ: IterableDiffer<T>|null = null;
   // TODO(issue/24571): remove '!'.
-  private _trackByFn !: TrackByFunction<T>;
+  private _trackByFn!: TrackByFunction<T>;
 
   constructor(
       private _viewContainer: ViewContainerRef,
@@ -175,7 +186,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
 
   /**
    * A reference to the template that is stamped out for each item in the iterable.
-   * @see [template reference variable](guide/template-syntax#template-reference-variables--var-)
+   * @see [template reference variable](guide/template-reference-variables)
    */
   @Input()
   set ngForTemplate(value: TemplateRef<NgForOfContext<T, U>>) {
@@ -199,8 +210,8 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
         try {
           this._differ = this._differs.find(value).create(this.ngForTrackBy);
         } catch {
-          throw new Error(
-              `Cannot find a differ supporting object '${value}' of type '${getTypeName(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
+          throw new Error(`Cannot find a differ supporting object '${value}' of type '${
+              getTypeName(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
         }
       }
     }
@@ -213,14 +224,14 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
   private _applyChanges(changes: IterableChanges<T>) {
     const insertTuples: RecordViewTuple<T, U>[] = [];
     changes.forEachOperation(
-        (item: IterableChangeRecord<any>, adjustedPreviousIndex: number | null,
-         currentIndex: number | null) => {
+        (item: IterableChangeRecord<any>, adjustedPreviousIndex: number|null,
+         currentIndex: number|null) => {
           if (item.previousIndex == null) {
             // NgForOf is never "null" or "undefined" here because the differ detected
             // that a new item needs to be inserted from the iterable. This implies that
             // there is an iterable value for "_ngForOf".
             const view = this._viewContainer.createEmbeddedView(
-                this._template, new NgForOfContext<T, U>(null !, this._ngForOf !, -1, -1),
+                this._template, new NgForOfContext<T, U>(null!, this._ngForOf!, -1, -1),
                 currentIndex === null ? undefined : currentIndex);
             const tuple = new RecordViewTuple<T, U>(item, view);
             insertTuples.push(tuple);
@@ -228,7 +239,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
             this._viewContainer.remove(
                 adjustedPreviousIndex === null ? undefined : adjustedPreviousIndex);
           } else if (adjustedPreviousIndex !== null) {
-            const view = this._viewContainer.get(adjustedPreviousIndex) !;
+            const view = this._viewContainer.get(adjustedPreviousIndex)!;
             this._viewContainer.move(view, currentIndex);
             const tuple = new RecordViewTuple(item, <EmbeddedViewRef<NgForOfContext<T, U>>>view);
             insertTuples.push(tuple);
@@ -243,7 +254,7 @@ export class NgForOf<T, U extends NgIterable<T> = NgIterable<T>> implements DoCh
       const viewRef = <EmbeddedViewRef<NgForOfContext<T, U>>>this._viewContainer.get(i);
       viewRef.context.index = i;
       viewRef.context.count = ilen;
-      viewRef.context.ngForOf = this._ngForOf !;
+      viewRef.context.ngForOf = this._ngForOf!;
     }
 
     changes.forEachIdentityChange((record: any) => {

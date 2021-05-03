@@ -25,7 +25,6 @@ export class UniqueAlterEgoValidator implements AsyncValidator {
 }
 // #enddocregion async-validator
 
-// #docregion async-validator-directive
 @Directive({
   selector: '[appUniqueAlterEgo]',
   providers: [
@@ -43,4 +42,3 @@ export class UniqueAlterEgoValidatorDirective {
     this.validator.validate(control);
   }
 }
-// #enddocregion async-validator-directive

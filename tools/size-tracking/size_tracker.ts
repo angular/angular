@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {readFileSync} from 'fs';
-import {SourceMapConsumer} from 'source-map';
+import {RawSourceMap, SourceMapConsumer} from 'source-map';
 
 import {DirectorySizeEntry, FileSizeData, omitCommonPathPrefix, sortFileSizeData} from './file_size_data';
 
@@ -23,7 +23,8 @@ export class SizeTracker {
 
   constructor(private filePath: string, private sourceMapPath: string) {
     this.fileContent = readFileSync(filePath, 'utf8');
-    this.consumer = new SourceMapConsumer(JSON.parse(readFileSync(sourceMapPath, 'utf8')));
+    this.consumer =
+        new SourceMapConsumer(JSON.parse(readFileSync(sourceMapPath, 'utf8')) as RawSourceMap);
     this.sizeResult = this._computeSizeResult();
   }
 

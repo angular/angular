@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -47,7 +47,9 @@ function runInFileSystem(os: string, callback: (os: string) => void, error: bool
     afterEach(() => setFileSystem(new InvalidFileSystem()));
     callback(os);
     if (error) {
-      afterAll(() => { throw new Error(`runInFileSystem limited to ${os}, cannot pass`); });
+      afterAll(() => {
+        throw new Error(`runInFileSystem limited to ${os}, cannot pass`);
+      });
     }
   });
 }
@@ -64,10 +66,11 @@ runInEachFileSystem.unix = (callback: (os: string) => void) =>
 runInEachFileSystem.windows = (callback: (os: string) => void) =>
     runInFileSystem(FS_WINDOWS, callback, true);
 
-export function initMockFileSystem(os: string, cwd?: AbsoluteFsPath): void {
+export function initMockFileSystem(os: string, cwd?: AbsoluteFsPath): MockFileSystem {
   const fs = createMockFileSystem(os, cwd);
   setFileSystem(fs);
   monkeyPatchTypeScript(os, fs);
+  return fs;
 }
 
 function createMockFileSystem(os: string, cwd?: AbsoluteFsPath): MockFileSystem {
@@ -125,14 +128,16 @@ function monkeyPatchTypeScript(os: string, fs: MockFileSystem) {
     return {files, directories};
   }
 
-  function realPath(path: string): string { return fs.realpath(fs.resolve(path)); }
+  function realPath(path: string): string {
+    return fs.realpath(fs.resolve(path));
+  }
 
   // Rather than completely re-implementing we are using the `ts.matchFiles` function,
   // which is internal to the `ts` namespace.
   const tsMatchFiles: (
-      path: string, extensions: ReadonlyArray<string>| undefined,
-      excludes: ReadonlyArray<string>| undefined, includes: ReadonlyArray<string>| undefined,
-      useCaseSensitiveFileNames: boolean, currentDirectory: string, depth: number | undefined,
+      path: string, extensions: ReadonlyArray<string>|undefined,
+      excludes: ReadonlyArray<string>|undefined, includes: ReadonlyArray<string>|undefined,
+      useCaseSensitiveFileNames: boolean, currentDirectory: string, depth: number|undefined,
       getFileSystemEntries: (path: string) => FileSystemEntries,
       realpath: (path: string) => string) => string[] = (ts as any).matchFiles;
 

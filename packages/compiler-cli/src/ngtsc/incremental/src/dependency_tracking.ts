@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath} from '../../file_system';
+import {absoluteFromSourceFile, AbsoluteFsPath} from '../../file_system';
 import {DependencyTracker} from '../api';
 
 /**
@@ -23,36 +23,26 @@ import {DependencyTracker} from '../api';
  * 2. One of its dependencies has physically changed.
  * 3. One of its resource dependencies has physically changed.
  */
-export class FileDependencyGraph<T extends{fileName: string} = ts.SourceFile> implements
+export class FileDependencyGraph<T extends {fileName: string} = ts.SourceFile> implements
     DependencyTracker<T> {
   private nodes = new Map<T, FileNode>();
 
-  addDependency(from: T, on: T): void { this.nodeFor(from).dependsOn.add(on.fileName); }
+  addDependency(from: T, on: T): void {
+    this.nodeFor(from).dependsOn.add(absoluteFromSourceFile(on));
+  }
 
   addResourceDependency(from: T, resource: AbsoluteFsPath): void {
     this.nodeFor(from).usesResources.add(resource);
   }
 
-  addTransitiveDependency(from: T, on: T): void {
-    const nodeFrom = this.nodeFor(from);
-    nodeFrom.dependsOn.add(on.fileName);
-
-    const nodeOn = this.nodeFor(on);
-    for (const dep of nodeOn.dependsOn) {
-      nodeFrom.dependsOn.add(dep);
-    }
+  recordDependencyAnalysisFailure(file: T): void {
+    this.nodeFor(file).failedAnalysis = true;
   }
 
-  addTransitiveResources(from: T, resourcesOf: T): void {
-    const nodeFrom = this.nodeFor(from);
-    const nodeOn = this.nodeFor(resourcesOf);
-    for (const dep of nodeOn.usesResources) {
-      nodeFrom.usesResources.add(dep);
-    }
-  }
+  getResourceDependencies(from: T): AbsoluteFsPath[] {
+    const node = this.nodes.get(from);
 
-  isStale(sf: T, changedTsPaths: Set<string>, changedResources: Set<AbsoluteFsPath>): boolean {
-    return isLogicallyChanged(sf, this.nodeFor(sf), changedTsPaths, EMPTY_SET, changedResources);
+    return node ? [...node.usesResources] : [];
   }
 
   /**
@@ -77,18 +67,21 @@ export class FileDependencyGraph<T extends{fileName: string} = ts.SourceFile> im
    * P(n) = the physically changed files from build n - 1 to build n.
    */
   updateWithPhysicalChanges(
-      previous: FileDependencyGraph<T>, changedTsPaths: Set<string>, deletedTsPaths: Set<string>,
-      changedResources: Set<AbsoluteFsPath>): Set<string> {
-    const logicallyChanged = new Set<string>();
+      previous: FileDependencyGraph<T>, changedTsPaths: Set<AbsoluteFsPath>,
+      deletedTsPaths: Set<AbsoluteFsPath>,
+      changedResources: Set<AbsoluteFsPath>): Set<AbsoluteFsPath> {
+    const logicallyChanged = new Set<AbsoluteFsPath>();
 
     for (const sf of previous.nodes.keys()) {
+      const sfPath = absoluteFromSourceFile(sf);
       const node = previous.nodeFor(sf);
       if (isLogicallyChanged(sf, node, changedTsPaths, deletedTsPaths, changedResources)) {
-        logicallyChanged.add(sf.fileName);
-      } else if (!deletedTsPaths.has(sf.fileName)) {
+        logicallyChanged.add(sfPath);
+      } else if (!deletedTsPaths.has(sfPath)) {
         this.nodes.set(sf, {
           dependsOn: new Set(node.dependsOn),
           usesResources: new Set(node.usesResources),
+          failedAnalysis: false,
         });
       }
     }
@@ -99,11 +92,12 @@ export class FileDependencyGraph<T extends{fileName: string} = ts.SourceFile> im
   private nodeFor(sf: T): FileNode {
     if (!this.nodes.has(sf)) {
       this.nodes.set(sf, {
-        dependsOn: new Set<string>(),
+        dependsOn: new Set<AbsoluteFsPath>(),
         usesResources: new Set<AbsoluteFsPath>(),
+        failedAnalysis: false,
       });
     }
-    return this.nodes.get(sf) !;
+    return this.nodes.get(sf)!;
   }
 }
 
@@ -111,11 +105,20 @@ export class FileDependencyGraph<T extends{fileName: string} = ts.SourceFile> im
  * Determine whether `sf` has logically changed, given its dependencies and the set of physically
  * changed files and resources.
  */
-function isLogicallyChanged<T extends{fileName: string}>(
-    sf: T, node: FileNode, changedTsPaths: ReadonlySet<string>, deletedTsPaths: ReadonlySet<string>,
+function isLogicallyChanged<T extends {fileName: string}>(
+    sf: T, node: FileNode, changedTsPaths: ReadonlySet<AbsoluteFsPath>,
+    deletedTsPaths: ReadonlySet<AbsoluteFsPath>,
     changedResources: ReadonlySet<AbsoluteFsPath>): boolean {
+  // A file is assumed to have logically changed if its dependencies could not be determined
+  // accurately.
+  if (node.failedAnalysis) {
+    return true;
+  }
+
+  const sfPath = absoluteFromSourceFile(sf);
+
   // A file is logically changed if it has physically changed itself (including being deleted).
-  if (changedTsPaths.has(sf.fileName) || deletedTsPaths.has(sf.fileName)) {
+  if (changedTsPaths.has(sfPath) || deletedTsPaths.has(sfPath)) {
     return true;
   }
 
@@ -136,8 +139,7 @@ function isLogicallyChanged<T extends{fileName: string}>(
 }
 
 interface FileNode {
-  dependsOn: Set<string>;
+  dependsOn: Set<AbsoluteFsPath>;
   usesResources: Set<AbsoluteFsPath>;
+  failedAnalysis: boolean;
 }
-
-const EMPTY_SET: ReadonlySet<any> = new Set<any>();

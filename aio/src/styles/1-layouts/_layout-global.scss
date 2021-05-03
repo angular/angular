@@ -1,34 +1,28 @@
 html, body {
-    height: 100%;
+  height: 100%;
 }
 
 body,
 .content {
-    background-color: $white;
+  background-color: $white;
+}
+
+.center-layout {
+  margin: 0 auto;
+  max-width: 62.5em;
+}
+
+.center-layout-wide {
+  margin: 0 auto;
+  max-width: 84em;
 }
 
 .github-links + .content h1 {
   max-width: 90%;
 }
 
-.clearfix {
-    content: "";
-    display: table;
-    clear: both;
-}
-
 .clear {
-    clear: both;
-}
-
-.l-clearfix:after, .clearfix:after {
-    content: "";
-    display: table;
-    clear: both;
-}
-
-.is-visible {
-    display: block!important;
+  clear: both;
 }
 
 .l-flex-wrap {
@@ -37,20 +31,16 @@ body,
 }
 
 .flex-center {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .center {
-    text-align: center;
+  text-align: center;
 }
 
 .visually-hidden {
-    position: absolute !important;
-    top: -9999px !important;
-    left: -9999px !important;
-}
-
-.text-uppercase {
-  text-transform: uppercase;
+  position: absolute !important;
+  top: -9999px !important;
+  left: -9999px !important;
 }

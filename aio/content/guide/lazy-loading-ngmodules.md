@@ -1,19 +1,61 @@
 # Lazy-loading feature modules
 
-## High level view
-
 By default, NgModules are eagerly loaded, which means that as soon as the app loads, so do all the NgModules, whether or not they are immediately necessary. For large apps with lots of routes, consider lazy loading&mdash;a design pattern that loads NgModules as needed. Lazy loading helps keep initial
 bundle sizes smaller, which in turn helps decrease load times.
 
+<div class="alert is-helpful">
+
 For the final sample app with two lazy-loaded modules that this page describes, see the
 <live-example></live-example>.
+
+</div>
+
+{@a lazy-loading}
+
+## Lazy loading basics
+
+This section introduces the basic procedure for configuring a lazy-loaded route.
+For a step-by-step example, see the [step-by-step setup](#step-by-step) section on this page.
+
+To lazy load Angular modules, use `loadChildren` (instead of `component`) in your `AppRoutingModule` `routes` configuration as follows.
+
+<code-example header="AppRoutingModule (excerpt)">
+
+const routes: Routes = [
+  {
+    path: 'items',
+    loadChildren: () => import('./items/items.module').then(m => m.ItemsModule)
+  }
+];
+
+</code-example>
+
+In the lazy-loaded module's routing module, add a route for the component.
+
+<code-example header="Routing module for lazy loaded module (excerpt)">
+
+const routes: Routes = [
+  {
+    path: '',
+    component: ItemsComponent
+  }
+];
+
+</code-example>
+
+Also be sure to remove the `ItemsModule` from the `AppModule`.
+For step-by-step instructions on lazy loading modules, continue with the following sections of this page.
+
+{@a step-by-step}
+
+## Step-by-step setup
 
 There are two main steps to setting up a lazy-loaded feature module:
 
 1. Create the feature module with the CLI, using the `--route` flag.
 1. Configure the routes.
 
-## Set up an app
+### Set up an app
 
 If you don’t already have an app, you can follow the steps below to
 create one with the CLI. If you already have an app, skip to
@@ -36,7 +78,7 @@ See [Keeping Up to Date](guide/updating).
 
 </div>
 
-## Create a feature module with routing
+### Create a feature module with routing
 
 Next, you’ll need a feature module with a component to route to.
 To make one, enter the following command in the terminal, where `customers` is the name of the feature module. The path for loading the `customers` feature modules is also `customers` because it is specified with the `--route` option:
@@ -45,7 +87,7 @@ To make one, enter the following command in the terminal, where `customers` is t
 ng generate module customers --route customers --module app.module
 </code-example>
 
-This creates a `customers` folder with the new lazy-loadable module `CustomersModule` defined in the `customers.module.ts` file. The command automatically declares the `CustomersComponent` inside the new feature module.
+This creates a `customers` folder having the new lazy-loadable feature module `CustomersModule` defined in the `customers.module.ts` file and the routing module `CustomersRoutingModule` defined in the `customers-routing.module.ts` file. The command automatically declares the `CustomersComponent` and imports `CustomersRoutingModule` inside the new feature module.
 
 Because the new module is meant to be lazy-loaded, the command does NOT add a reference to the new feature module in the application's root module file, `app.module.ts`.
 Instead, it adds the declared route, `customers` to the `routes` array declared in the module provided as the `--module` option.
@@ -58,6 +100,15 @@ Instead, it adds the declared route, `customers` to the `routes` array declared 
 
 Notice that the lazy-loading syntax uses `loadChildren` followed by a function that uses the browser's built-in `import('...')` syntax for dynamic imports.
 The import path is the relative path to the module.
+
+<div class="callout is-helpful">
+<header>String-based lazy loading</header>
+
+In Angular version 8, the string syntax for the `loadChildren` route specification [was deprecated](https://angular.io/guide/deprecations#loadchildren-string-syntax) in favor of the `import()` syntax. However, you can opt into using string-based lazy loading (`loadChildren: './path/to/module#Module'`) by including the lazy-loaded routes in your `tsconfig` file, which includes the lazy-loaded files in the compilation.
+
+By default the CLI will generate projects which stricter file inclusions intended to be used with the `import()` syntax.
+
+</div>
 
 ### Add another feature module
 
@@ -76,15 +127,13 @@ The `orders` route, specified with the `--route` option, is added to the `routes
   region="routes-customers-orders">
 </code-example>
 
-## Set up the UI
+### Set up the UI
 
 Though you can type the URL into the address bar, a navigation UI is easier for the user and more common.
 Replace the default placeholder markup in `app.component.html` with a custom nav
 so you can easily navigate to your modules in the browser:
 
-
 <code-example path="lazy-loading-ngmodules/src/app/app.component.html" header="app.component.html" region="app-component-template" header="src/app/app.component.html"></code-example>
-
 
 To see your app in the browser so far, enter the following command in the terminal window:
 
@@ -102,7 +151,7 @@ These buttons work, because the CLI automatically added the routes to the featur
 
 {@a config-routes}
 
-## Imports and route configuration
+### Imports and route configuration
 
 The CLI automatically added each feature module to the routes map at the application level.
 Finish this off by adding the default route. In the `app-routing.module.ts` file, update the `routes` array with the following:
@@ -134,7 +183,7 @@ The other feature module's routing module is configured similarly.
 
 <code-example path="lazy-loading-ngmodules/src/app/orders/orders-routing.module.ts" id="orders-routing.module.ts" region="orders-routing-module-detail" header="src/app/orders/orders-routing.module.ts (excerpt)"></code-example>
 
-## Confirm it’s working
+### Verify lazy loading
 
 You can check to see that a module is indeed being lazy loaded with the Chrome developer tools. In Chrome, open the dev tools by pressing `Cmd+Option+i` on a Mac or `Ctrl+Shift+j` on a PC and go to the Network Tab.
 
@@ -175,7 +224,111 @@ The `forRoot()` method takes care of the *global* injector configuration for the
 The `forChild()` method has no injector configuration. It uses directives such as `RouterOutlet` and `RouterLink`.
 For more information, see the [`forRoot()` pattern](guide/singleton-services#forRoot) section of the [Singleton Services](guide/singleton-services) guide.
 
-<hr>
+{@a preloading}
+
+## Preloading
+
+Preloading improves UX by loading parts of your app in the background.
+You can preload modules or component data.
+
+### Preloading modules
+
+Preloading modules improves UX by loading parts of your app in the background so users don't have to wait for the elements to download when they activate a route.
+
+To enable preloading of all lazy loaded modules, import the `PreloadAllModules` token from the Angular `router`.
+
+<code-example header="AppRoutingModule (excerpt)">
+
+import { PreloadAllModules } from '@angular/router';
+
+</code-example>
+
+Still in the `AppRoutingModule`, specify your preloading strategy in `forRoot()`.
+
+<code-example header="AppRoutingModule (excerpt)">
+
+RouterModule.forRoot(
+  appRoutes,
+  {
+    preloadingStrategy: PreloadAllModules
+  }
+)
+
+</code-example>
+
+### Preloading component data
+
+To preload component data, you can use a `resolver`.
+Resolvers improve UX by blocking the page load until all necessary data is available to fully display the page.
+
+#### Resolvers
+
+Create a resolver service.
+With the CLI, the command to generate a service is as follows:
+
+
+<code-example language="none" class="code-shell">
+  ng generate service <service-name>
+</code-example>
+
+In your service, import the following router members, implement `Resolve`, and inject the `Router` service:
+
+<code-example header="Resolver service (excerpt)">
+
+import { Resolve } from '@angular/router';
+
+...
+
+export class CrisisDetailResolverService implements Resolve<> {
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<> {
+    // your logic goes here
+  }
+}
+
+</code-example>
+
+Import this resolver into your module's routing module.
+
+<code-example header="Feature module's routing module (excerpt)">
+
+import { YourResolverService }    from './your-resolver.service';
+
+</code-example>
+
+Add a `resolve` object to the component's `route` configuration.
+
+<code-example header="Feature module's routing module (excerpt)">
+{
+  path: '/your-path',
+  component: YourComponent,
+  resolve: {
+    crisis: YourResolverService
+  }
+}
+</code-example>
+
+
+In the component, use an `Observable` to get the data from the `ActivatedRoute`.
+
+
+<code-example header="Component (excerpt)">
+ngOnInit() {
+  this.route.data
+    .subscribe((your-parameters) => {
+      // your data-specific code goes here
+    });
+}
+</code-example>
+
+For more information with a working example, see the [routing tutorial section on preloading](guide/router-tutorial-toh#preloading-background-loading-of-feature-areas).
+
+## Troubleshooting lazy-loading modules
+
+A common error when lazy-loading modules is importing common modules in multiple places within an application.  You can test for this condition by first generating the module using the Angular CLI and including the `--route route-name` parameter, where `route-name` is the name of your module. Next, generate the module without the `--route` parameter. If the Angular CLI generates an error when you use the `--route` parameter, but runs correctly without it, you may have imported the same module in multiple places.
+
+Remember, many common Angular modules should be imported at the base of your application.
+
+For more information on Angular Modules, see [NgModules](guide/ngmodules).
 
 ## More on NgModules and routing
 

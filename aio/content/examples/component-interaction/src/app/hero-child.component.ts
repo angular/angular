@@ -12,6 +12,6 @@ import { Hero } from './hero';
 })
 export class HeroChildComponent {
   @Input() hero: Hero;
-  @Input('master') masterName: string;
+  @Input('master') masterName: string; // tslint:disable-line: no-input-rename
 }
 // #enddocregion

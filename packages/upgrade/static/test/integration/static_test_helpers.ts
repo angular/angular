@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -19,7 +19,9 @@ export function bootstrap(
     const ngZone = ref.injector.get<NgZone>(NgZone);
     const upgrade = ref.injector.get(UpgradeModule);
     const failHardModule: any = ($provide: angular.IProvideService) => {
-      $provide.value($EXCEPTION_HANDLER, (err: any) => { throw err; });
+      $provide.value($EXCEPTION_HANDLER, (err: any) => {
+        throw err;
+      });
     };
 
     // The `bootstrap()` helper is used for convenience in tests, so that we don't have to inject

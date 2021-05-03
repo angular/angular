@@ -2,7 +2,7 @@
 import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 
 import { AdDirective } from './ad.directive';
-import { AdItem }      from './ad-item';
+import { AdItem } from './ad-item';
 import { AdComponent } from './ad.component';
 
 @Component({
@@ -11,7 +11,7 @@ import { AdComponent } from './ad.component';
   template: `
               <div class="ad-banner-example">
                 <h3>Advertisements</h3>
-                <ng-template ad-host></ng-template>
+                <ng-template adHost></ng-template>
               </div>
             `
   // #enddocregion ad-host
@@ -43,8 +43,8 @@ export class AdBannerComponent implements OnInit, OnDestroy {
     const viewContainerRef = this.adHost.viewContainerRef;
     viewContainerRef.clear();
 
-    const componentRef = viewContainerRef.createComponent(componentFactory);
-    (<AdComponent>componentRef.instance).data = adItem.data;
+    const componentRef = viewContainerRef.createComponent<AdComponent>(componentFactory);
+    componentRef.instance.data = adItem.data;
   }
 
   getAds() {

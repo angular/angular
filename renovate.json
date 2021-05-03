@@ -1,0 +1,137 @@
+{
+  "pinVersions": false,
+  "semanticCommits": true,
+  "semanticPrefix": "build",
+  "separateMajorMinor": false,
+  "prHourlyLimit": 2,
+  "labels": [
+    "target: minor",
+    "comp: build & ci",
+    "action: review"
+  ],
+  "timezone": "America/Tijuana",
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "schedule": [
+    "after 10pm every weekday",
+    "before 4am every weekday",
+    "every weekend"
+  ],
+  "baseBranches": [
+    "master"
+  ],
+  "ignoreDeps": [
+    "@babel/core",
+    "@babel/generator",
+    "@babel/parser",
+    "@babel/preset-env",
+    "@babel/template",
+    "@babel/traverse",
+    "@babel/types",
+    "@types/babel__core",
+    "@types/babel__generator",
+    "@types/babel__template",
+    "@types/babel__traverse",
+    "@types/node",
+    "@types/selenium-webdriver",
+    "@microsoft/api-extractor",
+    "angular",
+    "angular-1.5",
+    "angular-1.6",
+    "angular-1.7",
+    "angular-mocks",
+    "angular-mocks-1.5",
+    "angular-mocks-1.6",
+    "angular-mocks-1.7",
+    "puppeteer",
+    "rollup",
+    "selenium-webdriver"
+  ],
+  "packageFiles": [
+    "WORKSPACE",
+    "integration/bazel/WORKSPACE",
+    "package.json",
+    "packages/**/package.json",
+    "tools/ts-api-guardian/package.json",
+    "aio/package.json"
+  ],
+  "packageRules": [
+    {
+      "packagePatterns": [
+        "^@angular/.*",
+        "^@angular-devkit/.*",
+        "^@schematics/.*"
+      ],
+      "groupName": "angular",
+      "pinVersions": false
+    },
+    {
+      "packagePatterns": [
+        "^@babel/.*"
+      ],
+      "groupName": "babel",
+      "pinVersions": false
+    },
+    {
+      "packagePatterns": [
+        "^@bazel/.*",
+        "^build_bazel.*"
+      ],
+      "groupName": "bazel",
+      "pinVersions": false
+    },
+    {
+      "packagePatterns": [
+        "^remark-.*",
+        "remark"
+      ],
+      "groupName": "remark",
+      "pinVersions": false
+    },
+    {
+      "packageNames": [
+        "typescript",
+        "rxjs",
+        "tslib"
+      ],
+      "separateMinorPatch": true
+    },
+    {
+      "packageNames": [
+        "typescript",
+        "rxjs",
+        "tslib"
+      ],
+      "updateTypes": [
+        "minor",
+        "major"
+      ],
+      "enabled": false
+    },
+    {
+      "matchCurrentVersion": "0.0.0-PLACEHOLDER",
+      "enabled": false
+    },
+    {
+      "excludePackagePatterns": [
+        "^@angular/.*",
+        "^@angular-devkit/.*",
+        "^@schematics/.*"
+      ],
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "matchCurrentVersion": ">=1",
+      "groupName": "all non-major dependencies",
+      "groupSlug": "all-minor-patch",
+      "schedule": [
+        "after 1am on Thursday"
+      ]
+    }
+  ]
+}

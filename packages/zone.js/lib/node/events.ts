@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,7 @@
 
 import {patchEventTarget} from '../common/events';
 
-Zone.__load_patch('EventEmitter', (global: any) => {
+Zone.__load_patch('EventEmitter', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   // For EventEmitter
   const EE_ADD_LISTENER = 'addListener';
   const EE_PREPEND_LISTENER = 'prependListener';
@@ -16,6 +16,7 @@ Zone.__load_patch('EventEmitter', (global: any) => {
   const EE_REMOVE_ALL_LISTENER = 'removeAllListeners';
   const EE_LISTENERS = 'listeners';
   const EE_ON = 'on';
+  const EE_OFF = 'off';
 
   const compareTaskCallbackVsDelegate = function(task: any, delegate: any) {
     // same callback, same capture, same event name, just return
@@ -33,7 +34,7 @@ Zone.__load_patch('EventEmitter', (global: any) => {
   };
 
   function patchEventEmitterMethods(obj: any) {
-    const result = patchEventTarget(global, [obj], {
+    const result = patchEventTarget(global, api, [obj], {
       useG: false,
       add: EE_ADD_LISTENER,
       rm: EE_REMOVE_LISTENER,
@@ -47,6 +48,7 @@ Zone.__load_patch('EventEmitter', (global: any) => {
     });
     if (result && result[0]) {
       obj[EE_ON] = obj[EE_ADD_LISTENER];
+      obj[EE_OFF] = obj[EE_REMOVE_LISTENER];
     }
   }
 

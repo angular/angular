@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,6 +28,12 @@ export function assertNumberInRange(
 export function assertString(actual: any, msg: string): asserts actual is string {
   if (!(typeof actual === 'string')) {
     throwError(msg, actual === null ? 'null' : typeof actual, 'string', '===');
+  }
+}
+
+export function assertFunction(actual: any, msg: string): asserts actual is Function {
+  if (!(typeof actual === 'function')) {
+    throwError(msg, actual === null ? 'null' : typeof actual, 'function', '===');
   }
 }
 
@@ -86,7 +92,7 @@ export function assertNotDefined<T>(actual: T, msg: string) {
   }
 }
 
-export function assertDefined<T>(actual: T, msg: string) {
+export function assertDefined<T>(actual: T|null|undefined, msg: string): asserts actual is T {
   if (actual == null) {
     throwError(msg, actual, null, '!=');
   }
@@ -102,15 +108,25 @@ export function throwError(msg: string, actual?: any, expected?: any, comparison
 
 export function assertDomNode(node: any): asserts node is Node {
   // If we're in a worker, `Node` will not be defined.
-  assertEqual(
-      (typeof Node !== 'undefined' && node instanceof Node) ||
-          (typeof node === 'object' && node != null &&
-           node.constructor.name === 'WebWorkerRenderNode'),
-      true, `The provided value must be an instance of a DOM Node but got ${stringify(node)}`);
+  if (!(typeof Node !== 'undefined' && node instanceof Node) &&
+      !(typeof node === 'object' && node != null &&
+        node.constructor.name === 'WebWorkerRenderNode')) {
+    throwError(`The provided value must be an instance of a DOM Node but got ${stringify(node)}`);
+  }
 }
 
 
-export function assertDataInRange(arr: any[], index: number) {
-  const maxLen = arr ? arr.length : 0;
-  assertLessThan(index, maxLen, `Index expected to be less than ${maxLen} but got ${index}`);
+export function assertIndexInRange(arr: any[], index: number) {
+  assertDefined(arr, 'Array must be defined.');
+  const maxLen = arr.length;
+  if (index < 0 || index >= maxLen) {
+    throwError(`Index expected to be less than ${maxLen} but got ${index}`);
+  }
+}
+
+
+export function assertOneOf(value: any, ...validValues: any[]) {
+  if (validValues.indexOf(value) !== -1) return true;
+  throwError(`Expected value to be one of ${JSON.stringify(validValues)} but was ${
+      JSON.stringify(value)}.`);
 }

@@ -1,0 +1,52 @@
+{
+  "name": "trusted-types",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --prod",
+    "pretest": "ng version",
+    "test": "ng test && yarn e2e --configuration=ci && yarn e2e --configuration=ci-production",
+    "lint": "ng lint",
+    "e2e": "ng e2e --port 0",
+    "postinstall": "ngcc --properties es2015 --create-ivy-entry-points"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/forms": "file:../../dist/packages-dist/forms",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/router": "file:../../dist/packages-dist/router",
+    "rxjs": "file:../../node_modules/rxjs",
+    "tslib": "file:../../node_modules/tslib",
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "file:../../node_modules/@angular-devkit/build-angular",
+    "@angular/cli": "file:../../node_modules/@angular/cli",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/node": "file:../../node_modules/@types/node",
+    "codelyzer": "6.0.1",
+    "jasmine-core": "3.6.0",
+    "jasmine-spec-reporter": "5.0.2",
+    "karma": "5.2.3",
+    "karma-chrome-launcher": "3.1.0",
+    "karma-coverage": "2.0.3",
+    "karma-jasmine": "4.0.1",
+    "karma-jasmine-html-reporter": "1.5.4",
+    "protractor": "file:../../node_modules/protractor",
+    "puppeteer": "file:../../node_modules/puppeteer",
+    "ts-node": "8.3.0",
+    "tslint": "6.1.3",
+    "typescript": "file:../../node_modules/typescript"
+  },
+  "//resolutions-comment": "Ensure a single version of webdriver-manager which comes from root node_modules that has already run webdriver-manager update",
+  "resolutions": {
+    "**/webdriver-manager": "file:../../node_modules/webdriver-manager"
+  }
+}

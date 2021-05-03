@@ -1,7 +1,7 @@
 // #docregion
-import { Component }          from '@angular/core';
+import { Component } from '@angular/core';
 
-import { MissionService }     from './mission.service';
+import { MissionService } from './mission.service';
 
 @Component({
   selector: 'app-mission-control',
@@ -34,7 +34,7 @@ export class MissionControlComponent {
   }
 
   announce() {
-    let mission = this.missions[this.nextMission++];
+    const mission = this.missions[this.nextMission++];
     this.missionService.announceMission(mission);
     this.history.push(`Mission "${mission}" announced`);
     if (this.nextMission >= this.missions.length) { this.nextMission = 0; }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,40 +9,16 @@
 import * as ts from 'typescript';
 
 import {HelperFunction} from './helpers';
-import {findImportSpecifier} from './util';
 
 /** A call expression that is based on a property access. */
-type PropertyAccessCallExpression = ts.CallExpression & {expression: ts.PropertyAccessExpression};
-
-/** Replaces an import inside an import statement with a different one. */
-export function replaceImport(node: ts.NamedImports, oldImport: string, newImport: string) {
-  const isAlreadyImported = findImportSpecifier(node.elements, newImport);
-
-  if (isAlreadyImported) {
-    return node;
-  }
-
-  const existingImport = findImportSpecifier(node.elements, oldImport);
-
-  if (!existingImport) {
-    throw new Error(`Could not find an import to replace using ${oldImport}.`);
-  }
-
-  return ts.updateNamedImports(node, [
-    ...node.elements.filter(current => current !== existingImport),
-    // Create a new import while trying to preserve the alias of the old one.
-    ts.createImportSpecifier(
-        existingImport.propertyName ? ts.createIdentifier(newImport) : undefined,
-        existingImport.propertyName ? existingImport.name : ts.createIdentifier(newImport))
-  ]);
-}
+type PropertyAccessCallExpression = ts.CallExpression&{expression: ts.PropertyAccessExpression};
 
 /**
  * Migrates a function call expression from `Renderer` to `Renderer2`.
  * Returns null if the expression should be dropped.
  */
 export function migrateExpression(node: ts.CallExpression, typeChecker: ts.TypeChecker):
-    {node: ts.Node | null, requiredHelpers?: HelperFunction[]} {
+    {node: ts.Node|null, requiredHelpers?: HelperFunction[]} {
   if (isPropertyAccessCallExpression(node)) {
     switch (node.expression.name.getText()) {
       case 'setElementProperty':
@@ -152,7 +128,7 @@ function migrateSetElementClass(node: PropertyAccessCallExpression): ts.Node {
   // Clone so we don't mutate by accident. Note that we assume that
   // the user's code is providing all three required arguments.
   const outputMethodArgs = node.arguments.slice();
-  const isAddArgument = outputMethodArgs.pop() !;
+  const isAddArgument = outputMethodArgs.pop()!;
   const createRendererCall = (isAdd: boolean) => {
     const innerExpression = node.expression.expression;
     const topExpression =
@@ -263,6 +239,6 @@ function migrateAnimateCall() {
  */
 function switchToHelperCall(
     node: PropertyAccessCallExpression, helper: HelperFunction,
-    args: ts.Expression[] | ts.NodeArray<ts.Expression>): ts.Node {
+    args: ts.Expression[]|ts.NodeArray<ts.Expression>): ts.Node {
   return ts.createCall(ts.createIdentifier(helper), [], [node.expression.expression, ...args]);
 }

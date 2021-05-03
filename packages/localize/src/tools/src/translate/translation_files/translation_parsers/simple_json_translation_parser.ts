@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,13 @@
 import {ɵMessageId, ɵParsedTranslation, ɵparseTranslation} from '@angular/localize';
 import {extname} from 'path';
 import {Diagnostics} from '../../../diagnostics';
-import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
+
+import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
+
+interface SimpleJsonFile {
+  locale: string;
+  translations: {[messageId: string]: string};
+}
 
 /**
  * A translation parser that can parse JSON that has the form:
@@ -22,12 +28,55 @@ import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
  *   }
  * }
  * ```
+ *
+ * @see SimpleJsonTranslationSerializer
+ * @publicApi used by CLI
  */
-export class SimpleJsonTranslationParser implements TranslationParser {
-  canParse(filePath: string, _contents: string): boolean { return (extname(filePath) === '.json'); }
+export class SimpleJsonTranslationParser implements TranslationParser<SimpleJsonFile> {
+  /**
+   * @deprecated
+   */
+  canParse(filePath: string, contents: string): SimpleJsonFile|false {
+    const result = this.analyze(filePath, contents);
+    return result.canParse && result.hint;
+  }
 
-  parse(_filePath: string, contents: string): ParsedTranslationBundle {
-    const {locale: parsedLocale, translations} = JSON.parse(contents);
+  analyze(filePath: string, contents: string): ParseAnalysis<SimpleJsonFile> {
+    const diagnostics = new Diagnostics();
+    // For this to be parsable, the extension must be `.json` and the contents must include "locale"
+    // and "translations" keys.
+    if (extname(filePath) !== '.json' ||
+        !(contents.includes('"locale"') && contents.includes('"translations"'))) {
+      diagnostics.warn('File does not have .json extension.');
+      return {canParse: false, diagnostics};
+    }
+    try {
+      const json = JSON.parse(contents) as SimpleJsonFile;
+      if (json.locale === undefined) {
+        diagnostics.warn('Required "locale" property missing.');
+        return {canParse: false, diagnostics};
+      }
+      if (typeof json.locale !== 'string') {
+        diagnostics.warn('The "locale" property is not a string.');
+        return {canParse: false, diagnostics};
+      }
+      if (json.translations === undefined) {
+        diagnostics.warn('Required "translations" property missing.');
+        return {canParse: false, diagnostics};
+      }
+      if (typeof json.translations !== 'object') {
+        diagnostics.warn('The "translations" is not an object.');
+        return {canParse: false, diagnostics};
+      }
+      return {canParse: true, diagnostics, hint: json};
+    } catch (e) {
+      diagnostics.warn('File is not valid JSON.');
+      return {canParse: false, diagnostics};
+    }
+  }
+
+  parse(_filePath: string, contents: string, json?: SimpleJsonFile): ParsedTranslationBundle {
+    const {locale: parsedLocale, translations} = json || JSON.parse(contents) as SimpleJsonFile;
     const parsedTranslations: Record<ɵMessageId, ɵParsedTranslation> = {};
     for (const messageId in translations) {
       const targetMessage = translations[messageId];

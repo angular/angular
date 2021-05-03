@@ -1,10 +1,10 @@
-import { NgModule }      from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule }  from '@angular/router';
+import { RouterModule } from '@angular/router';
 
-import { AppComponent }    from './app.component';
+import { AppComponent } from './app.component';
 import { HeroesComponent } from './heroes';
-import { HeroService }     from './heroes/shared';
+import { HeroService } from './heroes/shared';
 
 @NgModule({
   imports: [

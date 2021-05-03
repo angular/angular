@@ -8,14 +8,17 @@ module.exports = {
     'eslint:recommended',
     'plugin:jasmine/recommended'
   ],
+  'parserOptions': {
+    'ecmaVersion': 2020,
+  },
   'plugins': [
     'jasmine'
   ],
   'rules': {
-    'indent': ['error', 2],
     'linebreak-style': ['error', 'unix'],
+    'no-prototype-builtins': ['off'],
     'quotes': ['error', 'single'],
     'semi': ['error', 'always'],
-    'jasmine/new-line-before-expect': 0
+    'jasmine/new-line-before-expect': ['off'],
   }
 };

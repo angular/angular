@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    /* We need to keep the metadata to support JIT compilation. */
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "lib": [ "es2015", "dom" ],
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "suppressImplicitAnyIndexErrors": true
+  },
+  "compileOnSave": true,
+  "exclude": [
+    "**/*-aot.ts",
+    "node_modules/",
+    "universal/"
+  ]
+}

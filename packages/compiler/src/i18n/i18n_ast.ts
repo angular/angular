@@ -1,12 +1,24 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {ParseSourceSpan} from '../parse_util';
+
+/**
+ * Describes the text contents of a placeholder as it appears in an ICU expression, including its
+ * source span information.
+ */
+export interface MessagePlaceholder {
+  /** The text contents of the placeholder */
+  text: string;
+
+  /** The source span of the placeholder */
+  sourceSpan: ParseSourceSpan;
+}
 
 export class Message {
   sources: MessageSpan[];
@@ -16,14 +28,14 @@ export class Message {
 
   /**
    * @param nodes message AST
-   * @param placeholders maps placeholder names to static content
+   * @param placeholders maps placeholder names to static content and their source spans
    * @param placeholderToMessage maps placeholder names to messages (used for nested ICU messages)
    * @param meaning
    * @param description
    * @param customId
    */
   constructor(
-      public nodes: Node[], public placeholders: {[phName: string]: string},
+      public nodes: Node[], public placeholders: {[phName: string]: MessagePlaceholder},
       public placeholderToMessage: {[phName: string]: Message}, public meaning: string,
       public description: string, public customId: string) {
     if (nodes.length) {
@@ -57,39 +69,51 @@ export interface Node {
 export class Text implements Node {
   constructor(public value: string, public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any { return visitor.visitText(this, context); }
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitText(this, context);
+  }
 }
 
 // TODO(vicb): do we really need this node (vs an array) ?
 export class Container implements Node {
   constructor(public children: Node[], public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any { return visitor.visitContainer(this, context); }
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitContainer(this, context);
+  }
 }
 
 export class Icu implements Node {
   // TODO(issue/24571): remove '!'.
-  public expressionPlaceholder !: string;
+  public expressionPlaceholder!: string;
   constructor(
       public expression: string, public type: string, public cases: {[k: string]: Node},
       public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any { return visitor.visitIcu(this, context); }
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitIcu(this, context);
+  }
 }
 
 export class TagPlaceholder implements Node {
   constructor(
       public tag: string, public attrs: {[k: string]: string}, public startName: string,
       public closeName: string, public children: Node[], public isVoid: boolean,
-      public sourceSpan: ParseSourceSpan) {}
+      // TODO sourceSpan should cover all (we need a startSourceSpan and endSourceSpan)
+      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
+      public endSourceSpan: ParseSourceSpan|null) {}
 
-  visit(visitor: Visitor, context?: any): any { return visitor.visitTagPlaceholder(this, context); }
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitTagPlaceholder(this, context);
+  }
 }
 
 export class Placeholder implements Node {
   constructor(public value: string, public name: string, public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any { return visitor.visitPlaceholder(this, context); }
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitPlaceholder(this, context);
+  }
 }
 
 export class IcuPlaceholder implements Node {
@@ -97,7 +121,9 @@ export class IcuPlaceholder implements Node {
   previousMessage?: Message;
   constructor(public value: Icu, public name: string, public sourceSpan: ParseSourceSpan) {}
 
-  visit(visitor: Visitor, context?: any): any { return visitor.visitIcuPlaceholder(this, context); }
+  visit(visitor: Visitor, context?: any): any {
+    return visitor.visitIcuPlaceholder(this, context);
+  }
 }
 
 /**
@@ -106,7 +132,7 @@ export class IcuPlaceholder implements Node {
  * This information is either a `Message`, which indicates it is the root of an i18n message, or a
  * `Node`, which indicates is it part of a containing `Message`.
  */
-export type I18nMeta = Message | Node;
+export type I18nMeta = Message|Node;
 
 export interface Visitor {
   visitText(text: Text, context?: any): any;
@@ -119,7 +145,9 @@ export interface Visitor {
 
 // Clone the AST
 export class CloneVisitor implements Visitor {
-  visitText(text: Text, context?: any): Text { return new Text(text.value, text.sourceSpan); }
+  visitText(text: Text, context?: any): Text {
+    return new Text(text.value, text.sourceSpan);
+  }
 
   visitContainer(container: Container, context?: any): Container {
     const children = container.children.map(n => n.visit(this, context));
@@ -137,7 +165,8 @@ export class CloneVisitor implements Visitor {
   visitTagPlaceholder(ph: TagPlaceholder, context?: any): TagPlaceholder {
     const children = ph.children.map(n => n.visit(this, context));
     return new TagPlaceholder(
-        ph.tag, ph.attrs, ph.startName, ph.closeName, children, ph.isVoid, ph.sourceSpan);
+        ph.tag, ph.attrs, ph.startName, ph.closeName, children, ph.isVoid, ph.sourceSpan,
+        ph.startSourceSpan, ph.endSourceSpan);
   }
 
   visitPlaceholder(ph: Placeholder, context?: any): Placeholder {
@@ -158,7 +187,9 @@ export class RecurseVisitor implements Visitor {
   }
 
   visitIcu(icu: Icu, context?: any): any {
-    Object.keys(icu.cases).forEach(k => { icu.cases[k].visit(this); });
+    Object.keys(icu.cases).forEach(k => {
+      icu.cases[k].visit(this);
+    });
   }
 
   visitTagPlaceholder(ph: TagPlaceholder, context?: any): any {

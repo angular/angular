@@ -67,7 +67,7 @@ export class ApiService implements OnDestroy {
   * API sections is an array of Angular top modules and metadata about their API documents (items).
   * Updates `sections` observable
   *
-  * @param {string} [src] - Name of the api list JSON file
+  * @param [src] - Name of the api list JSON file
   */
   fetchSections(src?: string) {
     // TODO: get URL by configuration?

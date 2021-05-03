@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import {Reference} from '../../imports';
 import {OwningModule} from '../../imports/src/references';
 import {DependencyTracker} from '../../incremental/api';
-import {Declaration, InlineDeclaration, ReflectionHost} from '../../reflection';
+import {Declaration, DeclarationKind, DeclarationNode, EnumMember, FunctionDefinition, isConcreteDeclaration, ReflectionHost, SpecialDeclarationKind} from '../../reflection';
 import {isDeclaration} from '../../util/src/typescript';
 
 import {ArrayConcatBuiltinFn, ArraySliceBuiltinFn} from './builtin';
@@ -203,19 +203,13 @@ export class StaticInterpreter {
     const pieces: string[] = [node.head.text];
     for (let i = 0; i < node.templateSpans.length; i++) {
       const span = node.templateSpans[i];
-      let value = this.visit(span.expression, context);
-      if (value instanceof EnumValue) {
-        value = value.resolved;
-      }
-      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' ||
-          value == null) {
-        pieces.push(`${value}`);
-      } else if (value instanceof DynamicValue) {
+      const value = literal(
+          this.visit(span.expression, context),
+          () => DynamicValue.fromDynamicString(span.expression));
+      if (value instanceof DynamicValue) {
         return DynamicValue.fromDynamicInput(node, value);
-      } else {
-        return DynamicValue.fromDynamicInput(node, DynamicValue.fromDynamicString(span.expression));
       }
-      pieces.push(span.literal.text);
+      pieces.push(`${value}`, span.literal.text);
     }
     return pieces.join('');
   }
@@ -226,19 +220,27 @@ export class StaticInterpreter {
       if (node.originalKeywordKind === ts.SyntaxKind.UndefinedKeyword) {
         return undefined;
       } else {
+        // Check if the symbol here is imported.
+        if (this.dependencyTracker !== null && this.host.getImportOfIdentifier(node) !== null) {
+          // It was, but no declaration for the node could be found. This means that the dependency
+          // graph for the current file cannot be properly updated to account for this (broken)
+          // import. Instead, the originating file is reported as failing dependency analysis,
+          // ensuring that future compilations will always attempt to re-resolve the previously
+          // broken identifier.
+          this.dependencyTracker.recordDependencyAnalysisFailure(context.originatingFile);
+        }
         return DynamicValue.fromUnknownIdentifier(node);
       }
     }
     if (decl.known !== null) {
       return resolveKnownDeclaration(decl.known);
+    } else if (
+        isConcreteDeclaration(decl) && decl.identity !== null &&
+        decl.identity.kind === SpecialDeclarationKind.DownleveledEnum) {
+      return this.getResolvedEnum(decl.node, decl.identity.enumMembers, context);
     }
     const declContext = {...context, ...joinModuleContext(context, node, decl)};
-    // The identifier's declaration is either concrete (a ts.Declaration exists for it) or inline
-    // (a direct reference to a ts.Expression).
-    // TODO(alxhub): remove cast once TS is upgraded in g3.
-    const result = decl.node !== null ?
-        this.visitDeclaration(decl.node, declContext) :
-        this.visitExpression((decl as InlineDeclaration).expression, declContext);
+    const result = this.visitAmbiguousDeclaration(decl, declContext);
     if (result instanceof Reference) {
       // Only record identifiers to non-synthetic references. Synthetic references may not have the
       // same value at runtime as they do at compile time, so it's not legal to refer to them by the
@@ -252,7 +254,7 @@ export class StaticInterpreter {
     return result;
   }
 
-  private visitDeclaration(node: ts.Declaration, context: Context): ResolvedValue {
+  private visitDeclaration(node: DeclarationNode, context: Context): ResolvedValue {
     if (this.dependencyTracker !== null) {
       this.dependencyTracker.addDependency(context.originatingFile, node.getSourceFile());
     }
@@ -261,13 +263,15 @@ export class StaticInterpreter {
     } else if (ts.isVariableDeclaration(node)) {
       return this.visitVariableDeclaration(node, context);
     } else if (ts.isParameter(node) && context.scope.has(node)) {
-      return context.scope.get(node) !;
+      return context.scope.get(node)!;
     } else if (ts.isExportAssignment(node)) {
       return this.visitExpression(node.expression, context);
     } else if (ts.isEnumDeclaration(node)) {
       return this.visitEnumDeclaration(node, context);
     } else if (ts.isSourceFile(node)) {
       return this.visitSourceFile(node, context);
+    } else if (ts.isBindingElement(node)) {
+      return this.visitBindingElement(node, context);
     } else {
       return this.getReference(node, context);
     }
@@ -285,7 +289,7 @@ export class StaticInterpreter {
   }
 
   private visitEnumDeclaration(node: ts.EnumDeclaration, context: Context): ResolvedValue {
-    const enumRef = this.getReference(node, context) as Reference<ts.EnumDeclaration>;
+    const enumRef = this.getReference(node, context);
     const map = new Map<string, EnumValue>();
     node.members.forEach(member => {
       const name = this.stringNameFromPropertyName(member.name, context);
@@ -337,24 +341,31 @@ export class StaticInterpreter {
       }
 
       const declContext = {
-          ...context, ...joinModuleContext(context, node, decl),
+        ...context,
+        ...joinModuleContext(context, node, decl),
       };
 
       // Visit both concrete and inline declarations.
-      // TODO(alxhub): remove cast once TS is upgraded in g3.
-      return decl.node !== null ?
-          this.visitDeclaration(decl.node, declContext) :
-          this.visitExpression((decl as InlineDeclaration).expression, declContext);
+      return this.visitAmbiguousDeclaration(decl, declContext);
     });
   }
 
-  private accessHelper(
-      node: ts.Expression, lhs: ResolvedValue, rhs: string|number,
-      context: Context): ResolvedValue {
+  private visitAmbiguousDeclaration(decl: Declaration, declContext: Context) {
+    return decl.kind === DeclarationKind.Inline && decl.implementation !== undefined &&
+            !isDeclaration(decl.implementation) ?
+        // Inline declarations whose `implementation` is a `ts.Expression` should be visited as
+        // an expression.
+        this.visitExpression(decl.implementation, declContext) :
+        // Otherwise just visit the `node` as a declaration.
+        this.visitDeclaration(decl.node, declContext);
+  }
+
+  private accessHelper(node: ts.Node, lhs: ResolvedValue, rhs: string|number, context: Context):
+      ResolvedValue {
     const strIndex = `${rhs}`;
     if (lhs instanceof Map) {
       if (lhs.has(strIndex)) {
-        return lhs.get(strIndex) !;
+        return lhs.get(strIndex)!;
       } else {
         return undefined;
       }
@@ -446,21 +457,56 @@ export class StaticInterpreter {
         };
       }
 
-      const res = this.visitExpression(expr, context);
-      if (res instanceof Reference) {
-        // This Reference was created synthetically, via a foreign function resolver. The real
-        // runtime value of the function expression may be different than the foreign function
-        // resolved value, so mark the Reference as synthetic to avoid it being misinterpreted.
-        res.synthetic = true;
-      }
-      return res;
+      return this.visitFfrExpression(expr, context);
     }
 
-    const body = fn.body;
-    if (body.length !== 1 || !ts.isReturnStatement(body[0])) {
-      return DynamicValue.fromUnknown(node);
+    let res: ResolvedValue = this.visitFunctionBody(node, fn, context);
+
+    // If the result of attempting to resolve the function body was a DynamicValue, attempt to use
+    // the foreignFunctionResolver if one is present. This could still potentially yield a usable
+    // value.
+    if (res instanceof DynamicValue && context.foreignFunctionResolver !== undefined) {
+      const ffrExpr = context.foreignFunctionResolver(lhs, node.arguments);
+      if (ffrExpr !== null) {
+        // The foreign function resolver was able to extract an expression from this function. See
+        // if that expression leads to a non-dynamic result.
+        const ffrRes = this.visitFfrExpression(ffrExpr, context);
+        if (!(ffrRes instanceof DynamicValue)) {
+          // FFR yielded an actual result that's not dynamic, so use that instead of the original
+          // resolution.
+          res = ffrRes;
+        }
+      }
     }
-    const ret = body[0] as ts.ReturnStatement;
+
+    return res;
+  }
+
+  /**
+   * Visit an expression which was extracted from a foreign-function resolver.
+   *
+   * This will process the result and ensure it's correct for FFR-resolved values, including marking
+   * `Reference`s as synthetic.
+   */
+  private visitFfrExpression(expr: ts.Expression, context: Context): ResolvedValue {
+    const res = this.visitExpression(expr, context);
+    if (res instanceof Reference) {
+      // This Reference was created synthetically, via a foreign function resolver. The real
+      // runtime value of the function expression may be different than the foreign function
+      // resolved value, so mark the Reference as synthetic to avoid it being misinterpreted.
+      res.synthetic = true;
+    }
+    return res;
+  }
+
+  private visitFunctionBody(node: ts.CallExpression, fn: FunctionDefinition, context: Context):
+      ResolvedValue {
+    if (fn.body === null) {
+      return DynamicValue.fromUnknown(node);
+    } else if (fn.body.length !== 1 || !ts.isReturnStatement(fn.body[0])) {
+      return DynamicValue.fromComplexFunctionCall(node, fn);
+    }
+    const ret = fn.body[0] as ts.ReturnStatement;
 
     const args = this.evaluateFunctionArguments(node, context);
     const newScope: Scope = new Map<ts.ParameterDeclaration, ResolvedValue>();
@@ -501,7 +547,7 @@ export class StaticInterpreter {
       return DynamicValue.fromUnsupportedSyntax(node);
     }
 
-    const op = UNARY_OPERATORS.get(operatorKind) !;
+    const op = UNARY_OPERATORS.get(operatorKind)!;
     const value = this.visitExpression(node.operand, context);
     if (value instanceof DynamicValue) {
       return DynamicValue.fromDynamicInput(node, value);
@@ -516,11 +562,15 @@ export class StaticInterpreter {
       return DynamicValue.fromUnsupportedSyntax(node);
     }
 
-    const opRecord = BINARY_OPERATORS.get(tokenKind) !;
+    const opRecord = BINARY_OPERATORS.get(tokenKind)!;
     let lhs: ResolvedValue, rhs: ResolvedValue;
     if (opRecord.literal) {
-      lhs = literal(this.visitExpression(node.left, context), node.left);
-      rhs = literal(this.visitExpression(node.right, context), node.right);
+      lhs = literal(
+          this.visitExpression(node.left, context),
+          value => DynamicValue.fromInvalidExpressionType(node.left, value));
+      rhs = literal(
+          this.visitExpression(node.right, context),
+          value => DynamicValue.fromInvalidExpressionType(node.right, value));
     } else {
       lhs = this.visitExpression(node.left, context);
       rhs = this.visitExpression(node.right, context);
@@ -562,6 +612,47 @@ export class StaticInterpreter {
     }
   }
 
+  private visitBindingElement(node: ts.BindingElement, context: Context): ResolvedValue {
+    const path: ts.BindingElement[] = [];
+    let closestDeclaration: ts.Node = node;
+
+    while (ts.isBindingElement(closestDeclaration) ||
+           ts.isArrayBindingPattern(closestDeclaration) ||
+           ts.isObjectBindingPattern(closestDeclaration)) {
+      if (ts.isBindingElement(closestDeclaration)) {
+        path.unshift(closestDeclaration);
+      }
+
+      closestDeclaration = closestDeclaration.parent;
+    }
+
+    if (!ts.isVariableDeclaration(closestDeclaration) ||
+        closestDeclaration.initializer === undefined) {
+      return DynamicValue.fromUnknown(node);
+    }
+
+    let value = this.visit(closestDeclaration.initializer, context);
+    for (const element of path) {
+      let key: number|string;
+      if (ts.isArrayBindingPattern(element.parent)) {
+        key = element.parent.elements.indexOf(element);
+      } else {
+        const name = element.propertyName || element.name;
+        if (ts.isIdentifier(name)) {
+          key = name.text;
+        } else {
+          return DynamicValue.fromUnknown(element);
+        }
+      }
+      value = this.accessHelper(element, value, key, context);
+      if (value instanceof DynamicValue) {
+        return value;
+      }
+    }
+
+    return value;
+  }
+
   private stringNameFromPropertyName(node: ts.PropertyName, context: Context): string|undefined {
     if (ts.isIdentifier(node) || ts.isStringLiteral(node) || ts.isNumericLiteral(node)) {
       return node.text;
@@ -573,7 +664,21 @@ export class StaticInterpreter {
     }
   }
 
-  private getReference(node: ts.Declaration, context: Context): Reference {
+  private getResolvedEnum(node: ts.Declaration, enumMembers: EnumMember[], context: Context):
+      ResolvedValue {
+    const enumRef = this.getReference(node, context);
+    const map = new Map<string, EnumValue>();
+    enumMembers.forEach(member => {
+      const name = this.stringNameFromPropertyName(member.name, context);
+      if (name !== undefined) {
+        const resolved = this.visit(member.initializer, context);
+        map.set(name, new EnumValue(enumRef, name, resolved));
+      }
+    });
+    return map;
+  }
+
+  private getReference<T extends DeclarationNode>(node: T, context: Context): Reference<T> {
     return new Reference(node, owningModule(context));
   }
 }
@@ -584,12 +689,16 @@ function isFunctionOrMethodReference(ref: Reference<ts.Node>):
       ts.isFunctionExpression(ref.node);
 }
 
-function literal(value: ResolvedValue, node: ts.Node): any {
+function literal(
+    value: ResolvedValue, reject: (value: ResolvedValue) => ResolvedValue): ResolvedValue {
+  if (value instanceof EnumValue) {
+    value = value.resolved;
+  }
   if (value instanceof DynamicValue || value === null || value === undefined ||
       typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return value;
   }
-  return DynamicValue.fromInvalidExpressionType(node, value);
+  return reject(value);
 }
 
 function isVariableDeclarationDeclared(node: ts.VariableDeclaration): boolean {
@@ -621,7 +730,7 @@ function joinModuleContext(existing: Context, node: ts.Node, decl: Declaration):
   }
 }
 
-function owningModule(context: Context, override: OwningModule | null = null): OwningModule|null {
+function owningModule(context: Context, override: OwningModule|null = null): OwningModule|null {
   let specifier = context.absoluteModuleName;
   if (override !== null) {
     specifier = override.specifier;

@@ -1,3 +1,4 @@
+// tslint:disable: jsdoc-format
 // #docplaster
 // #docregion
 // #docregion no-docs, skeleton

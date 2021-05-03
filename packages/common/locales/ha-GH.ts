@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -45,7 +45,7 @@ export default [
   ['#,##0.###', '#,##0%', '¤ #,##0.00', '#E0'],
   'GHS',
   'GH₵',
-  'GHS',
+  'Kudin Ghana',
   {'GHS': ['GH₵'], 'NGN': ['₦']},
   'ltr',
   plural

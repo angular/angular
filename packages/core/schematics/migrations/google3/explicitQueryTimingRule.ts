@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,7 +28,7 @@ export class Rule extends Rules.TypedRule {
     const typeChecker = program.getTypeChecker();
     const queryVisitor = new NgQueryResolveVisitor(program.getTypeChecker());
     const templateVisitor = new NgComponentTemplateVisitor(typeChecker);
-    const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f) !);
+    const rootSourceFiles = program.getRootFileNames().map(f => program.getSourceFile(f)!);
     const printer = ts.createPrinter();
     const failures: RuleFailure[] = [];
 
@@ -44,7 +44,7 @@ export class Rule extends Rules.TypedRule {
     // check component templates for static query usage.
     templateVisitor.resolvedTemplates.forEach(template => {
       if (classMetadata.has(template.container)) {
-        classMetadata.get(template.container) !.template = template;
+        classMetadata.get(template.container)!.template = template;
       }
     });
 

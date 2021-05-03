@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,18 +13,9 @@ const u = undefined;
 
 export default [
   [
-    [
-      'فجرًا', 'صباحًا', 'ظهرًا', 'بعد الظهر', 'مساءً',
-      'منتصف الليل', 'ليلاً'
-    ],
-    [
-      'فجرًا', 'ص', 'ظهرًا', 'بعد الظهر', 'مساءً', 'منتصف الليل',
-      'ليلاً'
-    ],
-    [
-      'فجرًا', 'صباحًا', 'ظهرًا', 'بعد الظهر', 'مساءً',
-      'منتصف الليل', 'ليلاً'
-    ]
+    ['فجرًا', 'صباحًا', 'ظهرًا', 'بعد الظهر', 'مساءً', 'منتصف الليل', 'ليلاً'],
+    ['فجرًا', 'ص', 'ظهرًا', 'بعد الظهر', 'مساءً', 'منتصف الليل', 'ليلاً'],
+    ['فجرًا', 'صباحًا', 'ظهرًا', 'بعد الظهر', 'مساءً', 'منتصف الليل', 'ليلاً']
   ],
   u,
   [

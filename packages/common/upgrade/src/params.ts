@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -152,7 +152,9 @@ export class AngularJSUrlCodec implements UrlCodec {
   }
 
   // https://github.com/angular/angular.js/blob/864c7f0/src/ng/location.js#L72
-  decodeSearch(search: string) { return parseKeyValue(search); }
+  decodeSearch(search: string) {
+    return parseKeyValue(search);
+  }
 
   // https://github.com/angular/angular.js/blob/864c7f0/src/ng/location.js#L73
   decodeHash(hash: string) {
@@ -193,7 +195,9 @@ export class AngularJSUrlCodec implements UrlCodec {
     }
   }
 
-  areEqual(valA: string, valB: string) { return this.normalize(valA) === this.normalize(valB); }
+  areEqual(valA: string, valB: string) {
+    return this.normalize(valA) === this.normalize(valB);
+  }
 
   // https://github.com/angular/angular.js/blob/864c7f0/src/ng/urlUtils.js#L60
   parse(url: string, base?: string) {
@@ -293,7 +297,7 @@ function toKeyValue(obj: {[k: string]: unknown}) {
 
 /**
  * We need our custom method because encodeURIComponent is too aggressive and doesn't follow
- * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
+ * https://tools.ietf.org/html/rfc3986 with regards to the character set (pchar) allowed in path
  * segments:
  *    segment       = *pchar
  *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
@@ -305,17 +309,14 @@ function toKeyValue(obj: {[k: string]: unknown}) {
  * Logic from https://github.com/angular/angular.js/blob/864c7f0/src/Angular.js#L1437
  */
 function encodeUriSegment(val: string) {
-  return encodeUriQuery(val, true)
-      .replace(/%26/gi, '&')
-      .replace(/%3D/gi, '=')
-      .replace(/%2B/gi, '+');
+  return encodeUriQuery(val, true).replace(/%26/g, '&').replace(/%3D/gi, '=').replace(/%2B/gi, '+');
 }
 
 
 /**
  * This method is intended for encoding *key* or *value* parts of query component. We need a custom
  * method because encodeURIComponent is too aggressive and encodes stuff that doesn't have to be
- * encoded per http://tools.ietf.org/html/rfc3986:
+ * encoded per https://tools.ietf.org/html/rfc3986:
  *    query         = *( pchar / "/" / "?" )
  *    pchar         = unreserved / pct-encoded / sub-delims / ":" / "@"
  *    unreserved    = ALPHA / DIGIT / "-" / "." / "_" / "~"
@@ -327,7 +328,7 @@ function encodeUriSegment(val: string) {
  */
 function encodeUriQuery(val: string, pctEncodeSpaces: boolean = false) {
   return encodeURIComponent(val)
-      .replace(/%40/gi, '@')
+      .replace(/%40/g, '@')
       .replace(/%3A/gi, ':')
       .replace(/%24/g, '$')
       .replace(/%2C/gi, ',')

@@ -1,12 +1,10 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
-// #docregion TemplateDriven
 import {Component} from '@angular/core';
 
 @Component({
@@ -17,7 +15,7 @@ import {Component} from '@angular/core';
       <input type="radio" value="lamb" name="food" [(ngModel)]="myFood"> Lamb
       <input type="radio" value="fish" name="food" [(ngModel)]="myFood"> Fish
     </form>
-    
+
     <p>Form value: {{ f.value | json }}</p>  <!-- {food: 'lamb' } -->
     <p>myFood value: {{ myFood }}</p>  <!-- 'lamb' -->
   `,
@@ -25,4 +23,3 @@ import {Component} from '@angular/core';
 export class RadioButtonComp {
   myFood = 'lamb';
 }
-// #enddocregion

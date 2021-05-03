@@ -23,7 +23,7 @@ Existing Angular libraries exist on NPM today and are distributed in the Angular
 
 We will produce two compiler entry-points, `ngtsc` and `ngcc`.
 
-`ngtsc` will be an Typescript-to-Javascript transpiler that reifies Angular decorators into static properties. It is a minimal wrapper around `tsc` which includes a set of Angular transforms. While Ivy is experimental, `ngc` operates as `ngtsc` when the `angularCompilerOption` `enableIvy` flag is set to `true` in the `tsconfig.json` file for the project.
+`ngtsc` will be a Typescript-to-Javascript transpiler that reifies Angular decorators into static properties. It is a minimal wrapper around `tsc` which includes a set of Angular transforms. While Ivy is experimental, `ngc` operates as `ngtsc` when the `angularCompilerOption` `enableIvy` flag is set to `true` in the `tsconfig.json` file for the project.
 
 `ngcc` (which stands for Angular compatibility compiler) is designed to process code coming from NPM and produce the equivalent Ivy version, as if the code was compiled with `ngtsc`. It will operate given a `node_modules` directory and a set of packages to compile, and will produce an equivalent directory from which the Ivy equivalents of those modules can be read. `ngcc` is a separate script entry point to `@angular/compiler-cli`.
 
@@ -49,7 +49,7 @@ export class GreetComponent {
 }
 ```
 
-will normally be translated this into something like,
+will normally be translated into something like this:
 
 ```js
 const tslib_1 = require("tslib");
@@ -137,7 +137,7 @@ The overall architecure of TypeScript is:
 
 The parse step is a traditional recursive descent parser, augmented to support incremental parsing, that emits an abstract syntax tree (AST).
 
-The type-checker construct a symbol table and then performs type analysis of every expression in the file, reporting errors it finds. This process not extended or modified by `ngtsc`.
+The type-checker construct a symbol table and then performs type analysis of every expression in the file, reporting errors it finds. This process is not extended or modified by `ngtsc`.
 
 The transform step is a set of AST to AST transformations that perform various tasks such as, removing type declarations, lowering module and class declarations to ES5, converting `async` methods to state-machines, etc.
 
@@ -276,7 +276,7 @@ Given a selector scope, a dependency list is formed by producing the set of type
 
 ##### Finding a components module.
 
-A component's module can be found by using the TypeScript language service's `findReferences`. If one of the references is to a class declaration with an `@NgModule` annotation, process the class as described above to produce the selector scope. If the class is the declaration list of the `@NgModule` then use the scope produce for that module.
+A component's module can be found by using the TypeScript language service's `findReferences`. If one of the references is to a class declaration with an `@NgModule` annotation, process the class as described above to produce the selector scope. If the class is the declaration list of the `@NgModule` then use the scope produced for that module.
 
 When processing the `@NgModule` class, the type references can be found using the program's `checker` `getSymbolAtLocation` (potentially calling `getAliasedSymbol` if it is an alias symbol, `SymbolFlags.Alias`) and then using `Symbol`'s `declarations` field to get the list of declarations nodes (there should only be one for a `class`, there can be several for an `interface`).
 

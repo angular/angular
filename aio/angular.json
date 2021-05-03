@@ -31,34 +31,17 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "webWorkerTsConfig": "tsconfig.worker.json",
-            "aot": true,
-            "optimization": true,
-            "buildOptimizer": true,
             "outputHashing": "all",
             "sourceMap": true,
-            "statsJson": true,
-            "extractCss": true,
-            "extractLicenses": true,
             "namedChunks": true,
-            "vendorChunk": false,
             "assets": [
               "src/assets",
               "src/generated",
               "src/pwa-manifest.json",
-              "src/google385281288605d160.html",
-              {
-                "glob": "custom-elements.min.js",
-                "input": "node_modules/@webcomponents/custom-elements",
-                "output": "/assets/js"
-              },
-              {
-                "glob": "native-shim.js",
-                "input": "node_modules/@webcomponents/custom-elements/src",
-                "output": "/assets/js"
-              }
+              "src/google385281288605d160.html"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles/main.scss"
             ],
             "scripts": [],
             "budgets": [
@@ -70,6 +53,7 @@
           },
           "configurations": {
             "fast": {
+              "buildOptimizer": false,
               "optimization": false
             },
             "next": {
@@ -77,6 +61,15 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.next.ts"
+                }
+              ],
+              "serviceWorker": true
+            },
+            "rc": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.rc.ts"
                 }
               ],
               "serviceWorker": true
@@ -116,6 +109,9 @@
             "next": {
               "browserTarget": "site:build:next"
             },
+            "rc": {
+              "browserTarget": "site:build:rc"
+            },
             "stable": {
               "browserTarget": "site:build:stable"
             },
@@ -143,22 +139,11 @@
             "karmaConfig": "karma.conf.js",
             "assets": [
               "src/assets",
-              "src/generated",
               "src/pwa-manifest.json",
-              "src/google385281288605d160.html",
-              {
-                "glob": "custom-elements.min.js",
-                "input": "node_modules/@webcomponents/custom-elements",
-                "output": "/assets/js"
-              },
-              {
-                "glob": "native-shim.js",
-                "input": "node_modules/@webcomponents/custom-elements/src",
-                "output": "/assets/js"
-              }
+              "src/google385281288605d160.html"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles/main.scss"
             ],
             "scripts": []
           }

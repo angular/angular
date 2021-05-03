@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -66,8 +66,6 @@ export class Identifiers {
   static directiveInject: o.ExternalReference = {name: 'ɵɵdirectiveInject', moduleName: CORE};
   static INJECTOR: o.ExternalReference = {name: 'INJECTOR', moduleName: CORE};
   static Injector: o.ExternalReference = {name: 'Injector', moduleName: CORE};
-  static ɵɵdefineInjectable: o.ExternalReference = {name: 'ɵɵdefineInjectable', moduleName: CORE};
-  static InjectableDef: o.ExternalReference = {name: 'ɵɵInjectableDef', moduleName: CORE};
   static ViewEncapsulation: o.ExternalReference = {
     name: 'ViewEncapsulation',
     moduleName: CORE,
@@ -124,7 +122,6 @@ export class Identifiers {
     moduleName: CORE,
   };
   static createComponentFactory: o.ExternalReference = {name: 'ɵccf', moduleName: CORE};
-  static setClassMetadata: o.ExternalReference = {name: 'ɵsetClassMetadata', moduleName: CORE};
 }
 
 export function createTokenForReference(reference: any): CompileTokenMetadata {

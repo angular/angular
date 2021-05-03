@@ -8,8 +8,8 @@ export class User {
 }
 
 // TODO: get the user; don't 'new' it.
-let alice = new User('Alice', true);
-let bob = new User('Bob', false);
+const alice = new User('Alice', true);
+const bob = new User('Bob', false);
 
 @Injectable({
   providedIn: 'root'

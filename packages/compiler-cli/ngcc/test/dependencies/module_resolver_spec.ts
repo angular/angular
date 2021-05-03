@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadTestFiles} from '../../../test/helpers';
+import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {ModuleResolver, ResolvedDeepImport, ResolvedExternalModule, ResolvedRelativeModule} from '../../src/dependencies/module_resolver';
 
 runInEachFileSystem(() => {
@@ -67,15 +67,28 @@ runInEachFileSystem(() => {
       ]);
     });
 
-    describe('resolveModule()', () => {
+    describe('resolveModuleImport()', () => {
       describe('with relative paths', () => {
         it('should resolve sibling, child and aunt modules', () => {
           const resolver = new ModuleResolver(getFileSystem());
+
+          // With relative file paths.
           expect(resolver.resolveModuleImport('./x', _('/libs/local-package/index.js')))
               .toEqual(new ResolvedRelativeModule(_('/libs/local-package/x.js')));
           expect(resolver.resolveModuleImport('./sub-folder', _('/libs/local-package/index.js')))
               .toEqual(new ResolvedRelativeModule(_('/libs/local-package/sub-folder/index.js')));
           expect(resolver.resolveModuleImport('../x', _('/libs/local-package/sub-folder/index.js')))
+              .toEqual(new ResolvedRelativeModule(_('/libs/local-package/x.js')));
+
+          // With absolute file paths.
+          expect(resolver.resolveModuleImport(
+                     _('/libs/local-package/x'), _('/libs/local-package/index.js')))
+              .toEqual(new ResolvedRelativeModule(_('/libs/local-package/x.js')));
+          expect(resolver.resolveModuleImport(
+                     _('/libs/local-package/sub-folder'), _('/libs/local-package/index.js')))
+              .toEqual(new ResolvedRelativeModule(_('/libs/local-package/sub-folder/index.js')));
+          expect(resolver.resolveModuleImport(
+                     _('/libs/local-package/x'), _('/libs/local-package/sub-folder/index.js')))
               .toEqual(new ResolvedRelativeModule(_('/libs/local-package/x.js')));
         });
 
@@ -243,6 +256,16 @@ runInEachFileSystem(() => {
                         'package-4/secondary-entry-point', _('/dist/package-4/index.js')))
                  .toEqual(new ResolvedExternalModule(_('/dist/package-4/secondary-entry-point')));
            });
+      });
+
+      describe('with mapped path relative paths', () => {
+        it('should resolve to a relative file if found via a paths mapping', () => {
+          const resolver = new ModuleResolver(
+              getFileSystem(), {baseUrl: '/', paths: {'mapped/*': ['libs/local-package/*']}});
+
+          expect(resolver.resolveModuleImport('mapped/x', _('/libs/local-package/index.js')))
+              .toEqual(new ResolvedRelativeModule(_('/libs/local-package/x.js')));
+        });
       });
     });
   });

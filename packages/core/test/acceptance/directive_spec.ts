@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,9 +13,7 @@ import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
 describe('directives', () => {
-
   describe('matching', () => {
-
     @Directive({selector: 'ng-template[test]'})
     class TestDirective {
       constructor(public templateRef: TemplateRef<any>) {}
@@ -241,7 +239,9 @@ describe('directives', () => {
 
       @Directive({selector: '[dir]'})
       class MyDir {
-        ngOnInit() { calls.push('MyDir.ngOnInit'); }
+        ngOnInit() {
+          calls.push('MyDir.ngOnInit');
+        }
       }
 
       @Component({
@@ -266,7 +266,9 @@ describe('directives', () => {
       @Directive({selector: 'svg[dir]'})
       class MyDir {
         constructor(private el: ElementRef) {}
-        ngOnInit() { calls.push(`MyDir.ngOnInit: ${this.el.nativeElement.tagName}`); }
+        ngOnInit() {
+          calls.push(`MyDir.ngOnInit: ${this.el.nativeElement.tagName}`);
+        }
       }
 
       @Component({
@@ -289,7 +291,9 @@ describe('directives', () => {
       @Directive({selector: 'text[dir]'})
       class MyDir {
         constructor(private el: ElementRef) {}
-        ngOnInit() { calls.push(`MyDir.ngOnInit: ${this.el.nativeElement.tagName}`); }
+        ngOnInit() {
+          calls.push(`MyDir.ngOnInit: ${this.el.nativeElement.tagName}`);
+        }
       }
 
       @Component({
@@ -311,13 +315,13 @@ describe('directives', () => {
 
       @Directive({selector: '[test]'})
       class MyDir {
-        constructor() { logs.push('MyDir.contructor'); }
+        constructor() {
+          logs.push('MyDir.contructor');
+        }
 
-        @Input('test')
-        myInput = '';
+        @Input('test') myInput = '';
 
-        @Input('disabled')
-        myInput2 = '';
+        @Input('disabled') myInput2 = '';
       }
 
       @Component({
@@ -338,7 +342,6 @@ describe('directives', () => {
 
       expect(logs).toEqual(['MyDir.contructor']);
     });
-
   });
 
   describe('inputs', () => {
@@ -346,7 +349,9 @@ describe('directives', () => {
       let dirInstance: WithInput;
       @Directive({selector: '[dir]'})
       class WithInput {
-        constructor() { dirInstance = this; }
+        constructor() {
+          dirInstance = this;
+        }
         @Input() dir: string = '';
       }
 
@@ -362,14 +367,16 @@ describe('directives', () => {
       const fixture = TestBed.createComponent(TestComp);
       fixture.detectChanges();
 
-      expect(dirInstance !.dir).toBe('Hello');
+      expect(dirInstance!.dir).toBe('Hello');
     });
 
     it('should allow directive inputs (as an interpolated prop) on <ng-template>', () => {
       let dirInstance: WithInput;
       @Directive({selector: '[dir]'})
       class WithInput {
-        constructor() { dirInstance = this; }
+        constructor() {
+          dirInstance = this;
+        }
         @Input() dir: string = '';
       }
 
@@ -385,7 +392,7 @@ describe('directives', () => {
       const fixture = TestBed.createComponent(TestComp);
       fixture.detectChanges();
 
-      expect(dirInstance !.dir).toBe('Hello');
+      expect(dirInstance!.dir).toBe('Hello');
     });
 
     it('should allow directive inputs (as an interpolated prop) on <ng-template> with structural directives',
@@ -393,7 +400,9 @@ describe('directives', () => {
          let dirInstance: WithInput;
          @Directive({selector: '[dir]'})
          class WithInput {
-           constructor() { dirInstance = this; }
+           constructor() {
+             dirInstance = this;
+           }
            @Input() dir: string = '';
          }
 
@@ -409,8 +418,95 @@ describe('directives', () => {
          const fixture = TestBed.createComponent(TestComp);
          fixture.detectChanges();
 
-         expect(dirInstance !.dir).toBe('Hello');
+         expect(dirInstance!.dir).toBe('Hello');
        });
+
+    it('should not set structural directive inputs from static element attrs', () => {
+      const dirInstances: StructuralDir[] = [];
+
+      @Directive({selector: '[dir]'})
+      class StructuralDir {
+        constructor() {
+          dirInstances.push(this);
+        }
+        @Input() dirOf!: number[];
+        @Input() dirUnboundInput: any;
+      }
+
+      @Component({
+        template: `
+          <!-- Regular form of structural directive -->
+          <div *dir="let item of items" dirUnboundInput>Some content</div>
+
+          <!-- De-sugared version of the same structural directive -->
+          <ng-template dir let-item [dirOf]="items" dirUnboundInput>
+            <div>Some content</div>
+          </ng-template>
+        `,
+      })
+      class App {
+        items: number[] = [1, 2, 3];
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, StructuralDir],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const [regularDir, desugaredDir] = dirInstances;
+
+      // When directive is used as a structural one, the `dirUnboundInput` should not be treated as
+      // an input.
+      expect(regularDir.dirUnboundInput).toBe(undefined);
+
+      // In de-sugared version the `dirUnboundInput` acts as a regular input, so it should be set
+      // to an empty string.
+      expect(desugaredDir.dirUnboundInput).toBe('');
+    });
+
+    it('should not set structural directive inputs from element bindings', () => {
+      const dirInstances: StructuralDir[] = [];
+
+      @Directive({selector: '[dir]'})
+      class StructuralDir {
+        constructor() {
+          dirInstances.push(this);
+        }
+        @Input() dirOf!: number[];
+        @Input() title: any;
+      }
+
+      @Component({
+        template: `
+          <!-- Regular form of structural directive -->
+          <div *dir="let item of items" [title]="title">Some content</div>
+
+          <!-- De-sugared version of the same structural directive -->
+          <ng-template dir let-item [dirOf]="items" [title]="title">
+            <div>Some content</div>
+          </ng-template>
+        `,
+      })
+      class App {
+        items: number[] = [1, 2, 3];
+        title: string = 'element title';
+      }
+
+      TestBed.configureTestingModule({
+        declarations: [App, StructuralDir],
+      });
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+
+      const [regularDir, desugaredDir] = dirInstances;
+
+      // When directive is used as a structural one, the `title` should not be treated as an input.
+      expect(regularDir.title).toBe(undefined);
+
+      // In de-sugared version the `title` acts as a regular input, so it should be set.
+      expect(desugaredDir.title).toBe('element title');
+    });
   });
 
   describe('outputs', () => {
@@ -433,7 +529,7 @@ describe('directives', () => {
       expect(fixture.componentInstance.testDir).toBeTruthy();
       expect(fixture.componentInstance.value).toBe(false);
 
-      fixture.componentInstance.testDir !.out.emit();
+      fixture.componentInstance.testDir!.out.emit();
       fixture.detectChanges();
       expect(fixture.componentInstance.value).toBe(true);
     });
@@ -459,7 +555,6 @@ describe('directives', () => {
       fixture.detectChanges();
       expect(fixture.componentInstance.value).toBeTruthy();
     });
-
   });
 
   describe('attribute shadowing behaviors', () => {
@@ -471,8 +566,7 @@ describe('directives', () => {
       selector: '[dir-with-title]',
     })
     class DirWithTitle {
-      @Input()
-      title = '';
+      @Input() title = '';
     }
 
     it('should set both the div attribute and the directive input for `title="value"`', () => {
@@ -711,8 +805,12 @@ describe('directives', () => {
       const log: string[] = [];
       @Directive({selector: '[dir]'})
       class DirectiveA {
-        constructor() { log.push('DirectiveA.constructor'); }
-        ngOnInit() { log.push('DirectiveA.ngOnInit'); }
+        constructor() {
+          log.push('DirectiveA.constructor');
+        }
+        ngOnInit() {
+          log.push('DirectiveA.ngOnInit');
+        }
       }
 
       @NgModule({
@@ -724,8 +822,12 @@ describe('directives', () => {
 
       @Directive({selector: '[dir]'})
       class DirectiveB {
-        constructor() { log.push('DirectiveB.constructor'); }
-        ngOnInit() { log.push('DirectiveB.ngOnInit'); }
+        constructor() {
+          log.push('DirectiveB.constructor');
+        }
+        ngOnInit() {
+          log.push('DirectiveB.ngOnInit');
+        }
       }
 
       @Component({
@@ -752,8 +854,12 @@ describe('directives', () => {
       const log: string[] = [];
       @Directive({selector: '[dir]'})
       class DirectiveA {
-        constructor() { log.push('DirectiveA.constructor'); }
-        ngOnInit() { log.push('DirectiveA.ngOnInit'); }
+        constructor() {
+          log.push('DirectiveA.constructor');
+        }
+        ngOnInit() {
+          log.push('DirectiveA.ngOnInit');
+        }
       }
 
       @NgModule({
@@ -765,8 +871,12 @@ describe('directives', () => {
 
       @Directive({selector: '[dir]'})
       class DirectiveB {
-        constructor() { log.push('DirectiveB.constructor'); }
-        ngOnInit() { log.push('DirectiveB.ngOnInit'); }
+        constructor() {
+          log.push('DirectiveB.constructor');
+        }
+        ngOnInit() {
+          log.push('DirectiveB.ngOnInit');
+        }
       }
 
       @NgModule({
@@ -795,6 +905,5 @@ describe('directives', () => {
         'DirectiveB.ngOnInit'
       ]);
     });
-
   });
 });

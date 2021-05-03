@@ -1,0 +1,12 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "protractor-perf.conf.js",
+    "start-server.js",
+])
+
+# Make source files available for distribution via pkg_npm
+filegroup(
+    name = "files",
+    srcs = glob(["*"]) + ["//dev-infra/benchmark/component_benchmark/defaults:files"],
+)

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,13 +9,15 @@
 import {getDocument} from '../render3/interfaces/document';
 import {SANITIZER} from '../render3/interfaces/view';
 import {getLView} from '../render3/state';
-import {renderStringify} from '../render3/util/misc_utils';
+import {renderStringify} from '../render3/util/stringify_utils';
+import {TrustedHTML, TrustedScript, TrustedScriptURL} from '../util/security/trusted_type_defs';
+import {trustedHTMLFromString, trustedScriptURLFromString} from '../util/security/trusted_types';
+import {trustedHTMLFromStringBypass, trustedScriptFromStringBypass, trustedScriptURLFromStringBypass} from '../util/security/trusted_types_bypass';
 
-import {BypassType, allowSanitizationBypassAndThrow, unwrapSafeValue} from './bypass';
+import {allowSanitizationBypassAndThrow, BypassType, unwrapSafeValue} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
 import {Sanitizer} from './sanitizer';
 import {SecurityContext} from './security';
-import {StyleSanitizeFn, StyleSanitizeMode, _sanitizeStyle} from './style_sanitizer';
 import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
 
 
@@ -33,15 +35,15 @@ import {_sanitizeUrl as _sanitizeUrl} from './url_sanitizer';
  * @returns `html` string which is safe to display to user, because all of the dangerous javascript
  * and urls have been removed.
  *
- * @publicApi
+ * @codeGenApi
  */
-export function ɵɵsanitizeHtml(unsafeHtml: any): string {
+export function ɵɵsanitizeHtml(unsafeHtml: any): TrustedHTML|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '';
+    return trustedHTMLFromStringBypass(sanitizer.sanitize(SecurityContext.HTML, unsafeHtml) || '');
   }
   if (allowSanitizationBypassAndThrow(unsafeHtml, BypassType.Html)) {
-    return unwrapSafeValue(unsafeHtml);
+    return trustedHTMLFromStringBypass(unwrapSafeValue(unsafeHtml));
   }
   return _sanitizeHtml(getDocument(), renderStringify(unsafeHtml));
 }
@@ -50,16 +52,12 @@ export function ɵɵsanitizeHtml(unsafeHtml: any): string {
  * A `style` sanitizer which converts untrusted `style` **string** into trusted string by removing
  * dangerous content.
  *
- * This method parses the `style` and locates potentially dangerous content (such as urls and
- * javascript) and removes it.
- *
  * It is possible to mark a string as trusted by calling {@link bypassSanitizationTrustStyle}.
  *
  * @param unsafeStyle untrusted `style`, typically from the user.
- * @returns `style` string which is safe to bind to the `style` properties, because all of the
- * dangerous javascript and urls have been removed.
+ * @returns `style` string which is safe to bind to the `style` properties.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ɵɵsanitizeStyle(unsafeStyle: any): string {
   const sanitizer = getSanitizer();
@@ -69,7 +67,7 @@ export function ɵɵsanitizeStyle(unsafeStyle: any): string {
   if (allowSanitizationBypassAndThrow(unsafeStyle, BypassType.Style)) {
     return unwrapSafeValue(unsafeStyle);
   }
-  return _sanitizeStyle(renderStringify(unsafeStyle));
+  return renderStringify(unsafeStyle);
 }
 
 /**
@@ -86,7 +84,7 @@ export function ɵɵsanitizeStyle(unsafeStyle: any): string {
  * @returns `url` string which is safe to bind to the `src` properties such as `<img src>`, because
  * all of the dangerous javascript has been removed.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ɵɵsanitizeUrl(unsafeUrl: any): string {
   const sanitizer = getSanitizer();
@@ -108,17 +106,18 @@ export function ɵɵsanitizeUrl(unsafeUrl: any): string {
  * @returns `url` string which is safe to bind to the `src` properties such as `<img src>`, because
  * only trusted `url`s have been allowed to pass.
  *
- * @publicApi
+ * @codeGenApi
  */
-export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): string {
+export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): TrustedScriptURL|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
+    return trustedScriptURLFromStringBypass(
+        sanitizer.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '');
   }
   if (allowSanitizationBypassAndThrow(unsafeResourceUrl, BypassType.ResourceUrl)) {
-    return unwrapSafeValue(unsafeResourceUrl);
+    return trustedScriptURLFromStringBypass(unwrapSafeValue(unsafeResourceUrl));
   }
-  throw new Error('unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
+  throw new Error('unsafe value used in a resource URL context (see https://g.co/ng/security#xss)');
 }
 
 /**
@@ -131,17 +130,70 @@ export function ɵɵsanitizeResourceUrl(unsafeResourceUrl: any): string {
  * @returns `url` string which is safe to bind to the `<script>` element such as `<img src>`,
  * because only trusted `scripts` have been allowed to pass.
  *
- * @publicApi
+ * @codeGenApi
  */
-export function ɵɵsanitizeScript(unsafeScript: any): string {
+export function ɵɵsanitizeScript(unsafeScript: any): TrustedScript|string {
   const sanitizer = getSanitizer();
   if (sanitizer) {
-    return sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
+    return trustedScriptFromStringBypass(
+        sanitizer.sanitize(SecurityContext.SCRIPT, unsafeScript) || '');
   }
   if (allowSanitizationBypassAndThrow(unsafeScript, BypassType.Script)) {
-    return unwrapSafeValue(unsafeScript);
+    return trustedScriptFromStringBypass(unwrapSafeValue(unsafeScript));
   }
   throw new Error('unsafe value used in a script context');
+}
+
+/**
+ * A template tag function for promoting the associated constant literal to a
+ * TrustedHTML. Interpolation is explicitly not allowed.
+ *
+ * @param html constant template literal containing trusted HTML.
+ * @returns TrustedHTML wrapping `html`.
+ *
+ * @security This is a security-sensitive function and should only be used to
+ * convert constant values of attributes and properties found in
+ * application-provided Angular templates to TrustedHTML.
+ *
+ * @codeGenApi
+ */
+export function ɵɵtrustConstantHtml(html: TemplateStringsArray): TrustedHTML|string {
+  // The following runtime check ensures that the function was called as a
+  // template tag (e.g. ɵɵtrustConstantHtml`content`), without any interpolation
+  // (e.g. not ɵɵtrustConstantHtml`content ${variable}`). A TemplateStringsArray
+  // is an array with a `raw` property that is also an array. The associated
+  // template literal has no interpolation if and only if the length of the
+  // TemplateStringsArray is 1.
+  if (ngDevMode && (!Array.isArray(html) || !Array.isArray(html.raw) || html.length !== 1)) {
+    throw new Error(`Unexpected interpolation in trusted HTML constant: ${html.join('?')}`);
+  }
+  return trustedHTMLFromString(html[0]);
+}
+
+/**
+ * A template tag function for promoting the associated constant literal to a
+ * TrustedScriptURL. Interpolation is explicitly not allowed.
+ *
+ * @param url constant template literal containing a trusted script URL.
+ * @returns TrustedScriptURL wrapping `url`.
+ *
+ * @security This is a security-sensitive function and should only be used to
+ * convert constant values of attributes and properties found in
+ * application-provided Angular templates to TrustedScriptURL.
+ *
+ * @codeGenApi
+ */
+export function ɵɵtrustConstantResourceUrl(url: TemplateStringsArray): TrustedScriptURL|string {
+  // The following runtime check ensures that the function was called as a
+  // template tag (e.g. ɵɵtrustConstantResourceUrl`content`), without any
+  // interpolation (e.g. not ɵɵtrustConstantResourceUrl`content ${variable}`). A
+  // TemplateStringsArray is an array with a `raw` property that is also an
+  // array. The associated template literal has no interpolation if and only if
+  // the length of the TemplateStringsArray is 1.
+  if (ngDevMode && (!Array.isArray(url) || !Array.isArray(url.raw) || url.length !== 1)) {
+    throw new Error(`Unexpected interpolation in trusted URL constant: ${url.join('?')}`);
+  }
+  return trustedScriptURLFromString(url[0]);
 }
 
 /**
@@ -152,8 +204,9 @@ export function ɵɵsanitizeScript(unsafeScript: any): string {
  * If tag and prop names don't match Resource URL schema, use URL sanitizer.
  */
 export function getUrlSanitizer(tag: string, prop: string) {
-  if ((prop === 'src' && (tag === 'embed' || tag === 'frame' || tag === 'iframe' ||
-                          tag === 'media' || tag === 'script')) ||
+  if ((prop === 'src' &&
+       (tag === 'embed' || tag === 'frame' || tag === 'iframe' || tag === 'media' ||
+        tag === 'script')) ||
       (prop === 'href' && (tag === 'base' || tag === 'link'))) {
     return ɵɵsanitizeResourceUrl;
   }
@@ -173,45 +226,10 @@ export function getUrlSanitizer(tag: string, prop: string) {
  * @param prop name of the property that contains the value.
  * @returns `url` string which is safe to bind.
  *
- * @publicApi
+ * @codeGenApi
  */
 export function ɵɵsanitizeUrlOrResourceUrl(unsafeUrl: any, tag: string, prop: string): any {
   return getUrlSanitizer(tag, prop)(unsafeUrl);
-}
-
-/**
- * The default style sanitizer will handle sanitization for style properties by
- * sanitizing any CSS property that can include a `url` value (usually image-based properties)
- *
- * @publicApi
- */
-export const ɵɵdefaultStyleSanitizer =
-    (function(prop: string, value: string|null, mode?: StyleSanitizeMode): string | boolean | null {
-      if (value === undefined && mode === undefined) {
-        // This is a workaround for the fact that `StyleSanitizeFn` should not exist once PR#34480
-        // lands. For now the `StyleSanitizeFn` and should act like `(value: any) => string` as a
-        // work around.
-        return ɵɵsanitizeStyle(prop);
-      }
-      mode = mode || StyleSanitizeMode.ValidateAndSanitize;
-      let doSanitizeValue = true;
-      if (mode & StyleSanitizeMode.ValidateProperty) {
-        doSanitizeValue = stylePropNeedsSanitization(prop);
-      }
-
-      if (mode & StyleSanitizeMode.SanitizeOnly) {
-        return doSanitizeValue ? ɵɵsanitizeStyle(value) : unwrapSafeValue(value);
-      } else {
-        return doSanitizeValue;
-      }
-    } as StyleSanitizeFn);
-
-export function stylePropNeedsSanitization(prop: string): boolean {
-  return prop === 'background-image' || prop === 'backgroundImage' || prop === 'background' ||
-      prop === 'border-image' || prop === 'borderImage' || prop === 'border-image-source' ||
-      prop === 'borderImageSource' || prop === 'filter' || prop === 'list-style' ||
-      prop === 'listStyle' || prop === 'list-style-image' || prop === 'listStyleImage' ||
-      prop === 'clip-path' || prop === 'clipPath';
 }
 
 export function validateAgainstEventProperties(name: string) {

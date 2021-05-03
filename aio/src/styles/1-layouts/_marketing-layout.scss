@@ -106,6 +106,7 @@ section#intro {
       width: 400px;
       height: 400px;
       margin-bottom: 8px;
+      max-width: none;
       padding: 0;
       filter: drop-shadow(0 2px 2px rgba($black, 0.24));
 
@@ -260,62 +261,35 @@ section#intro {
   }
 }
 
-aio-shell {
-  &.page-resources, &.page-events, &.page-features, &.page-presskit, &.page-contribute {
-    main {
-      padding: 0rem 0rem 3rem;
-    }
+@include marketing-pages {
+  .sidenav-content {
+    padding: 0 0 3rem;
   }
 
-  &.page-home {
-    main {
-      padding: 0;
+  article {
+    padding: 3rem;
+
+    @media (max-width: 800px) {
+      padding: 2.2rem;
     }
-  }
-
-  &.page-home, &.page-resources, &.page-events, &.page-contribute {
-    article {
-      padding: 32px;
-
-      @media (max-width: 800px) {
-        padding: 24px;
-      }
-    }
-  }
-
-  &.page-features {
-    article {
-      padding: 0 3rem;
-    }
-  }
-
-  &.page-home, &.page-resources, &.page-events, &.page-features {
-
-    .content img {
-      @media (max-width: 1300px) {
-        max-width: none;
-      }
-    }
-
-    .feature-section img {
-      max-width: 70px;
-    }
-
-    @media (max-width: 600px) {
-      mat-sidenav-container.sidenav-container {
-        padding-top: 0;
-      }
-    }
-  }
-
-  .cta-bar .hero-cta {
-    color: $blue;
   }
 }
 
-.cta-bar.announcement-bar {
-  background: none;
-  box-shadow: none;
+.page-home {
+  .sidenav-content {
+    padding-bottom: 0;
+  }
+}
+
+.cta-bar {
+  &.announcement-bar {
+    background: none;
+    box-shadow: none;
+  }
+
+  .hero-cta {
+    color: $blue;
+  }
 }
 
 .text-headline {
@@ -385,23 +359,12 @@ div[layout=row]{
   }
 
   .promo-img-container {
-
-    img {
-      max-width: 90% !important;
-    }
-
     p {
       margin: 0 20px;
     }
 
     img {
-      max-width: 90%;
-
-
-      @media (max-width: 599px) {
-        max-width: 100%;
-        float: initial !important;
-      }
+      max-width: 90% !important;
     }
   }
 }
@@ -434,11 +397,8 @@ div[layout=row]{
       display: none;
     }
   }
-}
-.page-features .marketing-banner {
-  margin-bottom: 20px;
-}
 
-.events-container{
-  overflow-x: auto;
+  .page-features & {
+    margin-bottom: 20px;
+  }
 }

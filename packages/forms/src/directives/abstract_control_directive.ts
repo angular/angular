@@ -1,14 +1,18 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {Observable} from 'rxjs';
+
 import {AbstractControl} from '../model';
-import {ValidationErrors} from './validators';
+import {composeAsyncValidators, composeValidators} from '../validators';
+
+import {AsyncValidator, AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './validators';
+
 
 /**
  * @description
@@ -31,7 +35,9 @@ export abstract class AbstractControlDirective {
    * @description
    * Reports the value of the control if it is present, otherwise null.
    */
-  get value(): any { return this.control ? this.control.value : null; }
+  get value(): any {
+    return this.control ? this.control.value : null;
+  }
 
   /**
    * @description
@@ -39,14 +45,18 @@ export abstract class AbstractControlDirective {
    * validation errors exist with the current value.
    * If the control is not present, null is returned.
    */
-  get valid(): boolean|null { return this.control ? this.control.valid : null; }
+  get valid(): boolean|null {
+    return this.control ? this.control.valid : null;
+  }
 
   /**
    * @description
    * Reports whether the control is invalid, meaning that an error exists in the input value.
    * If the control is not present, null is returned.
    */
-  get invalid(): boolean|null { return this.control ? this.control.invalid : null; }
+  get invalid(): boolean|null {
+    return this.control ? this.control.invalid : null;
+  }
 
   /**
    * @description
@@ -54,7 +64,9 @@ export abstract class AbstractControlDirective {
    * errors are not yet available for the input value. If the control is not present, null is
    * returned.
    */
-  get pending(): boolean|null { return this.control ? this.control.pending : null; }
+  get pending(): boolean|null {
+    return this.control ? this.control.pending : null;
+  }
 
   /**
    * @description
@@ -62,41 +74,53 @@ export abstract class AbstractControlDirective {
    * in the UI and is exempt from validation checks and excluded from aggregate
    * values of ancestor controls. If the control is not present, null is returned.
    */
-  get disabled(): boolean|null { return this.control ? this.control.disabled : null; }
+  get disabled(): boolean|null {
+    return this.control ? this.control.disabled : null;
+  }
 
   /**
    * @description
    * Reports whether the control is enabled, meaning that the control is included in ancestor
    * calculations of validity or value. If the control is not present, null is returned.
    */
-  get enabled(): boolean|null { return this.control ? this.control.enabled : null; }
+  get enabled(): boolean|null {
+    return this.control ? this.control.enabled : null;
+  }
 
   /**
    * @description
    * Reports the control's validation errors. If the control is not present, null is returned.
    */
-  get errors(): ValidationErrors|null { return this.control ? this.control.errors : null; }
+  get errors(): ValidationErrors|null {
+    return this.control ? this.control.errors : null;
+  }
 
   /**
    * @description
    * Reports whether the control is pristine, meaning that the user has not yet changed
    * the value in the UI. If the control is not present, null is returned.
    */
-  get pristine(): boolean|null { return this.control ? this.control.pristine : null; }
+  get pristine(): boolean|null {
+    return this.control ? this.control.pristine : null;
+  }
 
   /**
    * @description
    * Reports whether the control is dirty, meaning that the user has changed
    * the value in the UI. If the control is not present, null is returned.
    */
-  get dirty(): boolean|null { return this.control ? this.control.dirty : null; }
+  get dirty(): boolean|null {
+    return this.control ? this.control.dirty : null;
+  }
 
   /**
    * @description
    * Reports whether the control is touched, meaning that the user has triggered
    * a `blur` event on it. If the control is not present, null is returned.
    */
-  get touched(): boolean|null { return this.control ? this.control.touched : null; }
+  get touched(): boolean|null {
+    return this.control ? this.control.touched : null;
+  }
 
   /**
    * @description
@@ -104,14 +128,18 @@ export abstract class AbstractControlDirective {
    * 'VALID', 'INVALID', 'DISABLED', and 'PENDING'.
    * If the control is not present, null is returned.
    */
-  get status(): string|null { return this.control ? this.control.status : null; }
+  get status(): string|null {
+    return this.control ? this.control.status : null;
+  }
 
   /**
    * @description
    * Reports whether the control is untouched, meaning that the user has not yet triggered
    * a `blur` event on it. If the control is not present, null is returned.
    */
-  get untouched(): boolean|null { return this.control ? this.control.untouched : null; }
+  get untouched(): boolean|null {
+    return this.control ? this.control.untouched : null;
+  }
 
   /**
    * @description
@@ -137,7 +165,94 @@ export abstract class AbstractControlDirective {
    * Returns an array that represents the path from the top-level form to this control.
    * Each index is the string name of the control on that level.
    */
-  get path(): string[]|null { return null; }
+  get path(): string[]|null {
+    return null;
+  }
+
+  /**
+   * Contains the result of merging synchronous validators into a single validator function
+   * (combined using `Validators.compose`).
+   */
+  private _composedValidatorFn: ValidatorFn|null|undefined;
+
+  /**
+   * Contains the result of merging asynchronous validators into a single validator function
+   * (combined using `Validators.composeAsync`).
+   */
+  private _composedAsyncValidatorFn: AsyncValidatorFn|null|undefined;
+
+  /**
+   * Set of synchronous validators as they were provided while calling `setValidators` function.
+   * @internal
+   */
+  _rawValidators: Array<Validator|ValidatorFn> = [];
+
+  /**
+   * Set of asynchronous validators as they were provided while calling `setAsyncValidators`
+   * function.
+   * @internal
+   */
+  _rawAsyncValidators: Array<AsyncValidator|AsyncValidatorFn> = [];
+
+  /**
+   * Sets synchronous validators for this directive.
+   * @internal
+   */
+  _setValidators(validators: Array<Validator|ValidatorFn>|undefined): void {
+    this._rawValidators = validators || [];
+    this._composedValidatorFn = composeValidators(this._rawValidators);
+  }
+
+  /**
+   * Sets asynchronous validators for this directive.
+   * @internal
+   */
+  _setAsyncValidators(validators: Array<AsyncValidator|AsyncValidatorFn>|undefined): void {
+    this._rawAsyncValidators = validators || [];
+    this._composedAsyncValidatorFn = composeAsyncValidators(this._rawAsyncValidators);
+  }
+
+  /**
+   * @description
+   * Synchronous validator function composed of all the synchronous validators registered with this
+   * directive.
+   */
+  get validator(): ValidatorFn|null {
+    return this._composedValidatorFn || null;
+  }
+
+  /**
+   * @description
+   * Asynchronous validator function composed of all the asynchronous validators registered with
+   * this directive.
+   */
+  get asyncValidator(): AsyncValidatorFn|null {
+    return this._composedAsyncValidatorFn || null;
+  }
+
+  /*
+   * The set of callbacks to be invoked when directive instance is being destroyed.
+   */
+  private _onDestroyCallbacks: (() => void)[] = [];
+
+  /**
+   * Internal function to register callbacks that should be invoked
+   * when directive instance is being destroyed.
+   * @internal
+   */
+  _registerOnDestroy(fn: () => void): void {
+    this._onDestroyCallbacks.push(fn);
+  }
+
+  /**
+   * Internal function to invoke all registered "on destroy" callbacks.
+   * Note: calling this function also clears the list of callbacks.
+   * @internal
+   */
+  _invokeOnDestroyCallbacks(): void {
+    this._onDestroyCallbacks.forEach(fn => fn());
+    this._onDestroyCallbacks = [];
+  }
 
   /**
    * @description

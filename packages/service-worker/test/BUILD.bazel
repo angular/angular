@@ -33,14 +33,6 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "test_web",
-    tags = [
-        # FIXME: fix on saucelabs
-        # ERROR: 'There is no timestamp for @angular/service-worker/worker/src/db-cache.js!'
-        # ERROR: 'There is no timestamp for @angular/service-worker/worker/src/driver.js!'
-        # ERROR: 'There is no timestamp for @angular/service-worker/worker/src/sha1.js!'
-        "fixme-saucelabs-ivy",
-        "fixme-saucelabs-ve",
-    ],
     deps = [
         ":test_lib",
     ],

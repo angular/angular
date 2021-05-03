@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,14 +9,14 @@
 import * as ts from 'typescript';
 
 import {ClassDeclaration, ReflectionHost} from '../../reflection';
+import {TypeCtorMetadata} from '../api';
+import {checkIfGenericTypeBoundsAreContextFree} from './tcb_util';
 
-import {TypeCtorMetadata} from './api';
-import {TypeParameterEmitter} from './type_parameter_emitter';
+import {tsCreateTypeQueryForCoercedInput} from './ts_util';
 
 export function generateTypeCtorDeclarationFn(
     node: ClassDeclaration<ts.ClassDeclaration>, meta: TypeCtorMetadata, nodeTypeRef: ts.EntityName,
-    typeParams: ts.TypeParameterDeclaration[] | undefined,
-    reflector: ReflectionHost): ts.Statement {
+    typeParams: ts.TypeParameterDeclaration[]|undefined, reflector: ReflectionHost): ts.Statement {
   if (requiresInlineTypeCtor(node, reflector)) {
     throw new Error(`${node.name.text} requires an inline type constructor`);
   }
@@ -32,7 +32,8 @@ export function generateTypeCtorDeclarationFn(
     const fnType = ts.createFunctionTypeNode(
         /* typeParameters */ typeParameters,
         /* parameters */[initParam],
-        /* type */ rawType, );
+        /* type */ rawType,
+    );
 
     const decl = ts.createVariableDeclaration(
         /* name */ meta.fnName,
@@ -121,7 +122,8 @@ export function generateInlineTypeCtor(
       /* typeParameters */ typeParametersWithDefaultTypes(node.typeParameters),
       /* parameters */[initParam],
       /* type */ rawType,
-      /* body */ body, );
+      /* body */ body,
+  );
 }
 
 function constructTypeCtorParameter(
@@ -149,8 +151,7 @@ function constructTypeCtorParameter(
           /* modifiers */ undefined,
           /* name */ key,
           /* questionToken */ undefined,
-          /* type */ ts.createTypeQueryNode(
-              ts.createQualifiedName(rawType.typeName, `ngAcceptInputType_${key}`)),
+          /* type */ tsCreateTypeQueryForCoercedInput(rawType.typeName, key),
           /* initializer */ undefined));
     }
   }
@@ -164,8 +165,8 @@ function constructTypeCtorParameter(
   if (coercedKeys.length > 0) {
     const coercedLiteral = ts.createTypeLiteralNode(coercedKeys);
 
-    initType =
-        initType !== null ? ts.createUnionTypeNode([initType, coercedLiteral]) : coercedLiteral;
+    initType = initType !== null ? ts.createIntersectionTypeNode([initType, coercedLiteral]) :
+                                   coercedLiteral;
   }
 
   if (initType === null) {
@@ -193,12 +194,6 @@ export function requiresInlineTypeCtor(
   // The class requires an inline type constructor if it has generic type bounds that can not be
   // emitted into a different context.
   return !checkIfGenericTypeBoundsAreContextFree(node, host);
-}
-
-function checkIfGenericTypeBoundsAreContextFree(
-    node: ClassDeclaration<ts.ClassDeclaration>, reflector: ReflectionHost): boolean {
-  // Generic type parameters are considered context free if they can be emitted into any context.
-  return new TypeParameterEmitter(node.typeParameters, reflector).canEmit();
 }
 
 /**
@@ -243,9 +238,8 @@ function checkIfGenericTypeBoundsAreContextFree(
  *
  * This correctly infers `T` as `any`, and therefore `_t3` as `NgFor<any>`.
  */
-function typeParametersWithDefaultTypes(
-    params: ReadonlyArray<ts.TypeParameterDeclaration>| undefined): ts.TypeParameterDeclaration[]|
-    undefined {
+function typeParametersWithDefaultTypes(params: ReadonlyArray<ts.TypeParameterDeclaration>|
+                                        undefined): ts.TypeParameterDeclaration[]|undefined {
   if (params === undefined) {
     return undefined;
   }

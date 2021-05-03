@@ -7,18 +7,14 @@
   <img [src]="itemImageUrl">
   <!-- #enddocregion property-binding -->
   <h2>Using bind- syntax:</h2>
-  <!-- #docregion bind-prefix -->
   <img bind-src="itemImageUrl">
-  <!-- #enddocregion bind-prefix -->
   <hr />
 
   <h2>Binding to the colSpan property</h2>
   <table border=1>
     <tr><td>Column 1</td><td>Column 2</td></tr>
-    <!-- #docregion colSpan -->
     <!-- Notice the colSpan property is camel case -->
     <tr><td [colSpan]="2">Span 2 columns</td></tr>
-    <!-- #enddocregion colSpan -->
   </table>
 
 
@@ -46,14 +42,12 @@
 
   <h3>Pass objects:</h3>
   <!-- #docregion pass-object -->
-  <app-list-item [items]="currentItem"></app-list-item>
+  <app-item-list [items]="currentItems"></app-item-list>
   <!-- #enddocregion pass-object -->
 
   <hr />
   <h2>Initialized string:</h2>
-  <!-- #docregion string-init -->
   <app-string-init prefix="This is a one-time initialized string."></app-string-init>
-<!-- #enddocregion string-init -->
 
   <hr />
 
@@ -77,7 +71,7 @@
 <!-- #docregion malicious-content -->
   <!--
   Angular generates a warning for the following line as it sanitizes them
-  WARNING: sanitizing HTML stripped some content (see http://g.co/ng/security#xss).
+  WARNING: sanitizing HTML stripped some content (see https://g.co/ng/security#xss).
  -->
   <p>"<span [innerHTML]="evilTitle"></span>" is the <i>property bound</i> evil title.</p>
 <!-- #enddocregion malicious-content -->

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,16 +9,17 @@
 import {ErrorCode, makeDiagnostic, ngErrorCode} from '../../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration} from '../../../src/ngtsc/reflection';
-import {getDeclaration} from '../../../src/ngtsc/testing';
+import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, TraitState} from '../../../src/ngtsc/transform';
-import {loadTestFiles} from '../../../test/helpers';
 import {NgccTraitCompiler} from '../../src/analysis/ngcc_trait_compiler';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {createComponentDecorator} from '../../src/migrations/utils';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
-import {MockLogger} from '../helpers/mock_logger';
 import {makeTestEntryPointBundle} from '../helpers/utils';
+import {getTraitDiagnostics} from '../host/util';
 
 runInEachFileSystem(() => {
   describe('NgccTraitCompiler', () => {
@@ -39,7 +40,8 @@ runInEachFileSystem(() => {
     });
 
     function createCompiler({entryPoint, handlers}: {
-      entryPoint: EntryPointBundle; handlers: DecoratorHandler<unknown, unknown, unknown>[]
+      entryPoint: EntryPointBundle;
+      handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[]
     }) {
       const reflectionHost = new Esm2015ReflectionHost(new MockLogger(), false, entryPoint.src);
       return new NgccTraitCompiler(handlers, reflectionHost);
@@ -91,7 +93,7 @@ runInEachFileSystem(() => {
 
         const record = compiler.recordFor(mockClazz);
         expect(record).toBeDefined();
-        expect(record !.traits.length).toBe(1);
+        expect(record!.traits.length).toBe(1);
       });
 
       it('should add a new trait to an existing class record', () => {
@@ -118,11 +120,11 @@ runInEachFileSystem(() => {
         compiler.analyzeFile(entryPoint.src.file);
         compiler.injectSyntheticDecorator(myClass, injectedDecorator);
 
-        const record = compiler.recordFor(myClass) !;
+        const record = compiler.recordFor(myClass)!;
         expect(record).toBeDefined();
         expect(record.traits.length).toBe(2);
-        expect(record.traits[0].detected.decorator !.name).toBe('Directive');
-        expect(record.traits[1].detected.decorator !.name).toBe('InjectedDecorator');
+        expect(record.traits[0].detected.decorator!.name).toBe('Directive');
+        expect(record.traits[1].detected.decorator!.name).toBe('InjectedDecorator');
       });
 
       it('should not add a weak handler when a primary handler already exists', () => {
@@ -150,10 +152,10 @@ runInEachFileSystem(() => {
 
         compiler.injectSyntheticDecorator(myClass, injectedDecorator);
 
-        const record = compiler.recordFor(myClass) !;
+        const record = compiler.recordFor(myClass)!;
         expect(record).toBeDefined();
         expect(record.traits.length).toBe(1);
-        expect(record.traits[0].detected.decorator !.name).toBe('Directive');
+        expect(record.traits[0].detected.decorator!.name).toBe('Directive');
       });
 
       it('should replace an existing weak handler when injecting a primary handler', () => {
@@ -181,10 +183,10 @@ runInEachFileSystem(() => {
 
         compiler.injectSyntheticDecorator(myClass, injectedDecorator);
 
-        const record = compiler.recordFor(myClass) !;
+        const record = compiler.recordFor(myClass)!;
         expect(record).toBeDefined();
         expect(record.traits.length).toBe(1);
-        expect(record.traits[0].detected.decorator !.name).toBe('InjectedDecorator');
+        expect(record.traits[0].detected.decorator!.name).toBe('InjectedDecorator');
       });
 
       it('should produce an error when a primary handler is added when a primary handler is already present',
@@ -214,12 +216,11 @@ runInEachFileSystem(() => {
 
            compiler.injectSyntheticDecorator(myClass, injectedDecorator);
 
-           const record = compiler.recordFor(myClass) !;
+           const record = compiler.recordFor(myClass)!;
            expect(record).toBeDefined();
            expect(record.metaDiagnostics).toBeDefined();
-           expect(record.metaDiagnostics !.length).toBe(1);
-           expect(record.metaDiagnostics ![0].code)
-               .toBe(ngErrorCode(ErrorCode.DECORATOR_COLLISION));
+           expect(record.metaDiagnostics!.length).toBe(1);
+           expect(record.metaDiagnostics![0].code).toBe(ngErrorCode(ErrorCode.DECORATOR_COLLISION));
            expect(record.traits.length).toBe(0);
          });
 
@@ -233,14 +234,15 @@ runInEachFileSystem(() => {
         const decorator = createComponentDecorator(mockClazz, {selector: 'comp', exportAs: null});
         compiler.injectSyntheticDecorator(mockClazz, decorator);
 
-        const record = compiler.recordFor(mockClazz) !;
+        const record = compiler.recordFor(mockClazz)!;
         const migratedTrait = record.traits[0];
-        if (migratedTrait.state !== TraitState.ERRORED) {
+        const diagnostics = getTraitDiagnostics(migratedTrait);
+        if (diagnostics === null) {
           return fail('Expected migrated class trait to be in an error state');
         }
 
-        expect(migratedTrait.diagnostics.length).toBe(1);
-        expect(migratedTrait.diagnostics[0].messageText).toEqual(`test diagnostic`);
+        expect(diagnostics.length).toBe(1);
+        expect(diagnostics[0].messageText).toEqual(`test diagnostic`);
       });
     });
 
@@ -286,23 +288,22 @@ runInEachFileSystem(() => {
 
         compiler.injectSyntheticDecorator(myClass, injectedDecorator);
 
-        const decorators = compiler.getAllDecorators(myClass) !;
+        const decorators = compiler.getAllDecorators(myClass)!;
         expect(decorators.length).toBe(2);
         expect(decorators[0].name).toBe('Directive');
         expect(decorators[1].name).toBe('InjectedDecorator');
       });
     });
-
   });
 });
 
-class TestHandler implements DecoratorHandler<unknown, unknown, unknown> {
+class TestHandler implements DecoratorHandler<unknown, unknown, null, unknown> {
   constructor(readonly name: string, protected log: string[]) {}
 
   precedence = HandlerPrecedence.PRIMARY;
 
   detect(node: ClassDeclaration, decorators: Decorator[]|null): DetectResult<unknown>|undefined {
-    this.log.push(`${this.name}:detect:${node.name.text}:${decorators !.map(d => d.name)}`);
+    this.log.push(`${this.name}:detect:${node.name.text}:${decorators!.map(d => d.name)}`);
     return undefined;
   }
 
@@ -311,7 +312,11 @@ class TestHandler implements DecoratorHandler<unknown, unknown, unknown> {
     return {};
   }
 
-  compile(node: ClassDeclaration): CompileResult|CompileResult[] {
+  symbol(node: ClassDeclaration, analysis: Readonly<unknown>): null {
+    return null;
+  }
+
+  compileFull(node: ClassDeclaration): CompileResult|CompileResult[] {
     this.log.push(this.name + ':compile:' + node.name.text);
     return [];
   }

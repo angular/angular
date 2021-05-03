@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, ɵcreateInjector as createInjector, ɵɵdefineInjectable, ɵɵdefineInjector} from '@angular/core';
+import {ɵcreateInjector as createInjector, ɵɵdefineInjectable, ɵɵdefineInjector} from '@angular/core';
 
 export class RootService {
   static ɵprov = ɵɵdefineInjectable({
@@ -31,7 +31,6 @@ export class ScopedService {
 
 export class DefinedInjector {
   static ɵinj = ɵɵdefineInjector({
-    factory: () => new DefinedInjector(),
     providers: [ScopedService],
   });
 }

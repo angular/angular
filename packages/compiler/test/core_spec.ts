@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -153,7 +153,8 @@ import * as core from '@angular/core';
       expectToBe(compilerCore.InjectFlags.Default, core.InjectFlags.Default);
       expectToBe(compilerCore.InjectFlags.SkipSelf, core.InjectFlags.SkipSelf);
       expectToBe(compilerCore.InjectFlags.Self, core.InjectFlags.Self);
-
+      expectToBe(compilerCore.InjectFlags.Host, core.InjectFlags.Host);
+      expectToBe(compilerCore.InjectFlags.Optional, core.InjectFlags.Optional);
 
       expectToBe(compilerCore.ArgumentType.Inline, core.ɵArgumentType.Inline);
       expectToBe(compilerCore.ArgumentType.Dynamic, core.ɵArgumentType.Dynamic);
@@ -190,7 +191,9 @@ import * as core from '@angular/core';
 function compareRuntimeShape(a: any, b: any) {
   const keys = metadataKeys(a);
   expect(keys).toEqual(metadataKeys(b));
-  keys.forEach(key => { expect(a[key]).toBe(b[key]); });
+  keys.forEach(key => {
+    expect(a[key]).toBe(b[key]);
+  });
   // Need to check 'ngMetadataName' separately, as this is
   // on the prototype in @angular/core, but a regular property in @angular/compiler.
   expect(a.ngMetadataName).toBe(b.ngMetadataName);

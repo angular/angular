@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,7 @@ export function createHtmlSourceFile(filePath: string, content: string): ts.Sour
 
   // Subtract two characters because the string literal quotes are only needed for parsing
   // and are not part of the actual source file.
-  sourceFile.end = sourceFile.end - 2;
+  (sourceFile.end as number) = sourceFile.end - 2;
 
   // Note: This does not affect the way TSLint applies replacements for external resource files.
   // At the time of writing, TSLint loads files manually if the actual rule source file is not

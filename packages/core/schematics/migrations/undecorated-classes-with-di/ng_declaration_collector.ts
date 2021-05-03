@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@ import {Reference} from '@angular/compiler-cli/src/ngtsc/imports';
 import {PartialEvaluator, ResolvedValue} from '@angular/compiler-cli/src/ngtsc/partial_evaluator';
 import * as ts from 'typescript';
 
-import {NgDecorator, getAngularDecorators} from '../../utils/ng_decorators';
+import {getAngularDecorators, NgDecorator} from '../../utils/ng_decorators';
 import {getPropertyNameText} from '../../utils/typescript/property_name';
 
 

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -32,17 +32,23 @@ module.exports = function(config) {
       {pattern: 'node_modules/angular-mocks-1.5/angular-mocks.js', included: false, watched: false},
       {pattern: 'node_modules/angular-1.6/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks-1.6/angular-mocks.js', included: false, watched: false},
+      {pattern: 'node_modules/angular-1.7/angular?(.min).js', included: false, watched: false},
+      {pattern: 'node_modules/angular-mocks-1.7/angular-mocks.js', included: false, watched: false},
       {pattern: 'node_modules/angular/angular?(.min).js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false, watched: false},
 
-      'node_modules/core-js/client/core.js',
-      'dist/bin/packages/zone.js/npm_package/dist/zone.js',
-      'dist/bin/packages/zone.js/npm_package/dist/zone-testing.js',
-      'dist/bin/packages/zone.js/npm_package/dist/task-tracking.js',
+      'node_modules/core-js-bundle/index.js',
+      'node_modules/jasmine-ajax/lib/mock-ajax.js',
+
+      // Dependencies built by Bazel. See `config.yml` for steps running before
+      // the legacy Saucelabs tests run.
+      'dist/bin/packages/zone.js/npm_package/bundles/zone.umd.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/zone-testing.umd.js',
+      'dist/bin/packages/zone.js/npm_package/bundles/task-tracking.umd.js',
 
       // Including systemjs because it defines `__eval`, which produces correct stack traces.
       'test-events.js',
-      'shims_for_IE.js',
+      'third_party/shims_for_IE.js',
       'node_modules/systemjs/dist/system.src.js',
 
       // Serve polyfills necessary for testing the `elements` package.
@@ -79,6 +85,7 @@ module.exports = function(config) {
       'dist/all/@angular/compiler/test/render3/**',
       'dist/all/@angular/core/test/bundling/**',
       'dist/all/@angular/core/test/render3/ivy/**',
+      'dist/all/@angular/core/test/render3/jit/**',
       'dist/all/@angular/core/test/render3/perf/**',
       'dist/all/@angular/elements/schematics/**',
       'dist/all/@angular/examples/**/e2e_test/*',

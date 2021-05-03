@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -27,6 +27,7 @@ import './rxjs.merge.spec';
 import './rxjs.never.spec';
 import './rxjs.of.spec';
 import './rxjs.range.spec';
+import './rxjs.retry.spec';
 import './rxjs.throw.spec';
 import './rxjs.timer.spec';
 import './rxjs.zip.spec';

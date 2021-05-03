@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/webapis-rtc-peer-connection",
+  "main": "../../bundles/webapis-rtc-peer-connection.umd.js",
+  "fesm2015": "../../fesm2015/webapis-rtc-peer-connection.js",
+  "es2015": "../../fesm2015/webapis-rtc-peer-connection.js",
+  "module": "../../fesm2015/webapis-rtc-peer-connection.js"
+}

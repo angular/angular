@@ -10,12 +10,12 @@ export const TITLE = new InjectionToken<string>('title');
 import { Component, Inject } from '@angular/core';
 
 import { DateLoggerService } from './date-logger.service';
-import { Hero }              from './hero';
-import { HeroService }       from './hero.service';
-import { LoggerService }     from './logger.service';
-import { MinimalLogger }     from './minimal-logger.service';
+import { Hero } from './hero';
+import { HeroService } from './hero.service';
+import { LoggerService } from './logger.service';
+import { MinimalLogger } from './minimal-logger.service';
 import { RUNNERS_UP,
-         runnersUpFactory }  from './runners-up';
+         runnersUpFactory } from './runners-up';
 
 // #enddocregion hero-of-the-month
 // #docregion some-hero
@@ -48,13 +48,11 @@ const someHero = new Hero(42, 'Magma', 'Had a great month!', '555-555-5555');
 export class HeroOfTheMonthComponent {
   logs: string[] = [];
 
-// #docregion ctor-signature
   constructor(
       logger: MinimalLogger,
       public heroOfTheMonth: Hero,
       @Inject(RUNNERS_UP) public runnersUp: string,
       @Inject(TITLE) public title: string)
-// #enddocregion ctor-signature
   {
     this.logs = logger.logs;
     logger.logInfo('starting up');

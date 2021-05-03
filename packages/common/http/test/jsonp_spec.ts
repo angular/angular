@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.JsonpCallbackContext
+ * Copyright Google LLC All Rights Reserved.sonpCallbackContext
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -43,6 +43,16 @@ const SAMPLE_REQ = new HttpRequest<never>('JSONP', '/test');
         done();
       });
       runOnlyCallback(home, {data: 'This is a test'});
+      document.mockLoad();
+    });
+    // Issue #39496
+    it('handles a request with callback call wrapped in promise', done => {
+      backend.handle(SAMPLE_REQ).subscribe(() => {
+        done();
+      });
+      Promise.resolve().then(() => {
+        runOnlyCallback(home, {data: 'This is a test'});
+      });
       document.mockLoad();
     });
     it('handles an error response properly', done => {

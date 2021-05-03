@@ -1,15 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as chai from 'chai';
 import * as ts from 'typescript';
 
-import {SerializationOptions, publicApiInternal} from '../lib/serializer';
+import {publicApiInternal, SerializationOptions} from '../lib/serializer';
 
 const classesAndInterfaces = `
   export declare class A {
@@ -125,8 +124,8 @@ describe('unit test', () => {
     const expected = `
     `;
     check({'classes_and_interfaces.d.ts': classesAndInterfaces, 'file.d.ts': input}, expected);
-    chai.assert.deepEqual(
-        warnings, ['file.d.ts(1,1): error: No export declaration found for symbol "Foo"']);
+    expect(warnings).toEqual(
+        ['file.d.ts(1,1): error: No export declaration found for symbol "Foo"']);
   });
 
   it('should sort exports', () => {
@@ -634,13 +633,12 @@ function getMockHost(files: {[name: string]: string}): ts.CompilerHost {
 function check(
     files: {[name: string]: string}, expected: string, options: SerializationOptions = {}) {
   const actual = publicApiInternal(getMockHost(files), 'file.d.ts', {}, options);
-  chai.assert.equal(actual.trim(), stripExtraIndentation(expected).trim());
+  expect(actual.trim()).toBe(stripExtraIndentation(expected).trim());
 }
 
 function checkThrows(
     files: {[name: string]: string}, error: string, options: SerializationOptions = {}) {
-  chai.assert.throws(
-      () => { publicApiInternal(getMockHost(files), 'file.d.ts', {}, options); }, error);
+  expect(() => publicApiInternal(getMockHost(files), 'file.d.ts', {}, options)).toThrowError(error);
 }
 
 function stripExtraIndentation(text: string) {
@@ -648,7 +646,7 @@ function stripExtraIndentation(text: string) {
   // Ignore first and last new line
   lines = lines.slice(1, lines.length - 1);
   const commonIndent = lines.reduce((min, line) => {
-    const indent = /^( *)/.exec(line) ![1].length;
+    const indent = /^( *)/.exec(line)![1].length;
     // Ignore empty line
     return line.length ? Math.min(min, indent) : min;
   }, text.length);

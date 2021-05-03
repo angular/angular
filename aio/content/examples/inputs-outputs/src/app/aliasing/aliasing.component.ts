@@ -1,21 +1,14 @@
-/* tslint:disable:use-input-property-decorator */
-/* tslint:disable:use-output-property-decorator */
-
-/* tslint:disable:no-input-rename */
-
-
+// tslint:disable: no-input-rename no-output-rename use-input-property-decorator use-output-property-decorator
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-aliasing',
   templateUrl: './aliasing.component.html',
   styleUrls: ['./aliasing.component.css'],
-  // #docregion alias
   // tslint:disable: no-inputs-metadata-property no-outputs-metadata-property
   inputs: ['input1: saveForLaterItem'], // propertyName:alias
   outputs: ['outputEvent1: saveForLaterEvent']
   // tslint:disable: no-inputs-metadata-property no-outputs-metadata-property
-  // #enddocregion alias
 
 })
 export class AliasingComponent {
@@ -23,10 +16,8 @@ export class AliasingComponent {
   input1: string;
   outputEvent1: EventEmitter<string> = new EventEmitter<string>();
 
-  // #docregion alias-input-output
   @Input('wishListItem') input2: string; //  @Input(alias)
   @Output('wishEvent') outputEvent2 = new EventEmitter<string>(); //  @Output(alias) propertyName = ...
-  // #enddocregion alias-input-output
 
 
   saveIt() {

@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Hero } from './hero';
 
-// #docregion styleurls
 @Component({
   selector: 'app-hero-details',
   template: `
@@ -12,7 +11,5 @@ import { Hero } from './hero';
   styleUrls: ['./hero-details.component.css']
 })
 export class HeroDetailsComponent {
-  // #enddocregion styleurls
   @Input() hero: Hero;
-  // #docregion styleurls
 }

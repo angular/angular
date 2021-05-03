@@ -12,7 +12,7 @@ export class ClickMe2Component {
   clicks = 1;
 
   onClickMe2(event: any) {
-    let evtMsg = event ? ' Event target is ' + event.target.tagName  : '';
+    const evtMsg = event ? ' Event target is ' + event.target.tagName  : '';
     this.clickMessage = (`Click #${this.clicks++}. ${evtMsg}`);
   }
 }

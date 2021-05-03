@@ -81,7 +81,7 @@ table {
   }
 }
 
-#cheatsheet {
+.page-guide-cheatsheet {
 
   table tbody td {
     overflow: auto;
@@ -94,11 +94,6 @@ table {
       display: block;
       position: relative;
       max-width: 100%;
-
-      code {
-        padding: 0;
-        background-color: inherit;
-      }
     }
 
     th {
@@ -114,7 +109,7 @@ table {
   }
 }
 
-.events-container {
+.page-events {
   tr > td, tr > th {
     width: 33%;
   }

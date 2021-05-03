@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,19 +8,18 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Mutable, Type} from '../interface/type';
-import {NgModuleDef} from '../metadata/ng_module';
+import {NgModuleDef, NgModuleType} from '../metadata/ng_module_def';
 import {SchemaMetadata} from '../metadata/schema';
 import {ViewEncapsulation} from '../metadata/view';
 import {noSideEffects} from '../util/closure';
+import {EMPTY_ARRAY, EMPTY_OBJ} from '../util/empty';
 import {initNgDevMode} from '../util/ng_dev_mode';
 import {stringify} from '../util/stringify';
-
-import {EMPTY_ARRAY, EMPTY_OBJ} from './empty';
-import {NG_COMP_DEF, NG_DIR_DEF, NG_FACTORY_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveTypesOrFactory, FactoryFn, HostBindingsFunction, PipeDef, PipeType, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
-import {AttributeMarker, TAttributes, TConstants} from './interfaces/node';
+import {NG_COMP_DEF, NG_DIR_DEF, NG_LOC_ID_DEF, NG_MOD_DEF, NG_PIPE_DEF} from './fields';
+import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, ContentQueriesFunction, DirectiveDef, DirectiveDefFeature, DirectiveTypesOrFactory, HostBindingsFunction, PipeDef, PipeTypesOrFactory, ViewQueriesFunction} from './interfaces/definition';
+import {AttributeMarker, TAttributes, TConstantsOrFactory} from './interfaces/node';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
-import {NgModuleType} from './ng_module_ref';
+
 
 let _renderCompCount = 0;
 
@@ -220,7 +219,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    * Constants for the nodes in the component's view.
    * Includes attribute arrays, local definition arrays etc.
    */
-  consts?: TConstants;
+  consts?: TConstantsOrFactory;
 
   /**
    * An array of `ngContent[selector]` values that were found in the template.
@@ -288,14 +287,13 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
    * The set of schemas that declare elements to be allowed in the component's template.
    */
   schemas?: SchemaMetadata[] | null;
-}): never {
+}): unknown {
   return noSideEffects(() => {
     // Initialize ngDevMode. This must be the first statement in ɵɵdefineComponent.
     // See the `initNgDevMode` docstring for more information.
     (typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode();
 
     const type = componentDefinition.type;
-    const typePrototype = type.prototype;
     const declaredInputs: {[key: string]: string} = {} as any;
     const def: Mutable<ComponentDef<any>, keyof ComponentDef<any>> = {
       type: type,
@@ -303,7 +301,7 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       decls: componentDefinition.decls,
       vars: componentDefinition.vars,
       factory: null,
-      template: componentDefinition.template || null !,
+      template: componentDefinition.template || null!,
       consts: componentDefinition.consts || null,
       ngContentSelectors: componentDefinition.ngContentSelectors,
       hostBindings: componentDefinition.hostBindings || null,
@@ -311,37 +309,29 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
       hostAttrs: componentDefinition.hostAttrs || null,
       contentQueries: componentDefinition.contentQueries || null,
       declaredInputs: declaredInputs,
-      inputs: null !,   // assigned in noSideEffects
-      outputs: null !,  // assigned in noSideEffects
+      inputs: null!,   // assigned in noSideEffects
+      outputs: null!,  // assigned in noSideEffects
       exportAs: componentDefinition.exportAs || null,
-      onChanges: null,
-      onInit: typePrototype.ngOnInit || null,
-      doCheck: typePrototype.ngDoCheck || null,
-      afterContentInit: typePrototype.ngAfterContentInit || null,
-      afterContentChecked: typePrototype.ngAfterContentChecked || null,
-      afterViewInit: typePrototype.ngAfterViewInit || null,
-      afterViewChecked: typePrototype.ngAfterViewChecked || null,
-      onDestroy: typePrototype.ngOnDestroy || null,
       onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
-      directiveDefs: null !,  // assigned in noSideEffects
-      pipeDefs: null !,       // assigned in noSideEffects
+      directiveDefs: null!,  // assigned in noSideEffects
+      pipeDefs: null!,       // assigned in noSideEffects
       selectors: componentDefinition.selectors || EMPTY_ARRAY,
       viewQuery: componentDefinition.viewQuery || null,
       features: componentDefinition.features as DirectiveDefFeature[] || null,
       data: componentDefinition.data || {},
-      // TODO(misko): convert ViewEncapsulation into const enum so that it can be used directly in
-      // the next line. Also `None` should be 0 not 2.
+      // TODO(misko): convert ViewEncapsulation into const enum so that it can be used
+      // directly in the next line. Also `None` should be 0 not 2.
       encapsulation: componentDefinition.encapsulation || ViewEncapsulation.Emulated,
       id: 'c',
       styles: componentDefinition.styles || EMPTY_ARRAY,
-      _: null as never,
+      _: null,
       setInput: null,
       schemas: componentDefinition.schemas || null,
       tView: null,
     };
-    const directiveTypes = componentDefinition.directives !;
+    const directiveTypes = componentDefinition.directives!;
     const feature = componentDefinition.features;
-    const pipeTypes = componentDefinition.pipes !;
+    const pipeTypes = componentDefinition.pipes!;
     def.id += _renderCompCount++;
     def.inputs = invertObject(componentDefinition.inputs, declaredInputs),
     def.outputs = invertObject(componentDefinition.outputs),
@@ -354,11 +344,17 @@ export function ɵɵdefineComponent<T>(componentDefinition: {
         () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
         null;
 
-    return def as never;
+    return def;
   });
 }
 
 /**
+ * Generated next to NgModules to monkey-patch directive and pipe references onto a component's
+ * definition, when generating a direct reference in the component file would otherwise create an
+ * import cycle.
+ *
+ * See [this explanation](https://hackmd.io/Odw80D0pR6yfsOjg_7XCJg?view) for more details.
+ *
  * @codeGenApi
  */
 export function ɵɵsetComponentScope(
@@ -373,7 +369,7 @@ export function extractDirectiveDef(type: Type<any>): DirectiveDef<any>|Componen
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is neither 'ComponentType' or 'DirectiveType'.`);
   }
-  return def !;
+  return def!;
 }
 
 export function extractPipeDef(type: Type<any>): PipeDef<any> {
@@ -381,7 +377,7 @@ export function extractPipeDef(type: Type<any>): PipeDef<any> {
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is not a 'PipeType'.`);
   }
-  return def !;
+  return def!;
 }
 
 export const autoRegisterModuleById: {[id: string]: NgModuleType} = {};
@@ -413,7 +409,7 @@ export function ɵɵdefineNgModule<T>(def: {
 
   /** Unique ID for the module that is used with `getModuleFactory`. */
   id?: string | null;
-}): never {
+}): unknown {
   const res: NgModuleDef<T> = {
     type: def.type,
     bootstrap: def.bootstrap || EMPTY_ARRAY,
@@ -425,10 +421,11 @@ export function ɵɵdefineNgModule<T>(def: {
     id: def.id || null,
   };
   if (def.id != null) {
-    noSideEffects(
-        () => { autoRegisterModuleById[def.id !] = def.type as unknown as NgModuleType; });
+    noSideEffects(() => {
+      autoRegisterModuleById[def.id!] = def.type as unknown as NgModuleType;
+    });
   }
-  return res as never;
+  return res;
 }
 
 /**
@@ -443,7 +440,7 @@ export function ɵɵdefineNgModule<T>(def: {
  */
 export function ɵɵsetNgModuleScope(type: any, scope: {
   /** List of components, directives, and pipes declared by this module. */
-  declarations?: Type<any>[] | (() => Type<any>[]);
+  declarations?: Type<any>[]|(() => Type<any>[]);
 
   /** List of modules or `ModuleWithProviders` imported by this module. */
   imports?: Type<any>[] | (() => Type<any>[]);
@@ -453,13 +450,13 @@ export function ɵɵsetNgModuleScope(type: any, scope: {
    * module.
    */
   exports?: Type<any>[] | (() => Type<any>[]);
-}): void {
+}): unknown {
   return noSideEffects(() => {
     const ngModuleDef = getNgModuleDef(type, true);
     ngModuleDef.declarations = scope.declarations || EMPTY_ARRAY;
     ngModuleDef.imports = scope.imports || EMPTY_ARRAY;
     ngModuleDef.exports = scope.exports || EMPTY_ARRAY;
-  }) as never;
+  });
 }
 
 /**
@@ -518,13 +515,13 @@ export function ɵɵsetNgModuleScope(type: any, scope: {
 
  */
 function invertObject<T>(
-    obj?: {[P in keyof T]?: string | [string, string]},
+    obj?: {[P in keyof T]?: string|[string, string]},
     secondary?: {[key: string]: string}): {[P in keyof T]: string} {
   if (obj == null) return EMPTY_OBJ as any;
   const newLookup: any = {};
   for (const minifiedKey in obj) {
     if (obj.hasOwnProperty(minifiedKey)) {
-      let publicName: string|[string, string] = obj[minifiedKey] !;
+      let publicName: string|[string, string] = obj[minifiedKey]!;
       let declaredName = publicName;
       if (Array.isArray(publicName)) {
         declaredName = publicName[1];
@@ -555,142 +552,143 @@ function invertObject<T>(
  *
  * @codeGenApi
  */
-export const ɵɵdefineDirective = ɵɵdefineComponent as any as<T>(directiveDefinition: {
-  /**
-   * Directive type, needed to configure the injector.
-   */
-  type: Type<T>;
+export const ɵɵdefineDirective =
+    ɵɵdefineComponent as any as<T>(directiveDefinition: {
+      /**
+       * Directive type, needed to configure the injector.
+       */
+      type: Type<T>;
 
-  /** The selectors that will be used to match nodes to this directive. */
-  selectors?: CssSelectorList;
+      /** The selectors that will be used to match nodes to this directive. */
+      selectors?: CssSelectorList;
 
-  /**
-   * A map of input names.
-   *
-   * The format is in: `{[actualPropertyName: string]:(string|[string, string])}`.
-   *
-   * Given:
-   * ```
-   * class MyComponent {
-   *   @Input()
-   *   publicInput1: string;
-   *
-   *   @Input('publicInput2')
-   *   declaredInput2: string;
-   * }
-   * ```
-   *
-   * is described as:
-   * ```
-   * {
-   *   publicInput1: 'publicInput1',
-   *   declaredInput2: ['declaredInput2', 'publicInput2'],
-   * }
-   * ```
-   *
-   * Which the minifier may translate to:
-   * ```
-   * {
-   *   minifiedPublicInput1: 'publicInput1',
-   *   minifiedDeclaredInput2: [ 'publicInput2', 'declaredInput2'],
-   * }
-   * ```
-   *
-   * This allows the render to re-construct the minified, public, and declared names
-   * of properties.
-   *
-   * NOTE:
-   *  - Because declared and public name are usually same we only generate the array
-   *    `['declared', 'public']` format when they differ.
-   *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
-   *    inconsistent behavior in that it uses declared names rather than minified or public. For
-   *    this reason `NgOnChanges` will be deprecated and removed in future version and this
-   *    API will be simplified to be consistent with `output`.
-   */
-  inputs?: {[P in keyof T]?: string | [string, string]};
+      /**
+       * A map of input names.
+       *
+       * The format is in: `{[actualPropertyName: string]:(string|[string, string])}`.
+       *
+       * Given:
+       * ```
+       * class MyComponent {
+       *   @Input()
+       *   publicInput1: string;
+       *
+       *   @Input('publicInput2')
+       *   declaredInput2: string;
+       * }
+       * ```
+       *
+       * is described as:
+       * ```
+       * {
+       *   publicInput1: 'publicInput1',
+       *   declaredInput2: ['declaredInput2', 'publicInput2'],
+       * }
+       * ```
+       *
+       * Which the minifier may translate to:
+       * ```
+       * {
+       *   minifiedPublicInput1: 'publicInput1',
+       *   minifiedDeclaredInput2: [ 'publicInput2', 'declaredInput2'],
+       * }
+       * ```
+       *
+       * This allows the render to re-construct the minified, public, and declared names
+       * of properties.
+       *
+       * NOTE:
+       *  - Because declared and public name are usually same we only generate the array
+       *    `['declared', 'public']` format when they differ.
+       *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
+       *    inconsistent behavior in that it uses declared names rather than minified or public. For
+       *    this reason `NgOnChanges` will be deprecated and removed in future version and this
+       *    API will be simplified to be consistent with `output`.
+       */
+      inputs?: {[P in keyof T]?: string | [string, string]};
 
-  /**
-   * A map of output names.
-   *
-   * The format is in: `{[actualPropertyName: string]:string}`.
-   *
-   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
-   *
-   * This allows the render to re-construct the minified and non-minified names
-   * of properties.
-   */
-  outputs?: {[P in keyof T]?: string};
+      /**
+       * A map of output names.
+       *
+       * The format is in: `{[actualPropertyName: string]:string}`.
+       *
+       * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
+       *
+       * This allows the render to re-construct the minified and non-minified names
+       * of properties.
+       */
+      outputs?: {[P in keyof T]?: string};
 
-  /**
-   * A list of optional features to apply.
-   *
-   * See: {@link NgOnChangesFeature}, {@link ProvidersFeature}, {@link InheritDefinitionFeature}
-   */
-  features?: DirectiveDefFeature[];
+      /**
+       * A list of optional features to apply.
+       *
+       * See: {@link NgOnChangesFeature}, {@link ProvidersFeature}, {@link InheritDefinitionFeature}
+       */
+      features?: DirectiveDefFeature[];
 
-  /**
-   * Function executed by the parent template to allow child directive to apply host bindings.
-   */
-  hostBindings?: HostBindingsFunction<T>;
+      /**
+       * Function executed by the parent template to allow child directive to apply host bindings.
+       */
+      hostBindings?: HostBindingsFunction<T>;
 
-  /**
-   * The number of bindings in this directive `hostBindings` (including pure fn bindings).
-   *
-   * Used to calculate the length of the component's LView array, so we
-   * can pre-fill the array and set the host binding start index.
-   */
-  hostVars?: number;
+      /**
+       * The number of bindings in this directive `hostBindings` (including pure fn bindings).
+       *
+       * Used to calculate the length of the component's LView array, so we
+       * can pre-fill the array and set the host binding start index.
+       */
+      hostVars?: number;
 
-  /**
-   * Assign static attribute values to a host element.
-   *
-   * This property will assign static attribute values as well as class and style
-   * values to a host element. Since attribute values can consist of different types of values, the
-   * `hostAttrs` array must include the values in the following format:
-   *
-   * attrs = [
-   *   // static attributes (like `title`, `name`, `id`...)
-   *   attr1, value1, attr2, value,
-   *
-   *   // a single namespace value (like `x:id`)
-   *   NAMESPACE_MARKER, namespaceUri1, name1, value1,
-   *
-   *   // another single namespace value (like `x:name`)
-   *   NAMESPACE_MARKER, namespaceUri2, name2, value2,
-   *
-   *   // a series of CSS classes that will be applied to the element (no spaces)
-   *   CLASSES_MARKER, class1, class2, class3,
-   *
-   *   // a series of CSS styles (property + value) that will be applied to the element
-   *   STYLES_MARKER, prop1, value1, prop2, value2
-   * ]
-   *
-   * All non-class and non-style attributes must be defined at the start of the list
-   * first before all class and style values are set. When there is a change in value
-   * type (like when classes and styles are introduced) a marker must be used to separate
-   * the entries. The marker values themselves are set via entries found in the
-   * [AttributeMarker] enum.
-   */
-  hostAttrs?: TAttributes;
+      /**
+       * Assign static attribute values to a host element.
+       *
+       * This property will assign static attribute values as well as class and style
+       * values to a host element. Since attribute values can consist of different types of values,
+       * the `hostAttrs` array must include the values in the following format:
+       *
+       * attrs = [
+       *   // static attributes (like `title`, `name`, `id`...)
+       *   attr1, value1, attr2, value,
+       *
+       *   // a single namespace value (like `x:id`)
+       *   NAMESPACE_MARKER, namespaceUri1, name1, value1,
+       *
+       *   // another single namespace value (like `x:name`)
+       *   NAMESPACE_MARKER, namespaceUri2, name2, value2,
+       *
+       *   // a series of CSS classes that will be applied to the element (no spaces)
+       *   CLASSES_MARKER, class1, class2, class3,
+       *
+       *   // a series of CSS styles (property + value) that will be applied to the element
+       *   STYLES_MARKER, prop1, value1, prop2, value2
+       * ]
+       *
+       * All non-class and non-style attributes must be defined at the start of the list
+       * first before all class and style values are set. When there is a change in value
+       * type (like when classes and styles are introduced) a marker must be used to separate
+       * the entries. The marker values themselves are set via entries found in the
+       * [AttributeMarker] enum.
+       */
+      hostAttrs?: TAttributes;
 
-  /**
-   * Function to create instances of content queries associated with a given directive.
-   */
-  contentQueries?: ContentQueriesFunction<T>;
+      /**
+       * Function to create instances of content queries associated with a given directive.
+       */
+      contentQueries?: ContentQueriesFunction<T>;
 
-  /**
-   * Additional set of instructions specific to view query processing. This could be seen as a
-   * set of instructions to be inserted into the template function.
-   */
-  viewQuery?: ViewQueriesFunction<T>| null;
+      /**
+       * Additional set of instructions specific to view query processing. This could be seen as a
+       * set of instructions to be inserted into the template function.
+       */
+      viewQuery?: ViewQueriesFunction<T>| null;
 
-  /**
-   * Defines the name that can be used in the template to assign this directive to a variable.
-   *
-   * See: {@link Directive.exportAs}
-   */
-  exportAs?: string[];
-}) => never;
+      /**
+       * Defines the name that can be used in the template to assign this directive to a variable.
+       *
+       * See: {@link Directive.exportAs}
+       */
+      exportAs?: string[];
+    }) => never;
 
 /**
  * Create a pipe definition object.
@@ -717,18 +715,18 @@ export function ɵɵdefinePipe<T>(pipeDef: {
 
   /** Whether the pipe is pure. */
   pure?: boolean
-}): never {
+}): unknown {
   return (<PipeDef<T>>{
     type: pipeDef.type,
     name: pipeDef.name,
     factory: null,
     pure: pipeDef.pure !== false,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null
-  }) as never;
+  });
 }
 
 /**
- * The following getter methods retrieve the definition form the type. Currently the retrieval
+ * The following getter methods retrieve the definition from the type. Currently the retrieval
  * honors inheritance, but in the future we may change the rule to require that definitions are
  * explicit. This would require some sort of migration strategy.
  */
@@ -743,16 +741,6 @@ export function getDirectiveDef<T>(type: any): DirectiveDef<T>|null {
 
 export function getPipeDef<T>(type: any): PipeDef<T>|null {
   return type[NG_PIPE_DEF] || null;
-}
-
-export function getFactoryDef<T>(type: any, throwNotFound: true): FactoryFn<T>;
-export function getFactoryDef<T>(type: any): FactoryFn<T>|null;
-export function getFactoryDef<T>(type: any, throwNotFound?: boolean): FactoryFn<T>|null {
-  const hasFactoryDef = type.hasOwnProperty(NG_FACTORY_DEF);
-  if (!hasFactoryDef && throwNotFound === true && ngDevMode) {
-    throw new Error(`Type ${stringify(type)} does not have 'ɵfac' property.`);
-  }
-  return hasFactoryDef ? type[NG_FACTORY_DEF] : null;
 }
 
 export function getNgModuleDef<T>(type: any, throwNotFound: true): NgModuleDef<T>;

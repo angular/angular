@@ -8,6 +8,11 @@
     Join the community of millions of developers who build compelling user interfaces with Angular.">
   <base href="/">
 
+  <link rel="preconnect" href="https://www.google-analytics.com">
+  <link rel="dns-prefetch" href="https://www.google-analytics.com">
+  <link rel="preconnect" href="https://stats.g.doubleclick.net">
+  <link rel="dns-prefetch" href="https://stats.g.doubleclick.net">
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="search" type="application/opensearchdescription+xml" href="assets/opensearch.xml">
@@ -20,8 +25,8 @@
   <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/images/favicons/favicon-144x144.png">
 
   <!-- NOTE: These need to be kept in sync with `ngsw-config.json`. -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Sans+Mono&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap">
   <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block">
   <!-- -->
 
@@ -96,13 +101,26 @@
         <img src="assets/images/logos/angular/angular.svg" width="250" height="250" alt="Angular">
       </div>
       <div class="homepage-container">
-        <div class="hero-headline">One framework.<br>Mobile &amp; desktop.</div>
+        <div class="hero-headline">The modern web<br>developer's platform</div>
       </div>
     </section>
     <h2 style="color: red; margin-top: 40px; position: relative; text-align: center; text-shadow: 1px 1px #fafafa;">
       <b><i>This website requires JavaScript.</i></b>
     </h2>
   </noscript>
+
+  <!--
+    Custom Elements polyfills required for browsers that natively support Custom Elements but not
+    ES2015 modules. (See `custom-elements-es5-polyfills.js` for more info.)
+
+    NOTE:
+    The polyfills here will be loaded before the ones in `polyfills.ts` (including
+    `@webcomponents/custom-elements`). This is fine, because the polyfills here are only needed on
+    browsers that natively support Custom Elements, on which `@webcomponents/custom-elements` will
+    be a no-op (so the order of loading does not matter).
+  -->
+  <script src="generated/js/custom-elements-es5-polyfills.js" nomodule></script>
+
 </body>
 
 </html>

@@ -1,34 +1,29 @@
 # Security
 
-This page describes Angular's built-in
+This topic describes Angular's built-in
 protections against common web-application vulnerabilities and attacks such as cross-site
-scripting attacks. It doesn't cover application-level security, such as authentication (_Who is
-this user?_) and authorization (_What can this user do?_).
+scripting attacks. It doesn't cover application-level security, such as authentication and authorization.
 
 For more information about the attacks and mitigations described below, see [OWASP Guide Project](https://www.owasp.org/index.php/Category:OWASP_Guide_Project).
 
 You can run the <live-example></live-example> in Stackblitz and download the code from there.
 
+<div class="callout is-important">
 
-
-<h2 id='report-issues'>
-  Reporting vulnerabilities
-</h2>
-
-
+{@a report-issues}
+<header>Reporting vulnerabilities</header>
 
 To report vulnerabilities in Angular itself, email us at [security@angular.io](mailto:security@angular.io).
 
 For more information about how Google handles security issues, see [Google's security
 philosophy](https://www.google.com/about/appsecurity/).
 
+</div>
 
+<div class="callout is-helpful">
 
-<h2 id='best-practices'>
-  Best practices
-</h2>
-
-
+{@a best-practices}
+<header>Best practices</header>
 
 * **Keep current with the latest Angular library releases.**
 We regularly update the Angular libraries, and these updates may fix security defects discovered in
@@ -43,13 +38,9 @@ community and make a pull request.
 * **Avoid Angular APIs marked in the documentation as “_Security Risk_.”**
 For more information, see the [Trusting safe values](guide/security#bypass-security-apis) section of this page.
 
+</div>
 
-
-<h2 id='xss'>
-  Preventing cross-site scripting (XSS)
-</h2>
-
-
+## Preventing cross-site scripting (XSS)
 
 [Cross-site scripting (XSS)](https://en.wikipedia.org/wiki/Cross-site_scripting) enables attackers
 to inject malicious code into web pages. Such code can then, for example, steal user data (in
@@ -64,16 +55,9 @@ attacker-controlled data enters the DOM, expect security vulnerabilities.
 
 ### Angular’s cross-site scripting security model
 
-To systematically block XSS bugs, Angular treats all values as untrusted by default. When a value
-is inserted into the DOM from a template, via property, attribute, style, class binding, or interpolation,
-Angular sanitizes and escapes untrusted values.
+To systematically block XSS bugs, Angular treats all values as untrusted by default. When a value is inserted into the DOM from a template binding, or interpolation, Angular sanitizes and escapes untrusted values. If a value was already sanitized outside of Angular and is considered safe, you can communicate this to Angular by marking the [value as trusted](#bypass-security-apis).
 
-_Angular templates are the same as executable code_: HTML, attributes, and binding expressions
-(but not the values bound) in templates are trusted to be safe. This means that applications must
-prevent values that an attacker can control from ever making it into the source code of a
-template. Never generate template source code by concatenating user input and templates.
-To prevent these vulnerabilities, use
-the [offline template compiler](guide/security#offline-template-compiler), also known as _template injection_.
+Unlike values to be used for rendering, Angular templates are considered trusted by default, and should be treated as executable code. Never generate templates by concatenating user input and template syntax. Doing this would enable attackers to [inject arbitrary code](https://en.wikipedia.org/wiki/Code_injection) into your application. To prevent these vulnerabilities, always use the default [AOT template compiler](/guide/security#offline-template-compiler) in production deployments.
 
 ### Sanitization and security contexts
 
@@ -97,35 +81,26 @@ when it has to change a value during sanitization.
 The following template binds the value of `htmlSnippet`, once by interpolating it into an element's
 content, and once by binding it to the `innerHTML` property of an element:
 
-
 <code-example path="security/src/app/inner-html-binding.component.html" header="src/app/inner-html-binding.component.html"></code-example>
-
-
 
 Interpolated content is always escaped&mdash;the HTML isn't interpreted and the browser displays
 angle brackets in the element's text content.
 
 For the HTML to be interpreted, bind it to an HTML property such as `innerHTML`. But binding
 a value that an attacker might control into `innerHTML` normally causes an XSS
-vulnerability. For example, code contained in a `<script>` tag is executed:
-
+vulnerability. For example, one could execute JavaScript in a following way:
 
 <code-example path="security/src/app/inner-html-binding.component.ts" header="src/app/inner-html-binding.component.ts (class)" region="class"></code-example>
 
-
-
-Angular recognizes the value as unsafe and automatically sanitizes it, which removes the `<script>`
-tag but keeps safe content such as the `<b>` element.
-
+Angular recognizes the value as unsafe and automatically sanitizes it, which removes the `script` element but keeps safe content such as the `<b>` element.
 
 <div class="lightbox">
   <img src='generated/images/guide/security/binding-inner-html.png' alt='A screenshot showing interpolated and bound HTML values'>
 </div>
 
-
 ### Direct use of the DOM APIs and explicit sanitization calls
 
-The built-in browser DOM APIs don't automatically protect you from security vulnerabilities.
+Built-in browser DOM APIs don't automatically protect you from security vulnerabilities.
 For example, `document`, the node available through `ElementRef`, and many third-party APIs
 contain unsafe methods. In the same way, if you interact with other libraries that manipulate
 the DOM, you likely won't have the same automatic sanitization as with Angular interpolations.
@@ -137,43 +112,9 @@ method and the appropriate `SecurityContext`. That function also accepts values 
 marked as trusted using the `bypassSecurityTrust`... functions, and will not sanitize them,
 as [described below](#bypass-security-apis).
 
-### Content security policy
+{@a bypass-security-apis}
 
-Content Security Policy (CSP) is a defense-in-depth
-technique to prevent XSS. To enable CSP, configure your web server to return an appropriate
-`Content-Security-Policy` HTTP header. Read more about content security policy at
-[An Introduction to Content Security Policy](http://www.html5rocks.com/en/tutorials/security/content-security-policy/)
-on the HTML5Rocks website.
-
-
-{@a offline-template-compiler}
-
-
-### Use the offline template compiler
-
-The offline template compiler prevents a whole class of vulnerabilities called template injection,
-and greatly improves application performance. Use the offline template compiler in production
-deployments; don't dynamically generate templates. Angular trusts template code, so generating
-templates, in particular templates containing user data, circumvents Angular's built-in protections.
-For information about dynamically constructing forms in a safe way, see the
-[Dynamic Forms](guide/dynamic-form) guide page.
-
-### Server-side XSS protection
-
-HTML constructed on the server is vulnerable to injection attacks. Injecting template code into an
-Angular application is the same as injecting executable code into the
-application: it gives the attacker full control over the application. To prevent this,
-use a templating language that automatically escapes values to prevent XSS vulnerabilities on
-the server. Don't generate Angular templates on the server side using a templating language; doing this
-carries a high risk of introducing template-injection vulnerabilities.
-
-
-
-<h2 id='bypass-security-apis'>
-  Trusting safe values
-</h2>
-
-
+### Trusting safe values
 
 Sometimes applications genuinely need to include executable code, display an `<iframe>` from some
 URL, or construct potentially dangerous URLs. To prevent automatic sanitization in any of these
@@ -195,59 +136,62 @@ Remember, whether a value is safe depends on context, so choose the right contex
 your intended use of the value. Imagine that the following template needs to bind a URL to a
 `javascript:alert(...)` call:
 
-
 <code-example path="security/src/app/bypass-security.component.html" header="src/app/bypass-security.component.html (URL)" region="URL"></code-example>
-
-
 
 Normally, Angular automatically sanitizes the URL, disables the dangerous code, and
 in development mode, logs this action to the console. To prevent
 this, mark the URL value as a trusted URL using the `bypassSecurityTrustUrl` call:
 
-
 <code-example path="security/src/app/bypass-security.component.ts" header="src/app/bypass-security.component.ts (trust-url)" region="trust-url"></code-example>
-
-
 
 <div class="lightbox">
   <img src='generated/images/guide/security/bypass-security-component.png' alt='A screenshot showing an alert box created from a trusted URL'>
 </div>
 
-
-
 If you need to convert user input into a trusted value, use a
-controller method. The following template allows users to enter a YouTube video ID and load the
+component method. The following template allows users to enter a YouTube video ID and load the
 corresponding video in an `<iframe>`. The `<iframe src>` attribute is a resource URL security
 context, because an untrusted source can, for example, smuggle in file downloads that unsuspecting users
-could execute. So call a method on the controller to construct a trusted video URL, which causes
+could execute. So call a method on the component to construct a trusted video URL, which causes
 Angular to allow binding into `<iframe src>`:
 
 
 <code-example path="security/src/app/bypass-security.component.html" header="src/app/bypass-security.component.html (iframe)" region="iframe"></code-example>
 
-
-
 <code-example path="security/src/app/bypass-security.component.ts" header="src/app/bypass-security.component.ts (trust-video-url)" region="trust-video-url"></code-example>
 
+{@a content-security-policy}
+### Content security policy
 
+Content Security Policy (CSP) is a defense-in-depth
+technique to prevent XSS. To enable CSP, configure your web server to return an appropriate
+`Content-Security-Policy` HTTP header. Read more about content security policy at the 
+[Web Fundamentals guide](https://developers.google.com/web/fundamentals/security/csp) on the
+Google Developers website.
 
+{@a offline-template-compiler}
 
-<h2 id='http'>
-  HTTP-level vulnerabilities
-</h2>
+### Use the AOT template compiler
 
+The AOT template compiler prevents a whole class of vulnerabilities called template injection,
+and greatly improves application performance. The AOT template compiler is the default compiler used by Angular CLI applications, and you should use it in all production deployments.
 
+An alternative to the AOT compiler is the JIT compiler which compiles templates to executable template code within the browser at runtime. Angular trusts template code, so dynamically generating templates and compiling them, in particular templates containing user data, circumvents Angular's built-in protections and is a security anti-pattern. For information about dynamically constructing forms in a safe way, see the [Dynamic Forms](guide/dynamic-form) guide.
+
+{@a server-side-xss}
+### Server-side XSS protection
+
+HTML constructed on the server is vulnerable to injection attacks. Injecting template code into an Angular application is the same as injecting executable code into the application: it gives the attacker full control over the application. To prevent this, use a templating language that automatically escapes values to prevent XSS vulnerabilities on the server. Don't generate Angular templates on the server side using a templating language; doing this carries a high risk of introducing template-injection vulnerabilities.
+
+{@a http}
+## HTTP-level vulnerabilities
 
 Angular has built-in support to help prevent two common HTTP vulnerabilities, cross-site request
 forgery (CSRF or XSRF) and cross-site script inclusion (XSSI). Both of these must be mitigated primarily
 on the server side, but Angular provides helpers to make integration on the client side easier.
 
-
-<h3 id='xsrf'>
-  Cross-site request forgery
-</h3>
-
-
+{@a xsrf}
+### Cross-site request forgery
 
 In a cross-site request forgery (CSRF or XSRF), an attacker tricks the user into visiting
 a different web page (such as `evil.com`) with malignant code that secretly sends a malicious request
@@ -279,20 +223,16 @@ That means only your application can read this cookie token and set the custom h
 Angular's `HttpClient` has built-in support for the client-side half of this technique. Read about it more in the [HttpClient guide](/guide/http#security-xsrf-protection).
 
 For information about CSRF at the Open Web Application Security Project (OWASP), see
-<a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29">Cross-Site Request Forgery (CSRF)</a> and
-<a href="https://www.owasp.org/index.php/CSRF_Prevention_Cheat_Sheet">Cross-Site Request Forgery (CSRF) Prevention Cheat Sheet</a>.
+[Cross-Site Request Forgery (CSRF)](https://owasp.org/www-community/attacks/csrf) and
+[Cross-Site Request Forgery (CSRF) Prevention Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html).
 The Stanford University paper
-<a href="https://seclab.stanford.edu/websec/csrf/csrf.pdf">Robust Defenses for Cross-Site Request Forgery</a> is a rich source of detail.
+[Robust Defenses for Cross-Site Request Forgery](https://seclab.stanford.edu/websec/csrf/csrf.pdf) is a rich source of detail.
 
 See also Dave Smith's easy-to-understand
-<a href="https://www.youtube.com/watch?v=9inczw6qtpY" title="Cross Site Request Funkery Securing Your Angular Apps From Evil Doers">talk on XSRF at AngularConnect 2016</a>.
+[talk on XSRF at AngularConnect 2016](https://www.youtube.com/watch?v=9inczw6qtpY "Cross Site Request Funkery Securing Your Angular Apps From Evil Doers").
 
-
-<h3 id='xssi'>
-  Cross-site script inclusion (XSSI)
-</h3>
-
-
+{@a xssi}
+### Cross-site script inclusion (XSSI)
 
 Cross-site script inclusion, also known as JSON vulnerability, can allow an attacker's website to
 read data from a JSON API. The attack works on older browsers by overriding native JavaScript
@@ -308,13 +248,8 @@ Angular's `HttpClient` library recognizes this convention and automatically stri
 For more information, see the XSSI section of this [Google web security blog
 post](https://security.googleblog.com/2011/05/website-security-for-webmasters.html).
 
-
-
-<h2 id='code-review'>
-  Auditing Angular applications
-</h2>
-
-
+{@a code-review}
+## Auditing Angular applications
 
 Angular applications must follow the same security principles as regular web applications, and
 must be audited as such. Angular-specific APIs that should be audited in a security review,

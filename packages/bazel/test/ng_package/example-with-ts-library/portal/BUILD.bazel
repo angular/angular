@@ -6,7 +6,7 @@ ng_module(
     name = "portal",
     srcs = glob(["*.ts"]),
     bundle_dts = False,
-    module_name = "example/portal",
+    module_name = "example-with-ts-library/portal",
     deps = [
         "//packages/core",
         "@npm//@types",

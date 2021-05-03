@@ -1,6 +1,6 @@
 # Angular compiler options
 
-When you use [AOT compilation](guide/aot-compiler), you can control how your application is compiled by specifying *template* compiler options in the `tsconfig.json` [TypeScript configuration file](guide/typescript-configuration).
+When you use [AOT compilation](guide/aot-compiler), you can control how your application is compiled by specifying *template* compiler options in the [TypeScript configuration file](guide/typescript-configuration).
 
 The template options object, `angularCompilerOptions`, is a sibling to the `compilerOptions` object that supplies standard options to the TypeScript compiler.
 
@@ -21,17 +21,17 @@ The template options object, `angularCompilerOptions`, is a sibling to the `comp
 {@a tsconfig-extends}
 ## Configuration inheritance with extends
 
-Like the TypeScript compiler, The Angular AOT compiler also supports `extends` in the `angularCompilerOptions` section of the TypeScript configuration file, `tsconfig.json`.
+Like the TypeScript compiler, The Angular AOT compiler also supports `extends` in the `angularCompilerOptions` section of the TypeScript configuration file.
 The `extends` property is at the top level, parallel to `compilerOptions` and `angularCompilerOptions`.
 
 A TypeScript configuration can inherit settings from another file using the `extends` property.
-The configuration options from the base file are loaded first, then overridden by those in the inheriting `tsconfig` file.
+The configuration options from the base file are loaded first, then overridden by those in the inheriting configuration file.
 
 For example:
 
 ```json
 {
-  "extends": "../tsconfig.base.json",
+  "extends": "../tsconfig.json",
   "compilerOptions": {
     "experimentalDecorators": true,
     ...
@@ -64,8 +64,17 @@ Modifies how Angular-specific annotations are emitted to improve tree-shaking. N
 
 ### `annotateForClosureCompiler`
 
-When `true`, use [Tsickle](https://github.com/angular/tsickle) to annotate the emitted JavaScript with [JSDoc](http://usejsdoc.org/) comments needed by the
+When `true`, use [Tsickle](https://github.com/angular/tsickle) to annotate the emitted JavaScript with [JSDoc](https://jsdoc.app/) comments needed by the
 [Closure Compiler](https://github.com/google/closure-compiler). Default is `false`.
+
+### `compilationMode`
+
+Specifies the compilation mode to use. The following modes are available:
+
+- `'full'`: generates fully AOT-compiled code according to the version of Angular that is currently being used.
+- `'partial'`: generates code in a stable, but intermediate form suitable for a published library.
+
+The default value is `'full'`.
 
 ### `disableExpressionLowering`
 
@@ -76,6 +85,19 @@ When `false`, disables this rewriting, requiring the rewriting to be done manual
 ### `disableTypeScriptVersionCheck`
 
 When `true`, the compiler does not check the TypeScript version and does not report an error when an unsupported version of TypeScript is used. Not recommended, as unsupported versions of TypeScript might have undefined behavior. Default is `false`.
+
+### `enableI18nLegacyMessageIdFormat`
+
+Instructs the Angular template compiler to generate legacy ids for messages that are tagged in templates by the `i18n` attribute.
+See [Localizing your app](guide/i18n#mark-text-for-translations) for more information about marking messages for localization.
+
+Set this option to `false` unless your project relies upon translations that were previously generated using legacy ids. Default is `true`.
+
+The pre-Ivy message extraction tooling generated a variety of legacy formats for extracted message ids.
+These message formats have a number of issues, such as whitespace handling and reliance upon information inside the original HTML of a template.
+
+The new message format is more resilient to whitespace changes, is the same across all translation file formats, and can be generated directly from calls to `$localize`.
+This allows `$localize` messages in application code to use the same id as identical `i18n` messages in component templates.
 
 ### `enableIvy`
 
@@ -110,7 +132,7 @@ to the generated flat module index instead of the library index file.
 
 Produces only one `.metadata.json` file, which contains all the metadata necessary
 for symbols exported from the library index. In the generated `.ngfactory.js` files, the flat
-module index is used to import symbols that includes both the public API from the library index
+module index is used to import symbols that include both the public API from the library index
 as well as shrowded internal symbols.
 
 By default the `.ts` file supplied in the `files` field is assumed to be the library index.
@@ -128,7 +150,7 @@ would be `"index.d.ts"`.
 
 When `true` (recommended), enables the [binding expression validation](guide/aot-compiler#binding-expression-validation) phase of the template compiler, which uses TypeScript to validate binding expressions. For more information, see [Template type checking](guide/template-typecheck).
 
-Default is `false`, but when you use the CLI command `ng new`, it is set to `true` by default in the generated project's configuration.
+Default is `false`, but when you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
 ### `generateCodeForLibraries`
 
@@ -167,7 +189,7 @@ For library projects generated with the CLI, the dev configuration default is `t
 ### `strictMetadataEmit`
 
 When `true`, reports an error to the `.metadata.json` file if `"skipMetadataEmit"` is `false`.
-Default is `false`. Use only when `"skipMetadataEmit"` is `false` and `"skipTemplateCodeGen"` is `true`.
+Default is `false`. Use only when `"skipMetadataEmit"` is `false` and `"skipTemplateCodegen"` is `true`.
 
 This option is intended to validate the `.metadata.json` files emitted for bundling with an `npm` package. The validation is strict and can emit errors for metadata that would never produce an error when used by the template compiler. You can choose to suppress the error emitted by this option for an exported symbol by including `@dynamic` in the comment documenting the symbol.
 
@@ -186,14 +208,15 @@ For library projects generated with the CLI, the dev configuration default is `t
 
 When `true` (recommended), reports an error for a supplied parameter whose injection type cannot be determined. When `false` (currently the default), constructor parameters of classes marked with `@Injectable` whose type cannot be resolved produce a warning.
 
-When you use the CLI command `ng new`, it is set to `true` by default in the generated project's configuration.
+When you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
 ### `strictTemplates`
 
-When `true`, enables [strict template type checking](guide/template-typecheck#strict-mode) in Angular version 9. Strict mode is only available when using [Ivy](guide/ivy).
+When `true`, enables [strict template type checking](guide/template-typecheck#strict-mode). Strict mode is only available when using [Ivy](guide/ivy) (Angular version 9 and later).
 
 Additional strictness flags allow you to enable and disable specific types of strict template type checking. See [troubleshooting template errors](guide/template-typecheck#troubleshooting-template-errors).
 
+When you use the CLI command `ng new --strict`, it is set to `true` in the generated project's configuration.
 
 ### `trace`
 

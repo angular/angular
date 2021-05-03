@@ -1,11 +1,11 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Logger} from '../../../logging/logger';
+import {Logger} from '../../../../../src/ngtsc/logging';
 import {PartiallyOrderedTasks, Task, TaskDependencies, TaskQueue} from '../api';
 import {stringifyTask} from '../utils';
 
@@ -37,30 +37,40 @@ export abstract class BaseTaskQueue implements TaskQueue {
         break;
       }
       // We are skipping this task so mark it as complete
-      this.markTaskCompleted(nextTask);
-      const failedTask = this.tasksToSkip.get(nextTask) !;
-      this.logger.warn(
-          `Skipping processing of ${nextTask.entryPoint.name} because its dependency ${failedTask.entryPoint.name} failed to compile.`);
+      this.markAsCompleted(nextTask);
+      const failedTask = this.tasksToSkip.get(nextTask)!;
+      this.logger.warn(`Skipping processing of ${nextTask.entryPoint.name} because its dependency ${
+          failedTask.entryPoint.name} failed to compile.`);
       nextTask = this.computeNextTask();
     }
     return nextTask;
   }
 
-  markAsFailed(task: Task) {
-    if (this.dependencies.has(task)) {
-      for (const dependentTask of this.dependencies.get(task) !) {
-        this.skipDependentTasks(dependentTask, task);
-      }
-    }
-  }
-
-  markTaskCompleted(task: Task): void {
+  markAsCompleted(task: Task): void {
     if (!this.inProgressTasks.has(task)) {
       throw new Error(
           `Trying to mark task that was not in progress as completed: ${stringifyTask(task)}`);
     }
 
     this.inProgressTasks.delete(task);
+  }
+
+  markAsFailed(task: Task): void {
+    if (this.dependencies.has(task)) {
+      for (const dependentTask of this.dependencies.get(task)!) {
+        this.skipDependentTasks(dependentTask, task);
+      }
+    }
+  }
+
+  markAsUnprocessed(task: Task): void {
+    if (!this.inProgressTasks.has(task)) {
+      throw new Error(
+          `Trying to mark task that was not in progress as unprocessed: ${stringifyTask(task)}`);
+    }
+
+    this.inProgressTasks.delete(task);
+    this.tasks.unshift(task);
   }
 
   toString(): string {
@@ -81,7 +91,7 @@ export abstract class BaseTaskQueue implements TaskQueue {
   protected skipDependentTasks(task: Task, failedTask: Task) {
     this.tasksToSkip.set(task, failedTask);
     if (this.dependencies.has(task)) {
-      for (const dependentTask of this.dependencies.get(task) !) {
+      for (const dependentTask of this.dependencies.get(task)!) {
         this.skipDependentTasks(dependentTask, failedTask);
       }
     }

@@ -1,7 +1,7 @@
 # Getting started with service workers
 
 
-This document explains how to enable Angular service worker support in projects that you created with the [Angular CLI](cli). It then uses a simple example to show you a service worker in action, demonstrating loading and basic caching.
+This document explains how to enable Angular service worker support in projects that you created with the [Angular CLI](cli). It then uses an example to show you a service worker in action, demonstrating loading and basic caching.
 
 #### Prerequisites
 
@@ -10,7 +10,7 @@ A basic understanding of the information in [Introduction to Angular service wor
 
 ## Adding a service worker to your project
 
-To set up the Angular service worker in your project, use the CLI command `ng add @angular/pwa`. It takes care of configuring your app to use service workers by adding the `service-worker` package along
+To set up the Angular service worker in your project, use the CLI command `ng add @angular/pwa`. It takes care of configuring your application to use service workers by adding the `service-worker` package along
 with setting up the necessary support files.
 
 ```sh
@@ -21,9 +21,9 @@ The above command completes the following actions:
 
 1. Adds the `@angular/service-worker` package to your project.
 2. Enables service worker build support in the CLI.
-3. Imports and registers the service worker in the app module.
+3. Imports and registers the service worker in the application module.
 4. Updates the `index.html` file:
-    * Includes a link to add the `manifest.json` file.
+    * Includes a link to add the `manifest.webmanifest` file.
     * Adds meta tags for `theme-color`.
 5. Installs icon files to support the installed Progressive Web App (PWA).
 6. Creates the service worker configuration file called [`ngsw-config.json`](/guide/service-worker-config), which specifies the caching behaviors and other settings.
@@ -32,7 +32,7 @@ The above command completes the following actions:
  Now, build the project:
 
 ```sh
-ng build --prod
+ng build
 ```
 
 The CLI project is now set up to use the Angular service worker.
@@ -62,7 +62,7 @@ With the server running, you can point your browser at http://localhost:8080/. Y
 <div class="alert is-helpful">
 
 **Note:**
-If you are not using HTTPS, the service worker will only be registered when accessing the app on `localhost`.
+If you are not using HTTPS, the service worker will only be registered when accessing the application on `localhost`.
 
 </div>
 
@@ -78,7 +78,7 @@ To simulate a network issue, disable network interaction for your application. I
   <img src="generated/images/guide/service-worker/offline-checkbox.png" alt="The offline checkbox in the Network tab is checked">
 </div>
 
-Now the app has no access to network interaction.
+Now the application has no access to network interaction.
 
 For applications that do not use the Angular service worker, refreshing now would display Chrome's Internet disconnected page that says "There is no Internet connection".
 
@@ -107,7 +107,7 @@ Notice that all of the files the browser needs to render this application are ca
 <div class="alert is-helpful">
 Pay attention to two key points:
 
-1. The generated `ngsw-config.json` includes a limited list of cachable fonts and images extentions. In some cases, you might want to modify the glob pattern to suit your needs.
+1. The generated `ngsw-config.json` includes a limited list of cacheable fonts and images extensions. In some cases, you might want to modify the glob pattern to suit your needs.
 
 1. If `resourcesOutputPath` or `assets` paths are modified after the generation of configuration file, you need to change the paths manually in `ngsw-config.json`.
 </div>
@@ -115,7 +115,7 @@ Pay attention to two key points:
 ### Making changes to your application
 
 Now that you've seen how service workers cache your application, the
-next step is understanding how updates work.
+next step is understanding how updates work. Let's make a change to the application, and watch the service worker install the update:
 
 1. If you're testing in an incognito window, open a second blank tab. This will keep the incognito and the cache state alive during your test.
 
@@ -123,16 +123,14 @@ next step is understanding how updates work.
 
 3. Shut down `http-server`.
 
-4. Next, make a change to the application, and watch the service worker install the update.
+4. Open `src/app/app.component.html` for editing.
 
-5. Open `src/app/app.component.html` for editing.
+5. Change the text `Welcome to {{title}}!` to `Bienvenue à {{title}}!`.
 
-6. Change the text `Welcome to {{title}}!` to `Bienvenue à {{title}}!`.
-
-7. Build and run the server again:
+6. Build and run the server again:
 
 ```sh
-ng build --prod
+ng build
 http-server -p 8080 -c-1 dist/<project-name>
 ```
 
@@ -156,9 +154,7 @@ If you look at the `http-server` logs, you can see the service worker requesting
   <img src="generated/images/guide/service-worker/welcome-msg-fr.png" alt="The text has changed to say Bienvenue à app!">
 </div>
 
-The service worker installed the updated version of your app *in the background*, and the next time the page is loaded or reloaded, the service worker switches to the latest version.
-
-<hr />
+The service worker installed the updated version of your application *in the background*, and the next time the page is loaded or reloaded, the service worker switches to the latest version.
 
 ## More on Angular service workers
 

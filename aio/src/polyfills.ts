@@ -18,7 +18,9 @@
  * BROWSER POLYFILLS
  */
 
-/** IE10 and IE11 requires the following for NgClass support on SVG elements */
+/**
+ * IE11 requires the following for NgClass support on SVG elements
+ */
 // import 'classlist.js';  // Run `npm install --save classlist.js`.
 
 /**
@@ -35,7 +37,7 @@
  * will put import in the top of bundle, so user need to create a separate file
  * in this directory (for example: zone-flags.ts), and put the following flags
  * into that file, and then add the following code before importing zone.js.
- * import './zone-flags.ts';
+ * import './zone-flags';
  *
  * The flags allowed in zone-flags.ts are listed here.
  *
@@ -55,7 +57,7 @@
 /***************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-import 'zone.js/dist/zone';  // Included with Angular CLI.
+import 'zone.js';  // Included with Angular CLI.
 
 
 /***************************************************************************************************
@@ -63,11 +65,3 @@ import 'zone.js/dist/zone';  // Included with Angular CLI.
  */
 // Custom Elements polyfill. Required for browsers that do not natively support Custom Elements.
 import '@webcomponents/custom-elements';
-// Custom Element ES5 shim. Required for browsers that natively support Custom Elements, but do not
-// support ES2015 modules.
-// NOTE: Chrome, Firefox and Safari should not need this, because they added support for ES2015
-//       modules before Custom Elements. It is still required for some other (less common) browsers:
-//       - UC browser for android 11.8 (~3.5% global usage)
-//       - Samsung browser 5.0-8.1 (~0.43% global usage)
-//       - Opera 41-47 (~0.02% global usage)
-import '@webcomponents/custom-elements/src/native-shim';

@@ -1,23 +1,28 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import '../../dist/zone-node';
+import './zone.js';
 const testClosureFunction = () => {
   const logs: string[] = [];
   // call all Zone exposed functions
   const testZoneSpec: ZoneSpec = {
     name: 'closure',
     properties: {},
-    onFork: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-             zoneSpec: ZoneSpec) => { return parentZoneDelegate.fork(targetZone, zoneSpec); },
+    onFork:
+        (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
+         zoneSpec: ZoneSpec) => {
+          return parentZoneDelegate.fork(targetZone, zoneSpec);
+        },
 
     onIntercept:
         (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, delegate: Function,
-         source: string) => { return parentZoneDelegate.intercept(targetZone, delegate, source); },
+         source: string) => {
+          return parentZoneDelegate.intercept(targetZone, delegate, source);
+        },
 
     onInvoke: function(
         parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, delegate: Function,
@@ -59,19 +64,63 @@ const testClosureFunction = () => {
   testZone.runGuarded(() => {
     testZone.run(() => {
       const properties = testZoneSpec.properties;
-      properties !['key'] = 'value';
+      properties!['key'] = 'value';
       const keyZone = Zone.current.getZoneWith('key');
 
       logs.push('current' + Zone.current.name);
-      logs.push('parent' + Zone.current.parent !.name);
-      logs.push('getZoneWith' + keyZone !.name);
-      logs.push('get' + keyZone !.get('key'));
+      logs.push('parent' + Zone.current.parent!.name);
+      logs.push('getZoneWith' + keyZone!.name);
+      logs.push('get' + keyZone!.get('key'));
       logs.push('root' + Zone.root.name);
-      Object.keys((Zone as any).prototype).forEach(key => { logs.push(key); });
-      Object.keys(testZoneSpec).forEach(key => { logs.push(key); });
+      const zonePrototypeKeys = [
+        'get',
+        'getZoneWith',
+        'fork',
+        'wrap',
+        'run',
+        'runGuarded',
+        'runTask',
+        'scheduleTask',
+        'scheduleMicroTask',
+        'scheduleMacroTask',
+        'scheduleEventTask',
+        'cancelTask',
+      ];
+      zonePrototypeKeys.forEach(key => {
+        if ((Zone as any).prototype.hasOwnProperty(key)) {
+          logs.push(key);
+        }
+      });
+
+      const zoneSpecKeys = [
+        'name',
+        'properties',
+        'onFork',
+        'onIntercept',
+        'onInvoke',
+        'onHandleError',
+        'onScheduleTask',
+        'onInvokeTask',
+        'onCancelTask',
+        'onHasTask',
+      ];
+      zoneSpecKeys.forEach(key => {
+        if (testZoneSpec.hasOwnProperty(key)) {
+          logs.push(key);
+        }
+      });
+
+      const zoneTaskKeys = [
+        'onHasTask', 'runCount', 'type', 'source', 'data', 'scheduleFn', 'cancelFn', 'callback',
+        'invoke'
+      ];
 
       const task = Zone.current.scheduleMicroTask('testTask', () => {}, undefined, () => {});
-      Object.keys(task).forEach(key => { logs.push(key); });
+      zoneTaskKeys.forEach(key => {
+        if (task.hasOwnProperty(key)) {
+          logs.push(key);
+        }
+      });
     });
   });
 
@@ -81,8 +130,6 @@ const testClosureFunction = () => {
     'getZoneWithclosure',
     'getvalue',
     'root<root>',
-    'parent',
-    'name',
     'get',
     'getZoneWith',
     'fork',
@@ -95,7 +142,6 @@ const testClosureFunction = () => {
     'scheduleMacroTask',
     'scheduleEventTask',
     'cancelTask',
-    '_updateTaskCount',
     'name',
     'properties',
     'onFork',
@@ -106,10 +152,7 @@ const testClosureFunction = () => {
     'onInvokeTask',
     'onCancelTask',
     'onHasTask',
-    '_zone',
     'runCount',
-    '_zoneDelegates',
-    '_state',
     'type',
     'source',
     'data',
@@ -126,8 +169,15 @@ const testClosureFunction = () => {
       result = false;
     }
   }
+  if (result) {
+    console.log('All tests passed.');
+  } else {
+    console.error('Test failed, some public APIs cannot be found after closure compiler.');
+  }
   process['exit'](result ? 0 : 1);
 };
-process['on']('uncaughtException', (err: any) => { process['exit'](1); });
+process['on']('uncaughtException', (err: any) => {
+  process['exit'](1);
+});
 
 testClosureFunction();

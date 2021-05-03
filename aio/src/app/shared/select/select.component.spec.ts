@@ -35,10 +35,10 @@ describe('SelectComponent', () => {
 
   describe('button', () => {
     it('should display the label if provided', () => {
-      expect(getButton().textContent!.trim()).toEqual('');
+      expect(getButton().textContent?.trim()).toEqual('');
       host.label = 'Label:';
       fixture.detectChanges();
-      expect(getButton().textContent!.trim()).toEqual('Label:');
+      expect(getButton().textContent?.trim()).toEqual('Label:');
     });
 
     it('should contain a symbol if hasSymbol is true', () => {
@@ -53,7 +53,7 @@ describe('SelectComponent', () => {
       host.selected = options[0];
       fixture.detectChanges();
       expect(getButton().textContent).toContain(options[0].title);
-      expect(getButtonSymbol()!.className).toContain(options[0].value);
+      expect(getButtonSymbol()?.className).toContain(options[0].value);
     });
 
     it('should toggle the visibility of the options list when clicked', () => {
@@ -93,7 +93,7 @@ describe('SelectComponent', () => {
     beforeEach(() => {
       host.options = options;
       host.showSymbol = true;
-      getButton().click(); // ensure the the options are visible
+      getButton().click(); // ensure the options are visible
       fixture.detectChanges();
     });
 
@@ -108,7 +108,7 @@ describe('SelectComponent', () => {
       fixture.detectChanges();
       expect(host.onChange).toHaveBeenCalledWith({ option: options[0], index: 0 });
       expect(getButton().textContent).toContain(options[0].title);
-      expect(getButtonSymbol()!.className).toContain(options[0].value);
+      expect(getButtonSymbol()?.className).toContain(options[0].value);
     });
 
     it('should select the current option when enter is pressed', () => {
@@ -117,7 +117,7 @@ describe('SelectComponent', () => {
       fixture.detectChanges();
       expect(host.onChange).toHaveBeenCalledWith({ option: options[0], index: 0 });
       expect(getButton().textContent).toContain(options[0].title);
-      expect(getButtonSymbol()!.className).toContain(options[0].value);
+      expect(getButtonSymbol()?.className).toContain(options[0].value);
     });
 
     it('should select the current option when space is pressed', () => {
@@ -126,7 +126,7 @@ describe('SelectComponent', () => {
       fixture.detectChanges();
       expect(host.onChange).toHaveBeenCalledWith({ option: options[0], index: 0 });
       expect(getButton().textContent).toContain(options[0].title);
-      expect(getButtonSymbol()!.className).toContain(options[0].value);
+      expect(getButtonSymbol()?.className).toContain(options[0].value);
     });
 
     it('should hide when an option is clicked', () => {

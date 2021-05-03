@@ -98,7 +98,7 @@ export class AppComponent {
 
 ## Configure target-specific file replacements
 
-The main CLI configuration file, `angular.json`, contains a `fileReplacements` section in the configuration for each build target, which allows you to replace any file with a target-specific version of that file.
+The main CLI configuration file, `angular.json`, contains a `fileReplacements` section in the configuration for each build target, which allows you to replace any file in the TypeScript program with a target-specific version of that file.
 This is useful for including target-specific code or variables in a build that targets a specific environment, such as production or staging.
 
 By default no files are replaced.
@@ -117,7 +117,7 @@ For example:
     ...
 ```
 
-This means that when you build your production configuration (using `ng build --prod` or `ng build --configuration=production`), the `src/environments/environment.ts` file is replaced with the target-specific version of the file, `src/environments/environment.prod.ts`.
+This means that when you build your production configuration with `ng build --configuration production`, the `src/environments/environment.ts` file is replaced with the target-specific version of the file, `src/environments/environment.prod.ts`.
 
 You can add additional configurations as required. To add a staging environment, create a copy of `src/environments/environment.ts` called `src/environments/environment.staging.ts`, then add a `staging` configuration to `angular.json`:
 
@@ -262,6 +262,33 @@ Each budget entry is a JSON object with the following properties:
 
  </table>
 
+{@a commonjs }
+## Configuring CommonJS dependencies
+
+<div class="alert is-important">
+
+It is recommended that you avoid depending on CommonJS modules in your Angular applications.
+Depending on CommonJS modules can prevent bundlers and minifiers from optimizing your application, which results in larger bundle sizes.
+Instead, it is recommended that you use [ECMAScript modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import) in your entire application.
+For more information, see [How CommonJS is making your bundles larger](https://web.dev/commonjs-larger-bundles/).
+
+</div>
+
+The Angular CLI outputs warnings if it detects that your browser application depends on CommonJS modules.
+To disable these warnings, you can add the CommonJS module name to `allowedCommonJsDependencies` option in the `build` options located in `angular.json` file.
+
+<code-example lang="json">
+"build": {
+  "builder": "@angular-devkit/build-angular:browser",
+  "options": {
+     "allowedCommonJsDependencies": [
+        "lodash"
+     ]
+     ...
+   }
+   ...
+},
+</code-example>
 
 {@a browser-compat}
 
@@ -311,11 +338,11 @@ To use CSS grid with IE10/11, you must explicitly enable it using the `autoplace
 To do this, add the following to the top of the global styles file (or within a specific css selector scope):
 
 ```
-/* autoprefixer grid: autoplace /
+/* autoprefixer grid: autoplace */
 ```
 or
 ```
-/ autoprefixer grid: no-autoplace */
+/* autoprefixer grid: no-autoplace */
 ```
 
 For more information, see [Autoprefixer documentation](https://autoprefixer.github.io/).

@@ -1,31 +1,31 @@
-import { TestBed, async } from '@angular/core/testing';
+import { TestBed, waitForAsync } from '@angular/core/testing';
+
 import { AppComponent } from './app.component';
-import { TemplateModule } from './template/template.module';
 import { ReactiveModule } from './reactive/reactive.module';
+import { TemplateModule } from './template/template.module';
 
 describe('AppComponent', () => {
-
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      imports: [ReactiveModule, TemplateModule],
-      declarations: [
-        AppComponent
-      ],
-    }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed
+        .configureTestingModule({
+          imports: [ReactiveModule, TemplateModule],
+          declarations: [AppComponent],
+        })
+        .compileComponents();
   }));
 
-  it('should create the app', async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
+  it('should create the app', waitForAsync(() => {
+       const fixture = TestBed.createComponent(AppComponent);
+       const app = fixture.componentInstance;
 
-    expect(app).toBeTruthy();
-  }));
+       expect(app).toBeTruthy();
+     }));
 
-  it('should render title', async(() => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
+  it('should render title', waitForAsync(() => {
+       const fixture = TestBed.createComponent(AppComponent);
+       fixture.detectChanges();
 
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain('Forms Overview');
-  }));
+       const compiled = fixture.debugElement.nativeElement;
+       expect(compiled.querySelector('h1').textContent).toContain('Forms Overview');
+     }));
 });

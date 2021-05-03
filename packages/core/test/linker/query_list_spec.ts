@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,10 +21,11 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
       log = '';
     });
 
-    function logAppend(item: any /** TODO #9100 */) { log += (log.length == 0 ? '' : ', ') + item; }
+    function logAppend(item: any /** TODO #9100 */) {
+      log += (log.length == 0 ? '' : ', ') + item;
+    }
 
     describe('dirty and reset', () => {
-
       it('should initially be dirty and empty', () => {
         expect(queryList.dirty).toBeTruthy();
         expect(queryList.length).toBe(0);
@@ -36,7 +37,6 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
         expect(queryList.dirty).toBeFalsy();
         expect(queryList.length).toBe(2);
       });
-
     });
 
     it('should support resetting and iterating over the new objects', () => {
@@ -49,6 +49,11 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
     it('should support length', () => {
       queryList.reset(['one', 'two']);
       expect(queryList.length).toEqual(2);
+    });
+
+    it('should support get', () => {
+      queryList.reset(['one', 'two']);
+      expect(queryList.get(1)).toEqual('two');
     });
 
     it('should support map', () => {
@@ -146,16 +151,20 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
 
       // For loops use the iteration protocol.
       for (const value of queryListAsIterable) {
-        expect(value).toBe(data.shift() !);
+        expect(value).toBe(data.shift()!);
       }
       expect(data.length).toBe(0);
     });
 
-    if (getDOM().supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents) {
       describe('simple observable interface', () => {
         it('should fire callbacks on change', fakeAsync(() => {
              let fires = 0;
-             queryList.changes.subscribe({next: (_) => { fires += 1; }});
+             queryList.changes.subscribe({
+               next: (_) => {
+                 fires += 1;
+               }
+             });
 
              queryList.notifyOnChanges();
              tick();
@@ -170,7 +179,11 @@ import {beforeEach, describe, expect, it} from '@angular/core/testing/src/testin
 
         it('should provides query list as an argument', fakeAsync(() => {
              let recorded: any /** TODO #9100 */;
-             queryList.changes.subscribe({next: (v: any) => { recorded = v; }});
+             queryList.changes.subscribe({
+               next: (v: any) => {
+                 recorded = v;
+               }
+             });
 
              queryList.reset(['one']);
              queryList.notifyOnChanges();

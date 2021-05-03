@@ -1,10 +1,10 @@
-import { NgModule }      from '@angular/core';
-import { CommonModule }  from '@angular/common';
-import { FormsModule }   from '@angular/forms';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { HighlightDirective } from './highlight.directive';
-import { TitleCasePipe }      from './title-case.pipe';
-import { CanvasComponent }    from './canvas.component';
+import { TitleCasePipe } from './title-case.pipe';
+import { CanvasComponent } from './canvas.component';
 
 @NgModule({
   imports: [ CommonModule ],

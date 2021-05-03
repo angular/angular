@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,11 +9,11 @@ import {Element, Expansion, ExpansionCase, Node, Text, visitAll} from '@angular/
 
 import {BaseVisitor} from '../base_visitor';
 import {TranslationParseError} from '../translation_parsers/translation_parse_error';
-import {getAttrOrThrow, getAttribute} from '../translation_parsers/translation_utils';
+import {getAttribute, getAttrOrThrow} from '../translation_parsers/translation_utils';
 
 import {MessageRenderer} from './message_renderer';
 
-interface MessageSerializerConfig {
+export interface MessageSerializerConfig {
   inlineElements: string[];
   placeholder?: {elementName: string; nameAttribute: string; bodyAttribute?: string;};
   placeholderContainer?: {elementName: string; startAttribute: string; endAttribute: string;};
@@ -55,7 +55,9 @@ export class MessageSerializer<T> extends BaseVisitor {
     }
   }
 
-  visitText(text: Text): void { this.renderer.text(text.value); }
+  visitText(text: Text): void {
+    this.renderer.text(text.value);
+  }
 
   visitExpansion(expansion: Expansion): void {
     this.renderer.startIcu();
@@ -73,29 +75,9 @@ export class MessageSerializer<T> extends BaseVisitor {
   }
 
   visitContainedNodes(nodes: Node[]): void {
-    const length = nodes.length;
-    let index = 0;
-    while (index < length) {
-      if (!this.isPlaceholderContainer(nodes[index])) {
-        const startOfContainedNodes = index;
-        while (index < length - 1) {
-          index++;
-          if (this.isPlaceholderContainer(nodes[index])) {
-            break;
-          }
-        }
-        if (index - startOfContainedNodes > 1) {
-          // Only create a container if there are two or more contained Nodes in a row
-          this.renderer.startContainer();
-          visitAll(this, nodes.slice(startOfContainedNodes, index - 1));
-          this.renderer.closeContainer();
-        }
-      }
-      if (index < length) {
-        nodes[index].visit(this, undefined);
-      }
-      index++;
-    }
+    this.renderer.startContainer();
+    visitAll(this, nodes);
+    this.renderer.closeContainer();
   }
 
   visitPlaceholder(name: string, body: string|undefined): void {
@@ -109,6 +91,6 @@ export class MessageSerializer<T> extends BaseVisitor {
   }
 
   private isPlaceholderContainer(node: Node): boolean {
-    return node instanceof Element && node.name === this.config.placeholderContainer !.elementName;
+    return node instanceof Element && node.name === this.config.placeholderContainer!.elementName;
   }
 }

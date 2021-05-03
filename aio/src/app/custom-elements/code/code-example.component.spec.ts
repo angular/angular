@@ -36,6 +36,10 @@ describe('CodeExampleComponent', () => {
     expect(codeExampleComponent.aioCode.code.trim()).toBe(`const foo = "bar";`);
   });
 
+  it('should clean-up the projected code snippet once captured', () => {
+    expect(codeExampleComponent.content.nativeElement.innerHTML).toBe('');
+  });
+
   it('should change aio-code classes based on header presence', () => {
     expect(codeExampleComponent.header).toBe('Great Example');
     expect(fixture.nativeElement.querySelector('header')).toBeTruthy();

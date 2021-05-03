@@ -1,15 +1,11 @@
 load(":angular_integration_test.bzl", "angular_integration_test")
 
-exports_files([
-    "_payload-limits.json",
-])
-
 # Some integration ports must be managed manually to be unique and in other
 # cases the tests are able to select a random free port.
 #
 # Where `ng e2e` is used we pass `ng e2e --port 0` which prompts the cli
-# to select a random free port for the the e2e test. The protractor.conf is
-# automaticaly updated to use this port.
+# to select a random free port for the e2e test. The protractor.conf is
+# automatically updated to use this port.
 #
 # Karma automatically finds a free port so no effort is needed there.
 #
@@ -37,46 +33,54 @@ INTEGRATION_TESTS = {
             "no-ivy-aot",
         ],
     },
-    "bazel-schematics": {
-        "tags": [
-            # Bazel-in-bazel tests are resource intensive and should not be over-parallized
-            # as they will complete for the resources of other parallel tests slowing
-            # everything down. Ask Bazel to allocate multiple CPUs for these tests with "cpu:n" tag.
-            "cpu:3",
-            "no-ivy-aot",
-        ],
+    "cli-elements-universal": {
+        "tags": ["ivy-only"],
     },
-    "cli-hello-world": {"commands": "payload_size_tracking"},
-    "cli-hello-world-ivy-compat": {"commands": "payload_size_tracking"},
+    "cli-hello-world": {
+        "commands": "payload_size_tracking",
+        "tags": ["ivy-only"],
+    },
+    "cli-hello-world-ivy-compat": {
+        "commands": "payload_size_tracking",
+        "tags": ["ivy-only"],
+    },
     "cli-hello-world-ivy-i18n": {
         "commands": "payload_size_tracking",
-        "tags": ["no-ivy-aot"],
+        "tags": ["ivy-only"],
     },
-    "cli-hello-world-ivy-minimal": {"commands": "payload_size_tracking"},
+    "cli-hello-world-ivy-minimal": {
+        "commands": "payload_size_tracking",
+        "tags": ["ivy-only"],
+    },
     "cli-hello-world-lazy": {
         "commands": "payload_size_tracking",
-        # TODO: cli-hello-world-lazy fails on a bundle size check with Ivy bundles
-        "tags": ["no-ivy-aot"],
+        "tags": ["ivy-only"],
     },
-    "cli-hello-world-lazy-rollup": {"commands": "payload_size_tracking"},
     "dynamic-compiler": {"tags": ["no-ivy-aot"]},
-    "hello_world__closure": {
+    "forms": {
         "commands": "payload_size_tracking",
+        "tags": ["ivy-only"],
+    },
+    "hello_world__closure": {
+        # TODO: Re-enable the payload_size_tracking command:
+        #   We should define ngDevMode to false in Closure, but --define only works in the global scope.
+        #   With ngDevMode not being set to false, this size tracking test provides little value but a lot of
+        #   headache to continue updating the size.
         "tags": ["no-ivy-aot"],
     },
     "hello_world__systemjs_umd": {
         # Special case for `hello_world__systemjs_umd` test as we want to pin
-        # `systems` at version 0.20.2 and not link to the the root @npm//systemjs
+        # `systems` at version 0.20.2 and not link to the root @npm//systemjs
         # which is stuck at 0.18.10 and can't be updated to 0.20.2 without
         # breaking the legacy saucelabs job.
         "pinned_npm_packages": ["systemjs"],
     },
     "i18n": {"tags": ["no-ivy-aot"]},
     "injectable-def": {"tags": ["no-ivy-aot"]},
-    "ivy-i18n": {"tags": ["no-ivy-aot"]},
-    "language_service_plugin": {},
+    "ivy-i18n": {"tags": ["ivy-only"]},
+    "trusted-types": {"tags": ["ivy-only"]},
     "ng_elements": {"tags": ["no-ivy-aot"]},
-    "ng_elements_schematics": {"tags": ["no-ivy-aot"]},
+    "ng_elements_schematics": {"tags": ["ivy-only"]},
     "ng_update": {},
     "ng_update_migrations": {"tags": ["no-ivy-aot"]},
     "ngcc": {"tags": ["no-ivy-aot"]},
@@ -84,15 +88,15 @@ INTEGRATION_TESTS = {
     "service-worker-schema": {},
     "side-effects": {"tags": ["no-ivy-aot"]},
     "terser": {},
-    "typings_test_ts36": {
-        # Special case for `typings_test_ts36` test as we want to pin
-        # `typescript` at version 3.6.x for that test and not link to the
+    "typings_test_ts41": {
+        # Special case for `typings_test_ts41` test as we want to pin
+        # `typescript` at version 4.1.x for that test and not link to the
         # root @npm//typescript package.
         "pinned_npm_packages": ["typescript"],
     },
-    "typings_test_ts37": {
-        # Special case for `typings_test_ts37` test as we want to pin
-        # `typescript` at version 3.7.x for that test and not link to the
+    "typings_test_ts42": {
+        # Special case for `typings_test_ts42` test as we want to pin
+        # `typescript` at version 4.2.x for that test and not link to the
         # root @npm//typescript package.
         "pinned_npm_packages": ["typescript"],
     },

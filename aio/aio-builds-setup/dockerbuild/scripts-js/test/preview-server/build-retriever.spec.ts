@@ -32,18 +32,18 @@ describe('BuildRetriever', () => {
     };
 
     api = new CircleCiApi('ORG', 'REPO', 'TOKEN');
-    spyOn(api, 'getBuildInfo').and.callFake(() => Promise.resolve(BUILD_INFO));
-    getBuildArtifactUrlSpy = spyOn(api, 'getBuildArtifactUrl')
-      .and.callFake(() => Promise.resolve(BASE_URL + ARTIFACT_PATH));
+    spyOn(api, 'getBuildInfo').and.resolveTo(BUILD_INFO);
+    getBuildArtifactUrlSpy = spyOn(api, 'getBuildArtifactUrl').and.resolveTo(BASE_URL + ARTIFACT_PATH);
 
     WRITEFILE_RESULT = undefined;
     writeFileSpy = spyOn(fs, 'writeFile').and.callFake(
-      (_path: string, _buffer: Buffer, callback: (err?: any) => {}) => callback(WRITEFILE_RESULT),
+      ((_path: string, _buffer: Buffer, callback: fs.NoParamCallback) =>
+        callback(WRITEFILE_RESULT)) as typeof fs.writeFile,
     );
 
     EXISTS_RESULT = false;
     existsSpy = spyOn(fs, 'exists').and.callFake(
-      (_path: string, callback: (exists: boolean) => {}) => callback(EXISTS_RESULT),
+      ((_path, callback) => callback(EXISTS_RESULT)) as typeof fs.exists,
     );
   });
 
@@ -56,6 +56,7 @@ describe('BuildRetriever', () => {
       expect(() => new BuildRetriever(api, -1, DOWNLOAD_DIR))
         .toThrowError(`Invalid parameter "downloadSizeLimit" should be a number greater than 0.`);
     });
+
     it('should fail if the "downloadDir" is missing', () => {
       expect(() => new BuildRetriever(api, MAX_DOWNLOAD_SIZE, ''))
         .toThrowError(`Missing or empty required parameter 'downloadDir'!`);
@@ -72,14 +73,10 @@ describe('BuildRetriever', () => {
     });
 
     it('should error if it is not possible to extract the PR number from the branch', async () => {
+      BUILD_INFO.branch = 'master';
       const retriever = new BuildRetriever(api, MAX_DOWNLOAD_SIZE, DOWNLOAD_DIR);
-      try {
-        BUILD_INFO.branch = 'master';
-        await retriever.getGithubInfo(12345);
-        throw new Error('Exception Expected');
-      } catch (error) {
-        expect(error.message).toEqual('No PR found in branch field: master');
-      }
+
+      await expectAsync(retriever.getGithubInfo(12345)).toBeRejectedWithError('No PR found in branch field: master');
     });
   });
 
@@ -110,12 +107,10 @@ describe('BuildRetriever', () => {
     it('should fail if the artifact is too large', async () => {
       const artifactRequest = nock(BASE_URL).get(ARTIFACT_PATH).reply(200, ARTIFACT_CONTENTS);
       retriever = new BuildRetriever(api, 10, DOWNLOAD_DIR);
-      try {
-        await retriever.downloadBuildArtifact(12345, 777, 'COMMIT', ARTIFACT_PATH);
-        throw new Error('Exception Expected');
-      } catch (error) {
-        expect(error.status).toEqual(413);
-      }
+
+      await expectAsync(retriever.downloadBuildArtifact(12345, 777, 'COMMIT', ARTIFACT_PATH)).
+        toBeRejectedWith(jasmine.objectContaining({status: 413}));
+
       artifactRequest.done();
     });
 
@@ -143,50 +138,40 @@ describe('BuildRetriever', () => {
       artifactRequest.done();
     });
 
-    it('should fail if the CircleCI API fails',  async () => {
-      try {
-        getBuildArtifactUrlSpy.and.callFake(() => Promise.reject('getBuildArtifactUrl failed'));
-        await retriever.downloadBuildArtifact(12345, 777, 'COMMIT', ARTIFACT_PATH);
-        throw new Error('Exception Expected');
-      } catch (error) {
-        expect(error.message).toEqual('CircleCI artifact download failed (getBuildArtifactUrl failed)');
-      }
+    it('should fail if the CircleCI API fails', async () => {
+      getBuildArtifactUrlSpy.and.rejectWith('getBuildArtifactUrl failed');
+      await expectAsync(retriever.downloadBuildArtifact(12345, 777, 'COMMIT', ARTIFACT_PATH)).
+        toBeRejectedWithError('CircleCI artifact download failed (getBuildArtifactUrl failed)');
     });
 
-    it('should fail if the URL fetch errors',  async () => {
+    it('should fail if the URL fetch errors', async () => {
       // create a new handler that errors
       const artifactRequest = nock(BASE_URL).get(ARTIFACT_PATH).replyWithError('Artifact Request Failed');
-      try {
-        await retriever.downloadBuildArtifact(12345, 777, 'COMMIT', ARTIFACT_PATH);
-        throw new Error('Exception Expected');
-      } catch (error) {
-        expect(error.message).toEqual('CircleCI artifact download failed ' +
+
+      await expectAsync(retriever.downloadBuildArtifact(12345, 777, 'COMMIT', ARTIFACT_PATH)).toBeRejectedWithError(
+          'CircleCI artifact download failed ' +
           '(request to http://test.com/some/path/build.zip failed, reason: Artifact Request Failed)');
-      }
+
       artifactRequest.done();
     });
 
-    it('should fail if the URL fetch 404s',  async () => {
+    it('should fail if the URL fetch 404s', async () => {
       // create a new handler that errors
       const artifactRequest = nock(BASE_URL).get(ARTIFACT_PATH).reply(404, 'No such artifact');
-      try {
-        await retriever.downloadBuildArtifact(12345, 777, 'COMMIT', ARTIFACT_PATH);
-        throw new Error('Exception Expected');
-      } catch (error) {
-        expect(error.message).toEqual('CircleCI artifact download failed (Error 404 - Not Found)');
-      }
+
+      await expectAsync(retriever.downloadBuildArtifact(12345, 777, 'COMMIT', ARTIFACT_PATH)).
+        toBeRejectedWithError('CircleCI artifact download failed (Error 404 - Not Found)');
+
       artifactRequest.done();
     });
 
-    it('should fail if file write fails',  async () => {
+    it('should fail if file write fails', async () => {
       const artifactRequest = nock(BASE_URL).get(ARTIFACT_PATH).reply(200, ARTIFACT_CONTENTS);
-      try {
-        WRITEFILE_RESULT = 'Test Error';
-        await retriever.downloadBuildArtifact(12345, 777, 'COMMIT', ARTIFACT_PATH);
-        throw new Error('Exception Expected');
-      } catch (error) {
-        expect(error.message).toEqual('CircleCI artifact download failed (Test Error)');
-      }
+      WRITEFILE_RESULT = 'Test Error';
+
+      await expectAsync(retriever.downloadBuildArtifact(12345, 777, 'COMMIT', ARTIFACT_PATH)).
+        toBeRejectedWithError('CircleCI artifact download failed (Test Error)');
+
       artifactRequest.done();
     });
   });

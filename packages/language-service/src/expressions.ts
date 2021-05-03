@@ -1,15 +1,16 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AST, ASTWithSource, AstPath as AstPathBase, RecursiveAstVisitor} from '@angular/compiler';
+import {AST, AstPath as AstPathBase, ASTWithName, ASTWithSource, Interpolation, RecursiveAstVisitor} from '@angular/compiler';
+
 import {AstType} from './expression_type';
 import {BuiltinType, Span, Symbol, SymbolTable, TemplateSource} from './types';
-import {inSpan} from './utils';
+import {inSpan, isNarrower} from './utils';
 
 type AstPath = AstPathBase<AST>;
 
@@ -19,7 +20,10 @@ function findAstAt(ast: AST, position: number, excludeEmpty: boolean = false): A
     visit(ast: AST) {
       if ((!excludeEmpty || ast.sourceSpan.start < ast.sourceSpan.end) &&
           inSpan(position, ast.sourceSpan)) {
-        path.push(ast);
+        const isNotNarrower = path.length && !isNarrower(ast.span, path[path.length - 1].span);
+        if (!isNotNarrower) {
+          path.push(ast);
+        }
         ast.visit(this);
       }
     }
@@ -31,7 +35,14 @@ function findAstAt(ast: AST, position: number, excludeEmpty: boolean = false): A
     ast = ast.ast;
   }
 
-  visitor.visit(ast);
+  // `Interpolation` is useless here except the `expressions` of it.
+  if (ast instanceof Interpolation) {
+    ast = ast.expressions.filter((_ast: AST) => inSpan(position, _ast.sourceSpan))[0];
+  }
+
+  if (ast) {
+    visitor.visit(ast);
+  }
 
   return new AstPathBase<AST>(path, position);
 }
@@ -41,7 +52,7 @@ export function getExpressionCompletions(
     undefined {
   const path = findAstAt(ast, position);
   if (path.empty) return undefined;
-  const tail = path.tail !;
+  const tail = path.tail!;
   let result: SymbolTable|undefined = scope;
 
   function getType(ast: AST): Symbol {
@@ -52,18 +63,31 @@ export function getExpressionCompletions(
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the
   // beginning of an expression.
   tail.visit({
-    visitBinary(ast) {},
-    visitChain(ast) {},
-    visitConditional(ast) {},
-    visitFunctionCall(ast) {},
-    visitImplicitReceiver(ast) {},
-    visitInterpolation(ast) { result = undefined; },
-    visitKeyedRead(ast) {},
-    visitKeyedWrite(ast) {},
-    visitLiteralArray(ast) {},
-    visitLiteralMap(ast) {},
-    visitLiteralPrimitive(ast) {},
-    visitMethodCall(ast) {},
+    visitUnary(_ast) {},
+    visitBinary(_ast) {},
+    visitChain(_ast) {},
+    visitConditional(_ast) {},
+    visitFunctionCall(_ast) {},
+    visitImplicitReceiver(_ast) {},
+    visitThisReceiver(_ast) {},
+    visitInterpolation(_ast) {
+      result = undefined;
+    },
+    visitKeyedRead(_ast) {},
+    visitKeyedWrite(_ast) {},
+    visitLiteralArray(_ast) {},
+    visitLiteralMap(_ast) {},
+    visitLiteralPrimitive(ast) {
+      // The type `LiteralPrimitive` include the `ERROR`, and it's wrapped as `string`.
+      // packages/compiler/src/template_parser/binding_parser.ts#L308
+      // So exclude the `ERROR` here.
+      if (typeof ast.value === 'string' &&
+          ast.value ===
+              templateInfo.source.slice(ast.sourceSpan.start + 1, ast.sourceSpan.end - 1)) {
+        result = undefined;
+      }
+    },
+    visitMethodCall(_ast) {},
     visitPipe(ast) {
       if (position >= ast.exp.span.end &&
           (!ast.args || !ast.args.length || position < (<AST>ast.args[0]).span.start)) {
@@ -71,8 +95,8 @@ export function getExpressionCompletions(
         result = templateInfo.query.getPipes();
       }
     },
-    visitPrefixNot(ast) {},
-    visitNonNullAssert(ast) {},
+    visitPrefixNot(_ast) {},
+    visitNonNullAssert(_ast) {},
     visitPropertyRead(ast) {
       const receiverType = getType(ast.receiver);
       result = receiverType ? receiverType.members() : scope;
@@ -81,7 +105,7 @@ export function getExpressionCompletions(
       const receiverType = getType(ast.receiver);
       result = receiverType ? receiverType.members() : scope;
     },
-    visitQuote(ast) {
+    visitQuote(_ast) {
       // For a quote, return the members of any (if there are any).
       result = templateInfo.query.getBuiltinType(BuiltinType.Any).members();
     },
@@ -111,10 +135,21 @@ export function getExpressionSymbol(
     templateInfo: TemplateSource): {symbol: Symbol, span: Span}|undefined {
   const path = findAstAt(ast, position, /* excludeEmpty */ true);
   if (path.empty) return undefined;
-  const tail = path.tail !;
+  const tail = path.tail!;
 
   function getType(ast: AST): Symbol {
     return new AstType(scope, templateInfo.query, {}, templateInfo.source).getType(ast);
+  }
+
+  function spanFromName(ast: ASTWithName): Span {
+    // `nameSpan` is an absolute span, but the span expected by the result of this method is
+    // relative to the start of the expression.
+    // TODO(ayazhafiz): migrate to only using absolute spans
+    const offset = ast.sourceSpan.start - ast.span.start;
+    return {
+      start: ast.nameSpan.start - offset,
+      end: ast.nameSpan.end - offset,
+    };
   }
 
   let symbol: Symbol|undefined = undefined;
@@ -124,66 +159,54 @@ export function getExpressionSymbol(
   // (that is the scope of the implicit receiver) is the right scope as the user is typing the
   // beginning of an expression.
   tail.visit({
-    visitBinary(ast) {},
-    visitChain(ast) {},
-    visitConditional(ast) {},
-    visitFunctionCall(ast) {},
-    visitImplicitReceiver(ast) {},
-    visitInterpolation(ast) {},
-    visitKeyedRead(ast) {},
-    visitKeyedWrite(ast) {},
-    visitLiteralArray(ast) {},
-    visitLiteralMap(ast) {},
-    visitLiteralPrimitive(ast) {},
+    visitUnary(_ast) {},
+    visitBinary(_ast) {},
+    visitChain(_ast) {},
+    visitConditional(_ast) {},
+    visitFunctionCall(_ast) {},
+    visitImplicitReceiver(_ast) {},
+    visitThisReceiver(_ast) {},
+    visitInterpolation(_ast) {},
+    visitKeyedRead(_ast) {},
+    visitKeyedWrite(_ast) {},
+    visitLiteralArray(_ast) {},
+    visitLiteralMap(_ast) {},
+    visitLiteralPrimitive(_ast) {},
     visitMethodCall(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);
-      span = ast.span;
+      span = spanFromName(ast);
     },
     visitPipe(ast) {
       if (inSpan(position, ast.nameSpan, /* exclusive */ true)) {
         // We are in a position a pipe name is expected.
         const pipes = templateInfo.query.getPipes();
         symbol = pipes.get(ast.name);
-
-        // `nameSpan` is an absolute span, but the span expected by the result of this method is
-        // relative to the start of the expression.
-        // TODO(ayazhafiz): migrate to only using absolute spans
-        const offset = ast.sourceSpan.start - ast.span.start;
-        span = {
-          start: ast.nameSpan.start - offset,
-          end: ast.nameSpan.end - offset,
-        };
+        span = spanFromName(ast);
       }
     },
-    visitPrefixNot(ast) {},
-    visitNonNullAssert(ast) {},
+    visitPrefixNot(_ast) {},
+    visitNonNullAssert(_ast) {},
     visitPropertyRead(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);
-      span = ast.span;
+      span = spanFromName(ast);
     },
     visitPropertyWrite(ast) {
       const receiverType = getType(ast.receiver);
-      const {start} = ast.span;
       symbol = receiverType && receiverType.members().get(ast.name);
-      // A PropertyWrite span includes both the LHS (name) and the RHS (value) of the write. In this
-      // visit, only the name is relevant.
-      //   prop=$event
-      //   ^^^^        name
-      //        ^^^^^^ value; visited separately as a nested AST
-      span = {start, end: start + ast.name.length};
+      span = spanFromName(ast);
     },
-    visitQuote(ast) {},
+    visitQuote(_ast) {},
     visitSafeMethodCall(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);
-      span = ast.span;
+      span = spanFromName(ast);
     },
     visitSafePropertyRead(ast) {
       const receiverType = getType(ast.receiver);
       symbol = receiverType && receiverType.members().get(ast.name);
-      span = ast.span;
+      span = spanFromName(ast);
     },
   });
 

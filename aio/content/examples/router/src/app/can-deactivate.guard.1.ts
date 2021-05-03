@@ -1,9 +1,9 @@
 // #docregion
-import { Injectable }           from '@angular/core';
-import { Observable }           from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { CanDeactivate,
          ActivatedRouteSnapshot,
-         RouterStateSnapshot }  from '@angular/router';
+         RouterStateSnapshot } from '@angular/router';
 
 import { CrisisDetailComponent } from './crisis-center/crisis-detail/crisis-detail.component';
 

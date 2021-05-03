@@ -1,13 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {Inject, Injectable, LOCALE_ID} from '@angular/core';
-import {Plural, getLocalePluralCase} from './locale_data_api';
+
+import {getLocalePluralCase, Plural} from './locale_data_api';
 
 
 /**
@@ -51,7 +52,9 @@ export function getPluralCategory(
  */
 @Injectable()
 export class NgLocaleLocalization extends NgLocalization {
-  constructor(@Inject(LOCALE_ID) protected locale: string) { super(); }
+  constructor(@Inject(LOCALE_ID) protected locale: string) {
+    super();
+  }
 
   getPluralCategory(value: any, locale?: string): string {
     const plural = getLocalePluralCase(locale || this.locale)(value);

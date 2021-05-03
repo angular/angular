@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {Component} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
-import {of } from 'rxjs';
+import {of} from 'rxjs';
 
 describe('text instructions', () => {
   it('should handle all flavors of interpolated text', () => {
@@ -66,8 +66,8 @@ describe('text instructions', () => {
       `
     })
     class App {
-      who = of ('Sally');
-      item = of ({
+      who = of('Sally');
+      item = of({
         what: 'seashells',
         where: 'seashore',
       });
@@ -128,5 +128,61 @@ describe('text instructions', () => {
     const div = fixture.nativeElement.querySelector('div');
 
     expect(div.innerHTML).toBe('function foo() { }');
+  });
+
+  it('should stringify an object using its toString method', () => {
+    class TestObject {
+      toString() {
+        return 'toString';
+      }
+      valueOf() {
+        return 'valueOf';
+      }
+    }
+
+    @Component({template: '{{object}}'})
+    class App {
+      object = new TestObject();
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('toString');
+  });
+
+  it('should stringify a symbol', () => {
+    // This test is only valid on browsers that support Symbol.
+    if (typeof Symbol === 'undefined') {
+      return;
+    }
+
+    @Component({template: '{{symbol}}'})
+    class App {
+      symbol = Symbol('hello');
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    // Note that this uses `toContain`, because a polyfilled `Symbol` produces something like
+    // `Symbol(hello)_p.sc8s398cplk`, whereas the native one is `Symbol(hello)`.
+    expect(fixture.nativeElement.textContent).toContain('Symbol(hello)');
+  });
+
+  it('should handle binding syntax used inside quoted text', () => {
+    @Component({
+      template: `{{'Interpolations look like {{this}}'}}`,
+    })
+    class App {
+    }
+
+    TestBed.configureTestingModule({declarations: [App]});
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toBe('Interpolations look like {{this}}');
   });
 });

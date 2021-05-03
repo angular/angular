@@ -5,6 +5,13 @@ The Tour of Heroes `HeroesComponent` is currently getting and displaying fake da
 After the refactoring in this tutorial, `HeroesComponent` will be lean and focused on supporting the view.
 It will also be easier to unit-test with a mock service.
 
+<div class="alert is-helpful">
+
+  For the sample application that this page describes, see the <live-example></live-example>.
+
+</div>
+
+
 ## Why services
 
 Components shouldn't fetch or save data directly and they certainly shouldn't knowingly present fake data.
@@ -72,7 +79,7 @@ before Angular can _inject_ it into the `HeroesComponent` by registering a _prov
 
 To make sure that the `HeroService` can provide this service, register it
 with the _injector_, which is the object that is responsible for choosing
-and injecting the provider where the app requires it.
+and injecting the provider where the application requires it.
 
 By default, the Angular CLI command `ng generate service` registers a provider with the _root injector_ for your service by including provider metadata, that is `providedIn: 'root'` in the `@Injectable()` decorator.
 
@@ -83,7 +90,7 @@ By default, the Angular CLI command `ng generate service` registers a provider w
 ```
 
 When you provide the service at the root level, Angular creates a single, shared instance of `HeroService` and injects into any class that asks for it.
-Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all.
+Registering the provider in the `@Injectable` metadata also allows Angular to optimize an application by removing the service if it turns out not to be used after all.
 
 <div class="alert is-helpful">
 
@@ -111,7 +118,7 @@ Import the `HeroService` instead.
 <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts (import HeroService)" region="hero-service-import">
 </code-example>
 
-Replace the definition of the `heroes` property with a simple declaration.
+Replace the definition of the `heroes` property with a declaration.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.ts" header="src/app/heroes/heroes.component.ts" region="heroes">
 </code-example>
@@ -132,7 +139,7 @@ sets the `heroService` parameter to the singleton instance of `HeroService`.
 
 ### Add `getHeroes()`
 
-Create a function to retrieve the heroes from the service.
+Create a method to retrieve the heroes from the service.
 
 <code-example path="toh-pt4/src/app/heroes/heroes.component.1.ts" header="src/app/heroes/heroes.component.ts" region="getHeroes">
 </code-example>
@@ -143,7 +150,7 @@ Create a function to retrieve the heroes from the service.
 
 While you could call `getHeroes()` in the constructor, that's not the best practice.
 
-Reserve the constructor for simple initialization such as wiring constructor parameters to properties.
+Reserve the constructor for minimal initialization such as wiring constructor parameters to properties.
 The constructor shouldn't _do anything_.
 It certainly shouldn't call a function that makes HTTP requests to a remote server as a _real_ data service would.
 
@@ -155,7 +162,7 @@ let Angular call `ngOnInit()` at an appropriate time _after_ constructing a `Her
 
 ### See it run
 
-After the browser refreshes, the app should run as before,
+After the browser refreshes, the application should run as before,
 showing a list of heroes and a hero detail view when you click on a hero name.
 
 ## Observable data
@@ -170,7 +177,7 @@ as if heroes could be fetched synchronously.
 
 This will not work in a real app.
 You're getting away with it now because the service currently returns _mock heroes_.
-But soon the app will fetch heroes from a remote server,
+But soon the application will fetch heroes from a remote server,
 which is an inherently _asynchronous_ operation.
 
 The `HeroService` must wait for the server to respond,
@@ -185,7 +192,7 @@ and [`HttpClient.get()` returns an `Observable`](guide/http).
 
 ### Observable `HeroService`
 
-`Observable` is one of the key classes in the [RxJS library](http://reactivex.io/rxjs/).
+`Observable` is one of the key classes in the [RxJS library](https://rxjs.dev/).
 
 In a [later tutorial on HTTP](tutorial/toh-pt6), you'll learn that Angular's `HttpClient` methods return RxJS `Observable`s.
 In this tutorial, you'll simulate getting data from the server with the RxJS `of()` function.
@@ -249,7 +256,7 @@ the `HeroService` requests heroes from the server.
 
 This section guides you through the following:
 
-* adding a `MessagesComponent` that displays app messages at the bottom of the screen
+* adding a `MessagesComponent` that displays application messages at the bottom of the screen
 * creating an injectable, app-wide `MessageService` for sending messages to be displayed
 * injecting `MessageService` into the `HeroService`
 * displaying a message when `HeroService` fetches heroes successfully
@@ -362,7 +369,7 @@ This template binds directly to the component's `messageService`.
 * An `*ngFor` presents the list of messages in repeated `<div>` elements.
 
 
-* An Angular [event binding](guide/template-syntax#event-binding) binds the button's click event
+* An Angular [event binding](guide/event-binding) binds the button's click event
 to `MessageService.clear()`.
 
 The messages will look better when you add the private CSS styles to `messages.component.css`
@@ -378,16 +385,15 @@ next section on [Routing](tutorial/toh-pt5).
 path="toh-pt4/src/app/heroes/heroes.component.ts">
 </code-example>
 
-The browser refreshes and the page displays the list of heroes.
 Refresh the browser to see the list of heroes, and scroll to the bottom to see the
 messages from the HeroService. Each time you click a hero, a new message appears to record
-the selection. Use the "clear" button to clear the message history.
+the selection. Use the **Clear messages** button to clear the message history.
 
 {@a final-code-review}
 
 ## Final code review
 
-Here are the code files discussed on this page and your app should look like this <live-example></live-example>.
+Here are the code files discussed on this page.
 
 <code-tabs>
 

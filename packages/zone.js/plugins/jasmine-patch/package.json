@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/jasmine-patch",
+  "main": "../../bundles/jasmine-patch.umd.js",
+  "fesm2015": "../../fesm2015/jasmine-patch.js",
+  "es2015": "../../fesm2015/jasmine-patch.js",
+  "module": "../../fesm2015/jasmine-patch.js"
+}

@@ -1,11 +1,11 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem} from '../../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, FileSystem, ReadonlyFileSystem} from '../../../../src/ngtsc/file_system';
 import {needsCleaning} from '../../packages/build_marker';
 import {EntryPoint} from '../../packages/entry_point';
 
@@ -16,7 +16,7 @@ import {isLocalDirectory} from './utils';
  * A class that can clean ngcc artifacts from a directory.
  */
 export class PackageCleaner {
-  constructor(private fs: FileSystem, private cleaners: CleaningStrategy[]) {}
+  constructor(private fs: ReadonlyFileSystem, private cleaners: CleaningStrategy[]) {}
 
   /**
    * Recurse through the file-system cleaning files and directories as determined by the configured
@@ -63,7 +63,7 @@ export function cleanOutdatedPackages(fileSystem: FileSystem, entryPoints: Entry
   const packagesToClean = new Set<AbsoluteFsPath>();
   for (const entryPoint of entryPoints) {
     if (needsCleaning(entryPoint.packageJson)) {
-      packagesToClean.add(entryPoint.package);
+      packagesToClean.add(entryPoint.packagePath);
     }
   }
 

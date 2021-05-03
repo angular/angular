@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,9 +18,9 @@ interface HTMLNode extends TmplAstNode {
   name?: string;
 }
 
-type ExpressionIdentifier = PropertyIdentifier | MethodIdentifier;
-type TmplTarget = TmplAstReference | TmplAstVariable;
-type TargetIdentifier = ReferenceIdentifier | VariableIdentifier;
+type ExpressionIdentifier = PropertyIdentifier|MethodIdentifier;
+type TmplTarget = TmplAstReference|TmplAstVariable;
+type TargetIdentifier = ReferenceIdentifier|VariableIdentifier;
 type TargetIdentifierMap = Map<TmplTarget, TargetIdentifier>;
 
 /**
@@ -62,7 +62,9 @@ class ExpressionVisitor extends RecursiveAstVisitor {
     return visitor.identifiers;
   }
 
-  visit(ast: AST) { ast.visit(this); }
+  visit(ast: AST) {
+    ast.visit(this);
+  }
 
   visitMethodCall(ast: MethodCall, context: {}) {
     this.visitIdentifier(ast, IdentifierKind.Method);
@@ -95,15 +97,12 @@ class ExpressionVisitor extends RecursiveAstVisitor {
       return;
     }
 
-    // Get the location of the identifier of real interest.
-    // The compiler's expression parser records the location of some expressions in a manner not
-    // useful to the indexer. For example, a `MethodCall` `foo(a, b)` will record the span of the
-    // entire method call, but the indexer is interested only in the method identifier.
-    const localExpression = this.expressionStr.substr(ast.span.start);
-    if (!localExpression.includes(ast.name)) {
-      throw new Error(`Impossible state: "${ast.name}" not found in "${localExpression}"`);
+    // The source span of the requested AST starts at a location that is offset from the expression.
+    const identifierStart = ast.sourceSpan.start - this.absoluteOffset;
+    if (!this.expressionStr.substring(identifierStart).startsWith(ast.name)) {
+      throw new Error(`Impossible state: "${ast.name}" not found in "${
+          this.expressionStr}" at location ${identifierStart}`);
     }
-    const identifierStart = ast.span.start + localExpression.indexOf(ast.name);
 
     // Join the relative position of the expression within a node with the absolute position
     // of the node to get the absolute position of the expression in the source code.
@@ -144,16 +143,22 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
    *
    * @param boundTemplate bound template target
    */
-  constructor(private boundTemplate: BoundTarget<ComponentMeta>) { super(); }
+  constructor(private boundTemplate: BoundTarget<ComponentMeta>) {
+    super();
+  }
 
   /**
    * Visits a node in the template.
    *
    * @param node node to visit
    */
-  visit(node: HTMLNode) { node.visit(this); }
+  visit(node: HTMLNode) {
+    node.visit(this);
+  }
 
-  visitAll(nodes: TmplAstNode[]) { nodes.forEach(node => this.visit(node)); }
+  visitAll(nodes: TmplAstNode[]) {
+    nodes.forEach(node => this.visit(node));
+  }
 
   /**
    * Add an identifier for an HTML element and visit its children recursively.
@@ -183,29 +188,22 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
     this.visitAll(template.references);
   }
   visitBoundAttribute(attribute: TmplAstBoundAttribute) {
-    // A BoundAttribute's value (the parent AST) may have subexpressions (children ASTs) that have
-    // recorded spans extending past the recorded span of the parent. The most common example of
-    // this is with `*ngFor`.
-    // To resolve this, use the information on the BoundAttribute Template AST, which is always
-    // correct, to determine locations of identifiers in the expression.
-    //
-    // TODO(ayazhafiz): Remove this when https://github.com/angular/angular/pull/31813 lands.
-    const attributeSrc = attribute.sourceSpan.toString();
-    const attributeAbsolutePosition = attribute.sourceSpan.start.offset;
-
-    // Skip the bytes of the attribute name so that there are no collisions between the attribute
-    // name and expression identifier names later.
-    const nameSkipOffet = attributeSrc.indexOf(attribute.name) + attribute.name.length;
-    const expressionSrc = attributeSrc.substring(nameSkipOffet);
-    const expressionAbsolutePosition = attributeAbsolutePosition + nameSkipOffet;
+    // If the bound attribute has no value, it cannot have any identifiers in the value expression.
+    if (attribute.valueSpan === undefined) {
+      return;
+    }
 
     const identifiers = ExpressionVisitor.getIdentifiers(
-        attribute.value, expressionSrc, expressionAbsolutePosition, this.boundTemplate,
-        this.targetToIdentifier.bind(this));
+        attribute.value, attribute.valueSpan.toString(), attribute.valueSpan.start.offset,
+        this.boundTemplate, this.targetToIdentifier.bind(this));
     identifiers.forEach(id => this.identifiers.add(id));
   }
-  visitBoundEvent(attribute: TmplAstBoundEvent) { this.visitExpression(attribute.handler); }
-  visitBoundText(text: TmplAstBoundText) { this.visitExpression(text.value); }
+  visitBoundEvent(attribute: TmplAstBoundEvent) {
+    this.visitExpression(attribute.handler);
+  }
+  visitBoundText(text: TmplAstBoundText) {
+    this.visitExpression(text.value);
+  }
   visitReference(reference: TmplAstReference) {
     const referenceIdentifer = this.targetToIdentifier(reference);
 
@@ -222,7 +220,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       |TemplateNodeIdentifier {
     // If this node has already been seen, return the cached result.
     if (this.elementAndTemplateIdentifierCache.has(node)) {
-      return this.elementAndTemplateIdentifierCache.get(node) !;
+      return this.elementAndTemplateIdentifierCache.get(node)!;
     }
 
     let name: string;
@@ -234,7 +232,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       name = node.name;
       kind = IdentifierKind.Element;
     }
-    const {sourceSpan} = node;
+    const sourceSpan = node.startSourceSpan;
     // An element's or template's source span can be of the form `<element>`, `<element />`, or
     // `<element></element>`. Only the selector is interesting to the indexer, so the source is
     // searched for the first occurrence of the element (selector) name.
@@ -254,7 +252,8 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
 
     const identifier = {
       name,
-      span: absoluteSpan, kind,
+      span: absoluteSpan,
+      kind,
       attributes: new Set(attributes),
       usedDirectives: new Set(usedDirectives.map(dir => {
         return {
@@ -274,7 +273,7 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
   private targetToIdentifier(node: TmplAstReference|TmplAstVariable): TargetIdentifier {
     // If this node has already been seen, return the cached result.
     if (this.targetIdentifierCache.has(node)) {
-      return this.targetIdentifierCache.get(node) !;
+      return this.targetIdentifierCache.get(node)!;
     }
 
     const {name, sourceSpan} = node;
@@ -304,7 +303,8 @@ class TemplateVisitor extends TmplAstRecursiveVisitor {
       identifier = {
         name,
         span,
-        kind: IdentifierKind.Reference, target,
+        kind: IdentifierKind.Reference,
+        target,
       };
     } else {
       identifier = {

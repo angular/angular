@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,15 +20,15 @@ export default [
   [['AM', 'PM'], u, u],
   u,
   [
-    ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-    ['اتوار', 'پیر', 'منگل', 'بُدھ', 'جمعرات', 'جمعہ', 'ہفتہ'], u, u
+    ['S', 'M', 'T', 'W', 'T', 'F', 'S'], ['اتوار', 'پیر', 'منگل', 'بُدھ', 'جمعرات', 'جمعہ', 'ہفتہ'],
+    u, u
   ],
   u,
   [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
     [
-      'جنوری', 'فروری', 'مارچ', 'اپریل', 'مئ', 'جون', 'جولائی',
-      'اگست', 'ستمبر', 'اکتوبر', 'نومبر', 'دسمبر'
+      'جنوری', 'فروری', 'مارچ', 'اپریل', 'مئ', 'جون', 'جولائی', 'اگست', 'ستمبر', 'اکتوبر', 'نومبر',
+      'دسمبر'
     ],
     u
   ],

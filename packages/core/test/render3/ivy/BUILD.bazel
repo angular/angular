@@ -16,7 +16,10 @@ ts_library(
 
 jasmine_node_test(
     name = "ivy",
-    bootstrap = ["//packages/core/test/render3:domino_es5"],
+    bootstrap = [
+        "//packages/core/test/render3:domino_es5",
+        "//tools/testing:node_es5",
+    ],
     tags = [
         "ivy-only",
     ],

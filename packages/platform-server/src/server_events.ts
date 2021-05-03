@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,12 +14,15 @@ export class ServerEventManagerPlugin /* extends EventManagerPlugin which is pri
   constructor(@Inject(DOCUMENT) private doc: any) {}
 
   // Handle all events on the server.
-  supports(eventName: string) { return true; }
+  supports(eventName: string) {
+    return true;
+  }
 
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
     return getDOM().onAndCancel(element, eventName, handler);
   }
 
+  /** @deprecated No longer being used in Ivy code. To be removed in version 14. */
   addGlobalEventListener(element: string, eventName: string, handler: Function): Function {
     const target: HTMLElement = getDOM().getGlobalEventTarget(this.doc, element);
     if (!target) {

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,11 +9,11 @@
 /// <reference types="node" />
 
 import {MockFileSystemNative} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {SingleProcessExecutorSync} from '../../src/execution/single_process_executor';
 import {Task, TaskQueue} from '../../src/execution/tasks/api';
 import {SyncLocker} from '../../src/locking/sync_locker';
 import {MockLockFile} from '../helpers/mock_lock_file';
-import {MockLogger} from '../helpers/mock_logger';
 
 
 describe('SingleProcessExecutor', () => {
@@ -33,16 +33,18 @@ describe('SingleProcessExecutor', () => {
     executor = new SingleProcessExecutorSync(mockLogger, locker, createTaskCompletedCallback);
   });
 
-  const noTasks = () => ({ allTasksCompleted: true, getNextTask: () => null } as TaskQueue);
+  const noTasks = () => ({allTasksCompleted: true, getNextTask: () => null} as TaskQueue);
   const oneTask = () => {
     let tasksCount = 1;
     return <TaskQueue>{
-      get allTasksCompleted() { return tasksCount === 0; },
+      get allTasksCompleted() {
+        return tasksCount === 0;
+      },
       getNextTask() {
         tasksCount--;
         return {};
       },
-      markTaskCompleted(_task: Task) {},
+      markAsCompleted(_task: Task) {},
     };
   };
 
@@ -55,7 +57,9 @@ describe('SingleProcessExecutor', () => {
        });
 
     it('should call LockFile.write() and LockFile.remove() if `analyzeEntryPoints` fails', () => {
-      const errorFn: () => never = () => { throw new Error('analyze error'); };
+      const errorFn: () => never = () => {
+        throw new Error('analyze error');
+      };
       const createCompileFn: () => any = () => undefined;
       let error: string = '';
       try {
@@ -68,7 +72,9 @@ describe('SingleProcessExecutor', () => {
     });
 
     it('should call LockFile.write() and LockFile.remove() if `createCompileFn` fails', () => {
-      const createErrorCompileFn: () => any = () => { throw new Error('compile error'); };
+      const createErrorCompileFn: () => any = () => {
+        throw new Error('compile error');
+      };
       let error: string = '';
       try {
         executor.execute(oneTask, createErrorCompileFn);
@@ -85,7 +91,9 @@ describe('SingleProcessExecutor', () => {
         throw new Error('LockFile.write() error');
       });
 
-      const analyzeFn: () => any = () => { lockFileLog.push('analyzeFn'); };
+      const analyzeFn: () => any = () => {
+        lockFileLog.push('analyzeFn');
+      };
       const anyFn: () => any = () => undefined;
       executor = new SingleProcessExecutorSync(mockLogger, locker, createTaskCompletedCallback);
       let error = '';
@@ -124,14 +132,15 @@ describe('SingleProcessExecutor', () => {
           {allTasksCompleted: true, getNextTask: jasmine.any(Function)})]);
     });
 
-    it('should pass the created TaskCompletedCallback to the createCompileFn', () => {
+    it('should pass the necessary callbacks to createCompileFn', () => {
+      const beforeWritingFiles = jasmine.any(Function);
+      const onTaskCompleted = () => {};
       const createCompileFn =
           jasmine.createSpy('createCompileFn').and.returnValue(function compileFn() {});
-      function onTaskCompleted() {}
       createTaskCompletedCallback.and.returnValue(onTaskCompleted);
       executor.execute(noTasks, createCompileFn);
       expect(createCompileFn).toHaveBeenCalledTimes(1);
-      expect(createCompileFn).toHaveBeenCalledWith(onTaskCompleted);
+      expect(createCompileFn).toHaveBeenCalledWith(beforeWritingFiles, onTaskCompleted);
     });
   });
 });

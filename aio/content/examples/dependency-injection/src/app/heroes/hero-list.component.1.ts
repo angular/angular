@@ -1,6 +1,5 @@
-// #docregion
-import { Component }   from '@angular/core';
-import { HEROES }      from './mock-heroes';
+import { Component } from '@angular/core';
+import { HEROES } from './mock-heroes';
 
 @Component({
   selector: 'app-hero-list',
@@ -10,8 +9,6 @@ import { HEROES }      from './mock-heroes';
     </div>
   `
 })
-// #docregion class
 export class HeroListComponent {
   heroes = HEROES;
 }
-// #enddocregion class

@@ -1,9 +1,9 @@
 // #docregion
-import { Injectable }           from '@angular/core';
+import { Injectable } from '@angular/core';
 
-import { HeroJobAdComponent }   from './hero-job-ad.component';
+import { HeroJobAdComponent } from './hero-job-ad.component';
 import { HeroProfileComponent } from './hero-profile.component';
-import { AdItem }               from './ad-item';
+import { AdItem } from './ad-item';
 
 @Injectable()
 export class AdService {

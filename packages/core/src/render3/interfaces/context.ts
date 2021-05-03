@@ -1,19 +1,15 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 
-import {RNode} from './renderer';
+import {RNode} from './renderer_dom';
 import {LView} from './view';
 
-/**
- * This property will be monkey-patched on elements, components and directives
- */
-export const MONKEY_PATCH_KEY_NAME = '__ngContext__';
 
 /**
  * The internal view context which is specific to a given DOM element, directive or

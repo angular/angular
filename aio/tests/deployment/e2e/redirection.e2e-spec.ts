@@ -67,8 +67,8 @@ describe(browser.baseUrl, () => {
       await page.goTo(unknownPagePath);
       await browser.wait(() => page.getDocViewerText(), 5000);  // Wait for the document to be loaded.
 
-      expect(aioShell.isPresent()).toBe(true);
-      expect(heading.getText()).toMatch(/page not found/i);
+      expect(await aioShell.isPresent()).toBe(true);
+      expect(await heading.getText()).toMatch(/page not found/i);
     });
 
     it('should serve a custom 404 page for unknown resources', async () => {
@@ -76,15 +76,15 @@ describe(browser.baseUrl, () => {
       const heading = aioShell.element(by.css('h1'));
       await page.goTo(unknownResourcePath);
 
-      expect(aioShell.isPresent()).toBe(true);
-      expect(heading.getText()).toMatch(/resource not found/i);
+      expect(await aioShell.isPresent()).toBe(true);
+      expect(await heading.getText()).toMatch(/resource not found/i);
     });
 
     it('should include a link to the home page in custom 404 page', async () => {
       const homeNavLink = element(by.css('.nav-link.home'));
       await page.goTo(unknownResourcePath);
 
-      expect(homeNavLink.isPresent()).toBe(true);
+      expect(await homeNavLink.isPresent()).toBe(true);
 
       await homeNavLink.click();
       const expectedUrl = page.baseUrl;

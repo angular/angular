@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@ import './init';
 import {ComponentUsingThirdParty} from '../src/comp_using_3rdp';
 import {ComponentUsingFlatModule} from '../src/comp_using_flat_module';
 import {MainModule} from '../src/module';
-import {CompUsingLibModuleDirectiveAndPipe, CompUsingRootModuleDirectiveAndPipe, SOME_TOKEN, ServiceUsingLibModule, SomeLibModule, SomeService} from '../src/module_fixtures';
+import {CompUsingLibModuleDirectiveAndPipe, CompUsingRootModuleDirectiveAndPipe, ServiceUsingLibModule, SOME_TOKEN, SomeLibModule, SomeService} from '../src/module_fixtures';
 
 import {createComponent, createModule} from './util';
 

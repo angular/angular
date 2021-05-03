@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -42,14 +42,16 @@ export class JsWebFrameworksComponent {
 
   constructor(private _appRef: ApplicationRef) {}
 
-  itemById(index: number, item: RowData) { return item.id; }
+  itemById(index: number, item: RowData) {
+    return item.id;
+  }
 
   select(itemId: number) {
     this.selected = itemId;
     this._appRef.tick();
   }
 
-  delete (itemId: number) {
+  delete(itemId: number) {
     const data = this.data;
     for (let i = 0, l = data.length; i < l; i++) {
       if (data[i].id === itemId) {

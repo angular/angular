@@ -1,11 +1,9 @@
-// #docplaster
-// #docregion
 // TODO: Feature Componetized like HeroCenter
-import { Component, OnInit }   from '@angular/core';
-import { Router }              from '@angular/router';
-import { Observable }          from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
 
-import { HeroService }   from '../hero.service';
+import { HeroService } from '../hero.service';
 import { Hero } from '../hero';
 
 @Component({
@@ -16,15 +14,12 @@ import { Hero } from '../hero';
 export class HeroListComponent implements OnInit {
   heroes$: Observable<Hero[]>;
 
-  // #docregion ctor
   constructor(
     private router: Router,
     private service: HeroService
   ) {}
-  // #enddocregion ctor
 
   ngOnInit() {
     this.heroes$ = this.service.getHeroes();
   }
 }
-// #enddocregion

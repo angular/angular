@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -78,7 +78,7 @@ export * from './ml_parser/tags';
 export {LexerRange} from './ml_parser/lexer';
 export * from './ml_parser/xml_parser';
 export {NgModuleCompiler} from './ng_module_compiler';
-export {ArrayType, AssertNotNull, DYNAMIC_TYPE, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinType, BuiltinTypeName, BuiltinVar, CastExpr, ClassField, ClassMethod, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, ExternalReference, literalMap, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, NONE_TYPE, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, StatementVisitor, ThrowStmt, TryCatchStmt, Type, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr, StmtModifier, Statement, STRING_TYPE, TypeofExpr, collectExternalReferences} from './output/output_ast';
+export {ArrayType, AssertNotNull, DYNAMIC_TYPE, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinType, BuiltinTypeName, BuiltinVar, CastExpr, ClassField, ClassMethod, ClassStmt, CommaExpr, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, ExternalReference, literalMap, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, NONE_TYPE, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, StatementVisitor, TaggedTemplateExpr, TemplateLiteral, TemplateLiteralElement, ThrowStmt, TryCatchStmt, Type, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr, StmtModifier, Statement, STRING_TYPE, TypeofExpr, collectExternalReferences, jsDocComment, leadingComment, LeadingComment, JSDocComment, UnaryOperator, UnaryOperatorExpr, LocalizedString} from './output/output_ast';
 export {EmitterVisitorContext} from './output/abstract_emitter';
 export {JitEvaluator} from './output/output_jit';
 export * from './output/ts_emitter';
@@ -91,17 +91,28 @@ export {ViewCompiler} from './view_compiler/view_compiler';
 export {getParseErrors, isSyntaxError, syntaxError, Version} from './util';
 export {SourceMap} from './output/source_map';
 export * from './injectable_compiler_2';
+export * from './render3/partial/api';
 export * from './render3/view/api';
-export {BoundAttribute as TmplAstBoundAttribute, BoundEvent as TmplAstBoundEvent, BoundText as TmplAstBoundText, Content as TmplAstContent, Element as TmplAstElement, Node as TmplAstNode, RecursiveVisitor as TmplAstRecursiveVisitor, Reference as TmplAstReference, Template as TmplAstTemplate, Text as TmplAstText, TextAttribute as TmplAstTextAttribute, Variable as TmplAstVariable,} from './render3/r3_ast';
+export {BoundAttribute as TmplAstBoundAttribute, BoundEvent as TmplAstBoundEvent, BoundText as TmplAstBoundText, Content as TmplAstContent, Element as TmplAstElement, Icu as TmplAstIcu, Node as TmplAstNode, RecursiveVisitor as TmplAstRecursiveVisitor, Reference as TmplAstReference, Template as TmplAstTemplate, Text as TmplAstText, TextAttribute as TmplAstTextAttribute, Variable as TmplAstVariable} from './render3/r3_ast';
 export * from './render3/view/t2_api';
 export * from './render3/view/t2_binder';
 export {Identifiers as R3Identifiers} from './render3/r3_identifiers';
-export {R3DependencyMetadata, R3ResolvedDependencyType, compileFactoryFunction, R3FactoryMetadata, R3FactoryTarget} from './render3/r3_factory';
-export {compileInjector, compileNgModule, R3InjectorMetadata, R3NgModuleMetadata} from './render3/r3_module_compiler';
+export {R3ClassMetadata, CompileClassMetadataFn, compileClassMetadata} from './render3/r3_class_metadata_compiler';
+export {compileFactoryFunction, R3DependencyMetadata, R3FactoryMetadata, FactoryTarget} from './render3/r3_factory';
+export {compileNgModule, R3NgModuleMetadata} from './render3/r3_module_compiler';
+export {compileInjector, R3InjectorMetadata} from './render3/r3_injector_compiler';
 export {compilePipeFromMetadata, R3PipeMetadata} from './render3/r3_pipe_compiler';
-export {makeBindingParser, parseTemplate, ParseTemplateOptions} from './render3/view/template';
-export {R3Reference} from './render3/util';
+export {makeBindingParser, ParsedTemplate, parseTemplate, ParseTemplateOptions} from './render3/view/template';
+export {R3CompiledExpression, R3Reference, devOnlyGuardedExpression, getSafePropertyAccessString} from './render3/util';
 export {compileComponentFromMetadata, compileDirectiveFromMetadata, parseHostBindings, ParsedHostBindings, verifyHostBindings} from './render3/view/compiler';
+export {compileDeclareClassMetadata} from './render3/partial/class_metadata';
+export {compileDeclareComponentFromMetadata, DeclareComponentTemplateInfo} from './render3/partial/component';
+export {compileDeclareDirectiveFromMetadata} from './render3/partial/directive';
+export {compileDeclareFactoryFunction} from './render3/partial/factory';
+export {compileDeclareInjectableFromMetadata} from './render3/partial/injectable';
+export {compileDeclareInjectorFromMetadata} from './render3/partial/injector';
+export {compileDeclareNgModuleFromMetadata} from './render3/partial/ng_module';
+export {compileDeclarePipeFromMetadata} from './render3/partial/pipe';
 export {publishFacade} from './jit_compiler_facade';
 // This file only reexports content of the `src` folder. Keep it that way.
 

@@ -1,13 +1,13 @@
-import { TestBed, async } from '@angular/core/testing';
-import { AppComponent } from './app.component';
+import {TestBed, waitForAsync} from '@angular/core/testing';
+import {AppComponent} from './app.component';
 
 describe('AppComponent', () => {
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [
-        AppComponent
-      ],
-    }).compileComponents();
+  beforeEach(waitForAsync(() => {
+    TestBed
+        .configureTestingModule({
+          declarations: [AppComponent],
+        })
+        .compileComponents();
   }));
 
   it('should create the app', () => {
@@ -26,6 +26,7 @@ describe('AppComponent', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('cli-hello-world app is running!');
+    expect(compiled.querySelector('.content span').textContent)
+        .toContain('cli-hello-world app is running!');
   });
 });

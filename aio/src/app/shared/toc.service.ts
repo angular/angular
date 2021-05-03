@@ -70,7 +70,7 @@ export class TocService {
     // Remove any remaining `a` elements (but keep their content).
     querySelectorAll(div, 'a').forEach(anchorLink => {
       // We want to keep the content of this anchor, so move it into its parent.
-      const parent = anchorLink.parentNode!;
+      const parent = anchorLink.parentNode as Node;
       while (anchorLink.childNodes.length) {
         parent.insertBefore(anchorLink.childNodes[0], anchorLink);
       }

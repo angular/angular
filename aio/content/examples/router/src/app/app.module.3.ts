@@ -1,18 +1,18 @@
 // #docplaster
 // #docregion
 // #docregion remove-heroes
-import { NgModule }       from '@angular/core';
-import { BrowserModule }  from '@angular/platform-browser';
-import { FormsModule }    from '@angular/forms';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 // #enddocregion remove-heroes
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 // #docregion remove-heroes
-import { AppComponent }     from './app.component';
+import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
-import { HeroesModule }     from './heroes/heroes.module';
+import { HeroesModule } from './heroes/heroes.module';
 
-import { CrisisListComponent }   from './crisis-list/crisis-list.component';
+import { CrisisListComponent } from './crisis-list/crisis-list.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 @NgModule({
@@ -21,9 +21,7 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
     BrowserModule,
 // #enddocregion module-imports
 // #enddocregion remove-heroes
-// #docregion animation-import
     BrowserAnimationsModule,
-// #enddocregion animation-import
 // #docregion remove-heroes
 // #docregion module-imports
     FormsModule,
@@ -41,14 +39,3 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 export class AppModule { }
 // #enddocregion remove-heroes
 // #enddocregion
-
-/*
-// #docregion module-imports-2
-  imports: [
-    RouterModule.forChild([
-      // Heroes Routes
-    ]),
-    AppRoutingModule
-  ],
-// #enddocregion module-imports-2
-*/

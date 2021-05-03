@@ -38,6 +38,7 @@ merge:
       - "modules/benchmarks/**"
       - "modules/system.d.ts"
       - "packages/**"
+      - "dev-infra/benchmark/driver-utilities/**"
     # list of patterns to ignore for the files changed by the PR
     exclude:
       - "packages/*"
@@ -47,7 +48,10 @@ merge:
       - "packages/bazel/src/ng_package/**"
       - "packages/bazel/src/protractor/**"
       - "packages/bazel/src/schematics/**"
+      - "packages/compiler-cli/src/ngcc/**"
+      - "packages/compiler-cli/linker/**"
       - "packages/compiler-cli/ngcc/**"
+      - "packages/compiler-cli/src/ngtsc/sourcemaps/**"
       - "packages/docs/**"
       - "packages/elements/schematics/**"
       - "packages/examples/**"
@@ -55,6 +59,8 @@ merge:
       - "packages/localize/**"
       - "packages/private/**"
       - "packages/service-worker/**"
+      - "packages/common/locales/**"
+      - "packages/http/**"
       - "**/.gitignore"
       - "**/.gitkeep"
       - "**/yarn.lock"
@@ -68,20 +74,20 @@ merge:
       - "packages/**/integrationtest/**"
       - "packages/**/test/**"
       - "packages/zone.js/*"
+      - "packages/zone.js/dist/**"
       - "packages/zone.js/doc/**"
       - "packages/zone.js/example/**"
       - "packages/zone.js/scripts/**"
 
   # comment that will be added to a PR when there is a conflict, leave empty or set to false to disable
-  mergeConflictComment: "Hi @{{PRAuthor}}! This PR has merge conflicts due to recent upstream merges.
-\nPlease help to unblock it by resolving these conflicts. Thanks!"
+  mergeConflictComment: "Hi @{{PRAuthor}}! This PR has merge conflicts due to recent upstream merges.\nPlease help to unblock it by resolving these conflicts. Thanks!"
 
   # label to monitor
-  mergeLabel: "PR action: merge"
+  mergeLabel: "action: merge"
 
   # adding any of these labels will also add the merge label
   mergeLinkedLabels:
-    - "PR action: merge-assistance"
+    - "action: merge-assistance"
 
   # list of checks that will determine if the merge label can be added
   checks:
@@ -94,24 +100,23 @@ merge:
 
     # whether the PR shouldn't have a conflict with the base branch
     noConflict: true
-    # list of labels that a PR needs to have, checked with a regexp (e.g. "PR target:" will work for the label "PR target: master")
+    # list of labels that a PR needs to have, checked with a regexp (e.g. "target:" will work for the label "target: master")
     requiredLabels:
-      - "PR target: *"
+      - "target: *"
       - "cla: yes"
 
     # list of labels that a PR shouldn't have, checked after the required labels with a regexp
     forbiddenLabels:
-      - "PR target: TBD"
-      - "PR action: cleanup"
-      - "PR action: review"
-      - "PR state: blocked"
+      - "target: TBD"
+      - "action: cleanup"
+      - "action: review"
+      - "state: blocked"
       - "cla: no"
 
     # list of PR statuses that need to be successful
     requiredStatuses:
       - "ci/circleci: build"
       - "ci/circleci: lint"
-      - "ci/circleci: publish_snapshot"
       - "ci/angular: size"
       - "cla/google"
       - "google3"
@@ -121,12 +126,7 @@ merge:
   # the comment that will be added when the merge label is added despite failing checks, leave empty or set to false to disable
   # {{MERGE_LABEL}} will be replaced by the value of the mergeLabel option
   # {{PLACEHOLDER}} will be replaced by the list of failing checks
-  mergeRemovedComment: "I see that you just added the `{{MERGE_LABEL}}` label, but the following checks are still failing:
-\n{{PLACEHOLDER}}
-\n
-\n**If you want your PR to be merged, it has to pass all the CI checks.**
-\n
-\nIf you can't get the PR to a green state due to flakes or broken master, please try rebasing to master and/or restarting the CI job. If that fails and you believe that the issue is not due to your change, please contact the caretaker and ask for help."
+  mergeRemovedComment: "I see that you just added the `{{MERGE_LABEL}}` label, but the following checks are still failing:\n{{PLACEHOLDER}}\n\n**If you want your PR to be merged, it has to pass all the CI checks.**\n\nIf you can't get the PR to a green state due to flakes or broken master, please try rebasing to master and/or restarting the CI job. If that fails and you believe that the issue is not due to your change, please contact the caretaker and ask for help."
 
 # options for the triage plugin
 triage:
@@ -141,18 +141,34 @@ triage:
   # arrays of labels that determine if an issue has been fully triaged
   l2TriageLabels:
     -
-      - "type: bug/fix"
-      - "severity*"
-      - "freq*"
+      - "P0"
       - "comp: *"
     -
-      - "type: feature"
+      - "P1"
       - "comp: *"
     -
-      - "type: refactor"
+      - "P2"
       - "comp: *"
     -
-      - "type: RFC / Discussion / question"
+      - "P3"
+      - "comp: *"
+    -
+      - "P4"
+      - "comp: *"
+    -
+      - "P5"
+      - "comp: *"
+    -
+      - "feature"
+      - "comp: *"
+    -
+      - "discussion"
+      - "comp: *"
+    -
+      - "needs clarification"
+      - "comp: *"
+    -
+      - "needs reproduction"
       - "comp: *"
 
 # options for the triage PR plugin
@@ -170,9 +186,6 @@ triagePR:
   # arrays of labels that determine if a PR has been fully triaged
   l2TriageLabels:
     -
-      - "type: *"
-      - "effort*"
-      - "risk*"
       - "comp: *"
 
 # options for rerunning CI
@@ -180,4 +193,4 @@ rerunCircleCI:
   # set to true to disable
   disabled: false
   # the label which when added triggers a rerun of the default CircleCI workflow
-  triggerRerunLabel: "PR action: rerun CI at HEAD"
+  triggerRerunLabel: "action: rerun CI at HEAD"

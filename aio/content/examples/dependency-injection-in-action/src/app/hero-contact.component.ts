@@ -3,7 +3,7 @@
 import { Component, Host, Optional } from '@angular/core';
 
 import { HeroCacheService } from './hero-cache.service';
-import { LoggerService }    from './logger.service';
+import { LoggerService } from './logger.service';
 
 // #docregion component
 @Component({
@@ -30,9 +30,7 @@ export class HeroContactComponent {
       this.hasLogger = true;
       loggerService.logInfo('HeroContactComponent can log!');
     }
-  // #docregion ctor
   }
-  // #enddocregion ctor
 
   get phoneNumber() { return this.heroCache.hero.phone; }
 

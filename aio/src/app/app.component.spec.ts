@@ -25,11 +25,9 @@ import { first, mapTo } from 'rxjs/operators';
 import { MockLocationService } from 'testing/location.service';
 import { MockLogger } from 'testing/logger.service';
 import { MockSearchService } from 'testing/search.service';
-import { AppComponent } from './app.component';
+import { AppComponent, dockSideNavWidth, showFloatingTocWidth, showTopMenuWidth } from './app.component';
 import { AppModule } from './app.module';
 
-const sideBySideBreakPoint = 992;
-const hideToCBreakPoint = 800;
 const startedDelay = 100;
 
 describe('AppComponent', () => {
@@ -58,7 +56,7 @@ describe('AppComponent', () => {
     component = fixture.componentInstance;
 
     fixture.detectChanges();
-    component.onResize(sideBySideBreakPoint + 1); // wide by default
+    component.onResize(showTopMenuWidth + 1); // wide by default
 
     const de = fixture.debugElement;
     const docViewerDe = de.query(By.css('aio-doc-viewer'));
@@ -99,7 +97,7 @@ describe('AppComponent', () => {
       });
 
       it('should be false on narrow screens', () => {
-        component.onResize(hideToCBreakPoint - 1);
+        component.onResize(showFloatingTocWidth - 1);
 
         tocService.tocList.next([{}, {}, {}] as TocItem[]);
         expect(component.hasFloatingToc).toBe(false);
@@ -112,7 +110,7 @@ describe('AppComponent', () => {
       });
 
       it('should be true on wide screens unless the toc is empty', () => {
-        component.onResize(hideToCBreakPoint + 1);
+        component.onResize(showFloatingTocWidth + 1);
 
         tocService.tocList.next([{}, {}, {}] as TocItem[]);
         expect(component.hasFloatingToc).toBe(true);
@@ -127,37 +125,47 @@ describe('AppComponent', () => {
       it('should be false when toc is empty', () => {
         tocService.tocList.next([]);
 
-        component.onResize(hideToCBreakPoint + 1);
+        component.onResize(showFloatingTocWidth + 1);
         expect(component.hasFloatingToc).toBe(false);
 
-        component.onResize(hideToCBreakPoint - 1);
+        component.onResize(showFloatingTocWidth - 1);
         expect(component.hasFloatingToc).toBe(false);
 
-        component.onResize(hideToCBreakPoint + 1);
+        component.onResize(showFloatingTocWidth + 1);
         expect(component.hasFloatingToc).toBe(false);
       });
 
       it('should be true when toc is not empty unless the screen is narrow', () => {
         tocService.tocList.next([{}, {}, {}] as TocItem[]);
 
-        component.onResize(hideToCBreakPoint + 1);
+        component.onResize(showFloatingTocWidth + 1);
         expect(component.hasFloatingToc).toBe(true);
 
-        component.onResize(hideToCBreakPoint - 1);
+        component.onResize(showFloatingTocWidth - 1);
         expect(component.hasFloatingToc).toBe(false);
 
-        component.onResize(hideToCBreakPoint + 1);
+        component.onResize(showFloatingTocWidth + 1);
         expect(component.hasFloatingToc).toBe(true);
       });
     });
 
-    describe('isSideBySide', () => {
+    describe('showTopMenu', () => {
       it('should be updated on resize', () => {
-        component.onResize(sideBySideBreakPoint - 1);
-        expect(component.isSideBySide).toBe(false);
+        component.onResize(showTopMenuWidth - 1);
+        expect(component.showTopMenu).toBe(false);
 
-        component.onResize(sideBySideBreakPoint + 1);
-        expect(component.isSideBySide).toBe(true);
+        component.onResize(showTopMenuWidth + 1);
+        expect(component.showTopMenu).toBe(true);
+      });
+    });
+
+    describe('dockSideNav', () => {
+      it('should be updated on resize', () => {
+        component.onResize(dockSideNavWidth - 1);
+        expect(component.dockSideNav).toBe(false);
+
+        component.onResize(dockSideNavWidth + 1);
+        expect(component.dockSideNav).toBe(true);
       });
     });
 
@@ -185,8 +193,8 @@ describe('AppComponent', () => {
         fixture.detectChanges();
       };
 
-      describe('when side-by-side (wide)', () => {
-        beforeEach(() => resizeTo(sideBySideBreakPoint + 1));  // side-by-side
+      describe('when view is wide', () => {
+        beforeEach(() => resizeTo(dockSideNavWidth + 1));  // wide view
 
         it('should open when navigating to a guide page (guide/pipes)', () => {
           navigateTo('guide/pipes');
@@ -232,8 +240,8 @@ describe('AppComponent', () => {
         });
       });
 
-      describe('when NOT side-by-side (narrow)', () => {
-        beforeEach(() => resizeTo(sideBySideBreakPoint - 1)); // NOT side-by-side
+      describe('when view is narrow', () => {
+        beforeEach(() => resizeTo(dockSideNavWidth - 1)); // narrow view
 
         it('should be closed when navigating to a guide page (guide/pipes)', () => {
           navigateTo('guide/pipes');
@@ -286,30 +294,30 @@ describe('AppComponent', () => {
         });
       });
 
-      describe('when changing side-by-side (narrow --> wide)', () => {
+      describe('when changing from narrow to wide view', () => {
         const sidenavDocs = ['api/a/b/c/d', 'guide/pipes'];
         const nonSidenavDocs = ['features', 'about'];
 
         sidenavDocs.forEach(doc => {
           it(`should open when on a sidenav doc (${doc})`, () => {
-            resizeTo(sideBySideBreakPoint - 1);
+            resizeTo(dockSideNavWidth - 1);
 
             navigateTo(doc);
             expect(sidenav.opened).toBe(false);
 
-            resizeTo(sideBySideBreakPoint + 1);
+            resizeTo(dockSideNavWidth + 1);
             expect(sidenav.opened).toBe(true);
           });
         });
 
         nonSidenavDocs.forEach(doc => {
           it(`should remain closed when on a non-sidenav doc (${doc})`, () => {
-            resizeTo(sideBySideBreakPoint - 1);
+            resizeTo(dockSideNavWidth - 1);
 
             navigateTo(doc);
             expect(sidenav.opened).toBe(false);
 
-            resizeTo(sideBySideBreakPoint + 1);
+            resizeTo(dockSideNavWidth + 1);
             expect(sidenav.opened).toBe(false);
           });
         });
@@ -317,33 +325,33 @@ describe('AppComponent', () => {
         describe('when manually opened', () => {
           sidenavDocs.forEach(doc => {
             it(`should remain opened when on a sidenav doc (${doc})`, () => {
-              resizeTo(sideBySideBreakPoint - 1);
+              resizeTo(dockSideNavWidth - 1);
 
               navigateTo(doc);
               toggleSidenav();
               expect(sidenav.opened).toBe(true);
 
-              resizeTo(sideBySideBreakPoint + 1);
+              resizeTo(dockSideNavWidth + 1);
               expect(sidenav.opened).toBe(true);
             });
           });
 
           nonSidenavDocs.forEach(doc => {
             it(`should close when on a non-sidenav doc (${doc})`, () => {
-              resizeTo(sideBySideBreakPoint - 1);
+              resizeTo(dockSideNavWidth - 1);
 
               navigateTo(doc);
               toggleSidenav();
               expect(sidenav.opened).toBe(true);
 
-              resizeTo(sideBySideBreakPoint + 1);
+              resizeTo(showTopMenuWidth + 1);
               expect(sidenav.opened).toBe(false);
             });
           });
         });
       });
 
-      describe('when changing side-by-side (wide --> narrow)', () => {
+      describe('when changing from wide to narrow view', () => {
         const sidenavDocs = ['api/a/b/c/d', 'guide/pipes'];
         const nonSidenavDocs = ['features', 'about'];
 
@@ -352,7 +360,7 @@ describe('AppComponent', () => {
             navigateTo(doc);
             expect(sidenav.opened).toBe(true);
 
-            resizeTo(sideBySideBreakPoint - 1);
+            resizeTo(dockSideNavWidth - 1);
             expect(sidenav.opened).toBe(false);
           });
         });
@@ -362,7 +370,7 @@ describe('AppComponent', () => {
             navigateTo(doc);
             expect(sidenav.opened).toBe(false);
 
-            resizeTo(sideBySideBreakPoint - 1);
+            resizeTo(dockSideNavWidth - 1);
             expect(sidenav.opened).toBe(false);
           });
         });
@@ -376,7 +384,7 @@ describe('AppComponent', () => {
       async function setupSelectorForTesting(mode?: string) {
         createTestingModule('a/b', mode);
         await initializeTest();
-        component.onResize(sideBySideBreakPoint + 1); // side-by-side
+        component.onResize(dockSideNavWidth + 1); // wide view
         selectElement = fixture.debugElement.query(By.directive(SelectComponent));
         selectComponent = selectElement.componentInstance;
       }
@@ -627,61 +635,53 @@ describe('AppComponent', () => {
     });
 
     describe('aio-toc', () => {
-      let tocContainer: HTMLElement|null;
-      let toc: HTMLElement|null;
-
-      const setHasFloatingToc = (hasFloatingToc: boolean) => {
+      function setHasFloatingTocAndGetToc(hasFloatingToc: false): [null, null];
+      function setHasFloatingTocAndGetToc(hasFloatingToc: true): [HTMLElement, HTMLElement];
+      function setHasFloatingTocAndGetToc(hasFloatingToc: boolean) {
         component.hasFloatingToc = hasFloatingToc;
         fixture.detectChanges();
 
-        tocContainer = fixture.debugElement.nativeElement.querySelector('.toc-container');
-        toc = tocContainer && tocContainer.querySelector('aio-toc');
-      };
+        const tocContainer = fixture.debugElement.nativeElement.querySelector('.toc-container');
+        const toc = tocContainer && tocContainer.querySelector('aio-toc');
 
-
-      beforeEach(() => {
-        tocContainer = null;
-        toc = null;
-      });
+        return [toc, tocContainer];
+      }
 
       it('should show/hide `<aio-toc>` based on `hasFloatingToc`', () => {
-        expect(tocContainer).toBeFalsy();
-        expect(toc).toBeFalsy();
+        const [toc1, tocContainer1] = setHasFloatingTocAndGetToc(true);
+        expect(tocContainer1).toBeTruthy();
+        expect(toc1).toBeTruthy();
 
-        setHasFloatingToc(true);
-        expect(tocContainer).toBeTruthy();
-        expect(toc).toBeTruthy();
-
-        setHasFloatingToc(false);
-        expect(tocContainer).toBeFalsy();
-        expect(toc).toBeFalsy();
+        const [toc2, tocContainer2] = setHasFloatingTocAndGetToc(false);
+        expect(tocContainer2).toBeFalsy();
+        expect(toc2).toBeFalsy();
       });
 
       it('should have a non-embedded `<aio-toc>` element', () => {
-        setHasFloatingToc(true);
-        expect(toc!.classList.contains('embedded')).toBe(false);
+        const [toc] = setHasFloatingTocAndGetToc(true);
+        expect(toc.classList.contains('embedded')).toBe(false);
       });
 
       it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
-        setHasFloatingToc(true);
+        const [, tocContainer] = setHasFloatingTocAndGetToc(true);
 
         component.tocMaxHeight = '100';
         fixture.detectChanges();
-        expect(tocContainer!.style.maxHeight).toBe('100px');
+        expect(tocContainer.style.maxHeight).toBe('100px');
 
         component.tocMaxHeight = '200';
         fixture.detectChanges();
-        expect(tocContainer!.style.maxHeight).toBe('200px');
+        expect(tocContainer.style.maxHeight).toBe('200px');
       });
 
       it('should restrain scrolling inside the ToC container', () => {
         const restrainScrolling = spyOn(component, 'restrainScrolling');
         const evt = new WheelEvent('wheel');
+        const [, tocContainer] = setHasFloatingTocAndGetToc(true);
 
-        setHasFloatingToc(true);
         expect(restrainScrolling).not.toHaveBeenCalled();
 
-        tocContainer!.dispatchEvent(evt);
+        tocContainer.dispatchEvent(evt);
         expect(restrainScrolling).toHaveBeenCalledWith(evt);
       });
 
@@ -689,7 +689,7 @@ describe('AppComponent', () => {
         const loader = fixture.debugElement.injector.get(ElementsLoader) as unknown as TestElementsLoader;
         expect(loader.loadCustomElement).not.toHaveBeenCalled();
 
-        setHasFloatingToc(true);
+        setHasFloatingTocAndGetToc(true);
         expect(loader.loadCustomElement).toHaveBeenCalledWith('aio-toc');
       });
     });
@@ -713,7 +713,7 @@ describe('AppComponent', () => {
         createTestingModule('a/b', 'stable');
         await initializeTest();
         const banner: HTMLElement = fixture.debugElement.query(By.css('aio-mode-banner')).nativeElement;
-        expect(banner.textContent!.trim()).toEqual('');
+        expect(banner.textContent?.trim()).toEqual('');
       });
     });
 
@@ -774,7 +774,7 @@ describe('AppComponent', () => {
         it('should grab focus when the / key is pressed', () => {
           const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
           spyOn(searchBox, 'focus');
-          window.document.dispatchEvent(new KeyboardEvent('keyup', { 'key': '/' }));
+          window.document.dispatchEvent(new KeyboardEvent('keyup', { key: '/' }));
           fixture.detectChanges();
           expect(searchBox.focus).toHaveBeenCalled();
         });
@@ -783,7 +783,7 @@ describe('AppComponent', () => {
           const searchBox: SearchBoxComponent = fixture.debugElement.query(By.directive(SearchBoxComponent)).componentInstance;
           spyOn(searchBox, 'focus');
           component.showSearchResults = true;
-          window.document.dispatchEvent(new KeyboardEvent('keyup', { 'key': 'Escape' }));
+          window.document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape' }));
           fixture.detectChanges();
           expect(searchBox.focus).toHaveBeenCalled();
         });
@@ -827,6 +827,7 @@ describe('AppComponent', () => {
       const redirectionPerMode: {[mode: string]: boolean} = {
         archive: true,
         next: false,
+        rc: false,
         stable: false,
       };
 
@@ -960,23 +961,23 @@ describe('AppComponent', () => {
 
         // Initially, `isTransitoning` is true.
         expect(component.isTransitioning).toBe(true);
-        expect(toolbar.classes['transitioning']).toBe(true);
+        expect(toolbar.classes.transitioning).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(toolbar.classes['transitioning']).toBeFalsy();
+        expect(toolbar.classes.transitioning).toBeFalsy();
 
         // While a document is being rendered, `isTransitoning` is set to true.
         triggerDocViewerEvent('docReady');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(true);
-        expect(toolbar.classes['transitioning']).toBe(true);
+        expect(toolbar.classes.transitioning).toBe(true);
 
         triggerDocViewerEvent('docRendered');
         fixture.detectChanges();
         expect(component.isTransitioning).toBe(false);
-        expect(toolbar.classes['transitioning']).toBeFalsy();
+        expect(toolbar.classes.transitioning).toBeFalsy();
       });
 
       it('should update the sidenav state as soon as a new document is inserted (but not before)', () => {
@@ -1023,15 +1024,15 @@ describe('AppComponent', () => {
 
         navigateTo('guide/pipes');
         expect(component.pageId).toEqual('guide-pipes');
-        expect(container.properties['id']).toEqual('guide-pipes');
+        expect(container.properties.id).toEqual('guide-pipes');
 
         navigateTo('news');
         expect(component.pageId).toEqual('news');
-        expect(container.properties['id']).toEqual('news');
+        expect(container.properties.id).toEqual('news');
 
         navigateTo('');
         expect(component.pageId).toEqual('home');
-        expect(container.properties['id']).toEqual('home');
+        expect(container.properties.id).toEqual('home');
       });
 
       it('should not be affected by changes to the query', () => {
@@ -1042,7 +1043,7 @@ describe('AppComponent', () => {
         navigateTo('guide/other?search=http');
 
         expect(component.pageId).toEqual('guide-other');
-        expect(container.properties['id']).toEqual('guide-other');
+        expect(container.properties.id).toEqual('guide-other');
       });
     });
 
@@ -1117,7 +1118,7 @@ describe('AppComponent', () => {
 
       function checkHostClass(type: string, value: string) {
         const host = fixture.debugElement;
-        const classes: string = host.properties['className'];
+        const classes: string = host.properties.className;
         const classArray = classes.split(' ').filter(c => c.indexOf(`${type}-`) === 0);
         expect(classArray.length).toBeLessThanOrEqual(1, `"${classes}" should have only one class matching ${type}-*`);
         expect(classArray).toEqual([`${type}-${value}`], `"${classes}" should contain ${type}-${value}`);
@@ -1303,42 +1304,42 @@ class TestHttpClient {
 
   // tslint:disable:quotemark
   navJson = {
-    "TopBar": [
+    TopBar: [
       {
-        "url": "features",
-        "title": "Features"
+        url: 'features',
+        title: 'Features',
       },
       {
-        "url": "no-title",
-        "title": "No Title"
+        url: 'no-title',
+        title: 'No Title',
       },
     ],
-    "SideNav": [
+    SideNav: [
       {
-      "title": "Core",
-      "tooltip": "Learn the core capabilities of Angular",
-      "children": [
+        title: 'Core',
+        tooltip: 'Learn the core capabilities of Angular',
+        children: [
           {
-            "url": "guide/pipes",
-            "title": "Pipes",
-            "tooltip": "Pipes transform displayed values within a template."
+            url: 'guide/pipes',
+            title: 'Pipes',
+            tooltip: 'Pipes transform displayed values within a template.',
           },
           {
-            "url": "guide/bags",
-            "title": "Bags",
-            "tooltip": "Pack your bags for a code adventure."
-          }
-        ]
+            url: 'guide/bags',
+            title: 'Bags',
+            tooltip: 'Pack your bags for a code adventure.',
+          },
+        ],
       },
       {
-        "url": "api",
-        "title": "API",
-        "tooltip": "Details of the Angular classes and values."
-      }
+        url: 'api',
+        title: 'API',
+        tooltip: 'Details of the Angular classes and values.',
+      },
     ],
-    "docVersions": TestHttpClient.docVersions,
+    docVersions: TestHttpClient.docVersions,
 
-    "__versionInfo": TestHttpClient.versionInfo,
+    __versionInfo: TestHttpClient.versionInfo,
   };
 
   get(url: string) {
@@ -1346,10 +1347,10 @@ class TestHttpClient {
     if (/navigation\.json/.test(url)) {
       data = this.navJson;
     } else {
-      const match = /generated\/docs\/(.+)\.json/.exec(url)!;
-      const id = match[1]!;
+      const match = /generated\/docs\/(.+)\.json/.exec(url);
+      const id = match?.[1];
       // Make up a title for test purposes
-      const title = id.split('/').pop()!.replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
+      const title = id?.split('/')?.pop()?.replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
       const h1 = (id === 'no-title') ? '' : `<h1 class="no-toc">${title}</h1>`;
       const contents = `${h1}<h2 id="#somewhere">Some heading</h2>`;
       data = { id, contents };

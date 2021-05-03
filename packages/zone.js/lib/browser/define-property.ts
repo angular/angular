@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -36,17 +36,19 @@ export function propertyPatch() {
   };
 
   Object.defineProperties = function(obj, props) {
-    Object.keys(props).forEach(function(prop) { Object.defineProperty(obj, prop, props[prop]); });
+    Object.keys(props).forEach(function(prop) {
+      Object.defineProperty(obj, prop, props[prop]);
+    });
     return obj;
   };
 
-  Object.create = <any>function(obj: any, proto: any) {
-    if (typeof proto === 'object' && !Object.isFrozen(proto)) {
-      Object.keys(proto).forEach(function(prop) {
-        proto[prop] = rewriteDescriptor(obj, prop, proto[prop]);
+  Object.create = <any>function(proto: any, propertiesObject: any) {
+    if (typeof propertiesObject === 'object' && !Object.isFrozen(propertiesObject)) {
+      Object.keys(propertiesObject).forEach(function(prop) {
+        propertiesObject[prop] = rewriteDescriptor(proto, prop, propertiesObject[prop]);
       });
     }
-    return _create(obj, proto);
+    return _create(proto, propertiesObject);
   };
 
   Object.getOwnPropertyDescriptor = function(obj, prop) {
@@ -100,6 +102,20 @@ function _tryDefineProperty(obj: any, prop: string, desc: any, originalConfigura
       try {
         return _defineProperty(obj, prop, desc);
       } catch (error) {
+        let swallowError = false;
+        if (prop === 'createdCallback' || prop === 'attachedCallback' ||
+            prop === 'detachedCallback' || prop === 'attributeChangedCallback') {
+          // We only swallow the error in registerElement patch
+          // this is the work around since some applications
+          // fail if we throw the error
+          swallowError = true;
+        }
+        if (!swallowError) {
+          throw error;
+        }
+        // TODO: @JiaLiPassion, Some application such as `registerElement` patch
+        // still need to swallow the error, in the future after these applications
+        // are updated, the following logic can be removed.
         let descJson: string|null = null;
         try {
           descJson = JSON.stringify(desc);

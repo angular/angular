@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -54,7 +54,9 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return parseInt(v, 10);
   }
 
-  gc() { return this.driver.executeScript('window.gc()'); }
+  gc() {
+    return this.driver.executeScript('window.gc()');
+  }
 
   async timeBegin(name: string): Promise<any> {
     if (this._firstRun) {
@@ -84,7 +86,9 @@ export class ChromeDriverExtension extends WebDriverExtension {
         .then((entries) => {
           const events: PerfLogEvent[] = [];
           entries.forEach((entry: any) => {
-            const message = JSON.parse(entry['message'])['message'];
+            const message =
+                (JSON.parse(entry['message']) as
+                 {message: {method: string, params: PerfLogEvent}})['message'];
             if (message['method'] === 'Tracing.dataCollected') {
               events.push(message['params']);
             }
@@ -108,7 +112,7 @@ export class ChromeDriverExtension extends WebDriverExtension {
     chromeEvents.forEach((event) => {
       const categories = this._parseCategories(event['cat']);
       const normalizedEvent = this._convertEvent(event, categories);
-      if (normalizedEvent != null) normalizedEvents !.push(normalizedEvent);
+      if (normalizedEvent != null) normalizedEvents!.push(normalizedEvent);
     });
     return normalizedEvents;
   }
@@ -184,7 +188,9 @@ export class ChromeDriverExtension extends WebDriverExtension {
     return null;  // nothing useful in this event
   }
 
-  private _parseCategories(categories: string): string[] { return categories.split(','); }
+  private _parseCategories(categories: string): string[] {
+    return categories.split(',');
+  }
 
   private _isEvent(
       eventCategories: string[], eventName: string, expectedCategories: string[],

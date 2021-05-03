@@ -1,13 +1,9 @@
-// #docregion
 import { Component } from '@angular/core';
 
-// #docregion import
 import { Hero } from './hero';
-// #enddocregion import
 
 @Component({
   selector: 'app-root',
-  // #docregion template
   template: `
     <h1>{{title}}</h1>
     <h2>My favorite hero is: {{myHero.name}}</h2>
@@ -18,12 +14,9 @@ import { Hero } from './hero';
       </li>
     </ul>
   `
-  // #enddocregion template
 })
-// #docregion class
 export class AppComponent {
   title = 'Tour of Heroes';
-  // #docregion heroes
   heroes = [
     new Hero(1, 'Windstorm'),
     new Hero(13, 'Bombasto'),
@@ -31,5 +24,4 @@ export class AppComponent {
     new Hero(20, 'Tornado')
   ];
   myHero = this.heroes[0];
-  // #enddocregion heroes
 }

@@ -25,11 +25,11 @@ export class HeroService {
 
   // #docregion getHeroes, getHeroes-1
   getHeroes(): Observable<Hero[]> {
+    const heroes = of(HEROES);
     // #enddocregion getHeroes-1
-    // TODO: send the message _after_ fetching the heroes
     this.messageService.add('HeroService: fetched heroes');
     // #docregion getHeroes-1
-    return of(HEROES);
+    return heroes;
   }
   // #enddocregion getHeroes, getHeroes-1
 }

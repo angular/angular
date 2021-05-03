@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -158,7 +158,7 @@ export interface CompilerHost extends ts.CompilerHost, ExtendedTsCompilerHost {
    * Produce an AMD module name for the source file. Used in Bazel.
    *
    * An AMD module can have an arbitrary name, so that it is require'd by name
-   * rather than by path. See http://requirejs.org/docs/whyamd.html#namedmodules
+   * rather than by path. See https://requirejs.org/docs/whyamd.html#namedmodules
    */
   amdModuleName?(sf: ts.SourceFile): string|undefined;
 }
@@ -190,8 +190,12 @@ export interface TsEmitArguments {
   customTransformers?: ts.CustomTransformers;
 }
 
-export interface TsEmitCallback { (args: TsEmitArguments): ts.EmitResult; }
-export interface TsMergeEmitResultsCallback { (results: ts.EmitResult[]): ts.EmitResult; }
+export interface TsEmitCallback {
+  (args: TsEmitArguments): ts.EmitResult;
+}
+export interface TsMergeEmitResultsCallback {
+  (results: ts.EmitResult[]): ts.EmitResult;
+}
 
 export interface LibrarySummary {
   fileName: string;
@@ -283,14 +287,14 @@ export interface Program {
    *
    * Angular structural information is required to emit files.
    */
-  emit({emitFlags, cancellationToken, customTransformers, emitCallback,
-        mergeEmitResultsCallback}?: {
-    emitFlags?: EmitFlags,
-    cancellationToken?: ts.CancellationToken,
-    customTransformers?: CustomTransformers,
-    emitCallback?: TsEmitCallback,
-    mergeEmitResultsCallback?: TsMergeEmitResultsCallback
-  }): ts.EmitResult;
+  emit({emitFlags, cancellationToken, customTransformers, emitCallback, mergeEmitResultsCallback}?:
+           {
+             emitFlags?: EmitFlags,
+             cancellationToken?: ts.CancellationToken,
+             customTransformers?: CustomTransformers,
+             emitCallback?: TsEmitCallback,
+             mergeEmitResultsCallback?: TsMergeEmitResultsCallback
+           }): ts.EmitResult;
 
   /**
    * Returns the .d.ts / .ngsummary.json / .ngfactory.d.ts files of libraries that have been emitted

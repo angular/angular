@@ -7,15 +7,21 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  // #docregion item-image
   itemImageUrl = '../assets/phone.png';
+  // #enddocregion item-image
+  // #docregion boolean
   isUnchanged = true;
+  // #enddocregion boolean
+  // #docregion directive-property
   classes = 'special';
+  // #enddocregion directive-property
   // #docregion parent-data-type
   parentItem = 'lamp';
   // #enddocregion parent-data-type
 
   // #docregion pass-object
-  currentItem = [{
+  currentItems = [{
     id: 21,
     name: 'phone'
   }];

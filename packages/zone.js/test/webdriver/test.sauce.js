@@ -1,12 +1,11 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-const webdriverio = require('webdriverio');
 const desiredCapabilities = {
   firefox52Win7: {browserName: 'firefox', platform: 'Windows 7', version: '52'},
   firefox53Win7: {browserName: 'firefox', platform: 'Windows 7', version: '53'},
@@ -20,18 +19,6 @@ const desiredCapabilities = {
   /*ios84: {browserName: 'iphone', platform: 'OS X 10.10', version: '8.4'},*/
   ios10: {browserName: 'iphone', platform: 'OS X 10.10', version: '10.3'},
   ios11: {browserName: 'iphone', platform: 'OS X 10.12', version: '11.2'},
-  /*
-  ie9: {
-    browserName: 'internet explorer',
-    platform: 'Windows 2008',
-    version: '9'
-  },*/
-  /*
-  ie10: {
-    browserName: 'internet explorer',
-    platform: 'Windows 2012',
-    version: '10'
-  },*/
   ie11: {browserName: 'internet explorer', platform: 'Windows 10', version: '11'},
   // andriod44: {browserName: 'android', platform: 'Linux', version: '4.4'},
   android51: {browserName: 'android', platform: 'Linux', version: '5.1'},
@@ -60,7 +47,9 @@ Object.keys(desiredCapabilities).forEach(key => {
   const p = client.init()
                 .timeouts('script', 60000)
                 .url('http://localhost:8080/test/webdriver/test.html')
-                .executeAsync(function(done) { window.setTimeout(done, 1000) })
+                .executeAsync(function(done) {
+                  window.setTimeout(done, 1000)
+                })
                 .execute(function() {
                   const elem = document.getElementById('thetext');
                   const zone = window['Zone'] ? Zone.current.fork({name: 'webdriver'}) : null;
@@ -71,7 +60,9 @@ Object.keys(desiredCapabilities).forEach(key => {
                       });
                     });
                   } else {
-                    elem.addEventListener('click', function(e) { e.target.innerText = 'clicked'; });
+                    elem.addEventListener('click', function(e) {
+                      e.target.innerText = 'clicked';
+                    });
                   }
                 })
                 .click('#thetext')
@@ -82,14 +73,18 @@ Object.keys(desiredCapabilities).forEach(key => {
                         errors.push(`Env: ${key}, expected clickedwebdriver, get ${text}`);
                       }
                     }),
-                    (error) => { errors.push(`Env: ${key}, error occurs: ${error}`); })
+                    (error) => {
+                      errors.push(`Env: ${key}, error occurs: ${error}`);
+                    })
                 .end();
   tasks.push(p);
 });
 
 function exit(exitCode) {
   const http = require('http');
-  http.get('http://localhost:8080/close', () => { process.exit(exitCode); });
+  http.get('http://localhost:8080/close', () => {
+    process.exit(exitCode);
+  });
 }
 
 Promise.all(tasks).then(() => {

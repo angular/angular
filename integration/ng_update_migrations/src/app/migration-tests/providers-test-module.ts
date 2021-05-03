@@ -1,4 +1,4 @@
-import {Component, Directive, NgModule, NgZone} from '@angular/core';
+import {Component, Directive, NgModule, NgZone, Injectable} from '@angular/core';
 
 export class ComponentTypeProvider {}
 export class ComponentDontNeedCase {}
@@ -28,8 +28,7 @@ export class ProvidersTestDirective {}
 
 export class TypeCase {}
 
-// undecorated-classes-with-di migration will add "@Injectable" here
-// because the constructor is inherited in "ProvideCase".
+@Injectable()
 class BaseProviderCase {
   constructor(zone: NgZone) {}
 }

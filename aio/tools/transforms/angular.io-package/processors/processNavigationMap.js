@@ -1,15 +1,14 @@
-module.exports = function processNavigationMap(versionInfo, log) {
+module.exports = function processNavigationMap(versionInfo, getPreviousMajorVersions, log) {
   return {
     $runAfter: ['paths-computed'],
     $runBefore: ['rendering-docs'],
     $process: function(docs) {
-
       const navigationDoc = docs.find(doc => doc.docType === 'navigation-json');
 
       if (!navigationDoc) {
         throw new Error(
-          'Missing navigation map document (docType="navigation-json").' +
-          'Did you forget to add it to the readFileProcessor?');
+            'Missing navigation map document (docType="navigation-json").' +
+            'Did you forget to add it to the readFileProcessor?');
       }
 
       // Verify that all the navigation paths are to valid docs
@@ -24,6 +23,9 @@ module.exports = function processNavigationMap(versionInfo, log) {
         throw new Error('processNavigationMap failed');
       }
 
+      navigationDoc.data['docVersions'] = getPreviousMajorVersions().map(
+          v => ({title: `v${v.major}`, url: `https://v${v.major}.angular.io/`}));
+
       // Add in the version data in a "secret" field to be extracted in the docs app
       navigationDoc.data['__versionInfo'] = versionInfo.currentVersion;
     }
@@ -32,13 +34,13 @@ module.exports = function processNavigationMap(versionInfo, log) {
 
 function walk(node, map, path) {
   let errors = [];
-  for(const key in node) {
+  for (const key in node) {
     const child = node[key];
-    if (child !== null) { // null is allowed
+    if (child !== null) {  // null is allowed
       if (key === 'url') {
-        const url = child.replace(/#.*$/, ''); // strip hash
+        const url = child.replace(/#.*$/, '');  // strip hash
         if (isRelative(url) && !map[url]) {
-          errors.push({ path: path.join('.'), url });
+          errors.push({path: path.join('.'), url});
         }
       } else if (typeof child !== 'string') {
         errors = errors.concat(walk(child, map, path.concat([key])));

@@ -1,5 +1,4 @@
-/* tslint:disable:no-unused-variable component-selector-name one-line check-open-brace */
-/* tslint:disable:*/
+// tslint:disable: component-selector space-before-function-paren
 // #docplaster
 // #docregion
 import { Component, forwardRef, Optional, SkipSelf } from '@angular/core';
@@ -20,8 +19,7 @@ const DifferentParent = Parent;
 // The `parentType` defaults to `Parent` when omitting the second parameter.
 // #docregion provide-the-parent
 export function provideParent
-// #enddocregion provide-parent, provide-the-parent
-// #docregion provide-parent
+// #enddocregion provide-the-parent
   (component: any, parentType?: any) {
     return { provide: parentType || Parent, useExisting: forwardRef(() => component) };
   }
@@ -37,7 +35,6 @@ export function provideTheParent
 
 
 ///////// C - Child //////////
-// #docregion carol
 const templateC = `
   <div class="c">
     <h3>{{name}}</h3>
@@ -56,7 +53,6 @@ export class CarolComponent {
   // #enddocregion carol-ctor
 }
 // #enddocregion carol-class
-// #enddocregion carol
 
 @Component({
   selector: 'chris',
@@ -134,7 +130,7 @@ export class BethComponent implements Parent {
 
 ///////// A - Grandparent //////
 
-// #docregion alex, alex-1
+// #docregion alex-1
 @Component({
   selector: 'alex',
   template: `
@@ -159,11 +155,10 @@ export class AlexComponent extends Base
 {
   name = 'Alex';
 }
-// #enddocregion alex, alex-1
+// #enddocregion alex-1
 
 /////
 
-// #docregion alice
 @Component({
   selector: 'alice',
   template: `
@@ -184,7 +179,6 @@ export class AliceComponent implements Parent
 {
   name = 'Alice';
 }
-// #enddocregion alice
 
 //////  Cathy ///////////
 /**

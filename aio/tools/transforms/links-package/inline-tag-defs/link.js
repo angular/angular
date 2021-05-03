@@ -14,7 +14,7 @@ var INLINE_LINK = /(\S+)(?:\s+([\s\S]+))?/;
 module.exports = function linkInlineTagDef(getLinkInfo, createDocMessage, log) {
   return {
     name: 'link',
-    failOnBadLink: false,
+    failOnBadLink: true,
     description:
         'Process inline link tags (of the form {@link some/uri Some Title}), replacing them with HTML anchors',
     handler(doc, tagName, tagDescription) {

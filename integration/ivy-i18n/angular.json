@@ -13,6 +13,8 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "localize": false, // To prevent the CLI from doing inlining itself
+            "aot": true,
             "outputPath": "dist",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -33,7 +35,6 @@
               "tsConfig": "tsconfig.view-engine.json"
             },
             "production": {
-              "localize": false, // TODO: enable when CLI supports inlining the locale
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -42,10 +43,9 @@
               ],
               "optimization": true,
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": true,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -72,9 +72,9 @@
             },
             "translated-legacy": {
               "tsConfig": "tsconfig.legacy.json",
-              "optimization": true,
+              "optimization": false,
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": true,
               "extractCss": true,
               "namedChunks": false,
               "aot": true,
@@ -84,9 +84,9 @@
             },
             "translated-legacy-xmb": {
               "tsConfig": "tsconfig.legacy-xmb.json",
-              "optimization": true,
+              "optimization": false,
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": true,
               "extractCss": true,
               "namedChunks": false,
               "aot": true,
@@ -198,6 +198,7 @@
           }
         }
       }
-    }},
+    }
+  },
   "defaultProject": "cli-hello-world-ivy-i18n"
 }

@@ -1,12 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import * as i18n from '../../../i18n/i18n_ast';
 import * as o from '../../../output/output_ast';
+import {ParseLocation, ParseSourceSpan} from '../../../parse_util';
 
 import {serializeIcuNode} from './icu_serializer';
 import {formatI18nPlaceholderName} from './util';
@@ -14,21 +15,13 @@ import {formatI18nPlaceholderName} from './util';
 export function createLocalizeStatements(
     variable: o.ReadVarExpr, message: i18n.Message,
     params: {[name: string]: o.Expression}): o.Statement[] {
-  const statements = [];
-
   const {messageParts, placeHolders} = serializeI18nMessageForLocalize(message);
-  statements.push(new o.ExpressionStatement(variable.set(
-      o.localizedString(message, messageParts, placeHolders, placeHolders.map(ph => params[ph])))));
-
-  return statements;
-}
-
-class MessagePiece {
-  constructor(public text: string) {}
-}
-class LiteralPiece extends MessagePiece {}
-class PlaceholderPiece extends MessagePiece {
-  constructor(name: string) { super(formatI18nPlaceholderName(name, /* useCamelCase */ false)); }
+  const sourceSpan = getSourceSpan(message);
+  const expressions = placeHolders.map(ph => params[ph.text]);
+  const localizedString =
+      o.localizedString(message, messageParts, placeHolders, expressions, sourceSpan);
+  const variableInitialization = variable.set(localizedString);
+  return [new o.ExpressionStatement(variableInitialization)];
 }
 
 /**
@@ -37,37 +30,42 @@ class PlaceholderPiece extends MessagePiece {
  * The result can be used for generating the `$localize` tagged template literals.
  */
 class LocalizeSerializerVisitor implements i18n.Visitor {
-  visitText(text: i18n.Text, context: MessagePiece[]): any {
-    if (context[context.length - 1] instanceof LiteralPiece) {
+  visitText(text: i18n.Text, context: o.MessagePiece[]): any {
+    if (context[context.length - 1] instanceof o.LiteralPiece) {
       // Two literal pieces in a row means that there was some comment node in-between.
       context[context.length - 1].text += text.value;
     } else {
-      context.push(new LiteralPiece(text.value));
+      context.push(new o.LiteralPiece(text.value, text.sourceSpan));
     }
   }
 
-  visitContainer(container: i18n.Container, context: MessagePiece[]): any {
+  visitContainer(container: i18n.Container, context: o.MessagePiece[]): any {
     container.children.forEach(child => child.visit(this, context));
   }
 
-  visitIcu(icu: i18n.Icu, context: MessagePiece[]): any {
-    context.push(new LiteralPiece(serializeIcuNode(icu)));
+  visitIcu(icu: i18n.Icu, context: o.MessagePiece[]): any {
+    context.push(new o.LiteralPiece(serializeIcuNode(icu), icu.sourceSpan));
   }
 
-  visitTagPlaceholder(ph: i18n.TagPlaceholder, context: MessagePiece[]): any {
-    context.push(new PlaceholderPiece(ph.startName));
+  visitTagPlaceholder(ph: i18n.TagPlaceholder, context: o.MessagePiece[]): any {
+    context.push(this.createPlaceholderPiece(ph.startName, ph.startSourceSpan ?? ph.sourceSpan));
     if (!ph.isVoid) {
       ph.children.forEach(child => child.visit(this, context));
-      context.push(new PlaceholderPiece(ph.closeName));
+      context.push(this.createPlaceholderPiece(ph.closeName, ph.endSourceSpan ?? ph.sourceSpan));
     }
   }
 
-  visitPlaceholder(ph: i18n.Placeholder, context: MessagePiece[]): any {
-    context.push(new PlaceholderPiece(ph.name));
+  visitPlaceholder(ph: i18n.Placeholder, context: o.MessagePiece[]): any {
+    context.push(this.createPlaceholderPiece(ph.name, ph.sourceSpan));
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
-    context.push(new PlaceholderPiece(ph.name));
+    context.push(this.createPlaceholderPiece(ph.name, ph.sourceSpan));
+  }
+
+  private createPlaceholderPiece(name: string, sourceSpan: ParseSourceSpan): o.PlaceholderPiece {
+    return new o.PlaceholderPiece(
+        formatI18nPlaceholderName(name, /* useCamelCase */ false), sourceSpan);
   }
 }
 
@@ -82,10 +80,18 @@ const serializerVisitor = new LocalizeSerializerVisitor();
  * @returns an object containing the messageParts and placeholders.
  */
 export function serializeI18nMessageForLocalize(message: i18n.Message):
-    {messageParts: string[], placeHolders: string[]} {
-  const pieces: MessagePiece[] = [];
+    {messageParts: o.LiteralPiece[], placeHolders: o.PlaceholderPiece[]} {
+  const pieces: o.MessagePiece[] = [];
   message.nodes.forEach(node => node.visit(serializerVisitor, pieces));
   return processMessagePieces(pieces);
+}
+
+function getSourceSpan(message: i18n.Message): ParseSourceSpan {
+  const startNode = message.nodes[0];
+  const endNode = message.nodes[message.nodes.length - 1];
+  return new ParseSourceSpan(
+      startNode.sourceSpan.start, endNode.sourceSpan.end, startNode.sourceSpan.fullStart,
+      startNode.sourceSpan.details);
 }
 
 /**
@@ -97,31 +103,35 @@ export function serializeI18nMessageForLocalize(message: i18n.Message):
  * @param pieces The pieces to process.
  * @returns an object containing the messageParts and placeholders.
  */
-function processMessagePieces(pieces: MessagePiece[]):
-    {messageParts: string[], placeHolders: string[]} {
-  const messageParts: string[] = [];
-  const placeHolders: string[] = [];
+function processMessagePieces(pieces: o.MessagePiece[]):
+    {messageParts: o.LiteralPiece[], placeHolders: o.PlaceholderPiece[]} {
+  const messageParts: o.LiteralPiece[] = [];
+  const placeHolders: o.PlaceholderPiece[] = [];
 
-  if (pieces[0] instanceof PlaceholderPiece) {
+  if (pieces[0] instanceof o.PlaceholderPiece) {
     // The first piece was a placeholder so we need to add an initial empty message part.
-    messageParts.push('');
+    messageParts.push(createEmptyMessagePart(pieces[0].sourceSpan.start));
   }
 
   for (let i = 0; i < pieces.length; i++) {
     const part = pieces[i];
-    if (part instanceof LiteralPiece) {
-      messageParts.push(part.text);
+    if (part instanceof o.LiteralPiece) {
+      messageParts.push(part);
     } else {
-      placeHolders.push(part.text);
-      if (pieces[i - 1] instanceof PlaceholderPiece) {
+      placeHolders.push(part);
+      if (pieces[i - 1] instanceof o.PlaceholderPiece) {
         // There were two placeholders in a row, so we need to add an empty message part.
-        messageParts.push('');
+        messageParts.push(createEmptyMessagePart(pieces[i - 1].sourceSpan.end));
       }
     }
   }
-  if (pieces[pieces.length - 1] instanceof PlaceholderPiece) {
+  if (pieces[pieces.length - 1] instanceof o.PlaceholderPiece) {
     // The last piece was a placeholder so we need to add a final empty message part.
-    messageParts.push('');
+    messageParts.push(createEmptyMessagePart(pieces[pieces.length - 1].sourceSpan.end));
   }
   return {messageParts, placeHolders};
+}
+
+function createEmptyMessagePart(location: ParseLocation): o.LiteralPiece {
+  return new o.LiteralPiece('', new ParseSourceSpan(location, location));
 }

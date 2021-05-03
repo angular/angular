@@ -1,18 +1,20 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConnectableObservable, Observable, concat, defer, fromEvent, of , throwError} from 'rxjs';
+import {concat, ConnectableObservable, defer, fromEvent, Observable, of, throwError} from 'rxjs';
 import {filter, map, publish, switchMap, take, tap} from 'rxjs/operators';
 
 export const ERR_SW_NOT_SUPPORTED = 'Service workers are disabled or not supported by this browser';
 
 /**
  * An event emitted when a new version of the app is available.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
  *
  * @publicApi
  */
@@ -25,12 +27,32 @@ export interface UpdateAvailableEvent {
 /**
  * An event emitted when a new version of the app has been downloaded and activated.
  *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
  * @publicApi
  */
 export interface UpdateActivatedEvent {
   type: 'UPDATE_ACTIVATED';
   previous?: {hash: string, appData?: Object};
   current: {hash: string, appData?: Object};
+}
+
+/**
+ * An event emitted when the version of the app used by the service worker to serve this client is
+ * in a broken state that cannot be recovered from and a full page reload is required.
+ *
+ * For example, the service worker may not be able to retrieve a required resource, neither from the
+ * cache nor from the server. This could happen if a new version is deployed to the server and the
+ * service worker cache has been partially cleaned by the browser, removing some files of a previous
+ * app version but not all.
+ *
+ * @see {@link guide/service-worker-communications Service worker communication guide}
+ *
+ * @publicApi
+ */
+export interface UnrecoverableStateEvent {
+  type: 'UNRECOVERABLE_STATE';
+  reason: string;
 }
 
 /**
@@ -41,9 +63,11 @@ export interface PushEvent {
   data: any;
 }
 
-export type IncomingEvent = UpdateAvailableEvent | UpdateActivatedEvent;
+export type IncomingEvent = UpdateAvailableEvent|UpdateActivatedEvent|UnrecoverableStateEvent;
 
-export interface TypedEvent { type: string; }
+export interface TypedEvent {
+  type: string;
+}
 
 interface StatusEvent {
   type: 'STATUS';
@@ -73,7 +97,7 @@ export class NgswCommChannel {
     } else {
       const controllerChangeEvents = fromEvent(serviceWorker, 'controllerchange');
       const controllerChanges = controllerChangeEvents.pipe(map(() => serviceWorker.controller));
-      const currentController = defer(() => of (serviceWorker.controller));
+      const currentController = defer(() => of(serviceWorker.controller));
       const controllerWithChanges = concat(currentController, controllerChanges);
 
       this.worker = controllerWithChanges.pipe(filter((c): c is ServiceWorker => !!c));
@@ -95,7 +119,8 @@ export class NgswCommChannel {
     return this.worker
         .pipe(take(1), tap((sw: ServiceWorker) => {
                 sw.postMessage({
-                    action, ...payload,
+                  action,
+                  ...payload,
                 });
               }))
         .toPromise()
@@ -108,7 +133,9 @@ export class NgswCommChannel {
     return Promise.all([waitForStatus, postMessage]).then(() => undefined);
   }
 
-  generateNonce(): number { return Math.round(Math.random() * 10000000); }
+  generateNonce(): number {
+    return Math.round(Math.random() * 10000000);
+  }
 
   eventsOfType<T extends TypedEvent>(type: T['type']): Observable<T> {
     const filterFn = (event: TypedEvent): event is T => event.type === type;
@@ -125,10 +152,12 @@ export class NgswCommChannel {
                 if (event.status) {
                   return undefined;
                 }
-                throw new Error(event.error !);
+                throw new Error(event.error!);
               }))
         .toPromise();
   }
 
-  get isEnabled(): boolean { return !!this.serviceWorker; }
+  get isEnabled(): boolean {
+    return !!this.serviceWorker;
+  }
 }

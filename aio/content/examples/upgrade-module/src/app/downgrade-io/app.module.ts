@@ -6,10 +6,8 @@ import { UpgradeModule, downgradeComponent } from '@angular/upgrade/static';
 
 import { MainController } from './main.controller';
 
-// #docregion downgradecomponent
 import { HeroDetailComponent } from './hero-detail.component';
 
-// #enddocregion downgradecomponent
 @NgModule({
   imports: [
     BrowserModule,
@@ -28,12 +26,10 @@ export class AppModule {
     this.upgrade.bootstrap(document.body, ['heroApp'], { strictDi: true });
   }
 }
-// #docregion downgradecomponent
 
 angular.module('heroApp', [])
   .controller('MainController', MainController)
   .directive('heroDetail', downgradeComponent({component: HeroDetailComponent}) as angular.IDirectiveFactory);
 
-// #enddocregion downgradecomponent
 
 platformBrowserDynamic().bootstrapModule(AppModule);

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -26,6 +26,5 @@ import {ParseTreeResult} from '@angular/compiler/src/ml_parser/parser';
       i18nHtmlParser.parse('source', 'url');
       expect(TranslationBundle.load).toHaveBeenCalledTimes(1);
     });
-
   });
 }

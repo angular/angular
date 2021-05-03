@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 
 import {getTemplateExpressionDiagnostics} from '../src/expression_diagnostics';
 
-import {DiagnosticContext, MockLanguageServiceHost, getDiagnosticTemplateInfo} from './mocks';
+import {DiagnosticContext, getDiagnosticTemplateInfo, MockLanguageServiceHost} from './mocks';
 
 describe('expression diagnostics', () => {
   let registry: ts.DocumentRegistry;
@@ -27,15 +27,15 @@ describe('expression diagnostics', () => {
     registry = ts.createDocumentRegistry(false, '/src');
     host = new MockLanguageServiceHost(['app/app.component.ts'], FILES, '/src');
     service = ts.createLanguageService(host, registry);
-    const program = service.getProgram() !;
+    const program = service.getProgram()!;
     const checker = program.getTypeChecker();
-    const symbolResolverHost = new ReflectorHost(() => program !, host);
-    context = new DiagnosticContext(service, program !, checker, symbolResolverHost);
+    const symbolResolverHost = new ReflectorHost(() => program!, host);
+    context = new DiagnosticContext(service, program!, checker, symbolResolverHost);
     type = context.getStaticSymbol('app/app.component.ts', 'AppComponent');
   });
 
   it('should have no diagnostics in default app', () => {
-    function messageToString(messageText: string | ts.DiagnosticMessageChain): string {
+    function messageToString(messageText: string|ts.DiagnosticMessageChain): string {
       if (typeof messageText == 'string') {
         return messageText;
       } else {
@@ -102,18 +102,21 @@ describe('expression diagnostics', () => {
   it('should reject *ngIf of misspelled identifier in PrefixNot node',
      () =>
          reject('<div *ngIf="people && !persson"></div>', 'Identifier \'persson\' is not defined'));
+  it('should reject misspelled field in unary operator expression',
+     () => reject('{{ +persson }}', `Identifier 'persson' is not defined`));
   it('should accept an *ngFor', () => accept(`
       <div *ngFor="let p of people">
         {{p.name.first}} {{p.name.last}}
       </div>
     `));
-  it('should reject misspelled field in *ngFor', () => reject(
-                                                     `
+  it('should reject misspelled field in *ngFor',
+     () => reject(
+         `
       <div *ngFor="let p of people">
         {{p.names.first}} {{p.name.last}}
       </div>
     `,
-                                                     'Identifier \'names\' is not defined'));
+         'Identifier \'names\' is not defined'));
   it('should accept an async expression',
      () => accept('{{(promised_person | async)?.name.first || ""}}'));
   it('should reject an async misspelled field',
@@ -124,25 +127,27 @@ describe('expression diagnostics', () => {
         {{p.name.first}} {{p.name.last}}
       </div>
     `));
-  it('should reject misspelled field an async *ngFor', () => reject(
-                                                           `
+  it('should reject misspelled field an async *ngFor',
+     () => reject(
+         `
       <div *ngFor="let p of promised_people | async">
         {{p.name.first}} {{p.nume.last}}
       </div>
     `,
-                                                           'Identifier \'nume\' is not defined'));
+         'Identifier \'nume\' is not defined'));
   it('should accept an async *ngIf', () => accept(`
       <div *ngIf="promised_person | async as p">
         {{p.name.first}} {{p.name.last}}
       </div>
     `));
-  it('should reject misspelled field in async *ngIf', () => reject(
-                                                          `
+  it('should reject misspelled field in async *ngIf',
+     () => reject(
+         `
       <div *ngIf="promised_person | async as p">
         {{p.name.first}} {{p.nume.last}}
       </div>
     `,
-                                                          'Identifier \'nume\' is not defined'));
+         'Identifier \'nume\' is not defined'));
   it('should reject access to potentially undefined field',
      () => reject(
          `<div>{{maybe_person.name.first}}`,

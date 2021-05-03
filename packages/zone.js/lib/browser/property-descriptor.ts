@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@
  * @suppress {globalThis}
  */
 
-import {ObjectGetPrototypeOf, isBrowser, isIE, isMix, isNode, patchOnProperties} from '../common/utils';
+import {isBrowser, isIE, isMix, isNode, ObjectGetPrototypeOf, patchOnProperties} from '../common/utils';
 
 const globalEventHandlersEventNames = [
   'abort',
@@ -277,7 +277,7 @@ export function propertyDescriptorPatch(api: _ZonePrivate, _global: any) {
   if (isBrowser) {
     const internalWindow: any = window;
     const ignoreErrorProperties =
-        isIE ? [{target: internalWindow, ignoreProperties: ['error']}] : [];
+        isIE() ? [{target: internalWindow, ignoreProperties: ['error']}] : [];
     // in IE/Edge, onProp not exist in window object, but in WindowPrototype
     // so we need to pass WindowPrototype to check onProp exist or not
     patchFilteredProperties(

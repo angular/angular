@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -79,8 +79,12 @@ export function downgradeInjectable(token: any, downgradedModule: string = ''): 
 
     validateInjectionKey($injector, downgradedModule, injectorKey, attemptedAction);
 
-    const injector: Injector = $injector.get(injectorKey);
-    return injector.get(token);
+    try {
+      const injector: Injector = $injector.get(injectorKey);
+      return injector.get(token);
+    } catch (err) {
+      throw new Error(`Error while ${attemptedAction}: ${err.message || err}`);
+    }
   };
   (factory as any)['$inject'] = [$INJECTOR];
 

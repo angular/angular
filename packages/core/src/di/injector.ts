@@ -1,31 +1,33 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbstractType, Type} from '../interface/type';
 import {stringify} from '../util/stringify';
 
 import {resolveForwardRef} from './forward_ref';
-import {InjectionToken} from './injection_token';
-import {INJECTOR, NG_TEMP_TOKEN_PATH, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, catchInjectorError, formatError, setCurrentInjector, ɵɵinject} from './injector_compatibility';
+import {catchInjectorError, formatError, NG_TEMP_TOKEN_PATH, setCurrentInjector, THROW_IF_NOT_FOUND, USE_VALUE, ɵɵinject} from './injector_compatibility';
+import {InjectorMarkers} from './injector_marker';
+import {INJECTOR} from './injector_token';
 import {getInjectableDef, ɵɵdefineInjectable} from './interface/defs';
 import {InjectFlags} from './interface/injector';
 import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './interface/provider';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
+import {NullInjector} from './null_injector';
+import {ProviderToken} from './provider_token';
 import {createInjector} from './r3_injector';
 import {INJECTOR_SCOPE} from './scope';
 
 export function INJECTOR_IMPL__PRE_R3__(
-    providers: StaticProvider[], parent: Injector | undefined, name: string) {
+    providers: StaticProvider[], parent: Injector|undefined, name: string) {
   return new StaticInjector(providers, parent, name);
 }
 
 export function INJECTOR_IMPL__POST_R3__(
-    providers: StaticProvider[], parent: Injector | undefined, name: string) {
+    providers: StaticProvider[], parent: Injector|undefined, name: string) {
   return createInjector({name: name}, parent, providers, name);
 }
 
@@ -64,10 +66,9 @@ export abstract class Injector {
    * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
    * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
-  abstract get<T>(
-      token: Type<T>|InjectionToken<T>|AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  abstract get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   /**
-   * @deprecated from v4.0.0 use Type<T> or InjectionToken<T>
+   * @deprecated from v4.0.0 use ProviderToken<T>
    * @suppress {duplicate}
    */
   abstract get(token: any, notFoundValue?: any): any;
@@ -103,7 +104,7 @@ export abstract class Injector {
   }
 
   /** @nocollapse */
-  static ɵprov = ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
     token: Injector,
     providedIn: 'any' as any,
     factory: () => ɵɵinject(INJECTOR),
@@ -113,7 +114,7 @@ export abstract class Injector {
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__ = -1;
+  static __NG_ELEMENT_ID__ = InjectorMarkers.Injector;
 }
 
 
@@ -154,7 +155,7 @@ export class StaticInjector implements Injector {
     this.scope = recursivelyProcessProviders(records, providers);
   }
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   get(token: any, notFoundValue?: any): any;
   get(token: any, notFoundValue?: any, flags: InjectFlags = InjectFlags.Default): any {
     const records = this._records;
@@ -163,11 +164,12 @@ export class StaticInjector implements Injector {
       // This means we have never seen this record, see if it is tree shakable provider.
       const injectableDef = getInjectableDef(token);
       if (injectableDef) {
-        const providedIn = injectableDef && injectableDef.providedIn;
+        const providedIn = injectableDef && resolveForwardRef(injectableDef.providedIn);
         if (providedIn === 'any' || providedIn != null && providedIn === this.scope) {
           records.set(
-              token, record = resolveProvider(
-                         {provide: token, useFactory: injectableDef.factory, deps: EMPTY}));
+              token,
+              record = resolveProvider(
+                  {provide: token, useFactory: injectableDef.factory, deps: EMPTY}));
         }
       }
       if (record === undefined) {
@@ -193,7 +195,7 @@ export class StaticInjector implements Injector {
 }
 
 type SupportedProvider =
-    ValueProvider | ExistingProvider | StaticClassProvider | ConstructorProvider | FactoryProvider;
+    ValueProvider|ExistingProvider|StaticClassProvider|ConstructorProvider|FactoryProvider;
 
 interface Record {
   fn: Function;
@@ -293,7 +295,7 @@ function recursivelyProcessProviders(records: Map<any, Record>, provider: Static
 }
 
 function tryResolveToken(
-    token: any, record: Record | undefined | null, records: Map<any, Record|null>, parent: Injector,
+    token: any, record: Record|undefined|null, records: Map<any, Record|null>, parent: Injector,
     notFoundValue: any, flags: InjectFlags): any {
   try {
     return resolveToken(token, record, records, parent, notFoundValue, flags);
@@ -313,7 +315,7 @@ function tryResolveToken(
 }
 
 function resolveToken(
-    token: any, record: Record | undefined | null, records: Map<any, Record|null>, parent: Injector,
+    token: any, record: Record|undefined|null, records: Map<any, Record|null>, parent: Injector,
     notFoundValue: any, flags: InjectFlags): any {
   let value;
   if (record && !(flags & InjectFlags.SkipSelf)) {

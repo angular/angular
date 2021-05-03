@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -69,9 +69,13 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     }
   }
 
-  init(): void { this.players.forEach(player => player.init()); }
+  init(): void {
+    this.players.forEach(player => player.init());
+  }
 
-  onStart(fn: () => void): void { this._onStartFns.push(fn); }
+  onStart(fn: () => void): void {
+    this._onStartFns.push(fn);
+  }
 
   private _onStart() {
     if (!this.hasStarted()) {
@@ -81,11 +85,17 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     }
   }
 
-  onDone(fn: () => void): void { this._onDoneFns.push(fn); }
+  onDone(fn: () => void): void {
+    this._onDoneFns.push(fn);
+  }
 
-  onDestroy(fn: () => void): void { this._onDestroyFns.push(fn); }
+  onDestroy(fn: () => void): void {
+    this._onDestroyFns.push(fn);
+  }
 
-  hasStarted() { return this._started; }
+  hasStarted() {
+    return this._started;
+  }
 
   play() {
     if (!this.parentPlayer) {
@@ -95,16 +105,22 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     this.players.forEach(player => player.play());
   }
 
-  pause(): void { this.players.forEach(player => player.pause()); }
+  pause(): void {
+    this.players.forEach(player => player.pause());
+  }
 
-  restart(): void { this.players.forEach(player => player.restart()); }
+  restart(): void {
+    this.players.forEach(player => player.restart());
+  }
 
   finish(): void {
     this._onFinish();
     this.players.forEach(player => player.finish());
   }
 
-  destroy(): void { this._onDestroy(); }
+  destroy(): void {
+    this._onDestroy();
+  }
 
   private _onDestroy() {
     if (!this._destroyed) {
@@ -132,12 +148,13 @@ export class AnimationGroupPlayer implements AnimationPlayer {
   }
 
   getPosition(): number {
-    let min = 0;
-    this.players.forEach(player => {
-      const p = player.getPosition();
-      min = Math.min(p, min);
-    });
-    return min;
+    const longestPlayer =
+        this.players.reduce((longestSoFar: AnimationPlayer|null, player: AnimationPlayer) => {
+          const newPlayerIsLongest =
+              longestSoFar === null || player.totalTime > longestSoFar.totalTime;
+          return newPlayerIsLongest ? player : longestSoFar;
+        }, null);
+    return longestPlayer != null ? longestPlayer.getPosition() : 0;
   }
 
   beforeDestroy(): void {

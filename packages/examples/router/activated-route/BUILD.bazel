@@ -27,7 +27,7 @@ ts_devserver(
     ],
     static_files = [
         "//packages/examples:index.html",
-        "//packages/zone.js/dist:zone.js",
+        "//packages/zone.js/bundles:zone.umd.js",
     ],
     deps = [":router_activated_route_examples"],
 )

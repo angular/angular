@@ -1,5 +1,5 @@
 load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver")
-load("//modules/benchmarks:benchmark_test.bzl", "benchmark_test")
+load("//dev-infra/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
 
 package(default_visibility = ["//modules/benchmarks:__subpackages__"])
 
@@ -26,10 +26,10 @@ ng_rollup_bundle(
 
 ts_devserver(
     name = "prodserver",
-    bootstrap = ["//packages/zone.js/dist:zone.js"],
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
     port = 4200,
     static_files = ["index.html"],
-    deps = [":bundle.min_debug.es2015.js"],
+    deps = [":bundle.min_debug.js"],
 )
 
 benchmark_test(

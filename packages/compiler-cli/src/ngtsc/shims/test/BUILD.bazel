@@ -10,7 +10,11 @@ ts_library(
     ]),
     deps = [
         "//packages:types",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
         "//packages/compiler-cli/src/ngtsc/shims",
+        "//packages/compiler-cli/src/ngtsc/shims:api",
+        "//packages/compiler-cli/src/ngtsc/testing",
         "@npm//typescript",
     ],
 )

@@ -16,6 +16,7 @@
       "remoteRoot": "${workspaceRoot}",
       "stopOnEntry": false,
       "timeout": 600000,
+      "outFiles": ["${workspaceFolder}/bazel-out/**/angular/**/*.js"],
     },
     {
       "name": "Attach to bazel test ... --config=debug (no source maps)",
@@ -29,6 +30,7 @@
       "remoteRoot": "${workspaceRoot}",
       "stopOnEntry": false,
       "timeout": 600000,
+      "outFiles": ["${workspaceFolder}/bazel-out/**/angular/**/*.js"],
     },
     {
       "name": "IVY:packages/core/test/acceptance",
@@ -46,6 +48,7 @@
       "restart": true,
       "sourceMaps": true,
       "timeout": 600000,
+      "outFiles": ["${workspaceFolder}/bazel-out/**/angular/**/*.js"],
     },
     {
       "name": "IVY:packages/core/test/render3",
@@ -63,6 +66,7 @@
       "restart": true,
       "sourceMaps": true,
       "timeout": 600000,
+      "outFiles": ["${workspaceFolder}/bazel-out/**/angular/**/*.js"],
     },
     {
       "name": "IVY:packages/core/test",
@@ -80,6 +84,7 @@
       "restart": true,
       "sourceMaps": true,
       "timeout": 600000,
+      "outFiles": ["${workspaceFolder}/bazel-out/**/angular/**/*.js"],
     },
   ]
 }

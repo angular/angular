@@ -1,19 +1,21 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
 
-import {AbsoluteFsPath, NgtscCompilerHost, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, getFileSystem, NgtscCompilerHost} from '../../../src/ngtsc/file_system';
 import {TestFile} from '../../../src/ngtsc/file_system/testing';
+import {DtsProcessing} from '../../src/execution/tasks/api';
 import {BundleProgram, makeBundleProgram} from '../../src/packages/bundle_program';
 import {NgccEntryPointConfig} from '../../src/packages/configuration';
 import {EntryPoint, EntryPointFormat} from '../../src/packages/entry_point';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
 import {NgccSourcesCompilerHost} from '../../src/packages/ngcc_compiler_host';
+import {createModuleResolutionCache, EntryPointFileCache, SharedFileCache} from '../../src/packages/source_file_cache';
 
 export type TestConfig = Pick<NgccEntryPointConfig, 'generateDeepReexports'>;
 
@@ -21,9 +23,10 @@ export function makeTestEntryPoint(
     entryPointName: string, packageName: string = entryPointName, config?: TestConfig): EntryPoint {
   return {
     name: entryPointName,
-    packageJson: {name: entryPointName},
-    package: absoluteFrom(`/node_modules/${packageName}`),
     path: absoluteFrom(`/node_modules/${entryPointName}`),
+    packageName,
+    packagePath: absoluteFrom(`/node_modules/${packageName}`),
+    packageJson: {name: entryPointName},
     typings: absoluteFrom(`/node_modules/${entryPointName}/index.d.ts`),
     compiledByAngular: true,
     ignoreMissingDependencies: false,
@@ -43,13 +46,20 @@ export function makeTestEntryPointBundle(
     enableI18nLegacyMessageIdFormat = false): EntryPointBundle {
   const entryPoint = makeTestEntryPoint(packageName, packageName, config);
   const src = makeTestBundleProgram(srcRootNames[0], isCore);
-  const dts =
-      dtsRootNames ? makeTestDtsBundleProgram(dtsRootNames[0], entryPoint.package, isCore) : null;
+  const dts = dtsRootNames ?
+      makeTestDtsBundleProgram(dtsRootNames[0], entryPoint.packagePath, isCore) :
+      null;
   const isFlatCore = isCore && src.r3SymbolsFile === null;
   return {
     entryPoint,
     format,
-    rootDirs: [absoluteFrom('/')], src, dts, isCore, isFlatCore, enableI18nLegacyMessageIdFormat
+    rootDirs: [absoluteFrom('/')],
+    src,
+    dts,
+    dtsProcessing: dtsRootNames ? DtsProcessing.Yes : DtsProcessing.No,
+    isCore,
+    isFlatCore,
+    enableI18nLegacyMessageIdFormat
   };
 }
 
@@ -61,7 +71,10 @@ export function makeTestBundleProgram(
   const rootDir = fs.dirname(entryPointPath);
   const options: ts.CompilerOptions =
       {allowJs: true, maxNodeModuleJsDepth: Infinity, checkJs: false, rootDir, rootDirs: [rootDir]};
-  const host = new NgccSourcesCompilerHost(fs, options, entryPointPath);
+  const moduleResolutionCache = createModuleResolutionCache(fs);
+  const entryPointFileCache = new EntryPointFileCache(fs, new SharedFileCache(fs));
+  const host =
+      new NgccSourcesCompilerHost(fs, options, entryPointFileCache, moduleResolutionCache, rootDir);
   return makeBundleProgram(
       fs, isCore, rootDir, path, 'r3_symbols.js', options, host, additionalFiles);
 }

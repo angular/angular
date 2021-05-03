@@ -1,0 +1,19 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+
+ts_library(
+    name = "release",
+    srcs = glob([
+        "**/*.ts",
+    ]),
+    module_name = "@angular/dev-infra-private/release",
+    visibility = ["//dev-infra:__subpackages__"],
+    deps = [
+        "//dev-infra/release/build",
+        "//dev-infra/release/publish",
+        "//dev-infra/release/set-dist-tag",
+        "//dev-infra/utils",
+        "@npm//@types/node",
+        "@npm//@types/yargs",
+        "@npm//yargs",
+    ],
+)

@@ -1,17 +1,17 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {devModeEqual} from '../change_detection/change_detection_util';
-import {assertDataInRange, assertLessThan, assertNotSame} from '../util/assert';
+import {assertIndexInRange, assertLessThan, assertNotSame} from '../util/assert';
 
 import {getExpressionChangedErrorDetails, throwErrorIfNoChangesMode} from './errors';
 import {LView} from './interfaces/view';
-import {getCheckNoChangesMode} from './state';
+import {isInCheckNoChangesMode} from './state';
 import {NO_CHANGE} from './tokens';
 
 
@@ -24,7 +24,7 @@ export function updateBinding(lView: LView, bindingIndex: number, value: any): a
 
 /** Gets the current binding value. */
 export function getBinding(lView: LView, bindingIndex: number): any {
-  ngDevMode && assertDataInRange(lView, bindingIndex);
+  ngDevMode && assertIndexInRange(lView, bindingIndex);
   ngDevMode &&
       assertNotSame(lView[bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
   return lView[bindingIndex];
@@ -52,7 +52,7 @@ export function bindingUpdated(lView: LView, bindingIndex: number, value: any): 
   if (Object.is(oldValue, value)) {
     return false;
   } else {
-    if (ngDevMode && getCheckNoChangesMode()) {
+    if (ngDevMode && isInCheckNoChangesMode()) {
       // View engine didn't report undefined values as changed on the first checkNoChanges pass
       // (before the change detection was run).
       const oldValueToCompare = oldValue !== NO_CHANGE ? oldValue : undefined;

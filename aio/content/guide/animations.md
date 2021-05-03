@@ -65,7 +65,7 @@ In the component file, add a metadata property called `animations:` within the `
 
 ## Animating a simple transition
 
-Let's animate a simple transition that changes a single HTML element from one state to another. For example, you can specify that a button displays either **Open** or **Closed** based on the user's last action. When the button is in the `open` state, it's visible and yellow. When it's the `closed` state, it's transparent and green.
+Let's animate a simple transition that changes a single HTML element from one state to another. For example, you can specify that a button displays either **Open** or **Closed** based on the user's last action. When the button is in the `open` state, it's visible and yellow. When it's in the `closed` state, it's transparent and green.
 
 In HTML, these attributes are set using ordinary CSS styles such as color and opacity. In Angular, use the `style()` function to specify a set of CSS styles for use with animations. You can collect a set of styles in an animation state, and give the state a name, such as `open` or `closed`.
 
@@ -118,7 +118,7 @@ The second argument, `delay`, has the same syntax as `duration`. For example:
 
 * Wait for 100ms and then run for 200ms: `'0.2s 100ms'`
 
-The third argument, `easing`, controls how the animation [accelerates and decelerates](http://easings.net/) during its runtime. For example, `ease-in` causes the animation to begin slowly, and to pick up speed as it progresses.
+The third argument, `easing`, controls how the animation [accelerates and decelerates](https://easings.net/) during its runtime. For example, `ease-in` causes the animation to begin slowly, and to pick up speed as it progresses.
 
 * Wait for 100ms, run for 200ms. Use a deceleration curve to start out fast and slowly decelerate to a resting point: `'0.2s 100ms ease-out'`
 
@@ -286,7 +286,7 @@ What it does
 
 <tr>
 <td><code>query()</code></td>
-<td>Use to find one or more inner HTML elements within the current element. </td>
+<td>Finds one or more inner HTML elements within the current element. </td>
 </tr>
 
 <tr>
@@ -327,5 +327,5 @@ You may also be interested in the following:
 
 <div class="alert is-helpful">
 
-Check out this full animation [demo](http://animationsftw.in/#/) with accompanying [presentation](https://www.youtube.com/watch?v=JhNo3Wvj6UQ&feature=youtu.be&t=2h47m53s), shown at the AngularConnect conference in November 2017.
+Check out this [presentation](https://www.youtube.com/watch?v=rnTK9meY5us), shown at the AngularConnect conference in November 2017, and the accompanying [source code](https://github.com/matsko/animationsftw.in).
 </div>

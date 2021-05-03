@@ -1,30 +1,69 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type, isType} from '../interface/type';
+import {isType, Type} from '../interface/type';
 import {newArray} from '../util/array_utils';
 import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
 import {global} from '../util/global';
 import {stringify} from '../util/stringify';
+
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
 
 
 
-/**
- * Attention: These regex has to hold even if the code is minified!
+/*
+ * #########################
+ * Attention: These Regular expressions have to hold even if the code is minified!
+ * ##########################
  */
-export const DELEGATE_CTOR = /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*arguments\)/;
-export const INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{/;
-export const INHERITED_CLASS_WITH_CTOR =
+
+/**
+ * Regular expression that detects pass-through constructors for ES5 output. This Regex
+ * intends to capture the common delegation pattern emitted by TypeScript and Babel. Also
+ * it intends to capture the pattern where existing constructors have been downleveled from
+ * ES2015 to ES5 using TypeScript w/ downlevel iteration. e.g.
+ *
+ * ```
+ *   function MyClass() {
+ *     var _this = _super.apply(this, arguments) || this;
+ * ```
+ *
+ * downleveled to ES5 with `downlevelIteration` for TypeScript < 4.2:
+ * ```
+ *   function MyClass() {
+ *     var _this = _super.apply(this, __spread(arguments)) || this;
+ * ```
+ *
+ * or downleveled to ES5 with `downlevelIteration` for TypeScript >= 4.2:
+ * ```
+ *   function MyClass() {
+ *     var _this = _super.apply(this, __spreadArray([], __read(arguments))) || this;
+ * ```
+ *
+ * More details can be found in: https://github.com/angular/angular/issues/38453.
+ */
+export const ES5_DELEGATE_CTOR =
+    /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*(arguments|(?:[^()]+\(\[\],)?[^()]+\(arguments\))\)/;
+/** Regular expression that detects ES2015 classes which extend from other classes. */
+export const ES2015_INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{/;
+/**
+ * Regular expression that detects ES2015 classes which extend from other classes and
+ * have an explicit constructor defined.
+ */
+export const ES2015_INHERITED_CLASS_WITH_CTOR =
     /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(/;
-export const INHERITED_CLASS_WITH_DELEGATE_CTOR =
-    /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(\)\s*{\s+super\(\.\.\.arguments\)/;
+/**
+ * Regular expression that detects ES2015 classes which extend from other classes
+ * and inherit a constructor.
+ */
+export const ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR =
+    /^class\s+[A-Za-z\d$_]*\s*extends\s+[^{]+{[\s\S]*constructor\s*\(\)\s*{\s*super\(\.\.\.arguments\)/;
 
 /**
  * Determine whether a stringified type is a class which delegates its constructor
@@ -35,18 +74,25 @@ export const INHERITED_CLASS_WITH_DELEGATE_CTOR =
  * an initialized instance property.
  */
 export function isDelegateCtor(typeStr: string): boolean {
-  return DELEGATE_CTOR.test(typeStr) || INHERITED_CLASS_WITH_DELEGATE_CTOR.test(typeStr) ||
-      (INHERITED_CLASS.test(typeStr) && !INHERITED_CLASS_WITH_CTOR.test(typeStr));
+  return ES5_DELEGATE_CTOR.test(typeStr) ||
+      ES2015_INHERITED_CLASS_WITH_DELEGATE_CTOR.test(typeStr) ||
+      (ES2015_INHERITED_CLASS.test(typeStr) && !ES2015_INHERITED_CLASS_WITH_CTOR.test(typeStr));
 }
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
 
-  constructor(reflect?: any) { this._reflect = reflect || global['Reflect']; }
+  constructor(reflect?: any) {
+    this._reflect = reflect || global['Reflect'];
+  }
 
-  isReflectionEnabled(): boolean { return true; }
+  isReflectionEnabled(): boolean {
+    return true;
+  }
 
-  factory<T>(t: Type<T>): (args: any[]) => T { return (...args: any[]) => new t(...args); }
+  factory<T>(t: Type<T>): (args: any[]) => T {
+    return (...args: any[]) => new t(...args);
+  }
 
   /** @internal */
   _zipTypesAndAnnotations(paramTypes: any[], paramAnnotations: any[]): any[][] {
@@ -235,9 +281,13 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return type instanceof Type && lcProperty in type.prototype;
   }
 
-  guards(type: any): {[key: string]: any} { return {}; }
+  guards(type: any): {[key: string]: any} {
+    return {};
+  }
 
-  getter(name: string): GetterFn { return <GetterFn>new Function('o', 'return o.' + name + ';'); }
+  getter(name: string): GetterFn {
+    return <GetterFn>new Function('o', 'return o.' + name + ';');
+  }
 
   setter(name: string): SetterFn {
     return <SetterFn>new Function('o', 'v', 'return o.' + name + ' = v;');
@@ -259,12 +309,16 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     return `./${stringify(type)}`;
   }
 
-  resourceUri(type: any): string { return `./${stringify(type)}`; }
+  resourceUri(type: any): string {
+    return `./${stringify(type)}`;
+  }
 
   resolveIdentifier(name: string, moduleUrl: string, members: string[], runtime: any): any {
     return runtime;
   }
-  resolveEnum(enumIdentifier: any, name: string): any { return enumIdentifier[name]; }
+  resolveEnum(enumIdentifier: any, name: string): any {
+    return enumIdentifier[name];
+  }
 }
 
 function convertTsickleDecoratorIntoMetadata(decoratorInvocations: any[]): any[] {

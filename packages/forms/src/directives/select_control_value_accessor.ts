@@ -1,14 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider, forwardRef, ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {Directive, ElementRef, forwardRef, Host, Input, OnDestroy, Optional, Renderer2, StaticProvider} from '@angular/core';
 
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
+import {BuiltInControlValueAccessor, ControlValueAccessor, NG_VALUE_ACCESSOR} from './control_value_accessor';
 
 export const SELECT_VALUE_ACCESSOR: StaticProvider = {
   provide: NG_VALUE_ACCESSOR,
@@ -16,7 +16,7 @@ export const SELECT_VALUE_ACCESSOR: StaticProvider = {
   multi: true
 };
 
-function _buildValueString(id: string | null, value: any): string {
+function _buildValueString(id: string|null, value: any): string {
   if (id == null) return `${value}`;
   if (value && typeof value === 'object') value = 'Object';
   return `${id}: ${value}`.slice(0, 50);
@@ -75,9 +75,8 @@ function _extractId(valueString: string): string {
  * ```
  *
  * **Note:** We listen to the 'change' event because 'input' events aren't fired
- * for selects in Firefox and IE:
- * https://bugzilla.mozilla.org/show_bug.cgi?id=1024350
- * https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4660045/
+ * for selects in IE, see:
+ * https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event#browser_compatibility
  *
  * @ngModule ReactiveFormsModule
  * @ngModule FormsModule
@@ -89,24 +88,16 @@ function _extractId(valueString: string): string {
   host: {'(change)': 'onChange($event.target.value)', '(blur)': 'onTouched()'},
   providers: [SELECT_VALUE_ACCESSOR]
 })
-export class SelectControlValueAccessor implements ControlValueAccessor {
+export class SelectControlValueAccessor extends BuiltInControlValueAccessor implements
+    ControlValueAccessor {
+  /** @nodoc */
   value: any;
+
   /** @internal */
   _optionMap: Map<string, any> = new Map<string, any>();
+
   /** @internal */
   _idCounter: number = 0;
-
-  /**
-   * @description
-   * The registered callback function called when a change event occurs on the input element.
-   */
-  onChange = (_: any) => {};
-
-  /**
-   * @description
-   * The registered callback function called when a blur event occurs on the input element.
-   */
-  onTouched = () => {};
 
   /**
    * @description
@@ -115,37 +106,32 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
    */
   @Input()
   set compareWith(fn: (o1: any, o2: any) => boolean) {
-    if (typeof fn !== 'function') {
+    if (typeof fn !== 'function' && (typeof ngDevMode === 'undefined' || ngDevMode)) {
       throw new Error(`compareWith must be a function, but received ${JSON.stringify(fn)}`);
     }
     this._compareWith = fn;
   }
 
-  private _compareWith: (o1: any, o2: any) => boolean = looseIdentical;
-
-  constructor(private _renderer: Renderer2, private _elementRef: ElementRef) {}
+  private _compareWith: (o1: any, o2: any) => boolean = Object.is;
 
   /**
    * Sets the "value" property on the input element. The "selectedIndex"
    * property is also set if an ID is provided on the option element.
-   *
-   * @param value The checked value
+   * @nodoc
    */
   writeValue(value: any): void {
     this.value = value;
     const id: string|null = this._getOptionId(value);
     if (id == null) {
-      this._renderer.setProperty(this._elementRef.nativeElement, 'selectedIndex', -1);
+      this.setProperty('selectedIndex', -1);
     }
     const valueString = _buildValueString(id, value);
-    this._renderer.setProperty(this._elementRef.nativeElement, 'value', valueString);
+    this.setProperty('value', valueString);
   }
 
   /**
-   * @description
    * Registers a function called when the control value changes.
-   *
-   * @param fn The callback function
+   * @nodoc
    */
   registerOnChange(fn: (value: any) => any): void {
     this.onChange = (valueString: string) => {
@@ -154,25 +140,10 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
     };
   }
 
-  /**
-   * @description
-   * Registers a function called when the control is touched.
-   *
-   * @param fn The callback function
-   */
-  registerOnTouched(fn: () => any): void { this.onTouched = fn; }
-
-  /**
-   * Sets the "disabled" property on the select input element.
-   *
-   * @param isDisabled The disabled value
-   */
-  setDisabledState(isDisabled: boolean): void {
-    this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
-  }
-
   /** @internal */
-  _registerOption(): string { return (this._idCounter++).toString(); }
+  _registerOption(): string {
+    return (this._idCounter++).toString();
+  }
 
   /** @internal */
   _getOptionId(value: any): string|null {
@@ -206,7 +177,7 @@ export class NgSelectOption implements OnDestroy {
    * ID of the option element
    */
   // TODO(issue/24571): remove '!'.
-  id !: string;
+  id!: string;
 
   constructor(
       private _element: ElementRef, private _renderer: Renderer2,
@@ -243,10 +214,7 @@ export class NgSelectOption implements OnDestroy {
     this._renderer.setProperty(this._element.nativeElement, 'value', value);
   }
 
-  /**
-   * @description
-   * Lifecycle method called before the directive's instance is destroyed. For internal use only.
-   */
+  /** @nodoc */
   ngOnDestroy(): void {
     if (this._select) {
       this._select._optionMap.delete(this.id);

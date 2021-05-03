@@ -9,7 +9,7 @@ ts_library(
     ]),
     module_name = "@angular/compiler-cli/src/ngtsc/cycles",
     deps = [
-        "//packages/compiler-cli/src/ngtsc/imports",
+        "//packages/compiler-cli/src/ngtsc/perf",
         "@npm//typescript",
     ],
 )

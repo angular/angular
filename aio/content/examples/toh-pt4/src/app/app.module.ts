@@ -17,11 +17,9 @@ import { MessagesComponent } from './messages/messages.component';
     BrowserModule,
     FormsModule
   ],
-  // #docregion providers
   providers: [
     // no need to place any providers due to the `providedIn` flag...
   ],
-  // #enddocregion providers
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

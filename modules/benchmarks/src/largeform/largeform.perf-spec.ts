@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,8 +8,7 @@
 
 import {$} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
-import {runBenchmark} from '../../../e2e_util/perf_util';
+import {runBenchmark, verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 interface Worker {
   id: string;
@@ -26,12 +25,11 @@ const CreateAndDestroyWorker = {
 };
 
 describe('largeform benchmark spec', () => {
-
   afterEach(verifyNoBrowserErrors);
 
   [CreateAndDestroyWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it('should run for ng2', async() => {
+      it('should run for ng2', async () => {
         await runLargeFormBenchmark({url: '/', id: `largeform.ng2.${worker.id}`, worker: worker});
       });
     });

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,32 +12,32 @@ import * as cluster from 'cluster';
 
 import {AbsoluteFsPath} from '../../../../src/ngtsc/file_system';
 import {JsonObject} from '../../packages/entry_point';
-import {PackageJsonChange, PackageJsonUpdate, PackageJsonUpdater, applyChange} from '../../writing/package_json_updater';
+import {applyChange, PackageJsonChange, PackageJsonUpdate, PackageJsonUpdater} from '../../writing/package_json_updater';
 
 import {sendMessageToMaster} from './utils';
 
 
 /**
- * A `PackageJsonUpdater` that can safely handle update operations on multiple processes.
+ * A `PackageJsonUpdater` for cluster workers that will send update changes to the master process so
+ * that it can safely handle update operations on multiple processes.
  */
-export class ClusterPackageJsonUpdater implements PackageJsonUpdater {
-  constructor(private delegate: PackageJsonUpdater) {}
+export class ClusterWorkerPackageJsonUpdater implements PackageJsonUpdater {
+  constructor() {
+    if (cluster.isMaster) {
+      throw new Error('Tried to create cluster worker PackageJsonUpdater on the master process.');
+    }
+  }
 
   createUpdate(): PackageJsonUpdate {
     return new PackageJsonUpdate((...args) => this.writeChanges(...args));
   }
 
+  /**
+   * Apply the changes in-memory (if necessary) and send a message to the master process.
+   */
   writeChanges(
       changes: PackageJsonChange[], packageJsonPath: AbsoluteFsPath,
       preExistingParsedJson?: JsonObject): void {
-    if (cluster.isMaster) {
-      // This is the master process:
-      // Actually apply the changes to the file on disk.
-      return this.delegate.writeChanges(changes, packageJsonPath, preExistingParsedJson);
-    }
-
-    // This is a worker process:
-    // Apply the changes in-memory (if necessary) and send a message to the master process.
     if (preExistingParsedJson) {
       for (const [propPath, value] of changes) {
         if (propPath.length === 0) {

@@ -6,8 +6,6 @@
 # Each statement should be followed by an `assert*` or `exit 1` statement.
 set +e -x
 
-PATH=$PATH:$(npm bin)
-
 function assertFailed {
   if [[ $? -eq 0 ]]; then
     echo "FAIL: $1";
@@ -64,41 +62,31 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"fesm2015": "'
   assertSucceeded "Expected 'ngcc' to add build marker for 'fesm2015' in '@angular/common'."
 
+  # `es2015` is an alias of `fesm2015`.
   cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"es2015": "'
   assertSucceeded "Expected 'ngcc' to add build marker for 'es2015' in '@angular/common'."
 
-  # - esm5
-  cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"esm5": "'
-  assertSucceeded "Expected 'ngcc' to add build marker for 'esm5' in '@angular/common'."
-
-  # - fesm5
+  # `module` is an alias of `fesm2015`
   cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"module": "'
   assertSucceeded "Expected 'ngcc' to add build marker for 'module' in '@angular/common'."
-
-  cat node_modules/@angular/common/package.json | awk 'ORS=" "' | grep '"__processed_by_ivy_ngcc__":[^}]*"fesm5": "'
-  assertSucceeded "Expected 'ngcc' to add build marker for 'fesm5' in '@angular/common'."
-
 
 # Did it replace the PRE_R3 markers correctly?
   grep "= SWITCH_COMPILE_COMPONENT__POST_R3__" node_modules/@angular/core/fesm2015/core.js
   assertSucceeded "Expected 'ngcc' to replace 'SWITCH_COMPILE_COMPONENT__PRE_R3__' in '@angular/core' (fesm2015)."
 
-  grep "= SWITCH_COMPILE_COMPONENT__POST_R3__" node_modules/@angular/core/fesm5/core.js
-  assertSucceeded "Expected 'ngcc' to replace 'SWITCH_COMPILE_COMPONENT__PRE_R3__' in '@angular/core' (fesm5)."
+  grep "= SWITCH_COMPILE_COMPONENT__POST_R3__" node_modules/@angular/core/bundles/core.umd.js
+  assertSucceeded "Expected 'ngcc' to replace 'SWITCH_COMPILE_COMPONENT__PRE_R3__' in '@angular/core' (main)."
 
 
 # Did it compile @angular/core/ApplicationModule correctly?
-  grep "ApplicationModule.ɵmod = ɵɵdefineNgModule" node_modules/@angular/core/fesm2015/core.js
+  grep "ApplicationModule.ɵmod = /\*@__PURE__\*/ ɵɵdefineNgModule" node_modules/@angular/core/fesm2015/core.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (fesm2015)."
 
-  grep "ApplicationModule.ɵmod = ɵɵdefineNgModule" node_modules/@angular/core/fesm5/core.js
-  assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (fesm5)."
+  grep "ApplicationModule.ɵmod = /\*@__PURE__\*/ ɵɵdefineNgModule" node_modules/@angular/core/bundles/core.umd.js
+  assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (main)."
 
-  grep "ApplicationModule.ɵmod = ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm2015/src/application_module.js
+  grep "ApplicationModule.ɵmod = /\*@__PURE__\*/ ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm2015/src/application_module.js
   assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (esm2015)."
-
-  grep "ApplicationModule.ɵmod = ɵngcc0.ɵɵdefineNgModule" node_modules/@angular/core/esm5/src/application_module.js
-  assertSucceeded "Expected 'ngcc' to correctly compile 'ApplicationModule' in '@angular/core' (esm5)."
 
 # Did it place the `setClassMetadata` call correctly?
   cat node_modules/@angular/core/fesm2015/core.js | awk 'ORS=" "' | grep "ApplicationRef.ctorParameters.*setClassMetadata(ApplicationRef"
@@ -109,33 +97,39 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   grep "import [*] as ɵngcc0 from './src/r3_symbols';" node_modules/@angular/core/core.d.ts
   assertSucceeded "Expected 'ngcc' to add an import for 'src/r3_symbols' in '@angular/core' typings."
 
-  grep "static ɵinj: ɵngcc0.ɵɵInjectorDef<ApplicationModule>;" node_modules/@angular/core/core.d.ts
+  grep "static ɵinj: ɵngcc0.ɵɵInjectorDeclaration<ApplicationModule>;" node_modules/@angular/core/core.d.ts
   assertSucceeded "Expected 'ngcc' to add a definition for 'ApplicationModule.ɵinj' in '@angular/core' typings."
 
 
 # Did it generate a base factory call for synthesized constructors correctly?
-  grep "const ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm2015/table/table.js
+  grep "/\*@__PURE__\*/ function () { let ɵMatTable_BaseFactory; return function MatTable_Factory(t) { return (ɵMatTable_BaseFactory || (ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable)))(t || MatTable); }; }();" node_modules/@angular/material/esm2015/table/table.js
   assertSucceeded "Expected 'ngcc' to generate a base factory for 'MatTable' in '@angular/material' (esm2015)."
 
-  grep "var ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable);" node_modules/@angular/material/esm5/table/table.js
+  grep "/\*@__PURE__\*/ function () { var ɵMatTable_BaseFactory; return function MatTable_Factory(t) { return (ɵMatTable_BaseFactory || (ɵMatTable_BaseFactory = ɵngcc0.ɵɵgetInheritedFactory(MatTable)))(t || MatTable); }; }();" node_modules/@angular/material/esm5/table/table.js
   assertSucceeded "Expected 'ngcc' to generate a base factory for 'MatTable' in '@angular/material' (esm5)."
 
 
 # Did it generate an abstract directive definition for undecorated classes with inputs and view queries?
-  grep "_MatMenuBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm2015/menu/menu.js
+  grep "_MatMenuBase.ɵdir = /\*@__PURE__\*/ ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm2015/menu/menu.js
   assertSucceeded "Expected 'ngcc' to generate an abstract directive definition for 'MatMenuBase' in '@angular/material' (esm2015)."
 
-  grep "_MatMenuBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm5/menu/menu.js
+  grep "_MatMenuBase.ɵdir = /\*@__PURE__\*/ ɵngcc0.ɵɵdefineDirective({ type: _MatMenuBase" node_modules/@angular/material/esm5/menu/menu.js
   assertSucceeded "Expected 'ngcc' to generate an abstract directive definition for 'MatMenuBase' in '@angular/material' (esm5)."
 
 
+# TODO: This assertion is disabled because @angular/common no longer contains __decorate calls.
+#       We should either remove this assertion or use a syntentic JS file as input.
+#       Discuss with the ngcc folks.
 # Did it handle namespace imported decorators in UMD using `__decorate` syntax?
-  grep "type: i0.Injectable" node_modules/@angular/common/bundles/common.umd.js
-  assertSucceeded "Expected 'ngcc' to correctly handle '__decorate' syntax in '@angular/common' (umd)."
+  #grep "type: i0.Injectable" node_modules/@angular/common/bundles/common.umd.js
+  #assertSucceeded "Expected 'ngcc' to correctly handle '__decorate' syntax in '@angular/common' (umd)."
 
+# TODO: This assertion is disabled because @angular/common no longer contains __decorate calls.
+#       We should either remove this assertion or use a syntentic JS file as input.
+#       Discuss with the ngcc folks.
   # (and ensure the @angular/common package is indeed using `__decorate` syntax)
-  grep "JsonPipe = __decorate(" node_modules/@angular/common/bundles/common.umd.js.__ivy_ngcc_bak
-  assertSucceeded "Expected '@angular/common' (umd) to actually use '__decorate' syntax."
+  #grep "JsonPipe = __decorate(" node_modules/@angular/common/bundles/common.umd.js.__ivy_ngcc_bak
+  #assertSucceeded "Expected '@angular/common' (umd) to actually use '__decorate' syntax."
 
 
 # Did it handle namespace imported decorators in UMD using static properties?
@@ -173,8 +167,7 @@ assertSucceeded "Expected 'ngcc' to log 'Compiling'."
   assertEquals 1 `cat node_modules/@angular/material/button/button.d.ts | grep 'import \* as ɵngcc0' | wc -l`
 
   # Re-compile packages (which requires cleaning up those compiled by a different ngcc version).
-  # (Use sync mode to ensure all tasks share the same `CachedFileSystem` instance.)
-  ngcc --no-async --properties main
+  ngcc --properties main
   assertSucceeded "Expected 'ngcc' to successfully re-compile the packages."
 
   # Ensure previously compiled packages were correctly cleaned up (i.e. no multiple
@@ -214,6 +207,15 @@ assertFailed "Expected 'ngcc -l error' to not output anything."
 # Does running it with --formats fail?
 ngcc --formats fesm2015
 assertFailed "Expected 'ngcc --formats fesm2015' to fail (since '--formats' is deprecated)."
+
+# Does it timeout if there is another ngcc process running
+LOCKFILE=node_modules/@angular/compiler-cli/ngcc/__ngcc_lock_file__
+touch $LOCKFILE
+trap "[[ -f $LOCKFILE ]] && rm $LOCKFILE" EXIT
+ngcc
+exitCode=$?
+assertEquals $exitCode 177
+rm $LOCKFILE
 
 # Now try compiling the app using the ngcc compiled libraries
 ngc -p tsconfig-app.json

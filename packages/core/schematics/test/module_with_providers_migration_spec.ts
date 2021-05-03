@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -46,7 +46,7 @@ describe('ModuleWithProviders migration', () => {
     shx.rm('-r', tmpDirPath);
   });
 
-  it('should add generic type for function return', async() => {
+  it('should add generic type for function return', async () => {
     writeFile('/index.ts', `
         import {NgModule, ModuleWithProviders} from '@angular/core';
 
@@ -69,7 +69,7 @@ describe('ModuleWithProviders migration', () => {
     expect(tree.readContent('/index.ts')).toContain(`ModuleWithProviders<BaseModule>`);
   });
 
-  it('should add generic type for function return; external file', async() => {
+  it('should add generic type for function return; external file', async () => {
     writeFile('/module.ts', `
         import {NgModule} from '@angular/core';
 
@@ -96,7 +96,7 @@ describe('ModuleWithProviders migration', () => {
     expect(tree.readContent('/index.ts')).toContain(`ModuleWithProviders<BaseModule>`);
   });
 
-  it('should add generic type for function return without explicit type', async() => {
+  it('should add generic type for function return without explicit type', async () => {
     writeFile('/index.ts', `
         import {NgModule} from '@angular/core';
 
@@ -119,7 +119,7 @@ describe('ModuleWithProviders migration', () => {
     expect(tree.readContent('/index.ts')).toContain(`ModuleWithProviders<BaseModule>`);
   });
 
-  it('should add generic type for const variable', async() => {
+  it('should add generic type for const variable', async () => {
     writeFile('/index.ts', `
         import {ModuleWithProviders, NgModule} from '@angular/core';
 
@@ -140,7 +140,7 @@ describe('ModuleWithProviders migration', () => {
     expect(tree.readContent('/index.ts')).toContain(`ModuleWithProviders<BaseModule>`);
   });
 
-  it('should add generic type for const variable without explicit type', async() => {
+  it('should add generic type for const variable without explicit type', async () => {
     writeFile('/index.ts', `
         import {NgModule} from '@angular/core';
 
@@ -161,7 +161,7 @@ describe('ModuleWithProviders migration', () => {
     expect(tree.readContent('/index.ts')).toContain(`ModuleWithProviders<BaseModule>`);
   });
 
-  it('should not add generic type for const variable with invalid base object', async() => {
+  it('should not add generic type for const variable with invalid base object', async () => {
     writeFile('/index.ts', `
         import {NgModule} from '@angular/core';
 
@@ -182,7 +182,7 @@ describe('ModuleWithProviders migration', () => {
     expect(tree.readContent('/index.ts')).not.toContain(`ModuleWithProviders<BaseModule>`);
   });
 
-  it('should add generic type for const variables and functions with incomplete type', async() => {
+  it('should add generic type for const variables and functions with incomplete type', async () => {
     writeFile('/index.ts', `
       import {ModuleWithProviders, NgModule} from '@angular/core';
 
@@ -214,7 +214,7 @@ describe('ModuleWithProviders migration', () => {
     expect(tree.readContent('/index.ts')).not.toContain(`ModuleWithProviders `);
   });
 
-  it('should not add generic type for const variables without initialization', async() => {
+  it('should not add generic type for const variables without initialization', async () => {
     writeFile('/index.ts', `
       import {ModuleWithProviders} from '@angular/core';
 
@@ -230,6 +230,6 @@ describe('ModuleWithProviders migration', () => {
   }
 
   function runMigration() {
-    return runner.runSchematicAsync('migration-v9-module-with-providers', {}, tree).toPromise();
+    return runner.runSchematicAsync('migration-v10-module-with-providers', {}, tree).toPromise();
   }
 });

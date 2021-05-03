@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -124,6 +124,20 @@ runInEachFileSystem(() => {
         });
       });
 
+      it('should handle bound attributes with no value', () => {
+        const template = '<div [bar]></div>';
+        const refs = getTemplateIdentifiers(bind(template));
+
+        const refArr = Array.from(refs);
+        expect(refArr).toEqual([{
+          name: 'div',
+          kind: IdentifierKind.Element,
+          span: new AbsoluteSourceSpan(1, 4),
+          attributes: new Set(),
+          usedDirectives: new Set(),
+        }]);
+      });
+
       it('should discover variables in bound attributes', () => {
         const template = '<div #div [value]="div.innerText"></div>';
         const refs = getTemplateIdentifiers(bind(template));
@@ -189,6 +203,33 @@ runInEachFileSystem(() => {
           target: null,
         });
       });
+
+      it('should discover properties in template expressions and resist collisions', () => {
+        const template = '<div *ngFor="let foo of (foos ? foos : foos)"></div>';
+        const refs = getTemplateIdentifiers(bind(template));
+
+        const refArr = Array.from(refs);
+        expect(refArr).toEqual(jasmine.arrayContaining([
+          {
+            name: 'foos',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(25, 29),
+            target: null,
+          },
+          {
+            name: 'foos',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(32, 36),
+            target: null,
+          },
+          {
+            name: 'foos',
+            kind: IdentifierKind.Property,
+            span: new AbsoluteSourceSpan(39, 43),
+            target: null,
+          },
+        ]));
+      });
     });
 
     describe('generates identifiers for PropertyWrites', () => {
@@ -219,11 +260,11 @@ runInEachFileSystem(() => {
 
         const refArr = Array.from(refs);
         expect(refArr).toEqual(jasmine.arrayContaining([{
-          name: 'foo',
-          kind: IdentifierKind.Property,
-          span: new AbsoluteSourceSpan(20, 23),
-          target: null,
-        }] as TopLevelIdentifier[]));
+                                                         name: 'foo',
+                                                         kind: IdentifierKind.Property,
+                                                         span: new AbsoluteSourceSpan(20, 23),
+                                                         target: null,
+                                                       }] as TopLevelIdentifier[]));
       });
 
       it('should ignore property writes that are not implicitly received by the template', () => {
@@ -314,12 +355,13 @@ runInEachFileSystem(() => {
       };
 
       const refArray = Array.from(refs);
-      expect(refArray).toEqual(jasmine.arrayContaining([{
-        name: 'foo',
-        kind: IdentifierKind.Reference,
-        span: new AbsoluteSourceSpan(6, 9),
-        target: {node: elementReference, directive: null},
-      }] as TopLevelIdentifier[]));
+      expect(refArray).toEqual(
+          jasmine.arrayContaining([{
+                                    name: 'foo',
+                                    kind: IdentifierKind.Reference,
+                                    span: new AbsoluteSourceSpan(6, 9),
+                                    target: {node: elementReference, directive: null},
+                                  }] as TopLevelIdentifier[]));
     });
 
     it('should discover nested references', () => {
@@ -334,12 +376,13 @@ runInEachFileSystem(() => {
       };
 
       const refArray = Array.from(refs);
-      expect(refArray).toEqual(jasmine.arrayContaining([{
-        name: 'foo',
-        kind: IdentifierKind.Reference,
-        span: new AbsoluteSourceSpan(12, 15),
-        target: {node: elementReference, directive: null},
-      }] as TopLevelIdentifier[]));
+      expect(refArray).toEqual(
+          jasmine.arrayContaining([{
+                                    name: 'foo',
+                                    kind: IdentifierKind.Reference,
+                                    span: new AbsoluteSourceSpan(12, 15),
+                                    target: {node: elementReference, directive: null},
+                                  }] as TopLevelIdentifier[]));
     });
 
     it('should discover references to references', () => {
@@ -409,14 +452,14 @@ runInEachFileSystem(() => {
       const refArr = Array.from(refs);
       let fooRef = refArr.find(id => id.name === 'foo');
       expect(fooRef).toBeDefined();
-      expect(fooRef !.kind).toBe(IdentifierKind.Reference);
+      expect(fooRef!.kind).toBe(IdentifierKind.Reference);
 
       fooRef = fooRef as ReferenceIdentifier;
       expect(fooRef.target).toBeDefined();
-      expect(fooRef.target !.node.kind).toBe(IdentifierKind.Element);
-      expect(fooRef.target !.node.name).toBe('div');
-      expect(fooRef.target !.node.span).toEqual(new AbsoluteSourceSpan(1, 4));
-      expect(fooRef.target !.directive).toEqual(declB);
+      expect(fooRef.target!.node.kind).toBe(IdentifierKind.Element);
+      expect(fooRef.target!.node.name).toBe('div');
+      expect(fooRef.target!.node.span).toEqual(new AbsoluteSourceSpan(1, 4));
+      expect(fooRef.target!.directive).toEqual(declB);
     });
 
     it('should discover references to references', () => {
@@ -455,10 +498,10 @@ runInEachFileSystem(() => {
 
       const refArray = Array.from(refs);
       expect(refArray).toEqual(jasmine.arrayContaining([{
-        name: 'foo',
-        kind: IdentifierKind.Variable,
-        span: new AbsoluteSourceSpan(17, 20),
-      }] as TopLevelIdentifier[]));
+                                                         name: 'foo',
+                                                         kind: IdentifierKind.Variable,
+                                                         span: new AbsoluteSourceSpan(17, 20),
+                                                       }] as TopLevelIdentifier[]));
     });
 
     it('should discover variables with let- syntax', () => {
@@ -467,10 +510,10 @@ runInEachFileSystem(() => {
 
       const refArray = Array.from(refs);
       expect(refArray).toEqual(jasmine.arrayContaining([{
-        name: 'var',
-        kind: IdentifierKind.Variable,
-        span: new AbsoluteSourceSpan(17, 20),
-      }] as TopLevelIdentifier[]));
+                                                         name: 'var',
+                                                         kind: IdentifierKind.Variable,
+                                                         span: new AbsoluteSourceSpan(17, 20),
+                                                       }] as TopLevelIdentifier[]));
     });
 
     it('should discover nested variables', () => {
@@ -479,10 +522,10 @@ runInEachFileSystem(() => {
 
       const refArray = Array.from(refs);
       expect(refArray).toEqual(jasmine.arrayContaining([{
-        name: 'foo',
-        kind: IdentifierKind.Variable,
-        span: new AbsoluteSourceSpan(23, 26),
-      }] as TopLevelIdentifier[]));
+                                                         name: 'foo',
+                                                         kind: IdentifierKind.Variable,
+                                                         span: new AbsoluteSourceSpan(23, 26),
+                                                       }] as TopLevelIdentifier[]));
     });
 
     it('should discover references to variables', () => {

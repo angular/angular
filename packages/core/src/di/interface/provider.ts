@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -250,13 +250,13 @@ export interface FactoryProvider extends FactorySansProvider {
  * Describes how an `Injector` should be configured as static (that is, without reflection).
  * A static provider provides tokens to an injector for various types of dependencies.
  *
- * @see [Injector.create()](/api/core/Injector#create).
+ * @see `Injector.create()`.
  * @see ["Dependency Injection Guide"](guide/dependency-injection-providers).
  *
  * @publicApi
  */
-export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvider |
-    ConstructorProvider | FactoryProvider | any[];
+export type StaticProvider =
+    ValueProvider|ExistingProvider|StaticClassProvider|ConstructorProvider|FactoryProvider|any[];
 
 
 /**
@@ -329,8 +329,8 @@ export interface ClassProvider extends ClassSansProvider {
  *
  * @publicApi
  */
-export type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider |
-    ExistingProvider | FactoryProvider | any[];
+export type Provider = TypeProvider|ValueProvider|ClassProvider|ConstructorProvider|
+    ExistingProvider|FactoryProvider|any[];
 
 /**
  * Describes a function that is used to process provider lists (such as provider

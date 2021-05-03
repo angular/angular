@@ -3,8 +3,10 @@ export declare const BEFORE_APP_SERIALIZED: InjectionToken<(() => void | Promise
 export declare const INITIAL_CONFIG: InjectionToken<PlatformConfig>;
 
 export declare interface PlatformConfig {
+    baseUrl?: string;
     document?: string;
     url?: string;
+    useAbsoluteUrl?: boolean;
 }
 
 export declare const platformDynamicServer: (extraProviders?: StaticProvider[] | undefined) => PlatformRef;

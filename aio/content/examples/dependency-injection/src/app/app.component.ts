@@ -1,11 +1,7 @@
-// #docplaster
-// #docregion
-// #docregion imports
 import { Component, Inject } from '@angular/core';
 
 import { APP_CONFIG, AppConfig } from './app.config';
 import { UserService } from './user.service';
-// #enddocregion imports
 
 @Component({
   selector: 'app-root',
@@ -28,13 +24,11 @@ import { UserService } from './user.service';
 export class AppComponent {
   title: string;
 
-  // #docregion ctor
   constructor(
     @Inject(APP_CONFIG) config: AppConfig,
     private userService: UserService) {
     this.title = config.title;
   }
-  // #enddocregion ctor
 
   get isAuthorized() { return this.user.isAuthorized; }
   nextUser()         { this.userService.getNewUser(); }

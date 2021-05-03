@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@ import {mapLiteral} from '../../../output/map_util';
 import * as o from '../../../output/output_ast';
 
 import {serializeIcuNode} from './icu_serializer';
-import {i18nMetaToDocStmt} from './meta';
+import {i18nMetaToJSDoc} from './meta';
 import {formatI18nPlaceholderName} from './util';
 
 /** Closure uses `goog.getMsg(message)` to lookup translations */
@@ -31,15 +31,13 @@ export function createGoogleGetMsgStatements(
   //  */
   // const MSG_... = goog.getMsg(..);
   // I18N_X = MSG_...;
-  const statements = [];
-  const jsdocComment = i18nMetaToDocStmt(message);
-  if (jsdocComment !== null) {
-    statements.push(jsdocComment);
+  const googGetMsgStmt = closureVar.set(o.variable(GOOG_GET_MSG).callFn(args)).toConstDecl();
+  const metaComment = i18nMetaToJSDoc(message);
+  if (metaComment !== null) {
+    googGetMsgStmt.addLeadingComment(metaComment);
   }
-  statements.push(closureVar.set(o.variable(GOOG_GET_MSG).callFn(args)).toConstDecl());
-  statements.push(new o.ExpressionStatement(variable.set(closureVar)));
-
-  return statements;
+  const i18nAssignmentStmt = new o.ExpressionStatement(variable.set(closureVar));
+  return [googGetMsgStmt, i18nAssignmentStmt];
 }
 
 /**
@@ -47,23 +45,32 @@ export function createGoogleGetMsgStatements(
  * placeholders in `{$placeholder}` (for plain messages) or `{PLACEHOLDER}` (inside ICUs) format.
  */
 class GetMsgSerializerVisitor implements i18n.Visitor {
-  private formatPh(value: string): string { return `{$${formatI18nPlaceholderName(value)}}`; }
+  private formatPh(value: string): string {
+    return `{$${formatI18nPlaceholderName(value)}}`;
+  }
 
-  visitText(text: i18n.Text): any { return text.value; }
+  visitText(text: i18n.Text): any {
+    return text.value;
+  }
 
   visitContainer(container: i18n.Container): any {
     return container.children.map(child => child.visit(this)).join('');
   }
 
-  visitIcu(icu: i18n.Icu): any { return serializeIcuNode(icu); }
+  visitIcu(icu: i18n.Icu): any {
+    return serializeIcuNode(icu);
+  }
 
   visitTagPlaceholder(ph: i18n.TagPlaceholder): any {
     return ph.isVoid ?
         this.formatPh(ph.startName) :
-        `${this.formatPh(ph.startName)}${ph.children.map(child => child.visit(this)).join('')}${this.formatPh(ph.closeName)}`;
+        `${this.formatPh(ph.startName)}${ph.children.map(child => child.visit(this)).join('')}${
+            this.formatPh(ph.closeName)}`;
   }
 
-  visitPlaceholder(ph: i18n.Placeholder): any { return this.formatPh(ph.name); }
+  visitPlaceholder(ph: i18n.Placeholder): any {
+    return this.formatPh(ph.name);
+  }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): any {
     return this.formatPh(ph.name);

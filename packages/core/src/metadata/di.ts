@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {InjectionToken} from '../di/injection_token';
-import {Type} from '../interface/type';
+import {ProviderToken} from '../di/provider_token';
 import {makePropDecorator} from '../util/decorators';
 
 /**
@@ -75,7 +75,7 @@ export interface AttributeDecorator {
    * @publicApi
    */
   (name: string): any;
-  new (name: string): Attribute;
+  new(name: string): Attribute;
 }
 
 
@@ -98,12 +98,18 @@ export interface Attribute {
  */
 export interface Query {
   descendants: boolean;
+  emitDistinctChangesOnly: boolean;
   first: boolean;
   read: any;
   isViewQuery: boolean;
   selector: any;
   static?: boolean;
 }
+
+// Stores the default value of `emitDistinctChangesOnly` when the `emitDistinctChangesOnly` is not
+// explicitly set.
+export const emitDistinctChangesOnlyDefaultValue = true;
+
 
 /**
  * Base class for query metadata.
@@ -139,8 +145,14 @@ export interface ContentChildrenDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
-   * * **descendants** - True to include all descendants, otherwise include only direct children.
-   * * **read** - True to read a different token from the queried elements.
+   * * **descendants** - If `true` include all descendants of the element. If `false` then only
+   * query direct children of the element.
+   * * **emitDistinctChangesOnly** - The ` QueryList#changes` observable will emit new values only
+   *   if the QueryList result has changed. When `false` the `changes` observable might emit even
+   *   if the QueryList has not changed.
+   *   ** Note: *** This config option is **deprecated**, it will be permanently set to `true` and
+   *   removed in future versions of Angular.
+   * * **read** - Used to read a different token from the queried elements.
    *
    * @usageNotes
    *
@@ -157,8 +169,13 @@ export interface ContentChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): any;
-  new (selector: Type<any>|Function|string, opts?: {descendants?: boolean, read?: any}): Query;
+  (selector: ProviderToken<unknown>|Function|string, opts?: {
+    descendants?: boolean,
+    emitDistinctChangesOnly?: boolean,
+    read?: any,
+  }): any;
+  new(selector: ProviderToken<unknown>|Function|string,
+      opts?: {descendants?: boolean, emitDistinctChangesOnly?: boolean, read?: any}): Query;
 }
 
 /**
@@ -178,9 +195,14 @@ export type ContentChildren = Query;
  * @publicApi
  */
 export const ContentChildren: ContentChildrenDecorator = makePropDecorator(
-    'ContentChildren',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: false, isViewQuery: false, descendants: false, ...data}),
+    'ContentChildren', (selector?: any, data: any = {}) => ({
+                         selector,
+                         first: false,
+                         isViewQuery: false,
+                         descendants: false,
+                         emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
+                         ...data
+                       }),
     Query);
 
 /**
@@ -204,7 +226,7 @@ export interface ContentChildDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
-   * * **read** - True to read a different token from the queried element.
+   * * **read** - Used to read a different token from the queried element.
    * * **static** - True to resolve query results before change detection runs,
    * false to resolve after change detection. Defaults to false.
    *
@@ -218,8 +240,9 @@ export interface ContentChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ContentChild;
+  (selector: ProviderToken<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
+  new(selector: ProviderToken<unknown>|Function|string,
+      opts?: {read?: any, static?: boolean}): ContentChild;
 }
 
 /**
@@ -238,8 +261,9 @@ export type ContentChild = Query;
  * @publicApi
  */
 export const ContentChild: ContentChildDecorator = makePropDecorator(
-    'ContentChild', (selector?: any, data: any = {}) =>
-                        ({selector, first: true, isViewQuery: false, descendants: true, ...data}),
+    'ContentChild',
+    (selector?: any, data: any = {}) =>
+        ({selector, first: true, isViewQuery: false, descendants: true, ...data}),
     Query);
 
 /**
@@ -262,7 +286,12 @@ export interface ViewChildrenDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
-   * * **read** - True to read a different token from the queried elements.
+   * * **read** - Used to read a different token from the queried elements.
+   * * **emitDistinctChangesOnly** - The ` QueryList#changes` observable will emit new values only
+   *   if the QueryList result has changed. When `false` the `changes` observable might emit even
+   *   if the QueryList has not changed.
+   *   ** Note: *** This config option is **deprecated**, it will be permanently set to `true` and
+   * removed in future versions of Angular.
    *
    * @usageNotes
    *
@@ -274,8 +303,10 @@ export interface ViewChildrenDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any}): ViewChildren;
+  (selector: ProviderToken<unknown>|Function|string,
+   opts?: {read?: any, emitDistinctChangesOnly?: boolean}): any;
+  new(selector: ProviderToken<unknown>|Function|string,
+      opts?: {read?: any, emitDistinctChangesOnly?: boolean}): ViewChildren;
 }
 
 /**
@@ -292,8 +323,14 @@ export type ViewChildren = Query;
  * @publicApi
  */
 export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
-    'ViewChildren', (selector?: any, data: any = {}) =>
-                        ({selector, first: false, isViewQuery: true, descendants: true, ...data}),
+    'ViewChildren', (selector?: any, data: any = {}) => ({
+                      selector,
+                      first: false,
+                      isViewQuery: true,
+                      descendants: true,
+                      emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
+                      ...data
+                    }),
     Query);
 
 /**
@@ -315,7 +352,7 @@ export interface ViewChildDecorator {
    * **Metadata Properties**:
    *
    * * **selector** - The directive type or the name used for querying.
-   * * **read** - True to read a different token from the queried elements.
+   * * **read** - Used to read a different token from the queried elements.
    * * **static** - True to resolve query results before change detection runs,
    * false to resolve after change detection. Defaults to false.
    *
@@ -341,8 +378,9 @@ export interface ViewChildDecorator {
    *
    * @Annotation
    */
-  (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): any;
-  new (selector: Type<any>|Function|string, opts?: {read?: any, static?: boolean}): ViewChild;
+  (selector: ProviderToken<unknown>|Function|string, opts?: {read?: any, static?: boolean}): any;
+  new(selector: ProviderToken<unknown>|Function|string,
+      opts?: {read?: any, static?: boolean}): ViewChild;
 }
 
 /**
@@ -359,6 +397,7 @@ export type ViewChild = Query;
  * @publicApi
  */
 export const ViewChild: ViewChildDecorator = makePropDecorator(
-    'ViewChild', (selector: any, data: any) =>
-                     ({selector, first: true, isViewQuery: true, descendants: true, ...data}),
+    'ViewChild',
+    (selector: any, data: any) =>
+        ({selector, first: true, isViewQuery: true, descendants: true, ...data}),
     Query);

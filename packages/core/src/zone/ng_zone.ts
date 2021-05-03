@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,6 +8,7 @@
 
 import {EventEmitter} from '../event_emitter';
 import {global} from '../util/global';
+import {noop} from '../util/noop';
 import {getNativeRequestAnimationFrame} from '../util/raf';
 
 
@@ -119,7 +120,11 @@ export class NgZone {
   readonly onError: EventEmitter<any> = new EventEmitter(false);
 
 
-  constructor({enableLongStackTrace = false, shouldCoalesceEventChangeDetection = false}) {
+  constructor({
+    enableLongStackTrace = false,
+    shouldCoalesceEventChangeDetection = false,
+    shouldCoalesceRunChangeDetection = false
+  }) {
     if (typeof Zone == 'undefined') {
       throw new Error(`In this configuration Angular requires Zone.js`);
     }
@@ -130,10 +135,6 @@ export class NgZone {
 
     self._outer = self._inner = Zone.current;
 
-    if ((Zone as any)['wtfZoneSpec']) {
-      self._inner = self._inner.fork((Zone as any)['wtfZoneSpec']);
-    }
-
     if ((Zone as any)['TaskTrackingZoneSpec']) {
       self._inner = self._inner.fork(new ((Zone as any)['TaskTrackingZoneSpec'] as any));
     }
@@ -141,14 +142,19 @@ export class NgZone {
     if (enableLongStackTrace && (Zone as any)['longStackTraceZoneSpec']) {
       self._inner = self._inner.fork((Zone as any)['longStackTraceZoneSpec']);
     }
-
-    self.shouldCoalesceEventChangeDetection = shouldCoalesceEventChangeDetection;
+    // if shouldCoalesceRunChangeDetection is true, all tasks including event tasks will be
+    // coalesced, so shouldCoalesceEventChangeDetection option is not necessary and can be skipped.
+    self.shouldCoalesceEventChangeDetection =
+        !shouldCoalesceRunChangeDetection && shouldCoalesceEventChangeDetection;
+    self.shouldCoalesceRunChangeDetection = shouldCoalesceRunChangeDetection;
     self.lastRequestAnimationFrameId = -1;
     self.nativeRequestAnimationFrame = getNativeRequestAnimationFrame().nativeRequestAnimationFrame;
     forkInnerZoneWithAngularBehavior(self);
   }
 
-  static isInAngularZone(): boolean { return Zone.current.get('isAngularZone') === true; }
+  static isInAngularZone(): boolean {
+    return Zone.current.get('isAngularZone') === true;
+  }
 
   static assertInAngularZone(): void {
     if (!NgZone.isInAngularZone()) {
@@ -175,7 +181,7 @@ export class NgZone {
    * If a synchronous error happens it will be rethrown and not reported via `onError`.
    */
   run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
-    return (this as any as NgZonePrivate)._inner.run(fn, applyThis, applyArgs) as T;
+    return (this as any as NgZonePrivate)._inner.run(fn, applyThis, applyArgs);
   }
 
   /**
@@ -194,7 +200,7 @@ export class NgZone {
     const zone = (this as any as NgZonePrivate)._inner;
     const task = zone.scheduleEventTask('NgZoneEvent: ' + name, fn, EMPTY_PAYLOAD, noop, noop);
     try {
-      return zone.runTask(task, applyThis, applyArgs) as T;
+      return zone.runTask(task, applyThis, applyArgs);
     } finally {
       zone.cancelTask(task);
     }
@@ -205,7 +211,7 @@ export class NgZone {
    * rethrown.
    */
   runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
-    return (this as any as NgZonePrivate)._inner.runGuarded(fn, applyThis, applyArgs) as T;
+    return (this as any as NgZonePrivate)._inner.runGuarded(fn, applyThis, applyArgs);
   }
 
   /**
@@ -222,11 +228,10 @@ export class NgZone {
    * Use {@link #run} to reenter the Angular zone and do work that updates the application model.
    */
   runOutsideAngular<T>(fn: (...args: any[]) => T): T {
-    return (this as any as NgZonePrivate)._outer.run(fn) as T;
+    return (this as any as NgZonePrivate)._outer.run(fn);
   }
 }
 
-function noop() {}
 const EMPTY_PAYLOAD = {};
 
 interface NgZonePrivate extends NgZone {
@@ -238,12 +243,80 @@ interface NgZonePrivate extends NgZone {
   hasPendingMacrotasks: boolean;
   hasPendingMicrotasks: boolean;
   lastRequestAnimationFrameId: number;
+  /**
+   * A flag to indicate if NgZone is currently inside
+   * checkStable and to prevent re-entry. The flag is
+   * needed because it is possible to invoke the change
+   * detection from within change detection leading to
+   * incorrect behavior.
+   *
+   * For detail, please refer here,
+   * https://github.com/angular/angular/pull/40540
+   */
+  isCheckStableRunning: boolean;
   isStable: boolean;
+  /**
+   * Optionally specify coalescing event change detections or not.
+   * Consider the following case.
+   *
+   * <div (click)="doSomething()">
+   *   <button (click)="doSomethingElse()"></button>
+   * </div>
+   *
+   * When button is clicked, because of the event bubbling, both
+   * event handlers will be called and 2 change detections will be
+   * triggered. We can coalesce such kind of events to trigger
+   * change detection only once.
+   *
+   * By default, this option will be false. So the events will not be
+   * coalesced and the change detection will be triggered multiple times.
+   * And if this option be set to true, the change detection will be
+   * triggered async by scheduling it in an animation frame. So in the case above,
+   * the change detection will only be trigged once.
+   */
   shouldCoalesceEventChangeDetection: boolean;
+  /**
+   * Optionally specify if `NgZone#run()` method invocations should be coalesced
+   * into a single change detection.
+   *
+   * Consider the following case.
+   *
+   * for (let i = 0; i < 10; i ++) {
+   *   ngZone.run(() => {
+   *     // do something
+   *   });
+   * }
+   *
+   * This case triggers the change detection multiple times.
+   * With ngZoneRunCoalescing options, all change detections in an event loops trigger only once.
+   * In addition, the change detection executes in requestAnimation.
+   *
+   */
+  shouldCoalesceRunChangeDetection: boolean;
+
   nativeRequestAnimationFrame: (callback: FrameRequestCallback) => number;
+
+  // Cache a  "fake" top eventTask so you don't need to schedule a new task every
+  // time you run a `checkStable`.
+  fakeTopEventTask: Task;
 }
 
 function checkStable(zone: NgZonePrivate) {
+  // TODO: @JiaLiPassion, should check zone.isCheckStableRunning to prevent
+  // re-entry. The case is:
+  //
+  // @Component({...})
+  // export class AppComponent {
+  // constructor(private ngZone: NgZone) {
+  //   this.ngZone.onStable.subscribe(() => {
+  //     this.ngZone.run(() => console.log('stable'););
+  //   });
+  // }
+  //
+  // The onStable subscriber run another function inside ngZone
+  // which causes `checkStable()` re-entry.
+  // But this fix causes some issues in g3, so this fix will be
+  // launched in another PR.
   if (zone._nesting == 0 && !zone.hasPendingMicrotasks && !zone.isStable) {
     try {
       zone._nesting++;
@@ -262,48 +335,81 @@ function checkStable(zone: NgZonePrivate) {
 }
 
 function delayChangeDetectionForEvents(zone: NgZonePrivate) {
-  if (zone.lastRequestAnimationFrameId !== -1) {
+  /**
+   * We also need to check _nesting here
+   * Consider the following case with shouldCoalesceRunChangeDetection = true
+   *
+   * ngZone.run(() => {});
+   * ngZone.run(() => {});
+   *
+   * We want the two `ngZone.run()` only trigger one change detection
+   * when shouldCoalesceRunChangeDetection is true.
+   * And because in this case, change detection run in async way(requestAnimationFrame),
+   * so we also need to check the _nesting here to prevent multiple
+   * change detections.
+   */
+  if (zone.isCheckStableRunning || zone.lastRequestAnimationFrameId !== -1) {
     return;
   }
   zone.lastRequestAnimationFrameId = zone.nativeRequestAnimationFrame.call(global, () => {
-    zone.lastRequestAnimationFrameId = -1;
-    updateMicroTaskStatus(zone);
-    checkStable(zone);
+    // This is a work around for https://github.com/angular/angular/issues/36839.
+    // The core issue is that when event coalescing is enabled it is possible for microtasks
+    // to get flushed too early (As is the case with `Promise.then`) between the
+    // coalescing eventTasks.
+    //
+    // To workaround this we schedule a "fake" eventTask before we process the
+    // coalescing eventTasks. The benefit of this is that the "fake" container eventTask
+    //  will prevent the microtasks queue from getting drained in between the coalescing
+    // eventTask execution.
+    if (!zone.fakeTopEventTask) {
+      zone.fakeTopEventTask = Zone.root.scheduleEventTask('fakeTopEventTask', () => {
+        zone.lastRequestAnimationFrameId = -1;
+        updateMicroTaskStatus(zone);
+        zone.isCheckStableRunning = true;
+        checkStable(zone);
+        zone.isCheckStableRunning = false;
+      }, undefined, () => {}, () => {});
+    }
+    zone.fakeTopEventTask.invoke();
   });
   updateMicroTaskStatus(zone);
 }
 
 function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
-  const delayChangeDetectionForEventsDelegate = () => { delayChangeDetectionForEvents(zone); };
-  const maybeDelayChangeDetection = !!zone.shouldCoalesceEventChangeDetection &&
-      zone.nativeRequestAnimationFrame && delayChangeDetectionForEventsDelegate;
+  const delayChangeDetectionForEventsDelegate = () => {
+    delayChangeDetectionForEvents(zone);
+  };
   zone._inner = zone._inner.fork({
     name: 'angular',
-    properties:
-        <any>{'isAngularZone': true, 'maybeDelayChangeDetection': maybeDelayChangeDetection},
-    onInvokeTask: (delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
-                   applyArgs: any): any => {
-      try {
-        onEnter(zone);
-        return delegate.invokeTask(target, task, applyThis, applyArgs);
-      } finally {
-        if (maybeDelayChangeDetection && task.type === 'eventTask') {
-          maybeDelayChangeDetection();
-        }
-        onLeave(zone);
-      }
-    },
+    properties: <any>{'isAngularZone': true},
+    onInvokeTask:
+        (delegate: ZoneDelegate, current: Zone, target: Zone, task: Task, applyThis: any,
+         applyArgs: any): any => {
+          try {
+            onEnter(zone);
+            return delegate.invokeTask(target, task, applyThis, applyArgs);
+          } finally {
+            if ((zone.shouldCoalesceEventChangeDetection && task.type === 'eventTask') ||
+                zone.shouldCoalesceRunChangeDetection) {
+              delayChangeDetectionForEventsDelegate();
+            }
+            onLeave(zone);
+          }
+        },
 
-
-    onInvoke: (delegate: ZoneDelegate, current: Zone, target: Zone, callback: Function,
-               applyThis: any, applyArgs?: any[], source?: string): any => {
-      try {
-        onEnter(zone);
-        return delegate.invoke(target, callback, applyThis, applyArgs, source);
-      } finally {
-        onLeave(zone);
-      }
-    },
+    onInvoke:
+        (delegate: ZoneDelegate, current: Zone, target: Zone, callback: Function, applyThis: any,
+         applyArgs?: any[], source?: string): any => {
+          try {
+            onEnter(zone);
+            return delegate.invoke(target, callback, applyThis, applyArgs, source);
+          } finally {
+            if (zone.shouldCoalesceRunChangeDetection) {
+              delayChangeDetectionForEventsDelegate();
+            }
+            onLeave(zone);
+          }
+        },
 
     onHasTask:
         (delegate: ZoneDelegate, current: Zone, target: Zone, hasTaskState: HasTaskState) => {
@@ -331,7 +437,8 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
 
 function updateMicroTaskStatus(zone: NgZonePrivate) {
   if (zone._hasPendingMicrotasks ||
-      (zone.shouldCoalesceEventChangeDetection && zone.lastRequestAnimationFrameId !== -1)) {
+      ((zone.shouldCoalesceEventChangeDetection || zone.shouldCoalesceRunChangeDetection) &&
+       zone.lastRequestAnimationFrameId !== -1)) {
     zone.hasPendingMicrotasks = true;
   } else {
     zone.hasPendingMicrotasks = false;
@@ -364,17 +471,19 @@ export class NoopNgZone implements NgZone {
   readonly onStable: EventEmitter<any> = new EventEmitter();
   readonly onError: EventEmitter<any> = new EventEmitter();
 
-  run(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): any {
+  run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any): T {
     return fn.apply(applyThis, applyArgs);
   }
 
-  runGuarded(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): any {
+  runGuarded<T>(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any): T {
     return fn.apply(applyThis, applyArgs);
   }
 
-  runOutsideAngular(fn: (...args: any[]) => any): any { return fn(); }
+  runOutsideAngular<T>(fn: (...args: any[]) => T): T {
+    return fn();
+  }
 
-  runTask(fn: (...args: any[]) => any, applyThis?: any, applyArgs?: any, name?: string): any {
+  runTask<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any, name?: string): T {
     return fn.apply(applyThis, applyArgs);
   }
 }

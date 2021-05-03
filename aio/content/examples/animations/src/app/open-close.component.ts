@@ -5,11 +5,10 @@ import { trigger, transition, state, animate, style, AnimationEvent } from '@ang
 // #docregion component, events1
 @Component({
   selector: 'app-open-close',
-// #docregion trigger, trigger-wildcard1, trigger-transition
+// #docregion trigger-wildcard1, trigger-transition
   animations: [
     trigger('openClose', [
-// #enddocregion events1
-// #docregion state1, events1
+// #docregion state1
       // ...
 // #enddocregion events1
       state('open', style({
@@ -34,8 +33,7 @@ import { trigger, transition, state, animate, style, AnimationEvent } from '@ang
       transition('closed => open', [
         animate('0.5s')
       ]),
-// #enddocregion trigger, component
-// #enddocregion transition2
+// #enddocregion transition2, component
 // #docregion trigger-wildcard1
       transition('* => closed', [
         animate('1s')
@@ -56,21 +54,22 @@ import { trigger, transition, state, animate, style, AnimationEvent } from '@ang
         ),
       ]),
 // #enddocregion transition4
-// #docregion transition3
       transition('* => *', [
         animate('1s')
       ]),
-// #enddocregion transition3, trigger-transition
-// #docregion trigger, component, trigger-wildcard1, events1
+// #enddocregion trigger-transition
+// #docregion component, trigger-wildcard1, events1
     ]),
   ],
-// #enddocregion trigger, trigger-wildcard1
+// #enddocregion trigger-wildcard1
   templateUrl: 'open-close.component.html',
   styleUrls: ['open-close.component.css']
 })
 // #docregion events
 export class OpenCloseComponent {
-// #enddocregion events1, events
+// #enddocregion events1, events, component
+  @Input() logging = false;
+// #docregion component
   isOpen = true;
 
   toggle() {
@@ -78,9 +77,8 @@ export class OpenCloseComponent {
   }
 
 // #enddocregion component
-  @Input() logging = false;
 // #docregion events1, events
-  onAnimationEvent ( event: AnimationEvent ) {
+  onAnimationEvent( event: AnimationEvent ) {
 // #enddocregion events1, events
     if (!this.logging) {
       return;

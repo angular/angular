@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,14 +14,23 @@
 
 import {CssSelector} from './selector';
 
-export interface Inject { token: any; }
+export interface Inject {
+  token: any;
+}
 export const createInject = makeMetadataFactory<Inject>('Inject', (token: any) => ({token}));
 export const createInjectionToken = makeMetadataFactory<object>(
     'InjectionToken', (desc: string) => ({_desc: desc, ɵprov: undefined}));
 
-export interface Attribute { attributeName?: string; }
+export interface Attribute {
+  attributeName: string;
+}
 export const createAttribute =
-    makeMetadataFactory<Attribute>('Attribute', (attributeName?: string) => ({attributeName}));
+    makeMetadataFactory<Attribute>('Attribute', (attributeName: string) => ({attributeName}));
+
+// Stores the default value of `emitDistinctChangesOnly` when the `emitDistinctChangesOnly` is not
+// explicitly set.
+export const emitDistinctChangesOnlyDefaultValue = true;
+
 
 export interface Query {
   descendants: boolean;
@@ -30,21 +39,35 @@ export interface Query {
   isViewQuery: boolean;
   selector: any;
   static?: boolean;
+  emitDistinctChangesOnly: boolean;
 }
 
 export const createContentChildren = makeMetadataFactory<Query>(
-    'ContentChildren',
-    (selector?: any, data: any = {}) =>
-        ({selector, first: false, isViewQuery: false, descendants: false, ...data}));
+    'ContentChildren', (selector?: any, data: any = {}) => ({
+                         selector,
+                         first: false,
+                         isViewQuery: false,
+                         descendants: false,
+                         emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
+                         ...data
+                       }));
 export const createContentChild = makeMetadataFactory<Query>(
-    'ContentChild', (selector?: any, data: any = {}) =>
-                        ({selector, first: true, isViewQuery: false, descendants: true, ...data}));
+    'ContentChild',
+    (selector?: any, data: any = {}) =>
+        ({selector, first: true, isViewQuery: false, descendants: true, ...data}));
 export const createViewChildren = makeMetadataFactory<Query>(
-    'ViewChildren', (selector?: any, data: any = {}) =>
-                        ({selector, first: false, isViewQuery: true, descendants: true, ...data}));
+    'ViewChildren', (selector?: any, data: any = {}) => ({
+                      selector,
+                      first: false,
+                      isViewQuery: true,
+                      descendants: true,
+                      emitDistinctChangesOnly: emitDistinctChangesOnlyDefaultValue,
+                      ...data
+                    }));
 export const createViewChild = makeMetadataFactory<Query>(
-    'ViewChild', (selector: any, data: any) =>
-                     ({selector, first: true, isViewQuery: true, descendants: true, ...data}));
+    'ViewChild',
+    (selector: any, data: any) =>
+        ({selector, first: true, isViewQuery: true, descendants: true, ...data}));
 
 export interface Directive {
   selector?: string;
@@ -75,7 +98,7 @@ export interface Component extends Directive {
 }
 export enum ViewEncapsulation {
   Emulated = 0,
-  Native = 1,
+  // Historically the 1 value was for `Native` encapsulation which has been removed as of v11.
   None = 2,
   ShadowDom = 3
 }
@@ -94,15 +117,21 @@ export interface Pipe {
 }
 export const createPipe = makeMetadataFactory<Pipe>('Pipe', (p: Pipe) => ({pure: true, ...p}));
 
-export interface Input { bindingPropertyName?: string; }
+export interface Input {
+  bindingPropertyName?: string;
+}
 export const createInput =
     makeMetadataFactory<Input>('Input', (bindingPropertyName?: string) => ({bindingPropertyName}));
 
-export interface Output { bindingPropertyName?: string; }
+export interface Output {
+  bindingPropertyName?: string;
+}
 export const createOutput = makeMetadataFactory<Output>(
     'Output', (bindingPropertyName?: string) => ({bindingPropertyName}));
 
-export interface HostBinding { hostPropertyName?: string; }
+export interface HostBinding {
+  hostPropertyName?: string;
+}
 export const createHostBinding = makeMetadataFactory<HostBinding>(
     'HostBinding', (hostPropertyName?: string) => ({hostPropertyName}));
 
@@ -140,7 +169,9 @@ export interface Injectable {
 }
 export const createInjectable =
     makeMetadataFactory('Injectable', (injectable: Injectable = {}) => injectable);
-export interface SchemaMetadata { name: string; }
+export interface SchemaMetadata {
+  name: string;
+}
 
 export const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata = {
   name: 'custom-elements'
@@ -155,7 +186,9 @@ export const createSelf = makeMetadataFactory('Self');
 export const createSkipSelf = makeMetadataFactory('SkipSelf');
 export const createHost = makeMetadataFactory('Host');
 
-export interface Type extends Function { new (...args: any[]): any; }
+export interface Type extends Function {
+  new(...args: any[]): any;
+}
 export const Type = Function;
 
 export enum SecurityContext {
@@ -207,6 +240,7 @@ export const enum NodeFlags {
   StaticQuery = 1 << 28,
   DynamicQuery = 1 << 29,
   TypeModuleProvider = 1 << 30,
+  EmitDistinctChangesOnly = 1 << 31,
   CatQuery = TypeContentQuery | TypeViewQuery,
 
   // mutually exclusive values...
@@ -238,9 +272,17 @@ export const enum InjectFlags {
   SkipSelf = 1 << 2,
   /** Inject `defaultValue` instead if token not found. */
   Optional = 1 << 3,
+  /**
+   * This token is being injected into a pipe.
+   * @internal
+   */
+  ForPipe = 1 << 4,
 }
 
-export const enum ArgumentType {Inline = 0, Dynamic = 1}
+export const enum ArgumentType {
+  Inline = 0,
+  Dynamic = 1
+}
 
 export const enum BindingFlags {
   TypeElementAttribute = 1 << 0,
@@ -255,7 +297,10 @@ export const enum BindingFlags {
   Types = TypeElementAttribute | TypeElementClass | TypeElementStyle | TypeProperty
 }
 
-export const enum QueryBindingType {First = 0, All = 1}
+export const enum QueryBindingType {
+  First = 0,
+  All = 1
+}
 
 export const enum QueryValueType {
   ElementRef = 0,
@@ -324,7 +369,7 @@ export const enum SelectorFlags {
 
 // These are a copy the CSS types from core/src/render3/interfaces/projection.ts
 // They are duplicated here as they cannot be directly referenced from core.
-export type R3CssSelector = (string | SelectorFlags)[];
+export type R3CssSelector = (string|SelectorFlags)[];
 export type R3CssSelectorList = R3CssSelector[];
 
 function parserSelectorToSimpleSelector(selector: CssSelector): R3CssSelector {
@@ -363,7 +408,7 @@ function parserSelectorToR3Selector(selector: CssSelector): R3CssSelector {
   return positive.concat(...negative);
 }
 
-export function parseSelectorToR3Selector(selector: string | null): R3CssSelectorList {
+export function parseSelectorToR3Selector(selector: string|null): R3CssSelectorList {
   return selector ? CssSelector.parse(selector).map(parserSelectorToR3Selector) : [];
 }
 

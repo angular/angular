@@ -1,10 +1,10 @@
 // #docregion
-import { NgModule }             from '@angular/core';
-import { BrowserModule }        from '@angular/platform-browser';
-import { FormsModule }          from '@angular/forms';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
 
-import { AppComponent }          from './app.component';
+import { AppComponent } from './app.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 const routes: Routes = [

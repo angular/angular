@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,12 +11,13 @@
 // where this will require /aio/node_modules/puppeteer
 const puppeteerPkgPath = require.resolve('puppeteer/package.json', {paths: [process.cwd()]});
 const puppeteerVersion = require(puppeteerPkgPath).version;
-const chromeVersionMap = require('./puppeteer-chrome-versions');
+const chromedriverVersionMap = require('./puppeteer-chromedriver-versions');
 const spawnSync = require('child_process').spawnSync;
 
-const version = chromeVersionMap[puppeteerVersion];
+const version = chromedriverVersionMap[puppeteerVersion];
 if (!version) {
-  console.error(`[webdriver-manager-update.js] Error: Could not find Chrome version for Puppeteer version '${puppeteerVersion}' in Chrome/Puppeteer version map. Please update /scripts/puppeteer-chrome-versions.js.`);
+  console.error(`[webdriver-manager-update.js] Error: Could not find ChromeDriver version for Puppeteer version '${
+      puppeteerVersion}' in ChromeDriver/Puppeteer version map. Please update /scripts/puppeteer-chromedriver-versions.js.`);
   process.exit(1);
 }
 
@@ -33,10 +34,12 @@ const args = [
 
 const result = spawnSync('yarn', args, {shell: true, stdio: 'inherit'});
 if (result.error) {
-  console.error(`[webdriver-manager-update.js] Call to 'yarn ${args.join(' ')}' failed with error code ${result.error.code}`);
+  console.error(`[webdriver-manager-update.js] Call to 'yarn ${
+      args.join(' ')}' failed with error code ${result.error.code}`);
   process.exit(result.status);
 }
 if (result.status) {
-  console.error(`[webdriver-manager-update.js] Call to 'yarn ${args.join(' ')}' failed with error code ${result.status}`);
+  console.error(`[webdriver-manager-update.js] Call to 'yarn ${
+      args.join(' ')}' failed with error code ${result.status}`);
   process.exit(result.status);
 }

@@ -15,20 +15,28 @@ that are important to Angular developers, including details about the following 
 
 {@a tsconfig}
 
-## TypeScript configuration
+## Configuration files
 
-A TypeScript configuration file called `tsconfig.json` guides the compiler as it generates JavaScript files for a project.
-This file contains options and flags that are essential for Angular applications.
-Typically, the file is found at the [root level of the workspace](guide/file-structure).
+A given Angular workspace contains several TypeScript configuration files.
+At the root `tsconfig.json` file specifies the base TypeScript and Angular compiler options that all projects in the workspace inherit.
 
 <div class="alert is-helpful">
 
-For details about `tsconfig.json`, see the official
-[TypeScript wiki](http://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
+See the [Angular compiler options](guide/angular-compiler-options) guide for information about what Angular specific options are available.
 
 </div>
 
-The initial `tsconfig.json` for an Angular app typically looks like the following example.
+The TypeScript and Angular have a wide range of options which can be used to configure type-checking features and generated output.
+For more information, see the [Configuration inheritance with extends](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#configuration-inheritance-with-extends) section of the TypeScript documentation.
+
+<div class="alert is-helpful">
+
+For more information TypeScript configuration files, see the official [TypeScript wiki](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)
+For details about configuration inheritance, see the [Configuration inheritance with extends](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html#configuration-inheritance-with-extends) section.
+
+</div>
+
+The initial `tsconfig.json` for an Angular workspace typically looks like the following example.
 
 <code-example lang="json" header="tsconfig.json" linenums="false">
 {
@@ -40,28 +48,24 @@ The initial `tsconfig.json` for an Angular app typically looks like the followin
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
-    "module": "esnext",
     "moduleResolution": "node",
     "importHelpers": true,
     "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "module": "es2020",
     "lib": [
       "es2018",
       "dom"
     ]
-  },
-  "angularCompilerOptions": {
-    "fullTemplateTypeCheck": true,
-    "strictInjectionParameters": true
   }
 }
 </code-example>
 
+### Strict mode
+
+When you create new workspaces and projects, you have the option to use Angular's strict mode, which can help you write better, more maintainable code.
+For more information, see [Strict mode](/guide/strict-mode).
 
 {@a noImplicitAny}
-
 
 ### *noImplicitAny* and *suppressImplicitAnyIndexErrors*
 
@@ -95,6 +99,7 @@ You can suppress them with the following additional flag:
 For more information about how the TypeScript configuration affects compilation, see [Angular Compiler Options](guide/angular-compiler-options) and [Template Type Checking](guide/template-typecheck).
 
 </div>
+
 
 {@a typings}
 
@@ -138,14 +143,13 @@ Fortunately, either their authors or community contributors have created separat
 published them in well-known locations.
 
 You can install these typings via `npm` using the
-[`@types/*` scoped package](http://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html)
+[`@types/*` scoped package](https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html)
 and Typescript, starting at 2.0, automatically recognizes them.
 
 For instance, to install typings for `jasmine` you run `npm install @types/jasmine --save-dev`.
 
 
 {@a target}
-
 
 ### *target*
 

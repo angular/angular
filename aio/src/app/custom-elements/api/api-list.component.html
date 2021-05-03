@@ -15,12 +15,12 @@
   </aio-select>
 
   <div class="form-search">
-    <input #filter placeholder="Filter" (input)="setQuery($event.target.value)" aria-label="Filter Search">
+    <input #filter placeholder="Filter" (input)="setQuery($any($event.target).value)" aria-label="Filter Search">
     <i class="material-icons">search</i>
   </div>
 </div>
 
-<article class="api-list-container l-content-small docs-content">
+<article class="api-list-container">
   <div *ngFor="let section of filteredSections | async" >
     <h2 *ngIf="section.items"><a [href]="section.path" [class.deprecated-api-item]="section.deprecated">{{section.title}}</a></h2>
     <ul class="api-list" *ngIf="section.items && section.items.length">

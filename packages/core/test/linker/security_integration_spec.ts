@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,16 +8,22 @@
 
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, HostBinding, Input, NO_ERRORS_SCHEMA, ɵivyEnabled as ivyEnabled} from '@angular/core';
-import {ComponentFixture, TestBed, getTestBed} from '@angular/core/testing';
+import {ComponentFixture, getTestBed, TestBed} from '@angular/core/testing';
 import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 import {modifiedInIvy, onlyInIvy} from '@angular/private/testing';
 
 {
   if (ivyEnabled) {
-    describe('ivy', () => { declareTests(); });
+    describe('ivy', () => {
+      declareTests();
+    });
   } else {
-    describe('jit', () => { declareTests({useJit: true}); });
-    describe('no jit', () => { declareTests({useJit: false}); });
+    describe('jit', () => {
+      declareTests({useJit: true});
+    });
+    describe('no jit', () => {
+      declareTests({useJit: false});
+    });
   }
 }
 
@@ -34,7 +40,6 @@ class OnPrefixDir {
 
 function declareTests(config?: {useJit: boolean}) {
   describe('security integration tests', function() {
-
     beforeEach(() => {
       TestBed.configureCompiler({...config}).configureTestingModule({
         declarations: [
@@ -44,12 +49,10 @@ function declareTests(config?: {useJit: boolean}) {
       });
     });
 
-    let originalLog: (msg: any) => any;
     beforeEach(() => {
-      originalLog = getDOM().log;
-      getDOM().log = (msg) => { /* disable logging */ };
+      // Disable logging for these tests.
+      spyOn(console, 'log').and.callFake(() => {});
     });
-    afterEach(() => { getDOM().log = originalLog; });
 
     describe('events', () => {
       modifiedInIvy('on-prefixed attributes validation happens at runtime in Ivy')
@@ -113,7 +116,7 @@ function declareTests(config?: {useJit: boolean}) {
         });
 
         // should not throw for inputs starting with "on"
-        let cmp: ComponentFixture<SecuredComponent> = undefined !;
+        let cmp: ComponentFixture<SecuredComponent> = undefined!;
         expect(() => cmp = TestBed.createComponent(SecuredComponent)).not.toThrow();
 
         // must bind to the directive not to the property of the div
@@ -121,10 +124,9 @@ function declareTests(config?: {useJit: boolean}) {
         cmp.detectChanges();
         const div = cmp.debugElement.children[0];
         expect(div.injector.get(OnPrefixDir).onclick).toBe(value);
-        expect(getDOM().getProperty(div.nativeElement, 'onclick')).not.toBe(value);
+        expect(div.nativeElement.onclick).not.toBe(value);
         expect(div.nativeElement.hasAttribute('onclick')).toEqual(false);
       });
-
     });
 
     describe('safe HTML values', function() {
@@ -139,7 +141,7 @@ function declareTests(config?: {useJit: boolean}) {
         const trusted = sanitizer.bypassSecurityTrustUrl('javascript:alert(1)');
         ci.ctxProp = trusted;
         fixture.detectChanges();
-        expect(getDOM().getProperty(e, 'href')).toEqual('javascript:alert(1)');
+        expect(e.getAttribute('href')).toEqual('javascript:alert(1)');
       });
 
       it('should error when using the wrong trusted value', () => {
@@ -165,25 +167,21 @@ function declareTests(config?: {useJit: boolean}) {
         const ci = fixture.componentInstance;
         ci.ctxProp = trusted;
         fixture.detectChanges();
-        expect(getDOM().getProperty(e, 'href')).toMatch(/SafeValue(%20| )must(%20| )use/);
+        expect(e.href).toMatch(/SafeValue(%20| )must(%20| )use/);
       });
     });
 
     describe('sanitizing', () => {
-      function checkEscapeOfHrefProperty(fixture: ComponentFixture<any>, isAttribute: boolean) {
+      function checkEscapeOfHrefProperty(fixture: ComponentFixture<any>) {
         const e = fixture.debugElement.children[0].nativeElement;
         const ci = fixture.componentInstance;
         ci.ctxProp = 'hello';
         fixture.detectChanges();
-        // In the browser, reading href returns an absolute URL. On the server side,
-        // it just echoes back the property.
-        let value = isAttribute ? e.getAttribute('href') : getDOM().getProperty(e, 'href');
-        expect(value).toMatch(/.*\/?hello$/);
+        expect(e.getAttribute('href')).toMatch(/.*\/?hello$/);
 
         ci.ctxProp = 'javascript:alert(1)';
         fixture.detectChanges();
-        value = isAttribute ? e.getAttribute('href') : getDOM().getProperty(e, 'href');
-        expect(value).toEqual('unsafe:javascript:alert(1)');
+        expect(e.getAttribute('href')).toEqual('unsafe:javascript:alert(1)');
       }
 
       it('should escape unsafe properties', () => {
@@ -191,7 +189,7 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
 
-        checkEscapeOfHrefProperty(fixture, false);
+        checkEscapeOfHrefProperty(fixture);
       });
 
       it('should escape unsafe attributes', () => {
@@ -199,15 +197,14 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
 
-        checkEscapeOfHrefProperty(fixture, true);
+        checkEscapeOfHrefProperty(fixture);
       });
 
       it('should escape unsafe properties if they are used in host bindings', () => {
         @Directive({selector: '[dirHref]'})
         class HrefDirective {
           // TODO(issue/24571): remove '!'.
-          @HostBinding('href') @Input()
-          dirHref !: string;
+          @HostBinding('href') @Input() dirHref!: string;
         }
 
         const template = `<a [dirHref]="ctxProp">Link Title</a>`;
@@ -215,15 +212,14 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
 
-        checkEscapeOfHrefProperty(fixture, false);
+        checkEscapeOfHrefProperty(fixture);
       });
 
       it('should escape unsafe attributes if they are used in host bindings', () => {
         @Directive({selector: '[dirHref]'})
         class HrefDirective {
           // TODO(issue/24571): remove '!'.
-          @HostBinding('attr.href') @Input()
-          dirHref !: string;
+          @HostBinding('attr.href') @Input() dirHref!: string;
         }
 
         const template = `<a [dirHref]="ctxProp">Link Title</a>`;
@@ -231,27 +227,7 @@ function declareTests(config?: {useJit: boolean}) {
         TestBed.overrideComponent(SecuredComponent, {set: {template}});
         const fixture = TestBed.createComponent(SecuredComponent);
 
-        checkEscapeOfHrefProperty(fixture, true);
-      });
-
-      it('should escape unsafe style values', () => {
-        const template = `<div [style.background]="ctxProp">Text</div>`;
-        TestBed.overrideComponent(SecuredComponent, {set: {template}});
-        const fixture = TestBed.createComponent(SecuredComponent);
-
-        const e = fixture.debugElement.children[0].nativeElement;
-        const ci = fixture.componentInstance;
-        // Make sure binding harmless values works.
-        ci.ctxProp = 'red';
-        fixture.detectChanges();
-        // In some browsers, this will contain the full background specification, not just
-        // the color.
-        expect(e.style['background']).toMatch(/red.*/);
-
-        ci.ctxProp = 'url(javascript:evil())';
-        fixture.detectChanges();
-        // Updated value gets rejected, no value change.
-        expect(e.style['background']).not.toContain('javascript');
+        checkEscapeOfHrefProperty(fixture);
       });
 
       modifiedInIvy('Unknown property error thrown during update mode, not creation mode')
@@ -263,12 +239,12 @@ function declareTests(config?: {useJit: boolean}) {
                 .toThrowError(/Can't bind to 'xlink:href'/);
           });
 
-      onlyInIvy('Unknown property warning logged instead of throwing an error')
+      onlyInIvy('Unknown property logs an error message instead of throwing')
           .it('should escape unsafe SVG attributes', () => {
             const template = `<svg:circle [xlink:href]="ctxProp">Text</svg:circle>`;
             TestBed.overrideComponent(SecuredComponent, {set: {template}});
 
-            const spy = spyOn(console, 'warn');
+            const spy = spyOn(console, 'error');
             const fixture = TestBed.createComponent(SecuredComponent);
             fixture.detectChanges();
             expect(spy.calls.mostRecent().args[0]).toMatch(/Can't bind to 'xlink:href'/);
@@ -297,6 +273,32 @@ function declareTests(config?: {useJit: boolean}) {
         ci.ctxProp = 'also <iframe srcdoc="evil"></iframe> evil';
         fixture.detectChanges();
         expect(e.innerHTML).toEqual('also  evil');
+      });
+    });
+
+    onlyInIvy('Trusted Types are only supported in Ivy').describe('translation', () => {
+      it('should throw error on security-sensitive attributes with constant values', () => {
+        const template = `<iframe srcdoc="foo" i18n-srcdoc></iframe>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+        expect(() => TestBed.createComponent(SecuredComponent))
+            .toThrowError(/Translating attribute 'srcdoc' is disallowed for security reasons./);
+      });
+
+      it('should throw error on security-sensitive attributes with interpolated values', () => {
+        const template = `<object i18n-data data="foo{{bar}}baz"></object>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+        expect(() => TestBed.createComponent(SecuredComponent))
+            .toThrowError(/Translating attribute 'data' is disallowed for security reasons./);
+      });
+
+      it('should throw error on security-sensitive attributes with bound values', () => {
+        const template = `<div [innerHTML]="foo" i18n-innerHTML></div>`;
+        TestBed.overrideComponent(SecuredComponent, {set: {template}});
+
+        expect(() => TestBed.createComponent(SecuredComponent))
+            .toThrowError(/Translating attribute 'innerHTML' is disallowed for security reasons./);
       });
     });
   });

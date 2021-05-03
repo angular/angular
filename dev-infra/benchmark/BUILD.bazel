@@ -1,0 +1,12 @@
+package(default_visibility = ["//visibility:public"])
+
+# Make source files available for distribution via pkg_npm
+filegroup(
+    name = "files",
+    srcs = glob(["*"]) + [
+        "//dev-infra/benchmark/brotli-cli:files",
+        "//dev-infra/browsers:files",
+        "//dev-infra/benchmark/component_benchmark:files",
+        "//dev-infra/benchmark/ng_rollup_bundle:files",
+    ],
+)

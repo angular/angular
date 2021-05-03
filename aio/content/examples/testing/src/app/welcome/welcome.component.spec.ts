@@ -1,14 +1,14 @@
 // #docplaster
 import { ComponentFixture, inject, TestBed } from '@angular/core/testing';
 
-import { UserService }      from '../model/user.service';
+import { UserService } from '../model/user.service';
 import { WelcomeComponent } from './welcome.component';
 
 // #docregion mock-user-service
 class MockUserService {
   isLoggedIn = true;
   user = { name: 'Test User'};
-};
+}
 // #enddocregion mock-user-service
 
 describe('WelcomeComponent (class only)', () => {
@@ -58,7 +58,7 @@ describe('WelcomeComponent', () => {
   let el: HTMLElement; // the DOM element with the welcome message
 
   // #docregion setup, user-service-stub
-    let userServiceStub: Partial<UserService>;
+  let userServiceStub: Partial<UserService>;
 
   // #enddocregion user-service-stub
   beforeEach(() => {
@@ -66,7 +66,7 @@ describe('WelcomeComponent', () => {
     // #docregion user-service-stub
     userServiceStub = {
       isLoggedIn: true,
-      user: { name: 'Test User'}
+      user: { name: 'Test User' },
     };
     // #enddocregion user-service-stub
 
@@ -74,10 +74,10 @@ describe('WelcomeComponent', () => {
     TestBed.configureTestingModule({
        declarations: [ WelcomeComponent ],
     // #enddocregion setup
-    // providers:    [ UserService ]  // NO! Don't provide the real service!
-                                      // Provide a test-double instead
+    // providers: [ UserService ],  // NO! Don't provide the real service!
+                                    // Provide a test-double instead
     // #docregion setup
-       providers:    [ {provide: UserService, useValue: userServiceStub } ]
+       providers: [ { provide: UserService, useValue: userServiceStub } ],
     });
     // #enddocregion config-test-module
 
@@ -85,7 +85,7 @@ describe('WelcomeComponent', () => {
     comp    = fixture.componentInstance;
 
     // #enddocregion setup
-   // #docregion injected-service
+    // #docregion injected-service
     // UserService actually injected into the component
     userService = fixture.debugElement.injector.get(UserService);
     // #enddocregion injected-service
@@ -132,14 +132,4 @@ describe('WelcomeComponent', () => {
   it('TestBed and Component UserService should be the same', () => {
     expect(userService === componentUserService).toBe(true);
   });
-
-  // #docregion stub-not-injected
-  it('stub object and injected UserService should not be the same', () => {
-    expect(userServiceStub === userService).toBe(false);
-
-    // Changing the stub object has no effect on the injected service
-    userServiceStub.isLoggedIn = false;
-    expect(userService.isLoggedIn).toBe(true);
-  });
-  // #enddocregion stub-not-injected
 });

@@ -17,7 +17,7 @@ Toggle All Animations <input type="checkbox" [checked]="!animationsDisabled" (cl
 </nav>
 
 <!-- #docregion route-animations-outlet -->
-<div [@routeAnimations]="prepareRoute(outlet)" >
+<div [@routeAnimations]="prepareRoute(outlet)">
   <router-outlet #outlet="outlet"></router-outlet>
 </div>
 <!-- #enddocregion route-animations-outlet -->

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@ import {Observable, Subscriber, Subscription} from 'rxjs';
 
 type ZoneSubscriberContext = {
   _zone: Zone
-} & Subscriber<any>;
+}&Subscriber<any>;
 
 (Zone as any).__load_patch('rxjs', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   const symbol: (symbolString: string) => string = (Zone as any).__symbol__;
@@ -31,7 +31,9 @@ type ZoneSubscriberContext = {
       _zoneSubscribe: {value: null, writable: true, configurable: true},
       source: {
         configurable: true,
-        get: function(this: Observable<any>) { return (this as any)._zoneSource; },
+        get: function(this: Observable<any>) {
+          return (this as any)._zoneSource;
+        },
         set: function(this: Observable<any>, source: any) {
           (this as any)._zone = Zone.current;
           (this as any)._zoneSource = source;
@@ -75,7 +77,9 @@ type ZoneSubscriberContext = {
         }
       },
       subjectFactory: {
-        get: function() { return (this as any)._zoneSubjectFactory; },
+        get: function() {
+          return (this as any)._zoneSubjectFactory;
+        },
         set: function(factory: any) {
           const zone = this._zone;
           this._zoneSubjectFactory = function() {
@@ -111,7 +115,7 @@ type ZoneSubscriberContext = {
       _zoneUnsubscribe: {value: null, writable: true, configurable: true},
       _unsubscribe: {
         get: function(this: Subscription) {
-          if ((this as any)._zoneUnsubscribe) {
+          if ((this as any)._zoneUnsubscribe || (this as any)._zoneUnsubscribeCleared) {
             return (this as any)._zoneUnsubscribe;
           }
           const proto = Object.getPrototypeOf(this);
@@ -121,7 +125,13 @@ type ZoneSubscriberContext = {
           (this as any)._zone = Zone.current;
           if (!unsubscribe) {
             (this as any)._zoneUnsubscribe = unsubscribe;
+            // In some operator such as `retryWhen`, the _unsubscribe
+            // method will be set to null, so we need to set another flag
+            // to tell that we should return null instead of finding
+            // in the prototype chain.
+            (this as any)._zoneUnsubscribeCleared = true;
           } else {
+            (this as any)._zoneUnsubscribeCleared = false;
             (this as any)._zoneUnsubscribe = function() {
               if (this._zone && this._zone !== Zone.current) {
                 return this._zone.run(unsubscribe, this, arguments);
@@ -142,7 +152,9 @@ type ZoneSubscriberContext = {
 
     Object.defineProperty(Subscriber.prototype, 'destination', {
       configurable: true,
-      get: function(this: Subscriber<any>) { return (this as any)._zoneDestination; },
+      get: function(this: Subscriber<any>) {
+        return (this as any)._zoneDestination;
+      },
       set: function(this: Subscriber<any>, destination: any) {
         (this as any)._zone = Zone.current;
         (this as any)._zoneDestination = destination;

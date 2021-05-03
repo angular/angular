@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,15 +8,16 @@
 
 import {CommonModule} from '@angular/common';
 import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
-import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, Optional, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
-import {TestBed, async} from '@angular/core/testing';
+import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NgModule, NgModuleFactory, NO_ERRORS_SCHEMA, Optional, QueryList, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {TestBed, waitForAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 describe('insert/remove', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({imports: [TestModule]});
+  });
 
-  beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });
-
-  it('should do nothing if component is null', async(() => {
+  it('should do nothing if component is null', waitForAsync(() => {
        const template = `<ng-template *ngComponentOutlet="currentComponent"></ng-template>`;
        TestBed.overrideComponent(TestComponent, {set: {template: template}});
        let fixture = TestBed.createComponent(TestComponent);
@@ -27,7 +28,7 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('');
      }));
 
-  it('should insert content specified by a component', async(() => {
+  it('should insert content specified by a component', waitForAsync(() => {
        let fixture = TestBed.createComponent(TestComponent);
 
        fixture.detectChanges();
@@ -39,7 +40,7 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('foo');
      }));
 
-  it('should emit a ComponentRef once a component was created', async(() => {
+  it('should emit a ComponentRef once a component was created', waitForAsync(() => {
        let fixture = TestBed.createComponent(TestComponent);
 
        fixture.detectChanges();
@@ -51,11 +52,11 @@ describe('insert/remove', () => {
        fixture.detectChanges();
        expect(fixture.nativeElement).toHaveText('foo');
        expect(fixture.componentInstance.cmpRef).toBeAnInstanceOf(ComponentRef);
-       expect(fixture.componentInstance.cmpRef !.instance).toBeAnInstanceOf(InjectedComponent);
+       expect(fixture.componentInstance.cmpRef!.instance).toBeAnInstanceOf(InjectedComponent);
      }));
 
 
-  it('should clear view if component becomes null', async(() => {
+  it('should clear view if component becomes null', waitForAsync(() => {
        let fixture = TestBed.createComponent(TestComponent);
 
        fixture.detectChanges();
@@ -73,7 +74,7 @@ describe('insert/remove', () => {
      }));
 
 
-  it('should swap content if component changes', async(() => {
+  it('should swap content if component changes', waitForAsync(() => {
        let fixture = TestBed.createComponent(TestComponent);
 
        fixture.detectChanges();
@@ -90,7 +91,7 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('bar');
      }));
 
-  it('should use the injector, if one supplied', async(() => {
+  it('should use the injector, if one supplied', waitForAsync(() => {
        let fixture = TestBed.createComponent(TestComponent);
 
        const uniqueValue = {};
@@ -99,28 +100,27 @@ describe('insert/remove', () => {
            [{provide: TEST_TOKEN, useValue: uniqueValue}], fixture.componentRef.injector);
 
        fixture.detectChanges();
-       let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
+       let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
        expect(cmpRef).toBeAnInstanceOf(ComponentRef);
        expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
        expect(cmpRef.instance.testToken).toBe(uniqueValue);
-
      }));
 
 
-  it('should resolve with an injector', async(() => {
+  it('should resolve with an injector', waitForAsync(() => {
        let fixture = TestBed.createComponent(TestComponent);
 
        // We are accessing a ViewChild (ngComponentOutlet) before change detection has run
        fixture.componentInstance.cmpRef = null;
        fixture.componentInstance.currentComponent = InjectedComponent;
        fixture.detectChanges();
-       let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef !;
+       let cmpRef: ComponentRef<InjectedComponent> = fixture.componentInstance.cmpRef!;
        expect(cmpRef).toBeAnInstanceOf(ComponentRef);
        expect(cmpRef.instance).toBeAnInstanceOf(InjectedComponent);
        expect(cmpRef.instance.testToken).toBeNull();
      }));
 
-  it('should render projectable nodes, if supplied', async(() => {
+  it('should render projectable nodes, if supplied', waitForAsync(() => {
        const template = `<ng-template>projected foo</ng-template>${TEST_CMP_TEMPLATE}`;
        TestBed.overrideComponent(TestComponent, {set: {template: template}})
            .configureTestingModule({schemas: [NO_ERRORS_SCHEMA]});
@@ -144,7 +144,7 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('projected foo');
      }));
 
-  it('should resolve components from other modules, if supplied', async(() => {
+  it('should resolve components from other modules, if supplied', waitForAsync(() => {
        const compiler = TestBed.inject(Compiler);
        let fixture = TestBed.createComponent(TestComponent);
 
@@ -158,7 +158,7 @@ describe('insert/remove', () => {
        expect(fixture.nativeElement).toHaveText('baz');
      }));
 
-  it('should clean up moduleRef, if supplied', async(() => {
+  it('should clean up moduleRef, if supplied', waitForAsync(() => {
        let destroyed = false;
        const compiler = TestBed.inject(Compiler);
        const fixture = TestBed.createComponent(TestComponent);
@@ -166,7 +166,7 @@ describe('insert/remove', () => {
        fixture.componentInstance.currentComponent = Module2InjectedComponent;
        fixture.detectChanges();
 
-       const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef'] !;
+       const moduleRef = fixture.componentInstance.ngComponentOutlet['_moduleRef']!;
        spyOn(moduleRef, 'destroy').and.callThrough();
 
        expect(moduleRef.destroy).not.toHaveBeenCalled();
@@ -174,7 +174,7 @@ describe('insert/remove', () => {
        expect(moduleRef.destroy).toHaveBeenCalled();
      }));
 
-  it('should not re-create moduleRef when it didn\'t actually change', async(() => {
+  it('should not re-create moduleRef when it didn\'t actually change', waitForAsync(() => {
        const compiler = TestBed.inject(Compiler);
        const fixture = TestBed.createComponent(TestComponent);
 
@@ -191,7 +191,7 @@ describe('insert/remove', () => {
        expect(moduleRef).toBe(fixture.componentInstance.ngComponentOutlet['_moduleRef']);
      }));
 
-  it('should re-create moduleRef when changed', async(() => {
+  it('should re-create moduleRef when changed', waitForAsync(() => {
        const compiler = TestBed.inject(Compiler);
        const fixture = TestBed.createComponent(TestComponent);
        fixture.componentInstance.module = compiler.compileModuleSync(TestModule2);
@@ -224,21 +224,25 @@ const TEST_CMP_TEMPLATE =
 @Component({selector: 'test-cmp', template: TEST_CMP_TEMPLATE})
 class TestComponent {
   // TODO(issue/24571): remove '!'.
-  currentComponent !: Type<any>| null;
+  currentComponent!: Type<any>|null;
   // TODO(issue/24571): remove '!'.
-  injector !: Injector;
+  injector!: Injector;
   // TODO(issue/24571): remove '!'.
-  projectables !: any[][];
+  projectables!: any[][];
   // TODO(issue/24571): remove '!'.
-  module !: NgModuleFactory<any>;
+  module!: NgModuleFactory<any>;
 
-  get cmpRef(): ComponentRef<any>|null { return this.ngComponentOutlet['_componentRef']; }
-  set cmpRef(value: ComponentRef<any>|null) { this.ngComponentOutlet['_componentRef'] = value; }
+  get cmpRef(): ComponentRef<any>|null {
+    return this.ngComponentOutlet['_componentRef'];
+  }
+  set cmpRef(value: ComponentRef<any>|null) {
+    this.ngComponentOutlet['_componentRef'] = value;
+  }
 
   // TODO(issue/24571): remove '!'.
-  @ViewChildren(TemplateRef) tplRefs !: QueryList<TemplateRef<any>>;
+  @ViewChildren(TemplateRef) tplRefs!: QueryList<TemplateRef<any>>;
   // TODO(issue/24571): remove '!'.
-  @ViewChild(NgComponentOutlet, {static: true}) ngComponentOutlet !: NgComponentOutlet;
+  @ViewChild(NgComponentOutlet, {static: true}) ngComponentOutlet!: NgComponentOutlet;
 
   constructor(public vcRef: ViewContainerRef) {}
 }

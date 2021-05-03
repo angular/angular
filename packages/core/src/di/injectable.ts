@@ -1,15 +1,15 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {Type} from '../interface/type';
-import {TypeDecorator, makeDecorator} from '../util/decorators';
+import {makeDecorator, TypeDecorator} from '../util/decorators';
 
-import {InjectableType, getInjectableDef, ɵɵdefineInjectable} from './interface/defs';
+import {getInjectableDef, InjectableType, ɵɵdefineInjectable} from './interface/defs';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './interface/provider';
 import {compileInjectable as render3CompileInjectable} from './jit/injectable';
 import {convertInjectableProviderToFactory} from './util';
@@ -21,8 +21,8 @@ import {convertInjectableProviderToFactory} from './util';
  *
  * @publicApi
  */
-export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
-    StaticClassSansProvider | ConstructorSansProvider | FactorySansProvider | ClassSansProvider;
+export type InjectableProvider = ValueSansProvider|ExistingSansProvider|StaticClassSansProvider|
+    ConstructorSansProvider|FactorySansProvider|ClassSansProvider;
 
 /**
  * Type of the Injectable decorator / constructor function.
@@ -50,11 +50,11 @@ export interface InjectableDecorator {
    *
    */
   (): TypeDecorator;
-  (options?: {providedIn: Type<any>| 'root' | 'platform' | 'any' | null}&
+  (options?: {providedIn: Type<any>|'root'|'platform'|'any'|null}&
    InjectableProvider): TypeDecorator;
-  new (): Injectable;
-  new (options?: {providedIn: Type<any>| 'root' | 'platform' | 'any' | null}&
-       InjectableProvider): Injectable;
+  new(): Injectable;
+  new(options?: {providedIn: Type<any>|'root'|'platform'|'any'|null}&
+      InjectableProvider): Injectable;
 }
 
 /**
@@ -70,8 +70,8 @@ export interface Injectable {
    * - 'root' : The application-level injector in most apps.
    * - 'platform' : A special singleton platform injector shared by all
    * applications on the page.
-   * - 'any' : Provides a unique instance in every module (including lazy modules) that injects the
-   * token.
+   * - 'any' : Provides a unique instance in each lazy loaded module while all eagerly loaded
+   * modules share one instance.
    *
    */
   providedIn?: Type<any>|'root'|'platform'|'any'|null;
@@ -91,9 +91,9 @@ export const Injectable: InjectableDecorator = makeDecorator(
 /**
  * Supports @Injectable() in JIT mode for Render2.
  */
-function render2CompileInjectable(injectableType: Type<any>, options?: {
-  providedIn?: Type<any>| 'root' | 'platform' | 'any' | null
-} & InjectableProvider): void {
+function render2CompileInjectable(
+    injectableType: Type<any>,
+    options?: {providedIn?: Type<any>|'root'|'platform'|'any'|null}&InjectableProvider): void {
   if (options && options.providedIn !== undefined && !getInjectableDef(injectableType)) {
     (injectableType as InjectableType<any>).ɵprov = ɵɵdefineInjectable({
       token: injectableType,

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,8 +21,5 @@ export default [
     ['nửa đêm', 'TR', 'sáng', 'chiều', 'tối', 'đêm'],
     ['nửa đêm', 'trưa', 'sáng', 'chiều', 'tối', 'đêm']
   ],
-  [
-    '00:00', '12:00', ['04:00', '12:00'], ['12:00', '18:00'], ['18:00', '21:00'],
-    ['21:00', '04:00']
-  ]
+  ['00:00', '12:00', ['04:00', '12:00'], ['12:00', '18:00'], ['18:00', '21:00'], ['21:00', '04:00']]
 ];

@@ -1,15 +1,15 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PartiallyOrderedTasks, TaskQueue} from '../../../../src/execution/tasks/api';
+import {MockLogger} from '../../../../../src/ngtsc/logging/testing';
+import {DtsProcessing, PartiallyOrderedTasks, TaskQueue} from '../../../../src/execution/tasks/api';
 import {ParallelTaskQueue} from '../../../../src/execution/tasks/queues/parallel_task_queue';
 import {computeTaskDependencies} from '../../../../src/execution/tasks/utils';
-import {MockLogger} from '../../../helpers/mock_logger';
 import {createTasksAndGraph} from '../../helpers';
 
 describe('ParallelTaskQueue', () => {
@@ -51,7 +51,7 @@ describe('ParallelTaskQueue', () => {
    */
   const processNextTask = (queue: TaskQueue): ReturnType<TaskQueue['getNextTask']> => {
     const task = queue.getNextTask();
-    if (task !== null) queue.markTaskCompleted(task);
+    if (task !== null) queue.markAsCompleted(task);
     return task;
   };
 
@@ -77,16 +77,16 @@ describe('ParallelTaskQueue', () => {
     it('should be `true`, when there are no unprocess or in-progress tasks', () => {
       const {queue} = createQueue(3);
 
-      const task1 = queue.getNextTask() !;
-      const task2 = queue.getNextTask() !;
-      const task3 = queue.getNextTask() !;
+      const task1 = queue.getNextTask()!;
+      const task2 = queue.getNextTask()!;
+      const task3 = queue.getNextTask()!;
       expect(queue.allTasksCompleted).toBe(false);
 
-      queue.markTaskCompleted(task1);
-      queue.markTaskCompleted(task3);
+      queue.markAsCompleted(task1);
+      queue.markAsCompleted(task3);
       expect(queue.allTasksCompleted).toBe(false);  // The second task is still in progress.
 
-      queue.markTaskCompleted(task2);
+      queue.markAsCompleted(task2);
       expect(queue.allTasksCompleted).toBe(true);
     });
 
@@ -141,9 +141,9 @@ describe('ParallelTaskQueue', () => {
 
       // Verify that the first two tasks are for the first entry-point.
       expect(tasks[0].entryPoint.name).toBe('entry-point-0');
-      expect(tasks[0].processDts).toBe(true);
+      expect(tasks[0].processDts).toBe(DtsProcessing.Yes);
       expect(tasks[1].entryPoint.name).toBe('entry-point-0');
-      expect(tasks[1].processDts).toBe(false);
+      expect(tasks[1].processDts).toBe(DtsProcessing.No);
 
       // Verify that the last two tasks are for the second entry-point.
       expect(tasks[2].entryPoint.name).toBe('entry-point-1');
@@ -156,18 +156,18 @@ describe('ParallelTaskQueue', () => {
       expect(queue.getNextTask()).toBe(null);
 
       // Unblock typings task for entry-point #1 and non-typings task for entry-point #0
-      queue.markTaskCompleted(tasks[0]);
+      queue.markAsCompleted(tasks[0]);
       expect(queue.getNextTask()).toBe(tasks[2]);
       expect(queue.getNextTask()).toBe(tasks[1]);
 
       // The non-typings task for entry-point #1 is blocked on the typings task
       expect(queue.getNextTask()).toBe(null);
-      queue.markTaskCompleted(tasks[1]);
+      queue.markAsCompleted(tasks[1]);
       // Still blocked because we only completed a non-blocking task
       expect(queue.getNextTask()).toBe(null);
 
       // Finally, unblock non-typings task for entry-point #1
-      queue.markTaskCompleted(tasks[2]);
+      queue.markAsCompleted(tasks[2]);
       expect(queue.getNextTask()).toBe(tasks[3]);
     });
 
@@ -262,16 +262,16 @@ describe('ParallelTaskQueue', () => {
     });
   });
 
-  describe('markTaskCompleted()', () => {
+  describe('markAsCompleted()', () => {
     it('should mark a task as completed', () => {
       const {queue} = createQueue(2);
 
-      const task1 = queue.getNextTask() !;
-      const task2 = queue.getNextTask() !;
+      const task1 = queue.getNextTask()!;
+      const task2 = queue.getNextTask()!;
       expect(queue.allTasksCompleted).toBe(false);
 
-      queue.markTaskCompleted(task1);
-      queue.markTaskCompleted(task2);
+      queue.markAsCompleted(task1);
+      queue.markAsCompleted(task2);
       expect(queue.allTasksCompleted).toBe(true);
     });
 
@@ -279,10 +279,10 @@ describe('ParallelTaskQueue', () => {
       const {tasks, queue} = createQueue(3);
       queue.getNextTask();
 
-      expect(() => queue.markTaskCompleted(tasks[2]))
+      expect(() => queue.markAsCompleted(tasks[2]))
           .toThrowError(
               `Trying to mark task that was not in progress as completed: ` +
-              `{entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}`);
+              `{entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}`);
     });
 
     it('should remove the completed task from the lists of blocking tasks (so other tasks can be unblocked)',
@@ -300,16 +300,75 @@ describe('ParallelTaskQueue', () => {
          expect(queue.getNextTask()).toBe(null);
 
          // Once task #0 is completed, task #1 is unblocked.
-         queue.markTaskCompleted(tasks[0]);
+         queue.markAsCompleted(tasks[0]);
          expect(queue.getNextTask()).toBe(tasks[1]);
 
          // Task #2 is still blocked on #1.
          expect(queue.getNextTask()).toBe(null);
 
          // Once task #1 is completed, task #2 is unblocked.
-         queue.markTaskCompleted(tasks[1]);
+         queue.markAsCompleted(tasks[1]);
          expect(queue.getNextTask()).toBe(tasks[2]);
        });
+  });
+
+  describe('markAsUnprocessed()', () => {
+    it('should mark an in-progress task as unprocessed, so that it can be picked again', () => {
+      const {queue} = createQueue(2);
+
+      const task1 = queue.getNextTask()!;
+      const task2 = queue.getNextTask()!;
+      expect(queue.allTasksCompleted).toBe(false);
+
+      queue.markAsUnprocessed(task1);
+      queue.markAsCompleted(task2);
+      expect(queue.allTasksCompleted).toBe(false);
+
+      expect(queue.getNextTask()).toBe(task1);
+      expect(queue.allTasksCompleted).toBe(false);
+
+      queue.markAsCompleted(task1);
+      expect(queue.allTasksCompleted).toBe(true);
+    });
+
+    it('should throw, if the specified task is not in progress', () => {
+      const {tasks, queue} = createQueue(3);
+      queue.getNextTask();
+      queue.markAsCompleted(tasks[0]);
+
+      // Try with a task that is already completed.
+      expect(() => queue.markAsUnprocessed(tasks[0]))
+          .toThrowError(
+              `Trying to mark task that was not in progress as unprocessed: ` +
+              `{entryPoint: entry-point-0, formatProperty: prop-0, processDts: Yes}`);
+
+      // Try with a task that is not yet started.
+      expect(() => queue.markAsUnprocessed(tasks[2]))
+          .toThrowError(
+              `Trying to mark task that was not in progress as unprocessed: ` +
+              `{entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}`);
+    });
+
+    it('should not remove the unprocessed task from the lists of blocking tasks', () => {
+      const {tasks, queue} = createQueue(3, 1, {
+        0: [],      // Entry-point #0 does not depend on anything.
+        1: [0],     // Entry-point #1 depends on #0.
+        2: [0, 1],  // Entry-point #2 depends on #0 and #1.
+      });
+
+      // Pick task #0 first, since it is the only one that is not blocked by other tasks.
+      expect(queue.getNextTask()).toBe(tasks[0]);
+
+      // No task available, until task #0 is completed.
+      expect(queue.getNextTask()).toBe(null);
+
+      // Put task #0 back to the unprocessed tasks.
+      queue.markAsUnprocessed(tasks[0]);
+      expect(queue.getNextTask()).toBe(tasks[0]);
+
+      // Other tasks are still blocked on task #0.
+      expect(queue.getNextTask()).toBe(null);
+    });
   });
 
   describe('toString()', () => {
@@ -327,11 +386,11 @@ describe('ParallelTaskQueue', () => {
 
       processNextTask(queue2);
       processNextTask(queue2);
-      const task = queue2.getNextTask() !;
+      const task = queue2.getNextTask()!;
 
       expect(queue2.toString()).toContain('  All tasks completed: false\n');
 
-      queue2.markTaskCompleted(task);
+      queue2.markAsCompleted(task);
       expect(queue2.toString()).toContain('  All tasks completed: true\n');
     });
 
@@ -340,25 +399,25 @@ describe('ParallelTaskQueue', () => {
       expect(queue.toString())
           .toContain(
               '  Unprocessed tasks (3): \n' +
-              '    - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
-              '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}\n' +
-              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n');
+              '    - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: Yes}\n' +
+              '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: Yes}\n' +
+              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}\n');
 
-      const task1 = queue.getNextTask() !;
+      const task1 = queue.getNextTask()!;
       expect(queue.toString())
           .toContain(
               '  Unprocessed tasks (2): \n' +
-              '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}\n' +
-              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n');
+              '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: Yes}\n' +
+              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}\n');
 
-      queue.markTaskCompleted(task1);
-      const task2 = queue.getNextTask() !;
+      queue.markAsCompleted(task1);
+      const task2 = queue.getNextTask()!;
       expect(queue.toString())
           .toContain(
               '  Unprocessed tasks (1): \n' +
-              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n');
+              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}\n');
 
-      queue.markTaskCompleted(task2);
+      queue.markAsCompleted(task2);
       processNextTask(queue);
       expect(queue.toString()).toContain('  Unprocessed tasks (0): \n');
     });
@@ -367,20 +426,20 @@ describe('ParallelTaskQueue', () => {
       const {queue} = createQueue(3);
       expect(queue.toString()).toContain('  In-progress tasks (0): \n');
 
-      const task1 = queue.getNextTask() !;
+      const task1 = queue.getNextTask()!;
       expect(queue.toString())
           .toContain(
               '  In-progress tasks (1): \n' +
-              '    - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n');
+              '    - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: Yes}\n');
 
-      queue.markTaskCompleted(task1);
-      const task2 = queue.getNextTask() !;
+      queue.markAsCompleted(task1);
+      const task2 = queue.getNextTask()!;
       expect(queue.toString())
           .toContain(
               '  In-progress tasks (1): \n' +
-              '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}\n');
+              '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: Yes}\n');
 
-      queue.markTaskCompleted(task2);
+      queue.markAsCompleted(task2);
       processNextTask(queue);
       expect(queue.toString()).toContain('  In-progress tasks (0): \n');
     });
@@ -404,29 +463,29 @@ describe('ParallelTaskQueue', () => {
           .toContain(
               '  Blocked tasks (6): \n' +
               // #0.1 blocked by its typings #0.0
-              '    - {entryPoint: entry-point-0, formatProperty: prop-1, processDts: false} (1): \n' +
-              '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
+              '    - {entryPoint: entry-point-0, formatProperty: prop-1, processDts: No} (1): \n' +
+              '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: Yes}\n' +
               // #1.0 blocked by #0.0
-              '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true} (1): \n' +
-              '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
+              '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: Yes} (1): \n' +
+              '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: Yes}\n' +
               // #1.1 blocked by #0.0 and its typings #1.0
-              '    - {entryPoint: entry-point-1, formatProperty: prop-1, processDts: false} (2): \n' +
-              '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
-              '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}\n' +
+              '    - {entryPoint: entry-point-1, formatProperty: prop-1, processDts: No} (2): \n' +
+              '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: Yes}\n' +
+              '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: Yes}\n' +
               // #3.0 blocked by #0.0 (transitively), #1.0 and #2.0.
-              '    - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: true} (3): \n' +
-              '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
-              '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}\n' +
-              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n' +
+              '    - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: Yes} (3): \n' +
+              '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: Yes}\n' +
+              '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: Yes}\n' +
+              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}\n' +
               // #3.1 blocked by #0.0 (transitively), #1.0 and #2.0, and its typings #3.0
-              '    - {entryPoint: entry-point-3, formatProperty: prop-1, processDts: false} (4): \n' +
-              '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
-              '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}\n' +
-              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n' +
-              '        - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: true}\n' +
+              '    - {entryPoint: entry-point-3, formatProperty: prop-1, processDts: No} (4): \n' +
+              '        - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: Yes}\n' +
+              '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: Yes}\n' +
+              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}\n' +
+              '        - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: Yes}\n' +
               // #2.1 blocked by its typings #2.0
-              '    - {entryPoint: entry-point-2, formatProperty: prop-1, processDts: false} (1): \n' +
-              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}');
+              '    - {entryPoint: entry-point-2, formatProperty: prop-1, processDts: No} (1): \n' +
+              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}');
 
       expect(processNextTask(queue)).toBe(tasks[0]);  // Process #0.0.
       expect(processNextTask(queue)).toBe(tasks[2]);  // Process #1.0.
@@ -434,23 +493,23 @@ describe('ParallelTaskQueue', () => {
           .toContain(
               '  Blocked tasks (3): \n' +
               // #3.0 blocked by #2.0.
-              '    - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: true} (1): \n' +
-              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n' +
+              '    - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: Yes} (1): \n' +
+              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}\n' +
               // #3.1 blocked by #2.0 and its typings #3.0
-              '    - {entryPoint: entry-point-3, formatProperty: prop-1, processDts: false} (2): \n' +
-              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n' +
-              '        - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: true}\n' +
+              '    - {entryPoint: entry-point-3, formatProperty: prop-1, processDts: No} (2): \n' +
+              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}\n' +
+              '        - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: Yes}\n' +
               // #2.1 blocked by its typings #2.0
-              '    - {entryPoint: entry-point-2, formatProperty: prop-1, processDts: false} (1): \n' +
-              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}');
+              '    - {entryPoint: entry-point-2, formatProperty: prop-1, processDts: No} (1): \n' +
+              '        - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}');
 
       expect(processNextTask(queue)).toBe(tasks[4]);  // Process #2.0.
       expect(queue.toString())
           .toContain(
               '  Blocked tasks (1): \n' +
               // #3.1 blocked by its typings #3.0
-              '    - {entryPoint: entry-point-3, formatProperty: prop-1, processDts: false} (1): \n' +
-              '        - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: true}');
+              '    - {entryPoint: entry-point-3, formatProperty: prop-1, processDts: No} (1): \n' +
+              '        - {entryPoint: entry-point-3, formatProperty: prop-0, processDts: Yes}');
       expect(processNextTask(queue)).toBe(tasks[6]);  // Process #3.0.
       expect(queue.toString()).toContain('  Blocked tasks (0): ');
     });
@@ -473,13 +532,13 @@ describe('ParallelTaskQueue', () => {
               'ParallelTaskQueue\n' +
               '  All tasks completed: false\n' +
               '  Unprocessed tasks (3): \n' +
-              '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}\n' +
-              '    - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
-              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n' +
+              '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: Yes}\n' +
+              '    - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: Yes}\n' +
+              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}\n' +
               '  In-progress tasks (0): \n' +
               '  Blocked tasks (1): \n' +
-              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true} (1): \n' +
-              '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}');
+              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes} (1): \n' +
+              '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: Yes}');
 
       // Start processing tasks #1 and #0 (#2 is still blocked on #1).
       expect(queue2.getNextTask()).toBe(tasks2[1]);
@@ -489,16 +548,16 @@ describe('ParallelTaskQueue', () => {
               'ParallelTaskQueue\n' +
               '  All tasks completed: false\n' +
               '  Unprocessed tasks (1): \n' +
-              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n' +
+              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}\n' +
               '  In-progress tasks (2): \n' +
-              '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}\n' +
-              '    - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
+              '    - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: Yes}\n' +
+              '    - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: Yes}\n' +
               '  Blocked tasks (1): \n' +
-              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true} (1): \n' +
-              '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: true}');
+              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes} (1): \n' +
+              '        - {entryPoint: entry-point-1, formatProperty: prop-0, processDts: Yes}');
 
       // Complete task #1 nd start processing #2 (which is not unblocked).
-      queue2.markTaskCompleted(tasks2[1]);
+      queue2.markAsCompleted(tasks2[1]);
       expect(queue2.getNextTask()).toBe(tasks2[2]);
       expect(queue2.toString())
           .toBe(
@@ -506,13 +565,13 @@ describe('ParallelTaskQueue', () => {
               '  All tasks completed: false\n' +
               '  Unprocessed tasks (0): \n' +
               '  In-progress tasks (2): \n' +
-              '    - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: true}\n' +
-              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: true}\n' +
+              '    - {entryPoint: entry-point-0, formatProperty: prop-0, processDts: Yes}\n' +
+              '    - {entryPoint: entry-point-2, formatProperty: prop-0, processDts: Yes}\n' +
               '  Blocked tasks (0): ');
 
       // Complete tasks #2 and #0. All tasks are now completed.
-      queue2.markTaskCompleted(tasks2[2]);
-      queue2.markTaskCompleted(tasks2[0]);
+      queue2.markAsCompleted(tasks2[2]);
+      queue2.markAsCompleted(tasks2[0]);
       expect(queue2.toString())
           .toBe(
               'ParallelTaskQueue\n' +

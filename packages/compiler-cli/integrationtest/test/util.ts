@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,7 +13,7 @@ import {platformServerTesting} from '@angular/platform-server/testing';
 import {MainModule} from '../src/module';
 import {MainModuleNgFactory} from '../src/module.ngfactory';
 
-let mainModuleRef: NgModuleRef<MainModule> = null !;
+let mainModuleRef: NgModuleRef<MainModule> = null!;
 beforeEach((done) => {
   platformServerTesting().bootstrapModuleFactory(MainModuleNgFactory).then((moduleRef: any) => {
     mainModuleRef = moduleRef;

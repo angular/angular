@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 
 import {ObjectAssignBuiltinFn} from './builtin';
 import {DynamicValue} from './dynamic';
-import {KnownFn, ResolvedValueArray} from './result';
+import {KnownFn, ResolvedValue, ResolvedValueArray} from './result';
 
 
 // Use the same implementation we use for `Object.assign()`. Semantically these functions are the
@@ -33,5 +33,50 @@ export class SpreadHelperFn extends KnownFn {
     }
 
     return result;
+  }
+}
+
+// Used for `__spreadArray` TypeScript helper function.
+export class SpreadArrayHelperFn extends KnownFn {
+  evaluate(node: ts.Node, args: ResolvedValueArray): ResolvedValue {
+    if (args.length !== 2) {
+      return DynamicValue.fromUnknown(node);
+    }
+
+    const [to, from] = args;
+    if (to instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, to);
+    } else if (from instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, from);
+    }
+
+    if (!Array.isArray(to)) {
+      return DynamicValue.fromInvalidExpressionType(node, to);
+    } else if (!Array.isArray(from)) {
+      return DynamicValue.fromInvalidExpressionType(node, from);
+    }
+
+    return to.concat(from);
+  }
+}
+
+// Used for `__read` TypeScript helper function.
+export class ReadHelperFn extends KnownFn {
+  evaluate(node: ts.Node, args: ResolvedValueArray): ResolvedValue {
+    if (args.length !== 1) {
+      // The `__read` helper accepts a second argument `n` but that case is not supported.
+      return DynamicValue.fromUnknown(node);
+    }
+
+    const [value] = args;
+    if (value instanceof DynamicValue) {
+      return DynamicValue.fromDynamicInput(node, value);
+    }
+
+    if (!Array.isArray(value)) {
+      return DynamicValue.fromInvalidExpressionType(node, value);
+    }
+
+    return value;
   }
 }

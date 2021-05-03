@@ -79,11 +79,13 @@ export class CodeExampleComponent implements AfterViewInit {
 
   @HostBinding('class.avoidFile') isAvoid = false;
 
-  @ViewChild('content', { static: true }) content: ElementRef;
+  @ViewChild('content', { static: true }) content: ElementRef<HTMLDivElement>;
 
   @ViewChild(CodeComponent, { static: true }) aioCode: CodeComponent;
 
   ngAfterViewInit() {
-    this.aioCode.code = this.content.nativeElement.innerHTML;
+    const contentElem = this.content.nativeElement;
+    this.aioCode.code = contentElem.innerHTML;
+    contentElem.innerHTML = '';  // Remove DOM nodes that are no longer needed.
   }
 }

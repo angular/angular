@@ -1,33 +1,34 @@
 
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompiler, AotCompilerHost, AotCompilerOptions, EmitterVisitorContext, FormattedMessageChain, GeneratedFile, MessageBundle, NgAnalyzedFile, NgAnalyzedFileWithInjectables, NgAnalyzedModules, ParseSourceSpan, PartialModule, Position, Serializer, StaticSymbol, TypeScriptEmitter, Xliff, Xliff2, Xmb, core, createAotCompiler, getParseErrors, isFormattedError, isSyntaxError} from '@angular/compiler';
+import {AotCompiler, AotCompilerOptions, core, createAotCompiler, FormattedMessageChain, GeneratedFile, getMissingNgModuleMetadataErrorData, getParseErrors, isFormattedError, isSyntaxError, MessageBundle, NgAnalyzedFileWithInjectables, NgAnalyzedModules, ParseSourceSpan, PartialModule, Serializer, Xliff, Xliff2, Xmb} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
-import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata';
+import {translateDiagnostics} from '../diagnostics/translate_diagnostics';
+import {createBundleIndexHost, MetadataCollector} from '../metadata';
+import {isAngularCorePackage} from '../ngtsc/core/src/compiler';
 import {NgtscProgram} from '../ngtsc/program';
+import {TypeScriptReflectionHost} from '../ngtsc/reflection';
 import {verifySupportedTypeScriptVersion} from '../typescript_support';
 
-import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
-import {CodeGenerator, TsCompilerAotCompilerTypeCheckHostAdapter, getOriginalReferences} from './compiler_host';
-import {InlineResourcesMetadataTransformer, getInlineResourcesTransformFactory} from './inline_resources';
-import {LowerMetadataTransform, getExpressionLoweringTransformFactory} from './lower_expressions';
+import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitCallback, TsMergeEmitResultsCallback} from './api';
+import {CodeGenerator, getOriginalReferences, TsCompilerAotCompilerTypeCheckHostAdapter} from './compiler_host';
+import {getDownlevelDecoratorsTransform} from './downlevel_decorators_transform';
+import {getInlineResourcesTransformFactory, InlineResourcesMetadataTransformer} from './inline_resources';
+import {getExpressionLoweringTransformFactory, LowerMetadataTransform} from './lower_expressions';
 import {MetadataCache, MetadataTransformer} from './metadata_cache';
-import {nocollapseHack} from './nocollapse_hack';
 import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {PartialModuleMetadataTransformer} from './r3_metadata_transform';
-import {StripDecoratorsMetadataTransformer, getDecoratorStripTransformerFactory} from './r3_strip_decorators';
 import {getAngularClassTransformerFactory} from './r3_transform';
-import {DTS, GENERATED_FILES, StructureIsReused, TS, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
+import {createMessageDiagnostic, DTS, GENERATED_FILES, isInRootDir, ngToTsDiagnostic, StructureIsReused, TS, tsStructureIsReused} from './util';
 
 
 /**
@@ -47,13 +48,16 @@ const LOWER_FIELDS = ['useValue', 'useFactory', 'data', 'id', 'loadChildren'];
  */
 const R3_LOWER_FIELDS = [...LOWER_FIELDS, 'providers', 'imports', 'exports'];
 
-const R3_REIFIED_DECORATORS = [
-  'Component',
-  'Directive',
-  'Injectable',
-  'NgModule',
-  'Pipe',
-];
+/**
+ * Installs a handler for testing purposes to allow inspection of the temporary program.
+ */
+let tempProgramHandlerForTest: ((program: ts.Program) => void)|null = null;
+export function setTempProgramHandlerForTest(handler: (program: ts.Program) => void): void {
+  tempProgramHandlerForTest = handler;
+}
+export function resetTempProgramHandlerForTest(): void {
+  tempProgramHandlerForTest = null;
+}
 
 const emptyModules: NgAnalyzedModules = {
   ngModules: [],
@@ -61,18 +65,23 @@ const emptyModules: NgAnalyzedModules = {
   files: []
 };
 
-const defaultEmitCallback: TsEmitCallback =
-    ({program, targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles,
-      customTransformers}) =>
-        program.emit(
-            targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
+const defaultEmitCallback: TsEmitCallback = ({
+  program,
+  targetSourceFile,
+  writeFile,
+  cancellationToken,
+  emitOnlyDtsFiles,
+  customTransformers
+}) =>
+    program.emit(
+        targetSourceFile, writeFile, cancellationToken, emitOnlyDtsFiles, customTransformers);
 
 class AngularCompilerProgram implements Program {
   private rootNames: string[];
   private metadataCache: MetadataCache;
   // Metadata cache used exclusively for the flat module index
   // TODO(issue/24571): remove '!'.
-  private flatModuleMetadataCache !: MetadataCache;
+  private flatModuleMetadataCache!: MetadataCache;
   private loweringMetadataTransform: LowerMetadataTransform;
   private oldProgramLibrarySummaries: Map<string, LibrarySummary>|undefined;
   private oldProgramEmittedGeneratedFiles: Map<string, GeneratedFile>|undefined;
@@ -85,18 +94,17 @@ class AngularCompilerProgram implements Program {
 
   // Lazily initialized fields
   // TODO(issue/24571): remove '!'.
-  private _compiler !: AotCompiler;
+  private _compiler!: AotCompiler;
   // TODO(issue/24571): remove '!'.
-  private _hostAdapter !: TsCompilerAotCompilerTypeCheckHostAdapter;
+  private _hostAdapter!: TsCompilerAotCompilerTypeCheckHostAdapter;
   // TODO(issue/24571): remove '!'.
-  private _tsProgram !: ts.Program;
+  private _tsProgram!: ts.Program;
   private _analyzedModules: NgAnalyzedModules|undefined;
   private _analyzedInjectables: NgAnalyzedFileWithInjectables[]|undefined;
   private _structuralDiagnostics: Diagnostic[]|undefined;
   private _programWithStubs: ts.Program|undefined;
   private _optionsDiagnostics: Diagnostic[] = [];
-  // TODO(issue/24571): remove '!'.
-  private _reifiedDecorators !: Set<StaticSymbol>;
+  private _transformTsDiagnostics: ts.Diagnostic[] = [];
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: CompilerOptions,
@@ -125,7 +133,7 @@ class AngularCompilerProgram implements Program {
                                                       code: DEFAULT_ERROR_CODE
                                                     })));
       } else {
-        this.rootNames.push(indexName !);
+        this.rootNames.push(indexName!);
         this.host = bundleHost;
       }
     }
@@ -176,7 +184,9 @@ class AngularCompilerProgram implements Program {
     return result;
   }
 
-  getTsProgram(): ts.Program { return this.tsProgram; }
+  getTsProgram(): ts.Program {
+    return this.tsProgram;
+  }
 
   getTsOptionDiagnostics(cancellationToken?: ts.CancellationToken) {
     return this.tsProgram.getOptionsDiagnostics(cancellationToken);
@@ -257,86 +267,19 @@ class AngularCompilerProgram implements Program {
     return this._emitRender2(parameters);
   }
 
-  private _emitRender3(
-      {
-          emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
-          emitCallback = defaultEmitCallback, mergeEmitResultsCallback = mergeEmitResults,
-      }: {
-        emitFlags?: EmitFlags,
-        cancellationToken?: ts.CancellationToken,
-        customTransformers?: CustomTransformers,
-        emitCallback?: TsEmitCallback,
-        mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
-      } = {}): ts.EmitResult {
-    const emitStart = Date.now();
-    if ((emitFlags & (EmitFlags.JS | EmitFlags.DTS | EmitFlags.Metadata | EmitFlags.Codegen)) ===
-        0) {
-      return {emitSkipped: true, diagnostics: [], emittedFiles: []};
-    }
-
-    // analyzedModules and analyzedInjectables are created together. If one exists, so does the
-    // other.
-    const modules =
-        this.compiler.emitAllPartialModules(this.analyzedModules, this._analyzedInjectables !);
-
-    const writeTsFile: ts.WriteFileCallback =
-        (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
-          const sourceFile = sourceFiles && sourceFiles.length == 1 ? sourceFiles[0] : null;
-          let genFile: GeneratedFile|undefined;
-          if (this.options.annotateForClosureCompiler && sourceFile &&
-              TS.test(sourceFile.fileName)) {
-            outData = nocollapseHack(outData);
-          }
-          this.writeFile(outFileName, outData, writeByteOrderMark, onError, undefined, sourceFiles);
-        };
-
-    const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
-
-    const tsCustomTransformers = this.calculateTransforms(
-        /* genFiles */ undefined, /* partialModules */ modules,
-        /* stripDecorators */ this.reifiedDecorators, customTransformers);
-
-
-    // Restore the original references before we emit so TypeScript doesn't emit
-    // a reference to the .d.ts file.
-    const augmentedReferences = new Map<ts.SourceFile, ReadonlyArray<ts.FileReference>>();
-    for (const sourceFile of this.tsProgram.getSourceFiles()) {
-      const originalReferences = getOriginalReferences(sourceFile);
-      if (originalReferences) {
-        augmentedReferences.set(sourceFile, sourceFile.referencedFiles);
-        sourceFile.referencedFiles = originalReferences;
-      }
-    }
-
-    try {
-      return emitCallback({
-        program: this.tsProgram,
-        host: this.host,
-        options: this.options,
-        writeFile: writeTsFile, emitOnlyDtsFiles,
-        customTransformers: tsCustomTransformers
-      });
-    } finally {
-      // Restore the references back to the augmented value to ensure that the
-      // checks that TypeScript makes for project structure reuse will succeed.
-      for (const [sourceFile, references] of Array.from(augmentedReferences)) {
-        // TODO(chuckj): Remove any cast after updating build to 2.6
-        (sourceFile as any).referencedFiles = references;
-      }
-    }
-  }
-
-  private _emitRender2(
-      {
-          emitFlags = EmitFlags.Default, cancellationToken, customTransformers,
-          emitCallback = defaultEmitCallback, mergeEmitResultsCallback = mergeEmitResults,
-      }: {
-        emitFlags?: EmitFlags,
-        cancellationToken?: ts.CancellationToken,
-        customTransformers?: CustomTransformers,
-        emitCallback?: TsEmitCallback,
-        mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
-      } = {}): ts.EmitResult {
+  private _emitRender2({
+    emitFlags = EmitFlags.Default,
+    cancellationToken,
+    customTransformers,
+    emitCallback = defaultEmitCallback,
+    mergeEmitResultsCallback = mergeEmitResults,
+  }: {
+    emitFlags?: EmitFlags,
+    cancellationToken?: ts.CancellationToken,
+    customTransformers?: CustomTransformers,
+    emitCallback?: TsEmitCallback,
+    mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
+  } = {}): ts.EmitResult {
     const emitStart = Date.now();
     if (emitFlags & EmitFlags.I18nBundle) {
       const locale = this.options.i18nOutLocale || null;
@@ -362,6 +305,7 @@ class AngularCompilerProgram implements Program {
     const genFileByFileName = new Map<string, GeneratedFile>();
     genFiles.forEach(genFile => genFileByFileName.set(genFile.genFileUrl, genFile));
     this.emittedLibrarySummaries = [];
+    this._transformTsDiagnostics = [];
     const emittedSourceFiles = [] as ts.SourceFile[];
     const writeTsFile: ts.WriteFileCallback =
         (outFileName, outData, writeByteOrderMark, onError?, sourceFiles?) => {
@@ -377,9 +321,6 @@ class AngularCompilerProgram implements Program {
                 emittedSourceFiles.push(originalFile);
               }
             }
-            if (this.options.annotateForClosureCompiler && TS.test(sourceFile.fileName)) {
-              outData = nocollapseHack(outData);
-            }
           }
           this.writeFile(outFileName, outData, writeByteOrderMark, onError, genFile, sourceFiles);
         };
@@ -387,8 +328,8 @@ class AngularCompilerProgram implements Program {
     const modules = this._analyzedInjectables &&
         this.compiler.emitAllPartialModules2(this._analyzedInjectables);
 
-    const tsCustomTransformers = this.calculateTransforms(
-        genFileByFileName, modules, /* stripDecorators */ undefined, customTransformers);
+    const tsCustomTransformers =
+        this.calculateTransforms(genFileByFileName, modules, customTransformers);
     const emitOnlyDtsFiles = (emitFlags & (EmitFlags.DTS | EmitFlags.JS)) == EmitFlags.DTS;
     // Restore the original references before we emit so TypeScript doesn't emit
     // a reference to the .d.ts file.
@@ -423,7 +364,8 @@ class AngularCompilerProgram implements Program {
                                   program: this.tsProgram,
                                   host: this.host,
                                   options: this.options,
-                                  writeFile: writeTsFile, emitOnlyDtsFiles,
+                                  writeFile: writeTsFile,
+                                  emitOnlyDtsFiles,
                                   customTransformers: tsCustomTransformers,
                                   targetSourceFile: this.tsProgram.getSourceFile(fileName),
                                 })));
@@ -433,7 +375,8 @@ class AngularCompilerProgram implements Program {
           program: this.tsProgram,
           host: this.host,
           options: this.options,
-          writeFile: writeTsFile, emitOnlyDtsFiles,
+          writeFile: writeTsFile,
+          emitOnlyDtsFiles,
           customTransformers: tsCustomTransformers
         });
         emittedUserTsCount = this.tsProgram.getSourceFiles().length - genTsFiles.length;
@@ -476,7 +419,7 @@ class AngularCompilerProgram implements Program {
     if (emitFlags & EmitFlags.Codegen) {
       genJsonFiles.forEach(gf => {
         const outFileName = srcToOutPath(gf.genFileUrl);
-        this.writeFile(outFileName, gf.source !, false, undefined, gf);
+        this.writeFile(outFileName, gf.source!, false, undefined, gf);
       });
     }
     let metadataJsonCount = 0;
@@ -511,21 +454,21 @@ class AngularCompilerProgram implements Program {
     if (!this._compiler) {
       this._createCompiler();
     }
-    return this._compiler !;
+    return this._compiler!;
   }
 
   private get hostAdapter(): TsCompilerAotCompilerTypeCheckHostAdapter {
     if (!this._hostAdapter) {
       this._createCompiler();
     }
-    return this._hostAdapter !;
+    return this._hostAdapter!;
   }
 
   private get analyzedModules(): NgAnalyzedModules {
     if (!this._analyzedModules) {
       this.initSync();
     }
-    return this._analyzedModules !;
+    return this._analyzedModules!;
   }
 
   private get structuralDiagnostics(): ReadonlyArray<Diagnostic> {
@@ -541,25 +484,26 @@ class AngularCompilerProgram implements Program {
     if (!this._tsProgram) {
       this.initSync();
     }
-    return this._tsProgram !;
+    return this._tsProgram!;
   }
 
-  private get reifiedDecorators(): Set<StaticSymbol> {
-    if (!this._reifiedDecorators) {
-      const reflector = this.compiler.reflector;
-      this._reifiedDecorators = new Set(
-          R3_REIFIED_DECORATORS.map(name => reflector.findDeclaration('@angular/core', name)));
+  /** Whether the program is compiling the Angular core package. */
+  private get isCompilingAngularCore(): boolean {
+    if (this._isCompilingAngularCore !== null) {
+      return this._isCompilingAngularCore;
     }
-    return this._reifiedDecorators;
+    return this._isCompilingAngularCore = isAngularCorePackage(this.tsProgram);
   }
+  private _isCompilingAngularCore: boolean|null = null;
 
   private calculateTransforms(
       genFiles: Map<string, GeneratedFile>|undefined, partialModules: PartialModule[]|undefined,
-      stripDecorators: Set<StaticSymbol>|undefined,
       customTransformers?: CustomTransformers): ts.CustomTransformers {
     const beforeTs: Array<ts.TransformerFactory<ts.SourceFile>> = [];
     const metadataTransforms: MetadataTransformer[] = [];
     const flatModuleMetadataTransforms: MetadataTransformer[] = [];
+    const annotateForClosureCompiler = this.options.annotateForClosureCompiler || false;
+
     if (this.options.enableResourceInlining) {
       beforeTs.push(getInlineResourcesTransformFactory(this.tsProgram, this.hostAdapter));
       const transformer = new InlineResourcesMetadataTransformer(this.hostAdapter);
@@ -573,10 +517,11 @@ class AngularCompilerProgram implements Program {
       metadataTransforms.push(this.loweringMetadataTransform);
     }
     if (genFiles) {
-      beforeTs.push(getAngularEmitterTransformFactory(genFiles, this.getTsProgram()));
+      beforeTs.push(getAngularEmitterTransformFactory(
+          genFiles, this.getTsProgram(), annotateForClosureCompiler));
     }
     if (partialModules) {
-      beforeTs.push(getAngularClassTransformerFactory(partialModules));
+      beforeTs.push(getAngularClassTransformerFactory(partialModules, annotateForClosureCompiler));
 
       // If we have partial modules, the cached metadata might be incorrect as it doesn't reflect
       // the partial module transforms.
@@ -585,18 +530,26 @@ class AngularCompilerProgram implements Program {
       flatModuleMetadataTransforms.push(transformer);
     }
 
-    if (stripDecorators) {
-      beforeTs.push(getDecoratorStripTransformerFactory(
-          stripDecorators, this.compiler.reflector, this.getTsProgram().getTypeChecker()));
-      const transformer =
-          new StripDecoratorsMetadataTransformer(stripDecorators, this.compiler.reflector);
-      metadataTransforms.push(transformer);
-      flatModuleMetadataTransforms.push(transformer);
-    }
-
     if (customTransformers && customTransformers.beforeTs) {
       beforeTs.push(...customTransformers.beforeTs);
     }
+
+    // If decorators should be converted to static fields (enabled by default), we set up
+    // the decorator downlevel transform. Note that we set it up as last transform as that
+    // allows custom transformers to strip Angular decorators without having to deal with
+    // identifying static properties. e.g. it's more difficult handling `<..>.decorators`
+    // or `<..>.ctorParameters` compared to the `ts.Decorator` AST nodes.
+    if (this.options.annotationsAs !== 'decorators') {
+      const typeChecker = this.getTsProgram().getTypeChecker();
+      const reflectionHost = new TypeScriptReflectionHost(typeChecker);
+      // Similarly to how we handled tsickle decorator downleveling in the past, we just
+      // ignore diagnostics that have been collected by the transformer. These are
+      // non-significant failures that shouldn't prevent apps from compiling.
+      beforeTs.push(getDownlevelDecoratorsTransform(
+          typeChecker, reflectionHost, [], this.isCompilingAngularCore, annotateForClosureCompiler,
+          /* skipClassDecorators */ false));
+    }
+
     if (metadataTransforms.length > 0) {
       this.metadataCache = this.createMetadataCache(metadataTransforms);
     }
@@ -625,7 +578,7 @@ class AngularCompilerProgram implements Program {
   private _createCompiler() {
     const codegen: CodeGenerator = {
       generateFile: (genFileName, baseFileName) =>
-                        this._compiler.emitBasicStub(genFileName, baseFileName),
+          this._compiler.emitBasicStub(genFileName, baseFileName),
       findGeneratedFileNames: (fileName) => this._compiler.findGeneratedFileNames(fileName),
     };
 
@@ -654,7 +607,7 @@ class AngularCompilerProgram implements Program {
 
     const codegen: CodeGenerator = {
       generateFile: (genFileName, baseFileName) =>
-                        this.compiler.emitBasicStub(genFileName, baseFileName),
+          this.compiler.emitBasicStub(genFileName, baseFileName),
       findGeneratedFileNames: (fileName) => this.compiler.findGeneratedFileNames(fileName),
     };
 
@@ -676,6 +629,9 @@ class AngularCompilerProgram implements Program {
     }
 
     const tmpProgram = ts.createProgram(rootNames, this.options, this.hostAdapter, oldTsProgram);
+    if (tempProgramHandlerForTest !== null) {
+      tempProgramHandlerForTest(tmpProgram);
+    }
     const sourceFiles: string[] = [];
     const tsFiles: string[] = [];
     tmpProgram.getSourceFiles().forEach(sf => {
@@ -700,7 +656,7 @@ class AngularCompilerProgram implements Program {
         if (generate) {
           // Note: ! is ok as hostAdapter.shouldGenerateFile will always return a baseFileName
           // for .ngfactory.ts files.
-          const genFile = this.compiler.emitTypeCheckStub(sf.fileName, baseFileName !);
+          const genFile = this.compiler.emitTypeCheckStub(sf.fileName, baseFileName!);
           if (genFile) {
             this.hostAdapter.updateGeneratedFile(genFile);
           }
@@ -712,7 +668,7 @@ class AngularCompilerProgram implements Program {
     // - we cache all the files in the hostAdapter
     // - new new stubs use the exactly same imports/exports as the old once (we assert that in
     // hostAdapter.updateGeneratedFile).
-    if (tsStructureIsReused(tmpProgram) !== StructureIsReused.Completely) {
+    if (tsStructureIsReused(this._tsProgram) !== StructureIsReused.Completely) {
       throw new Error(`Internal Error: The structure of the program changed during codegen.`);
     }
   }
@@ -734,7 +690,7 @@ class AngularCompilerProgram implements Program {
   private _addStructuralDiagnostics(error: Error) {
     const diagnostics = this._structuralDiagnostics || (this._structuralDiagnostics = []);
     if (isSyntaxError(error)) {
-      diagnostics.push(...syntaxErrorToDiagnostics(error));
+      diagnostics.push(...syntaxErrorToDiagnostics(error, this.tsProgram));
     } else {
       diagnostics.push({
         messageText: error.toString(),
@@ -790,11 +746,12 @@ class AngularCompilerProgram implements Program {
   private getSourceFilesForEmit(): ts.SourceFile[]|undefined {
     // TODO(tbosch): if one of the files contains a `const enum`
     // always emit all files -> return undefined!
-    let sourceFilesToEmit = this.tsProgram.getSourceFiles().filter(
-        sf => { return !sf.isDeclarationFile && !GENERATED_FILES.test(sf.fileName); });
+    let sourceFilesToEmit = this.tsProgram.getSourceFiles().filter(sf => {
+      return !sf.isDeclarationFile && !GENERATED_FILES.test(sf.fileName);
+    });
     if (this.oldProgramEmittedSourceFiles) {
       sourceFilesToEmit = sourceFilesToEmit.filter(sf => {
-        const oldFile = this.oldProgramEmittedSourceFiles !.get(sf.fileName);
+        const oldFile = this.oldProgramEmittedSourceFiles!.get(sf.fileName);
         return sf !== oldFile;
       });
     }
@@ -857,7 +814,8 @@ class AngularCompilerProgram implements Program {
 export function createProgram({rootNames, options, host, oldProgram}: {
   rootNames: ReadonlyArray<string>,
   options: CompilerOptions,
-  host: CompilerHost, oldProgram?: Program
+  host: CompilerHost,
+  oldProgram?: Program
 }): Program {
   if (options.enableIvy !== false) {
     return new NgtscProgram(rootNames, options, host, oldProgram as NgtscProgram | undefined);
@@ -895,7 +853,9 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
   return {
     locale: options.i18nInLocale,
     i18nFormat: options.i18nInFormat || options.i18nOutFormat,
-    i18nUseExternalIds: options.i18nUseExternalIds, translations, missingTranslation,
+    i18nUseExternalIds: options.i18nUseExternalIds,
+    translations,
+    missingTranslation,
     enableSummariesForJit: options.enableSummariesForJit,
     preserveWhitespaces: options.preserveWhitespaces,
     fullTemplateTypeCheck: options.fullTemplateTypeCheck,
@@ -939,8 +899,8 @@ function normalizeSeparators(path: string): string {
  * POSIX normalized paths for output paths.
  */
 export function createSrcToOutPathMapper(
-    outDir: string | undefined, sampleSrcFileName: string | undefined,
-    sampleOutFileName: string | undefined, host: {
+    outDir: string|undefined, sampleSrcFileName: string|undefined,
+    sampleOutFileName: string|undefined, host: {
       dirname: typeof path.dirname,
       resolve: typeof path.resolve,
       relative: typeof path.relative
@@ -979,14 +939,14 @@ export function createSrcToOutPathMapper(
 }
 
 export function i18nExtract(
-    formatName: string | null, outFile: string | null, host: ts.CompilerHost,
-    options: CompilerOptions, bundle: MessageBundle): string[] {
+    formatName: string|null, outFile: string|null, host: ts.CompilerHost, options: CompilerOptions,
+    bundle: MessageBundle): string[] {
   formatName = formatName || 'xlf';
   // Checks the format and returns the extension
   const ext = i18nGetExtension(formatName);
   const content = i18nSerialize(bundle, formatName, options);
   const dstFile = outFile || `messages.${ext}`;
-  const dstPath = path.resolve(options.outDir || options.basePath !, dstFile);
+  const dstPath = path.resolve(options.outDir || options.basePath!, dstFile);
   host.writeFile(dstPath, content, false, undefined, []);
   return [dstPath];
 }
@@ -1053,7 +1013,7 @@ function mergeEmitResults(emitResults: ts.EmitResult[]): ts.EmitResult {
 function diagnosticSourceOfSpan(span: ParseSourceSpan): ts.SourceFile {
   // For diagnostics, TypeScript only uses the fileName and text properties.
   // The redundant '()' are here is to avoid having clang-format breaking the line incorrectly.
-  return ({ fileName: span.start.file.url, text: span.start.file.content } as any);
+  return ({fileName: span.start.file.url, text: span.start.file.content} as any);
 }
 
 function diagnosticSourceOfFileName(fileName: string, program: ts.Program): ts.SourceFile {
@@ -1063,7 +1023,7 @@ function diagnosticSourceOfFileName(fileName: string, program: ts.Program): ts.S
   // If we are reporting diagnostics for a source file that is not in the project then we need
   // to fake a source file so the diagnostic formatting routines can emit the file name.
   // The redundant '()' are here is to avoid having clang-format breaking the line incorrectly.
-  return ({ fileName, text: '' } as any);
+  return ({fileName, text: ''} as any);
 }
 
 
@@ -1076,7 +1036,7 @@ function diagnosticChainFromFormattedDiagnosticChain(chain: FormattedMessageChai
   };
 }
 
-function syntaxErrorToDiagnostics(error: Error): Diagnostic[] {
+function syntaxErrorToDiagnostics(error: Error, program: ts.Program): Diagnostic[] {
   const parserErrors = getParseErrors(error);
   if (parserErrors && parserErrors.length) {
     return parserErrors.map<Diagnostic>(e => ({
@@ -1098,6 +1058,33 @@ function syntaxErrorToDiagnostics(error: Error): Diagnostic[] {
       position: error.position
     }];
   }
+
+  const ngModuleErrorData = getMissingNgModuleMetadataErrorData(error);
+  if (ngModuleErrorData !== null) {
+    // This error represents the import or export of an `NgModule` that didn't have valid metadata.
+    // This _might_ happen because the NgModule in question is an Ivy-compiled library, and we want
+    // to show a more useful error if that's the case.
+    const ngModuleClass =
+        getDtsClass(program, ngModuleErrorData.fileName, ngModuleErrorData.className);
+    if (ngModuleClass !== null && isIvyNgModule(ngModuleClass)) {
+      return [{
+        messageText: `The NgModule '${ngModuleErrorData.className}' in '${
+            ngModuleErrorData
+                .fileName}' is imported by this compilation, but appears to be part of a library compiled for Angular Ivy. This may occur because:
+
+  1) the library was processed with 'ngcc'. Removing and reinstalling node_modules may fix this problem.
+
+  2) the library was published for Angular Ivy and v12+ applications only. Check its peer dependencies carefully and ensure that you're using a compatible version of Angular.
+
+See https://angular.io/errors/NG6999 for more information.
+`,
+        category: ts.DiagnosticCategory.Error,
+        code: DEFAULT_ERROR_CODE,
+        source: SOURCE,
+      }];
+    }
+  }
+
   // Produce a Diagnostic anyway since we know for sure `error` is a SyntaxError
   return [{
     messageText: error.message,
@@ -1105,4 +1092,39 @@ function syntaxErrorToDiagnostics(error: Error): Diagnostic[] {
     code: DEFAULT_ERROR_CODE,
     source: SOURCE,
   }];
+}
+
+function getDtsClass(program: ts.Program, fileName: string, className: string): ts.ClassDeclaration|
+    null {
+  const sf = program.getSourceFile(fileName);
+  if (sf === undefined || !sf.isDeclarationFile) {
+    return null;
+  }
+  for (const stmt of sf.statements) {
+    if (!ts.isClassDeclaration(stmt)) {
+      continue;
+    }
+    if (stmt.name === undefined || stmt.name.text !== className) {
+      continue;
+    }
+
+    return stmt;
+  }
+
+  // No classes found that matched the given name.
+  return null;
+}
+
+function isIvyNgModule(clazz: ts.ClassDeclaration): boolean {
+  for (const member of clazz.members) {
+    if (!ts.isPropertyDeclaration(member)) {
+      continue;
+    }
+    if (ts.isIdentifier(member.name) && member.name.text === 'ɵmod') {
+      return true;
+    }
+  }
+
+  // No Ivy 'ɵmod' property found.
+  return false;
 }

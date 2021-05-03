@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,6 +13,7 @@ import {ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID} from '@angular/
 @Injectable()
 export class ServerStylesHost extends SharedStylesHost {
   private head: any = null;
+  private _styleNodes = new Set<HTMLElement>();
 
   constructor(
       @Inject(DOCUMENT) private doc: any,
@@ -29,7 +30,14 @@ export class ServerStylesHost extends SharedStylesHost {
       el.setAttribute('ng-transition', this.transitionId);
     }
     this.head.appendChild(el);
+    this._styleNodes.add(el);
   }
 
-  onStylesAdded(additions: Set<string>) { additions.forEach(style => this._addStyle(style)); }
+  onStylesAdded(additions: Set<string>) {
+    additions.forEach(style => this._addStyle(style));
+  }
+
+  ngOnDestroy() {
+    this._styleNodes.forEach(styleNode => styleNode.remove());
+  }
 }

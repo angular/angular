@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,10 +12,7 @@
 const u = undefined;
 
 export default [
-  [
-    ['ب', 'ص', 'ظ', 'ع', 'ش', 'ن'],
-    ['بامداد', 'صبح', 'ظهر', 'بعدازچاشت', 'شب', 'نیمه\u200cشب'], u
-  ],
+  [['ب', 'ص', 'ظ', 'ع', 'ش', 'ن'], ['بامداد', 'صبح', 'ظهر', 'بعدازچاشت', 'شب', 'نیمه\u200cشب'], u],
   [
     ['ب', 'ص', 'بعد از چاشت', 'ع', 'ش', 'ن'],
     ['بامداد', 'صبح', 'ظهر', 'بعدازچاشت', 'شب', 'نیمه\u200cشب'], u

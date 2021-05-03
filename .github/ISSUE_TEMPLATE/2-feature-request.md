@@ -1,5 +1,5 @@
 ---
-name: "\U0001F680Feature request"
+name: "\U0001F680 Feature request"
 about: Suggest a feature for Angular Framework
 
 ---

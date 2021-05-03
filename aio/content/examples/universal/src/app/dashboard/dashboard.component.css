@@ -10,9 +10,7 @@
 a {
   text-decoration: none;
 }
-*, *:after, *:before {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
+*, *::after, *::before {
   box-sizing: border-box;
 }
 h3 {
@@ -34,7 +32,7 @@ h4 {
   color: #eee;
   max-height: 120px;
   min-width: 120px;
-  background-color: #607D8B;
+  background-color: #3f525c;
   border-radius: 2px;
 }
 .module:hover {

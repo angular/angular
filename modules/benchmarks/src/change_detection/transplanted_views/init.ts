@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -19,6 +19,7 @@ export function init(moduleRef: NgModuleRef<TransplantedViewsModule>) {
 
   bindAction('#destroyDom', destroyDom);
   bindAction('#createDom', createDom);
+  bindAction('#markInsertionComponentForCheck', markInsertionComponentForCheck);
   bindAction('#detectChanges', detectChanges);
   bindAction('#detectChangesProfile', profile(detectChanges, noop, 'detectChanges'));
 
@@ -35,7 +36,13 @@ export function init(moduleRef: NgModuleRef<TransplantedViewsModule>) {
     appRef.tick();
   }
 
-  function detectChanges() { appRef.tick(); }
+  function markInsertionComponentForCheck() {
+    declaration.insertionComponent.changeDetector.markForCheck();
+  }
+
+  function detectChanges() {
+    appRef.tick();
+  }
 
   function noop() {}
 }

@@ -21,11 +21,10 @@ if you'd like to contribute to Angular.
 Before you can build and test Angular, you must install and configure the
 following products on your development machine:
 
-* [Git](http://git-scm.com) and/or the **GitHub app** (for [Mac](http://mac.github.com) or
-  [Windows](http://windows.github.com)); [GitHub's Guide to Installing
-  Git](https://help.github.com/articles/set-up-git) is a good source of information.
+* [Git](https://git-scm.com/) and/or the [**GitHub app**](https://desktop.github.com/) (for Mac and Windows);
+  [GitHub's Guide to Installing Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* [Node.js](http://nodejs.org), (version specified in the engines field of [`package.json`](../package.json)) which is used to run a development web server,
+* [Node.js](https://nodejs.org), (version specified in the engines field of [`package.json`](../package.json)) which is used to run a development web server,
   run tests, and generate distributable files.
 
 * [Yarn](https://yarnpkg.com) (version specified in the engines field of [`package.json`](../package.json)) which is used to install dependencies.
@@ -39,7 +38,7 @@ Fork and clone the Angular repository:
 
 1. Login to your GitHub account or create one by following the instructions given
    [here](https://github.com/signup/free).
-2. [Fork](http://help.github.com/forking) the [main Angular
+2. [Fork](https://help.github.com/forking) the [main Angular
    repository](https://github.com/angular/angular).
 3. Clone your fork of the Angular repository and define an `upstream` remote pointing back to
    the Angular repository that you forked in the first place.
@@ -76,12 +75,14 @@ node ./scripts/build/build-packages-dist.js
 
 ## Running Tests Locally
 
-Bazel is used as the primary tool for building and testing Angular. Building and testing is
+Bazel is used as the primary tool for building and testing Angular. Building and testing are
 incremental with Bazel, and it's possible to only run tests for an individual package instead
 of for all packages. Read more about this in the [BAZEL.md](./BAZEL.md) document.
 
-You should execute all test suites before submitting a PR to GitHub:
-- `yarn bazel test packages/...`
+You should execute all test suites before submitting a PR to GitHub. Note that not all tests
+support both Ivy and View Engine, so they need to be run separately:
+- `yarn test-ivy-aot //packages/...`
+- `yarn test-non-ivy //packages/...`
 
 **Note**: The first test run will be much slower than future runs. This is because future runs will
 benefit from Bazel's capability to do incremental builds.
@@ -89,15 +90,18 @@ benefit from Bazel's capability to do incremental builds.
 All the tests are executed on our Continuous Integration infrastructure. PRs can only be
 merged if the code is formatted properly and all tests are passing.
 
+<a name="formatting-your-source-code">
 <a name="clang-format"></a>
+
 ## Formatting your source code
 
-Angular uses [clang-format](http://clang.llvm.org/docs/ClangFormat.html) to format the source code.
+Angular uses [clang-format](https://clang.llvm.org/docs/ClangFormat.html) to format the source code.
 If the source code is not properly formatted, the CI will fail and the PR cannot be merged.
 
 You can automatically format your code by running:
-- `yarn gulp format`: re-format only edited source code.
-- `yarn gulp format:all`: format _all_ source code
+- `yarn ng-dev format changed [shaOrRef]`: format only files changed since the provided sha/ref. `shaOrRef` defaults to `master`.
+- `yarn ng-dev format all`: format _all_ source code
+- `yarn ng-dev format files <files..>`: format only provided files
 
 A better way is to set up your IDE to format the changed file on each file save.
 
@@ -149,9 +153,7 @@ available as a long-term distribution mechanism, but they are guaranteed to be a
 time of the build.
 
 You can access the artifacts for a specific CI run by going to the workflow page, clicking on the
-`publish_packages_as_artifacts` job and then switching to the "Artifacts" tab.
-(If you happen to know the build number of the job, the URL will be something like:
-`https://circleci.com/gh/angular/angular/<build-number>#artifacts`)
+`publish_packages_as_artifacts` job and then switching to the "ARTIFACTS" tab.
 
 #### Archives for each Package
 On the "Artifacts" tab, there is a list of links to compressed archives for Angular packages. The
@@ -187,7 +189,7 @@ a. Any transitive dependencies of the copied packages will not be automatically 
 b. The packages need to be copied over every time `npm/yarn install` is run.
 c. Some package managers (such as `pnpm` or `yarn pnp`) might not work correctly.
 
-### Publishing to GitHub repos
+### Publishing to GitHub Repos
 You can also manually publish `*-builds` snapshots just like our CircleCI build does for upstream
 builds. Before being able to publish the packages, you need to build them locally by running the
 `./scripts/build/build-packages-dist.js` script.

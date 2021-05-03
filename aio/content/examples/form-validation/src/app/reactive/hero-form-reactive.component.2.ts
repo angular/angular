@@ -20,20 +20,18 @@ export class HeroFormReactiveComponent implements OnInit {
   heroForm: FormGroup;
 
   ngOnInit(): void {
-    // #docregion async-validation
     this.heroForm = new FormGroup({
-      'name': new FormControl(this.hero.name, [
+      name: new FormControl(this.hero.name, [
         Validators.required,
         Validators.minLength(4),
         forbiddenNameValidator(/bob/i)
       ]),
-      'alterEgo': new FormControl(this.hero.alterEgo, {
+      alterEgo: new FormControl(this.hero.alterEgo, {
         asyncValidators: [this.alterEgoValidator.validate.bind(this.alterEgoValidator)],
         updateOn: 'blur'
       }),
-      'power': new FormControl(this.hero.power, Validators.required)
+      power: new FormControl(this.hero.power, Validators.required)
     });
-    // #enddocregion async-validation
   }
 
   get name() { return this.heroForm.get('name'); }
@@ -42,7 +40,5 @@ export class HeroFormReactiveComponent implements OnInit {
 
   get alterEgo() { return this.heroForm.get('alterEgo'); }
 
-  // #docregion async-validation
   constructor(private alterEgoValidator: UniqueAlterEgoValidator) {}
-  // #enddocregion async-validation
 }

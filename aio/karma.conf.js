@@ -10,7 +10,7 @@ module.exports = function (config) {
       require('karma-jasmine'),
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
-      require('karma-coverage-istanbul-reporter'),
+      require('karma-coverage'),
       require('@angular-devkit/build-angular/plugins/karma'),
       {'reporter:jasmine-seed': ['type', JasmineSeedReporter]},
     ],
@@ -20,14 +20,24 @@ module.exports = function (config) {
     client: {
       clearContext: false,  // leave Jasmine Spec Runner output visible in browser
       jasmine: {
+        // you can add configuration options for Jasmine here
+        // the possible options are listed at https://jasmine.github.io/api/edge/Configuration.html
+        // for example, you can disable the random execution with `random: false`
+        // or set a specific seed with `seed: 4321`
         random: true,
         seed: '',
       },
     },
-    coverageIstanbulReporter: {
+    jasmineHtmlReporter: {
+      suppressAll: true // removes the duplicated traces
+    },
+    coverageReporter: {
       dir: require('path').join(__dirname, './coverage/site'),
-      reports: ['html', 'lcovonly', 'text-summary'],
-      fixWebpackSourcePaths: true,
+      subdir: '.',
+      reporters: [
+        { type: 'html' },
+        { type: 'text-summary' }
+      ],
     },
     reporters: ['progress', 'kjhtml', 'jasmine-seed'],
     port: 9876,

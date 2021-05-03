@@ -7,11 +7,8 @@
 <fieldset><h4>NgModel examples</h4>
   <p>Current item name: {{currentItem.name}}</p>
   <p>
-    <!-- #docregion without-NgModel -->
     <label for="without">without NgModel:</label>
-    <input [value]="currentItem.name" (input)="currentItem.name=$event.target.value" id="without">
-    <!-- #enddocregion without-NgModel -->
-
+    <input [value]="currentItem.name" (input)="currentItem.name=getValue($event.target)" id="without">
   </p>
 
   <p>
@@ -27,10 +24,8 @@
   </p>
 
   <p>
-    <!-- #docregion NgModelChange -->
     <label for="example-change">(ngModelChange)="...name=$event":</label>
     <input [ngModel]="currentItem.name" (ngModelChange)="currentItem.name=$event" id="example-change">
-      <!-- #enddocregion NgModelChange -->
   </p>
 
   <p>
@@ -77,12 +72,9 @@
 
 <!-- NgStyle binding -->
 <hr><h3>NgStyle Binding</h3>
-<!-- #docregion without-ng-style -->
 <div [style.font-size]="isSpecial ? 'x-large' : 'smaller'">
   This div is x-large or smaller.
 </div>
-<!-- #enddocregion without-ng-style -->
-
 
 <h4>[ngStyle] binding to currentStyles - CSS property names</h4>
 <p>currentStyles is {{currentStyles | json}}</p>
@@ -134,7 +126,6 @@
 <hr>
 
 <h4>Show/hide vs. NgIf</h4>
-<!-- #docregion NgIf-3 -->
 <!-- isSpecial is true -->
 <div [class.hidden]="!isSpecial">Show with class</div>
 <div [class.hidden]="isSpecial">Hide with class</div>
@@ -144,7 +135,6 @@
 
 <div [style.display]="isSpecial ? 'block' : 'none'">Show with style</div>
 <div [style.display]="isSpecial ? 'none'  : 'block'">Hide with style</div>
-<!-- #enddocregion NgIf-3 -->
 
 
 <hr>

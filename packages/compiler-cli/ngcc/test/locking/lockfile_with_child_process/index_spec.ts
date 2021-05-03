@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,11 +8,11 @@
 import {ChildProcess} from 'child_process';
 import * as process from 'process';
 
-import {CachedFileSystem, FileSystem, getFileSystem} from '../../../../src/ngtsc/file_system';
+import {FileSystem, getFileSystem} from '../../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../../src/ngtsc/logging/testing';
 import {getLockFilePath} from '../../../src/locking/lock_file';
 import {LockFileWithChildProcess} from '../../../src/locking/lock_file_with_child_process';
-import {MockLogger} from '../../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('LockFileWithChildProcess', () => {
@@ -23,7 +23,7 @@ runInEachFileSystem(() => {
     class LockFileUnderTest extends LockFileWithChildProcess {
       // Note that log is initialized in the `createUnlocker()` function that is called from
       // super(), so we can't initialize it here.
-      log !: string[];
+      log!: string[];
       constructor(fs: FileSystem) {
         super(fs, new MockLogger());
         fs.ensureDir(fs.dirname(this.path));
@@ -47,7 +47,11 @@ runInEachFileSystem(() => {
         const log = this.log;
         // Normally this would fork a child process and return it.
         // But we don't want to do that in these tests.
-        return <any>{disconnect() { log.push('unlocker.disconnect()'); }};
+        return <any>{
+          disconnect() {
+            log.push('unlocker.disconnect()');
+          }
+        };
       }
     }
 
@@ -93,18 +97,6 @@ runInEachFileSystem(() => {
         const lockFile = new LockFileUnderTest(fs);
         expect(lockFile.read()).toEqual('{unknown}');
       });
-
-      it('should not read file from the cache, since the file may have been modified externally',
-         () => {
-           const rawFs = getFileSystem();
-           const fs = new CachedFileSystem(rawFs);
-           const lockFile = new LockFileUnderTest(fs);
-           rawFs.writeFile(lockFile.path, '' + process.pid);
-           expect(lockFile.read()).toEqual('' + process.pid);
-           // We need to write to the rawFs to ensure that we don't update the cache at this point
-           rawFs.writeFile(lockFile.path, '444');
-           expect(lockFile.read()).toEqual('444');
-         });
     });
 
     describe('remove()', () => {

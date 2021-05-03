@@ -1,4 +1,4 @@
-import { ReflectiveInjector } from '@angular/core';
+import { Injector } from '@angular/core';
 
 import { of } from 'rxjs';
 
@@ -12,20 +12,22 @@ import { LocationService } from 'app/shared/location.service';
 describe('ContributorListComponent', () => {
 
   let component: ContributorListComponent;
-  let injector: ReflectiveInjector;
+  let injector: Injector;
   let contributorService: TestContributorService;
   let locationService: TestLocationService;
   let contributorGroups: ContributorGroup[];
 
   beforeEach(() => {
-    injector = ReflectiveInjector.resolveAndCreate([
-      ContributorListComponent,
-      {provide: ContributorService, useClass: TestContributorService },
-      {provide: LocationService, useClass: TestLocationService }
-    ]);
+    injector = Injector.create({
+      providers: [
+        {provide: ContributorListComponent, deps: [ContributorService, LocationService] },
+        {provide: ContributorService, useClass: TestContributorService, deps: [] },
+        {provide: LocationService, useClass: TestLocationService, deps: [] }
+      ]
+    });
 
-    locationService = injector.get(LocationService);
-    contributorService = injector.get(ContributorService);
+    locationService = injector.get(LocationService) as unknown as TestLocationService;
+    contributorService = injector.get(ContributorService) as unknown as TestContributorService;
     contributorGroups = contributorService.testContributors;
   });
 
@@ -61,7 +63,7 @@ describe('ContributorListComponent', () => {
   it('should set the query to the "GDE" group when user selects "GDE"', () => {
     component = getComponent();
     component.selectGroup('GDE');
-    expect(locationService.searchResult['group']).toBe('GDE');
+    expect(locationService.searchResult.group).toBe('GDE');
   });
 
   it('should set the query to the first group when user selects unknown name', () => {
@@ -69,7 +71,7 @@ describe('ContributorListComponent', () => {
     component.selectGroup('GDE'); // a legit group that isn't the first
 
     component.selectGroup('foo'); // not a legit group name
-    expect(locationService.searchResult['group']).toBe('Angular');
+    expect(locationService.searchResult.group).toBe('Angular');
   });
 
   //// Test Helpers ////

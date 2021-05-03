@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -26,7 +26,9 @@ import {Zippy} from './app/zippy';
 export class ZippyApp {
   logs: string[] = [];
 
-  pushLog(log: string) { this.logs.push(log); }
+  pushLog(log: string) {
+    this.logs.push(log);
+  }
 }
 
 @NgModule({declarations: [ZippyApp, Zippy], bootstrap: [ZippyApp], imports: [BrowserModule]})

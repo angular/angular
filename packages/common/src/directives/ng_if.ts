@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  * Angular renders the template provided in an optional `else` clause. The default
  * template for the `else` clause is blank.
  *
- * A [shorthand form](guide/structural-directives#the-asterisk--prefix) of the directive,
+ * A [shorthand form](guide/structural-directives#asterisk) of the directive,
  * `*ngIf="condition"`, is generally used, provided
  * as an attribute of the anchor element for the inserted template.
  * Angular expands this into a more explicit version, in which the anchor element
@@ -90,7 +90,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  * You might want to show a set of properties from the same object. If you are waiting
  * for asynchronous data, the object can be undefined.
  * In this case, you can use `ngIf` and store the result of the condition in a local
- * variable as shown in the the following example.
+ * variable as shown in the following example.
  *
  * {@example common/ngIf/ts/module.ts region='NgIfAs'}
  *
@@ -100,7 +100,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  *
  * The conditional displays the data only if `userStream` returns a value,
  * so you don't need to use the
- * [safe-navigation-operator](guide/template-syntax#safe-navigation-operator) (`?.`)
+ * safe-navigation-operator (`?.`)
  * to guard against null values when accessing properties.
  * You can display an alternative template while waiting for the data.
  *
@@ -143,7 +143,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  *
  * The presence of the implicit template object has implications for the nesting of
  * structural directives. For more on this subject, see
- * [Structural Directives](https://angular.io/guide/structural-directives#one-per-element).
+ * [Structural Directives](https://angular.io/guide/built-in-directives#one-per-element).
  *
  * @ngModule CommonModule
  * @publicApi
@@ -232,7 +232,8 @@ export class NgIf<T = unknown> {
    * The presence of this method is a signal to the Ivy template type-check compiler that the
    * `NgIf` structural directive renders its template with a specific context type.
    */
-  static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any): ctx is NgIfContext<NonNullable<T>> {
+  static ngTemplateContextGuard<T>(dir: NgIf<T>, ctx: any):
+      ctx is NgIfContext<Exclude<T, false|0|''|null|undefined>> {
     return true;
   }
 }
@@ -241,11 +242,11 @@ export class NgIf<T = unknown> {
  * @publicApi
  */
 export class NgIfContext<T = unknown> {
-  public $implicit: T = null !;
-  public ngIf: T = null !;
+  public $implicit: T = null!;
+  public ngIf: T = null!;
 }
 
-function assertTemplate(property: string, templateRef: TemplateRef<any>| null): void {
+function assertTemplate(property: string, templateRef: TemplateRef<any>|null): void {
   const isTemplateRefOrNull = !!(!templateRef || templateRef.createEmbeddedView);
   if (!isTemplateRefOrNull) {
     throw new Error(`${property} must be a TemplateRef, but received '${stringify(templateRef)}'.`);

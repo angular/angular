@@ -44,7 +44,7 @@ For more information on how to choose, see the [next question](#how-do-i-choose)
 {@a how-do-i-choose}
 ### How do I choose which `static` flag value to use: `true` or `false`?
 
-In the official API docs, we have always recommended retrieving query results in [`ngAfterViewInit` for view queries](https://angular.io/api/core/ViewChild#description) and [`ngAfterContentInit` for content queries](https://angular.io/api/core/ContentChild#description).
+In the official API docs, we have always recommended retrieving query results in [`ngAfterViewInit` for view queries](api/core/ViewChild#description) and [`ngAfterContentInit` for content queries](api/core/ContentChild#description).
 This is because by the time those lifecycle hooks run, change detection has completed for the relevant nodes and we can guarantee that we have collected all the possible query results.
 
 Most applications will want to use `{static: false}` for the same reason. This setting will ensure query matches that are dependent on binding resolution (e.g. results inside `*ngIf`s or `*ngFor`s) will be found by the query.

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,7 +21,9 @@ function writeNotFound(res) {
 function requestHandler(req, res) {
   if (req.url === '/close') {
     res.end('server closing');
-    setTimeout(() => { process.exit(0); }, 1000);
+    setTimeout(() => {
+      process.exit(0);
+    }, 1000);
   } else {
     const file = path.resolve(localFolder, req.url);
     if (!file.startsWith(localFolder + '/')) {

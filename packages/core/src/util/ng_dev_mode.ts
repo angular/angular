@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -97,7 +97,7 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
  * (and thus Ivy instructions), so a single initialization there is sufficient to ensure ngDevMode
  * is defined for the entire instruction set.
  *
- * When using checking `ngDevMode` on toplevel, always init it before referencing it
+ * When checking `ngDevMode` on toplevel, always init it before referencing it
  * (e.g. `((typeof ngDevMode === 'undefined' || ngDevMode) && initNgDevMode())`), otherwise you can
  *  get a `ReferenceError` like in https://github.com/angular/angular/issues/31595.
  *
@@ -115,7 +115,7 @@ export function initNgDevMode(): boolean {
     if (typeof ngDevMode !== 'object') {
       ngDevModeResetPerfCounters();
     }
-    return !!ngDevMode;
+    return typeof ngDevMode !== 'undefined' && !!ngDevMode;
   }
   return false;
 }

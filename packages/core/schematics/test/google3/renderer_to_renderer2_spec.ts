@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,7 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
   let tmpDir: string;
 
   beforeEach(() => {
-    tmpDir = join(process.env['TEST_TMPDIR'] !, 'google3-test');
+    tmpDir = join(process.env['TEST_TMPDIR']!, 'google3-test');
     shx.mkdir('-p', tmpDir);
 
     // We need to declare the Angular symbols we're testing for, otherwise type checking won't work.
@@ -46,7 +46,7 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     const config = Configuration.parseConfigFile({rules: {'renderer-to-renderer2': true}});
 
     program.getRootFileNames().forEach(fileName => {
-      linter.lint(fileName, program.getSourceFile(fileName) !.getFullText(), config);
+      linter.lint(fileName, program.getSourceFile(fileName)!.getFullText(), config);
     });
 
     return linter;
@@ -56,7 +56,9 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     writeFileSync(join(tmpDir, fileName), content);
   }
 
-  function getFile(fileName: string) { return readFileSync(join(tmpDir, fileName), 'utf8'); }
+  function getFile(fileName: string) {
+    return readFileSync(join(tmpDir, fileName), 'utf8');
+  }
 
   it('should flag Renderer imports and typed nodes', () => {
     writeFile('/index.ts', `
@@ -101,6 +103,26 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     expect(content).toContain(`import { Component, Renderer2 } from '@angular/core';`);
     expect(content).toContain('public renderer: Renderer2;');
     expect(content).toContain('(renderer: Renderer2)');
+  });
+
+  it('should not change Renderer imports if Renderer2 is already imported', () => {
+    writeFile('/index.ts', `
+        import { Renderer, Component, Renderer2 } from '@angular/core';
+
+        @Component({template: ''})
+        export class MyComp {
+          public renderer: Renderer;
+
+          constructor(renderer: Renderer) {
+            this.renderer = renderer;
+          }
+        }
+      `);
+
+    runTSLint(true);
+    const content = getFile('index.ts');
+
+    expect(content).toContain(`import { Renderer, Component, Renderer2 } from '@angular/core';`);
   });
 
   it('should change Renderer inside single-line forwardRefs to Renderer2', () => {
@@ -223,8 +245,8 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     runTSLint(true);
     const content = getFile('index.ts');
 
-    expect(content.match(/function __ngRendererCreateElementHelper\(/g) !.length).toBe(1);
-    expect(content.match(/function __ngRendererSetElementAttributeHelper\(/g) !.length).toBe(1);
+    expect(content.match(/function __ngRendererCreateElementHelper\(/g)!.length).toBe(1);
+    expect(content.match(/function __ngRendererSetElementAttributeHelper\(/g)!.length).toBe(1);
   });
 
   it('should insert helpers after the user\'s code', () => {
@@ -410,5 +432,4 @@ describe('Google3 Renderer to Renderer2 TSLint rule', () => {
     // Expect the `setInfo` method to only contain whitespace.
     expect(content).toMatch(/setInfo\(\) \{\s+\}/);
   });
-
 });

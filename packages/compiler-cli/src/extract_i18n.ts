@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -41,6 +41,7 @@ function readXi18nCommandLineAndConfiguration(args: string[]): ParsedConfigurati
 
 // Entry point
 if (require.main === module) {
+  process.title = 'Angular i18n Message Extractor (ng-xi18n)';
   const args = process.argv.slice(2);
   // We are running the real compiler so run against the real file-system
   setFileSystem(new NodeJSFileSystem());

@@ -35,6 +35,7 @@ export class BuildCleaner {
       ]);
     } catch (error) {
       this.logger.error('ERROR:', error);
+      throw error;
     }
   }
 

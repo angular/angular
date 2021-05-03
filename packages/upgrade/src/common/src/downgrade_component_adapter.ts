@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,10 +8,10 @@
 
 import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry, Type} from '@angular/core';
 
-import {IAttributes, IAugmentedJQuery, ICompileService, IInjectorService, INgModelController, IParseService, IScope} from './angular1';
+import {IAttributes, IAugmentedJQuery, ICompileService, INgModelController, IParseService, IScope} from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
-import {getTypeName, hookupNgModel, strictEquals} from './util';
+import {cleanData, getTypeName, hookupNgModel, strictEquals} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -23,18 +23,18 @@ export class DowngradeComponentAdapter {
   private inputChanges: SimpleChanges = {};
   private componentScope: IScope;
   // TODO(issue/24571): remove '!'.
-  private componentRef !: ComponentRef<any>;
+  private componentRef!: ComponentRef<any>;
   private component: any;
   // TODO(issue/24571): remove '!'.
-  private changeDetector !: ChangeDetectorRef;
+  private changeDetector!: ChangeDetectorRef;
   // TODO(issue/24571): remove '!'.
-  private viewChangeDetector !: ChangeDetectorRef;
+  private viewChangeDetector!: ChangeDetectorRef;
 
   constructor(
       private element: IAugmentedJQuery, private attrs: IAttributes, private scope: IScope,
       private ngModel: INgModelController, private parentInjector: Injector,
-      private $injector: IInjectorService, private $compile: ICompileService,
-      private $parse: IParseService, private componentFactory: ComponentFactory<any>,
+      private $compile: ICompileService, private $parse: IParseService,
+      private componentFactory: ComponentFactory<any>,
       private wrapCallback: <T>(cb: () => T) => () => T) {
     this.componentScope = scope.$new();
   }
@@ -44,12 +44,12 @@ export class DowngradeComponentAdapter {
     const projectableNodes: Node[][] = this.groupProjectableNodes();
     const linkFns = projectableNodes.map(nodes => this.$compile(nodes));
 
-    this.element.empty !();
+    this.element.empty!();
 
     linkFns.forEach(linkFn => {
       linkFn(this.scope, (clone: Node[]) => {
         compiledProjectableNodes.push(clone);
-        this.element.append !(clone);
+        this.element.append!(clone);
       });
     });
 
@@ -108,7 +108,7 @@ export class DowngradeComponentAdapter {
         // for `ngOnChanges()`. This is necessary if we are already in a `$digest`, which means that
         // `ngOnChanges()` (which is called by a watcher) will run before the `$observe()` callback.
         let unwatch: Function|null = this.componentScope.$watch(() => {
-          unwatch !();
+          unwatch!();
           unwatch = null;
           observeFn(attrs[input.attr]);
         });
@@ -140,7 +140,7 @@ export class DowngradeComponentAdapter {
       if (this.implementsOnChanges) {
         const inputChanges = this.inputChanges;
         this.inputChanges = {};
-        (<OnChanges>this.component).ngOnChanges(inputChanges !);
+        (<OnChanges>this.component).ngOnChanges(inputChanges!);
       }
 
       this.viewChangeDetector.markForCheck();
@@ -160,7 +160,7 @@ export class DowngradeComponentAdapter {
     // (Allow time for the initial input values to be set and `ngOnChanges()` to be called.)
     if (manuallyAttachView || !propagateDigest) {
       let unwatch: Function|null = this.componentScope.$watch(() => {
-        unwatch !();
+        unwatch!();
         unwatch = null;
 
         const appRef = this.parentInjector.get<ApplicationRef>(ApplicationRef);
@@ -202,12 +202,12 @@ export class DowngradeComponentAdapter {
     const emitter = this.component[output.prop] as EventEmitter<any>;
     if (emitter) {
       emitter.subscribe({
-        next: isAssignment ? (v: any) => setter !(this.scope, v) :
+        next: isAssignment ? (v: any) => setter!(this.scope, v) :
                              (v: any) => getter(this.scope, {'$event': v})
       });
     } else {
-      throw new Error(
-          `Missing emitter '${output.prop}' on component '${getTypeName(this.componentFactory.componentType)}'!`);
+      throw new Error(`Missing emitter '${output.prop}' on component '${
+          getTypeName(this.componentFactory.componentType)}'!`);
     }
   }
 
@@ -216,17 +216,41 @@ export class DowngradeComponentAdapter {
     const destroyComponentRef = this.wrapCallback(() => this.componentRef.destroy());
     let destroyed = false;
 
-    this.element.on !('$destroy', () => this.componentScope.$destroy());
+    this.element.on!('$destroy', () => {
+      // The `$destroy` event may have been triggered by the `cleanData()` call in the
+      // `componentScope` `$destroy` handler below. In that case, we don't want to call
+      // `componentScope.$destroy()` again.
+      if (!destroyed) this.componentScope.$destroy();
+    });
     this.componentScope.$on('$destroy', () => {
       if (!destroyed) {
         destroyed = true;
         testabilityRegistry.unregisterApplication(this.componentRef.location.nativeElement);
+
+        // The `componentScope` might be getting destroyed, because an ancestor element is being
+        // removed/destroyed. If that is the case, jqLite/jQuery would normally invoke `cleanData()`
+        // on the removed element and all descendants.
+        //   https://github.com/angular/angular.js/blob/2e72ea13fa98bebf6ed4b5e3c45eaf5f990ed16f/src/jqLite.js#L349-L355
+        //   https://github.com/jquery/jquery/blob/6984d1747623dbc5e87fd6c261a5b6b1628c107c/src/manipulation.js#L182
+        //
+        // Here, however, `destroyComponentRef()` may under some circumstances remove the element
+        // from the DOM and therefore it will no longer be a descendant of the removed element when
+        // `cleanData()` is called. This would result in a memory leak, because the element's data
+        // and event handlers (and all objects directly or indirectly referenced by them) would be
+        // retained.
+        //
+        // To ensure the element is always properly cleaned up, we manually call `cleanData()` on
+        // this element and its descendants before destroying the `ComponentRef`.
+        cleanData(this.element[0]);
+
         destroyComponentRef();
       }
     });
   }
 
-  getInjector(): Injector { return this.componentRef.injector; }
+  getInjector(): Injector {
+    return this.componentRef.injector;
+  }
 
   private updateInput(prop: string, prevValue: any, currValue: any) {
     if (this.implementsOnChanges) {
@@ -239,7 +263,7 @@ export class DowngradeComponentAdapter {
 
   groupProjectableNodes() {
     let ngContentSelectors = this.componentFactory.ngContentSelectors;
-    return groupNodesBySelector(ngContentSelectors, this.element.contents !());
+    return groupNodesBySelector(ngContentSelectors, this.element.contents!());
   }
 }
 
@@ -248,7 +272,6 @@ export class DowngradeComponentAdapter {
  */
 export function groupNodesBySelector(ngContentSelectors: string[], nodes: Node[]): Node[][] {
   const projectableNodes: Node[][] = [];
-  let wildcardNgContentIndex: number;
 
   for (let i = 0, ii = ngContentSelectors.length; i < ii; ++i) {
     projectableNodes[i] = [];

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -138,13 +138,13 @@ export class ShadowCss {
   constructor() {}
 
   /*
-  * Shim some cssText with the given selector. Returns cssText that can
-  * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
-  *
-  * When strictStyling is true:
-  * - selector is the attribute added to all elements inside the host,
-  * - hostSelector is the attribute added to the host itself.
-  */
+   * Shim some cssText with the given selector. Returns cssText that can
+   * be included in the document via WebComponents.ShadowCSS.addCssToDocument(css).
+   *
+   * When strictStyling is true:
+   * - selector is the attribute added to all elements inside the host,
+   * - hostSelector is the attribute added to the host itself.
+   */
   shimCssText(cssText: string, selector: string, hostSelector: string = ''): string {
     const commentsWithHash = extractCommentsWithHash(cssText);
     cssText = stripComments(cssText);
@@ -172,11 +172,12 @@ export class ShadowCss {
    *
    * scopeName menu-item {
    *
-  **/
+   **/
   private _insertPolyfillDirectivesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
-    return cssText.replace(
-        _cssContentNextSelectorRe, function(...m: string[]) { return m[2] + '{'; });
+    return cssText.replace(_cssContentNextSelectorRe, function(...m: string[]) {
+      return m[2] + '{';
+    });
   }
 
   /*
@@ -193,7 +194,7 @@ export class ShadowCss {
    *
    * scopeName menu-item {...}
    *
-  **/
+   **/
   private _insertPolyfillRulesInCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     return cssText.replace(_cssContentRuleRe, (...m: string[]) => {
@@ -209,7 +210,7 @@ export class ShadowCss {
    *  and converts this to
    *
    *  scopeName .foo { ... }
-  */
+   */
   private _scopeCssText(cssText: string, scopeSelector: string, hostSelector: string): string {
     const unscopedRules = this._extractUnscopedRulesFromCssText(cssText);
     // replace :host and :host-context -shadowcsshost and -shadowcsshost respectively
@@ -238,7 +239,7 @@ export class ShadowCss {
    *
    * menu-item {...}
    *
-  **/
+   **/
   private _extractUnscopedRulesFromCssText(cssText: string): string {
     // Difference with webcomponents.js: does not handle comments
     let r = '';
@@ -257,9 +258,23 @@ export class ShadowCss {
    * to
    *
    * .foo<scopeName> > .bar
-  */
+   */
   private _convertColonHost(cssText: string): string {
-    return this._convertColonRule(cssText, _cssColonHostRe, this._colonHostPartReplacer);
+    return cssText.replace(_cssColonHostRe, (_, hostSelectors: string, otherSelectors: string) => {
+      if (hostSelectors) {
+        const convertedSelectors: string[] = [];
+        const hostSelectorArray = hostSelectors.split(',').map(p => p.trim());
+        for (const hostSelector of hostSelectorArray) {
+          if (!hostSelector) break;
+          const convertedSelector =
+              _polyfillHostNoCombinator + hostSelector.replace(_polyfillHost, '') + otherSelectors;
+          convertedSelectors.push(convertedSelector);
+        }
+        return convertedSelectors.join(',');
+      } else {
+        return _polyfillHostNoCombinator + otherSelectors;
+      }
+    });
   }
 
   /*
@@ -267,7 +282,7 @@ export class ShadowCss {
    *
    * to
    *
-   * .foo<scopeName> > .bar, .foo scopeName > .bar { }
+   * .foo<scopeName> > .bar, .foo <scopeName> > .bar { }
    *
    * and
    *
@@ -276,46 +291,73 @@ export class ShadowCss {
    * to
    *
    * .foo<scopeName> .bar { ... }
-  */
+   */
   private _convertColonHostContext(cssText: string): string {
-    return this._convertColonRule(
-        cssText, _cssColonHostContextRe, this._colonHostContextPartReplacer);
-  }
+    return cssText.replace(_cssColonHostContextReGlobal, selectorText => {
+      // We have captured a selector that contains a `:host-context` rule.
 
-  private _convertColonRule(cssText: string, regExp: RegExp, partReplacer: Function): string {
-    // m[1] = :host(-context), m[2] = contents of (), m[3] rest of rule
-    return cssText.replace(regExp, function(...m: string[]) {
-      if (m[2]) {
-        const parts = m[2].split(',');
-        const r: string[] = [];
-        for (let i = 0; i < parts.length; i++) {
-          const p = parts[i].trim();
-          if (!p) break;
-          r.push(partReplacer(_polyfillHostNoCombinator, p, m[3]));
+      // For backward compatibility `:host-context` may contain a comma separated list of selectors.
+      // Each context selector group will contain a list of host-context selectors that must match
+      // an ancestor of the host.
+      // (Normally `contextSelectorGroups` will only contain a single array of context selectors.)
+      const contextSelectorGroups: string[][] = [[]];
+
+      // There may be more than `:host-context` in this selector so `selectorText` could look like:
+      // `:host-context(.one):host-context(.two)`.
+      // Execute `_cssColonHostContextRe` over and over until we have extracted all the
+      // `:host-context` selectors from this selector.
+      let match: RegExpMatchArray|null;
+      while (match = _cssColonHostContextRe.exec(selectorText)) {
+        // `match` = [':host-context(<selectors>)<rest>', <selectors>, <rest>]
+
+        // The `<selectors>` could actually be a comma separated list: `:host-context(.one, .two)`.
+        const newContextSelectors =
+            (match[1] ?? '').trim().split(',').map(m => m.trim()).filter(m => m !== '');
+
+        // We must duplicate the current selector group for each of these new selectors.
+        // For example if the current groups are:
+        // ```
+        // [
+        //   ['a', 'b', 'c'],
+        //   ['x', 'y', 'z'],
+        // ]
+        // ```
+        // And we have a new set of comma separated selectors: `:host-context(m,n)` then the new
+        // groups are:
+        // ```
+        // [
+        //   ['a', 'b', 'c', 'm'],
+        //   ['x', 'y', 'z', 'm'],
+        //   ['a', 'b', 'c', 'n'],
+        //   ['x', 'y', 'z', 'n'],
+        // ]
+        // ```
+        const contextSelectorGroupsLength = contextSelectorGroups.length;
+        repeatGroups(contextSelectorGroups, newContextSelectors.length);
+        for (let i = 0; i < newContextSelectors.length; i++) {
+          for (let j = 0; j < contextSelectorGroupsLength; j++) {
+            contextSelectorGroups[j + (i * contextSelectorGroupsLength)].push(
+                newContextSelectors[i]);
+          }
         }
-        return r.join(',');
-      } else {
-        return _polyfillHostNoCombinator + m[3];
+
+        // Update the `selectorText` and see repeat to see if there are more `:host-context`s.
+        selectorText = match[2];
       }
+
+      // The context selectors now must be combined with each other to capture all the possible
+      // selectors that `:host-context` can match. See `combineHostContextSelectors()` for more
+      // info about how this is done.
+      return contextSelectorGroups
+          .map(contextSelectors => combineHostContextSelectors(contextSelectors, selectorText))
+          .join(', ');
     });
-  }
-
-  private _colonHostContextPartReplacer(host: string, part: string, suffix: string): string {
-    if (part.indexOf(_polyfillHost) > -1) {
-      return this._colonHostPartReplacer(host, part, suffix);
-    } else {
-      return host + part + suffix + ', ' + part + ' ' + host + suffix;
-    }
-  }
-
-  private _colonHostPartReplacer(host: string, part: string, suffix: string): string {
-    return host + part.replace(_polyfillHost, '') + suffix;
   }
 
   /*
    * Convert combinators like ::shadow and pseudo-elements like ::content
    * by replacing with space.
-  */
+   */
   private _convertShadowDOMSelectors(cssText: string): string {
     return _shadowDOMSelectorsRe.reduce((result, pattern) => result.replace(pattern, ' '), cssText);
   }
@@ -332,7 +374,36 @@ export class ShadowCss {
           rule.selector.startsWith('@media') || rule.selector.startsWith('@supports') ||
           rule.selector.startsWith('@page') || rule.selector.startsWith('@document')) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
+      } else if (rule.selector.startsWith('@font-face')) {
+        content = this._stripScopingSelectors(rule.content, scopeSelector, hostSelector);
       }
+      return new CssRule(selector, content);
+    });
+  }
+
+  /**
+   * Handle a css text that is within a rule that should not contain scope selectors by simply
+   * removing them! An example of such a rule is `@font-face`.
+   *
+   * `@font-face` rules cannot contain nested selectors. Nor can they be nested under a selector.
+   * Normally this would be a syntax error by the author of the styles. But in some rare cases, such
+   * as importing styles from a library, and applying `:host ::ng-deep` to the imported styles, we
+   * can end up with broken css if the imported styles happen to contain @font-face rules.
+   *
+   * For example:
+   *
+   * ```
+   * :host ::ng-deep {
+   *   import 'some/lib/containing/font-face';
+   * }
+   * ```
+   */
+  private _stripScopingSelectors(cssText: string, scopeSelector: string, hostSelector: string):
+      string {
+    return processRules(cssText, rule => {
+      const selector = rule.selector.replace(_shadowDeepSelectors, ' ')
+                           .replace(_polyfillHostNoCombinatorRe, ' ');
+      const content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
       return new CssRule(selector, content);
     });
   }
@@ -484,12 +555,14 @@ class SafeSelector {
   constructor(selector: string) {
     // Replaces attribute selectors with placeholders.
     // The WS in [attr="va lue"] would otherwise be interpreted as a selector separator.
-    selector = selector.replace(/(\[[^\]]*\])/g, (_, keep) => {
-      const replaceBy = `__ph-${this.index}__`;
-      this.placeholders.push(keep);
-      this.index++;
-      return replaceBy;
-    });
+    selector = this._escapeRegexMatches(selector, /(\[[^\]]*\])/g);
+
+    // CSS allows for certain special characters to be used in selectors if they're escaped.
+    // E.g. `.foo:blue` won't match a class called `foo:blue`, because the colon denotes a
+    // pseudo-class, but writing `.foo\:blue` will match, because the colon was escaped.
+    // Replace all escape sequences (`\` followed by a character) with a placeholder so
+    // that our handling of pseudo-selectors doesn't mess with them.
+    selector = this._escapeRegexMatches(selector, /(\\.)/g);
 
     // Replaces the expression in `:nth-child(2n + 1)` with a placeholder.
     // WS and "+" would otherwise be interpreted as selector separators.
@@ -502,10 +575,25 @@ class SafeSelector {
   }
 
   restore(content: string): string {
-    return content.replace(/__ph-(\d+)__/g, (ph, index) => this.placeholders[+index]);
+    return content.replace(/__ph-(\d+)__/g, (_ph, index) => this.placeholders[+index]);
   }
 
-  content(): string { return this._content; }
+  content(): string {
+    return this._content;
+  }
+
+  /**
+   * Replaces all of the substrings that match a regex within a
+   * special string (e.g. `__ph-0__`, `__ph-1__`, etc).
+   */
+  private _escapeRegexMatches(content: string, pattern: RegExp): string {
+    return content.replace(pattern, (_, keep) => {
+      const replaceBy = `__ph-${this.index}__`;
+      this.placeholders.push(keep);
+      this.index++;
+      return replaceBy;
+    });
+  }
 }
 
 const _cssContentNextSelectorRe =
@@ -516,11 +604,12 @@ const _cssContentUnscopedRuleRe =
 const _polyfillHost = '-shadowcsshost';
 // note: :host-context pre-processed to -shadowcsshostcontext.
 const _polyfillHostContext = '-shadowcsscontext';
-const _parenSuffix = ')(?:\\((' +
+const _parenSuffix = '(?:\\((' +
     '(?:\\([^)(]*\\)|[^)(]*)+?' +
     ')\\))?([^,{]*)';
-const _cssColonHostRe = new RegExp('(' + _polyfillHost + _parenSuffix, 'gim');
-const _cssColonHostContextRe = new RegExp('(' + _polyfillHostContext + _parenSuffix, 'gim');
+const _cssColonHostRe = new RegExp(_polyfillHost + _parenSuffix, 'gim');
+const _cssColonHostContextReGlobal = new RegExp(_polyfillHostContext + _parenSuffix, 'gim');
+const _cssColonHostContextRe = new RegExp(_polyfillHostContext + _parenSuffix, 'im');
 const _polyfillHostNoCombinator = _polyfillHost + '-no-combinator';
 const _polyfillHostNoCombinatorRe = /-shadowcsshost-no-combinator([^\s]*)/;
 const _shadowDOMSelectorsRe = [
@@ -552,66 +641,162 @@ function extractCommentsWithHash(input: string): string[] {
   return input.match(_commentWithHashRe) || [];
 }
 
-const _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
-const _curlyRe = /([{}])/g;
-const OPEN_CURLY = '{';
-const CLOSE_CURLY = '}';
 const BLOCK_PLACEHOLDER = '%BLOCK%';
+const QUOTE_PLACEHOLDER = '%QUOTED%';
+const _ruleRe = /(\s*)([^;\{\}]+?)(\s*)((?:{%BLOCK%}?\s*;?)|(?:\s*;))/g;
+const _quotedRe = /%QUOTED%/g;
+const CONTENT_PAIRS = new Map([['{', '}']]);
+const QUOTE_PAIRS = new Map([[`"`, `"`], [`'`, `'`]]);
 
 export class CssRule {
   constructor(public selector: string, public content: string) {}
 }
 
 export function processRules(input: string, ruleCallback: (rule: CssRule) => CssRule): string {
-  const inputWithEscapedBlocks = escapeBlocks(input);
+  const inputWithEscapedQuotes = escapeBlocks(input, QUOTE_PAIRS, QUOTE_PLACEHOLDER);
+  const inputWithEscapedBlocks =
+      escapeBlocks(inputWithEscapedQuotes.escapedString, CONTENT_PAIRS, BLOCK_PLACEHOLDER);
   let nextBlockIndex = 0;
-  return inputWithEscapedBlocks.escapedString.replace(_ruleRe, function(...m: string[]) {
-    const selector = m[2];
-    let content = '';
-    let suffix = m[4];
-    let contentPrefix = '';
-    if (suffix && suffix.startsWith('{' + BLOCK_PLACEHOLDER)) {
-      content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
-      suffix = suffix.substring(BLOCK_PLACEHOLDER.length + 1);
-      contentPrefix = '{';
-    }
-    const rule = ruleCallback(new CssRule(selector, content));
-    return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
-  });
+  let nextQuoteIndex = 0;
+  return inputWithEscapedBlocks.escapedString
+      .replace(
+          _ruleRe,
+          (...m: string[]) => {
+            const selector = m[2];
+            let content = '';
+            let suffix = m[4];
+            let contentPrefix = '';
+            if (suffix && suffix.startsWith('{' + BLOCK_PLACEHOLDER)) {
+              content = inputWithEscapedBlocks.blocks[nextBlockIndex++];
+              suffix = suffix.substring(BLOCK_PLACEHOLDER.length + 1);
+              contentPrefix = '{';
+            }
+            const rule = ruleCallback(new CssRule(selector, content));
+            return `${m[1]}${rule.selector}${m[3]}${contentPrefix}${rule.content}${suffix}`;
+          })
+      .replace(_quotedRe, () => inputWithEscapedQuotes.blocks[nextQuoteIndex++]);
 }
 
 class StringWithEscapedBlocks {
   constructor(public escapedString: string, public blocks: string[]) {}
 }
 
-function escapeBlocks(input: string): StringWithEscapedBlocks {
-  const inputParts = input.split(_curlyRe);
+function escapeBlocks(
+    input: string, charPairs: Map<string, string>, placeholder: string): StringWithEscapedBlocks {
   const resultParts: string[] = [];
   const escapedBlocks: string[] = [];
-  let bracketCount = 0;
-  let currentBlockParts: string[] = [];
-  for (let partIndex = 0; partIndex < inputParts.length; partIndex++) {
-    const part = inputParts[partIndex];
-    if (part == CLOSE_CURLY) {
-      bracketCount--;
-    }
-    if (bracketCount > 0) {
-      currentBlockParts.push(part);
-    } else {
-      if (currentBlockParts.length > 0) {
-        escapedBlocks.push(currentBlockParts.join(''));
-        resultParts.push(BLOCK_PLACEHOLDER);
-        currentBlockParts = [];
+  let openCharCount = 0;
+  let nonBlockStartIndex = 0;
+  let blockStartIndex = -1;
+  let openChar: string|undefined;
+  let closeChar: string|undefined;
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    if (char === '\\') {
+      i++;
+    } else if (char === closeChar) {
+      openCharCount--;
+      if (openCharCount === 0) {
+        escapedBlocks.push(input.substring(blockStartIndex, i));
+        resultParts.push(placeholder);
+        nonBlockStartIndex = i;
+        blockStartIndex = -1;
+        openChar = closeChar = undefined;
       }
-      resultParts.push(part);
-    }
-    if (part == OPEN_CURLY) {
-      bracketCount++;
+    } else if (char === openChar) {
+      openCharCount++;
+    } else if (openCharCount === 0 && charPairs.has(char)) {
+      openChar = char;
+      closeChar = charPairs.get(char);
+      openCharCount = 1;
+      blockStartIndex = i + 1;
+      resultParts.push(input.substring(nonBlockStartIndex, blockStartIndex));
     }
   }
-  if (currentBlockParts.length > 0) {
-    escapedBlocks.push(currentBlockParts.join(''));
-    resultParts.push(BLOCK_PLACEHOLDER);
+  if (blockStartIndex !== -1) {
+    escapedBlocks.push(input.substring(blockStartIndex));
+    resultParts.push(placeholder);
+  } else {
+    resultParts.push(input.substring(nonBlockStartIndex));
   }
   return new StringWithEscapedBlocks(resultParts.join(''), escapedBlocks);
+}
+
+/**
+ * Combine the `contextSelectors` with the `hostMarker` and the `otherSelectors`
+ * to create a selector that matches the same as `:host-context()`.
+ *
+ * Given a single context selector `A` we need to output selectors that match on the host and as an
+ * ancestor of the host:
+ *
+ * ```
+ * A <hostMarker>, A<hostMarker> {}
+ * ```
+ *
+ * When there is more than one context selector we also have to create combinations of those
+ * selectors with each other. For example if there are `A` and `B` selectors the output is:
+ *
+ * ```
+ * AB<hostMarker>, AB <hostMarker>, A B<hostMarker>,
+ * B A<hostMarker>, A B <hostMarker>, B A <hostMarker> {}
+ * ```
+ *
+ * And so on...
+ *
+ * @param hostMarker the string that selects the host element.
+ * @param contextSelectors an array of context selectors that will be combined.
+ * @param otherSelectors the rest of the selectors that are not context selectors.
+ */
+function combineHostContextSelectors(contextSelectors: string[], otherSelectors: string): string {
+  const hostMarker = _polyfillHostNoCombinator;
+  _polyfillHostRe.lastIndex = 0;  // reset the regex to ensure we get an accurate test
+  const otherSelectorsHasHost = _polyfillHostRe.test(otherSelectors);
+
+  // If there are no context selectors then just output a host marker
+  if (contextSelectors.length === 0) {
+    return hostMarker + otherSelectors;
+  }
+
+  const combined: string[] = [contextSelectors.pop() || ''];
+  while (contextSelectors.length > 0) {
+    const length = combined.length;
+    const contextSelector = contextSelectors.pop();
+    for (let i = 0; i < length; i++) {
+      const previousSelectors = combined[i];
+      // Add the new selector as a descendant of the previous selectors
+      combined[length * 2 + i] = previousSelectors + ' ' + contextSelector;
+      // Add the new selector as an ancestor of the previous selectors
+      combined[length + i] = contextSelector + ' ' + previousSelectors;
+      // Add the new selector to act on the same element as the previous selectors
+      combined[i] = contextSelector + previousSelectors;
+    }
+  }
+  // Finally connect the selector to the `hostMarker`s: either acting directly on the host
+  // (A<hostMarker>) or as an ancestor (A <hostMarker>).
+  return combined
+      .map(
+          s => otherSelectorsHasHost ?
+              `${s}${otherSelectors}` :
+              `${s}${hostMarker}${otherSelectors}, ${s} ${hostMarker}${otherSelectors}`)
+      .join(',');
+}
+
+/**
+ * Mutate the given `groups` array so that there are `multiples` clones of the original array
+ * stored.
+ *
+ * For example `repeatGroups([a, b], 3)` will result in `[a, b, a, b, a, b]` - but importantly the
+ * newly added groups will be clones of the original.
+ *
+ * @param groups An array of groups of strings that will be repeated. This array is mutated
+ *     in-place.
+ * @param multiples The number of times the current groups should appear.
+ */
+export function repeatGroups<T>(groups: string[][], multiples: number): void {
+  const length = groups.length;
+  for (let i = 1; i < multiples; i++) {
+    for (let j = 0; j < length; j++) {
+      groups[j + (i * length)] = groups[j].slice(0);
+    }
+  }
 }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,7 +12,7 @@
 
 import {findEventTasks} from '../common/events';
 import {patchTimer} from '../common/timers';
-import {ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, patchClass, patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, zoneSymbol} from '../common/utils';
+import {patchClass, patchMethod, patchPrototype, scheduleMacroTaskWithCurrentZone, ZONE_SYMBOL_ADD_EVENT_LISTENER, ZONE_SYMBOL_REMOVE_EVENT_LISTENER, zoneSymbol,} from '../common/utils';
 
 import {patchCustomElements} from './custom-elements';
 import {eventTargetPatch, patchEvent} from './event-target';
@@ -24,6 +24,15 @@ Zone.__load_patch('legacy', (global: any) => {
     legacyPatch();
   }
 });
+
+Zone.__load_patch('queueMicrotask', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
+  api.patchMethod(global, 'queueMicrotask', delegate => {
+    return function(self: any, args: any[]) {
+      Zone.current.scheduleMicroTask('queueMicrotask', args[0]);
+    }
+  });
+});
+
 
 Zone.__load_patch('timers', (global: any) => {
   const set = 'set';
@@ -57,11 +66,20 @@ Zone.__load_patch('EventTarget', (global: any, Zone: ZoneType, api: _ZonePrivate
   // patch XMLHttpRequestEventTarget's addEventListener/removeEventListener
   const XMLHttpRequestEventTarget = (global as any)['XMLHttpRequestEventTarget'];
   if (XMLHttpRequestEventTarget && XMLHttpRequestEventTarget.prototype) {
-    api.patchEventTarget(global, [XMLHttpRequestEventTarget.prototype]);
+    api.patchEventTarget(global, api, [XMLHttpRequestEventTarget.prototype]);
   }
+});
+
+Zone.__load_patch('MutationObserver', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   patchClass('MutationObserver');
   patchClass('WebKitMutationObserver');
+});
+
+Zone.__load_patch('IntersectionObserver', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   patchClass('IntersectionObserver');
+});
+
+Zone.__load_patch('FileReader', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   patchClass('FileReader');
 });
 
@@ -99,7 +117,9 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
     }
     const XMLHttpRequestPrototype: any = XMLHttpRequest.prototype;
 
-    function findPendingTask(target: any) { return target[XHR_TASK]; }
+    function findPendingTask(target: any) {
+      return target[XHR_TASK];
+    }
 
     let oriAddListener = XMLHttpRequestPrototype[ZONE_SYMBOL_ADD_EVENT_LISTENER];
     let oriRemoveListener = XMLHttpRequestPrototype[ZONE_SYMBOL_REMOVE_EVENT_LISTENER];
@@ -138,8 +158,12 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
             // check whether the xhr has registered onload listener
             // if that is the case, the task should invoke after all
             // onload listeners finish.
+            // Also if the request failed without response (status = 0), the load event handler
+            // will not be triggered, in that case, we should also invoke the placeholder callback
+            // to close the XMLHttpRequest::send macroTask.
+            // https://github.com/angular/angular/issues/38795
             const loadTasks = target[Zone.__symbol__('loadfalse')];
-            if (loadTasks && loadTasks.length > 0) {
+            if (target.status !== 0 && loadTasks && loadTasks.length > 0) {
               const oriInvoke = task.invoke;
               task.invoke = function() {
                 // need to load the tasks again, because in other
@@ -170,7 +194,7 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
       if (!storedTask) {
         target[XHR_TASK] = task;
       }
-      sendNative !.apply(target, data.args);
+      sendNative!.apply(target, data.args);
       target[XHR_SCHEDULED] = true;
       return task;
     }
@@ -182,14 +206,14 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
       // Note - ideally, we would call data.target.removeEventListener here, but it's too late
       // to prevent it from firing. So instead, we store info for the event listener.
       data.aborted = true;
-      return abortNative !.apply(data.target, data.args);
+      return abortNative!.apply(data.target, data.args);
     }
 
     const openNative =
         patchMethod(XMLHttpRequestPrototype, 'open', () => function(self: any, args: any[]) {
           self[XHR_SYNC] = args[2] == false;
           self[XHR_URL] = args[1];
-          return openNative !.apply(self, args);
+          return openNative!.apply(self, args);
         });
 
     const XMLHTTPREQUEST_SOURCE = 'XMLHttpRequest.send';
@@ -201,11 +225,11 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
             // a fetch is scheduling, so we are using xhr to polyfill fetch
             // and because we already schedule macroTask for fetch, we should
             // not schedule a macroTask for xhr again
-            return sendNative !.apply(self, args);
+            return sendNative!.apply(self, args);
           }
           if (self[XHR_SYNC]) {
             // if the XHR is sync there is no task to schedule, just execute the code.
-            return sendNative !.apply(self, args);
+            return sendNative!.apply(self, args);
           } else {
             const options: XHROptions =
                 {target: self, url: self[XHR_URL], isPeriodic: false, args: args, aborted: false};
@@ -235,7 +259,7 @@ Zone.__load_patch('XHR', (global: any, Zone: ZoneType) => {
             task.zone.cancelTask(task);
           } else if ((Zone.current as any)[fetchTaskAborting] === true) {
             // the abort is called from fetch polyfill, we need to call native abort of XHR.
-            return abortNative !.apply(self, args);
+            return abortNative!.apply(self, args);
           }
           // Otherwise, we are trying to abort an XHR which has not yet been sent, so there is no
           // task

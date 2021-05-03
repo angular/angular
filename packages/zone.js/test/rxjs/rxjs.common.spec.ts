@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -157,7 +157,9 @@ describe('Zone interaction', () => {
       };
     }));
 
-    observable.subscribe(() => { log.push('next'); });
+    observable.subscribe(() => {
+      log.push('next');
+    });
 
     expect(log).toEqual(['next', 'cleanup']);
   });
@@ -170,7 +172,9 @@ describe('Zone interaction', () => {
 
     let subject: any;
 
-    constructorZone.run(() => { subject = new Subject(); });
+    constructorZone.run(() => {
+      subject = new Subject();
+    });
 
     let subscription1: any;
     let subscription2: any;

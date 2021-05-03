@@ -86,7 +86,7 @@ describe('NavigationService', () => {
     ];
 
     beforeEach(() => {
-      navService.navigationViews.subscribe(views => view = views['sideNav']);
+      navService.navigationViews.subscribe(views => view = views.sideNav);
       httpMock.expectOne({}).flush({sideNav});
     });
 
@@ -144,7 +144,7 @@ describe('NavigationService', () => {
           url: 'b',
           view: 'SideNav',
           nodes: [
-            sideNavNodes[0].children![0],
+            sideNavNodes[0].children?.[0] as NavigationNode,
             sideNavNodes[0]
           ]
         }
@@ -156,8 +156,8 @@ describe('NavigationService', () => {
           url: 'd',
           view: 'SideNav',
           nodes: [
-            sideNavNodes[0].children![0].children![1],
-            sideNavNodes[0].children![0],
+            sideNavNodes[0].children?.[0].children?.[1] as NavigationNode,
+            sideNavNodes[0].children?.[0] as NavigationNode,
             sideNavNodes[0]
           ]
         }
@@ -201,8 +201,8 @@ describe('NavigationService', () => {
           url: 'c',
           view: 'SideNav',
           nodes: [
-            sideNavNodes[0].children![0].children![0],
-            sideNavNodes[0].children![0],
+            sideNavNodes[0].children?.[0].children?.[0] as NavigationNode,
+            sideNavNodes[0].children?.[0] as NavigationNode,
             sideNavNodes[0]
           ]
         }
@@ -254,7 +254,7 @@ describe('NavigationService', () => {
         {...v, ...{ tooltip: v.title + '.'}})
       );
 
-      navService.navigationViews.subscribe(views => actualDocVersions = views['docVersions']);
+      navService.navigationViews.subscribe(views => actualDocVersions = views.docVersions);
     });
 
     it('should extract the docVersions', () => {

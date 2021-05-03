@@ -12,16 +12,18 @@ export class HeroService {
   constructor(private messageService: MessageService) { }
 
   getHeroes(): Observable<Hero[]> {
-    // TODO: send the message _after_ fetching the heroes
+    const heroes = of(HEROES);
     this.messageService.add('HeroService: fetched heroes');
-    return of(HEROES);
+    return heroes;
   }
 
   // #docregion getHero
   getHero(id: number): Observable<Hero> {
-    // TODO: send the message _after_ fetching the hero
+    // For now, assume that a hero with the specified `id` always exists.
+    // Error handling will be added in the next step of the tutorial.
+    const hero = HEROES.find(h => h.id === id) as Hero;
     this.messageService.add(`HeroService: fetched hero id=${id}`);
-    return of(HEROES.find(hero => hero.id === id));
+    return of(hero);
   }
   // #enddocregion getHero
 }

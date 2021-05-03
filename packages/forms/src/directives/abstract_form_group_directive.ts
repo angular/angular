@@ -1,19 +1,18 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {OnDestroy, OnInit} from '@angular/core';
+import {Directive, OnDestroy, OnInit} from '@angular/core';
 
 import {FormGroup} from '../model';
 
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
-import {composeAsyncValidators, composeValidators, controlPath} from './shared';
-import {AsyncValidatorFn, ValidatorFn} from './validators';
+import {controlPath} from './shared';
 
 
 
@@ -23,6 +22,7 @@ import {AsyncValidatorFn, ValidatorFn} from './validators';
  *
  * @publicApi
  */
+@Directive()
 export class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
   /**
    * @description
@@ -31,43 +31,19 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @internal
    */
   // TODO(issue/24571): remove '!'.
-  _parent !: ControlContainer;
+  _parent!: ControlContainer;
 
-  /**
-   * @description
-   * An array of synchronous validators for the group
-   *
-   * @internal
-   */
-  // TODO(issue/24571): remove '!'.
-  _validators !: any[];
-
-  /**
-   * @description
-   * An array of async validators for the group
-   *
-   * @internal
-   */
-  // TODO(issue/24571): remove '!'.
-  _asyncValidators !: any[];
-
-  /**
-   * @description
-   * An internal callback method triggered on the instance after the inputs are set.
-   * Registers the group with its parent group.
-   */
+  /** @nodoc */
   ngOnInit(): void {
     this._checkParentType();
-    this.formDirective !.addFormGroup(this);
+    // Register the group with its parent group.
+    this.formDirective!.addFormGroup(this);
   }
 
-  /**
-   * @description
-   * An internal callback method triggered before the instance is destroyed.
-   * Removes the group from its parent group.
-   */
+  /** @nodoc */
   ngOnDestroy(): void {
     if (this.formDirective) {
+      // Remove the group from its parent group.
       this.formDirective.removeFormGroup(this);
     }
   }
@@ -76,7 +52,9 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The `FormGroup` bound to this directive.
    */
-  get control(): FormGroup { return this.formDirective !.getFormGroup(this); }
+  get control(): FormGroup {
+    return this.formDirective!.getFormGroup(this);
+  }
 
   /**
    * @description
@@ -90,20 +68,8 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
    * @description
    * The top-level directive for this group if present, otherwise null.
    */
-  get formDirective(): Form|null { return this._parent ? this._parent.formDirective : null; }
-
-  /**
-   * @description
-   * The synchronous validators registered with this group.
-   */
-  get validator(): ValidatorFn|null { return composeValidators(this._validators); }
-
-  /**
-   * @description
-   * The async validators registered with this group.
-   */
-  get asyncValidator(): AsyncValidatorFn|null {
-    return composeAsyncValidators(this._asyncValidators);
+  get formDirective(): Form|null {
+    return this._parent ? this._parent.formDirective : null;
   }
 
   /** @internal */

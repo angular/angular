@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,9 +14,9 @@ export {ChangeDetectorStatus as ɵChangeDetectorStatus, isDefaultChangeDetection
 export {Console as ɵConsole} from './console';
 export {getDebugNodeR2 as ɵgetDebugNodeR2} from './debug/debug_node';
 export {inject, setCurrentInjector as ɵsetCurrentInjector, ɵɵinject} from './di/injector_compatibility';
-export {getInjectableDef as ɵgetInjectableDef, ɵɵInjectableDef, ɵɵInjectorDef} from './di/interface/defs';
+export {getInjectableDef as ɵgetInjectableDef, ɵɵInjectableDeclaration, ɵɵInjectorDef} from './di/interface/defs';
 export {INJECTOR_SCOPE as ɵINJECTOR_SCOPE} from './di/scope';
-export {CurrencyIndex as ɵCurrencyIndex, ExtraLocaleDataIndex as ɵExtraLocaleDataIndex, LocaleDataIndex as ɵLocaleDataIndex, findLocaleData as ɵfindLocaleData, getLocaleCurrencyCode as ɵgetLocaleCurrencyCode, getLocalePluralCase as ɵgetLocalePluralCase, registerLocaleData as ɵregisterLocaleData, unregisterAllLocaleData as ɵunregisterLocaleData} from './i18n/locale_data_api';
+export {CurrencyIndex as ɵCurrencyIndex, ExtraLocaleDataIndex as ɵExtraLocaleDataIndex, findLocaleData as ɵfindLocaleData, getLocaleCurrencyCode as ɵgetLocaleCurrencyCode, getLocalePluralCase as ɵgetLocalePluralCase, LocaleDataIndex as ɵLocaleDataIndex, registerLocaleData as ɵregisterLocaleData, unregisterAllLocaleData as ɵunregisterLocaleData} from './i18n/locale_data_api';
 export {DEFAULT_LOCALE_ID as ɵDEFAULT_LOCALE_ID} from './i18n/localization';
 export {ivyEnabled as ɵivyEnabled} from './ivy_switch';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
@@ -24,14 +24,12 @@ export {CodegenComponentFactoryResolver as ɵCodegenComponentFactoryResolver} fr
 export {clearResolutionOfComponentResourcesQueue as ɵclearResolutionOfComponentResourcesQueue, resolveComponentResources as ɵresolveComponentResources} from './metadata/resource_loading';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
 export {GetterFn as ɵGetterFn, MethodFn as ɵMethodFn, SetterFn as ɵSetterFn} from './reflection/types';
-export {BypassType as ɵBypassType, SafeHtml as ɵSafeHtml, SafeResourceUrl as ɵSafeResourceUrl, SafeScript as ɵSafeScript, SafeStyle as ɵSafeStyle, SafeUrl as ɵSafeUrl, SafeValue as ɵSafeValue, allowSanitizationBypassAndThrow as ɵallowSanitizationBypassAndThrow, getSanitizationBypassType as ɵgetSanitizationBypassType, unwrapSafeValue as ɵunwrapSafeValue} from './sanitization/bypass';
+export {allowSanitizationBypassAndThrow as ɵallowSanitizationBypassAndThrow, BypassType as ɵBypassType, getSanitizationBypassType as ɵgetSanitizationBypassType, SafeHtml as ɵSafeHtml, SafeResourceUrl as ɵSafeResourceUrl, SafeScript as ɵSafeScript, SafeStyle as ɵSafeStyle, SafeUrl as ɵSafeUrl, SafeValue as ɵSafeValue, unwrapSafeValue as ɵunwrapSafeValue} from './sanitization/bypass';
 export {_sanitizeHtml as ɵ_sanitizeHtml} from './sanitization/html_sanitizer';
-export {_sanitizeStyle as ɵ_sanitizeStyle} from './sanitization/style_sanitizer';
 export {_sanitizeUrl as ɵ_sanitizeUrl} from './sanitization/url_sanitizer';
-export {looseIdentical as ɵlooseIdentical,} from './util/comparison';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';
 export {global as ɵglobal} from './util/global';
-export {isObservable as ɵisObservable, isPromise as ɵisPromise} from './util/lang';
+export {isObservable as ɵisObservable, isPromise as ɵisPromise, isSubscribable as ɵisSubscribable} from './util/lang';
 export {stringify as ɵstringify} from './util/stringify';
 export {clearOverrides as ɵclearOverrides, initServicesIfNeeded as ɵinitServicesIfNeeded, overrideComponentView as ɵoverrideComponentView, overrideProvider as ɵoverrideProvider} from './view/index';
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider';

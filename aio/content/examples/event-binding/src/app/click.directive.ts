@@ -1,4 +1,4 @@
-/* tslint:disable use-output-property-decorator directive-class-suffix */
+// tslint:disable: directive-selector
 import { Directive, ElementRef, EventEmitter, Output } from '@angular/core';
 
 @Directive({selector: '[myClick]'})

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -51,7 +51,7 @@ class JsEmitterVisitor extends AbstractJsEmitterVisitor {
       }
       ctx.print(ast, `${prefix}.`);
     }
-    ctx.print(ast, name !);
+    ctx.print(ast, name!);
     return null;
   }
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -100,7 +100,9 @@ export interface HttpUploadProgressEvent extends HttpProgressEvent {
  *
  * @publicApi
  */
-export interface HttpSentEvent { type: HttpEventType.Sent; }
+export interface HttpSentEvent {
+  type: HttpEventType.Sent;
+}
 
 /**
  * A user-defined event.
@@ -110,7 +112,9 @@ export interface HttpSentEvent { type: HttpEventType.Sent; }
  *
  * @publicApi
  */
-export interface HttpUserEvent<T> { type: HttpEventType.User; }
+export interface HttpUserEvent<T> {
+  type: HttpEventType.User;
+}
 
 /**
  * An error that represents a failed attempt to JSON.parse text coming back
@@ -133,7 +137,7 @@ export interface HttpJsonParseError {
  * @publicApi
  */
 export type HttpEvent<T> =
-    HttpSentEvent | HttpHeaderResponse | HttpResponse<T>| HttpProgressEvent | HttpUserEvent<T>;
+    HttpSentEvent|HttpHeaderResponse|HttpResponse<T>|HttpProgressEvent|HttpUserEvent<T>;
 
 /**
  * Base class for both `HttpResponse` and `HttpHeaderResponse`.
@@ -152,7 +156,7 @@ export abstract class HttpResponseBase {
   readonly status: number;
 
   /**
-   * Textual description of response status code.
+   * Textual description of response status code, defaults to OK.
    *
    * Do not depend on this.
    */
@@ -172,7 +176,7 @@ export abstract class HttpResponseBase {
    * Type of the response, narrowed to either the full response or the header.
    */
   // TODO(issue/24571): remove '!'.
-  readonly type !: HttpEventType.Response | HttpEventType.ResponseHeader;
+  readonly type!: HttpEventType.Response|HttpEventType.ResponseHeader;
 
   /**
    * Super-constructor for all responses.
@@ -187,7 +191,7 @@ export abstract class HttpResponseBase {
         statusText?: string,
         url?: string,
       },
-      defaultStatus: number = 200, defaultStatusText: string = 'OK') {
+      defaultStatus: number = HttpStatusCode.Ok, defaultStatusText: string = 'OK') {
     // If the hash has values passed, use them to initialize the response.
     // Otherwise use the default values.
     this.headers = init.headers || new HttpHeaders();
@@ -260,7 +264,11 @@ export class HttpResponse<T> extends HttpResponseBase {
    * Construct a new `HttpResponse`.
    */
   constructor(init: {
-    body?: T | null, headers?: HttpHeaders; status?: number; statusText?: string; url?: string;
+    body?: T|null,
+    headers?: HttpHeaders;
+    status?: number;
+    statusText?: string;
+    url?: string;
   } = {}) {
     super(init);
     this.body = init.body !== undefined ? init.body : null;
@@ -272,10 +280,18 @@ export class HttpResponse<T> extends HttpResponseBase {
   clone(update: {headers?: HttpHeaders; status?: number; statusText?: string; url?: string;}):
       HttpResponse<T>;
   clone<V>(update: {
-    body?: V | null, headers?: HttpHeaders; status?: number; statusText?: string; url?: string;
+    body?: V|null,
+    headers?: HttpHeaders;
+    status?: number;
+    statusText?: string;
+    url?: string;
   }): HttpResponse<V>;
   clone(update: {
-    body?: any | null; headers?: HttpHeaders; status?: number; statusText?: string; url?: string;
+    body?: any|null;
+    headers?: HttpHeaders;
+    status?: number;
+    statusText?: string;
+    url?: string;
   } = {}): HttpResponse<any> {
     return new HttpResponse<any>({
       body: (update.body !== undefined) ? update.body : this.body,
@@ -311,7 +327,11 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
   readonly ok = false;
 
   constructor(init: {
-    error?: any; headers?: HttpHeaders; status?: number; statusText?: string; url?: string;
+    error?: any;
+    headers?: HttpHeaders;
+    status?: number;
+    statusText?: string;
+    url?: string;
   }) {
     // Initialize with a default status of 0 / Unknown Error.
     super(init, 0, 'Unknown Error');
@@ -322,9 +342,84 @@ export class HttpErrorResponse extends HttpResponseBase implements Error {
     if (this.status >= 200 && this.status < 300) {
       this.message = `Http failure during parsing for ${init.url || '(unknown url)'}`;
     } else {
-      this.message =
-          `Http failure response for ${init.url || '(unknown url)'}: ${init.status} ${init.statusText}`;
+      this.message = `Http failure response for ${init.url || '(unknown url)'}: ${init.status} ${
+          init.statusText}`;
     }
     this.error = init.error || null;
   }
+}
+
+/**
+ * Http status codes.
+ * As per https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+ * @publicApi
+ */
+export const enum HttpStatusCode {
+  Continue = 100,
+  SwitchingProtocols = 101,
+  Processing = 102,
+  EarlyHints = 103,
+
+  Ok = 200,
+  Created = 201,
+  Accepted = 202,
+  NonAuthoritativeInformation = 203,
+  NoContent = 204,
+  ResetContent = 205,
+  PartialContent = 206,
+  MultiStatus = 207,
+  AlreadyReported = 208,
+  ImUsed = 226,
+
+  MultipleChoices = 300,
+  MovedPermanently = 301,
+  Found = 302,
+  SeeOther = 303,
+  NotModified = 304,
+  UseProxy = 305,
+  Unused = 306,
+  TemporaryRedirect = 307,
+  PermanentRedirect = 308,
+
+  BadRequest = 400,
+  Unauthorized = 401,
+  PaymentRequired = 402,
+  Forbidden = 403,
+  NotFound = 404,
+  MethodNotAllowed = 405,
+  NotAcceptable = 406,
+  ProxyAuthenticationRequired = 407,
+  RequestTimeout = 408,
+  Conflict = 409,
+  Gone = 410,
+  LengthRequired = 411,
+  PreconditionFailed = 412,
+  PayloadTooLarge = 413,
+  UriTooLong = 414,
+  UnsupportedMediaType = 415,
+  RangeNotSatisfiable = 416,
+  ExpectationFailed = 417,
+  ImATeapot = 418,
+  MisdirectedRequest = 421,
+  UnprocessableEntity = 422,
+  Locked = 423,
+  FailedDependency = 424,
+  TooEarly = 425,
+  UpgradeRequired = 426,
+  PreconditionRequired = 428,
+  TooManyRequests = 429,
+  RequestHeaderFieldsTooLarge = 431,
+  UnavailableForLegalReasons = 451,
+
+  InternalServerError = 500,
+  NotImplemented = 501,
+  BadGateway = 502,
+  ServiceUnavailable = 503,
+  GatewayTimeout = 504,
+  HttpVersionNotSupported = 505,
+  VariantAlsoNegotiates = 506,
+  InsufficientStorage = 507,
+  LoopDetected = 508,
+  NotExtended = 510,
+  NetworkAuthenticationRequired = 511
 }

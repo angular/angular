@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -78,7 +78,7 @@ export function convertDirectiveMetadataToExpression(
 /**
  * Gets a valid property name from the given text. If the text cannot be used
  * as unquoted identifier, the name will be wrapped in a string literal.
-*/
+ */
 function getPropertyName(name: string): string|ts.StringLiteral {
   // Matches the most common identifiers that do not need quotes. Constructing a
   // regular expression that matches the ECMAScript specification in order to determine

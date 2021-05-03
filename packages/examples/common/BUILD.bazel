@@ -35,7 +35,7 @@ ts_library(
 ts_devserver(
     name = "devserver",
     additional_root_paths = ["angular/packages/examples"],
-    bootstrap = ["//packages/zone.js/dist:zone.js"],
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
     entry_module = "@angular/examples/common/main",
     port = 4200,
     scripts = [

@@ -17,13 +17,11 @@
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
     "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
-    "@angular/platform-webworker": "file:../../dist/packages-dist/platform-webworker",
-    "@angular/platform-webworker-dynamic": "file:../../dist/packages-dist/platform-webworker-dynamic",
     "@angular/router": "file:../../dist/packages-dist/router",
     "@angular/service-worker": "file:../../dist/packages-dist/service-worker",
     "@angular/upgrade": "file:../../dist/packages-dist/upgrade",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../dist/zone.js-dist/zone.js"
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   }
 }

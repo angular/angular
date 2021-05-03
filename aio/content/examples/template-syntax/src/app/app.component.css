@@ -11,7 +11,7 @@ img {height: 100px;}
 .special {font-weight:bold; font-size: x-large}
 .bad {color: red;}
 .saveable {color: limegreen;}
-.curly, .modified {font-family: "Brush Script MT"}
+.curly, .modified {font-family: "Brush Script MT", cursive}
 .toe {margin-left: 1em; font-style: italic;}
 little-hero {color:blue; font-size: smaller; background-color: Turquoise }
 .to-toc {margin-top: 10px; display: block}

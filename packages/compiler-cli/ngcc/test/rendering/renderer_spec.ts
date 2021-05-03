@@ -1,35 +1,38 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {Statement} from '@angular/compiler';
-import {SourceMapMappings, encode} from 'sourcemap-codec';
+import {fromObject, fromSource, generateMapFileComment, SourceMapConverter} from 'convert-source-map';
 import MagicString from 'magic-string';
+import {encode, SourceMapMappings} from 'sourcemap-codec';
 import * as ts from 'typescript';
-import {fromObject, generateMapFileComment, SourceMapConverter} from 'convert-source-map';
+
 import {absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
-import {TestFile, runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {NOOP_DEFAULT_IMPORT_RECORDER, Reexport} from '../../../src/ngtsc/imports';
-import {loadTestFiles} from '../../../test/helpers';
+import {runInEachFileSystem, TestFile} from '../../../src/ngtsc/file_system/testing';
+import {Reexport} from '../../../src/ngtsc/imports';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
+import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {Import, ImportManager, translateStatement} from '../../../src/ngtsc/translator';
 import {DecorationAnalyzer} from '../../src/analysis/decoration_analyzer';
-import {CompiledClass} from '../../src/analysis/types';
-import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
 import {ModuleWithProvidersInfo} from '../../src/analysis/module_with_providers_analyzer';
-import {PrivateDeclarationsAnalyzer, ExportInfo} from '../../src/analysis/private_declarations_analyzer';
+import {NgccReferencesRegistry} from '../../src/analysis/ngcc_references_registry';
+import {ExportInfo, PrivateDeclarationsAnalyzer} from '../../src/analysis/private_declarations_analyzer';
 import {SwitchMarkerAnalyzer} from '../../src/analysis/switch_marker_analyzer';
+import {CompiledClass} from '../../src/analysis/types';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {Renderer} from '../../src/rendering/renderer';
-import {MockLogger} from '../helpers/mock_logger';
-import {RenderingFormatter, RedundantDecoratorMap} from '../../src/rendering/rendering_formatter';
-import {makeTestEntryPointBundle, getRootFiles} from '../helpers/utils';
+import {RedundantDecoratorMap, RenderingFormatter} from '../../src/rendering/rendering_formatter';
+import {getRootFiles, makeTestEntryPointBundle} from '../helpers/utils';
 
 class TestRenderingFormatter implements RenderingFormatter {
   private printer = ts.createPrinter({newLine: ts.NewLineKind.LineFeed});
+
+  constructor(private isEs5: boolean) {}
 
   addImports(output: MagicString, imports: Import[], sf: ts.SourceFile) {
     output.prepend('\n// ADD IMPORTS\n');
@@ -62,7 +65,8 @@ class TestRenderingFormatter implements RenderingFormatter {
   }
   printStatement(stmt: Statement, sourceFile: ts.SourceFile, importManager: ImportManager): string {
     const node = translateStatement(
-        stmt, importManager, NOOP_DEFAULT_IMPORT_RECORDER, ts.ScriptTarget.ES2015);
+        stmt, importManager,
+        {downlevelTaggedTemplates: this.isEs5, downlevelVariableDeclarations: this.isEs5});
     const code = this.printer.printNode(ts.EmitHint.Unspecified, node, sourceFile);
 
     return `// TRANSPILED\n${code}`;
@@ -89,11 +93,11 @@ function createTestRenderer(
   const referencesRegistry = new NgccReferencesRegistry(host);
   const decorationAnalyses =
       new DecorationAnalyzer(fs, bundle, host, referencesRegistry).analyzeProgram();
-  const switchMarkerAnalyses =
-      new SwitchMarkerAnalyzer(host, bundle.entryPoint.package).analyzeProgram(bundle.src.program);
+  const switchMarkerAnalyses = new SwitchMarkerAnalyzer(host, bundle.entryPoint.packagePath)
+                                   .analyzeProgram(bundle.src.program);
   const privateDeclarationsAnalyses =
       new PrivateDeclarationsAnalyzer(host, referencesRegistry).analyzeProgram(bundle.src.program);
-  const testFormatter = new TestRenderingFormatter();
+  const testFormatter = new TestRenderingFormatter(isEs5);
   spyOn(testFormatter, 'addExports').and.callThrough();
   spyOn(testFormatter, 'addImports').and.callThrough();
   spyOn(testFormatter, 'addDefinitions').and.callThrough();
@@ -106,12 +110,14 @@ function createTestRenderer(
 
   const renderer = new Renderer(host, testFormatter, fs, logger, bundle);
 
-  return {renderer,
-          testFormatter,
-          decorationAnalyses,
-          switchMarkerAnalyses,
-          privateDeclarationsAnalyses,
-          bundle};
+  return {
+    renderer,
+    testFormatter,
+    decorationAnalyses,
+    switchMarkerAnalyses,
+    privateDeclarationsAnalyses,
+    bundle
+  };
 }
 
 runInEachFileSystem(() => {
@@ -195,19 +201,84 @@ runInEachFileSystem(() => {
         'file': 'file.js',
         'sources': ['file.js'],
         'names': [],
-        'mappings': encode([[], [], [], [], [], [], [], [], [], [], [], [], [[0, 0, 0, 0]]]),
+        'mappings': encode([
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [[0, 0, 0, 0]],
+          [[0, 0, 1, 0]],
+          [[0, 0, 2, 0]],
+          [[0, 0, 3, 0]],
+          [[0, 0, 4, 0]],
+          [[0, 0, 5, 0]],
+          [[0, 0, 6, 0]],
+          [[0, 0, 7, 0]],
+          [[0, 0, 8, 0]]
+        ]),
         'sourcesContent': [JS_CONTENT.contents],
       });
-
-      const MERGED_OUTPUT_PROGRAM_MAPPINGS: SourceMapMappings =
-          [[], [], [], [], [], [], [], [], [], [], [], [], ...JS_CONTENT_MAPPINGS];
 
       MERGED_OUTPUT_PROGRAM_MAP = fromObject({
         'version': 3,
         'file': 'file.js',
         'sources': ['file.ts'],
         'names': [],
-        'mappings': encode(MERGED_OUTPUT_PROGRAM_MAPPINGS),
+        'mappings': encode([
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [],
+          [
+            [0, 0, 0, 0], [7, 0, 0, 7], [9, 0, 0, 8], [18, 0, 0, 17], [20, 0, 0, 18],
+            [26, 0, 0, 24], [41, 0, 0, 39], [42, 0, 0, 40]
+          ],
+          [
+            [0, 0, 2, 0], [4, 0, 2, 13], [5, 0, 2, 14], [8, 0, 2, 0], [14, 0, 2, 13], [15, 0, 2, 14]
+          ],
+          [[0, 0, 2, 16], [4, 0, 3, 2], [7, 0, 3, 5], [8, 0, 3, 6], [9, 0, 3, 15]],
+          [
+            [0, 0, 3, 27], [7, 0, 3, 34], [8, 0, 3, 35], [9, 0, 3, 36], [10, 0, 3, 37],
+            [11, 0, 3, 38], [1, 0, 4, 1], [2, 0, 4, 1]
+          ],
+          [[0, 0, 2, 13], [1, 0, 2, 14]],
+          [[0, 0, 3, 3]],
+          [
+            [0, 0, 3, 5], [2, 0, 1, 1], [11, 0, 1, 10], [12, 0, 1, 11], [14, 0, 1, 12],
+            [3, 0, 2, 13], [4, 0, 2, 14], [5, 0, 4, 1]
+          ],
+          [
+            [0, 0, 4, 13], [5, 0, 1, 20], [7, 0, 1, 22], [12, 0, 1, 27], [14, 0, 1, 28],
+            [15, 0, 1, 29], [9, 0, 2, 13], [10, 0, 2, 14]
+          ],
+          [[0, 0, 4, 2]],
+          [],
+          [
+            [0, 0, 0, 2], [0, 0, 0, 2], [0, 0, 0, 2], [0, 0, 0, 2], [0, 0, 0, 2], [0, 0, 0, 2],
+            [0, 0, 0, 2], [0, 0, 0, 2], [0, 0, 2, 2], [0, 0, 2, 2], [0, 0, 2, 2], [0, 0, 2, 2],
+            [0, 0, 2, 2], [0, 0, 2, 2], [0, 0, 3, 2], [0, 0, 3, 2], [0, 0, 3, 2], [0, 0, 3, 2],
+            [0, 0, 3, 2], [0, 0, 3, 2], [0, 0, 3, 2], [0, 0, 3, 2], [0, 0, 3, 2], [0, 0, 3, 2],
+            [0, 0, 4, 2], [0, 0, 4, 2], [0, 0, 2, 2], [0, 0, 2, 2], [0, 0, 1, 2], [0, 0, 1, 2],
+            [0, 0, 1, 2], [0, 0, 1, 2], [0, 0, 2, 2], [0, 0, 2, 2], [0, 0, 4, 2], [0, 0, 1, 2],
+            [0, 0, 1, 2], [0, 0, 1, 2], [0, 0, 1, 2], [0, 0, 1, 2], [0, 0, 2, 2], [0, 0, 2, 2]
+          ],
+        ]),
         'sourcesContent': [TS_CONTENT.contents],
       });
     });
@@ -220,22 +291,28 @@ runInEachFileSystem(() => {
            const [sourceFile, mapFile] = renderer.renderProgram(
                decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
            expect(sourceFile.path).toEqual(_('/node_modules/test-package/src/file.js'));
-           expect(sourceFile.contents)
-               .toEqual(RENDERED_CONTENTS + '\n' + OUTPUT_PROGRAM_MAP.toComment());
+           expect(sourceFile.contents).toContain(RENDERED_CONTENTS);
+           expect(fromSource(sourceFile.contents)!.toObject())
+               .toEqual(OUTPUT_PROGRAM_MAP.toObject());
            expect(mapFile).toBeUndefined();
          });
 
 
       it('should render as JavaScript', () => {
-        const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-               testFormatter} = createTestRenderer('test-package', [COMPONENT_PROGRAM]);
+        const {
+          renderer,
+          decorationAnalyses,
+          switchMarkerAnalyses,
+          privateDeclarationsAnalyses,
+          testFormatter
+        } = createTestRenderer('test-package', [COMPONENT_PROGRAM]);
         renderer.renderProgram(
             decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
         const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
         expect(addDefinitionsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
 A.ɵfac = function A_Factory(t) { return new (t || A)(); };
 // TRANSPILED
-A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
+A.ɵcmp = /*@__PURE__*/ ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, vars: 1, template: function A_Template(rf, ctx) { if (rf & 1) {
         ɵngcc0.ɵɵtext(0);
     } if (rf & 2) {
         ɵngcc0.ɵɵtextInterpolate(ctx.person.name);
@@ -243,7 +320,7 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
 
         const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
         expect(addAdjacentStatementsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
-/*@__PURE__*/ (function () { ɵngcc0.ɵsetClassMetadata(A, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵngcc0.ɵsetClassMetadata(A, [{
         type: Component,
         args: [{ selector: 'a', template: '{{ person!.name }}' }]
     }], null, null); })();`);
@@ -253,21 +330,31 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
       describe('calling RenderingFormatter methods', () => {
         it('should call addImports with the source code and info about the core Angular library.',
            () => {
-             const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                    testFormatter} = createTestRenderer('test-package', [JS_CONTENT]);
+             const {
+               renderer,
+               decorationAnalyses,
+               switchMarkerAnalyses,
+               privateDeclarationsAnalyses,
+               testFormatter
+             } = createTestRenderer('test-package', [JS_CONTENT]);
              const result = renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              const addImportsSpy = testFormatter.addImports as jasmine.Spy;
              expect(addImportsSpy.calls.first().args[0].toString()).toEqual(RENDERED_CONTENTS);
              expect(addImportsSpy.calls.first().args[1]).toEqual([
-               {specifier: '@angular/core', qualifier: 'ɵngcc0'}
+               {specifier: '@angular/core', qualifier: jasmine.objectContaining({text: 'ɵngcc0'})}
              ]);
            });
 
         it('should call addDefinitions with the source code, the analyzed class and the rendered definitions.',
            () => {
-             const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                    testFormatter} = createTestRenderer('test-package', [JS_CONTENT]);
+             const {
+               renderer,
+               decorationAnalyses,
+               switchMarkerAnalyses,
+               privateDeclarationsAnalyses,
+               testFormatter
+             } = createTestRenderer('test-package', [JS_CONTENT]);
              renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
@@ -279,13 +366,18 @@ A.ɵcmp = ɵngcc0.ɵɵdefineComponent({ type: A, selectors: [["a"]], decls: 1, v
              expect(addDefinitionsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
 A.ɵfac = function A_Factory(t) { return new (t || A)(); };
 // TRANSPILED
-A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`);
+A.ɵdir = /*@__PURE__*/ ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`);
            });
 
         it('should call addAdjacentStatements with the source code, the analyzed class and the rendered statements',
            () => {
-             const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                    testFormatter} = createTestRenderer('test-package', [JS_CONTENT]);
+             const {
+               renderer,
+               decorationAnalyses,
+               switchMarkerAnalyses,
+               privateDeclarationsAnalyses,
+               testFormatter
+             } = createTestRenderer('test-package', [JS_CONTENT]);
              renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
@@ -295,7 +387,7 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
                  .toEqual(jasmine.objectContaining(
                      {name: 'A', decorators: [jasmine.objectContaining({name: 'Directive'})]}));
              expect(addAdjacentStatementsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
-/*@__PURE__*/ (function () { ɵngcc0.ɵsetClassMetadata(A, [{
+(function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵngcc0.ɵsetClassMetadata(A, [{
         type: Directive,
         args: [{ selector: '[a]' }]
     }], null, null); })();`);
@@ -303,8 +395,13 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
 
         it('should call removeDecorators with the source code, a map of class decorators that have been analyzed',
            () => {
-             const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                    testFormatter} = createTestRenderer('test-package', [JS_CONTENT]);
+             const {
+               renderer,
+               decorationAnalyses,
+               switchMarkerAnalyses,
+               privateDeclarationsAnalyses,
+               testFormatter
+             } = createTestRenderer('test-package', [JS_CONTENT]);
              renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              const removeDecoratorsSpy = testFormatter.removeDecorators as jasmine.Spy;
@@ -326,19 +423,29 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
            });
 
         it('should render definitions as static fields', () => {
-          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                 testFormatter} = createTestRenderer('test-package', [NGMODULE_PROGRAM]);
+          const {
+            renderer,
+            decorationAnalyses,
+            switchMarkerAnalyses,
+            privateDeclarationsAnalyses,
+            testFormatter
+          } = createTestRenderer('test-package', [NGMODULE_PROGRAM]);
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
           const definitions: string = addDefinitionsSpy.calls.first().args[2];
-          expect(definitions).toContain('A.ɵmod = ɵngcc0.ɵɵdefineNgModule(');
-          expect(definitions).toContain('A.ɵinj = ɵngcc0.ɵɵdefineInjector(');
+          expect(definitions).toContain('A.ɵmod = /*@__PURE__*/ ɵngcc0.ɵɵdefineNgModule(');
+          expect(definitions).toContain('A.ɵinj = /*@__PURE__*/ ɵngcc0.ɵɵdefineInjector(');
         });
 
         it('should render adjacent statements', () => {
-          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                 testFormatter} = createTestRenderer('test-package', [NGMODULE_PROGRAM]);
+          const {
+            renderer,
+            decorationAnalyses,
+            switchMarkerAnalyses,
+            privateDeclarationsAnalyses,
+            testFormatter
+          } = createTestRenderer('test-package', [NGMODULE_PROGRAM]);
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
@@ -347,8 +454,13 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
         });
 
         it('should render directives using the inner class name if different from outer', () => {
-          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                 testFormatter} =
+          const {
+            renderer,
+            decorationAnalyses,
+            switchMarkerAnalyses,
+            privateDeclarationsAnalyses,
+            testFormatter
+          } =
               createTestRenderer(
                   'test-package', [{
                     name: _('/node_modules/test-package/src/file.js'),
@@ -379,8 +491,13 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
         });
 
         it('should render injectables using the inner class name if different from outer', () => {
-          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                 testFormatter} =
+          const {
+            renderer,
+            decorationAnalyses,
+            switchMarkerAnalyses,
+            privateDeclarationsAnalyses,
+            testFormatter
+          } =
               createTestRenderer(
                   'test-package', [{
                     name: _('/node_modules/test-package/src/file.js'),
@@ -411,8 +528,13 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
         });
 
         it('should render ng-modules using the inner class name if different from outer', () => {
-          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                 testFormatter} =
+          const {
+            renderer,
+            decorationAnalyses,
+            switchMarkerAnalyses,
+            privateDeclarationsAnalyses,
+            testFormatter
+          } =
               createTestRenderer(
                   'test-package', [{
                     name: _('/node_modules/test-package/src/file.js'),
@@ -448,8 +570,13 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
         });
 
         it('should render pipes using the inner class name if different from outer', () => {
-          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                 testFormatter} =
+          const {
+            renderer,
+            decorationAnalyses,
+            switchMarkerAnalyses,
+            privateDeclarationsAnalyses,
+            testFormatter
+          } =
               createTestRenderer(
                   'test-package', [{
                     name: _('/node_modules/test-package/src/file.js'),
@@ -479,9 +606,13 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
         });
 
         it('should render classes without decorators if class fields are decorated', () => {
-          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                 testFormatter} =
-              createTestRenderer('test-package', [{
+          const {
+            renderer,
+            decorationAnalyses,
+            switchMarkerAnalyses,
+            privateDeclarationsAnalyses,
+            testFormatter
+          } = createTestRenderer('test-package', [{
                                    name: _('/node_modules/test-package/src/file.js'),
                                    contents: `
                   import { Directive, ViewChild } from '@angular/core';
@@ -504,18 +635,23 @@ A.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: A, selectors: [["", "a", ""]] });`
           expect(addDefinitionsSpy.calls.first().args[2]).toEqual(`// TRANSPILED
 UndecoratedBase.ɵfac = function UndecoratedBase_Factory(t) { return new (t || UndecoratedBase)(); };
 // TRANSPILED
-UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, viewQuery: function UndecoratedBase_Query(rf, ctx) { if (rf & 1) {
-        ɵngcc0.ɵɵstaticViewQuery(_c0, true);
+UndecoratedBase.ɵdir = /*@__PURE__*/ ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, viewQuery: function UndecoratedBase_Query(rf, ctx) { if (rf & 1) {
+        ɵngcc0.ɵɵviewQuery(_c0, 7);
     } if (rf & 2) {
-        var _t;
+        let _t;
         ɵngcc0.ɵɵqueryRefresh(_t = ɵngcc0.ɵɵloadQuery()) && (ctx.test = _t.first);
     } } });`);
         });
 
         it('should call renderImports after other abstract methods', () => {
           // This allows the other methods to add additional imports if necessary
-          const {renderer, decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                 testFormatter} = createTestRenderer('test-package', [JS_CONTENT]);
+          const {
+            renderer,
+            decorationAnalyses,
+            switchMarkerAnalyses,
+            privateDeclarationsAnalyses,
+            testFormatter
+          } = createTestRenderer('test-package', [JS_CONTENT]);
           const addExportsSpy = testFormatter.addExports as jasmine.Spy;
           const addDefinitionsSpy = testFormatter.addDefinitions as jasmine.Spy;
           const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
@@ -537,13 +673,18 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
                name: JS_CONTENT.name,
                contents: JS_CONTENT.contents + '\n' + JS_CONTENT_MAP.toComment()
              }];
-             const {decorationAnalyses, renderer, switchMarkerAnalyses,
-                    privateDeclarationsAnalyses} = createTestRenderer('test-package', sourceFiles);
+             const {
+               decorationAnalyses,
+               renderer,
+               switchMarkerAnalyses,
+               privateDeclarationsAnalyses
+             } = createTestRenderer('test-package', sourceFiles);
              const [sourceFile, mapFile] = renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              expect(sourceFile.path).toEqual(_('/node_modules/test-package/src/file.js'));
-             expect(sourceFile.contents)
-                 .toEqual(RENDERED_CONTENTS + '\n' + MERGED_OUTPUT_PROGRAM_MAP.toComment());
+             expect(sourceFile.contents).toContain(RENDERED_CONTENTS);
+             expect(fromSource(sourceFile.contents)!.toObject())
+                 .toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());
              expect(mapFile).toBeUndefined();
            });
 
@@ -555,16 +696,38 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
              }];
              const mappingFiles: TestFile[] =
                  [{name: _(JS_CONTENT.name + '.map'), contents: JS_CONTENT_MAP.toJSON()}];
-             const {decorationAnalyses, renderer, switchMarkerAnalyses,
-                    privateDeclarationsAnalyses} =
-                 createTestRenderer('test-package', sourceFiles, undefined, mappingFiles);
+             const {
+               decorationAnalyses,
+               renderer,
+               switchMarkerAnalyses,
+               privateDeclarationsAnalyses
+             } = createTestRenderer('test-package', sourceFiles, undefined, mappingFiles);
              const [sourceFile, mapFile] = renderer.renderProgram(
                  decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
              expect(sourceFile.path).toEqual(_('/node_modules/test-package/src/file.js'));
              expect(sourceFile.contents)
                  .toEqual(RENDERED_CONTENTS + '\n' + generateMapFileComment('file.js.map'));
              expect(mapFile.path).toEqual(_('/node_modules/test-package/src/file.js.map'));
-             expect(JSON.parse(mapFile.contents)).toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());
+             expect(JSON.parse(mapFile.contents) as any)
+                 .toEqual(MERGED_OUTPUT_PROGRAM_MAP.toObject());
+           });
+
+
+        it('should render an internal source map for files whose original file does not have a source map',
+           () => {
+             const sourceFiles: TestFile[] = [JS_CONTENT];
+             const {
+               decorationAnalyses,
+               renderer,
+               switchMarkerAnalyses,
+               privateDeclarationsAnalyses
+             } = createTestRenderer('test-package', sourceFiles, undefined);
+             const [sourceFile, mapFile] = renderer.renderProgram(
+                 decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
+             expect(sourceFile.path).toEqual(_('/node_modules/test-package/src/file.js'));
+             expect(sourceFile.contents)
+                 .toEqual(RENDERED_CONTENTS + '\n' + OUTPUT_PROGRAM_MAP.toComment());
+             expect(mapFile).toBeUndefined();
            });
       });
 
@@ -582,16 +745,22 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
             contents: `export const NgModule = () => null;`
           };
           // The package name of `@angular/core` indicates that we are compiling the core library.
-          const {decorationAnalyses, renderer, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                 testFormatter} = createTestRenderer('@angular/core', [CORE_FILE, R3_SYMBOLS_FILE]);
+          const {
+            decorationAnalyses,
+            renderer,
+            switchMarkerAnalyses,
+            privateDeclarationsAnalyses,
+            testFormatter
+          } = createTestRenderer('@angular/core', [CORE_FILE, R3_SYMBOLS_FILE]);
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
           expect(addAdjacentStatementsSpy.calls.first().args[2])
-              .toContain(`/*@__PURE__*/ (function () { ɵngcc0.setClassMetadata(`);
+              .toContain(
+                  `function () { (typeof ngDevMode === "undefined" || ngDevMode) && ɵngcc0.setClassMetadata(`);
           const addImportsSpy = testFormatter.addImports as jasmine.Spy;
           expect(addImportsSpy.calls.first().args[1]).toEqual([
-            {specifier: './r3_symbols', qualifier: 'ɵngcc0'}
+            {specifier: './r3_symbols', qualifier: jasmine.objectContaining({text: 'ɵngcc0'})}
           ]);
         });
 
@@ -602,13 +771,19 @@ UndecoratedBase.ɵdir = ɵngcc0.ɵɵdefineDirective({ type: UndecoratedBase, vie
             export class MyModule {}\nMyModule.decorators = [\n    { type: NgModule, args: [] }\n];\n`
           };
 
-          const {decorationAnalyses, renderer, switchMarkerAnalyses, privateDeclarationsAnalyses,
-                 testFormatter} = createTestRenderer('@angular/core', [CORE_FILE]);
+          const {
+            decorationAnalyses,
+            renderer,
+            switchMarkerAnalyses,
+            privateDeclarationsAnalyses,
+            testFormatter
+          } = createTestRenderer('@angular/core', [CORE_FILE]);
           renderer.renderProgram(
               decorationAnalyses, switchMarkerAnalyses, privateDeclarationsAnalyses);
           const addAdjacentStatementsSpy = testFormatter.addAdjacentStatements as jasmine.Spy;
           expect(addAdjacentStatementsSpy.calls.first().args[2])
-              .toContain(`/*@__PURE__*/ (function () { setClassMetadata(`);
+              .toContain(
+                  `function () { (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(`);
           const addImportsSpy = testFormatter.addImports as jasmine.Spy;
           expect(addImportsSpy.calls.first().args[1]).toEqual([]);
         });

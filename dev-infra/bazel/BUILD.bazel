@@ -1,0 +1,10 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "files",
+    srcs = [
+        "BUILD.bazel",
+        "expand_template.bzl",
+        "//dev-infra/bazel/remote-execution:files",
+    ],
+)

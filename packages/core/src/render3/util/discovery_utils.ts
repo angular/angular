@@ -1,22 +1,26 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ChangeDetectionStrategy} from '../../change_detection/constants';
 import {Injector} from '../../di/injector';
+import {ViewEncapsulation} from '../../metadata/view';
+import {assertEqual} from '../../util/assert';
 import {assertLView} from '../assert';
 import {discoverLocalRefs, getComponentAtNodeIndex, getDirectivesAtNodeIndex, getLContext} from '../context_discovery';
+import {getComponentDef, getDirectiveDef} from '../definition';
 import {NodeInjector} from '../di';
-import {DebugNode, buildDebugNode} from '../instructions/lview_debug';
+import {buildDebugNode} from '../instructions/lview_debug';
 import {LContext} from '../interfaces/context';
 import {DirectiveDef} from '../interfaces/definition';
 import {TElementNode, TNode, TNodeProviderIndexes} from '../interfaces/node';
 import {isLView} from '../interfaces/type_checks';
-import {CLEANUP, CONTEXT, FLAGS, HEADER_OFFSET, HOST, LView, LViewFlags, TVIEW, T_HOST} from '../interfaces/view';
-import {stringifyForError} from './misc_utils';
+import {CLEANUP, CONTEXT, DebugNode, FLAGS, LView, LViewFlags, T_HOST, TVIEW, TViewType} from '../interfaces/view';
+import {stringifyForError} from './stringify_utils';
 import {getLViewParent, getRootContext} from './view_traversal_utils';
 import {getTNode, unwrapRNode} from './view_utils';
 
@@ -49,7 +53,7 @@ import {getTNode, unwrapRNode} from './view_utils';
  */
 export function getComponent<T>(element: Element): T|null {
   assertDomElement(element);
-  const context = loadLContext(element, false);
+  const context = getLContext(element);
   if (context === null) return null;
 
   if (context.component === undefined) {
@@ -74,7 +78,7 @@ export function getComponent<T>(element: Element): T|null {
  */
 export function getContext<T>(element: Element): T|null {
   assertDomElement(element);
-  const context = loadLContext(element, false);
+  const context = getLContext(element);
   return context === null ? null : context.lView[CONTEXT] as T;
 }
 
@@ -93,15 +97,14 @@ export function getContext<T>(element: Element): T|null {
  * @publicApi
  * @globalApi ng
  */
-export function getOwningComponent<T>(elementOrDir: Element | {}): T|null {
-  const context = loadLContext(elementOrDir, false);
+export function getOwningComponent<T>(elementOrDir: Element|{}): T|null {
+  const context = getLContext(elementOrDir);
   if (context === null) return null;
 
   let lView = context.lView;
   let parent: LView|null;
   ngDevMode && assertLView(lView);
-  while (lView[HOST] === null && (parent = getLViewParent(lView) !)) {
-    // As long as lView[HOST] is null we know we are part of sub-template such as `*ngIf`
+  while (lView[TVIEW].type === TViewType.Embedded && (parent = getLViewParent(lView)!)) {
     lView = parent;
   }
   return lView[FLAGS] & LViewFlags.IsRoot ? null : lView[CONTEXT] as T;
@@ -118,7 +121,7 @@ export function getOwningComponent<T>(elementOrDir: Element | {}): T|null {
  * @publicApi
  * @globalApi ng
  */
-export function getRootComponents(elementOrDir: Element | {}): {}[] {
+export function getRootComponents(elementOrDir: Element|{}): {}[] {
   return [...getRootContext(elementOrDir).components];
 }
 
@@ -132,8 +135,8 @@ export function getRootComponents(elementOrDir: Element | {}): {}[] {
  * @publicApi
  * @globalApi ng
  */
-export function getInjector(elementOrDir: Element | {}): Injector {
-  const context = loadLContext(elementOrDir, false);
+export function getInjector(elementOrDir: Element|{}): Injector {
+  const context = getLContext(elementOrDir);
   if (context === null) return Injector.NULL;
 
   const tNode = context.lView[TVIEW].data[context.nodeIndex] as TElementNode;
@@ -146,7 +149,7 @@ export function getInjector(elementOrDir: Element | {}): Injector {
  * @param element Element for which the injection tokens should be retrieved.
  */
 export function getInjectionTokens(element: Element): any[] {
-  const context = loadLContext(element, false);
+  const context = getLContext(element);
   if (context === null) return [];
   const lView = context.lView;
   const tView = lView[TVIEW];
@@ -169,7 +172,7 @@ export function getInjectionTokens(element: Element): any[] {
 }
 
 /**
- * Retrieves directive instances associated with a given DOM element. Does not include
+ * Retrieves directive instances associated with a given DOM node. Does not include
  * component instances.
  *
  * @usageNotes
@@ -181,21 +184,35 @@ export function getInjectionTokens(element: Element): any[] {
  * </my-app>
  * ```
  * Calling `getDirectives` on `<button>` will return an array with an instance of the `MyButton`
- * directive that is associated with the DOM element.
+ * directive that is associated with the DOM node.
  *
  * Calling `getDirectives` on `<my-comp>` will return an empty array.
  *
- * @param element DOM element for which to get the directives.
- * @returns Array of directives associated with the element.
+ * @param node DOM node for which to get the directives.
+ * @returns Array of directives associated with the node.
  *
  * @publicApi
  * @globalApi ng
  */
-export function getDirectives(element: Element): {}[] {
-  const context = loadLContext(element) !;
+export function getDirectives(node: Node): {}[] {
+  // Skip text nodes because we can't have directives associated with them.
+  if (node instanceof Text) {
+    return [];
+  }
 
+  const context = getLContext(node);
+  if (context === null) {
+    return [];
+  }
+
+  const lView = context.lView;
+  const tView = lView[TVIEW];
+  const nodeIndex = context.nodeIndex;
+  if (!tView?.data[nodeIndex]) {
+    return [];
+  }
   if (context.directives === undefined) {
-    context.directives = getDirectivesAtNodeIndex(context.nodeIndex, context.lView, false);
+    context.directives = getDirectivesAtNodeIndex(nodeIndex, lView, false);
   }
 
   // The `directives` in this case are a named array called `LComponentView`. Clone the
@@ -204,19 +221,67 @@ export function getDirectives(element: Element): {}[] {
 }
 
 /**
- * Returns LContext associated with a target passed as an argument.
- * Throws if a given target doesn't have associated LContext.
+ * Partial metadata for a given directive instance.
+ * This information might be useful for debugging purposes or tooling.
+ * Currently only `inputs` and `outputs` metadata is available.
+ *
+ * @publicApi
  */
-export function loadLContext(target: {}): LContext;
-export function loadLContext(target: {}, throwOnNotFound: false): LContext|null;
-export function loadLContext(target: {}, throwOnNotFound: boolean = true): LContext|null {
-  const context = getLContext(target);
-  if (!context && throwOnNotFound) {
-    throw new Error(
-        ngDevMode ? `Unable to find context associated with ${stringifyForError(target)}` :
-                    'Invalid ng target');
+export interface DirectiveDebugMetadata {
+  inputs: Record<string, string>;
+  outputs: Record<string, string>;
+}
+
+/**
+ * Partial metadata for a given component instance.
+ * This information might be useful for debugging purposes or tooling.
+ * Currently the following fields are available:
+ *  - inputs
+ *  - outputs
+ *  - encapsulation
+ *  - changeDetection
+ *
+ * @publicApi
+ */
+export interface ComponentDebugMetadata extends DirectiveDebugMetadata {
+  encapsulation: ViewEncapsulation;
+  changeDetection: ChangeDetectionStrategy;
+}
+
+/**
+ * Returns the debug (partial) metadata for a particular directive or component instance.
+ * The function accepts an instance of a directive or component and returns the corresponding
+ * metadata.
+ *
+ * @param directiveOrComponentInstance Instance of a directive or component
+ * @returns metadata of the passed directive or component
+ *
+ * @publicApi
+ * @globalApi ng
+ */
+export function getDirectiveMetadata(directiveOrComponentInstance: any): ComponentDebugMetadata|
+    DirectiveDebugMetadata|null {
+  const {constructor} = directiveOrComponentInstance;
+  if (!constructor) {
+    throw new Error('Unable to find the instance constructor');
   }
-  return context;
+  // In case a component inherits from a directive, we may have component and directive metadata
+  // To ensure we don't get the metadata of the directive, we want to call `getComponentDef` first.
+  const componentDef = getComponentDef(constructor);
+  if (componentDef) {
+    return {
+      inputs: componentDef.inputs,
+      outputs: componentDef.outputs,
+      encapsulation: componentDef.encapsulation,
+      changeDetection: componentDef.onPush ? ChangeDetectionStrategy.OnPush :
+                                             ChangeDetectionStrategy.Default
+    };
+  }
+  const directiveDef = getDirectiveDef(constructor);
+  if (directiveDef) {
+    return {inputs: directiveDef.inputs, outputs: directiveDef.outputs};
+  }
+  return null;
 }
 
 /**
@@ -228,7 +293,7 @@ export function loadLContext(target: {}, throwOnNotFound: boolean = true): LCont
  *    the local references.
  */
 export function getLocalRefs(target: {}): {[key: string]: any} {
-  const context = loadLContext(target, false);
+  const context = getLContext(target);
   if (context === null) return {};
 
   if (context.localRefs === undefined) {
@@ -250,7 +315,7 @@ export function getLocalRefs(target: {}): {[key: string]: any} {
  * @globalApi ng
  */
 export function getHostElement(componentOrDirective: {}): Element {
-  return getLContext(componentOrDirective) !.native as never as Element;
+  return getLContext(componentOrDirective)!.native as unknown as Element;
 }
 
 /**
@@ -266,11 +331,6 @@ export function getHostElement(componentOrDirective: {}): Element {
 export function getRenderedText(component: any): string {
   const hostElement = getHostElement(component);
   return hostElement.textContent || '';
-}
-
-export function loadLContextFromNode(node: Node): LContext {
-  if (!(node instanceof Node)) throw new Error('Expecting instance of DOM Element');
-  return loadLContext(node) !;
 }
 
 /**
@@ -324,7 +384,7 @@ export interface Listener {
  */
 export function getListeners(element: Element): Listener[] {
   assertDomElement(element);
-  const lContext = loadLContext(element, false);
+  const lContext = getLContext(element);
   if (lContext === null) return [];
 
   const lView = lContext.lView;
@@ -377,21 +437,29 @@ function isDirectiveDefHack(obj: any): obj is DirectiveDef<any> {
  * @param element DOM element which is owned by an existing component's view.
  */
 export function getDebugNode(element: Element): DebugNode|null {
-  let debugNode: DebugNode|null = null;
+  if (ngDevMode && !(element instanceof Node)) {
+    throw new Error('Expecting instance of DOM Element');
+  }
 
-  const lContext = loadLContextFromNode(element);
+  const lContext = getLContext(element);
+  if (lContext === null) {
+    return null;
+  }
+
   const lView = lContext.lView;
   const nodeIndex = lContext.nodeIndex;
   if (nodeIndex !== -1) {
     const valueInLView = lView[nodeIndex];
     // this means that value in the lView is a component with its own
     // data. In this situation the TNode is not accessed at the same spot.
-    const tNode = isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) :
-                                          getTNode(lView[TVIEW], nodeIndex - HEADER_OFFSET);
-    debugNode = buildDebugNode(tNode, lView, nodeIndex);
+    const tNode =
+        isLView(valueInLView) ? (valueInLView[T_HOST] as TNode) : getTNode(lView[TVIEW], nodeIndex);
+    ngDevMode &&
+        assertEqual(tNode.index, nodeIndex, 'Expecting that TNode at index is same as index');
+    return buildDebugNode(tNode, lView);
   }
 
-  return debugNode;
+  return null;
 }
 
 /**
@@ -403,7 +471,7 @@ export function getDebugNode(element: Element): DebugNode|null {
  * @param target DOM element or component instance for which to retrieve the LView.
  */
 export function getComponentLView(target: any): LView {
-  const lContext = loadLContext(target);
+  const lContext = getLContext(target)!;
   const nodeIndx = lContext.nodeIndex;
   const lView = lContext.lView;
   const componentLView = lView[nodeIndx];

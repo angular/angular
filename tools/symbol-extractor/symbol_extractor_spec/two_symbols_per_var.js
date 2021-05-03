@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,10 +12,14 @@
   console.log('Hello, Alice in Wonderland');
   var A = function() {
     function A() {}
-    return A.prototype.a = function() { return document.a; }, A;
+    return A.prototype.a = function() {
+      return document.a;
+    }, A;
   }(), B = function() {
     function B() {}
-    return B.prototype.b = function() { return window.b; }, B;
+    return B.prototype.b = function() {
+      return window.b;
+    }, B;
   }();
   var ignore_no_initializer;
   // tslint:disable-next-line:no-console

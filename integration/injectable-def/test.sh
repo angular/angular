@@ -1,9 +1,6 @@
 #!/bin/bash
 set -e -x
 
-NPM_BIN=$(npm bin)
-PATH="$PATH:${NPM_BIN}"
-
 rm -rf node_modules/lib1_built node_modules/lib2_built dist/
 
 ngc -p tsconfig-lib1.json

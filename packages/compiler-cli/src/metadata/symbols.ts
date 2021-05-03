@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,7 +12,7 @@ import {MetadataSymbolicReferenceExpression, MetadataValue} from './schema';
 
 export class Symbols {
   // TODO(issue/24571): remove '!'.
-  private _symbols !: Map<string, MetadataValue>;
+  private _symbols!: Map<string, MetadataValue>;
   private references = new Map<string, MetadataSymbolicReferenceExpression>();
 
   constructor(private sourceFile: ts.SourceFile) {}
@@ -21,12 +21,16 @@ export class Symbols {
     return (preferReference && this.references.get(name)) || this.symbols.get(name);
   }
 
-  define(name: string, value: MetadataValue) { this.symbols.set(name, value); }
+  define(name: string, value: MetadataValue) {
+    this.symbols.set(name, value);
+  }
   defineReference(name: string, value: MetadataSymbolicReferenceExpression) {
     this.references.set(name, value);
   }
 
-  has(name: string): boolean { return this.symbols.has(name); }
+  has(name: string): boolean {
+    return this.symbols.has(name);
+  }
 
   private get symbols(): Map<string, MetadataValue> {
     let result = this._symbols;
@@ -58,8 +62,8 @@ export class Symbols {
                 // even if the `SourceFile` was not type checked (which looks for `SourceFile`
                 // in the parent chain). This doesn't damage the node as the binder unconditionally
                 // sets the parent.
-                externalReference.expression.parent = externalReference;
-                externalReference.parent = this.sourceFile as any;
+                (externalReference.expression.parent as ts.Node) = externalReference;
+                (externalReference.parent as ts.Node) = this.sourceFile;
               }
               const from = stripQuotes(externalReference.expression.getText());
               symbols.set(
@@ -79,8 +83,8 @@ export class Symbols {
           }
           if (!importDecl.moduleSpecifier.parent) {
             // See note above in the `ImportEqualDeclaration` case.
-            importDecl.moduleSpecifier.parent = importDecl;
-            importDecl.parent = this.sourceFile;
+            (importDecl.moduleSpecifier.parent as ts.Node) = importDecl;
+            (importDecl.parent as ts.Node) = this.sourceFile;
           }
           const from = stripQuotes(importDecl.moduleSpecifier.getText());
           if (importDecl.importClause.name) {

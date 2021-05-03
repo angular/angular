@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NumberFormatStyle, NumberSymbol, getLocaleNumberFormat, getLocaleNumberSymbol, getNumberOfCurrencyDigits} from './locale_data_api';
+import {getLocaleNumberFormat, getLocaleNumberSymbol, getNumberOfCurrencyDigits, NumberFormatStyle, NumberSymbol} from './locale_data_api';
 
 export const NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
 const MAX_DIGITS = 22;
@@ -136,7 +136,7 @@ function formatNumberToLocaleString(
  * @param currencyCode The [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217)
  * currency code, such as `USD` for the US dollar and `EUR` for the euro.
  * Used to determine the number of digits in the decimal part.
- * @param digitInfo Decimal representation options, specified by a string in the following format:
+ * @param digitsInfo Decimal representation options, specified by a string in the following format:
  * `{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`. See `DecimalPipe` for more details.
  *
  * @returns The formatted currency value.
@@ -153,7 +153,7 @@ export function formatCurrency(
   const format = getLocaleNumberFormat(locale, NumberFormatStyle.Currency);
   const pattern = parseNumberFormat(format, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
 
-  pattern.minFrac = getNumberOfCurrencyDigits(currencyCode !);
+  pattern.minFrac = getNumberOfCurrencyDigits(currencyCode!);
   pattern.maxFrac = pattern.minFrac;
 
   const res = formatNumberToLocaleString(
@@ -177,7 +177,7 @@ export function formatCurrency(
  *
  * @param value The number to format.
  * @param locale A locale code for the locale format rules to use.
- * @param digitInfo Decimal representation options, specified by a string in the following format:
+ * @param digitsInfo Decimal representation options, specified by a string in the following format:
  * `{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`. See `DecimalPipe` for more details.
  *
  * @returns The formatted percentage value.
@@ -206,7 +206,7 @@ export function formatPercent(value: number, locale: string, digitsInfo?: string
  *
  * @param value The number to format.
  * @param locale A locale code for the locale format rules to use.
- * @param digitInfo Decimal representation options, specified by a string in the following format:
+ * @param digitsInfo Decimal representation options, specified by a string in the following format:
  * `{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}`. See `DecimalPipe` for more details.
  *
  * @returns The formatted text string.
@@ -392,8 +392,8 @@ function parseNumber(num: number): ParsedNumber {
  */
 function roundNumber(parsedNumber: ParsedNumber, minFrac: number, maxFrac: number) {
   if (minFrac > maxFrac) {
-    throw new Error(
-        `The minimum number of digits after fraction (${minFrac}) is higher than the maximum (${maxFrac}).`);
+    throw new Error(`The minimum number of digits after fraction (${
+        minFrac}) is higher than the maximum (${maxFrac}).`);
   }
 
   let digits = parsedNumber.digits;

@@ -10,6 +10,12 @@ In this page, you'll take the first step in that direction by moving the hero de
 The `HeroesComponent` will only present the list of heroes.
 The `HeroDetailComponent` will present details of a selected hero.
 
+<div class="alert is-helpful">
+
+  For the sample application that this page describes, see the <live-example></live-example>.
+
+</div>
+
 ## Make the `HeroDetailComponent`
 
 Use the Angular CLI to generate a new component named `hero-detail`.
@@ -56,7 +62,7 @@ region="import-hero" header="src/app/hero-detail/hero-detail.component.ts (impor
 </code-example>
 
 The `hero` property
-[must be an _Input_ property](guide/template-syntax#inputs-outputs "Input and Output properties"),
+[must be an _Input_ property](guide/inputs-outputs "Input and Output properties"),
 annotated with the `@Input()` decorator,
 because the _external_ `HeroesComponent` [will bind to it](#heroes-component-template) like this.
 
@@ -73,13 +79,12 @@ Add a `hero` property, preceded by the `@Input()` decorator.
 
 That's the only change you should make to the `HeroDetailComponent` class.
 There are no more properties. There's no presentation logic.
-This component simply receives a hero object through its `hero` property and displays it.
+This component only receives a hero object through its `hero` property and displays it.
 
 ## Show the `HeroDetailComponent`
 
-The `HeroesComponent` is still a master/detail view.
-
-It used to display the hero details on its own, before you cut that portion of the template. Now it will delegate to the `HeroDetailComponent`.
+The `HeroesComponent` used to display the hero details on its own, before you removed that portion of the template.
+This section guides you through delegating logic to the `HeroDetailComponent`.
 
 The two components will have a parent/child relationship.
 The parent `HeroesComponent` will control the child `HeroDetailComponent`
@@ -101,7 +106,7 @@ Bind the `HeroesComponent.selectedHero` to the element's `hero` property like th
 
 </code-example>
 
-`[hero]="selectedHero"` is an Angular [property binding](guide/template-syntax#property-binding).
+`[hero]="selectedHero"` is an Angular [property binding](guide/property-binding).
 
 It's a _one way_ data binding from
 the `selectedHero` property of the `HeroesComponent` to the `hero` property of the target element, which maps to the `hero` property of the `HeroDetailComponent`.
@@ -115,7 +120,7 @@ The revised `HeroesComponent` template should look like this:
 <code-example path="toh-pt3/src/app/heroes/heroes.component.html"
   header="heroes.component.html"></code-example>
 
-The browser refreshes and the app starts working again as it did before.
+The browser refreshes and the application starts working again as it did before.
 
 ## What changed?
 
@@ -125,7 +130,7 @@ Now the `HeroDetailComponent` is presenting those details instead of the `Heroes
 
 Refactoring the original `HeroesComponent` into two components yields benefits, both now and in the future:
 
-1. You simplified the `HeroesComponent` by reducing its responsibilities.
+1. You reduced the `HeroesComponent` responsibilities.
 
 1. You can evolve the `HeroDetailComponent` into a rich hero editor
 without touching the parent `HeroesComponent`.
@@ -136,7 +141,7 @@ without touching the parent `HeroesComponent`.
 
 ## Final code review
 
-Here are the code files discussed on this page and your app should look like this <live-example></live-example>.
+Here are the code files discussed on this page.
 
 <code-tabs>
 
@@ -159,9 +164,9 @@ Here are the code files discussed on this page and your app should look like thi
 * You created a separate, reusable `HeroDetailComponent`.
 
 
-* You used a [property binding](guide/template-syntax#property-binding) to give the parent `HeroesComponent` control over the child `HeroDetailComponent`.
+* You used a [property binding](guide/property-binding) to give the parent `HeroesComponent` control over the child `HeroDetailComponent`.
 
 
-* You used the [`@Input` decorator](guide/template-syntax#inputs-outputs)
+* You used the [`@Input` decorator](guide/inputs-outputs)
 to make the `hero` property available for binding
 by the external `HeroesComponent`.

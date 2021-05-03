@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -48,4 +48,16 @@ describe('downgradeInjectable', () => {
     expect(factory(mockNg1Injector)).toEqual('service value');
     expect(mockNg2Injector.get).toHaveBeenCalledWith('someToken');
   });
+
+  it('should mention the injectable\'s name in the error thrown when failing to retrieve injectable',
+     () => {
+       const factory = downgradeInjectable('someToken');
+       expect(factory).toEqual(jasmine.any(Function));
+       expect((factory as any).$inject).toEqual([$INJECTOR]);
+
+       const {mockNg1Injector, mockNg2Injector} = setupMockInjectors();
+       mockNg2Injector.get.and.throwError('Mock failure');
+       expect(() => factory(mockNg1Injector))
+           .toThrowError(/^Error while instantiating injectable 'someToken': Mock failure/);
+     });
 });

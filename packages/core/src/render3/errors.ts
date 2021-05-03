@@ -1,53 +1,32 @@
 
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {InjectorType} from '../di/interface/defs';
-import {stringify} from '../util/stringify';
-
+import {RuntimeError, RuntimeErrorCode} from './error_code';
 import {TNode} from './interfaces/node';
 import {LView, TVIEW} from './interfaces/view';
 import {INTERPOLATION_DELIMITER} from './util/misc_utils';
 
 
 
-/** Called when directives inject each other (creating a circular dependency) */
-export function throwCyclicDependencyError(token: any): never {
-  throw new Error(`Cannot instantiate cyclic dependency! ${token}`);
-}
-
 /** Called when there are multiple component selectors that match a given node */
 export function throwMultipleComponentError(tNode: TNode): never {
-  throw new Error(`Multiple components match node with tagname ${tNode.tagName}`);
-}
-
-export function throwMixedMultiProviderError() {
-  throw new Error(`Cannot mix multi providers and regular providers`);
-}
-
-export function throwInvalidProviderError(
-    ngModuleType?: InjectorType<any>, providers?: any[], provider?: any) {
-  let ngModuleDetail = '';
-  if (ngModuleType && providers) {
-    const providerDetail = providers.map(v => v == provider ? '?' + provider + '?' : '...');
-    ngModuleDetail =
-        ` - only instances of Provider and Type are allowed, got: [${providerDetail.join(', ')}]`;
-  }
-
-  throw new Error(
-      `Invalid provider for the NgModule '${stringify(ngModuleType)}'` + ngModuleDetail);
+  throw new RuntimeError(
+      RuntimeErrorCode.MULTIPLE_COMPONENTS_MATCH,
+      `Multiple components match node with tagname ${tNode.value}`);
 }
 
 /** Throws an ExpressionChangedAfterChecked error if checkNoChanges mode is on. */
 export function throwErrorIfNoChangesMode(
-    creationMode: boolean, oldValue: any, currValue: any, propName?: string): never|void {
+    creationMode: boolean, oldValue: any, currValue: any, propName?: string): never {
   const field = propName ? ` for '${propName}'` : '';
   let msg =
-      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${field}: '${oldValue}'. Current value: '${currValue}'.`;
+      `ExpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value${
+          field}: '${oldValue}'. Current value: '${currValue}'.`;
   if (creationMode) {
     msg +=
         ` It seems like the view has been created after its parent and its children have been dirty checked.` +
@@ -55,7 +34,7 @@ export function throwErrorIfNoChangesMode(
   }
   // TODO: include debug context, see `viewDebugError` function in
   // `packages/core/src/view/errors.ts` for reference.
-  throw new Error(msg);
+  throw new RuntimeError(RuntimeErrorCode.EXPRESSION_CHANGED_AFTER_CHECKED, msg);
 }
 
 function constructDetailsForInterpolation(

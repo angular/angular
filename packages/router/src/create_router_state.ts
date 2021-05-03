@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,21 +28,20 @@ function createNode(
     value._futureSnapshot = curr.value;
     const children = createOrReuseChildren(routeReuseStrategy, curr, prevState);
     return new TreeNode<ActivatedRoute>(value, children);
-
-    // retrieve an activated route that is used to be displayed, but is not currently displayed
   } else {
-    const detachedRouteHandle =
-        <DetachedRouteHandleInternal>routeReuseStrategy.retrieve(curr.value);
-    if (detachedRouteHandle) {
-      const tree: TreeNode<ActivatedRoute> = detachedRouteHandle.route;
-      setFutureSnapshotsOfActivatedRoutes(curr, tree);
-      return tree;
-
-    } else {
-      const value = createActivatedRoute(curr.value);
-      const children = curr.children.map(c => createNode(routeReuseStrategy, c));
-      return new TreeNode<ActivatedRoute>(value, children);
+    if (routeReuseStrategy.shouldAttach(curr.value)) {
+      // retrieve an activated route that is used to be displayed, but is not currently displayed
+      const detachedRouteHandle = routeReuseStrategy.retrieve(curr.value);
+      if (detachedRouteHandle !== null) {
+        const tree = (detachedRouteHandle as DetachedRouteHandleInternal).route;
+        setFutureSnapshotsOfActivatedRoutes(curr, tree);
+        return tree;
+      }
     }
+
+    const value = createActivatedRoute(curr.value);
+    const children = curr.children.map(c => createNode(routeReuseStrategy, c));
+    return new TreeNode<ActivatedRoute>(value, children);
   }
 }
 
@@ -65,7 +64,7 @@ function createOrReuseChildren(
     prevState: TreeNode<ActivatedRoute>) {
   return curr.children.map(child => {
     for (const p of prevState.children) {
-      if (routeReuseStrategy.shouldReuseRoute(p.value.snapshot, child.value)) {
+      if (routeReuseStrategy.shouldReuseRoute(child.value, p.value.snapshot)) {
         return createNode(routeReuseStrategy, child, p);
       }
     }

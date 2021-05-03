@@ -56,7 +56,6 @@ module.exports = function mergeDecoratorDocs(log) {
       {type: 'Param', description: 'parameter', functionName: 'makeParamDecorator'},
     ],
     $process(docs) {
-
       const decoratorDocs = Object.create(null);
 
       // find all the decorators, signified by a call to `make...Decorator<Decorator>(metadata)`
@@ -69,7 +68,8 @@ module.exports = function mergeDecoratorDocs(log) {
               // For example the `X` of `createDecorator<X>(...)`.
               const decoratorType = initializer.arguments[0].text;
 
-              log.debug('mergeDecoratorDocs: found decorator', doc.docType, doc.name, decoratorType);
+              log.debug(
+                  'mergeDecoratorDocs: found decorator', doc.docType, doc.name, decoratorType);
 
               doc.docType = 'decorator';
               doc.decoratorLocation = call.description;
@@ -84,8 +84,8 @@ module.exports = function mergeDecoratorDocs(log) {
       // merge the info from the associated metadata interfaces into the decorator docs
       docs = docs.filter(doc => {
         if (decoratorDocs[doc.name]) {
-
-          // We have found an `XxxDecorator` document that will hold the call signature of the decorator
+          // We have found an `XxxDecorator` document that will hold the call signature of the
+          // decorator
           var decoratorDoc = decoratorDocs[doc.name];
           var callMember = doc.members.find(member => member.isCallMember);
 
@@ -109,18 +109,44 @@ module.exports = function mergeDecoratorDocs(log) {
 };
 
 function getInitializer(doc) {
-  var initializer = doc.symbol && doc.symbol.valueDeclaration && doc.symbol.valueDeclaration.initializer;
+  const declaration = doc.symbol && doc.symbol.valueDeclaration;
+  if (!declaration || !declaration.initializer || !declaration.initializer.expression) {
+    return;
+  }
+
+  let initializer = declaration.initializer;
+
   // There appear to be two forms of initializer:
-  //    export var Injectable: InjectableFactory =
-  //    <InjectableFactory>makeDecorator(InjectableMetadata);
+  //
+  // ```
+  // export const Injectable: InjectableFactory =
+  //       <InjectableFactory>makeDecorator(InjectableMetadata);
+  // ```
+  //
   // and
-  //    export var RouteConfig: (configs: RouteDefinition[]) => ClassDecorator =
-  //    makeDecorator(RouteConfigAnnotation);
-  // In the first case, the type assertion `<InjectableFactory>` causes the AST to contain an
-  // extra level of expression
-  // to hold the new type of the expression.
-  if (initializer && initializer.expression && initializer.expression.expression) {
+  //
+  // ```
+  // export const RouteConfig: (configs: RouteDefinition[]) => ClassDecorator =
+  //       makeDecorator(RouteConfigAnnotation);
+  // ```
+  //
+  // In the first case, the type assertion `<InjectableFactory>` causes the AST to contain an extra
+  // level of expression to hold the new type of the expression.
+  if (initializer.type && initializer.expression.expression) {
     initializer = initializer.expression;
   }
+
+  // It is also possible that the decorator call is wrapped in a call to `attachInjectFlag()`:
+  //
+  // ```
+  // const Optional: OptionalDecorator =
+  //       attachInjectFlag(makeParamDecorator('Optional'), InternalInjectFlags.Optional);
+  // ```
+  //
+  // If so, use the first argument of the call.
+  if (initializer.arguments && initializer.expression.text === 'attachInjectFlag') {
+    initializer = initializer.arguments[0];
+  }
+
   return initializer;
 }

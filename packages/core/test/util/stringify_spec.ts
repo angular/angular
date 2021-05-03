@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -21,7 +21,8 @@ describe('stringify', () => {
       expect(concatStringsWithSpace('', 'b')).toEqual('b');
     });
 
-    it('should concat when not empty',
-       () => { expect(concatStringsWithSpace('before', 'after')).toEqual('before after'); });
+    it('should concat when not empty', () => {
+      expect(concatStringsWithSpace('before', 'after')).toEqual('before after');
+    });
   });
 });

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -83,7 +83,9 @@ Zone.__load_patch('ResizeObserver', (global: any, Zone: any, api: _ZonePrivate) 
       ResizeObserver.prototype, 'disconnect', (delegate: Function) => (self: any, args: any[]) => {
         const targets = self[resizeObserverSymbol];
         if (targets) {
-          targets.forEach((target: any) => { target[resizeObserverSymbol] = undefined; });
+          targets.forEach((target: any) => {
+            target[resizeObserverSymbol] = undefined;
+          });
           self[resizeObserverSymbol] = undefined;
         }
         return delegate.apply(self, args);

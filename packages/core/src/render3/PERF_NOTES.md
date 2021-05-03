@@ -14,8 +14,8 @@ shown here: https://jsperf.com/small-arrays-vs-linked-objects
 ## Monomorphic vs Megamorphic code
 
 Great reads:
-- [What's up with monomorphism?](http://mrale.ph/blog/2015/01/11/whats-up-with-monomorphism.html)
-- [Impact of polymorphism on component-based frameworks like React](http://benediktmeurer.de/2018/03/23/impact-of-polymorphism-on-component-based-frameworks-like-react/)
+- [What's up with monomorphism?](https://mrale.ph/blog/2015/01/11/whats-up-with-monomorphism.html)
+- [Impact of polymorphism on component-based frameworks like React](https://benediktmeurer.de/2018/03/23/impact-of-polymorphism-on-component-based-frameworks-like-react/)
 
 1) Monomorphic prop access is 100 times faster than megamorphic.
 2) Monomorphic call is 4 times faster the megamorphic call.

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,7 +22,19 @@ import {BoundAttribute, BoundEvent, Element, Node, Reference, Template, TextAttr
 /**
  * A logical target for analysis, which could contain a template or other types of bindings.
  */
-export interface Target { template?: Node[]; }
+export interface Target {
+  template?: Node[];
+}
+
+/**
+ * A data structure which can indicate whether a given property name is present or not.
+ *
+ * This is used to represent the set of inputs or outputs present on a directive, and allows the
+ * binder to query for the presence of a mapping for property names.
+ */
+export interface InputOutputPropertySet {
+  hasBindingPropertyName(propertyName: string): boolean;
+}
 
 /**
  * Metadata regarding a directive that's needed to match it against template elements. This is
@@ -34,6 +46,9 @@ export interface DirectiveMeta {
    */
   name: string;
 
+  /** The selector for the directive or `null` if there isn't one. */
+  selector: string|null;
+
   /**
    * Whether the directive is a component.
    */
@@ -44,14 +59,14 @@ export interface DirectiveMeta {
    *
    * Goes from property names to field names.
    */
-  inputs: {[property: string]: string | [string, string]};
+  inputs: InputOutputPropertySet;
 
   /**
    * Set of outputs which this directive claims.
    *
    * Goes from property names to field names.
    */
-  outputs: {[property: string]: string};
+  outputs: InputOutputPropertySet;
 
   /**
    * Name under which the directive is exported, if any (exportAs in Angular).
@@ -59,6 +74,8 @@ export interface DirectiveMeta {
    * Null otherwise
    */
   exportAs: string[]|null;
+
+  isStructural: boolean;
 }
 
 /**
@@ -67,7 +84,9 @@ export interface DirectiveMeta {
  *
  * The returned `BoundTarget` has an API for extracting information about the processed target.
  */
-export interface TargetBinder<D extends DirectiveMeta> { bind(target: Target): BoundTarget<D>; }
+export interface TargetBinder<D extends DirectiveMeta> {
+  bind(target: Target): BoundTarget<D>;
+}
 
 /**
  * Result of performing the binding operation against a `Target`.
@@ -131,6 +150,12 @@ export interface BoundTarget<DirectiveT extends DirectiveMeta> {
    * nested at deeper levels.
    */
   getNestingLevel(template: Template): number;
+
+  /**
+   * Get all `Reference`s and `Variables` visible within the given `Template` (or at the top level,
+   * if `null` is passed).
+   */
+  getEntitiesInTemplateScope(template: Template|null): ReadonlySet<Reference|Variable>;
 
   /**
    * Get a list of all the directives used by the target.

@@ -1,4 +1,4 @@
-module.exports = function getExampleRegion(exampleMap, createDocMessage, collectExamples) {
+module.exports = function getExampleRegion(exampleMap, createDocMessage, collectExamples, log) {
   return function getExampleRegionImpl(doc, relativePath, regionName) {
     const EXAMPLES_FOLDERS = collectExamples.exampleFolders;
 
@@ -29,10 +29,12 @@ module.exports = function getExampleRegion(exampleMap, createDocMessage, collect
     var sourceCodeDoc = exampleFile.regions[regionName || ''];
     if (!sourceCodeDoc) {
       const message = createDocMessage('Missing example region... relativePath: "' + relativePath + '", region: "' + regionName + '".', doc) + '\n' +
-                      'Regions available are: ' + Object.keys(exampleFile.regions).map(function(region) { return '"' + region + '"'; }).join(', ');
+      'Regions available are: ' + Object.keys(exampleFile.regions).map(function(region) { return '"' + region + '"'; }).join(', ');
       throw new Error(message);
     }
 
+    sourceCodeDoc.usedInDoc = doc;
+    log.debug(`Example region ${sourceCodeDoc.id} used in ${doc.id}`);
     return sourceCodeDoc.renderedContent;
   };
 };

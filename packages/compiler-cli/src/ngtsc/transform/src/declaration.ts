@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -28,14 +28,14 @@ export class DtsTransformRegistry {
     if (!this.ivyDeclarationTransforms.has(sf)) {
       this.ivyDeclarationTransforms.set(sf, new IvyDeclarationDtsTransform());
     }
-    return this.ivyDeclarationTransforms.get(sf) !;
+    return this.ivyDeclarationTransforms.get(sf)!;
   }
 
   getReturnTypeTransform(sf: ts.SourceFile): ReturnTypeTransform {
     if (!this.returnTypeTransforms.has(sf)) {
       this.returnTypeTransforms.set(sf, new ReturnTypeTransform());
     }
-    return this.returnTypeTransforms.get(sf) !;
+    return this.returnTypeTransforms.get(sf)!;
   }
 
   /**
@@ -55,11 +55,11 @@ export class DtsTransformRegistry {
     let transforms: DtsTransform[]|null = null;
     if (this.ivyDeclarationTransforms.has(originalSf)) {
       transforms = [];
-      transforms.push(this.ivyDeclarationTransforms.get(originalSf) !);
+      transforms.push(this.ivyDeclarationTransforms.get(originalSf)!);
     }
     if (this.returnTypeTransforms.has(originalSf)) {
       transforms = transforms || [];
-      transforms.push(this.returnTypeTransforms.get(originalSf) !);
+      transforms.push(this.returnTypeTransforms.get(originalSf)!);
     }
     return transforms;
   }
@@ -200,12 +200,12 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
     if (!this.declarationFields.has(original)) {
       return clazz;
     }
-    const fields = this.declarationFields.get(original) !;
+    const fields = this.declarationFields.get(original)!;
 
     const newMembers = fields.map(decl => {
       const modifiers = [ts.createModifier(ts.SyntaxKind.StaticKeyword)];
       const typeRef = translateType(decl.type, imports);
-      emitAsSingleLine(typeRef);
+      markForEmitAsSingleLine(typeRef);
       return ts.createProperty(
           /* decorators */ undefined,
           /* modifiers */ modifiers,
@@ -226,9 +226,9 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
   }
 }
 
-function emitAsSingleLine(node: ts.Node) {
+function markForEmitAsSingleLine(node: ts.Node) {
   ts.setEmitFlags(node, ts.EmitFlags.SingleLine);
-  ts.forEachChild(node, emitAsSingleLine);
+  ts.forEachChild(node, markForEmitAsSingleLine);
 }
 
 export class ReturnTypeTransform implements DtsTransform {
@@ -239,32 +239,21 @@ export class ReturnTypeTransform implements DtsTransform {
   }
 
   transformClassElement(element: ts.ClassElement, imports: ImportManager): ts.ClassElement {
-    if (!ts.isMethodSignature(element)) {
-      return element;
+    if (ts.isMethodDeclaration(element)) {
+      const original = ts.getOriginalNode(element, ts.isMethodDeclaration);
+      if (!this.typeReplacements.has(original)) {
+        return element;
+      }
+      const returnType = this.typeReplacements.get(original)!;
+      const tsReturnType = translateType(returnType, imports);
+
+      return ts.updateMethod(
+          element, element.decorators, element.modifiers, element.asteriskToken, element.name,
+          element.questionToken, element.typeParameters, element.parameters, tsReturnType,
+          element.body);
     }
 
-    const original = ts.getOriginalNode(element) as ts.MethodDeclaration;
-    if (!this.typeReplacements.has(original)) {
-      return element;
-    }
-    const returnType = this.typeReplacements.get(original) !;
-    const tsReturnType = translateType(returnType, imports);
-
-    const methodSignature = ts.updateMethodSignature(
-        /* node */ element,
-        /* typeParameters */ element.typeParameters,
-        /* parameters */ element.parameters,
-        /* type */ tsReturnType,
-        /* name */ element.name,
-        /* questionToken */ element.questionToken);
-
-    // Copy over any modifiers, these cannot be set during the `ts.updateMethodSignature` call.
-    methodSignature.modifiers = element.modifiers;
-
-    // A bug in the TypeScript declaration causes `ts.MethodSignature` not to be assignable to
-    // `ts.ClassElement`. Since `element` was a `ts.MethodSignature` already, transforming it into
-    // this type is actually correct.
-    return methodSignature as unknown as ts.ClassElement;
+    return element;
   }
 
   transformFunctionDeclaration(element: ts.FunctionDeclaration, imports: ImportManager):
@@ -273,7 +262,7 @@ export class ReturnTypeTransform implements DtsTransform {
     if (!this.typeReplacements.has(original)) {
       return element;
     }
-    const returnType = this.typeReplacements.get(original) !;
+    const returnType = this.typeReplacements.get(original)!;
     const tsReturnType = translateType(returnType, imports);
 
     return ts.updateFunctionDeclaration(

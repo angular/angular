@@ -1,5 +1,5 @@
 ---
-name: "\U0001F48EAngular Components"
+name: "\U0001F48E Angular Components"
 about: Issues and feature requests for Angular Components
 
 ---

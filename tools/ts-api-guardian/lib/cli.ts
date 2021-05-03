@@ -1,20 +1,17 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 // tslint:disable:no-console
-
-// TODO(alexeagle): why not import chalk from 'chalk'?
-// Something to do with TS default export in UMD emit...
-const chalk = require('chalk');
+import * as chalk from 'chalk';
 import * as minimist from 'minimist';
 import * as path from 'path';
 
-import {SerializationOptions, generateGoldenFile, verifyAgainstGoldenFile, discoverAllEntrypoints} from './main';
+import {discoverAllEntrypoints, generateGoldenFile, SerializationOptions, verifyAgainstGoldenFile} from './main';
 
 /** Name of the CLI */
 const CMD = 'ts-api-guardian';
@@ -47,7 +44,7 @@ export function startCli() {
     options.exportTags = {
       requireAtLeastOne: ['publicApi', 'codeGenApi'],
       banned: ['experimental'],
-      toCopy: ['deprecated']
+      toCopy: ['deprecated', 'codeGenApi']
     };
     options.memberTags = {
       requireAtLeastOne: [],
@@ -95,8 +92,8 @@ export function startCli() {
             lines.pop();  // Remove trailing newline
           }
           for (const line of lines) {
-            const chalkMap: {[key: string]:
-                                 any} = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
+            const chalkMap:
+                {[key: string]: any} = {'-': chalk.red, '+': chalk.green, '@': chalk.cyan};
             const chalkFunc = chalkMap[line[0]] || chalk.reset;
             console.log(chalkFunc(line));
           }
@@ -109,7 +106,7 @@ export function startCli() {
         if (bazelTarget) {
           console.error('\n\nIf you modify a public API, you must accept the new golden file.');
           console.error('\n\nTo do so, execute the following Bazel target:');
-          console.error(`  yarn bazel run ${bazelTarget.replace(/_bin$/, "")}.accept`);
+          console.error(`  yarn bazel run ${bazelTarget.replace(/_bin$/, '')}.accept`);
           if (process.env['TEST_WORKSPACE'] === 'angular') {
             console.error('\n\nFor more information, see');
             console.error(

@@ -9,8 +9,10 @@ import { CUSTOMERS } from './customers';
 })
 export class AppComponent {
   customers = CUSTOMERS;
-
+  // #docregion customer
   currentCustomer = 'Maria';
+  // #enddocregion customer
+
   title = 'Featured product:';
   itemImageUrl = '../assets/potted-plant.png';
 

@@ -22,4 +22,3 @@ for packageLabel in $NPM_PACKAGE_LABELS; do
   echo "publishing $packageLabel"
   $BAZEL run --config=release -- ${packageLabel}.publish --access public --tag latest
 done
-

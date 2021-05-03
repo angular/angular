@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,10 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {ClassDeclaration, ClassMember, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost} from '../../../src/ngtsc/reflection';
+import {ClassDeclaration, ClassMember, CtorParameter, Declaration, DeclarationNode, Decorator, FunctionDefinition, Import, ReflectionHost} from '../../../src/ngtsc/reflection';
 import {isFromDtsFile} from '../../../src/ngtsc/util/src/typescript';
 
-import {ModuleWithProvidersFunction, NgccClassSymbol, NgccReflectionHost, SwitchableVariableDeclaration} from './ngcc_host';
+import {NgccClassSymbol, NgccReflectionHost, SwitchableVariableDeclaration} from './ngcc_host';
 
 /**
  * A reflection host implementation that delegates reflector queries depending on whether they
@@ -32,12 +32,13 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     if (isFromDtsFile(id)) {
-      return this.tsHost.getDeclarationOfIdentifier(id);
+      const declaration = this.tsHost.getDeclarationOfIdentifier(id);
+      return declaration !== null ? this.detectKnownDeclaration(declaration) : null;
     }
     return this.ngccHost.getDeclarationOfIdentifier(id);
   }
 
-  getDecoratorsOfDeclaration(declaration: ts.Declaration): Decorator[]|null {
+  getDecoratorsOfDeclaration(declaration: DeclarationNode): Decorator[]|null {
     if (isFromDtsFile(declaration)) {
       return this.tsHost.getDecoratorsOfDeclaration(declaration);
     }
@@ -51,7 +52,7 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
     return this.ngccHost.getDefinitionOfFunction(fn);
   }
 
-  getDtsDeclaration(declaration: ts.Declaration): ts.Declaration|null {
+  getDtsDeclaration(declaration: DeclarationNode): ts.Declaration|null {
     if (isFromDtsFile(declaration)) {
       return this.tsHost.getDtsDeclaration(declaration);
     }
@@ -60,7 +61,13 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
     if (isFromDtsFile(module)) {
-      return this.tsHost.getExportsOfModule(module);
+      const exportMap = this.tsHost.getExportsOfModule(module);
+
+      if (exportMap !== null) {
+        exportMap.forEach(decl => this.detectKnownDeclaration(decl));
+      }
+
+      return exportMap;
     }
     return this.ngccHost.getExportsOfModule(module);
   }
@@ -143,15 +150,15 @@ export class DelegatingReflectionHost implements NgccReflectionHost {
     return this.ngccHost.getDecoratorsOfSymbol(symbol);
   }
 
-  getModuleWithProvidersFunctions(sf: ts.SourceFile): ModuleWithProvidersFunction[] {
-    return this.ngccHost.getModuleWithProvidersFunctions(sf);
-  }
-
   getSwitchableDeclarations(module: ts.Node): SwitchableVariableDeclaration[] {
     return this.ngccHost.getSwitchableDeclarations(module);
   }
 
   getEndOfClass(classSymbol: NgccClassSymbol): ts.Node {
     return this.ngccHost.getEndOfClass(classSymbol);
+  }
+
+  detectKnownDeclaration<T extends Declaration>(decl: T): T {
+    return this.ngccHost.detectKnownDeclaration(decl);
   }
 }

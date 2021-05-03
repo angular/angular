@@ -301,14 +301,14 @@ The following are all in `src/`
 
 ## Appendix: Develop locally with IE
 
-If you develop angular locally with `ng serve`, a `websocket` connection is set up automatically between browser and local dev server, so when your code changes, the browser can automatically refresh.
+If you develop Angular locally with `ng serve`, a `websocket` connection is set up automatically between browser and local dev server, so when your code changes, the browser can automatically refresh.
 
 In Windows, by default, one application can only have 6 websocket connections, <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" title="MSDN WebSocket settings">MSDN WebSocket Settings</a>.
-So when IE is refreshed (manually or automatically by `ng serve`), sometimes the websocket does not close properly. When websocket connections exceed the limitations, a `SecurityError` will be thrown. This error will not affect the angular application, you can just restart IE to clear this error, or modify the windows registry to update the limitations.
+So when IE is refreshed (manually or automatically by `ng serve`), sometimes the websocket does not close properly. When websocket connections exceed the limitations, a `SecurityError` will be thrown. This error will not affect the Angular application, you can just restart IE to clear this error, or modify the windows registry to update the limitations.
 
-## Appendix: Test using `fakeAsync()/async()`
+## Appendix: Test using `fakeAsync()/waitForAsync()`
 
-If you use the `fakeAsync()/async()` helper function to run unit tests (for details, read the [Testing guide](guide/testing#async-test-with-fakeasync)), you need to import `zone.js/dist/zone-testing` in your test setup file.
+If you use the `fakeAsync()/waitForAsync()` helper function to run unit tests (for details, read the [Testing guide](guide/testing-components-scenarios#fake-async)), you need to import `zone.js/testing` in your test setup file.
 
 <div class="alert is-important">
 If you create project with `Angular/CLI`, it is already imported in `src/test.ts`.
@@ -317,12 +317,12 @@ If you create project with `Angular/CLI`, it is already imported in `src/test.ts
 And in the earlier versions of `Angular`, the following files were imported or added in your html file:
 
 ```
-import 'zone.js/dist/long-stack-trace-zone';
-import 'zone.js/dist/proxy';
-import 'zone.js/dist/sync-test';
-import 'zone.js/dist/jasmine-patch';
-import 'zone.js/dist/async-test';
-import 'zone.js/dist/fake-async-test';
+import 'zone.js/plugins/long-stack-trace-zone';
+import 'zone.js/plugins/proxy';
+import 'zone.js/plugins/sync-test';
+import 'zone.js/plugins/jasmine-patch';
+import 'zone.js/plugins/async-test';
+import 'zone.js/plugins/fake-async-test';
 ```
 
 You can still load those files separately, but the order is important, you must import `proxy` before `sync-test`, `async-test`, `fake-async-test` and `jasmine-patch`. And you also need to import `sync-test` before `jasmine-patch`, so it is recommended to just import `zone-testing` instead of loading those separated files.

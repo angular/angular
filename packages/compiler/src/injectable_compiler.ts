@@ -1,22 +1,20 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {StaticSymbol} from './aot/static_symbol';
-import {CompileInjectableMetadata, CompileNgModuleMetadata, CompileProviderMetadata, identifierName} from './compile_metadata';
+import {CompileInjectableMetadata, identifierName} from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
-import {InjectFlags, NodeFlags} from './core';
+import {InjectFlags} from './core';
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
 import {convertValueToOutputAst} from './output/value_util';
-import {typeSourceSpan} from './parse_util';
-import {NgModuleProviderAnalyzer} from './provider_analyzer';
+import {Identifiers as R3} from './render3/r3_identifiers';
 import {OutputContext} from './util';
-import {componentFactoryResolverProviderDef, depDef, providerDef} from './view_compiler/provider_compiler';
 
 type MapEntry = {
   key: string,
@@ -116,12 +114,12 @@ export class InjectableCompiler {
       mapEntry('token', ctx.importExpr(injectable.type.reference)),
       mapEntry('providedIn', providedIn),
     ];
-    return o.importExpr(Identifiers.ɵɵdefineInjectable).callFn([o.literalMap(def)]);
+    return o.importExpr(R3.ɵɵdefineInjectable).callFn([o.literalMap(def)], undefined, true);
   }
 
   compile(injectable: CompileInjectableMetadata, ctx: OutputContext): void {
     if (this.alwaysGenerateDef || injectable.providedIn !== undefined) {
-      const className = identifierName(injectable.type) !;
+      const className = identifierName(injectable.type)!;
       const clazz = new o.ClassStmt(
           className, null,
           [

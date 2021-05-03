@@ -1,26 +1,28 @@
 <h2>Products</h2>
 
 <!-- #docregion router-link -->
-<div *ngFor="let product of products; index as productId">
+<div *ngFor="let product of products">
 
   <h3>
-    <a [title]="product.name + ' details'" [routerLink]="['/products', productId]">
+    <a [title]="product.name + ' details'" [routerLink]="['/products', product.id]">
       {{ product.name }}
     </a>
   </h3>
-<!-- #enddocregion router-link -->  
+
+  <!-- #enddocregion router-link -->
   <p *ngIf="product.description">
     Description: {{ product.description }}
   </p>
-  
+
   <button (click)="share()">
     Share
   </button>
-  
+
   <app-product-alerts
     [product]="product"
     (notify)="onNotify()">
   </app-product-alerts>
-<!-- #docregion router-link -->
+  <!-- #docregion router-link -->
+
 </div>
 <!-- #enddocregion router-link -->

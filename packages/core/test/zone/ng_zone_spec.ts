@@ -1,16 +1,19 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {EventEmitter, NgZone} from '@angular/core';
-import {async, fakeAsync, flushMicrotasks} from '@angular/core/testing';
-import {AsyncTestCompleter, Log, beforeEach, describe, expect, inject, it, xit} from '@angular/core/testing/src/testing_internal';
+import {fakeAsync, flushMicrotasks, waitForAsync} from '@angular/core/testing';
+import {AsyncTestCompleter, beforeEach, describe, expect, inject, it, Log, xit} from '@angular/core/testing/src/testing_internal';
 import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
+
+import {global} from '../../src/util/global';
 import {scheduleMicroTask} from '../../src/util/microtask';
+import {getNativeRequestAnimationFrame} from '../../src/util/raf';
 import {NoopNgZone} from '../../src/zone/ng_zone';
 
 const needsLongerTimers = browserDetection.isSlow || browserDetection.isEdge;
@@ -89,7 +92,9 @@ function runNgZoneNoLog(fn: () => any) {
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            macroTask(() => {
              let resolve: (result: any) => void;
-             const promise: Promise<any> = new Promise((res) => { resolve = res; });
+             const promise: Promise<any> = new Promise((res) => {
+               resolve = res;
+             });
 
              _zone.run(() => {
                setTimeout(() => {
@@ -112,7 +117,9 @@ function runNgZoneNoLog(fn: () => any) {
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            macroTask(() => {
              let resolve: (result: any) => void;
-             const promise: Promise<any> = new Promise((res) => { resolve = res; });
+             const promise: Promise<any> = new Promise((res) => {
+               resolve = res;
+             });
 
              _zone.run(() => {
                scheduleMicroTask(() => {
@@ -147,7 +154,9 @@ function runNgZoneNoLog(fn: () => any) {
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            macroTask(() => {
              let resolve: (result: any) => void;
-             const promise: Promise<any> = new Promise((res) => { resolve = res; });
+             const promise: Promise<any> = new Promise((res) => {
+               resolve = res;
+             });
 
              _zone.run(() => {
                setTimeout(() => {
@@ -177,7 +186,11 @@ function runNgZoneNoLog(fn: () => any) {
     it('should run', () => {
       let runs = false;
       ngZone.run(() => {
-        ngZone.runGuarded(() => { ngZone.runOutsideAngular(() => { runs = true; }); });
+        ngZone.runGuarded(() => {
+          ngZone.runOutsideAngular(() => {
+            runs = true;
+          });
+        });
       });
       expect(runs).toBe(true);
     });
@@ -223,33 +236,47 @@ function runNgZoneNoLog(fn: () => any) {
 
 function commonTests() {
   describe('hasPendingMicrotasks', () => {
-    it('should be false', () => { expect(_zone.hasPendingMicrotasks).toBe(false); });
+    it('should be false', () => {
+      expect(_zone.hasPendingMicrotasks).toBe(false);
+    });
 
     it('should be true', () => {
-      runNgZoneNoLog(() => { scheduleMicroTask(() => {}); });
+      runNgZoneNoLog(() => {
+        scheduleMicroTask(() => {});
+      });
       expect(_zone.hasPendingMicrotasks).toBe(true);
     });
   });
 
   describe('hasPendingTimers', () => {
-    it('should be false', () => { expect(_zone.hasPendingMacrotasks).toBe(false); });
+    it('should be false', () => {
+      expect(_zone.hasPendingMacrotasks).toBe(false);
+    });
 
     it('should be true', () => {
-      runNgZoneNoLog(() => { setTimeout(() => {}, 0); });
+      runNgZoneNoLog(() => {
+        setTimeout(() => {}, 0);
+      });
       expect(_zone.hasPendingMacrotasks).toBe(true);
     });
   });
 
   describe('hasPendingAsyncTasks', () => {
-    it('should be false', () => { expect(_zone.hasPendingMicrotasks).toBe(false); });
+    it('should be false', () => {
+      expect(_zone.hasPendingMicrotasks).toBe(false);
+    });
 
     it('should be true when microtask is scheduled', () => {
-      runNgZoneNoLog(() => { scheduleMicroTask(() => {}); });
+      runNgZoneNoLog(() => {
+        scheduleMicroTask(() => {});
+      });
       expect(_zone.hasPendingMicrotasks).toBe(true);
     });
 
     it('should be true when timer is scheduled', () => {
-      runNgZoneNoLog(() => { setTimeout(() => {}, 0); });
+      runNgZoneNoLog(() => {
+        setTimeout(() => {}, 0);
+      });
       expect(_zone.hasPendingMacrotasks).toBe(true);
     });
   });
@@ -257,23 +284,33 @@ function commonTests() {
   describe('isInInnerZone', () => {
     it('should return whether the code executes in the inner zone', () => {
       expect(NgZone.isInAngularZone()).toEqual(false);
-      runNgZoneNoLog(() => { expect(NgZone.isInAngularZone()).toEqual(true); });
+      runNgZoneNoLog(() => {
+        expect(NgZone.isInAngularZone()).toEqual(true);
+      });
     }, testTimeout);
   });
 
   describe('run', () => {
     it('should return the body return value from run',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         macroTask(() => { expect(_zone.run(() => 6)).toEqual(6); });
+         macroTask(() => {
+           expect(_zone.run(() => 6)).toEqual(6);
+         });
 
-         macroTask(() => { async.done(); });
+         macroTask(() => {
+           async.done();
+         });
        }), testTimeout);
 
     it('should return the body return value from runTask',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         macroTask(() => { expect(_zone.runTask(() => 6)).toEqual(6); });
+         macroTask(() => {
+           expect(_zone.runTask(() => 6)).toEqual(6);
+         });
 
-         macroTask(() => { async.done(); });
+         macroTask(() => {
+           async.done();
+         });
        }), testTimeout);
 
     it('should call onUnstable and onMicrotaskEmpty',
@@ -299,7 +336,9 @@ function commonTests() {
              _log.add(`onMicrotaskEmpty ${times}`);
              if (times < 2) {
                // Scheduling a microtask causes a second digest
-               runNgZoneNoLog(() => { scheduleMicroTask(() => {}); });
+               runNgZoneNoLog(() => {
+                 scheduleMicroTask(() => {});
+               });
              }
            }
          });
@@ -358,7 +397,9 @@ function commonTests() {
             }
           });
 
-          macroTask(() => { _zone.run(_log.fn('run')); });
+          macroTask(() => {
+            _zone.run(_log.fn('run'));
+          });
 
           macroTask(() => {
             expect(_log.result()).toEqual('onUnstable; run; onMicrotaskEmpty; onStable');
@@ -377,7 +418,9 @@ function commonTests() {
            next: () => {
              _log.add('onMyMicrotaskEmpty');
              if (turnDone) return;
-             _zone.run(() => { scheduleMicroTask(() => {}); });
+             _zone.run(() => {
+               scheduleMicroTask(() => {});
+             });
              turnDone = true;
            }
          });
@@ -490,8 +533,12 @@ function commonTests() {
 
          runNgZoneNoLog(() => {
            macroTask(() => {
-             aPromise = new Promise(res => { aResolve = res; });
-             bPromise = new Promise(res => { bResolve = res; });
+             aPromise = new Promise(res => {
+               aResolve = res;
+             });
+             bPromise = new Promise(res => {
+               bResolve = res;
+             });
 
              _log.add('run start');
              aPromise.then(_log.fn('a then'));
@@ -516,7 +563,9 @@ function commonTests() {
 
     it('should run a function outside of the angular zone',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         macroTask(() => { _zone.runOutsideAngular(_log.fn('run')); });
+         macroTask(() => {
+           _zone.runOutsideAngular(_log.fn('run'));
+         });
 
          macroTask(() => {
            expect(_log.result()).toEqual('run');
@@ -526,12 +575,14 @@ function commonTests() {
 
     it('should call onUnstable and onMicrotaskEmpty when an inner microtask is scheduled from outside angular',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         let resolve: (result: string | null) => void;
+         let resolve: (result: string|null) => void;
          let promise: Promise<string|null>;
 
          macroTask(() => {
            NgZone.assertNotInAngularZone();
-           promise = new Promise<string|null>(res => { resolve = res; });
+           promise = new Promise<string|null>(res => {
+             resolve = res;
+           });
          });
 
          runNgZoneNoLog(() => {
@@ -657,7 +708,9 @@ function commonTests() {
              _log.add('onUnstable(begin)');
              if (!startPromiseRan) {
                _log.add('onUnstable(schedulePromise)');
-               _zone.run(() => { scheduleMicroTask(_log.fn('onUnstable(executePromise)')); });
+               _zone.run(() => {
+                 scheduleMicroTask(_log.fn('onUnstable(executePromise)'));
+               });
                startPromiseRan = true;
              }
              _log.add('onUnstable(end)');
@@ -669,7 +722,9 @@ function commonTests() {
              _log.add('onMicrotaskEmpty(begin)');
              if (!donePromiseRan) {
                _log.add('onMicrotaskEmpty(schedulePromise)');
-               _zone.run(() => { scheduleMicroTask(_log.fn('onMicrotaskEmpty(executePromise)')); });
+               _zone.run(() => {
+                 scheduleMicroTask(_log.fn('onMicrotaskEmpty(executePromise)'));
+               });
                donePromiseRan = true;
              }
              _log.add('onMicrotaskEmpty(end)');
@@ -695,24 +750,36 @@ function commonTests() {
 
     it('should call onUnstable and onMicrotaskEmpty before and after each turn, respectively',
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
-         let aResolve: (result: string | null) => void;
+         let aResolve: (result: string|null) => void;
          let aPromise: Promise<string|null>;
-         let bResolve: (result: string | null) => void;
+         let bResolve: (result: string|null) => void;
          let bPromise: Promise<string|null>;
 
          runNgZoneNoLog(() => {
            macroTask(() => {
-             aPromise = new Promise<string|null>(res => { aResolve = res; });
-             bPromise = new Promise<string|null>(res => { bResolve = res; });
+             aPromise = new Promise<string|null>(res => {
+               aResolve = res;
+             });
+             bPromise = new Promise<string|null>(res => {
+               bResolve = res;
+             });
              aPromise.then(_log.fn('a then'));
              bPromise.then(_log.fn('b then'));
              _log.add('run start');
            });
          });
 
-         runNgZoneNoLog(() => { macroTask(() => { aResolve(null); }, 10); });
+         runNgZoneNoLog(() => {
+           macroTask(() => {
+             aResolve(null);
+           }, 10);
+         });
 
-         runNgZoneNoLog(() => { macroTask(() => { bResolve(null); }, 20); });
+         runNgZoneNoLog(() => {
+           macroTask(() => {
+             bResolve(null);
+           }, 20);
+         });
 
          macroTask(() => {
            expect(_log.result())
@@ -754,8 +821,9 @@ function commonTests() {
 
          runNgZoneNoLog(() => {
            macroTask(() => {
-             _zone.runOutsideAngular(
-                 () => { promise = Promise.resolve(4).then((x) => Promise.resolve(x)); });
+             _zone.runOutsideAngular(() => {
+               promise = Promise.resolve(4).then((x) => Promise.resolve(x));
+             });
 
              promise.then(_log.fn('promise then'));
              _log.add('zone run');
@@ -778,7 +846,9 @@ function commonTests() {
          macroTask(() => {
            const exception = new Error('sync');
 
-           _zone.runGuarded(() => { throw exception; });
+           _zone.runGuarded(() => {
+             throw exception;
+           });
 
            expect(_errors.length).toBe(1);
            expect(_errors[0]).toBe(exception);
@@ -790,7 +860,9 @@ function commonTests() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          macroTask(() => {
            const exception = new Error('sync');
-           expect(() => _zone.run(() => { throw exception; })).toThrowError('sync');
+           expect(() => _zone.run(() => {
+             throw exception;
+           })).toThrowError('sync');
 
            expect(_errors.length).toBe(0);
            async.done();
@@ -801,7 +873,13 @@ function commonTests() {
        inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
          const exception = new Error('async');
 
-         macroTask(() => { _zone.run(() => { scheduleMicroTask(() => { throw exception; }); }); });
+         macroTask(() => {
+           _zone.run(() => {
+             scheduleMicroTask(() => {
+               throw exception;
+             });
+           });
+         });
 
          macroTask(() => {
            expect(_errors.length).toBe(1);
@@ -821,7 +899,7 @@ function commonTests() {
       }));
 
       it('should fakeAsync even if the NgZone was created outside.', fakeAsync(() => {
-           let result: string = null !;
+           let result: string = null!;
            // try to escape the current fakeAsync zone by using NgZone which was created outside.
            ngZone.run(() => {
              Promise.resolve('works').then((v) => result = v);
@@ -834,9 +912,11 @@ function commonTests() {
         let asyncResult: string;
         const waitLongerThenTestFrameworkAsyncTimeout = 5;
 
-        beforeEach(() => { asyncResult = null !; });
+        beforeEach(() => {
+          asyncResult = null!;
+        });
 
-        it('should async even if the NgZone was created outside.', async(() => {
+        it('should async even if the NgZone was created outside.', waitForAsync(() => {
              // try to escape the current async zone by using NgZone which was created outside.
              ngZone.run(() => {
                setTimeout(() => {
@@ -845,9 +925,288 @@ function commonTests() {
              });
            }));
 
-        afterEach(() => { expect(asyncResult).toEqual('works'); });
-
+        afterEach(() => {
+          expect(asyncResult).toEqual('works');
+        });
       });
+    });
+  });
+
+  describe('coalescing', () => {
+    describe(
+        'shouldCoalesceRunChangeDetection = false, shouldCoalesceEventChangeDetection = false',
+        () => {
+          let notCoalesceZone: NgZone;
+          let logs: string[] = [];
+
+          beforeEach(() => {
+            notCoalesceZone = new NgZone({});
+            logs = [];
+            notCoalesceZone.onMicrotaskEmpty.subscribe(() => {
+              logs.push('microTask empty');
+            });
+          });
+
+          it('should run sync', () => {
+            notCoalesceZone.run(() => {});
+            expect(logs).toEqual(['microTask empty']);
+          });
+
+          it('should emit onMicroTaskEmpty multiple times within the same event loop for multiple ngZone.run',
+             () => {
+               notCoalesceZone.run(() => {});
+               notCoalesceZone.run(() => {});
+               expect(logs).toEqual(['microTask empty', 'microTask empty']);
+             });
+
+          it('should emit onMicroTaskEmpty multiple times within the same event loop for multiple tasks',
+             () => {
+               const tasks: Task[] = [];
+               notCoalesceZone.run(() => {
+                 tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+                   logs.push('eventTask1');
+                 }, undefined, () => {}));
+                 tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+                   logs.push('eventTask2');
+                 }, undefined, () => {}));
+                 tasks.push(Zone.current.scheduleMacroTask('myMacro', () => {
+                   logs.push('macroTask');
+                 }, undefined, () => {}));
+               });
+               tasks.forEach(t => t.invoke());
+               expect(logs).toEqual([
+                 'microTask empty', 'eventTask1', 'microTask empty', 'eventTask2',
+                 'microTask empty', 'macroTask', 'microTask empty'
+               ]);
+             });
+        });
+
+    describe('shouldCoalesceEventChangeDetection = true, shouldCoalesceRunChangeDetection = false', () => {
+      let nativeRequestAnimationFrame: (fn: FrameRequestCallback) => void;
+      let nativeSetTimeout: any = global[Zone.__symbol__('setTimeout')];
+      if (!global.requestAnimationFrame) {
+        nativeRequestAnimationFrame = function(fn: Function) {
+          global[Zone.__symbol__('setTimeout')](fn, 16);
+        };
+      } else {
+        nativeRequestAnimationFrame = getNativeRequestAnimationFrame().nativeRequestAnimationFrame;
+      }
+      let patchedImmediate: any;
+      let coalesceZone: NgZone;
+      let logs: string[] = [];
+
+      beforeEach(() => {
+        patchedImmediate = setImmediate;
+        global.setImmediate = global[Zone.__symbol__('setImmediate')];
+        coalesceZone = new NgZone({shouldCoalesceEventChangeDetection: true});
+        logs = [];
+        coalesceZone.onMicrotaskEmpty.subscribe(() => {
+          logs.push('microTask empty');
+        });
+      });
+
+      afterEach(() => {
+        global.setImmediate = patchedImmediate;
+      });
+
+      it('should run in requestAnimationFrame async', (done: DoneFn) => {
+        let task: Task|undefined = undefined;
+        coalesceZone.run(() => {
+          task = Zone.current.scheduleEventTask('myEvent', () => {
+            logs.push('myEvent');
+          }, undefined, () => {});
+        });
+        task!.invoke();
+        expect(logs).toEqual(['microTask empty', 'myEvent']);
+        nativeRequestAnimationFrame(() => {
+          expect(logs).toEqual(['microTask empty', 'myEvent', 'microTask empty']);
+          done();
+        });
+      });
+
+      it('should only emit onMicroTaskEmpty once within the same event loop for multiple event tasks',
+         (done: DoneFn) => {
+           const tasks: Task[] = [];
+           coalesceZone.run(() => {
+             tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+               logs.push('eventTask1');
+             }, undefined, () => {}));
+             tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+               logs.push('eventTask2');
+             }, undefined, () => {}));
+           });
+           tasks.forEach(t => t.invoke());
+           expect(logs).toEqual(['microTask empty', 'eventTask1', 'eventTask2']);
+           nativeRequestAnimationFrame(() => {
+             expect(logs).toEqual(
+                 ['microTask empty', 'eventTask1', 'eventTask2', 'microTask empty']);
+             done();
+           });
+         });
+
+      it('should only emit onMicroTaskEmpty once within the same event loop for ngZone.run in onMicrotaskEmpty subscription',
+         (done: DoneFn) => {
+           const tasks: Task[] = [];
+           coalesceZone.onMicrotaskEmpty.subscribe(() => {
+             coalesceZone.run(() => {});
+           });
+           coalesceZone.run(() => {
+             tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+               logs.push('eventTask1');
+             }, undefined, () => {}));
+           });
+           coalesceZone.run(() => {
+             tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+               logs.push('eventTask2');
+             }, undefined, () => {}));
+           });
+           tasks.forEach(t => t.invoke());
+           expect(logs).toEqual(['microTask empty', 'microTask empty', 'eventTask1', 'eventTask2']);
+           nativeSetTimeout(() => {
+             expect(logs).toEqual([
+               'microTask empty', 'microTask empty', 'eventTask1', 'eventTask2', 'microTask empty'
+             ]);
+             done();
+           }, 100);
+         });
+
+      it('should emit onMicroTaskEmpty once within the same event loop for not only event tasks, but event tasks are before other tasks',
+         (done: DoneFn) => {
+           const tasks: Task[] = [];
+           coalesceZone.run(() => {
+             tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+               logs.push('eventTask1');
+             }, undefined, () => {}));
+             tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+               logs.push('eventTask2');
+             }, undefined, () => {}));
+             tasks.push(Zone.current.scheduleMacroTask('myMacro', () => {
+               logs.push('macroTask');
+             }, undefined, () => {}));
+           });
+           tasks.forEach(t => t.invoke());
+           expect(logs).toEqual(['microTask empty', 'eventTask1', 'eventTask2', 'macroTask']);
+           nativeRequestAnimationFrame(() => {
+             expect(logs).toEqual(
+                 ['microTask empty', 'eventTask1', 'eventTask2', 'macroTask', 'microTask empty']);
+             done();
+           });
+         });
+
+      it('should emit multiple onMicroTaskEmpty within the same event loop for not only event tasks, but event tasks are after other tasks',
+         (done: DoneFn) => {
+           const tasks: Task[] = [];
+           coalesceZone.run(() => {
+             tasks.push(Zone.current.scheduleMacroTask('myMacro', () => {
+               logs.push('macroTask');
+             }, undefined, () => {}));
+             tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+               logs.push('eventTask1');
+             }, undefined, () => {}));
+             tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+               logs.push('eventTask2');
+             }, undefined, () => {}));
+           });
+           tasks.forEach(t => t.invoke());
+           expect(logs).toEqual(
+               ['microTask empty', 'macroTask', 'microTask empty', 'eventTask1', 'eventTask2']);
+           nativeRequestAnimationFrame(() => {
+             expect(logs).toEqual([
+               'microTask empty', 'macroTask', 'microTask empty', 'eventTask1', 'eventTask2',
+               'microTask empty'
+             ]);
+             done();
+           });
+         });
+    });
+
+    describe('shouldCoalesceRunChangeDetection = true', () => {
+      let nativeRequestAnimationFrame: (fn: FrameRequestCallback) => void;
+      let nativeSetTimeout: any = global[Zone.__symbol__('setTimeout')];
+      if (!global.requestAnimationFrame) {
+        nativeRequestAnimationFrame = function(fn: Function) {
+          global[Zone.__symbol__('setTimeout')](fn, 16);
+        };
+      } else {
+        nativeRequestAnimationFrame = getNativeRequestAnimationFrame().nativeRequestAnimationFrame;
+      }
+      let patchedImmediate: any;
+      let coalesceZone: NgZone;
+      let logs: string[] = [];
+
+      beforeEach(() => {
+        patchedImmediate = setImmediate;
+        global.setImmediate = global[Zone.__symbol__('setImmediate')];
+        coalesceZone = new NgZone({shouldCoalesceRunChangeDetection: true});
+        logs = [];
+        coalesceZone.onMicrotaskEmpty.subscribe(() => {
+          logs.push('microTask empty');
+        });
+      });
+
+      afterEach(() => {
+        global.setImmediate = patchedImmediate;
+      });
+
+      it('should run in requestAnimationFrame async', (done: DoneFn) => {
+        coalesceZone.run(() => {});
+        expect(logs).toEqual([]);
+        nativeRequestAnimationFrame(() => {
+          expect(logs).toEqual(['microTask empty']);
+          done();
+        });
+      });
+
+      it('should only emit onMicroTaskEmpty once within the same event loop for multiple ngZone.run',
+         (done: DoneFn) => {
+           coalesceZone.run(() => {});
+           coalesceZone.run(() => {});
+           expect(logs).toEqual([]);
+           nativeRequestAnimationFrame(() => {
+             expect(logs).toEqual(['microTask empty']);
+             done();
+           });
+         });
+
+      it('should only emit onMicroTaskEmpty once within the same event loop for ngZone.run in onMicrotaskEmpty subscription',
+         (done: DoneFn) => {
+           coalesceZone.onMicrotaskEmpty.subscribe(() => {
+             coalesceZone.run(() => {});
+           });
+           coalesceZone.run(() => {});
+           coalesceZone.run(() => {});
+           expect(logs).toEqual([]);
+           nativeSetTimeout(() => {
+             expect(logs).toEqual(['microTask empty']);
+             done();
+           }, 100);
+         });
+
+      it('should only emit onMicroTaskEmpty once within the same event loop for multiple tasks',
+         (done: DoneFn) => {
+           const tasks: Task[] = [];
+           coalesceZone.run(() => {
+             tasks.push(Zone.current.scheduleMacroTask('myMacro', () => {
+               logs.push('macroTask');
+             }, undefined, () => {}));
+             tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+               logs.push('eventTask1');
+             }, undefined, () => {}));
+             tasks.push(Zone.current.scheduleEventTask('myEvent', () => {
+               logs.push('eventTask2');
+             }, undefined, () => {}));
+             tasks.push(Zone.current.scheduleMacroTask('myMacro', () => {
+               logs.push('macroTask');
+             }, undefined, () => {}));
+           });
+           tasks.forEach(t => t.invoke());
+           expect(logs).toEqual(['macroTask', 'eventTask1', 'eventTask2', 'macroTask']);
+           nativeRequestAnimationFrame(() => {
+             expect(logs).toEqual(
+                 ['macroTask', 'eventTask1', 'eventTask2', 'macroTask', 'microTask empty']);
+             done();
+           });
+         });
     });
   });
 }

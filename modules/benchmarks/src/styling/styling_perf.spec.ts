@@ -1,14 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {$, by, element} from 'protractor';
-import {openBrowser, verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
-import {runBenchmark} from '../../../e2e_util/perf_util';
+import {openBrowser, runBenchmark, verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 /** List of possible scenarios that should be tested.  */
 const SCENARIOS = [
@@ -28,7 +27,7 @@ const SCENARIOS = [
 describe('styling benchmark spec', () => {
   afterEach(verifyNoBrowserErrors);
 
-  it('should render and interact to update and detect changes', async() => {
+  it('should render and interact to update and detect changes', async () => {
     openBrowser({url: '/', ignoreBrowserSynchronization: true});
     create();
     const items = element.all(by.css('styling-bindings button'));
@@ -38,7 +37,7 @@ describe('styling benchmark spec', () => {
     expect(await items.first().getAttribute('title')).toBe('baz');
   });
 
-  it('should render and run noop change detection', async() => {
+  it('should render and run noop change detection', async () => {
     openBrowser({url: '/', ignoreBrowserSynchronization: true});
     create();
     const items = element.all(by.css('styling-bindings button'));
@@ -51,7 +50,7 @@ describe('styling benchmark spec', () => {
   // Create benchmarks for each possible test scenario.
   SCENARIOS.forEach(({optionIndex, id}) => {
     describe(id, () => {
-      it('should run create benchmark', async() => {
+      it('should run create benchmark', async () => {
         await runStylingBenchmark(`styling.${id}.create`, {
           work: () => create(),
           prepare: () => {
@@ -61,7 +60,7 @@ describe('styling benchmark spec', () => {
         });
       });
 
-      it('should run update benchmark', async() => {
+      it('should run update benchmark', async () => {
         await runStylingBenchmark(`styling.${id}.update`, {
           work: () => update(),
           prepare: () => {
@@ -71,7 +70,7 @@ describe('styling benchmark spec', () => {
         });
       });
 
-      it('should run detect changes benchmark', async() => {
+      it('should run detect changes benchmark', async () => {
         await runStylingBenchmark(`styling.${id}.noop_cd`, {
           work: () => detectChanges(),
           prepare: () => {

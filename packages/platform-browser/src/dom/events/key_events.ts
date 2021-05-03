@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -20,7 +20,7 @@ const DOM_KEY_LOCATION_NUMPAD = 3;
 // Map to convert some key or keyIdentifier values to what will be returned by getEventKey
 const _keyMap: {[k: string]: string} = {
   // The following values are here for cross-browser compatibility and to match the W3C standard
-  // cf http://www.w3.org/TR/DOM-Level-3-Events-key/
+  // cf https://www.w3.org/TR/DOM-Level-3-Events-key/
   '\b': 'Backspace',
   '\t': 'Tab',
   '\x7F': 'Delete',
@@ -79,14 +79,18 @@ export class KeyEventsPlugin extends EventManagerPlugin {
    * Initializes an instance of the browser plug-in.
    * @param doc The document in which key events will be detected.
    */
-  constructor(@Inject(DOCUMENT) doc: any) { super(doc); }
+  constructor(@Inject(DOCUMENT) doc: any) {
+    super(doc);
+  }
 
   /**
-    * Reports whether a named key event is supported.
-    * @param eventName The event name to query.
-    * @return True if the named key event is supported.
+   * Reports whether a named key event is supported.
+   * @param eventName The event name to query.
+   * @return True if the named key event is supported.
    */
-  supports(eventName: string): boolean { return KeyEventsPlugin.parseEventName(eventName) != null; }
+  supports(eventName: string): boolean {
+    return KeyEventsPlugin.parseEventName(eventName) != null;
+  }
 
   /**
    * Registers a handler for a specific element and key event.
@@ -95,9 +99,9 @@ export class KeyEventsPlugin extends EventManagerPlugin {
    * @param handler A function to call when the notification occurs. Receives the
    * event object as an argument.
    * @returns The key event that was registered.
-  */
+   */
   addEventListener(element: HTMLElement, eventName: string, handler: Function): Function {
-    const parsedEvent = KeyEventsPlugin.parseEventName(eventName) !;
+    const parsedEvent = KeyEventsPlugin.parseEventName(eventName)!;
 
     const outsideHandler =
         KeyEventsPlugin.eventCallback(parsedEvent['fullKey'], handler, this.manager.getZone());
@@ -107,7 +111,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
     });
   }
 
-  static parseEventName(eventName: string): {[key: string]: string}|null {
+  static parseEventName(eventName: string): {fullKey: string, domEventName: string}|null {
     const parts: string[] = eventName.toLowerCase().split('.');
 
     const domEventName = parts.shift();
@@ -115,7 +119,7 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       return null;
     }
 
-    const key = KeyEventsPlugin._normalizeKey(parts.pop() !);
+    const key = KeyEventsPlugin._normalizeKey(parts.pop()!);
 
     let fullKey = '';
     MODIFIER_KEYS.forEach(modifierName => {
@@ -132,7 +136,10 @@ export class KeyEventsPlugin extends EventManagerPlugin {
       return null;
     }
 
-    const result: {[k: string]: string} = {};
+    // NOTE: Please don't rewrite this as so, as it will break JSCompiler property renaming.
+    //       The code must remain in the `result['domEventName']` form.
+    // return {domEventName, fullKey};
+    const result: {fullKey: string, domEventName: string} = {} as any;
     result['domEventName'] = domEventName;
     result['fullKey'] = fullKey;
     return result;
@@ -192,7 +199,7 @@ function getEventKey(event: any): string {
     key = event.keyIdentifier;
     // keyIdentifier is defined in the old draft of DOM Level 3 Events implemented by Chrome and
     // Safari cf
-    // http://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/events.html#Events-KeyboardEvents-Interfaces
+    // https://www.w3.org/TR/2007/WD-DOM-Level-3-Events-20071221/events.html#Events-KeyboardEvents-Interfaces
     if (key == null) {
       return 'Unidentified';
     }

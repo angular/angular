@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,9 +9,11 @@
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 
-import {HelperFunction, getHelper} from '../renderer-to-renderer2/helpers';
-import {migrateExpression, replaceImport} from '../renderer-to-renderer2/migration';
-import {findCoreImport, findRendererReferences} from '../renderer-to-renderer2/util';
+import {getImportSpecifier, replaceImport} from '../../utils/typescript/imports';
+import {closestNode} from '../../utils/typescript/nodes';
+import {getHelper, HelperFunction} from '../renderer-to-renderer2/helpers';
+import {migrateExpression} from '../renderer-to-renderer2/migration';
+import {findRendererReferences} from '../renderer-to-renderer2/util';
 
 /**
  * TSLint rule that migrates from `Renderer` to `Renderer2`. More information on how it works:
@@ -22,15 +24,18 @@ export class Rule extends Rules.TypedRule {
     const typeChecker = program.getTypeChecker();
     const printer = ts.createPrinter();
     const failures: RuleFailure[] = [];
-    const rendererImport = findCoreImport(sourceFile, 'Renderer');
+    const rendererImportSpecifier = getImportSpecifier(sourceFile, '@angular/core', 'Renderer');
+    const rendererImport = rendererImportSpecifier ?
+        closestNode<ts.NamedImports>(rendererImportSpecifier, ts.SyntaxKind.NamedImports) :
+        null;
 
     // If there are no imports for the `Renderer`, we can exit early.
-    if (!rendererImport) {
+    if (!rendererImportSpecifier || !rendererImport) {
       return failures;
     }
 
     const {typedNodes, methodCalls, forwardRefs} =
-        findRendererReferences(sourceFile, typeChecker, rendererImport);
+        findRendererReferences(sourceFile, typeChecker, rendererImportSpecifier);
     const helpersToAdd = new Set<HelperFunction>();
 
     failures.push(this._getNamedImportsFailure(rendererImport, sourceFile, printer));
@@ -75,7 +80,7 @@ export class Rule extends Rules.TypedRule {
   private _getTypedNodeFailure(
       node: ts.ParameterDeclaration|ts.PropertyDeclaration|ts.AsExpression,
       sourceFile: ts.SourceFile): RuleFailure {
-    const type = node.type !;
+    const type = node.type!;
 
     return new RuleFailure(
         sourceFile, type.getStart(), type.getEnd(),

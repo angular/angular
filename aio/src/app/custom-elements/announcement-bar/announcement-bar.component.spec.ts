@@ -102,11 +102,11 @@ describe('AnnouncementBarComponent', () => {
     });
 
     it('should display an image', () => {
-      expect(element.querySelector('img')!.src).toContain('dummy/image');
+      expect(element.querySelector('img')?.src).toContain('dummy/image');
     });
 
     it('should display a link', () => {
-      expect(element.querySelector('a')!.href).toContain('link/to/website');
+      expect(element.querySelector('a')?.href).toContain('link/to/website');
     });
   });
 });

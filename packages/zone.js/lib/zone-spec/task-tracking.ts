@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -19,7 +19,9 @@ class TaskTrackingZoneSpec implements ZoneSpec {
   eventTasks: Task[] = [];
   properties: {[key: string]: any} = {'TaskTrackingZone': this};
 
-  static get() { return Zone.current.get('TaskTrackingZone'); }
+  static get() {
+    return Zone.current.get('TaskTrackingZone');
+  }
 
   private getTasksFor(type: string): Task[] {
     switch (type) {

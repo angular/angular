@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,7 +15,9 @@ type HumanizedExpressionSource = [string, AbsoluteSourceSpan];
 class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visitor {
   result: HumanizedExpressionSource[] = [];
 
-  private recordAst(ast: e.AST) { this.result.push([unparse(ast), ast.sourceSpan]); }
+  private recordAst(ast: e.AST) {
+    this.result.push([unparse(ast), ast.sourceSpan]);
+  }
 
   // This method is defined to reconcile the type of ExpressionSourceHumanizer
   // since both RecursiveAstVisitor and Visitor define the visit() method in
@@ -124,14 +126,29 @@ class ExpressionSourceHumanizer extends e.RecursiveAstVisitor implements t.Visit
   }
   visitReference(ast: t.Reference) {}
   visitVariable(ast: t.Variable) {}
-  visitEvent(ast: t.BoundEvent) { ast.handler.visit(this); }
+  visitEvent(ast: t.BoundEvent) {
+    ast.handler.visit(this);
+  }
   visitTextAttribute(ast: t.TextAttribute) {}
-  visitBoundAttribute(ast: t.BoundAttribute) { ast.value.visit(this); }
-  visitBoundEvent(ast: t.BoundEvent) { ast.handler.visit(this); }
-  visitBoundText(ast: t.BoundText) { ast.value.visit(this); }
+  visitBoundAttribute(ast: t.BoundAttribute) {
+    ast.value.visit(this);
+  }
+  visitBoundEvent(ast: t.BoundEvent) {
+    ast.handler.visit(this);
+  }
+  visitBoundText(ast: t.BoundText) {
+    ast.value.visit(this);
+  }
   visitContent(ast: t.Content) {}
   visitText(ast: t.Text) {}
-  visitIcu(ast: t.Icu) {}
+  visitIcu(ast: t.Icu) {
+    for (const key of Object.keys(ast.vars)) {
+      ast.vars[key].visit(this);
+    }
+    for (const key of Object.keys(ast.placeholders)) {
+      ast.placeholders[key].visit(this);
+    }
+  }
 }
 
 /**

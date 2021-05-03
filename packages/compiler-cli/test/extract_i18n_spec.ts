@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -42,7 +42,7 @@ const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
   <msg id="5811701742971715242" desc="with ICU and other things"><source>src/icu.html:4,6</source>
      foo <ph name="ICU"><ex>{ count, plural, =1 {...} other {...}}</ex>{ count, plural, =1 {...} other {...}}</ph>
     </msg>
-  <msg id="7254052530614200029" desc="with placeholders"><source>src/placeholders.html:1</source>Name: <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph><ph name="NAME"><ex>{{
+  <msg id="7254052530614200029" desc="with placeholders"><source>src/placeholders.html:1,3</source>Name: <ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex>&lt;b&gt;</ph><ph name="NAME"><ex>{{
       name // i18n(ph=&quot;name&quot;)
     }}</ex>{{
       name // i18n(ph=&quot;name&quot;)
@@ -182,7 +182,7 @@ const EXPECTED_XLIFF2 = `<?xml version="1.0" encoding="UTF-8" ?>
     <unit id="7254052530614200029">
       <notes>
         <note category="description">with placeholders</note>
-        <note category="location">src/placeholders.html:1</note>
+        <note category="location">src/placeholders.html:1,3</note>
       </notes>
       <segment>
         <source>Name: <pc id="0" equivStart="START_BOLD_TEXT" equivEnd="CLOSE_BOLD_TEXT" type="fmt" dispStart="&lt;b&gt;" dispEnd="&lt;/b&gt;"><ph id="1" equiv="NAME" disp="{{
@@ -207,7 +207,9 @@ describe('extract_i18n command line', () => {
   beforeEach(() => {
     errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
     const support = setup();
-    write = (fileName: string, content: string) => { support.write(fileName, content); };
+    write = (fileName: string, content: string) => {
+      support.write(fileName, content);
+    };
     basePath = support.basePath;
     outDir = path.join(basePath, 'built');
     write('tsconfig-base.json', `{

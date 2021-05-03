@@ -6,9 +6,9 @@ import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 
 // #enddocregion added-imports
-import { Hero }         from '../hero';
+import { Hero } from '../hero';
 // #docregion added-imports
-import { HeroService }  from '../hero.service';
+import { HeroService } from '../hero.service';
 // #enddocregion added-imports
 
 @Component({
@@ -32,13 +32,11 @@ export class HeroDetailComponent implements OnInit {
     this.getHero();
   }
 
-  // #docregion getHero
   getHero(): void {
-    const id = +this.route.snapshot.paramMap.get('id');
+    const id = Number(this.route.snapshot.paramMap.get('id'));
     this.heroService.getHero(id)
       .subscribe(hero => this.hero = hero);
   }
-  // #enddocregion getHero
   // #enddocregion ngOnInit
 
   // #docregion goBack

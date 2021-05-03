@@ -2,12 +2,10 @@
 // #docregion
 import { InjectionToken } from '@angular/core';
 
-import { Hero }        from './hero';
+import { Hero } from './hero';
 import { HeroService } from './hero.service';
 
-// #docregion runners-up
 export const RUNNERS_UP = new InjectionToken<string>('RunnersUp');
-// #enddocregion runners-up
 
 // #docregion factory-synopsis
 export function runnersUpFactory(take: number) {
@@ -22,5 +20,5 @@ export function runnersUpFactory(take: number) {
           .join(', ');
 // #docregion factory-synopsis
   };
-};
+}
 // #enddocregion factory-synopsis

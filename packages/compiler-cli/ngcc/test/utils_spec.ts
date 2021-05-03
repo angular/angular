@@ -1,12 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import * as ts from 'typescript';
+import {absoluteFrom as _abs} from '../../src/ngtsc/file_system';
+import {runInEachFileSystem} from '../../src/ngtsc/file_system/testing';
 import {KnownDeclaration} from '../../src/ngtsc/reflection';
 import {FactoryMap, getTsHelperFnFromDeclaration, getTsHelperFnFromIdentifier, isRelativePath, stripExtension} from '../src/utils';
 
@@ -106,6 +108,22 @@ describe('getTsHelperFnFromDeclaration()', () => {
     expect(getTsHelperFnFromDeclaration(decl2)).toBe(KnownDeclaration.TsHelperSpreadArrays);
   });
 
+  it('should recognize the `__spreadArray` helper as function declaration', () => {
+    const decl1 = createFunctionDeclaration('__spreadArray');
+    const decl2 = createFunctionDeclaration('__spreadArray$42');
+
+    expect(getTsHelperFnFromDeclaration(decl1)).toBe(KnownDeclaration.TsHelperSpreadArray);
+    expect(getTsHelperFnFromDeclaration(decl2)).toBe(KnownDeclaration.TsHelperSpreadArray);
+  });
+
+  it('should recognize the `__spreadArray` helper as variable declaration', () => {
+    const decl1 = createVariableDeclaration('__spreadArray');
+    const decl2 = createVariableDeclaration('__spreadArray$42');
+
+    expect(getTsHelperFnFromDeclaration(decl1)).toBe(KnownDeclaration.TsHelperSpreadArray);
+    expect(getTsHelperFnFromDeclaration(decl2)).toBe(KnownDeclaration.TsHelperSpreadArray);
+  });
+
   it('should return null for unrecognized helpers', () => {
     const decl1 = createFunctionDeclaration('__foo');
     const decl2 = createVariableDeclaration('spread');
@@ -126,7 +144,7 @@ describe('getTsHelperFnFromDeclaration()', () => {
     const classDecl =
         ts.createClassDeclaration(undefined, undefined, '__assign', undefined, undefined, []);
 
-    expect(classDecl.name !.text).toBe('__assign');
+    expect(classDecl.name!.text).toBe('__assign');
     expect(getTsHelperFnFromDeclaration(classDecl)).toBe(null);
   });
 });
@@ -156,6 +174,14 @@ describe('getTsHelperFnFromIdentifier()', () => {
     expect(getTsHelperFnFromIdentifier(id2)).toBe(KnownDeclaration.TsHelperSpreadArrays);
   });
 
+  it('should recognize the `__spreadArray` helper', () => {
+    const id1 = ts.createIdentifier('__spreadArray');
+    const id2 = ts.createIdentifier('__spreadArray$42');
+
+    expect(getTsHelperFnFromIdentifier(id1)).toBe(KnownDeclaration.TsHelperSpreadArray);
+    expect(getTsHelperFnFromIdentifier(id2)).toBe(KnownDeclaration.TsHelperSpreadArray);
+  });
+
   it('should return null for unrecognized helpers', () => {
     const id1 = ts.createIdentifier('__foo');
     const id2 = ts.createIdentifier('spread');
@@ -167,30 +193,36 @@ describe('getTsHelperFnFromIdentifier()', () => {
   });
 });
 
-describe('isRelativePath()', () => {
-  it('should return true for relative paths', () => {
-    expect(isRelativePath('.')).toBe(true);
-    expect(isRelativePath('..')).toBe(true);
-    expect(isRelativePath('./')).toBe(true);
-    expect(isRelativePath('../')).toBe(true);
-    expect(isRelativePath('./abc/xyz')).toBe(true);
-    expect(isRelativePath('../abc/xyz')).toBe(true);
-  });
+runInEachFileSystem(() => {
+  describe('isRelativePath()', () => {
+    it('should return true for relative paths', () => {
+      expect(isRelativePath('.')).toBe(true);
+      expect(isRelativePath('..')).toBe(true);
+      expect(isRelativePath('./')).toBe(true);
+      expect(isRelativePath('.\\')).toBe(true);
+      expect(isRelativePath('../')).toBe(true);
+      expect(isRelativePath('..\\')).toBe(true);
+      expect(isRelativePath('./abc/xyz')).toBe(true);
+      expect(isRelativePath('.\\abc\\xyz')).toBe(true);
+      expect(isRelativePath('../abc/xyz')).toBe(true);
+      expect(isRelativePath('..\\abc\\xyz')).toBe(true);
+    });
 
-  it('should return true for absolute paths', () => {
-    expect(isRelativePath('/')).toBe(true);
-    expect(isRelativePath('/abc/xyz')).toBe(true);
-  });
+    it('should return true for absolute paths', () => {
+      expect(isRelativePath(_abs('/'))).toBe(true);
+      expect(isRelativePath(_abs('/abc/xyz'))).toBe(true);
+    });
 
-  it('should return false for other paths', () => {
-    expect(isRelativePath('abc')).toBe(false);
-    expect(isRelativePath('abc/xyz')).toBe(false);
-    expect(isRelativePath('.abc')).toBe(false);
-    expect(isRelativePath('..abc')).toBe(false);
-    expect(isRelativePath('@abc')).toBe(false);
-    expect(isRelativePath('.abc/xyz')).toBe(false);
-    expect(isRelativePath('..abc/xyz')).toBe(false);
-    expect(isRelativePath('@abc/xyz')).toBe(false);
+    it('should return false for other paths', () => {
+      expect(isRelativePath('abc')).toBe(false);
+      expect(isRelativePath('abc/xyz')).toBe(false);
+      expect(isRelativePath('.abc')).toBe(false);
+      expect(isRelativePath('..abc')).toBe(false);
+      expect(isRelativePath('@abc')).toBe(false);
+      expect(isRelativePath('.abc/xyz')).toBe(false);
+      expect(isRelativePath('..abc/xyz')).toBe(false);
+      expect(isRelativePath('@abc/xyz')).toBe(false);
+    });
   });
 });
 

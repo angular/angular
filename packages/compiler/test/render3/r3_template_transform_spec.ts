@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -75,17 +75,25 @@ class R3AstHumanizer implements t.Visitor<void> {
     ]);
   }
 
-  visitText(text: t.Text) { this.result.push(['Text', text.value]); }
+  visitText(text: t.Text) {
+    this.result.push(['Text', text.value]);
+  }
 
-  visitBoundText(text: t.BoundText) { this.result.push(['BoundText', unparse(text.value)]); }
+  visitBoundText(text: t.BoundText) {
+    this.result.push(['BoundText', unparse(text.value)]);
+  }
 
-  visitIcu(icu: t.Icu) { return null; }
+  visitIcu(icu: t.Icu) {
+    return null;
+  }
 
-  private visitAll(nodes: t.Node[][]) { nodes.forEach(node => t.visitAll(this, node)); }
+  private visitAll(nodes: t.Node[][]) {
+    nodes.forEach(node => t.visitAll(this, node));
+  }
 }
 
-function expectFromHtml(html: string) {
-  const res = parse(html);
+function expectFromHtml(html: string, ignoreError = false) {
+  const res = parse(html, {ignoreError});
   return expectFromR3Nodes(res.nodes);
 }
 
@@ -97,16 +105,30 @@ function expectFromR3Nodes(nodes: t.Node[]) {
 
 function expectSpanFromHtml(html: string) {
   const {nodes} = parse(html);
-  return expect(nodes[0] !.sourceSpan.toString());
+  return expect(nodes[0]!.sourceSpan.toString());
 }
 
 describe('R3 template transform', () => {
   describe('ParseSpan on nodes toString', () => {
-    it('should create valid text span on Element with adjacent start and end tags',
-       () => { expectSpanFromHtml('<div></div>').toBe('<div></div>'); });
+    it('should create valid text span on Element with adjacent start and end tags', () => {
+      expectSpanFromHtml('<div></div>').toBe('<div></div>');
+    });
   });
 
   describe('Nodes without binding', () => {
+    it('should parse incomplete tags terminated by EOF', () => {
+      expectFromHtml('<a', true /* ignoreError */).toEqual([
+        ['Element', 'a'],
+      ]);
+    });
+
+    it('should parse incomplete tags terminated by another tag', () => {
+      expectFromHtml('<a <span></span>', true /* ignoreError */).toEqual([
+        ['Element', 'a'],
+        ['Element', 'span'],
+      ]);
+    });
+
     it('should parse text nodes', () => {
       expectFromHtml('a').toEqual([
         ['Text', 'a'],
@@ -264,6 +286,11 @@ describe('R3 template transform', () => {
       ]);
     });
 
+    it('should report an error if a reference is used multiple times on the same template', () => {
+      expect(() => parse('<ng-template #a #a></ng-template>'))
+          .toThrowError(/Reference "#a" is defined more than once/);
+    });
+
     it('should parse variables via let-...', () => {
       expectFromHtml('<ng-template let-a="b"></ng-template>').toEqual([
         ['Template'],
@@ -390,6 +417,27 @@ describe('R3 template transform', () => {
       expect(() => parse('<div (event)="">')).toThrowError(/Empty expressions are not allowed/);
       expect(() => parse('<div (event)="   ">')).toThrowError(/Empty expressions are not allowed/);
     });
+
+    it('should parse bound animation events when event name is empty', () => {
+      expectFromHtml('<div (@)="onAnimationEvent($event)"></div>', true).toEqual([
+        ['Element', 'div'],
+        ['BoundEvent', '', null, 'onAnimationEvent($event)'],
+      ]);
+      expect(() => parse('<div (@)></div>'))
+          .toThrowError(/Animation event name is missing in binding/);
+    });
+
+    it('should report invalid phase value of animation event', () => {
+      expect(() => parse('<div (@event.invalidPhase)></div>'))
+          .toThrowError(
+              /The provided animation output phase value "invalidphase" for "@event" is not supported \(use start or done\)/);
+      expect(() => parse('<div (@event.)></div>'))
+          .toThrowError(
+              /The animation trigger output event \(@event\) is missing its phase value name \(start or done are currently supported\)/);
+      expect(() => parse('<div (@event)></div>'))
+          .toThrowError(
+              /The animation trigger output event \(@event\) is missing its phase value name \(start or done are currently supported\)/);
+    });
   });
 
   describe('variables', () => {
@@ -432,6 +480,11 @@ describe('R3 template transform', () => {
 
     it('should report missing reference names', () => {
       expect(() => parse('<div #></div>')).toThrowError(/Reference does not have a name/);
+    });
+
+    it('should report an error if a reference is used multiple times on the same element', () => {
+      expect(() => parse('<div #a #a></div>'))
+          .toThrowError(/Reference "#a" is defined more than once/);
     });
   });
 

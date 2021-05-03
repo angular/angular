@@ -1,4 +1,4 @@
-import { browser, element, by, ElementFinder } from 'protractor';
+import { browser, element, by } from 'protractor';
 import { resolve } from 'path';
 
 const page = {
@@ -24,115 +24,134 @@ const page = {
   uploadMessage: element(by.css('app-uploader p'))
 };
 
-let checkLogForMessage = (message: string) => {
-  expect(page.logList.getText()).toContain(message);
+const checkLogForMessage = async (message: string) => {
+  expect(await page.logList.getText()).toContain(message);
 };
 
-describe('Http Tests', function() {
-  beforeEach(() => {
-    browser.get('');
+describe('Http Tests', () => {
+  // It seems that currently Chrome/ChromeDriver fail to click a button that is just outside the
+  // viewport (or maybe only partially inside the viewport) - at least in headless mode.
+  // Possible solutions:
+  // 1. Click the element via JavaScript (with something like
+  //    `browser.executeScript('arguments[0].click', elem)`).
+  // 2. Manually scroll the element into view before clicking:
+  //    https://stackoverflow.com/questions/47776774/element-is-not-clickable-at-point-in-headless-mode-but-when-we-remove-headless
+  // 3. Explicitly set the window size to a bigger size:
+  //    https://stackoverflow.com/questions/62003082/elementnotinteractableexception-element-not-interactable-element-has-zero-size
+  //
+  // Since the default 800x600 window size in headless mode (as used on CI) causes the
+  // `<app-config>` buttons to be in a position that trigger the above issue, we explicitly set the
+  // window size to 1920x1080 when in headless mode.
+  beforeAll(async () => {
+    const config = await browser.getProcessedConfig();
+    if (config.capabilities?.chromeOptions?.args?.includes('--headless')) {
+      browser.driver.manage().window().setSize(1920, 1080);
+    }
   });
 
+  beforeEach(() => browser.get(''));
+
   describe('Heroes', () => {
-    it('retrieves the list of heroes at startup', () => {
-      expect(page.heroesListItems.count()).toBe(4);
-      expect(page.heroesListItems.get(0).getText()).toContain('Dr Nice');
-      checkLogForMessage('GET "api/heroes"');
+    it('retrieves the list of heroes at startup', async () => {
+      expect(await page.heroesListItems.count()).toBe(4);
+      expect(await page.heroesListItems.get(0).getText()).toContain('Dr Nice');
+      await checkLogForMessage('GET "api/heroes"');
     });
 
-    it('makes a POST to add a new hero', () => {
-      page.heroesListInput.sendKeys('Magneta');
-      page.heroesListAddButton.click();
-      expect(page.heroesListItems.count()).toBe(5);
-      checkLogForMessage('POST "api/heroes"');
+    it('makes a POST to add a new hero', async () => {
+      await page.heroesListInput.sendKeys('Magneta');
+      await page.heroesListAddButton.click();
+      expect(await page.heroesListItems.count()).toBe(5);
+      await checkLogForMessage('POST "api/heroes"');
     });
 
-    it('makes a GET to search for a hero', () => {
-      page.heroesListInput.sendKeys('Celeritas');
-      page.heroesListSearchButton.click();
-      checkLogForMessage('GET "api/heroes?name=Celeritas"');
+    it('makes a GET to search for a hero', async () => {
+      await page.heroesListInput.sendKeys('Celeritas');
+      await page.heroesListSearchButton.click();
+      await checkLogForMessage('GET "api/heroes?name=Celeritas"');
     });
   });
 
   describe('Messages', () => {
-    it('can clear the logs', () => {
-      expect(page.logListItems.count()).toBe(1);
-      page.logClearButton.click();
-      expect(page.logListItems.count()).toBe(0);
+    it('can clear the logs', async () => {
+      expect(await page.logListItems.count()).toBe(1);
+      await page.logClearButton.click();
+      expect(await page.logListItems.count()).toBe(0);
     });
   });
 
   describe('Configuration', () => {
-    it('can fetch the configuration JSON file', () => {
-      page.configGetButton.click();
-      checkLogForMessage('GET "assets/config.json"');
-      expect(page.configSpan.getText()).toContain('Heroes API URL is "api/heroes"');
-      expect(page.configSpan.getText()).toContain('Textfile URL is "assets/textfile.txt"');
+    it('can fetch the configuration JSON file', async () => {
+      await page.configGetButton.click();
+      await checkLogForMessage('GET "assets/config.json"');
+      expect(await page.configSpan.getText()).toContain('Heroes API URL is "api/heroes"');
+      expect(await page.configSpan.getText()).toContain('Textfile URL is "assets/textfile.txt"');
+      expect(await page.configSpan.getText()).toContain('Date is "Wed Jan 29 2020" (date)');
     });
 
-    it('can fetch the configuration JSON file with headers', () => {
-      page.configGetResponseButton.click();
-      checkLogForMessage('GET "assets/config.json"');
-      expect(page.configSpan.getText()).toContain('Response headers:');
-      expect(page.configSpan.getText()).toContain('content-type: application/json; charset=UTF-8');
+    it('can fetch the configuration JSON file with headers', async () => {
+      await page.configGetResponseButton.click();
+      await checkLogForMessage('GET "assets/config.json"');
+      expect(await page.configSpan.getText()).toContain('Response headers:');
+      expect(await page.configSpan.getText()).toContain('content-type: application/json; charset=UTF-8');
     });
 
-    it('can clear the configuration log', () => {
-      page.configGetResponseButton.click();
-      expect(page.configSpan.getText()).toContain('Response headers:');
-      page.configClearButton.click();
-      expect(page.configSpan.isPresent()).toBeFalsy();
+    it('can clear the configuration log', async () => {
+      await page.configGetResponseButton.click();
+      expect(await page.configSpan.getText()).toContain('Response headers:');
+      await page.configClearButton.click();
+      expect(await page.configSpan.isPresent()).toBeFalsy();
     });
 
-    it('throws an error for a non valid url', () => {
-      page.configErrorButton.click();
-      checkLogForMessage('GET "not/a/real/url"');
-      expect(page.configErrorMessage.getText()).toContain('"Something bad happened; please try again later."');
+    it('throws an error for a non valid url', async () => {
+      await page.configErrorButton.click();
+      await checkLogForMessage('GET "not/a/real/url"');
+      expect(await page.configErrorMessage.getText()).toContain('"Something bad happened; please try again later."');
     });
   });
 
   describe('Download', () => {
-    it('can download a txt file and show it', () => {
-      page.downloadButton.click();
-      checkLogForMessage('DownloaderService downloaded "assets/textfile.txt"');
-      checkLogForMessage('GET "assets/textfile.txt"');
-      expect(page.downloadMessage.getText()).toContain('Contents: "This is the downloaded text file "');
+    it('can download a txt file and show it', async () => {
+      await page.downloadButton.click();
+      await checkLogForMessage('DownloaderService downloaded "assets/textfile.txt"');
+      await checkLogForMessage('GET "assets/textfile.txt"');
+      expect(await page.downloadMessage.getText()).toContain('Contents: "This is the downloaded text file "');
     });
 
-    it('can clear the log of the download', () => {
-      page.downloadButton.click();
-      expect(page.downloadMessage.getText()).toContain('Contents: "This is the downloaded text file "');
-      page.downloadClearButton.click();
-      expect(page.downloadMessage.isPresent()).toBeFalsy();
+    it('can clear the log of the download', async () => {
+      await page.downloadButton.click();
+      expect(await page.downloadMessage.getText()).toContain('Contents: "This is the downloaded text file "');
+      await page.downloadClearButton.click();
+      expect(await page.downloadMessage.isPresent()).toBeFalsy();
     });
   });
 
   describe('Upload', () => {
-    it('can upload a file', () => {
+    it('can upload a file', async () => {
       const filename = 'app.po.ts';
       const url = resolve(__dirname, filename);
-      page.uploadInput.sendKeys(url);
-      checkLogForMessage('POST "/upload/file" succeeded in');
-      expect(page.uploadMessage.getText()).toContain(
+      await page.uploadInput.sendKeys(url);
+      await checkLogForMessage('POST "/upload/file" succeeded in');
+      expect(await page.uploadMessage.getText()).toContain(
         `File "${filename}" was completely uploaded!`);
     });
   });
 
   describe('PackageSearch', () => {
-    it('can search for npm package and find in cache', () => {
+    it('can search for npm package and find in cache', async () => {
       const packageName = 'angular';
-      page.searchInput.sendKeys(packageName);
-      checkLogForMessage(
+      await page.searchInput.sendKeys(packageName);
+      await checkLogForMessage(
         'Caching response from "https://npmsearch.com/query?q=angular"');
-      expect(page.searchListItems.count()).toBeGreaterThan(1, 'angular items');
+      expect(await page.searchListItems.count()).toBeGreaterThan(1, 'angular items');
 
-      page.searchInput.clear();
-      page.searchInput.sendKeys(' ');
-      expect(page.searchListItems.count()).toBe(0, 'search empty');
+      await page.searchInput.clear();
+      await page.searchInput.sendKeys(' ');
+      expect(await page.searchListItems.count()).toBe(0, 'search empty');
 
-      page.searchInput.clear();
-      page.searchInput.sendKeys(packageName);
-      checkLogForMessage(
+      await page.searchInput.clear();
+      await page.searchInput.sendKeys(packageName);
+      await checkLogForMessage(
         'Found cached response for "https://npmsearch.com/query?q=angular"');
     });
   });

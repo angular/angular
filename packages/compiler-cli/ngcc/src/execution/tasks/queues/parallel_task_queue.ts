@@ -1,11 +1,11 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {Logger} from '../../../logging/logger';
+import {Logger} from '../../../../../src/ngtsc/logging';
 import {PartiallyOrderedTasks, Task, TaskDependencies} from '../api';
 import {getBlockedTasks, sortTasksByPriority, stringifyTask} from '../utils';
 import {BaseTaskQueue} from './base_task_queue';
@@ -41,17 +41,17 @@ export class ParallelTaskQueue extends BaseTaskQueue {
     return nextTask;
   }
 
-  markTaskCompleted(task: Task): void {
-    super.markTaskCompleted(task);
+  markAsCompleted(task: Task): void {
+    super.markAsCompleted(task);
 
     if (!this.dependencies.has(task)) {
       return;
     }
 
     // Unblock the tasks that are dependent upon `task`
-    for (const dependentTask of this.dependencies.get(task) !) {
+    for (const dependentTask of this.dependencies.get(task)!) {
       if (this.blockedTasks.has(dependentTask)) {
-        const blockingTasks = this.blockedTasks.get(dependentTask) !;
+        const blockingTasks = this.blockedTasks.get(dependentTask)!;
         // Remove the completed task from the lists of tasks blocking other tasks.
         blockingTasks.delete(task);
         if (blockingTasks.size === 0) {

@@ -1,6 +1,6 @@
 # BEGIN-INTERNAL
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_npm")
-load("@npm_bazel_typescript//:index.bzl", "ts_library")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
 load("//tools:defaults.bzl", "jasmine_node_test")
 
 ts_library(
@@ -39,9 +39,8 @@ pkg_npm(
         "package.json",
     ],
     substitutions = {
-        "@angular//tools/ts-api-guardian:bin": "@npm_ts_api_guardian//:bin",
+        "@angular//tools/ts-api-guardian:bin": "//:node_modules/ts-api-guardian/bin",
         "@angular//tools/ts-api-guardian:lib": "@npm//ts-api-guardian",
-        "angular/tools/ts-api-guardian/": "npm_ts_api_guardian/",
     },
     deps = [
         ":lib",
@@ -62,10 +61,9 @@ ts_library(
     tsconfig = "//tools:tsconfig-test",
     deps = [
         ":lib",
-        "@npm//@types/chai",
+        "@npm//@bazel/runfiles",
         "@npm//@types/jasmine",
         "@npm//@types/node",
-        "@npm//chai",
         "@npm//jasmine",
         "@npm//typescript",
     ],
@@ -103,7 +101,6 @@ jasmine_node_test(
         ":ts-api-guardian",
     ],
 )
-# END-INTERNAL
 
 filegroup(
     name = "bin",
@@ -113,3 +110,5 @@ filegroup(
 
 # Exported to be referenced as entry_point of the nodejs_binary
 exports_files(["bin/ts-api-guardian"])
+
+# END-INTERNAL

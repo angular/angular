@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -27,6 +27,7 @@ export interface Config {
   assetGroups?: AssetGroup[];
   dataGroups?: DataGroup[];
   navigationUrls?: string[];
+  navigationRequestStrategy?: 'freshness'|'performance';
 }
 
 /**
@@ -39,6 +40,7 @@ export interface AssetGroup {
   installMode?: 'prefetch'|'lazy';
   updateMode?: 'prefetch'|'lazy';
   resources: {files?: Glob[]; urls?: Glob[];};
+  cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
 }
 
 /**
@@ -51,6 +53,9 @@ export interface DataGroup {
   urls: Glob[];
   version?: number;
   cacheConfig: {
-    maxSize: number; maxAge: Duration; timeout?: Duration; strategy?: 'freshness' | 'performance';
+    maxSize: number; maxAge: Duration;
+    timeout?: Duration;
+    strategy?: 'freshness' | 'performance';
   };
+  cacheQueryOptions?: Pick<CacheQueryOptions, 'ignoreSearch'>;
 }

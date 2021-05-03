@@ -3,10 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 import { CodeComponent } from './code.component';
 import { CodeModule } from './code.module';
-import { CopierService } from 'app/shared//copier.service';
 import { Logger } from 'app/shared/logger.service';
 import { MockPrettyPrinter } from 'testing/pretty-printer.service';
 import { PrettyPrinter } from './pretty-printer.service';
@@ -32,7 +32,6 @@ describe('CodeComponent', () => {
       imports: [ NoopAnimationsModule, CodeModule ],
       declarations: [ HostComponent ],
       providers: [
-        CopierService,
         { provide: Logger, useClass: TestLogger },
         { provide: PrettyPrinter, useClass: MockPrettyPrinter },
      ]
@@ -222,23 +221,23 @@ describe('CodeComponent', () => {
     });
 
     it('should call copier service when clicked', () => {
-      const copierService: CopierService = TestBed.inject(CopierService);
-      const spy = spyOn(copierService, 'copyText');
+      const clipboard = TestBed.inject(Clipboard);
+      const spy = spyOn(clipboard, 'copy');
       expect(spy.calls.count()).toBe(0, 'before click');
       getButton().click();
       expect(spy.calls.count()).toBe(1, 'after click');
     });
 
     it('should copy code text when clicked', () => {
-      const copierService: CopierService = TestBed.inject(CopierService);
-      const spy = spyOn(copierService, 'copyText');
+      const clipboard = TestBed.inject(Clipboard);
+      const spy = spyOn(clipboard, 'copy');
       getButton().click();
       expect(spy.calls.argsFor(0)[0]).toBe(oneLineCode, 'after click');
     });
 
     it('should preserve newlines in the copied code', () => {
-      const copierService: CopierService = TestBed.inject(CopierService);
-      const spy = spyOn(copierService, 'copyText');
+      const clipboard = TestBed.inject(Clipboard);
+      const spy = spyOn(clipboard, 'copy');
       const expectedCode = smallMultiLineCode.trim().replace(/&lt;/g, '<').replace(/&gt;/g, '>');
       let actualCode;
 
@@ -251,7 +250,7 @@ describe('CodeComponent', () => {
         actualCode = spy.calls.mostRecent().args[0];
 
         expect(actualCode).toBe(expectedCode, `when linenums=${linenums}`);
-        expect(actualCode.match(/\r?\n/g)!.length).toBe(5);
+        expect(actualCode.match(/\r?\n/g)?.length).toBe(5);
 
         spy.calls.reset();
       });
@@ -259,19 +258,19 @@ describe('CodeComponent', () => {
 
     it('should display a message when copy succeeds', () => {
       const snackBar: MatSnackBar = TestBed.inject(MatSnackBar);
-      const copierService: CopierService = TestBed.inject(CopierService);
+      const clipboard = TestBed.inject(Clipboard);
       spyOn(snackBar, 'open');
-      spyOn(copierService, 'copyText').and.returnValue(true);
+      spyOn(clipboard, 'copy').and.returnValue(true);
       getButton().click();
       expect(snackBar.open).toHaveBeenCalledWith('Code Copied', '', { duration: 800 });
     });
 
     it('should display an error when copy fails', () => {
       const snackBar: MatSnackBar = TestBed.inject(MatSnackBar);
-      const copierService: CopierService = TestBed.inject(CopierService);
+      const clipboard = TestBed.inject(Clipboard);
       const logger = TestBed.inject(Logger) as unknown as TestLogger;
       spyOn(snackBar, 'open');
-      spyOn(copierService, 'copyText').and.returnValue(false);
+      spyOn(clipboard, 'copy').and.returnValue(false);
       getButton().click();
       expect(snackBar.open).toHaveBeenCalledWith('Copy failed. Please try again!', '', { duration: 800 });
       expect(logger.error).toHaveBeenCalledTimes(1);

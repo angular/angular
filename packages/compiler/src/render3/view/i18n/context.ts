@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,7 +15,6 @@ import {assembleBoundTextPlaceholders, getSeqNumberGenerator, updatePlaceholderM
 enum TagType {
   ELEMENT,
   TEMPLATE,
-  PROJECTION
 }
 
 /**
@@ -46,7 +45,7 @@ export class I18nContext {
   public placeholders = new Map<string, any[]>();
   public isEmitted: boolean = false;
 
-  private _registry !: any;
+  private _registry!: any;
   private _unresolvedCtxCount: number = 0;
 
   constructor(
@@ -66,9 +65,15 @@ export class I18nContext {
     updatePlaceholderMap(this.placeholders, ph, content);
   }
 
-  get icus() { return this._registry.icus; }
-  get isRoot() { return this.level === 0; }
-  get isResolved() { return this._unresolvedCtxCount === 0; }
+  get icus() {
+    return this._registry.icus;
+  }
+  get isRoot() {
+    return this.level === 0;
+  }
+  get isResolved() {
+    return this._unresolvedCtxCount === 0;
+  }
 
   getSerializedPlaceholders() {
     const result = new Map<string, any[]>();
@@ -78,7 +83,9 @@ export class I18nContext {
   }
 
   // public API to accumulate i18n-related content
-  appendBinding(binding: AST) { this.bindings.add(binding); }
+  appendBinding(binding: AST) {
+    this.bindings.add(binding);
+  }
   appendIcu(name: string, ref: o.Expression) {
     updatePlaceholderMap(this._registry.icus, name, ref);
   }
@@ -97,10 +104,12 @@ export class I18nContext {
     this.appendTag(TagType.ELEMENT, node as i18n.TagPlaceholder, index, closed);
   }
   appendProjection(node: i18n.I18nMeta, index: number) {
-    // add open and close tags at the same time,
-    // since we process projected content separately
-    this.appendTag(TagType.PROJECTION, node as i18n.TagPlaceholder, index, false);
-    this.appendTag(TagType.PROJECTION, node as i18n.TagPlaceholder, index, true);
+    // Add open and close tags at the same time, since `<ng-content>` has no content,
+    // so when we come across `<ng-content>` we can register both open and close tags.
+    // Note: runtime i18n logic doesn't distinguish `<ng-content>` tag placeholders and
+    // regular element tag placeholders, so we generate element placeholders for both types.
+    this.appendTag(TagType.ELEMENT, node as i18n.TagPlaceholder, index, false);
+    this.appendTag(TagType.ELEMENT, node as i18n.TagPlaceholder, index, true);
   }
 
   /**
@@ -181,7 +190,7 @@ function wrapTag(symbol: string, {index, ctx, isVoid}: any, closed?: boolean): s
                   wrap(symbol, index, ctx, closed);
 }
 
-function findTemplateFn(ctx: number, templateIndex: number | null) {
+function findTemplateFn(ctx: number, templateIndex: number|null) {
   return (token: any) => typeof token === 'object' && token.type === TagType.TEMPLATE &&
       token.index === templateIndex && token.ctx === ctx;
 }
@@ -206,9 +215,6 @@ function serializePlaceholderValue(value: any): string {
 
     case TagType.TEMPLATE:
       return template(value, value.closed);
-
-    case TagType.PROJECTION:
-      return projection(value, value.closed);
 
     default:
       return value;

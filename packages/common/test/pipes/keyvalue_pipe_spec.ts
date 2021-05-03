@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,12 +17,12 @@ describe('KeyValuePipe', () => {
   });
   it('should return null when given undefined', () => {
     const pipe = new KeyValuePipe(defaultKeyValueDiffers);
-    expect(pipe.transform(undefined as any)).toEqual(null);
+    expect(pipe.transform(undefined)).toEqual(null);
   });
   it('should return null for an unsupported type', () => {
     const pipe = new KeyValuePipe(defaultKeyValueDiffers);
     const fn = () => {};
-    expect(pipe.transform(fn as any)).toEqual(null);
+    expect(pipe.transform(fn as any as null)).toEqual(null);
   });
   describe('object dictionary', () => {
     it('should return empty array of an empty dictionary', () => {
@@ -63,6 +63,16 @@ describe('KeyValuePipe', () => {
       const transform2 = pipe.transform({1: 3});
       expect(transform1 !== transform2).toEqual(true);
     });
+    it('should accept a type union of an object with string keys and null', () => {
+      let value!: {[key: string]: string}|null;
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(value)).toEqual(null);
+    });
+    it('should accept a type union of an object with number keys and null', () => {
+      let value!: {[key: number]: string}|null;
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(value)).toEqual(null);
+    });
   });
 
   describe('Map', () => {
@@ -88,8 +98,9 @@ describe('KeyValuePipe', () => {
     });
     it('should order by numerical and alpha', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
-      const input = [[2, 1], [1, 1], ['b', 1], [0, 1], [3, 1], ['a', 1]];
-      expect(pipe.transform(new Map(input as any))).toEqual([
+      const input =
+          [[2, 1], [1, 1], ['b', 1], [0, 1], [3, 1], ['a', 1]] as Array<[number | string, number]>;
+      expect(pipe.transform(new Map(input))).toEqual([
         {key: 0, value: 1}, {key: 1, value: 1}, {key: 2, value: 1}, {key: 3, value: 1},
         {key: 'a', value: 1}, {key: 'b', value: 1}
       ]);
@@ -114,6 +125,11 @@ describe('KeyValuePipe', () => {
       const transform1 = pipe.transform(new Map([[1, 2]]));
       const transform2 = pipe.transform(new Map([[1, 3]]));
       expect(transform1 !== transform2).toEqual(true);
+    });
+    it('should accept a type union of a Map and null', () => {
+      let value!: Map<number, number>|null;
+      const pipe = new KeyValuePipe(defaultKeyValueDiffers);
+      expect(pipe.transform(value)).toEqual(null);
     });
   });
 });

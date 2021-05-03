@@ -2,13 +2,12 @@
 // #docregion
 import { Component, Injector, OnInit } from '@angular/core';
 
-import { Car, Engine, Tires }   from './car/car';
-import { Hero }                 from './heroes/hero';
-import { HeroService }          from './heroes/hero.service';
-import { heroServiceProvider }  from './heroes/hero.service.provider';
-import { Logger }               from './logger.service';
+import { Car, Engine, Tires } from './car/car';
+import { Hero } from './heroes/hero';
+import { HeroService } from './heroes/hero.service';
+import { heroServiceProvider } from './heroes/hero.service.provider';
+import { Logger } from './logger.service';
 
-// #docregion injector
 @Component({
   selector: 'app-injectors',
   template: `
@@ -36,11 +35,10 @@ export class InjectorComponent implements OnInit {
   }
 
   get rodent() {
-    let rousDontExist = `R.O.U.S.'s? I don't think they exist!`;
+    const rousDontExist = `R.O.U.S.'s? I don't think they exist!`;
     return this.injector.get(ROUS, rousDontExist);
   }
 }
-// #enddocregion injector
 
 /**
  * R.O.U.S. - Rodents Of Unusual Size

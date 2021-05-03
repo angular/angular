@@ -1,24 +1,25 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import '../util/ng_dev_mode';
 
-import {assertDomNode} from '../util/assert';
+import {assertDefined, assertDomNode} from '../util/assert';
 
-import {EMPTY_ARRAY} from './empty';
-import {LContext, MONKEY_PATCH_KEY_NAME} from './interfaces/context';
+import {EMPTY_ARRAY} from '../util/empty';
+import {LContext} from './interfaces/context';
 import {TNode, TNodeFlags} from './interfaces/node';
-import {RElement, RNode} from './interfaces/renderer';
+import {RElement, RNode} from './interfaces/renderer_dom';
 import {CONTEXT, HEADER_OFFSET, HOST, LView, TVIEW} from './interfaces/view';
-import {getComponentLViewByIndex, getNativeByTNodeOrNull, readPatchedData, unwrapRNode} from './util/view_utils';
+import {getComponentLViewByIndex, unwrapRNode} from './util/view_utils';
 
 
 
-/** Returns the matching `LContext` data for a given DOM node, directive or component instance.
+/**
+ * Returns the matching `LContext` data for a given DOM node, directive or component instance.
  *
  * This function will examine the provided DOM element, component, or directive instance\'s
  * monkey-patched property to derive the `LContext` data. Once called then the monkey-patched
@@ -43,7 +44,7 @@ export function getLContext(target: any): LContext|null {
     // only when it's an array is it considered an LView instance
     // ... otherwise it's an already constructed LContext instance
     if (Array.isArray(mpValue)) {
-      const lView: LView = mpValue !;
+      const lView: LView = mpValue!;
       let nodeIndex: number;
       let component: any = undefined;
       let directives: any[]|null|undefined = undefined;
@@ -170,11 +171,34 @@ export function getComponentViewByInstance(componentInstance: {}): LView {
 }
 
 /**
+ * This property will be monkey-patched on elements, components and directives.
+ */
+const MONKEY_PATCH_KEY_NAME = '__ngContext__';
+
+/**
  * Assigns the given data to the given target (which could be a component,
  * directive or DOM node instance) using monkey-patching.
  */
-export function attachPatchData(target: any, data: LView | LContext) {
+export function attachPatchData(target: any, data: LView|LContext) {
+  ngDevMode && assertDefined(target, 'Target expected');
   target[MONKEY_PATCH_KEY_NAME] = data;
+}
+
+/**
+ * Returns the monkey-patch value data present on the target (which could be
+ * a component, directive or a DOM node).
+ */
+export function readPatchedData(target: any): LView|LContext|null {
+  ngDevMode && assertDefined(target, 'Target expected');
+  return target[MONKEY_PATCH_KEY_NAME] || null;
+}
+
+export function readPatchedLView(target: any): LView|null {
+  const value = readPatchedData(target);
+  if (value) {
+    return Array.isArray(value) ? value : (value as LContext).lView;
+  }
+  return null;
 }
 
 export function isComponentInstance(instance: any): boolean {
@@ -189,13 +213,11 @@ export function isDirectiveInstance(instance: any): boolean {
  * Locates the element within the given LView and returns the matching index
  */
 function findViaNativeElement(lView: LView, target: RElement): number {
-  let tNode = lView[TVIEW].firstChild;
-  while (tNode) {
-    const native = getNativeByTNodeOrNull(tNode, lView) !;
-    if (native === target) {
-      return tNode.index;
+  const tView = lView[TVIEW];
+  for (let i = HEADER_OFFSET; i < tView.bindingStartIndex; i++) {
+    if (unwrapRNode(lView[i]) === target) {
+      return i;
     }
-    tNode = traverseNextElement(tNode);
   }
 
   return -1;

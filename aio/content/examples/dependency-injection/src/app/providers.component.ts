@@ -18,10 +18,10 @@ const template = '{{log}}';
 
 @Component({
   selector: 'provider-1',
-  template: template,
-  // #docregion providers-1, providers-logger
+  template,
+  // #docregion providers-logger
   providers: [Logger]
-  // #enddocregion providers-1, providers-logger
+  // #enddocregion providers-logger
 })
 export class Provider1Component {
   log: string;
@@ -35,7 +35,7 @@ export class Provider1Component {
 
 @Component({
   selector: 'provider-3',
-  template: template,
+  template,
   providers:
     // #docregion providers-3
     [{ provide: Logger, useClass: Logger }]
@@ -54,7 +54,7 @@ export class BetterLogger extends Logger {}
 
 @Component({
   selector: 'provider-4',
-  template: template,
+  template,
   providers:
     // #docregion providers-4
     [{ provide: Logger, useClass: BetterLogger }]
@@ -76,7 +76,7 @@ export class EvenBetterLogger extends Logger {
   constructor(private userService: UserService) { super(); }
 
   log(message: string) {
-    let name = this.userService.user.name;
+    const name = this.userService.user.name;
     super.log(`Message to ${name}: ${message}`);
   }
 }
@@ -84,7 +84,7 @@ export class EvenBetterLogger extends Logger {
 
 @Component({
   selector: 'provider-5',
-  template: template,
+  template,
   providers:
     // #docregion providers-5
     [ UserService,
@@ -107,18 +107,16 @@ export class OldLogger {
   logs: string[] = [];
   log(message: string) {
     throw new Error('Should not call the old logger!');
-  };
+  }
 }
 
 @Component({
   selector: 'provider-6a',
-  template: template,
+  template,
   providers:
-    // #docregion providers-6a
     [ NewLogger,
       // Not aliased! Creates two instances of `NewLogger`
       { provide: OldLogger, useClass: NewLogger}]
-    // #enddocregion providers-6a
 })
 export class Provider6aComponent {
   log: string;
@@ -135,7 +133,7 @@ export class Provider6aComponent {
 
 @Component({
   selector: 'provider-6b',
-  template: template,
+  template,
   providers:
     // #docregion providers-6b
     [ NewLogger,
@@ -168,7 +166,7 @@ export const SilentLogger = {
 
 @Component({
   selector: 'provider-7',
-  template: template,
+  template,
   providers:
     // #docregion providers-7
     [{ provide: Logger, useValue: SilentLogger }]
@@ -186,26 +184,24 @@ export class Provider7Component {
 
 @Component({
   selector: 'provider-8',
-  template: template,
+  template,
   providers: [heroServiceProvider, Logger, UserService]
 })
 export class Provider8Component {
   // must be true else this component would have blown up at runtime
   log = 'Hero service injected successfully via heroServiceProvider';
 
-  // #docregion provider-8-ctor
   constructor(heroService: HeroService) { }
-  // #enddocregion provider-8-ctor
 }
 
 /////////////////
 
 @Component({
   selector: 'provider-9',
-  template: template,
+  template,
   /*
    // #docregion providers-9-interface
-   // FAIL! Can't use interface as provider token
+   // Can't use interface as provider token
    [{ provide: AppConfig, useValue: HERO_DI_CONFIG })]
    // #enddocregion providers-9-interface
    */
@@ -217,13 +213,11 @@ export class Provider9Component implements OnInit {
   log: string;
   /*
    // #docregion provider-9-ctor-interface
-   // FAIL! Can't inject using the interface as the parameter type
+   // Can't inject using the interface as the parameter type
    constructor(private config: AppConfig){ }
    // #enddocregion provider-9-ctor-interface
    */
-  // #docregion provider-9-ctor
   constructor(@Inject(APP_CONFIG) private config: AppConfig) { }
-  // #enddocregion provider-9-ctor
 
   ngOnInit() {
      this.log = 'APP_CONFIG Application title is ' + this.config.title;
@@ -233,26 +227,22 @@ export class Provider9Component implements OnInit {
 //////////////////////////////////////////
 // Sample providers 1 to 7 illustrate a required logger dependency.
 // Optional logger, can be null
-// #docregion import-optional
 import { Optional } from '@angular/core';
-// #enddocregion import-optional
 
-let some_message = 'Hello from the injected logger';
+const someMessage = 'Hello from the injected logger';
 
 @Component({
   selector: 'provider-10',
-  template: template,
+  template,
   providers: [{ provide: Logger, useValue: null }]
 })
 export class Provider10Component implements OnInit {
   log: string;
-  // #docregion provider-10-ctor
   constructor(@Optional() private logger?: Logger) {
     if (this.logger) {
-      this.logger.log(some_message);
+      this.logger.log(someMessage);
     }
   }
-  // #enddocregion provider-10-ctor
 
   ngOnInit() {
     this.log = this.logger ? this.logger.logs[0] : 'Optional logger was not available';

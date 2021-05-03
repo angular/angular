@@ -1,1 +1,0 @@
-Deprecated in favor of `@angular/common/http`.

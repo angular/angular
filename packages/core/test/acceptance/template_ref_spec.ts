@@ -1,23 +1,21 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, ComponentFactoryResolver, Injector, NgModule, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ivyEnabled, onlyInIvy} from '@angular/private/testing';
 
 describe('TemplateRef', () => {
   describe('rootNodes', () => {
-
     @Component({template: `<ng-template #templateRef></ng-template>`})
     class App {
-      @ViewChild('templateRef', {static: true})
-      templateRef !: TemplateRef<any>;
+      @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
       minutes = 0;
     }
 
@@ -80,7 +78,7 @@ describe('TemplateRef', () => {
             `
       })
       class App {
-        @ViewChild(MenuContent) content !: MenuContent;
+        @ViewChild(MenuContent) content!: MenuContent;
 
         constructor(public viewContainerRef: ViewContainerRef) {}
       }
@@ -181,6 +179,181 @@ describe('TemplateRef', () => {
         // when it comes to ICU containers - this needs more investigation / fix.
         expect(rootNodes.length).toBe(7);
       }
+    });
+
+    it('should return an empty array for an embedded view with projection and no projectable nodes',
+       () => {
+         const rootNodes =
+             getRootNodes(`<ng-template #templateRef><ng-content></ng-content></ng-template>`);
+         // VE will, incorrectly, return an additional comment node in this case
+         expect(rootNodes.length).toBe(ivyEnabled ? 0 : 1);
+       });
+
+    it('should return an empty array for an embedded view with multiple projections and no projectable nodes',
+       () => {
+         const rootNodes = getRootNodes(
+             `<ng-template #templateRef><ng-content></ng-content><ng-content select="foo"></ng-content></ng-template>`);
+         // VE will, incorrectly, return an additional comment node in this case
+         expect(rootNodes.length).toBe(ivyEnabled ? 0 : 1);
+       });
+
+    describe('projectable nodes provided to a dynamically created component', () => {
+      @Component({selector: 'dynamic', template: ''})
+      class DynamicCmp {
+        @ViewChild('templateRef', {static: true}) templateRef!: TemplateRef<any>;
+      }
+
+      @NgModule({
+        declarations: [DynamicCmp],
+        entryComponents: [DynamicCmp],
+      })
+      class WithDynamicCmpModule {
+      }
+
+      @Component({selector: 'test', template: ''})
+      class TestCmp {
+        constructor(public cfr: ComponentFactoryResolver) {}
+      }
+
+      beforeEach(() => {
+        TestBed.configureTestingModule({
+          declarations: [TestCmp],
+          imports: [WithDynamicCmpModule],
+        });
+      });
+
+      it('should return projectable nodes when provided', () => {
+        TestBed.overrideTemplate(
+            DynamicCmp, `<ng-template #templateRef><ng-content></ng-content></ng-template>`);
+
+        const fixture = TestBed.createComponent(TestCmp);
+        const dynamicCmptFactory =
+            fixture.componentInstance.cfr.resolveComponentFactory(DynamicCmp);
+
+        // Number of projectable nodes matches the number of slots - all nodes should be returned
+        const projectableNodes = [[document.createTextNode('textNode')]];
+        const cmptRef = dynamicCmptFactory.create(Injector.NULL, projectableNodes);
+        const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
+
+        // VE will, incorrectly, return an additional comment node in this case
+        expect(viewRef.rootNodes.length).toBe(ivyEnabled ? 1 : 2);
+      });
+
+      it('should return an empty collection when no projectable nodes were provided', () => {
+        TestBed.overrideTemplate(
+            DynamicCmp, `<ng-template #templateRef><ng-content></ng-content></ng-template>`);
+
+        const fixture = TestBed.createComponent(TestCmp);
+        const dynamicCmptFactory =
+            fixture.componentInstance.cfr.resolveComponentFactory(DynamicCmp);
+
+        // There are slots but projectable nodes were not provided - nothing should be returned
+        const cmptRef = dynamicCmptFactory.create(Injector.NULL, []);
+        const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
+
+        // VE will, incorrectly, return an additional comment node in this case
+        expect(viewRef.rootNodes.length).toBe(ivyEnabled ? 0 : 1);
+      });
+
+      it('should return an empty collection when projectable nodes were provided but there are no slots',
+         () => {
+           TestBed.overrideTemplate(DynamicCmp, `<ng-template #templateRef></ng-template>`);
+
+           const fixture = TestBed.createComponent(TestCmp);
+           const dynamicCmptFactory =
+               fixture.componentInstance.cfr.resolveComponentFactory(DynamicCmp);
+
+           // There are no slots but projectable were provided - nothing should be returned
+           const projectableNodes = [[document.createTextNode('textNode')]];
+           const cmptRef = dynamicCmptFactory.create(Injector.NULL, projectableNodes);
+           const viewRef = cmptRef.instance.templateRef.createEmbeddedView({});
+
+           // VE will, incorrectly, return an additional comment node in this case
+           expect(viewRef.rootNodes.length).toBe(ivyEnabled ? 0 : 1);
+         });
+    });
+  });
+
+  describe('context', () => {
+    @Component({
+      template: `
+      <ng-template #templateRef let-name="name">{{name}}</ng-template>
+      <ng-container #containerRef></ng-container>
+    `
+    })
+    class App {
+      @ViewChild('templateRef') templateRef!: TemplateRef<any>;
+      @ViewChild('containerRef', {read: ViewContainerRef}) containerRef!: ViewContainerRef;
+    }
+
+    it('should update if the context of a view ref is mutated', () => {
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const context = {name: 'Frodo'};
+      const viewRef = fixture.componentInstance.templateRef.createEmbeddedView(context);
+      fixture.componentInstance.containerRef.insert(viewRef);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Frodo');
+
+      context.name = 'Bilbo';
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Bilbo');
+    });
+
+    it('should update if the context of a view ref is replaced', () => {
+      TestBed.configureTestingModule({declarations: [App]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges();
+      const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
+      fixture.componentInstance.containerRef.insert(viewRef);
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Frodo');
+
+      viewRef.context = {name: 'Bilbo'};
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toBe('Bilbo');
+    });
+
+    it('should use the latest context information inside template listeners', () => {
+      const events: string[] = [];
+
+      @Component({
+        template: `
+          <ng-template #templateRef let-name="name">
+            <button (click)="log(name)"></button>
+          </ng-template>
+          <ng-container #containerRef></ng-container>
+        `
+      })
+      class ListenerTest {
+        @ViewChild('templateRef') templateRef!: TemplateRef<any>;
+        @ViewChild('containerRef', {read: ViewContainerRef}) containerRef!: ViewContainerRef;
+
+        log(name: string) {
+          events.push(name);
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [ListenerTest]});
+      const fixture = TestBed.createComponent(ListenerTest);
+      fixture.detectChanges();
+      const viewRef = fixture.componentInstance.templateRef.createEmbeddedView({name: 'Frodo'});
+      fixture.componentInstance.containerRef.insert(viewRef);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+      expect(events).toEqual(['Frodo']);
+
+      viewRef.context = {name: 'Bilbo'};
+      fixture.detectChanges();
+      button.click();
+      expect(events).toEqual(['Frodo', 'Bilbo']);
     });
   });
 });

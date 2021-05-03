@@ -1,29 +1,37 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {Element, Node, ParseErrorLevel, visitAll} from '@angular/compiler';
-import {ɵParsedTranslation} from '@angular/localize';
 
 import {Diagnostics} from '../../../diagnostics';
 import {BaseVisitor} from '../base_visitor';
-import {MessageSerializer} from '../message_serialization/message_serializer';
-import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
-import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {XmlTranslationParserHint, addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, parseInnerRange} from './translation_utils';
+import {serializeTranslationMessage} from './serialize_translation_message';
+import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
+import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, XmlTranslationParserHint} from './translation_utils';
 
 /**
  * A translation parser that can load translations from XLIFF 2 files.
  *
- * http://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
+ * https://docs.oasis-open.org/xliff/xliff-core/v2.0/os/xliff-core-v2.0-os.html
  *
+ * @see Xliff2TranslationSerializer
+ * @publicApi used by CLI
  */
 export class Xliff2TranslationParser implements TranslationParser<XmlTranslationParserHint> {
+  /**
+   * @deprecated
+   */
   canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
+    const result = this.analyze(filePath, contents);
+    return result.canParse && result.hint;
+  }
+
+  analyze(filePath: string, contents: string): ParseAnalysis<XmlTranslationParserHint> {
     return canParseXml(filePath, contents, 'xliff', {version: '2.0'});
   }
 
@@ -132,27 +140,18 @@ class Xliff2TranslationVisitor extends BaseVisitor {
       return;
     }
 
-    try {
-      bundle.translations[unit] = serializeTargetMessage(targetMessage);
-    } catch (e) {
-      // Capture any errors from serialize the target message
-      if (e.span && e.msg && e.level) {
-        addParseDiagnostic(bundle.diagnostics, e.span, e.msg, e.level);
-      } else {
-        throw e;
-      }
+    const {translation, parseErrors, serializeErrors} = serializeTranslationMessage(targetMessage, {
+      inlineElements: ['cp', 'sc', 'ec', 'mrk', 'sm', 'em'],
+      placeholder: {elementName: 'ph', nameAttribute: 'equiv', bodyAttribute: 'disp'},
+      placeholderContainer:
+          {elementName: 'pc', startAttribute: 'equivStart', endAttribute: 'equivEnd'}
+    });
+    if (translation !== null) {
+      bundle.translations[unit] = translation;
     }
+    addErrorsToBundle(bundle, parseErrors);
+    addErrorsToBundle(bundle, serializeErrors);
   }
-}
-
-function serializeTargetMessage(source: Element): ɵParsedTranslation {
-  const serializer = new MessageSerializer(new TargetMessageRenderer(), {
-    inlineElements: ['cp', 'sc', 'ec', 'mrk', 'sm', 'em'],
-    placeholder: {elementName: 'ph', nameAttribute: 'equiv', bodyAttribute: 'disp'},
-    placeholderContainer:
-        {elementName: 'pc', startAttribute: 'equivStart', endAttribute: 'equivEnd'}
-  });
-  return serializer.serialize(parseInnerRange(source));
 }
 
 function isFileElement(node: Node): node is Element {

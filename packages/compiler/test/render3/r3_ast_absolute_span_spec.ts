@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -245,10 +245,18 @@ describe('expression AST absolute source spans', () => {
     });
   });
 
-  it('should provide absolute offsets of a property read', () => {
-    expect(humanizeExpressionSource(parse('<div>{{prop}}</div>').nodes)).toContain([
-      'prop', new AbsoluteSourceSpan(7, 11)
-    ]);
+  describe('property read', () => {
+    it('should provide absolute offsets of a property read', () => {
+      expect(humanizeExpressionSource(parse('<div>{{prop.obj}}<div>').nodes)).toContain([
+        'prop.obj', new AbsoluteSourceSpan(7, 15)
+      ]);
+    });
+
+    it('should provide absolute offsets of expressions in a property read', () => {
+      expect(humanizeExpressionSource(parse('<div>{{prop.obj}}<div>').nodes)).toContain([
+        'prop', new AbsoluteSourceSpan(7, 11)
+      ]);
+    });
   });
 
   describe('property write', () => {
@@ -256,6 +264,11 @@ describe('expression AST absolute source spans', () => {
       expect(humanizeExpressionSource(parse('<div (click)="prop = 0"></div>').nodes)).toContain([
         'prop = 0', new AbsoluteSourceSpan(14, 22)
       ]);
+    });
+
+    it('should provide absolute offsets of an accessed property write', () => {
+      expect(humanizeExpressionSource(parse('<div (click)="prop.inner = 0"></div>').nodes))
+          .toContain(['prop.inner = 0', new AbsoluteSourceSpan(14, 28)]);
     });
 
     it('should provide absolute offsets of expressions in a property write', () => {
@@ -324,6 +337,27 @@ describe('expression AST absolute source spans', () => {
       expect(humanizeExpressionSource(parse('<div *ngFor="let a of As; let b of Bs"></div>').nodes))
           .toEqual(jasmine.arrayContaining(
               [['As', new AbsoluteSourceSpan(22, 24)], ['Bs', new AbsoluteSourceSpan(35, 37)]]));
+    });
+  });
+
+  describe('ICU expressions', () => {
+    it('is correct for variables and placeholders', () => {
+      const spans = humanizeExpressionSource(
+          parse('<span i18n>{item.var, plural, other { {{item.placeholder}} items } }</span>')
+              .nodes);
+      expect(spans).toContain(['item.var', new AbsoluteSourceSpan(12, 20)]);
+      expect(spans).toContain(['item.placeholder', new AbsoluteSourceSpan(40, 56)]);
+    });
+
+    it('is correct for variables and placeholders', () => {
+      const spans = humanizeExpressionSource(
+          parse(
+              '<span i18n>{item.var, plural, other { {{item.placeholder}} {nestedVar, plural, other { {{nestedPlaceholder}} }}} }</span>')
+              .nodes);
+      expect(spans).toContain(['item.var', new AbsoluteSourceSpan(12, 20)]);
+      expect(spans).toContain(['item.placeholder', new AbsoluteSourceSpan(40, 56)]);
+      expect(spans).toContain(['nestedVar', new AbsoluteSourceSpan(60, 69)]);
+      expect(spans).toContain(['nestedPlaceholder', new AbsoluteSourceSpan(89, 106)]);
     });
   });
 });

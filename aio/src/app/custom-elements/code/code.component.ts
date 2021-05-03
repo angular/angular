@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
+import { Clipboard } from '@angular/cdk/clipboard';
 import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
-import { CopierService } from 'app/shared/copier.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { tap } from 'rxjs/operators';
 
@@ -96,7 +96,7 @@ export class CodeComponent implements OnChanges {
   constructor(
     private snackbar: MatSnackBar,
     private pretty: PrettyPrinter,
-    private copier: CopierService,
+    private clipboard: Clipboard,
     private logger: Logger) {}
 
   ngOnChanges() {
@@ -144,7 +144,7 @@ export class CodeComponent implements OnChanges {
   /** Copies the code snippet to the user's clipboard. */
   doCopy() {
     const code = this.codeText;
-    const successfullyCopied = this.copier.copyText(code);
+    const successfullyCopied = this.clipboard.copy(code);
 
     if (successfullyCopied) {
       this.logger.log('Copied code to clipboard:', code);

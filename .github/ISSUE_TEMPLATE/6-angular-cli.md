@@ -1,5 +1,5 @@
 ---
-name: "\U0001F6E0️Angular CLI"
+name: "\U0001F6E0️ Angular CLI"
 about: Issues and feature requests for Angular CLI
 
 ---

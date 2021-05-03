@@ -1,18 +1,20 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname, relative} from 'canonical-path';
-import * as ts from 'typescript';
+import {PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import MagicString from 'magic-string';
+import * as ts from 'typescript';
+
 import {Reexport} from '../../../src/ngtsc/imports';
 import {Import, ImportManager} from '../../../src/ngtsc/translator';
 import {ExportInfo} from '../analysis/private_declarations_analyzer';
 import {isRequireCall} from '../host/commonjs_umd_utils';
 import {NgccReflectionHost} from '../host/ngcc_host';
+
 import {Esm5RenderingFormatter} from './esm5_rendering_formatter';
 import {stripExtension} from './utils';
 
@@ -22,8 +24,8 @@ import {stripExtension} from './utils';
  * wrapper function for AMD, CommonJS and global module formats.
  */
 export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
-  constructor(protected commonJsHost: NgccReflectionHost, isCore: boolean) {
-    super(commonJsHost, isCore);
+  constructor(fs: PathManipulation, protected commonJsHost: NgccReflectionHost, isCore: boolean) {
+    super(fs, commonJsHost, isCore);
   }
 
   /**
@@ -37,7 +39,7 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
 
     const insertionPoint = this.findEndOfImports(file);
     const renderedImports =
-        imports.map(i => `var ${i.qualifier} = require('${i.specifier}');\n`).join('');
+        imports.map(i => `var ${i.qualifier.text} = require('${i.specifier}');\n`).join('');
     output.appendLeft(insertionPoint, renderedImports);
   }
 
@@ -49,11 +51,11 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
       importManager: ImportManager, file: ts.SourceFile): void {
     exports.forEach(e => {
       const basePath = stripExtension(e.from);
-      const relativePath = './' + relative(dirname(entryPointBasePath), basePath);
+      const relativePath = './' + this.fs.relative(this.fs.dirname(entryPointBasePath), basePath);
       const namedImport = entryPointBasePath !== basePath ?
           importManager.generateNamedImport(relativePath, e.identifier) :
           {symbol: e.identifier, moduleImport: null};
-      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';
+      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport.text}.` : '';
       const exportStr = `\nexports.${e.identifier} = ${importNamespace}${namedImport.symbol};`;
       output.append(exportStr);
     });
@@ -64,7 +66,7 @@ export class CommonJsRenderingFormatter extends Esm5RenderingFormatter {
       file: ts.SourceFile): void {
     for (const e of exports) {
       const namedImport = importManager.generateNamedImport(e.fromModule, e.symbolName);
-      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport}.` : '';
+      const importNamespace = namedImport.moduleImport ? `${namedImport.moduleImport.text}.` : '';
       const exportStr = `\nexports.${e.asAlias} = ${importNamespace}${namedImport.symbol};`;
       output.append(exportStr);
     }

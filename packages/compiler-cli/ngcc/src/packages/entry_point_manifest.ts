@@ -1,18 +1,19 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {createHash} from 'crypto';
 
-import {AbsoluteFsPath, FileSystem} from '../../../src/ngtsc/file_system';
-import {Logger} from '../logging/logger';
+import {AbsoluteFsPath, FileSystem, PathSegment} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
+import {EntryPointWithDependencies} from '../dependencies/dependency_host';
 
 import {NGCC_VERSION} from './build_marker';
 import {NgccConfiguration} from './configuration';
-import {EntryPoint, INVALID_ENTRY_POINT, NO_ENTRY_POINT, getEntryPointInfo} from './entry_point';
+import {getEntryPointInfo, isEntryPoint, PackageJsonFormatProperties} from './entry_point';
 
 /**
  * Manages reading and writing a manifest file that contains a list of all the entry-points that
@@ -40,7 +41,7 @@ export class EntryPointManifest {
    * @returns an array of entry-point information for all entry-points found below the given
    * `basePath` or `null` if the manifest was out of date.
    */
-  readEntryPointsUsingManifest(basePath: AbsoluteFsPath): EntryPoint[]|null {
+  readEntryPointsUsingManifest(basePath: AbsoluteFsPath): EntryPointWithDependencies[]|null {
     try {
       if (this.fs.basename(basePath) !== 'node_modules') {
         return null;
@@ -63,19 +64,30 @@ export class EntryPointManifest {
         return null;
       }
 
-      this.logger.debug(
-          `Entry-point manifest found for ${basePath} so loading entry-point information directly.`);
+      this.logger.debug(`Entry-point manifest found for ${
+          basePath} so loading entry-point information directly.`);
       const startTime = Date.now();
 
-      const entryPoints: EntryPoint[] = [];
-      for (const [packagePath, entryPointPath] of entryPointPaths) {
-        const result =
-            getEntryPointInfo(this.fs, this.config, this.logger, packagePath, entryPointPath);
-        if (result === NO_ENTRY_POINT || result === INVALID_ENTRY_POINT) {
-          throw new Error(
-              `The entry-point manifest at ${manifestPath} contained an invalid pair of package paths: [${packagePath}, ${entryPointPath}]`);
+      const entryPoints: EntryPointWithDependencies[] = [];
+      for (const
+               [packagePath, entryPointPath, dependencyPaths = [], missingPaths = [],
+                                             deepImportPaths = []] of entryPointPaths) {
+        const result = getEntryPointInfo(
+            this.fs, this.config, this.logger, this.fs.resolve(basePath, packagePath),
+            this.fs.resolve(basePath, entryPointPath));
+        if (!isEntryPoint(result)) {
+          throw new Error(`The entry-point manifest at ${
+              manifestPath} contained an invalid pair of package paths: [${packagePath}, ${
+              entryPointPath}]`);
         } else {
-          entryPoints.push(result);
+          entryPoints.push({
+            entryPoint: result,
+            depInfo: {
+              dependencies: new Set(dependencyPaths),
+              missing: new Set(missingPaths),
+              deepImports: new Set(deepImportPaths),
+            }
+          });
         }
       }
       const duration = Math.round((Date.now() - startTime) / 100) / 10;
@@ -98,7 +110,12 @@ export class EntryPointManifest {
    * @param basePath The path where the manifest file is to be written.
    * @param entryPoints A collection of entry-points to record in the manifest.
    */
-  writeEntryPointManifest(basePath: AbsoluteFsPath, entryPoints: EntryPoint[]): void {
+  writeEntryPointManifest(basePath: AbsoluteFsPath, entryPoints: EntryPointWithDependencies[]):
+      void {
+    if (this.fs.basename(basePath) !== 'node_modules') {
+      return;
+    }
+
     const lockFileHash = this.computeLockFileHash(basePath);
     if (lockFileHash === null) {
       return;
@@ -107,7 +124,27 @@ export class EntryPointManifest {
       ngccVersion: NGCC_VERSION,
       configFileHash: this.config.hash,
       lockFileHash: lockFileHash,
-      entryPointPaths: entryPoints.map(entryPoint => [entryPoint.package, entryPoint.path]),
+      entryPointPaths: entryPoints.map(e => {
+        const entryPointPaths: EntryPointPaths = [
+          this.fs.relative(basePath, e.entryPoint.packagePath),
+          this.fs.relative(basePath, e.entryPoint.path),
+        ];
+        // Only add depInfo arrays if needed.
+        if (e.depInfo.dependencies.size > 0) {
+          entryPointPaths[2] = Array.from(e.depInfo.dependencies);
+        } else if (e.depInfo.missing.size > 0 || e.depInfo.deepImports.size > 0) {
+          entryPointPaths[2] = [];
+        }
+        if (e.depInfo.missing.size > 0) {
+          entryPointPaths[3] = Array.from(e.depInfo.missing);
+        } else if (e.depInfo.deepImports.size > 0) {
+          entryPointPaths[3] = [];
+        }
+        if (e.depInfo.deepImports.size > 0) {
+          entryPointPaths[4] = Array.from(e.depInfo.deepImports);
+        }
+        return entryPointPaths;
+      }),
     };
     this.fs.writeFile(this.getEntryPointManifestPath(basePath), JSON.stringify(manifest));
   }
@@ -134,12 +171,22 @@ export class EntryPointManifest {
  * current manifest file.
  *
  * It always returns `null` from the `readEntryPointsUsingManifest()` method, which forces a new
- * manifest to be created, which will overwrite the current file when `writeEntryPointManifest()` is
- * called.
+ * manifest to be created, which will overwrite the current file when `writeEntryPointManifest()`
+ * is called.
  */
 export class InvalidatingEntryPointManifest extends EntryPointManifest {
-  readEntryPointsUsingManifest(basePath: AbsoluteFsPath): EntryPoint[]|null { return null; }
+  readEntryPointsUsingManifest(_basePath: AbsoluteFsPath): EntryPointWithDependencies[]|null {
+    return null;
+  }
 }
+
+export type EntryPointPaths = [
+  string,
+  string,
+  Array<AbsoluteFsPath>?,
+  Array<AbsoluteFsPath|PathSegment>?,
+  Array<AbsoluteFsPath>?,
+];
 
 /**
  * The JSON format of the manifest file that is written to disk.
@@ -148,5 +195,11 @@ export interface EntryPointManifestFile {
   ngccVersion: string;
   configFileHash: string;
   lockFileHash: string;
-  entryPointPaths: Array<[AbsoluteFsPath, AbsoluteFsPath]>;
+  entryPointPaths: EntryPointPaths[];
 }
+
+
+/** The JSON format of the entrypoint properties. */
+export type NewEntryPointPropertiesMap = {
+  [Property in PackageJsonFormatProperties as `${Property}_ivy_ngcc`]?: string;
+};

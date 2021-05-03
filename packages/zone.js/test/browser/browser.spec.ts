@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -42,7 +42,11 @@ function canPatchOnProperty(obj: any, prop: string) {
 
 let supportsPassive = false;
 try {
-  const opts = Object.defineProperty({}, 'passive', {get: function() { supportsPassive = true; }});
+  const opts = Object.defineProperty({}, 'passive', {
+    get: function() {
+      supportsPassive = true;
+    }
+  });
   window.addEventListener('test', opts as any, opts);
   window.removeEventListener('test', opts as any, opts);
 } catch (e) {
@@ -73,7 +77,9 @@ function ieOrEdge() {
 
 class TestEventListener {
   logs: any[] = [];
-  addEventListener(eventName: string, listener: any, options: any) { this.logs.push(options); }
+  addEventListener(eventName: string, listener: any, options: any) {
+    this.logs.push(options);
+  }
   removeEventListener(eventName: string, listener: any, options: any) {}
 }
 
@@ -86,13 +92,13 @@ describe('Zone', function() {
       const alertSpy = jasmine.createSpy('alert');
       const promptSpy = jasmine.createSpy('prompt');
       const confirmSpy = jasmine.createSpy('confirm');
-      const spies: {[k: string]:
-                        Function} = {'alert': alertSpy, 'prompt': promptSpy, 'confirm': confirmSpy};
+      const spies:
+          {[k: string]: Function} = {'alert': alertSpy, 'prompt': promptSpy, 'confirm': confirmSpy};
       const myZone = Zone.current.fork({
         name: 'spy',
-        onInvoke: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                   callback: Function, applyThis?: any, applyArgs?: any[],
-                   source?: string): any => {
+        onInvoke: (
+            parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
+            callback: Function, applyThis?: any, applyArgs?: any[], source?: string): any => {
           if (source) {
             spies[source].apply(null, applyArgs);
           } else {
@@ -119,11 +125,12 @@ describe('Zone', function() {
           let hookSpy: Spy, eventListenerSpy: Spy;
           const zone = rootZone.fork({
             name: 'spy',
-            onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                             task: Task): any => {
-              hookSpy();
-              return parentZoneDelegate.scheduleTask(targetZone, task);
-            }
+            onScheduleTask:
+                (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                    any => {
+                      hookSpy();
+                      return parentZoneDelegate.scheduleTask(targetZone, task);
+                    }
           });
 
           beforeEach(function() {
@@ -170,11 +177,13 @@ describe('Zone', function() {
             });
           });
 
-          it('should patch all possbile on properties on body',
-             function() { checkIsOnPropertiesPatched(document.body, ['onorientationchange']); });
+          it('should patch all possbile on properties on body', function() {
+            checkIsOnPropertiesPatched(document.body, ['onorientationchange']);
+          });
 
-          it('should patch all possbile on properties on Document',
-             function() { checkIsOnPropertiesPatched(document, ['onorientationchange']); });
+          it('should patch all possbile on properties on Document', function() {
+            checkIsOnPropertiesPatched(document, ['onorientationchange']);
+          });
 
           it('should patch all possbile on properties on Window', function() {
             checkIsOnPropertiesPatched(window, [
@@ -185,8 +194,9 @@ describe('Zone', function() {
             ]);
           });
 
-          it('should patch all possbile on properties on xhr',
-             function() { checkIsOnPropertiesPatched(new XMLHttpRequest()); });
+          it('should patch all possbile on properties on xhr', function() {
+            checkIsOnPropertiesPatched(new XMLHttpRequest());
+          });
 
           it('should not patch ignored on properties', function() {
             const TestTarget: any = (window as any)['TestTarget'];
@@ -226,7 +236,9 @@ describe('Zone', function() {
               div.addEventListener('scroll', listener);
             });
 
-            zone.run(() => { div.dispatchEvent(scrollEvent); });
+            zone.run(() => {
+              div.dispatchEvent(scrollEvent);
+            });
             document.body.removeChild(div);
           });
 
@@ -248,12 +260,16 @@ describe('Zone', function() {
               };
             });
 
-            Zone.current.fork({name: 'test1'}).run(() => { testTarget.dispatchEvent('prop3'); });
+            Zone.current.fork({name: 'test1'}).run(() => {
+              testTarget.dispatchEvent('prop3');
+            });
           });
 
           it('window onmousedown should be in zone',
              ifEnvSupports(canPatchOnProperty(window, 'onmousedown'), function() {
-               zone.run(function() { window.onmousedown = eventListenerSpy; });
+               zone.run(function() {
+                 window.onmousedown = eventListenerSpy;
+               });
 
                window.dispatchEvent(mouseEvent);
 
@@ -281,7 +297,9 @@ describe('Zone', function() {
 
           it('document onmousedown should be in zone',
              ifEnvSupports(canPatchOnProperty(Document.prototype, 'onmousedown'), function() {
-               zone.run(function() { document.onmousedown = eventListenerSpy; });
+               zone.run(function() {
+                 document.onmousedown = eventListenerSpy;
+               });
 
                document.dispatchEvent(mouseEvent);
 
@@ -297,11 +315,6 @@ describe('Zone', function() {
           // TODO: JiaLiPassion, need to find out why the test bundle is not `use strict`.
           xit('event handler with null context should use event.target',
               ifEnvSupports(canPatchOnProperty(Document.prototype, 'onmousedown'), function() {
-                const ieVer = getIEVersion();
-                if (ieVer && ieVer === 9) {
-                  // in ie9, this is window object even we call func.apply(undefined)
-                  return;
-                }
                 const logs: string[] = [];
                 const EventTarget = (window as any)['EventTarget'];
                 let oriAddEventListener = EventTarget && EventTarget.prototype ?
@@ -315,9 +328,13 @@ describe('Zone', function() {
                 let handler1: Function;
                 let handler2: Function;
 
-                const listener = function() { logs.push('listener1'); };
+                const listener = function() {
+                  logs.push('listener1');
+                };
 
-                const listener1 = function() { logs.push('listener2'); };
+                const listener1 = function() {
+                  logs.push('listener2');
+                };
 
                 HTMLSpanElement.prototype.addEventListener = function(
                     eventName: string, callback: any) {
@@ -331,7 +348,7 @@ describe('Zone', function() {
 
                 (HTMLSpanElement.prototype as any)[zoneSymbol('addEventListener')] = null;
 
-                patchEventTarget(window, [HTMLSpanElement.prototype]);
+                patchEventTarget(window, null as any, [HTMLSpanElement.prototype]);
 
                 const span = document.createElement('span');
                 document.body.appendChild(span);
@@ -341,11 +358,11 @@ describe('Zone', function() {
                   span.onmousedown = listener1;
                 });
 
-                expect(handler1 !).toBe(handler2 !);
+                expect(handler1!).toBe(handler2!);
 
-                handler1 !.apply(null, [{type: 'click', target: span}]);
+                handler1!.apply(null, [{type: 'click', target: span}]);
 
-                handler2 !.apply(null, [{type: 'mousedown', target: span}]);
+                handler2!.apply(null, [{type: 'mousedown', target: span}]);
 
                 expect(hookSpy).toHaveBeenCalled();
                 expect(logs).toEqual(['listener1', 'listener2']);
@@ -364,7 +381,9 @@ describe('Zone', function() {
                  canPatchOnProperty(SVGElement && SVGElement.prototype, 'onmousedown'), function() {
                    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
                    document.body.appendChild(svg);
-                   zone.run(function() { svg.onmousedown = eventListenerSpy; });
+                   zone.run(function() {
+                     svg.onmousedown = eventListenerSpy;
+                   });
 
                    svg.dispatchEvent(mouseEvent);
 
@@ -398,7 +417,9 @@ describe('Zone', function() {
                  setTimeout(done);
                  return true;
                };
-               setTimeout(() => { throw testError; }, 100);
+               setTimeout(() => {
+                 throw testError;
+               }, 100);
              }));
         }));
 
@@ -413,21 +434,26 @@ describe('Zone', function() {
         document.body.appendChild(button);
       });
 
-      afterEach(function() { document.body.removeChild(button); });
+      afterEach(function() {
+        document.body.removeChild(button);
+      });
 
       it('should support addEventListener', function() {
         const hookSpy = jasmine.createSpy('hook');
         const eventListenerSpy = jasmine.createSpy('eventListener');
         const zone = rootZone.fork({
           name: 'spy',
-          onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                           task: Task): any => {
-            hookSpy();
-            return parentZoneDelegate.scheduleTask(targetZone, task);
-          }
+          onScheduleTask:
+              (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                  any => {
+                    hookSpy();
+                    return parentZoneDelegate.scheduleTask(targetZone, task);
+                  }
         });
 
-        zone.run(function() { button.addEventListener('click', eventListenerSpy); });
+        zone.run(function() {
+          button.addEventListener('click', eventListenerSpy);
+        });
 
         button.dispatchEvent(clickEvent);
 
@@ -444,18 +470,21 @@ describe('Zone', function() {
         let scheduleTask;
         const zone = rootZone.fork({
           name: 'spy',
-          onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                           task: Task): any => {
-            hookSpy();
-            scheduleButton = (task.data as any).taskData.target;
-            scheduleEventName = (task.data as any).taskData.eventName;
-            scheduleCapture = (task.data as any).taskData.capture;
-            scheduleTask = task;
-            return parentZoneDelegate.scheduleTask(targetZone, task);
-          }
+          onScheduleTask:
+              (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                  any => {
+                    hookSpy();
+                    scheduleButton = (task.data as any).taskData.target;
+                    scheduleEventName = (task.data as any).taskData.eventName;
+                    scheduleCapture = (task.data as any).taskData.capture;
+                    scheduleTask = task;
+                    return parentZoneDelegate.scheduleTask(targetZone, task);
+                  }
         });
 
-        zone.run(function() { button.addEventListener('click', eventListenerSpy); });
+        zone.run(function() {
+          button.addEventListener('click', eventListenerSpy);
+        });
 
         button.dispatchEvent(clickEvent);
 
@@ -472,14 +501,17 @@ describe('Zone', function() {
            const eventListenerSpy = jasmine.createSpy('eventListener');
            const zone = rootZone.fork({
              name: 'spy',
-             onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                              task: Task): any => {
-               hookSpy();
-               return parentZoneDelegate.scheduleTask(targetZone, task);
-             }
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   hookSpy();
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 }
            });
 
-           zone.run(function() { window.addEventListener('click', eventListenerSpy); });
+           zone.run(function() {
+             window.addEventListener('click', eventListenerSpy);
+           });
 
            window.dispatchEvent(clickEvent);
 
@@ -492,11 +524,12 @@ describe('Zone', function() {
         const eventListenerSpy = jasmine.createSpy('eventListener');
         const zone = rootZone.fork({
           name: 'spy',
-          onCancelTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                         task: Task): any => {
-            hookSpy();
-            return parentZoneDelegate.cancelTask(targetZone, task);
-          }
+          onCancelTask:
+              (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                  any => {
+                    hookSpy();
+                    return parentZoneDelegate.cancelTask(targetZone, task);
+                  }
         });
 
         zone.run(function() {
@@ -518,20 +551,26 @@ describe('Zone', function() {
             let logs: string[];
             const zone = rootZone.fork({
               name: 'spy',
-              onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone,
-                               targetZone: Zone, task: Task): any => {
-                hookSpy();
-                return parentZoneDelegate.scheduleTask(targetZone, task);
-              },
-              onCancelTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                             task: Task): any => {
-                cancelSpy();
-                return parentZoneDelegate.cancelTask(targetZone, task);
-              }
+              onScheduleTask:
+                  (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
+                   task: Task): any => {
+                    hookSpy();
+                    return parentZoneDelegate.scheduleTask(targetZone, task);
+                  },
+              onCancelTask:
+                  (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
+                   task: Task): any => {
+                    cancelSpy();
+                    return parentZoneDelegate.cancelTask(targetZone, task);
+                  }
             });
 
-            const docListener = () => { logs.push('document'); };
-            const btnListener = () => { logs.push('button'); };
+            const docListener = () => {
+              logs.push('document');
+            };
+            const btnListener = () => {
+              logs.push('button');
+            };
 
             beforeEach(() => {
               logs = [];
@@ -589,19 +628,23 @@ describe('Zone', function() {
             let logs: string[];
             const zone = rootZone.fork({
               name: 'spy',
-              onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone,
-                               targetZone: Zone, task: Task): any => {
-                hookSpy();
-                return parentZoneDelegate.scheduleTask(targetZone, task);
-              },
-              onCancelTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                             task: Task): any => {
-                cancelSpy();
-                return parentZoneDelegate.cancelTask(targetZone, task);
-              }
+              onScheduleTask:
+                  (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
+                   task: Task): any => {
+                    hookSpy();
+                    return parentZoneDelegate.scheduleTask(targetZone, task);
+                  },
+              onCancelTask:
+                  (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
+                   task: Task): any => {
+                    cancelSpy();
+                    return parentZoneDelegate.cancelTask(targetZone, task);
+                  }
             });
 
-            const docListener = () => { logs.push('document options'); };
+            const docListener = () => {
+              logs.push('document options');
+            };
 
             beforeEach(() => {
               logs = [];
@@ -661,21 +704,29 @@ describe('Zone', function() {
             let logs: string[];
             const zone = rootZone.fork({
               name: 'spy',
-              onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone,
-                               targetZone: Zone, task: Task): any => {
-                hookSpy();
-                return parentZoneDelegate.scheduleTask(targetZone, task);
-              },
-              onCancelTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                             task: Task): any => {
-                cancelSpy();
-                return parentZoneDelegate.cancelTask(targetZone, task);
-              }
+              onScheduleTask:
+                  (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
+                   task: Task): any => {
+                    hookSpy();
+                    return parentZoneDelegate.scheduleTask(targetZone, task);
+                  },
+              onCancelTask:
+                  (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
+                   task: Task): any => {
+                    cancelSpy();
+                    return parentZoneDelegate.cancelTask(targetZone, task);
+                  }
             });
 
-            const docListener = () => { logs.push('document options'); };
-            const docListener1 = () => { logs.push('document useCapture'); };
-            const btnListener = () => { logs.push('button'); };
+            const docListener = () => {
+              logs.push('document options');
+            };
+            const docListener1 = () => {
+              logs.push('document useCapture');
+            };
+            const btnListener = () => {
+              logs.push('button');
+            };
 
             beforeEach(() => {
               logs = [];
@@ -815,11 +866,12 @@ describe('Zone', function() {
            let logs: string[] = [];
            const zone = rootZone.fork({
              name: 'spy',
-             onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                              task: Task): any => {
-               hookSpy();
-               return parentZoneDelegate.scheduleTask(targetZone, task);
-             }
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   hookSpy();
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 }
            });
 
            zone.run(function() {
@@ -845,11 +897,12 @@ describe('Zone', function() {
            let logs: string[] = [];
            const zone = rootZone.fork({
              name: 'spy',
-             onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                              task: Task): any => {
-               hookSpy();
-               return parentZoneDelegate.scheduleTask(targetZone, task);
-             }
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   hookSpy();
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 }
            });
 
            zone.run(function() {
@@ -874,7 +927,9 @@ describe('Zone', function() {
          ifEnvSupports(supportEventListenerOptions, function() {
            let logs: string[] = [];
 
-           button.addEventListener('click', function() { logs.push('click'); }, true);
+           button.addEventListener('click', function() {
+             logs.push('click');
+           }, true);
            (button as any).addEventListener('click', function() {
              logs.push('once click');
            }, {once: true, capture: true});
@@ -894,7 +949,9 @@ describe('Zone', function() {
          ifEnvSupports(supportEventListenerOptions, function() {
            let logs: string[] = [];
 
-           button.addEventListener('click', function() { logs.push('click'); });
+           button.addEventListener('click', function() {
+             logs.push('click');
+           });
            (button as any).addEventListener('click', function() {
              logs.push('once click');
            }, {once: true, capture: true});
@@ -918,7 +975,9 @@ describe('Zone', function() {
              logs.push('once click');
            }, {once: true});
 
-           button.addEventListener('click', function() { logs.push('click'); });
+           button.addEventListener('click', function() {
+             logs.push('click');
+           });
 
            button.dispatchEvent(clickEvent);
 
@@ -939,7 +998,9 @@ describe('Zone', function() {
              logs.push('once click');
            }, {once: true, capture: true});
 
-           button.addEventListener('click', function() { logs.push('click'); }, true);
+           button.addEventListener('click', function() {
+             logs.push('click');
+           }, true);
 
            button.dispatchEvent(clickEvent);
 
@@ -960,7 +1021,9 @@ describe('Zone', function() {
              logs.push('once click');
            }, {once: true, capture: true});
 
-           button.addEventListener('click', function() { logs.push('click'); });
+           button.addEventListener('click', function() {
+             logs.push('click');
+           });
 
            button.dispatchEvent(clickEvent);
 
@@ -974,7 +1037,7 @@ describe('Zone', function() {
          }));
 
       it('should change options to boolean if not support passive', () => {
-        patchEventTarget(window, [TestEventListener.prototype]);
+        patchEventTarget(window, null as any, [TestEventListener.prototype]);
         const testEventListener = new TestEventListener();
 
         const listener = function() {};
@@ -996,7 +1059,9 @@ describe('Zone', function() {
 
       it('should change options to boolean if not support passive on HTMLElement', () => {
         const logs: string[] = [];
-        const listener = (e: Event) => { logs.push('clicked'); };
+        const listener = (e: Event) => {
+          logs.push('clicked');
+        };
 
         (button as any).addEventListener('click', listener, {once: true});
         button.dispatchEvent(clickEvent);
@@ -1017,11 +1082,12 @@ describe('Zone', function() {
            const logs: string[] = [];
            const zone = rootZone.fork({
              name: 'spy',
-             onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                              task: Task): any => {
-               hookSpy();
-               return parentZoneDelegate.scheduleTask(targetZone, task);
-             }
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   hookSpy();
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 }
            });
 
            const listener = (e: Event) => {
@@ -1061,23 +1127,34 @@ describe('Zone', function() {
           logs = [];
           (button as any).removeAllListeners();
         });
-        afterEach(() => { (button as any).removeAllListeners(); });
-        it('should be passive with global variable defined',
-           () => { testPassive('touchstart', 'default will run', {passive: true}); });
-        it('should not be passive without global variable defined',
-           () => { testPassive('touchend', 'defaultPrevented', undefined); });
-        it('should be passive with global variable defined even without passive options',
-           () => { testPassive('touchstart', 'default will run', undefined); });
+        afterEach(() => {
+          (button as any).removeAllListeners();
+        });
+        it('should be passive with global variable defined', () => {
+          testPassive('touchstart', 'default will run', {passive: true});
+        });
+        it('should not be passive without global variable defined', () => {
+          testPassive('touchend', 'defaultPrevented', undefined);
+        });
+        it('should be passive with global variable defined even without passive options', () => {
+          testPassive('touchstart', 'default will run', undefined);
+        });
         it('should be passive with global variable defined even without passive options and with capture',
-           () => { testPassive('touchstart', 'default will run', {capture: true}); });
-        it('should be passive with global variable defined with capture option',
-           () => { testPassive('touchstart', 'default will run', true); });
-        it('should not be passive with global variable defined with passive false option',
-           () => { testPassive('touchstart', 'defaultPrevented', {passive: false}); });
-        it('should be passive with global variable defined and also blacklisted',
-           () => { testPassive('scroll', 'default will run', undefined); });
-        it('should not be passive without global variable defined and also blacklisted',
-           () => { testPassive('wheel', 'defaultPrevented', undefined); });
+           () => {
+             testPassive('touchstart', 'default will run', {capture: true});
+           });
+        it('should be passive with global variable defined with capture option', () => {
+          testPassive('touchstart', 'default will run', true);
+        });
+        it('should not be passive with global variable defined with passive false option', () => {
+          testPassive('touchstart', 'defaultPrevented', {passive: false});
+        });
+        it('should be passive with global variable defined and also unpatched', () => {
+          testPassive('scroll', 'default will run', undefined);
+        });
+        it('should not be passive without global variable defined and also unpatched', () => {
+          testPassive('wheel', 'defaultPrevented', undefined);
+        });
       });
 
       it('should support Event.stopImmediatePropagation',
@@ -1086,11 +1163,12 @@ describe('Zone', function() {
            const logs: any[] = [];
            const zone = rootZone.fork({
              name: 'spy',
-             onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                              task: Task): any => {
-               hookSpy();
-               return parentZoneDelegate.scheduleTask(targetZone, task);
-             }
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   hookSpy();
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 }
            });
 
            const listener1 = (e: Event) => {
@@ -1098,7 +1176,9 @@ describe('Zone', function() {
              e.stopImmediatePropagation();
            };
 
-           const listener2 = (e: Event) => { logs.push('listener2'); };
+           const listener2 = (e: Event) => {
+             logs.push('listener2');
+           };
 
            zone.run(function() {
              (button as any).addEventListener('click', listener1);
@@ -1119,19 +1199,24 @@ describe('Zone', function() {
         let eventTask: Task;
         const zone = rootZone.fork({
           name: 'spy',
-          onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                           task: Task): any => {
-            eventTask = task;
-            return parentZoneDelegate.scheduleTask(targetZone, task);
-          }
+          onScheduleTask:
+              (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                  any => {
+                    eventTask = task;
+                    return parentZoneDelegate.scheduleTask(targetZone, task);
+                  }
         });
 
-        zone.run(() => { button.addEventListener('click', function() { logs.push('click'); }); });
-        let listeners = button.eventListeners !('click');
+        zone.run(() => {
+          button.addEventListener('click', function() {
+            logs.push('click');
+          });
+        });
+        let listeners = button.eventListeners!('click');
         expect(listeners.length).toBe(1);
-        eventTask !.zone.cancelTask(eventTask !);
+        eventTask!.zone.cancelTask(eventTask!);
 
-        listeners = button.eventListeners !('click');
+        listeners = button.eventListeners!('click');
         button.dispatchEvent(clickEvent);
         expect(logs.length).toBe(0);
         expect(listeners.length).toBe(0);
@@ -1143,21 +1228,24 @@ describe('Zone', function() {
            let eventTask: Task;
            const zone = rootZone.fork({
              name: 'spy',
-             onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                              task: Task): any => {
-               eventTask = task;
-               return parentZoneDelegate.scheduleTask(targetZone, task);
-             }
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   eventTask = task;
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 }
            });
 
            zone.run(() => {
-             button.addEventListener('click', function() { logs.push('click'); }, true);
+             button.addEventListener('click', function() {
+               logs.push('click');
+             }, true);
            });
-           let listeners = button.eventListeners !('click');
+           let listeners = button.eventListeners!('click');
            expect(listeners.length).toBe(1);
-           eventTask !.zone.cancelTask(eventTask !);
+           eventTask!.zone.cancelTask(eventTask!);
 
-           listeners = button.eventListeners !('click');
+           listeners = button.eventListeners!('click');
            button.dispatchEvent(clickEvent);
            expect(logs.length).toBe(0);
            expect(listeners.length).toBe(0);
@@ -1169,26 +1257,32 @@ describe('Zone', function() {
            let eventTask: Task;
            const zone = rootZone.fork({
              name: 'spy',
-             onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                              task: Task): any => {
-               eventTask = task;
-               return parentZoneDelegate.scheduleTask(targetZone, task);
-             }
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   eventTask = task;
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 }
            });
 
-           zone.run(
-               () => { button.addEventListener('click', function() { logs.push('click1'); }); });
-           button.addEventListener('click', function() { logs.push('click2'); });
-           let listeners = button.eventListeners !('click');
+           zone.run(() => {
+             button.addEventListener('click', function() {
+               logs.push('click1');
+             });
+           });
+           button.addEventListener('click', function() {
+             logs.push('click2');
+           });
+           let listeners = button.eventListeners!('click');
            expect(listeners.length).toBe(2);
 
            button.dispatchEvent(clickEvent);
            expect(logs.length).toBe(2);
            expect(logs).toEqual(['click1', 'click2']);
-           eventTask !.zone.cancelTask(eventTask !);
+           eventTask!.zone.cancelTask(eventTask!);
            logs = [];
 
-           listeners = button.eventListeners !('click');
+           listeners = button.eventListeners!('click');
            button.dispatchEvent(clickEvent);
            expect(logs.length).toBe(1);
            expect(listeners.length).toBe(1);
@@ -1201,27 +1295,32 @@ describe('Zone', function() {
            let eventTask: Task;
            const zone = rootZone.fork({
              name: 'spy',
-             onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                              task: Task): any => {
-               eventTask = task;
-               return parentZoneDelegate.scheduleTask(targetZone, task);
-             }
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   eventTask = task;
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 }
            });
 
            zone.run(() => {
-             button.addEventListener('click', function() { logs.push('click1'); }, true);
+             button.addEventListener('click', function() {
+               logs.push('click1');
+             }, true);
            });
-           button.addEventListener('click', function() { logs.push('click2'); }, true);
-           let listeners = button.eventListeners !('click');
+           button.addEventListener('click', function() {
+             logs.push('click2');
+           }, true);
+           let listeners = button.eventListeners!('click');
            expect(listeners.length).toBe(2);
 
            button.dispatchEvent(clickEvent);
            expect(logs.length).toBe(2);
            expect(logs).toEqual(['click1', 'click2']);
-           eventTask !.zone.cancelTask(eventTask !);
+           eventTask!.zone.cancelTask(eventTask!);
            logs = [];
 
-           listeners = button.eventListeners !('click');
+           listeners = button.eventListeners!('click');
            button.dispatchEvent(clickEvent);
            expect(logs.length).toBe(1);
            expect(listeners.length).toBe(1);
@@ -1234,27 +1333,32 @@ describe('Zone', function() {
            let eventTask: Task;
            const zone = rootZone.fork({
              name: 'spy',
-             onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                              task: Task): any => {
-               eventTask = task;
-               return parentZoneDelegate.scheduleTask(targetZone, task);
-             }
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   eventTask = task;
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 }
            });
 
            zone.run(() => {
-             button.addEventListener('click', function() { logs.push('click1'); }, true);
+             button.addEventListener('click', function() {
+               logs.push('click1');
+             }, true);
            });
-           button.addEventListener('click', function() { logs.push('click2'); });
-           let listeners = button.eventListeners !('click');
+           button.addEventListener('click', function() {
+             logs.push('click2');
+           });
+           let listeners = button.eventListeners!('click');
            expect(listeners.length).toBe(2);
 
            button.dispatchEvent(clickEvent);
            expect(logs.length).toBe(2);
            expect(logs).toEqual(['click1', 'click2']);
-           eventTask !.zone.cancelTask(eventTask !);
+           eventTask!.zone.cancelTask(eventTask!);
            logs = [];
 
-           listeners = button.eventListeners !('click');
+           listeners = button.eventListeners!('click');
            button.dispatchEvent(clickEvent);
            expect(logs.length).toBe(1);
            expect(listeners.length).toBe(1);
@@ -1267,22 +1371,23 @@ describe('Zone', function() {
            let hookSpy2 = jasmine.createSpy('spy2');
            let hookSpy3 = jasmine.createSpy('spy3');
            let logs: string[] = [];
-           const isBlacklistedEvent = function(source: string) {
+           const isUnpatchedEvent = function(source: string) {
              return source.lastIndexOf('click') !== -1;
            };
            const zone1 = Zone.current.fork({
              name: 'zone1',
-             onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                              task: Task): any => {
-               if ((task.type === 'eventTask' || task.type === 'macroTask') &&
-                   isBlacklistedEvent(task.source)) {
-                 task.cancelScheduleRequest();
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   if ((task.type === 'eventTask' || task.type === 'macroTask') &&
+                       isUnpatchedEvent(task.source)) {
+                     task.cancelScheduleRequest();
 
-                 return zone2.scheduleTask(task);
-               } else {
-                 return parentZoneDelegate.scheduleTask(targetZone, task);
-               }
-             },
+                     return zone2.scheduleTask(task);
+                   } else {
+                     return parentZoneDelegate.scheduleTask(targetZone, task);
+                   }
+                 },
              onInvokeTask(
                  parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task,
                  applyThis: any, applyArgs: any) {
@@ -1292,11 +1397,12 @@ describe('Zone', function() {
            });
            const zone2 = Zone.current.fork({
              name: 'zone2',
-             onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                              task: Task): any => {
-               hookSpy2();
-               return parentZoneDelegate.scheduleTask(targetZone, task);
-             },
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   hookSpy2();
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 },
              onInvokeTask(
                  parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task,
                  applyThis: any, applyArgs: any) {
@@ -1305,7 +1411,9 @@ describe('Zone', function() {
              }
            });
 
-           const listener = function() { logs.push(Zone.current.name); };
+           const listener = function() {
+             logs.push(Zone.current.name);
+           };
            zone1.run(() => {
              button.addEventListener('click', listener);
              button.addEventListener('mouseover', listener);
@@ -1339,11 +1447,12 @@ describe('Zone', function() {
         const hookSpy = jasmine.createSpy('hook');
         const zone = rootZone.fork({
           name: 'spy',
-          onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                           task: Task): any => {
-            hookSpy();
-            return parentZoneDelegate.scheduleTask(targetZone, task);
-          }
+          onScheduleTask:
+              (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                  any => {
+                    hookSpy();
+                    return parentZoneDelegate.scheduleTask(targetZone, task);
+                  }
         });
 
         zone.run(function() {
@@ -1359,8 +1468,14 @@ describe('Zone', function() {
             button.removeEventListener('click', listener1);
             logs.push('listener1');
           };
-          const listener2 = function() { logs.push('listener2'); };
-          const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
+          const listener2 = function() {
+            logs.push('listener2');
+          };
+          const listener3 = {
+            handleEvent: function(event: Event) {
+              logs.push('listener3');
+            }
+          };
 
           button.addEventListener('click', listener1);
           button.addEventListener('click', listener2);
@@ -1386,8 +1501,14 @@ describe('Zone', function() {
                button.removeEventListener('click', listener1, true);
                logs.push('listener1');
              };
-             const listener2 = function() { logs.push('listener2'); };
-             const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
+             const listener2 = function() {
+               logs.push('listener2');
+             };
+             const listener3 = {
+               handleEvent: function(event: Event) {
+                 logs.push('listener3');
+               }
+             };
 
              button.addEventListener('click', listener1, true);
              button.addEventListener('click', listener2, true);
@@ -1409,8 +1530,12 @@ describe('Zone', function() {
         it('should be able to remove handleEvent eventListener during eventListener callback',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
-             const listener2 = function() { logs.push('listener2'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               logs.push('listener2');
+             };
              const listener3 = {
                handleEvent: function(event: Event) {
                  logs.push('listener3');
@@ -1438,8 +1563,12 @@ describe('Zone', function() {
         it('should be able to remove handleEvent eventListener during eventListener callback with capture=true',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
-             const listener2 = function() { logs.push('listener2'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               logs.push('listener2');
+             };
              const listener3 = {
                handleEvent: function(event: Event) {
                  logs.push('listener3');
@@ -1472,8 +1601,14 @@ describe('Zone', function() {
                button.removeEventListener('click', listener2);
                button.removeEventListener('click', listener3);
              };
-             const listener2 = function() { logs.push('listener2'); };
-             const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
+             const listener2 = function() {
+               logs.push('listener2');
+             };
+             const listener3 = {
+               handleEvent: function(event: Event) {
+                 logs.push('listener3');
+               }
+             };
 
              button.addEventListener('click', listener1);
              button.addEventListener('click', listener2);
@@ -1494,8 +1629,14 @@ describe('Zone', function() {
                button.removeEventListener('click', listener2, true);
                button.removeEventListener('click', listener3, true);
              };
-             const listener2 = function() { logs.push('listener2'); };
-             const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
+             const listener2 = function() {
+               logs.push('listener2');
+             };
+             const listener3 = {
+               handleEvent: function(event: Event) {
+                 logs.push('listener3');
+               }
+             };
 
              button.addEventListener('click', listener1, true);
              button.addEventListener('click', listener2, true);
@@ -1515,8 +1656,14 @@ describe('Zone', function() {
                logs.push('listener1');
                button.removeEventListener('click', listener2);
              };
-             const listener2 = function() { logs.push('listener2'); };
-             const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
+             const listener2 = function() {
+               logs.push('listener2');
+             };
+             const listener3 = {
+               handleEvent: function(event: Event) {
+                 logs.push('listener3');
+               }
+             };
 
              button.addEventListener('click', listener1);
              button.addEventListener('click', listener2);
@@ -1537,8 +1684,14 @@ describe('Zone', function() {
                logs.push('listener1');
                button.removeEventListener('click', listener2, true);
              };
-             const listener2 = function() { logs.push('listener2'); };
-             const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
+             const listener2 = function() {
+               logs.push('listener2');
+             };
+             const listener3 = {
+               handleEvent: function(event: Event) {
+                 logs.push('listener3');
+               }
+             };
 
              button.addEventListener('click', listener1, true);
              button.addEventListener('click', listener2, true);
@@ -1555,13 +1708,19 @@ describe('Zone', function() {
         it('should be able to remove all beforeward and afterward eventListener during eventListener callback',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
              const listener2 = function() {
                logs.push('listener2');
                button.removeEventListener('click', listener1);
                button.removeEventListener('click', listener3);
              };
-             const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
+             const listener3 = {
+               handleEvent: function(event: Event) {
+                 logs.push('listener3');
+               }
+             };
 
              button.addEventListener('click', listener1);
              button.addEventListener('click', listener2);
@@ -1582,13 +1741,19 @@ describe('Zone', function() {
         it('should be able to remove all beforeward and afterward eventListener during eventListener callback with capture=true',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
              const listener2 = function() {
                logs.push('listener2');
                button.removeEventListener('click', listener1, true);
                button.removeEventListener('click', listener3, true);
              };
-             const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
+             const listener3 = {
+               handleEvent: function(event: Event) {
+                 logs.push('listener3');
+               }
+             };
 
              button.addEventListener('click', listener1, true);
              button.addEventListener('click', listener2, true);
@@ -1609,8 +1774,12 @@ describe('Zone', function() {
         it('should be able to remove part of beforeward and afterward eventListener during eventListener callback',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
-             const listener2 = function() { logs.push('listener2'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               logs.push('listener2');
+             };
              const listener3 = {
                handleEvent: function(event: Event) {
                  logs.push('listener3');
@@ -1618,8 +1787,12 @@ describe('Zone', function() {
                  button.removeEventListener('click', listener4);
                }
              };
-             const listener4 = function() { logs.push('listener4'); };
-             const listener5 = function() { logs.push('listener5'); };
+             const listener4 = function() {
+               logs.push('listener4');
+             };
+             const listener5 = function() {
+               logs.push('listener5');
+             };
 
              button.addEventListener('click', listener1);
              button.addEventListener('click', listener2);
@@ -1644,8 +1817,12 @@ describe('Zone', function() {
         it('should be able to remove part of beforeward and afterward eventListener during eventListener callback with capture=true',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
-             const listener2 = function() { logs.push('listener2'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               logs.push('listener2');
+             };
              const listener3 = {
                handleEvent: function(event: Event) {
                  logs.push('listener3');
@@ -1653,8 +1830,12 @@ describe('Zone', function() {
                  button.removeEventListener('click', listener4, true);
                }
              };
-             const listener4 = function() { logs.push('listener4'); };
-             const listener5 = function() { logs.push('listener5'); };
+             const listener4 = function() {
+               logs.push('listener4');
+             };
+             const listener5 = function() {
+               logs.push('listener5');
+             };
 
              button.addEventListener('click', listener1, true);
              button.addEventListener('click', listener2, true);
@@ -1679,8 +1860,12 @@ describe('Zone', function() {
         it('should be able to remove all beforeward eventListener during eventListener callback',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
-             const listener2 = function() { logs.push('listener2'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               logs.push('listener2');
+             };
              const listener3 = {
                handleEvent: function(event: Event) {
                  logs.push('listener3');
@@ -1708,8 +1893,12 @@ describe('Zone', function() {
         it('should be able to remove all beforeward eventListener during eventListener callback with capture=true',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
-             const listener2 = function() { logs.push('listener2'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               logs.push('listener2');
+             };
              const listener3 = {
                handleEvent: function(event: Event) {
                  logs.push('listener3');
@@ -1737,8 +1926,12 @@ describe('Zone', function() {
         it('should be able to remove part of beforeward eventListener during eventListener callback',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
-             const listener2 = function() { logs.push('listener2'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               logs.push('listener2');
+             };
              const listener3 = {
                handleEvent: function(event: Event) {
                  logs.push('listener3');
@@ -1766,8 +1959,12 @@ describe('Zone', function() {
         it('should be able to remove part of beforeward eventListener during eventListener callback with capture=true',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
-             const listener2 = function() { logs.push('listener2'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               logs.push('listener2');
+             };
              const listener3 = {
                handleEvent: function(event: Event) {
                  logs.push('listener3');
@@ -1796,11 +1993,17 @@ describe('Zone', function() {
            function() {
              let logs: string[] = [];
              const listener1 = function() {
-               button.removeAllListeners !('click');
+               button.removeAllListeners!('click');
                logs.push('listener1');
              };
-             const listener2 = function() { logs.push('listener2'); };
-             const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
+             const listener2 = function() {
+               logs.push('listener2');
+             };
+             const listener3 = {
+               handleEvent: function(event: Event) {
+                 logs.push('listener3');
+               }
+             };
 
              button.addEventListener('click', listener1);
              button.addEventListener('click', listener2);
@@ -1819,11 +2022,17 @@ describe('Zone', function() {
            function() {
              let logs: string[] = [];
              const listener1 = function() {
-               button.removeAllListeners !('click');
+               button.removeAllListeners!('click');
                logs.push('listener1');
              };
-             const listener2 = function() { logs.push('listener2'); };
-             const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
+             const listener2 = function() {
+               logs.push('listener2');
+             };
+             const listener3 = {
+               handleEvent: function(event: Event) {
+                 logs.push('listener3');
+               }
+             };
 
              button.addEventListener('click', listener1, true);
              button.addEventListener('click', listener2, true);
@@ -1841,12 +2050,18 @@ describe('Zone', function() {
         it('should be able to remove all eventListeners during middle eventListener callback',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
              const listener2 = function() {
-               button.removeAllListeners !('click');
+               button.removeAllListeners!('click');
                logs.push('listener2');
              };
-             const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
+             const listener3 = {
+               handleEvent: function(event: Event) {
+                 logs.push('listener3');
+               }
+             };
 
              button.addEventListener('click', listener1);
              button.addEventListener('click', listener2);
@@ -1864,12 +2079,18 @@ describe('Zone', function() {
         it('should be able to remove all eventListeners during middle eventListener callback with capture=true',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
              const listener2 = function() {
-               button.removeAllListeners !('click');
+               button.removeAllListeners!('click');
                logs.push('listener2');
              };
-             const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
+             const listener3 = {
+               handleEvent: function(event: Event) {
+                 logs.push('listener3');
+               }
+             };
 
              button.addEventListener('click', listener1, true);
              button.addEventListener('click', listener2, true);
@@ -1887,12 +2108,16 @@ describe('Zone', function() {
         it('should be able to remove all eventListeners during last eventListener callback',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
-             const listener2 = function() { logs.push('listener2'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               logs.push('listener2');
+             };
              const listener3 = {
                handleEvent: function(event: Event) {
                  logs.push('listener3');
-                 button.removeAllListeners !('click');
+                 button.removeAllListeners!('click');
                }
              };
 
@@ -1912,12 +2137,16 @@ describe('Zone', function() {
         it('should be able to remove all eventListeners during last eventListener callback with capture=true',
            function() {
              let logs: string[] = [];
-             const listener1 = function() { logs.push('listener1'); };
-             const listener2 = function() { logs.push('listener2'); };
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               logs.push('listener2');
+             };
              const listener3 = {
                handleEvent: function(event: Event) {
                  logs.push('listener3');
-                 button.removeAllListeners !('click');
+                 button.removeAllListeners!('click');
                }
              };
 
@@ -1946,7 +2175,7 @@ describe('Zone', function() {
         button.addEventListener('click', listener3);
         button.addEventListener('mouseover', listener4);
 
-        const listeners = button.eventListeners !('click');
+        const listeners = button.eventListeners!('click');
         expect(listeners.length).toBe(3);
         expect(listeners).toEqual([listener1, listener2, listener3]);
         button.removeEventListener('click', listener1);
@@ -1963,7 +2192,7 @@ describe('Zone', function() {
         button.addEventListener('mouseover', listener2);
         button.addEventListener('mousehover', listener3);
 
-        const listeners = button.eventListeners !();
+        const listeners = button.eventListeners!();
         expect(listeners.length).toBe(3);
         expect(listeners).toEqual([listener1, listener2, listener3]);
         button.removeEventListener('click', listener1);
@@ -1973,11 +2202,23 @@ describe('Zone', function() {
 
       it('should be able to remove all listeners of specified event form EventTarget', function() {
         let logs: string[] = [];
-        const listener1 = function() { logs.push('listener1'); };
-        const listener2 = function() { logs.push('listener2'); };
-        const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
-        const listener4 = function() { logs.push('listener4'); };
-        const listener5 = function() { logs.push('listener5'); };
+        const listener1 = function() {
+          logs.push('listener1');
+        };
+        const listener2 = function() {
+          logs.push('listener2');
+        };
+        const listener3 = {
+          handleEvent: function(event: Event) {
+            logs.push('listener3');
+          }
+        };
+        const listener4 = function() {
+          logs.push('listener4');
+        };
+        const listener5 = function() {
+          logs.push('listener5');
+        };
 
         button.addEventListener('mouseover', listener1);
         button.addEventListener('mouseover', listener2);
@@ -1986,8 +2227,8 @@ describe('Zone', function() {
         button.onmouseover = listener5;
         expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toEqual(listener5);
 
-        button.removeAllListeners !('mouseover');
-        const listeners = button.eventListeners !('mouseover');
+        button.removeAllListeners!('mouseover');
+        const listeners = button.eventListeners!('mouseover');
         expect(listeners.length).toBe(0);
         expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toBeNull();
         expect(!!button.onmouseover).toBeFalsy();
@@ -2007,18 +2248,28 @@ describe('Zone', function() {
       it('should be able to remove all listeners of specified event form EventTarget with capture=true',
          function() {
            let logs: string[] = [];
-           const listener1 = function() { logs.push('listener1'); };
-           const listener2 = function() { logs.push('listener2'); };
-           const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
-           const listener4 = function() { logs.push('listener4'); };
+           const listener1 = function() {
+             logs.push('listener1');
+           };
+           const listener2 = function() {
+             logs.push('listener2');
+           };
+           const listener3 = {
+             handleEvent: function(event: Event) {
+               logs.push('listener3');
+             }
+           };
+           const listener4 = function() {
+             logs.push('listener4');
+           };
 
            button.addEventListener('mouseover', listener1, true);
            button.addEventListener('mouseover', listener2, true);
            button.addEventListener('mouseover', listener3, true);
            button.addEventListener('click', listener4, true);
 
-           button.removeAllListeners !('mouseover');
-           const listeners = button.eventListeners !('mouseover');
+           button.removeAllListeners!('mouseover');
+           const listeners = button.eventListeners!('mouseover');
            expect(listeners.length).toBe(0);
 
            const mouseEvent = document.createEvent('Event');
@@ -2036,18 +2287,28 @@ describe('Zone', function() {
       it('should be able to remove all listeners of specified event form EventTarget with mixed capture',
          function() {
            let logs: string[] = [];
-           const listener1 = function() { logs.push('listener1'); };
-           const listener2 = function() { logs.push('listener2'); };
-           const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
-           const listener4 = function() { logs.push('listener4'); };
+           const listener1 = function() {
+             logs.push('listener1');
+           };
+           const listener2 = function() {
+             logs.push('listener2');
+           };
+           const listener3 = {
+             handleEvent: function(event: Event) {
+               logs.push('listener3');
+             }
+           };
+           const listener4 = function() {
+             logs.push('listener4');
+           };
 
            button.addEventListener('mouseover', listener1, true);
            button.addEventListener('mouseover', listener2, false);
            button.addEventListener('mouseover', listener3, true);
            button.addEventListener('click', listener4, true);
 
-           button.removeAllListeners !('mouseover');
-           const listeners = button.eventListeners !('mouseove');
+           button.removeAllListeners!('mouseover');
+           const listeners = button.eventListeners!('mouseove');
            expect(listeners.length).toBe(0);
 
            const mouseEvent = document.createEvent('Event');
@@ -2064,11 +2325,23 @@ describe('Zone', function() {
 
       it('should be able to remove all listeners of all events form EventTarget', function() {
         let logs: string[] = [];
-        const listener1 = function() { logs.push('listener1'); };
-        const listener2 = function() { logs.push('listener2'); };
-        const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
-        const listener4 = function() { logs.push('listener4'); };
-        const listener5 = function() { logs.push('listener5'); };
+        const listener1 = function() {
+          logs.push('listener1');
+        };
+        const listener2 = function() {
+          logs.push('listener2');
+        };
+        const listener3 = {
+          handleEvent: function(event: Event) {
+            logs.push('listener3');
+          }
+        };
+        const listener4 = function() {
+          logs.push('listener4');
+        };
+        const listener5 = function() {
+          logs.push('listener5');
+        };
 
         button.addEventListener('mouseover', listener1);
         button.addEventListener('mouseover', listener2);
@@ -2077,8 +2350,8 @@ describe('Zone', function() {
         button.onmouseover = listener5;
         expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toEqual(listener5);
 
-        button.removeAllListeners !();
-        const listeners = button.eventListeners !('mouseover');
+        button.removeAllListeners!();
+        const listeners = button.eventListeners!('mouseover');
         expect(listeners.length).toBe(0);
         expect((button as any)[Zone.__symbol__('ON_PROPERTYmouseover')]).toBeNull();
         expect(!!button.onmouseover).toBeFalsy();
@@ -2095,10 +2368,20 @@ describe('Zone', function() {
 
       it('should be able to remove listener which was added outside of zone ', function() {
         let logs: string[] = [];
-        const listener1 = function() { logs.push('listener1'); };
-        const listener2 = function() { logs.push('listener2'); };
-        const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
-        const listener4 = function() { logs.push('listener4'); };
+        const listener1 = function() {
+          logs.push('listener1');
+        };
+        const listener2 = function() {
+          logs.push('listener2');
+        };
+        const listener3 = {
+          handleEvent: function(event: Event) {
+            logs.push('listener3');
+          }
+        };
+        const listener4 = function() {
+          logs.push('listener4');
+        };
 
         button.addEventListener('mouseover', listener1);
         (button as any)[Zone.__symbol__('addEventListener')]('mouseover', listener2);
@@ -2109,7 +2392,7 @@ describe('Zone', function() {
         button.removeEventListener('mouseover', listener2);
         button.removeEventListener('click', listener3);
         button.removeEventListener('click', listener4);
-        const listeners = button.eventListeners !('mouseover');
+        const listeners = button.eventListeners!('mouseover');
         expect(listeners.length).toBe(0);
 
         const mouseEvent = document.createEvent('Event');
@@ -2124,18 +2407,28 @@ describe('Zone', function() {
 
       it('should be able to remove all listeners which were added inside of zone ', function() {
         let logs: string[] = [];
-        const listener1 = function() { logs.push('listener1'); };
-        const listener2 = function() { logs.push('listener2'); };
-        const listener3 = {handleEvent: function(event: Event) { logs.push('listener3'); }};
-        const listener4 = function() { logs.push('listener4'); };
+        const listener1 = function() {
+          logs.push('listener1');
+        };
+        const listener2 = function() {
+          logs.push('listener2');
+        };
+        const listener3 = {
+          handleEvent: function(event: Event) {
+            logs.push('listener3');
+          }
+        };
+        const listener4 = function() {
+          logs.push('listener4');
+        };
 
         button.addEventListener('mouseover', listener1);
         (button as any)[Zone.__symbol__('addEventListener')]('mouseover', listener2);
         button.addEventListener('click', listener3);
         (button as any)[Zone.__symbol__('addEventListener')]('click', listener4);
 
-        button.removeAllListeners !();
-        const listeners = button.eventListeners !('mouseover');
+        button.removeAllListeners!();
+        const listeners = button.eventListeners!('mouseover');
         expect(listeners.length).toBe(0);
 
         const mouseEvent = document.createEvent('Event');
@@ -2153,19 +2446,26 @@ describe('Zone', function() {
            const hookSpy = jasmine.createSpy('hook');
            const zone = rootZone.fork({
              name: 'spy',
-             onScheduleTask: (parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone,
-                              task: Task): any => {
-               hookSpy();
-               return parentZoneDelegate.scheduleTask(targetZone, task);
-             }
+             onScheduleTask: (
+                 parentZoneDelegate: ZoneDelegate, currentZone: Zone, targetZone: Zone, task: Task):
+                 any => {
+                   hookSpy();
+                   return parentZoneDelegate.scheduleTask(targetZone, task);
+                 }
            });
            let logs: string[] = [];
 
-           const listener1 = function() { logs.push(Zone.current.name); };
+           const listener1 = function() {
+             logs.push(Zone.current.name);
+           };
 
-           (listener1 as any).toString = function() { return '[object FunctionWrapper]'; };
+           (listener1 as any).toString = function() {
+             return '[object FunctionWrapper]';
+           };
 
-           const listener2 = function() { logs.push(Zone.current.name); };
+           const listener2 = function() {
+             logs.push(Zone.current.name);
+           };
 
            (listener2 as any).toString = function() {
              return 'function __BROWSERTOOLS_CONSOLE_SAFEFUNC() { [native code] }';
@@ -2190,14 +2490,124 @@ describe('Zone', function() {
            expect(hookSpy).not.toHaveBeenCalled();
            expect(logs).toEqual([]);
          }));
+
+      it('should be able to continue to invoke remaining listeners even some listener throw error',
+         function(done: DoneFn) {
+           // override global.onerror to prevent jasmine report error
+           let oriWindowOnError = window.onerror;
+           window.onerror = function() {};
+           try {
+             let logs: string[] = [];
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               throw new Error('test1');
+             };
+             const listener3 = function() {
+               throw new Error('test2');
+             };
+             const listener4 = {
+               handleEvent: function() {
+                 logs.push('listener2');
+               }
+             };
+
+             button.addEventListener('click', listener1);
+             button.addEventListener('click', listener2);
+             button.addEventListener('click', listener3);
+             button.addEventListener('click', listener4);
+
+             const mouseEvent = document.createEvent('MouseEvent');
+             mouseEvent.initEvent('click', true, true);
+
+             const unhandledRejection = (e: PromiseRejectionEvent) => {
+               logs.push(e.reason.message);
+             };
+             window.addEventListener('unhandledrejection', unhandledRejection);
+
+             button.dispatchEvent(mouseEvent);
+             expect(logs).toEqual(['listener1', 'listener2']);
+
+             setTimeout(() => {
+               expect(logs).toEqual(['listener1', 'listener2', 'test1', 'test2']);
+               window.removeEventListener('unhandledrejection', unhandledRejection);
+               window.onerror = oriWindowOnError;
+               done()
+             });
+           } catch (e: any) {
+             window.onerror = oriWindowOnError;
+           }
+         });
+
+      it('should be able to continue to invoke remaining listeners even some listener throw error in the different zones',
+         function(done: DoneFn) {
+           // override global.onerror to prevent jasmine report error
+           let oriWindowOnError = window.onerror;
+           window.onerror = function() {};
+           try {
+             let logs: string[] = [];
+             const zone1 = Zone.current.fork({
+               name: 'zone1',
+               onHandleError: (delegate, curr, target, error) => {
+                 logs.push(error.message);
+                 return false;
+               }
+             });
+             const listener1 = function() {
+               logs.push('listener1');
+             };
+             const listener2 = function() {
+               throw new Error('test1');
+             };
+             const listener3 = function() {
+               throw new Error('test2');
+             };
+             const listener4 = {
+               handleEvent: function() {
+                 logs.push('listener2');
+               }
+             };
+
+             button.addEventListener('click', listener1);
+             zone1.run(() => {
+               button.addEventListener('click', listener2);
+             });
+             button.addEventListener('click', listener3);
+             button.addEventListener('click', listener4);
+
+             const mouseEvent = document.createEvent('MouseEvent');
+             mouseEvent.initEvent('click', true, true);
+
+             const unhandledRejection = (e: PromiseRejectionEvent) => {
+               logs.push(e.reason.message);
+             };
+             window.addEventListener('unhandledrejection', unhandledRejection);
+
+             button.dispatchEvent(mouseEvent);
+             expect(logs).toEqual(['listener1', 'test1', 'listener2']);
+
+             setTimeout(() => {
+               expect(logs).toEqual(['listener1', 'test1', 'listener2', 'test2']);
+               window.removeEventListener('unhandledrejection', unhandledRejection);
+               window.onerror = oriWindowOnError;
+               done()
+             });
+           } catch (e: any) {
+             window.onerror = oriWindowOnError;
+           }
+         });
     });
 
-    describe('unhandle promise rejection', () => {
+    // TODO: Re-enable via https://github.com/angular/angular/pull/41526
+    xdescribe('unhandle promise rejection', () => {
       const AsyncTestZoneSpec = (Zone as any)['AsyncTestZoneSpec'];
       const asyncTest = function(testFn: Function) {
         return (done: Function) => {
-          let asyncTestZone: Zone = Zone.current.fork(
-              new AsyncTestZoneSpec(done, (error: Error) => { fail(error); }, 'asyncTest'));
+          let asyncTestZone: Zone =
+              Zone.current.fork(new AsyncTestZoneSpec(done, (error: Error) => {
+                fail(error);
+              }, 'asyncTest'));
           asyncTestZone.run(testFn);
         };
       };
@@ -2215,7 +2625,9 @@ describe('Zone', function() {
                expect(evt.reason.message).toBe('promise error');
              };
              window.addEventListener('unhandledrejection', listener);
-             new Promise((resolve, reject) => { throw new Error('promise error'); });
+             new Promise((resolve, reject) => {
+               throw new Error('promise error');
+             });
            });
          }));
 
@@ -2239,7 +2651,9 @@ describe('Zone', function() {
              };
 
              window.addEventListener('rejectionhandled', handledListener);
-             const p = new Promise((resolve, reject) => { throw new Error('promise error'); });
+             const p = new Promise((resolve, reject) => {
+               throw new Error('promise error');
+             });
            });
          }));
 
@@ -2260,10 +2674,13 @@ describe('Zone', function() {
                expect(evt.type).toEqual('unhandledrejection');
                expect(evt.promise.constructor.name).toEqual('Promise');
                expect(evt.reason.message).toBe('promise error');
+               evt.preventDefault();
              };
              window.addEventListener('unhandledrejection', listener1);
              window.addEventListener('unhandledrejection', listener2);
-             new Promise((resolve, reject) => { throw new Error('promise error'); });
+             new Promise((resolve, reject) => {
+               throw new Error('promise error');
+             });
            });
          }));
     });
@@ -2294,7 +2711,7 @@ describe('Zone', function() {
        ifEnvSupportsWithDone(supportCanvasTest, (done: Function) => {
          const canvas = document.createElement('canvas');
          const d = canvas.width;
-         const ctx = canvas.getContext('2d') !;
+         const ctx = canvas.getContext('2d')!;
          ctx.beginPath();
          ctx.moveTo(d / 2, 0);
          ctx.lineTo(d, d);
@@ -2320,7 +2737,7 @@ describe('Zone', function() {
              expect(scheduleSpy).toHaveBeenCalled();
 
              const reader = new FileReader();
-             reader.readAsDataURL(blob !);
+             reader.readAsDataURL(blob!);
              reader.onloadend = function() {
                const base64data = reader.result;
                expect(base64data).toEqual(canvasData);
@@ -2344,7 +2761,9 @@ describe('Zone', function() {
               done();
             });
 
-            zone.run(() => { observer.observe(div); });
+            zone.run(() => {
+              observer.observe(div);
+            });
 
             document.body.appendChild(div);
           });
@@ -2370,8 +2789,12 @@ describe('Zone', function() {
                  }
                });
 
-               zone.run(() => { observer.observe(div1); });
-               Zone.root.run(() => { observer.observe(div2); });
+               zone.run(() => {
+                 observer.observe(div1);
+               });
+               Zone.root.run(() => {
+                 observer.observe(div2);
+               });
 
                document.body.appendChild(div1);
                document.body.appendChild(div2);
@@ -2431,7 +2854,9 @@ describe('Zone', function() {
   describe(
       'pointer event in IE',
       ifEnvSupports(
-          () => { return getIEVersion() === 11; },
+          () => {
+            return getIEVersion() === 11;
+          },
           () => {
             const pointerEventsMap: {[key: string]: string} = {
               'MSPointerCancel': 'pointercancel',
@@ -2450,7 +2875,9 @@ describe('Zone', function() {
               div = document.createElement('div');
               document.body.appendChild(div);
             });
-            afterEach(() => { document.body.removeChild(div); });
+            afterEach(() => {
+              document.body.removeChild(div);
+            });
             Object.keys(pointerEventsMap).forEach(key => {
               it(`${key} and ${pointerEventsMap[key]} should both be triggered`, (done: DoneFn) => {
                 const logs: string[] = [];
@@ -2482,7 +2909,7 @@ describe('Zone', function() {
               });
 
               it(`${key} and ${
-            pointerEventsMap[key]} with same listener should not be triggered twice`,
+                     pointerEventsMap[key]} with same listener should not be triggered twice`,
                  (done: DoneFn) => {
                    const logs: string[] = [];
                    const listener = function(event: any) {
@@ -2496,24 +2923,28 @@ describe('Zone', function() {
                    evt1.initEvent(key, true, true);
                    div.dispatchEvent(evt1);
 
-                   setTimeout(() => { expect(logs).toEqual([`${key} triggered`]); });
+                   setTimeout(() => {
+                     expect(logs).toEqual([`${key} triggered`]);
+                   });
 
                    const evt2 = document.createEvent('Event');
                    evt2.initEvent(pointerEventsMap[key], true, true);
                    div.dispatchEvent(evt2);
 
-                   setTimeout(
-                       () => { expect(logs).toEqual([`${pointerEventsMap[key]} triggered`]); });
+                   setTimeout(() => {
+                     expect(logs).toEqual([`${pointerEventsMap[key]} triggered`]);
+                   });
 
                    setTimeout(done);
                  });
 
               it(`${key} and ${
-            pointerEventsMap
-            [key]} should be able to be removed with removeEventListener`,
+                     pointerEventsMap[key]} should be able to be removed with removeEventListener`,
                  (done: DoneFn) => {
                    const logs: string[] = [];
-                   const listener1 = function(event: any) { logs.push(`${key} triggered`); };
+                   const listener1 = function(event: any) {
+                     logs.push(`${key} triggered`);
+                   };
                    const listener2 = function(event: any) {
                      logs.push(`${pointerEventsMap[key]} triggered`);
                    };
@@ -2527,13 +2958,17 @@ describe('Zone', function() {
                    evt1.initEvent(key, true, true);
                    div.dispatchEvent(evt1);
 
-                   setTimeout(() => { expect(logs).toEqual([]); });
+                   setTimeout(() => {
+                     expect(logs).toEqual([]);
+                   });
 
                    const evt2 = document.createEvent('Event');
                    evt2.initEvent(pointerEventsMap[key], true, true);
                    div.dispatchEvent(evt2);
 
-                   setTimeout(() => { expect(logs).toEqual([]); });
+                   setTimeout(() => {
+                     expect(logs).toEqual([]);
+                   });
 
                    div.addEventListener(key, listener1);
                    div.addEventListener(pointerEventsMap[key], listener2);
@@ -2543,11 +2978,15 @@ describe('Zone', function() {
 
                    div.dispatchEvent(evt1);
 
-                   setTimeout(() => { expect(logs).toEqual([]); });
+                   setTimeout(() => {
+                     expect(logs).toEqual([]);
+                   });
 
                    div.dispatchEvent(evt2);
 
-                   setTimeout(() => { expect(logs).toEqual([]); });
+                   setTimeout(() => {
+                     expect(logs).toEqual([]);
+                   });
 
                    setTimeout(done);
                  });

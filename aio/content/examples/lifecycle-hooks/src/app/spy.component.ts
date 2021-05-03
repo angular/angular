@@ -1,15 +1,11 @@
 // #docregion
 import { Component } from '@angular/core';
 
-import { LoggerService }  from './logger.service';
+import { LoggerService } from './logger.service';
 
 @Component({
   selector: 'spy-parent',
   templateUrl: './spy.component.html',
-  styles: [
-     '.parent {background: khaki;}',
-     '.heroes {background: LightYellow; padding: 0 8px}'
-  ],
   providers:  [LoggerService]
 })
 export class SpyParentComponent {
@@ -31,7 +27,7 @@ export class SpyParentComponent {
     this.logger.tick();
   }
   reset() {
-    this.logger.log('-- reset --');
+    this.logger.log('reset');
     this.heroes = [];
     this.logger.tick();
   }

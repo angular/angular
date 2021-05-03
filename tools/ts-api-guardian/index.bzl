@@ -24,7 +24,7 @@ def ts_api_guardian_test(
         golden,
         actual,
         data = [],
-        strip_export_pattern = ["^__", "^ɵ[^ɵ]"],
+        strip_export_pattern = [],
         allow_module_identifiers = COMMON_MODULE_IDENTIFIERS,
         use_angular_tag_rules = True,
         **kwargs):
@@ -34,7 +34,9 @@ def ts_api_guardian_test(
         # Locally we need to add the TS build target
         # But it will replaced to @npm//ts-api-guardian when publishing
         "@angular//tools/ts-api-guardian:lib",
+        # BEGIN-INTERNAL
         "@angular//tools/ts-api-guardian:bin",
+        # END-INTERNAL
         # The below are required during runtime
         "@npm//chalk",
         "@npm//diff",
@@ -46,11 +48,15 @@ def ts_api_guardian_test(
         # Needed so that node doesn't walk back to the source directory.
         # From there, the relative imports would point to .ts files.
         "--node_options=--preserve-symlinks",
+        # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+        # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+        "--bazel_patch_module_resolver",
     ]
 
     for i in strip_export_pattern:
-        # The below replacement is needed because under Windows '^' needs to be escaped twice
-        args += ["--stripExportPattern", i.replace("^", "^^^^")]
+        # Quote the regexp before passing it via the command line.
+        quoted_pattern = "\"%s\"" % i
+        args += ["--stripExportPattern", quoted_pattern]
 
     for i in allow_module_identifiers:
         args += ["--allowModuleIdentifiers", i]
@@ -61,7 +67,7 @@ def ts_api_guardian_test(
     nodejs_test(
         name = name,
         data = data,
-        entry_point = "@angular//tools/ts-api-guardian:bin/ts-api-guardian",
+        entry_point = Label("@angular//tools/ts-api-guardian:bin/ts-api-guardian"),
         tags = kwargs.pop("tags", []) + ["api_guard"],
         templated_args = args + ["--verify", golden, actual],
         **kwargs
@@ -71,7 +77,7 @@ def ts_api_guardian_test(
         name = name + ".accept",
         testonly = True,
         data = data,
-        entry_point = "@angular//tools/ts-api-guardian:bin/ts-api-guardian",
+        entry_point = Label("@angular//tools/ts-api-guardian:bin/ts-api-guardian"),
         tags = kwargs.pop("tags", []) + ["api_guard"],
         templated_args = args + ["--out", golden, actual],
         **kwargs
@@ -82,7 +88,7 @@ def ts_api_guardian_test_npm_package(
         goldenDir,
         actualDir,
         data = [],
-        strip_export_pattern = ["^__", "^ɵ[^ɵ]"],
+        strip_export_pattern = ["^ɵ(?!ɵdefineInjectable|ɵinject|ɵInjectableDef)"],
         allow_module_identifiers = COMMON_MODULE_IDENTIFIERS,
         use_angular_tag_rules = True,
         **kwargs):
@@ -106,11 +112,15 @@ def ts_api_guardian_test_npm_package(
         "--node_options=--preserve-symlinks",
         # We automatically discover the enpoints for our NPM package.
         "--autoDiscoverEntrypoints",
+        # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+        # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+        "--bazel_patch_module_resolver",
     ]
 
     for i in strip_export_pattern:
-        # The below replacement is needed because under Windows '^' needs to be escaped twice
-        args += ["--stripExportPattern", i.replace("^", "^^^^")]
+        # Quote the regexp before passing it via the command line.
+        quoted_pattern = "\"%s\"" % i
+        args += ["--stripExportPattern", quoted_pattern]
 
     for i in allow_module_identifiers:
         args += ["--allowModuleIdentifiers", i]

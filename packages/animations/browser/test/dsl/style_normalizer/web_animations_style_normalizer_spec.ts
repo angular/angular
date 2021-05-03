@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,13 +16,13 @@ import {WebAnimationsStyleNormalizer} from '../../../src/dsl/style_normalization
         expect(normalizer.normalizePropertyName('width', [])).toEqual('width');
         expect(normalizer.normalizePropertyName('border-width', [])).toEqual('borderWidth');
         expect(normalizer.normalizePropertyName('borderHeight', [])).toEqual('borderHeight');
-        expect(normalizer.normalizePropertyName('-webkit-animation', [
-        ])).toEqual('WebkitAnimation');
+        expect(normalizer.normalizePropertyName('-webkit-animation', []))
+            .toEqual('WebkitAnimation');
       });
     });
 
     describe('normalizeStyleValue', () => {
-      function normalize(prop: string, val: string | number): string {
+      function normalize(prop: string, val: string|number): string {
         const errors: string[] = [];
         const result = normalizer.normalizeStyleValue(prop, prop, val, errors);
         if (errors.length) {

@@ -5,6 +5,7 @@ const path = require('canonical-path');
 const fs = require('fs-extra');
 const globby = require('globby');
 const jsdom = require('jsdom');
+const json5 = require('json5');
 
 const regionExtractor = require('../transforms/examples-package/services/region-parser');
 
@@ -24,14 +25,19 @@ class StackblitzBuilder {
     // const stackblitzPaths = path.join(this.basePath, '**/testing/*stackblitz.json');
     const stackblitzPaths = path.join(this.basePath, '**/*stackblitz.json');
     const fileNames = globby.sync(stackblitzPaths, { ignore: ['**/node_modules/**'] });
+    let failed = false;
     fileNames.forEach((configFileName) => {
       try {
-        // console.log('***'+configFileName)
         this._buildStackblitzFrom(configFileName);
       } catch (e) {
+        failed = true;
         console.log(e);
       }
     });
+
+    if (failed) {
+      process.exit(1);
+    }
   }
 
   _addDependencies(config, postData) {
@@ -67,7 +73,7 @@ class StackblitzBuilder {
   _buildCopyrightStrings() {
     const copyright = 'Copyright Google LLC. All Rights Reserved.\n' +
         'Use of this source code is governed by an MIT-style license that\n' +
-        'can be found in the LICENSE file at http://angular.io/license';
+        'can be found in the LICENSE file at https://angular.io/license';
     const pad = '\n\n';
 
     return {
@@ -226,6 +232,18 @@ class StackblitzBuilder {
       postData[`files[${relativeFileName}]`] = content;
     });
 
+    // Stackblitz defaults to ViewEngine unless `"enableIvy": true`
+    // So if there is a tsconfig.json file and there is no `enableIvy` property, we need to
+    // explicitly set it.
+    const tsConfigJSON = postData['files[tsconfig.json]'];
+    if (tsConfigJSON !== undefined) {
+      const tsConfig = json5.parse(tsConfigJSON);
+      if (tsConfig.angularCompilerOptions.enableIvy === undefined) {
+        tsConfig.angularCompilerOptions.enableIvy = true;
+        postData['files[tsconfig.json]'] = JSON.stringify(tsConfig, null, 2);
+      }
+    }
+
     const tags = ['angular', 'example', ...config.tags || []];
     tags.forEach((tag, ix) => postData[`tags[${ix}]`] = tag);
 
@@ -236,7 +254,7 @@ class StackblitzBuilder {
 
   _createStackblitzHtml(config, postData) {
     const baseHtml = this._createBaseStackblitzHtml(config);
-    const doc = jsdom.jsdom(baseHtml);
+    const doc = new jsdom.JSDOM(baseHtml).window.document;
     const form = doc.querySelector('form');
 
     for(const [key, value] of Object.entries(postData)) {
@@ -263,7 +281,7 @@ class StackblitzBuilder {
     const config = this._parseConfig(configFileName);
 
     const defaultIncludes = ['**/*.ts', '**/*.js', '**/*.css', '**/*.html', '**/*.md', '**/*.json', '**/*.png', '**/*.svg'];
-    const boilerplateIncludes = ['src/environments/*.*', 'angular.json', 'src/polyfills.ts'];
+    const boilerplateIncludes = ['src/environments/*.*', 'angular.json', 'src/polyfills.ts', 'tsconfig.json'];
     if (config.files) {
       if (config.files.length > 0) {
         if (config.files[0][0] === '!') {
@@ -288,7 +306,6 @@ class StackblitzBuilder {
 
     const defaultExcludes = [
       '!**/e2e/**/*.*',
-      '!**/tsconfig.json',
       '!**/package.json',
       '!**/example-config.json',
       '!**/tslint.json',

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,28 +8,31 @@
 
 // We are temporarily importing the existing viewEngine from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
-import {Type} from '../core';
 import {Injector} from '../di/injector';
+import {Type} from '../interface/type';
 import {Sanitizer} from '../sanitization/sanitizer';
-import {assertDataInRange} from '../util/assert';
+import {assertDefined, assertIndexInRange} from '../util/assert';
+
 import {assertComponentType} from './assert';
+import {readPatchedLView} from './context_discovery';
 import {getComponentDef} from './definition';
 import {diPublicInInjector, getOrCreateNodeInjectorForNode} from './di';
+import {throwProviderNotFoundError} from './errors_di';
 import {registerPostOrderHooks} from './hooks';
-import {CLEAN_PROMISE, addHostBindingsToExpandoInstructions, addToViewTree, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, growHostVarsSpace, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, renderView} from './instructions/shared';
+import {addToViewTree, CLEAN_PROMISE, createLView, createTView, getOrCreateTComponentView, getOrCreateTNode, initTNodeFlags, instantiateRootComponent, invokeHostBindingsInCreationMode, locateHostElement, markAsComponentHost, refreshView, registerHostBindingOpCodes, renderView} from './instructions/shared';
 import {ComponentDef, ComponentType, RenderFlags} from './interfaces/definition';
-import {TElementNode, TNode, TNodeType} from './interfaces/node';
+import {TElementNode, TNodeType} from './interfaces/node';
 import {PlayerHandler} from './interfaces/player';
-import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
+import {domRendererFactory3, Renderer3, RendererFactory3} from './interfaces/renderer';
+import {RElement} from './interfaces/renderer_dom';
 import {CONTEXT, HEADER_OFFSET, LView, LViewFlags, RootContext, RootContextFlags, TVIEW, TViewType} from './interfaces/view';
 import {writeDirectClass, writeDirectStyle} from './node_manipulation';
-import {enterView, getPreviousOrParentTNode, leaveView, setSelectedIndex} from './state';
+import {enterView, getCurrentTNode, leaveView, setSelectedIndex} from './state';
 import {computeStaticStyling} from './styling/static_styling';
 import {setUpAttributes} from './util/attrs_utils';
 import {publishDefaultGlobalUtils} from './util/global_utils';
-import {defaultScheduler, stringifyForError} from './util/misc_utils';
+import {defaultScheduler} from './util/misc_utils';
 import {getRootContext} from './util/view_traversal_utils';
-import {readPatchedLView} from './util/view_utils';
 
 
 
@@ -88,7 +91,7 @@ type HostFeature = (<T>(component: T, componentDef: ComponentDef<T>) => void);
 // TODO: A hack to not pull in the NullInjector from @angular/core.
 export const NULL_INJECTOR: Injector = {
   get: (token: any, notFoundValue?: any) => {
-    throw new Error('NullInjector: Not found: ' + stringifyForError(token));
+    throwProviderNotFoundError(token, 'NullInjector');
   }
 };
 
@@ -107,7 +110,7 @@ export const NULL_INJECTOR: Injector = {
  */
 export function renderComponent<T>(
     componentType: ComponentType<T>|
-        Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
+    Type<T>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */
     ,
     opts: CreateComponentOptions = {}): T {
   ngDevMode && publishDefaultGlobalUtils();
@@ -115,11 +118,11 @@ export function renderComponent<T>(
 
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
-  const componentDef = getComponentDef<T>(componentType) !;
-  if (componentDef.type != componentType) (componentDef as{type: Type<any>}).type = componentType;
+  const componentDef = getComponentDef<T>(componentType)!;
+  if (componentDef.type != componentType) (componentDef as {type: Type<any>}).type = componentType;
 
   // The first index of the first selector is the tag name.
-  const componentTag = componentDef.selectors ![0] ![0] as string;
+  const componentTag = componentDef.selectors![0]![0] as string;
   const hostRenderer = rendererFactory.createRenderer(null, null);
   const hostRNode =
       locateHostElement(hostRenderer, opts.host || componentTag, componentDef.encapsulation);
@@ -128,12 +131,12 @@ export function renderComponent<T>(
   const rootContext = createRootContext(opts.scheduler, opts.playerHandler);
 
   const renderer = rendererFactory.createRenderer(hostRNode, componentDef);
-  const rootTView = createTView(TViewType.Root, -1, null, 1, 0, null, null, null, null, null);
+  const rootTView = createTView(TViewType.Root, null, null, 1, 0, null, null, null, null, null);
   const rootView: LView = createLView(
-      null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, undefined,
+      null, rootTView, rootContext, rootFlags, null, null, rendererFactory, renderer, null,
       opts.injector || null);
 
-  enterView(rootView, null);
+  enterView(rootView);
   let component: T;
 
   try {
@@ -162,22 +165,26 @@ export function renderComponent<T>(
  * @param rNode Render host element.
  * @param def ComponentDef
  * @param rootView The parent view where the host node is stored
+ * @param rendererFactory Factory to be used for creating child renderers.
  * @param hostRenderer The current renderer
  * @param sanitizer The sanitizer, if provided
  *
  * @returns Component view created
  */
 export function createRootComponentView(
-    rNode: RElement | null, def: ComponentDef<any>, rootView: LView,
-    rendererFactory: RendererFactory3, hostRenderer: Renderer3,
-    sanitizer?: Sanitizer | null): LView {
+    rNode: RElement|null, def: ComponentDef<any>, rootView: LView,
+    rendererFactory: RendererFactory3, hostRenderer: Renderer3, sanitizer?: Sanitizer|null): LView {
   const tView = rootView[TVIEW];
-  ngDevMode && assertDataInRange(rootView, 0 + HEADER_OFFSET);
-  rootView[0 + HEADER_OFFSET] = rNode;
-  const tNode: TElementNode = getOrCreateTNode(tView, null, 0, TNodeType.Element, null, null);
+  const index = HEADER_OFFSET;
+  ngDevMode && assertIndexInRange(rootView, index);
+  rootView[index] = rNode;
+  // '#host' is added here as we don't know the real host DOM name (we don't want to read it) and at
+  // the same time we want to communicate the debug `TNode` that this is a special `TNode`
+  // representing a host element.
+  const tNode: TElementNode = getOrCreateTNode(tView, index, TNodeType.Element, '#host', null);
   const mergedAttrs = tNode.mergedAttrs = def.hostAttrs;
   if (mergedAttrs !== null) {
-    computeStaticStyling(tNode, mergedAttrs);
+    computeStaticStyling(tNode, mergedAttrs, true);
     if (rNode !== null) {
       setUpAttributes(hostRenderer, rNode, mergedAttrs);
       if (tNode.classes !== null) {
@@ -192,8 +199,8 @@ export function createRootComponentView(
   const viewRenderer = rendererFactory.createRenderer(rNode, def);
   const componentView = createLView(
       rootView, getOrCreateTComponentView(def), null,
-      def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[HEADER_OFFSET], tNode,
-      rendererFactory, viewRenderer, sanitizer);
+      def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, rootView[index], tNode,
+      rendererFactory, viewRenderer, sanitizer || null, null);
 
   if (tView.firstCreatePass) {
     diPublicInInjector(getOrCreateNodeInjectorForNode(tNode, rootView), tView, def.type);
@@ -204,7 +211,7 @@ export function createRootComponentView(
   addToViewTree(rootView, componentView);
 
   // Store component view at node index, with node as the HOST
-  return rootView[HEADER_OFFSET] = componentView;
+  return rootView[index] = componentView;
 }
 
 /**
@@ -213,7 +220,7 @@ export function createRootComponentView(
  */
 export function createRootComponent<T>(
     componentView: LView, componentDef: ComponentDef<T>, rootLView: LView, rootContext: RootContext,
-    hostFeatures: HostFeature[] | null): any {
+    hostFeatures: HostFeature[]|null): any {
   const tView = rootLView[TVIEW];
   // Create directive instance with factory() and store at next index in viewData
   const component = instantiateRootComponent(tView, rootLView, componentDef);
@@ -226,18 +233,21 @@ export function createRootComponent<T>(
   // We want to generate an empty QueryList for root content queries for backwards
   // compatibility with ViewEngine.
   if (componentDef.contentQueries) {
-    componentDef.contentQueries(RenderFlags.Create, component, rootLView.length - 1);
+    const tNode = getCurrentTNode()!;
+    ngDevMode && assertDefined(tNode, 'TNode expected');
+    componentDef.contentQueries(RenderFlags.Create, component, tNode.directiveStart);
   }
 
-  const rootTNode = getPreviousOrParentTNode();
+  const rootTNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(rootTNode, 'tNode should have been already created');
   if (tView.firstCreatePass &&
       (componentDef.hostBindings !== null || componentDef.hostAttrs !== null)) {
-    const elementIndex = rootTNode.index - HEADER_OFFSET;
-    setSelectedIndex(elementIndex);
+    setSelectedIndex(rootTNode.index);
 
     const rootTView = rootLView[TVIEW];
-    addHostBindingsToExpandoInstructions(rootTView, componentDef);
-    growHostVarsSpace(rootTView, rootLView, componentDef.hostVars);
+    registerHostBindingOpCodes(
+        rootTView, rootTNode, rootLView, rootTNode.directiveStart, rootTNode.directiveEnd,
+        componentDef);
 
     invokeHostBindingsInCreationMode(componentDef, component);
   }
@@ -270,13 +280,12 @@ export function createRootContext(
  * ```
  */
 export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
-  const rootTView = readPatchedLView(component) ![TVIEW];
-  const dirIndex = rootTView.data.length - 1;
-
-  // TODO(misko): replace `as TNode` with createTNode call. (needs refactoring to lose dep on
-  // LNode).
-  registerPostOrderHooks(
-      rootTView, { directiveStart: dirIndex, directiveEnd: dirIndex + 1 } as TNode);
+  const lView = readPatchedLView(component)!;
+  ngDevMode && assertDefined(lView, 'LView is required');
+  const tView = lView[TVIEW];
+  const tNode = getCurrentTNode()!;
+  ngDevMode && assertDefined(tNode, 'TNode is required');
+  registerPostOrderHooks(tView, tNode);
 }
 
 /**

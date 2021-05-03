@@ -75,7 +75,8 @@ Releasing `zone.js` is a two step process.
 #### 1. Creating a PR for release
 
 ```
-export PREVIOUS_ZONE_TAG=`git tag -l 'zone.js-0.10.*' | tail -n1`
+rm -rf node_modules && yarn install
+export PREVIOUS_ZONE_TAG=`git tag -l 'zone.js-0.11.*' | tail -n1`
 export VERSION=`(cd packages/zone.js; npm version patch --no-git-tag-version)`
 export VERSION=${VERSION#v}
 export TAG="zone.js-${VERSION}"
@@ -91,12 +92,12 @@ Create a dry run build to make sure everything is ready.
 yarn bazel --output_base=$(mktemp -d) run //packages/zone.js:npm_package.pack --workspace_status_command="echo BUILD_SCM_VERSION $VERSION"
 ```
 
-If everything looks good commit the changes and push them to your origin to create a PR.
+If everything looks good, commit the changes and push them to your origin to create a PR.
 
 ```
-git co -b "release_${TAG}"
+git checkout -b "release_${TAG}"
 git add packages/zone.js/CHANGELOG.md packages/zone.js/package.json
-git ci -m "release: cut the ${TAG} release"
+git commit -m "release: cut the ${TAG} release"
 git push origin "release_${TAG}"
 ```
 
@@ -107,10 +108,13 @@ Check out the SHA on master which has the changelog commit of the zone.js
 
 ```
 git fetch upstream
+git checkout upstream/master
+rm -rf node_modules && yarn install
 export VERSION=`(node -e "console.log(require('./packages/zone.js/package.json').version)")`
 export TAG="zone.js-${VERSION}"
 export SHA=`git log upstream/master --oneline -n 1000 | grep "release: cut the ${TAG} release" | cut -f 1 -d " "`
-git co ${SHA}
+echo "Releasing '$VERSION' which will be tagged as '$TAG' from SHA '$SHA'."
+git checkout ${SHA}
 npm login --registry https://wombat-dressing-room.appspot.com
 yarn bazel -- run --config=release -- //packages/zone.js:npm_package.publish --access public --tag latest
 git tag ${TAG} ${SHA}

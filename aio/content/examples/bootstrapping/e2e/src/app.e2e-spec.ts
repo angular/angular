@@ -7,8 +7,8 @@ describe('feature-modules App', () => {
     page = new AppPage();
   });
 
-  it('should display message saying app works', () => {
-    page.navigateTo();
-    expect(page.getTitleText()).toEqual('app works!');
+  it('should display message saying app works', async () => {
+    await page.navigateTo();
+    expect(await page.getTitleText()).toEqual('app works!');
   });
 });

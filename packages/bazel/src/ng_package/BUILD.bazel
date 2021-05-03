@@ -1,14 +1,55 @@
-package(default_visibility = ["//visibility:public"])
-
 load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
 
 # BEGIN-DEV-ONLY
-load("@npm_bazel_typescript//:index.bzl", "ts_library")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+# END-DEV-ONLY
 
+package(default_visibility = ["//visibility:public"])
+
+nodejs_binary(
+    name = "rollup_for_ng_package",
+    data = [
+        # BEGIN-DEV-ONLY
+        "@npm" +
+        # END-DEV-ONLY
+        "//rollup",
+        # BEGIN-DEV-ONLY
+        "@npm" +
+        # END-DEV-ONLY
+        "//rollup-plugin-commonjs",
+        # BEGIN-DEV-ONLY
+        "@npm" +
+        # END-DEV-ONLY
+        "//rollup-plugin-node-resolve",
+        # BEGIN-DEV-ONLY
+        "@npm" +
+        # END-DEV-ONLY
+        "//rollup-plugin-sourcemaps",
+        # BEGIN-DEV-ONLY
+        "@npm" +
+        # END-DEV-ONLY
+        "//typescript",
+    ],
+    entry_point = (
+        # BEGIN-DEV-ONLY
+        "@npm" +
+        # END-DEV-ONLY
+        "//:node_modules/rollup/dist/bin/rollup"
+    ),
+    # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+    # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+    templated_args = ["--bazel_patch_module_resolver"],
+)
+
+exports_files([
+    "ng_package.bzl",
+    "rollup.config.js",
+])
+
+# BEGIN-DEV-ONLY
 ts_library(
     name = "lib",
     srcs = glob(["*.ts"]),
-    node_modules = "@npm//typescript:typescript__typings",
     tsconfig = ":tsconfig.json",
     deps = [
         "@npm//@types/node",
@@ -16,7 +57,14 @@ ts_library(
     ],
 )
 
-# END-DEV-ONLY
+filegroup(
+    name = "package_assets",
+    srcs = glob(["*.bzl"]) + [
+        "BUILD.bazel",
+        "rollup.config.js",
+    ],
+)
+
 nodejs_binary(
     name = "packager",
     data = [
@@ -24,30 +72,8 @@ nodejs_binary(
         "@npm//shelljs",
     ],
     entry_point = ":packager.ts",
+    # TODO(josephperrott): update dependency usages to no longer need bazel patch module resolver
+    # See: https://github.com/bazelbuild/rules_nodejs/wiki#--bazel_patch_module_resolver-now-defaults-to-false-2324
+    templated_args = ["--bazel_patch_module_resolver"],
 )
-
-nodejs_binary(
-    name = "rollup_for_ng_package",
-    data = [
-        "@npm//rollup",
-        "@npm//rollup-plugin-commonjs",
-        "@npm//rollup-plugin-node-resolve",
-        "@npm//rollup-plugin-sourcemaps",
-    ],
-    entry_point = "@npm//:node_modules/rollup/dist/bin/rollup",
-)
-
-exports_files([
-    "ng_package.bzl",
-    "rollup.config.js",
-    "terser_config.default.json",
-])
-
-filegroup(
-    name = "package_assets",
-    srcs = glob(["*.bzl"]) + [
-        "BUILD.bazel",
-        "rollup.config.js",
-        "terser_config.default.json",
-    ],
-)
+# END-DEV-ONLY

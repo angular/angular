@@ -1,13 +1,41 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {injectElementRef as render3InjectElementRef} from '../render3/view_engine_compatibility';
+import {TNode} from '../render3/interfaces/node';
+import {RElement} from '../render3/interfaces/renderer_dom';
+import {LView} from '../render3/interfaces/view';
+import {getCurrentTNode, getLView} from '../render3/state';
+import {getNativeByTNode} from '../render3/util/view_utils';
 import {noop} from '../util/noop';
+
+/**
+ * Creates an ElementRef from the most recent node.
+ *
+ * @returns The ElementRef instance to use
+ */
+export function injectElementRef(): ElementRef {
+  return createElementRef(getCurrentTNode()!, getLView());
+}
+
+/**
+ * Creates an ElementRef given a node.
+ *
+ * @param tNode The node for which you'd like an ElementRef
+ * @param lView The view to which the node belongs
+ * @returns The ElementRef instance to use
+ */
+export function createElementRef(tNode: TNode, lView: LView): ElementRef {
+  return new ElementRef(getNativeByTNode(tNode, lView) as RElement);
+}
+
+export const SWITCH_ELEMENT_REF_FACTORY__POST_R3__ = injectElementRef;
+const SWITCH_ELEMENT_REF_FACTORY__PRE_R3__ = noop;
+const SWITCH_ELEMENT_REF_FACTORY: typeof injectElementRef = SWITCH_ELEMENT_REF_FACTORY__PRE_R3__;
 
 /**
  * A wrapper around a native element inside of a View.
@@ -17,14 +45,14 @@ import {noop} from '../util/noop';
  *
  * @security Permitting direct access to the DOM can make your application more vulnerable to
  * XSS attacks. Carefully review any use of `ElementRef` in your code. For more detail, see the
- * [Security Guide](http://g.co/ng/security).
+ * [Security Guide](https://g.co/ng/security).
  *
  * @publicApi
  */
 // Note: We don't expose things like `Injector`, `ViewContainer`, ... here,
 // i.e. users have to ask for what they need. With that, we can build better analysis tools
 // and could do better codegen in the future.
-export class ElementRef<T extends any = any> {
+export class ElementRef<T = any> {
   /**
    * The underlying native element or `null` if direct access to native elements is not supported
    * (e.g. when the application runs in a web worker).
@@ -48,16 +76,23 @@ export class ElementRef<T extends any = any> {
    */
   public nativeElement: T;
 
-  constructor(nativeElement: T) { this.nativeElement = nativeElement; }
+  constructor(nativeElement: T) {
+    this.nativeElement = nativeElement;
+  }
 
   /**
    * @internal
    * @nocollapse
    */
-  static __NG_ELEMENT_ID__: () => ElementRef = () => SWITCH_ELEMENT_REF_FACTORY(ElementRef);
+  static __NG_ELEMENT_ID__: () => ElementRef = SWITCH_ELEMENT_REF_FACTORY;
 }
 
-export const SWITCH_ELEMENT_REF_FACTORY__POST_R3__ = render3InjectElementRef;
-const SWITCH_ELEMENT_REF_FACTORY__PRE_R3__ = noop;
-const SWITCH_ELEMENT_REF_FACTORY: typeof render3InjectElementRef =
-    SWITCH_ELEMENT_REF_FACTORY__PRE_R3__;
+/**
+ * Unwraps `ElementRef` and return the `nativeElement`.
+ *
+ * @param value value to unwrap
+ * @returns `nativeElement` if `ElementRef` otherwise returns value as is.
+ */
+export function unwrapElementRef<T, R>(value: T|ElementRef<R>): T|R {
+  return value instanceof ElementRef ? value.nativeElement : value;
+}

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,7 +12,7 @@ import {ImplicitReceiver, MethodCall, PropertyRead} from '@angular/compiler/src/
 describe('RecursiveAstVisitor', () => {
   it('should visit every node', () => {
     const parser = new Parser(new Lexer());
-    const ast = parser.parseBinding('x.y()', null /* location */, 0 /* absoluteOffset */);
+    const ast = parser.parseBinding('x.y()', '', 0 /* absoluteOffset */);
     const visitor = new Visitor();
     const path: AST[] = [];
     visitor.visit(ast.ast, path);

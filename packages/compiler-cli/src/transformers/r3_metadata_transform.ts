@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,7 @@
 import {ClassStmt, PartialModule, Statement, StmtModifier} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {MetadataCollector, MetadataValue, ModuleMetadata, isClassMetadata} from '../metadata/index';
+import {isClassMetadata, MetadataCollector, MetadataValue, ModuleMetadata} from '../metadata/index';
 
 import {MetadataTransformer, ValueTransform} from './metadata_cache';
 

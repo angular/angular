@@ -6,10 +6,10 @@ import { DebugElement } from '@angular/core';
 import { BannerComponent } from './banner.component';
 
 describe('BannerComponent (inline template)', () => {
-// #docregion setup
+  // #docregion setup
   let component: BannerComponent;
-  let fixture:   ComponentFixture<BannerComponent>;
-  let h1:        HTMLElement;
+  let fixture: ComponentFixture<BannerComponent>;
+  let h1: HTMLElement;
 
   // #docregion configure-and-create
   beforeEach(() => {
@@ -22,15 +22,15 @@ describe('BannerComponent (inline template)', () => {
     h1 = fixture.nativeElement.querySelector('h1');
     // #docregion configure-and-create
   });
-// #enddocregion setup, configure-and-create
+  // #enddocregion setup, configure-and-create
 
-// #docregion test-w-o-detect-changes
+  // #docregion test-w-o-detect-changes
   it('no title in the DOM after createComponent()', () => {
     expect(h1.textContent).toEqual('');
   });
-// #enddocregion test-w-o-detect-changes
+  // #enddocregion test-w-o-detect-changes
 
-// #docregion expect-h1-default-v1
+  // #docregion expect-h1-default-v1
   it('should display original title', () => {
     // #enddocregion expect-h1-default-v1
     fixture.detectChanges();
@@ -39,18 +39,18 @@ describe('BannerComponent (inline template)', () => {
   });
   // #enddocregion expect-h1-default-v1
 
-// #docregion expect-h1-default
-it('should display original title after detectChanges()', () => {
-  fixture.detectChanges();
-  expect(h1.textContent).toContain(component.title);
-});
-// #enddocregion expect-h1-default
+  // #docregion expect-h1-default
+  it('should display original title after detectChanges()', () => {
+    fixture.detectChanges();
+    expect(h1.textContent).toContain(component.title);
+  });
+  // #enddocregion expect-h1-default
 
-// #docregion after-change
-it('should display a different test title', () => {
-  component.title = 'Test Title';
-  fixture.detectChanges();
-  expect(h1.textContent).toContain('Test Title');
-});
-// #enddocregion after-change
+  // #docregion after-change
+  it('should display a different test title', () => {
+    component.title = 'Test Title';
+    fixture.detectChanges();
+    expect(h1.textContent).toContain('Test Title');
+  });
+  // #enddocregion after-change
 });

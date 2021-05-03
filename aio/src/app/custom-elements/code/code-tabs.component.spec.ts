@@ -70,6 +70,10 @@ describe('CodeTabsComponent', () => {
     const codeContent = fixture.nativeElement.querySelector('aio-code').textContent;
     expect(codeContent.indexOf('Code example 1') !== -1).toBeTruthy();
   });
+
+  it('should clean-up the projected tabs content once captured', () => {
+    expect(codeTabsComponent.content.nativeElement.innerHTML).toBe('');
+  });
 });
 
 @Component({

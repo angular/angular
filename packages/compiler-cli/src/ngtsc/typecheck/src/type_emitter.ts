@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,7 +12,7 @@ import {Reference} from '../../imports';
  * A resolved type reference can either be a `Reference`, the original `ts.TypeReferenceNode` itself
  * or null to indicate the no reference could be resolved.
  */
-export type ResolvedTypeReference = Reference | ts.TypeReferenceNode | null;
+export type ResolvedTypeReference = Reference|ts.TypeReferenceNode|null;
 
 /**
  * A type reference resolver function is responsible for finding the declaration of the type
@@ -36,6 +36,7 @@ export function canEmitType(type: ts.TypeNode, resolver: TypeReferenceResolver):
       visitTypeReferenceNode: type => canEmitTypeReference(type),
       visitArrayTypeNode: type => canEmitTypeWorker(type.elementType),
       visitKeywordType: () => true,
+      visitLiteralType: () => true,
       visitOtherType: () => false,
     });
   }
@@ -111,7 +112,10 @@ export class TypeEmitter {
       visitTypeReferenceNode: type => this.emitTypeReference(type),
       visitArrayTypeNode: type => ts.updateArrayTypeNode(type, this.emitType(type.elementType)),
       visitKeywordType: type => type,
-      visitOtherType: () => { throw new Error('Unable to emit a complex type'); },
+      visitLiteralType: type => type,
+      visitOtherType: () => {
+        throw new Error('Unable to emit a complex type');
+      },
     });
   }
 
@@ -137,8 +141,8 @@ export class TypeEmitter {
 
       const emittedType = this.emitReference(reference);
       if (!ts.isTypeReferenceNode(emittedType)) {
-        throw new Error(
-            `Expected TypeReferenceNode for emitted reference, got ${ts.SyntaxKind[emittedType.kind]}`);
+        throw new Error(`Expected TypeReferenceNode for emitted reference, got ${
+            ts.SyntaxKind[emittedType.kind]}`);
       }
 
       typeName = emittedType.typeName;
@@ -157,6 +161,7 @@ interface TypeEmitterVisitor<R> {
   visitTypeReferenceNode(type: ts.TypeReferenceNode): R;
   visitArrayTypeNode(type: ts.ArrayTypeNode): R;
   visitKeywordType(type: ts.KeywordTypeNode): R;
+  visitLiteralType(type: ts.LiteralTypeNode): R;
   visitOtherType(type: ts.TypeNode): R;
 }
 
@@ -165,6 +170,8 @@ function visitTypeNode<R>(type: ts.TypeNode, visitor: TypeEmitterVisitor<R>): R 
     return visitor.visitTypeReferenceNode(type);
   } else if (ts.isArrayTypeNode(type)) {
     return visitor.visitArrayTypeNode(type);
+  } else if (ts.isLiteralTypeNode(type)) {
+    return visitor.visitLiteralType(type);
   }
 
   switch (type.kind) {

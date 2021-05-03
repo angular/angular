@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -12,7 +12,8 @@ import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpRequest} from './request';
-import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse} from './response';
+import {HttpErrorResponse, HttpEvent, HttpEventType, HttpResponse, HttpStatusCode} from './response';
+
 
 // Every request made through JSONP needs a callback name that's unique across the
 // whole page. Each request is assigned an id and the callback name is constructed
@@ -36,7 +37,9 @@ export const JSONP_ERR_WRONG_RESPONSE_TYPE = 'JSONP requests must use Json respo
  *
  *
  */
-export abstract class JsonpCallbackContext { [key: string]: (data: any) => void; }
+export abstract class JsonpCallbackContext {
+  [key: string]: (data: any) => void;
+}
 
 /**
  * Processes an `HttpRequest` with the JSONP method,
@@ -48,12 +51,19 @@ export abstract class JsonpCallbackContext { [key: string]: (data: any) => void;
  */
 @Injectable()
 export class JsonpClientBackend implements HttpBackend {
+  /**
+   * A resolved promise that can be used to schedule microtasks in the event handlers.
+   */
+  private readonly resolvedPromise = Promise.resolve();
+
   constructor(private callbackMap: JsonpCallbackContext, @Inject(DOCUMENT) private document: any) {}
 
   /**
    * Get the name of the next callback method, by incrementing the global `nextRequestId`.
    */
-  private nextCallback(): string { return `ng_jsonp_callback_${nextRequestId++}`; }
+  private nextCallback(): string {
+    return `ng_jsonp_callback_${nextRequestId++}`;
+  }
 
   /**
    * Processes a JSONP request and returns an event stream of the results.
@@ -136,32 +146,38 @@ export class JsonpClientBackend implements HttpBackend {
           return;
         }
 
-        // Cleanup the page.
-        cleanup();
+        // We wrap it in an extra Promise, to ensure the microtask
+        // is scheduled after the loaded endpoint has executed any potential microtask itself,
+        // which is not guaranteed in Internet Explorer and EdgeHTML. See issue #39496
+        this.resolvedPromise.then(() => {
+          // Cleanup the page.
+          cleanup();
 
-        // Check whether the response callback has run.
-        if (!finished) {
-          // It hasn't, something went wrong with the request. Return an error via
-          // the Observable error path. All JSONP errors have status 0.
-          observer.error(new HttpErrorResponse({
+          // Check whether the response callback has run.
+          if (!finished) {
+            // It hasn't, something went wrong with the request. Return an error via
+            // the Observable error path. All JSONP errors have status 0.
+            observer.error(new HttpErrorResponse({
+              url,
+              status: 0,
+              statusText: 'JSONP Error',
+              error: new Error(JSONP_ERR_NO_CALLBACK),
+            }));
+            return;
+          }
+
+          // Success. body either contains the response body or null if none was
+          // returned.
+          observer.next(new HttpResponse({
+            body,
+            status: HttpStatusCode.Ok,
+            statusText: 'OK',
             url,
-            status: 0,
-            statusText: 'JSONP Error',
-            error: new Error(JSONP_ERR_NO_CALLBACK),
           }));
-          return;
-        }
 
-        // Success. body either contains the response body or null if none was
-        // returned.
-        observer.next(new HttpResponse({
-          body,
-          status: 200,
-          statusText: 'OK', url,
-        }));
-
-        // Complete the stream, the response is over.
-        observer.complete();
+          // Complete the stream, the response is over.
+          observer.complete();
+        });
       };
 
       // onError() is the error callback, which runs if the script returned generates
@@ -178,7 +194,8 @@ export class JsonpClientBackend implements HttpBackend {
         observer.error(new HttpErrorResponse({
           error,
           status: 0,
-          statusText: 'JSONP Error', url,
+          statusText: 'JSONP Error',
+          url,
         }));
       };
 

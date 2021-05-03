@@ -1,19 +1,17 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectFlags, InjectionToken, Injector, Type, inject, ɵsetCurrentInjector as setCurrentInjector} from '@angular/core';
+import {inject, InjectFlags, InjectionToken, Injector, ProviderToken, ɵsetCurrentInjector as setCurrentInjector} from '@angular/core';
 
 class MockRootScopeInjector implements Injector {
   constructor(readonly parent: Injector) {}
 
-  get<T>(
-      token: Type<T>|InjectionToken<T>, defaultValue?: any,
-      flags: InjectFlags = InjectFlags.Default): T {
+  get<T>(token: ProviderToken<T>, defaultValue?: any, flags: InjectFlags = InjectFlags.Default): T {
     if ((token as any).ɵprov && (token as any).ɵprov.providedIn === 'root') {
       const old = setCurrentInjector(this);
       try {

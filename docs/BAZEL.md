@@ -64,7 +64,7 @@ See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc
 - `--config=debug`: build and launch in debug mode (see [debugging](#debugging) instructions below)
 - `--test_arg=--node_options=--inspect=9228`: change the inspector port.
 - `--config=ivy` Enables ivy mode if present, otherwise ViewEngine is used. This switches which compiler is used (ngc or ngtsc)
-- `--config=view-engine` Enables ViewEngine mode if present, currentl this the default mode. This switches which compiler is used (ngc or ngtsc)
+- `--config=view-engine` Enables ViewEngine mode if present, currently this the default mode. This switches which compiler is used (ngc or ngtsc)
 - `--test_tag_filters=<tag>`: filter tests down to tags defined in the `tag` config of your rules in any given `BUILD.bazel`.
     - `no-ivy-aot`: Useful for excluding build and test targets that are not meant to be executed in Ivy AOT mode (`--config=ivy`).
     - `ivy-only`: Useful for excluding all Ivy build and tests targets with `--config=view-engine`.
@@ -75,7 +75,7 @@ See also: [`//.bazelrc`](https://github.com/angular/angular/blob/master/.bazelrc
 <a id="debugging"></a>
 
 - Open chrome at: [chrome://inspect](chrome://inspect)
-- Click on  `Open dedicated DevTools for Node` to launch a debugger.
+- Click on `Open dedicated DevTools for Node` to launch a debugger.
 - Run test: `yarn bazel test packages/core/test:test --config=debug`
 
 The process should automatically connect to the debugger.
@@ -120,7 +120,7 @@ Apple+Shift+D on Mac) and click on the green play icon next to the configuration
 
 Open `external` directory which contains everything that bazel downloaded while executing the workspace file:
 ```sh
-open $(bazel info output_base)/external
+open $(yarn -s bazel info output_base)/external
 ```
 
 See subcommands that bazel executes (helpful for debugging):
@@ -130,7 +130,7 @@ yarn bazel build //packages/core:package -s
 
 To debug nodejs_binary executable paths uncomment `find . -name rollup 1>&2` (~ line 96) in
 ```sh
-open $(bazel info output_base)/external/build_bazel_rules_nodejs/internal/node_launcher.sh
+open $(yarn -s bazel info output_base)/external/build_bazel_rules_nodejs/internal/node_launcher.sh
 ```
 
 ## Stamping
@@ -203,13 +203,13 @@ yarn bazel analyze-profile filename_name.profile
 
 This will show the phase summary, individual phase information and critical path.
 
-You can also list all individual tasks and the time they took using `--task_tree`. 
+You can also list all individual tasks and the time they took using `--task_tree`.
 ```
 yarn bazel analyze-profile filename_name.profile --task_tree ".*"
 ```
 
 To show all tasks that take longer than a certain threshold, use the `--task_tree_threshold` flag.
-The default behaviour is to use a 50ms threshold.
+The default behavior is to use a 50ms threshold.
 ```
 yarn bazel analyze-profile filename_name.profile --task_tree ".*" --task_tree_threshold 5000
 ```
@@ -253,6 +253,29 @@ Usually there is a single item (or multiple items of the same kind) where the ov
 
 
 ## Known issues
+
+### Windows
+
+If you see the following error:
+
+```
+Error: Cannot find module 'C:\users\xxxx\_bazel_xxxx\7lxopdvs\execroot\angular\bazel-out\x64_windows-fastbuild\bin\packages\core\test\bundling\hello_world\symbol_test.bat.runfiles\angular\c;C:\msys64\users\xxxx\_bazel_xxxx\7lxopdvs\execroot\angular\bazel-out\x64_windows-fastbuild\bin\packages\core\test\bundling\hello_world\symbol_test.bat.runfiles\angular\packages\core\test\bundling\hello_world\symbol_test_require_patch.js'
+Require stack:
+- internal/preload
+    at Function.Module._resolveFilename (internal/modules/cjs/loader.js:793:17)
+    at Function.Module._load (internal/modules/cjs/loader.js:686:27)
+    at Module.require (internal/modules/cjs/loader.js:848:19)
+    at Module._preloadModules (internal/modules/cjs/loader.js:1133:12)
+    at loadPreloadModules (internal/bootstrap/pre_execution.js:443:5)
+    at prepareMainThreadExecution (internal/bootstrap/pre_execution.js:62:3)
+    at internal/main/run_main_module.js:7:1 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ 'internal/preload' ]
+```
+
+`bazel run` only works in Bazel Windows with non-test targets. Ensure that you are using `bazel test` instead.
+
+e.g: `yarn bazel test packages/core/test/bundling/forms:symbol_test --config=ivy`
 
 ### Xcode
 

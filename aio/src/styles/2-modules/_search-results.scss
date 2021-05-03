@@ -4,7 +4,6 @@ aio-search-results {
   .search-results {
     display: flex;
     flex-direction: row;
-    justify-content: space-around;
     overflow: auto;
     padding: 0px 32px;
     border-top: 68px solid transparent;
@@ -20,8 +19,8 @@ aio-search-results {
     box-sizing: border-box;
 
     .search-area {
-      margin: 16px;
-      height: 100%;
+      margin: 0 auto;
+      padding: 16px;
 
       .search-section-header {
         @include font-size(16);
@@ -41,8 +40,11 @@ aio-search-results {
 
         .search-result-item {
           @include font-size(14);
+          @include line-height(24);
           color: $lightgray;
+          display: inline-block;
           font-weight: normal;
+          padding: 0.6rem 0;
 
           &a {
             text-decoration: none;
@@ -50,10 +52,6 @@ aio-search-results {
 
           &:hover {
             color: $white;
-          }
-
-          .symbol {
-            margin-right: 8px;
           }
         }
 

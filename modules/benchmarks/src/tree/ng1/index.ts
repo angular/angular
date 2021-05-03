@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,7 +15,7 @@ declare var angular: any;
 
 function init() {
   let detectChangesRuns = 0;
-  const numberOfChecksEl = document.getElementById('numberOfChecks') !;
+  const numberOfChecksEl = document.getElementById('numberOfChecks')!;
 
   addTreeToModule(angular.module('app', [])).run([
     '$rootScope',
@@ -31,11 +31,15 @@ function init() {
       function noop() {}
 
       function destroyDom() {
-        $rootScope.$apply(() => { $rootScope.initData = emptyTree; });
+        $rootScope.$apply(() => {
+          $rootScope.initData = emptyTree;
+        });
       }
 
       function createDom() {
-        $rootScope.$apply(() => { $rootScope.initData = buildTree(); });
+        $rootScope.$apply(() => {
+          $rootScope.initData = buildTree();
+        });
       }
 
       bindAction('#destroyDom', destroyDom);

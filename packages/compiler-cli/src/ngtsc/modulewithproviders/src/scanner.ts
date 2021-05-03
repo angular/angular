@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,7 +13,9 @@ import {ImportFlags, Reference, ReferenceEmitter} from '../../imports';
 import {PartialEvaluator, ResolvedValueMap} from '../../partial_evaluator';
 import {ReflectionHost} from '../../reflection';
 
-export interface DtsHandler { addTypeReplacement(node: ts.Declaration, type: Type): void; }
+export interface DtsHandler {
+  addTypeReplacement(node: ts.Declaration, type: Type): void;
+}
 
 export class ModuleWithProvidersScanner {
   constructor(
@@ -99,9 +101,9 @@ export class ModuleWithProvidersScanner {
 
     const ngModuleExpr =
         this.emitter.emit(ngModule, decl.getSourceFile(), ImportFlags.ForceNewImport);
-    const ngModuleType = new ExpressionType(ngModuleExpr);
+    const ngModuleType = new ExpressionType(ngModuleExpr.expression);
     const mwpNgType = new ExpressionType(
-        new ExternalExpr(Identifiers.ModuleWithProviders), /* modifiers */ null, [ngModuleType]);
+        new ExternalExpr(Identifiers.ModuleWithProviders), [/* modifiers */], [ngModuleType]);
 
     dts.addTypeReplacement(decl, mwpNgType);
   }

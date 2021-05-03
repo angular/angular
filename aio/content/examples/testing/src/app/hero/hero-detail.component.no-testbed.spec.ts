@@ -6,7 +6,6 @@ import { Hero } from '../model/hero';
 //////////  Tests  ////////////////////
 
 describe('HeroDetailComponent - no TestBed', () => {
-  let activatedRoute: ActivatedRouteStub;
   let comp: HeroDetailComponent;
   let expectedHero: Hero;
   let hds: any;

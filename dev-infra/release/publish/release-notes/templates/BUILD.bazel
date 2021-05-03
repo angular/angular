@@ -1,0 +1,6 @@
+package(default_visibility = ["//dev-infra:__subpackages__"])
+
+filegroup(
+    name = "templates",
+    srcs = glob(["*.ejs"]),
+)

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,9 +9,10 @@
 import {createPatch} from 'diff';
 import * as fs from 'fs';
 import * as path from 'path';
-import {SerializationOptions, publicApi} from './serializer';
 
-export {SerializationOptions, publicApi} from './serializer';
+import {publicApi, SerializationOptions} from './serializer';
+
+export {publicApi, SerializationOptions} from './serializer';
 
 export function generateGoldenFile(
     entrypoint: string, outFile: string, options: SerializationOptions = {}): void {
@@ -85,7 +86,8 @@ export function discoverAllEntrypoints(dirPath: string) {
 
   // Get all typings file locations from package.json files
   for (const packageJson of packageJsons) {
-    const packageJsonObj = JSON.parse(fs.readFileSync(packageJson, {encoding: 'utf8'}));
+    const packageJsonObj =
+        JSON.parse(fs.readFileSync(packageJson, {encoding: 'utf8'})) as {typings: string};
     const typings = packageJsonObj.typings;
     if (typings) {
       entryPoints.push(path.join(path.dirname(packageJson), typings));

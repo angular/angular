@@ -40,8 +40,8 @@ using and results in smaller bundle sizes.
 Tree-shaking is especially useful for a library
 because the application which uses the library may not have
 a need to inject it. Read more
-about [tree-shakable providers](guide/dependency-injection-providers#tree-shakable-providers)
-in [DI Providers](guide/dependency-injection-providers).
+about [tree-shakable providers](guide/architecture-services#providing-services)
+in [Introduction to services and dependency injection](guide/architecture-services).
 
 </div>
 
@@ -1182,8 +1182,6 @@ its injector produces an instance of `Car` resolved by injector (C) with an `Eng
   <img src="generated/images/guide/dependency-injection/injector-tree.png" alt="car injector tree">
 </div>
 
-
-<hr />
 
 ## More on dependency injection
 

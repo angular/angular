@@ -1,16 +1,17 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as chai from 'chai';
 import * as fs from 'fs';
 import * as path from 'path';
+
 import * as main from '../lib/main';
-import {assertFileEqual, unlinkRecursively} from './helpers';
+
+import {assertFileEqual} from './helpers';
 
 describe('integration test: public api', () => {
   let _warn: any = null;
@@ -26,14 +27,17 @@ describe('integration test: public api', () => {
     _warn = null;
   });
 
-  it('should handle empty files',
-     () => { check('test/fixtures/empty.d.ts', 'test/fixtures/empty_expected.d.ts'); });
+  it('should handle empty files', () => {
+    check('test/fixtures/empty.d.ts', 'test/fixtures/empty_expected.d.ts');
+  });
 
-  it('should include symbols',
-     () => { check('test/fixtures/simple.d.ts', 'test/fixtures/simple_expected.d.ts'); });
+  it('should include symbols', () => {
+    check('test/fixtures/simple.d.ts', 'test/fixtures/simple_expected.d.ts');
+  });
 
-  it('should include symbols reexported explicitly',
-     () => { check('test/fixtures/reexported.d.ts', 'test/fixtures/reexported_expected.d.ts'); });
+  it('should include symbols reexported explicitly', () => {
+    check('test/fixtures/reexported.d.ts', 'test/fixtures/reexported_expected.d.ts');
+  });
 
   it('should include symbols reexported with *', () => {
     check('test/fixtures/reexported_star.d.ts', 'test/fixtures/reexported_star_expected.d.ts');
@@ -58,7 +62,7 @@ describe('integration test: public api', () => {
 
   it('should remove reexported external symbols', () => {
     check('test/fixtures/reexported_extern.d.ts', 'test/fixtures/reexported_extern_expected.d.ts');
-    chai.assert.deepEqual(warnings, [
+    expect(warnings).toEqual([
       'test/fixtures/reexported_extern.d.ts(5,1): error: No export declaration found for symbol "CompilerHost"'
     ]);
   });
@@ -72,9 +76,8 @@ describe('integration test: public api', () => {
   });
 
   it('should throw on passing a .ts file as an input', () => {
-    chai.assert.throws(() => {
-      main.publicApi('test/fixtures/empty.ts');
-    }, 'Source file "test/fixtures/empty.ts" is not a declaration file');
+    expect(() => main.publicApi('test/fixtures/empty.ts'))
+        .toThrowError('Source file "test/fixtures/empty.ts" is not a declaration file');
   });
 
   it('should respect serialization options', () => {
@@ -95,7 +98,9 @@ describe('integration test: generateGoldenFile', () => {
     }
   });
 
-  afterEach(() => { unlinkRecursively(outDir); });
+  afterEach(() => {
+    fs.rmdirSync(outDir, {recursive: true});
+  });
 
 
   it('should generate a golden file', () => {
@@ -124,23 +129,23 @@ describe('integration test: verifyAgainstGoldenFile', () => {
   it('should check an entrypoint against a golden file on equal', () => {
     const diff = main.verifyAgainstGoldenFile(
         'test/fixtures/reexported_classes.d.ts', 'test/fixtures/reexported_classes_expected.d.ts');
-    chai.assert.equal(diff, '');
+    expect(diff).toBe('');
   });
 
   it('should check an entrypoint against a golden file with proper diff message', () => {
     const diff = main.verifyAgainstGoldenFile(
         'test/fixtures/verify_entrypoint.d.ts', 'test/fixtures/verify_expected.d.ts');
-    chai.assert.equal(diff, fs.readFileSync('test/fixtures/verify.patch').toString());
+    expect(diff).toBe(fs.readFileSync('test/fixtures/verify.patch').toString());
   });
 
   it('should respect serialization options', () => {
     const diff = main.verifyAgainstGoldenFile(
         'test/fixtures/underscored.d.ts', 'test/fixtures/underscored_expected.d.ts',
         {stripExportPattern: /^__.*/});
-    chai.assert.equal(diff, '');
+    expect(diff).toBe('');
   });
 });
 
 function check(sourceFile: string, expectedFile: string, options: main.SerializationOptions = {}) {
-  chai.assert.equal(main.publicApi(sourceFile, options), fs.readFileSync(expectedFile).toString());
+  expect(main.publicApi(sourceFile, options)).toBe(fs.readFileSync(expectedFile).toString());
 }

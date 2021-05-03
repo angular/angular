@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -127,9 +127,9 @@ export interface StrictTemplateOptions {
   /**
    * If `true`, implies all template strictness flags below (unless individually disabled).
    *
-   * Has no effect unless `fullTemplateTypeCheck` is also enabled.
+   * This flag is a superset of `fullTemplateTypeCheck`.
    *
-   * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
+   * Defaults to `false`, even if "fullTemplateTypeCheck" is `true`.
    */
   strictTemplates?: boolean;
 
@@ -146,6 +146,18 @@ export interface StrictTemplateOptions {
    * Defaults to `false`, even if "fullTemplateTypeCheck" is set.
    */
   strictInputTypes?: boolean;
+
+  /**
+   * Whether to check if the input binding attempts to assign to a restricted field (readonly,
+   * private, or protected) on the directive/component.
+   *
+   * Defaults to `false`, even if "fullTemplateTypeCheck", "strictTemplates" and/or
+   * "strictInputTypes" is set. Note that if `strictInputTypes` is not set, or set to `false`, this
+   * flag has no effect.
+   *
+   * Tracking issue for enabling this by default: https://github.com/angular/angular/issues/38400
+   */
+  strictInputAccessModifiers?: boolean;
 
   /**
    * Whether to use strict null types for input bindings for directives.
@@ -313,6 +325,35 @@ export interface I18nOptions {
    * (used by Closure Compiler's output of `goog.getMsg` for transition period)
    */
   i18nUseExternalIds?: boolean;
+
+  /**
+   * If templates are stored in external files (e.g. via `templateUrl`) then we need to decide
+   * whether or not to normalize the line-endings (from `\r\n` to `\n`) when processing ICU
+   * expressions.
+   *
+   * Ideally we would always normalize, but for backward compatibility this flag allows the template
+   * parser to avoid normalizing line endings in ICU expressions.
+   *
+   * If `true` then we will normalize ICU expression line endings.
+   * The default is `false`, but this will be switched in a future major release.
+   */
+  i18nNormalizeLineEndingsInICUs?: boolean;
+}
+
+/**
+ * Options that specify compilation target.
+ *
+ * @publicApi
+ */
+export interface TargetOptions {
+  /**
+   * Specifies the compilation mode to use. The following modes are available:
+   * - 'full': generates fully AOT compiled code using Ivy instructions.
+   * - 'partial': generates code in a stable, but intermediate form suitable for publication to NPM.
+   *
+   * The default value is 'full'.
+   */
+  compilationMode?: 'full'|'partial';
 }
 
 /**

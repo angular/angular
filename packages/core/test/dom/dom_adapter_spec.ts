@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,7 +14,7 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
   describe('dom adapter', () => {
     let defaultDoc: any;
     beforeEach(() => {
-      defaultDoc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
+      defaultDoc = getDOM().supportsDOMEvents ? document : getDOM().createHtmlDocument();
     });
 
     it('should be able to create text nodes and use them with the other APIs', () => {
@@ -36,12 +36,13 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
       expect(() => getDOM().remove(d)).not.toThrow();
     });
 
-    if (getDOM().supportsDOMEvents()) {
+    if (getDOM().supportsDOMEvents) {
       describe('getBaseHref', () => {
         beforeEach(() => getDOM().resetBaseElement());
 
-        it('should return null if base element is absent',
-           () => { expect(getDOM().getBaseHref(defaultDoc)).toBeNull(); });
+        it('should return null if base element is absent', () => {
+          expect(getDOM().getBaseHref(defaultDoc)).toBeNull();
+        });
 
         it('should return the value of the base element', () => {
           const baseEl = getDOM().createElement('base');
@@ -62,7 +63,7 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
           const headEl = defaultDoc.head;
           headEl.appendChild(baseEl);
 
-          const baseHref = getDOM().getBaseHref(defaultDoc) !;
+          const baseHref = getDOM().getBaseHref(defaultDoc)!;
           headEl.removeChild(baseEl);
           getDOM().resetBaseElement();
 
@@ -70,7 +71,5 @@ import {isTextNode} from '@angular/platform-browser/testing/src/browser_util';
         });
       });
     }
-
-
   });
 }

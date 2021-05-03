@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -34,15 +34,15 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
 
   const enum FrameType {
     /// Skip this frame when printing out stack
-    blackList,
+    zoneJsInternal,
     /// This frame marks zone transition
     transition
   }
 
-  const blacklistedStackFramesSymbol = api.symbol('blacklistedStackFrames');
+  const zoneJsInternalStackFramesSymbol = api.symbol('zoneJsInternalStackFrames');
   const NativeError = global[api.symbol('Error')] = global['Error'];
   // Store the frames which should be removed from the stack frames
-  const blackListedStackFrames: {[frame: string]: FrameType} = {};
+  const zoneJsInternalStackFrames: {[frame: string]: FrameType} = {};
   // We must find the frame where Error was created, otherwise we assume we don't understand stack
   let zoneAwareFrame1: string;
   let zoneAwareFrame2: string;
@@ -53,9 +53,10 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   global['Error'] = ZoneAwareError;
   const stackRewrite = 'stackRewrite';
 
-  type BlackListedStackFramesPolicy = 'default' | 'disable' | 'lazy';
-  const blackListedStackFramesPolicy: BlackListedStackFramesPolicy =
-      global['__Zone_Error_BlacklistedStackFrames_policy'] || 'default';
+  type ZoneJsInternalStackFramesPolicy = 'default'|'disable'|'lazy';
+  const zoneJsInternalStackFramesPolicy: ZoneJsInternalStackFramesPolicy =
+      global['__Zone_Error_BlacklistedStackFrames_policy'] ||
+      global['__Zone_Error_ZoneJsInternalStackFrames_policy'] || 'default';
 
   interface ZoneFrameName {
     zoneName: string;
@@ -75,7 +76,7 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
   }
 
   function buildZoneAwareStackFrames(
-      originalStack: string, zoneFrame: _ZoneFrame | ZoneFrameName | null, isZoneFrame = true) {
+      originalStack: string, zoneFrame: _ZoneFrame|ZoneFrameName|null, isZoneFrame = true) {
     let frames: string[] = originalStack.split('\n');
     let i = 0;
     // Find the first frame
@@ -88,8 +89,8 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
     for (; i < frames.length && zoneFrame; i++) {
       let frame = frames[i];
       if (frame.trim()) {
-        switch (blackListedStackFrames[frame]) {
-          case FrameType.blackList:
+        switch (zoneJsInternalStackFrames[frame]) {
+          case FrameType.zoneJsInternal:
             frames.splice(i, 1);
             i--;
             break;
@@ -115,7 +116,7 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
    * This is ZoneAwareError which processes the stack frame and cleans up extra frames as well as
    * adds zone information to it.
    */
-  function ZoneAwareError(this: unknown | typeof NativeError): Error {
+  function ZoneAwareError(this: unknown|typeof NativeError): Error {
     // We always have to return native error otherwise the browser console will not work.
     let error: Error = NativeError.apply(this, arguments);
     // Save original stack trace
@@ -124,10 +125,10 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
     // Process the stack trace and rewrite the frames.
     if ((ZoneAwareError as any)[stackRewrite] && originalStack) {
       let zoneFrame = api.currentZoneFrame();
-      if (blackListedStackFramesPolicy === 'lazy') {
+      if (zoneJsInternalStackFramesPolicy === 'lazy') {
         // don't handle stack trace now
         (error as any)[api.symbol('zoneFrameNames')] = buildZoneFrameNames(zoneFrame);
-      } else if (blackListedStackFramesPolicy === 'default') {
+      } else if (zoneJsInternalStackFramesPolicy === 'default') {
         try {
           error.stack = error.zoneAwareStack = buildZoneAwareStackFrames(originalStack, zoneFrame);
         } catch (e) {
@@ -156,14 +157,13 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
 
   // Copy the prototype so that instanceof operator works as expected
   ZoneAwareError.prototype = NativeError.prototype;
-  (ZoneAwareError as any)[blacklistedStackFramesSymbol] = blackListedStackFrames;
+  (ZoneAwareError as any)[zoneJsInternalStackFramesSymbol] = zoneJsInternalStackFrames;
   (ZoneAwareError as any)[stackRewrite] = false;
 
   const zoneAwareStackSymbol = api.symbol('zoneAwareStack');
 
-  // try to define zoneAwareStack property when blackListed
-  // policy is delay
-  if (blackListedStackFramesPolicy === 'lazy') {
+  // try to define zoneAwareStack property when zoneJsInternal frames policy is delay
+  if (zoneJsInternalStackFramesPolicy === 'lazy') {
     Object.defineProperty(ZoneAwareError.prototype, 'zoneAwareStack', {
       configurable: true,
       enumerable: true,
@@ -190,8 +190,12 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
     nativeErrorProperties.forEach(prop => {
       if (specialPropertyNames.filter(sp => sp === prop).length === 0) {
         Object.defineProperty(ZoneAwareError, prop, {
-          get: function() { return NativeError[prop]; },
-          set: function(value) { NativeError[prop] = value; }
+          get: function() {
+            return NativeError[prop];
+          },
+          set: function(value) {
+            NativeError[prop] = value;
+          }
         });
       }
     });
@@ -203,8 +207,12 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
 
     // make sure that ZoneAwareError has the same property which forwards to NativeError.
     Object.defineProperty(ZoneAwareError, 'stackTraceLimit', {
-      get: function() { return NativeError.stackTraceLimit; },
-      set: function(value) { return NativeError.stackTraceLimit = value; }
+      get: function() {
+        return NativeError.stackTraceLimit;
+      },
+      set: function(value) {
+        return NativeError.stackTraceLimit = value;
+      }
     });
   }
 
@@ -220,7 +228,9 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
 
   const ZONE_CAPTURESTACKTRACE = 'zoneCaptureStackTrace';
   Object.defineProperty(ZoneAwareError, 'prepareStackTrace', {
-    get: function() { return NativeError.prepareStackTrace; },
+    get: function() {
+      return NativeError.prepareStackTrace;
+    },
     set: function(value) {
       if (!value || typeof value !== 'function') {
         return NativeError.prepareStackTrace = value;
@@ -243,12 +253,11 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
     }
   });
 
-  if (blackListedStackFramesPolicy === 'disable') {
-    // don't need to run detectZone to populate
-    // blacklisted stack frames
+  if (zoneJsInternalStackFramesPolicy === 'disable') {
+    // don't need to run detectZone to populate zoneJs internal stack frames
     return;
   }
-  // Now we need to populate the `blacklistedStackFrames` as well as find the
+  // Now we need to populate the `zoneJsInternalStackFrames` as well as find the
   // run/runGuarded/runTask frames. This is done by creating a detect zone and then threading
   // the execution through all of the above methods so that we can look at the stack trace and
   // find the frames of interest.
@@ -286,7 +295,7 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
                       frame.replace('ZoneAwareError', 'Error.ZoneAwareError');
                 }
               }
-              blackListedStackFrames[zoneAwareFrame2] = FrameType.blackList;
+              zoneJsInternalStackFrames[zoneAwareFrame2] = FrameType.zoneJsInternal;
             }
             if (fnName.indexOf('runGuarded') !== -1) {
               runGuardedFrame = true;
@@ -295,9 +304,9 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
             } else if (fnName.indexOf('run') !== -1) {
               runFrame = true;
             } else {
-              frameType = FrameType.blackList;
+              frameType = FrameType.zoneJsInternal;
             }
-            blackListedStackFrames[frame] = frameType;
+            zoneJsInternalStackFrames[frame] = frameType;
             // Once we find all of the frames we can stop looking.
             if (runFrame && runGuardedFrame && runTaskFrame) {
               (ZoneAwareError as any)[stackRewrite] = true;
@@ -310,7 +319,7 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
     }
   }) as Zone;
   // carefully constructor a stack frame which contains all of the frames of interest which
-  // need to be detected and blacklisted.
+  // need to be detected and marked as an internal zoneJs frame.
 
   const childDetectZone = detectZone.fork({
     name: 'child',
@@ -341,19 +350,27 @@ Zone.__load_patch('Error', (global: any, Zone: ZoneType, api: _ZonePrivate) => {
     childDetectZone.runGuarded(() => {
       const fakeTransitionTo = () => {};
       childDetectZone.scheduleEventTask(
-          blacklistedStackFramesSymbol,
+          zoneJsInternalStackFramesSymbol,
           () => {
             childDetectZone.scheduleMacroTask(
-                blacklistedStackFramesSymbol,
+                zoneJsInternalStackFramesSymbol,
                 () => {
                   childDetectZone.scheduleMicroTask(
-                      blacklistedStackFramesSymbol, () => { throw new Error(); }, undefined,
+                      zoneJsInternalStackFramesSymbol,
+                      () => {
+                        throw new Error();
+                      },
+                      undefined,
                       (t: Task) => {
                         (t as any)._transitionTo = fakeTransitionTo;
                         t.invoke();
                       });
                   childDetectZone.scheduleMicroTask(
-                      blacklistedStackFramesSymbol, () => { throw Error(); }, undefined,
+                      zoneJsInternalStackFramesSymbol,
+                      () => {
+                        throw Error();
+                      },
+                      undefined,
                       (t: Task) => {
                         (t as any)._transitionTo = fakeTransitionTo;
                         t.invoke();

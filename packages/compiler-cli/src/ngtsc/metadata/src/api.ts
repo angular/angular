@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,6 +11,8 @@ import * as ts from 'typescript';
 
 import {Reference} from '../../imports';
 import {ClassDeclaration} from '../../reflection';
+
+import {ClassPropertyMapping, ClassPropertyName} from './property_mapping';
 
 
 /**
@@ -33,18 +35,71 @@ export interface NgModuleMeta {
 }
 
 /**
+ * Typing metadata collected for a directive within an NgModule's scope.
+ */
+export interface DirectiveTypeCheckMeta {
+  /**
+   * List of static `ngTemplateGuard_xx` members found on the Directive's class.
+   * @see `TemplateGuardMeta`
+   */
+  ngTemplateGuards: TemplateGuardMeta[];
+
+  /**
+   * Whether the Directive's class has a static ngTemplateContextGuard function.
+   */
+  hasNgTemplateContextGuard: boolean;
+
+  /**
+   * The set of input fields which have a corresponding static `ngAcceptInputType_` on the
+   * Directive's class. This allows inputs to accept a wider range of types and coerce the input to
+   * a narrower type with a getter/setter. See https://angular.io/guide/template-typecheck.
+   */
+  coercedInputFields: Set<ClassPropertyName>;
+
+  /**
+   * The set of input fields which map to `readonly`, `private`, or `protected` members in the
+   * Directive's class.
+   */
+  restrictedInputFields: Set<ClassPropertyName>;
+
+  /**
+   * The set of input fields which are declared as string literal members in the Directive's class.
+   * We need to track these separately because these fields may not be valid JS identifiers so
+   * we cannot use them with property access expressions when assigning inputs.
+   */
+  stringLiteralInputFields: Set<ClassPropertyName>;
+
+  /**
+   * The set of input fields which do not have corresponding members in the Directive's class.
+   */
+  undeclaredInputFields: Set<ClassPropertyName>;
+
+  /**
+   * Whether the Directive's class is generic, i.e. `class MyDir<T> {...}`.
+   */
+  isGeneric: boolean;
+}
+
+/**
  * Metadata collected for a directive within an NgModule's scope.
  */
-export interface DirectiveMeta extends T2DirectiveMeta {
+export interface DirectiveMeta extends T2DirectiveMeta, DirectiveTypeCheckMeta {
   ref: Reference<ClassDeclaration>;
   /**
    * Unparsed selector of the directive, or null if the directive does not have a selector.
    */
   selector: string|null;
   queries: string[];
-  ngTemplateGuards: TemplateGuardMeta[];
-  hasNgTemplateContextGuard: boolean;
-  coercedInputFields: Set<string>;
+
+  /**
+   * A mapping of input field names to the property names.
+   */
+  inputs: ClassPropertyMapping;
+
+  /**
+   * A mapping of output field names to the property names.
+   */
+  outputs: ClassPropertyMapping;
 
   /**
    * A `Reference` to the base class for the directive, if one was detected.
@@ -53,6 +108,17 @@ export interface DirectiveMeta extends T2DirectiveMeta {
    * another type, it could not statically determine the base class.
    */
   baseClass: Reference<ClassDeclaration>|'dynamic'|null;
+
+  /**
+   * Whether the directive had some issue with its declaration that means it might not have complete
+   * and reliable metadata.
+   */
+  isPoisoned: boolean;
+
+  /**
+   * Whether the directive is likely a structural directive (injects `TemplateRef`).
+   */
+  isStructural: boolean;
 }
 
 /**

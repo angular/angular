@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -13,7 +13,9 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
   let innerPlayer: MockDomAnimation|null = null;
   beforeEach(() => {
     element = {};
-    element['animate'] = () => { return innerPlayer = new MockDomAnimation(); };
+    element['animate'] = () => {
+      return innerPlayer = new MockDomAnimation();
+    };
   });
 
   describe('WebAnimationsPlayer tests', () => {
@@ -26,7 +28,7 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
       const player = new WebAnimationsPlayer(element, keyframes, {duration: 1000});
 
       player.init();
-      const p = innerPlayer !;
+      const p = innerPlayer!;
       expect(p.log).toEqual(['pause']);
 
       player.play();
@@ -42,7 +44,7 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
       const player = new WebAnimationsPlayer(element, keyframes, {duration: 1000});
 
       player.play();
-      const p = innerPlayer !;
+      const p = innerPlayer!;
       expect(p.log).toEqual(['play']);
     });
 
@@ -65,15 +67,44 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
       player.finish();
       expect(log).toEqual(['started', 'done']);
     });
+
+    it('should allow setting position before animation is started', () => {
+      const player = new WebAnimationsPlayer(element, [], {duration: 1000});
+
+      player.setPosition(0.5);
+      const p = innerPlayer!;
+      expect(p.log).toEqual(['pause']);
+      expect(p.currentTime).toEqual(500);
+    });
+
+    it('should continue playing animations from setPosition', () => {
+      const player = new WebAnimationsPlayer(element, [], {duration: 1000});
+
+      player.play();
+      const p = innerPlayer!;
+      expect(p.log).toEqual(['play']);
+
+      player.setPosition(0.5);
+      expect(p.currentTime).toEqual(500);
+      expect(p.log).toEqual(['play']);
+    });
   });
 }
 
 class MockDomAnimation implements DOMAnimation {
   log: string[] = [];
-  cancel(): void { this.log.push('cancel'); }
-  play(): void { this.log.push('play'); }
-  pause(): void { this.log.push('pause'); }
-  finish(): void { this.log.push('finish'); }
+  cancel(): void {
+    this.log.push('cancel');
+  }
+  play(): void {
+    this.log.push('play');
+  }
+  pause(): void {
+    this.log.push('pause');
+  }
+  finish(): void {
+    this.log.push('finish');
+  }
   onfinish: Function = () => {};
   position: number = 0;
   currentTime: number = 0;

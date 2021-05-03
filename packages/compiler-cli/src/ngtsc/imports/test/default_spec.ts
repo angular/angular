@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -39,16 +39,14 @@ runInEachFileSystem(() => {
             module: ts.ModuleKind.ES2015,
           });
       const fooClause = getDeclaration(program, _('/test.ts'), 'Foo', ts.isImportClause);
-      const fooId = fooClause.name !;
       const fooDecl = fooClause.parent;
 
       const tracker = new DefaultImportTracker();
-      tracker.recordImportedIdentifier(fooId, fooDecl);
-      tracker.recordUsedIdentifier(fooId);
+      tracker.recordUsedImport(fooDecl);
       program.emit(undefined, undefined, undefined, undefined, {
         before: [tracker.importPreservingTransformer()],
       });
-      const testContents = host.readFile('/test.js') !;
+      const testContents = host.readFile('/test.js')!;
       expect(testContents).toContain(`import Foo from './dep';`);
 
       // The control should have the import elided.
@@ -69,19 +67,18 @@ runInEachFileSystem(() => {
             module: ts.ModuleKind.CommonJS,
           });
       const fooClause = getDeclaration(program, _('/test.ts'), 'Foo', ts.isImportClause);
-      const fooId = ts.updateIdentifier(fooClause.name !);
+      const fooId = fooClause.name!;
       const fooDecl = fooClause.parent;
 
       const tracker = new DefaultImportTracker();
-      tracker.recordImportedIdentifier(fooId, fooDecl);
-      tracker.recordUsedIdentifier(fooId);
+      tracker.recordUsedImport(fooDecl);
       program.emit(undefined, undefined, undefined, undefined, {
         before: [
           addReferenceTransformer(fooId),
           tracker.importPreservingTransformer(),
         ],
       });
-      const testContents = host.readFile('/test.js') !;
+      const testContents = host.readFile('/test.js')!;
       expect(testContents).toContain(`var dep_1 = require("./dep");`);
       expect(testContents).toContain(`var ref = dep_1["default"];`);
     });

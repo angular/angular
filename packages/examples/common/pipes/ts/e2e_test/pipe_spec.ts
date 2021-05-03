@@ -1,12 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {$, ExpectedConditions, browser, by, element} from 'protractor';
+import {$, browser, by, element, ExpectedConditions} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 function waitForElement(selector: string) {
@@ -74,14 +75,10 @@ describe('pipe', () => {
       browser.get(URL);
       waitForElement('number-pipe');
       const examples = element.all(by.css('number-pipe p'));
-      expect(examples.get(0).getText()).toEqual('e (no formatting): 2.718');
-      expect(examples.get(1).getText()).toEqual('e (3.1-5): 002.71828');
-      expect(examples.get(2).getText()).toEqual('e (4.5-5): 0,002.71828');
-      expect(examples.get(3).getText()).toEqual('e (french): 0\u202f002,71828');
-      expect(examples.get(4).getText()).toEqual('pi (no formatting): 3.14');
-      expect(examples.get(5).getText()).toEqual('pi (3.1-5): 003.14');
-      expect(examples.get(6).getText()).toEqual('pi (3.5-5): 003.14000');
-      expect(examples.get(7).getText()).toEqual('-2.5 (1.0-0): -3');
+      expect(examples.get(0).getText()).toEqual('No specified formatting: 3.142');
+      expect(examples.get(1).getText()).toEqual('With digitsInfo parameter specified: 0,003.14159');
+      expect(examples.get(2).getText())
+          .toEqual('With digitsInfo and locale parameters specified: 0\u202f003,14159');
     });
   });
 

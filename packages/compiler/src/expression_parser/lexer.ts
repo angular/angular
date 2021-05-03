@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -42,37 +42,61 @@ export class Token {
     return this.type == TokenType.Character && this.numValue == code;
   }
 
-  isNumber(): boolean { return this.type == TokenType.Number; }
+  isNumber(): boolean {
+    return this.type == TokenType.Number;
+  }
 
-  isString(): boolean { return this.type == TokenType.String; }
+  isString(): boolean {
+    return this.type == TokenType.String;
+  }
 
   isOperator(operator: string): boolean {
     return this.type == TokenType.Operator && this.strValue == operator;
   }
 
-  isIdentifier(): boolean { return this.type == TokenType.Identifier; }
+  isIdentifier(): boolean {
+    return this.type == TokenType.Identifier;
+  }
 
-  isKeyword(): boolean { return this.type == TokenType.Keyword; }
+  isKeyword(): boolean {
+    return this.type == TokenType.Keyword;
+  }
 
-  isKeywordLet(): boolean { return this.type == TokenType.Keyword && this.strValue == 'let'; }
+  isKeywordLet(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'let';
+  }
 
-  isKeywordAs(): boolean { return this.type == TokenType.Keyword && this.strValue == 'as'; }
+  isKeywordAs(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'as';
+  }
 
-  isKeywordNull(): boolean { return this.type == TokenType.Keyword && this.strValue == 'null'; }
+  isKeywordNull(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'null';
+  }
 
   isKeywordUndefined(): boolean {
     return this.type == TokenType.Keyword && this.strValue == 'undefined';
   }
 
-  isKeywordTrue(): boolean { return this.type == TokenType.Keyword && this.strValue == 'true'; }
+  isKeywordTrue(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'true';
+  }
 
-  isKeywordFalse(): boolean { return this.type == TokenType.Keyword && this.strValue == 'false'; }
+  isKeywordFalse(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'false';
+  }
 
-  isKeywordThis(): boolean { return this.type == TokenType.Keyword && this.strValue == 'this'; }
+  isKeywordThis(): boolean {
+    return this.type == TokenType.Keyword && this.strValue == 'this';
+  }
 
-  isError(): boolean { return this.type == TokenType.Error; }
+  isError(): boolean {
+    return this.type == TokenType.Error;
+  }
 
-  toNumber(): number { return this.type == TokenType.Number ? this.numValue : -1; }
+  toNumber(): number {
+    return this.type == TokenType.Number ? this.numValue : -1;
+  }
 
   toString(): string|null {
     switch (this.type) {
@@ -188,7 +212,7 @@ class _Scanner {
       case chars.$CARET:
         return this.scanOperator(start, String.fromCharCode(peek));
       case chars.$QUESTION:
-        return this.scanComplexOperator(start, '?', chars.$PERIOD, '.');
+        return this.scanQuestion(start);
       case chars.$LT:
       case chars.$GT:
         return this.scanComplexOperator(start, String.fromCharCode(peek), chars.$EQ, '=');
@@ -322,6 +346,17 @@ class _Scanner {
     this.advance();  // Skip terminating quote.
 
     return newStringToken(start, this.index, buffer + last);
+  }
+
+  scanQuestion(start: number): Token {
+    this.advance();
+    let str: string = '?';
+    // Either `a ?? b` or 'a?.b'.
+    if (this.peek === chars.$QUESTION || this.peek === chars.$PERIOD) {
+      str += this.peek === chars.$PERIOD ? '.' : '?';
+      this.advance();
+    }
+    return newOperatorToken(start, this.index, str);
   }
 
   error(message: string, offset: number): Token {

@@ -1,19 +1,21 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import * as ts from 'typescript';
-import {absoluteFrom} from '../../../src/ngtsc/file_system';
-import {Declaration, Import} from '../../../src/ngtsc/reflection';
-import {Logger} from '../logging/logger';
-import {BundleProgram} from '../packages/bundle_program';
-import {FactoryMap, getTsHelperFnFromIdentifier, isDefined, stripExtension} from '../utils';
 
-import {ExportDeclaration, ExportStatement, ReexportStatement, RequireCall, findNamespaceOfIdentifier, findRequireCallReference, isExportStatement, isReexportStatement, isRequireCall} from './commonjs_umd_utils';
+import {absoluteFrom} from '../../../src/ngtsc/file_system';
+import {Logger} from '../../../src/ngtsc/logging';
+import {Declaration, DeclarationKind, Import} from '../../../src/ngtsc/reflection';
+import {BundleProgram} from '../packages/bundle_program';
+import {FactoryMap, isDefined} from '../utils';
+
+import {DefinePropertyReexportStatement, ExportDeclaration, ExportsStatement, extractGetterFnExpression, findNamespaceOfIdentifier, findRequireCallReference, isDefinePropertyReexportStatement, isExportsAssignment, isExportsStatement, isExternalImport, isRequireCall, isWildcardReexportStatement, RequireCall, skipAliases, WildcardReexportStatement} from './commonjs_umd_utils';
+import {getInnerClassDeclaration, getOuterNodeFromInnerDeclaration} from './esm2015_host';
 import {Esm5ReflectionHost} from './esm5_host';
 import {NgccClassSymbol} from './ngcc_host';
 
@@ -42,7 +44,7 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
-    return this.getCommonJsImportedDeclaration(id) || super.getDeclarationOfIdentifier(id);
+    return this.getCommonJsModuleDeclaration(id) || super.getDeclarationOfIdentifier(id);
   }
 
   getExportsOfModule(module: ts.Node): Map<string, Declaration>|null {
@@ -97,40 +99,39 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
   private computeExportsOfCommonJsModule(sourceFile: ts.SourceFile): Map<string, Declaration> {
     const moduleMap = new Map<string, Declaration>();
     for (const statement of this.getModuleStatements(sourceFile)) {
-      if (isExportStatement(statement)) {
-        const exportDeclaration = this.extractCommonJsExportDeclaration(statement);
+      if (isExportsStatement(statement)) {
+        const exportDeclaration = this.extractBasicCommonJsExportDeclaration(statement);
         moduleMap.set(exportDeclaration.name, exportDeclaration.declaration);
-      } else if (isReexportStatement(statement)) {
-        const reexports = this.extractCommonJsReexports(statement, sourceFile);
+      } else if (isWildcardReexportStatement(statement)) {
+        const reexports = this.extractCommonJsWildcardReexports(statement, sourceFile);
         for (const reexport of reexports) {
           moduleMap.set(reexport.name, reexport.declaration);
+        }
+      } else if (isDefinePropertyReexportStatement(statement)) {
+        const exportDeclaration = this.extractCommonJsDefinePropertyExportDeclaration(statement);
+        if (exportDeclaration !== null) {
+          moduleMap.set(exportDeclaration.name, exportDeclaration.declaration);
         }
       }
     }
     return moduleMap;
   }
 
-  private extractCommonJsExportDeclaration(statement: ExportStatement): ExportDeclaration {
-    const exportExpression = statement.expression.right;
-    const declaration = this.getDeclarationOfExpression(exportExpression);
-    const name = statement.expression.left.name.text;
-    if (declaration !== null) {
-      return {name, declaration};
-    } else {
-      return {
-        name,
-        declaration: {
-          node: null,
-          known: null,
-          expression: exportExpression,
-          viaModule: null,
-        },
-      };
-    }
+  private extractBasicCommonJsExportDeclaration(statement: ExportsStatement): ExportDeclaration {
+    const exportExpression = skipAliases(statement.expression.right);
+    const node = statement.expression.left;
+    const declaration = this.getDeclarationOfExpression(exportExpression) ?? {
+      kind: DeclarationKind.Inline,
+      node,
+      implementation: exportExpression,
+      known: null,
+      viaModule: null,
+    };
+    return {name: node.name.text, declaration};
   }
 
-  private extractCommonJsReexports(statement: ReexportStatement, containingFile: ts.SourceFile):
-      ExportDeclaration[] {
+  private extractCommonJsWildcardReexports(
+      statement: WildcardReexportStatement, containingFile: ts.SourceFile): ExportDeclaration[] {
     const reexportArg = statement.expression.arguments[0];
 
     const requireCall = isRequireCall(reexportArg) ?
@@ -151,17 +152,41 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
       return [];
     }
 
-    const viaModule = stripExtension(importedFile.fileName);
+    const viaModule = isExternalImport(importPath) ? importPath : null;
     const reexports: ExportDeclaration[] = [];
-    importedExports.forEach((decl, name) => {
-      if (decl.node !== null) {
-        reexports.push({name, declaration: {node: decl.node, known: null, viaModule}});
-      } else {
-        reexports.push(
-            {name, declaration: {node: null, known: null, expression: decl.expression, viaModule}});
+    importedExports.forEach((declaration, name) => {
+      if (viaModule !== null && declaration.viaModule === null) {
+        declaration = {...declaration, viaModule};
       }
+      reexports.push({name, declaration});
     });
     return reexports;
+  }
+
+  private extractCommonJsDefinePropertyExportDeclaration(
+      statement: DefinePropertyReexportStatement): ExportDeclaration|null {
+    const args = statement.expression.arguments;
+    const name = args[1].text;
+    const getterFnExpression = extractGetterFnExpression(statement);
+    if (getterFnExpression === null) {
+      return null;
+    }
+
+    const declaration = this.getDeclarationOfExpression(getterFnExpression);
+    if (declaration !== null) {
+      return {name, declaration};
+    }
+
+    return {
+      name,
+      declaration: {
+        kind: DeclarationKind.Inline,
+        node: args[1],
+        implementation: getterFnExpression,
+        known: null,
+        viaModule: null,
+      },
+    };
   }
 
   private findCommonJsImport(id: ts.Identifier): RequireCall|null {
@@ -171,19 +196,46 @@ export class CommonJsReflectionHost extends Esm5ReflectionHost {
     return nsIdentifier && findRequireCallReference(nsIdentifier, this.checker);
   }
 
-  private getCommonJsImportedDeclaration(id: ts.Identifier): Declaration|null {
-    const importInfo = this.getImportOfIdentifier(id);
-    if (importInfo === null) {
+  /**
+   * Handle the case where the identifier represents a reference to a whole CommonJS
+   * module, i.e. the result of a call to `require(...)`.
+   *
+   * @param id the identifier whose declaration we are looking for.
+   * @returns a declaration if `id` refers to a CommonJS module, or `null` otherwise.
+   */
+  private getCommonJsModuleDeclaration(id: ts.Identifier): Declaration|null {
+    const requireCall = findRequireCallReference(id, this.checker);
+    if (requireCall === null) {
       return null;
     }
-
-    const importedFile = this.resolveModuleName(importInfo.from, id.getSourceFile());
-    if (importedFile === undefined) {
+    const importPath = requireCall.arguments[0].text;
+    const module = this.resolveModuleName(importPath, id.getSourceFile());
+    if (module === undefined) {
       return null;
     }
+    const viaModule = isExternalImport(importPath) ? importPath : null;
+    return {node: module, known: null, viaModule, identity: null, kind: DeclarationKind.Concrete};
+  }
 
-    const viaModule = !importInfo.from.startsWith('.') ? importInfo.from : null;
-    return {node: importedFile, known: getTsHelperFnFromIdentifier(id), viaModule};
+  /**
+   * If this is an IFE then try to grab the outer and inner classes otherwise fallback on the super
+   * class.
+   */
+  protected getDeclarationOfExpression(expression: ts.Expression): Declaration|null {
+    const inner = getInnerClassDeclaration(expression);
+    if (inner !== null) {
+      const outer = getOuterNodeFromInnerDeclaration(inner);
+      if (outer !== null && isExportsAssignment(outer)) {
+        return {
+          kind: DeclarationKind.Inline,
+          node: outer.left,
+          implementation: inner,
+          known: null,
+          viaModule: null,
+        };
+      }
+    }
+    return super.getDeclarationOfExpression(expression);
   }
 
   private resolveModuleName(moduleName: string, containingFile: ts.SourceFile): ts.SourceFile

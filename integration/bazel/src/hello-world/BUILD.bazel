@@ -1,26 +1,26 @@
 package(default_visibility = ["//visibility:public"])
 
-load("@npm_bazel_karma//:index.bzl", "karma_web_test_suite")
-load("@npm_bazel_typescript//:index.bzl", "ts_library")
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary")
-load("@npm_angular_bazel//:index.bzl", "ng_module", "ng_package")
+load("@npm//@bazel/concatjs:index.bzl", "karma_web_test_suite")
+load("@io_bazel_rules_sass//:defs.bzl", "sass_binary")
+load("@npm//@angular/bazel:index.bzl", "ng_package")
+load("//tools:ng_ts_library.bzl", "ng_ts_library")
 
 sass_binary(
     name = "hello-world-styles",
     src = "hello-world.component.scss",
 )
 
-ng_module(
+ng_ts_library(
     name = "hello-world",
     srcs = glob(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
     assets = [":hello-world-styles"],
-    generate_ve_shims = True,
     deps = [
         "@npm//@angular/core",
         "@npm//@types",
+        "@npm//tslib",
     ],
 )
 
@@ -30,7 +30,7 @@ ng_package(
     deps = [":hello-world"],
 )
 
-ts_library(
+ng_ts_library(
     name = "test_lib",
     testonly = 1,
     srcs = glob(["*.spec.ts"]),
@@ -41,13 +41,14 @@ ts_library(
         "@npm//@angular/platform-browser-dynamic",
         "@npm//@types",
         "@npm//jasmine",
+        "@npm//tslib",
     ],
 )
 
 karma_web_test_suite(
     name = "test",
     bootstrap = [
-        "@npm//:node_modules/zone.js/dist/zone-testing-bundle.js",
+        "@npm//:node_modules/zone.js/bundles/zone-testing-bundle.umd.js",
         "@npm//:node_modules/reflect-metadata/Reflect.js",
     ],
     browsers = [

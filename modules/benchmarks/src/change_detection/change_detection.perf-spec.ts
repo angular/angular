@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {$} from 'protractor';
-import {runBenchmark, verifyNoBrowserErrors} from '../../../e2e_util/perf_util';
+import {runBenchmark, verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 interface Worker {
   id: string;
@@ -15,11 +15,23 @@ interface Worker {
   work(): void;
 }
 
-const UpdateWorker: Worker = {
-  id: 'createOnly',
+// Used to benchmark performance when insertion tree is not dirty.
+const InsertionNotDirtyWorker: Worker = {
+  id: 'insertionNotDirty',
   prepare: () => {
     $('#destroyDom').click();
     $('#createDom').click();
+  },
+  work: () => $('#detectChanges').click()
+};
+
+// Used to benchmark performance when both declaration and insertion trees are dirty.
+const AllComponentsDirtyWorker: Worker = {
+  id: 'allComponentsDirty',
+  prepare: () => {
+    $('#destroyDom').click();
+    $('#createDom').click();
+    $('#markInsertionComponentForCheck').click();
   },
   work: () => $('#detectChanges').click()
 };
@@ -31,15 +43,14 @@ const UpdateWorker: Worker = {
 // name. We determine the name of the Bazel package where this test runs from the current test
 // target. The Bazel target
 // looks like: "//modules/benchmarks/src/change_detection/{pkg_name}:{target_name}".
-const testPackageName = process.env['BAZEL_TARGET'] !.split(':')[0].split('/').pop();
+const testPackageName = process.env['BAZEL_TARGET']!.split(':')[0].split('/').pop();
 
 describe('change detection benchmark perf', () => {
-
   afterEach(verifyNoBrowserErrors);
 
-  [UpdateWorker].forEach((worker) => {
+  [InsertionNotDirtyWorker, AllComponentsDirtyWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it(`should run benchmark for ${testPackageName}`, async() => {
+      it(`should run benchmark for ${testPackageName}`, async () => {
         await runChangeDetectionBenchmark({
           id: `change_detection.${testPackageName}.${worker.id}`,
           url: '/',

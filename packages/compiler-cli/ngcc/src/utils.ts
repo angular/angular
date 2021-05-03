@@ -1,13 +1,14 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import * as ts from 'typescript';
-import {AbsoluteFsPath, FileSystem, absoluteFrom} from '../../src/ngtsc/file_system';
-import {KnownDeclaration} from '../../src/ngtsc/reflection';
+
+import {absoluteFrom, AbsoluteFsPath, isRooted, ReadonlyFileSystem} from '../../src/ngtsc/file_system';
+import {DeclarationNode, KnownDeclaration} from '../../src/ngtsc/reflection';
 
 /**
  * A list (`Array`) of partially ordered `T` items.
@@ -37,11 +38,11 @@ export function getOriginalSymbol(checker: ts.TypeChecker): (symbol: ts.Symbol) 
   };
 }
 
-export function isDefined<T>(value: T | undefined | null): value is T {
+export function isDefined<T>(value: T|undefined|null): value is T {
   return (value !== undefined) && (value !== null);
 }
 
-export function getNameText(name: ts.PropertyName | ts.BindingName): string {
+export function getNameText(name: ts.PropertyName|ts.BindingName): string {
   return ts.isIdentifier(name) || ts.isLiteralExpression(name) ? name.text : name.getText();
 }
 
@@ -70,24 +71,20 @@ export function findAll<T>(node: ts.Node, test: (node: ts.Node) => node is ts.No
  * @param declaration The declaration to test.
  * @returns true if the declaration has an identifier for a name.
  */
-export function hasNameIdentifier(declaration: ts.Declaration): declaration is ts.Declaration&
+export function hasNameIdentifier(declaration: ts.Node): declaration is DeclarationNode&
     {name: ts.Identifier} {
-  const namedDeclaration: ts.Declaration&{name?: ts.Node} = declaration;
+  const namedDeclaration: ts.Node&{name?: ts.Node} = declaration;
   return namedDeclaration.name !== undefined && ts.isIdentifier(namedDeclaration.name);
 }
-
-export type PathMappings = {
-  baseUrl: string,
-  paths: {[key: string]: string[]}
-};
 
 /**
  * Test whether a path is "relative".
  *
- * Relative paths start with `/`, `./` or `../`; or are simply `.` or `..`.
+ * Relative paths start with `/`, `./` or `../` (or the Windows equivalents); or are simply `.` or
+ * `..`.
  */
 export function isRelativePath(path: string): boolean {
-  return /^\/|^\.\.?($|\/)/.test(path);
+  return isRooted(path) || /^\.\.?(\/|\\|$)/.test(path);
 }
 
 /**
@@ -111,10 +108,12 @@ export class FactoryMap<K, V> {
       this.internalMap.set(key, this.factory(key));
     }
 
-    return this.internalMap.get(key) !;
+    return this.internalMap.get(key)!;
   }
 
-  set(key: K, value: V): void { this.internalMap.set(key, value); }
+  set(key: K, value: V): void {
+    this.internalMap.set(key, value);
+  }
 }
 
 /**
@@ -123,7 +122,7 @@ export class FactoryMap<K, V> {
  * @returns An absolute path to the first matching existing file, or `null` if none exist.
  */
 export function resolveFileWithPostfixes(
-    fs: FileSystem, path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
+    fs: ReadonlyFileSystem, path: AbsoluteFsPath, postFixes: string[]): AbsoluteFsPath|null {
   for (const postFix of postFixes) {
     const testPath = absoluteFrom(path + postFix);
     if (fs.exists(testPath) && fs.stat(testPath).isFile()) {
@@ -137,7 +136,7 @@ export function resolveFileWithPostfixes(
  * Determine whether a function declaration corresponds with a TypeScript helper function, returning
  * its kind if so or null if the declaration does not seem to correspond with such a helper.
  */
-export function getTsHelperFnFromDeclaration(decl: ts.Declaration): KnownDeclaration|null {
+export function getTsHelperFnFromDeclaration(decl: DeclarationNode): KnownDeclaration|null {
   if (!ts.isFunctionDeclaration(decl) && !ts.isVariableDeclaration(decl)) {
     return null;
   }
@@ -162,6 +161,10 @@ export function getTsHelperFnFromIdentifier(id: ts.Identifier): KnownDeclaration
       return KnownDeclaration.TsHelperSpread;
     case '__spreadArrays':
       return KnownDeclaration.TsHelperSpreadArrays;
+    case '__spreadArray':
+      return KnownDeclaration.TsHelperSpreadArray;
+    case '__read':
+      return KnownDeclaration.TsHelperRead;
     default:
       return null;
   }

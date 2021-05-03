@@ -5,7 +5,7 @@ angular.module('heroApp', [])
   });
 // #enddocregion ng1module
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
   // #docregion bootstrap
   angular.bootstrap(document.body, ['heroApp'], { strictDi: true });
   // #enddocregion bootstrap

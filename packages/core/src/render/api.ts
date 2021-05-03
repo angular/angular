@@ -1,51 +1,23 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {InjectionToken} from '../di/injection_token';
-import {ViewEncapsulation} from '../metadata/view';
-import {injectRenderer2 as render3InjectRenderer2} from '../render3/view_engine_compatibility';
+import {isProceduralRenderer} from '../render3/interfaces/renderer';
+import {isLView} from '../render3/interfaces/type_checks';
+import {LView, RENDERER} from '../render3/interfaces/view';
+import {getCurrentTNode, getLView} from '../render3/state';
+import {getComponentLViewByIndex} from '../render3/util/view_utils';
 import {noop} from '../util/noop';
+import {RendererStyleFlags2, RendererType2} from './api_flags';
 
 
 export const Renderer2Interceptor = new InjectionToken<Renderer2[]>('Renderer2Interceptor');
 
-/**
- * Used by `RendererFactory2` to associate custom rendering data and styles
- * with a rendering implementation.
- *  @publicApi
- */
-export interface RendererType2 {
-  /**
-   * A unique identifying string for the new renderer, used when creating
-   * unique styles for encapsulation.
-   */
-  id: string;
-  /**
-   * The view encapsulation type, which determines how styles are applied to
-   * DOM elements. One of
-   * - `Emulated` (default): Emulate native scoping of styles.
-   * - `Native`: Use the native encapsulation mechanism of the renderer.
-   * - `ShadowDom`: Use modern [Shadow
-   * DOM](https://w3c.github.io/webcomponents/spec/shadow/) and
-   * create a ShadowRoot for component's host element.
-   * - `None`: Do not provide any template or style encapsulation.
-   */
-  encapsulation: ViewEncapsulation;
-  /**
-   * Defines CSS styles to be stored on a renderer instance.
-   */
-  styles: (string|any[])[];
-  /**
-   * Defines arbitrary developer-defined data to be stored on a renderer instance.
-   * This is useful for renderers that delegate to other renderers.
-   */
-  data: {[kind: string]: any};
-}
 
 /**
  * Creates and initializes a custom renderer that implements the `Renderer2` base class.
@@ -75,23 +47,6 @@ export abstract class RendererFactory2 {
   abstract whenRenderingDone?(): Promise<any>;
 }
 
-/**
- * Flags for renderer-specific style modifiers.
- * @publicApi
- */
-export enum RendererStyleFlags2 {
-  // TODO(misko): This needs to be refactored into a separate file so that it can be imported from
-  // `node_manipulation.ts` Currently doing the import cause resolution order to change and fails
-  // the tests. The work around is to have hard coded value in `node_manipulation.ts` for now.
-  /**
-   * Marks a style as important.
-   */
-  Important = 1 << 0,
-  /**
-   * Marks a style as using dash case naming (this-is-dash-case).
-   */
-  DashCase = 1 << 1
-}
 
 /**
  * Extend this base class to implement custom rendering. By default, Angular
@@ -145,7 +100,7 @@ export abstract class Renderer2 {
    * This is used as a performance optimization for production mode.
    */
   // TODO(issue/24571): remove '!'.
-  destroyNode !: ((node: any) => void) | null;
+  destroyNode!: ((node: any) => void)|null;
   /**
    * Appends a child to a given parent node in the host element DOM.
    * @param parent The parent node.
@@ -158,8 +113,13 @@ export abstract class Renderer2 {
    * @param parent The parent node.
    * @param newChild The new child nodes.
    * @param refChild The existing child node before which `newChild` is inserted.
+   * @param isMove Optional argument which signifies if the current `insertBefore` is a result of a
+   *     move. Animation uses this information to trigger move animations. In the past the Animation
+   *     would always assume that any `insertBefore` is a move. This is not strictly true because
+   *     with runtime i18n it is possible to invoke `insertBefore` as a result of i18n and it should
+   *     not trigger an animation move.
    */
-  abstract insertBefore(parent: any, newChild: any, refChild: any): void;
+  abstract insertBefore(parent: any, newChild: any, refChild: any, isMove?: boolean): void;
   /**
    * Implement this callback to remove a child node from the host element's DOM.
    * @param parent The parent node.
@@ -281,6 +241,25 @@ export abstract class Renderer2 {
 }
 
 
-export const SWITCH_RENDERER2_FACTORY__POST_R3__ = render3InjectRenderer2;
+export const SWITCH_RENDERER2_FACTORY__POST_R3__ = injectRenderer2;
 const SWITCH_RENDERER2_FACTORY__PRE_R3__ = noop;
-const SWITCH_RENDERER2_FACTORY: typeof render3InjectRenderer2 = SWITCH_RENDERER2_FACTORY__PRE_R3__;
+const SWITCH_RENDERER2_FACTORY: typeof injectRenderer2 = SWITCH_RENDERER2_FACTORY__PRE_R3__;
+
+/** Returns a Renderer2 (or throws when application was bootstrapped with Renderer3) */
+function getOrCreateRenderer2(lView: LView): Renderer2 {
+  const renderer = lView[RENDERER];
+  if (ngDevMode && !isProceduralRenderer(renderer)) {
+    throw new Error('Cannot inject Renderer2 when the application uses Renderer3!');
+  }
+  return renderer as Renderer2;
+}
+
+/** Injects a Renderer2 for the current component. */
+export function injectRenderer2(): Renderer2 {
+  // We need the Renderer to be based on the component that it's being injected into, however since
+  // DI happens before we've entered its view, `getLView` will return the parent view instead.
+  const lView = getLView();
+  const tNode = getCurrentTNode()!;
+  const nodeAtIndex = getComponentLViewByIndex(tNode.index, lView);
+  return getOrCreateRenderer2(isLView(nodeAtIndex) ? nodeAtIndex : lView);
+}

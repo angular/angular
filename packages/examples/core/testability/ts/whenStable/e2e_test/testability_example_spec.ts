@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -29,7 +29,9 @@ describe('testability example', () => {
       let waitWithResultScript = function(done: any) {
         let rootEl = document.querySelector('example-app');
         let testability = window.getAngularTestability(rootEl);
-        testability.whenStable((didWork: boolean, tasks: any) => { done(tasks); }, 1000);
+        testability.whenStable((didWork: boolean, tasks: any) => {
+          done(tasks);
+        }, 1000);
       };
 
       element(by.css('.start-button')).click();
@@ -43,6 +45,8 @@ describe('testability example', () => {
       });
     });
 
-    afterAll(() => { browser.ignoreSynchronization = false; });
+    afterAll(() => {
+      browser.ignoreSynchronization = false;
+    });
   });
 });

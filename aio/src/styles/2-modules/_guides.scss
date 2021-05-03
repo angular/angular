@@ -1,0 +1,6 @@
+.reviewed {
+  color: lighten($darkgray, 10);
+  @include font-size(13);
+  font-style: italic;
+  text-align: right;
+}

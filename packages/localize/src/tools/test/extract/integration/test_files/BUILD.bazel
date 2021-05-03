@@ -1,0 +1,56 @@
+package(default_visibility = ["//packages/localize/src/tools/test/extract/integration:__pkg__"])
+
+load("@npm//typescript:index.bzl", "tsc")
+load("@build_bazel_rules_nodejs//:index.bzl", "copy_to_bin")
+
+tsc(
+    name = "compile_es5",
+    outs = [
+        "dist_es5/index.js",
+        "dist_es5/index.js.map",
+    ],
+    args = [
+        "--target",
+        "es5",
+        "--module",
+        "amd",
+        "--outFile",
+        "$(execpath dist_es5/index.js)",
+        "--skipLibCheck",
+        "--sourceMap",
+        "--inlineSources",
+        "$(execpath src/index.ts)",
+    ],
+    data = glob(["src/*.ts"]),
+)
+
+tsc(
+    name = "compile_es2015",
+    outs = [
+        "dist_es2015/index.js",
+        "dist_es2015/index.js.map",
+    ],
+    args = [
+        "--target",
+        "es2015",
+        "--module",
+        "amd",
+        "--outFile",
+        "$(execpath dist_es2015/index.js)",
+        "--skipLibCheck",
+        "--sourceMap",
+        "--inlineSources",
+        "$(execpath src/index.ts)",
+    ],
+    data = glob(["src/*.ts"]),
+)
+
+# Use copy_to_bin since filegroup doesn't seem to work on Windows.
+copy_to_bin(
+    name = "test_files",
+    srcs = glob([
+        "**/*.js",
+        "**/*.txt",
+        "**/*.ts",
+    ]),
+)

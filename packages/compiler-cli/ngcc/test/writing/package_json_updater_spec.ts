@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, absoluteFrom, getFileSystem} from '../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
-import {loadTestFiles} from '../../../test/helpers';
+import {loadTestFiles} from '../../../src/ngtsc/testing';
 import {JsonObject} from '../../src/packages/entry_point';
 import {DirectPackageJsonUpdater, PackageJsonUpdater} from '../../src/writing/package_json_updater';
 
@@ -18,7 +18,7 @@ runInEachFileSystem(() => {
     let updater: PackageJsonUpdater;
 
     // Helpers
-    const readJson = (path: AbsoluteFsPath) => JSON.parse(fs.readFile(path));
+    const readJson = <T>(path: AbsoluteFsPath) => JSON.parse(fs.readFile(path)) as T;
 
     beforeEach(() => {
       _ = absoluteFrom;
@@ -55,7 +55,7 @@ runInEachFileSystem(() => {
         {name: jsonPath, contents: '{"foo": true, "bar": {"baz": "OK"}}'},
       ]);
 
-      const pkg = readJson(jsonPath);
+      const pkg = readJson<{foo: boolean, bar: {baz: string | number}}>(jsonPath);
       const update = updater.createUpdate().addChange(['foo'], false).addChange(['bar', 'baz'], 42);
 
       // Not updated yet.
@@ -95,7 +95,7 @@ runInEachFileSystem(() => {
         {name: jsonPath, contents: '{"foo": {}}'},
       ]);
 
-      const pkg = readJson(jsonPath);
+      const pkg = readJson<{foo: {bar: {baz: {qux: string}}}}>(jsonPath);
       updater.createUpdate()
           .addChange(['foo', 'bar', 'baz', 'qux'], 'updated')
           .writeChanges(jsonPath, pkg);

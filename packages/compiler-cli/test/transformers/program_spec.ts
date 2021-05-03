@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,11 +10,12 @@ import * as ng from '@angular/compiler-cli';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
+
 import {formatDiagnostics} from '../../src/perform_compile';
 import {CompilerHost, EmitFlags, LazyRoute} from '../../src/transformers/api';
-import {createSrcToOutPathMapper} from '../../src/transformers/program';
+import {createSrcToOutPathMapper, resetTempProgramHandlerForTest, setTempProgramHandlerForTest} from '../../src/transformers/program';
 import {StructureIsReused, tsStructureIsReused} from '../../src/transformers/util';
-import {TestSupport, expectNoDiagnosticsInProgram, setup, stripAnsi} from '../test_support';
+import {expectNoDiagnosticsInProgram, setup, stripAnsi, TestSupport} from '../test_support';
 
 describe('ng program', () => {
   let testSupport: TestSupport;
@@ -83,21 +84,21 @@ describe('ng program', () => {
 
     const originalGetSourceFile = host.getSourceFile;
     const cache = new Map<string, ts.SourceFile>();
-    host.getSourceFile = function(
-                             fileName: string, languageVersion: ts.ScriptTarget): ts.SourceFile |
-        undefined {
-          const sf = originalGetSourceFile.call(host, fileName, languageVersion);
-          if (sf) {
-            if (cache.has(sf.fileName)) {
-              const oldSf = cache.get(sf.fileName) !;
-              if (oldSf.getFullText() === sf.getFullText()) {
-                return oldSf;
-              }
-            }
-            cache.set(sf.fileName, sf);
-          }
-          return sf;
-        };
+    host.getSourceFile = function(fileName: string, languageVersion: ts.ScriptTarget):
+                             ts.SourceFile|
+                         undefined {
+                           const sf = originalGetSourceFile.call(host, fileName, languageVersion);
+                           if (sf) {
+                             if (cache.has(sf.fileName)) {
+                               const oldSf = cache.get(sf.fileName)!;
+                               if (oldSf.getFullText() === sf.getFullText()) {
+                                 return oldSf;
+                               }
+                             }
+                             cache.set(sf.fileName, sf);
+                           }
+                           return sf;
+                         };
     return host;
   }
 
@@ -248,7 +249,8 @@ describe('ng program', () => {
       fileCache.delete(path.posix.join(testSupport.basePath, 'src/index.ts'));
       const p6 = ng.createProgram({
         rootNames: [path.posix.join(testSupport.basePath, 'src/index.ts')],
-        options: testSupport.createCompilerOptions(options), host,
+        options: testSupport.createCompilerOptions(options),
+        host,
         oldProgram: p5
       });
       const p7 = compile(p6, options, undefined, host).program;
@@ -295,6 +297,16 @@ describe('ng program', () => {
     describe(
         'verify that program structure is reused within tsc in order to speed up incremental compilation',
         () => {
+          afterEach(resetTempProgramHandlerForTest);
+
+          function captureStructureReuse(compile: () => void): StructureIsReused|null {
+            let structureReuse: StructureIsReused|null = null;
+            setTempProgramHandlerForTest(program => {
+              structureReuse = tsStructureIsReused(program);
+            });
+            compile();
+            return structureReuse;
+          }
 
           it('should reuse the old ts program completely if nothing changed', () => {
             testSupport.writeFiles({'src/index.ts': createModuleAndCompSource('main')});
@@ -303,8 +315,9 @@ describe('ng program', () => {
             // and therefore changes the structure again
             const p1 = compile(undefined, undefined, undefined, host).program;
             const p2 = compile(p1, undefined, undefined, host).program;
-            compile(p2, undefined, undefined, host);
-            expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
+            const structureReuse =
+                captureStructureReuse(() => compile(p2, undefined, undefined, host));
+            expect(structureReuse).toBe(StructureIsReused.Completely);
           });
 
           it('should reuse the old ts program completely if a template or a ts file changed',
@@ -327,8 +340,9 @@ describe('ng program', () => {
                  'src/main.html': `Another template`,
                  'src/util.ts': `export const x = 2`,
                });
-               compile(p2, undefined, undefined, host);
-               expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
+               const structureReuse =
+                   captureStructureReuse(() => compile(p2, undefined, undefined, host));
+               expect(structureReuse).toBe(StructureIsReused.Completely);
              });
 
           it('should not reuse the old ts program if an import changed', () => {
@@ -347,11 +361,11 @@ describe('ng program', () => {
             const p2 = compile(p1, undefined, undefined, host).program;
             testSupport.writeFiles(
                 {'src/util.ts': `import {Injectable} from '@angular/core'; export const x = 1;`});
-            compile(p2, undefined, undefined, host);
-            expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
+            const structureReuse =
+                captureStructureReuse(() => compile(p2, undefined, undefined, host));
+            expect(structureReuse).toBe(StructureIsReused.SafeModules);
           });
         });
-
   });
 
   it('should not typecheck templates if skipTemplateCodegen is set but fullTemplateTypeCheck is not',
@@ -473,7 +487,7 @@ describe('ng program', () => {
 
     host.writeFile =
         (fileName: string, data: string, writeByteOrderMark: boolean,
-         onError: ((message: string) => void) | undefined,
+         onError: ((message: string) => void)|undefined,
          sourceFiles?: ReadonlyArray<ts.SourceFile>) => {
           written.set(fileName, {original: sourceFiles, data});
         };
@@ -487,30 +501,32 @@ describe('ng program', () => {
       const writeData = written.get(path.posix.join(testSupport.basePath, fileName));
       expect(writeData).toBeTruthy();
       expect(
-          writeData !.original !.some(
+          writeData!.original!.some(
               sf => sf.fileName === path.posix.join(testSupport.basePath, checks.originalFileName)))
           .toBe(true);
       switch (checks.shouldBe) {
         case ShouldBe.Empty:
-          expect(writeData !.data).toMatch(/^(\s*\/\*([^*]|\*[^/])*\*\/\s*)?$/);
+          expect(writeData!.data).toMatch(/^(\s*\/\*([^*]|\*[^\/])*\*\/\s*)?$/);
           break;
         case ShouldBe.EmptyExport:
-          expect(writeData !.data)
-              .toMatch(/^((\s*\/\*([^*]|\*[^/])*\*\/\s*)|(\s*export\s*{\s*}\s*;\s*)|())$/);
+          expect(writeData!.data)
+              .toMatch(/^((\s*\/\*([^*]|\*[^\/])*\*\/\s*)|(\s*export\s*{\s*};\s*))$/m);
           break;
         case ShouldBe.NoneEmpty:
-          expect(writeData !.data).not.toBe('');
+          expect(writeData!.data).not.toBe('');
           break;
       }
     }
 
     assertGenFile(
-        'built/src/util.ngfactory.js', {originalFileName: 'src/util.ts', shouldBe: ShouldBe.Empty});
+        'built/src/util.ngfactory.js',
+        {originalFileName: 'src/util.ts', shouldBe: ShouldBe.EmptyExport});
     assertGenFile(
         'built/src/util.ngfactory.d.ts',
         {originalFileName: 'src/util.ts', shouldBe: ShouldBe.EmptyExport});
     assertGenFile(
-        'built/src/util.ngsummary.js', {originalFileName: 'src/util.ts', shouldBe: ShouldBe.Empty});
+        'built/src/util.ngsummary.js',
+        {originalFileName: 'src/util.ts', shouldBe: ShouldBe.EmptyExport});
     assertGenFile(
         'built/src/util.ngsummary.d.ts',
         {originalFileName: 'src/util.ts', shouldBe: ShouldBe.EmptyExport});
@@ -987,7 +1003,8 @@ describe('ng program', () => {
     const errorDiags =
         program1.emit().diagnostics.filter(d => d.category === ts.DiagnosticCategory.Error);
     expect(stripAnsi(formatDiagnostics(errorDiags)))
-        .toContain(`src/main.ts:5:13 - error TS2322: Type '1' is not assignable to type 'string'.`);
+        .toContain(
+            `src/main.ts:5:13 - error TS2322: Type 'number' is not assignable to type 'string'.`);
     expect(stripAnsi(formatDiagnostics(errorDiags)))
         .toContain(
             `src/main.html:1:1 - error TS100: Property 'nonExistent' does not exist on type 'MyComp'.`);
@@ -1099,15 +1116,15 @@ describe('ng program', () => {
          });
          const host = ng.createCompilerHost({options});
          const originalGetSourceFile = host.getSourceFile;
-         host.getSourceFile = (fileName: string, languageVersion: ts.ScriptTarget,
-                               onError?: ((message: string) => void) | undefined): ts.SourceFile |
-             undefined => {
-           // We should never try to load .ngfactory.ts files
-           if (fileName.match(/\.ngfactory\.ts$/)) {
-             throw new Error(`Non existent ngfactory file: ` + fileName);
-           }
-           return originalGetSourceFile.call(host, fileName, languageVersion, onError);
-         };
+         host.getSourceFile =
+             (fileName: string, languageVersion: ts.ScriptTarget,
+              onError?: ((message: string) => void)|undefined): ts.SourceFile|undefined => {
+               // We should never try to load .ngfactory.ts files
+               if (fileName.match(/\.ngfactory\.ts$/)) {
+                 throw new Error(`Non existent ngfactory file: ` + fileName);
+               }
+               return originalGetSourceFile.call(host, fileName, languageVersion, onError);
+             };
          const program = ng.createProgram({rootNames: allRootNames, options, host});
          const structuralErrors = program.getNgStructuralDiagnostics();
          expect(structuralErrors.length).toBe(1);
@@ -1115,5 +1132,4 @@ describe('ng program', () => {
              .toContain('Function expressions are not supported');
        });
   });
-
 });

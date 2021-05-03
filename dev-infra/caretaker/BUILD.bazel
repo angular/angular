@@ -1,0 +1,48 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "caretaker",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    module_name = "@angular/dev-infra-private/caretaker",
+    visibility = ["//dev-infra:__subpackages__"],
+    deps = [
+        "//dev-infra/release/versioning",
+        "//dev-infra/utils",
+        "@npm//@types/node",
+        "@npm//@types/node-fetch",
+        "@npm//@types/yargs",
+        "@npm//multimatch",
+        "@npm//node-fetch",
+        "@npm//typed-graphqlify",
+        "@npm//yaml",
+        "@npm//yargs",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.spec.ts"]),
+    deps = [
+        ":caretaker",
+        "//dev-infra/release/versioning",
+        "//dev-infra/utils",
+        "//dev-infra/utils/testing",
+        "@npm//@types/jasmine",
+        "@npm//@types/node",
+        "@npm//@types/semver",
+        "@npm//semver",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node_no_angular_es5"],
+    deps = [
+        ":test_lib",
+    ],
+)

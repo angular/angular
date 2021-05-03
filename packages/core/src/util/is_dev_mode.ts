@@ -1,10 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {global} from './global';
 
 /**
  * This file is used to control if the default rendering pipeline should be `ViewEngine` or `Ivy`.
@@ -44,5 +46,12 @@ export function enableProdMode(): void {
   if (_runModeLocked) {
     throw new Error('Cannot enable prod mode after platform setup.');
   }
+
+  // The below check is there so when ngDevMode is set via terser
+  // `global['ngDevMode'] = false;` is also dropped.
+  if (typeof ngDevMode === undefined || !!ngDevMode) {
+    global['ngDevMode'] = false;
+  }
+
   _devMode = false;
 }

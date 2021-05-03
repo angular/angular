@@ -1,20 +1,23 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, Inject, Injectable, InjectionToken, Input, NgModule, OnDestroy, Pipe, PipeTransform, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Directive, Inject, Injectable, InjectionToken, Input, NgModule, OnChanges, OnDestroy, Pipe, PipeTransform, SimpleChanges, ViewChild, WrappedValue} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
+import {ivyEnabled} from '@angular/private/testing';
 
 describe('pipe', () => {
   @Pipe({name: 'countingPipe'})
   class CountingPipe implements PipeTransform {
     state: number = 0;
-    transform(value: any) { return `${value} state:${this.state++}`; }
+    transform(value: any) {
+      return `${value} state:${this.state++}`;
+    }
   }
 
   @Pipe({name: 'multiArgPipe'})
@@ -57,20 +60,21 @@ describe('pipe', () => {
   it('should support bindings', () => {
     @Directive({selector: '[my-dir]'})
     class Dir {
-      @Input()
-      dirProp: string = '';
+      @Input() dirProp: string = '';
     }
 
     @Pipe({name: 'double'})
     class DoublePipe implements PipeTransform {
-      transform(value: any) { return `${value}${value}`; }
+      transform(value: any) {
+        return `${value}${value}`;
+      }
     }
 
     @Component({
       template: `<div my-dir [dirProp]="'a'|double"></div>`,
     })
     class App {
-      @ViewChild(Dir) directive !: Dir;
+      @ViewChild(Dir) directive!: Dir;
     }
 
     TestBed.configureTestingModule({declarations: [App, DoublePipe, Dir]});
@@ -113,7 +117,9 @@ describe('pipe', () => {
   it('should pick a Pipe defined in `declarations` over imported Pipes', () => {
     @Pipe({name: 'number'})
     class PipeA implements PipeTransform {
-      transform(value: any) { return `PipeA: ${value}`; }
+      transform(value: any) {
+        return `PipeA: ${value}`;
+      }
     }
 
     @NgModule({
@@ -125,7 +131,9 @@ describe('pipe', () => {
 
     @Pipe({name: 'number'})
     class PipeB implements PipeTransform {
-      transform(value: any) { return `PipeB: ${value}`; }
+      transform(value: any) {
+        return `PipeB: ${value}`;
+      }
     }
 
     @Component({
@@ -150,7 +158,9 @@ describe('pipe', () => {
      () => {
        @Pipe({name: 'number'})
        class PipeA implements PipeTransform {
-         transform(value: any) { return `PipeA: ${value}`; }
+         transform(value: any) {
+           return `PipeA: ${value}`;
+         }
        }
 
        @NgModule({
@@ -162,7 +172,9 @@ describe('pipe', () => {
 
        @Pipe({name: 'number'})
        class PipeB implements PipeTransform {
-         transform(value: any) { return `PipeB: ${value}`; }
+         transform(value: any) {
+           return `PipeB: ${value}`;
+         }
        }
 
        @NgModule({
@@ -222,12 +234,16 @@ describe('pipe', () => {
   it('should support duplicates by using the later entry', () => {
     @Pipe({name: 'duplicatePipe'})
     class DuplicatePipe1 implements PipeTransform {
-      transform(value: any) { return `${value} from duplicate 1`; }
+      transform(value: any) {
+        return `${value} from duplicate 1`;
+      }
     }
 
     @Pipe({name: 'duplicatePipe'})
     class DuplicatePipe2 implements PipeTransform {
-      transform(value: any) { return `${value} from duplicate 2`; }
+      transform(value: any) {
+        return `${value} from duplicate 2`;
+      }
     }
 
     @Component({
@@ -247,7 +263,9 @@ describe('pipe', () => {
   it('should support pipe in context of ternary operator', () => {
     @Pipe({name: 'pipe'})
     class MyPipe implements PipeTransform {
-      transform(value: any): any { return value; }
+      transform(value: any): any {
+        return value;
+      }
     }
 
     @Component({
@@ -266,6 +284,133 @@ describe('pipe', () => {
     fixture.componentInstance.condition = true;
     fixture.detectChanges();
     expect(fixture.nativeElement).toHaveText('a');
+  });
+
+  describe('pipes within an optional chain', () => {
+    it('should not dirty unrelated inputs', () => {
+      // https://github.com/angular/angular/issues/37194
+      // https://github.com/angular/angular/issues/37591
+      // Using a pipe in the LHS of safe navigation operators would clobber unrelated bindings
+      // iff the pipe returns WrappedValue, incorrectly causing the unrelated binding
+      // to be considered changed.
+      const log: string[] = [];
+
+      @Component({template: `<my-cmp [value1]="1" [value2]="(value2 | pipe)?.id"></my-cmp>`})
+      class App {
+        value2 = {id: 2};
+      }
+
+      @Component({selector: 'my-cmp', template: ''})
+      class MyCmp {
+        @Input()
+        set value1(value1: number) {
+          log.push(`set value1=${value1}`);
+        }
+
+        @Input()
+        set value2(value2: number) {
+          log.push(`set value2=${value2}`);
+        }
+      }
+
+      @Pipe({name: 'pipe'})
+      class MyPipe implements PipeTransform {
+        transform(value: any): any {
+          log.push('pipe');
+          return WrappedValue.wrap(value);
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyCmp, MyPipe]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges(/* checkNoChanges */ false);
+
+      // Both bindings should have been set. Note: ViewEngine evaluates the pipe out-of-order,
+      // before setting inputs.
+      expect(log).toEqual(
+          ivyEnabled ?
+              [
+                'set value1=1',
+                'pipe',
+                'set value2=2',
+              ] :
+              [
+                'pipe',
+                'set value1=1',
+                'set value2=2',
+              ]);
+      log.length = 0;
+
+      fixture.componentInstance.value2 = {id: 3};
+      fixture.detectChanges(/* checkNoChanges */ false);
+
+      // value1 did not change, so it should not have been set.
+      expect(log).toEqual([
+        'pipe',
+        'set value2=3',
+      ]);
+    });
+
+    it('should not include unrelated inputs in ngOnChanges', () => {
+      // https://github.com/angular/angular/issues/37194
+      // https://github.com/angular/angular/issues/37591
+      // Using a pipe in the LHS of safe navigation operators would clobber unrelated bindings
+      // iff the pipe returns WrappedValue, incorrectly causing the unrelated binding
+      // to be considered changed.
+      const log: string[] = [];
+
+      @Component({template: `<my-cmp [value1]="1" [value2]="(value2 | pipe)?.id"></my-cmp>`})
+      class App {
+        value2 = {id: 2};
+      }
+
+      @Component({selector: 'my-cmp', template: ''})
+      class MyCmp implements OnChanges {
+        @Input() value1!: number;
+
+        @Input() value2!: number;
+
+        ngOnChanges(changes: SimpleChanges): void {
+          if (changes.value1) {
+            const {previousValue, currentValue, firstChange} = changes.value1;
+            log.push(`change value1: ${previousValue} -> ${currentValue} (${firstChange})`);
+          }
+          if (changes.value2) {
+            const {previousValue, currentValue, firstChange} = changes.value2;
+            log.push(`change value2: ${previousValue} -> ${currentValue} (${firstChange})`);
+          }
+        }
+      }
+
+      @Pipe({name: 'pipe'})
+      class MyPipe implements PipeTransform {
+        transform(value: any): any {
+          log.push('pipe');
+          return WrappedValue.wrap(value);
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [App, MyCmp, MyPipe]});
+      const fixture = TestBed.createComponent(App);
+      fixture.detectChanges(/* checkNoChanges */ false);
+
+      // Both bindings should have been included in ngOnChanges.
+      expect(log).toEqual([
+        'pipe',
+        'change value1: undefined -> 1 (true)',
+        'change value2: undefined -> 2 (true)',
+      ]);
+      log.length = 0;
+
+      fixture.componentInstance.value2 = {id: 3};
+      fixture.detectChanges(/* checkNoChanges */ false);
+
+      // value1 did not change, so it should not have been included in ngOnChanges
+      expect(log).toEqual([
+        'pipe',
+        'change value2: 2 -> 3 (false)',
+      ]);
+    });
   });
 
   describe('pure', () => {
@@ -313,8 +458,12 @@ describe('pipe', () => {
     @Pipe({name: 'countingImpurePipe', pure: false})
     class CountingImpurePipe implements PipeTransform {
       state: number = 0;
-      transform(value: any) { return `${value} state:${this.state++}`; }
-      constructor() { impurePipeInstances.push(this); }
+      transform(value: any) {
+        return `${value} state:${this.state++}`;
+      }
+      constructor() {
+        impurePipeInstances.push(this);
+      }
     }
 
     beforeEach(() => impurePipeInstances = []);
@@ -372,8 +521,12 @@ describe('pipe', () => {
 
       @Pipe({name: 'pipeWithOnDestroy'})
       class PipeWithOnDestroy implements PipeTransform, OnDestroy {
-        ngOnDestroy() { destroyCalls++; }
-        transform(value: any): any { return null; }
+        ngOnDestroy() {
+          destroyCalls++;
+        }
+        transform(value: any): any {
+          return null;
+        }
       }
 
       @Component({
@@ -401,7 +554,9 @@ describe('pipe', () => {
       @Pipe({name: 'myConcatPipe'})
       class ConcatPipe implements PipeTransform {
         constructor(public service: Service) {}
-        transform(value: string): string { return `${value} - ${this.service.title}`; }
+        transform(value: string): string {
+          return `${value} - ${this.service.title}`;
+        }
       }
 
       @Component({
@@ -428,7 +583,9 @@ describe('pipe', () => {
       @Pipe({name: 'myConcatPipe'})
       class ConcatPipe implements PipeTransform {
         constructor(@Inject(token) public service: Service) {}
-        transform(value: string): string { return `${value} - ${this.service.title}`; }
+        transform(value: string): string {
+          return `${value} - ${this.service.title}`;
+        }
       }
 
       @Component({
@@ -461,7 +618,9 @@ describe('pipe', () => {
       @Pipe({name: 'myConcatPipe'})
       class ConcatPipe implements PipeTransform {
         constructor(public service: Service) {}
-        transform(value: string): string { return `${value} - ${this.service.title}`; }
+        transform(value: string): string {
+          return `${value} - ${this.service.title}`;
+        }
       }
 
       @Component({
@@ -501,7 +660,7 @@ describe('pipe', () => {
          })
          class App {
            @Input() something: any;
-           @ViewChild(SomeComp) comp !: SomeComp;
+           @ViewChild(SomeComp) comp!: SomeComp;
            pipeValue = 10;
            displayValue = 0;
          }
@@ -512,7 +671,9 @@ describe('pipe', () => {
              pipeChangeDetectorRef = changeDetectorRef;
            }
 
-           transform() { return ''; }
+           transform() {
+             return '';
+           }
          }
 
          TestBed.configureTestingModule({declarations: [App, SomeComp, TestPipe]});
@@ -521,7 +682,7 @@ describe('pipe', () => {
 
          fixture.componentInstance.displayValue = 1;
          fixture.componentInstance.comp.displayValue = 1;
-         pipeChangeDetectorRef !.markForCheck();
+         pipeChangeDetectorRef!.markForCheck();
          fixture.detectChanges();
 
          expect(fixture.nativeElement.textContent).toContain('Outer value: "1"');
@@ -553,7 +714,7 @@ describe('pipe', () => {
          })
          class App {
            @Input() something: any;
-           @ViewChild(SomeComp) comp !: SomeComp;
+           @ViewChild(SomeComp) comp!: SomeComp;
            pipeValue = 10;
            displayValue = 0;
          }
@@ -564,7 +725,9 @@ describe('pipe', () => {
              pipeChangeDetectorRef = changeDetectorRef;
            }
 
-           transform() { return ''; }
+           transform() {
+             return '';
+           }
          }
 
          TestBed.configureTestingModule({declarations: [App, SomeComp, TestPipe]});
@@ -573,22 +736,21 @@ describe('pipe', () => {
 
          fixture.componentInstance.displayValue = 1;
          fixture.componentInstance.comp.displayValue = 1;
-         pipeChangeDetectorRef !.markForCheck();
+         pipeChangeDetectorRef!.markForCheck();
          fixture.detectChanges();
 
          expect(fixture.nativeElement.textContent).toContain('Outer value: "1"');
          expect(fixture.nativeElement.textContent).toContain('Inner value: "0"');
        });
-
   });
 
   describe('pure pipe error handling', () => {
-
     it('should not re-invoke pure pipes if it fails initially', () => {
-
       @Pipe({name: 'throwPipe', pure: true})
       class ThrowPipe implements PipeTransform {
-        transform(): never { throw new Error('ThrowPipeError'); }
+        transform(): never {
+          throw new Error('ThrowPipeError');
+        }
       }
       @Component({template: `{{val | throwPipe}}`})
       class App {
@@ -607,7 +769,6 @@ describe('pipe', () => {
 
 
     it('should display the last known result from a pure pipe when it throws', () => {
-
       @Pipe({name: 'throwPipe', pure: true})
       class ThrowPipe implements PipeTransform {
         transform(value: string): string {
@@ -647,7 +808,8 @@ describe('pipe', () => {
     describe('pure pipe error handling with multiple arguments', () => {
       const args: string[] = new Array(10).fill(':0');
       for (let numberOfPipeArgs = 0; numberOfPipeArgs < args.length; numberOfPipeArgs++) {
-        it(`should not invoke ${numberOfPipeArgs} argument pure pipe second time if it throws unless input changes`,
+        it(`should not invoke ${
+               numberOfPipeArgs} argument pure pipe second time if it throws unless input changes`,
            () => {
              // https://stackblitz.com/edit/angular-mbx2pg
              const log: string[] = [];
@@ -685,8 +847,5 @@ describe('pipe', () => {
            });
       }
     });
-
   });
-
-
 });

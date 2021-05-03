@@ -1,16 +1,13 @@
-// #docregion
 import { Injectable } from '@angular/core';
-import { HEROES }     from './mock-heroes';
-import { Logger }     from '../logger.service';
+import { HEROES } from './mock-heroes';
+import { Logger } from '../logger.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HeroService {
 
-  // #docregion ctor
   constructor(private logger: Logger) {  }
-  // #enddocregion ctor
 
   getHeroes() {
     this.logger.log('Getting heroes ...');

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,7 +16,7 @@ try {
   // is introduced in node 10.2.0
   console.warn(
       `Running postinstall-patches.js script in an external repository requires --preserve-symlinks-main node flag introduced in node 10.2.0. ` +
-      `Current node version is ${process.version}. Node called with '${process.argv.join(" ")}'.`);
+      `Current node version is ${process.version}. Node called with '${process.argv.join(' ')}'.`);
   process.exit(0);
 }
 
@@ -44,13 +44,6 @@ log('\n# patch: reactivex/rxjs#3302 make node_modules/rxjs compilable with Types
 sed('-i', '(\'response\' in xhr)', '(\'response\' in (xhr as any))',
     'node_modules/rxjs/src/observable/dom/AjaxObservable.ts');
 */
-
-// make chrome 74 work on OSX with karma under bazel
-// remove when we update to the next @bazel/karma release
-log('\n# patch: @bazel/karma 0.29.0 to disable chrome sandbox for OSX');
-sed('-i', 'process.platform !== \'linux\'',
-    'process.platform !== \'linux\' && process.platform !== \'darwin\'',
-    'node_modules/@bazel/karma/karma.conf.js');
 
 // Workaround https://github.com/bazelbuild/rules_nodejs/issues/1033
 // TypeScript doesn't understand typings without "declare module" unless

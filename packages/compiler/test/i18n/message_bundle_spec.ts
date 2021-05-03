@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,9 @@ import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_co
     describe('Messages', () => {
       let messages: MessageBundle;
 
-      beforeEach(() => { messages = new MessageBundle(new HtmlParser, [], {}); });
+      beforeEach(() => {
+        messages = new MessageBundle(new HtmlParser, [], {});
+      });
 
       it('should extract the message to the catalog', () => {
         messages.updateFromTemplate(
@@ -48,11 +50,13 @@ class _TestSerializer extends Serializer {
   }
 
   load(content: string, url: string):
-      {locale: string | null, i18nNodesByMsgId: {[id: string]: i18n.Node[]}} {
+      {locale: string|null, i18nNodesByMsgId: {[id: string]: i18n.Node[]}} {
     return {locale: null, i18nNodesByMsgId: {}};
   }
 
-  digest(msg: i18n.Message): string { return msg.id || `default`; }
+  digest(msg: i18n.Message): string {
+    return msg.id || `default`;
+  }
 }
 
 function humanizeMessages(catalog: MessageBundle): string[] {

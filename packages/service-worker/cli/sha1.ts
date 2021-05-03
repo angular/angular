@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,7 +9,7 @@
 /**
  * Compute the SHA1 of the given string
  *
- * see http://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
+ * see https://csrc.nist.gov/publications/fips/fips180-4/fips-180-4.pdf
  *
  * WARNING: this function has not been designed not tested with security in mind.
  *          DO NOT USE IT IN A SECURITY SENSITIVE CONTEXT.
@@ -133,7 +133,7 @@ function arrayBufferToWords32(buffer: ArrayBuffer, endian: Endian): number[] {
   return words32;
 }
 
-function byteAt(str: string | Uint8Array, index: number): number {
+function byteAt(str: string|Uint8Array, index: number): number {
   if (typeof str === 'string') {
     return index >= str.length ? 0 : str.charCodeAt(index) & 0xff;
   } else {
@@ -141,7 +141,7 @@ function byteAt(str: string | Uint8Array, index: number): number {
   }
 }
 
-function wordAt(str: string | Uint8Array, index: number, endian: Endian): number {
+function wordAt(str: string|Uint8Array, index: number, endian: Endian): number {
   let word = 0;
   if (endian === Endian.Big) {
     for (let i = 0; i < 4; i++) {

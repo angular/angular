@@ -1,11 +1,11 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, resolve} from '@angular/compiler-cli/src/ngtsc/file_system';
+import {AbsoluteFsPath, getFileSystem, PathManipulation} from '@angular/compiler-cli/src/ngtsc/file_system';
 import {runInEachFileSystem} from '@angular/compiler-cli/src/ngtsc/file_system/testing';
 import {AbsoluteSourceSpan, IdentifierKind, IndexedComponent, TopLevelIdentifier} from '@angular/compiler-cli/src/ngtsc/indexer';
 import {ParseSourceFile} from '@angular/compiler/src/compiler';
@@ -14,15 +14,17 @@ import {NgtscTestEnvironment} from './env';
 
 runInEachFileSystem(() => {
   describe('ngtsc component indexing', () => {
-    let env !: NgtscTestEnvironment;
+    let fs: PathManipulation;
+    let env!: NgtscTestEnvironment;
     let testSourceFile: AbsoluteFsPath;
     let testTemplateFile: AbsoluteFsPath;
 
     beforeEach(() => {
       env = NgtscTestEnvironment.setup();
       env.tsconfig();
-      testSourceFile = resolve(env.basePath, 'test.ts');
-      testTemplateFile = resolve(env.basePath, 'test.html');
+      fs = getFileSystem();
+      testSourceFile = fs.resolve(env.basePath, 'test.ts');
+      testTemplateFile = fs.resolve(env.basePath, 'test.html');
     });
 
     describe('indexing metadata', () => {
@@ -177,10 +179,10 @@ runInEachFileSystem(() => {
         expect(testComp).toBeDefined();
         expect(testImportComp).toBeDefined();
 
-        expect(testComp !.template.usedComponents.size).toBe(0);
-        expect(testImportComp !.template.usedComponents.size).toBe(1);
+        expect(testComp!.template.usedComponents.size).toBe(0);
+        expect(testImportComp!.template.usedComponents.size).toBe(1);
 
-        const [usedComp] = Array.from(testImportComp !.template.usedComponents);
+        const [usedComp] = Array.from(testImportComp!.template.usedComponents);
         expect(indexed.get(usedComp)).toEqual(testComp);
       });
     });

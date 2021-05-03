@@ -1,22 +1,20 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {Rule, SchematicsException, Tree} from '@angular-devkit/schematics';
-import {dirname, relative} from 'path';
+import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
-import {parseTsconfigFile} from '../../utils/typescript/parse_tsconfig';
+import {canMigrateFile, createMigrationProgram} from '../../utils/typescript/compiler_host';
 
 import {COMMON_IMPORT, DOCUMENT_TOKEN_NAME, DocumentImportVisitor, ResolvedDocumentImport} from './document_import_visitor';
 import {addToImport, createImport, removeFromImport} from './move-import';
-
 
 
 /** Entry point for the V8 move-document migration. */
@@ -26,7 +24,7 @@ export default function(): Rule {
     const basePath = process.cwd();
 
     if (!buildPaths.length && !testPaths.length) {
-      throw new SchematicsException(`Could not find any tsconfig file. Cannot migrate DOCUMENT 
+      throw new SchematicsException(`Could not find any tsconfig file. Cannot migrate DOCUMENT
           to new import source.`);
     }
 
@@ -42,14 +40,11 @@ export default function(): Rule {
  * new import source.
  */
 function runMoveDocumentMigration(tree: Tree, tsconfigPath: string, basePath: string) {
-  const parsed = parseTsconfigFile(tsconfigPath, dirname(tsconfigPath));
-  const host = createMigrationCompilerHost(tree, parsed.options, basePath);
-
-  const program = ts.createProgram(parsed.fileNames, parsed.options, host);
+  const {program} = createMigrationProgram(tree, tsconfigPath, basePath);
   const typeChecker = program.getTypeChecker();
   const visitor = new DocumentImportVisitor(typeChecker);
-  const sourceFiles = program.getSourceFiles().filter(
-      f => !f.isDeclarationFile && !program.isSourceFileFromExternalLibrary(f));
+  const sourceFiles =
+      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
 
   // Analyze source files by finding imports.
   sourceFiles.forEach(sourceFile => visitor.visitNode(sourceFile));

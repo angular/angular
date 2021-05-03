@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://angular.io/internal/compliance-test-cases.json",
+  "title": "Compliance test cases",
+  "description": "Describes configuration for an Angular compliance test",
+  "type": "object",
+  "properties": {
+    "cases": {
+      "title": "A collection of test cases",
+      "type": "array",
+      "items": {
+        "title": "A test case definition",
+        "type": "object",
+        "required": [
+          "description"
+        ],
+        "properties": {
+          "description": {
+            "title": "A description of the test case",
+            "description": "This will be used as the message in an `it()` clause.",
+            "type": "string"
+          },
+          "compilationModeFilter": {
+            "title": "An array of compilation modes under which this test-case should be run.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "full compile",
+                "linked compile"
+              ]
+            },
+            "default": [
+              "full compile",
+              "linked compile"
+            ]
+          },
+          "inputFiles": {
+            "title": "A collection of source files to compile",
+            "type": "array",
+            "items": {
+              "title": "Path (relative to the test case) of a source file to compile",
+              "type": "string"
+            }
+          },
+          "expectations": {
+            "title": "A collection of expectations for this test case",
+            "type": "array",
+            "items": {
+              "title": "An expectation to check for this test case",
+              "type": "object",
+              "properties": {
+                "failureMessage": {
+                  "title": "The message to display if this expectation fails",
+                  "type": "string",
+                  "default": "Incorrect generated output."
+                },
+                "files": {
+                  "title": "A collection of expected-generated file path pairs",
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "title": "A pair of expected-generated file paths to be compared",
+                        "type": "object",
+                        "required": [
+                          "expected",
+                          "generated"
+                        ],
+                        "properties": {
+                          "expected": {
+                            "title": "A path (relative to the test case) where a file containing expected output can be found",
+                            "type": "string"
+                          },
+                          "generated": {
+                            "title": "A path (relative to the build output directory) where the compiled file can be found.",
+                            "type": "string"
+                          }
+                        }
+                      },
+                      {
+                        "type": "string",
+                        "title": "A path (relative to the test case) where an file containing expected output can be found. (The generated path is inferred from this.)"
+                      }
+                    ]
+                  }
+                },
+                "expectedErrors": {
+                  "title": "A collection of expected error messages for this test-case.",
+                  "type": "array",
+                  "items": {
+                    "title": "An array of strings that should appear in the error message.",
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "title": "A regular expression that should match the error message",
+                        "type": "string"
+                      },
+                      "location": {
+                        "title": "An optional regular expression that should match the location of the error",
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "message"
+                    ]
+                  }
+                },
+                "extraChecks": {
+                  "title": "Additional checks to run against the generated code.",
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "title": "The name of a function to run as an additional check on the source.",
+                        "type": "string"
+                      },
+                      {
+                        "title": "An array whose first element is the name of a function to run as an additional check, and subsequent elements are args for this function",
+                        "type": "array"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "compilerOptions": {
+            "title": "Additional options to pass to the TypeScript compiler",
+            "type": "object"
+          },
+          "angularCompilerOptions": {
+            "title": "Additional options to pass to the Angular compiler",
+            "type": "object"
+          },
+          "focusTest": {
+            "title": "Set to true to focus on this test - equivalent to jasmine's `fit()` function",
+            "type": "boolean"
+          },
+          "excludeTest": {
+            "title": "Set to true to exclude this test - equivalent to jasmine's `xit()` function",
+            "type": "boolean"
+          }
+        }
+      },
+      "minItems": 1
+    }
+  }
+}

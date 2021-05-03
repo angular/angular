@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,7 @@ import {Reporter} from './reporter';
 import {ConsoleReporter} from './reporter/console_reporter';
 import {MultiReporter} from './reporter/multi_reporter';
 import {SampleDescription} from './sample_description';
-import {SampleState, Sampler} from './sampler';
+import {Sampler, SampleState} from './sampler';
 import {Validator} from './validator';
 import {RegressionSlopeValidator} from './validator/regression_slope_validator';
 import {SizeValidator} from './validator/size_validator';

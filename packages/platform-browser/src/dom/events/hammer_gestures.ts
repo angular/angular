@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -52,10 +52,11 @@ const EVENT_NAMES = {
   'swipedown': true,
   // tap
   'tap': true,
+  'doubletap': true
 };
 
 /**
- * DI token for providing [HammerJS](http://hammerjs.github.io/) support to Angular.
+ * DI token for providing [HammerJS](https://hammerjs.github.io/) support to Angular.
  * @see `HammerGestureConfig`
  *
  * @ngModule HammerModule
@@ -85,7 +86,7 @@ export interface HammerInstance {
 }
 
 /**
- * An injectable [HammerJS Manager](http://hammerjs.github.io/api/#hammer.manager)
+ * An injectable [HammerJS Manager](https://hammerjs.github.io/api/#hammermanager)
  * for gesture recognition. Configures specific event recognition.
  * @publicApi
  */
@@ -94,26 +95,26 @@ export class HammerGestureConfig {
   /**
    * A set of supported event names for gestures to be used in Angular.
    * Angular supports all built-in recognizers, as listed in
-   * [HammerJS documentation](http://hammerjs.github.io/).
+   * [HammerJS documentation](https://hammerjs.github.io/).
    */
   events: string[] = [];
 
   /**
-  * Maps gesture event names to a set of configuration options
-  * that specify overrides to the default values for specific properties.
-  *
-  * The key is a supported event name to be configured,
-  * and the options object contains a set of properties, with override values
-  * to be applied to the named recognizer event.
-  * For example, to disable recognition of the rotate event, specify
-  *  `{"rotate": {"enable": false}}`.
-  *
-  * Properties that are not present take the HammerJS default values.
-  * For information about which properties are supported for which events,
-  * and their allowed and default values, see
-  * [HammerJS documentation](http://hammerjs.github.io/).
-  *
-  */
+   * Maps gesture event names to a set of configuration options
+   * that specify overrides to the default values for specific properties.
+   *
+   * The key is a supported event name to be configured,
+   * and the options object contains a set of properties, with override values
+   * to be applied to the named recognizer event.
+   * For example, to disable recognition of the rotate event, specify
+   *  `{"rotate": {"enable": false}}`.
+   *
+   * Properties that are not present take the HammerJS default values.
+   * For information about which properties are supported for which events,
+   * and their allowed and default values, see
+   * [HammerJS documentation](https://hammerjs.github.io/).
+   *
+   */
   overrides: {[key: string]: Object} = {};
 
   /**
@@ -121,10 +122,12 @@ export class HammerGestureConfig {
    * Different sets of properties apply to different events.
    * For information about which properties are supported for which events,
    * and their allowed and default values, see
-   * [HammerJS documentation](http://hammerjs.github.io/).
+   * [HammerJS documentation](https://hammerjs.github.io/).
    */
   options?: {
-    cssProps?: any; domEvents?: boolean; enable?: boolean | ((manager: any) => boolean);
+    cssProps?: any;
+    domEvents?: boolean;
+    enable?: boolean | ((manager: any) => boolean);
     preset?: any[];
     touchAction?: string;
     recognizers?: any[];
@@ -133,13 +136,13 @@ export class HammerGestureConfig {
   };
 
   /**
-   * Creates a [HammerJS Manager](http://hammerjs.github.io/api/#hammer.manager)
+   * Creates a [HammerJS Manager](https://hammerjs.github.io/api/#hammermanager)
    * and attaches it to a given HTML element.
    * @param element The element that will recognize gestures.
    * @returns A HammerJS event-manager object.
    */
   buildHammer(element: HTMLElement): HammerInstance {
-    const mc = new Hammer !(element, this.options);
+    const mc = new Hammer!(element, this.options);
 
     mc.get('pinch').set({enable: true});
     mc.get('rotate').set({enable: true});
@@ -159,6 +162,8 @@ export class HammerGestureConfig {
  */
 @Injectable()
 export class HammerGesturesPlugin extends EventManagerPlugin {
+  private _loaderPromise: Promise<void>|null = null;
+
   constructor(
       @Inject(DOCUMENT) doc: any,
       @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig, private console: Console,
@@ -172,9 +177,11 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     }
 
     if (!(window as any).Hammer && !this.loader) {
-      this.console.warn(
-          `The "${eventName}" event cannot be bound because Hammer.JS is not ` +
-          `loaded and no custom loader has been specified.`);
+      if (typeof ngDevMode === 'undefined' || ngDevMode) {
+        this.console.warn(
+            `The "${eventName}" event cannot be bound because Hammer.JS is not ` +
+            `loaded and no custom loader has been specified.`);
+      }
       return false;
     }
 
@@ -188,18 +195,23 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     // If Hammer is not present but a loader is specified, we defer adding the event listener
     // until Hammer is loaded.
     if (!(window as any).Hammer && this.loader) {
+      this._loaderPromise = this._loaderPromise || this.loader();
       // This `addEventListener` method returns a function to remove the added listener.
       // Until Hammer is loaded, the returned function needs to *cancel* the registration rather
       // than remove anything.
       let cancelRegistration = false;
-      let deregister: Function = () => { cancelRegistration = true; };
+      let deregister: Function = () => {
+        cancelRegistration = true;
+      };
 
-      this.loader()
+      this._loaderPromise
           .then(() => {
             // If Hammer isn't actually loaded when the custom loader resolves, give up.
             if (!(window as any).Hammer) {
-              this.console.warn(
-                  `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
+              if (typeof ngDevMode === 'undefined' || ngDevMode) {
+                this.console.warn(
+                    `The custom HAMMER_LOADER completed, but Hammer.JS is not present.`);
+              }
               deregister = () => {};
               return;
             }
@@ -211,23 +223,29 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
             }
           })
           .catch(() => {
-            this.console.warn(
-                `The "${eventName}" event cannot be bound because the custom ` +
-                `Hammer.JS loader failed.`);
+            if (typeof ngDevMode === 'undefined' || ngDevMode) {
+              this.console.warn(
+                  `The "${eventName}" event cannot be bound because the custom ` +
+                  `Hammer.JS loader failed.`);
+            }
             deregister = () => {};
           });
 
       // Return a function that *executes* `deregister` (and not `deregister` itself) so that we
       // can change the behavior of `deregister` once the listener is added. Using a closure in
       // this way allows us to avoid any additional data structures to track listener removal.
-      return () => { deregister(); };
+      return () => {
+        deregister();
+      };
     }
 
     return zone.runOutsideAngular(() => {
       // Creating the manager bind events, must be done outside of angular
       const mc = this._config.buildHammer(element);
       const callback = function(eventObj: HammerInput) {
-        zone.runGuarded(function() { handler(eventObj); });
+        zone.runGuarded(function() {
+          handler(eventObj);
+        });
       };
       mc.on(eventName, callback);
       return () => {
@@ -240,7 +258,9 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
     });
   }
 
-  isCustomEvent(eventName: string): boolean { return this._config.events.indexOf(eventName) > -1; }
+  isCustomEvent(eventName: string): boolean {
+    return this._config.events.indexOf(eventName) > -1;
+  }
 }
 
 /**

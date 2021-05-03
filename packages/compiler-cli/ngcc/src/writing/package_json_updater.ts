@@ -1,17 +1,17 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AbsoluteFsPath, FileSystem, dirname} from '../../../src/ngtsc/file_system';
+import {AbsoluteFsPath, dirname, FileSystem} from '../../../src/ngtsc/file_system';
 import {JsonObject, JsonValue} from '../packages/entry_point';
 
 
 export type PackageJsonChange = [string[], JsonValue, PackageJsonPropertyPositioning];
-export type PackageJsonPropertyPositioning = 'unimportant' | 'alphabetic' | {before: string};
+export type PackageJsonPropertyPositioning = 'unimportant'|'alphabetic'|{before: string};
 export type WritePackageJsonChangesFn =
     (changes: PackageJsonChange[], packageJsonPath: AbsoluteFsPath, parsedJson?: JsonObject) =>
         void;
@@ -130,8 +130,9 @@ export class DirectPackageJsonUpdater implements PackageJsonUpdater {
     // Read and parse the `package.json` content.
     // NOTE: We are not using `preExistingParsedJson` (even if specified) to avoid corrupting the
     //       content on disk in case `preExistingParsedJson` is outdated.
-    const parsedJson =
-        this.fs.exists(packageJsonPath) ? JSON.parse(this.fs.readFile(packageJsonPath)) : {};
+    const parsedJson = this.fs.exists(packageJsonPath) ?
+        JSON.parse(this.fs.readFile(packageJsonPath)) as JsonObject :
+        {};
 
     // Apply all changes to both the canonical representation (read from disk) and any pre-existing,
     // in-memory representation.

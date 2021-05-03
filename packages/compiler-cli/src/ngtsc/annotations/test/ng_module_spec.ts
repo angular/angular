@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,10 +11,11 @@ import * as ts from 'typescript';
 
 import {absoluteFrom} from '../../file_system';
 import {runInEachFileSystem} from '../../file_system/testing';
-import {LocalIdentifierStrategy, NOOP_DEFAULT_IMPORT_RECORDER, ReferenceEmitter} from '../../imports';
+import {LocalIdentifierStrategy, ReferenceEmitter} from '../../imports';
 import {CompoundMetadataReader, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry} from '../../metadata';
 import {PartialEvaluator} from '../../partial_evaluator';
-import {TypeScriptReflectionHost, isNamedClassDeclaration} from '../../reflection';
+import {NOOP_PERF_RECORDER} from '../../perf';
+import {isNamedClassDeclaration, TypeScriptReflectionHost} from '../../reflection';
 import {LocalModuleScopeRegistry, MetadataDtsModuleScopeResolver} from '../../scope';
 import {getDeclaration, makeProgram} from '../../testing';
 import {NgModuleDecoratorHandler} from '../src/ng_module';
@@ -71,7 +72,7 @@ runInEachFileSystem(() => {
       const handler = new NgModuleDecoratorHandler(
           reflectionHost, evaluator, metaReader, metaRegistry, scopeRegistry, referencesRegistry,
           /* isCore */ false, /* routeAnalyzer */ null, refEmitter, /* factoryTracker */ null,
-          NOOP_DEFAULT_IMPORT_RECORDER, /* annotateForClosureCompiler */ false, injectableRegistry);
+          /* annotateForClosureCompiler */ false, injectableRegistry, NOOP_PERF_RECORDER);
       const TestModule =
           getDeclaration(program, _('/entry.ts'), 'TestModule', isNamedClassDeclaration);
       const detected =
@@ -79,7 +80,7 @@ runInEachFileSystem(() => {
       if (detected === undefined) {
         return fail('Failed to recognize @NgModule');
       }
-      const moduleDef = handler.analyze(TestModule, detected.metadata).analysis !.mod;
+      const moduleDef = handler.analyze(TestModule, detected.metadata).analysis!.mod;
 
       expect(getReferenceIdentifierTexts(moduleDef.declarations)).toEqual(['TestComp']);
       expect(getReferenceIdentifierTexts(moduleDef.exports)).toEqual(['TestComp']);

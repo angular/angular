@@ -60,6 +60,17 @@
               }
             },
             "additionalProperties": false
+          },
+          "cacheQueryOptions" : {
+            "type": "object",
+            "description": "Provide options that are passed to Cache#match.",
+            "properties" : {
+              "ignoreSearch": {
+                "type": "boolean",
+                "description": "Whether to ignore the query string in the URL."
+              }
+            },
+            "additionalProperties": false
           }
         },
         "required": [
@@ -122,6 +133,17 @@
               "maxAge"
             ],
             "additionalProperties": false
+          },
+          "cacheQueryOptions" : {
+            "type": "object",
+            "description": "Provide options that are passed to Cache#match.",
+            "properties" : {
+              "ignoreSearch": {
+                "type": "boolean",
+                "description": "Whether to ignore the query string in the URL."
+              }
+            },
+            "additionalProperties": false
           }
         },
         "required": [
@@ -139,6 +161,14 @@
         "type": "string"
       },
       "uniqueItems": true
+    },
+    "navigationRequestStrategy": {
+      "enum": [
+        "freshness",
+        "performance"
+      ],
+      "default": "performance",
+      "description": "The Angular service worker can use two request strategies for navigation requests. 'performance', the default, skips navigation requests. The other strategy, 'freshness', forces all navigation requests through the network."
     }
   },
   "required": [

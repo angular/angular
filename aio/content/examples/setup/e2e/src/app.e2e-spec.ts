@@ -1,17 +1,13 @@
-'use strict'; // necessary for es6 output in node
-
 import { browser, element, by } from 'protractor';
 
-describe('QuickStart E2E Tests', function () {
+describe('QuickStart E2E Tests', () => {
 
-  let expectedMsg = 'Hello Angular';
+  const expectedMsg = 'Hello Angular';
 
-  beforeEach(function () {
-    browser.get('');
-  });
+  beforeEach(() => browser.get(''));
 
-  it(`should display: ${expectedMsg}`, function () {
-    expect(element(by.css('h1')).getText()).toEqual(expectedMsg);
+  it(`should display: ${expectedMsg}`, async () => {
+    expect(await element(by.css('h1')).getText()).toEqual(expectedMsg);
   });
 
 });

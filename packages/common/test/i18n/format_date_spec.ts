@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,47 +9,65 @@ import localeAr from '@angular/common/locales/ar';
 import localeDe from '@angular/common/locales/de';
 import localeEn from '@angular/common/locales/en';
 import localeEnExtra from '@angular/common/locales/extra/en';
+import localeFi from '@angular/common/locales/fi';
 import localeHu from '@angular/common/locales/hu';
 import localeSr from '@angular/common/locales/sr';
 import localeTh from '@angular/common/locales/th';
-import {isDate, toDate, formatDate} from '@angular/common/src/i18n/format_date';
-import {ɵDEFAULT_LOCALE_ID, ɵunregisterLocaleData, ɵregisterLocaleData} from '@angular/core';
+import {formatDate, isDate, toDate} from '@angular/common/src/i18n/format_date';
+import {ɵDEFAULT_LOCALE_ID, ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
 
 describe('Format date', () => {
   describe('toDate', () => {
-    it('should support date', () => { expect(isDate(toDate(new Date()))).toBeTruthy(); });
+    it('should support date', () => {
+      expect(isDate(toDate(new Date()))).toBeTruthy();
+    });
 
-    it('should support int', () => { expect(isDate(toDate(123456789))).toBeTruthy(); });
+    it('should support int', () => {
+      expect(isDate(toDate(123456789))).toBeTruthy();
+    });
 
-    it('should support numeric strings',
-       () => { expect(isDate(toDate('123456789'))).toBeTruthy(); });
+    it('should support numeric strings', () => {
+      expect(isDate(toDate('123456789'))).toBeTruthy();
+    });
 
-    it('should support decimal strings',
-       () => { expect(isDate(toDate('123456789.11'))).toBeTruthy(); });
+    it('should support decimal strings', () => {
+      expect(isDate(toDate('123456789.11'))).toBeTruthy();
+    });
 
-    it('should support ISO string',
-       () => { expect(isDate(toDate('2015-06-15T21:43:11Z'))).toBeTruthy(); });
+    it('should support ISO string', () => {
+      expect(isDate(toDate('2015-06-15T21:43:11Z'))).toBeTruthy();
+    });
 
-    it('should throw for empty string', () => { expect(() => toDate('')).toThrow(); });
+    it('should throw for empty string', () => {
+      expect(() => toDate('')).toThrow();
+    });
 
-    it('should throw for alpha numeric strings',
-       () => { expect(() => toDate('123456789 hello')).toThrow(); });
+    it('should throw for alpha numeric strings', () => {
+      expect(() => toDate('123456789 hello')).toThrow();
+    });
 
-    it('should throw for NaN', () => { expect(() => toDate(Number.NaN)).toThrow(); });
+    it('should throw for NaN', () => {
+      expect(() => toDate(Number.NaN)).toThrow();
+    });
 
-    it('should support ISO string without time',
-       () => { expect(isDate(toDate('2015-01-01'))).toBeTruthy(); });
+    it('should support ISO string without time', () => {
+      expect(isDate(toDate('2015-01-01'))).toBeTruthy();
+    });
 
-    it('should throw for objects', () => { expect(() => toDate({} as any)).toThrow(); });
+    it('should throw for objects', () => {
+      expect(() => toDate({} as any)).toThrow();
+    });
   });
 
   describe('formatDate', () => {
     const isoStringWithoutTime = '2015-01-01';
+    const isoStringWithoutTimeOrDate = '2015-01';
+    const isoStringWithoutTimeOrDateOrMonth = '2015';
     const defaultFormat = 'mediumDate';
     let date: Date;
 
     // Check the transformation of a date into a pattern
-    function expectDateFormatAs(date: Date | string, pattern: any, output: string): void {
+    function expectDateFormatAs(date: Date|string, pattern: any, output: string): void {
       expect(formatDate(date, pattern, ɵDEFAULT_LOCALE_ID))
           .toEqual(output, `pattern: "${pattern}"`);
     }
@@ -61,11 +79,14 @@ describe('Format date', () => {
       ɵregisterLocaleData(localeSr);
       ɵregisterLocaleData(localeTh);
       ɵregisterLocaleData(localeAr);
+      ɵregisterLocaleData(localeFi);
     });
 
     afterAll(() => ɵunregisterLocaleData());
 
-    beforeEach(() => { date = new Date(2015, 5, 15, 9, 3, 1, 550); });
+    beforeEach(() => {
+      date = new Date(2015, 5, 15, 9, 3, 1, 550);
+    });
 
     it('should format each component correctly', () => {
       const dateFixtures: any = {
@@ -78,6 +99,10 @@ describe('Format date', () => {
         yy: '15',
         yyy: '2015',
         yyyy: '2015',
+        Y: '2015',
+        YY: '15',
+        YYY: '2015',
+        YYYY: '2015',
         M: '6',
         MM: '06',
         MMM: 'Jun',
@@ -93,6 +118,12 @@ describe('Format date', () => {
         W: '3',
         d: '15',
         dd: '15',
+        c: '1',
+        cc: '1',
+        ccc: 'Mon',
+        cccc: 'Monday',
+        ccccc: 'M',
+        cccccc: 'Mo',
         E: 'Mon',
         EE: 'Mon',
         EEE: 'Mon',
@@ -136,6 +167,10 @@ describe('Format date', () => {
         yy: '15',
         yyy: '2015',
         yyyy: '2015',
+        Y: '2015',
+        YY: '15',
+        YYY: '2015',
+        YYYY: '2015',
         M: '1',
         MM: '01',
         MMM: 'Jan',
@@ -151,6 +186,12 @@ describe('Format date', () => {
         W: '1',
         d: '1',
         dd: '01',
+        c: '4',
+        cc: '4',
+        ccc: 'Thu',
+        cccc: 'Thursday',
+        ccccc: 'T',
+        cccccc: 'Th',
         E: 'Thu',
         EE: 'Thu',
         EEE: 'Thu',
@@ -185,12 +226,40 @@ describe('Format date', () => {
         BBBBB: 'mi',
       };
 
+      const midnightCrossingPeriods: any = {
+        b: 'night',
+        bb: 'night',
+        bbb: 'night',
+        bbbb: 'night',
+        bbbbb: 'night',
+        B: 'at night',
+        BB: 'at night',
+        BBB: 'at night',
+        BBBB: 'at night',
+        BBBBB: 'at night',
+      };
+
       Object.keys(dateFixtures).forEach((pattern: string) => {
         expectDateFormatAs(date, pattern, dateFixtures[pattern]);
       });
 
       Object.keys(isoStringWithoutTimeFixtures).forEach((pattern: string) => {
         expectDateFormatAs(isoStringWithoutTime, pattern, isoStringWithoutTimeFixtures[pattern]);
+      });
+
+      Object.keys(isoStringWithoutTimeFixtures).forEach((pattern: string) => {
+        expectDateFormatAs(
+            isoStringWithoutTimeOrDate, pattern, isoStringWithoutTimeFixtures[pattern]);
+      });
+
+      Object.keys(isoStringWithoutTimeFixtures).forEach((pattern: string) => {
+        expectDateFormatAs(
+            isoStringWithoutTimeOrDateOrMonth, pattern, isoStringWithoutTimeFixtures[pattern]);
+      });
+
+      const nightTime = new Date(2015, 5, 15, 2, 3, 1, 550);
+      Object.keys(midnightCrossingPeriods).forEach(pattern => {
+        expectDateFormatAs(nightTime, pattern, midnightCrossingPeriods[pattern]);
       });
     });
 
@@ -292,8 +361,34 @@ describe('Format date', () => {
           .toEqual('10:14 AM');
     });
 
+    // The following test is disabled because backwards compatibility requires that date-only ISO
+    // strings are parsed with the local timezone.
+
+    // it('should create UTC date objects when an ISO string is passed with no time components',
+    //    () => {
+    //      expect(formatDate('2019-09-20', `MMM d, y, h:mm:ss a ZZZZZ`, ɵDEFAULT_LOCALE_ID))
+    //          .toEqual('Sep 20, 2019, 12:00:00 AM Z');
+    //    });
+
+    // This test is to ensure backward compatibility for parsing date-only ISO strings.
+    it('should create local timezone date objects when an ISO string is passed with no time components',
+       () => {
+         // Dates created with individual components are evaluated against the local timezone. See
+         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/Date#Individual_date_and_time_component_values
+         const localDate = new Date(2019, 8, 20, 0, 0, 0, 0);
+         expect(formatDate('2019-09-20', `MMM d, y, h:mm:ss a ZZZZZ`, ɵDEFAULT_LOCALE_ID))
+             .toEqual(formatDate(localDate, `MMM d, y, h:mm:ss a ZZZZZ`, ɵDEFAULT_LOCALE_ID));
+       });
+
+    it('should create local timezone date objects when an ISO string is passed with time components',
+       () => {
+         const localDate = new Date(2019, 8, 20, 0, 0, 0, 0);
+         expect(formatDate('2019-09-20T00:00:00', `MMM d, y, h:mm:ss a ZZZZZ`, ɵDEFAULT_LOCALE_ID))
+             .toEqual(formatDate(localDate, `MMM d, y, h:mm:ss a ZZZZZ`, ɵDEFAULT_LOCALE_ID));
+       });
+
     it('should remove bidi control characters',
-       () => expect(formatDate(date, 'MM/dd/yyyy', ɵDEFAULT_LOCALE_ID) !.length).toEqual(10));
+       () => expect(formatDate(date, 'MM/dd/yyyy', ɵDEFAULT_LOCALE_ID)!.length).toEqual(10));
 
     it(`should format the date correctly in various locales`, () => {
       expect(formatDate(date, 'short', 'de')).toEqual('15.06.15, 09:03');
@@ -325,6 +420,31 @@ describe('Format date', () => {
       expect(formatDate(3001, 'm:ss.S', 'en')).toEqual('0:03.0');
       expect(formatDate(3001, 'm:ss.SS', 'en')).toEqual('0:03.00');
       expect(formatDate(3001, 'm:ss.SSS', 'en')).toEqual('0:03.001');
+    });
+
+    // https://github.com/angular/angular/issues/38739
+    it('should return correct ISO 8601 week-numbering year for dates close to year end/beginning',
+       () => {
+         expect(formatDate('2013-12-27', 'YYYY', 'en')).toEqual('2013');
+         expect(formatDate('2013-12-29', 'YYYY', 'en')).toEqual('2014');
+         expect(formatDate('2010-01-02', 'YYYY', 'en')).toEqual('2009');
+         expect(formatDate('2010-01-04', 'YYYY', 'en')).toEqual('2010');
+         expect(formatDate('0049-01-01', 'YYYY', 'en')).toEqual('0048');
+         expect(formatDate('0049-01-04', 'YYYY', 'en')).toEqual('0049');
+       });
+
+    // https://github.com/angular/angular/issues/40377
+    it('should format date with year between 0 and 99 correctly', () => {
+      expect(formatDate('0098-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0098');
+      expect(formatDate('0099-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0099');
+      expect(formatDate('0100-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0100');
+      expect(formatDate('0001-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0001');
+      expect(formatDate('0000-01-11', 'YYYY', ɵDEFAULT_LOCALE_ID)).toEqual('0000');
+    });
+
+    // https://github.com/angular/angular/issues/26922
+    it('should support fullDate in finnish, which uses standalone week day', () => {
+      expect(formatDate(date, 'fullDate', 'fi')).toMatch('maanantai 15. kesäkuuta 2015');
     });
   });
 });

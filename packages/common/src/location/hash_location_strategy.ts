@@ -1,12 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, Optional} from '@angular/core';
+import {Inject, Injectable, OnDestroy, Optional} from '@angular/core';
+
 import {APP_BASE_HREF, LocationStrategy} from './location_strategy';
 import {LocationChangeListener, PlatformLocation} from './platform_location';
 import {joinWithSlash, normalizeQueryParams} from './util';
@@ -32,8 +33,10 @@ import {joinWithSlash, normalizeQueryParams} from './util';
  * @publicApi
  */
 @Injectable()
-export class HashLocationStrategy extends LocationStrategy {
+export class HashLocationStrategy extends LocationStrategy implements OnDestroy {
   private _baseHref: string = '';
+  private _removeListenerFns: (() => void)[] = [];
+
   constructor(
       private _platformLocation: PlatformLocation,
       @Optional() @Inject(APP_BASE_HREF) _baseHref?: string) {
@@ -43,12 +46,20 @@ export class HashLocationStrategy extends LocationStrategy {
     }
   }
 
-  onPopState(fn: LocationChangeListener): void {
-    this._platformLocation.onPopState(fn);
-    this._platformLocation.onHashChange(fn);
+  ngOnDestroy(): void {
+    while (this._removeListenerFns.length) {
+      this._removeListenerFns.pop()!();
+    }
   }
 
-  getBaseHref(): string { return this._baseHref; }
+  onPopState(fn: LocationChangeListener): void {
+    this._removeListenerFns.push(
+        this._platformLocation.onPopState(fn), this._platformLocation.onHashChange(fn));
+  }
+
+  getBaseHref(): string {
+    return this._baseHref;
+  }
 
   path(includeHash: boolean = false): string {
     // the hash value is always prefixed with a `#`
@@ -80,7 +91,15 @@ export class HashLocationStrategy extends LocationStrategy {
     this._platformLocation.replaceState(state, title, url);
   }
 
-  forward(): void { this._platformLocation.forward(); }
+  forward(): void {
+    this._platformLocation.forward();
+  }
 
-  back(): void { this._platformLocation.back(); }
+  back(): void {
+    this._platformLocation.back();
+  }
+
+  historyGo(relativePosition: number = 0): void {
+    this._platformLocation.historyGo?.(relativePosition);
+  }
 }

@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {DepGraph} from 'dependency-graph';
-import {PartiallyOrderedTasks, Task} from '../../src/execution/tasks/api';
+import {DtsProcessing, PartiallyOrderedTasks, Task} from '../../src/execution/tasks/api';
 import {EntryPoint} from '../../src/packages/entry_point';
 
 /**
@@ -14,8 +14,8 @@ import {EntryPoint} from '../../src/packages/entry_point';
  *
  * NOTE 1: The first task for each entry-point generates typings (which is similar to what happens
  *         in the actual code).
- * NOTE 2: The `computeTaskDependencies()` implementation relies on the fact that tasks are sorted in such
- *         a way that a task can only depend upon earlier tasks (i.e. dependencies always come
+ * NOTE 2: The `computeTaskDependencies()` implementation relies on the fact that tasks are sorted
+ * in such a way that a task can only depend upon earlier tasks (i.e. dependencies always come
  *         before dependents in the list of tasks).
  *         To preserve this attribute, you need to ensure that entry-points will only depend on
  *         entry-points with a lower index. Take this into account when defining `entryPointDeps`.
@@ -52,7 +52,8 @@ export function createTasksAndGraph(
     graph.addNode(entryPoint.path);
 
     for (let tIdx = 0; tIdx < tasksPerEntryPointCount; tIdx++) {
-      tasks.push({ entryPoint, formatProperty: `prop-${tIdx}`, processDts: tIdx === 0 } as Task);
+      const processDts = tIdx === 0 ? DtsProcessing.Yes : DtsProcessing.No;
+      tasks.push({entryPoint, formatProperty: `prop-${tIdx}`, processDts} as Task);
     }
   }
 

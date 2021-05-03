@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,16 +11,22 @@ import {ReflectorHost} from '@angular/language-service/src/reflector_host';
 import * as ts from 'typescript';
 
 import {BuiltinType, Symbol, SymbolQuery, SymbolTable} from '../src/symbols';
-import {getSymbolQuery, toSymbolTableFactory} from '../src/typescript_symbols';
+import {getSymbolQuery} from '../src/typescript_symbols';
 
 import {DiagnosticContext, MockLanguageServiceHost} from './mocks';
 
 function emptyPipes(): SymbolTable {
   return {
     size: 0,
-    get(key: string) { return undefined; },
-    has(key: string) { return false; },
-    values(): Symbol[]{return [];}
+    get(key: string) {
+      return undefined;
+    },
+    has(key: string) {
+      return false;
+    },
+    values(): Symbol[] {
+      return [];
+    }
   };
 }
 
@@ -35,9 +41,9 @@ describe('symbol query', () => {
     const host = new MockLanguageServiceHost(
         ['/quickstart/app/app.component.ts'], QUICKSTART, '/quickstart');
     const service = ts.createLanguageService(host, registry);
-    program = service.getProgram() !;
+    program = service.getProgram()!;
     checker = program.getTypeChecker();
-    sourceFile = program.getSourceFile('/quickstart/app/app.component.ts') !;
+    sourceFile = program.getSourceFile('/quickstart/app/app.component.ts')!;
     const symbolResolverHost = new ReflectorHost(() => program, host);
     context = new DiagnosticContext(service, program, checker, symbolResolverHost);
     query = getSymbolQuery(program, checker, sourceFile, emptyPipes);
@@ -67,17 +73,9 @@ describe('symbol query', () => {
       } else {
         const symbol = query.getBuiltinType(builtinType);
         const got: ts.TypeFlags = (symbol as any).tsType.flags;
-        expect(got).toBe(want !);
+        expect(got).toBe(want!);
       }
     }
-  });
-});
-
-describe('toSymbolTableFactory(tsVersion)', () => {
-  it('should return a Map for versions of TypeScript >= 2.2', () => {
-    const a = { name: 'a' } as ts.Symbol;
-    const b = { name: 'b' } as ts.Symbol;
-    expect(toSymbolTableFactory([a, b]) instanceof Map).toEqual(true);
   });
 });
 

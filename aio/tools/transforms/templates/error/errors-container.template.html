@@ -1,0 +1,18 @@
+{% extends 'content.template.html' -%}
+
+{% block content %}
+<div class="content">
+  {$ doc.description | marked $}
+</div>
+
+<ul class="error-list">
+  {% for error in doc.errors %}
+  <li>
+    <a class="code-anchor" href="{$ error.path $}">
+      <span class="symbol {$ error.category $}"></span>
+      <code class="no-auto-link">{$ error.code $}: {$ error.name $}</code>
+    </a>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

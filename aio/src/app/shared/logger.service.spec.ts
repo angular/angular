@@ -1,4 +1,4 @@
-import { ErrorHandler, ReflectiveInjector } from '@angular/core';
+import { ErrorHandler, Injector } from '@angular/core';
 import { Logger } from './logger.service';
 
 describe('logger service', () => {
@@ -10,10 +10,10 @@ describe('logger service', () => {
   beforeEach(() => {
     logSpy = spyOn(console, 'log');
     warnSpy = spyOn(console, 'warn');
-    const injector = ReflectiveInjector.resolveAndCreate([
-      Logger,
-      { provide: ErrorHandler, useClass: MockErrorHandler }
-    ]);
+    const injector = Injector.create({providers: [
+      { provide: Logger, deps: [ErrorHandler] },
+      { provide: ErrorHandler, useClass: MockErrorHandler, deps: [] }
+    ]});
     logger = injector.get(Logger);
     errorHandler = injector.get(ErrorHandler);
   });

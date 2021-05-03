@@ -17,7 +17,7 @@ describe ('HeroesService (with spies)', () => {
   beforeEach(() => {
     // TODO: spy on other methods too
     httpClientSpy = jasmine.createSpyObj('HttpClient', ['get']);
-    heroService = new HeroService(<any> httpClientSpy);
+    heroService = new HeroService(httpClientSpy as any);
   });
 
   it('should return expected heroes (HttpClient called once)', () => {
@@ -180,7 +180,6 @@ describe('HeroesService (with mocks)', () => {
       req.flush(msg, {status: 404, statusText: 'Not Found'});
     });
 
-    // #docregion network-error
     it('should turn network error into user-facing error', () => {
       const emsg = 'simulated network error';
 
@@ -196,19 +195,16 @@ describe('HeroesService (with mocks)', () => {
       // Connection timeout, DNS error, offline, etc
       const errorEvent = new ErrorEvent('so sad', {
         message: emsg,
-        // #enddocregion network-error
         // The rest of this is optional and not used.
         // Just showing that you could provide this too.
         filename: 'HeroService.ts',
         lineno: 42,
         colno: 21
-      // #docregion network-error
       });
 
       // Respond with mock error
       req.error(errorEvent);
     });
-    // #enddocregion network-error
   });
 
   // TODO: test other HeroService methods

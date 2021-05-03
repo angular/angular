@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,36 +9,37 @@ import {findEndOfBlock, makeTemplateObject, parseMessage, parseMetadata, splitBl
 
 describe('messages utils', () => {
   describe('parseMessage', () => {
-    it('should use the custom id parsed from the metadata if available', () => {
+    it('should use the custom id parsed from the metadata for the message id, if available', () => {
       const message = parseMessage(
           makeTemplateObject(
               [':@@custom-message-id:a', ':one:b', ':two:c'],
               [':@@custom-message-id:a', ':one:b', ':two:c']),
           [1, 2]);
-      expect(message.messageId).toEqual('custom-message-id');
+      expect(message.customId).toEqual('custom-message-id');
+      expect(message.id).toEqual(message.customId!);
     });
 
     it('should compute the translation key if no metadata', () => {
       const message = parseMessage(
           makeTemplateObject(['a', ':one:b', ':two:c'], ['a', ':one:b', ':two:c']), [1, 2]);
-      expect(message.messageId).toEqual('8865273085679272414');
+      expect(message.id).toEqual('8865273085679272414');
     });
 
-    it('should compute the translation key if no id in the metadata', () => {
+    it('should compute the translation key if no custom id in the metadata', () => {
       const message = parseMessage(
           makeTemplateObject(
               [':description:a', ':one:b', ':two:c'], [':description:a', ':one:b', ':two:c']),
           [1, 2]);
-      expect(message.messageId).toEqual('8865273085679272414');
+      expect(message.id).toEqual('8865273085679272414');
     });
 
     it('should compute a different id if the meaning changes', () => {
       const message1 = parseMessage(makeTemplateObject(['abc'], ['abc']), []);
       const message2 = parseMessage(makeTemplateObject([':meaning1|:abc'], [':meaning1|:abc']), []);
       const message3 = parseMessage(makeTemplateObject([':meaning2|:abc'], [':meaning2|:abc']), []);
-      expect(message1.messageId).not.toEqual(message2.messageId);
-      expect(message2.messageId).not.toEqual(message3.messageId);
-      expect(message3.messageId).not.toEqual(message1.messageId);
+      expect(message1.id).not.toEqual(message2.id);
+      expect(message2.id).not.toEqual(message3.id);
+      expect(message3.id).not.toEqual(message1.id);
     });
 
     it('should capture legacy ids if available', () => {
@@ -47,7 +48,7 @@ describe('messages utils', () => {
               [':␟legacy-1␟legacy-2␟legacy-3:a', ':one:b', ':two:c'],
               [':␟legacy-1␟legacy-2␟legacy-3:a', ':one:b', ':two:c']),
           [1, 2]);
-      expect(message1.messageId).toEqual('8865273085679272414');
+      expect(message1.id).toEqual('8865273085679272414');
       expect(message1.legacyIds).toEqual(['legacy-1', 'legacy-2', 'legacy-3']);
 
       const message2 = parseMessage(
@@ -55,7 +56,7 @@ describe('messages utils', () => {
               [':@@custom-message-id␟legacy-message-id:a', ':one:b', ':two:c'],
               [':@@custom-message-id␟legacy-message-id:a', ':one:b', ':two:c']),
           [1, 2]);
-      expect(message2.messageId).toEqual('custom-message-id');
+      expect(message2.id).toEqual('custom-message-id');
       expect(message2.legacyIds).toEqual(['legacy-message-id']);
 
       const message3 = parseMessage(
@@ -63,28 +64,28 @@ describe('messages utils', () => {
               [':@@custom-message-id:a', ':one:b', ':two:c'],
               [':@@custom-message-id:a', ':one:b', ':two:c']),
           [1, 2]);
-      expect(message3.messageId).toEqual('custom-message-id');
+      expect(message3.id).toEqual('custom-message-id');
       expect(message3.legacyIds).toEqual([]);
     });
 
     it('should infer placeholder names if not given', () => {
       const parts1 = ['a', 'b', 'c'];
       const message1 = parseMessage(makeTemplateObject(parts1, parts1), [1, 2]);
-      expect(message1.messageId).toEqual('8107531564991075946');
+      expect(message1.id).toEqual('8107531564991075946');
 
       const parts2 = ['a', ':custom1:b', ':custom2:c'];
       const message2 = parseMessage(makeTemplateObject(parts2, parts2), [1, 2]);
-      expect(message2.messageId).toEqual('1822117095464505589');
+      expect(message2.id).toEqual('1822117095464505589');
 
       // Note that the placeholder names are part of the message so affect the message id.
-      expect(message1.messageId).not.toEqual(message2.messageId);
-      expect(message1.messageString).not.toEqual(message2.messageString);
+      expect(message1.id).not.toEqual(message2.id);
+      expect(message1.text).not.toEqual(message2.text);
     });
 
     it('should ignore placeholder blocks whose markers have been escaped', () => {
       const message = parseMessage(
           makeTemplateObject(['a', ':one:b', ':two:c'], ['a', '\\:one:b', '\\:two:c']), [1, 2]);
-      expect(message.messageId).toEqual('2623373088949454037');
+      expect(message.id).toEqual('2623373088949454037');
     });
 
     it('should extract the meaning, description and placeholder names', () => {
@@ -119,12 +120,12 @@ describe('messages utils', () => {
       const message = parseMessage(makeTemplateObject(['a', 'b', 'c'], ['a', 'b', 'c']), [1, 2]);
       expect(message.substitutions).toEqual({PH: 1, PH_1: 2});
     });
-
   });
 
   describe('splitBlock()', () => {
-    it('should return just the text if there is no block',
-       () => { expect(splitBlock('abc def', 'abc def')).toEqual({text: 'abc def'}); });
+    it('should return just the text if there is no block', () => {
+      expect(splitBlock('abc def', 'abc def')).toEqual({text: 'abc def'});
+    });
 
     it('should return just the text and block if there is one', () => {
       expect(splitBlock(':block info:abc def', ':block info:abc def'))
@@ -173,13 +174,7 @@ describe('messages utils', () => {
 
   describe('parseMetadata()', () => {
     it('should return just the text if there is no block', () => {
-      expect(parseMetadata('abc def', 'abc def')).toEqual({
-        text: 'abc def',
-        meaning: undefined,
-        description: undefined,
-        id: undefined,
-        legacyIds: []
-      });
+      expect(parseMetadata('abc def', 'abc def')).toEqual({text: 'abc def'});
     });
 
     it('should extract the metadata if provided', () => {
@@ -187,21 +182,21 @@ describe('messages utils', () => {
         text: 'abc def',
         description: 'description',
         meaning: undefined,
-        id: undefined,
+        customId: undefined,
         legacyIds: []
       });
       expect(parseMetadata(':meaning|:abc def', ':meaning|:abc def')).toEqual({
         text: 'abc def',
         description: undefined,
         meaning: 'meaning',
-        id: undefined,
+        customId: undefined,
         legacyIds: []
       });
       expect(parseMetadata(':@@message-id:abc def', ':@@message-id:abc def')).toEqual({
         text: 'abc def',
         description: undefined,
         meaning: undefined,
-        id: 'message-id',
+        customId: 'message-id',
         legacyIds: []
       });
       expect(parseMetadata(':meaning|description:abc def', ':meaning|description:abc def'))
@@ -209,7 +204,7 @@ describe('messages utils', () => {
             text: 'abc def',
             description: 'description',
             meaning: 'meaning',
-            id: undefined,
+            customId: undefined,
             legacyIds: []
           });
       expect(parseMetadata(':description@@message-id:abc def', ':description@@message-id:abc def'))
@@ -217,7 +212,7 @@ describe('messages utils', () => {
             text: 'abc def',
             description: 'description',
             meaning: undefined,
-            id: 'message-id',
+            customId: 'message-id',
             legacyIds: []
           });
       expect(parseMetadata(':meaning|@@message-id:abc def', ':meaning|@@message-id:abc def'))
@@ -225,7 +220,7 @@ describe('messages utils', () => {
             text: 'abc def',
             description: undefined,
             meaning: 'meaning',
-            id: 'message-id',
+            customId: 'message-id',
             legacyIds: []
           });
       expect(parseMetadata(
@@ -235,7 +230,7 @@ describe('messages utils', () => {
             text: 'abc def',
             description: 'description',
             meaning: undefined,
-            id: 'message-id',
+            customId: 'message-id',
             legacyIds: ['legacy-1', 'legacy-2', 'legacy-3']
           });
       expect(parseMetadata(
@@ -245,7 +240,7 @@ describe('messages utils', () => {
             text: 'abc def',
             description: undefined,
             meaning: 'meaning',
-            id: 'message-id',
+            customId: 'message-id',
             legacyIds: ['legacy-message-id']
           });
       expect(parseMetadata(
@@ -254,7 +249,7 @@ describe('messages utils', () => {
             text: 'abc def',
             description: undefined,
             meaning: 'meaning',
-            id: undefined,
+            customId: undefined,
             legacyIds: ['legacy-message-id']
           });
 
@@ -262,7 +257,7 @@ describe('messages utils', () => {
         text: 'abc def',
         description: undefined,
         meaning: undefined,
-        id: undefined,
+        customId: undefined,
         legacyIds: ['legacy-message-id']
       });
     });
@@ -272,20 +267,14 @@ describe('messages utils', () => {
         text: 'abc def',
         meaning: undefined,
         description: undefined,
-        id: undefined,
+        customId: undefined,
         legacyIds: []
       });
     });
 
     it('should handle escaped block markers', () => {
       expect(parseMetadata(':part of the message:abc def', '\\:part of the message:abc def'))
-          .toEqual({
-            text: ':part of the message:abc def',
-            meaning: undefined,
-            description: undefined,
-            id: undefined,
-            legacyIds: []
-          });
+          .toEqual({text: ':part of the message:abc def'});
     });
   });
 });

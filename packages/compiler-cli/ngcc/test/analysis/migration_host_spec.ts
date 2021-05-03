@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,17 +11,18 @@ import * as ts from 'typescript';
 import {makeDiagnostic} from '../../../src/ngtsc/diagnostics';
 import {absoluteFrom} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {SemanticSymbol} from '../../../src/ngtsc/incremental/semantic_graph';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {ClassDeclaration, Decorator, isNamedClassDeclaration} from '../../../src/ngtsc/reflection';
-import {getDeclaration} from '../../../src/ngtsc/testing';
-import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence, TraitState} from '../../../src/ngtsc/transform';
-import {loadTestFiles} from '../../../test/helpers';
+import {getDeclaration, loadTestFiles} from '../../../src/ngtsc/testing';
+import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerPrecedence} from '../../../src/ngtsc/transform';
 import {DefaultMigrationHost} from '../../src/analysis/migration_host';
 import {NgccTraitCompiler} from '../../src/analysis/ngcc_trait_compiler';
 import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {createComponentDecorator} from '../../src/migrations/utils';
 import {EntryPointBundle} from '../../src/packages/entry_point_bundle';
-import {MockLogger} from '../helpers/mock_logger';
 import {makeTestEntryPointBundle} from '../helpers/utils';
+import {getTraitDiagnostics} from '../host/util';
 
 runInEachFileSystem(() => {
   describe('DefaultMigrationHost', () => {
@@ -44,7 +45,8 @@ runInEachFileSystem(() => {
     });
 
     function createMigrationHost({entryPoint, handlers}: {
-      entryPoint: EntryPointBundle; handlers: DecoratorHandler<unknown, unknown, unknown>[]
+      entryPoint: EntryPointBundle;
+      handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[]
     }) {
       const reflectionHost = new Esm2015ReflectionHost(new MockLogger(), false, entryPoint.src);
       const compiler = new NgccTraitCompiler(handlers, reflectionHost);
@@ -62,7 +64,7 @@ runInEachFileSystem(() => {
         const {host, compiler} = createMigrationHost({entryPoint, handlers: [handler]});
         host.injectSyntheticDecorator(mockClazz, injectedDecorator);
 
-        const record = compiler.recordFor(mockClazz) !;
+        const record = compiler.recordFor(mockClazz)!;
         expect(record).toBeDefined();
         expect(record.traits.length).toBe(1);
         expect(record.traits[0].detected.decorator).toBe(injectedDecorator);
@@ -77,22 +79,21 @@ runInEachFileSystem(() => {
         const decorator = createComponentDecorator(mockClazz, {selector: 'comp', exportAs: null});
         host.injectSyntheticDecorator(mockClazz, decorator);
 
-        const record = compiler.recordFor(mockClazz) !;
+        const record = compiler.recordFor(mockClazz)!;
         const migratedTrait = record.traits[0];
-        if (migratedTrait.state !== TraitState.ERRORED) {
+        const diagnostics = getTraitDiagnostics(migratedTrait);
+        if (diagnostics === null) {
           return fail('Expected migrated class trait to be in an error state');
         }
 
-        expect(migratedTrait.diagnostics.length).toBe(1);
-        expect(ts.flattenDiagnosticMessageText(migratedTrait.diagnostics[0].messageText, '\n'))
+        expect(diagnostics.length).toBe(1);
+        expect(ts.flattenDiagnosticMessageText(diagnostics[0].messageText, '\n'))
             .toEqual(
                 `test diagnostic\n` +
                 `  Occurs for @Component decorator inserted by an automatic migration\n` +
                 `  @Component({ template: "", selector: "comp" })`);
       });
     });
-
-
 
     describe('getAllDecorators', () => {
       it('should include injected decorators', () => {
@@ -120,7 +121,7 @@ runInEachFileSystem(() => {
 
         host.injectSyntheticDecorator(myClass, injectedDecorator);
 
-        const decorators = host.getAllDecorators(myClass) !;
+        const decorators = host.getAllDecorators(myClass)!;
         expect(decorators.length).toBe(2);
         expect(decorators[0].name).toBe('Directive');
         expect(decorators[1].name).toBe('InjectedDecorator');
@@ -143,7 +144,7 @@ runInEachFileSystem(() => {
         expect(host.isInScope(internalClass)).toBe(true);
       });
 
-      it('should be false for nodes outside the entry-point', () => {
+      it('should be false for nodes outside the entry-point (in sibling package)', () => {
         loadTestFiles([
           {name: _('/node_modules/external/index.js'), contents: `export class ExternalClass {}`},
           {
@@ -163,11 +164,35 @@ runInEachFileSystem(() => {
 
         expect(host.isInScope(externalClass)).toBe(false);
       });
+
+      it('should be false for nodes outside the entry-point (in nested `node_modules/`)', () => {
+        loadTestFiles([
+          {
+            name: _('/node_modules/test/index.js'),
+            contents: `
+              export {NestedDependencyClass} from 'nested';
+              export class InternalClass {}
+            `,
+          },
+          {
+            name: _('/node_modules/test/node_modules/nested/index.js'),
+            contents: `export class NestedDependencyClass {}`,
+          },
+        ]);
+        const entryPoint =
+            makeTestEntryPointBundle('test', 'esm2015', false, [_('/node_modules/test/index.js')]);
+        const {host} = createMigrationHost({entryPoint, handlers: []});
+        const nestedDepClass = getDeclaration(
+            entryPoint.src.program, _('/node_modules/test/node_modules/nested/index.js'),
+            'NestedDependencyClass', isNamedClassDeclaration);
+
+        expect(host.isInScope(nestedDepClass)).toBe(false);
+      });
     });
   });
 });
 
-class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, unknown> {
+class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, null, unknown> {
   readonly name = DetectDecoratorHandler.name;
 
   constructor(private decorator: string, readonly precedence: HandlerPrecedence) {}
@@ -183,12 +208,20 @@ class DetectDecoratorHandler implements DecoratorHandler<unknown, unknown, unkno
     return {trigger: node, decorator, metadata: {}};
   }
 
-  analyze(node: ClassDeclaration): AnalysisOutput<unknown> { return {}; }
+  analyze(node: ClassDeclaration): AnalysisOutput<unknown> {
+    return {};
+  }
 
-  compile(node: ClassDeclaration): CompileResult|CompileResult[] { return []; }
+  symbol(node: ClassDeclaration, analysis: Readonly<unknown>): null {
+    return null;
+  }
+
+  compileFull(node: ClassDeclaration): CompileResult|CompileResult[] {
+    return [];
+  }
 }
 
-class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, unknown> {
+class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, null, unknown> {
   readonly name = DiagnosticProducingHandler.name;
   readonly precedence = HandlerPrecedence.PRIMARY;
 
@@ -201,5 +234,11 @@ class DiagnosticProducingHandler implements DecoratorHandler<unknown, unknown, u
     return {diagnostics: [makeDiagnostic(9999, node, 'test diagnostic')]};
   }
 
-  compile(node: ClassDeclaration): CompileResult|CompileResult[] { return []; }
+  symbol(node: ClassDeclaration, analysis: Readonly<unknown>): null {
+    return null;
+  }
+
+  compileFull(node: ClassDeclaration): CompileResult|CompileResult[] {
+    return [];
+  }
 }

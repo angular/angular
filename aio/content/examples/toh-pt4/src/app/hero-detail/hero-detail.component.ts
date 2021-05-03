@@ -8,9 +8,7 @@ import { Hero } from '../hero';
 })
 export class HeroDetailComponent implements OnInit {
 
-  // #docregion hero
   @Input() hero: Hero;
-  // #enddocregion hero
 
   constructor() { }
 

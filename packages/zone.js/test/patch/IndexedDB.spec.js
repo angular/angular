@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -25,7 +25,9 @@ describe(
             var testStore =
                 db.transaction('test-object-store', 'readwrite').objectStore('test-object-store');
             testStore.add({key: 1, data: 'Test data'});
-            testStore.transaction.oncomplete = function() { done(); }
+            testStore.transaction.oncomplete = function() {
+              done();
+            }
           };
         };
       });
@@ -34,7 +36,9 @@ describe(
         db.close();
 
         var openRequest = indexedDB.deleteDatabase('_zone_testdb');
-        openRequest.onsuccess = function(event) { done(); };
+        openRequest.onsuccess = function(event) {
+          done();
+        };
       });
 
       describe('IDBRequest', function() {

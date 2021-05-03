@@ -111,8 +111,6 @@ describe('demo (no TestBed):', () => {
     // #enddocregion no-before-each-setup
   });
 
-  // #docregion ReversePipe
-
   describe('ReversePipe', () => {
     let pipe: ReversePipe;
 
@@ -128,7 +126,6 @@ describe('demo (no TestBed):', () => {
     });
 
   });
-  // #enddocregion ReversePipe
 
   // #docregion Lightswitch
   describe('LightswitchComp', () => {

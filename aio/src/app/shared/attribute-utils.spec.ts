@@ -8,7 +8,7 @@ describe('Attribute Utilities', () => {
   beforeEach(() => {
     const div = document.createElement('div');
     div.innerHTML = `<div a b="true" c="false" D="foo" d-E></div>`;
-    testEl = div.querySelector('div')!;
+    testEl = div.querySelector('div') as HTMLElement;
   });
 
   describe('getAttrs', () => {

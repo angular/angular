@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AssetGroupConfig, Manifest} from '../src/manifest';
+import {Manifest} from '../src/manifest';
 import {sha1} from '../src/sha1';
 
 import {MockResponse} from './fetch';
@@ -20,7 +20,9 @@ export class MockFile {
       readonly path: string, readonly contents: string, readonly headers = {},
       readonly hashThisFile: boolean) {}
 
-  get hash(): string { return sha1(this.contents); }
+  get hash(): string {
+    return sha1(this.contents);
+  }
 }
 
 export class MockFileSystemBuilder {
@@ -36,18 +38,22 @@ export class MockFileSystemBuilder {
     return this;
   }
 
-  build(): MockFileSystem { return new MockFileSystem(this.resources); }
+  build(): MockFileSystem {
+    return new MockFileSystem(this.resources);
+  }
 }
 
 export class MockFileSystem {
   constructor(private resources: Map<string, MockFile>) {}
 
-  lookup(path: string): MockFile|undefined { return this.resources.get(path); }
+  lookup(path: string): MockFile|undefined {
+    return this.resources.get(path);
+  }
 
   extend(): MockFileSystemBuilder {
     const builder = new MockFileSystemBuilder();
     Array.from(this.resources.keys()).forEach(path => {
-      const res = this.resources.get(path) !;
+      const res = this.resources.get(path)!;
       if (res.hashThisFile) {
         builder.addFile(path, res.contents, res.headers);
       } else {
@@ -57,23 +63,44 @@ export class MockFileSystem {
     return builder;
   }
 
-  list(): string[] { return Array.from(this.resources.keys()); }
+  list(): string[] {
+    return Array.from(this.resources.keys());
+  }
 }
 
 export class MockServerStateBuilder {
+  private rootDir = '/';
   private resources = new Map<string, Response>();
   private errors = new Set<string>();
 
-  withStaticFiles(fs: MockFileSystem): MockServerStateBuilder {
-    fs.list().forEach(path => {
-      const file = fs.lookup(path) !;
-      this.resources.set(path, new MockResponse(file.contents, {headers: file.headers}));
+  withRootDirectory(newRootDir: string): MockServerStateBuilder {
+    // Update existing resources/errors.
+    const oldRootDir = this.rootDir;
+    const updateRootDir = (path: string) =>
+        path.startsWith(oldRootDir) ? joinPaths(newRootDir, path.slice(oldRootDir.length)) : path;
+
+    this.resources = new Map(
+        [...this.resources].map(([path, contents]) => [updateRootDir(path), contents.clone()]));
+    this.errors = new Set([...this.errors].map(url => updateRootDir(url)));
+
+    // Set `rootDir` for future resource/error additions.
+    this.rootDir = newRootDir;
+
+    return this;
+  }
+
+  withStaticFiles(dir: MockFileSystem): MockServerStateBuilder {
+    dir.list().forEach(path => {
+      const file = dir.lookup(path)!;
+      this.resources.set(
+          joinPaths(this.rootDir, path), new MockResponse(file.contents, {headers: file.headers}));
     });
     return this;
   }
 
   withManifest(manifest: Manifest): MockServerStateBuilder {
-    this.resources.set('ngsw.json', new MockResponse(JSON.stringify(manifest)));
+    const manifestPath = joinPaths(this.rootDir, 'ngsw.json');
+    this.resources.set(manifestPath, new MockResponse(JSON.stringify(manifest)));
     return this;
   }
 
@@ -102,17 +129,21 @@ export class MockServerState {
   private gate: Promise<void> = Promise.resolve();
   private resolve: Function|null = null;
   // TODO(issue/24571): remove '!'.
-  private resolveNextRequest !: Function;
+  private resolveNextRequest!: Function;
   online = true;
   nextRequest: Promise<Request>;
 
   constructor(private resources: Map<string, Response>, private errors: Set<string>) {
-    this.nextRequest = new Promise(resolve => { this.resolveNextRequest = resolve; });
+    this.nextRequest = new Promise(resolve => {
+      this.resolveNextRequest = resolve;
+    });
   }
 
   async fetch(req: Request): Promise<Response> {
     this.resolveNextRequest(req);
-    this.nextRequest = new Promise(resolve => { this.resolveNextRequest = resolve; });
+    this.nextRequest = new Promise(resolve => {
+      this.resolveNextRequest = resolve;
+    });
 
     await this.gate;
 
@@ -127,7 +158,7 @@ export class MockServerState {
     }
     const url = req.url.split('?')[0];
     if (this.resources.has(url)) {
-      return this.resources.get(url) !.clone();
+      return this.resources.get(url)!.clone();
     }
     if (this.errors.has(url)) {
       throw new Error('Intentional failure!');
@@ -136,7 +167,9 @@ export class MockServerState {
   }
 
   pause(): void {
-    this.gate = new Promise(resolve => { this.resolve = resolve; });
+    this.gate = new Promise(resolve => {
+      this.resolve = resolve;
+    });
   }
 
   unpause(): void {
@@ -170,18 +203,24 @@ export class MockServerState {
 
   assertNoOtherRequests(): void {
     if (!this.noOtherRequests()) {
-      throw new Error(
-          `Expected no other requests, got requests for ${this.requests.map(req => req.url.split('?')[0]).join(', ')}`);
+      throw new Error(`Expected no other requests, got requests for ${
+          this.requests.map(req => req.url.split('?')[0]).join(', ')}`);
     }
   }
 
-  noOtherRequests(): boolean { return this.requests.length === 0; }
+  noOtherRequests(): boolean {
+    return this.requests.length === 0;
+  }
 
-  clearRequests(): void { this.requests = []; }
+  clearRequests(): void {
+    this.requests = [];
+  }
 
   reset(): void {
     this.clearRequests();
-    this.nextRequest = new Promise(resolve => { this.resolveNextRequest = resolve; });
+    this.nextRequest = new Promise(resolve => {
+      this.resolveNextRequest = resolve;
+    });
     this.gate = Promise.resolve();
     this.resolve = null;
     this.online = true;
@@ -191,7 +230,9 @@ export class MockServerState {
 export function tmpManifestSingleAssetGroup(fs: MockFileSystem): Manifest {
   const files = fs.list();
   const hashTable: {[url: string]: string} = {};
-  files.forEach(path => { hashTable[path] = fs.lookup(path) !.hash; });
+  files.forEach(path => {
+    hashTable[path] = fs.lookup(path)!.hash;
+  });
   return {
     configVersion: 1,
     timestamp: 1234567890123,
@@ -203,21 +244,26 @@ export function tmpManifestSingleAssetGroup(fs: MockFileSystem): Manifest {
         updateMode: 'prefetch',
         urls: files,
         patterns: [],
+        cacheQueryOptions: {ignoreVary: true}
       },
     ],
-    navigationUrls: [], hashTable,
+    navigationUrls: [],
+    navigationRequestStrategy: 'performance',
+    hashTable,
   };
 }
 
 export function tmpHashTableForFs(
-    fs: MockFileSystem, breakHashes: {[url: string]: boolean} = {}): {[url: string]: string} {
+    fs: MockFileSystem, breakHashes: {[url: string]: boolean} = {},
+    baseHref = '/'): {[url: string]: string} {
   const table: {[url: string]: string} = {};
-  fs.list().forEach(path => {
-    const file = fs.lookup(path) !;
+  fs.list().forEach(filePath => {
+    const urlPath = joinPaths(baseHref, filePath);
+    const file = fs.lookup(filePath)!;
     if (file.hashThisFile) {
-      table[path] = file.hash;
-      if (breakHashes[path]) {
-        table[path] = table[path].split('').reverse().join('');
+      table[urlPath] = file.hash;
+      if (breakHashes[filePath]) {
+        table[urlPath] = table[urlPath].split('').reverse().join('');
       }
     }
   });
@@ -231,4 +277,12 @@ export function tmpHashTable(manifest: Manifest): Map<string, string> {
     map.set(url, hash);
   });
   return map;
+}
+
+// Helpers
+/**
+ * Join two path segments, ensuring that there is exactly one slash (`/`) between them.
+ */
+function joinPaths(path1: string, path2: string): string {
+  return `${path1.replace(/\/$/, '')}/${path2.replace(/^\//, '')}`;
 }

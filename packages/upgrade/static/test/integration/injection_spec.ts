@@ -1,30 +1,29 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, Injector, NgModule, destroyPlatform} from '@angular/core';
-import {async} from '@angular/core/testing';
+import {destroyPlatform, InjectionToken, Injector, NgModule} from '@angular/core';
+import {waitForAsync} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from '../../../src/common/src/angular1';
 import {$INJECTOR, INJECTOR_KEY} from '../../../src/common/src/constants';
 import {html, withEachNg1Version} from '../../../src/common/test/helpers/common_test_helpers';
-import {UpgradeModule, downgradeInjectable, getAngularJSGlobal, setAngularJSGlobal} from '../../index';
+import {downgradeInjectable, getAngularJSGlobal, setAngularJSGlobal, UpgradeModule} from '../../index';
 
 import {bootstrap} from './static_test_helpers';
 
 withEachNg1Version(() => {
   describe('injection', () => {
-
     beforeEach(() => destroyPlatform());
     afterEach(() => destroyPlatform());
 
-    it('should downgrade ng2 service to ng1', async(() => {
+    it('should downgrade ng2 service to ng1', waitForAsync(() => {
          // Tokens used in ng2 to identify services
          const Ng2Service = new InjectionToken('ng2-service');
 
@@ -50,7 +49,7 @@ withEachNg1Version(() => {
              });
        }));
 
-    it('should upgrade ng1 service to ng2', async(() => {
+    it('should upgrade ng1 service to ng2', waitForAsync(() => {
          // Tokens used in ng2 to identify services
          const Ng1Service = new InjectionToken('ng1-service');
 
@@ -82,7 +81,7 @@ withEachNg1Version(() => {
        }));
 
     it('should initialize the upgraded injector before application run blocks are executed',
-       async(() => {
+       waitForAsync(() => {
          let runBlockTriggered = false;
 
          const ng1Module = angular.module_('ng1Module', []).run([
@@ -103,7 +102,7 @@ withEachNg1Version(() => {
          });
        }));
 
-    it('should allow resetting angular at runtime', async(() => {
+    it('should allow resetting angular at runtime', waitForAsync(() => {
          let wrappedBootstrapCalled = false;
 
          const n: any = getAngularJSGlobal();

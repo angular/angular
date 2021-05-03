@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { LoggerService }  from '../core/logger.service';
+import { LoggerService } from '../core/logger.service';
 import { SpinnerService } from '../core/spinner/spinner.service';
 
 @Component({

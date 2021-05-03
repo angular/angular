@@ -2,28 +2,23 @@
   "name": "@angular/platform-server",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - library for using Angular in Node.js",
-  "main": "./bundles/platform-server.umd.js",
-  "module": "./fesm5/platform-server.js",
-  "es2015": "./fesm2015/platform-server.js",
-  "esm5": "./esm5/platform-server.js",
-  "esm2015": "./esm2015/platform-server.js",
-  "fesm5": "./fesm5/platform-server.js",
-  "fesm2015": "./fesm2015/platform-server.js",
-  "typings": "./platform-server.d.ts",
   "author": "angular",
   "license": "MIT",
+  "engines": {
+    "node": "^12.14.1 || ^14.0.0"
+  },
   "peerDependencies": {
     "@angular/animations": "0.0.0-PLACEHOLDER",
     "@angular/common": "0.0.0-PLACEHOLDER",
     "@angular/compiler": "0.0.0-PLACEHOLDER",
     "@angular/core": "0.0.0-PLACEHOLDER",
     "@angular/platform-browser": "0.0.0-PLACEHOLDER",
-    "@angular/platform-browser-dynamic": "0.0.0-PLACEHOLDER",
-    "tslib": "^1.10.0"
+    "@angular/platform-browser-dynamic": "0.0.0-PLACEHOLDER"
   },
   "dependencies": {
     "domino": "^2.1.2",
-    "xhr2": "^0.1.4"
+    "tslib": "^2.1.0",
+    "xhr2": "^0.2.0"
   },
   "repository": {
     "type": "git",
@@ -33,10 +28,15 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
-  "sideEffects": false,
-  "engines": {
-    "node": ">=8.0"
-  },
+  "sideEffects": [
+    "./bundles/platform-server-init.umd.js",
+    "./bundles/platform-server-init.umd.min.js",
+    "./esm2015/init/src/init.js",
+    "./fesm2015/init.js",
+    "./__ivy_ngcc__/bundles/platform-server-init.umd.js",
+    "./__ivy_ngcc__/esm2015/init/src/init.js",
+    "./__ivy_ngcc__/fesm2015/init.js"
+  ],
   "publishConfig":{
     "registry":"https://wombat-dressing-room.appspot.com"
   }

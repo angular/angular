@@ -1,4 +1,3 @@
-/* #docregion */
 button {
   min-width: 100px;
   font-size: 100%;
@@ -31,9 +30,7 @@ th {
   vertical-align: top;
 }
 
-/* #docregion p-span */
 p span {
   color: red;
   font-size: 70%;
 }
-/* #enddocregion p-span */

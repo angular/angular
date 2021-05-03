@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,7 +10,7 @@ const spawnSync = require('child_process').spawnSync;
 const fs = require('fs');
 const path = require('path');
 const tmp = require('tmp');
-const runfiles = require(process.env['BAZEL_NODE_RUNFILES_HELPER']);
+const {runfiles} = require('@bazel/runfiles');
 
 const VERBOSE_LOGS = !!process.env['VERBOSE_LOGS'];
 
@@ -179,7 +179,8 @@ class TestRunner {
           if (args.length > 0) {
             packageJsonFile = args[0];
           }
-          log(`running test command ${this.successful+1} of ${this.config.commands.length}: patching '${packageJsonFile}' in '${this.testRoot}'`);
+          log(`running test command ${this.successful + 1} of ${
+              this.config.commands.length}: patching '${packageJsonFile}' in '${this.testRoot}'`);
           this._patchPackageJson(packageJsonFile);
         } break;
 
@@ -187,16 +188,25 @@ class TestRunner {
           if (binary.startsWith('external/')) {
             binary = `../${binary.substring('external/'.length)}`;
           }
-          const runfilesBinary = runfiles.resolveWorkspaceRelative(binary);
-          binary = fs.existsSync(runfilesBinary) ? runfilesBinary : binary;
-          log(`running test command ${this.successful+1} of ${this.config.commands.length}: '${binary} ${args.join(' ')}' in '${this.testRoot}'`);
+          try {
+            // Attempt to resolve runfiles location if command is expected to
+            // be in runfiles. For example, $(rootpath @nodejs//:yarn_bin)
+            const runfilesBinary = runfiles.resolveWorkspaceRelative(binary);
+            binary = (runfilesBinary && fs.existsSync(runfilesBinary)) ? runfilesBinary : binary;
+          } catch (e) {
+            // If resolveWorkspaceRelative then command is likely a built-in
+            // such as 'mkdir' or 'rm'
+          }
+          log(`running test command ${this.successful + 1} of ${this.config.commands.length}: '${
+              binary} ${args.join(' ')}' in '${this.testRoot}'`);
           const spawnedProcess = spawnSync(binary, args, {cwd: this.testRoot, stdio: 'inherit'});
           if (spawnedProcess.error) {
-            fail(
-                `test command ${testRunner.successful+1} '${binary} ${args.join(' ')}' failed with ${spawnedProcess.error.code}`);
+            fail(`test command ${testRunner.successful + 1} '${binary} ${
+                args.join(' ')}' failed with ${spawnedProcess.error.code}`);
           }
           if (spawnedProcess.status) {
-            log(`test command ${testRunner.successful+1} '${binary} ${args.join(' ')}' failed with status code ${spawnedProcess.status}`);
+            log(`test command ${testRunner.successful + 1} '${binary} ${
+                args.join(' ')}' failed with status code ${spawnedProcess.status}`);
             return spawnedProcess.status;
           }
         }
@@ -225,17 +235,20 @@ class TestRunner {
       if (contents.dependencies && contents.dependencies[key]) {
         replacements++;
         contents.dependencies[key] = replacement;
-        log(`overriding dependencies['${key}'] npm package with 'file:${path}' in package.json file`);
+        log(`overriding dependencies['${key}'] npm package with 'file:${
+            path}' in package.json file`);
       }
       if (contents.devDependencies && contents.devDependencies[key]) {
         replacements++;
         contents.devDependencies[key] = replacement;
-        log(`overriding devDependencies['${key}'] npm package with 'file:${path}' in package.json file`);
+        log(`overriding devDependencies['${key}'] npm package with 'file:${
+            path}' in package.json file`);
       }
       if (contents.resolutions && contents.resolutions[key]) {
         replacements++;
         contents.resolutions[key] = replacement;
-        log(`overriding resolutions['${key}'] npm package with 'file:${path}' in package.json file`);
+        log(`overriding resolutions['${key}'] npm package with 'file:${
+            path}' in package.json file`);
       }
       // TODO: handle other formats for resolutions such as `some-package/${key}` or
       // `some-package/**/${key}`
@@ -243,7 +256,8 @@ class TestRunner {
       if (contents.resolutions && contents.resolutions[altKey]) {
         replacements++;
         contents.resolutions[altKey] = replacement;
-        log(`overriding resolutions['${altKey}'] npm package with 'file:${path}' in package.json file`);
+        log(`overriding resolutions['${altKey}'] npm package with 'file:${
+            path}' in package.json file`);
       }
     }
     // check packages that must be replaced
@@ -263,8 +277,8 @@ class TestRunner {
     const contentsEncoded = JSON.stringify(contents, null, 2);
     log(`package.json file:\n${contentsEncoded}`);
     if (failedPackages.length) {
-      fail(
-          `expected replacements of npm packages ${JSON.stringify(failedPackages)} not found; add these to the npm_packages attribute`);
+      fail(`expected replacements of npm packages ${
+          JSON.stringify(failedPackages)} not found; add these to the npm_packages attribute`);
     }
     if (replacements) {
       fs.writeFileSync(packageJson, contentsEncoded);
@@ -314,7 +328,8 @@ class TestRunner {
       log(`configuring test in-place under ${this.testRoot}`);
     } else {
       this.testRoot = copyToTmp(this.config.testFiles);
-      log(`test files from '${rootDirectory(this.config.testFiles)}' copied to tmp folder ${this.testRoot}`);
+      log(`test files from '${rootDirectory(this.config.testFiles)}' copied to tmp folder ${
+          this.testRoot}`);
     }
   }
 
@@ -340,7 +355,7 @@ class TestRunner {
   }
 }
 
-const config = require(process.argv[2]);
+const config = require(runfiles.resolveWorkspaceRelative(process.argv[2]));
 
 // set env vars passed from --define
 for (const k of Object.keys(config.envVars)) {

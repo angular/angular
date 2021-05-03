@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -33,22 +33,19 @@ export default [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
     ['led', 'úno', 'bře', 'dub', 'kvě', 'čvn', 'čvc', 'srp', 'zář', 'říj', 'lis', 'pro'],
     [
-      'ledna', 'února', 'března', 'dubna', 'května', 'června', 'července', 'srpna', 'září',
-      'října', 'listopadu', 'prosince'
+      'ledna', 'února', 'března', 'dubna', 'května', 'června', 'července', 'srpna', 'září', 'října',
+      'listopadu', 'prosince'
     ]
   ],
   [
     ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
     ['led', 'úno', 'bře', 'dub', 'kvě', 'čvn', 'čvc', 'srp', 'zář', 'říj', 'lis', 'pro'],
     [
-      'leden', 'únor', 'březen', 'duben', 'květen', 'červen', 'červenec', 'srpen', 'září',
-      'říjen', 'listopad', 'prosinec'
+      'leden', 'únor', 'březen', 'duben', 'květen', 'červen', 'červenec', 'srpen', 'září', 'říjen',
+      'listopad', 'prosinec'
     ]
   ],
-  [
-    ['př.n.l.', 'n.l.'], ['př. n. l.', 'n. l.'],
-    ['před naším letopočtem', 'našeho letopočtu']
-  ],
+  [['př.n.l.', 'n.l.'], ['př. n. l.', 'n. l.'], ['před naším letopočtem', 'našeho letopočtu']],
   1,
   [6, 0],
   ['dd.MM.yy', 'd. M. y', 'd. MMMM y', 'EEEE d. MMMM y'],

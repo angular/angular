@@ -45,25 +45,15 @@ describe('CircleCIApi', () => {
       const errorMessage = 'Invalid request';
       const request = nock(BASE_URL).get(`/${buildNum}?circle-token=${TOKEN}`);
 
-      try {
-        request.replyWithError(errorMessage);
-        await api.getBuildInfo(buildNum);
-        throw new Error('Exception Expected');
-      } catch (err) {
-        expect(err.message).toEqual(
+      request.replyWithError(errorMessage);
+      await expectAsync(api.getBuildInfo(buildNum)).toBeRejectedWithError(
           `CircleCI build info request failed ` +
           `(request to ${BASE_URL}/${buildNum}?circle-token=${TOKEN} failed, reason: ${errorMessage})`);
-      }
 
-      try {
-        request.reply(404, errorMessage);
-        await api.getBuildInfo(buildNum);
-        throw new Error('Exception Expected');
-      } catch (err) {
-        expect(err.message).toEqual(
+      request.reply(404, errorMessage);
+      await expectAsync(api.getBuildInfo(buildNum)).toBeRejectedWithError(
           `CircleCI build info request failed ` +
           `(request to ${BASE_URL}/${buildNum}?circle-token=${TOKEN} failed, reason: ${errorMessage})`);
-      }
     });
   });
 
@@ -78,8 +68,7 @@ describe('CircleCIApi', () => {
         .get(`/${buildNum}/artifacts?circle-token=${TOKEN}`)
         .reply(200, [artifact0, artifact1, artifact2]);
 
-      const artifactUrl = await api.getBuildArtifactUrl(buildNum, 'some/path/1');
-      expect(artifactUrl).toEqual('https://url/1');
+      await expectAsync(api.getBuildArtifactUrl(buildNum, 'some/path/1')).toBeResolvedTo('https://url/1');
       request.done();
     });
 
@@ -90,25 +79,15 @@ describe('CircleCIApi', () => {
       const errorMessage = 'Invalid request';
       const request = nock(BASE_URL).get(`/${buildNum}/artifacts?circle-token=${TOKEN}`);
 
-      try {
-        request.replyWithError(errorMessage);
-        await api.getBuildArtifactUrl(buildNum, 'some/path/1');
-        throw new Error('Exception Expected');
-      } catch (err) {
-        expect(err.message).toEqual(
+      request.replyWithError(errorMessage);
+      await expectAsync(api.getBuildArtifactUrl(buildNum, 'some/path/1')).toBeRejectedWithError(
           `CircleCI artifact URL request failed ` +
           `(request to ${BASE_URL}/${buildNum}/artifacts?circle-token=${TOKEN} failed, reason: ${errorMessage})`);
-      }
 
-      try {
-        request.reply(404, errorMessage);
-        await api.getBuildArtifactUrl(buildNum, 'some/path/1');
-        throw new Error('Exception Expected');
-      } catch (err) {
-        expect(err.message).toEqual(
+      request.reply(404, errorMessage);
+      await expectAsync(api.getBuildArtifactUrl(buildNum, 'some/path/1')).toBeRejectedWithError(
           `CircleCI artifact URL request failed ` +
           `(request to ${BASE_URL}/${buildNum}/artifacts?circle-token=${TOKEN} failed, reason: ${errorMessage})`);
-      }
     });
 
     it('should throw an error if the response does not contain the specified artifact', async () => {
@@ -121,14 +100,9 @@ describe('CircleCIApi', () => {
         .get(`/${buildNum}/artifacts?circle-token=${TOKEN}`)
         .reply(200, [artifact0, artifact1, artifact2]);
 
-      try {
-        await api.getBuildArtifactUrl(buildNum, 'some/path/3');
-        throw new Error('Exception Expected');
-      } catch (err) {
-        expect(err.message).toEqual(
+      await expectAsync(api.getBuildArtifactUrl(buildNum, 'some/path/3')).toBeRejectedWithError(
           `CircleCI artifact URL request failed ` +
           `(Missing artifact (some/path/3) for CircleCI build: ${buildNum})`);
-      }
     });
   });
 });

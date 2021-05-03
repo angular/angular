@@ -20,9 +20,9 @@ A builder handler function receives two arguments; a set of input `options` (a J
 
 The separation of concerns here is the same as with [schematics](guide/glossary#schematic), which are used for other CLI commands that touch your code (such as `ng generate`).
 
-* Options are given by the CLI user, context is provided by and provides access to the CLI Builder API, and the developer provides the behavior.
+* The `options` object is provided by the CLI user, while the `context` object is provided by the CLI Builder API.
 
-* The `BuilderContext` object provides access to the scheduling method, `BuilderContext.scheduleTarget()`. The scheduler executes the builder handler function with a given [target configuration](guide/glossary#target).
+* In addition to the contextual information, the `context` object, which is an instance of the `BuilderContext`, also provides access to a scheduling method, `BuilderContext.scheduleTarget()`. The scheduler executes the builder handler function with a given [target configuration](guide/glossary#target).
 
 The builder handler function can be synchronous (return a value) or asynchronous (return a Promise), or it can watch and return multiple values (return an Observable).
 The return value or values must always be of type `BuilderOutput`.
@@ -42,11 +42,11 @@ For example, your `myBuilder` folder could contain the following files.
 | `src/my-builder.ts`      | Main source file for the builder definition. |
 | `src/my-builder.spec.ts` | Source file for tests. |
 | `src/schema.json`        | Definition of builder input options. |
-| `builders.json`          | Testing configuration. |
+| `builders.json`          | Builders definition. |
 | `package.json`           | Dependencies. See https://docs.npmjs.com/files/package.json. |
 | `tsconfig.json`          | [TypeScript configuration](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html). |
 
-You can publish the builder to `npm` (see [Publishing your Library](https://angular.io/guide/creating-libraries#publishing-your-library)). If you publish it as `@example/my-builder`, you can install it using the following command.
+You can publish the builder to `npm` (see [Publishing your Library](guide/creating-libraries#publishing-your-library)). If you publish it as `@example/my-builder`, you can install it using the following command.
 
 <code-example language="sh">
 
@@ -106,7 +106,7 @@ Pass an empty string to remove the status.
 
 <code-example 
   path="cli-builder/src/my-builder.ts" 
-  header="src/my-builder.ts (progess reporting)" 
+  header="src/my-builder.ts (progress reporting)" 
   region="progress-reporting">
 </code-example>
 

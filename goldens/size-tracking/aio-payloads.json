@@ -1,0 +1,20 @@
+{
+  "aio": {
+    "master": {
+      "uncompressed": {
+        "runtime-es2015": 4444,
+        "main-es2015": 451200,
+        "polyfills-es2015": 55283
+      }
+    }
+  },
+  "aio-local": {
+    "master": {
+      "uncompressed": {
+        "runtime-es2015": 4444,
+        "main-es2015": 451200,
+        "polyfills-es2015": 55283
+      }
+    }
+  }
+}

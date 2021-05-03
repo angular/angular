@@ -1,14 +1,14 @@
 # Using published libraries
 
 When building Angular applications you can take advantage of sophisticated first-party libraries, such as [Angular Material](https://material.angular.io/), as well as rich ecosystem of third-party libraries.
-See the [Angular Resources](https://angular.io/resources) page for links to the most popular ones.
+See the [Angular Resources](resources) page for links to the most popular ones.
 
 ## Installing libraries
 
 Libraries are published as [npm packages](guide/npm-packages), usually together with schematics that integrate them with the Angular CLI.
 To integrate reusable library code into an application, you need to install the package and import the provided functionality where you will use it. For most published Angular libraries, you can use the Angular CLI `ng add <lib_name>` command.
 
-The `ng add` command uses the npm package manager or [yarn](https://yarnpkg.com/) to install the library package, and invokes schematics that are included in the package to other scaffolding within the project code, such as adding import statements, fonts, themes, and so on.
+The `ng add` command uses a package manager such as [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) to install the library package, and invokes schematics that are included in the package to other scaffolding within the project code, such as adding import statements, fonts, themes, and so on.
 
 A published library typically provides a README or other documentation on how to add that lib to your app.
 For an example, see [Angular Material](https://material.angular.io/) docs.
@@ -32,7 +32,7 @@ To do this:
 
 1. Create a `typings.d.ts` file in your `src/` folder. This file is automatically included as global type definition.
 
-2. Add the following code in `src/typings.d.ts`.
+2. Add the following code in `src/typings.d.ts`:
 
 ```
 declare module 'host' {
@@ -45,7 +45,7 @@ declare module 'host' {
 }
 ```
 
-3. In the component or file that uses the library, add the following code.
+3. In the component or file that uses the library, add the following code:
 
 ```
 import * as host from 'host';
@@ -129,7 +129,7 @@ interface JQuery {
 }
 ```
 
-If don't add the interface for the script-defined extension, your IDE shows an error:
+If you don't add the interface for the script-defined extension, your IDE shows an error:
 
 ```
 [TS][Error] Property 'myPlugin' does not exist on type 'JQuery'

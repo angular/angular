@@ -55,10 +55,11 @@ nodejs_binary(
     name = "karma-saucelabs",
     data = [
         "sauce-service.sh",
+        "@npm//@bazel/runfiles",
         "@npm//karma",
         "@npm//sauce-connect",
         "@npm//shelljs",
     ],
     entry_point = "karma-saucelabs.js",
-    templated_args = ["$(location sauce-service.sh)"],
+    templated_args = ["$(rootpath sauce-service.sh)"],
 )

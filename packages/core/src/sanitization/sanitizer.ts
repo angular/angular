@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,7 @@ import {SecurityContext} from './security';
 export abstract class Sanitizer {
   abstract sanitize(context: SecurityContext, value: {}|string|null): string|null;
   /** @nocollapse */
-  static ɵprov = ɵɵdefineInjectable({
+  static ɵprov = /** @pureOrBreakMyCode */ ɵɵdefineInjectable({
     token: Sanitizer,
     providedIn: 'root',
     factory: () => null,

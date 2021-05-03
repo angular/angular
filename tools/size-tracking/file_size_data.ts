@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -47,18 +47,14 @@ export function omitCommonPathPrefix(entry: DirectorySizeEntry): DirectorySizeEn
 }
 
 function _sortDirectorySizeEntryObject(oldObject: DirectorySizeEntry): DirectorySizeEntry {
-  return Object.keys(oldObject)
-      .sort(_sortSizeEntryKeys)
-      .reduce(
-          (result, key) => {
-            if (typeof oldObject[key] === 'number') {
-              result[key] = oldObject[key];
-            } else {
-              result[key] = _sortDirectorySizeEntryObject(oldObject[key] as DirectorySizeEntry);
-            }
-            return result;
-          },
-          {} as DirectorySizeEntry);
+  return Object.keys(oldObject).sort(_sortSizeEntryKeys).reduce((result, key) => {
+    if (typeof oldObject[key] === 'number') {
+      result[key] = oldObject[key];
+    } else {
+      result[key] = _sortDirectorySizeEntryObject(oldObject[key] as DirectorySizeEntry);
+    }
+    return result;
+  }, {} as DirectorySizeEntry);
 }
 
 function _sortSizeEntryKeys(a: string, b: string) {

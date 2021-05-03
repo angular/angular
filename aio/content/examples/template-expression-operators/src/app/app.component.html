@@ -3,36 +3,22 @@
 <hr />
 
 <h2 id="pipes">Pipes</h2>
-<!-- #docregion uppercase-pipe-->
 <p>Title through uppercase pipe: {{title | uppercase}}</p>
-<!-- #enddocregion uppercase-pipe-->
-<!-- #docregion pipe-chain-->
 <!-- convert title to uppercase, then to lowercase -->
 <p>Title through a pipe chain: {{title | uppercase | lowercase}}</p>
-<!-- #enddocregion pipe-chain-->
 
-<!-- #docregion date-pipe -->
 <!-- pipe with configuration argument => "February 25, 1980" -->
 <p>Manufacture date with date format pipe: {{item.manufactureDate | date:'longDate'}}</p>
-<!-- #enddocregion date-pipe -->
 <p>Manufacture date with uppercase pipe: {{(item.manufactureDate | date:'longDate') | uppercase}}</p>
-<!-- #docregion json-pipe -->
 <p>Item json pipe: {{item | json}}</p>
-<!-- #enddocregion json-pipe -->
 
-<!-- #docregion currency-pipe -->
 <p>Price with currency pipe: {{item.price | currency:'USD'}}</p>
-<!-- #enddocregion currency-pipe -->
 <hr />
 
 <h2>Safe navigation operator: <code>?</code> and <code>null</code></h2>
-<!-- #docregion safe -->
 <p>The item name is: {{item?.name}}</p>
-<!-- #enddocregion safe -->
 
-<!-- #docregion safe-null -->
 <p>The nullItem name is: {{nullItem?.name}}</p>
-<!-- #enddocregion safe-null -->
 
 <hr />
 

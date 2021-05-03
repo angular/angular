@@ -1,30 +1,38 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {Element, ParseErrorLevel, visitAll} from '@angular/compiler';
-import {ɵParsedTranslation} from '@angular/localize';
 
 import {Diagnostics} from '../../../diagnostics';
 import {BaseVisitor} from '../base_visitor';
-import {MessageSerializer} from '../message_serialization/message_serializer';
-import {TargetMessageRenderer} from '../message_serialization/target_message_renderer';
 
-import {ParsedTranslationBundle, TranslationParser} from './translation_parser';
-import {XmlTranslationParserHint, addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, parseInnerRange} from './translation_utils';
+import {serializeTranslationMessage} from './serialize_translation_message';
+import {ParseAnalysis, ParsedTranslationBundle, TranslationParser} from './translation_parser';
+import {addErrorsToBundle, addParseDiagnostic, addParseError, canParseXml, getAttribute, isNamedElement, XmlTranslationParserHint} from './translation_utils';
 
 /**
  * A translation parser that can load XLIFF 1.2 files.
  *
- * http://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html
- * http://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
+ * https://docs.oasis-open.org/xliff/v1.2/os/xliff-core.html
+ * https://docs.oasis-open.org/xliff/v1.2/xliff-profile-html/xliff-profile-html-1.2.html
  *
+ * @see Xliff1TranslationSerializer
+ * @publicApi used by CLI
  */
 export class Xliff1TranslationParser implements TranslationParser<XmlTranslationParserHint> {
+  /**
+   * @deprecated
+   */
   canParse(filePath: string, contents: string): XmlTranslationParserHint|false {
+    const result = this.analyze(filePath, contents);
+    return result.canParse && result.hint;
+  }
+
+  analyze(filePath: string, contents: string): ParseAnalysis<XmlTranslationParserHint> {
     return canParseXml(filePath, contents, 'xliff', {version: '1.2'});
   }
 
@@ -74,7 +82,8 @@ export class Xliff1TranslationParser implements TranslationParser<XmlTranslation
     if (localesFound.size > 1) {
       addParseDiagnostic(
           diagnostics, element.sourceSpan,
-          `More than one locale found in translation file: ${JSON.stringify(Array.from(localesFound))}. Using "${bundle.locale}"`,
+          `More than one locale found in translation file: ${
+              JSON.stringify(Array.from(localesFound))}. Using "${bundle.locale}"`,
           ParseErrorLevel.WARNING);
     }
 
@@ -140,23 +149,14 @@ class XliffTranslationVisitor extends BaseVisitor {
       return;
     }
 
-    try {
-      bundle.translations[id] = serializeTargetMessage(targetMessage);
-    } catch (e) {
-      // Capture any errors from serialize the target message
-      if (e.span && e.msg && e.level) {
-        addParseDiagnostic(bundle.diagnostics, e.span, e.msg, e.level);
-      } else {
-        throw e;
-      }
+    const {translation, parseErrors, serializeErrors} = serializeTranslationMessage(targetMessage, {
+      inlineElements: ['g', 'bx', 'ex', 'bpt', 'ept', 'ph', 'it', 'mrk'],
+      placeholder: {elementName: 'x', nameAttribute: 'id'}
+    });
+    if (translation !== null) {
+      bundle.translations[id] = translation;
     }
+    addErrorsToBundle(bundle, parseErrors);
+    addErrorsToBundle(bundle, serializeErrors);
   }
-}
-
-function serializeTargetMessage(source: Element): ɵParsedTranslation {
-  const serializer = new MessageSerializer(new TargetMessageRenderer(), {
-    inlineElements: ['g', 'bx', 'ex', 'bpt', 'ept', 'ph', 'it', 'mrk'],
-    placeholder: {elementName: 'x', nameAttribute: 'id'}
-  });
-  return serializer.serialize(parseInnerRange(source));
 }

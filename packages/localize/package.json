@@ -2,19 +2,16 @@
   "name": "@angular/localize",
   "version": "0.0.0-PLACEHOLDER",
   "description": "Angular - library for localizing messages",
-  "main": "./bundles/localize.umd.js",
-  "module": "./fesm5/localize.js",
-  "es2015": "./fesm2015/localize.js",
-  "esm5": "./esm5/index.js",
-  "esm2015": "./esm2015/index.js",
-  "fesm5": "./fesm5/localize.js",
-  "fesm2015": "./fesm2015/localize.js",
-  "typings": "./index.d.ts",
   "bin": {
-    "localize-translate": "./src/tools/src/translate/main.js"
+    "localize-translate": "./src/tools/src/translate/main.js",
+    "localize-extract": "./src/tools/src/extract/main.js",
+    "localize-migrate": "./src/tools/src/migrate/main.js"
   },
   "author": "angular",
   "license": "MIT",
+  "engines": {
+    "node": "^12.14.1 || ^14.0.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/angular/angular.git"
@@ -23,20 +20,24 @@
   "ng-update": {
     "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
   },
+  "ng-add": {
+    "save": "devDependencies"
+  },
   "sideEffects": [
     "**/init/index.js",
     "**/init.js",
     "**/localize-init.umd.js"
   ],
-  "engines": {
-    "node": ">=8.0"
-  },
   "dependencies": {
     "@babel/core": "7.8.3",
-    "glob": "7.1.2",
-    "yargs": "15.3.0"
+    "glob": "7.1.6",
+    "yargs": "^16.2.0"
   },
-  "publishConfig":{
-    "registry":"https://wombat-dressing-room.appspot.com"
+  "peerDependencies": {
+    "@angular/compiler": "0.0.0-PLACEHOLDER",
+    "@angular/compiler-cli": "0.0.0-PLACEHOLDER"
+  },
+  "publishConfig": {
+    "registry": "https://wombat-dressing-room.appspot.com"
   }
 }

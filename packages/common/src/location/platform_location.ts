@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,21 +14,21 @@ import {DOCUMENT} from '../dom_tokens';
  * This class should not be used directly by an application developer. Instead, use
  * {@link Location}.
  *
- * `PlatformLocation` encapsulates all calls to DOM apis, which allows the Router to be platform
- * agnostic.
+ * `PlatformLocation` encapsulates all calls to DOM APIs, which allows the Router to be
+ * platform-agnostic.
  * This means that we can have different implementation of `PlatformLocation` for the different
- * platforms that angular supports. For example, `@angular/platform-browser` provides an
- * implementation specific to the browser environment, while `@angular/platform-webworker` provides
- * one suitable for use with web workers.
+ * platforms that Angular supports. For example, `@angular/platform-browser` provides an
+ * implementation specific to the browser environment, while `@angular/platform-server` provides
+ * one suitable for use with server-side rendering.
  *
  * The `PlatformLocation` class is used directly by all implementations of {@link LocationStrategy}
- * when they need to interact with the DOM apis like pushState, popState, etc...
+ * when they need to interact with the DOM APIs like pushState, popState, etc.
  *
  * {@link LocationStrategy} in turn is used by the {@link Location} service which is used directly
  * by the {@link Router} in order to navigate between routes. Since all interactions between {@link
  * Router} /
- * {@link Location} / {@link LocationStrategy} and DOM apis flow through the `PlatformLocation`
- * class they are all platform independent.
+ * {@link Location} / {@link LocationStrategy} and DOM APIs flow through the `PlatformLocation`
+ * class, they are all platform-agnostic.
  *
  * @publicApi
  */
@@ -40,8 +40,14 @@ import {DOCUMENT} from '../dom_tokens';
 export abstract class PlatformLocation {
   abstract getBaseHrefFromDOM(): string;
   abstract getState(): unknown;
-  abstract onPopState(fn: LocationChangeListener): void;
-  abstract onHashChange(fn: LocationChangeListener): void;
+  /**
+   * Returns a function that, when executed, removes the `popstate` event handler.
+   */
+  abstract onPopState(fn: LocationChangeListener): VoidFunction;
+  /**
+   * Returns a function that, when executed, removes the `hashchange` event handler.
+   */
+  abstract onHashChange(fn: LocationChangeListener): VoidFunction;
 
   abstract get href(): string;
   abstract get protocol(): string;
@@ -58,6 +64,10 @@ export abstract class PlatformLocation {
   abstract forward(): void;
 
   abstract back(): void;
+
+  historyGo?(relativePosition: number): void {
+    throw new Error('Not implemented');
+  }
 }
 
 export function useBrowserPlatformLocation() {
@@ -86,7 +96,9 @@ export interface LocationChangeEvent {
 /**
  * @publicApi
  */
-export interface LocationChangeListener { (event: LocationChangeEvent): any; }
+export interface LocationChangeListener {
+  (event: LocationChangeEvent): any;
+}
 
 
 
@@ -101,8 +113,8 @@ export interface LocationChangeListener { (event: LocationChangeEvent): any; }
   useFactory: createBrowserPlatformLocation,
 })
 export class BrowserPlatformLocation extends PlatformLocation {
-  public readonly location !: Location;
-  private _history !: History;
+  public readonly location!: Location;
+  private _history!: History;
 
   constructor(@Inject(DOCUMENT) private _doc: any) {
     super();
@@ -112,28 +124,50 @@ export class BrowserPlatformLocation extends PlatformLocation {
   // This is moved to its own method so that `MockPlatformLocationStrategy` can overwrite it
   /** @internal */
   _init() {
-    (this as{location: Location}).location = getDOM().getLocation();
-    this._history = getDOM().getHistory();
+    (this as {location: Location}).location = window.location;
+    this._history = window.history;
   }
 
-  getBaseHrefFromDOM(): string { return getDOM().getBaseHref(this._doc) !; }
-
-  onPopState(fn: LocationChangeListener): void {
-    getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('popstate', fn, false);
+  getBaseHrefFromDOM(): string {
+    return getDOM().getBaseHref(this._doc)!;
   }
 
-  onHashChange(fn: LocationChangeListener): void {
-    getDOM().getGlobalEventTarget(this._doc, 'window').addEventListener('hashchange', fn, false);
+  onPopState(fn: LocationChangeListener): VoidFunction {
+    const window = getDOM().getGlobalEventTarget(this._doc, 'window');
+    window.addEventListener('popstate', fn, false);
+    return () => window.removeEventListener('popstate', fn);
   }
 
-  get href(): string { return this.location.href; }
-  get protocol(): string { return this.location.protocol; }
-  get hostname(): string { return this.location.hostname; }
-  get port(): string { return this.location.port; }
-  get pathname(): string { return this.location.pathname; }
-  get search(): string { return this.location.search; }
-  get hash(): string { return this.location.hash; }
-  set pathname(newPath: string) { this.location.pathname = newPath; }
+  onHashChange(fn: LocationChangeListener): VoidFunction {
+    const window = getDOM().getGlobalEventTarget(this._doc, 'window');
+    window.addEventListener('hashchange', fn, false);
+    return () => window.removeEventListener('hashchange', fn);
+  }
+
+  get href(): string {
+    return this.location.href;
+  }
+  get protocol(): string {
+    return this.location.protocol;
+  }
+  get hostname(): string {
+    return this.location.hostname;
+  }
+  get port(): string {
+    return this.location.port;
+  }
+  get pathname(): string {
+    return this.location.pathname;
+  }
+  get search(): string {
+    return this.location.search;
+  }
+  get hash(): string {
+    return this.location.hash;
+  }
+  set pathname(newPath: string) {
+    this.location.pathname = newPath;
+  }
 
   pushState(state: any, title: string, url: string): void {
     if (supportsState()) {
@@ -151,11 +185,21 @@ export class BrowserPlatformLocation extends PlatformLocation {
     }
   }
 
-  forward(): void { this._history.forward(); }
+  forward(): void {
+    this._history.forward();
+  }
 
-  back(): void { this._history.back(); }
+  back(): void {
+    this._history.back();
+  }
 
-  getState(): unknown { return this._history.state; }
+  historyGo(relativePosition: number = 0): void {
+    this._history.go(relativePosition);
+  }
+
+  getState(): unknown {
+    return this._history.state;
+  }
 }
 
 export function supportsState(): boolean {

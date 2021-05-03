@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -296,6 +296,34 @@ interface ZoneGlobalConfigurations {
 
   /**
    *
+   * Disable the monkey patching of the browser's `queueMicrotask()` API.
+   *
+   * By default, `zone.js` monkey patches the browser's `queueMicrotask()` API
+   * to ensure that `queueMicrotask()` callback is invoked in the same zone as zone used to invoke
+   * `queueMicrotask()`. And also the callback is running as `microTask` like
+   * `Promise.prototype.then()`.
+   *
+   * Consider the following example:
+   *
+   * ```
+   * const zone = Zone.current.fork({name: 'myZone'});
+   * zone.run(() => {
+   *   queueMicrotask(() => {
+   *     console.log('queueMicrotask() callback is invoked in the zone', Zone.current.name);
+   *     // Since `queueMicrotask()` was invoked in `myZone`, same zone is restored
+   *     // when 'queueMicrotask() callback is invoked, resulting in `myZone` being console logged.
+   *   });
+   * });
+   * ```
+   *
+   * If you set `__Zone_disable_queueMicrotask = true` before importing `zone.js`,
+   * `zone.js` does not monkey patch the `queueMicrotask()` API and the above code
+   * output will change to: 'queueMicrotask() callback is invoked in the zone <root>'.
+   */
+  __Zone_disable_queueMicrotask?: boolean;
+
+  /**
+   *
    * Disable the monkey patch of the browser blocking APIs(`alert()`/`prompt()`/`confirm()`).
    */
   __Zone_disable_blocking?: boolean;
@@ -324,6 +352,21 @@ interface ZoneGlobalConfigurations {
    *
    */
   __Zone_disable_EventTarget?: boolean;
+
+  /**
+   * Disable the monkey patch of the browser `FileReader` APIs.
+   */
+  __Zone_disable_FileReader?: boolean;
+
+  /**
+   * Disable the monkey patch of the browser `MutationObserver` APIs.
+   */
+  __Zone_disable_MutationObserver?: boolean;
+
+  /**
+   * Disable the monkey patch of the browser `IntersectionObserver` APIs.
+   */
+  __Zone_disable_IntersectionObserver?: boolean;
 
   /**
    * Disable the monkey patch of the browser onProperty APIs(such as onclick).
@@ -512,7 +555,7 @@ interface ZoneGlobalConfigurations {
    * Users can achieve this goal by defining `__zone_symbol__UNPATCHED_EVENTS = ['scroll',
    * 'mousemove'];` before importing `zone.js`.
    */
-  __zone_symbol__UNPATCHED_EVENTS?: boolean;
+  __zone_symbol__UNPATCHED_EVENTS?: string[];
 
   /**
    * Define the event names of the passive listeners.
@@ -528,7 +571,7 @@ interface ZoneGlobalConfigurations {
    *
    * The preceding code makes all scroll event listeners passive.
    */
-  __zone_symbol__PASSIVE_EVENTS?: boolean;
+  __zone_symbol__PASSIVE_EVENTS?: string[];
 
   /**
    * Disable wrapping uncaught promise rejection.

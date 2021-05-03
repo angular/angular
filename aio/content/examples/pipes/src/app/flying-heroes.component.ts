@@ -1,8 +1,8 @@
 // #docplaster
 // #docregion
-import { Component }              from '@angular/core';
+import { Component } from '@angular/core';
 
-import { HEROES }                 from './heroes';
+import { HEROES } from './heroes';
 
 @Component({
   selector: 'app-flying-heroes',
@@ -23,7 +23,7 @@ export class FlyingHeroesComponent {
   addHero(name: string) {
     name = name.trim();
     if (!name) { return; }
-    let hero = {name, canFly: this.canFly};
+    const hero = {name, canFly: this.canFly};
 // #enddocregion v1
     if (this.mutate) {
     // Pure pipe won't update display because heroes array reference is unchanged
@@ -35,9 +35,7 @@ export class FlyingHeroesComponent {
 // #enddocregion v1
     } else {
       // Pipe updates display because heroes array is a new object
-// #docregion concat
       this.heroes = this.heroes.concat(hero);
-// #enddocregion concat
     }
 // #docregion v1
   }
@@ -47,15 +45,11 @@ export class FlyingHeroesComponent {
 // #enddocregion v1
 
 ////// Identical except for impure pipe //////
-// #docregion impure-component
 @Component({
   selector: 'app-flying-heroes-impure',
   templateUrl: './flying-heroes-impure.component.html',
-// #enddocregion impure-component
   styles: ['.flyers, .all {font-style: italic}'],
-// #docregion impure-component
 })
 export class FlyingHeroesImpureComponent extends FlyingHeroesComponent {
   title = 'Flying Heroes (impure pipe)';
 }
-// #enddocregion impure-component

@@ -1,6 +1,4 @@
-'use strict'; // necessary for es6 output in node
-
-import { browser, element, by, ElementFinder } from 'protractor';
+import { browser, element, by } from 'protractor';
 
 describe('Testing Example', () => {
   const expectedViewNames = ['Dashboard', 'Heroes', 'About'];
@@ -8,28 +6,25 @@ describe('Testing Example', () => {
   beforeAll(() => browser.get(''));
 
   function getPageElts() {
-    let navElts = element.all(by.css('app-root nav a'));
-
     return {
-      navElts: navElts,
-
+      navElts: element.all(by.css('app-root nav a')),
       appDashboard: element(by.css('app-root app-dashboard')),
     };
   }
 
-  it('has title', async() => {
+  it('has title', async () => {
     expect(await browser.getTitle()).toEqual('App Under Test');
   });
 
   it(`has views ${expectedViewNames}`, async () => {
-    let viewNames = getPageElts().navElts.map(async(el: ElementFinder) => await el.getText());
+    const viewNames = await getPageElts().navElts.map(el => el.getText());
 
     expect(viewNames).toEqual(expectedViewNames);
   });
 
-  it('has dashboard as the active view', () => {
-    let page = getPageElts();
+  it('has dashboard as the active view', async () => {
+    const page = getPageElts();
 
-    expect(page.appDashboard.isPresent()).toBeTruthy();
+    expect(await page.appDashboard.isPresent()).toBeTruthy();
   });
 });

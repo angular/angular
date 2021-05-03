@@ -1,27 +1,36 @@
 <h1 class="no-toc">Introduction to the Angular Docs</h1>
 
-Angular is an app-design framework and development platform for creating efficient and sophisticated single-page apps.
+Angular is an application design framework and development platform for creating efficient and sophisticated single-page apps.
 
-These Angular docs help you learn and use the Angular framework and development platform, from your first app to optimizing complex single-page apps for enterprises.
+These Angular docs help you learn and use the Angular framework and development platform, from your first application to optimizing complex single-page apps for enterprises.
 Tutorials and guides include downloadable examples to accelerate your projects.
 
 
 <div class="card-container">
-  <a href="start" class="docs-card" title="Angular Getting Started">
-      <section>Learn</section>
-      <p>Play with and extend a small ready-made Angular app, without any setup</p>
-      <p class="card-footer">Getting Started</p>
+  <a href="guide/what-is-angular" class="docs-card" title="Angular Platform Overview">
+    <section>What is Angular</section>
+    <p>Get a high-level overview of the Angular platform.</p>
+    <p class="card-footer">Platform overview</p>
   </a>
-  <a href="guide/setup-local" class="docs-card"
-    title="Angular Local Environment Setup">
-      <section>Start Working</section>
-      <p>Set up your local environment with the Angular CLI</p>
-      <p class="card-footer">Local Setup</p>
+  <a href="guide/setup-local" class="docs-card" title="Angular Local Environment Setup">
+    <section>Get Started</section>
+    <p>Set up your local environment for development with the Angular CLI.</p>
+    <p class="card-footer">Local setup</p>
   </a>
-  <a href="guide/architecture" class="docs-card" title="Angular App Architecture">
-      <section>Explore</section>
-      <p>Learn about the fundamental design concepts and architecture of Angular apps</p>
-      <p class="card-footer">Introduction to Angular concepts</p>
+  <a href="guide/architecture" class="docs-card" title="Angular Concepts">
+    <section>Learn and Explore</section>
+    <p>Learn about the fundamental design concepts and architecture of Angular apps.</p>
+    <p class="card-footer">Introduction to Angular concepts</p>
+  </a>
+  <a href="start" class="docs-card" title="Try out Angular">
+    <section>Take a Look</section>
+    <p>Examine and work with a small ready-made Angular app, without any setup.</p>
+    <p class="card-footer">Try it now</p>
+  </a>
+  <a href="tutorial" class="docs-card" title="Work through a full tutorial">
+    <section>Hello World</section>
+    <p>Work through a full tutorial to create your first app.</p>
+    <p class="card-footer">Tour of Heroes tutorial</p>
   </a>
 </div>
 
@@ -37,9 +46,9 @@ Most Angular code can be written with just the latest JavaScript, using [types](
 
 ## Feedback
 
-<h4>You can sit with us!</h4>
+<h3>You can sit with us!</h3>
 
-We want to hear from you. [Report problems or submit suggestions for future docs.](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form")
+We want to hear from you. [Report problems or submit suggestions for future docs](https://github.com/angular/angular/issues/new/choose "Angular GitHub repository new issue form").
 
 Contribute to Angular docs by creating
 [pull requests](https://github.com/angular/angular/pulls "Angular Github pull requests")

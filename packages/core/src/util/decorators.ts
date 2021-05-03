@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -52,7 +52,7 @@ export function makeDecorator<T>(
     const metaCtor = makeMetadataCtor(props);
 
     function DecoratorFactory(
-        this: unknown | typeof DecoratorFactory, ...args: any[]): (cls: Type<T>) => any {
+        this: unknown|typeof DecoratorFactory, ...args: any[]): (cls: Type<T>) => any {
       if (this instanceof DecoratorFactory) {
         metaCtor.call(this, ...args);
         return this as typeof DecoratorFactory;
@@ -101,7 +101,7 @@ export function makeParamDecorator(
   return noSideEffects(() => {
     const metaCtor = makeMetadataCtor(props);
     function ParamDecoratorFactory(
-        this: unknown | typeof ParamDecoratorFactory, ...args: any[]): any {
+        this: unknown|typeof ParamDecoratorFactory, ...args: any[]): any {
       if (this instanceof ParamDecoratorFactory) {
         metaCtor.apply(this, args);
         return this;
@@ -143,8 +143,7 @@ export function makePropDecorator(
   return noSideEffects(() => {
     const metaCtor = makeMetadataCtor(props);
 
-    function PropDecoratorFactory(
-        this: unknown | typeof PropDecoratorFactory, ...args: any[]): any {
+    function PropDecoratorFactory(this: unknown|typeof PropDecoratorFactory, ...args: any[]): any {
       if (this instanceof PropDecoratorFactory) {
         metaCtor.apply(this, args);
         return this;
@@ -154,8 +153,8 @@ export function makePropDecorator(
 
       function PropDecorator(target: any, name: string) {
         const constructor = target.constructor;
-        // Use of Object.defineProperty is important since it creates non-enumerable property which
-        // prevents the property is copied during subclassing.
+        // Use of Object.defineProperty is important because it creates a non-enumerable property
+        // which prevents the property from being copied during subclassing.
         const meta = constructor.hasOwnProperty(PROP_METADATA) ?
             (constructor as any)[PROP_METADATA] :
             Object.defineProperty(constructor, PROP_METADATA, {value: {}})[PROP_METADATA];

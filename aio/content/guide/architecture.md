@@ -5,13 +5,13 @@ Angular is written in TypeScript.
 It implements core and optional functionality as a set of TypeScript libraries that you import into your apps.
 
 The architecture of an Angular application relies on certain fundamental concepts.
-The basic building blocks are *NgModules*, which provide a compilation context for *components*. NgModules collect related code into functional sets; an Angular app is defined by a set of NgModules. An app always has at least a *root module* that enables bootstrapping, and typically has many more *feature modules*.
+The basic building blocks of the Angular framework are Angular components that are organized into *NgModules*. NgModules collect related code into functional sets; an Angular app is defined by a set of NgModules. An app always has at least a *root module* that enables bootstrapping, and typically has many more *feature modules*.
 
 * Components define *views*, which are sets of screen elements that Angular can choose among and modify according to your program logic and data.
 
 * Components use *services*, which provide specific functionality not directly related to views. Service providers can be *injected* into components as *dependencies*, making your code modular, reusable, and efficient.
 
-Both components and services are simply classes, with *decorators* that mark their type and provide metadata that tells Angular how to use them.
+Modules, components and services are classes that use *decorators*. These decorators mark their type and provide metadata that tells Angular how to use them.
 
 * The metadata for a component class associates it with a *template* that defines a view. A template combines ordinary HTML with Angular *directives* and *binding markup* that allow Angular to modify the HTML before rendering it for display.
 
@@ -19,10 +19,15 @@ Both components and services are simply classes, with *decorators* that mark the
 
 An app's components typically define many views, arranged hierarchically. Angular provides the `Router` service to help you define navigation paths among views. The router provides sophisticated in-browser navigational capabilities.
 
-<div class="alert is-helpful>
+<div class="alert is-helpful">
 
   See the [Angular Glossary](guide/glossary) for basic definitions of important Angular terms and usage.
 
+</div>
+
+<div class="alert is-helpful">
+
+  For the sample app that this page describes, see the <live-example></live-example>.
 </div>
 
 ## Modules
@@ -109,13 +114,12 @@ The router interprets a link URL according to your app's view navigation rules a
 
 To define navigation rules, you associate *navigation paths* with your components. A path uses a URL-like syntax that integrates your program data, in much the same way that template syntax integrates your views with your program data. You can then apply program logic to choose which views to show or to hide, in response to user input and your own access rules.
 
- <div class="alert is-helpful">
+<div class="alert is-helpful">
 
-   For a more detailed discussion, see [Routing and navigation](guide/router).
+  For a more detailed discussion, see [Routing and navigation](guide/router).
 
- </div>
+</div>
 
-<hr/>
 
 ## What's next
 
@@ -147,11 +151,6 @@ Each of these subjects is introduced in more detail in the following pages.
   * [Pipes](guide/architecture-components#pipes)
 
 * [Introduction to services and dependency injection](guide/architecture-services)
-
-<div class="alert is-helpful">
-
-   Note that the code referenced on these pages is available as a <live-example></live-example>.
-</div>
 
 When you're familiar with these fundamental building blocks, you can explore them in more detail in the documentation. To learn about more tools and techniques that are available to help you build and deploy Angular applications, see [Next steps: tools and techniques](guide/architecture-next-steps).
 </div>

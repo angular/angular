@@ -1,26 +1,26 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 import {getFileSystem} from '../../../src/ngtsc/file_system';
 import {runInEachFileSystem} from '../../../src/ngtsc/file_system/testing';
+import {MockLogger} from '../../../src/ngtsc/logging/testing';
 import {AsyncLocker} from '../../src/locking/async_locker';
 import {MockLockFile} from '../helpers/mock_lock_file';
-import {MockLogger} from '../helpers/mock_logger';
 
 runInEachFileSystem(() => {
   describe('AsyncLocker', () => {
     describe('lock()', () => {
-      it('should guard the `fn()` with calls to `write()` and `remove()`', async() => {
+      it('should guard the `fn()` with calls to `write()` and `remove()`', async () => {
         const fs = getFileSystem();
         const log: string[] = [];
         const lockFile = new MockLockFile(fs, log);
         const locker = new AsyncLocker(lockFile, new MockLogger(), 100, 10);
 
-        await locker.lock(async() => {
+        await locker.lock(async () => {
           log.push('fn() - before');
           // This promise forces node to do a tick in this function, ensuring that we are truly
           // testing an async scenario.
@@ -31,7 +31,7 @@ runInEachFileSystem(() => {
       });
 
       it('should guard the `fn()` with calls to `write()` and `remove()`, even if it throws',
-         async() => {
+         async () => {
            let error: string = '';
            const fs = getFileSystem();
            const log: string[] = [];
@@ -39,7 +39,7 @@ runInEachFileSystem(() => {
            const locker = new AsyncLocker(lockFile, new MockLogger(), 100, 10);
 
            try {
-             await locker.lock(async() => {
+             await locker.lock(async () => {
                log.push('fn()');
                throw new Error('ERROR');
              });
@@ -50,7 +50,7 @@ runInEachFileSystem(() => {
            expect(log).toEqual(['write()', 'fn()', 'remove()']);
          });
 
-      it('should retry if another process is locking', async() => {
+      it('should retry if another process is locking', async () => {
         const fs = getFileSystem();
         const log: string[] = [];
         const lockFile = new MockLockFile(fs, log);
@@ -66,14 +66,19 @@ runInEachFileSystem(() => {
         });
         spyOn(lockFile, 'read').and.callFake(() => {
           log.push('read() => ' + lockFileContents);
+          if (lockFileContents === null) {
+            throw {code: 'ENOENT'};
+          }
           return lockFileContents;
         });
 
-        const promise = locker.lock(async() => log.push('fn()'));
+        const promise = locker.lock(async () => log.push('fn()'));
         // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
         expect(log).toEqual(['write()', 'read() => 188']);
         expect(logger.logs.info).toEqual([[
-          'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.'
+          'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.\n' +
+          `(If you are sure no ngcc process is running then you should delete the lock-file at ${
+              lockFile.path}.)`
         ]]);
 
         lockFileContents = null;
@@ -83,7 +88,7 @@ runInEachFileSystem(() => {
         expect(log).toEqual(['write()', 'read() => 188', 'write()', 'fn()', 'remove()']);
       });
 
-      it('should extend the retry timeout if the other process locking the file changes', async() => {
+      it('should extend the retry timeout if the other process locking the file changes', async () => {
         const fs = getFileSystem();
         const log: string[] = [];
         const lockFile = new MockLockFile(fs, log);
@@ -99,14 +104,19 @@ runInEachFileSystem(() => {
         });
         spyOn(lockFile, 'read').and.callFake(() => {
           log.push('read() => ' + lockFileContents);
+          if (lockFileContents === null) {
+            throw {code: 'ENOENT'};
+          }
           return lockFileContents;
         });
 
-        const promise = locker.lock(async() => log.push('fn()'));
+        const promise = locker.lock(async () => log.push('fn()'));
         // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
         expect(log).toEqual(['write()', 'read() => 188']);
         expect(logger.logs.info).toEqual([[
-          'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.'
+          'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.\n' +
+          `(If you are sure no ngcc process is running then you should delete the lock-file at ${
+              lockFile.path}.)`
         ]]);
 
         lockFileContents = '444';
@@ -114,12 +124,12 @@ runInEachFileSystem(() => {
         await new Promise(resolve => setTimeout(resolve, 250));
         expect(log).toEqual(['write()', 'read() => 188', 'write()', 'read() => 444']);
         expect(logger.logs.info).toEqual([
-          [
-            'Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.'
-          ],
-          [
-            'Another process, with id 444, is currently running ngcc.\nWaiting up to 1s for it to finish.'
-          ]
+          ['Another process, with id 188, is currently running ngcc.\nWaiting up to 1s for it to finish.\n' +
+           `(If you are sure no ngcc process is running then you should delete the lock-file at ${
+               lockFile.path}.)`],
+          ['Another process, with id 444, is currently running ngcc.\nWaiting up to 1s for it to finish.\n' +
+           `(If you are sure no ngcc process is running then you should delete the lock-file at ${
+               lockFile.path}.)`]
         ]);
 
         lockFileContents = null;
@@ -132,7 +142,7 @@ runInEachFileSystem(() => {
       });
 
       it('should error if another process does not release the lock-file before this times out',
-         async() => {
+         async () => {
            const fs = getFileSystem();
            const log: string[] = [];
            const lockFile = new MockLockFile(fs, log);
@@ -148,10 +158,13 @@ runInEachFileSystem(() => {
            });
            spyOn(lockFile, 'read').and.callFake(() => {
              log.push('read() => ' + lockFileContents);
+             if (lockFileContents === null) {
+               throw {code: 'ENOENT'};
+             }
              return lockFileContents;
            });
 
-           const promise = locker.lock(async() => log.push('fn()'));
+           const promise = locker.lock(async () => log.push('fn()'));
 
            // The lock is now waiting on the lock-file becoming free, so no `fn()` in the log.
            expect(log).toEqual(['write()', 'read() => 188']);
@@ -159,10 +172,11 @@ runInEachFileSystem(() => {
            let error: Error;
            await promise.catch(e => error = e);
            expect(log).toEqual(['write()', 'read() => 188', 'write()', 'read() => 188']);
-           expect(error !.message)
+           expect(error!.message)
                .toEqual(
                    `Timed out waiting 0.2s for another ngcc process, with id 188, to complete.\n` +
-                   `(If you are sure no ngcc process is running then you should delete the lock-file at ${lockFile.path}.)`);
+                   `(If you are sure no ngcc process is running then you should delete the lock-file at ${
+                       lockFile.path}.)`);
          });
     });
   });

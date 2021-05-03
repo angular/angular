@@ -22,7 +22,6 @@ export class TestComponent {
 /////////////////////////////////////
 function runTests() {
 
-  // #docregion spec
   const expectedHeroes = [{name: 'A'}, {name: 'B'}]
   const mockService = <HeroService> {getHeroes: () => expectedHeroes }
 
@@ -31,7 +30,6 @@ function runTests() {
     const component = new HeroListComponent(mockService);
     expect(component.heroes.length).toEqual(expectedHeroes.length);
   });
-  // #enddocregion spec
 
   return testResults;
 }
@@ -43,7 +41,7 @@ var testResults: {pass: string; message: string};
 
 function expect(actual: any) {
   return {
-    toEqual: function(expected: any){
+    toEqual: (expected: any) => {
       testResults = actual === expected ?
         {pass: 'passed', message: testName} :
         {pass: 'failed', message: `${testName}; expected ${actual} to equal ${expected}.`};

@@ -1,3 +1,4 @@
+// tslint:disable: directive-selector
 // #docregion
 // #docregion hero-detail-io
 export const heroDetail = {
@@ -10,7 +11,7 @@ export const heroDetail = {
     <div><label>id: </label>{{$ctrl.hero.id}}</div>
     <button ng-click="$ctrl.onDelete()">Delete</button>
   `,
-  controller: function() {
+  controller: function HeroDetailController() {
     this.onDelete = () => {
       this.deleted(this.hero);
     };

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,7 @@
 
 import {ComponentFactoryResolver, ComponentRef} from '@angular/core';
 
-import {RouterOutlet} from './directives/router_outlet';
+import {RouterOutletContract} from './directives/router_outlet';
 import {ActivatedRoute} from './router_state';
 
 
@@ -18,7 +18,7 @@ import {ActivatedRoute} from './router_state';
  * @publicApi
  */
 export class OutletContext {
-  outlet: RouterOutlet|null = null;
+  outlet: RouterOutletContract|null = null;
   route: ActivatedRoute|null = null;
   resolver: ComponentFactoryResolver|null = null;
   children = new ChildrenOutletContexts();
@@ -35,7 +35,7 @@ export class ChildrenOutletContexts {
   private contexts = new Map<string, OutletContext>();
 
   /** Called when a `RouterOutlet` directive is instantiated */
-  onChildOutletCreated(childName: string, outlet: RouterOutlet): void {
+  onChildOutletCreated(childName: string, outlet: RouterOutletContract): void {
     const context = this.getOrCreateContext(childName);
     context.outlet = outlet;
     this.contexts.set(childName, context);
@@ -63,7 +63,9 @@ export class ChildrenOutletContexts {
     return contexts;
   }
 
-  onOutletReAttached(contexts: Map<string, OutletContext>) { this.contexts = contexts; }
+  onOutletReAttached(contexts: Map<string, OutletContext>) {
+    this.contexts = contexts;
+  }
 
   getOrCreateContext(childName: string): OutletContext {
     let context = this.getContext(childName);
@@ -76,5 +78,7 @@ export class ChildrenOutletContexts {
     return context;
   }
 
-  getContext(childName: string): OutletContext|null { return this.contexts.get(childName) || null; }
+  getContext(childName: string): OutletContext|null {
+    return this.contexts.get(childName) || null;
+  }
 }

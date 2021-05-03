@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -17,7 +17,9 @@ import {ServerModule} from '@angular/platform-server';
 })
 export class AppComponent {
   data: string;
-  constructor(service: Service) { this.data = service.data; }
+  constructor(service: Service) {
+    this.data = service.data;
+  }
 }
 
 @NgModule({

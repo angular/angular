@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -9,16 +9,41 @@
 import {assertEqual, assertLessThanOrEqual} from './assert';
 
 /**
-* Equivalent to ES6 spread, add each item to an array.
-*
-* @param items The items to add
-* @param arr The array to which you want to add the items
-*/
+ * Equivalent to ES6 spread, add each item to an array.
+ *
+ * @param items The items to add
+ * @param arr The array to which you want to add the items
+ */
 export function addAllToArray(items: any[], arr: any[]) {
   for (let i = 0; i < items.length; i++) {
     arr.push(items[i]);
   }
 }
+
+/**
+ * Determines if the contents of two arrays is identical
+ *
+ * @param a first array
+ * @param b second array
+ * @param identityAccessor Optional function for extracting stable object identity from a value in
+ *     the array.
+ */
+export function arrayEquals<T>(a: T[], b: T[], identityAccessor?: (value: T) => unknown): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    let valueA = a[i];
+    let valueB = b[i];
+    if (identityAccessor) {
+      valueA = identityAccessor(valueA) as any;
+      valueB = identityAccessor(valueB) as any;
+    }
+    if (valueB !== valueA) {
+      return false;
+    }
+  }
+  return true;
+}
+
 
 /**
  * Flattens an array.
@@ -42,7 +67,7 @@ export function flatten(list: any[], dst?: any[]): any[] {
   return dst;
 }
 
-export function deepForEach<T>(input: (T | any[])[], fn: (value: T) => void): void {
+export function deepForEach<T>(input: (T|any[])[], fn: (value: T) => void): void {
   input.forEach(value => Array.isArray(value) ? deepForEach(value, fn) : fn(value));
 }
 
@@ -69,7 +94,7 @@ export function newArray<T>(size: number, value: T): T[];
 export function newArray<T>(size: number, value?: T): T[] {
   const list: T[] = [];
   for (let i = 0; i < size; i++) {
-    list.push(value !);
+    list.push(value!);
   }
   return list;
 }
@@ -228,7 +253,9 @@ export function arrayIndexOfSorted(array: string[], value: string): number {
  *
  * See: `keyValueArraySet`, `keyValueArrayGet`, `keyValueArrayIndexOf`, `keyValueArrayDelete`.
  */
-export interface KeyValueArray<VALUE> extends Array<VALUE|string> { __brand__: 'array-map'; }
+export interface KeyValueArray<VALUE> extends Array<VALUE|string> {
+  __brand__: 'array-map';
+}
 
 /**
  * Set a `value` for a `key`.
@@ -253,7 +280,7 @@ export function keyValueArraySet<V>(
 
 /**
  * Retrieve a `value` for a `key` (on `undefined` if not found.)
- * 
+ *
  * @param keyValueArray to search.
  * @param key The key to locate.
  * @return The `value` stored at the `key` location or `undefined if not found.

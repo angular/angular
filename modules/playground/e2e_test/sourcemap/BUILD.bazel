@@ -8,4 +8,7 @@ example_test(
         "//modules/playground/src/sourcemap:index.ts",
     ],
     server = "//modules/playground/src/sourcemap:devserver",
+    deps = [
+        "@npm//source-map",
+    ],
 )

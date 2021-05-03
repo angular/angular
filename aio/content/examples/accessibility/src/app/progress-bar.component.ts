@@ -1,3 +1,4 @@
+// tslint:disable: no-host-metadata-property
 // #docregion progressbar-component
 import { Component, Input } from '@angular/core';
 

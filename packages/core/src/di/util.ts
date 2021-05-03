@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,6 +8,7 @@
 
 import {Type} from '../interface/type';
 import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
+import {EMPTY_ARRAY} from '../util/empty';
 import {getClosureSafeProperty} from '../util/property';
 
 import {resolveForwardRef} from './forward_ref';
@@ -16,11 +17,11 @@ import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, Factor
 
 const USE_VALUE =
     getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
-const EMPTY_ARRAY: any[] = [];
 
 export function convertInjectableProviderToFactory(
-    type: Type<any>, provider?: ValueSansProvider | ExistingSansProvider | StaticClassSansProvider |
-        ConstructorSansProvider | FactorySansProvider | ClassSansProvider): () => any {
+    type: Type<any>,
+    provider?: ValueSansProvider|ExistingSansProvider|StaticClassSansProvider|
+    ConstructorSansProvider|FactorySansProvider|ClassSansProvider): () => any {
   if (!provider) {
     const reflectionCapabilities = new ReflectionCapabilities();
     const deps = reflectionCapabilities.parameters(type);
@@ -51,6 +52,6 @@ export function convertInjectableProviderToFactory(
       const reflectionCapabilities = new ReflectionCapabilities();
       deps = reflectionCapabilities.parameters(type);
     }
-    return () => new type(...injectArgs(deps !));
+    return () => new type(...injectArgs(deps!));
   }
 }

@@ -1,14 +1,15 @@
 // #docplaster
 // #docregion
-import { Injectable }       from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   CanActivate, Router,
   ActivatedRouteSnapshot,
   RouterStateSnapshot,
   CanActivateChild,
-  NavigationExtras
-}                           from '@angular/router';
-import { AuthService }      from './auth.service';
+  NavigationExtras,
+  UrlTree
+} from '@angular/router';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -16,34 +17,33 @@ import { AuthService }      from './auth.service';
 export class AuthGuard implements CanActivate, CanActivateChild {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    let url: string = state.url;
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): true|UrlTree {
+    const url: string = state.url;
 
     return this.checkLogin(url);
   }
 
-  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): true|UrlTree {
     return this.canActivate(route, state);
   }
 
-  checkLogin(url: string): boolean {
+  checkLogin(url: string): true|UrlTree {
     if (this.authService.isLoggedIn) { return true; }
 
     // Store the attempted URL for redirecting
     this.authService.redirectUrl = url;
 
     // Create a dummy session id
-    let sessionId = 123456789;
+    const sessionId = 123456789;
 
     // Set our navigation extras object
     // that contains our global query params and fragment
-    let navigationExtras: NavigationExtras = {
-      queryParams: { 'session_id': sessionId },
+    const navigationExtras: NavigationExtras = {
+      queryParams: { session_id: sessionId },
       fragment: 'anchor'
     };
 
-    // Navigate to the login page with extras
-    this.router.navigate(['/login'], navigationExtras);
-    return false;
+    // Redirect to the login page with extras
+    return this.router.createUrlTree(['/login'], navigationExtras);
   }
 }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -30,7 +30,7 @@ const profileTests =
 // build tests
 shell.exec(
     `yarn bazel build --config=ivy ` +
-    profileTests.map((name) => `//packages/core/test/render3/perf:${name}_lib.min_debug.es2015.js`)
+    profileTests.map((name) => `//packages/core/test/render3/perf:${name}_lib.min_debug.js`)
         .join(' '));
 
 // profile tests
@@ -60,8 +60,7 @@ if (readPath) {
 profileTests.forEach((name) => {
   // tslint:disable-next-line:no-console
   console.log('----------------', name, '----------------');
-  const log =
-      shell.exec(`node dist/bin/packages/core/test/render3/perf/${name}_lib.min_debug.es2015.js`);
+  const log = shell.exec(`node dist/bin/packages/core/test/render3/perf/${name}_lib.min_debug.js`);
   if (log.code != 0) throw new Error(log);
   const matches = log.stdout.match(/: ([\d\.]+) (.s)/);
   const runTime = times[name] || (times[name] = {name: name});

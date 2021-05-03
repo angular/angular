@@ -1,0 +1,21 @@
+@name Selector Collision
+@category runtime
+@videoUrl https://www.youtube.com/embed/z_3Z5mOm59I
+@shortDescription Multiple components match with the same tagname
+
+@description
+Two or more components use the same [element selector](guide/component-overview#specifying-a-components-css-selector). Because there can only be a single component associated with an element, selectors must be unique strings to prevent ambiguity for Angular.
+
+@debugging
+Use the element name from the error message to search for places where you’re using the same [selector declaration](guide/architecture-components) in your codebase:
+
+```typescript
+@Component({
+  selector: 'YOUR_STRING',
+  ...
+})
+```
+
+Ensure that each component has a unique CSS selector. This will guarantee that Angular renders the component you expect.
+
+If you’re having trouble finding multiple components with this selector tag name, check for components from imported component libraries, such as Angular Material. Make sure you're following the [best practices](guide/styleguide#component-selectors) for your selectors to prevent collisions.

@@ -1,0 +1,20 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+
+ts_library(
+    name = "driver-utilities",
+    srcs = glob(["*.ts"]),
+    module_name = "@angular/dev-infra-private/benchmark/driver-utilities",
+    tsconfig = "//dev-infra/benchmark/component_benchmark:tsconfig-e2e.json",
+    deps = [
+        "//packages/benchpress",
+        "@npm//@types/node",
+        "@npm//@types/selenium-webdriver",
+        "@npm//@types/shelljs",
+        "@npm//node-uuid",
+        "@npm//protractor",
+        "@npm//selenium-webdriver",
+        "@npm//shelljs",
+    ],
+)

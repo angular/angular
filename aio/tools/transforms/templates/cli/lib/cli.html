@@ -13,14 +13,15 @@
 <table class="is-full-width list-table property-table">
   <thead>
     <tr>
-      <th>Argument</th>
-      <th>Description</th>
+      <th width="15%">Argument</th>
+      <th width="40%">Description</th>
+      <th>Value Type</th>
     </tr>
   </thead>
   <tbody>
   {% for option in arguments %}
   <tr class="cli-option">
-    <td><code class="cli-option-syntax no-auto-link">&lt;<var>{$ option.name $}</var>&gt;{% if option.enum.length > 0 %}={$ renderValues(option.enum) $}{% endif %}</code></td>
+    <td><code class="cli-option-syntax no-auto-link">&lt;<var>{$ option.name $}</var>&gt;</code></td>
     <td>
       {$ option.description | marked $}
       {% if option.subcommands.length -%}
@@ -32,6 +33,7 @@
       </ul>
       {%- endif %}
     </td>
+    <td><code class="cli-option-syntax no-auto-link">{% if option.enum.length > 0 %}{$ renderValues(option.enum) $}{% else %}string{% endif %}</code></td>
   </tr>
   {% endfor %}
   </tbody>
@@ -45,15 +47,17 @@
 <table class="is-full-width list-table property-table">
   <thead>
     <tr>
-      <th>Option</th>
-      <th>Description</th>
-    </tr>
+      <th width="15%">Option</th>
+      <th width="40%">Description</th>
+      <th>Value Type</th>
+      <th>Default Value</th>
+      </tr>
   </thead>
   <tbody>
   {% for option in options %}
     <tr class="cli-option">
       <td>
-        <code class="cli-option-syntax no-auto-link{% if option.deprecated %} deprecated-api-item{% endif %}">{$ renderOption(option.name, option.type, option.default, option.enum) $}</code>
+        <code class="cli-option-syntax no-auto-link{% if option.deprecated %} deprecated-api-item{% endif %}">{$ renderOptionName(option.name) $}</code>
       </td>
       <td>
         {% if option.deprecated %}
@@ -64,9 +68,10 @@
           {% endif %}
         {% endif %}
         {$ option.description | marked $}
-        {% if option.default !== undefined %}<p><span class="cli-default">Default:</span> <code class="no-auto-link">{$ option.default $}</code></p>{% endif %}
         {% if option.aliases.length %}<p><span class="cli-aliases">Aliases:</span> {% for alias in option.aliases %}{$ renderOptionName(alias) $}{% if not loop.last %}, {% endif %}{% endfor %}</p>{% endif %}
       </td>
+      <td><code class="no-auto-link">{$ renderOptionValues(option.type, option.enum) $}</td>
+      <td>{% if option.default !== undefined %}<code class="no-auto-link">{$ option.default $}</code>{% endif %}</td>
     </tr>
   {% endfor %}
   </tbody>
@@ -78,20 +83,15 @@
 {% if name.length > 1 %}-{% endif %}-{$ name $}
 {%- endmacro %}
 
-{%- macro renderValues(values, default) -%}
-{%- set valString = values.join('|') -%}
-{%- if valString.length > 15 %}<br>    {% endif %}{$ valString $}
+{%- macro renderValues(values) -%}
+{$ values.join('|') $}
 {%- endmacro -%}
 
-{%- macro renderOption(name, type, default, values) -%}
-{% set prefix = '--' if name.length > 1 else '-' %}
-{%- if type === 'boolean' and not values.length %}{$ prefix $}{$ name $}={$ renderValues([true, false], default) $}
-{%- elif values.length -%}
-{$ prefix $}{$ name $}={$ renderValues(values, default) $}
-{%- elif type === 'string' -%}
-{$ prefix $}{$ name $}={% if name.length > 15 %}<br>    {% endif %}<var>{$ name $}</var>
+{%- macro renderOptionValues(type, values) -%}
+{%- if values.length -%}
+{$ renderValues(values) $}
 {%- else -%}
-{$ prefix $}{$ name $}
+{$ type $}
 {%- endif -%}
 {%- endmacro -%}
 

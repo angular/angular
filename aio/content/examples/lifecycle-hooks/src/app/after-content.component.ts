@@ -2,25 +2,16 @@
 // #docregion
 import { AfterContentChecked, AfterContentInit, Component, ContentChild } from '@angular/core';
 
-import { LoggerService }  from './logger.service';
+import { ChildComponent } from './child.component';
+import { LoggerService } from './logger.service';
 
-//////////////////
-@Component({
-  selector: 'app-child',
-  template: '<input [(ngModel)]="hero">'
-})
-export class ChildComponent {
-  hero = 'Magneta';
-}
-
-//////////////////////
 @Component({
   selector: 'after-content',
 // #docregion template
   template: `
-    <div>-- projected content begins --</div>
+    <div>projected content begins</div>
       <ng-content></ng-content>
-    <div>-- projected content ends --</div>`
+    <div>projected content ends</div>`
 // #enddocregion template
    + `
     <p *ngIf="comment" class="comment">
@@ -59,7 +50,6 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
     }
   }
 // #enddocregion hooks
-// #docregion do-something
 
   // This surrogate for real business logic sets the `comment`
   private doSomething() {
@@ -67,48 +57,11 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
   }
 
   private logIt(method: string) {
-    let child = this.contentChild;
-    let message = `${method}: ${child ? child.hero : 'no'} child content`;
+    const child = this.contentChild;
+    const message = `${method}: ${child ? child.hero : 'no'} child content`;
     this.logger.log(message);
   }
 // #docregion hooks
   // ...
 }
 // #enddocregion hooks
-
-//////////////
-@Component({
-  selector: 'after-content-parent',
-  template: `
-  <div class="parent">
-    <h2>AfterContent</h2>
-
-    <div *ngIf="show">` +
-// #docregion parent-template
-     `<after-content>
-        <app-child></app-child>
-      </after-content>`
-// #enddocregion parent-template
-+ `</div>
-
-    <h4>-- AfterContent Logs --</h4>
-    <p><button (click)="reset()">Reset</button></p>
-    <div *ngFor="let msg of logger.logs">{{msg}}</div>
-  </div>
-  `,
-  styles: ['.parent {background: burlywood}'],
-  providers: [LoggerService]
-})
-export class AfterContentParentComponent {
-  show = true;
-
-  constructor(public logger: LoggerService) {
-  }
-
-  reset() {
-    this.logger.clear();
-    // quickly remove and reload AfterContentComponent which recreates it
-    this.show = false;
-    this.logger.tick_then(() => this.show = true);
-  }
-}

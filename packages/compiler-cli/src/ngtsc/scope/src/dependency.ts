@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -47,17 +47,18 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
     const clazz = ref.node;
     const sourceFile = clazz.getSourceFile();
     if (!sourceFile.isDeclarationFile) {
-      throw new Error(
-          `Debug error: DtsModuleScopeResolver.read(${ref.debugName} from ${sourceFile.fileName}), but not a .d.ts file`);
+      throw new Error(`Debug error: DtsModuleScopeResolver.read(${ref.debugName} from ${
+          sourceFile.fileName}), but not a .d.ts file`);
     }
 
     if (this.cache.has(clazz)) {
-      return this.cache.get(clazz) !;
+      return this.cache.get(clazz)!;
     }
 
     // Build up the export scope - those directives and pipes made visible by this module.
     const directives: DirectiveMeta[] = [];
     const pipes: PipeMeta[] = [];
+    const ngModules = new Set<ClassDeclaration>([clazz]);
 
     const meta = this.dtsMetaReader.getNgModuleMetadata(ref);
     if (meta === null) {
@@ -114,17 +115,24 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
           for (const pipe of exportScope.exported.pipes) {
             pipes.push(this.maybeAlias(pipe, sourceFile, /* isReExport */ true));
           }
+          for (const ngModule of exportScope.exported.ngModules) {
+            ngModules.add(ngModule);
+          }
         }
       }
       continue;
 
       // The export was not a directive, a pipe, or a module. This is an error.
       // TODO(alxhub): produce a ts.Diagnostic
-      throw new Error(`Exported value ${exportRef.debugName} was not a directive, pipe, or module`);
     }
 
     const exportScope: ExportScope = {
-      exported: {directives, pipes},
+      exported: {
+        directives,
+        pipes,
+        ngModules: Array.from(ngModules),
+        isPoisoned: false,
+      },
     };
     this.cache.set(clazz, exportScope);
     return exportScope;

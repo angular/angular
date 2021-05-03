@@ -1,11 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {TestBed, fakeAsync, flushMicrotasks} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks} from '@angular/core/testing';
+
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 
 import {CssKeyframesDriver} from '../../../src/render/css_keyframes/css_keyframes_driver';
 import {CssKeyframesPlayer} from '../../../src/render/css_keyframes/css_keyframes_player';
@@ -16,7 +18,7 @@ import {assertElementExistsInDom, createElement, findKeyframeDefinition, forceRe
 const CSS_KEYFRAME_RULE_TYPE = 7;
 
 describe('CssKeyframesDriver tests', () => {
-  if (isNode || typeof(window as any)['AnimationEvent'] == 'undefined') return;
+  if (isNode || typeof (window as any)['AnimationEvent'] == 'undefined') return;
 
   describe('building keyframes', () => {
     it('should build CSS keyframe style object containing the keyframe styles', () => {
@@ -28,7 +30,7 @@ describe('CssKeyframesDriver tests', () => {
         {opacity: 1, width: '200px', offset: 1},
       ]);
 
-      const head = document.querySelector('head') !;
+      const head = document.querySelector('head')!;
       head.appendChild(kfElm);
       forceReflow();
 
@@ -67,7 +69,7 @@ describe('CssKeyframesDriver tests', () => {
         {width: '200px', offset: 1},
       ]);
 
-      const head = document.querySelector('head') !;
+      const head = document.querySelector('head')!;
       head.appendChild(kfElm);
       forceReflow();
 
@@ -104,9 +106,9 @@ describe('CssKeyframesDriver tests', () => {
       expect(easing).toEqual('ease-out');
     });
 
-    it('should animate until the `animationend` method is emitted, but stil retain the <style> method and the element animation details',
+    it('should animate until the `animationend` method is emitted, but still retain the <style> method and the element animation details',
        fakeAsync(() => {
-         // IE10 and IE11 cannot create an instanceof AnimationEvent
+         // IE11 cannot create an instanceof AnimationEvent
          if (!supportsAnimationEventCreation()) return;
 
          const elm = createElement();
@@ -144,7 +146,7 @@ describe('CssKeyframesDriver tests', () => {
          assertElementExistsInDom(matchingStyleElm, true);
        }));
 
-    it('should animate until finish() is called, but stil retain the <style> method and the element animation details',
+    it('should animate until finish() is called, but still retain the <style> method and the element animation details',
        fakeAsync(() => {
          const elm = createElement();
          const animator = new CssKeyframesDriver();
@@ -261,7 +263,7 @@ describe('CssKeyframesDriver tests', () => {
 
       player.play();
       player.finish();
-      player.beforeDestroy !();
+      player.beforeDestroy!();
       expect(player.currentSnapshot).toEqual({
         width: '999px',
         height: '999px',
@@ -295,7 +297,7 @@ describe('CssKeyframesDriver tests', () => {
        () => {
          // IE cannot modify the position of an animation...
          // note that this feature is only for testing purposes
-         if (isIE()) return;
+         if (browserDetection.isIE) return;
 
          const elm = createElement();
          elm.style.border = '1px solid black';
@@ -369,6 +371,32 @@ describe('CssKeyframesDriver tests', () => {
          expect(k2).toEqual({width: '400px', height: '400px', offset: 0.5});
          expect(k3).toEqual({width: '500px', height: '500px', offset: 1});
        });
+
+    if (browserDetection.supportsShadowDom) {
+      it('should append <style> in shadow DOM root element', fakeAsync(() => {
+           const hostElement = createElement();
+           const shadowRoot = hostElement.attachShadow({mode: 'open'});
+           const elementToAnimate = createElement();
+           shadowRoot.appendChild(elementToAnimate);
+           const animator = new CssKeyframesDriver();
+
+           assertExistingAnimationDuration(elementToAnimate, 0);
+           expect(shadowRoot.querySelector('style')).toBeFalsy();
+
+           const player = animator.animate(
+               elementToAnimate,
+               [
+                 {width: '0px', offset: 0},
+                 {width: '200px', offset: 1},
+               ],
+               1234, 0, 'ease-out');
+
+           player.play();
+
+           assertExistingAnimationDuration(elementToAnimate, 1234);
+           assertElementExistsInDom(shadowRoot.querySelector('style'), true);
+         }));
+    }
   });
 });
 
@@ -390,9 +418,4 @@ function parseElementAnimationStyle(element: any):
   const easing = style.animationTimingFunction;
   const animationName = style.animationName;
   return {duration, delay, easing, animationName};
-}
-
-function isIE() {
-  // note that this only applies to older IEs (not edge)
-  return (window as any).document['documentMode'] ? true : false;
 }

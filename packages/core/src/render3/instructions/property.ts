@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -33,7 +33,7 @@ import {elementPropertyInternal, setInputsForProperty, storePropertyBindingMetad
  * @codeGenApi
  */
 export function ɵɵproperty<T>(
-    propName: string, value: T, sanitizer?: SanitizerFn | null): typeof ɵɵproperty {
+    propName: string, value: T, sanitizer?: SanitizerFn|null): typeof ɵɵproperty {
   const lView = getLView();
   const bindingIndex = nextBindingIndex();
   if (bindingUpdated(lView, bindingIndex, value)) {
@@ -52,7 +52,7 @@ export function ɵɵproperty<T>(
  */
 export function setDirectiveInputsWhichShadowsStyling(
     tView: TView, tNode: TNode, lView: LView, value: any, isClassBased: boolean) {
-  const inputs = tNode.inputs !;
+  const inputs = tNode.inputs!;
   const property = isClassBased ? 'class' : 'style';
   // We support both 'class' and `className` hence the fallback.
   setInputsForProperty(tView, lView, inputs[property], property, value);

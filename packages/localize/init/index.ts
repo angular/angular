@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {$localize, LocalizeFn, _global} from '../src/localize';
+import {$localize, _global, LocalizeFn} from '../src/localize';
 
-export {LocalizeFn, TranslateFn} from '../src/localize';
+export {$localize, LocalizeFn, TranslateFn} from '../src/localize';
 
 // Attach $localize to the global context, as a side-effect of this module.
 _global.$localize = $localize;
@@ -37,7 +37,7 @@ declare global {
    * ```
    *
    * This format is the same as that used for `i18n` markers in Angular templates. See the
-   * [Angular 18n guide](guide/i18n#template-translations).
+   * [Angular 18n guide](guide/i18n#mark-text-for-translations).
    *
    * **Naming placeholders**
    *

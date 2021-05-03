@@ -1,7 +1,7 @@
 $notificationHeight: 56px;
 
 // we need to override some of the toolbar styling
-.mat-toolbar mat-toolbar-row.notification-container {
+.app-toolbar mat-toolbar-row.notification-container {
   padding: 0;
   height: auto;
   overflow: hidden;
@@ -69,29 +69,35 @@ aio-notification {
 // Here are all the hacks to make the content and sidebars the right height
 // when the notification is visible
 .aio-notification-show {
-  .sidenav-content {
-    padding-top: 80px + $notificationHeight;
-  }
-
-  mat-sidenav.mat-sidenav.sidenav {
-    top: 64px + $notificationHeight;
-
-    @media (max-width: 600px) {
-      top: 56px + $notificationHeight;
-    }
-  }
-
   .toc-container {
     top: 76px + $notificationHeight;
   }
 
   .search-results {
-    padding-top: 68px + $notificationHeight;
+    padding-top: $notificationHeight;
   }
 
-  &.page-home, &.page-resources, &.page-events, &.page-features, &.page-presskit, &.page-contribute  {
-    main {
-      padding-top: $notificationHeight;
+  mat-sidenav-container.sidenav-container {
+    .sidenav-content {
+      padding-top: 80px + $notificationHeight;
+    }
+
+    mat-sidenav.sidenav {
+      top: 64px + $notificationHeight;
+
+      @media (max-width: 600px) {
+        top: 56px + $notificationHeight;
+      }
+    }
+  }
+}
+
+@include marketing-pages {
+  &.aio-notification-show {
+    mat-sidenav-container.sidenav-container {
+      .sidenav-content {
+        padding-top: $notificationHeight;
+      }
     }
   }
 }
@@ -104,7 +110,8 @@ aio-notification {
   .sidenav-content {
     transition: padding-top 250ms ease;
   }
-  mat-sidenav.mat-sidenav.sidenav, .toc-container {
+
+  mat-sidenav.sidenav, .toc-container {
     transition: top 250ms ease;
   }
 }

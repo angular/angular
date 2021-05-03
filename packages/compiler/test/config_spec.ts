@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -19,7 +19,9 @@ import {CompilerConfig, preserveWhitespacesDefault} from '../src/config';
 
   describe('preserveWhitespacesDefault', () => {
     it('should return the default `false` setting when no preserveWhitespacesOption are provided',
-       () => { expect(preserveWhitespacesDefault(null)).toEqual(false); });
+       () => {
+         expect(preserveWhitespacesDefault(null)).toEqual(false);
+       });
     it('should return the preserveWhitespacesOption when provided as a parameter', () => {
       expect(preserveWhitespacesDefault(true)).toEqual(true);
       expect(preserveWhitespacesDefault(false)).toEqual(false);

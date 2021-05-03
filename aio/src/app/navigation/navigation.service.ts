@@ -153,7 +153,7 @@ export class NavigationService {
         if (!navMap.has(cleanedUrl)) {
           navMap.set(cleanedUrl, {});
         }
-        const navMapItem = navMap.get(cleanedUrl)!;
+        const navMapItem = navMap.get(cleanedUrl) as CurrentNodes;
         navMapItem[view] = { url, view, nodes };
       }
 

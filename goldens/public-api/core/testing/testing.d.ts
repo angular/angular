@@ -1,3 +1,7 @@
+/** @codeGenApi */
+export declare const __core_private_testing_placeholder__ = "";
+
+/** @deprecated */
 export declare function async(fn: Function): (done: any) => any;
 
 export declare class ComponentFixture<T> {
@@ -58,11 +62,11 @@ export declare interface TestBed {
     configureTestingModule(moduleDef: TestModuleMetadata): void;
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
     execute(tokens: any[], fn: Function, context?: any): any;
-    /** @deprecated */ get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+    /** @deprecated */ get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
     /** @deprecated */ get(token: any, notFoundValue?: any): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
-    inject<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
-    inject<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T | null;
+    inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
     overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void;
     overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void;
     overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void;
@@ -95,11 +99,11 @@ export declare interface TestBedStatic {
     }): TestBedStatic;
     configureTestingModule(moduleDef: TestModuleMetadata): TestBedStatic;
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
-    /** @deprecated */ get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
+    /** @deprecated */ get<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): any;
     /** @deprecated */ get(token: any, notFoundValue?: any): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
-    inject<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue?: T, flags?: InjectFlags): T;
-    inject<T>(token: Type<T> | InjectionToken<T> | AbstractType<T>, notFoundValue: null, flags?: InjectFlags): T | null;
+    inject<T>(token: ProviderToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    inject<T>(token: ProviderToken<T>, notFoundValue: null, flags?: InjectFlags): T | null;
     overrideComponent(component: Type<any>, override: MetadataOverride<Component>): TestBedStatic;
     overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): TestBedStatic;
     overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedStatic;
@@ -137,6 +141,8 @@ export declare type TestModuleMetadata = {
 export declare function tick(millis?: number, tickOptions?: {
     processNewMacroTasksSynchronously: boolean;
 }): void;
+
+export declare function waitForAsync(fn: Function): (done: any) => any;
 
 export declare function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;
 export declare function withModule(moduleDef: TestModuleMetadata, fn: Function): () => any;

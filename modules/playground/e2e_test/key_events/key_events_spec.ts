@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,16 +8,17 @@
 
 import {browser, by, element, protractor} from 'protractor';
 
-import {verifyNoBrowserErrors} from '../../../e2e_util/e2e_util';
+import {verifyNoBrowserErrors} from '../../../../dev-infra/benchmark/driver-utilities';
 
 const Key = protractor.Key;
 
 describe('key_events', function() {
-
   const URL = '/';
 
   afterEach(verifyNoBrowserErrors);
-  beforeEach(() => { browser.get(URL); });
+  beforeEach(() => {
+    browser.get(URL);
+  });
 
   it('should display correct key names', function() {
     const firstArea = element.all(by.css('.sample-area')).get(0);
@@ -78,5 +79,4 @@ describe('key_events', function() {
     secondArea.sendKeys(Key.CONTROL, Key.SHIFT, Key.ENTER);
     expect(secondArea.getText()).toEqual('');
   });
-
 });

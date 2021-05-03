@@ -1,4 +1,4 @@
-import { ReflectiveInjector } from '@angular/core';
+import { Injector } from '@angular/core';
 import { environment } from 'environments/environment';
 import { LocationService } from 'app/shared/location.service';
 import { MockLocationService } from 'testing/location.service';
@@ -15,7 +15,7 @@ describe('Deployment service', () => {
     it('should get the mode from the `mode` query parameter if available', () => {
       const injector = getInjector();
 
-      const locationService: MockLocationService = injector.get(LocationService);
+      const locationService = injector.get(LocationService) as unknown as MockLocationService;
       locationService.search.and.returnValue({ mode: 'bar' });
 
       const deployment = injector.get(Deployment);
@@ -25,8 +25,8 @@ describe('Deployment service', () => {
 });
 
 function getInjector() {
-  return ReflectiveInjector.resolveAndCreate([
-    Deployment,
-    { provide: LocationService, useFactory: () => new MockLocationService('') }
-  ]);
+  return Injector.create({providers: [
+    { provide: Deployment, deps: [LocationService] },
+    { provide: LocationService, useFactory: () => new MockLocationService(''), deps: [] }
+  ]});
 }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,11 +18,7 @@ function plural(n: number): number {
 
 export default [
   'sd',
-  [
-    ['صبح، منجهند', 'منجهند، شام'],
-    ['صبح، منجهند', 'شام، منجهند'],
-    ['صبح، منجهند', 'منجهند، شام']
-  ],
+  [['صبح، منجهند', 'منجهند، شام'], ['صبح، منجهند', 'شام، منجهند'], ['صبح، منجهند', 'منجهند، شام']],
   [['صبح، منجهند', 'منجهند، شام'], u, u],
   [
     ['آچر', 'سو', 'اڱارو', 'اربع', 'خم', 'جمعو', 'ڇنڇر'],
@@ -32,8 +28,8 @@ export default [
   [
     ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
     [
-      'جنوري', 'فيبروري', 'مارچ', 'اپريل', 'مئي', 'جون', 'جولاءِ',
-      'آگسٽ', 'سيپٽمبر', 'آڪٽوبر', 'نومبر', 'ڊسمبر'
+      'جنوري', 'فيبروري', 'مارچ', 'اپريل', 'مئي', 'جون', 'جولاءِ', 'آگسٽ', 'سيپٽمبر', 'آڪٽوبر',
+      'نومبر', 'ڊسمبر'
     ],
     u
   ],

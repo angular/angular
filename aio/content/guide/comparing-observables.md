@@ -21,16 +21,16 @@ Observables are often compared to promises. Here are some key differences:
 
 * Observables are not executed until a consumer subscribes. The `subscribe()` executes the defined behavior once, and it can be called again. Each subscription has its own computation. Resubscription causes recomputation of values.
 
-  <code-example 
-    path="comparing-observables/src/observables.ts" 
-    header="src/observables.ts (observable)" 
+  <code-example
+    path="comparing-observables/src/observables.ts"
+    header="src/observables.ts (observable)"
     region="observable">
   </code-example>
 
 * Promises execute immediately, and just once. The computation of the result is initiated when the promise is created. There is no way to restart work. All `then` clauses (subscriptions) share the same computation.
 
-  <code-example 
-    path="comparing-observables/src/promises.ts" 
+  <code-example
+    path="comparing-observables/src/promises.ts"
     header="src/promises.ts (promise)"
     region="promise">
   </code-example>
@@ -39,17 +39,17 @@ Observables are often compared to promises. Here are some key differences:
 
 * Observables differentiate between transformation function such as a map and subscription. Only subscription activates the subscriber function to start computing the values.
 
-  <code-example 
-    path="comparing-observables/src/observables.ts" 
-    header="src/observables.ts (chain)" 
+  <code-example
+    path="comparing-observables/src/observables.ts"
+    header="src/observables.ts (chain)"
     region="chain">
   </code-example>
 
 * Promises do not differentiate between the last `.then` clauses (equivalent to subscription) and intermediate `.then` clauses (equivalent to map).
 
-  <code-example 
+  <code-example
     path="comparing-observables/src/promises.ts"
-    header="src/promises.ts (chain)" 
+    header="src/promises.ts (chain)"
     region="chain">
   </code-example>
 
@@ -57,9 +57,9 @@ Observables are often compared to promises. Here are some key differences:
 
 * Observable subscriptions are cancellable. Unsubscribing removes the listener from receiving further values, and notifies the subscriber function to cancel work.
 
-  <code-example 
-    path="comparing-observables/src/observables.ts" 
-    header="src/observables.ts (unsubcribe)" 
+  <code-example
+    path="comparing-observables/src/observables.ts"
+    header="src/observables.ts (unsubcribe)"
     region="unsubscribe">
   </code-example>
 
@@ -69,16 +69,16 @@ Observables are often compared to promises. Here are some key differences:
 
 * Observable execution errors are delivered to the subscriber's error handler, and the subscriber automatically unsubscribes from the observable.
 
-  <code-example 
-    path="comparing-observables/src/observables.ts" 
+  <code-example
+    path="comparing-observables/src/observables.ts"
     header="src/observables.ts (error)"
     region="error">
   </code-example>
 
 * Promises push errors to the child promises.
 
-  <code-example 
-    path="comparing-observables/src/promises.ts" 
+  <code-example
+    path="comparing-observables/src/promises.ts"
     header="src/promises.ts (error)"
     region="error">
   </code-example>
@@ -157,9 +157,9 @@ Here are some code samples that illustrate how the same kind of operation is def
     <td>Creation & cancellation</td>
     <td>
 <pre>// Setup
-let clicks$ = fromEvent(buttonEl, ‘click’);
+const clicks$ = fromEvent(buttonEl, ‘click’);
 // Begin listening
-let subscription = clicks$
+const subscription = clicks$
   .subscribe(e => console.log(‘Clicked’, e))
 // Stop listening
 subscription.unsubscribe();</pre>

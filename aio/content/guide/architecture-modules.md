@@ -17,7 +17,7 @@ An NgModule is defined by a class decorated with `@NgModule()`. The `@NgModule()
 
 * `imports`: Other modules whose exported classes are needed by component templates declared in *this* NgModule.
 
-* `providers`: Creators of [services](guide/architecture-services) that this NgModule contributes to the global collection of services; they become accessible in all parts of the app. (You can also specify providers at the component level, which is often preferred.)
+* `providers`: Creators of [services](guide/architecture-services) that this NgModule contributes to the global collection of services; they become accessible in all parts of the app. (You can also specify providers at the component level.)
 
 * `bootstrap`: The main application view, called the *root component*, which hosts all other app views. Only the *root NgModule* should set the `bootstrap` property.
 
@@ -70,7 +70,7 @@ Other JavaScript modules use *import statements* to access public objects from o
 <code-example path="architecture/src/app/app.module.ts" region="export"></code-example>
 
 <div class="alert is-helpful">
-  <a href="http://exploringjs.com/es6/ch_modules.html">Learn more about the JavaScript module system on the web.</a>
+  <a href="https://exploringjs.com/es6/ch_modules.html">Learn more about the JavaScript module system on the web.</a>
 </div>
 
 ## Angular libraries

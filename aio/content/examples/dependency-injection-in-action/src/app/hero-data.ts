@@ -3,7 +3,7 @@ import { Hero } from './hero';
 
 export class HeroData {
   createDb() {
-    let heroes = [
+    const heroes = [
       new Hero(1, 'Windstorm'),
       new Hero(2, 'Bombasto'),
       new Hero(3, 'Magneta'),

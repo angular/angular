@@ -38,7 +38,11 @@
         margin: 0;
         clear: left;
       }
-
+      .actions {
+        display: flex;
+        color: $blue;
+        @include font-size(14);
+      }
       .show-all {
         display: initial;
       }
@@ -272,6 +276,7 @@
   }
 
   h1 {
+    @include font-size(24);
     margin: 0;
   }
 }

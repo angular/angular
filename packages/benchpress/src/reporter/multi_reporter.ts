@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -27,7 +27,9 @@ export class MultiReporter extends Reporter {
     ];
   }
 
-  constructor(private _reporters: Reporter[]) { super(); }
+  constructor(private _reporters: Reporter[]) {
+    super();
+  }
 
   reportMeasureValues(values: MeasureValues): Promise<any[]> {
     return Promise.all(this._reporters.map(reporter => reporter.reportMeasureValues(values)));

@@ -1,0 +1,7 @@
+{
+  "name": "zone.js/zone-legacy",
+  "main": "../../bundles/zone-legacy.umd.js",
+  "fesm2015": "../../fesm2015/zone-legacy.js",
+  "es2015": "../../fesm2015/zone-legacy.js",
+  "module": "../../fesm2015/zone-legacy.js"
+}

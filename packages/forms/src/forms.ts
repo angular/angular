@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -43,7 +43,7 @@ export {FormGroupName} from './directives/reactive_directives/form_group_name';
 export {NgSelectOption, SelectControlValueAccessor} from './directives/select_control_value_accessor';
 export {SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 export {ɵNgSelectMultipleOption} from './directives/select_multiple_control_value_accessor';
-export {AsyncValidator, AsyncValidatorFn, CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
+export {AsyncValidator, AsyncValidatorFn, CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MaxValidator, MinLengthValidator, MinValidator, PatternValidator, RequiredValidator, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 export {FormBuilder} from './form_builder';
 export {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup} from './model';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';

@@ -1,0 +1,69 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import {compileInjectable, ConstantPool, createR3ProviderExpression, R3DeclareInjectableMetadata, R3InjectableMetadata, R3PartialDeclaration} from '@angular/compiler';
+import * as o from '@angular/compiler/src/output/output_ast';
+
+import {AstObject} from '../../ast/ast_value';
+import {FatalLinkerError} from '../../fatal_linker_error';
+
+import {PartialLinker} from './partial_linker';
+import {extractForwardRef, getDependency, wrapReference} from './util';
+
+/**
+ * A `PartialLinker` that is designed to process `ɵɵngDeclareInjectable()` call expressions.
+ */
+export class PartialInjectableLinkerVersion1<TExpression> implements PartialLinker<TExpression> {
+  linkPartialDeclaration(
+      constantPool: ConstantPool,
+      metaObj: AstObject<R3PartialDeclaration, TExpression>): o.Expression {
+    const meta = toR3InjectableMeta(metaObj);
+    const def = compileInjectable(meta, /* resolveForwardRefs */ false);
+    return def.expression;
+  }
+}
+
+/**
+ * Derives the `R3InjectableMetadata` structure from the AST object.
+ */
+export function toR3InjectableMeta<TExpression>(
+    metaObj: AstObject<R3DeclareInjectableMetadata, TExpression>): R3InjectableMetadata {
+  const typeExpr = metaObj.getValue('type');
+  const typeName = typeExpr.getSymbolName();
+  if (typeName === null) {
+    throw new FatalLinkerError(
+        typeExpr.expression, 'Unsupported type, its name could not be determined');
+  }
+
+  const meta: R3InjectableMetadata = {
+    name: typeName,
+    type: wrapReference(typeExpr.getOpaque()),
+    internalType: typeExpr.getOpaque(),
+    typeArgumentCount: 0,
+    providedIn: metaObj.has('providedIn') ? extractForwardRef(metaObj.getValue('providedIn')) :
+                                            createR3ProviderExpression(o.literal(null), false),
+  };
+
+  if (metaObj.has('useClass')) {
+    meta.useClass = extractForwardRef(metaObj.getValue('useClass'));
+  }
+  if (metaObj.has('useFactory')) {
+    meta.useFactory = metaObj.getOpaque('useFactory');
+  }
+  if (metaObj.has('useExisting')) {
+    meta.useExisting = extractForwardRef(metaObj.getValue('useExisting'));
+  }
+  if (metaObj.has('useValue')) {
+    meta.useValue = extractForwardRef(metaObj.getValue('useValue'));
+  }
+
+  if (metaObj.has('deps')) {
+    meta.deps = metaObj.getArray('deps').map(dep => getDependency(dep.getObject()));
+  }
+
+  return meta;
+}

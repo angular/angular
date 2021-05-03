@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -23,6 +23,10 @@ const ng1Versions = [
   },
   {
     label: '1.7',
+    files: [`angular-1.7/${ANGULARJS_FILENAME}`, 'angular-mocks-1.7/angular-mocks.js'],
+  },
+  {
+    label: '1.8',
     files: [`angular/${ANGULARJS_FILENAME}`, 'angular-mocks/angular-mocks.js'],
   },
 ];
@@ -148,7 +152,7 @@ export function html(html: string): Element {
   return div;
 }
 
-export function multiTrim(text: string | null | undefined, allSpace = false): string {
+export function multiTrim(text: string|null|undefined, allSpace = false): string {
   if (typeof text == 'string') {
     const repl = allSpace ? '' : ' ';
     return text.replace(/\n/g, '').replace(/\s+/g, repl).trim();

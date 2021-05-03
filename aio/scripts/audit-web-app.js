@@ -35,7 +35,6 @@ const puppeteer = require('puppeteer');
 // Constants
 const AUDIT_CATEGORIES = ['accessibility', 'best-practices', 'performance', 'pwa', 'seo'];
 const LIGHTHOUSE_FLAGS = {logLevel: process.env.CI ? 'error' : 'info'};  // Be less verbose on CI.
-const SKIPPED_HTTPS_AUDITS = ['redirects-http', 'uses-http2'];
 const VIEWER_URL = 'https://googlechrome.github.io/lighthouse/viewer';
 const WAIT_FOR_SW_DELAY = 5000;
 
@@ -45,7 +44,6 @@ _main(process.argv.slice(2));
 // Functions - Definitions
 async function _main(args) {
   const {url, minScores, logFile} = parseInput(args);
-  const isOnHttp = /^http:/.test(url);
   const lhFlags = {...LIGHTHOUSE_FLAGS, onlyCategories: Object.keys(minScores).sort()};
   const lhConfig = {
     extends: 'lighthouse:default',
@@ -57,18 +55,21 @@ async function _main(args) {
   console.log(`Running web-app audits for '${url}'...`);
   console.log(`  Audit categories: ${lhFlags.onlyCategories.join(', ')}`);
 
-  // If testing on HTTP, skip HTTPS-specific tests.
-  // (Note: Browsers special-case localhost and run ServiceWorker even on HTTP.)
-  if (isOnHttp) skipHttpsAudits(lhConfig);
-
   logger.setLevel(lhFlags.logLevel);
 
   try {
     console.log('');
     const startTime = Date.now();
-    const results = await launchChromeAndRunLighthouse(url, lhFlags, lhConfig);
+    const browser = await puppeteer.launch();
+    const browserVersion = await browser.version();
+    const results = await runLighthouse(browser, url, lhFlags, lhConfig);
+
+    console.log(
+        `\n  Browser version:    ${browserVersion}` +
+        `\n  Lighthouse version: ${results.lhr.lighthouseVersion}`);
+
     const success = await processResults(results, minScores, logFile);
-    console.log(`\n(Completed in ${((Date.now() - startTime) / 1000).toFixed(1)}s.)\n`);
+    console.log(`\n  (Completed in ${((Date.now() - startTime) / 1000).toFixed(1)}s.)\n`);
 
     if (!success) {
       throw new Error('One or more scores are too low.');
@@ -80,17 +81,6 @@ async function _main(args) {
 
 function formatScore(score) {
   return `${(score * 100).toFixed(0).padStart(3)}`;
-}
-
-async function launchChromeAndRunLighthouse(url, flags, config) {
-  const browser = await puppeteer.launch();
-  flags.port = (new URL(browser.wsEndpoint())).port;
-
-  try {
-    return await lighthouse(url, flags, config);
-  } finally {
-    await browser.close();
-  }
 }
 
 function onError(err) {
@@ -142,19 +132,17 @@ function parseMinScores(raw) {
 }
 
 async function processResults(results, minScores, logFile) {
-  const lhVersion = results.lhr.lighthouseVersion;
   const categories = results.lhr.categories;
   const report = results.report;
 
   if (logFile) {
-    console.log(`\nSaving results in '${logFile}'...`);
-    console.log(`  LightHouse viewer: ${VIEWER_URL}`);
+    console.log(`\n  Saving results in '${logFile}'...`);
+    console.log(`    LightHouse viewer: ${VIEWER_URL}`);
 
     await printer.write(report, printer.OutputMode.json, logFile);
   }
 
-  console.log(`\nLighthouse version: ${lhVersion}`);
-  console.log('\nAudit results:');
+  console.log('\n  Audit results:');
 
   const maxTitleLen = Math.max(...Object.values(categories).map(({title}) => title.length));
   const success = Object.keys(categories).sort().reduce((aggr, cat) => {
@@ -164,7 +152,7 @@ async function processResults(results, minScores, logFile) {
     const passed = !isNaN(score) && (score >= minScore);
 
     console.log(
-      `  - ${paddedTitle}  ${formatScore(score)}  (Required: ${formatScore(minScore)})  ${passed ? 'OK' : 'FAILED'}`);
+      `    - ${paddedTitle}  ${formatScore(score)}  (Required: ${formatScore(minScore)})  ${passed ? 'OK' : 'FAILED'}`);
 
     return aggr && passed;
   }, true);
@@ -172,7 +160,11 @@ async function processResults(results, minScores, logFile) {
   return success;
 }
 
-function skipHttpsAudits(config) {
-  console.log(`  Skipping HTTPS-related audits: ${SKIPPED_HTTPS_AUDITS.join(', ')}`);
-  config.settings = {...config.settings, skipAudits: SKIPPED_HTTPS_AUDITS};
+async function runLighthouse(browser, url, flags, config) {
+  try {
+    flags.port = (new URL(browser.wsEndpoint())).port;
+    return await lighthouse(url, flags, config);
+  } finally {
+    await browser.close();
+  }
 }

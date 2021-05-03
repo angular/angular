@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -46,7 +46,9 @@ export class ExpansionResult {
 }
 
 export class ExpansionError extends ParseError {
-  constructor(span: ParseSourceSpan, errorMsg: string) { super(span, errorMsg); }
+  constructor(span: ParseSourceSpan, errorMsg: string) {
+    super(span, errorMsg);
+  }
 }
 
 /**
@@ -64,11 +66,17 @@ class _Expander implements html.Visitor {
         element.startSourceSpan, element.endSourceSpan);
   }
 
-  visitAttribute(attribute: html.Attribute, context: any): any { return attribute; }
+  visitAttribute(attribute: html.Attribute, context: any): any {
+    return attribute;
+  }
 
-  visitText(text: html.Text, context: any): any { return text; }
+  visitText(text: html.Text, context: any): any {
+    return text;
+  }
 
-  visitComment(comment: html.Comment, context: any): any { return comment; }
+  visitComment(comment: html.Comment, context: any): any {
+    return comment;
+  }
 
   visitExpansion(icu: html.Expansion, context: any): any {
     this.isExpanded = true;
@@ -87,17 +95,21 @@ function _expandPluralForm(ast: html.Expansion, errors: ParseError[]): html.Elem
     if (PLURAL_CASES.indexOf(c.value) == -1 && !c.value.match(/^=\d+$/)) {
       errors.push(new ExpansionError(
           c.valueSourceSpan,
-          `Plural cases should be "=<number>" or one of ${PLURAL_CASES.join(", ")}`));
+          `Plural cases should be "=<number>" or one of ${PLURAL_CASES.join(', ')}`));
     }
 
     const expansionResult = expandNodes(c.expression);
     errors.push(...expansionResult.errors);
 
     return new html.Element(
-        `ng-template`, [new html.Attribute('ngPluralCase', `${c.value}`, c.valueSourceSpan)],
+        `ng-template`, [new html.Attribute(
+                           'ngPluralCase', `${c.value}`, c.valueSourceSpan, undefined /* keySpan */,
+                           undefined /* valueSpan */, undefined /* i18n */)],
         expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
   });
-  const switchAttr = new html.Attribute('[ngPlural]', ast.switchValue, ast.switchValueSourceSpan);
+  const switchAttr = new html.Attribute(
+      '[ngPlural]', ast.switchValue, ast.switchValueSourceSpan, undefined /* keySpan */,
+      undefined /* valueSpan */, undefined /* i18n */);
   return new html.Element(
       'ng-container', [switchAttr], children, ast.sourceSpan, ast.sourceSpan, ast.sourceSpan);
 }
@@ -111,15 +123,21 @@ function _expandDefaultForm(ast: html.Expansion, errors: ParseError[]): html.Ele
     if (c.value === 'other') {
       // other is the default case when no values match
       return new html.Element(
-          `ng-template`, [new html.Attribute('ngSwitchDefault', '', c.valueSourceSpan)],
+          `ng-template`, [new html.Attribute(
+                             'ngSwitchDefault', '', c.valueSourceSpan, undefined /* keySpan */,
+                             undefined /* valueSpan */, undefined /* i18n */)],
           expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
     }
 
     return new html.Element(
-        `ng-template`, [new html.Attribute('ngSwitchCase', `${c.value}`, c.valueSourceSpan)],
+        `ng-template`, [new html.Attribute(
+                           'ngSwitchCase', `${c.value}`, c.valueSourceSpan, undefined /* keySpan */,
+                           undefined /* valueSpan */, undefined /* i18n */)],
         expansionResult.nodes, c.sourceSpan, c.sourceSpan, c.sourceSpan);
   });
-  const switchAttr = new html.Attribute('[ngSwitch]', ast.switchValue, ast.switchValueSourceSpan);
+  const switchAttr = new html.Attribute(
+      '[ngSwitch]', ast.switchValue, ast.switchValueSourceSpan, undefined /* keySpan */,
+      undefined /* valueSpan */, undefined /* i18n */);
   return new html.Element(
       'ng-container', [switchAttr], children, ast.sourceSpan, ast.sourceSpan, ast.sourceSpan);
 }

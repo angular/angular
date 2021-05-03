@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -70,8 +70,9 @@ function readMetadataFile(host: MetadataReaderHost, dtsFilePath: string): Module
     return undefined;
   }
   try {
-    const metadataOrMetadatas = JSON.parse(host.readFile(metadataPath));
-    const metadatas: ModuleMetadata[] = metadataOrMetadatas ?
+    const metadataOrMetadatas =
+        JSON.parse(host.readFile(metadataPath)) as ModuleMetadata | ModuleMetadata[] | undefined;
+    const metadatas = metadataOrMetadatas ?
         (Array.isArray(metadataOrMetadatas) ? metadataOrMetadatas : [metadataOrMetadatas]) :
         [];
     if (metadatas.length) {

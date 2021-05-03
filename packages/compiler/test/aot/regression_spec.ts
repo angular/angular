@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockDirectory, compile, expectNoDiagnostics, setup} from './test_util';
+import {compile, expectNoDiagnostics, MockDirectory, setup} from './test_util';
 
 describe('regressions', () => {
   let angularFiles = setup();

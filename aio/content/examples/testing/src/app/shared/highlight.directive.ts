@@ -1,9 +1,12 @@
+// tslint:disable: directive-selector
 // #docregion
 import { Directive, ElementRef, Input, OnChanges } from '@angular/core';
 
 @Directive({ selector: '[highlight]' })
-/** Set backgroundColor for the attached element to highlight color
- *  and set the element's customProperty to true */
+/**
+ * Set backgroundColor for the attached element to highlight color
+ * and set the element's customProperty to true
+ */
 export class HighlightDirective implements OnChanges {
 
   defaultColor =  'rgb(211, 211, 211)'; // lightgray

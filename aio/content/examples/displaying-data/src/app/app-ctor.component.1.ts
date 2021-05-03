@@ -7,7 +7,6 @@ import { Component } from '@angular/core';
     <h2>My favorite hero is: {{myHero}}</h2>
     `
 })
-// #docregion class
 export class AppComponent {
   title: string;
   myHero: string;

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,7 +15,7 @@ export function newArray<T>(size: number, value: T): T[];
 export function newArray<T>(size: number, value?: T): T[] {
   const list: T[] = [];
   for (let i = 0; i < size; i++) {
-    list.push(value !);
+    list.push(value!);
   }
   return list;
 }

@@ -1,40 +1,29 @@
+// tslint:disable: no-conflicting-lifecycle
+// #docregion
 import {
   AfterContentChecked,
   AfterContentInit,
   AfterViewChecked,
   AfterViewInit,
+  Component,
   DoCheck,
+  Input,
   OnChanges,
   OnDestroy,
   OnInit,
   SimpleChanges
 } from '@angular/core';
-import { Component, Input } from '@angular/core';
-import { LoggerService }    from './logger.service';
 
-let nextId = 1;
-
-// #docregion ngOnInit
-export class PeekABoo implements OnInit {
-  constructor(private logger: LoggerService) { }
-
-  // implement OnInit's `ngOnInit` method
-  ngOnInit() { this.logIt(`OnInit`); }
-
-  logIt(msg: string) {
-    this.logger.log(`#${nextId++} ${msg}`);
-  }
-}
-// #enddocregion ngOnInit
+import { LoggerService } from './logger.service';
+import { PeekABooDirective } from './peek-a-boo.directive';
 
 @Component({
   selector: 'peek-a-boo',
-  template: '<p>Now you see my hero, {{name}}</p>',
-  styles: ['p {background: LightYellow; padding: 8px}']
+  template: '<p>Now you see my hero, {{name}}</p>'
 })
 // Don't HAVE to mention the Lifecycle Hook interfaces
 // unless we want typing and tool support.
-export class PeekABooComponent extends PeekABoo implements
+export class PeekABooComponent extends PeekABooDirective implements
              OnChanges, OnInit, DoCheck,
              AfterContentInit, AfterContentChecked,
              AfterViewInit, AfterViewChecked,
@@ -46,16 +35,16 @@ export class PeekABooComponent extends PeekABoo implements
   constructor(logger: LoggerService) {
     super(logger);
 
-    let is = this.name ? 'is' : 'is not';
+    const is = this.name ? 'is' : 'is not';
     this.logIt(`name ${is} known at construction`);
   }
 
   // only called for/if there is an @input variable set by parent.
   ngOnChanges(changes: SimpleChanges) {
-    let changesMsgs: string[] = [];
-    for (let propName in changes) {
+    const changesMsgs: string[] = [];
+    for (const propName in changes) {
       if (propName === 'name') {
-        let name = changes['name'].currentValue;
+        const name = changes.name.currentValue;
         changesMsgs.push(`name ${this.verb} to "${name}"`);
       } else {
         changesMsgs.push(propName + ' ' + this.verb);

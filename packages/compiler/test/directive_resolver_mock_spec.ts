@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {Component, Directive, Injector} from '@angular/core';
-import {TestBed, inject} from '@angular/core/testing';
+import {inject, TestBed} from '@angular/core/testing';
 import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 import {MockDirectiveResolver} from '../testing';

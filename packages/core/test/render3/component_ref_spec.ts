@@ -1,17 +1,18 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, NgModuleRef, ViewEncapsulation} from '../../src/core';
+import {RElement} from '@angular/core/src/render3/interfaces/renderer_dom';
+import {Injector, NgModuleRef, RendererType2, ViewEncapsulation} from '../../src/core';
 import {ComponentFactory} from '../../src/linker/component_factory';
-import {RendererFactory2, RendererType2} from '../../src/render/api';
+import {RendererFactory2} from '../../src/render/api';
 import {injectComponentFactoryResolver} from '../../src/render3/component_ref';
 import {AttributeMarker, ɵɵdefineComponent} from '../../src/render3/index';
-import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
+import {domRendererFactory3, Renderer3, RendererFactory3} from '../../src/render3/interfaces/renderer';
 import {Sanitizer} from '../../src/sanitization/sanitizer';
 
 describe('ComponentFactory', () => {
@@ -146,7 +147,7 @@ describe('ComponentFactory', () => {
           {provide: RendererFactory2, useValue: {createRenderer: createRenderer3Spy}},
         ]);
 
-        cf.create(injector, undefined, undefined, { injector: mInjector } as NgModuleRef<any>);
+        cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
 
         expect(createRenderer2Spy).toHaveBeenCalled();
         expect(createRenderer3Spy).not.toHaveBeenCalled();
@@ -159,7 +160,7 @@ describe('ComponentFactory', () => {
              {provide: RendererFactory2, useValue: {createRenderer: createRenderer2Spy}},
            ]);
 
-           cf.create(injector, undefined, undefined, { injector: mInjector } as NgModuleRef<any>);
+           cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
 
            expect(createRenderer2Spy).toHaveBeenCalled();
            expect(createRenderer3Spy).not.toHaveBeenCalled();
@@ -169,7 +170,7 @@ describe('ComponentFactory', () => {
         const injector = Injector.create([]);
         const mInjector = Injector.create([]);
 
-        cf.create(injector, undefined, undefined, { injector: mInjector } as NgModuleRef<any>);
+        cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
 
         expect(createRenderer2Spy).not.toHaveBeenCalled();
         expect(createRenderer3Spy).toHaveBeenCalled();
@@ -188,7 +189,7 @@ describe('ComponentFactory', () => {
           {provide: Sanitizer, useFactory: mSanitizerFactorySpy, deps: []},
         ]);
 
-        cf.create(injector, undefined, undefined, { injector: mInjector } as NgModuleRef<any>);
+        cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
 
         expect(iSanitizerFactorySpy).toHaveBeenCalled();
         expect(mSanitizerFactorySpy).not.toHaveBeenCalled();
@@ -205,7 +206,7 @@ describe('ComponentFactory', () => {
            ]);
 
 
-           cf.create(injector, undefined, undefined, { injector: mInjector } as NgModuleRef<any>);
+           cf.create(injector, undefined, undefined, {injector: mInjector} as NgModuleRef<any>);
 
            expect(mSanitizerFactorySpy).toHaveBeenCalled();
          });

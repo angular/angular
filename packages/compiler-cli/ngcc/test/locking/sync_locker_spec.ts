@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -50,15 +50,17 @@ runInEachFileSystem(() => {
         const lockFile = new MockLockFile(fs, log);
         const locker = new SyncLocker(lockFile);
 
-        spyOn(lockFile, 'write').and.callFake(() => { throw {code: 'EEXIST'}; });
+        spyOn(lockFile, 'write').and.callFake(() => {
+          throw {code: 'EEXIST'};
+        });
         spyOn(lockFile, 'read').and.returnValue('188');
 
         expect(() => locker.lock(() => {}))
             .toThrowError(
                 `ngcc is already running at process with id 188.\n` +
-                `If you are running multiple builds in parallel then you should pre-process your node_modules via the command line ngcc tool before starting the builds;\n` +
-                `See https://v9.angular.io/guide/ivy#speeding-up-ngcc-compilation.\n` +
-                `(If you are sure no ngcc process is running then you should delete the lock-file at ${lockFile.path}.)`);
+                `If you are running multiple builds in parallel then you might try pre-processing your node_modules via the command line ngcc tool before starting the builds.\n` +
+                `(If you are sure no ngcc process is running then you should delete the lock-file at ${
+                    lockFile.path}.)`);
       });
     });
   });

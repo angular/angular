@@ -1,16 +1,18 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SchemaMetadata, ViewEncapsulation} from '../../core';
 import {ProcessProvidersFunction} from '../../di/interface/provider';
 import {Type} from '../../interface/type';
+import {SchemaMetadata} from '../../metadata/schema';
+import {ViewEncapsulation} from '../../metadata/view';
+import {FactoryFn} from '../definition_factory';
 
-import {TAttributes, TConstants} from './node';
+import {TAttributes, TConstantsOrFactory} from './node';
 import {CssSelectorList} from './projection';
 import {TView} from './view';
 
@@ -22,7 +24,7 @@ export type ComponentTemplate<T> = {
   // Note: the ctx parameter is typed as T|U, as using only U would prevent a template with
   // e.g. ctx: {} from being assigned to ComponentTemplate<any> as TypeScript won't infer U = any
   // in that scenario. By including T this incompatibility is resolved.
-  <U extends T>(rf: RenderFlags, ctx: T | U): void;
+  <U extends T>(rf: RenderFlags, ctx: T|U): void;
 };
 
 /**
@@ -35,22 +37,6 @@ export type ViewQueriesFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => v
  */
 export type ContentQueriesFunction<T> =
     <U extends T>(rf: RenderFlags, ctx: U, directiveIndex: number) => void;
-
-/**
- * Definition of what a factory function should look like.
- */
-export type FactoryFn<T> = {
-  /**
-   * Subclasses without an explicit constructor call through to the factory of their base
-   * definition, providing it with their own constructor to instantiate.
-   */
-  <U extends T>(t: Type<U>): U;
-
-  /**
-   * If no constructor to instantiate is provided, an instance of type T itself is created.
-   */
-  (t?: undefined): T;
-};
 
 /**
  * Flags passed into template functions to determine which blocks (i.e. creation, update)
@@ -72,29 +58,28 @@ export const enum RenderFlags {
  * A subclass of `Type` which has a static `ɵcmp`:`ComponentDef` field making it
  * consumable for rendering.
  */
-export interface ComponentType<T> extends Type<T> { ɵcmp: never; }
+export interface ComponentType<T> extends Type<T> {
+  ɵcmp: unknown;
+}
 
 /**
  * A subclass of `Type` which has a static `ɵdir`:`DirectiveDef` field making it
  * consumable for rendering.
  */
 export interface DirectiveType<T> extends Type<T> {
-  ɵdir: never;
-  ɵfac: () => T;
+  ɵdir: unknown;
+  ɵfac: unknown;
 }
 
 /**
  * A subclass of `Type` which has a static `ɵpipe`:`PipeDef` field making it
  * consumable for rendering.
  */
-export interface PipeType<T> extends Type<T> { ɵpipe: never; }
+export interface PipeType<T> extends Type<T> {
+  ɵpipe: unknown;
+}
 
-/**
- * @codeGenApi
- */
-export type ɵɵDirectiveDefWithMeta<
-    T, Selector extends string, ExportAs extends string[], InputMap extends{[key: string]: string},
-    OutputMap extends{[key: string]: string}, QueryFields extends string[]> = DirectiveDef<T>;
+
 
 /**
  * Runtime link information for Directives.
@@ -210,16 +195,6 @@ export interface DirectiveDef<T> {
    */
   readonly factory: FactoryFn<T>|null;
 
-  /* The following are lifecycle hooks for this component */
-  readonly onChanges: (() => void)|null;
-  readonly onInit: (() => void)|null;
-  readonly doCheck: (() => void)|null;
-  readonly afterContentInit: (() => void)|null;
-  readonly afterContentChecked: (() => void)|null;
-  readonly afterViewInit: (() => void)|null;
-  readonly afterViewChecked: (() => void)|null;
-  readonly onDestroy: (() => void)|null;
-
   /**
    * The features applied to this directive
    */
@@ -230,18 +205,6 @@ export interface DirectiveDef<T> {
            this: DirectiveDef<U>, instance: U, value: any, publicName: string,
            privateName: string) => void)|null;
 }
-
-/**
- * @codeGenApi
- */
-export type ɵɵComponentDefWithMeta<
-    T, Selector extends String, ExportAs extends string[], InputMap extends{[key: string]: string},
-    OutputMap extends{[key: string]: string}, QueryFields extends string[]> = ComponentDef<T>;
-
-/**
- * @codeGenApi
- */
-export type ɵɵFactoryDef<T> = () => T;
 
 /**
  * Runtime link information for Components.
@@ -267,7 +230,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
   readonly template: ComponentTemplate<T>;
 
   /** Constants associated with the component's view. */
-  readonly consts: TConstants|null;
+  readonly consts: TConstantsOrFactory|null;
 
   /**
    * An array of `ngContent[selector]` values that were found in the template.
@@ -352,7 +315,7 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
    * Used to store the result of `noSideEffects` function so that it is not removed by closure
    * compiler. The property should never be read.
    */
-  readonly _?: never;
+  readonly _?: unknown;
 }
 
 /**
@@ -396,11 +359,6 @@ export interface PipeDef<T> {
   onDestroy: (() => void)|null;
 }
 
-/**
- * @codeGenApi
- */
-export type ɵɵPipeDefWithMeta<T, Name extends string> = PipeDef<T>;
-
 export interface DirectiveDefFeature {
   <T>(directiveDef: DirectiveDef<T>): void;
   /**
@@ -433,14 +391,14 @@ export interface ComponentDefFeature {
  *
  * The function is necessary to be able to support forward declarations.
  */
-export type DirectiveDefListOrFactory = (() => DirectiveDefList) | DirectiveDefList;
+export type DirectiveDefListOrFactory = (() => DirectiveDefList)|DirectiveDefList;
 
-export type DirectiveDefList = (DirectiveDef<any>| ComponentDef<any>)[];
+export type DirectiveDefList = (DirectiveDef<any>|ComponentDef<any>)[];
 
-export type DirectiveTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
+export type DirectiveTypesOrFactory = (() => DirectiveTypeList)|DirectiveTypeList;
 
 export type DirectiveTypeList =
-    (DirectiveType<any>| ComponentType<any>|
+    (DirectiveType<any>|ComponentType<any>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 export type HostBindingsFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => void;
@@ -450,14 +408,14 @@ export type HostBindingsFunction<T> = <U extends T>(rf: RenderFlags, ctx: U) => 
  *
  * The function is necessary to be able to support forward declarations.
  */
-export type PipeDefListOrFactory = (() => PipeDefList) | PipeDefList;
+export type PipeDefListOrFactory = (() => PipeDefList)|PipeDefList;
 
 export type PipeDefList = PipeDef<any>[];
 
-export type PipeTypesOrFactory = (() => PipeTypeList) | PipeTypeList;
+export type PipeTypesOrFactory = (() => PipeTypeList)|PipeTypeList;
 
 export type PipeTypeList =
-    (PipeType<any>| Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
+    (PipeType<any>|Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

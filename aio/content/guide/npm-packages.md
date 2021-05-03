@@ -58,7 +58,7 @@ To add a new dependency, use the [`ng add`](cli/add) command.
 ### Angular packages
 
 The following Angular packages are included as dependencies in the default `package.json` file for a new Angular workspace.
-For a complete list of Angular packages, see the [API reference](http://angular.io/api?type=package).
+For a complete list of Angular packages, see the [API reference](https://angular.io/api?type=package).
 
 Package name                               | Description
 ----------------------------------------   | --------------------------------------------------
@@ -93,9 +93,6 @@ features that Angular requires.
 The [Browser Support](guide/browser-support) guide explains which browsers need polyfills and
 how you can add them.
 
-The `package.json` for a new Angular workspace installs the [core-js](https://github.com/zloirock/core-js) package,
-which polyfills missing features for several popular browser.
-
 
 {@a dev-dependencies}
 
@@ -121,14 +118,9 @@ Package name                               | Description
 [**@angular&#8209;devkit/<br />build&#8209;angular**](https://github.com/angular/angular-cli/) | The Angular build tools.
 [**@angular/cli**](https://github.com/angular/angular-cli/) | The Angular CLI tools.
 **@angular/<br />compiler&#8209;cli** | The Angular compiler, which is invoked by the Angular CLI's `ng build` and `ng serve` commands.
-**@angular/<br />language&#8209;service** | The [Angular language service](guide/language-service) analyzes component templates and provides type and error information that TypeScript-aware editors can use to improve the developer's experience. For example, see the [Angular language service extension for VS Code](https://marketplace.visualstudio.com/items?itemName=Angular.ng-template).
 **@types/... ** | TypeScript definition files for 3rd party libraries such as Jasmine and Node.js.
-[**codelyzer**](https://www.npmjs.com/package/codelyzer) | A linter for Angular apps whose rules conform to the Angular [style guide](guide/styleguide).
 **jasmine/... ** | Packages to support the [Jasmine](https://jasmine.github.io/) test library.
 **karma/... ** | Packages to support the [karma](https://www.npmjs.com/package/karma) test runner.
-[**protractor**](https://www.npmjs.com/package/protractor) | An end-to-end (e2e) framework for Angular apps. Built on top of [WebDriverJS](https://github.com/SeleniumHQ/selenium/wiki/WebDriverJs).
-[**ts-node**](https://www.npmjs.com/package/ts-node) | TypeScript execution environment and REPL for Node.js.
-[**tslint**](https://www.npmjs.com/package/tslint) | A static analysis tool that checks TypeScript code for readability, maintainability, and functionality errors.
 [**typescript**](https://www.npmjs.com/package/typescript) | The TypeScript language server, including the *tsc* TypeScript compiler.
 
 

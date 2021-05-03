@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {DOCUMENT} from '@angular/common';
-import {Inject, Injectable, Injector, Sanitizer, SecurityContext, forwardRef, ɵBypassType as BypassType, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
+import {forwardRef, Inject, Injectable, Injector, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeUrl as _sanitizeUrl, ɵallowSanitizationBypassAndThrow as allowSanitizationBypassOrThrow, ɵbypassSanitizationTrustHtml as bypassSanitizationTrustHtml, ɵbypassSanitizationTrustResourceUrl as bypassSanitizationTrustResourceUrl, ɵbypassSanitizationTrustScript as bypassSanitizationTrustScript, ɵbypassSanitizationTrustStyle as bypassSanitizationTrustStyle, ɵbypassSanitizationTrustUrl as bypassSanitizationTrustUrl, ɵBypassType as BypassType, ɵgetSanitizationBypassType as getSanitizationBypassType, ɵunwrapSafeValue as unwrapSafeValue} from '@angular/core';
 
 export {SecurityContext};
 
@@ -82,7 +82,7 @@ export interface SafeResourceUrl extends SafeValue {}
  * @security Calling any of the `bypassSecurityTrust...` APIs disables Angular's built-in
  * sanitization for the value passed in. Carefully check and audit all values and code paths going
  * into this call. Make sure any user data is appropriately escaped for this security context.
- * For more detail, see the [Security Guide](http://g.co/ng/security).
+ * For more detail, see the [Security Guide](https://g.co/ng/security).
  *
  * @publicApi
  */
@@ -149,7 +149,9 @@ export function domSanitizerImplFactory(injector: Injector) {
 
 @Injectable({providedIn: 'root', useFactory: domSanitizerImplFactory, deps: [Injector]})
 export class DomSanitizerImpl extends DomSanitizer {
-  constructor(@Inject(DOCUMENT) private _doc: any) { super(); }
+  constructor(@Inject(DOCUMENT) private _doc: any) {
+    super();
+  }
 
   sanitize(ctx: SecurityContext, value: SafeValue|string|null): string|null {
     if (value == null) return null;
@@ -160,12 +162,12 @@ export class DomSanitizerImpl extends DomSanitizer {
         if (allowSanitizationBypassOrThrow(value, BypassType.Html)) {
           return unwrapSafeValue(value);
         }
-        return _sanitizeHtml(this._doc, String(value));
+        return _sanitizeHtml(this._doc, String(value)).toString();
       case SecurityContext.STYLE:
         if (allowSanitizationBypassOrThrow(value, BypassType.Style)) {
           return unwrapSafeValue(value);
         }
-        return _sanitizeStyle(value as string);
+        return value as string;
       case SecurityContext.SCRIPT:
         if (allowSanitizationBypassOrThrow(value, BypassType.Script)) {
           return unwrapSafeValue(value);
@@ -182,18 +184,24 @@ export class DomSanitizerImpl extends DomSanitizer {
           return unwrapSafeValue(value);
         }
         throw new Error(
-            'unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
+            'unsafe value used in a resource URL context (see https://g.co/ng/security#xss)');
       default:
-        throw new Error(`Unexpected SecurityContext ${ctx} (see http://g.co/ng/security#xss)`);
+        throw new Error(`Unexpected SecurityContext ${ctx} (see https://g.co/ng/security#xss)`);
     }
   }
 
-  bypassSecurityTrustHtml(value: string): SafeHtml { return bypassSanitizationTrustHtml(value); }
-  bypassSecurityTrustStyle(value: string): SafeStyle { return bypassSanitizationTrustStyle(value); }
+  bypassSecurityTrustHtml(value: string): SafeHtml {
+    return bypassSanitizationTrustHtml(value);
+  }
+  bypassSecurityTrustStyle(value: string): SafeStyle {
+    return bypassSanitizationTrustStyle(value);
+  }
   bypassSecurityTrustScript(value: string): SafeScript {
     return bypassSanitizationTrustScript(value);
   }
-  bypassSecurityTrustUrl(value: string): SafeUrl { return bypassSanitizationTrustUrl(value); }
+  bypassSecurityTrustUrl(value: string): SafeUrl {
+    return bypassSanitizationTrustUrl(value);
+  }
   bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl {
     return bypassSanitizationTrustResourceUrl(value);
   }

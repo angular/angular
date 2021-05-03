@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -11,13 +11,14 @@ import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {IncrementalBuild} from '../../incremental/api';
+import {SemanticDepGraphUpdater, SemanticSymbol} from '../../incremental/semantic_graph';
 import {IndexingContext} from '../../indexer';
-import {PerfRecorder} from '../../perf';
-import {ClassDeclaration, Decorator, ReflectionHost} from '../../reflection';
-import {TypeCheckContext} from '../../typecheck';
+import {PerfEvent, PerfRecorder} from '../../perf';
+import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost} from '../../reflection';
+import {ProgramTypeCheckAdapter, TypeCheckContext} from '../../typecheck/api';
 import {getSourceFile, isExported} from '../../util/src/typescript';
 
-import {AnalysisOutput, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
+import {AnalysisOutput, CompilationMode, CompileResult, DecoratorHandler, HandlerFlags, HandlerPrecedence, ResolveResult} from './api';
 import {DtsTransformRegistry} from './declaration';
 import {PendingTrait, Trait, TraitState} from './trait';
 
@@ -34,7 +35,7 @@ export interface ClassRecord {
   /**
    * All traits which matched on the class.
    */
-  traits: Trait<unknown, unknown, unknown>[];
+  traits: Trait<unknown, unknown, SemanticSymbol|null, unknown>[];
 
   /**
    * Meta-diagnostics about the class, which are usually related to whether certain combinations of
@@ -67,7 +68,7 @@ export interface ClassRecord {
  * in the production of `CompileResult`s instructing the compiler to apply various mutations to the
  * class (like adding fields or type declarations).
  */
-export class TraitCompiler {
+export class TraitCompiler implements ProgramTypeCheckAdapter {
   /**
    * Maps class declarations to their `ClassRecord`, which tracks the Ivy traits being applied to
    * those classes.
@@ -82,21 +83,28 @@ export class TraitCompiler {
 
   private reexportMap = new Map<string, Map<string, [string, string]>>();
 
-  private handlersByName = new Map<string, DecoratorHandler<unknown, unknown, unknown>>();
+  private handlersByName =
+      new Map<string, DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>>();
 
   constructor(
-      private handlers: DecoratorHandler<unknown, unknown, unknown>[],
+      private handlers: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>[],
       private reflector: ReflectionHost, private perf: PerfRecorder,
-      private incrementalBuild: IncrementalBuild<ClassRecord>,
-      private compileNonExportedClasses: boolean, private dtsTransforms: DtsTransformRegistry) {
+      private incrementalBuild: IncrementalBuild<ClassRecord, unknown>,
+      private compileNonExportedClasses: boolean, private compilationMode: CompilationMode,
+      private dtsTransforms: DtsTransformRegistry,
+      private semanticDepGraphUpdater: SemanticDepGraphUpdater|null) {
     for (const handler of handlers) {
       this.handlersByName.set(handler.name, handler);
     }
   }
 
-  analyzeSync(sf: ts.SourceFile): void { this.analyze(sf, false); }
+  analyzeSync(sf: ts.SourceFile): void {
+    this.analyze(sf, false);
+  }
 
-  analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined { return this.analyze(sf, true); }
+  analyzeAsync(sf: ts.SourceFile): Promise<void>|undefined {
+    return this.analyze(sf, true);
+  }
 
   private analyze(sf: ts.SourceFile, preanalyze: false): void;
   private analyze(sf: ts.SourceFile, preanalyze: true): Promise<void>|undefined;
@@ -110,11 +118,14 @@ export class TraitCompiler {
     // type of 'void', so `undefined` is used instead.
     const promises: Promise<void>[] = [];
 
-    const priorWork = this.incrementalBuild.priorWorkFor(sf);
+    const priorWork = this.incrementalBuild.priorAnalysisFor(sf);
     if (priorWork !== null) {
       for (const priorRecord of priorWork) {
         this.adopt(priorRecord);
       }
+
+      this.perf.eventCount(PerfEvent.SourceFileReuseAnalysis);
+      this.perf.eventCount(PerfEvent.TraitReuseAnalysis, priorWork.length);
 
       // Skip the rest of analysis, as this file's prior traits are being reused.
       return;
@@ -138,7 +149,7 @@ export class TraitCompiler {
 
   recordFor(clazz: ClassDeclaration): ClassRecord|null {
     if (this.classes.has(clazz)) {
-      return this.classes.get(clazz) !;
+      return this.classes.get(clazz)!;
     } else {
       return null;
     }
@@ -149,8 +160,8 @@ export class TraitCompiler {
       return null;
     }
     const records: ClassRecord[] = [];
-    for (const clazz of this.fileToClasses.get(sf) !) {
-      records.push(this.classes.get(clazz) !);
+    for (const clazz of this.fileToClasses.get(sf)!) {
+      records.push(this.classes.get(clazz)!);
     }
     return records;
   }
@@ -173,18 +184,18 @@ export class TraitCompiler {
     };
 
     for (const priorTrait of priorRecord.traits) {
-      const handler = this.handlersByName.get(priorTrait.handler.name) !;
-      let trait: Trait<unknown, unknown, unknown> = Trait.pending(handler, priorTrait.detected);
+      const handler = this.handlersByName.get(priorTrait.handler.name)!;
+      let trait: Trait<unknown, unknown, SemanticSymbol|null, unknown> =
+          Trait.pending(handler, priorTrait.detected);
 
-      if (priorTrait.state === TraitState.ANALYZED || priorTrait.state === TraitState.RESOLVED) {
-        trait = trait.toAnalyzed(priorTrait.analysis);
-        if (trait.handler.register !== undefined) {
+      if (priorTrait.state === TraitState.Analyzed || priorTrait.state === TraitState.Resolved) {
+        const symbol = this.makeSymbolForTrait(handler, record.node, priorTrait.analysis);
+        trait = trait.toAnalyzed(priorTrait.analysis, priorTrait.analysisDiagnostics, symbol);
+        if (trait.analysis !== null && trait.handler.register !== undefined) {
           trait.handler.register(record.node, trait.analysis);
         }
-      } else if (priorTrait.state === TraitState.SKIPPED) {
+      } else if (priorTrait.state === TraitState.Skipped) {
         trait = trait.toSkipped();
-      } else if (priorTrait.state === TraitState.ERRORED) {
-        trait = trait.toErrored(priorTrait.diagnostics);
       }
 
       record.traits.push(trait);
@@ -195,11 +206,11 @@ export class TraitCompiler {
     if (!this.fileToClasses.has(sf)) {
       this.fileToClasses.set(sf, new Set<ClassDeclaration>());
     }
-    this.fileToClasses.get(sf) !.add(record.node);
+    this.fileToClasses.get(sf)!.add(record.node);
   }
 
   private scanClassForTraits(clazz: ClassDeclaration):
-      PendingTrait<unknown, unknown, unknown>[]|null {
+      PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>[]|null {
     if (!this.compileNonExportedClasses && !isExported(clazz)) {
       return null;
     }
@@ -210,9 +221,9 @@ export class TraitCompiler {
   }
 
   protected detectTraits(clazz: ClassDeclaration, decorators: Decorator[]|null):
-      PendingTrait<unknown, unknown, unknown>[]|null {
+      PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>[]|null {
     let record: ClassRecord|null = this.recordFor(clazz);
-    let foundTraits: PendingTrait<unknown, unknown, unknown>[] = [];
+    let foundTraits: PendingTrait<unknown, unknown, SemanticSymbol|null, unknown>[] = [];
 
     for (const handler of this.handlers) {
       const result = handler.detect(clazz, decorators);
@@ -242,7 +253,7 @@ export class TraitCompiler {
         if (!this.fileToClasses.has(sf)) {
           this.fileToClasses.set(sf, new Set<ClassDeclaration>());
         }
-        this.fileToClasses.get(sf) !.add(clazz);
+        this.fileToClasses.get(sf)!.add(clazz);
       } else {
         // This is at least the second handler to match this class. This is a slower path that some
         // classes will go through, which validates that the set of decorators applied to the class
@@ -290,6 +301,25 @@ export class TraitCompiler {
     return foundTraits.length > 0 ? foundTraits : null;
   }
 
+  private makeSymbolForTrait(
+      handler: DecoratorHandler<unknown, unknown, SemanticSymbol|null, unknown>,
+      decl: ClassDeclaration, analysis: Readonly<unknown>|null): SemanticSymbol|null {
+    if (analysis === null) {
+      return null;
+    }
+    const symbol = handler.symbol(decl, analysis);
+    if (symbol !== null && this.semanticDepGraphUpdater !== null) {
+      const isPrimary = handler.precedence === HandlerPrecedence.PRIMARY;
+      if (!isPrimary) {
+        throw new Error(
+            `AssertionError: ${handler.name} returned a symbol but is not a primary handler.`);
+      }
+      this.semanticDepGraphUpdater.registerSymbol(symbol);
+    }
+
+    return symbol;
+  }
+
   protected analyzeClass(clazz: ClassDeclaration, preanalyzeQueue: Promise<void>[]|null): void {
     const traits = this.scanClassForTraits(clazz);
 
@@ -309,7 +339,7 @@ export class TraitCompiler {
           preanalysis = trait.handler.preanalyze(clazz, trait.detected.metadata) || null;
         } catch (err) {
           if (err instanceof FatalDiagnosticError) {
-            trait.toErrored([err.toDiagnostic()]);
+            trait.toAnalyzed(null, [err.toDiagnostic()], null);
             return;
           } else {
             throw err;
@@ -317,7 +347,7 @@ export class TraitCompiler {
         }
       }
       if (preanalysis !== null) {
-        preanalyzeQueue !.push(preanalysis.then(analyze));
+        preanalyzeQueue!.push(preanalysis.then(analyze));
       } else {
         analyze();
       }
@@ -325,12 +355,14 @@ export class TraitCompiler {
   }
 
   protected analyzeTrait(
-      clazz: ClassDeclaration, trait: Trait<unknown, unknown, unknown>,
+      clazz: ClassDeclaration, trait: Trait<unknown, unknown, SemanticSymbol|null, unknown>,
       flags?: HandlerFlags): void {
-    if (trait.state !== TraitState.PENDING) {
-      throw new Error(
-          `Attempt to analyze trait of ${clazz.name.text} in state ${TraitState[trait.state]} (expected DETECTED)`);
+    if (trait.state !== TraitState.Pending) {
+      throw new Error(`Attempt to analyze trait of ${clazz.name.text} in state ${
+          TraitState[trait.state]} (expected DETECTED)`);
     }
+
+    this.perf.eventCount(PerfEvent.TraitAnalyze);
 
     // Attempt analysis. This could fail with a `FatalDiagnosticError`; catch it if it does.
     let result: AnalysisOutput<unknown>;
@@ -338,79 +370,67 @@ export class TraitCompiler {
       result = trait.handler.analyze(clazz, trait.detected.metadata, flags);
     } catch (err) {
       if (err instanceof FatalDiagnosticError) {
-        trait = trait.toErrored([err.toDiagnostic()]);
+        trait.toAnalyzed(null, [err.toDiagnostic()], null);
         return;
       } else {
         throw err;
       }
     }
 
-    if (result.diagnostics !== undefined) {
-      trait = trait.toErrored(result.diagnostics);
-    } else if (result.analysis !== undefined) {
-      // Analysis was successful. Trigger registration.
-      if (trait.handler.register !== undefined) {
-        trait.handler.register(clazz, result.analysis);
-      }
-
-      // Successfully analyzed and registered.
-      trait = trait.toAnalyzed(result.analysis);
-    } else {
-      trait = trait.toSkipped();
+    const symbol = this.makeSymbolForTrait(trait.handler, clazz, result.analysis ?? null);
+    if (result.analysis !== undefined && trait.handler.register !== undefined) {
+      trait.handler.register(clazz, result.analysis);
     }
+    trait = trait.toAnalyzed(result.analysis ?? null, result.diagnostics ?? null, symbol);
   }
 
   resolve(): void {
     const classes = Array.from(this.classes.keys());
     for (const clazz of classes) {
-      const record = this.classes.get(clazz) !;
+      const record = this.classes.get(clazz)!;
       for (let trait of record.traits) {
         const handler = trait.handler;
         switch (trait.state) {
-          case TraitState.SKIPPED:
-          case TraitState.ERRORED:
+          case TraitState.Skipped:
             continue;
-          case TraitState.PENDING:
-            throw new Error(
-                `Resolving a trait that hasn't been analyzed: ${clazz.name.text} / ${Object.getPrototypeOf(trait.handler).constructor.name}`);
-          case TraitState.RESOLVED:
+          case TraitState.Pending:
+            throw new Error(`Resolving a trait that hasn't been analyzed: ${clazz.name.text} / ${
+                Object.getPrototypeOf(trait.handler).constructor.name}`);
+          case TraitState.Resolved:
             throw new Error(`Resolving an already resolved trait`);
+        }
+
+        if (trait.analysis === null) {
+          // No analysis results, cannot further process this trait.
+          continue;
         }
 
         if (handler.resolve === undefined) {
           // No resolution of this trait needed - it's considered successful by default.
-          trait = trait.toResolved(null);
+          trait = trait.toResolved(null, null);
           continue;
         }
 
         let result: ResolveResult<unknown>;
         try {
-          result = handler.resolve(clazz, trait.analysis as Readonly<unknown>);
+          result = handler.resolve(clazz, trait.analysis as Readonly<unknown>, trait.symbol);
         } catch (err) {
           if (err instanceof FatalDiagnosticError) {
-            trait = trait.toErrored([err.toDiagnostic()]);
+            trait = trait.toResolved(null, [err.toDiagnostic()]);
             continue;
           } else {
             throw err;
           }
         }
 
-        if (result.diagnostics !== undefined && result.diagnostics.length > 0) {
-          trait = trait.toErrored(result.diagnostics);
-        } else {
-          if (result.data !== undefined) {
-            trait = trait.toResolved(result.data);
-          } else {
-            trait = trait.toResolved(null);
-          }
-        }
+        trait = trait.toResolved(result.data ?? null, result.diagnostics ?? null);
 
         if (result.reexports !== undefined) {
           const fileName = clazz.getSourceFile().fileName;
           if (!this.reexportMap.has(fileName)) {
             this.reexportMap.set(fileName, new Map<string, [string, string]>());
           }
-          const fileReexports = this.reexportMap.get(fileName) !;
+          const fileReexports = this.reexportMap.get(fileName)!;
           for (const reexport of result.reexports) {
             fileReexports.set(reexport.asAlias, [reexport.fromModule, reexport.symbolName]);
           }
@@ -419,25 +439,35 @@ export class TraitCompiler {
     }
   }
 
-  typeCheck(ctx: TypeCheckContext): void {
-    for (const clazz of this.classes.keys()) {
-      const record = this.classes.get(clazz) !;
+  /**
+   * Generate type-checking code into the `TypeCheckContext` for any components within the given
+   * `ts.SourceFile`.
+   */
+  typeCheck(sf: ts.SourceFile, ctx: TypeCheckContext): void {
+    if (!this.fileToClasses.has(sf)) {
+      return;
+    }
+
+    for (const clazz of this.fileToClasses.get(sf)!) {
+      const record = this.classes.get(clazz)!;
       for (const trait of record.traits) {
-        if (trait.state !== TraitState.RESOLVED) {
+        if (trait.state !== TraitState.Resolved) {
           continue;
         } else if (trait.handler.typeCheck === undefined) {
           continue;
         }
-        trait.handler.typeCheck(ctx, clazz, trait.analysis, trait.resolution);
+        if (trait.resolution !== null) {
+          trait.handler.typeCheck(ctx, clazz, trait.analysis, trait.resolution);
+        }
       }
     }
   }
 
   index(ctx: IndexingContext): void {
     for (const clazz of this.classes.keys()) {
-      const record = this.classes.get(clazz) !;
+      const record = this.classes.get(clazz)!;
       for (const trait of record.traits) {
-        if (trait.state !== TraitState.RESOLVED) {
+        if (trait.state !== TraitState.Resolved) {
           // Skip traits that haven't been resolved successfully.
           continue;
         } else if (trait.handler.index === undefined) {
@@ -445,31 +475,59 @@ export class TraitCompiler {
           continue;
         }
 
-        trait.handler.index(ctx, clazz, trait.analysis, trait.resolution);
+        if (trait.resolution !== null) {
+          trait.handler.index(ctx, clazz, trait.analysis, trait.resolution);
+        }
       }
     }
   }
 
-  compile(clazz: ts.Declaration, constantPool: ConstantPool): CompileResult[]|null {
+  updateResources(clazz: DeclarationNode): void {
+    if (!this.reflector.isClass(clazz) || !this.classes.has(clazz)) {
+      return;
+    }
+    const record = this.classes.get(clazz)!;
+    for (const trait of record.traits) {
+      if (trait.state !== TraitState.Resolved || trait.handler.updateResources === undefined) {
+        continue;
+      }
+
+      trait.handler.updateResources(clazz, trait.analysis, trait.resolution);
+    }
+  }
+
+  compile(clazz: DeclarationNode, constantPool: ConstantPool): CompileResult[]|null {
     const original = ts.getOriginalNode(clazz) as typeof clazz;
     if (!this.reflector.isClass(clazz) || !this.reflector.isClass(original) ||
         !this.classes.has(original)) {
       return null;
     }
 
-    const record = this.classes.get(original) !;
+    const record = this.classes.get(original)!;
 
     let res: CompileResult[] = [];
 
     for (const trait of record.traits) {
-      if (trait.state !== TraitState.RESOLVED) {
+      if (trait.state !== TraitState.Resolved || trait.analysisDiagnostics !== null ||
+          trait.resolveDiagnostics !== null) {
+        // Cannot compile a trait that is not resolved, or had any errors in its declaration.
         continue;
       }
 
-      const compileSpan = this.perf.start('compileClass', original);
-      const compileMatchRes =
-          trait.handler.compile(clazz, trait.analysis, trait.resolution, constantPool);
-      this.perf.stop(compileSpan);
+      // `trait.resolution` is non-null asserted here because TypeScript does not recognize that
+      // `Readonly<unknown>` is nullable (as `unknown` itself is nullable) due to the way that
+      // `Readonly` works.
+
+      let compileRes: CompileResult|CompileResult[];
+      if (this.compilationMode === CompilationMode.PARTIAL &&
+          trait.handler.compilePartial !== undefined) {
+        compileRes = trait.handler.compilePartial(clazz, trait.analysis, trait.resolution!);
+      } else {
+        compileRes =
+            trait.handler.compileFull(clazz, trait.analysis, trait.resolution!, constantPool);
+      }
+
+      const compileMatchRes = compileRes;
       if (Array.isArray(compileMatchRes)) {
         for (const result of compileMatchRes) {
           if (!res.some(r => r.name === result.name)) {
@@ -496,11 +554,11 @@ export class TraitCompiler {
       return [];
     }
 
-    const record = this.classes.get(original) !;
+    const record = this.classes.get(original)!;
     const decorators: ts.Decorator[] = [];
 
     for (const trait of record.traits) {
-      if (trait.state !== TraitState.RESOLVED) {
+      if (trait.state !== TraitState.Resolved) {
         continue;
       }
 
@@ -515,18 +573,24 @@ export class TraitCompiler {
   get diagnostics(): ReadonlyArray<ts.Diagnostic> {
     const diagnostics: ts.Diagnostic[] = [];
     for (const clazz of this.classes.keys()) {
-      const record = this.classes.get(clazz) !;
+      const record = this.classes.get(clazz)!;
       if (record.metaDiagnostics !== null) {
         diagnostics.push(...record.metaDiagnostics);
       }
       for (const trait of record.traits) {
-        if (trait.state === TraitState.ERRORED) {
-          diagnostics.push(...trait.diagnostics);
+        if ((trait.state === TraitState.Analyzed || trait.state === TraitState.Resolved) &&
+            trait.analysisDiagnostics !== null) {
+          diagnostics.push(...trait.analysisDiagnostics);
+        }
+        if (trait.state === TraitState.Resolved && trait.resolveDiagnostics !== null) {
+          diagnostics.push(...trait.resolveDiagnostics);
         }
       }
     }
     return diagnostics;
   }
 
-  get exportStatements(): Map<string, Map<string, [string, string]>> { return this.reexportMap; }
+  get exportStatements(): Map<string, Map<string, [string, string]>> {
+    return this.reexportMap;
+  }
 }

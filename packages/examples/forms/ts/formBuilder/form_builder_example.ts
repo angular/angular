@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-// #docregion Component, disabled-control
+// #docregion disabled-control
 import {Component, Inject} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 // #enddocregion disabled-control
@@ -42,7 +42,6 @@ export class FormBuilderComp {
         {updateOn: 'change'});
   }
 }
-// #enddocregion
 
 // #docregion disabled-control
 @Component({

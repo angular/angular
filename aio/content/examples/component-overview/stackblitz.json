@@ -1,0 +1,8 @@
+{
+  "description": "Component Overview",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js"
+  ],
+  "tags":["overview", "component"]
+}

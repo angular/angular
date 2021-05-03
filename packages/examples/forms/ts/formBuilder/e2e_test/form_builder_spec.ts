@@ -1,12 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementArrayFinder, browser, by, element} from 'protractor';
+import {browser, by, element, ElementArrayFinder} from 'protractor';
+
 import {verifyNoBrowserErrors} from '../../../../test-utils';
 
 describe('formBuilder example', () => {
@@ -33,5 +34,4 @@ describe('formBuilder example', () => {
     inputs.get(0).sendKeys('a');
     expect(paragraphs.get(1).getText()).toEqual('Validation status: INVALID');
   });
-
 });

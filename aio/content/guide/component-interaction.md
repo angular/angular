@@ -25,7 +25,7 @@ in which two or more components share information.
 ## Pass data from parent to child with input binding
 
 `HeroChildComponent` has two ***input properties***,
-typically adorned with [@Input decorations](guide/template-syntax#inputs-outputs).
+typically adorned with [@Input() decorator](guide/inputs-outputs#input).
 
 
 <code-example path="component-interaction/src/app/hero-child.component.ts" header="component-interaction/src/app/hero-child.component.ts">
@@ -180,7 +180,7 @@ The child component exposes an `EventEmitter` property with which it `emits` eve
 The parent binds to that event property and reacts to those events.
 
 The child's `EventEmitter` property is an ***output property***,
-  typically adorned with an [@Output decoration](guide/template-syntax#inputs-outputs)
+  typically adorned with an [@Output() decorator](guide/inputs-outputs#output)
   as seen in this `VoterComponent`:
 
 

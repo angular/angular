@@ -57,7 +57,7 @@ export class GithubTeams {
   /**
    * Check whether the given username is a member of the teams specified by the team slugs.
    * @param username The username to check for in the teams.
-   * @param teamSlugs A collection of slugs that represent the teams to check for the the username.
+   * @param teamSlugs A collection of slugs that represent the teams to check for the username.
    * @returns a Promise that resolves to `true` if the usernane is a member of at least one of the specified teams.
    */
   public async isMemberBySlug(username: string, teamSlugs: string[]): Promise<boolean> {

@@ -1,6 +1,6 @@
 // #docregion
 import { Injectable } from '@angular/core';
-import { Hero }       from './hero';
+import { Hero } from './hero';
 
 @Injectable({
   providedIn: 'root'

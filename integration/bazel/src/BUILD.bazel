@@ -2,10 +2,10 @@ package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_nodejs//:index.bzl", "pkg_web")
 load("@npm//http-server:index.bzl", "http_server")
-load("@npm_angular_bazel//:index.bzl", "ng_module")
-load("@npm_bazel_rollup//:index.bzl", "rollup_bundle")
-load("@npm_bazel_terser//:index.bzl", "terser_minified")
-load("@npm_bazel_typescript//:index.bzl", "ts_devserver")
+load("@npm//@angular/bazel:index.bzl", "ng_module")
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+load("@npm//@bazel/terser:index.bzl", "terser_minified")
+load("@npm//@bazel/concatjs:index.bzl", "concatjs_devserver")
 
 # Allow targets under sub-packages to reference the tsconfig.json file
 exports_files(["tsconfig.json"])
@@ -22,6 +22,7 @@ ng_module(
         "@npm//@angular/router",
         "@npm//@types",
         "@npm//rxjs",
+        "@npm//tslib",
     ],
 )
 
@@ -34,7 +35,7 @@ filegroup(
     ],
 )
 
-ts_devserver(
+concatjs_devserver(
     name = "devserver",
     entry_module = "bazel_integration_test/src/main",
     scripts = [
@@ -45,7 +46,7 @@ ts_devserver(
     serving_path = "/bundle.min.js",
     static_files = [
         "index.html",
-        "@npm//:node_modules/zone.js/dist/zone.min.js",
+        "@npm//:node_modules/zone.js/bundles/zone.umd.min.js",
     ],
     deps = ["//src"],
 )
@@ -71,7 +72,7 @@ pkg_web(
     srcs = [
         "index.html",
         ":bundle.min",
-        "@npm//:node_modules/zone.js/dist/zone.min.js",
+        "@npm//:node_modules/zone.js/bundles/zone.umd.min.js",
     ],
 )
 

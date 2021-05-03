@@ -43,4 +43,15 @@ describe('getExampleRegion', () => {
     }).toThrowError('Ignored example file... relativePath: "filtered/path" - doc\n' +
                     'This example file exists but has been ignored by a rule, in "some/gitignore".');
   });
+
+  it('should mark the example as having been "used"', () => {
+    const doc1 = {};
+    const doc2 = {};
+    expect(exampleMap['examples']['test/url'].regions['region-1'].usedInDoc).toBeUndefined();
+    getExampleRegion(doc1, 'test/url', 'region-1');
+    expect(exampleMap['examples']['test/url'].regions['region-1'].usedInDoc).toBe(doc1);
+    expect(exampleMap['examples']['test/url'].regions[''].usedInDoc).toBeUndefined();
+    getExampleRegion(doc2, 'test/url');
+    expect(exampleMap['examples']['test/url'].regions[''].usedInDoc).toBe(doc2);
+  });
 });

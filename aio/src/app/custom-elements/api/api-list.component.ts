@@ -17,9 +17,9 @@ import { Option } from 'app/shared/select/select.component';
 import { map } from 'rxjs/operators';
 
 class SearchCriteria {
-  query ? = '';
-  status ? = 'all';
-  type ? = 'all';
+  query = '';
+  status = 'all';
+  type = 'all';
 }
 
 @Component({
@@ -116,13 +116,13 @@ export class ApiListComponent implements OnInit {
     const sectionNameMatches = !query || section.name.indexOf(query) !== -1;
 
     const matchesQuery = (item: ApiItem) =>
-      sectionNameMatches || item.name.indexOf(query!) !== -1;
+      sectionNameMatches || item.name.indexOf(query) !== -1;
     const matchesStatus = (item: ApiItem) =>
       status === 'all' || status === item.stability || (status === 'security-risk' && item.securityRisk);
     const matchesType = (item: ApiItem) =>
       type === 'all' || type === item.docType;
 
-    const items = section.items!.filter(item =>
+    const items: ApiItem[] = (section.items || []).filter(item =>
       matchesType(item) && matchesStatus(item) && matchesQuery(item));
 
     // If there are no items we still return an empty array if the section name matches and the type is 'package'
@@ -160,7 +160,7 @@ export class ApiListComponent implements OnInit {
     this.locationService.setSearch('API Search', params);
   }
 
-  private setSearchCriteria(criteria: SearchCriteria) {
+  private setSearchCriteria(criteria: Partial<SearchCriteria>) {
     this.criteriaSubject.next(Object.assign(this.searchCriteria, criteria));
     this.setLocationSearch();
   }

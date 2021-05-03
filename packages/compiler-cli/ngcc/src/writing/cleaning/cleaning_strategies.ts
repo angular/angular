@@ -1,19 +1,21 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AbsoluteFsPath, FileSystem, PathSegment, absoluteFrom} from '../../../../src/ngtsc/file_system';
+import {absoluteFrom, AbsoluteFsPath, FileSystem, PathSegment} from '../../../../src/ngtsc/file_system';
 import {cleanPackageJson} from '../../packages/build_marker';
+import {EntryPointPackageJson} from '../../packages/entry_point';
 import {NGCC_BACKUP_EXTENSION} from '../in_place_file_writer';
 import {NGCC_DIRECTORY} from '../new_entry_point_file_writer';
+
 import {isLocalDirectory} from './utils';
 
 /**
-* Implement this interface to extend the cleaning strategies of the `PackageCleaner`.
-*/
+ * Implement this interface to extend the cleaning strategies of the `PackageCleaner`.
+ */
 export interface CleaningStrategy {
   canClean(path: AbsoluteFsPath, basename: PathSegment): boolean;
   clean(path: AbsoluteFsPath, basename: PathSegment): void;
@@ -29,7 +31,7 @@ export class PackageJsonCleaner implements CleaningStrategy {
     return basename === 'package.json';
   }
   clean(path: AbsoluteFsPath, _basename: PathSegment): void {
-    const packageJson = JSON.parse(this.fs.readFile(path));
+    const packageJson = JSON.parse(this.fs.readFile(path)) as EntryPointPackageJson;
     if (cleanPackageJson(packageJson)) {
       this.fs.writeFile(path, `${JSON.stringify(packageJson, null, 2)}\n`);
     }
@@ -44,7 +46,9 @@ export class NgccDirectoryCleaner implements CleaningStrategy {
   canClean(path: AbsoluteFsPath, basename: PathSegment): boolean {
     return basename === NGCC_DIRECTORY && isLocalDirectory(this.fs, path);
   }
-  clean(path: AbsoluteFsPath, _basename: PathSegment): void { this.fs.removeDeep(path); }
+  clean(path: AbsoluteFsPath, _basename: PathSegment): void {
+    this.fs.removeDeep(path);
+  }
 }
 
 /**

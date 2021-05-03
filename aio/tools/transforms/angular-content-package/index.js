@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,7 +18,7 @@ const { CONTENTS_PATH, GUIDE_EXAMPLES_PATH } = require('../config');
 module.exports = new Package('angular-content', [basePackage, contentPackage])
 
   // Where do we get the source files?
-  .config(function(readFilesProcessor, collectExamples, renderExamples) {
+  .config(function(readFilesProcessor, collectExamples) {
 
     const gitignoreFilePath = path.resolve(GUIDE_EXAMPLES_PATH, '.gitignore');
     const gitignoreFile = fs.readFileSync(gitignoreFilePath, 'utf8');
@@ -82,12 +82,15 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
         include: CONTENTS_PATH + '/marketing/resources.json',
         fileReader: 'jsonFileReader'
       },
+      {
+        basePath: CONTENTS_PATH,
+        include: CONTENTS_PATH + '/marketing/events.json',
+        fileReader: 'jsonFileReader'
+      },
     ]);
 
     collectExamples.exampleFolders.push('examples');
     collectExamples.registerIgnoredExamples(ignoredExamplePaths, gitignoreFilePath);
-
-    renderExamples.ignoreBrokenExamples = true;
   })
 
 
@@ -110,7 +113,8 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
       {docTypes: ['navigation-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
       {docTypes: ['contributors-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
       {docTypes: ['announcements-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
-      {docTypes: ['resources-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
+      {docTypes: ['resources-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'},
+      {docTypes: ['events-json'], pathTemplate: '${id}', outputPathTemplate: '../${id}.json'}
     ]);
   })
 

@@ -1,7 +1,7 @@
 // #docplaster
 // #docregion
-import { Component }   from '@angular/core';
-import { Hero }        from './hero';
+import { Component } from '@angular/core';
+import { Hero } from './hero';
 // #enddocregion
 import { HeroService } from './hero.service.1';
 /*
@@ -22,9 +22,7 @@ import { HeroService } from './hero.service';
 export class HeroListComponent {
   heroes: Hero[];
 
-  // #docregion ctor
   constructor(heroService: HeroService) {
     this.heroes = heroService.getHeroes();
   }
-  // #enddocregion ctor
 }

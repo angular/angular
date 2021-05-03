@@ -11,10 +11,13 @@ ts_library(
             "**/*_perf.ts",
             "domino.d.ts",
             "load_domino.ts",
+            "is_shape_of.ts",
             "jit_spec.ts",
+            "matchers.ts",
         ],
     ),
     deps = [
+        ":matchers",
         "//packages:types",
         "//packages/animations",
         "//packages/animations/browser",
@@ -31,6 +34,18 @@ ts_library(
         "//packages/platform-browser/testing",
         "//packages/private/testing",
         "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "matchers",
+    testonly = True,
+    srcs = [
+        "is_shape_of.ts",
+        "matchers.ts",
+    ],
+    deps = [
+        "//packages/core",
     ],
 )
 
@@ -61,7 +76,13 @@ ts_library(
 
 jasmine_node_test(
     name = "render3",
-    bootstrap = [":domino_es5"],
+    bootstrap = [
+        ":domino_es5",
+        "//tools/testing:node_es5",
+    ],
+    tags = [
+        "ivy-only",
+    ],
     deps = [
         ":render3_node_lib",
         "//packages/zone.js/lib",
@@ -70,6 +91,9 @@ jasmine_node_test(
 
 karma_web_test_suite(
     name = "render3_web",
+    tags = [
+        "ivy-only",
+    ],
     deps = [
         ":render3_lib",
     ],

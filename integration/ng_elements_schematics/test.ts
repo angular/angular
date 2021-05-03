@@ -62,7 +62,11 @@ const packageList = Object.keys(packages).map(p => `${p}@${packages[p]}`).join('
 exec(`yarn add --ignore-scripts --silent ${packageList} --cache-folder ./.yarn_local_cache`);
 
 // Add @angular/elements
-exec(bazelMappings ? `ng add "${bazelMappings['@angular/elements']}"` : `ng add "${__dirname}/../../dist/packages-dist/elements"`);
+const schematicPath = bazelMappings
+  ? `${bazelMappings['@angular/elements']}`
+  : `${__dirname}/../../dist/packages-dist/elements`;
+
+exec(`ng add "${schematicPath}" --skip-confirmation`);
 
 // Test that build is successful after adding elements
-exec('ng build --no-source-map');
+exec('ng build --no-source-map --configuration=development');

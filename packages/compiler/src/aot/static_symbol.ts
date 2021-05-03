@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -31,7 +31,7 @@ export class StaticSymbolCache {
 
   get(declarationFile: string, name: string, members?: string[]): StaticSymbol {
     members = members || [];
-    const memberSuffix = members.length ? `.${ members.join('.')}` : '';
+    const memberSuffix = members.length ? `.${members.join('.')}` : '';
     const key = `"${declarationFile}".${name}${memberSuffix}`;
     let result = this.cache.get(key);
     if (!result) {

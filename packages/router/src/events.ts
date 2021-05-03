@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -18,20 +18,20 @@ import {ActivatedRouteSnapshot, RouterStateSnapshot} from './router_state';
  *
  * @publicApi
  */
-export type NavigationTrigger = 'imperative' | 'popstate' | 'hashchange';
+export type NavigationTrigger = 'imperative'|'popstate'|'hashchange';
 
 /**
  * Base for events the router goes through, as opposed to events tied to a specific
  * route. Fired one time for any given navigation.
  *
- * @usageNotes
+ * The following code shows how a class subscribes to router events.
  *
  * ```ts
  * class MyService {
  *   constructor(public router: Router, logger: Logger) {
  *     router.events.pipe(
- *       filter(e => e instanceof RouterEvent)
- *     ).subscribe(e => {
+ *        filter((e: Event): e is RouterEvent => e instanceof RouterEvent)
+ *     ).subscribe((e: RouterEvent) => {
  *       logger.log(e.id, e.url);
  *     });
  *   }
@@ -39,6 +39,7 @@ export type NavigationTrigger = 'imperative' | 'popstate' | 'hashchange';
  * ```
  *
  * @see `Event`
+ * @see [Router events summary](guide/router#router-events)
  * @publicApi
  */
 export class RouterEvent {
@@ -59,6 +60,9 @@ export class NavigationStart extends RouterEvent {
    * Identifies the call or event that triggered the navigation.
    * An `imperative` trigger is a call to `router.navigateByUrl()` or `router.navigate()`.
    *
+   * @see `NavigationEnd`
+   * @see `NavigationCancel`
+   * @see `NavigationError`
    */
   navigationTrigger?: 'imperative'|'popstate'|'hashchange';
 
@@ -96,11 +100,17 @@ export class NavigationStart extends RouterEvent {
   }
 
   /** @docsNotRequired */
-  toString(): string { return `NavigationStart(id: ${this.id}, url: '${this.url}')`; }
+  toString(): string {
+    return `NavigationStart(id: ${this.id}, url: '${this.url}')`;
+  }
 }
 
 /**
  * An event triggered when a navigation ends successfully.
+ *
+ * @see `NavigationStart`
+ * @see `NavigationCancel`
+ * @see `NavigationError`
  *
  * @publicApi
  */
@@ -117,15 +127,19 @@ export class NavigationEnd extends RouterEvent {
 
   /** @docsNotRequired */
   toString(): string {
-    return `NavigationEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}')`;
+    return `NavigationEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
+        this.urlAfterRedirects}')`;
   }
 }
 
 /**
  * An event triggered when a navigation is canceled, directly or indirectly.
- *
- * This can happen when a [route guard](guide/router#milestone-5-route-guards)
+ * This can happen when a route guard
  * returns `false` or initiates a redirect by returning a `UrlTree`.
+ *
+ * @see `NavigationStart`
+ * @see `NavigationEnd`
+ * @see `NavigationError`
  *
  * @publicApi
  */
@@ -141,11 +155,17 @@ export class NavigationCancel extends RouterEvent {
   }
 
   /** @docsNotRequired */
-  toString(): string { return `NavigationCancel(id: ${this.id}, url: '${this.url}')`; }
+  toString(): string {
+    return `NavigationCancel(id: ${this.id}, url: '${this.url}')`;
+  }
 }
 
 /**
  * An event triggered when a navigation fails due to an unexpected error.
+ *
+ * @see `NavigationStart`
+ * @see `NavigationEnd`
+ * @see `NavigationCancel`
  *
  * @publicApi
  */
@@ -167,7 +187,7 @@ export class NavigationError extends RouterEvent {
 }
 
 /**
- *An event triggered when routes are recognized.
+ * An event triggered when routes are recognized.
  *
  * @publicApi
  */
@@ -186,12 +206,15 @@ export class RoutesRecognized extends RouterEvent {
 
   /** @docsNotRequired */
   toString(): string {
-    return `RoutesRecognized(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
+    return `RoutesRecognized(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
+        this.urlAfterRedirects}', state: ${this.state})`;
   }
 }
 
 /**
  * An event triggered at the start of the Guard phase of routing.
+ *
+ * @see `GuardsCheckEnd`
  *
  * @publicApi
  */
@@ -209,12 +232,15 @@ export class GuardsCheckStart extends RouterEvent {
   }
 
   toString(): string {
-    return `GuardsCheckStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
+    return `GuardsCheckStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
+        this.urlAfterRedirects}', state: ${this.state})`;
   }
 }
 
 /**
  * An event triggered at the end of the Guard phase of routing.
+ *
+ * @see `GuardsCheckStart`
  *
  * @publicApi
  */
@@ -234,15 +260,18 @@ export class GuardsCheckEnd extends RouterEvent {
   }
 
   toString(): string {
-    return `GuardsCheckEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state}, shouldActivate: ${this.shouldActivate})`;
+    return `GuardsCheckEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
+        this.urlAfterRedirects}', state: ${this.state}, shouldActivate: ${this.shouldActivate})`;
   }
 }
 
 /**
- * An event triggered at the the start of the Resolve phase of routing.
+ * An event triggered at the start of the Resolve phase of routing.
  *
  * Runs in the "resolve" phase whether or not there is anything to resolve.
  * In future, may change to only run when there are things to be resolved.
+ *
+ * @see `ResolveEnd`
  *
  * @publicApi
  */
@@ -260,7 +289,8 @@ export class ResolveStart extends RouterEvent {
   }
 
   toString(): string {
-    return `ResolveStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
+    return `ResolveStart(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
+        this.urlAfterRedirects}', state: ${this.state})`;
   }
 }
 
@@ -284,12 +314,15 @@ export class ResolveEnd extends RouterEvent {
   }
 
   toString(): string {
-    return `ResolveEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${this.urlAfterRedirects}', state: ${this.state})`;
+    return `ResolveEnd(id: ${this.id}, url: '${this.url}', urlAfterRedirects: '${
+        this.urlAfterRedirects}', state: ${this.state})`;
   }
 }
 
 /**
  * An event triggered before lazy loading a route configuration.
+ *
+ * @see `RouteConfigLoadEnd`
  *
  * @publicApi
  */
@@ -297,11 +330,15 @@ export class RouteConfigLoadStart {
   constructor(
       /** @docsNotRequired */
       public route: Route) {}
-  toString(): string { return `RouteConfigLoadStart(path: ${this.route.path})`; }
+  toString(): string {
+    return `RouteConfigLoadStart(path: ${this.route.path})`;
+  }
 }
 
 /**
  * An event triggered when a route has been lazy loaded.
+ *
+ * @see `RouteConfigLoadStart`
  *
  * @publicApi
  */
@@ -309,7 +346,9 @@ export class RouteConfigLoadEnd {
   constructor(
       /** @docsNotRequired */
       public route: Route) {}
-  toString(): string { return `RouteConfigLoadEnd(path: ${this.route.path})`; }
+  toString(): string {
+    return `RouteConfigLoadEnd(path: ${this.route.path})`;
+  }
 }
 
 /**
@@ -334,7 +373,7 @@ export class ChildActivationStart {
  * An event triggered at the end of the child-activation part
  * of the Resolve phase of routing.
  * @see `ChildActivationStart`
- * @see `ResolveStart` *
+ * @see `ResolveStart`
  * @publicApi
  */
 export class ChildActivationEnd {
@@ -350,7 +389,7 @@ export class ChildActivationEnd {
 /**
  * An event triggered at the start of the activation part
  * of the Resolve phase of routing.
- * @see ActivationEnd`
+ * @see `ActivationEnd`
  * @see `ResolveStart`
  *
  * @publicApi
@@ -408,26 +447,35 @@ export class Scroll {
 /**
  * Router events that allow you to track the lifecycle of the router.
  *
- * The sequence of router events is as follows:
+ * The events occur in the following sequence:
  *
- * - `NavigationStart`,
- * - `RouteConfigLoadStart`,
- * - `RouteConfigLoadEnd`,
- * - `RoutesRecognized`,
- * - `GuardsCheckStart`,
- * - `ChildActivationStart`,
- * - `ActivationStart`,
- * - `GuardsCheckEnd`,
- * - `ResolveStart`,
- * - `ResolveEnd`,
- * - `ActivationEnd`
- * - `ChildActivationEnd`
- * - `NavigationEnd`,
- * - `NavigationCancel`,
- * - `NavigationError`
- * - `Scroll`
+ * * [NavigationStart](api/router/NavigationStart): Navigation starts.
+ * * [RouteConfigLoadStart](api/router/RouteConfigLoadStart): Before
+ * the router [lazy loads](/guide/router#lazy-loading) a route configuration.
+ * * [RouteConfigLoadEnd](api/router/RouteConfigLoadEnd): After a route has been lazy loaded.
+ * * [RoutesRecognized](api/router/RoutesRecognized): When the router parses the URL
+ * and the routes are recognized.
+ * * [GuardsCheckStart](api/router/GuardsCheckStart): When the router begins the *guards*
+ * phase of routing.
+ * * [ChildActivationStart](api/router/ChildActivationStart): When the router
+ * begins activating a route's children.
+ * * [ActivationStart](api/router/ActivationStart): When the router begins activating a route.
+ * * [GuardsCheckEnd](api/router/GuardsCheckEnd): When the router finishes the *guards*
+ * phase of routing successfully.
+ * * [ResolveStart](api/router/ResolveStart): When the router begins the *resolve*
+ * phase of routing.
+ * * [ResolveEnd](api/router/ResolveEnd): When the router finishes the *resolve*
+ * phase of routing successfuly.
+ * * [ChildActivationEnd](api/router/ChildActivationEnd): When the router finishes
+ * activating a route's children.
+ * * [ActivationEnd](api/router/ActivationEnd): When the router finishes activating a route.
+ * * [NavigationEnd](api/router/NavigationEnd): When navigation ends successfully.
+ * * [NavigationCancel](api/router/NavigationCancel): When navigation is canceled.
+ * * [NavigationError](api/router/NavigationError): When navigation fails
+ * due to an unexpected error.
+ * * [Scroll](api/router/Scroll): When the user scrolls.
  *
  * @publicApi
  */
-export type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart |
-    ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
+export type Event = RouterEvent|RouteConfigLoadStart|RouteConfigLoadEnd|ChildActivationStart|
+    ChildActivationEnd|ActivationStart|ActivationEnd|Scroll;

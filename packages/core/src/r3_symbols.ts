@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -22,12 +22,13 @@
  */
 
 export {ɵɵinject} from './di/injector_compatibility';
-export {ɵɵInjectableDef, ɵɵInjectorDef, ɵɵdefineInjectable, ɵɵdefineInjector} from './di/interface/defs';
-export {NgModuleDef, ɵɵNgModuleDefWithMeta} from './metadata/ng_module';
+export {ɵɵdefineInjectable, ɵɵdefineInjector, ɵɵInjectableDeclaration} from './di/interface/defs';
+export {NgModuleDef} from './metadata/ng_module_def';
 export {ɵɵdefineNgModule} from './render3/definition';
-export {ɵɵFactoryDef} from './render3/interfaces/definition';
+export {ɵɵFactoryDeclaration, ɵɵInjectorDeclaration, ɵɵNgModuleDeclaration} from './render3/interfaces/public_definitions';
 export {setClassMetadata} from './render3/metadata';
 export {NgModuleFactory} from './render3/ng_module_ref';
+export {noSideEffects as ɵnoSideEffects} from './util/closure';
 
 
 

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -64,16 +64,16 @@ const COPY_COMPONENT_FIELDS: Exclude<keyof ComponentDef<unknown>, keyof Directiv
  *
  * @codeGenApi
  */
-export function ɵɵCopyDefinitionFeature(definition: DirectiveDef<any>| ComponentDef<any>): void {
-  let superType = getSuperType(definition.type) !;
+export function ɵɵCopyDefinitionFeature(definition: DirectiveDef<any>|ComponentDef<any>): void {
+  let superType = getSuperType(definition.type)!;
 
   let superDef: DirectiveDef<any>|ComponentDef<any>|undefined = undefined;
   if (isComponentDef(definition)) {
     // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
-    superDef = superType.ɵcmp !;
+    superDef = superType.ɵcmp!;
   } else {
     // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
-    superDef = superType.ɵdir !;
+    superDef = superType.ɵdir!;
   }
 
   // Needed because `definition` fields are readonly.

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -10,12 +10,13 @@ import {AotCompilerHost} from '@angular/compiler';
 import {dirname, resolve} from 'path';
 import * as ts from 'typescript';
 
-import {Import, getImportOfIdentifier} from '../../../utils/typescript/imports';
+import {ImportManager} from '../../../utils/import_manager';
+import {getImportOfIdentifier, Import} from '../../../utils/typescript/imports';
 import {getValueSymbolOfDeclaration} from '../../../utils/typescript/symbol';
-import {ImportManager} from '../import_manager';
 
 import {getPosixPath} from './path_format';
-import {ResolvedExport, getExportSymbolsOfFile} from './source_file_exports';
+import {getExportSymbolsOfFile, ResolvedExport} from './source_file_exports';
+
 
 /**
  * Factory that creates a TypeScript transformer which ensures that
@@ -115,7 +116,7 @@ export class ImportRewriteTransformerFactory {
    */
   private _getSourceFileExports(sourceFile: ts.SourceFile): ResolvedExport[] {
     if (this.sourceFileExports.has(sourceFile)) {
-      return this.sourceFileExports.get(sourceFile) !;
+      return this.sourceFileExports.get(sourceFile)!;
     }
 
     const sourceFileExports = getExportSymbolsOfFile(sourceFile, this.typeChecker);

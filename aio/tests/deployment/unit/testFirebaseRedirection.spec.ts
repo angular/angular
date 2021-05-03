@@ -2,20 +2,25 @@ import { getRedirector, loadLegacyUrls, loadLocalSitemapUrls, loadRedirects } fr
 
 describe('firebase.json redirect config', () => {
   describe('with sitemap urls', () => {
+    const redirector = getRedirector();
+
     loadLocalSitemapUrls().forEach(url => {
-      it('should not redirect any urls in the sitemap', () => {
-        expect(getRedirector().redirect(url)).toEqual(url);
+      it(`should not redirect sitemap URL '${url}'`, () => {
+        expect(redirector.redirect(url)).toEqual(url);
       });
     });
   });
 
   describe('with legacy urls', () => {
+    const redirector = getRedirector();
+
     loadLegacyUrls().forEach(urlPair => {
-      it('should redirect the legacy urls', () => {
-        const redirector = getRedirector();
-        expect(redirector.redirect(urlPair[0])).not.toEqual(urlPair[0]);
+      it(`should redirect legacy URL '${urlPair[0]}'`, () => {
+        const redirected = redirector.redirect(urlPair[0]);
+
+        expect(redirected).not.toEqual(urlPair[0]);
         if (urlPair[1]) {
-          expect(redirector.redirect(urlPair[0])).toEqual(urlPair[1]);
+          expect(redirected).toEqual(urlPair[1]);
         }
       });
     });
@@ -27,5 +32,21 @@ describe('firebase.json redirect config', () => {
         });
       });
     });
+  });
+
+  it('should not redirect disambiguated URLs', () => {
+    const redirector = getRedirector();
+
+    // Disambiguated URL.
+    const url1 = '/api/core/Foo-0';
+    expect(redirector.redirect(url1)).toBe(url1);
+
+    // Disambiguated URL.
+    const url2 = '/api/core/BAR-1337';
+    expect(redirector.redirect(url2)).toBe(url2);
+
+    // Non-disambiguated URL with dash.
+    const url3 = '/api/core/baz-class';
+    expect(redirector.redirect(url3)).toBe('/api/core/baz');
   });
 });

@@ -3,11 +3,20 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
     $runAfter: ['extractDecoratedClassesProcessor', 'computeIdsProcessor'],
     $runBefore: ['createSitemap'],
     exportDocTypes: ['directive', 'pipe'],
+    skipAbstractDirectives: true,
     $process(docs) {
       // Match all the directives/pipes to their module
       const errors = [];
       docs.forEach(doc => {
         if (this.exportDocTypes.indexOf(doc.docType) !== -1) {
+          const options = doc[`${doc.docType}Options`];
+
+          // Directives without a selector are considered abstract and do
+          // not need to be part of any `@NgModule`.
+          if (this.skipAbstractDirectives && doc.docType === 'directive' && !options.selector) {
+            return;
+          }
+
           if (!doc.ngModules || doc.ngModules.length === 0) {
             errors.push(createDocMessage(`"${doc.id}" has no @ngModule tag. Docs of type "${doc.docType}" must have this tag.`, doc));
             return;

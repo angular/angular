@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -45,7 +45,7 @@ export function unescapeHtml(text: string): string {
  *
  * @publicApi
  */
-export type StateKey<T> = string & {__not_a_string: never};
+export type StateKey<T> = string&{__not_a_string: never};
 
 /**
  * Create a `StateKey<T>` that can be used to store value of type T with `TransferState`.
@@ -73,14 +73,14 @@ export function makeStateKey<T = void>(key: string): StateKey<T> {
  * `ServerTransferStateModule` on the server and `BrowserTransferStateModule` on the client.
  *
  * The values in the store are serialized/deserialized using JSON.stringify/JSON.parse. So only
- * boolean, number, string, null and non-class objects will be serialized and deserialzied in a
+ * boolean, number, string, null and non-class objects will be serialized and deserialized in a
  * non-lossy manner.
  *
  * @publicApi
  */
 @Injectable()
 export class TransferState {
-  private store: {[k: string]: {} | undefined} = {};
+  private store: {[k: string]: {}|undefined} = {};
   private onSerializeCallbacks: {[k: string]: () => {} | undefined} = {};
 
   /** @internal */
@@ -100,17 +100,23 @@ export class TransferState {
   /**
    * Set the value corresponding to a key.
    */
-  set<T>(key: StateKey<T>, value: T): void { this.store[key] = value; }
+  set<T>(key: StateKey<T>, value: T): void {
+    this.store[key] = value;
+  }
 
   /**
    * Remove a key from the store.
    */
-  remove<T>(key: StateKey<T>): void { delete this.store[key]; }
+  remove<T>(key: StateKey<T>): void {
+    delete this.store[key];
+  }
 
   /**
    * Test whether a key exists in the store.
    */
-  hasKey<T>(key: StateKey<T>) { return this.store.hasOwnProperty(key); }
+  hasKey<T>(key: StateKey<T>) {
+    return this.store.hasOwnProperty(key);
+  }
 
   /**
    * Register a callback to provide the value for a key when `toJson` is called.
@@ -144,7 +150,8 @@ export function initTransferState(doc: Document, appId: string) {
   let initialState = {};
   if (script && script.textContent) {
     try {
-      initialState = JSON.parse(unescapeHtml(script.textContent));
+      // Avoid using any here as it triggers lint errors in google3 (any is not allowed).
+      initialState = JSON.parse(unescapeHtml(script.textContent)) as {};
     } catch (e) {
       console.warn('Exception while restoring TransferState for app ' + appId, e);
     }

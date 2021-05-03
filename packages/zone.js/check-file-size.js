@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -14,8 +14,8 @@ module.exports = function(config) {
       try {
         const stats = fs.statSync(target.path);
         if (stats.size > target.limit) {
-          console.error(
-              `file ${target.path} size over limit, limit is ${target.limit}, actual is ${stats.size}`);
+          console.error(`file ${target.path} size over limit, limit is ${target.limit}, actual is ${
+              stats.size}`);
           chkResult = false;
         }
       } catch (err) {

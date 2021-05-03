@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {create} from '../src/ts_plugin';
+import {create, getExternalFiles} from '../src/ts_plugin';
 import {CompletionKind} from '../src/types';
 
 import {MockTypescriptHost} from './test_utils';
@@ -21,12 +21,13 @@ const mockProject = {
     },
   },
   hasRoots: () => true,
+  fileExists: () => true,
 } as any;
 
 describe('plugin', () => {
   const mockHost = new MockTypescriptHost(['/app/main.ts']);
   const tsLS = ts.createLanguageService(mockHost);
-  const program = tsLS.getProgram() !;
+  const program = tsLS.getProgram()!;
   const plugin = create({
     languageService: tsLS,
     languageServiceHost: mockHost,
@@ -35,7 +36,9 @@ describe('plugin', () => {
     config: {},
   });
 
-  beforeEach(() => { mockHost.reset(); });
+  beforeEach(() => {
+    mockHost.reset();
+  });
 
   it('should produce TypeScript diagnostics', () => {
     const fileName = '/foo.ts';
@@ -48,15 +51,15 @@ describe('plugin', () => {
     const diags = plugin.getSemanticDiagnostics(fileName);
     expect(diags.length).toBe(1);
     expect(diags[0].messageText)
-        .toBe(`Argument of type '"hello"' is not assignable to parameter of type 'number'.`);
+        .toBe(`Argument of type 'string' is not assignable to parameter of type 'number'.`);
   });
 
   it('should not report TypeScript errors on tour of heroes', () => {
     const compilerDiags = tsLS.getCompilerOptionsDiagnostics();
     expect(compilerDiags).toEqual([]);
     const sourceFiles = program.getSourceFiles().filter(f => !f.fileName.endsWith('.d.ts'));
-    // there are six .ts files in the test project
-    expect(sourceFiles.length).toBe(6);
+    // there are four .ts files in the test project
+    expect(sourceFiles.length).toBe(4);
     for (const {fileName} of sourceFiles) {
       const syntacticDiags = tsLS.getSyntacticDiagnostics(fileName);
       expect(syntacticDiags).toEqual([]);
@@ -117,7 +120,7 @@ describe('plugin', () => {
     const marker = mockHost.getLocationMarkerFor(MY_COMPONENT, 'tree');
     const completions = plugin.getCompletionsAtPosition(MY_COMPONENT, marker.start, undefined);
     expect(completions).toBeDefined();
-    expect(completions !.entries).toEqual([
+    expect(completions!.entries).toEqual([
       {
         name: 'children',
         kind: CompletionKind.PROPERTY as any,
@@ -126,6 +129,20 @@ describe('plugin', () => {
         insertText: 'children',
       },
     ]);
+  });
+
+  it('should return external templates when getExternalFiles() is called', () => {
+    const externalTemplates = getExternalFiles(mockProject);
+    expect(new Set(externalTemplates)).toEqual(new Set([
+      '/app/test.ng',
+      '/app/#inner/inner.html',
+    ]));
+  });
+
+  it('should not return external template that does not exist', () => {
+    spyOn(mockProject, 'fileExists').and.returnValue(false);
+    const externalTemplates = getExternalFiles(mockProject);
+    expect(externalTemplates.length).toBe(0);
   });
 });
 

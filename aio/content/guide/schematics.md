@@ -1,4 +1,4 @@
-# Schematics
+# Generating code using schematics
 
 A schematic is a template-based code generator that supports complex logic.
 It is a set of instructions for transforming a software project by generating or modifying code.
@@ -33,7 +33,7 @@ A JSON schema associated with a schematic tells the Angular CLI what options are
 These defaults can be overridden by providing a different value for an option on the command line.
 See [Workspace Configuration](guide/workspace-config) for information about how you can change the generation option defaults for your workspace.
 
-The JSON schemas for the default schematics used by the CLI to generate projects and parts of projects are collected in the package [`@schematics/angular`](https://raw.githubusercontent.com/angular/angular-cli/v7.0.0/packages/schematics/angular/application/schema.json).
+The JSON schemas for the default schematics used by the CLI to generate projects and parts of projects are collected in the package [`@schematics/angular`](https://github.com/angular/angular-cli/tree/master/packages/schematics/angular).
 The schema describes the options available to the CLI for each of the `ng generate` sub-commands, as shown in the `--help` output.
 
 ## Developing schematics for libraries
@@ -62,7 +62,7 @@ Partner and third party libraries also support the Angular CLI with add schemati
 For example, `@ng-bootstrap/schematics` adds [ng-bootstrap](https://ng-bootstrap.github.io/)  to an app, and  `@clr/angular` installs and sets up [Clarity from VMWare](https://vmware.github.io/clarity/documentation/v1.0/get-started).
 
 An add schematic can also update a project with configuration changes, add additional dependencies (such as polyfills), or scaffold package-specific initialization code.
-For example, the `@angular/pwa` schematic turns your application into a PWA by adding an app manifest and service worker, and the `@angular/elements`  schematic adds the `document-register-element.js` polyfill and dependencies for Angular Elements.
+For example, the `@angular/pwa` schematic turns your application into a PWA by adding an application manifest and service worker, and the `@angular/elements`  schematic adds the `document-register-element.js` polyfill and dependencies for Angular Elements.
 
 ### Generation schematics
 

@@ -2404,7 +2404,7 @@ webdriver-js-extender@2.1.0:
     selenium-webdriver "^3.0.1"
 
 webdriver-manager@^12.0.6, "webdriver-manager@file:../../node_modules/webdriver-manager":
-  version "12.1.7"
+  version "12.1.8"
   dependencies:
     adm-zip "^0.4.9"
     chalk "^1.1.1"
@@ -2533,4 +2533,4 @@ yeast@0.1.2:
   resolved "https://registry.yarnpkg.com/yeast/-/yeast-0.1.2.tgz#008e06d8094320c372dbc2f8ed76a0ca6c8ac419"
 
 "zone.js@file:../../dist/zone.js-dist/zone.js":
-  version "0.10.2"
+  version "0.11.3"

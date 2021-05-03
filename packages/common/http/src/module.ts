@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -15,7 +15,7 @@ import {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptorHandler, NoopIntercep
 import {JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './jsonp';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
-import {BrowserXhr, HttpXhrBackend, XhrFactory} from './xhr';
+import {HttpXhrBackend} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
 
 /**
@@ -52,7 +52,7 @@ export class HttpInterceptingHandler implements HttpHandler {
  *
  */
 export function interceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[] | null = []): HttpHandler {
+    backend: HttpBackend, interceptors: HttpInterceptor[]|null = []): HttpHandler {
   if (!interceptors) {
     return backend;
   }
@@ -159,8 +159,6 @@ export class HttpClientXsrfModule {
     {provide: HttpHandler, useClass: HttpInterceptingHandler},
     HttpXhrBackend,
     {provide: HttpBackend, useExisting: HttpXhrBackend},
-    BrowserXhr,
-    {provide: XhrFactory, useExisting: BrowserXhr},
   ],
 })
 export class HttpClientModule {

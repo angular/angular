@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -16,7 +16,7 @@ import {relative} from 'path';
 import * as ts from 'typescript';
 
 import {getProjectTsConfigPaths} from '../../utils/project_tsconfig_paths';
-import {createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
+import {canMigrateFile, createMigrationCompilerHost} from '../../utils/typescript/compiler_host';
 
 import {createNgcProgram} from './create_ngc_program';
 import {NgDeclarationCollector} from './ng_declaration_collector';
@@ -85,8 +85,8 @@ function runUndecoratedClassesMigration(
   const partialEvaluator = new PartialEvaluator(
       new TypeScriptReflectionHost(typeChecker), typeChecker, /* dependencyTracker */ null);
   const declarationCollector = new NgDeclarationCollector(typeChecker, partialEvaluator);
-  const sourceFiles = program.getSourceFiles().filter(
-      s => !s.isDeclarationFile && !program.isSourceFileFromExternalLibrary(s));
+  const sourceFiles =
+      program.getSourceFiles().filter(sourceFile => canMigrateFile(basePath, sourceFile, program));
 
   // Analyze source files by detecting all directives, components and providers.
   sourceFiles.forEach(sourceFile => declarationCollector.visitNode(sourceFile));
@@ -123,7 +123,7 @@ function runUndecoratedClassesMigration(
   /** Gets the update recorder for the specified source file. */
   function getUpdateRecorder(sourceFile: ts.SourceFile): UpdateRecorder {
     if (updateRecorders.has(sourceFile)) {
-      return updateRecorders.get(sourceFile) !;
+      return updateRecorders.get(sourceFile)!;
     }
     const treeRecorder = tree.beginUpdate(relative(basePath, sourceFile.fileName));
     const recorder: UpdateRecorder = {
@@ -146,7 +146,9 @@ function runUndecoratedClassesMigration(
         treeRecorder.remove(namedBindings.getStart(), namedBindings.getWidth());
         treeRecorder.insertRight(namedBindings.getStart(), newNamedBindings);
       },
-      commitUpdate() { tree.commitUpdate(treeRecorder); }
+      commitUpdate() {
+        tree.commitUpdate(treeRecorder);
+      }
     };
     updateRecorders.set(sourceFile, recorder);
     return recorder;

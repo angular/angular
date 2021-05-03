@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -25,8 +25,11 @@ export class IdleScheduler {
   private emptyResolve: Function|null = null;
   lastTrigger: number|null = null;
   lastRun: number|null = null;
+  oldestScheduledAt: number|null = null;
 
-  constructor(private adapter: Adapter, private threshold: number, private debug: DebugLogger) {}
+  constructor(
+      private adapter: Adapter, private delay: number, private maxDelay: number,
+      private debug: DebugLogger) {}
 
   async trigger(): Promise<void> {
     this.lastTrigger = this.adapter.time;
@@ -43,7 +46,12 @@ export class IdleScheduler {
     };
     this.scheduled = scheduled;
 
-    await this.adapter.timeout(this.threshold);
+    // Ensure that no task remains pending for longer than `this.maxDelay` ms.
+    const now = this.adapter.time;
+    const maxDelay = Math.max(0, (this.oldestScheduledAt ?? now) + this.maxDelay - now);
+    const delay = Math.min(maxDelay, this.delay);
+
+    await this.adapter.timeout(delay);
 
     if (scheduled.cancel) {
       return;
@@ -60,7 +68,7 @@ export class IdleScheduler {
       const queue = this.queue;
       this.queue = [];
 
-      await queue.reduce(async(previous, task) => {
+      await queue.reduce(async (previous, task) => {
         await previous;
         try {
           await task.run();
@@ -75,16 +83,28 @@ export class IdleScheduler {
       this.emptyResolve = null;
     }
     this.empty = Promise.resolve();
+    this.oldestScheduledAt = null;
   }
 
   schedule(desc: string, run: () => Promise<void>): void {
     this.queue.push({desc, run});
+
     if (this.emptyResolve === null) {
-      this.empty = new Promise(resolve => { this.emptyResolve = resolve; });
+      this.empty = new Promise(resolve => {
+        this.emptyResolve = resolve;
+      });
+    }
+
+    if (this.oldestScheduledAt === null) {
+      this.oldestScheduledAt = this.adapter.time;
     }
   }
 
-  get size(): number { return this.queue.length; }
+  get size(): number {
+    return this.queue.length;
+  }
 
-  get taskDescriptions(): string[] { return this.queue.map(task => task.desc); }
+  get taskDescriptions(): string[] {
+    return this.queue.map(task => task.desc);
+  }
 }

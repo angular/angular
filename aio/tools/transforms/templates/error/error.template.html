@@ -1,0 +1,28 @@
+{% import "lib/githubLinks.html" as github -%}
+
+<h1>{$ doc.code $}: {$ doc.shortDescription $}</h1>
+<div class="github-links">
+  {$ github.githubEditLink(doc, versionInfo) $}
+</div>
+
+{% if doc.videoUrl.length %}
+<div class="error-video-container">
+  <iframe
+  src="{$ doc.videoUrl $}" 
+  frameborder="0" 
+  allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" 
+  allowfullscreen></iframe>
+</div>
+{% endif%}
+
+{% block content %}
+<div class="content">
+  <h2>Description</h2>
+  {$ doc.description | marked $}
+</div>
+<br>
+<div class="debugging">
+  <h2>Debugging the error</h2>
+  {$ doc.debugging | marked $}
+</div>
+{% endblock %}

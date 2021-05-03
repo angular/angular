@@ -1,0 +1,18 @@
+load("//tools:defaults.bzl", "ng_module")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+ng_module(
+    name = "init",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/platform-server",
+    ],
+)

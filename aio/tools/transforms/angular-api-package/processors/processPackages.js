@@ -18,6 +18,7 @@ module.exports = function processPackages(collectPackageContentDocsProcessor) {
           // Partition the exports into groups by type
           if (doc.exports) {
             const publicExports = doc.exports.filter(doc => !doc.privateExport);
+            doc.hasPublicExports = publicExports.length > 0;
             doc.ngmodules = publicExports.filter(doc => doc.docType === 'ngmodule').sort(byId);
             doc.classes = publicExports.filter(doc => doc.docType === 'class').sort(byId);
             doc.decorators = publicExports.filter(doc => doc.docType === 'decorator').sort(byId);
@@ -26,7 +27,7 @@ module.exports = function processPackages(collectPackageContentDocsProcessor) {
             doc.directives = publicExports.filter(doc => doc.docType === 'directive').sort(byId);
             doc.pipes = publicExports.filter(doc => doc.docType === 'pipe').sort(byId);
             doc.types = publicExports.filter(doc => doc.docType === 'type-alias' || doc.docType === 'const').sort(byId);
-            if (publicExports.every(doc => !!doc.deprecated)) {
+            if (doc.hasPublicExports && publicExports.every(doc => !!doc.deprecated)) {
               doc.deprecated = 'all exports of this entry point are deprecated.';
             }
           }

@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -45,7 +45,9 @@ export class App {
     for (let i = 0; i < appSize; i++) {
       this.scrollAreas.push(i);
     }
-    bindAction('#run-btn', () => { this.runBenchmark(); });
+    bindAction('#run-btn', () => {
+      this.runBenchmark();
+    });
     bindAction('#reset-btn', () => {
       this._getScrollDiv().scrollTop = 0;
       const existingMarker = this._locateFinishedMarker();
@@ -88,7 +90,11 @@ export class App {
     }, 0);
   }
 
-  private _locateFinishedMarker() { return DOM.querySelector(document.body, '#done'); }
+  private _locateFinishedMarker() {
+    return DOM.querySelector(document.body, '#done');
+  }
 
-  private _getScrollDiv() { return DOM.query('body /deep/ #scrollDiv'); }
+  private _getScrollDiv() {
+    return DOM.query('body /deep/ #scrollDiv');
+  }
 }

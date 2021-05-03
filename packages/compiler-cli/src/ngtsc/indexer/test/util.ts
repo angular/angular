@@ -1,21 +1,23 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BoundTarget, CssSelector, ParseTemplateOptions, R3TargetBinder, SelectorMatcher, parseTemplate} from '@angular/compiler';
+import {BoundTarget, CssSelector, parseTemplate, ParseTemplateOptions, R3TargetBinder, SelectorMatcher} from '@angular/compiler';
 import * as ts from 'typescript';
-import {AbsoluteFsPath, absoluteFrom} from '../../file_system';
+
+import {absoluteFrom, AbsoluteFsPath} from '../../file_system';
 import {Reference} from '../../imports';
+import {ClassPropertyMapping} from '../../metadata';
 import {ClassDeclaration} from '../../reflection';
 import {getDeclaration, makeProgram} from '../../testing';
 import {ComponentMeta} from '../src/context';
 
 /** Dummy file URL */
-export function getTestFilePath(): AbsoluteFsPath {
+function getTestFilePath(): AbsoluteFsPath {
   return absoluteFrom('/TEST_FILE.ts');
 }
 
@@ -27,7 +29,7 @@ export function getComponentDeclaration(componentStr: string, className: string)
 
   return getDeclaration(
       program.program, getTestFilePath(), className,
-      (value: ts.Declaration): value is ClassDeclaration => ts.isClassDeclaration(value));
+      (value: ts.Node): value is ClassDeclaration => ts.isClassDeclaration(value));
 }
 
 /**
@@ -49,9 +51,10 @@ export function getBoundTemplate(
       selector,
       name: declaration.name.getText(),
       isComponent: true,
-      inputs: {},
-      outputs: {},
+      inputs: ClassPropertyMapping.fromMappedObject({}),
+      outputs: ClassPropertyMapping.fromMappedObject({}),
       exportAs: null,
+      isStructural: false,
     });
   });
   const binder = new R3TargetBinder(matcher);

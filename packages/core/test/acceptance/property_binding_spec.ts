@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -91,7 +91,6 @@ describe('property bindings', () => {
   it('should not map properties whose names do not correspond to their attribute names, ' +
          'if they correspond to inputs',
      () => {
-
        @Component({template: '', selector: 'my-comp'})
        class MyComp {
           @Input() for !:string;
@@ -393,7 +392,6 @@ describe('property bindings', () => {
   });
 
   describe('attributes and input properties', () => {
-
     @Directive({selector: '[myDir]', exportAs: 'myDir'})
     class MyDir {
       @Input() role: string|undefined;
@@ -596,7 +594,6 @@ describe('property bindings', () => {
       expect(comp2.children[0].getAttribute('role')).toBe('button');
       expect(comp2.textContent).toBe('role: button');
     });
-
   });
 
   it('should not throw on synthetic property bindings when a directive on the same element injects ViewContainerRef',
@@ -627,4 +624,25 @@ describe('property bindings', () => {
        }).not.toThrow();
      });
 
+  it('should allow quoted binding syntax inside property binding', () => {
+    @Component({template: `<span [id]="'{{ id }}'"></span>`})
+    class Comp {
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp]});
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('span').id).toBe('{{ id }}');
+  });
+
+  it('should allow quoted binding syntax with escaped quotes inside property binding', () => {
+    @Component({template: `<span [id]="'{{ \\' }}'"></span>`})
+    class Comp {
+    }
+
+    TestBed.configureTestingModule({declarations: [Comp]});
+    const fixture = TestBed.createComponent(Comp);
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('span').id).toBe('{{ \' }}');
+  });
 });

@@ -39,11 +39,12 @@ describe('processNgModuleDocs processor', () => {
 
   it('should link directive/pipe docs with their NgModule docs (sorted by id)', () => {
     const aliasMap = injector.get('aliasMap');
+    const directiveOptions = {selector: 'some-selector'};
     const ngModule1 = { docType: 'ngmodule', id: 'NgModule1', aliases: ['NgModule1'], ngmoduleOptions: {}};
     const ngModule2 = { docType: 'ngmodule', id: 'NgModule2', aliases: ['NgModule2'], ngmoduleOptions: {}};
-    const directive1 = { docType: 'directive', id: 'Directive1', ngModules: ['NgModule1']};
-    const directive2 = { docType: 'directive', id: 'Directive2', ngModules: ['NgModule2']};
-    const directive3 = { docType: 'directive', id: 'Directive3', ngModules: ['NgModule1', 'NgModule2']};
+    const directive1 = { docType: 'directive', id: 'Directive1', ngModules: ['NgModule1'], directiveOptions};
+    const directive2 = { docType: 'directive', id: 'Directive2', ngModules: ['NgModule2'], directiveOptions};
+    const directive3 = { docType: 'directive', id: 'Directive3', ngModules: ['NgModule1', 'NgModule2'], directiveOptions};
     const pipe1 = { docType: 'pipe', id: 'Pipe1', ngModules: ['NgModule1']};
     const pipe2 = { docType: 'pipe', id: 'Pipe2', ngModules: ['NgModule2']};
     const pipe3 = { docType: 'pipe', id: 'Pipe3', ngModules: ['NgModule1', 'NgModule2']};
@@ -66,10 +67,22 @@ describe('processNgModuleDocs processor', () => {
     expect(pipe3.ngModules).toEqual([ngModule1, ngModule2]);
   });
 
+  it('should not error if an abstract directove does not have a `@ngModule` tag', () => {
+    expect(() => {
+      processor.$process([{ docType: 'directive', id: 'AbstractDir', directiveOptions: {} }]);
+    }).not.toThrow();
+
+    expect(() => {
+      processor.$process([{ docType: 'directive', id: 'AbstractDir',
+        directiveOptions: {selector: undefined} }]);
+    }).not.toThrow();
+  });
+
   it('should error if a pipe/directive does not have a `@ngModule` tag', () => {
     const log = injector.get('log');
     expect(() => {
-      processor.$process([{ docType: 'directive', id: 'Directive1' }]);
+      processor.$process([{ docType: 'directive', id: 'Directive1',
+        directiveOptions: {selector: 'dir1'} }]);
     }).toThrowError('Failed to process NgModule relationships.');
     expect(log.error).toHaveBeenCalledWith(
       '"Directive1" has no @ngModule tag. Docs of type "directive" must have this tag. - doc "Directive1" (directive) ');
@@ -84,7 +97,8 @@ describe('processNgModuleDocs processor', () => {
   it('should error if a pipe/directive has an @ngModule tag that does not match an NgModule doc', () => {
     const log = injector.get('log');
     expect(() => {
-      processor.$process([{ docType: 'directive', id: 'Directive1', ngModules: ['MissingNgModule'] }]);
+      processor.$process([{ docType: 'directive', id: 'Directive1', ngModules: ['MissingNgModule'],
+        directiveOptions: {selector: 'dir1'} }]);
     }).toThrowError('Failed to process NgModule relationships.');
     expect(log.error).toHaveBeenCalledWith(
       '"@ngModule MissingNgModule" does not match a public NgModule - doc "Directive1" (directive) ');
@@ -105,7 +119,9 @@ describe('processNgModuleDocs processor', () => {
     aliasMap.addDoc(ngModule2);
 
     expect(() => {
-      processor.$process([{ docType: 'directive', id: 'Directive1', ngModules: ['NgModuleAlias'] }]);
+      processor.$process([{
+        docType: 'directive', id: 'Directive1', ngModules: ['NgModuleAlias'],
+        directiveOptions: {selector: 'dir1'} }]);
     }).toThrowError('Failed to process NgModule relationships.');
     expect(log.error).toHaveBeenCalledWith(
       '"@ngModule NgModuleAlias" is ambiguous. Matches: NgModule1, NgModule2 - doc "Directive1" (directive) ');

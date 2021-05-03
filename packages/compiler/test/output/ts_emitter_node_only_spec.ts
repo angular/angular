@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -31,10 +31,10 @@ const someGenFilePath = 'somePackage/someGenFile';
       someVar = o.variable('someVar');
     });
 
-    function emitSourceMap(stmt: o.Statement | o.Statement[], preamble?: string): SourceMap {
+    function emitSourceMap(stmt: o.Statement|o.Statement[], preamble?: string): SourceMap {
       const stmts = Array.isArray(stmt) ? stmt : [stmt];
       const source = emitter.emitStatements(someGenFilePath, stmts, preamble);
-      return extractSourceMap(source) !;
+      return extractSourceMap(source)!;
     }
 
     describe('source maps', () => {

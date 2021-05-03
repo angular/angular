@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*_spec.ts"],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "//packages/compiler-cli/src/ngtsc/logging",
+        "//packages/compiler-cli/src/ngtsc/logging/testing",
+        "//packages/compiler-cli/src/ngtsc/testing",
+        "//packages/localize/src/tools",
+        "//packages/localize/src/tools/test:test_lib",
+        "//packages/localize/src/tools/test/helpers",
+    ],
+)
+
+jasmine_node_test(
+    name = "integration",
+    bootstrap = ["//tools/testing:node_no_angular_es5"],
+    data = [
+        "//packages/localize/src/tools/test/extract/integration/test_files",
+        "//packages/localize/src/tools/test/extract/integration/test_files:compile_es2015",
+        "//packages/localize/src/tools/test/extract/integration/test_files:compile_es5",
+    ],
+    deps = [
+        ":test_lib",
+        "@npm//glob",
+        "@npm//yargs",
+    ],
+)

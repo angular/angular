@@ -114,7 +114,7 @@ For integration tests we use the puppeteer provisioned version of Chrome. For bo
 
 The sandbox needs to be disabled with the `--no-sandbox` flag for both Karma and Protractor tests, because it causes Chrome to crash on some environments.
 
-See: http://chromedriver.chromium.org/help/chrome-doesn-t-start
+See: https://chromedriver.chromium.org/help/chrome-doesn-t-start
 See: https://github.com/puppeteer/puppeteer/blob/v1.0.0/docs/troubleshooting.md#chrome-headless-fails-due-to-sandbox-issues
 
 ### Headless: --headless
@@ -139,3 +139,14 @@ On CircleCI, the puppeteer provisioned Chrome crashes with `CI we get Root cause
 
 See: https://github.com/puppeteer/puppeteer/blob/v1.0.0/docs/troubleshooting.md#tips
 See: https://stackoverflow.com/questions/50642308/webdriverexception-unknown-error-devtoolsactiveport-file-doesnt-exist-while-t
+
+## Debugging Size Regressions
+
+If size regression occurs, one way to debug is to get a build which shows the code before and after. Here are the steps to do that.
+
+1. Check out both the `master` branch as well as the your change (let's refer to it as `change` branch) into two different working locations. (A suggested way to do this is using `git worktree`.)
+2. In both `master` and `change` locations update the failing tests `package.json` with `NG_BUILD_DEBUG_OPTIMIZE=minify` environment variable so that the resulting build would contain a human readable but optimized output. As an example:
+   - Open `integration/cli-hello-world/package.json` and prefix `NG_BUILD_DEBUG_OPTIMIZE=minify` into the `build` rule. Resulting in something like: `"build": "NG_BUILD_DEBUG_OPTIMIZE=minify ng build --prod",`
+   - Run `bazel run //integration:cli-hello-world_test.debug` to build the output. (optionally just run `yarn build` in the directory if you want to do a quick rebuild which will only pick up changes to the test application (not framework).)
+   - Diff the `master` vs `change` to see the differences. `myDiffTool change/integration/cli-hello-world/dist/main-es2015.*.js master/integration/cli-hello-world/dist/main-es2015.*.js`
+   - The above should give you a better understanding as to what has changed and what is causing the regression.

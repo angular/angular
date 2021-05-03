@@ -1,9 +1,9 @@
 // Exact copy except import UserService from greeting
-import { Component, OnInit }      from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 
 import { Contact, ContactService } from './contact.service';
-import { UserService }             from '../greeting/user.service';
+import { UserService } from '../greeting/user.service';
 
 @Component({
   selector: 'app-contact',
@@ -11,7 +11,7 @@ import { UserService }             from '../greeting/user.service';
   styleUrls: [ './contact.component.css' ]
 })
 export class ContactComponent implements OnInit {
-  contact:  Contact;
+  contact: Contact;
   contacts: Contact[];
 
   msg = 'Loading contacts ...';
@@ -46,7 +46,7 @@ export class ContactComponent implements OnInit {
   }
 
   onSubmit() {
-    let newName = this.contactForm.get('name').value;
+    const newName = this.contactForm.get('name').value;
     this.displayMessage('Saved ' + newName);
     this.contact.name = newName;
   }

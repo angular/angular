@@ -8,7 +8,7 @@ This guide explains how to specify metadata and apply available compiler options
 
 <div class="alert is-helpful">
 
-  <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular compiler</a> at AngularConnect 2016.
+  <a href="https://www.youtube.com/watch?v=anphffaCZrQ">Watch Alex Rickabaugh explain the Angular compiler</a> at AngularConnect 2019.
 
 </div>
 
@@ -43,32 +43,12 @@ Here are some reasons you might want to use AOT.
 
 Angular offers two ways to compile your application:
 
-* **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime.
-* **_Ahead-of-Time_ (AOT)**, which compiles your app at build time.
+* **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime. This was the default until Angular 8.
+* **_Ahead-of-Time_ (AOT)**, which compiles your app and libraries at build time. This is the default since Angular 9.
 
-JIT compilation is the default when you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve)  (build and serve locally) CLI commands:
-
-<code-example language="sh" class="code-shell">
-  ng build
-  ng serve
-</code-example>
-
-{@a compile}
-
-For AOT compilation, include the `--aot` option with the `ng build` or `ng serve` command:
-
-<code-example language="sh" class="code-shell">
-  ng build --aot
-  ng serve --aot
-</code-example>
-
-<div class="alert is-helpful">
-
-The `ng build` command with the `--prod` meta-flag (`ng build --prod`) compiles with AOT by default.
+When you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve) (build and serve locally) CLI commands, the type of compilation (JIT or AOT) depends on the value of the `aot` property in your build configuration specified in `angular.json`. By default, `aot` is set to `true` for new CLI apps.
 
 See the [CLI command reference](cli) and [Building and serving Angular apps](guide/build) for more information.
-
-</div>
 
 ## How AOT works
 
@@ -82,7 +62,7 @@ In the following example, the `@Component()` metadata object and the class const
 @Component({
   selector: 'app-typical',
   template: '<div>A typical component for {{data.name}}</div>'
-)}
+})
 export class TypicalComponent {
   @Input() data: TypicalData;
   constructor(private someService: SomeService) { ... }
@@ -125,7 +105,7 @@ For help in understanding and resolving these problems, see [AOT Metadata Errors
 
 ### Configuring AOT compilation
 
-You can provide options in the `tsconfig.json` [TypeScript configuration file](guide/typescript-configuration) that control the compilation process. See [Angular compiler options](guide/angular-compiler-options) for a complete list of available options.
+You can provide options in the [TypeScript configuration file](guide/typescript-configuration) that controls the compilation process. See [Angular compiler options](guide/angular-compiler-options) for a complete list of available options.
 
 ## Phase 1: Code analysis
 
@@ -231,7 +211,7 @@ The compiler later reports the error if it needs that piece of metadata to gener
 
 <div class="alert is-helpful">
 
- If you want `ngc` to report syntax errors immediately rather than produce a `.metadata.json` file with errors, set the `strictMetadataEmit` option in the TypeScript configuration file, `tsconfig.json`.
+ If you want `ngc` to report syntax errors immediately rather than produce a `.metadata.json` file with errors, set the `strictMetadataEmit` option in the TypeScript configuration file.
 
 ```
   "angularCompilerOptions": {
@@ -562,12 +542,13 @@ It does not, however, rewrite the `.d.ts` file, so TypeScript doesn't recognize 
 
 
 {@a binding-expression-validation}
+
 ## Phase 3: Template type checking
 
 One of the Angular compiler's most helpful features is the ability to type-check expressions within templates, and catch any errors before they cause crashes at runtime.
 In the template type-checking phase, the Angular template compiler uses the TypeScript compiler to validate the binding expressions in templates.
 
-Enable this phase explicitly by adding the compiler option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's `tsconfig.json`
+Enable this phase explicitly by adding the compiler option `"fullTemplateTypeCheck"` in the `"angularCompilerOptions"` of the project's TypeScript configuration file
 (see [Angular Compiler Options](guide/angular-compiler-options)).
 
 <div class="alert is-helpful">
@@ -579,7 +560,7 @@ As a result, templates that previously compiled under View Engine can fail type 
 This stricter type checking is not enabled by default in version 9, but can be enabled by setting the `strictTemplates` configuration option.
 We do expect to make strict type checking the default in the future.
 
-<!-- For more information about type-checking options, and about improvements to template type checking in version 9 and above, see [Template type checking](guide/template-type-checking). -->
+For more information about type-checking options, and about improvements to template type checking in version 9 and above, see [Template type checking](guide/template-typecheck).
 
 </div>
 
@@ -638,20 +619,11 @@ For example, to avoid `Object is possibly 'undefined'` error in the template abo
 
 Using `*ngIf` allows the TypeScript compiler to infer that the `person` used in the binding expression will never be `undefined`.
 
-#### Custom `ngIf` like directives
-
-Directives that behave like `*ngIf` can declare that they want the same treatment by including a static member marker that is a signal to the template compiler to treat them like `*ngIf`. This static member for `*ngIf` is:
-
-```typescript
-    public static ngIfUseIfTypeGuard: void;
-```
-
-This declares that the input property `ngIf` of the `NgIf` directive should be treated as a guard to the use of its template, implying that the template will only be instantiated if the `ngIf` input property is true.
-
+For more information about input type narrowing, see [Input setter coercion](guide/template-typecheck#input-setter-coercion) and [Improving template type checking for custom directives](guide/structural-directives#directive-type-checks).
 
 ### Non-null type assertion operator
 
-Use the [non-null type assertion operator](guide/template-syntax#non-null-assertion-operator) to suppress the `Object is possibly 'undefined'` error when it is inconvenient to use `*ngIf` or when some constraint in the component ensures that the expression is always non-null when the binding expression is interpolated.
+Use the [non-null type assertion operator](guide/template-expression-operators#non-null-assertion-operator) to suppress the `Object is possibly 'undefined'` error when it is inconvenient to use `*ngIf` or when some constraint in the component ensures that the expression is always non-null when the binding expression is interpolated.
 
 In the following example, the `person` and `address` properties are always set together, implying that `address` is always non-null if `person` is non-null.
 There is no convenient way to describe this constraint to TypeScript and the template compiler, but the error is suppressed in the example by using `address!.street`.

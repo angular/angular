@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -43,7 +43,7 @@ export class Options {
 }
 
 function writeFile(filename: string, content: string): Promise<any> {
-  return new Promise(function(resolve, reject) {
+  return new Promise<void>(function(resolve, reject) {
     fs.writeFile(filename, content, (error) => {
       if (error) {
         reject(error);

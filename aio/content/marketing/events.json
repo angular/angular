@@ -1,0 +1,267 @@
+[
+  {
+    "name": "Angular Global Summit",
+    "location": "Online",
+    "linkUrl": "https://link.geekle.us/angular/offsite",
+    "date": {
+      "start": "2021-06-01",
+      "end": "2021-06-02"
+    }
+  },
+  {
+    "name": "ng-conf",
+    "location": "Online",
+    "linkUrl": "https://www.2021.ng-conf.org/",
+    "date": {
+      "start": "2021-04-22",
+      "end": "2021-04-23"
+    },
+    "workshopsDate": {
+      "start": "2021-04-12",
+      "end": "2021-04-15"
+    }
+  },
+  {
+    "name": "ng-china",
+    "location": "Online",
+    "linkUrl": "https://ng-china.org/",
+    "date": {
+      "start": "2020-11-21",
+      "end": "2020-11-22"
+    }
+  },
+  {
+    "name": "EnterpriseNG",
+    "location": "Online",
+    "linkUrl": "https://www.ng-conf.org/",
+    "date": {
+      "start": "2020-11-19",
+      "end": "2020-11-20"
+    }
+  },
+  {
+    "name": "ngrome",
+    "location": "Online",
+    "linkUrl": "https://ngrome.io/",
+    "date": {
+      "start": "2020-10-20",
+      "end": "2020-10-20"
+    }
+  },
+  {
+    "name": "DevReach",
+    "location": "Online",
+    "linkUrl": "https://www.telerik.com/devreach/online/agenda-thursday#sessions",
+    "date": {
+      "start": "2020-10-19",
+      "end": "2020-10-23"
+    }
+  },
+  {
+    "name": "ngVikings",
+    "location": "Oslo, Norway",
+    "linkUrl": "https://ngvikings.org/",
+    "date": {
+      "start": "2020-05-25",
+      "end": "2020-05-26"
+    },
+    "workshopsDate": {
+      "start": "2020-05-27",
+      "end": "2020-05-27"
+    }
+  },
+  {
+    "name": "ng-conf",
+    "location": "Salt Lake City, Utah",
+    "linkUrl": "https://ng-conf.org/",
+    "date": {
+      "start": "2020-04-01",
+      "end": "2020-04-03"
+    }
+  },
+  {
+    "name": "ngIndia",
+    "location": "Delhi, India",
+    "linkUrl": "https://www.ng-ind.com/",
+    "date": {
+      "start": "2020-02-29",
+      "end": "2020-02-29"
+    }
+  },
+  {
+    "name": "ReactiveConf",
+    "location": "Prague, Czech Republic",
+    "linkUrl": "https://reactiveconf.com/",
+    "date": {
+      "start": "2019-10-30",
+      "end": "2019-11-01"
+    }
+  },
+  {
+    "name": "NG Rome MMXIX",
+    "location": "Rome, Italy",
+    "linkUrl": "https://ngrome.io",
+    "tooltip": "NG Rome MMXIX - The Italian Angular Conference",
+    "date": {
+      "start": "2019-10-07",
+      "end": "2019-10-07"
+    },
+    "workshopsDate": {
+      "start": "2019-10-06",
+      "end": "2019-10-06"
+    }
+  },
+  {
+    "name": "AngularConnect",
+    "location": "London, UK",
+    "linkUrl": "https://www.angularconnect.com/?utm_source=angular.io&utm_medium=referral",
+    "date": {
+      "start": "2019-09-19",
+      "end": "2019-09-20"
+    }
+  },
+  {
+    "name": "NG-DE",
+    "location": "Berlin, Germany",
+    "linkUrl": "https://ng-de.org/",
+    "date": {
+      "start": "2019-08-30",
+      "end": "2019-08-31"
+    },
+    "workshopsDate": {
+      "start": "2019-08-29",
+      "end": "2019-08-29"
+    }
+  },
+  {
+    "name": "ng-japan",
+    "location": "Tokyo, Japan",
+    "linkUrl": "https://ngjapan.org/",
+    "date": {
+      "start": "2019-07-13",
+      "end": "2019-07-13"
+    }
+  },
+  {
+    "name": "ngVikings",
+    "location": "Copenhagen, Denmark",
+    "linkUrl": "https://ngvikings.org/",
+    "date": {
+      "start": "2019-05-27",
+      "end": "2019-05-28"
+    },
+    "workshopsDate": {
+      "start": "2019-05-26",
+      "end": "2019-05-26"
+    }
+  },
+  {
+    "name": "ng-conf",
+    "location": "Salt Lake City, Utah",
+    "linkUrl": "https://ng-conf.org/",
+    "date": {
+      "start": "2019-05-01",
+      "end": "2019-05-03"
+    }
+  },
+  {
+    "name": "ng-India",
+    "location": "Gurgaon, India",
+    "linkUrl": "https://www.ng-ind.com/",
+    "date": {
+      "start": "2019-02-23",
+      "end": "2019-02-23"
+    }
+  },
+  {
+    "name": "ngAtlanta",
+    "location": "Atlanta, Georgia",
+    "linkUrl": "https://ng-atl.org/",
+    "date": {
+      "start": "2019-01-09",
+      "end": "2019-01-12"
+    }
+  },
+  {
+    "name": "AngularConnect",
+    "location": "London, United Kingdom",
+    "linkUrl": "https://past.angularconnect.com/2018",
+    "date": {
+      "start": "2018-11-05",
+      "end": "2018-11-07"
+    }
+  },
+  {
+    "name": "ReactiveConf",
+    "location": "Prague, Czech Republic",
+    "linkUrl": "https://reactiveconf.com/",
+    "date": {
+      "start": "2018-10-29",
+      "end": "2018-10-31"
+    }
+  },
+  {
+    "name": "AngularMix",
+    "location": "Orlando, Florida",
+    "linkUrl": "https://angularmix.com/",
+    "date": {
+      "start": "2018-10-10",
+      "end": "2018-10-12"
+    }
+  },
+  {
+    "name": "Angular Conf Australia",
+    "location": "Melbourne, Australia",
+    "linkUrl": "https://www.angularconf.com.au/",
+    "date": {
+      "start": "2018-06-22",
+      "end": "2018-06-22"
+    }
+  },
+  {
+    "name": "ng-japan",
+    "location": "Tokyo, Japan",
+    "linkUrl": "https://ngjapan.org/en.html",
+    "date": {
+      "start": "2018-06-16",
+      "end": "2018-06-16"
+    }
+  },
+  {
+    "name": "WeAreDevelopers",
+    "location": "Vienna, Austria",
+    "linkUrl": "https://www.wearedevelopers.com/",
+    "tooltip": "WeAreDevs",
+    "date": {
+      "start": "2018-05-16",
+      "end": "2018-05-18"
+    }
+  },
+  {
+    "name": "ng-conf",
+    "location": "Salt Lake City, Utah",
+    "linkUrl": "https://ng-conf.org/",
+    "date": {
+      "start": "2018-04-18",
+      "end": "2018-04-20"
+    }
+  },
+  {
+    "name": "ngVikings",
+    "location": "Helsinki, Finland",
+    "linkUrl": "https://ngvikings.org/",
+    "date": {
+      "start": "2018-03-01",
+      "end": "2018-03-02"
+    }
+  },
+  {
+    "name": "ngAtlanta",
+    "location": "Atlanta, Georgia",
+    "linkUrl": "https://ng-atl.org/",
+    "date": {
+      "start": "2018-01-30",
+      "end": "2018-01-30"
+    }
+  }
+]

@@ -1,0 +1,173 @@
+{
+  "$schema": "../../test_case_schema.json",
+  "cases": [
+    {
+      "description": "should generate bind instruction",
+      "inputFiles": [
+        "bind.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect property binding",
+          "files": [
+            "bind.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate interpolation instruction for {{...}} bindings",
+      "inputFiles": [
+        "interpolation.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect interpolated property binding",
+          "files": [
+            "interpolation.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should generate the proper update instructions for interpolated properties",
+      "inputFiles": [
+        "interpolated_properties.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect handling of interpolated properties",
+          "files": [
+            "interpolated_properties.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not remap property names whose names do not correspond to their attribute names",
+      "inputFiles": [
+        "special_property_remapping.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "special_property_remapping.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should emit temporary evaluation within the binding expression for in-order execution",
+      "inputFiles": [
+        "temporary_variables.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "temporary_variables.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should chain multiple property bindings into a single instruction",
+      "inputFiles": [
+        "chain_multiple_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_multiple_bindings.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should chain property bindings in the presence of other bindings",
+      "inputFiles": [
+        "chain_multiple_bindings_mixed.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_multiple_bindings_mixed.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should not add interpolated properties to the property instruction chain",
+      "inputFiles": [
+        "chain_bindings_with_interpolations.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_bindings_with_interpolations.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should chain synthetic property bindings together with regular property bindings",
+      "inputFiles": [
+        "chain_synthetic_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_synthetic_bindings.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should chain multiple property bindings on an ng-template",
+      "inputFiles": [
+        "chain_ngtemplate_bindings.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_ngtemplate_bindings.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should chain multiple property bindings when there are multiple elements",
+      "inputFiles": [
+        "chain_multiple_bindings_for_multiple_elements.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_multiple_bindings_for_multiple_elements.js"
+          ]
+        }
+      ]
+    },
+    {
+      "description": "should chain multiple property bindings when there are child elements",
+      "inputFiles": [
+        "chain_multiple_bindings_with_child_elements.ts"
+      ],
+      "expectations": [
+        {
+          "failureMessage": "Incorrect template",
+          "files": [
+            "chain_multiple_bindings_with_child_elements.js"
+          ]
+        }
+      ]
+    }
+  ]
+}

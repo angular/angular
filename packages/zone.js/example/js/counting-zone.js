@@ -25,7 +25,9 @@ Zone['countingZoneSpec'] = {
     }
   },
 
-  counter: function() { return this.data.count; },
+  counter: function() {
+    return this.data.count;
+  },
 
   data: {count: 0, flushed: false},
 

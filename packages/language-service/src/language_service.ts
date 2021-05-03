@@ -1,6 +1,6 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
@@ -49,7 +49,7 @@ class LanguageServiceImpl implements ng.LanguageService {
 
   getCompletionsAtPosition(
       fileName: string, position: number,
-      options?: tss.GetCompletionsAtPositionOptions): tss.CompletionInfo|undefined {
+      _options?: tss.GetCompletionsAtPositionOptions): tss.CompletionInfo|undefined {
     this.host.getAnalyzedModules();  // same role as 'synchronizeHostData'
     const ast = this.host.getTemplateAstAtPosition(fileName, position);
     if (!ast) {
@@ -75,7 +75,6 @@ class LanguageServiceImpl implements ng.LanguageService {
     if (templateInfo) {
       return getDefinitionAndBoundSpan(templateInfo, position);
     }
-
     // Attempt to get Angular-specific definitions in a TypeScript file, like templates defined
     // in a `templateUrl` property.
     if (fileName.endsWith('.ts')) {
@@ -97,5 +96,18 @@ class LanguageServiceImpl implements ng.LanguageService {
     // directive belongs to.
     const declarations = this.host.getDeclarations(fileName);
     return getTsHover(position, declarations, analyzedModules);
+  }
+
+  getReferencesAtPosition(fileName: string, position: number): tss.ReferenceEntry[]|undefined {
+    const defAndSpan = this.getDefinitionAndBoundSpan(fileName, position);
+    if (!defAndSpan?.definitions) {
+      return;
+    }
+    const {definitions} = defAndSpan;
+    const tsDef = definitions.find(def => def.fileName.endsWith('.ts'));
+    if (!tsDef) {
+      return;
+    }
+    return this.host.tsLS.getReferencesAtPosition(tsDef.fileName, tsDef.textSpan.start);
   }
 }

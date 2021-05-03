@@ -1,13 +1,13 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {ApplicationInitStatus, COMPILER_OPTIONS, Compiler, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, Type, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵgetInjectableDef as getInjectableDef, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDef as InjectableDef} from '@angular/core';
+import {ApplicationInitStatus, Compiler, COMPILER_OPTIONS, Component, Directive, Injector, InjectorType, LOCALE_ID, ModuleWithComponentFactories, ModuleWithProviders, NgModule, NgModuleFactory, NgZone, Pipe, PlatformRef, Provider, resolveForwardRef, Type, ɵcompileComponent as compileComponent, ɵcompileDirective as compileDirective, ɵcompileNgModuleDefs as compileNgModuleDefs, ɵcompilePipe as compilePipe, ɵDEFAULT_LOCALE_ID as DEFAULT_LOCALE_ID, ɵDirectiveDef as DirectiveDef, ɵgetInjectableDef as getInjectableDef, ɵNG_COMP_DEF as NG_COMP_DEF, ɵNG_DIR_DEF as NG_DIR_DEF, ɵNG_INJ_DEF as NG_INJ_DEF, ɵNG_MOD_DEF as NG_MOD_DEF, ɵNG_PIPE_DEF as NG_PIPE_DEF, ɵNgModuleFactory as R3NgModuleFactory, ɵNgModuleTransitiveScopes as NgModuleTransitiveScopes, ɵNgModuleType as NgModuleType, ɵpatchComponentDefWithScope as patchComponentDefWithScope, ɵRender3ComponentFactory as ComponentFactory, ɵRender3NgModuleRef as NgModuleRef, ɵsetLocaleId as setLocaleId, ɵtransitiveScopesFor as transitiveScopesFor, ɵɵInjectableDeclaration as InjectableDeclaration} from '@angular/core';
 
 import {clearResolutionOfComponentResourcesQueue, isComponentDefPendingResolution, resolveComponentResources, restoreComponentResolutionQueue} from '../../src/metadata/resource_loading';
 
@@ -57,6 +57,9 @@ export class R3TestBedCompiler {
   private seenComponents = new Set<Type<any>>();
   private seenDirectives = new Set<Type<any>>();
 
+  // Keep track of overridden modules, so that we can collect all affected ones in the module tree.
+  private overriddenModules = new Set<NgModuleType<any>>();
+
   // Store resolved styles for Components that have template overrides present and `styleUrls`
   // defined at the same time.
   private existingComponentStyles = new Map<Type<any>, string[]>();
@@ -88,7 +91,6 @@ export class R3TestBedCompiler {
 
   private testModuleType: NgModuleType<any>;
   private testModuleRef: NgModuleRef<any>|null = null;
-  private hasModuleOverrides: boolean = false;
 
   constructor(private platform: PlatformRef, private additionalModuleTypes: Type<any>|Type<any>[]) {
     class DynamicTestModule {}
@@ -123,7 +125,7 @@ export class R3TestBedCompiler {
   }
 
   overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void {
-    this.hasModuleOverrides = true;
+    this.overriddenModules.add(ngModule as NgModuleType<any>);
 
     // Compile the module right away.
     this.resolvers.module.addOverride(ngModule, override);
@@ -172,21 +174,21 @@ export class R3TestBedCompiler {
       providerDef = {provide: token};
     }
 
-    const injectableDef: InjectableDef<any>|null =
+    const injectableDef: InjectableDeclaration<any>|null =
         typeof token !== 'string' ? getInjectableDef(token) : null;
-    const isRoot = injectableDef !== null && injectableDef.providedIn === 'root';
-    const overridesBucket = isRoot ? this.rootProviderOverrides : this.providerOverrides;
+    const providedIn = injectableDef === null ? null : resolveForwardRef(injectableDef.providedIn);
+    const overridesBucket =
+        providedIn === 'root' ? this.rootProviderOverrides : this.providerOverrides;
     overridesBucket.push(providerDef);
 
     // Keep overrides grouped by token as well for fast lookups using token
     this.providerOverridesByToken.set(token, providerDef);
-    if (injectableDef !== null && injectableDef.providedIn !== null &&
-        typeof injectableDef.providedIn !== 'string') {
-      const existingOverrides = this.providerOverridesByModule.get(injectableDef.providedIn);
+    if (injectableDef !== null && providedIn !== null && typeof providedIn !== 'string') {
+      const existingOverrides = this.providerOverridesByModule.get(providedIn);
       if (existingOverrides !== undefined) {
         existingOverrides.push(providerDef);
       } else {
-        this.providerOverridesByModule.set(injectableDef.providedIn, [providerDef]);
+        this.providerOverridesByModule.set(providedIn, [providerDef]);
       }
     }
   }
@@ -194,7 +196,7 @@ export class R3TestBedCompiler {
   overrideTemplateUsingTestingModule(type: Type<any>, template: string): void {
     const def = (type as any)[NG_COMP_DEF];
     const hasStyleUrls = (): boolean => {
-      const metadata = this.resolvers.component.resolve(type) !as Component;
+      const metadata = this.resolvers.component.resolve(type)! as Component;
       return !!metadata.styleUrls && metadata.styleUrls.length > 0;
     };
     const overrideStyleUrls = !!def && !isComponentDefPendingResolution(type) && hasStyleUrls();
@@ -257,13 +259,15 @@ export class R3TestBedCompiler {
     const parentInjector = this.platform.injector;
     this.testModuleRef = new NgModuleRef(this.testModuleType, parentInjector);
 
-    // Set the locale ID, it can be overridden for the tests
-    const localeId = this.testModuleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
-    setLocaleId(localeId);
-
     // ApplicationInitStatus.runInitializers() is marked @internal to core.
     // Cast it to any before accessing it.
     (this.testModuleRef.injector.get(ApplicationInitStatus) as any).runInitializers();
+
+    // Set locale ID after running app initializers, since locale information might be updated while
+    // running initializers. This is also consistent with the execution order while bootstrapping an
+    // app (see `packages/core/src/application_ref.ts` file).
+    const localeId = this.testModuleRef.injector.get(LOCALE_ID, DEFAULT_LOCALE_ID);
+    setLocaleId(localeId);
 
     return this.testModuleRef;
   }
@@ -293,7 +297,9 @@ export class R3TestBedCompiler {
   /**
    * @internal
    */
-  _getModuleResolver(): Resolver<NgModule> { return this.resolvers.module; }
+  _getModuleResolver(): Resolver<NgModule> {
+    return this.resolvers.module;
+  }
 
   /**
    * @internal
@@ -301,7 +307,7 @@ export class R3TestBedCompiler {
   _getComponentFactories(moduleType: NgModuleType): ComponentFactory<any>[] {
     return maybeUnwrapFn(moduleType.ɵmod.declarations).reduce((factories, declaration) => {
       const componentDef = (declaration as any).ɵcmp;
-      componentDef && factories.push(new ComponentFactory(componentDef, this.testModuleRef !));
+      componentDef && factories.push(new ComponentFactory(componentDef, this.testModuleRef!));
       return factories;
     }, [] as ComponentFactory<any>[]);
   }
@@ -344,30 +350,40 @@ export class R3TestBedCompiler {
   }
 
   private applyTransitiveScopes(): void {
+    if (this.overriddenModules.size > 0) {
+      // Module overrides (via `TestBed.overrideModule`) might affect scopes that were previously
+      // calculated and stored in `transitiveCompileScopes`. If module overrides are present,
+      // collect all affected modules and reset scopes to force their re-calculation.
+      const testingModuleDef = (this.testModuleType as any)[NG_MOD_DEF];
+      const affectedModules = this.collectModulesAffectedByOverrides(testingModuleDef.imports);
+      if (affectedModules.size > 0) {
+        affectedModules.forEach(moduleType => {
+          this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
+          (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
+        });
+      }
+    }
+
     const moduleToScope = new Map<Type<any>|TestingModuleOverride, NgModuleTransitiveScopes>();
     const getScopeOfModule =
-        (moduleType: Type<any>| TestingModuleOverride): NgModuleTransitiveScopes => {
+        (moduleType: Type<any>|TestingModuleOverride): NgModuleTransitiveScopes => {
           if (!moduleToScope.has(moduleType)) {
             const isTestingModule = isTestingModuleOverride(moduleType);
             const realType = isTestingModule ? this.testModuleType : moduleType as Type<any>;
-            // Module overrides (via TestBed.overrideModule) might affect scopes that were
-            // previously calculated and stored in `transitiveCompileScopes`. If module overrides
-            // are present, always re-calculate transitive scopes to have the most up-to-date
-            // information available. The `moduleToScope` map avoids repeated re-calculation of
-            // scopes for the same module.
-            if (!isTestingModule && this.hasModuleOverrides) {
-              this.storeFieldOfDefOnType(moduleType as any, NG_MOD_DEF, 'transitiveCompileScopes');
-              (moduleType as any)[NG_MOD_DEF].transitiveCompileScopes = null;
-            }
             moduleToScope.set(moduleType, transitiveScopesFor(realType));
           }
-          return moduleToScope.get(moduleType) !;
+          return moduleToScope.get(moduleType)!;
         };
 
     this.componentToModuleScope.forEach((moduleType, componentType) => {
       const moduleScope = getScopeOfModule(moduleType);
       this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'directiveDefs');
       this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'pipeDefs');
+      // `tView` that is stored on component def contains information about directives and pipes
+      // that are in the scope of this component. Patching component scope will cause `tView` to be
+      // changed. Store original `tView` before patching scope, so the `tView` (including scope
+      // information) is restored back to its previous/original state before running next test.
+      this.storeFieldOfDefOnType(componentType, NG_COMP_DEF, 'tView');
       patchComponentDefWithScope((componentType as any).ɵcmp, moduleScope);
     });
 
@@ -377,7 +393,7 @@ export class R3TestBedCompiler {
   private applyProviderOverrides(): void {
     const maybeApplyOverrides = (field: string) => (type: Type<any>) => {
       const resolver = field === NG_COMP_DEF ? this.resolvers.component : this.resolvers.directive;
-      const metadata = resolver.resolve(type) !;
+      const metadata = resolver.resolve(type)!;
       if (this.hasProviderOverrides(metadata.providers)) {
         this.patchDefWithProviderOverrides(type, field);
       }
@@ -528,6 +544,46 @@ export class R3TestBedCompiler {
     queueTypesFromModulesArrayRecur(arr);
   }
 
+  // When module overrides (via `TestBed.overrideModule`) are present, it might affect all modules
+  // that import (even transitively) an overridden one. For all affected modules we need to
+  // recalculate their scopes for a given test run and restore original scopes at the end. The goal
+  // of this function is to collect all affected modules in a set for further processing. Example:
+  // if we have the following module hierarchy: A -> B -> C (where `->` means `imports`) and module
+  // `C` is overridden, we consider `A` and `B` as affected, since their scopes might become
+  // invalidated with the override.
+  private collectModulesAffectedByOverrides(arr: any[]): Set<NgModuleType<any>> {
+    const seenModules = new Set<NgModuleType<any>>();
+    const affectedModules = new Set<NgModuleType<any>>();
+    const calcAffectedModulesRecur = (arr: any[], path: NgModuleType<any>[]): void => {
+      for (const value of arr) {
+        if (Array.isArray(value)) {
+          // If the value is an array, just flatten it (by invoking this function recursively),
+          // keeping "path" the same.
+          calcAffectedModulesRecur(value, path);
+        } else if (hasNgModuleDef(value)) {
+          if (seenModules.has(value)) {
+            // If we've seen this module before and it's included into "affected modules" list, mark
+            // the whole path that leads to that module as affected, but do not descend into its
+            // imports, since we already examined them before.
+            if (affectedModules.has(value)) {
+              path.forEach(item => affectedModules.add(item));
+            }
+            continue;
+          }
+          seenModules.add(value);
+          if (this.overriddenModules.has(value)) {
+            path.forEach(item => affectedModules.add(item));
+          }
+          // Examine module imports recursively to look for overridden modules.
+          const moduleDef = (value as any)[NG_MOD_DEF];
+          calcAffectedModulesRecur(maybeUnwrapFn(moduleDef.imports), path.concat(value));
+        }
+      }
+    };
+    calcAffectedModulesRecur(arr, []);
+    return affectedModules;
+  }
+
   private maybeStoreNgDef(prop: string, type: Type<any>) {
     if (!this.initialNgDefs.has(type)) {
       const currentDef = Object.getOwnPropertyDescriptor(type, prop);
@@ -551,7 +607,7 @@ export class R3TestBedCompiler {
       this.originalComponentResolutionQueue = new Map();
     }
     clearResolutionOfComponentResourcesQueue().forEach(
-        (value, key) => this.originalComponentResolutionQueue !.set(key, value));
+        (value, key) => this.originalComponentResolutionQueue!.set(key, value));
   }
 
   /*
@@ -573,21 +629,20 @@ export class R3TestBedCompiler {
       op.object[op.fieldName] = op.originalValue;
     });
     // Restore initial component/directive/pipe defs
-    this.initialNgDefs.forEach(
-        (value: [string, PropertyDescriptor | undefined], type: Type<any>) => {
-          const [prop, descriptor] = value;
-          if (!descriptor) {
-            // Delete operations are generally undesirable since they have performance implications
-            // on objects they were applied to. In this particular case, situations where this code
-            // is invoked should be quite rare to cause any noticeable impact, since it's applied
-            // only to some test cases (for example when class with no annotations extends some
-            // @Component) when we need to clear 'ɵcmp' field on a given class to restore
-            // its original state (before applying overrides and running tests).
-            delete (type as any)[prop];
-          } else {
-            Object.defineProperty(type, prop, descriptor);
-          }
-        });
+    this.initialNgDefs.forEach((value: [string, PropertyDescriptor|undefined], type: Type<any>) => {
+      const [prop, descriptor] = value;
+      if (!descriptor) {
+        // Delete operations are generally undesirable since they have performance implications
+        // on objects they were applied to. In this particular case, situations where this code
+        // is invoked should be quite rare to cause any noticeable impact, since it's applied
+        // only to some test cases (for example when class with no annotations extends some
+        // @Component) when we need to clear 'ɵcmp' field on a given class to restore
+        // its original state (before applying overrides and running tests).
+        delete (type as any)[prop];
+      } else {
+        Object.defineProperty(type, prop, descriptor);
+      }
+    });
     this.initialNgDefs.clear();
     this.moduleProvidersOverridden.clear();
     this.restoreComponentResolutionQueue();
@@ -724,7 +779,7 @@ function hasNgModuleDef<T>(value: Type<T>): value is NgModuleType<T> {
   return value.hasOwnProperty('ɵmod');
 }
 
-function maybeUnwrapFn<T>(maybeFn: (() => T) | T): T {
+function maybeUnwrapFn<T>(maybeFn: (() => T)|T): T {
   return maybeFn instanceof Function ? maybeFn() : maybeFn;
 }
 

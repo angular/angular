@@ -19,7 +19,7 @@
     "express": "4.16.4",
     "rxjs": "file:../../node_modules/rxjs",
     "typescript": "file:../../node_modules/typescript",
-    "zone.js": "file:../../dist/zone.js-dist/zone.js"
+    "zone.js": "file:../../dist/zone.js-dist/archive/zone.js.tgz"
   },
   "devDependencies": {
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
@@ -40,7 +40,7 @@
   },
   "scripts": {
     "build": "./build.sh",
-    "test": "npm run build && concurrently \"npm run serve\" \"npm run protractor\" --kill-others --success first",
+    "test": "yarn build && concurrently \"yarn serve\" \"yarn protractor\" --kill-others --success first",
     "serve": "node built/server-bundle.js",
     "preprotractor": "tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js"

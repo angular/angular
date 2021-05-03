@@ -35,13 +35,11 @@
 
         <div class="form-group">
           <label for="alterEgo">Alter Ego</label>
-        <!-- #docregion async-validation -->
           <input id="alterEgo" class="form-control" name="alterEgo"
                 #alterEgo="ngModel"
                 [(ngModel)]="hero.alterEgo"
                 [ngModelOptions]="{ updateOn: 'blur' }"
                 appUniqueAlterEgo>
-        <!-- #enddocregion async-validation -->
 
           <div *ngIf="alterEgo.pending">Validating...</div>
           <div *ngIf="alterEgo.invalid" class="alert alert-danger alter-ego-errors">

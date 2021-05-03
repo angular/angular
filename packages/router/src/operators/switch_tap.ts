@@ -1,12 +1,12 @@
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MonoTypeOperatorFunction, ObservableInput, from} from 'rxjs';
+import {from, MonoTypeOperatorFunction, ObservableInput, of} from 'rxjs';
 import {map, switchMap} from 'rxjs/operators';
 
 /**
@@ -17,13 +17,11 @@ import {map, switchMap} from 'rxjs/operators';
  */
 export function switchTap<T>(next: (x: T) => void|ObservableInput<any>):
     MonoTypeOperatorFunction<T> {
-  return function(source) {
-    return source.pipe(switchMap(v => {
-      const nextResult = next(v);
-      if (nextResult) {
-        return from(nextResult).pipe(map(() => v));
-      }
-      return from([v]);
-    }));
-  };
+  return switchMap(v => {
+    const nextResult = next(v);
+    if (nextResult) {
+      return from(nextResult).pipe(map(() => v));
+    }
+    return of(v);
+  });
 }
