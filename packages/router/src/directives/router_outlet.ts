@@ -123,6 +123,7 @@ export interface RouterOutletContract {
 @Directive({selector: 'router-outlet', exportAs: 'outlet'})
 export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
   private activated: ComponentRef<any>|null = null;
+  private activating = false;
   private _activatedRoute: ActivatedRoute|null = null;
   private name: string;
 
@@ -144,7 +145,7 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
 
   /** @nodoc */
   ngOnInit(): void {
-    if (!this.activated) {
+    if (!(this.activated || this.activating)) {
       // If the outlet was not instantiated at the time the route got activated we need to populate
       // the outlet when it is initialized (ie inside a NgIf)
       const context = this.parentContexts.getContext(this.name);
@@ -227,7 +228,14 @@ export class RouterOutlet implements OnDestroy, OnInit, RouterOutletContract {
     const factory = resolver.resolveComponentFactory(component);
     const childContexts = this.parentContexts.getOrCreateContext(this.name).children;
     const injector = new OutletInjector(activatedRoute, childContexts, this.location.injector);
-    this.activated = this.location.createComponent(factory, this.location.length, injector);
+
+    // In case component creation triggers change detection, mark this component as activating so
+    // that the component is not double-rendered through ngOnInit.
+    this.activating = true;
+    const componentRef = this.location.createComponent(factory, this.location.length, injector);
+    this.activated = componentRef;
+    this.activating = false;
+
     // Calling `markForCheck` to make sure we will run the change detection when the
     // `RouterOutlet` is inside a `ChangeDetectionStrategy.OnPush` component.
     this.changeDetector.markForCheck();
