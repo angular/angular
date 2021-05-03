@@ -62,19 +62,19 @@ export interface CanColor {
     defaultColor: ThemePalette | undefined;
 }
 
-export declare type CanColorCtor = Constructor<CanColor>;
+export declare type CanColorCtor = Constructor<CanColor> & AbstractConstructor<CanColor>;
 
 export interface CanDisable {
     disabled: boolean;
 }
 
-export declare type CanDisableCtor = Constructor<CanDisable>;
+export declare type CanDisableCtor = Constructor<CanDisable> & AbstractConstructor<CanDisable>;
 
 export interface CanDisableRipple {
     disableRipple: boolean;
 }
 
-export declare type CanDisableRippleCtor = Constructor<CanDisableRipple>;
+export declare type CanDisableRippleCtor = Constructor<CanDisableRipple> & AbstractConstructor<CanDisableRipple>;
 
 export interface CanUpdateErrorState {
     errorState: boolean;
@@ -83,7 +83,7 @@ export interface CanUpdateErrorState {
     updateErrorState(): void;
 }
 
-export declare type CanUpdateErrorStateCtor = Constructor<CanUpdateErrorState>;
+export declare type CanUpdateErrorStateCtor = Constructor<CanUpdateErrorState> & AbstractConstructor<CanUpdateErrorState>;
 
 export declare abstract class DateAdapter<D> {
     protected readonly _localeChanges: Subject<void>;
@@ -148,7 +148,7 @@ export interface HasTabIndex {
     tabIndex: number;
 }
 
-export declare type HasTabIndexCtor = Constructor<HasTabIndex>;
+export declare type HasTabIndexCtor = Constructor<HasTabIndex> & AbstractConstructor<HasTabIndex>;
 
 export declare const MAT_DATE_FORMATS: InjectionToken<MatDateFormats>;
 
@@ -280,13 +280,13 @@ export declare class MatRippleModule {
     static ɵmod: i0.ɵɵNgModuleDeclaration<MatRippleModule, [typeof i1.MatRipple], [typeof i2.MatCommonModule, typeof i3.PlatformModule], [typeof i1.MatRipple, typeof i2.MatCommonModule]>;
 }
 
-export declare function mixinColor<T extends Constructor<HasElementRef>>(base: T, defaultColor?: ThemePalette): CanColorCtor & T;
+export declare function mixinColor<T extends AbstractConstructor<HasElementRef>>(base: T, defaultColor?: ThemePalette): CanColorCtor & T;
 
-export declare function mixinDisabled<T extends Constructor<{}>>(base: T): CanDisableCtor & T;
+export declare function mixinDisabled<T extends AbstractConstructor<{}>>(base: T): CanDisableCtor & T;
 
 export declare function mixinDisableRipple<T extends AbstractConstructor<{}>>(base: T): CanDisableRippleCtor & T;
 
-export declare function mixinErrorState<T extends Constructor<HasErrorState>>(base: T): CanUpdateErrorStateCtor & T;
+export declare function mixinErrorState<T extends AbstractConstructor<HasErrorState>>(base: T): CanUpdateErrorStateCtor & T;
 
 export declare function mixinInitialized<T extends Constructor<{}>>(base: T): HasInitializedCtor & T;
 
