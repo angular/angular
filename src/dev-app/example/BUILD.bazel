@@ -10,6 +10,5 @@ ng_module(
         "//src/components-examples",
         "//src/components-examples/private",
         "//src/material/expansion",
-        "@npm//@angular/elements",
     ],
 )
