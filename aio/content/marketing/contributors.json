@@ -274,6 +274,15 @@
     "bio": "Doguhan is a GDE in Angular and Web Technologies. He is the author of Angular for Enterprise-Ready Web Applications, a speaker, organizer for AngularDC, and OSS contributor. When away from a screen, he enjoys playing Go, building legos, and claims to be an avid mixologist.",
     "groups": ["GDE"]
   },
+  "dylhunn": {
+    "name": "Dylan Hunn",
+    "picture": "dylan-hunn.jpg",
+    "twitter": "dylhunn",
+    "website": "https://hunn.io",
+    "bio": "Dylan is a software engineer at Google on the Angular Core team. He loves board games, the open web, and adorable rabbits.",
+    "groups": ["Angular"],
+    "lead": "jelbourn"
+  },
   "EladBezalel": {
     "name": "Elad Bezalel",
     "picture": "eladbezalel.jpg",
