@@ -8,23 +8,26 @@ In JavaScript, unit testing mostly means testing of methods. In this context, th
 To simplify the tests and make them more stable and predictable, they should be independent.
 
 Independence in JavaScript is mostly compatible with Functional Programming; for example, pure functions.
-Each pure function should return the same result with the same passed arguments and does not have any side effects (e.g. closures)
+Each pure function should return the same result with the same passed arguments, and no side effects, such as closures.
 ```javascript
  const pureFunction = (arg) => arg;
 
- const notPureFunction = () => arg;
+ const notPureFunction = () => closuredVariable;
 ```
 
-In the test we need to follow the same principe to simplify it.
+In the test we need to follow the same principle to simplify it.
 
-1. each tested method should be wrapped to the individual scope with initialization on the root level to perform it before each tests
+1. Each tested method should be wrapped to the individual scope (describe). All dynamic initialization should be performed before each test start to avoid side effects.
 ```javascript
  describe('#testedMethodScope', () => {
-  beforeEach(() => {/*initialization*/}); 
+  beforeEach(() => {/*initialization of dynamic dependencies*/}); 
+  
+  it('should do this', () => {/*test1*/});
+  it('should do that', () => {/*test2*/})
  });
 ```
 
-2. Each case should be performed with not dirty state
+2. Each case should be performed with not dirty state.
 ```javascript
 // invalid 
  let value = true;
@@ -56,7 +59,7 @@ In the test we need to follow the same principe to simplify it.
  });
  ```
 
-3. Each test should not test another methods in the tested method
+3. Each test should not test another method in the tested method.
 ```typescript
  const testedMethod = (params: any, dependencyWithHandler: any) => dependencyWithHandler.handler(params);
  
@@ -72,7 +75,7 @@ In the test we need to follow the same principe to simplify it.
  expect(testedMethod(comfortableMockedParams, mockedDataWithDefinedMethod)).toBe(comfortablePredictableTestResult);
 ```
 
-4. Each dependency and data used in the tested method should be mocked or replaced to the spy
+4. Each dependency and data used in the tested method should be mocked or replaced to the spy.
 ```typescript
  const testedMethod = (params: any, dependencyWithHandler: any) => dependencyWithHandler.handler(params);
  
@@ -86,7 +89,7 @@ In the test we need to follow the same principe to simplify it.
  // static arguments can be defined once too 
  const params = 'params';
  
- // definition of "dynamic" values should be performed before each tests to clean up test's state 
+ // definition of "dynamic" values should be performed before each test to clean up test's state 
  beforeEach(() => {
    handler = jasmine.createSpy('handler').and.returnvalue(expectedResult);
    dependency = { handler };
@@ -102,7 +105,7 @@ In the test we need to follow the same principe to simplify it.
  });
  ```
 
-5. Each type should be simplified as possible
+5. Each type should be simplified as much as possible.
 ```typescript
  interface ComplicatedDataType {
     nestedComplicatedDataTypes: AnotherComplicatedType[];
@@ -112,7 +115,7 @@ In the test we need to follow the same principe to simplify it.
  const productionMethod1 = (params: ComplicatedDataType, dependency: any) => dependency.handler(params);
  const productionMethod2 = ({ nestedComplicatedDataTypes }: ComplicatedDataType, {handler}: any) => handler(nestedComplicatedDataTypes);
  
- // use any to avoid following complicated data structure to reduce mock/stub data size and simplify tests
+ // use `any` type to avoid following complicated data structure to reduce mock/stub data size and simplify tests
  let testedMethod1: any = productionMethod1;
  let testedMethod2: any = productionMethod2;
 
@@ -129,7 +132,7 @@ In the test we need to follow the same principe to simplify it.
  expect(handler).toHaveBeenCalledWith(nestedComplicatedDataTypes);
 ```
 
-6. Tests should avoid any mutations
+6. Tests should avoid any mutations.
 ```typescript
  // invalid
  const spy = jasmine.createSpy('spy'); 
