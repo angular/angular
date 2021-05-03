@@ -43,8 +43,8 @@ describe('find references and rename locations', () => {
 
     it('gets component member references from TS file and external template', () => {
       const refs = getReferencesAtPosition(appFile)!;
-      expect(refs.length).toBe(1);
-      assertFileNames(refs, ['app.html']);
+      expect(refs.length).toBe(2);
+      assertFileNames(refs, ['app.html', 'app.ts']);
       assertTextSpans(refs, ['myProp']);
     });
 
@@ -78,8 +78,8 @@ describe('find references and rename locations', () => {
 
     it('gets references', () => {
       const refs = getReferencesAtPosition(templateFile)!;
-      expect(refs.length).toBe(1);
-      assertFileNames(refs, ['app.html']);
+      expect(refs.length).toBe(2);
+      assertFileNames(refs, ['app.html', 'app.ts']);
       assertTextSpans(refs, ['myProp']);
     });
 
@@ -112,7 +112,7 @@ describe('find references and rename locations', () => {
 
     it('gets component member reference in ts file', () => {
       const refs = getReferencesAtPosition(appFile)!;
-      expect(refs.length).toBe(1);
+      expect(refs.length).toBe(2);
 
       assertFileNames(refs, ['app.ts']);
       assertTextSpans(refs, ['setTitle']);
@@ -149,7 +149,7 @@ describe('find references and rename locations', () => {
 
     it('gets member reference in ts file', () => {
       const refs = getReferencesAtPosition(appFile)!;
-      expect(refs.length).toBe(1);
+      expect(refs.length).toBe(2);
 
       assertTextSpans(refs, ['title']);
     });
@@ -215,9 +215,9 @@ describe('find references and rename locations', () => {
 
     it('gets member reference in ts file', () => {
       const refs = getReferencesAtPosition(file)!;
-      expect(refs.length).toBe(1);
+      expect(refs.length).toBe(2);
 
-      assertFileNames(refs, ['app.html']);
+      assertFileNames(refs, ['app.ts', 'app.html']);
       assertTextSpans(refs, ['title']);
     });
 
@@ -253,7 +253,7 @@ describe('find references and rename locations', () => {
 
     it('get reference to member in ts file', () => {
       const refs = getReferencesAtPosition(file)!;
-      expect(refs.length).toBe(1);
+      expect(refs.length).toBe(2);
 
       assertFileNames(refs, ['app.ts']);
       assertTextSpans(refs, ['otherTitle']);
@@ -290,7 +290,7 @@ describe('find references and rename locations', () => {
     it('gets reference to member type definition and initialization in component class', () => {
       const refs = getReferencesAtPosition(file)!;
       // 3 references: the type definition, the value assignment, and the read in the template
-      expect(refs.length).toBe(1);
+      expect(refs.length).toBe(3);
 
       assertFileNames(refs, ['app.ts']);
       // TODO(atscott): investigate if we can make the template keyed read be just the 'name' part.
@@ -298,7 +298,7 @@ describe('find references and rename locations', () => {
       // https://sourcegraph.com/github.com/microsoft/TypeScript@d5779c75d3dd19565b60b9e2960b8aac36d4d635/-/blob/src/services/findAllReferences.ts#L508-512
       // One possible solution would be to extend `FullTemplateMapping` to include the matched TCB
       // node and then do the same thing that TS does: if the node is a string, adjust the span.
-      assertTextSpans(refs, ['"name"']);
+      assertTextSpans(refs, ['name', '"name"']);
     });
 
     it('gets rename locations in component class', () => {
@@ -338,9 +338,9 @@ describe('find references and rename locations', () => {
 
     it('get references in ts file', () => {
       const refs = getReferencesAtPosition(file)!;
-      expect(refs.length).toBe(1);
+      expect(refs.length).toBe(2);
 
-      assertFileNames(refs, ['app.html']);
+      assertFileNames(refs, ['app.ts', 'app.html']);
       assertTextSpans(refs, ['batman']);
     });
 
@@ -493,8 +493,8 @@ describe('find references and rename locations', () => {
 
         it('should get references', () => {
           const refs = getReferencesAtPosition(file)!;
-          expect(refs.length).toBe(1);
-          assertFileNames(refs, ['app.html']);
+          expect(refs.length).toBe(2);
+          assertFileNames(refs, ['dir.ts', 'app.html']);
           assertTextSpans(refs, ['dirValue']);
         });
 
@@ -523,8 +523,8 @@ describe('find references and rename locations', () => {
 
         it('should get references', () => {
           const refs = getReferencesAtPosition(file)!;
-          expect(refs.length).toBe(1);
-          assertFileNames(refs, ['app.html']);
+          expect(refs.length).toBe(2);
+          assertFileNames(refs, ['dir.ts', 'app.html']);
           assertTextSpans(refs, ['dirValue']);
         });
 
@@ -553,8 +553,8 @@ describe('find references and rename locations', () => {
 
         it('should get references', () => {
           const refs = getReferencesAtPosition(file)!;
-          expect(refs.length).toBe(1);
-          assertFileNames(refs, ['app.html']);
+          expect(refs.length).toBe(2);
+          assertFileNames(refs, ['dir.ts', 'app.html']);
           assertTextSpans(refs, ['doSomething']);
         });
 
@@ -693,8 +693,8 @@ describe('find references and rename locations', () => {
 
       it('should find references', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toBe(1);
-        assertFileNames(refs, ['app.ts']);
+        expect(refs.length).toBe(2);
+        assertFileNames(refs, ['app.ts', 'example-directive.ts']);
         assertTextSpans(refs, ['identifier']);
       });
 
@@ -727,7 +727,7 @@ describe('find references and rename locations', () => {
 
       it('should find references', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toBe(1);
+        expect(refs.length).toBe(2);
         assertFileNames(refs, ['app.ts']);
         assertTextSpans(refs, ['name']);
       });
@@ -777,9 +777,9 @@ describe('find references and rename locations', () => {
 
       it('should find references', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toBe(1);
-        assertFileNames(refs, ['app.ts']);
-        assertTextSpans(refs, ['prefixPipe']);
+        expect(refs.length).toBe(5);
+        assertFileNames(refs, ['index.d.ts', 'prefix-pipe.ts', 'app.ts']);
+        assertTextSpans(refs, ['transform', 'prefixPipe']);
       });
 
       it('should find rename locations', () => {
@@ -817,7 +817,7 @@ describe('find references and rename locations', () => {
 
       it('should find references', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toBe(1);
+        expect(refs.length).toBe(2);
         assertFileNames(refs, ['app.ts']);
         assertTextSpans(refs, ['prefix']);
       });
@@ -862,8 +862,8 @@ describe('find references and rename locations', () => {
 
       it('should find references', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toEqual(1);
-        assertFileNames(refs, ['app.ts']);
+        expect(refs.length).toEqual(2);
+        assertFileNames(refs, ['string-model.ts', 'app.ts']);
         assertTextSpans(refs, ['model']);
       });
 
@@ -947,8 +947,8 @@ describe('find references and rename locations', () => {
 
       it('should work for text attributes', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toEqual(1);
-        assertFileNames(refs, ['app.ts']);
+        expect(refs.length).toEqual(2);
+        assertFileNames(refs, ['string-model.ts', 'app.ts']);
         assertTextSpans(refs, ['model']);
       });
 
@@ -988,8 +988,8 @@ describe('find references and rename locations', () => {
 
       it('should work from the TS input declaration', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toEqual(1);
-        assertFileNames(refs, ['app.ts']);
+        expect(refs.length).toEqual(2);
+        assertFileNames(refs, ['app.ts', 'string-model.ts']);
         assertTextSpans(refs, ['model']);
       });
 
@@ -1041,8 +1041,8 @@ describe('find references and rename locations', () => {
 
       it('should find references', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toEqual(1);
-        assertFileNames(refs, ['app.ts']);
+        expect(refs.length).toEqual(3);
+        assertFileNames(refs, ['app.ts', 'string-model.ts', 'other-dir.ts']);
         assertTextSpans(refs, ['model']);
       });
 
@@ -1076,9 +1076,9 @@ describe('find references and rename locations', () => {
 
       it('should find references', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toEqual(1);
-        assertFileNames(refs, ['app.ts']);
-        assertTextSpans(refs, ['alias']);
+        expect(refs.length).toEqual(2);
+        assertFileNames(refs, ['string-model.ts', 'app.ts']);
+        assertTextSpans(refs, ['aliasedModel', 'alias']);
       });
 
       it('should find rename locations', () => {
@@ -1130,7 +1130,7 @@ describe('find references and rename locations', () => {
 
       it('should find references', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toEqual(1);
+        expect(refs.length).toEqual(2);
         assertTextSpans(refs, ['modelChange']);
       });
 
@@ -1154,8 +1154,8 @@ describe('find references and rename locations', () => {
 
       it('should find references', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toEqual(1);
-        assertTextSpans(refs, ['alias']);
+        expect(refs.length).toEqual(2);
+        assertTextSpans(refs, ['aliasedModelChange', 'alias']);
       });
 
       it('should find rename locations', () => {
@@ -1194,9 +1194,12 @@ describe('find references and rename locations', () => {
     file.moveCursorToText('[(mod¦el)]');
 
     const refs = getReferencesAtPosition(file)!;
-    expect(refs.length).toEqual(2);
-    assertFileNames(refs, ['app.ts']);
-    assertTextSpans(refs, ['model']);
+    // Note that this includes the 'model` twice from the template. As with other potential
+    // duplicates (like if another plugin returns the same span), we expect the LS clients to filter
+    // these out themselves.
+    expect(refs.length).toEqual(4);
+    assertFileNames(refs, ['dir.ts', 'app.ts']);
+    assertTextSpans(refs, ['model', 'modelChange']);
   });
 
   describe('directives', () => {
@@ -1232,9 +1235,9 @@ describe('find references and rename locations', () => {
         const refs = getReferencesAtPosition(file)!;
         // 4 references are:  class declaration, template usage, app import and use in declarations
         // list.
-        expect(refs.length).toBe(1);
-        assertTextSpans(refs, ['<div dir>']);
-        assertFileNames(refs, ['app.ts']);
+        expect(refs.length).toBe(4);
+        assertTextSpans(refs, ['<div dir>', 'Dir']);
+        assertFileNames(refs, ['app.ts', 'dir.ts']);
       });
 
       it('should find rename locations', () => {
@@ -1281,9 +1284,9 @@ describe('find references and rename locations', () => {
 
       it('gets references to all matching directives', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toBe(2);
-        assertTextSpans(refs, ['<div dir>']);
-        assertFileNames(refs, ['app.ts']);
+        expect(refs.length).toBe(8);
+        assertTextSpans(refs, ['<div dir>', 'Dir', 'Dir2']);
+        assertFileNames(refs, ['app.ts', 'dir.ts', 'dir2.ts']);
       });
 
       it('finds rename locations for all matching directives', () => {
@@ -1318,9 +1321,9 @@ describe('find references and rename locations', () => {
 
       it('should be able to request references', () => {
         const refs = getReferencesAtPosition(file)!;
-        expect(refs.length).toBe(1);
-        assertTextSpans(refs, ['<div *ngFor="let item of items"></div>']);
-        assertFileNames(refs, ['app.ts']);
+        expect(refs.length).toBe(6);
+        assertTextSpans(refs, ['<div *ngFor="let item of items"></div>', 'NgForOf']);
+        assertFileNames(refs, ['index.d.ts', 'app.ts']);
       });
 
       it('should not support rename if directive is in a dts file', () => {
@@ -1360,9 +1363,9 @@ describe('find references and rename locations', () => {
         const refs = getReferencesAtPosition(file)!;
         // 4 references are:  class declaration, template usage, app import and use in declarations
         // list.
-        expect(refs.length).toBe(1);
-        assertTextSpans(refs, ['<my-comp>']);
-        assertFileNames(refs, ['app.ts']);
+        expect(refs.length).toBe(4);
+        assertTextSpans(refs, ['<my-comp>', 'MyComp']);
+        assertFileNames(refs, ['app.ts', 'comp.ts']);
       });
 
       it('gets rename locations', () => {
@@ -1405,9 +1408,9 @@ describe('find references and rename locations', () => {
         const refs = getReferencesAtPosition(file)!;
         // 4 references are:  class declaration, template usage, app import and use in declarations
         // list.
-        expect(refs.length).toBe(1);
-        assertTextSpans(refs, ['<my-comp>']);
-        assertFileNames(refs, ['app.ts']);
+        expect(refs.length).toBe(4);
+        assertTextSpans(refs, ['<my-comp>', 'MyComp']);
+        assertFileNames(refs, ['app.ts', 'comp.ts']);
       });
 
       it('finds rename locations', () => {
