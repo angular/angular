@@ -1,4 +1,5 @@
-import { nestedSerializer } from './state-serializer';
+import { deeplySerializeSelectedProperties } from './state-serializer';
+import { PropType } from 'protocol';
 
 const QUERY_1_1 = [];
 
@@ -16,7 +17,7 @@ const QUERY_1_2 = [
                 name: 0,
                 children: [
                   {
-                    name: 'nested',
+                    name: 'two',
                   },
                 ],
               },
@@ -61,83 +62,88 @@ const dir2 = {
   },
 };
 
-describe('nestedSerializer', () => {
+describe('deeplySerializeSelectedProperties', () => {
   it('should work with empty queries', () => {
-    const result = nestedSerializer(dir1, QUERY_1_1);
+    const result = deeplySerializeSelectedProperties(dir1, QUERY_1_1);
     expect(result).toEqual({
-      type: 9,
-      value: {
-        one: {
-          type: 0,
-          value: 1,
-          editable: true,
-          expandable: false,
-          preview: '1',
-        },
-        nested: {
-          type: 9,
-          editable: false,
-          expandable: true,
-          preview: '{...}',
+      one: {
+        type: PropType.Number,
+        expandable: false,
+        editable: true,
+        preview: '1',
+        value: 1,
+      },
+      nested: {
+        type: PropType.Object,
+        editable: false,
+        expandable: true,
+        preview: '{...}',
+        value: {
+          arr: {
+            type: PropType.Array,
+            expandable: true,
+            editable: false,
+            preview: 'Array(3)',
+          },
         },
       },
-      editable: false,
-      expandable: true,
-      preview: '{...}',
     });
   });
 
   it('should collect not specified but existing props below level', () => {
-    expect(nestedSerializer(dir1, QUERY_1_2)).toEqual({
-      type: 9,
-      value: {
-        one: {
-          type: 0,
-          value: 1,
-          editable: true,
-          expandable: false,
-          preview: '1',
-        },
-        nested: {
-          type: 9,
-          editable: false,
-          expandable: true,
-          preview: '{...}',
-          value: {
-            arr: {
-              type: 11,
-              editable: false,
-              expandable: true,
-              preview: 'Array(3)',
-              value: [
-                {
-                  type: 11,
-                  editable: false,
-                  expandable: true,
-                  preview: 'Array(1)',
-                  value: [
-                    {
-                      type: 9,
-                      editable: false,
-                      expandable: true,
-                      preview: '{...}',
-                      value: {},
+    const result = deeplySerializeSelectedProperties(dir1, QUERY_1_2);
+    expect(result).toEqual({
+      one: {
+        type: PropType.Number,
+        expandable: false,
+        editable: true,
+        preview: '1',
+        value: 1,
+      },
+      nested: {
+        type: PropType.Object,
+        editable: false,
+        expandable: true,
+        preview: '{...}',
+        value: {
+          arr: {
+            type: PropType.Array,
+            editable: false,
+            expandable: true,
+            preview: 'Array(3)',
+            value: [
+              {
+                type: PropType.Array,
+                editable: false,
+                expandable: true,
+                preview: 'Array(1)',
+                value: [
+                  {
+                    type: PropType.Object,
+                    editable: false,
+                    expandable: true,
+                    preview: '{...}',
+                    value: {
+                      two: {
+                        type: PropType.Number,
+                        expandable: false,
+                        editable: true,
+                        preview: '1',
+                        value: 1,
+                      },
                     },
-                  ],
-                },
-              ],
-            },
+                  },
+                ],
+              },
+            ],
           },
         },
       },
-      editable: false,
-      expandable: true,
-      preview: '{...}',
     });
   });
 
   it('should handle deletions even of the query asks for such props', () => {
-    const result = nestedSerializer(dir2, [
+    const result = deeplySerializeSelectedProperties(dir2, [
       {
         name: 'one',
         children: [],
@@ -148,18 +154,218 @@ describe('nestedSerializer', () => {
       },
     ]);
     expect(result).toEqual({
-      type: 9,
-      value: {
-        nested: {
-          type: 9,
-          editable: false,
-          expandable: true,
-          preview: '{...}',
+      nested: {
+        type: PropType.Object,
+        editable: false,
+        expandable: true,
+        preview: '{...}',
+        value: {
+          arr: {
+            type: PropType.Array,
+            editable: false,
+            expandable: true,
+            preview: 'Array(3)',
+          },
         },
       },
-      editable: false,
-      expandable: true,
-      preview: '{...}',
+    });
+  });
+
+  it('should work with getters', () => {
+    const result = deeplySerializeSelectedProperties(
+      {
+        get foo(): any {
+          return {
+            baz: {
+              qux: 3,
+            },
+          };
+        },
+      },
+      [
+        {
+          name: 'foo',
+          children: [
+            {
+              name: 'baz',
+              children: [],
+            },
+          ],
+        },
+      ]
+    );
+    expect(result).toEqual({
+      foo: {
+        type: PropType.Object,
+        editable: false,
+        expandable: true,
+        preview: '{...}',
+        value: {
+          baz: {
+            type: PropType.Object,
+            editable: false,
+            expandable: true,
+            preview: '{...}',
+          },
+        },
+      },
+    });
+  });
+
+  it('should getters should be readonly', () => {
+    const result = deeplySerializeSelectedProperties(
+      {
+        get foo(): number {
+          return 42;
+        },
+        get bar(): number {
+          return 42;
+        },
+        set bar(val: number) {},
+      },
+      []
+    );
+    expect(result).toEqual({
+      foo: {
+        type: PropType.Number,
+        expandable: false,
+        // Not editable because
+        // we don't have a getter.
+        editable: false,
+        preview: '42',
+        value: 42,
+      },
+      bar: {
+        type: PropType.Number,
+        expandable: false,
+        editable: true,
+        preview: '42',
+        value: 42,
+      },
+    });
+  });
+
+  it('should return the precise path requested', () => {
+    const result = deeplySerializeSelectedProperties(
+      {
+        state: {
+          nested: {
+            props: {
+              foo: 1,
+              bar: 2,
+            },
+            [Symbol(3)](): number {
+              return 1.618;
+            },
+            get foo(): number {
+              return 42;
+            },
+          },
+        },
+      },
+      [
+        {
+          name: 'state',
+          children: [
+            {
+              name: 'nested',
+              children: [
+                {
+                  name: 'props',
+                  children: [
+                    {
+                      name: 'foo',
+                      children: [],
+                    },
+                    {
+                      name: 'bar',
+                      children: [],
+                    },
+                  ],
+                },
+                {
+                  name: 'foo',
+                  children: [],
+                },
+              ],
+            },
+          ],
+        },
+      ]
+    );
+    expect(result).toEqual({
+      state: {
+        type: PropType.Object,
+        editable: false,
+        expandable: true,
+        preview: '{...}',
+        value: {
+          nested: {
+            type: PropType.Object,
+            editable: false,
+            expandable: true,
+            preview: '{...}',
+            value: {
+              props: {
+                type: PropType.Object,
+                editable: false,
+                expandable: true,
+                preview: '{...}',
+                value: {
+                  foo: {
+                    type: PropType.Number,
+                    expandable: false,
+                    editable: true,
+                    preview: '1',
+                    value: 1,
+                  },
+                  bar: {
+                    type: PropType.Number,
+                    expandable: false,
+                    editable: true,
+                    preview: '2',
+                    value: 2,
+                  },
+                },
+              },
+              foo: {
+                type: PropType.Number,
+                expandable: false,
+                editable: false,
+                preview: '42',
+                value: 42,
+              },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  it('should not show setters at all when associated getters or values are unavailable', () => {
+    const result = deeplySerializeSelectedProperties(
+      {
+        set foo(_: any) {},
+        get bar(): number {
+          return 1;
+        },
+      },
+      []
+    );
+    expect(result).toEqual({
+      foo: {
+        type: PropType.Undefined,
+        editable: false,
+        expandable: false,
+        preview: '[setter]',
+      },
+      bar: {
+        type: PropType.Number,
+        editable: false,
+        expandable: false,
+        preview: '1',
+        value: 1,
+      },
     });
   });
 });
