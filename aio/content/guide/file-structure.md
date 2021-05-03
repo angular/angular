@@ -79,7 +79,7 @@ Files at the top level of `src/` support testing and running your application. S
 
 <div class="alert is-helpful">
 
-If you create an application using Angular's strict mode, you will also have an additional `package.json` file in the `src/app` directory. For more information, see [Strict mode](/guide/strict-mode).
+New Angular projects use strict mode by default. If this is not desired you can opt-out when creating the project. For more information, see [Strict mode](/guide/strict-mode).
 
 </div>
 
