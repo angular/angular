@@ -1,6 +1,9 @@
-import {runfiles} from '@bazel/runfiles';
 import {HarnessLoader, parallel} from '@angular/cdk/testing';
-import {waitForAngularReady, WebDriverHarnessEnvironment} from '@angular/cdk/testing/webdriver';
+import {
+  SeleniumWebDriverHarnessEnvironment,
+  waitForAngularReady
+} from '@angular/cdk/testing/selenium-webdriver';
+import {runfiles} from '@bazel/runfiles';
 import * as webdriver from 'selenium-webdriver';
 import {crossEnvironmentSpecs} from './cross-environment.spec';
 import {MainComponentHarness} from './harnesses/main-component-harness';
@@ -70,7 +73,7 @@ describe('WebDriverHarnessEnvironment', () => {
       let loader: HarnessLoader;
 
       beforeEach(() => {
-        loader = WebDriverHarnessEnvironment.loader(wd);
+        loader = SeleniumWebDriverHarnessEnvironment.loader(wd);
       });
 
       it('should create HarnessLoader from WebDriverHarnessEnvironment', () => {
@@ -82,7 +85,8 @@ describe('WebDriverHarnessEnvironment', () => {
       let harness: MainComponentHarness;
 
       beforeEach(async () => {
-        harness = await WebDriverHarnessEnvironment.loader(wd).getHarness(MainComponentHarness);
+        harness = await SeleniumWebDriverHarnessEnvironment.loader(wd)
+            .getHarness(MainComponentHarness);
       });
 
       it('can get elements outside of host', async () => {
@@ -99,21 +103,22 @@ describe('WebDriverHarnessEnvironment', () => {
       });
 
       it('should be able to retrieve the WebElement from a WebDriverElement', async () => {
-        const element = WebDriverHarnessEnvironment.getNativeElement(await harness.host());
+        const element = SeleniumWebDriverHarnessEnvironment.getNativeElement(await harness.host());
         expect(await element.getTagName()).toBe('test-main');
       });
     });
 
     describe('shadow DOM interaction', () => {
       it('should not pierce shadow boundary by default', async () => {
-        const harness = await WebDriverHarnessEnvironment.loader(wd)
+        const harness = await SeleniumWebDriverHarnessEnvironment.loader(wd)
             .getHarness(MainComponentHarness);
         expect(await harness.shadows()).toEqual([]);
       });
 
       it('should pierce shadow boundary when using piercing query', async () => {
-        const harness = await WebDriverHarnessEnvironment.loader(wd, {queryFn: piercingQueryFn})
-            .getHarness(MainComponentHarness);
+        const harness =
+            await SeleniumWebDriverHarnessEnvironment.loader(wd, {queryFn: piercingQueryFn})
+                .getHarness(MainComponentHarness);
         const shadows = await harness.shadows();
         expect(await parallel(() => {
           return shadows.map(el => el.text());
@@ -121,16 +126,17 @@ describe('WebDriverHarnessEnvironment', () => {
       });
 
       it('should allow querying across shadow boundary', async () => {
-        const harness = await WebDriverHarnessEnvironment.loader(wd, {queryFn: piercingQueryFn})
-            .getHarness(MainComponentHarness);
+        const harness =
+            await SeleniumWebDriverHarnessEnvironment.loader(wd, {queryFn: piercingQueryFn})
+                .getHarness(MainComponentHarness);
         expect(await (await harness.deepShadow()).text()).toBe('Shadow 2');
       });
     });
   });
 
   describe('environment independent', () => crossEnvironmentSpecs(
-      () => WebDriverHarnessEnvironment.loader(wd),
-      () => WebDriverHarnessEnvironment.loader(wd).getHarness(MainComponentHarness),
+      () => SeleniumWebDriverHarnessEnvironment.loader(wd),
+      () => SeleniumWebDriverHarnessEnvironment.loader(wd).getHarness(MainComponentHarness),
       async () => (await activeElement()).getAttribute('id'),
   ));
 });

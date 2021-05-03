@@ -16,10 +16,10 @@ import {
   TextOptions
 } from '@angular/cdk/testing';
 import * as webdriver from 'selenium-webdriver';
-import {getWebDriverModifierKeys, webDriverKeyMap} from './webdriver-keys';
+import {getSeleniumWebDriverModifierKeys, seleniumWebDriverKeyMap} from './selenium-webdriver-keys';
 
 /** A `TestElement` implementation for WebDriver. */
-export class WebDriverElement implements TestElement {
+export class SeleniumWebDriverElement implements TestElement {
   constructor(
       readonly element: () => webdriver.WebElement,
       private _stabilize: () => Promise<void>) {}
@@ -116,8 +116,8 @@ export class WebDriverElement implements TestElement {
       rest = modifiersAndKeys;
     }
 
-    const modifierKeys = getWebDriverModifierKeys(modifiers);
-    const keys = rest.map(k => typeof k === 'string' ? k.split('') : [webDriverKeyMap[k]])
+    const modifierKeys = getSeleniumWebDriverModifierKeys(modifiers);
+    const keys = rest.map(k => typeof k === 'string' ? k.split('') : [seleniumWebDriverKeyMap[k]])
         .reduce((arr, k) => arr.concat(k), [])
         // webdriver.Key.chord doesn't work well with geckodriver (mozilla/geckodriver#1502),
         // so avoid it if no modifier keys are required.
@@ -246,7 +246,7 @@ export class WebDriverElement implements TestElement {
     if (args.length && typeof args[args.length - 1] === 'object') {
       modifiers = args.pop() as ModifierKeys;
     }
-    const modifierKeys = getWebDriverModifierKeys(modifiers);
+    const modifierKeys = getSeleniumWebDriverModifierKeys(modifiers);
 
     // Omitting the offset argument to mouseMove results in clicking the center.
     // This is the default behavior we want, so we use an empty array of offsetArgs if

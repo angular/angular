@@ -13,7 +13,7 @@ import * as webdriver from 'selenium-webdriver';
  * Maps the `TestKey` constants to WebDriver's `webdriver.Key` constants.
  * See https://github.com/SeleniumHQ/selenium/blob/trunk/javascript/webdriver/key.js#L29
  */
-export const webDriverKeyMap = {
+export const seleniumWebDriverKeyMap = {
   [TestKey.BACKSPACE]: webdriver.Key.BACK_SPACE,
   [TestKey.TAB]: webdriver.Key.TAB,
   [TestKey.ENTER]: webdriver.Key.ENTER,
@@ -47,7 +47,7 @@ export const webDriverKeyMap = {
 };
 
 /** Gets a list of WebDriver `Key`s for the given `ModifierKeys`. */
-export function getWebDriverModifierKeys(modifiers: ModifierKeys): string[] {
+export function getSeleniumWebDriverModifierKeys(modifiers: ModifierKeys): string[] {
   const result: string[] = [];
   if (modifiers.control) {
     result.push(webdriver.Key.CONTROL);

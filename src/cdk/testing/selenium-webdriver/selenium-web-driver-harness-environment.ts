@@ -8,7 +8,7 @@
 
 import {HarnessEnvironment, HarnessLoader, TestElement} from '@angular/cdk/testing';
 import * as webdriver from 'selenium-webdriver';
-import {WebDriverElement} from './webdriver-element';
+import {SeleniumWebDriverElement} from './selenium-web-driver-element';
 
 /**
  * An Angular framework stabilizer function that takes a callback and calls it when the application
@@ -67,7 +67,8 @@ export async function waitForAngularReady(wd: webdriver.WebDriver) {
 }
 
 /** A `HarnessEnvironment` implementation for WebDriver. */
-export class WebDriverHarnessEnvironment extends HarnessEnvironment<() => webdriver.WebElement> {
+export class SeleniumWebDriverHarnessEnvironment extends
+    HarnessEnvironment<() => webdriver.WebElement> {
   /** The options for this environment. */
   private _options: WebDriverHarnessEnvironmentOptions;
 
@@ -79,7 +80,7 @@ export class WebDriverHarnessEnvironment extends HarnessEnvironment<() => webdri
 
   /** Gets the ElementFinder corresponding to the given TestElement. */
   static getNativeElement(el: TestElement): webdriver.WebElement {
-    if (el instanceof WebDriverElement) {
+    if (el instanceof SeleniumWebDriverElement) {
       return el.element();
     }
     throw Error('This TestElement was not created by the WebDriverHarnessEnvironment');
@@ -88,7 +89,7 @@ export class WebDriverHarnessEnvironment extends HarnessEnvironment<() => webdri
   /** Creates a `HarnessLoader` rooted at the document root. */
   static loader(driver: webdriver.WebDriver, options?: WebDriverHarnessEnvironmentOptions):
       HarnessLoader {
-    return new WebDriverHarnessEnvironment(
+    return new SeleniumWebDriverHarnessEnvironment(
         () => driver.findElement(webdriver.By.css('body')), options);
   }
 
@@ -114,13 +115,13 @@ export class WebDriverHarnessEnvironment extends HarnessEnvironment<() => webdri
 
   /** Creates a `TestElement` from a raw element. */
   protected createTestElement(element: () => webdriver.WebElement): TestElement {
-    return new WebDriverElement(element, () => this.forceStabilize());
+    return new SeleniumWebDriverElement(element, () => this.forceStabilize());
   }
 
   /** Creates a `HarnessLoader` rooted at the given raw element. */
   protected createEnvironment(element: () => webdriver.WebElement):
       HarnessEnvironment<() => webdriver.WebElement> {
-    return new WebDriverHarnessEnvironment(element, this._options);
+    return new SeleniumWebDriverHarnessEnvironment(element, this._options);
   }
 
   // Note: This seems to be working, though we may need to re-evaluate if we encounter issues with

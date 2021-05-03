@@ -1,6 +1,4 @@
-export declare function waitForAngularReady(wd: webdriver.WebDriver): Promise<void>;
-
-export declare class WebDriverElement implements TestElement {
+export declare class SeleniumWebDriverElement implements TestElement {
     readonly element: () => webdriver.WebElement;
     constructor(element: () => webdriver.WebElement, _stabilize: () => Promise<void>);
     blur(): Promise<void>;
@@ -27,7 +25,7 @@ export declare class WebDriverElement implements TestElement {
     text(options?: TextOptions): Promise<string>;
 }
 
-export declare class WebDriverHarnessEnvironment extends HarnessEnvironment<() => webdriver.WebElement> {
+export declare class SeleniumWebDriverHarnessEnvironment extends HarnessEnvironment<() => webdriver.WebElement> {
     protected constructor(rawRootElement: () => webdriver.WebElement, options?: WebDriverHarnessEnvironmentOptions);
     protected createEnvironment(element: () => webdriver.WebElement): HarnessEnvironment<() => webdriver.WebElement>;
     protected createTestElement(element: () => webdriver.WebElement): TestElement;
@@ -38,6 +36,8 @@ export declare class WebDriverHarnessEnvironment extends HarnessEnvironment<() =
     static getNativeElement(el: TestElement): webdriver.WebElement;
     static loader(driver: webdriver.WebDriver, options?: WebDriverHarnessEnvironmentOptions): HarnessLoader;
 }
+
+export declare function waitForAngularReady(wd: webdriver.WebDriver): Promise<void>;
 
 export interface WebDriverHarnessEnvironmentOptions {
     queryFn: (selector: string, root: () => webdriver.WebElement) => Promise<webdriver.WebElement[]>;
