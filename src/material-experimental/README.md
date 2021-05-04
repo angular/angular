@@ -41,7 +41,7 @@ component by following these steps:
   export class MyModule {}
 ```
 
-4. Add use the components just as you would the normal Angular Material components. For example,
+4. Use the components just as you would the normal Angular Material components. For example,
 the checkbox:
 ```html
   <mat-checkbox [checked]="isChecked">Check me</mat-checkbox>
