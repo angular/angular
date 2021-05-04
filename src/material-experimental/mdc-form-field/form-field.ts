@@ -220,7 +220,7 @@ export class MatFormField implements AfterViewInit, OnDestroy, AfterContentCheck
   _subscriptAnimationState = '';
 
   /** Width of the outline notch. */
-  _outlineNotchWidth: number;
+  _outlineNotchWidth = 0;
 
   /** Gets the current form field control */
   get _control(): MatFormFieldControl<any> {
