@@ -12,7 +12,6 @@ import {spawnWithDebugOutput} from '../../utils/child-process';
 import {GithubConfig} from '../../utils/config';
 import {debug, error, info, log, promptConfirm, red, yellow} from '../../utils/console';
 import {GitClient} from '../../utils/git/index';
-import {exec} from '../../utils/shelljs';
 import {ReleaseConfig} from '../config/index';
 import {ActiveReleaseTrains, fetchActiveReleaseTrains, nextBranchName} from '../versioning/active-release-trains';
 import {npmIsLoggedIn, npmLogin, npmLogout} from '../versioning/npm-publish';

@@ -5213,6 +5213,21 @@ const ReleaseBuildCommandModule = {
  * found in the LICENSE file at https://angular.io/license
  */
 /**
+ * Spawns a given command with the specified arguments inside an interactive shell. All process
+ * stdin, stdout and stderr output is printed to the current console.
+ *
+ * @returns a Promise resolving on success, and rejecting on command failure with the status code.
+ */
+function spawnInteractiveCommand(command, args, options) {
+    if (options === void 0) { options = {}; }
+    return new Promise(function (resolve, reject) {
+        var commandText = command + " " + args.join(' ');
+        debug("Executing command: " + commandText);
+        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: 'inherit' }));
+        childProcess.on('exit', function (status) { return status === 0 ? resolve() : reject(status); });
+    });
+}
+/**
  * Spawns a given command with the specified arguments inside a shell. All process stdout
  * output is captured and returned as resolution on completion. Depending on the chosen
  * output mode, stdout/stderr output is also printed to the console, or only on error.
@@ -5226,7 +5241,7 @@ function spawnWithDebugOutput(command, args, options) {
         var commandText = command + " " + args.join(' ');
         var outputMode = options.mode;
         debug("Executing command: " + commandText);
-        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: ['inherit', 'pipe', 'pipe'] }));
+        var childProcess = child_process.spawn(command, args, tslib.__assign(tslib.__assign({}, options), { shell: true, stdio: 'pipe' }));
         var logOutput = '';
         var stdout = '';
         var stderr = '';
@@ -5324,7 +5339,7 @@ function npmIsLoggedIn(registryUrl) {
 }
 /**
  * Log into NPM at a provided registry.
- * @throws With the process log output if the login fails.
+ * @throws With the `npm login` status code if the login failed.
  */
 function npmLogin(registryUrl) {
     return tslib.__awaiter(this, void 0, void 0, function* () {
@@ -5335,7 +5350,9 @@ function npmLogin(registryUrl) {
         if (registryUrl !== undefined) {
             args.splice(1, 0, '--registry', registryUrl);
         }
-        yield spawnWithDebugOutput('npm', args);
+        // The login command prompts for username, password and other profile information. Hence
+        // the process needs to be interactive (i.e. respecting current TTYs stdin).
+        yield spawnInteractiveCommand('npm', args);
     });
 }
 /**
