@@ -39,8 +39,8 @@ export class CutStableAction extends ReleaseAction {
     // If a new major version is published and becomes the "latest" release-train, we need
     // to set the LTS npm dist tag for the previous latest release-train (the current patch).
     if (isNewMajor) {
-      const previousPatchVersion = this.active.latest.version;
-      const ltsTagForPatch = getLtsNpmDistTagOfMajor(previousPatchVersion.major);
+      const previousPatch = this.active.latest;
+      const ltsTagForPatch = getLtsNpmDistTagOfMajor(previousPatch.version.major);
 
       // Instead of directly setting the NPM dist tags, we invoke the ng-dev command for
       // setting the NPM dist tag to the specified version. We do this because release NPM
@@ -48,8 +48,9 @@ export class CutStableAction extends ReleaseAction {
       // LTS tag for all packages part of the last major. It would not be possible to set the
       // NPM dist tag for new packages part of the released major, nor would it be acceptable
       // to skip the LTS tag for packages which are no longer part of the new major.
+      await this.checkoutUpstreamBranch(previousPatch.branchName);
       await invokeYarnInstallCommand(this.projectDir);
-      await invokeSetNpmDistCommand(ltsTagForPatch, previousPatchVersion);
+      await invokeSetNpmDistCommand(ltsTagForPatch, previousPatch.version);
     }
 
     await this.cherryPickChangelogIntoNextBranch(newVersion, branchName);
