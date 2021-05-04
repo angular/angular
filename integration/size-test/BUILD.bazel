@@ -12,6 +12,7 @@ ts_library(
     name = "check-size",
     srcs = ["check-size.ts"],
     deps = [
+        "@npm//@bazel/runfiles",
         "@npm//@types/node",
         "@npm//@types/yaml",
         "@npm//chalk",
