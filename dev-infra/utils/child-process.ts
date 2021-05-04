@@ -24,6 +24,22 @@ export interface SpawnedProcessResult {
 }
 
 /**
+ * Spawns a given command with the specified arguments inside an interactive shell. All process
+ * stdin, stdout and stderr output is printed to the current console.
+ *
+ * @returns a Promise resolving on success, and rejecting on command failure with the status code.
+ */
+export function spawnInteractiveCommand(
+    command: string, args: string[], options: Omit<SpawnOptions, 'stdio'> = {}) {
+  return new Promise<void>((resolve, reject) => {
+    const commandText = `${command} ${args.join(' ')}`;
+    debug(`Executing command: ${commandText}`);
+    const childProcess = spawn(command, args, {...options, shell: true, stdio: 'inherit'});
+    childProcess.on('exit', status => status === 0 ? resolve() : reject(status));
+  });
+}
+
+/**
  * Spawns a given command with the specified arguments inside a shell. All process stdout
  * output is captured and returned as resolution on completion. Depending on the chosen
  * output mode, stdout/stderr output is also printed to the console, or only on error.
@@ -40,8 +56,7 @@ export function spawnWithDebugOutput(
 
     debug(`Executing command: ${commandText}`);
 
-    const childProcess =
-        spawn(command, args, {...options, shell: true, stdio: ['inherit', 'pipe', 'pipe']});
+    const childProcess = spawn(command, args, {...options, shell: true, stdio: 'pipe'});
     let logOutput = '';
     let stdout = '';
     let stderr = '';
@@ -57,6 +72,7 @@ export function spawnWithDebugOutput(
         process.stderr.write(message);
       }
     });
+
     childProcess.stdout.on('data', message => {
       stdout += message;
       logOutput += message;

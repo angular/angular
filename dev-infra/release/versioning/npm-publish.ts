@@ -7,7 +7,7 @@
  */
 
 import * as semver from 'semver';
-import {spawnWithDebugOutput} from '../../utils/child-process';
+import {spawnInteractiveCommand, spawnWithDebugOutput} from '../../utils/child-process';
 
 /**
  * Runs NPM publish within a specified package directory.
@@ -57,7 +57,7 @@ export async function npmIsLoggedIn(registryUrl: string|undefined): Promise<bool
 
 /**
  * Log into NPM at a provided registry.
- * @throws With the process log output if the login fails.
+ * @throws With the `npm login` status code if the login failed.
  */
 export async function npmLogin(registryUrl: string|undefined) {
   const args = ['login', '--no-browser'];
@@ -67,7 +67,9 @@ export async function npmLogin(registryUrl: string|undefined) {
   if (registryUrl !== undefined) {
     args.splice(1, 0, '--registry', registryUrl);
   }
-  await spawnWithDebugOutput('npm', args);
+  // The login command prompts for username, password and other profile information. Hence
+  // the process needs to be interactive (i.e. respecting current TTYs stdin).
+  await spawnInteractiveCommand('npm', args);
 }
 
 /**
