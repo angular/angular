@@ -2,12 +2,9 @@ load("//tools:defaults.bzl", "jasmine_node_test")
 load("@io_bazel_rules_webtesting//web:web.bzl", "web_test")
 load("//tools/server-test:index.bzl", "server_test")
 
-def webdriver_test(name, data = [], tags = [], **kwargs):
+def webdriver_test(name, tags = [], **kwargs):
     jasmine_node_test(
         name = "%s_jasmine_test" % name,
-        data = data + [
-            "@npm//@bazel/typescript",
-        ],
         tags = tags + ["manual"],
         **kwargs
     )
