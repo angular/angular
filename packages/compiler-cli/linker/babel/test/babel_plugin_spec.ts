@@ -7,7 +7,7 @@
  */
 import {transformSync} from '@babel/core';
 
-describe('babel plugin entry-point', () => {
+describe('default babel plugin entry-point', () => {
   it('should work as a Babel plugin using the module specifier', () => {
     const result = transformSync(
         `
