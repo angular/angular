@@ -13,7 +13,7 @@
     "yarn": ">= 1.0.0"
   },
   "scripts": {
-    "postinstall": "husky install && node tools/postinstall/apply-patches.js && ngcc --properties module main --create-ivy-entry-points && node tools/postinstall/update-ngcc-main-fields.js",
+    "postinstall": "node tools/postinstall/apply-patches.js && ngcc --properties module main --create-ivy-entry-points && node tools/postinstall/update-ngcc-main-fields.js",
     "build": "node ./scripts/build-packages-dist.js",
     "build-docs-content": "node ./scripts/build-docs-content.js",
     "dev-app": "ibazel run //src/dev-app:devserver",
@@ -48,7 +48,8 @@
     "integration-tests:size-test": "bazel test //integration/size-test/...",
     "check-mdc-tests": "ts-node --project scripts/tsconfig.json scripts/check-mdc-tests.ts",
     "check-mdc-exports": "ts-node --project scripts/tsconfig.json scripts/check-mdc-exports.ts",
-    "check-tools": "yarn tsc --project tools/tsconfig-ci.json"
+    "check-tools": "yarn tsc --project tools/tsconfig-ci.json",
+    "prepare": "husky install"
   },
   "version": "12.1.0-next.0",
   "dependencies": {
@@ -173,7 +174,7 @@
     "gulp-cli": "^2.3.0",
     "gulp-dart-sass": "^1.0.2",
     "highlight.js": "^10.4.0",
-    "husky": "5.2.0",
+    "husky": "6.0.0",
     "inquirer": "^8.0.0",
     "jasmine": "^3.6.0",
     "jasmine-core": "^3.6.0",
