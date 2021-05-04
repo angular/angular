@@ -24,7 +24,7 @@
     "source-map": "^0.6.1",
     "sourcemap-codec": "^1.4.8",
     "tslib": "^2.1.0",
-    "yargs": "^16.2.0"
+    "yargs": "^17.0.0"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",
