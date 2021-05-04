@@ -26,4 +26,9 @@ This will allow you to change the following:
  3. The tooltip messages on the navigation buttons.
 
 ### Accessibility
-The `aria-label`s for next page, previous page, first page and last page buttons can be set in `MatPaginatorIntl`.
+The paginator uses `role="group"` to semantically group its child controls. You must add an
+`aria-label` or `aria-labelledby` attribute to `<mat-paginator>` with a label that describes
+the content controlled by the pagination control.
+
+You can set the `aria-label` attributes for the button and select controls within the paginator in 
+`MatPaginatorIntl`.

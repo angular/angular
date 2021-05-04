@@ -467,6 +467,12 @@ describe('MatPaginator', () => {
     expect(paginator.showFirstLastButtons).toBe(true);
   });
 
+  it('should set `role="group"` on the host element', () => {
+    const fixture = createComponent(MatPaginatorApp);
+    const hostElement = fixture.nativeElement.querySelector('mat-paginator');
+    expect(hostElement.getAttribute('role')).toBe('group');
+  });
+
 });
 
 function getPreviousButton(fixture: ComponentFixture<any>) {

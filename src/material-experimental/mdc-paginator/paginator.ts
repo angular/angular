@@ -57,6 +57,7 @@ export const MAT_PAGINATOR_DEFAULT_OPTIONS =
   inputs: ['disabled'],
   host: {
     'class': 'mat-mdc-paginator',
+    'role': 'group',
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
