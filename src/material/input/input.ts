@@ -107,6 +107,9 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
   /** Whether the component is a textarea. */
   readonly _isTextarea: boolean;
 
+  /** Whether the input is inside of a form field. */
+  readonly _isInFormField: boolean;
+
   /**
    * Implemented as part of MatFormFieldControl.
    * @docs-private
@@ -282,6 +285,7 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     this._isServer = !this._platform.isBrowser;
     this._isNativeSelect = nodeName === 'select';
     this._isTextarea = nodeName === 'textarea';
+    this._isInFormField = !!_formField;
 
     if (this._isNativeSelect) {
       this.controlType = (element as HTMLSelectElement).multiple ? 'mat-native-select-multiple' :

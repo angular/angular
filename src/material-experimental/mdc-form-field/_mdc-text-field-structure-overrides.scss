@@ -8,7 +8,7 @@
   // Unset the border set by MDC. We move the border (which serves as the Material Design
   // text-field bottom line) into its own element. This is necessary because we want the
   // bottom-line to span across the whole form-field (including prefixes and suffixes).
-  .mat-mdc-input-element {
+  .mat-mdc-form-field-control {
     border: none;
   }
 
@@ -25,8 +25,8 @@
   // not work for us since we support arbitrary form field controls which don't necessarily
   // use an `input` element. We organize the vertical spacing on the infix container.
   .mdc-text-field--no-label:not(.mdc-text-field--textarea)
-  .mat-mdc-input-element.mdc-text-field__input,
-  .mat-mdc-text-field-wrapper .mat-mdc-input-element {
+  .mat-mdc-form-field-control.mdc-text-field__input,
+  .mat-mdc-text-field-wrapper .mat-mdc-form-field-control {
     height: auto;
   }
 

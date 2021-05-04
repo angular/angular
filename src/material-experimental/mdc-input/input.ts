@@ -19,13 +19,17 @@ import {MatInput as BaseMatInput} from '@angular/material/input';
       input[matNativeControl], textarea[matNativeControl]`,
   exportAs: 'matInput',
   host: {
-    'class': 'mat-mdc-input-element mdc-text-field__input',
-    // The BaseMatInput parent class adds `mat-input-element` and `mat-form-field-autofill-control`
-    // to the CSS classlist, but this should not be added for this MDC equivalent input.
+    'class': 'mat-mdc-input-element',
+    // The BaseMatInput parent class adds `mat-input-element`, `mat-form-field-control` and
+    // `mat-form-field-autofill-control` to the CSS class list, but this should not be added for
+    // this MDC equivalent input.
     '[class.mat-form-field-autofill-control]': 'false',
     '[class.mat-input-element]': 'false',
+    '[class.mat-form-field-control]': 'false',
     '[class.mat-input-server]': '_isServer',
     '[class.mat-mdc-textarea-input]': '_isTextarea',
+    '[class.mat-mdc-form-field-control]': '_isInFormField',
+    '[class.mdc-text-field__input]': '_isInFormField',
     // Native input properties that are overwritten by Angular inputs need to be synced with
     // the native input element. Otherwise property bindings for those don't work.
     '[id]': 'id',

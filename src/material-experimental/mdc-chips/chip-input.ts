@@ -17,8 +17,10 @@ import {
   Input,
   OnChanges,
   OnDestroy,
+  Optional,
   Output
 } from '@angular/core';
+import {MatFormField, MAT_FORM_FIELD} from '@angular/material-experimental/mdc-form-field';
 import {MatChipsDefaultOptions, MAT_CHIPS_DEFAULT_OPTIONS} from './chip-default-options';
 import {MatChipGrid} from './chip-grid';
 import {MatChipTextControl} from './chip-text-control';
@@ -127,9 +129,14 @@ export class MatChipInput implements MatChipTextControl, AfterContentInit, OnCha
 
   constructor(
     protected _elementRef: ElementRef<HTMLInputElement>,
-    @Inject(MAT_CHIPS_DEFAULT_OPTIONS) private _defaultOptions: MatChipsDefaultOptions) {
-    this.inputElement = this._elementRef.nativeElement as HTMLInputElement;
-  }
+    @Inject(MAT_CHIPS_DEFAULT_OPTIONS) private _defaultOptions: MatChipsDefaultOptions,
+    @Optional() @Inject(MAT_FORM_FIELD) formField?: MatFormField) {
+      this.inputElement = this._elementRef.nativeElement as HTMLInputElement;
+
+      if (formField) {
+        this.inputElement.classList.add('mat-mdc-form-field-control');
+      }
+    }
 
   ngOnChanges() {
     this._chipGrid.stateChanges.next();

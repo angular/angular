@@ -896,6 +896,17 @@ describe('MatMdcInput without forms', () => {
     expect(formField.classList).toContain('mat-warn');
   }));
 
+  it('should set a class on the input depending on whether it is in a form field', fakeAsync(() => {
+    const fixture = createComponent(MatInputInsideOutsideFormField);
+    fixture.detectChanges();
+
+    const inFormField = fixture.nativeElement.querySelector('.inside');
+    const outsideFormField = fixture.nativeElement.querySelector('.outside');
+
+    expect(inFormField.classList).toContain('mat-mdc-form-field-control');
+    expect(outsideFormField.classList).not.toContain('mat-mdc-form-field-control');
+  }));
+
 });
 
 describe('MatMdcInput with forms', () => {
@@ -1800,3 +1811,15 @@ class CustomMatInputAccessor {
 class MatInputWithColor {
   color: ThemePalette;
 }
+
+
+@Component({
+  template: `
+    <mat-form-field>
+      <input class="inside" matNativeControl>
+    </mat-form-field>
+
+    <input class="outside" matNativeControl>
+  `
+})
+class MatInputInsideOutsideFormField {}

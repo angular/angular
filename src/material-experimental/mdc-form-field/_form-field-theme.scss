@@ -74,7 +74,7 @@
 
     // MDC uses the `subtitle1` level for the input label and value, but the spec shows `body1` as
     // the correct level.
-    .mat-mdc-input-element,
+    .mat-mdc-form-field-control,
     .mat-mdc-form-field label,
     .mat-mdc-form-field-text-prefix,
     .mat-mdc-form-field-text-suffix {
