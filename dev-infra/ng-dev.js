@@ -6772,16 +6772,16 @@ class ReleaseTool {
         });
     }
     /**
-     * Verifies the current environment contains /usr/bin/python which points to the Python3
-     * interpreter.  python is required by our tooling in bazel as it contains scripts setting
-     * `#! /usr/bin/env python`.
-     *
+     * Verifies that Python can be resolved within scripts and points to a compatible version. Python
+     * is required in Bazel actions as there can be tools (such as `skydoc`) that rely on it.
      * @returns a boolean indicating success or failure.
      */
     _verifyEnvironmentHasPython3Symlink() {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             try {
-                const pyVersion = yield spawnWithDebugOutput('/usr/bin/python', ['--version'], { mode: 'silent' });
+                // Note: We do not rely on `/usr/bin/env` but rather access the `env` binary directly as it
+                // should be part of the shell's `$PATH`. This is necessary for compatibility with Windows.
+                const pyVersion = yield spawnWithDebugOutput('env', ['python', '--version'], { mode: 'silent' });
                 const version = pyVersion.stdout.trim() || pyVersion.stderr.trim();
                 if (version.startsWith('Python 3.')) {
                     debug(`Local python version: ${version}`);
