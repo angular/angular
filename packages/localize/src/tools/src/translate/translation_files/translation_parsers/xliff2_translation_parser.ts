@@ -132,12 +132,23 @@ class Xliff2TranslationVisitor extends BaseVisitor {
       return;
     }
 
-    const targetMessage = element.children.find(isNamedElement('target'));
+    let targetMessage = element.children.find(isNamedElement('target'));
     if (targetMessage === undefined) {
+      // Warn if there is no `<target>` child element
       addParseDiagnostic(
-          bundle.diagnostics, element.sourceSpan, 'Missing required <target> element',
-          ParseErrorLevel.ERROR);
-      return;
+          bundle.diagnostics, element.sourceSpan, 'Missing <target> element',
+          ParseErrorLevel.WARNING);
+
+      // Fallback to the `<source>` element if available.
+      targetMessage = element.children.find(isNamedElement('source'));
+      if (targetMessage === undefined) {
+        // Error if there is neither `<target>` nor `<source>`.
+        addParseDiagnostic(
+            bundle.diagnostics, element.sourceSpan,
+            'Missing required element: one of <target> or <source> is required',
+            ParseErrorLevel.ERROR);
+        return;
+      }
     }
 
     const {translation, parseErrors, serializeErrors} = serializeTranslationMessage(targetMessage, {
