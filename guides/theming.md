@@ -147,7 +147,7 @@ $my-primary: mat.define-palette(mat.$indigo-palette, 500);
 $my-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
 
 // The "warn" palette is optional and defaults to red if not specified.
-$my-accent: mat.define-palette(mat.$red-palette);
+$my-warn: mat.define-palette(mat.$red-palette);
 
 $my-theme: mat.define-light-theme((
  color: (
