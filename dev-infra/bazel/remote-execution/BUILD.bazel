@@ -7,26 +7,24 @@ platform(
         "@bazel_tools//platforms:x86_64",
         "@bazel_tools//tools/cpp:clang",
     ],
-    # We use a basic docker image from the Google Cloud container registry that supports
-    # browser tests. Note that we usually do not use any of the local browsers, but the image
-    # guarantees that necessary dependencies for launching browsers are installed. Since we
-    # do not rely on many binaries/tools from the image, the image doesn't need to be updated
-    # frequently. There are rare cases where it needs to be updated. e.g. for a more recent Bash
-    # version, or new system settings that are required for launching browsers. In order to do that,
-    # we need to either see if the `rbe-ubuntu16-04-webtest` image can be updated, or if we need to
-    # build and publish our own image to the Google cloud image registry. Additionally, we set the
-    # `SYS_ADMIN` capability so that browsers can be launched with sandbox mode enabled. Related
-    # information: https://developers.google.com/web/tools/puppeteer/troubleshooting#running_puppeteer_in_docker
-    remote_execution_properties = """
-        properties: {
-          name: "container-image"
-          value:"docker://gcr.io/cloud-marketplace/google/rbe-ubuntu16-04-webtest@sha256:886a12dc4726f5b991b46386292afa8d943b6703a5496c8a1e07cfde778d9044"
-        }
-        properties: {
-          name: "dockerAddCapabilities"
-          value: "SYS_ADMIN"
-        }
-        """,
+    exec_properties = {
+        # We use a basic docker image from the Google Cloud container registry that supports
+        # browser tests. Note that we usually do not use any of the local browsers, but the image
+        # guarantees that necessary dependencies for launching browsers are installed. Since we
+        # do not rely on many binaries/tools from the image, the image doesn't need to be updated
+        # frequently. There are rare cases where it needs to be updated. e.g. for a more recent Bash
+        # version, or new system settings that are required for launching browsers. In order to do that,
+        # we need to either see if the `rbe-ubuntu16-04-webtest` image can be updated, or if we need to
+        # build and publish our own image to the Google cloud image registry.
+        "container-image": "docker://gcr.io/cloud-marketplace/google/rbe-ubuntu16-04-webtest@sha256:886a12dc4726f5b991b46386292afa8d943b6703a5496c8a1e07cfde778d9044",
+        # The `SYS_ADMIN` capability is added so that browsers can be launched with sandbox mode enabled. Related
+        # # information: https://developers.google.com/web/tools/puppeteer/troubleshooting#running_puppeteer_in_docker
+        "dockerAddCapabilities": "SYS_ADMIN",
+        # By default in Google Cloud Remote build execution, network access is disabled. We explicitly set the
+        # property in the platform again in case the default ever changes. Network access is not desirable in
+        # Bazel builds as it is potential source of flaky tests and therefore also breaks hermeticity.
+        "dockerNetwork": "off",
+    },
 )
 
 filegroup(
