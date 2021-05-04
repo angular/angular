@@ -1374,7 +1374,7 @@ export class Router {
       url: UrlTree, replaceUrl: boolean, id: number, state?: {[key: string]: any}) {
     const path = this.urlSerializer.serialize(url);
     state = state || {};
-    if (this.location.isCurrentPathEqualTo(path) || replaceUrl) {
+    if (this.location.isCurrentPathEqualTo(path, '', true) || replaceUrl) {
       // TODO(jasonaden): Remove first `navigationId` and rely on `ng` namespace.
       this.location.replaceState(path, '', {...state, navigationId: id});
     } else {

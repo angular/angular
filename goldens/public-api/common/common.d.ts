@@ -158,7 +158,7 @@ export declare class Location {
     getState(): unknown;
     go(path: string, query?: string, state?: any): void;
     historyGo(relativePosition?: number): void;
-    isCurrentPathEqualTo(path: string, query?: string): boolean;
+    isCurrentPathEqualTo(path: string, query?: string, includeHash?: boolean): boolean;
     normalize(url: string): string;
     onUrlChange(fn: (url: string, state: unknown) => void): void;
     path(includeHash?: boolean): string;
