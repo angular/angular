@@ -12,8 +12,8 @@ describe('BannerComponent (inline template)', () => {
   let h1: HTMLElement;
 
   // #docregion configure-and-create
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [ BannerComponent ],
     });
     fixture = TestBed.createComponent(BannerComponent);

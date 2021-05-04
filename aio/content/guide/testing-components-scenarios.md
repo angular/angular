@@ -586,19 +586,11 @@ Then you can assert that the quote element displays the expected text.
 To use `waitForAsync()` functionality, you must import `zone.js/testing` in your test setup file.
 If you created your project with the Angular CLI, `zone-testing` is already imported in `src/test.ts`.
 
-<div class="alert is-helpful">
-
-The `TestBed.compileComponents()` method (see [below](#compile-components)) calls `XHR`
-to read external template and css files during "just-in-time" compilation.
-Write tests that call `compileComponents()` with the `waitForAsync()` utility.
-
-</div>
-
 Here's the previous `fakeAsync()` test, re-written with the `waitForAsync()` utility.
 
 <code-example
   path="testing/src/app/twain/twain.component.spec.ts"
-  region="async-test">
+  region="waitForAsync-test">
 </code-example>
 
 The `waitForAsync()` utility hides some asynchronous boilerplate by arranging for the tester's code
@@ -1502,7 +1494,7 @@ You must call `compileComponents()` within an asynchronous test function.
 <div class="alert is-critical">
 
 If you neglect to make the test function async
-(e.g., forget to use `waitForAsync()` as described below),
+(e.g., forget to use the `async` keyword as described below),
 you'll see this error message
 
 <code-example language="sh" class="code-shell" hideCopy>
@@ -1516,13 +1508,6 @@ A typical approach is to divide the setup logic into two separate `beforeEach()`
 1.  An async `beforeEach()` that compiles the components
 1.  A synchronous `beforeEach()` that performs the remaining setup.
 
-To follow this pattern, import the `waitForAsync()` helper with the other testing symbols.
-
-<code-example
-  path="testing/src/app/banner/banner-external.component.spec.ts"
-  region="import-async">
-</code-example>
-
 #### The async _beforeEach_
 
 Write the first async `beforeEach` like this.
@@ -1531,8 +1516,6 @@ Write the first async `beforeEach` like this.
   path="testing/src/app/banner/banner-external.component.spec.ts"
   region="async-before-each"
   header="app/banner/banner-external.component.spec.ts (async beforeEach)"></code-example>
-
-The `waitForAsync()` helper function takes a parameterless function with the body of the setup.
 
 The `TestBed.configureTestingModule()` method returns the `TestBed` class so you can chain
 calls to other `TestBed` static methods such as `compileComponents()`.

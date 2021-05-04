@@ -1,7 +1,5 @@
 // #docplaster
-// #docregion import-async
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-// #enddocregion import-async
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
@@ -14,13 +12,13 @@ describe('BannerComponent (external files)', () => {
 
   describe('Two beforeEach', () => {
     // #docregion async-before-each
-    beforeEach(waitForAsync(() => {
+    beforeEach(async () => {
       TestBed
           .configureTestingModule({
             declarations: [BannerComponent],
           })
           .compileComponents();  // compile template and css
-    }));
+    });
     // #enddocregion async-before-each
 
     // synchronous beforeEach
@@ -37,18 +35,14 @@ describe('BannerComponent (external files)', () => {
 
   describe('One beforeEach', () => {
     // #docregion one-before-each
-    beforeEach(waitForAsync(() => {
-      TestBed
-          .configureTestingModule({
-            declarations: [BannerComponent],
-          })
-          .compileComponents()
-          .then(() => {
-            fixture = TestBed.createComponent(BannerComponent);
-            component = fixture.componentInstance;
-            h1 = fixture.nativeElement.querySelector('h1');
-          });
-    }));
+    beforeEach(async () => {
+      await TestBed.configureTestingModule({
+        declarations: [BannerComponent],
+      }).compileComponents();
+      fixture = TestBed.createComponent(BannerComponent);
+      component = fixture.componentInstance;
+      h1 = fixture.nativeElement.querySelector('h1');
+    });
     // #enddocregion one-before-each
 
     tests();
