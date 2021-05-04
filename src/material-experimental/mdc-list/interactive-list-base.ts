@@ -59,12 +59,12 @@ export abstract class MatInteractiveListBase<T extends MatListItemBase>
       this._clearTabindexForAllItems();
     }
 
-    this._foundation.handleFocusIn(event, itemIndex);
+    this._foundation.handleFocusIn(itemIndex);
   }
 
   @HostListener('focusout', ['$event'])
   _handleFocusout(event: FocusEvent) {
-    this._foundation.handleFocusOut(event, this._indexForElement(event.target as HTMLElement));
+    this._foundation.handleFocusOut(this._indexForElement(event.target as HTMLElement));
   }
 
   /** Items in the interactive list. */
