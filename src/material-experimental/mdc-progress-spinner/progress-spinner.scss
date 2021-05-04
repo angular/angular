@@ -5,6 +5,9 @@
 @include mdc-circular-progress.core-styles($query: mdc-helpers.$mat-base-styles-query);
 
 .mat-mdc-progress-spinner {
+  // Explicitly set to `block` since the browser defaults custom elements to `inline`.
+  display: block;
+
   // Prevents the spinning of the inner element from affecting layout outside of the spinner.
   overflow: hidden;
 
