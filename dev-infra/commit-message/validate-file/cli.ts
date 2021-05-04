@@ -31,7 +31,10 @@ function builder(yargs: Argv) {
         type: 'string',
         conflicts: ['file'],
         description: 'The key of the environment variable for the path of the commit message file.',
-        coerce: (arg: string) => {
+        coerce: (arg: string|undefined) => {
+          if (arg === undefined) {
+            return arg;
+          }
           const file = process.env[arg];
           if (!file) {
             throw new Error(`Provided environment variable "${arg}" was not found.`);
