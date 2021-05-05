@@ -85,13 +85,6 @@ The Angular CLI installs the necessary Angular npm packages and other dependenci
 
 The CLI creates a new workspace and a simple Welcome app, ready to run.
 
-<div class="alert is-helpful">
-
-You also have the option to use Angular's strict mode, which can help you write better, more maintainable code.
-For more information, see [Strict mode](/guide/strict-mode).
-
-</div>
-
 {@a serve}
 
 ## Run the application
