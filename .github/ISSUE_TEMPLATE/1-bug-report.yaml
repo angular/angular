@@ -1,0 +1,67 @@
+name: Bug Report
+description: Report a bug in the Angular Framework
+
+body:
+- type: dropdown
+  id: affected-packages
+  attributes:
+    label: Which @angular/* package(s) are the source of the bug?
+    options:
+      - animations
+      - bazel
+      - common
+      - compiler-cli
+      - compiler
+      - elements
+      - forms
+      - language-service
+      - localize
+      - platform-browser-dynamic
+      - platform-browser
+      - platform-server
+      - router
+      - service-worker
+      - upgrade
+      - Don't known / other
+    multiple: true
+  validations:
+    required: true
+
+- type: dropdown
+  id: is-regression
+  attributes:
+    label: Is this a regression?
+    options:
+      - "Yes"
+      - "No"
+  validations:
+    required: true
+
+- type: textarea
+  id: description
+  attributes:
+    label: Description
+  validations:
+    required: true
+
+- type: input
+  id: reproduction
+  attributes:
+    label: Please provide a link to a minimal reproduction of the bug
+
+- type: textarea
+  id: exception-or-error
+  attributes:
+    label: Please provide the exception or error you saw
+    render: true
+
+- type: textarea
+  id: environment
+  attributes:
+    label: Please provide the environment you discovered this bug in
+    render: true
+
+- type: textarea
+  id: other
+  attributes:
+    label: Anything else?
