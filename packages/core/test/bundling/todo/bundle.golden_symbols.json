@@ -6,6 +6,12 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "ComponentFactory"
+  },
+  {
+    "name": "ComponentRef"
+  },
+  {
     "name": "DefaultIterableDiffer"
   },
   {
@@ -33,6 +39,9 @@
     "name": "IterableDiffers"
   },
   {
+    "name": "LifecycleHooksFeature"
+  },
+  {
     "name": "NG_COMP_DEF"
   },
   {
@@ -55,6 +64,9 @@
   },
   {
     "name": "NOT_FOUND"
+  },
+  {
+    "name": "NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR"
   },
   {
     "name": "NO_CHANGE"
@@ -93,6 +105,12 @@
     "name": "RecordViewTuple"
   },
   {
+    "name": "RendererFactory2"
+  },
+  {
+    "name": "RootViewRef"
+  },
+  {
     "name": "RuntimeError"
   },
   {
@@ -103,6 +121,9 @@
   },
   {
     "name": "SWITCH_VIEW_CONTAINER_REF_FACTORY"
+  },
+  {
+    "name": "Sanitizer"
   },
   {
     "name": "SimpleChange"
@@ -138,7 +159,13 @@
     "name": "TodoStore"
   },
   {
+    "name": "VERSION"
+  },
+  {
     "name": "VE_ViewContainerRef"
+  },
+  {
+    "name": "Version"
   },
   {
     "name": "ViewContainerRef"
@@ -261,6 +288,9 @@
     "name": "createDirectivesInstances"
   },
   {
+    "name": "createElementNode"
+  },
+  {
     "name": "createElementRef"
   },
   {
@@ -274,6 +304,15 @@
   },
   {
     "name": "createNodeInjector"
+  },
+  {
+    "name": "createRootComponent"
+  },
+  {
+    "name": "createRootComponentView"
+  },
+  {
+    "name": "createRootContext"
   },
   {
     "name": "createTView"
@@ -295,6 +334,9 @@
   },
   {
     "name": "detachView"
+  },
+  {
+    "name": "detectChangesInRootView"
   },
   {
     "name": "detectChangesInternal"
@@ -444,6 +486,9 @@
     "name": "getSymbolIterator"
   },
   {
+    "name": "getTNode"
+  },
+  {
     "name": "getTStylingRangeNext"
   },
   {
@@ -564,6 +609,9 @@
     "name": "leaveViewLight"
   },
   {
+    "name": "locateHostElement"
+  },
+  {
     "name": "lookupTokenUsingModuleInjector"
   },
   {
@@ -580,6 +628,9 @@
   },
   {
     "name": "markViewDirty"
+  },
+  {
+    "name": "maybeWrapInNotSelector"
   },
   {
     "name": "mergeHostAttribute"
@@ -726,10 +777,19 @@
     "name": "stringify"
   },
   {
+    "name": "stringifyCSSSelector"
+  },
+  {
     "name": "stringifyForError"
   },
   {
     "name": "throwProviderNotFoundError"
+  },
+  {
+    "name": "tickRootContext"
+  },
+  {
+    "name": "toRefArray"
   },
   {
     "name": "toTStylingRange"

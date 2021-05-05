@@ -1358,7 +1358,14 @@ export interface ViewChildrenDecorator {
 // @public
 export abstract class ViewContainerRef {
     abstract clear(): void;
-    abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
+    abstract createComponent<C>(componentType: Type<C>, options?: {
+        index?: number;
+        injector?: Injector;
+        ngModuleRef?: NgModuleRef<unknown>;
+        projectableNodes?: Node[][];
+    }): ComponentRef<C>;
+    // @deprecated
+    abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], ngModuleRef?: NgModuleRef<any>): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
     abstract detach(index?: number): ViewRef | null;
     abstract get element(): ElementRef;

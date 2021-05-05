@@ -122,6 +122,23 @@
     "packages/core/src/errors.ts",
     "packages/core/src/view/types.ts",
     "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/render3/component_ref.ts",
+    "packages/core/src/render3/component.ts",
+    "packages/core/src/render3/instructions/shared.ts"
+  ],
+  [
+    "packages/core/src/error_handler.ts",
+    "packages/core/src/errors.ts",
+    "packages/core/src/view/types.ts",
+    "packages/core/src/linker/view_container_ref.ts",
+    "packages/core/src/render3/component_ref.ts",
+    "packages/core/src/render3/instructions/shared.ts"
+  ],
+  [
+    "packages/core/src/error_handler.ts",
+    "packages/core/src/errors.ts",
+    "packages/core/src/view/types.ts",
+    "packages/core/src/linker/view_container_ref.ts",
     "packages/core/src/render3/instructions/shared.ts"
   ],
   [

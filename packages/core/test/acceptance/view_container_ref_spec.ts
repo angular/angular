@@ -8,10 +8,10 @@
 
 import {CommonModule, DOCUMENT} from '@angular/common';
 import {computeMsgId} from '@angular/compiler';
-import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, Injector, NgModule, NO_ERRORS_SCHEMA, OnDestroy, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
+import {Compiler, Component, ComponentFactoryResolver, Directive, DoCheck, ElementRef, EmbeddedViewRef, ErrorHandler, InjectionToken, Injector, NgModule, NgModuleRef, NO_ERRORS_SCHEMA, OnDestroy, OnInit, Pipe, PipeTransform, QueryList, RendererFactory2, RendererType2, Sanitizer, TemplateRef, ViewChild, ViewChildren, ViewContainerRef, ɵsetDocument} from '@angular/core';
 import {Input} from '@angular/core/src/metadata';
 import {ngDevModeResetPerfCounters} from '@angular/core/src/util/ng_dev_mode';
-import {TestBed, TestComponentRenderer} from '@angular/core/testing';
+import {ComponentFixture, TestBed, TestComponentRenderer} from '@angular/core/testing';
 import {clearTranslations, loadTranslations} from '@angular/localize';
 import {By, DomSanitizer, ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -1495,6 +1495,123 @@ describe('ViewContainerRef', () => {
 
          expect(fixture.debugElement.nativeElement.innerHTML).toContain('Child Component');
        });
+
+    describe('createComponent using Type', () => {
+      const TOKEN_A = new InjectionToken('A');
+      const TOKEN_B = new InjectionToken('B');
+
+      @Component({
+        selector: 'child-a',
+        template: `[Child Component A]`,
+      })
+      class ChildA {
+      }
+
+      @Component({
+        selector: 'child-b',
+        template: `
+          [Child Component B]
+          <ng-content></ng-content>
+          {{ tokenA }}
+          {{ tokenB }}
+        `,
+      })
+      class ChildB {
+        constructor(private injector: Injector) {}
+        get tokenA() {
+          return this.injector.get(TOKEN_A);
+        }
+        get tokenB() {
+          return this.injector.get(TOKEN_B);
+        }
+      }
+
+      @Component({
+        selector: 'app',
+        template: '',
+        providers: [
+          {provide: TOKEN_B, useValue: '[TokenValueB]'},
+        ]
+      })
+      class App {
+        constructor(
+            public viewContainerRef: ViewContainerRef, public ngModuleRef: NgModuleRef<unknown>,
+            public injector: Injector) {}
+      }
+
+      @NgModule({
+        declarations: [App, ChildA, ChildB],
+        providers: [
+          {provide: TOKEN_A, useValue: '[TokenValueA]'},
+        ]
+      })
+      class AppModule {
+      }
+
+      let fixture!: ComponentFixture<App>;
+      beforeEach(() => {
+        TestBed.configureTestingModule({imports: [AppModule]});
+        fixture = TestBed.createComponent(App);
+        fixture.detectChanges();
+      });
+
+      it('should be able to create a component when Type is provided', () => {
+        if (ivyEnabled) {
+          fixture.componentInstance.viewContainerRef.createComponent(ChildA);
+          expect(fixture.nativeElement.parentNode.textContent).toContain('[Child Component A]');
+        } else {
+          expect(() => {
+            fixture.componentInstance.viewContainerRef.createComponent(ChildA);
+          }).toThrowError(/ViewEngine does not support Type/);
+        }
+      });
+
+      it('should throw if class without @Component decorator is used as Component type', () => {
+        class MyClassWithoutComponentDecorator {}
+        const createComponent = () => {
+          fixture.componentInstance.viewContainerRef.createComponent(
+              MyClassWithoutComponentDecorator);
+        };
+        if (ivyEnabled) {
+          expect(createComponent)
+              .toThrowError(/Provided Component class doesn't contain Component definition./);
+        } else {
+          expect(createComponent).toThrowError(/ViewEngine does not support Type/);
+        }
+      });
+
+      onlyInIvy('Ivy-only checks for the `createComponent` API with `options` argument')
+          .describe('`options` argument handling', () => {
+            it('should work correctly when an empty object is provided', () => {
+              fixture.componentInstance.viewContainerRef.createComponent(ChildA, {});
+              expect(fixture.nativeElement.parentNode.textContent).toContain('[Child Component A]');
+            });
+
+            it('should take provided `options` arguments into account', () => {
+              const {viewContainerRef, ngModuleRef, injector} = fixture.componentInstance;
+              viewContainerRef.createComponent(ChildA);
+
+              const projectableNode = document.createElement('div');
+              const textNode = document.createTextNode('[Projectable Node]');
+              projectableNode.appendChild(textNode);
+              const projectableNodes = [[projectableNode]];
+
+              // Insert ChildB in front of ChildA (since index = 0)
+              viewContainerRef.createComponent(
+                  ChildB, {index: 0, injector, ngModuleRef, projectableNodes});
+
+              fixture.detectChanges();
+
+              expect(fixture.nativeElement.parentNode.textContent.trim())
+                  .toContain(
+                      '[Child Component B] ' +
+                      '[Projectable Node] ' +
+                      '[TokenValueA] ' +
+                      '[TokenValueB] ' +
+                      '[Child Component A]');
+            });
+          });
+    });
   });
 
   describe('insertion points and declaration points', () => {
