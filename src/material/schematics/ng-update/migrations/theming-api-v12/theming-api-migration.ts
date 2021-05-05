@@ -7,11 +7,15 @@
  */
 
 import {extname} from '@angular-devkit/core';
+import {SchematicContext} from '@angular-devkit/schematics';
 import {DevkitMigration, ResolvedResource, TargetVersion} from '@angular/cdk/schematics';
 import {migrateFileContent} from './migration';
 
 /** Migration that switches all Sass files using Material theming APIs to `@use`. */
 export class ThemingApiMigration extends DevkitMigration<null> {
+  /** Number of files that have been migrated. */
+  static migratedFileCount = 0;
+
   enabled = this.targetVersion === TargetVersion.V12;
 
   visitStylesheet(stylesheet: ResolvedResource): void {
@@ -24,7 +28,19 @@ export class ThemingApiMigration extends DevkitMigration<null> {
         this.fileSystem.edit(stylesheet.filePath)
           .remove(0, stylesheet.content.length)
           .insertLeft(0, migratedContent);
+        ThemingApiMigration.migratedFileCount++;
       }
+    }
+  }
+
+  /** Logs out the number of migrated files at the end of the migration. */
+  static globalPostMigration(_tree: unknown, context: SchematicContext): void {
+    const count = ThemingApiMigration.migratedFileCount;
+
+    if (count > 0) {
+      context.logger.info(`Migrated ${count === 1 ? `1 file` : `${count} files`} to the ` +
+                          `new Angular Material theming API.`);
+      ThemingApiMigration.migratedFileCount = 0;
     }
   }
 }
