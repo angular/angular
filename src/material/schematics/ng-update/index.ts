@@ -24,6 +24,7 @@ import {
 import {
   SecondaryEntryPointsMigration
 } from './migrations/package-imports-v8/secondary-entry-points-migration';
+import {ThemingApiMigration} from './migrations/theming-api-v12/theming-api-migration';
 
 import {materialUpgradeData} from './upgrade-data';
 
@@ -36,6 +37,7 @@ const materialMigrations: NullableDevkitMigration[] = [
   RippleSpeedFactorMigration,
   SecondaryEntryPointsMigration,
   HammerGesturesMigration,
+  ThemingApiMigration,
 ];
 
 /** Entry point for the migration schematics with target of Angular Material v6 */

@@ -1,19 +1,34 @@
-import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {createTestApp, getFileContent} from '@angular/cdk/schematics/testing';
-import {COLLECTION_PATH} from '../../paths';
-import {Schema} from './schema';
+import {UnitTestTree} from '@angular-devkit/schematics/testing';
+import {createTestCaseSetup} from '@angular/cdk/schematics/testing';
+import {join} from 'path';
+import {MIGRATION_PATH} from '../../../../paths';
 
-describe('Material theming API schematic', () => {
-  const options: Schema = {};
-  let runner: SchematicTestRunner;
+describe('v12 theming API migration', () => {
+  const PROJECT_PATH = '/projects/cdk-testing';
+  const THEME_PATH = join(PROJECT_PATH, 'src/theme.scss');
+  let tree: UnitTestTree;
+  let _writeFile: (filePath: string, text: string) => void;
+  let runMigration: () => Promise<{logOutput: string}>;
 
-  beforeEach(() => {
-    runner = new SchematicTestRunner('schematics', COLLECTION_PATH);
+  beforeEach(async () => {
+    const testSetup = await createTestCaseSetup('migration-v12', MIGRATION_PATH, []);
+    tree = testSetup.appTree;
+    runMigration = testSetup.runFixers;
+    _writeFile = testSetup.writeFile;
   });
 
+  /** Writes an array of lines as a single file. */
+  function writeLines(path: string, lines: string[]): void {
+    _writeFile(path, lines.join('\n'));
+  }
+
+  /** Reads a file and split it into an array where each item is a new line. */
+  function splitFile(path: string): string[] {
+    return tree.readContent(path).split('\n');
+  }
+
   it('should migrate a theme based on the theming API', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import '~@angular/material/theming';`,
 
       `@include mat-core();`,
@@ -43,10 +58,11 @@ describe('Material theming API schematic', () => {
       `.unicorn-dark-theme {`,
         `@include angular-material-color($dark-theme);`,
       `}`
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
 
       `@include mat.core();`,
@@ -80,8 +96,7 @@ describe('Material theming API schematic', () => {
   });
 
   it('should migrate files using CDK APIs through the theming import', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import '~@angular/material/theming';`,
       ``,
       `@include cdk-overlay();`,
@@ -96,10 +111,11 @@ describe('Material theming API schematic', () => {
           `outline: solid 1px;`,
         `}`,
       `}`
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/cdk' as cdk;`,
       ``,
       `@include cdk.overlay();`,
@@ -117,8 +133,7 @@ describe('Material theming API schematic', () => {
   });
 
   it('should migrate files using both Material and CDK APIs', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import './foo'`,
       `@import '~@angular/material/theming';`,
       ``,
@@ -139,10 +154,11 @@ describe('Material theming API schematic', () => {
       `.my-dialog {`,
         `z-index: $cdk-z-index-overlay-container + 1;`,
       `}`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
       `@use '~@angular/cdk' as cdk;`,
       `@import './foo'`,
@@ -168,43 +184,43 @@ describe('Material theming API schematic', () => {
   });
 
   it('should detect imports using double quotes', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import "~@angular/material/theming";`,
       `@include mat-core();`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
       `@include mat.core();`,
     ]);
   });
 
   it('should migrate mixins that are invoked without parentheses', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import '~@angular/material/theming';`,
       `@include mat-base-typography;`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
       `@include mat.typography-hierarchy;`,
     ]);
   });
 
   it('should migrate files that import the Material APIs transitively', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import 're-exports-material-symbols';`,
       `@include mat-core();`,
       `@include mat-button-theme();`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
       `@import 're-exports-material-symbols';`,
       `@include mat.core();`,
@@ -213,30 +229,30 @@ describe('Material theming API schematic', () => {
   });
 
   it('should allow an arbitrary number of spaces after @include and @import', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import                  '~@angular/material/theming';`,
       `@include     mat-core;`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
       `@include mat.core;`,
     ]);
   });
 
   it('should insert the new @use statement above other @import statements', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import './foo'`,
       `@import "~@angular/material/theming";`,
       `@import './bar'`,
       `@include mat-core();`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
       `@import './foo'`,
       `@import './bar'`,
@@ -245,16 +261,16 @@ describe('Material theming API schematic', () => {
   });
 
   it('should account for other @use statements when inserting the new Material @use', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@use './foo'`,
       `@import './bar'`,
       `@import "~@angular/material/theming";`,
       `@include mat-core();`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use './foo'`,
       `@use '~@angular/material' as mat;`,
       `@import './bar'`,
@@ -263,16 +279,16 @@ describe('Material theming API schematic', () => {
   });
 
   it('should account for file headers placed aboved the @import statements', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `/** This is a license. */`,
       `@import './foo'`,
       `@import '~@angular/material/theming';`,
       `@include mat-core();`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `/** This is a license. */`,
       `@use '~@angular/material' as mat;`,
       `@import './foo'`,
@@ -281,25 +297,28 @@ describe('Material theming API schematic', () => {
   });
 
   it('should migrate multiple files within the same project', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    const componentPath = join(PROJECT_PATH, 'components/dialog.scss');
+
+    writeLines(THEME_PATH, [
       `@import '~@angular/material/theming';`,
       `@include angular-material-theme();`,
-    ].join('\n'));
+    ]);
 
-    app.create('/components/dialog.scss', [
+    writeLines(componentPath, [
       `@import '~@angular/material/theming';`,
       `.my-dialog {`,
         `z-index: $cdk-z-index-overlay-container + 1;`,
       `}`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
       `@include mat.all-component-themes();`,
     ]);
-    expect(getFileContent(tree, '/components/dialog.scss').split('\n')).toEqual([
+
+    expect(splitFile(componentPath)).toEqual([
       `@use '~@angular/cdk' as cdk;`,
       `.my-dialog {`,
         `z-index: cdk.$overlay-container-z-index + 1;`,
@@ -308,17 +327,17 @@ describe('Material theming API schematic', () => {
   });
 
   it('should handle variables whose names overlap', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import '~@angular/material/theming';`,
       `$one: $mat-blue-grey;`,
       `$two: $mat-blue;`,
       '$three: $mat-blue',
       '$four: $mat-blue-gray',
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
       `$one: mat.$blue-grey-palette;`,
       `$two: mat.$blue-palette;`,
@@ -328,8 +347,7 @@ describe('Material theming API schematic', () => {
   });
 
   it('should migrate individual component themes', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import '~@angular/material/theming';`,
 
       `@include mat-core();`,
@@ -348,10 +366,11 @@ describe('Material theming API schematic', () => {
       `@include mat-expansion-panel-theme($candy-app-theme);`,
       `@include mat-datepicker-theme($candy-app-theme);`,
       `@include mat-option-theme($candy-app-theme);`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
 
       `@include mat.core();`,
@@ -375,8 +394,7 @@ describe('Material theming API schematic', () => {
   });
 
   it('should migrate deep imports', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import '~@angular/material/core/theming/palette';`,
       `@import '~@angular/material/core/theming/theming';`,
       `@import '~@angular/material/button/button-theme';`,
@@ -400,10 +418,11 @@ describe('Material theming API schematic', () => {
       `@include mat-table-theme($candy-app-theme);`,
       `@include mat-datepicker-theme($candy-app-theme);`,
       `@include mat-option-theme($candy-app-theme);`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
       `@use '~@angular/cdk' as cdk;`,
 
@@ -426,8 +445,7 @@ describe('Material theming API schematic', () => {
   });
 
   it('should migrate usages of @use, with and without namespaces', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@use '~@angular/material/core/theming/palette' as palette;`,
       `@use '~@angular/material/core/theming/theming';`,
       `@use '~@angular/material/button/button-theme' as button;`,
@@ -452,10 +470,11 @@ describe('Material theming API schematic', () => {
       `@include table.mat-table-theme($candy-app-theme);`,
       `@include datepicker.mat-datepicker-theme($candy-app-theme);`,
       `@include mat-option-theme($candy-app-theme);`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
       `@use '~@angular/cdk' as cdk;`,
 
@@ -478,8 +497,7 @@ describe('Material theming API schematic', () => {
   });
 
   it('should handle edge case inferred Sass import namespaces', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@use '~@angular/material/core/index';`,
       `@use '~@angular/material/button/_button-theme';`,
       `@use '~@angular/material/table/table-theme.import';`,
@@ -489,10 +507,11 @@ describe('Material theming API schematic', () => {
       `@include button-theme.mat-button-theme();`,
       `@include table-theme.mat-table-theme();`,
       `@include datepicker-theme.mat-datepicker-theme();`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
 
       `@include mat.core();`,
@@ -503,17 +522,17 @@ describe('Material theming API schematic', () => {
   });
 
   it('should drop the old import path even if the file is not using any symbols', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import '~@angular/material/theming';`,
       ``,
       `.my-dialog {`,
         `color: red;`,
       `}`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `.my-dialog {`,
         `color: red;`,
       `}`,
@@ -521,8 +540,7 @@ describe('Material theming API schematic', () => {
   });
 
   it('should replace removed variables with their values', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import '~@angular/material/theming';`,
       ``,
       `@include mat-button-toggle-theme();`,
@@ -538,10 +556,11 @@ describe('Material theming API schematic', () => {
           `height: $mat-button-toggle-standard-minimum-height;`,
         `}`,
       `}`
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
       ``,
       `@include mat.button-toggle-theme();`,
@@ -561,8 +580,7 @@ describe('Material theming API schematic', () => {
   });
 
   it('should not replace assignments to removed variables', async () => {
-    const app = await createTestApp(runner);
-    app.create('/theme.scss', [
+    writeLines(THEME_PATH, [
       `@import '~@angular/material/theming';`,
       ``,
       `$mat-button-toggle-standard-height: 50px;`,
@@ -571,10 +589,11 @@ describe('Material theming API schematic', () => {
       `$mat-toggle-size:     11px;`,
       ``,
       `@include mat-button-toggle-theme();`,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
       `@use '~@angular/material' as mat;`,
       ``,
       `$mat-button-toggle-standard-height: 50px;`,
@@ -587,16 +606,16 @@ describe('Material theming API schematic', () => {
   });
 
   it('should not migrate files in the node_modules', async () => {
-    const app = await createTestApp(runner);
-    app.create('/node_modules/theme.scss', [
+    writeLines('/node_modules/theme.scss', [
       `@import '~@angular/material/theming';`,
       ``,
       `@include mat-button-toggle-theme();`,
       ``,
-    ].join('\n'));
+    ]);
 
-    const tree = await runner.runSchematicAsync('theming-api', options, app).toPromise();
-    expect(getFileContent(tree, '/node_modules/theme.scss').split('\n')).toEqual([
+    await runMigration();
+
+    expect(splitFile('/node_modules/theme.scss')).toEqual([
       `@import '~@angular/material/theming';`,
       ``,
       `@include mat-button-toggle-theme();`,
