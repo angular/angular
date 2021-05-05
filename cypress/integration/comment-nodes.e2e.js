@@ -1,7 +1,5 @@
 function showComments() {
-  cy.get(
-    '#nav-buttons > button.mat-focus-indicator.mat-menu-trigger.mat-icon-button.mat-button-base.mat-primary'
-  ).click();
+  cy.get('#nav-buttons > button:nth-child(2)').click();
   cy.get('#mat-slide-toggle-3 > label > div').click();
 }
 
