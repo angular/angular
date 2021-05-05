@@ -423,8 +423,8 @@ describe('v12 theming API migration', () => {
     await runMigration();
 
     expect(splitFile(THEME_PATH)).toEqual([
-      `@use '~@angular/material' as mat;`,
       `@use '~@angular/cdk' as cdk;`,
+      `@use '~@angular/material' as mat;`,
 
       `@include cdk.overlay();`,
 
@@ -658,5 +658,39 @@ describe('v12 theming API migration', () => {
       `}`
     ]);
   });
+
+  it('should insert the @use statement at the top of the file, if the theming import is ' +
+     'the only import in the file and there is other content before it', async () => {
+    writeLines(THEME_PATH, [
+      `:host {`,
+        `display: block;`,
+        `width: 100%;`,
+      `}`,
+      ``,
+      `@import '~@angular/material/theming';`,
+      ``,
+      `.button {`,
+        `@include mat-elevation(4);`,
+        `padding: 8px;`,
+      `}`,
+    ]);
+
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
+      `@use '~@angular/material' as mat;`,
+      `:host {`,
+        `display: block;`,
+        `width: 100%;`,
+      `}`,
+      ``,
+      ``,
+      `.button {`,
+        `@include mat.elevation(4);`,
+        `padding: 8px;`,
+      `}`,
+    ]);
+  });
+
 
 });

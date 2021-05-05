@@ -16,6 +16,12 @@ import {
   unprefixedRemovedVariables
 } from './config';
 
+/** The result of a search for imports and namespaces in a file. */
+interface DetectImportResult {
+  imports: string[];
+  namespaces: string[];
+}
+
 /**
  * Migrates the content of a file to the new theming API. Note that this migration is using plain
  * string manipulation, rather than the AST from PostCSS and the schematics string manipulation
@@ -40,8 +46,8 @@ export function migrateFileContent(content: string,
 
   // Try to migrate the symbols even if there are no imports. This is used
   // to cover the case where the Components symbols were used transitively.
-  content = migrateMaterialSymbols(content, newMaterialImportPath, materialResults.namespaces);
-  content = migrateCdkSymbols(content, newCdkImportPath, cdkResults.namespaces);
+  content = migrateMaterialSymbols(content, newMaterialImportPath, materialResults);
+  content = migrateCdkSymbols(content, newCdkImportPath, cdkResults);
   content = replaceRemovedVariables(content, removedMaterialVariables);
 
   // We can assume that the migration has taken care of any Components symbols that were
@@ -64,7 +70,7 @@ export function migrateFileContent(content: string,
  * @param content File content in which to look for imports.
  * @param prefix Prefix that the imports should start with.
  */
-function detectImports(content: string, prefix: string): {imports: string[], namespaces: string[]} {
+function detectImports(content: string, prefix: string): DetectImportResult {
   if (prefix[prefix.length - 1] !== '/') {
     // Some of the logic further down makes assumptions about the import depth.
     throw Error(`Prefix "${prefix}" has to end in a slash.`);
@@ -96,47 +102,49 @@ function detectImports(content: string, prefix: string): {imports: string[], nam
 }
 
 /** Migrates the Material symbls in a file. */
-function migrateMaterialSymbols(content: string, importPath: string, namespaces: string[]): string {
+function migrateMaterialSymbols(content: string, importPath: string,
+                                detectedImports: DetectImportResult): string {
   const initialContent = content;
   const namespace = 'mat';
 
   // Migrate the mixins.
-  content = renameSymbols(content, materialMixins, namespaces, mixinKeyFormatter,
+  content = renameSymbols(content, materialMixins, detectedImports.namespaces, mixinKeyFormatter,
     getMixinValueFormatter(namespace));
 
   // Migrate the functions.
-  content = renameSymbols(content, materialFunctions, namespaces, functionKeyFormatter,
-    getFunctionValueFormatter(namespace));
+  content = renameSymbols(content, materialFunctions, detectedImports.namespaces,
+    functionKeyFormatter, getFunctionValueFormatter(namespace));
 
   // Migrate the variables.
-  content = renameSymbols(content, materialVariables, namespaces, variableKeyFormatter,
-    getVariableValueFormatter(namespace));
+  content = renameSymbols(content, materialVariables, detectedImports.namespaces,
+    variableKeyFormatter, getVariableValueFormatter(namespace));
 
   if (content !== initialContent) {
     // Add an import to the new API only if any of the APIs were being used.
-    content = insertUseStatement(content, importPath, namespace);
+    content = insertUseStatement(content, importPath, detectedImports.imports, namespace);
   }
 
   return content;
 }
 
 /** Migrates the CDK symbols in a file. */
-function migrateCdkSymbols(content: string, importPath: string, namespaces: string[]): string {
+function migrateCdkSymbols(content: string, importPath: string,
+                           detectedImports: DetectImportResult): string {
   const initialContent = content;
   const namespace = 'cdk';
 
   // Migrate the mixins.
-  content = renameSymbols(content, cdkMixins, namespaces, mixinKeyFormatter,
+  content = renameSymbols(content, cdkMixins, detectedImports.namespaces, mixinKeyFormatter,
     getMixinValueFormatter(namespace));
 
   // Migrate the variables.
-  content = renameSymbols(content, cdkVariables, namespaces, variableKeyFormatter,
+  content = renameSymbols(content, cdkVariables, detectedImports.namespaces, variableKeyFormatter,
     getVariableValueFormatter(namespace));
 
   // Previously the CDK symbols were exposed through `material/theming`, but now we have a
   // dedicated entrypoint for the CDK. Only add an import for it if any of the symbols are used.
   if (content !== initialContent) {
-    content = insertUseStatement(content, importPath, namespace);
+    content = insertUseStatement(content, importPath, detectedImports.imports, namespace);
   }
 
   return content;
@@ -175,11 +183,21 @@ function renameSymbols(content: string,
 }
 
 /** Inserts an `@use` statement in a string. */
-function insertUseStatement(content: string, importPath: string, namespace: string): string {
+function insertUseStatement(content: string, importPath: string, importsToIgnore: string[],
+                            namespace: string): string {
+  // We want to find the first import that isn't in the list of ignored imports or find nothing,
+  // because the imports being replaced might be the only ones in the file and they can be further
+  // down. An easy way to do this is to replace the imports with a random character and run
+  // `indexOf` on the result. This isn't the most efficient way of doing it, but it's more compact
+  // and it allows us to easily deal with things like comment nodes.
+  const contentToSearch = importsToIgnore.reduce((accumulator, current) =>
+    accumulator.replace(current, '◬'.repeat(current.length)), content);
+
   // Sass has a limitation that all `@use` declarations have to come before `@import` so we have
   // to find the first import and insert before it. Technically we can get away with always
   // inserting at 0, but the file may start with something like a license header.
-  const newImportIndex = Math.max(0, content.indexOf('@import '));
+  const newImportIndex = Math.max(0, contentToSearch.indexOf('@import '));
+
   return content.slice(0, newImportIndex) + `@use '${importPath}' as ${namespace};\n` +
          content.slice(newImportIndex);
 }
