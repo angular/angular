@@ -105,14 +105,14 @@ The following steps demonstrate a typical implementation of conditional content 
       <code-example path="content-projection/src/app/app.component.html" region="ng-template">
       </code-example>
 
-   The `ng-template` element defines a block of content that a component can render based on its own logic. A component can get a reference to this template content, or [`TemplateRef`](/api/core/TemplateRef), by using either the [`@ContentChild`](/api/core/ContentChild) or [`@ContentChildren`](/api/core/ContentChildren) decorators. The preceding example creates a custom directive, `exampleZippyContent`, as an API to mark the `ng-template` for the component's content. With the `TemplateRef`, the component can render the referenced content by using either the [`ngTemplateOutlet`](/api/common/NgTemplateOutlet) directive, or with [`ViewContainerRef.createEmbeddedView`](/api/core/ViewContainerRef#createembeddedview).
+   The `ng-template` element defines a block of content that a component can render based on its own logic. A component can get a reference to this template content, or [`TemplateRef`](/api/core/TemplateRef), by using either the [`@ContentChild`](/api/core/ContentChild) or [`@ContentChildren`](/api/core/ContentChildren) decorators. The preceding example creates a custom directive, `appExampleZippyContent`, as an API to mark the `ng-template` for the component's content. With the `TemplateRef`, the component can render the referenced content by using either the [`ngTemplateOutlet`](/api/common/NgTemplateOutlet) directive, or with [`ViewContainerRef.createEmbeddedView`](/api/core/ViewContainerRef#createembeddedview).
 
 1. Create a directive with a selector that matches the custom attribute for your template. In this directive, inject a TemplateRef instance.
 
    <code-example path="content-projection/src/app/app.component.ts" header="content-projection/src/app/app.component.ts" region="zippycontentdirective">
    </code-example>
 
-   In the previous step, you added an `ng-template` element with a custom attribute, `exampleZippyDirective`. This code provides the logic that Angular will use when it encounters that custom attribute. In this case, that logic instructs Angular to instantiate a template reference.
+   In the previous step, you added an `ng-template` element with a custom attribute, `appExampleZippyDirective`. This code provides the logic that Angular will use when it encounters that custom attribute. In this case, that logic instructs Angular to instantiate a template reference.
 
 1. In the component you want to project content into, use `@ContentChild` to get the template of the project content.
 

@@ -1,4 +1,4 @@
-import { Component, Directive, Input, TemplateRef, ContentChild } from '@angular/core';
+import { Component, Directive, Input, TemplateRef, ContentChild, HostBinding, HostListener } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -7,22 +7,22 @@ import { Component, Directive, Input, TemplateRef, ContentChild } from '@angular
 export class AppComponent {}
 
 @Directive({
-  selector: 'button[exampleZippyToggle]',
-  host: {
-    '[attr.aria-expanded]': 'zippy.expanded',
-    '[attr.aria-controls]': 'zippy.contentId',
-    '(click)': 'zippy.expanded = !zippy.expanded'
-  }
+  selector: 'button[appExampleZippyToggle]',
 })
-export class ZippyToggle {
-  constructor(public zippy: Zippy) {}
+export class ZippyToggleDirective {
+  @HostBinding('attr.aria-expanded') ariaExpanded = this.zippy.expanded;
+  @HostBinding('attr.aria-controls') ariaControls = this.zippy.contentId;
+  @HostListener('click') toggleZippy() {
+    this.zippy.expanded = !this.zippy.expanded;
+  }
+  constructor(public zippy: ZippyComponent) {}
 }
 
 // #docregion zippycontentdirective
 @Directive({
-  selector: '[exampleZippyContent]'
+  selector: '[appExampleZippyContent]'
 })
-export class ZippyContent {
+export class ZippyContentDirective {
   constructor(public templateRef: TemplateRef<unknown>) {}
 }
 // #enddocregion zippycontentdirective
@@ -30,13 +30,13 @@ export class ZippyContent {
 let nextId = 0;
 
 @Component({
-  selector: 'example-zippy',
+  selector: 'app-example-zippy',
   templateUrl: 'example-zippy.template.html',
 })
-export class Zippy {
+export class ZippyComponent {
   contentId = `zippy-${nextId++}`;
-  @Input() expanded: boolean = false;
+  @Input() expanded = false;
   // #docregion contentchild
-  @ContentChild(ZippyContent) content: ZippyContent;
+  @ContentChild(ZippyContentDirective) content: ZippyContentDirective;
   // #enddocregion contentchild
 }
