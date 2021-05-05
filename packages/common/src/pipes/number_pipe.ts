@@ -253,7 +253,7 @@ export class CurrencyPipe implements PipeTransform {
       display?: 'code'|'symbol'|'symbol-narrow'|string|boolean, digitsInfo?: string,
       locale?: string): string|null;
   transform(
-      value: number|string|null|undefined, currencyCode?: string,
+      value: number|string|null|undefined, currencyCode: string = this._defaultCurrencyCode,
       display: 'code'|'symbol'|'symbol-narrow'|string|boolean = 'symbol', digitsInfo?: string,
       locale?: string): string|null {
     if (!isValue(value)) return null;
