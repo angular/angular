@@ -418,23 +418,23 @@ export abstract class ReleaseAction {
    * The release is created by tagging the specified commit SHA.
    */
   private async _createGithubReleaseForVersion(
-      newVersion: semver.SemVer, versionBumpCommitSha: string, prerelease: boolean) {
-    const tagName = newVersion.format();
+      releaseNotes: ReleaseNotes, versionBumpCommitSha: string, prerelease: boolean) {
+    const tagName = releaseNotes.version.format();
     await this.git.github.git.createRef({
       ...this.git.remoteParams,
       ref: `refs/tags/${tagName}`,
       sha: versionBumpCommitSha,
     });
-    info(green(`  ✓   Tagged v${newVersion} release upstream.`));
+    info(green(`  ✓   Tagged v${releaseNotes.version} release upstream.`));
 
     await this.git.github.repos.createRelease({
       ...this.git.remoteParams,
-      name: `v${newVersion}`,
+      name: `v${releaseNotes.version}`,
       tag_name: tagName,
       prerelease,
-
+      body: await releaseNotes.getGithubReleaseEntry(),
     });
-    info(green(`  ✓   Created v${newVersion} release in Github.`));
+    info(green(`  ✓   Created v${releaseNotes.version} release in Github.`));
   }
 
   /**
@@ -444,10 +444,10 @@ export abstract class ReleaseAction {
    * @param npmDistTag NPM dist tag where the version should be published to.
    */
   protected async buildAndPublish(
-      newVersion: semver.SemVer, publishBranch: string, npmDistTag: string) {
+      releaseNotes: ReleaseNotes, publishBranch: string, npmDistTag: string) {
     const versionBumpCommitSha = await this._getCommitOfBranch(publishBranch);
 
-    if (!await this._isCommitForVersionStaging(newVersion, versionBumpCommitSha)) {
+    if (!await this._isCommitForVersionStaging(releaseNotes.version, versionBumpCommitSha)) {
       error(red(`  ✘   Latest commit in "${publishBranch}" branch is not a staging commit.`));
       error(red('      Please make sure the staging pull request has been merged.'));
       throw new FatalReleaseActionError();
@@ -467,11 +467,11 @@ export abstract class ReleaseAction {
     const builtPackages = await invokeReleaseBuildCommand();
 
     // Verify the packages built are the correct version.
-    await this._verifyPackageVersions(newVersion, builtPackages);
+    await this._verifyPackageVersions(releaseNotes.version, builtPackages);
 
     // Create a Github release for the new version.
     await this._createGithubReleaseForVersion(
-        newVersion, versionBumpCommitSha, npmDistTag === 'next');
+        releaseNotes, versionBumpCommitSha, npmDistTag === 'next');
 
     // Walk through all built packages and publish them to NPM.
     for (const builtPackage of builtPackages) {
