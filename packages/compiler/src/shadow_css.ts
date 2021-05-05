@@ -394,6 +394,10 @@ export class ShadowCss {
    * :host ::ng-deep {
    *   import 'some/lib/containing/font-face';
    * }
+   *
+   * Similar logic applies to `@page` rules which can contain a particular set of properties,
+   * as well as some specific at-rules. Since they can't be encapsulated, we have to strip
+   * any scoping selectors from them. For more information: https://www.w3.org/TR/css-page-3
    * ```
    */
   private _stripScopingSelectors(cssText: string): string {
