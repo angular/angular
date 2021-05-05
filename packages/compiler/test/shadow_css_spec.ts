@@ -92,6 +92,15 @@ import {normalizeCSS} from '@angular/platform-browser/testing/src/browser_util';
       expect(result).not.toContain(contentAttr);
     });
 
+    it('should strip ::ng-deep and :host from within @page rules', () => {
+      expect(s('@page { margin-right: 4in; }', 'contenta', 'h'))
+          .toEqual('@page { margin-right:4in;}');
+      expect(s('@page { ::ng-deep @top-left { content: "Hamlet";}}', 'contenta', 'h'))
+          .toEqual('@page { @top-left { content:"Hamlet";}}');
+      expect(s('@page { :host ::ng-deep @top-left { content:"Hamlet";}}', 'contenta', 'h'))
+          .toEqual('@page { @top-left { content:"Hamlet";}}');
+    });
+
     it('should handle document rules', () => {
       const css = '@document url(http://www.w3.org/) {div {font-size:50px;}}';
       const expected = '@document url(http://www.w3.org/) {div[contenta] {font-size:50px;}}';

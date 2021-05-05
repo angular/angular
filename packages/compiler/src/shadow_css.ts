@@ -372,8 +372,8 @@ export class ShadowCss {
           rule.selector.startsWith('@media') || rule.selector.startsWith('@supports') ||
           rule.selector.startsWith('@document')) {
         content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
-      } else if (rule.selector.startsWith('@font-face')) {
-        content = this._stripScopingSelectors(rule.content, scopeSelector, hostSelector);
+      } else if (rule.selector.startsWith('@font-face') || rule.selector.startsWith('@page')) {
+        content = this._stripScopingSelectors(rule.content);
       }
       return new CssRule(selector, content);
     });
@@ -396,13 +396,11 @@ export class ShadowCss {
    * }
    * ```
    */
-  private _stripScopingSelectors(cssText: string, scopeSelector: string, hostSelector: string):
-      string {
+  private _stripScopingSelectors(cssText: string): string {
     return processRules(cssText, rule => {
       const selector = rule.selector.replace(_shadowDeepSelectors, ' ')
                            .replace(_polyfillHostNoCombinatorRe, ' ');
-      const content = this._scopeSelectors(rule.content, scopeSelector, hostSelector);
-      return new CssRule(selector, content);
+      return new CssRule(selector, rule.content);
     });
   }
 
