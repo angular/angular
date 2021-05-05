@@ -154,8 +154,9 @@ class TestAction extends ReleaseAction {
     throw Error('Not implemented.');
   }
 
-  async testBuildAndPublish(newVersion: semver.SemVer, publishBranch: string, distTag: string) {
-    await this.buildAndPublish(newVersion, publishBranch, distTag);
+  async testBuildAndPublish(version: semver.SemVer, publishBranch: string, distTag: string) {
+    const releaseNotes = await ReleaseNotes.fromLatestTagToHead(version, this.config);
+    await this.buildAndPublish(releaseNotes, publishBranch, distTag);
   }
 
   async testCherryPickWithPullRequest(version: semver.SemVer, branch: string) {

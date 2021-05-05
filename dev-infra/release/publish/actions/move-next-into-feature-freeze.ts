@@ -47,7 +47,7 @@ export class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
     // pre-release. Finally, cherry-pick the release notes into the next branch in combination
     // with bumping the version to the next minor too.
     await this.waitForPullRequestToBeMerged(id);
-    await this.buildAndPublish(newVersion, newBranch, 'next');
+    await this.buildAndPublish(releaseNotes, newBranch, 'next');
     await this._createNextBranchUpdatePullRequest(releaseNotes, newVersion);
   }
 
