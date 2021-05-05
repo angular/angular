@@ -32,7 +32,7 @@ export class CutNewPatchAction extends ReleaseAction {
         await this.checkoutBranchAndStageVersion(newVersion, branchName);
 
     await this.waitForPullRequestToBeMerged(id);
-    await this.buildAndPublish(newVersion, branchName, 'latest');
+    await this.buildAndPublish(releaseNotes, branchName, 'latest');
     await this.cherryPickChangelogIntoNextBranch(releaseNotes, branchName);
   }
 

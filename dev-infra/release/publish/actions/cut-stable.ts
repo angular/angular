@@ -35,7 +35,7 @@ export class CutStableAction extends ReleaseAction {
         await this.checkoutBranchAndStageVersion(newVersion, branchName);
 
     await this.waitForPullRequestToBeMerged(id);
-    await this.buildAndPublish(newVersion, branchName, 'latest');
+    await this.buildAndPublish(releaseNotes, branchName, 'latest');
 
     // If a new major version is published and becomes the "latest" release-train, we need
     // to set the LTS npm dist tag for the previous latest release-train (the current patch).
