@@ -140,6 +140,11 @@ import {ɵregisterLocaleData, ɵunregisterLocaleData} from '@angular/core';
           expect(pipe.transform(5.1234, 'DKK', '', '', 'da')).toEqual('5,12');
         });
 
+        it('should use the injected default currency code if none is provided', () => {
+          const clpPipe = new CurrencyPipe('en-US', 'CLP');
+          expect(clpPipe.transform(1234)).toEqual('CLP1,234');
+        });
+
         it('should support any currency code name', () => {
           // currency code is unknown, default formatting options will be used
           expect(pipe.transform(5.1234, 'unexisting_ISO_code', 'symbol'))
