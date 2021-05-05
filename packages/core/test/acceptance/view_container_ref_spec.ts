@@ -1495,6 +1495,38 @@ describe('ViewContainerRef', () => {
 
          expect(fixture.debugElement.nativeElement.innerHTML).toContain('Child Component');
        });
+
+    it('should be able to create a component using Type', () => {
+      @Component({
+        selector: 'child',
+        template: `Child Component`,
+      })
+      class Child {
+      }
+
+      @Component({
+        selector: 'comp',
+        template: '',
+      })
+      class Comp {
+        constructor(private viewContainerRef: ViewContainerRef) {}
+
+        ngOnInit() {
+          this.viewContainerRef!.createComponent(Child);
+        }
+      }
+
+      TestBed.configureTestingModule({declarations: [Comp, Child]});
+
+      const fixture = TestBed.createComponent(Comp);
+      if (ivyEnabled) {
+        fixture.detectChanges();
+        const native = fixture.debugElement.nativeElement as Element;
+        expect((native.parentNode as Element).textContent).toContain('Child Component');
+      } else {
+        expect(() => fixture.detectChanges()).toThrowError(/ViewEngine does not support Type/);
+      }
+    });
   });
 
   describe('insertion points and declaration points', () => {

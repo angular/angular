@@ -7,7 +7,10 @@
  */
 
 import {Injector} from '../di/injector';
+import {Type} from '../interface/type';
 import {assertNodeInjector} from '../render3/assert';
+import {ComponentFactory as R3ComponentFactory} from '../render3/component_ref';
+import {getComponentDef} from '../render3/definition';
 import {getParentInjectorLocation, NodeInjector} from '../render3/di';
 import {addToViewTree, createLContainer} from '../render3/instructions/shared';
 import {CONTAINER_HEADER_OFFSET, LContainer, NATIVE, VIEW_REFS} from '../render3/interfaces/container';
@@ -25,6 +28,7 @@ import {ViewRef as R3ViewRef} from '../render3/view_ref';
 import {addToArray, removeFromArray} from '../util/array_utils';
 import {assertEqual, assertGreaterThan, assertLessThan} from '../util/assert';
 import {noop} from '../util/noop';
+
 import {ComponentFactory, ComponentRef} from './component_factory';
 import {createElementRef, ElementRef} from './element_ref';
 import {NgModuleRef} from './ng_module_factory';
@@ -109,7 +113,7 @@ export abstract class ViewContainerRef {
   /**
    * Instantiates a single component and inserts its host view into this container.
    *
-   * @param componentFactory The factory to use.
+   * @param componentFactoryOrType Component factory or a Component Type (Ivy-only) to use.
    * @param index The index at which to insert the new component's host view into this container.
    * If not specified, appends the new view as the last entry.
    * @param injector The injector to use as the parent for the new component.
@@ -120,7 +124,7 @@ export abstract class ViewContainerRef {
    *
    */
   abstract createComponent<C>(
-      componentFactory: ComponentFactory<C>, index?: number, injector?: Injector,
+      componentFactoryOrType: ComponentFactory<C>|Type<C>, index?: number, injector?: Injector,
       projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
 
   /**
@@ -182,6 +186,12 @@ export function injectViewContainerRef(): ViewContainerRef {
   return createContainerRef(previousTNode, getLView());
 }
 
+// Helper method to check if provided value is a ComponentFactory and a Type (Component instance).
+function isComponentFactory(value: ComponentFactory<any>|
+                            Type<any>): value is ComponentFactory<any> {
+  return value && typeof value !== 'function';
+}
+
 const VE_ViewContainerRef = ViewContainerRef;
 
 const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
@@ -238,9 +248,12 @@ const R3ViewContainerRef = class ViewContainerRef extends VE_ViewContainerRef {
   }
 
   createComponent<C>(
-      componentFactory: ComponentFactory<C>, index?: number|undefined,
+      componentFactoryOrType: ComponentFactory<C>|Type<C>, index?: number|undefined,
       injector?: Injector|undefined, projectableNodes?: any[][]|undefined,
       ngModuleRef?: NgModuleRef<any>|undefined): ComponentRef<C> {
+    const componentFactory: ComponentFactory<C> = isComponentFactory(componentFactoryOrType) ?
+        componentFactoryOrType :
+        new R3ComponentFactory(getComponentDef(componentFactoryOrType)!);
     const contextInjector = injector || this.parentInjector;
     if (!ngModuleRef && (componentFactory as any).ngModule == null && contextInjector) {
       // DO NOT REFACTOR. The code here used to have a `value || undefined` expression
