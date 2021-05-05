@@ -169,6 +169,14 @@ export const removedMaterialVariables: Record<string, string> = {
   'mat-tree-node-height': '48px',
   'mat-tree-node-minimum-height': '24px',
   'mat-tree-node-maximum-height': '48px',
+};
+
+/**
+ * Material variables **without a `mat-` prefix** that have been removed from the public API
+ * and which should be replaced with their values. These should be migrated only when there's a
+ * Material import, because their names could conflict with other variables in the user's app.
+ */
+export const unprefixedRemovedVariables: Record<string, string> = {
   'z-index-fab': '20',
   'z-index-drawer': '100',
   'ease-in-out-curve-function': 'cubic-bezier(0.35, 0, 0.25, 1)',
@@ -183,5 +191,21 @@ export const removedMaterialVariables: Record<string, string> = {
   'swift-ease-in-out': 'all 500ms cubic-bezier(0.35, 0, 0.25, 1)',
   'swift-linear-duration': '80ms',
   'swift-linear-timing-function': 'linear',
-  'swift-linear': 'all 80ms linear'
+  'swift-linear': 'all 80ms linear',
+  'black-87-opacity': 'rgba(black, 0.87)',
+  'white-87-opacity': 'rgba(white, 0.87)',
+  'black-12-opacity': 'rgba(black, 0.12)',
+  'white-12-opacity': 'rgba(white, 0.12)',
+  'black-6-opacity': 'rgba(black, 0.06)',
+  'white-6-opacity': 'rgba(white, 0.06)',
+  'dark-primary-text': 'rgba(black, 0.87)',
+  'dark-secondary-text': 'rgba(black, 0.54)',
+  'dark-disabled-text': 'rgba(black, 0.38)',
+  'dark-dividers': 'rgba(black, 0.12)',
+  'dark-focused': 'rgba(black, 0.12)',
+  'light-primary-text': 'white',
+  'light-secondary-text': 'rgba(white, 0.7)',
+  'light-disabled-text': 'rgba(white, 0.5)',
+  'light-dividers': 'rgba(white, 0.12)',
+  'light-focused': 'rgba(white, 0.12)',
 };

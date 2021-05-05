@@ -15,8 +15,9 @@ const STYLESHEET_REGEX = /.*\.(css|scss)/;
 /**
  * Finds stylesheets in the given directory from within the specified tree.
  * @param tree Devkit tree where stylesheet files can be found in.
- * @param startDirectory Optional start directory where stylesheets should be searched in. This can be
- *   useful if only stylesheets within a given folder are relevant (to avoid unnecessary iterations).
+ * @param startDirectory Optional start directory where stylesheets should be searched in.
+ *   This can be useful if only stylesheets within a given folder are relevant (to avoid
+ *   unnecessary iterations).
  */
 export function findStylesheetFiles(tree: Tree, startDirectory: string = '/'): string[] {
   const result: string[] = [];

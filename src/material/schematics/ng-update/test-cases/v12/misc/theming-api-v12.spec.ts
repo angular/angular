@@ -623,4 +623,40 @@ describe('v12 theming API migration', () => {
     ]);
   });
 
+  it('should only migrate unprefixed variables if there is a theming import', async () => {
+    const otherTheme = join(PROJECT_PATH, 'other-theme.scss');
+
+    writeLines(THEME_PATH, [
+      `@import '~@angular/material/theming';`,
+      ``,
+      `.my-button {`,
+        `z-index: $z-index-fab;`,
+      `}`
+    ]);
+
+    writeLines(otherTheme, [
+      `@import 're-exports-material-symbols';`,
+      ``,
+      `.my-drawer {`,
+        `z-index: $z-index-drawer;`,
+      `}`
+    ]);
+
+    await runMigration();
+
+    expect(splitFile(THEME_PATH)).toEqual([
+      `.my-button {`,
+        `z-index: 20;`,
+      `}`
+    ]);
+
+    expect(splitFile(otherTheme)).toEqual([
+      `@import 're-exports-material-symbols';`,
+      ``,
+      `.my-drawer {`,
+        `z-index: $z-index-drawer;`,
+      `}`
+    ]);
+  });
+
 });

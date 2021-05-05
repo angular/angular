@@ -12,7 +12,8 @@ import {
   materialVariables,
   cdkMixins,
   cdkVariables,
-  removedMaterialVariables
+  removedMaterialVariables,
+  unprefixedRemovedVariables
 } from './config';
 
 /**
@@ -47,6 +48,7 @@ export function migrateFileContent(content: string,
   // imported transitively so we can always drop the old imports. We also assume that imports
   // to the new entry points have been added already.
   if (materialResults.imports.length) {
+    content = replaceRemovedVariables(content, unprefixedRemovedVariables);
     content = removeStrings(content, materialResults.imports);
   }
 
