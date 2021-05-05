@@ -15,6 +15,7 @@ import {Renderer2} from '../render/api';
 import {isObservable} from '../util/lang';
 import {stringify} from '../util/stringify';
 
+import {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './provider_flags';
 import {createChangeDetectorRef, createInjector} from './refs';
 import {asElementData, asProviderData, BindingDef, BindingFlags, DepDef, DepFlags, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryValueType, Services, shouldCallLifecycleInitHook, ViewData, ViewFlags, ViewState} from './types';
 import {calcBindingFlags, checkBinding, dispatchEvent, isComponentView, splitDepsDsl, splitMatchedQueriesDsl, tokenKey, viewParentEl} from './util';
@@ -317,25 +318,6 @@ function callFactory(
       return factory(...depValues);
   }
 }
-
-// This default value is when checking the hierarchy for a token.
-//
-// It means both:
-// - the token is not provided by the current injector,
-// - only the element injectors should be checked (ie do not check module injectors
-//
-//          mod1
-//         /
-//       el1   mod2
-//         \  /
-//         el2
-//
-// When requesting el2.injector.get(token), we should check in the following order and return the
-// first found value:
-// - el2.injector.get(token, default)
-// - el1.injector.get(token, NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR) -> do not check the module
-// - mod2.injector.get(token, default)
-export const NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR = {};
 
 export function resolveDep(
     view: ViewData, elDef: NodeDef, allowPrivateServices: boolean, depDef: DepDef,

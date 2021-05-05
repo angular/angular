@@ -17,6 +17,7 @@ import {InternalNgModuleRef, NgModuleRef} from '../linker/ng_module_factory';
 import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef, InternalViewRef, ViewRef, ViewRefTracker} from '../linker/view_ref';
+import {assertEqual} from '../util/assert';
 import {stringify} from '../util/stringify';
 import {VERSION} from '../version';
 
@@ -191,9 +192,20 @@ class ViewContainerRef_ implements ViewContainerData {
   }
 
   createComponent<C>(
-      componentFactory: ComponentFactory<C>, index?: number, injector?: Injector,
-      projectableNodes?: any[][], ngModuleRef?: NgModuleRef<any>): ComponentRef<C> {
+      componentFactoryOrType: ComponentFactory<C>|Type<C>, indexOrOptions?: number|{},
+      injector?: Injector, projectableNodes?: any[][],
+      ngModuleRef?: NgModuleRef<any>): ComponentRef<C> {
+    if (typeof ngDevMode === 'undefined' || ngDevMode) {
+      assertEqual(
+          typeof componentFactoryOrType !== 'function', true,
+          'ViewEngine does not support Type as an argument for \'componentFactoryOrType\'');
+      assertEqual(
+          typeof indexOrOptions !== 'object', true,
+          'ViewEngine does not support options as an object provided via second argument');
+    }
+    const index = indexOrOptions as number | undefined;
     const contextInjector = injector || this.parentInjector;
+    const componentFactory = componentFactoryOrType as ComponentFactory<C>;
     if (!ngModuleRef && !(componentFactory instanceof ComponentFactoryBoundToModule)) {
       ngModuleRef = contextInjector.get(NgModuleRef);
     }
