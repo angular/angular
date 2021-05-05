@@ -82,6 +82,14 @@ mat-icon {
   body.dark-theme .menu-toggle-button {
     color: white;
   }
+
+  .menu-toggle-button {
+    mat-icon {
+      position: relative;
+      top: -1px;
+      margin-right: 5px;
+    }
+  }
 }
 
 .menu-toggle-button {
