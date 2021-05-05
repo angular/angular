@@ -45,7 +45,7 @@ export class CutLongTermSupportPatchAction extends ReleaseAction {
         await this.checkoutBranchAndStageVersion(newVersion, ltsBranch.name);
 
     await this.waitForPullRequestToBeMerged(id);
-    await this.buildAndPublish(newVersion, ltsBranch.name, ltsBranch.npmDistTag);
+    await this.buildAndPublish(releaseNotes, ltsBranch.name, ltsBranch.npmDistTag);
     await this.cherryPickChangelogIntoNextBranch(releaseNotes, ltsBranch.name);
   }
 

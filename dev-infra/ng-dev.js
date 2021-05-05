@@ -6261,13 +6261,13 @@ class ReleaseAction {
      * Creates a Github release for the specified version in the configured project.
      * The release is created by tagging the specified commit SHA.
      */
-    _createGithubReleaseForVersion(newVersion, versionBumpCommitSha, prerelease) {
+    _createGithubReleaseForVersion(releaseNotes, versionBumpCommitSha, prerelease) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            const tagName = newVersion.format();
+            const tagName = releaseNotes.version.format();
             yield this.git.github.git.createRef(Object.assign(Object.assign({}, this.git.remoteParams), { ref: `refs/tags/${tagName}`, sha: versionBumpCommitSha }));
-            info(green(`  ✓   Tagged v${newVersion} release upstream.`));
-            yield this.git.github.repos.createRelease(Object.assign(Object.assign({}, this.git.remoteParams), { name: `v${newVersion}`, tag_name: tagName, prerelease }));
-            info(green(`  ✓   Created v${newVersion} release in Github.`));
+            info(green(`  ✓   Tagged v${releaseNotes.version} release upstream.`));
+            yield this.git.github.repos.createRelease(Object.assign(Object.assign({}, this.git.remoteParams), { name: `v${releaseNotes.version}`, tag_name: tagName, prerelease, body: yield releaseNotes.getGithubReleaseEntry() }));
+            info(green(`  ✓   Created v${releaseNotes.version} release in Github.`));
         });
     }
     /**
@@ -6276,10 +6276,10 @@ class ReleaseAction {
      * @param publishBranch Name of the branch that contains the new version.
      * @param npmDistTag NPM dist tag where the version should be published to.
      */
-    buildAndPublish(newVersion, publishBranch, npmDistTag) {
+    buildAndPublish(releaseNotes, publishBranch, npmDistTag) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             const versionBumpCommitSha = yield this._getCommitOfBranch(publishBranch);
-            if (!(yield this._isCommitForVersionStaging(newVersion, versionBumpCommitSha))) {
+            if (!(yield this._isCommitForVersionStaging(releaseNotes.version, versionBumpCommitSha))) {
                 error(red(`  ✘   Latest commit in "${publishBranch}" branch is not a staging commit.`));
                 error(red('      Please make sure the staging pull request has been merged.'));
                 throw new FatalReleaseActionError();
@@ -6296,9 +6296,9 @@ class ReleaseAction {
             yield invokeBazelCleanCommand(this.projectDir);
             const builtPackages = yield invokeReleaseBuildCommand();
             // Verify the packages built are the correct version.
-            yield this._verifyPackageVersions(newVersion, builtPackages);
+            yield this._verifyPackageVersions(releaseNotes.version, builtPackages);
             // Create a Github release for the new version.
-            yield this._createGithubReleaseForVersion(newVersion, versionBumpCommitSha, npmDistTag === 'next');
+            yield this._createGithubReleaseForVersion(releaseNotes, versionBumpCommitSha, npmDistTag === 'next');
             // Walk through all built packages and publish them to NPM.
             for (const builtPackage of builtPackages) {
                 yield this._publishBuiltPackageToNpm(builtPackage, npmDistTag);
@@ -6377,7 +6377,7 @@ class CutLongTermSupportPatchAction extends ReleaseAction {
             const newVersion = semverInc(ltsBranch.version, 'patch');
             const { pullRequest: { id }, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, ltsBranch.name);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, ltsBranch.name, ltsBranch.npmDistTag);
+            yield this.buildAndPublish(releaseNotes, ltsBranch.name, ltsBranch.npmDistTag);
             yield this.cherryPickChangelogIntoNextBranch(releaseNotes, ltsBranch.name);
         });
     }
@@ -6454,7 +6454,7 @@ class CutNewPatchAction extends ReleaseAction {
             const newVersion = this._newVersion;
             const { pullRequest: { id }, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, branchName, 'latest');
+            yield this.buildAndPublish(releaseNotes, branchName, 'latest');
             yield this.cherryPickChangelogIntoNextBranch(releaseNotes, branchName);
         });
     }
@@ -6524,7 +6524,7 @@ class CutNextPrereleaseAction extends ReleaseAction {
             const newVersion = yield this._newVersion;
             const { pullRequest: { id }, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, branchName, 'next');
+            yield this.buildAndPublish(releaseNotes, branchName, 'next');
             // If the pre-release has been cut from a branch that is not corresponding
             // to the next release-train, cherry-pick the changelog into the primary
             // development branch. i.e. the `next` branch that is usually `master`.
@@ -6591,7 +6591,7 @@ class CutReleaseCandidateAction extends ReleaseAction {
             const newVersion = this._newVersion;
             const { pullRequest: { id }, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, branchName, 'next');
+            yield this.buildAndPublish(releaseNotes, branchName, 'next');
             yield this.cherryPickChangelogIntoNextBranch(releaseNotes, branchName);
         });
     }
@@ -6635,7 +6635,7 @@ class CutStableAction extends ReleaseAction {
             const isNewMajor = (_a = this.active.releaseCandidate) === null || _a === void 0 ? void 0 : _a.isMajor;
             const { pullRequest: { id }, releaseNotes } = yield this.checkoutBranchAndStageVersion(newVersion, branchName);
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, branchName, 'latest');
+            yield this.buildAndPublish(releaseNotes, branchName, 'latest');
             // If a new major version is published and becomes the "latest" release-train, we need
             // to set the LTS npm dist tag for the previous latest release-train (the current patch).
             if (isNewMajor) {
@@ -6708,7 +6708,7 @@ class MoveNextIntoFeatureFreezeAction extends ReleaseAction {
             // pre-release. Finally, cherry-pick the release notes into the next branch in combination
             // with bumping the version to the next minor too.
             yield this.waitForPullRequestToBeMerged(id);
-            yield this.buildAndPublish(newVersion, newBranch, 'next');
+            yield this.buildAndPublish(releaseNotes, newBranch, 'next');
             yield this._createNextBranchUpdatePullRequest(releaseNotes, newVersion);
         });
     }
