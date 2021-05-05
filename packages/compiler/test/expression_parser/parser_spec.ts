@@ -224,6 +224,7 @@ describe('parser', () => {
         checkAction('a?.["a"]');
         checkAction('this.a?.["a"]', 'a?.["a"]');
         checkAction('a.a?.["a"]');
+        checkAction('this.a?.[this.b?.["a"] ?? "a"]', 'a?.[b?.["a"] ?? "a"]');
       });
 
       describe('malformed keyed reads', () => {

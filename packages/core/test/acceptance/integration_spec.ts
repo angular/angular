@@ -1961,6 +1961,8 @@ describe('acceptance integration tests', () => {
       <span [title]="'Your last name is ' + (unknownNames?.[0] || 'unknown')">
         Hello, {{ knownNames?.[0]?.[1] }}!
         You are a Balrog: {{ species?.[0]?.[1]?.[2]?.[3]?.[4]?.[5] || 'unknown' }}
+        You are an Elf: {{ speciesMap?.[keys?.[0] ?? 'key'] }}
+        You are an Orc: {{ speciesMap?.['key'] }}
       </span>
     `
     })
@@ -1968,6 +1970,8 @@ describe('acceptance integration tests', () => {
       unknownNames: string[]|null = null;
       knownNames: string[][] = [['Frodo', 'Bilbo']];
       species = null;
+      keys = null;
+      speciesMap: Record<string, string> = {key: 'unknown'};
     }
 
     TestBed.configureTestingModule({declarations: [App]});
@@ -1977,6 +1981,7 @@ describe('acceptance integration tests', () => {
 
     expect(content).toContain('Hello, Bilbo!');
     expect(content).toContain('You are a Balrog: unknown');
+    expect(content).toContain('You are an Elf: unknown');
     expect(content).toContain(`<span title="Your last name is unknown">`);
   });
 

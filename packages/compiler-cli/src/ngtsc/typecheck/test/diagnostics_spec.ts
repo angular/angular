@@ -424,6 +424,23 @@ runInEachFileSystem(() => {
 
         expect(messages).toEqual([]);
       });
+
+      it('infers a safe keyed read as undefined', () => {
+        const messages = diagnose(`<div (click)="log(person.favoriteColors?.[0])"></div>`, `
+          export class TestComponent {
+            person: {
+              favoriteColors?: string[];
+            };
+
+            log(color: string) {
+              console.log(color);
+            }
+          }`);
+
+        expect(messages).toEqual([
+          `TestComponent.html(1, 19): Argument of type 'string | undefined' is not assignable to parameter of type 'string'.`
+        ]);
+      });
     });
 
     it('computes line and column offsets', () => {
