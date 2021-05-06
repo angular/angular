@@ -1068,6 +1068,7 @@ export class ComponentDecoratorHandler implements
       let templateContent: string;
       let sourceMapping: TemplateSourceMapping;
       let escapedString = false;
+      let sourceMapUrl: string|null;
       // We only support SourceMaps for inline templates that are simple string literals.
       if (ts.isStringLiteral(template.expression) ||
           ts.isNoSubstitutionTemplateLiteral(template.expression)) {
@@ -1081,6 +1082,7 @@ export class ComponentDecoratorHandler implements
           type: 'direct',
           node: template.expression,
         };
+        sourceMapUrl = template.potentialSourceMapUrl;
       } else {
         const resolvedTemplate = this.evaluator.evaluate(template.expression);
         if (typeof resolvedTemplate !== 'string') {
@@ -1097,10 +1099,15 @@ export class ComponentDecoratorHandler implements
           componentClass: node,
           template: templateContent,
         };
+
+        // Indirect templates cannot be mapped to a particular byte range of any input file, since
+        // they're computed by expressions that may span many files. Don't attempt to map them back
+        // to a given file.
+        sourceMapUrl = null;
       }
 
       return {
-        ...this._parseTemplate(template, sourceStr, sourceParseRange, escapedString),
+        ...this._parseTemplate(template, sourceStr, sourceParseRange, escapedString, sourceMapUrl),
         content: templateContent,
         sourceMapping,
         declaration: template,
@@ -1115,7 +1122,8 @@ export class ComponentDecoratorHandler implements
       return {
         ...this._parseTemplate(
             template, /* sourceStr */ templateContent, /* sourceParseRange */ null,
-            /* escapedString */ false),
+            /* escapedString */ false,
+            /* sourceMapUrl */ template.potentialSourceMapUrl),
         content: templateContent,
         sourceMapping: {
           type: 'external',
@@ -1133,11 +1141,11 @@ export class ComponentDecoratorHandler implements
 
   private _parseTemplate(
       template: TemplateDeclaration, sourceStr: string, sourceParseRange: LexerRange|null,
-      escapedString: boolean): ParsedComponentTemplate {
+      escapedString: boolean, sourceMapUrl: string|null): ParsedComponentTemplate {
     // We always normalize line endings if the template has been escaped (i.e. is inline).
     const i18nNormalizeLineEndingsInICUs = escapedString || this.i18nNormalizeLineEndingsInICUs;
 
-    const parsedTemplate = parseTemplate(sourceStr, template.sourceMapUrl, {
+    const parsedTemplate = parseTemplate(sourceStr, sourceMapUrl ?? '', {
       preserveWhitespaces: template.preserveWhitespaces,
       interpolationConfig: template.interpolationConfig,
       range: sourceParseRange ?? undefined,
@@ -1162,7 +1170,7 @@ export class ComponentDecoratorHandler implements
     // In order to guarantee the correctness of diagnostics, templates are parsed a second time
     // with the above options set to preserve source mappings.
 
-    const {nodes: diagNodes} = parseTemplate(sourceStr, template.sourceMapUrl, {
+    const {nodes: diagNodes} = parseTemplate(sourceStr, sourceMapUrl ?? '', {
       preserveWhitespaces: true,
       preserveLineEndings: true,
       interpolationConfig: template.interpolationConfig,
@@ -1177,7 +1185,7 @@ export class ComponentDecoratorHandler implements
     return {
       ...parsedTemplate,
       diagNodes,
-      file: new ParseSourceFile(sourceStr, template.resolvedTemplateUrl),
+      file: new ParseSourceFile(sourceStr, sourceMapUrl ?? ''),
     };
   }
 
@@ -1222,7 +1230,7 @@ export class ComponentDecoratorHandler implements
           templateUrl,
           templateUrlExpression: templateUrlExpr,
           resolvedTemplateUrl: resourceUrl,
-          sourceMapUrl: sourceMapUrl(resourceUrl),
+          potentialSourceMapUrl: sourceMapUrl(resourceUrl),
         };
       } catch (e) {
         throw this.makeResourceNotFoundError(
@@ -1236,7 +1244,7 @@ export class ComponentDecoratorHandler implements
         expression: component.get('template')!,
         templateUrl: containingFile,
         resolvedTemplateUrl: containingFile,
-        sourceMapUrl: containingFile,
+        potentialSourceMapUrl: containingFile,
       };
     } else {
       throw new FatalDiagnosticError(
@@ -1397,7 +1405,7 @@ interface CommonTemplateDeclaration {
   interpolationConfig: InterpolationConfig;
   templateUrl: string;
   resolvedTemplateUrl: string;
-  sourceMapUrl: string;
+  potentialSourceMapUrl: string;
 }
 
 /**

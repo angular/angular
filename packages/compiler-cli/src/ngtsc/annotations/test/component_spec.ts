@@ -229,6 +229,36 @@ runInEachFileSystem(() => {
       expect(analysis?.resources.styles.size).toBe(3);
     });
 
+    it('should use an empty source map URL for an indirect template', () => {
+      const template = '<span>indirect</span>';
+      const {program, options, host} = makeProgram([
+        {
+          name: _('/node_modules/@angular/core/index.d.ts'),
+          contents: 'export const Component: any;',
+        },
+        {
+          name: _('/entry.ts'),
+          contents: `
+          import {Component} from '@angular/core';
+
+          const TEMPLATE = '${template}';
+
+          @Component({
+            template: TEMPLATE,
+          }) class TestCmp {}
+      `
+        },
+      ]);
+      const {reflectionHost, handler} = setup(program, options, host);
+      const TestCmp = getDeclaration(program, _('/entry.ts'), 'TestCmp', isNamedClassDeclaration);
+      const detected = handler.detect(TestCmp, reflectionHost.getDecoratorsOfDeclaration(TestCmp));
+      if (detected === undefined) {
+        return fail('Failed to recognize @Component');
+      }
+      const {analysis} = handler.analyze(TestCmp, detected.metadata);
+      expect(analysis?.template.file?.url).toEqual('');
+    });
+
     it('does not emit a program with template parse errors', () => {
       const template = '{{x ? y }}';
       const {program, options, host} = makeProgram([
