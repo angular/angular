@@ -20,7 +20,7 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  *
  * @see `Route`
  * @see `Router`
- * @see [Router configuration guide](guide/router#configuration)
+ * @see [Router configuration guide](guide/router-reference#configuration)
  * @publicApi
  */
 export type Routes = Route[];

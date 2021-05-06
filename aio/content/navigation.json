@@ -258,9 +258,36 @@
       "tooltip": "Learn more about how to use Angular to build your applications.",
       "children": [
         {
-          "url": "guide/router",
           "title": "Routing & Navigation",
-          "tooltip": "Build in-app navigation among views using the Angular Router."
+          "tooltip": "Build in-app navigation among views using the Angular Router.",
+          "children": [
+            {
+              "url": "guide/routing-overview",
+              "title": "Overview",
+              "tooltip": "Introduces the Angular Router and lists topics that teach you how to add the router to your applications."
+            },
+            {
+              "url": "guide/router",
+              "title": "Common routing tasks",
+              "tooltip": "Task-based content on many of the common tasks associated with Angular routing, such as defining routs, setting up wildcard routes, and redirects."
+            },
+            {
+              "url": "guide/router-tutorial",
+              "title": "Tutorial: Routing in Single-page Applications",
+              "tooltip": "A tutorial that covers many patterns associated with Angular routing."
+            },
+            {
+              "url": "guide/router-tutorial-toh",
+              "title": "Tutorial: Adding routing to Tour of Heroes",
+              "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
+            },
+            {
+              "url": "guide/router-reference",
+              "title": "Router reference",
+              "tooltip": "Describes highlight some core router API concepts."
+            }
+
+          ]
         },
         {
           "title": "Forms",
@@ -590,22 +617,6 @@
               "url": "tutorial/toh-pt6",
               "title": "6. Get Data from a Server",
               "tooltip": "Part 6: Use HTTP to retrieve and save hero data."
-            }
-          ]
-        },
-        {
-          "title": "Routing",
-          "tooltip": "End-to-end tutorials for learning about Angular's router.",
-          "children": [
-            {
-              "url": "guide/router-tutorial",
-              "title": "Using Angular Routes in a Single-page Application",
-              "tooltip": "A tutorial that covers many patterns associated with Angular routing."
-            },
-            {
-              "url": "guide/router-tutorial-toh",
-              "title": "Router tutorial: tour of heroes",
-              "tooltip": "Explore how to use Angular's router. Based on the Tour of Heroes example."
             }
           ]
         },

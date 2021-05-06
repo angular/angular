@@ -39,7 +39,7 @@ export type NavigationTrigger = 'imperative'|'popstate'|'hashchange';
  * ```
  *
  * @see `Event`
- * @see [Router events summary](guide/router#router-events)
+ * @see [Router events summary](guide/router-reference#router-events)
  * @publicApi
  */
 export class RouterEvent {
