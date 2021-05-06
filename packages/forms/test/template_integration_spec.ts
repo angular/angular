@@ -9,7 +9,7 @@
 import {ɵgetDOM as getDOM} from '@angular/common';
 import {Component, Directive, forwardRef, Input, Type, ViewChild} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, ControlValueAccessor, FormControl, FormsModule, MaxValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, NgModel} from '@angular/forms';
+import {AbstractControl, AsyncValidator, COMPOSITION_BUFFER_MODE, ControlValueAccessor, FormControl, FormsModule, MaxValidator, MinValidator, NG_ASYNC_VALIDATORS, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgForm, NgModel, Validator} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent, sortedClassList} from '@angular/platform-browser/testing/src/browser_util';
 import {merge} from 'rxjs';
@@ -1966,6 +1966,79 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.detectChanges();
            expect(form.valid).toBeFalse();
            expect(form.controls.min_max.errors).toEqual({max: {max: -10, actual: 0}});
+         }));
+
+      it('should call registerOnValidatorChange as a part of a formGroup setup', fakeAsync(() => {
+           let registerOnValidatorChangeFired = 0;
+           let registerOnAsyncValidatorChangeFired = 0;
+
+           @Directive({
+             selector: '[ng-noop-validator]',
+             providers: [
+               {provide: NG_VALIDATORS, useExisting: forwardRef(() => NoOpValidator), multi: true}
+             ]
+           })
+           class NoOpValidator implements Validator {
+             @Input() validatorInput = '';
+
+             validate(c: AbstractControl) {
+               return null;
+             }
+
+             public registerOnValidatorChange(fn: () => void) {
+               registerOnValidatorChangeFired++;
+             }
+           }
+
+           @Directive({
+             selector: '[ng-noop-async-validator]',
+             providers: [{
+               provide: NG_ASYNC_VALIDATORS,
+               useExisting: forwardRef(() => NoOpAsyncValidator),
+               multi: true
+             }]
+           })
+           class NoOpAsyncValidator implements AsyncValidator {
+             @Input() validatorInput = '';
+
+             validate(c: AbstractControl) {
+               return Promise.resolve(null);
+             }
+
+             public registerOnValidatorChange(fn: () => void) {
+               registerOnAsyncValidatorChangeFired++;
+             }
+           }
+
+           @Component({
+             selector: 'ng-model-noop-validation',
+             template: `
+              <form>
+                <div ngModelGroup="emptyGroup" ng-noop-validator ng-noop-async-validator [validatorInput]="validatorInput">
+                  <input name="fgInput" ngModel>
+                </div>
+              </form>
+            `
+           })
+           class NgModelNoOpValidation {
+             validatorInput = 'foo';
+             emptyGroup = {};
+           }
+
+           const fixture = initTest(NgModelNoOpValidation, NoOpValidator, NoOpAsyncValidator);
+           fixture.detectChanges();
+           tick();
+
+           expect(registerOnValidatorChangeFired).toBe(1);
+           expect(registerOnAsyncValidatorChangeFired).toBe(1);
+
+           fixture.componentInstance.validatorInput = 'bar';
+           fixture.detectChanges();
+
+           // Changing validator inputs should not cause `registerOnValidatorChange` to be invoked,
+           // since it's invoked just once during the setup phase.
+           expect(registerOnValidatorChangeFired).toBe(1);
+           expect(registerOnAsyncValidatorChangeFired).toBe(1);
          }));
     });
 
