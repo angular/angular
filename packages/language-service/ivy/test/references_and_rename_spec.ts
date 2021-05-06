@@ -809,20 +809,23 @@ describe('find references and rename locations', () => {
           birthday = '';
         }
       `,
-          'prefix-pipe.ts': prefixPipe
+          'prefix_pipe.ts': prefixPipe
         };
         env = LanguageServiceTestEnv.setup();
         const project = createModuleAndProjectWithDeclarations(env, 'test', files);
-        const file = project.openFile('app.ts');
-        file.moveCursorToText('prefi¦xPipe:');
+        const file = project.openFile('prefix_pipe.ts');
+        file.moveCursorToText(`'prefi¦xPipe'`);
         const renameLocations = getRenameLocationsAtPosition(file)!;
         expect(renameLocations.length).toBe(2);
-        assertFileNames(renameLocations, ['prefix-pipe.ts', 'app.ts']);
+        assertFileNames(renameLocations, ['prefix_pipe.ts', 'app.ts']);
         assertTextSpans(renameLocations, ['prefixPipe']);
 
         const result = file.getRenameInfo() as ts.RenameInfoSuccess;
         expect(result.canRename).toEqual(true);
         expect(result.displayName).toEqual('prefixPipe');
+        expect(file.contents.substring(
+                   result.triggerSpan.start, result.triggerSpan.start + result.triggerSpan.length))
+            .toBe('prefixPipe');
       });
 
       it('finds rename locations in base class', () => {
