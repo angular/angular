@@ -114,7 +114,7 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   /** @nodoc */
   ngOnDestroy() {
     if (this.form) {
-      cleanUpValidators(this.form, this, /* handleOnValidatorChange */ false);
+      cleanUpValidators(this.form, this);
 
       // Currently the `onCollectionChange` callback is rewritten each time the
       // `_registerOnCollectionChange` function is invoked. The implication is that cleanup should
@@ -348,9 +348,9 @@ export class FormGroupDirective extends ControlContainer implements Form, OnChan
   }
 
   private _updateValidators() {
-    setUpValidators(this.form, this, /* handleOnValidatorChange */ false);
+    setUpValidators(this.form, this);
     if (this._oldForm) {
-      cleanUpValidators(this._oldForm, this, /* handleOnValidatorChange */ false);
+      cleanUpValidators(this._oldForm, this);
     }
   }
 

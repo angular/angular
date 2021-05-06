@@ -2733,6 +2733,80 @@ const ValueAccessorB = createControlValueAccessor('[cva-b]');
             expect(form.controls.pin.errors).toEqual({max: {max: -10, actual: 0}});
           });
         });
+
+        it('should fire registerOnValidatorChange for validators attached to the formGroups',
+           () => {
+             let registerOnValidatorChangeFired = 0;
+             let registerOnAsyncValidatorChangeFired = 0;
+
+             @Directive({
+               selector: '[ng-noop-validator]',
+               providers: [
+                 {provide: NG_VALIDATORS, useExisting: forwardRef(() => NoOpValidator), multi: true}
+               ]
+             })
+             class NoOpValidator implements Validator {
+               @Input() validatorInput = '';
+
+               validate(c: AbstractControl) {
+                 return null;
+               }
+
+               public registerOnValidatorChange(fn: () => void) {
+                 registerOnValidatorChangeFired++;
+               }
+             }
+
+             @Directive({
+               selector: '[ng-noop-async-validator]',
+               providers: [{
+                 provide: NG_ASYNC_VALIDATORS,
+                 useExisting: forwardRef(() => NoOpAsyncValidator),
+                 multi: true
+               }]
+             })
+             class NoOpAsyncValidator implements AsyncValidator {
+               @Input() validatorInput = '';
+
+               validate(c: AbstractControl) {
+                 return Promise.resolve(null);
+               }
+
+               public registerOnValidatorChange(fn: () => void) {
+                 registerOnAsyncValidatorChangeFired++;
+               }
+             }
+
+             @Component({
+               selector: 'ng-model-noop-validation',
+               template: `
+            <form [formGroup]="fooGroup" ng-noop-validator ng-noop-async-validator [validatorInput]="validatorInput">
+                <input type="text" formControlName="fooInput">
+            </form>
+           `
+             })
+             class NgModelNoOpValidation {
+               validatorInput = 'bar';
+
+               fooGroup = new FormGroup({
+                 fooInput: new FormControl(''),
+               });
+             }
+
+             const fixture = initTest(NgModelNoOpValidation, NoOpValidator, NoOpAsyncValidator);
+             fixture.detectChanges();
+
+             expect(registerOnValidatorChangeFired).toBe(1);
+             expect(registerOnAsyncValidatorChangeFired).toBe(1);
+
+             fixture.componentInstance.validatorInput = 'baz';
+             fixture.detectChanges();
+
+             // Changing the validator input should not cause the onValidatorChange to be called
+             // again.
+             expect(registerOnValidatorChangeFired).toBe(1);
+             expect(registerOnAsyncValidatorChangeFired).toBe(1);
+           });
       });
     });
 
