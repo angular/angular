@@ -40,7 +40,9 @@ we prioritize the request, alternatively we close it.
 
 ## Diagram
 
-![Feature Request Automation](https://github.com/angular/angular/raw/master/docs/images/feature-request-automation.png)
+<p align="center" width="100%">
+  <img src="./images/feature-request-automation.png" alt="Feature Request Automation">
+</p>
 
 ## What if I want to implement the feature to help the Angular team?
 
