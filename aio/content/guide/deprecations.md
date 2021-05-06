@@ -316,7 +316,7 @@ const routes: Routes = [{
 | `params` | `paramMap` |
 | `queryParams` | `queryParamMap` |
 
-For more information see the [Getting route information](guide/router#activated-route) section of the [Router guide](guide/router).
+For more information see the [Getting route information](guide/router-reference#activated-route) section of the [Router guide](guide/router).
 
 
 {@a reflect-metadata}
