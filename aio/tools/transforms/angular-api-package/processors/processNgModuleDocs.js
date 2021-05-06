@@ -158,6 +158,19 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
     processNgModuleProviders(ngModuleDoc) {
       // Add providers from the NgModule decorator.
       const providers = ngModuleDoc.ngmoduleOptions.providers || [];
+
+      // Update injectables which are provided by this NgModule
+      for (const provider of providers) {
+        const injectable = parseProvider(provider);
+        const injectableDocs = getDocFromAlias(injectable, ngModuleDoc);
+        if (injectableDocs.length !== 1) {
+          continue;
+        }
+        const injectableDoc = injectableDocs[0];
+        injectableDoc.ngModules = injectableDoc.ngModules || [];
+        injectableDoc.ngModules.push(ngModuleDoc);
+      }
+
       // And also add those associated via the `Injectable` `providedIn` property.
       if (Array.isArray(ngModuleDoc.providers)) {
         for (const provider of ngModuleDoc.providers) {
@@ -168,6 +181,7 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
       if (providers.length > 0) {
         ngModuleDoc.providers = providers;
       }
+
     }
   };
 
@@ -190,6 +204,15 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
     return ngModuleDocs[0];
   }
 };
+
+function parseProvider(provider) {
+  const match = /\{\s*provide:\s*(\w+)\s*,/.exec(provider);
+  if (match) {
+    return match[1];
+  } else {
+    return provider;
+  }
+}
 
 /**
  * Compute the name of the array that will hold items of this type in the NgModule document.
