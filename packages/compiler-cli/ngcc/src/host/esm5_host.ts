@@ -292,7 +292,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       const members: ClassMember[] = [];
       if (propertyDefinition.setter) {
         members.push({
-          node,
+          node: node!,
           implementation: propertyDefinition.setter,
           kind: ClassMemberKind.Setter,
           type: null,
@@ -310,7 +310,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       }
       if (propertyDefinition.getter) {
         members.push({
-          node,
+          node: node!,
           implementation: propertyDefinition.getter,
           kind: ClassMemberKind.Getter,
           type: null,

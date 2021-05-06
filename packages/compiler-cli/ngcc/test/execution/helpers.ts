@@ -7,7 +7,7 @@
  */
 import {DepGraph} from 'dependency-graph';
 import {DtsProcessing, PartiallyOrderedTasks, Task} from '../../src/execution/tasks/api';
-import {EntryPoint} from '../../src/packages/entry_point';
+import {EntryPoint, EntryPointJsonProperty} from '../../src/packages/entry_point';
 
 /**
  * Create a set of tasks and a graph of their interdependencies.
@@ -53,7 +53,13 @@ export function createTasksAndGraph(
 
     for (let tIdx = 0; tIdx < tasksPerEntryPointCount; tIdx++) {
       const processDts = tIdx === 0 ? DtsProcessing.Yes : DtsProcessing.No;
-      tasks.push({entryPoint, formatProperty: `prop-${tIdx}`, processDts} as Task);
+      const formatProperty = `prop-${tIdx}` as EntryPointJsonProperty;
+      tasks.push({
+        entryPoint,
+        formatProperty: formatProperty,
+        formatPropertiesToMarkAsProcessed: [],
+        processDts
+      });
     }
   }
 

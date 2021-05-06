@@ -33,7 +33,12 @@ describe('SerialTaskQueue', () => {
       const entryPoint = {name: `entry-point-${i}`, path: `/path/to/entry/point/${i}`} as
           EntryPoint;
       const processDts = i % 2 === 0 ? DtsProcessing.Yes : DtsProcessing.No;
-      tasks.push({entryPoint: entryPoint, formatProperty: `prop-${i}`, processDts} as Task);
+      tasks.push({
+        entryPoint: entryPoint,
+        formatProperty: `prop-${i}`,
+        formatPropertiesToMarkAsProcessed: [],
+        processDts
+      } as Task);
       graph.addNode(entryPoint.path);
     }
     const dependencies = computeTaskDependencies(tasks, graph);

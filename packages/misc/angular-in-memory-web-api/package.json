@@ -10,7 +10,7 @@
     "rxjs": "^6.5.3"
   },
   "dependencies": {
-    "tslib": "^2.1.0"
+    "tslib": "^2.2.0"
   },
   "repository": {
     "type": "git",

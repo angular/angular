@@ -421,7 +421,7 @@ export class UmdReflectionHost extends Esm5ReflectionHost {
     const exportsSymbol = this.checker.getSymbolsInScope(id, ts.SymbolFlags.Variable)
                               .find(symbol => symbol.name === 'exports');
 
-    const node = exportsSymbol !== undefined &&
+    const node = exportsSymbol?.valueDeclaration !== undefined &&
             !ts.isFunctionExpression(exportsSymbol.valueDeclaration.parent) ?
         // There is a locally defined `exports` variable that is not a function parameter.
         // So this `exports` identifier must be a local variable and does not represent the module.

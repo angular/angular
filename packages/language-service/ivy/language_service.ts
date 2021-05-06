@@ -244,7 +244,8 @@ export class LanguageService {
   getCompletionEntryDetails(
       fileName: string, position: number, entryName: string,
       formatOptions: ts.FormatCodeOptions|ts.FormatCodeSettings|undefined,
-      preferences: ts.UserPreferences|undefined): ts.CompletionEntryDetails|undefined {
+      preferences: ts.UserPreferences|undefined,
+      data: ts.CompletionEntryData|undefined): ts.CompletionEntryDetails|undefined {
     return this.withCompilerAndPerfTracing(PerfPhase.LsCompletions, (compiler) => {
       if (!isTemplateContext(compiler.getCurrentProgram(), fileName, position)) {
         return undefined;
@@ -254,7 +255,7 @@ export class LanguageService {
       if (builder === null) {
         return undefined;
       }
-      return builder.getCompletionEntryDetails(entryName, formatOptions, preferences);
+      return builder.getCompletionEntryDetails(entryName, formatOptions, preferences, data);
     });
   }
 

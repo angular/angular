@@ -102,10 +102,15 @@ export class DomRendererFactory2 implements RendererFactory2 {
         (<EmulatedEncapsulationDomRenderer2>renderer).applyToHost(element);
         return renderer;
       }
+      // @ts-ignore TODO: Remove as part of FW-2290. TS complains about us dealing with an enum
+      // value that is not known (but previously was the value for ViewEncapsulation.Native)
       case 1:
       case ViewEncapsulation.ShadowDom:
         // TODO(FW-2290): remove the `case 1:` fallback logic and the warning in v12.
         if ((typeof ngDevMode === 'undefined' || ngDevMode) &&
+            // @ts-ignore TODO: Remove as part of FW-2290. TS complains about us dealing with an
+            // enum value that is not known (but previously was the value for
+            // ViewEncapsulation.Native)
             !hasLoggedNativeEncapsulationWarning && type.encapsulation === 1) {
           hasLoggedNativeEncapsulationWarning = true;
           console.warn(

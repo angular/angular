@@ -152,7 +152,7 @@ export class DeclarationUsageVisitor {
       node: ts.PropertyAccessExpression, checkSetter: boolean, checkGetter: boolean) {
     const propertySymbol = this._getPropertyAccessSymbol(node);
 
-    if (!propertySymbol || !propertySymbol.declarations.length ||
+    if (propertySymbol?.declarations === undefined || propertySymbol.declarations.length === 0 ||
         (propertySymbol.getFlags() & ts.SymbolFlags.Accessor) === 0) {
       return;
     }

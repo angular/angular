@@ -233,6 +233,8 @@ export function getParentRenderElement(view: ViewData, renderHost: any, def: Nod
          (renderParent.element!.componentRendererType!.encapsulation ===
               ViewEncapsulation.ShadowDom ||
           // TODO(FW-2290): remove the `encapsulation === 1` fallback logic in v12.
+          // @ts-ignore TODO: Remove as part of FW-2290. TS complains about us dealing with an enum
+          // value that is not known (but previously was the value for ViewEncapsulation.Native)
           renderParent.element!.componentRendererType!.encapsulation === 1))) {
       // only children of non components, or children of components with native encapsulation should
       // be attached.

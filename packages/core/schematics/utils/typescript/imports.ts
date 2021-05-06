@@ -19,7 +19,7 @@ export function getImportOfIdentifier(typeChecker: ts.TypeChecker, node: ts.Iden
     null {
   const symbol = typeChecker.getSymbolAtLocation(node);
 
-  if (!symbol || !symbol.declarations.length) {
+  if (!symbol || symbol.declarations === undefined || !symbol.declarations.length) {
     return null;
   }
 

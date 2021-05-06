@@ -88,7 +88,7 @@ export function collectMemberMethods(
   const members: ts.MethodDeclaration[] = [];
   const apparentProps = typeChecker.getTypeAtLocation(clazz).getApparentProperties();
   for (const prop of apparentProps) {
-    if (ts.isMethodDeclaration(prop.valueDeclaration) && prop.valueDeclaration) {
+    if (prop.valueDeclaration && ts.isMethodDeclaration(prop.valueDeclaration)) {
       members.push(prop.valueDeclaration);
     }
   }

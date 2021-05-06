@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath} from '../../file_system';
 import {ClassDeclaration} from '../../reflection';
 import {ComponentScopeReader} from '../../scope';
-import {isAssignment} from '../../util/src/typescript';
+import {isAssignment, isSymbolWithValueDeclaration} from '../../util/src/typescript';
 import {BindingSymbol, DirectiveSymbol, DomBindingSymbol, ElementSymbol, ExpressionSymbol, InputBindingSymbol, OutputBindingSymbol, PipeSymbol, ReferenceSymbol, ShimLocation, Symbol, SymbolKind, TemplateSymbol, TsNodeSymbolInfo, TypeCheckableDirectiveMeta, VariableSymbol} from '../api';
 
 import {ExpressionIdentifier, findAllMatchingNodes, findFirstMatchingNode, hasExpressionIdentifier} from './comments';
@@ -119,8 +119,7 @@ export class SymbolBuilder {
     return nodes
         .map(node => {
           const symbol = this.getSymbolOfTsNode(node.parent);
-          if (symbol === null || symbol.tsSymbol === null ||
-              symbol.tsSymbol.valueDeclaration === undefined ||
+          if (symbol === null || !isSymbolWithValueDeclaration(symbol.tsSymbol) ||
               !ts.isClassDeclaration(symbol.tsSymbol.valueDeclaration)) {
             return null;
           }
@@ -314,7 +313,8 @@ export class SymbolBuilder {
     // In either case, `_t1["index"]` or `_t1.index`, `node.expression` is _t1.
     // The retrieved symbol for _t1 will be the variable declaration.
     const tsSymbol = this.getTypeChecker().getSymbolAtLocation(node.expression);
-    if (tsSymbol === undefined || tsSymbol.declarations.length === 0 || selector === null) {
+    if (tsSymbol?.declarations === undefined || tsSymbol.declarations.length === 0 ||
+        selector === null) {
       return null;
     }
 
@@ -329,8 +329,7 @@ export class SymbolBuilder {
     }
 
     const symbol = this.getSymbolOfTsNode(declaration);
-    if (symbol === null || symbol.tsSymbol === null ||
-        symbol.tsSymbol.valueDeclaration === undefined ||
+    if (symbol === null || !isSymbolWithValueDeclaration(symbol.tsSymbol) ||
         !ts.isClassDeclaration(symbol.tsSymbol.valueDeclaration)) {
       return null;
     }
@@ -444,7 +443,10 @@ export class SymbolBuilder {
     }
 
     const pipeInstance = this.getSymbolOfTsNode(pipeDeclaration.valueDeclaration);
-    if (pipeInstance === null || pipeInstance.tsSymbol === null) {
+    // The instance should never be null, nor should the symbol lack a value declaration. This
+    // is because the node used to look for the `pipeInstance` symbol info is a value
+    // declaration of another symbol (i.e. the `pipeDeclaration` symbol).
+    if (pipeInstance === null || !isSymbolWithValueDeclaration(pipeInstance.tsSymbol)) {
       return null;
     }
 

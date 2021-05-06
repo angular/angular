@@ -70,9 +70,10 @@ export class OpenBuffer {
 
   getCompletionEntryDetails(
       entryName: string, formatOptions?: ts.FormatCodeOptions|ts.FormatCodeSettings,
-      preferences?: ts.UserPreferences): ts.CompletionEntryDetails|undefined {
+      preferences?: ts.UserPreferences, data?: ts.CompletionEntryData): ts.CompletionEntryDetails
+      |undefined {
     return this.ngLS.getCompletionEntryDetails(
-        this.scriptInfo.fileName, this._cursor, entryName, formatOptions, preferences);
+        this.scriptInfo.fileName, this._cursor, entryName, formatOptions, preferences, data);
   }
 
   getTcb() {

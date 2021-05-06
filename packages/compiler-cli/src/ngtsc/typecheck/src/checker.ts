@@ -17,7 +17,7 @@ import {ProgramDriver, UpdateMode} from '../../program_driver';
 import {ClassDeclaration, isNamedClassDeclaration, ReflectionHost} from '../../reflection';
 import {ComponentScopeReader, TypeCheckScopeRegistry} from '../../scope';
 import {isShim} from '../../shims';
-import {getSourceFileOrNull} from '../../util/src/typescript';
+import {getSourceFileOrNull, isSymbolWithValueDeclaration} from '../../util/src/typescript';
 import {DirectiveInScope, ElementSymbol, FullTemplateMapping, GlobalCompletion, OptimizeFor, PipeInScope, ProgramTypeCheckAdapter, ShimLocation, Symbol, TemplateId, TemplateSymbol, TemplateTypeChecker, TypeCheckableDirectiveMeta, TypeCheckingConfig} from '../api';
 import {TemplateDiagnostic} from '../diagnostics';
 
@@ -577,7 +577,7 @@ export class TemplateTypeCheckerImpl implements TemplateTypeChecker {
         continue;
       }
       const tsSymbol = typeChecker.getSymbolAtLocation(dir.ref.node.name);
-      if (tsSymbol === undefined) {
+      if (!isSymbolWithValueDeclaration(tsSymbol)) {
         continue;
       }
 

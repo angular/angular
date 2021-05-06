@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "domino": "^2.1.2",
-    "tslib": "^2.1.0",
+    "tslib": "^2.2.0",
     "xhr2": "^0.2.0"
   },
   "repository": {
