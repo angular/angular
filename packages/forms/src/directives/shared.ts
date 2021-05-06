@@ -37,7 +37,7 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
     if (!dir.valueAccessor) _throwError(dir, 'No value accessor for form control with');
   }
 
-  setUpValidators(control, dir, /* handleOnValidatorChange */ true);
+  setUpValidators(control, dir);
 
   dir.valueAccessor!.writeValue(control.value);
 
@@ -79,7 +79,7 @@ export function cleanUpControl(
     dir.valueAccessor.registerOnTouched(noop);
   }
 
-  cleanUpValidators(control, dir, /* handleOnValidatorChange */ true);
+  cleanUpValidators(control, dir);
 
   if (control) {
     dir._invokeOnDestroyCallbacks();
@@ -122,12 +122,8 @@ export function setUpDisabledChangeHandler(control: FormControl, dir: NgControl)
  *
  * @param control Form control where directive validators should be setup.
  * @param dir Directive instance that contains validators to be setup.
- * @param handleOnValidatorChange Flag that determines whether directive validators should be setup
- *     to handle validator input change.
  */
-export function setUpValidators(
-    control: AbstractControl, dir: AbstractControlDirective,
-    handleOnValidatorChange: boolean): void {
+export function setUpValidators(control: AbstractControl, dir: AbstractControlDirective): void {
   const validators = getControlValidators(control);
   if (dir.validator !== null) {
     control.setValidators(mergeValidators<ValidatorFn>(validators, dir.validator));
@@ -151,11 +147,9 @@ export function setUpValidators(
   }
 
   // Re-run validation when validator binding changes, e.g. minlength=3 -> minlength=4
-  if (handleOnValidatorChange) {
-    const onValidatorChange = () => control.updateValueAndValidity();
-    registerOnValidatorChange<ValidatorFn>(dir._rawValidators, onValidatorChange);
-    registerOnValidatorChange<AsyncValidatorFn>(dir._rawAsyncValidators, onValidatorChange);
-  }
+  const onValidatorChange = () => control.updateValueAndValidity();
+  registerOnValidatorChange<ValidatorFn>(dir._rawValidators, onValidatorChange);
+  registerOnValidatorChange<AsyncValidatorFn>(dir._rawAsyncValidators, onValidatorChange);
 }
 
 /**
@@ -165,13 +159,10 @@ export function setUpValidators(
  *
  * @param control Form control from where directive validators should be removed.
  * @param dir Directive instance that contains validators to be removed.
- * @param handleOnValidatorChange Flag that determines whether directive validators should also be
- *     cleaned up to stop handling validator input change (if previously configured to do so).
  * @returns true if a control was updated as a result of this action.
  */
 export function cleanUpValidators(
-    control: AbstractControl|null, dir: AbstractControlDirective,
-    handleOnValidatorChange: boolean): boolean {
+    control: AbstractControl|null, dir: AbstractControlDirective): boolean {
   let isControlUpdated = false;
   if (control !== null) {
     if (dir.validator !== null) {
@@ -200,12 +191,10 @@ export function cleanUpValidators(
     }
   }
 
-  if (handleOnValidatorChange) {
-    // Clear onValidatorChange callbacks by providing a noop function.
-    const noop = () => {};
-    registerOnValidatorChange<ValidatorFn>(dir._rawValidators, noop);
-    registerOnValidatorChange<AsyncValidatorFn>(dir._rawAsyncValidators, noop);
-  }
+  // Clear onValidatorChange callbacks by providing a noop function.
+  const noop = () => {};
+  registerOnValidatorChange<ValidatorFn>(dir._rawValidators, noop);
+  registerOnValidatorChange<AsyncValidatorFn>(dir._rawAsyncValidators, noop);
 
   return isControlUpdated;
 }
@@ -264,7 +253,7 @@ export function setUpFormContainer(
     control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName) {
   if (control == null && (typeof ngDevMode === 'undefined' || ngDevMode))
     _throwError(dir, 'Cannot find control with');
-  setUpValidators(control, dir, /* handleOnValidatorChange */ false);
+  setUpValidators(control, dir);
 }
 
 /**
@@ -276,7 +265,7 @@ export function setUpFormContainer(
  */
 export function cleanUpFormContainer(
     control: FormGroup|FormArray, dir: AbstractFormGroupDirective|FormArrayName): boolean {
-  return cleanUpValidators(control, dir, /* handleOnValidatorChange */ false);
+  return cleanUpValidators(control, dir);
 }
 
 function _noControlError(dir: NgControl) {
