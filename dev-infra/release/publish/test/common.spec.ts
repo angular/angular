@@ -20,7 +20,7 @@ import {actions} from '../actions/index';
 import {changelogPath} from '../constants';
 import {ReleaseNotes} from '../release-notes/release-notes';
 
-import {fakeNpmPackageQueryRequest, getChangelogForVersion, getTestingMocksForReleaseAction, parse, setupReleaseActionForTesting, testTmpDir} from './test-utils';
+import {fakeNpmPackageQueryRequest, getTestingMocksForReleaseAction, parse, setupReleaseActionForTesting, testTmpDir} from './test-utils';
 
 describe('common release action logic', () => {
   const baseReleaseTrains: ActiveReleaseTrains = {
@@ -87,7 +87,6 @@ describe('common release action logic', () => {
 
   describe('changelog cherry-picking', () => {
     const {version, branchName} = baseReleaseTrains.latest;
-    const fakeReleaseNotes = getChangelogForVersion(version.format());
     const forkBranchName = `changelog-cherry-pick-${version}`;
 
     it('should prepend the changelog to the next branch', async () => {
@@ -96,8 +95,7 @@ describe('common release action logic', () => {
 
       // Expect the changelog to be fetched and return a fake changelog to test that
       // it is properly appended. Also expect a pull request to be created in the fork.
-      repo.expectChangelogFetch(branchName, fakeReleaseNotes)
-          .expectFindForkRequest(fork)
+      repo.expectFindForkRequest(fork)
           .expectPullRequestToBeCreated('master', fork, forkBranchName, 200)
           .expectPullRequestWait(200);
 
@@ -107,7 +105,7 @@ describe('common release action logic', () => {
       await instance.testCherryPickWithPullRequest(version, branchName);
 
       const changelogContent = readFileSync(join(testTmpDir, changelogPath), 'utf8');
-      expect(changelogContent).toEqual(`${fakeReleaseNotes}Existing changelog`);
+      expect(changelogContent).toEqual(`Changelog Entry for 10.0.1\n\nExisting changelog`);
     });
 
     it('should push changes to a fork for creating a pull request', async () => {
@@ -116,8 +114,7 @@ describe('common release action logic', () => {
 
       // Expect the changelog to be fetched and return a fake changelog to test that
       // it is properly appended. Also expect a pull request to be created in the fork.
-      repo.expectChangelogFetch(branchName, fakeReleaseNotes)
-          .expectFindForkRequest(fork)
+      repo.expectFindForkRequest(fork)
           .expectPullRequestToBeCreated('master', fork, forkBranchName, 200)
           .expectPullRequestWait(200);
 
@@ -155,12 +152,12 @@ class TestAction extends ReleaseAction {
   }
 
   async testBuildAndPublish(version: semver.SemVer, publishBranch: string, distTag: string) {
-    const releaseNotes = await ReleaseNotes.fromLatestTagToHead(version, this.config);
+    const releaseNotes = await ReleaseNotes.fromRange(version, '', '');
     await this.buildAndPublish(releaseNotes, publishBranch, distTag);
   }
 
   async testCherryPickWithPullRequest(version: semver.SemVer, branch: string) {
-    const releaseNotes = await ReleaseNotes.fromLatestTagToHead(version, this.config);
+    const releaseNotes = await ReleaseNotes.fromRange(version, '', '');
     await this.cherryPickChangelogIntoNextBranch(releaseNotes, branch);
   }
 }

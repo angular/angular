@@ -350,7 +350,8 @@ export abstract class ReleaseAction {
   protected async stageVersionForBranchAndCreatePullRequest(
       newVersion: semver.SemVer, pullRequestBaseBranch: string):
       Promise<{releaseNotes: ReleaseNotes, pullRequest: PullRequest}> {
-    const releaseNotes = await ReleaseNotes.fromLatestTagToHead(newVersion, this.config);
+    const releaseNotes =
+        await ReleaseNotes.fromRange(newVersion, this.git.getLatestSemverTag().format(), 'HEAD');
     await this.updateProjectVersion(newVersion);
     await this.prependReleaseNotesToChangelog(releaseNotes);
     await this.waitForEditsAndCreateReleaseCommit(newVersion);
