@@ -41,7 +41,11 @@ describe('node selection', () => {
 
       cy.get('ng-property-view').last().find('mat-tree-node:contains("todo")').click();
 
-      cy.get('ng-property-view').last().find('mat-tree-node:contains("Save the world")').its('length').should('eq', 1);
+      cy.get('ng-property-view')
+        .last()
+        .find('mat-tree-node:contains("Build something fun!")')
+        .its('length')
+        .should('eq', 1);
     });
   });
 

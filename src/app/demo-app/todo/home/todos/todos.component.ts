@@ -21,7 +21,7 @@ export class TodosComponent implements OnInit, OnDestroy {
       id: '42',
     },
     {
-      label: 'Save the world',
+      label: 'Build something fun!',
       completed: false,
       id: '43',
     },

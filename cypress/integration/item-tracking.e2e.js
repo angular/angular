@@ -20,7 +20,7 @@ describe('Tracking items from application to component tree', () => {
         cy.enter('#sample-app').then((getBody) => {
           getBody().find('app-todo').contains('Buy milk');
 
-          getBody().find('app-todo').contains('Save the world');
+          getBody().find('app-todo').contains('Build something fun!');
 
           getBody().find('app-todo').contains('Buy cookies');
         });
