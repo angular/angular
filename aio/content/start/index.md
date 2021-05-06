@@ -65,7 +65,7 @@ The preview features two areas:
 
 The project section on the left shows the source files that make up the application, including the infrastructure and configuration files.
 
-When you generate the StackBlitz example apps that accompany the tutorials, StackBlitz creates the starter files and mock data for you.
+When you generate the StackBlitz example applications that accompany the tutorials, StackBlitz creates the starter files and mock data for you.
 The files you use throughout the tutorial are in the `src` folder.
 
 For more information on how to use StackBlitz, see the [StackBlitz documentation](https://developer.stackblitz.com/docs/platform/).
@@ -269,4 +269,4 @@ In this section, you've created an application that iterates through data and fe
 To continue exploring Angular and developing this application:
 
 * Continue to [In-app navigation](start/start-routing "Getting started: In-app navigation") to create a product details page.
-* Skip ahead to [Deployment](start/start-deployment "Getting started: Deployment") to move to local development, or deploy your app to Firebase or your own server.
+* Skip ahead to [Deployment](start/start-deployment "Getting started: Deployment") to move to local development, or deploy your application to Firebase or your own server.
