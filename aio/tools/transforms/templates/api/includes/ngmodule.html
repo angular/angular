@@ -1,4 +1,5 @@
-{% if doc.ngModules.length == 1 %}<h2>NgModule</h2>{% else %}<h2>NgModules</h2>{% endif %}
+{% if doc.ngModules and doc.ngModules.length > 0 %}
+{% if doc.ngModules.length > 1 %}<h2>NgModules</h2>{% else %}<h2>NgModule</h2>{% endif %}
 <ul class="ngmodule-list">
 {% for ngModule in doc.ngModules %}
   <li>
@@ -8,4 +9,4 @@
   </li>
   {% endfor %}
 </ul>
-
+{% endif %}
