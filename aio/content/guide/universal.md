@@ -131,7 +131,7 @@ Your app may have to launch faster to engage these users before they decide to d
 
 With Angular Universal, you can generate landing pages for the app that look like the complete app.
 The pages are pure HTML, and can display even if JavaScript is disabled.
-The pages don't handle browser events, but they _do_ support navigation through the site using [`routerLink`](guide/router#router-link).
+The pages don't handle browser events, but they _do_ support navigation through the site using [`routerLink`](guide/router-reference#router-link).
 
 In practice, you'll serve a static version of the landing page to hold the user's attention.
 At the same time, you'll load the full Angular app behind it.
