@@ -117,6 +117,15 @@ describe('CodeComponent', () => {
       expect(getFormattedCode()).toBe(
           `Formatted code (language: auto, linenums: true): ${bigMultiLineCode}`);
     });
+
+    it('should skip prettify if language is `\'none\'`', () => {
+      hostComponent.setCode(bigMultiLineCode);
+      hostComponent.language = 'none';
+
+      fixture.detectChanges();
+
+      expect(getFormattedCode()).toBe(bigMultiLineCode);
+    });
   });
 
   describe('whitespace handling', () => {
