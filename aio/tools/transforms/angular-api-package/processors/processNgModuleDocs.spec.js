@@ -150,6 +150,24 @@ describe('processNgModuleDocs processor', () => {
     expect(nonInjectable.ngModules).toBeUndefined();
   });
 
+  it('should link injectables that are parsed out of `@NgModule` decorators', () => {
+    const ngModule1 = { docType: 'ngmodule', id: 'NgModule1', ngmoduleOptions: { providers: ['Injectable1', '{ provide: Injectable2, useClass: Injectable2 }'] } };
+    const ngModule2 = { docType: 'ngmodule', id: 'NgModule2', ngmoduleOptions: { providers: ['{ provide: Injectable3, useValue: {} }'] } };
+    const injectable1 = { docType: 'class', name: 'Injectable1', aliases: ['Injectable1'] };
+    const injectable2 = { docType: 'class', name: 'Injectable2', aliases: ['Injectable2'] };
+    const injectable3 = { docType: 'class', name: 'Injectable3', aliases: ['Injectable3'] };
+
+    const aliasMap = injector.get('aliasMap');
+    aliasMap.addDoc(injectable1);
+    aliasMap.addDoc(injectable2);
+    aliasMap.addDoc(injectable3);
+    processor.$process([ngModule1, ngModule2, injectable1, injectable2, injectable3]);
+
+    expect(injectable1.ngModules).toEqual([ngModule1]);
+    expect(injectable2.ngModules).toEqual([ngModule1]);
+    expect(injectable3.ngModules).toEqual([ngModule2]);
+  });
+
   it('should error if an injectable that has a `providedIn` property that references an unknown NgModule doc', () => {
     const log = injector.get('log');
     const injectable = { docType: 'class', name: 'Injectable1', decorators: [{ name: 'Injectable', argumentInfo: [{ providedIn: 'NgModuleRef' }] }] };
