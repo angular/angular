@@ -3,7 +3,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { Logger } from 'app/shared/logger.service';
 import { PrettyPrinter } from './pretty-printer.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 /**
@@ -123,7 +123,7 @@ export class CodeComponent implements OnChanges {
       this.logger.warn(`Using 'linenums' with 'language: none' is currently not supported.`);
     }
 
-        (this.language === 'none' ? skipPrettify : prettifyCode)
+    ((this.language === 'none' ? skipPrettify : prettifyCode) as Observable<unknown>)
         .subscribe(() => this.codeFormatted.emit(), () => { /* ignore failure to format */ });
   }
 
