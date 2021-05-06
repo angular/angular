@@ -13,7 +13,7 @@ import {ReleaseTrain} from '../../versioning/release-trains';
 import {MoveNextIntoFeatureFreezeAction} from '../actions/move-next-into-feature-freeze';
 import * as externalCommands from '../external-commands';
 
-import {getChangelogForVersion, parse, setupReleaseActionForTesting, testTmpDir} from './test-utils';
+import {parse, setupReleaseActionForTesting, testTmpDir} from './test-utils';
 
 describe('move next into feature-freeze action', () => {
   it('should not activate if a feature-freeze release-train is active', async () => {
@@ -84,7 +84,6 @@ describe('move next into feature-freeze action', () => {
             'STAGING_COMMIT_SHA', `release: cut the v${expectedVersion} release\n\nPR Close #200.`)
         .expectTagToBeCreated(expectedTagName, 'STAGING_COMMIT_SHA')
         .expectReleaseToBeCreated(`v${expectedVersion}`, expectedTagName)
-        .expectChangelogFetch(expectedNewBranch, getChangelogForVersion(expectedVersion))
         .expectPullRequestToBeCreated('master', fork, expectedNextUpdateBranch, 100);
 
     // In the fork, we make the following branches appear as non-existent,

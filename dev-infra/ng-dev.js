@@ -5880,12 +5880,14 @@ class ReleaseNotes {
         /** An instance of GitClient. */
         this.git = GitClient.getInstance();
         /** A promise resolving to a list of Commits since the latest semver tag on the branch. */
-        this.commits = getCommitsInRange(this.git.getLatestSemverTag().format(), 'HEAD');
+        this.commits = [];
     }
     /** Construct a release note generation instance. */
     static fromLatestTagToHead(version, config) {
         return tslib.__awaiter(this, void 0, void 0, function* () {
-            return new ReleaseNotes(version, config);
+            const instance = new ReleaseNotes(version, config);
+            instance.commits = yield getCommitsInRange(instance.git.getLatestSemverTag().format(), 'HEAD');
+            return instance;
         });
     }
     /** Retrieve the release note generated for a Github Release. */
@@ -5922,7 +5924,7 @@ class ReleaseNotes {
         return tslib.__awaiter(this, void 0, void 0, function* () {
             if (!this.renderContext) {
                 this.renderContext = new RenderContext({
-                    commits: yield this.commits,
+                    commits: this.commits,
                     github: this.git.remoteConfig,
                     version: this.version.format(),
                     groupOrder: this.config.releaseNotes.groupOrder,

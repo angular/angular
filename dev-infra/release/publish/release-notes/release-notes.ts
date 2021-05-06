@@ -8,6 +8,7 @@
 import {renderFile} from 'ejs';
 import {join} from 'path';
 import * as semver from 'semver';
+import {CommitFromGitLog} from '../../../commit-message/parse';
 
 import {getCommitsInRange} from '../../../commit-message/utils';
 import {promptInput} from '../../../utils/console';
@@ -27,19 +28,21 @@ export class ReleaseNotes {
   /** Construct a release note generation instance. */
   static async fromLatestTagToHead(version: semver.SemVer, config: ReleaseConfig):
       Promise<ReleaseNotes> {
-    return new ReleaseNotes(version, config);
+    const instance = new ReleaseNotes(version, config);
+    instance.commits = await getCommitsInRange(instance.git.getLatestSemverTag().format(), 'HEAD');
+    return instance;
   }
 
   /** An instance of GitClient. */
-  private git = GitClient.getInstance();
+  protected git = GitClient.getInstance();
   /** The RenderContext to be used during rendering. */
-  private renderContext: RenderContext|undefined;
+  protected renderContext: RenderContext|undefined;
   /** The title to use for the release. */
-  private title: string|false|undefined;
+  protected title: string|false|undefined;
   /** A promise resolving to a list of Commits since the latest semver tag on the branch. */
-  private commits = getCommitsInRange(this.git.getLatestSemverTag().format(), 'HEAD');
+  protected commits: CommitFromGitLog[] = [];
 
-  private constructor(public readonly version: semver.SemVer, private config: ReleaseConfig) {}
+  protected constructor(public readonly version: semver.SemVer, protected config: ReleaseConfig) {}
 
   /** Retrieve the release note generated for a Github Release. */
   async getGithubReleaseEntry(): Promise<string> {
@@ -71,10 +74,10 @@ export class ReleaseNotes {
   }
 
   /** Build the render context data object for constructing the RenderContext instance. */
-  private async generateRenderContext(): Promise<RenderContext> {
+  protected async generateRenderContext(): Promise<RenderContext> {
     if (!this.renderContext) {
       this.renderContext = new RenderContext({
-        commits: await this.commits,
+        commits: this.commits,
         github: this.git.remoteConfig,
         version: this.version.format(),
         groupOrder: this.config.releaseNotes.groupOrder,

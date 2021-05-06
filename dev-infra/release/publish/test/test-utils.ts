@@ -11,7 +11,6 @@ import * as nock from 'nock';
 import {join} from 'path';
 import * as semver from 'semver';
 
-import * as commitMessageUtils from '../../../commit-message/utils';
 import {GithubConfig} from '../../../utils/config';
 import * as console from '../../../utils/console';
 import {getBranchPushMatcher, installVirtualGitClientSpies, VirtualGitClient} from '../../../utils/testing';
@@ -22,7 +21,7 @@ import {_npmPackageInfoCache, NpmPackageInfo} from '../../versioning/npm-registr
 import {ReleaseAction, ReleaseActionConstructor} from '../actions';
 import * as constants from '../constants';
 import * as externalCommands from '../external-commands';
-import {buildDateStamp} from '../release-notes/context';
+import {ReleaseNotes} from '../release-notes/release-notes';
 
 import {GithubTestingRepo} from './github-api-testing';
 
@@ -70,7 +69,7 @@ export function setupReleaseActionForTesting<T extends ReleaseAction>(
     actionCtor: ReleaseActionConstructor<T>, active: ActiveReleaseTrains,
     isNextPublishedToNpm = true): TestReleaseAction<T> {
   installVirtualGitClientSpies();
-  spyOn(commitMessageUtils, 'getCommitsInRange').and.returnValue(Promise.resolve([]));
+  installMockReleaseNotes();
 
   // Reset existing HTTP interceptors.
   nock.cleanAll();
@@ -122,11 +121,6 @@ export function setupReleaseActionForTesting<T extends ReleaseAction>(
 /** Parses the specified version into Semver. */
 export function parse(version: string): semver.SemVer {
   return semver.parse(version)!;
-}
-
-/** Gets a changelog for the specified version. */
-export function getChangelogForVersion(version: string): string {
-  return `<a name="${version}"></a>\n# ${version} (${buildDateStamp()})\n\n\n`;
 }
 
 export async function expectStagingAndPublishWithoutCherryPick(
@@ -198,7 +192,6 @@ export async function expectStagingAndPublishWithCherryPick(
           'STAGING_COMMIT_SHA', `release: cut the v${expectedVersion} release\n\nPR Close #200.`)
       .expectTagToBeCreated(expectedTagName, 'STAGING_COMMIT_SHA')
       .expectReleaseToBeCreated(`v${expectedVersion}`, expectedTagName)
-      .expectChangelogFetch(expectedBranch, getChangelogForVersion(expectedVersion))
       .expectPullRequestToBeCreated('master', fork, expectedCherryPickForkBranch, 300)
       .expectPullRequestWait(300);
 
@@ -250,4 +243,30 @@ export async function expectStagingAndPublishWithCherryPick(
 export function fakeNpmPackageQueryRequest(pkgName: string, data: Partial<NpmPackageInfo>) {
   _npmPackageInfoCache[pkgName] =
       Promise.resolve({'dist-tags': {}, versions: {}, time: {}, ...data});
+}
+
+/**
+ * Mock version of the ReleaseNotes for testing, preventing actual calls to git for commits and
+ * returning versioned entry strings.
+ */
+class MockReleaseNotes extends ReleaseNotes {
+  static async fromLatestTagToHead(version: semver.SemVer, config: ReleaseConfig) {
+    return new MockReleaseNotes(version, config);
+  }
+
+  async getChangelogEntry() {
+    return `Changelog Entry for ${this.version}`;
+  }
+
+  async getGithubReleaseEntry() {
+    return `Github Release Entry for ${this.version}`;
+  }
+}
+
+/** Replace the ReleaseNotes static builder function with the MockReleaseNotes builder function. */
+export function installMockReleaseNotes() {
+  spyOn(ReleaseNotes, 'fromLatestTagToHead')
+      .and.callFake((version: semver.SemVer, config: ReleaseConfig) => {
+        return MockReleaseNotes.fromLatestTagToHead(version, config);
+      });
 }

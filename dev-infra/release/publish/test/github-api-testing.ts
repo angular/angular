@@ -60,13 +60,6 @@ export class GithubTestingRepo {
     return this;
   }
 
-  expectChangelogFetch(branch: string, content: string): this {
-    nock(this.repoApiUrl).get(`/contents/%2FCHANGELOG.md`).query(p => p.ref === branch).reply(200, {
-      content: new Buffer(content).toString('base64')
-    });
-    return this;
-  }
-
   expectCommitRequest(sha: string, message: string): this {
     nock(this.repoApiUrl).get(`/commits/${sha}`).reply(200, {commit: {message}});
     return this;
