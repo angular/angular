@@ -130,7 +130,7 @@
     "eslint-plugin-jasmine": "^4.1.2",
     "find-free-port": "^2.0.0",
     "firebase-tools": "^9.8.0",
-    "fs-extra": "^9.1.0",
+    "fs-extra": "^10.0.0",
     "globby": "^11.0.3",
     "hast-util-is-element": "^1.1.0",
     "hast-util-to-string": "^1.0.4",
