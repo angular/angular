@@ -272,25 +272,24 @@ describe('processNgModuleDocs processor', () => {
 });
 
 /**
- * This function simulates a TS AST node for the code:
+ * This function simulates a TypeScript AST node for the code:
  *
  * ```
  * static ɵprov = ɵɵdefineInjectable({
  *   providedIn: 'xxxx',
  * });
  * ```
- *
  */
 function createSymbolWithProvider(providedIn) {
   const initializer = {
     pos: 0,
     end: providedIn.length,
-    getSourceFile()  {
+    getSourceFile() {
       return { text: providedIn };
     }
   };
-  const valueDeclaration = { initializer: { arguments: [{ properties: [ { name: { text: 'providedIn' }, initializer } ] } ] } };
+  const valueDeclaration = { initializer: { arguments: [{ properties: [{ name: { text: 'providedIn' }, initializer }] }] } };
   const exportMap = new Map();
-  exportMap.set('ɵprov', {valueDeclaration});
-  return {exports: exportMap};
+  exportMap.set('ɵprov', { valueDeclaration });
+  return { exports: exportMap };
 }
