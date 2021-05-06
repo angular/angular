@@ -23,7 +23,6 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
         throw new Error('Failed to process NgModule relationships.');
       }
 
-
       // Update the NgModule docs after we have associated the directives/pipes/injectables docs.
       for (const doc of docs) {
         if (doc.docType === 'ngmodule') {
@@ -74,8 +73,8 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
       if (Array.isArray(injectableDoc.ngModules)) {
         for (const ngModule of injectableDoc.ngModules) {
           if (isWrappedInQuotes(ngModule)) {
-            // `ngModule` is wrapped in quotes, so it will be one of `'root'` or `'platform'` and
-            // is not associated with a specific NgModule. So just use the string.
+            // `ngModule` is wrapped in quotes, so it will be one of `'any'`, `'root'` or `'platform'`
+            // and is not associated with a specific NgModule. So just use the string.
             ngModules.push(ngModule.slice(1, -1));
             continue;
           }
@@ -178,10 +177,10 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
           providers.push(`{ provide: ${provider.name}, useClass: ${provider.name} }`);
         }
       }
+
       if (providers.length > 0) {
         ngModuleDoc.providers = providers;
       }
-
     }
   };
 
