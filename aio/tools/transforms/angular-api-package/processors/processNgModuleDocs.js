@@ -66,7 +66,7 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
     },
 
     /**
-     * Associate the given `injectableDoc` with an NgModule doc if is provided on an `NgModule`.
+     * Associate the given `injectableDoc` with an NgModule doc if it is provided on an `NgModule`.
      */
     processInjectableDoc(injectableDoc, errors) {
       const ngModules = [];
@@ -88,15 +88,27 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
       for (const decorator of injectableDoc.decorators || []) {
         if (decorator.name === 'Injectable' && decorator.argumentInfo[0]) {
           const providedIn = decorator.argumentInfo[0].providedIn;
-          if (isProvidedInNgModule(providedIn)) {
-            const ngModuleDoc = getNgModule(providedIn, injectableDoc, errors);
-            if (ngModuleDoc === null) {
-              continue;
-            }
-            const container = ngModuleDoc.providers = ngModuleDoc.providers || [];
-            container.push(injectableDoc);
-            ngModules.push(ngModuleDoc);
+          if (typeof providedIn !== 'string') {
+            // `providedIn` is not a string, which means that this is not a tree-shakable provider
+            // that needs associating with an NgModule.
+            continue;
           }
+          if (isWrappedInQuotes(providedIn)) {
+            // `providedIn` is wrapped in quotes, so it will be one of `'root'` or `'platform'` and
+            // is not associated with a specific NgModule. So just use the string.
+            ngModules.push(providedIn.slice(1, -1));
+            continue;
+          }
+
+          // `providedIn` ought to reference a public NgModule
+          const ngModuleDoc = getNgModule(providedIn, injectableDoc, errors);
+          if (ngModuleDoc === null) {
+            continue;
+          }
+
+          const container = ngModuleDoc.providers = ngModuleDoc.providers || [];
+          container.push(injectableDoc);
+          ngModules.push(ngModuleDoc);
         }
       }
 
@@ -178,8 +190,7 @@ function byId(a, b) {
  * Convert all the values of properties on the `obj` to arrays, if not already.
  */
 function convertAllPropertiesToArrays(obj) {
-  for (const key of Object.keys(obj)) {
-    const value = obj[key];
+  for (const [key, value] of Object.entries(obj)) {
     if (value && !Array.isArray(value)) {
       obj[key] = [value];
     }
@@ -187,14 +198,8 @@ function convertAllPropertiesToArrays(obj) {
 }
 
 /**
- * Returns true if the `providedIn` is a reference to an NgModule.
- *
- * If `providedIn` is not a string then it is probably undefined, which means that this
- * is not a tree-shakable provider that needs associating with an NgModule.
- *
- * If `providedIn` is wrapped in quotes, then it will be one of `'root'`
- * or `'platform'` and is not associated with a specific NgModule.
+ * Returns true if the `str` is wrapped in single or double quotes.
  */
-function isProvidedInNgModule(providedIn) {
-  return typeof providedIn === 'string' && !/^['"].+['"]$/.test(providedIn);
+function isWrappedInQuotes(str) {
+  return /^['"].+['"]$/.test(str);
 }

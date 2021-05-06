@@ -87,10 +87,10 @@ describe('processNgModuleDocs processor', () => {
     expect(ngModule1.providers).toEqual(['{ provide: Injectable5, useClass: Injectable5 }']);
     expect(ngModule2.providers).toEqual(['{ provide: Injectable6, useClass: Injectable6 }']);
 
-    expect(injectable1.ngModules).toBeUndefined();
-    expect(injectable2.ngModules).toBeUndefined();
-    expect(injectable3.ngModules).toBeUndefined();
-    expect(injectable4.ngModules).toBeUndefined();
+    expect(injectable1.ngModules).toEqual(['root']);
+    expect(injectable2.ngModules).toEqual(['platform']);
+    expect(injectable3.ngModules).toEqual(['root']);
+    expect(injectable4.ngModules).toEqual(['platform']);
     expect(injectable5.ngModules).toEqual([ngModule1]);
     expect(injectable6.ngModules).toEqual([ngModule2]);
     expect(injectable7.ngModules).toBeUndefined();

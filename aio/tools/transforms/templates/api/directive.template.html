@@ -1,10 +1,11 @@
 {% import "lib/memberHelpers.html" as memberHelpers -%}
+{% import "lib/ngmodule.html" as ngModuleHelpers -%}
 {% extends 'class.template.html' -%}
 
 {% block overview %}{% endblock %}
 
 {% block details -%}
-  {% include "includes/ngmodule.html" %}
+  {$ ngModuleHelpers.ngModuleList(doc.ngModules, 'Exported from') $}
   {% include "includes/selectors.html" %}
 
   {$ memberHelpers.renderDirectiveProperties(doc, 'Properties') $}
