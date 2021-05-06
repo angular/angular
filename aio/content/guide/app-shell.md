@@ -24,7 +24,7 @@ Use the CLI to automatically create the application shell.
 ng generate app-shell
 </code-example>
 
-* `client-project` takes the name of your client application.
+For more information about this command see [App shell command](cli/generate#app-shell-command). 
 
 After running this command you will notice that the `angular.json` configuration file has been updated to add two new targets, with a few other changes.
 
