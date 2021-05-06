@@ -8,6 +8,7 @@
 import * as ts from 'typescript';
 
 import {ClassDeclaration, Declaration, Decorator, ReflectionHost} from '../../../src/ngtsc/reflection';
+import {SymbolWithValueDeclaration} from '../../../src/ngtsc/util/src/typescript';
 
 export const PRE_R3_MARKER = '__PRE_R3__';
 export const POST_R3_MARKER = '__POST_R3__';
@@ -47,13 +48,13 @@ export interface NgccClassSymbol {
    * inner declaration does not need to satisfy the requirements imposed on a publicly visible class
    * declaration.
    */
-  implementation: ts.Symbol;
+  implementation: SymbolWithValueDeclaration;
 
   /**
    * Represents the symbol corresponding to a variable within a class IIFE that may be used to
    * attach static properties or decorated.
    */
-  adjacent?: ts.Symbol;
+  adjacent?: SymbolWithValueDeclaration;
 }
 
 /**

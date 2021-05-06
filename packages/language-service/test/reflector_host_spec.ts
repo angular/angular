@@ -59,8 +59,8 @@ describe('reflector_host_spec', () => {
     // This resolves all Angular directives in the project.
     ngLSHost.getAnalyzedModules();
     const secondCount = spy.calls.count();
-    expect(secondCount).toBeGreaterThan(500);
-    expect(secondCount).toBeLessThan(600);
+    expect(secondCount).toBeGreaterThan(400);
+    expect(secondCount).toBeLessThan(500);
     spy.calls.reset();
 
     // Third count is due to recompution after the program changes.

@@ -13,6 +13,23 @@ import * as ts from 'typescript';
 import {AbsoluteFsPath, getFileSystem} from '../../file_system';
 import {DeclarationNode} from '../../reflection';
 
+/**
+ * Type describing a symbol that is guaranteed to have a value declaration.
+ */
+export type SymbolWithValueDeclaration = ts.Symbol&{
+  valueDeclaration: ts.Declaration;
+  declarations: ts.Declaration[];
+};
+
+export function isSymbolWithValueDeclaration(symbol: ts.Symbol|null|
+                                             undefined): symbol is SymbolWithValueDeclaration {
+  // If there is a value declaration set, then the `declarations` property is never undefined. We
+  // still check for the property to exist as this matches with the type that `symbol` is narrowed
+  // to.
+  return symbol != null && symbol.valueDeclaration !== undefined &&
+      symbol.declarations !== undefined;
+}
+
 export function isDtsPath(filePath: string): boolean {
   return D_TS.test(filePath);
 }

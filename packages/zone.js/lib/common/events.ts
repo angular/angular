@@ -28,8 +28,11 @@ if (typeof window !== 'undefined') {
         passiveSupported = true;
       }
     });
-    window.addEventListener('test', options, options);
-    window.removeEventListener('test', options, options);
+    // Note: We pass the `options` object as the event handler too. This is not compatible with the
+    // signature of `addEventListener` or `removeEventListener` but enables us to remove the handler
+    // without an actual handler.
+    window.addEventListener('test', options as any, options);
+    window.removeEventListener('test', options as any, options);
   } catch (err) {
     passiveSupported = false;
   }

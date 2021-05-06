@@ -163,9 +163,9 @@ Zone.__load_patch('jasmine', (global: any, Zone: ZoneType, api: _ZonePrivate) =>
       let spyObj: any;
       if (propertyNames) {
         const defineProperty = Object.defineProperty;
-        Object.defineProperty = function(obj: any, p: string, attributes: any) {
+        Object.defineProperty = function<T>(obj: T, p: PropertyKey, attributes: any) {
           return defineProperty.call(
-              this, obj, p, {...attributes, configurable: true, enumerable: true});
+                     this, obj, p, {...attributes, configurable: true, enumerable: true}) as T;
         };
         try {
           spyObj = originalCreateSpyObj.apply(this, args);

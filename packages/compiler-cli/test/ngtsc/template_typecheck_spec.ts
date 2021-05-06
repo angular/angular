@@ -308,6 +308,36 @@ export declare class AnimationEvent {
       expect(diags.length).toBe(0);
     });
 
+    // https://devblogs.microsoft.com/typescript/announcing-typescript-4-3-beta/#separate-write-types-on-properties
+    it('should support separate write types on inputs', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {Component, NgModule, Input} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<target-cmp disabled></target-cmp>',
+        })
+        export class TestCmp {}
+
+        @Component({template: '', selector: 'target-cmp'})
+        export class TargetCmp {
+          @Input()
+          get disabled(): boolean { return this._disabled; }
+          set disabled(value: string|boolean) { this._disabled = value === '' || !!value; }
+          private _disabled = false;
+        }
+
+        @NgModule({
+          declarations: [TestCmp, TargetCmp],
+        })
+        export class Module {}
+      `);
+      const diags = env.driveDiagnostics();
+      console.error(diags);
+      expect(diags.length).toBe(0);
+    });
+
     describe('strictInputTypes', () => {
       beforeEach(() => {
         env.write('test.ts', `

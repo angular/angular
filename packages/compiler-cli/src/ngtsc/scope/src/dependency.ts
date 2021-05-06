@@ -150,9 +150,12 @@ export class MetadataDtsModuleScopeResolver implements DtsModuleScopeResolver {
       return dirOrPipe;
     }
 
+    // TypeScript incorrectly narrows the type here:
+    // https://github.com/microsoft/TypeScript/issues/43966.
+    // TODO: Remove/Update once https://github.com/microsoft/TypeScript/issues/43966 is resolved.
     return {
       ...dirOrPipe,
       ref: ref.cloneWithAlias(alias),
-    };
+    } as T;
   }
 }

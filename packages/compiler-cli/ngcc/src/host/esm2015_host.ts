@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 import {absoluteFromSourceFile} from '../../../src/ngtsc/file_system';
 import {Logger} from '../../../src/ngtsc/logging';
 import {ClassDeclaration, ClassMember, ClassMemberKind, CtorParameter, Declaration, DeclarationNode, Decorator, EnumMember, Import, isConcreteDeclaration, isDecoratorIdentifier, isNamedClassDeclaration, isNamedFunctionDeclaration, isNamedVariableDeclaration, KnownDeclaration, reflectObjectLiteral, SpecialDeclarationKind, TypeScriptReflectionHost, TypeValueReference, TypeValueReferenceKind, ValueUnavailableKind} from '../../../src/ngtsc/reflection';
+import {isSymbolWithValueDeclaration, SymbolWithValueDeclaration} from '../../../src/ngtsc/util/src/typescript';
 import {isWithinPackage} from '../analysis/util';
 import {BundleProgram} from '../packages/bundle_program';
 import {findAll, getNameText, hasNameIdentifier, isDefined, stripDollarSuffix} from '../utils';
@@ -213,7 +214,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
     // That didn't work so now try getting it from the "inner" declaration.
     const classSymbol = this.getClassSymbol(clazz);
-    if (classSymbol === undefined ||
+    if (classSymbol?.implementation.valueDeclaration === undefined ||
         !isNamedDeclaration(classSymbol.implementation.valueDeclaration)) {
       return null;
     }
@@ -241,7 +242,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   private getNameFromClassSymbolDeclaration(
-      classSymbol: NgccClassSymbol, declaration: ts.Declaration): ts.Identifier {
+      classSymbol: NgccClassSymbol, declaration: ts.Declaration|undefined): ts.Identifier {
     if (declaration === undefined) {
       throw new Error(
           `getInternalNameOfClass() called on a class with an undefined internal declaration. External class name: ${
@@ -721,12 +722,12 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       return undefined;
     }
 
-    let implementationSymbol = declarationSymbol;
+    let implementationSymbol: ts.Symbol|undefined = declarationSymbol;
     if (innerDeclaration !== null && isNamedDeclaration(innerDeclaration)) {
-      implementationSymbol = this.checker.getSymbolAtLocation(innerDeclaration.name) as ClassSymbol;
+      implementationSymbol = this.checker.getSymbolAtLocation(innerDeclaration.name);
     }
 
-    if (implementationSymbol === undefined) {
+    if (!isSymbolWithValueDeclaration(implementationSymbol)) {
       return undefined;
     }
 
@@ -740,8 +741,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     return classSymbol;
   }
 
-  private getAdjacentSymbol(declarationSymbol: ClassSymbol, implementationSymbol: ClassSymbol):
-      ClassSymbol|undefined {
+  private getAdjacentSymbol(
+      declarationSymbol: ClassSymbol,
+      implementationSymbol: SymbolWithValueDeclaration): SymbolWithValueDeclaration|undefined {
     if (declarationSymbol === implementationSymbol) {
       return undefined;
     }
@@ -755,9 +757,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     if (adjacentDeclaration === undefined || !isNamedVariableDeclaration(adjacentDeclaration)) {
       return undefined;
     }
-    const adjacentSymbol =
-        this.checker.getSymbolAtLocation(adjacentDeclaration.name) as ClassSymbol;
-    if (adjacentSymbol === declarationSymbol || adjacentSymbol === implementationSymbol) {
+    const adjacentSymbol = this.checker.getSymbolAtLocation(adjacentDeclaration.name);
+    if (adjacentSymbol === declarationSymbol || adjacentSymbol === implementationSymbol ||
+        !isSymbolWithValueDeclaration(adjacentSymbol)) {
       return undefined;
     }
     return adjacentSymbol;

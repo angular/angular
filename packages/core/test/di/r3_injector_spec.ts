@@ -64,7 +64,7 @@ describe('InjectorDef-based createInjector()', () => {
       providedIn: null,
       // ChildService is derived from ServiceWithDep, so the factory function here must do the right
       // thing and create an instance of the requested type if one is given.
-      factory: (t?: typeof ServiceWithDep) => new(t || ServiceWithDep)(ɵɵinject(Service)),
+      factory: (t?: any) => new(t || ServiceWithDep)(ɵɵinject(Service)),
     });
   }
 

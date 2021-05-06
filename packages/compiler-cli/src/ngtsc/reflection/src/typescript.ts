@@ -277,7 +277,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       return null;
     }
     const namespaceSymbol = this.checker.getSymbolAtLocation(namespaceIdentifier);
-    if (!namespaceSymbol) {
+    if (!namespaceSymbol || namespaceSymbol.declarations === undefined) {
       return null;
     }
     const declaration =

@@ -52,7 +52,8 @@ export class RelativeLinkResolutionCollector {
       return null;
     }
 
-    if (symbolForIdentifier.declarations.length === 0) {
+    if (symbolForIdentifier.declarations === undefined ||
+        symbolForIdentifier.declarations.length === 0) {
       return null;
     }
 

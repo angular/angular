@@ -25,7 +25,7 @@ const MIN_TS_VERSION = '4.2.3';
  * Note: this check is disabled in g3, search for
  * `angularCompilerOptions.disableTypeScriptVersionCheck` config param value in g3.
  */
-const MAX_TS_VERSION = '4.3.0';
+const MAX_TS_VERSION = '4.4.0';
 
 /**
  * The currently used version of TypeScript, which can be adjusted for testing purposes using
