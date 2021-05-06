@@ -67,7 +67,7 @@ describe('processNgModuleDocs processor', () => {
     expect(pipe3.ngModules).toEqual([ngModule1, ngModule2]);
   });
 
-  it('should link injectables that have a `providedIn` property that references a known NgModule doc', () => {
+  it('should link classes that have a `providedIn` property on an @Injectable decorator that references a known NgModule doc', () => {
     const ngModule1 = { docType: 'ngmodule', id: 'NgModule1', aliases: ['NgModule1'], ngmoduleOptions: {} };
     const ngModule2 = { docType: 'ngmodule', id: 'NgModule2', aliases: ['NgModule2'], ngmoduleOptions: {} };
     const injectable1 = { docType: 'class', name: 'Injectable1', decorators: [{ name: 'Injectable', argumentInfo: [{ providedIn: '\'root\'' }] }] };
@@ -76,6 +76,36 @@ describe('processNgModuleDocs processor', () => {
     const injectable4 = { docType: 'class', name: 'Injectable4', decorators: [{ name: 'Injectable', argumentInfo: [{ providedIn: '"platform"' }] }] };
     const injectable5 = { docType: 'class', name: 'Injectable5', decorators: [{ name: 'Injectable', argumentInfo: [{ providedIn: 'NgModule1' }] }] };
     const injectable6 = { docType: 'class', name: 'Injectable6', decorators: [{ name: 'Injectable', argumentInfo: [{ providedIn: 'NgModule2' }] }] };
+    const injectable7 = { docType: 'class', name: 'Injectable7' };
+    const nonInjectable = { docType: 'class', name: 'nonInjectable' };
+
+    const aliasMap = injector.get('aliasMap');
+    aliasMap.addDoc(ngModule1);
+    aliasMap.addDoc(ngModule2);
+    processor.$process([ngModule1, ngModule2, injectable1, injectable2, injectable3, injectable4, injectable5, injectable6, injectable7, nonInjectable]);
+
+    expect(ngModule1.providers).toEqual(['{ provide: Injectable5, useClass: Injectable5 }']);
+    expect(ngModule2.providers).toEqual(['{ provide: Injectable6, useClass: Injectable6 }']);
+
+    expect(injectable1.ngModules).toEqual(['root']);
+    expect(injectable2.ngModules).toEqual(['platform']);
+    expect(injectable3.ngModules).toEqual(['root']);
+    expect(injectable4.ngModules).toEqual(['platform']);
+    expect(injectable5.ngModules).toEqual([ngModule1]);
+    expect(injectable6.ngModules).toEqual([ngModule2]);
+    expect(injectable7.ngModules).toBeUndefined();
+    expect(nonInjectable.ngModules).toBeUndefined();
+  });
+
+  it('should link classes that have a `providedIn` property on a ɵprov static that references a known NgModule doc', () => {
+    const ngModule1 = { docType: 'ngmodule', id: 'NgModule1', aliases: ['NgModule1'], ngmoduleOptions: {} };
+    const ngModule2 = { docType: 'ngmodule', id: 'NgModule2', aliases: ['NgModule2'], ngmoduleOptions: {} };
+    const injectable1 = { docType: 'class', name: 'Injectable1', symbol: createSymbolWithProvider('\'root\'') };
+    const injectable2 = { docType: 'class', name: 'Injectable2', symbol: createSymbolWithProvider('\'platform\'') };
+    const injectable3 = { docType: 'class', name: 'Injectable3', symbol: createSymbolWithProvider('"root"') };
+    const injectable4 = { docType: 'class', name: 'Injectable4', symbol: createSymbolWithProvider('"platform"') };
+    const injectable5 = { docType: 'class', name: 'Injectable5', symbol: createSymbolWithProvider('NgModule1') };
+    const injectable6 = { docType: 'class', name: 'Injectable6', symbol: createSymbolWithProvider('NgModule2') };
     const injectable7 = { docType: 'class', name: 'Injectable7' };
     const nonInjectable = { docType: 'class', name: 'nonInjectable' };
 
@@ -222,3 +252,27 @@ describe('processNgModuleDocs processor', () => {
       'The referenced "NgModuleAlias" is ambiguous. Matches: NgModule1, NgModule2 - doc "Pipe1" (pipe) ');
   });
 });
+
+/**
+ * This function simulates a TS AST node for the code:
+ *
+ * ```
+ * static ɵprov = ɵɵdefineInjectable({
+ *   providedIn: 'xxxx',
+ * });
+ * ```
+ *
+ */
+function createSymbolWithProvider(providedIn) {
+  const initializer = {
+    pos: 0,
+    end: providedIn.length,
+    getSourceFile()  {
+      return { text: providedIn };
+    }
+  };
+  const valueDeclaration = { initializer: { arguments: [{ properties: [ { name: { text: 'providedIn' }, initializer } ] } ] } };
+  const exportMap = new Map();
+  exportMap.set('ɵprov', {valueDeclaration});
+  return {exports: exportMap};
+}

@@ -73,6 +73,12 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
 
       if (Array.isArray(injectableDoc.ngModules)) {
         for (const ngModule of injectableDoc.ngModules) {
+          if (isWrappedInQuotes(ngModule)) {
+            // `ngModule` is wrapped in quotes, so it will be one of `'root'` or `'platform'` and
+            // is not associated with a specific NgModule. So just use the string.
+            ngModules.push(ngModule.slice(1, -1));
+            continue;
+          }
           // Convert any `@ngModule` JSDOC tags to actual NgModule docs.
           // Don't add this doc to the NgModule doc, since this should already be in the `providers`
           // property of the `@NgModule()` decorator.
@@ -83,38 +89,53 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
         }
       }
 
-      // Check for `providedIn` property on `@Injectable()` that might associate it with an
-      // `NgModule`.
+      // Check for `providedIn` property on `@Injectable()`.
       for (const decorator of injectableDoc.decorators || []) {
         if (decorator.name === 'Injectable' && decorator.argumentInfo[0]) {
           const providedIn = decorator.argumentInfo[0].providedIn;
-          if (typeof providedIn !== 'string') {
-            // `providedIn` is not a string, which means that this is not a tree-shakable provider
-            // that needs associating with an NgModule.
-            continue;
-          }
-          if (isWrappedInQuotes(providedIn)) {
-            // `providedIn` is wrapped in quotes, so it will be one of `'root'` or `'platform'` and
-            // is not associated with a specific NgModule. So just use the string.
-            ngModules.push(providedIn.slice(1, -1));
-            continue;
-          }
+          this.processProvidedIn(providedIn, injectableDoc, ngModules, errors);
+        }
+      }
 
-          // `providedIn` ought to reference a public NgModule
-          const ngModuleDoc = getNgModule(providedIn, injectableDoc, errors);
-          if (ngModuleDoc === null) {
-            continue;
-          }
-
-          const container = ngModuleDoc.providers = ngModuleDoc.providers || [];
-          container.push(injectableDoc);
-          ngModules.push(ngModuleDoc);
+      // Check for `providedIn` property on an `ɵprov` static property
+      if (injectableDoc.symbol?.exports.has('ɵprov')) {
+        const declaration = injectableDoc.symbol?.exports.get('ɵprov')?.valueDeclaration;
+        const properties = declaration?.initializer?.arguments?.[0]?.properties;
+        const providedInProp = properties?.find(prop => prop.name.text === 'providedIn');
+        const providedInNode = providedInProp?.initializer;
+        if (providedInNode) {
+          const providedIn = providedInNode.getSourceFile().text.slice(providedInNode.pos, providedInNode.end).trim();
+          this.processProvidedIn(providedIn, injectableDoc, ngModules, errors);
         }
       }
 
       if (ngModules.length > 0) {
         injectableDoc.ngModules = ngModules;
       }
+    },
+
+    processProvidedIn(providedIn, injectableDoc, ngModules, errors) {
+      if (typeof providedIn !== 'string') {
+        // `providedIn` is not a string, which means that this is not a tree-shakable provider
+        // that needs associating with an NgModule.
+        return;
+      }
+      if (isWrappedInQuotes(providedIn)) {
+        // `providedIn` is wrapped in quotes, so it will be one of `'root'` or `'platform'` and
+        // is not associated with a specific NgModule. So just use the string.
+        ngModules.push(providedIn.slice(1, -1));
+        return;
+      }
+
+      // `providedIn` ought to reference a public NgModule
+      const ngModuleDoc = getNgModule(providedIn, injectableDoc, errors);
+      if (ngModuleDoc === null) {
+        return;
+      }
+
+      const container = ngModuleDoc.providers = ngModuleDoc.providers || [];
+      container.push(injectableDoc);
+      ngModules.push(ngModuleDoc);
     },
 
     /**
