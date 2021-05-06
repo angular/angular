@@ -1,9 +1,11 @@
+{% import "lib/ngmodule.html" as ngModuleHelpers -%}
 {% extends 'export-base.template.html' -%}
 
 {% block overview %}
   {% include "includes/class-overview.html" %}
 {% endblock %}
 {% block details %}
+  {$ ngModuleHelpers.ngModuleList(doc.ngModules, 'Provided in') $}
   {% include "includes/description.html" %}
   {% include "includes/class-members.html" %}
 {% endblock %}
