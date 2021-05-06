@@ -26,6 +26,7 @@ import {RComment, RElement, RNode, RText} from './interfaces/renderer_dom';
 import {isLContainer, isLView} from './interfaces/type_checks';
 import {CHILD_HEAD, CLEANUP, DECLARATION_COMPONENT_VIEW, DECLARATION_LCONTAINER, DestroyHookData, FLAGS, HookData, HookFn, HOST, LView, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, T_HOST, TVIEW, TView, TViewType, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertTNodeType} from './node_assert';
+import {profiler, ProfilerEvent} from './profiler';
 import {getLViewParent} from './util/view_traversal_utils';
 import {getNativeByTNode, unwrapRNode, updateTransplantedViewCount} from './util/view_utils';
 
@@ -506,10 +507,22 @@ function executeOnDestroys(tView: TView, lView: LView): void {
 
         if (Array.isArray(toCall)) {
           for (let j = 0; j < toCall.length; j += 2) {
-            (toCall[j + 1] as HookFn).call(context[toCall[j] as number]);
+            const callContext = context[toCall[j] as number];
+            const hook = toCall[j + 1] as HookFn;
+            profiler(ProfilerEvent.LifecycleHookStart, callContext, hook);
+            try {
+              hook.call(callContext);
+            } finally {
+              profiler(ProfilerEvent.LifecycleHookEnd, callContext, hook);
+            }
           }
         } else {
-          toCall.call(context);
+          profiler(ProfilerEvent.LifecycleHookStart, context, toCall);
+          try {
+            toCall.call(context);
+          } finally {
+            profiler(ProfilerEvent.LifecycleHookEnd, context, toCall);
+          }
         }
       }
     }
