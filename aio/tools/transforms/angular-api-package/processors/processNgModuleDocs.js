@@ -161,7 +161,7 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
       const providers = ngModuleDoc.ngmoduleOptions.providers || [];
 
       // Update injectables which are provided by this NgModule
-      for(const provider of providers) {
+      for (const provider of providers) {
         const injectable = parseProvider(provider);
         const injectableDocs = getDocFromAlias(injectable, ngModuleDoc);
         if (injectableDocs.length !== 1) {
