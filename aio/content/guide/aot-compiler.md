@@ -18,14 +18,14 @@ Here are some reasons you might want to use AOT.
 
 * *Faster rendering*
    With AOT, the browser downloads a pre-compiled version of the application.
-   The browser loads executable code so it can render the application immediately, without waiting to compile the app first.
+   The browser loads executable code so it can render the application immediately, without waiting to compile the application first.
 
 * *Fewer asynchronous requests*
    The compiler _inlines_ external HTML templates and CSS style sheets within the application JavaScript,
    eliminating separate ajax requests for those source files.
 
 * *Smaller Angular framework download size*
-   There's no need to download the Angular compiler if the app is already compiled.
+   There's no need to download the Angular compiler if the application is already compiled.
    The compiler is roughly half of Angular itself, so omitting it dramatically reduces the application payload.
 
 * *Detect template errors earlier*
@@ -43,10 +43,10 @@ Here are some reasons you might want to use AOT.
 
 Angular offers two ways to compile your application:
 
-* **_Just-in-Time_ (JIT)**, which compiles your app in the browser at runtime. This was the default until Angular 8.
-* **_Ahead-of-Time_ (AOT)**, which compiles your app and libraries at build time. This is the default since Angular 9.
+* **_Just-in-Time_ (JIT)**, which compiles your application in the browser at runtime. This was the default until Angular 8.
+* **_Ahead-of-Time_ (AOT)**, which compiles your application and libraries at build time. This is the default since Angular 9.
 
-When you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve) (build and serve locally) CLI commands, the type of compilation (JIT or AOT) depends on the value of the `aot` property in your build configuration specified in `angular.json`. By default, `aot` is set to `true` for new CLI apps.
+When you run the [`ng build`](cli/build) (build only) or [`ng serve`](cli/serve) (build and serve locally) CLI commands, the type of compilation (JIT or AOT) depends on the value of the `aot` property in your build configuration specified in `angular.json`. By default, `aot` is set to `true` for new CLI applications.
 
 See the [CLI command reference](cli) and [Building and serving Angular apps](guide/build) for more information.
 

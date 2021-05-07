@@ -57,7 +57,7 @@ In this example, Angular doesn't know what `orders` is or where it comes from.
 
 ### Quick info and navigation
 
-The quick-info feature allows you to hover to see where components, directives, modules, and so on come from.
+The quick-info feature allows you to hover to see where components, directives, and modules come from.
 You can then click "Go to definition" or press F12 to go directly to the definition.
 
 <div class="lightbox">

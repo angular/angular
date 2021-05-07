@@ -198,7 +198,7 @@ Specify size values in the following formats:
 
 * 12%: Percentage of size relative to baseline. (Not valid for baseline values.)
 
-When you configure a budget, the build system warns or reports an error when a given part of the app reaches or exceeds a boundary size that you set.
+When you configure a budget, the build system warns or reports an error when a given part of the application reaches or exceeds a boundary size that you set.
 
 Each budget entry is a JSON object with the following properties:
 
@@ -217,7 +217,7 @@ Each budget entry is a JSON object with the following properties:
 * `bundle` - The size of a specific bundle.
 * `initial` - The size of JavaScript needed for bootstrapping the application. Defaults to warning @ 500kb and erroring at 1mb.
 * `allScript` - The size of all scripts.
-* `all` - The size of the entire app.
+* `all` - The size of the entire application.
 * `anyComponentStyle` - This size of any one component stylesheet. Defaults to warning at 2kb and erroring at 4kb.
 * `anyScript` - The size of any one script.
 * `any` - The size of any file.
@@ -291,12 +291,68 @@ To disable these warnings, you can add the CommonJS module name to `allowedCommo
 },
 </code-example>
 
+{@a browser-compat}
+
+## Configuring browser compatibility
+
+The CLI uses [Autoprefixer](https://github.com/postcss/autoprefixer) to ensure compatibility with different browser and browser versions.
+You may find it necessary to target specific browsers or exclude certain browser versions from your build.
+
+Internally, Autoprefixer relies on a library called [Browserslist](https://github.com/browserslist/browserslist) to figure out which browsers to support with prefixing.
+Browserlist looks for configuration options in a `browserslist` property of the package configuration file, or in a configuration file named `.browserslistrc`.
+Autoprefixer looks for the `browserslist` configuration when it prefixes your CSS.
+
+* You can tell Autoprefixer what browsers to target by adding a browserslist property to the package configuration file, `package.json`:
+```
+ "browserslist": [
+   "> 1%",
+   "last 2 versions"
+ ]
+```
+
+* Alternatively, you can add a new file, `.browserslistrc`, to the project directory, that specifies browsers you want to support:
+```
+ ### Supported Browsers
+ > 1%
+ last 2 versions
+```
+
+See the [browserslist repo](https://github.com/browserslist/browserslist) for more examples of how to target specific browsers and versions.
+
+### Backward compatibility with Lighthouse
+
+If you want to produce a progressive web application and are using [Lighthouse](https://developers.google.com/web/tools/lighthouse/) to grade the project, add the following `browserslist` entry to your `package.json` file, in order to eliminate the [old flexbox](https://developers.google.com/web/tools/lighthouse/audits/old-flexbox) prefixes:
+
+```
+"browserslist": [
+  "last 2 versions",
+  "not ie <= 10",
+  "not ie_mob <= 10"
+]
+```
+
+### Backward compatibility with CSS grid
+
+CSS grid layout support in Autoprefixer, which was previously on by default, is off by default in Angular 8 and higher.
+
+To use CSS grid with Internet Explorer 10/11, you must explicitly enable it using the `autoplace` option.
+To do this, add the following to the top of the global styles file (or within a specific css selector scope):
+
+```
+/* autoprefixer grid: autoplace */
+```
+or
+```
+/* autoprefixer grid: no-autoplace */
+```
+
+For more information, see [Autoprefixer documentation](https://autoprefixer.github.io/).
 
 {@a proxy}
 
 ## Proxying to a backend server
 
-You can use the [proxying support](https://webpack.js.org/configuration/dev-server/#devserverproxy) in the `webpack` dev server to divert certain URLs to a backend server, by passing a file to the `--proxy-config` build option.
+You can use the [proxying support](https://webpack.js.org/configuration/dev-server/#devserverproxy) in the `webpack` development server to divert certain URLs to a backend server, by passing a file to the `--proxy-config` build option.
 For example, to divert all calls for `http://localhost:4200/api` to a server running on `http://localhost:3000/api`, take the following steps.
 
 1. Create a file `proxy.conf.json` in your project's `src/` folder.
@@ -324,7 +380,7 @@ For example, to divert all calls for `http://localhost:4200/api` to a server run
     ...
     ```
 
-1. To run the dev server with this proxy configuration, call `ng serve`.
+1. To run the development server with this proxy configuration, call `ng serve`.
 
 You can edit the proxy configuration file to add configuration options; some examples are given below.
 For a description of all options, see [webpack DevServer documentation](https://webpack.js.org/configuration/dev-server/#devserverproxy).
