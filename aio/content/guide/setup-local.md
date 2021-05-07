@@ -59,8 +59,7 @@ To install the CLI using `npm`, open a terminal/console window and enter the fol
 
 
 <code-example language="sh" class="code-shell">
-  npm install -g @angular/cli
-
+  npm install -g @angular/cli<aio-angular-dist-tag class="pln"></aio-angular-dist-tag>
 </code-example>
 
 
