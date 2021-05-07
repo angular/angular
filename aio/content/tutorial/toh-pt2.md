@@ -153,7 +153,7 @@ After the browser refreshes, the application is broken.
 
 Open the browser developer tools and look in the console for an error message like this:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   HeroesComponent.html:3 ERROR TypeError: Cannot read property 'name' of undefined
 </code-example>
 

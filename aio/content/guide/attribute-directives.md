@@ -14,7 +14,7 @@ This section walks you through creating a highlight directive that sets the back
 
 1. To create a directive, use the CLI command [`ng generate directive`](cli/generate).
 
-  <code-example language="sh" class="code-shell">
+  <code-example language="sh">
 ng generate directive highlight
 </code-example>
 

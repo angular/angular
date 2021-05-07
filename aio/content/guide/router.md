@@ -25,7 +25,7 @@ For a more in-depth experience of building an Angular app, see the [Tour of Hero
 The following command uses the Angular CLI to generate a basic Angular app with an app routing module, called `AppRoutingModule`, which is an NgModule where you can configure your routes.
 The app name in the following example is `routing-app`.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh">
   ng new routing-app --routing
 </code-example>
 
@@ -36,14 +36,14 @@ For this example, accept the default of `CSS`.
 
 To use the Angular router, an app needs to have at least two components so that it can navigate from one to the other. To create a component using the CLI, enter the following at the command line where `first` is the name of your component:
 
-<code-example language="none" class="code-shell">
+<code-example language="sh">
   ng generate component first
 </code-example>
 
 Repeat this step for a second component but give it a different name.
 Here, the new name is `second`.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh">
   ng generate component second
 </code-example>
 
@@ -376,7 +376,7 @@ To use route guards, consider using [component-less routes](api/router/Route#com
 Create a service for your guard:
 
 
-<code-example language="none" class="code-shell">
+<code-example language="sh">
   ng generate guard your-guard
 </code-example>
 

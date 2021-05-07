@@ -145,7 +145,7 @@ generate a new component.
 
 For example, the following CLI command generates a `BannerComponent` in the `app/banner` folder (with inline template and styles):
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 ng generate component banner --inline-template --inline-style --module app
 </code-example>
 

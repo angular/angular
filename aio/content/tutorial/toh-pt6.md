@@ -50,7 +50,7 @@ If you're coding along with this tutorial, stay here and add the In-memory Web A
 
 Install the In-memory Web API package from npm with the following command:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   npm install angular-in-memory-web-api --save
 </code-example>
 
@@ -71,7 +71,7 @@ that primes the in-memory database.
 
 Generate the class `src/app/in-memory-data.service.ts` with the following command:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate service InMemoryData
 </code-example>
 
@@ -406,7 +406,7 @@ For this to work, the next step is to add a component with a selector that match
 
 Create a `HeroSearchComponent` with the CLI.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate component hero-search
 </code-example>
 

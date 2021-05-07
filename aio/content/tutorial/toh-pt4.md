@@ -34,7 +34,7 @@ when the user clicks a hero.
 
 Using the Angular CLI, create a service called `hero`.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate service hero
 </code-example>
 
@@ -265,7 +265,7 @@ This section guides you through the following:
 
 Use the CLI to create the `MessagesComponent`.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate component messages
 </code-example>
 
@@ -284,7 +284,7 @@ You should see the default paragraph from `MessagesComponent` at the bottom of t
 
 Use the CLI to create the `MessageService` in `src/app`.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate service message
 </code-example>
 
