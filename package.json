@@ -64,7 +64,7 @@
     "@bahmutov/add-typescript-to-cypress": "^2.1.2",
     "@types/chrome": "^0.0.137",
     "@types/clone-deep": "^4.0.1",
-    "@types/jasmine": "~3.6.0",
+    "@types/jasmine": "~3.7.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/resize-observer-browser": "^0.1.5",
     "@types/semver": "^7.1.0",
