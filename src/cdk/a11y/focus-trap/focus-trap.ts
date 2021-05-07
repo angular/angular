@@ -454,7 +454,11 @@ export class CdkTrapFocus implements OnDestroy, AfterContentInit, OnChanges, DoC
   }
 
   private _captureFocus() {
-    this._previouslyFocusedElement = this._document.activeElement as HTMLElement;
+    // If the `activeElement` is inside a shadow root, `document.activeElement` will
+    // point to the shadow root so we have to descend into it ourselves.
+    const activeElement = this._document?.activeElement as HTMLElement|null;
+    this._previouslyFocusedElement =
+      activeElement?.shadowRoot?.activeElement as HTMLElement || activeElement;
     this.focusTrap.focusInitialElementWhenReady();
   }
 
