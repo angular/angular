@@ -134,7 +134,7 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
       elementRef: ElementRef<HTMLInputElement>,
       @Optional() dateAdapter: DateAdapter<D>,
       @Optional() @Inject(MAT_DATE_FORMATS) dateFormats: MatDateFormats,
-      @Optional() @Inject(MAT_FORM_FIELD) private _formField: MatFormField) {
+      @Optional() @Inject(MAT_FORM_FIELD) private _formField?: MatFormField) {
     super(elementRef, dateAdapter, dateFormats);
     this._validator = Validators.compose(super._getValidators());
   }
@@ -145,6 +145,15 @@ export class MatDatepickerInput<D> extends MatDatepickerInputBase<D | null, D>
    */
   getConnectedOverlayOrigin(): ElementRef {
     return this._formField ? this._formField.getConnectedOverlayOrigin() : this._elementRef;
+  }
+
+  /** Gets the ID of an element that should be used a description for the calendar overlay. */
+  getOverlayLabelId(): string | null {
+    if (this._formField) {
+      return this._formField.getLabelId();
+    }
+
+    return this._elementRef.nativeElement.getAttribute('aria-labelledby');
   }
 
   /** Returns the palette used by the input's form field, if any. */

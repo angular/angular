@@ -246,7 +246,7 @@ export declare class MatDatepickerInput<D> extends MatDatepickerInputBase<D | nu
     set max(value: D | null);
     get min(): D | null;
     set min(value: D | null);
-    constructor(elementRef: ElementRef<HTMLInputElement>, dateAdapter: DateAdapter<D>, dateFormats: MatDateFormats, _formField: MatFormField);
+    constructor(elementRef: ElementRef<HTMLInputElement>, dateAdapter: DateAdapter<D>, dateFormats: MatDateFormats, _formField?: MatFormField | undefined);
     protected _assignValueToModel(value: D | null): void;
     protected _getDateFilter(): DateFilterFn<D | null>;
     _getMaxDate(): D | null;
@@ -255,6 +255,7 @@ export declare class MatDatepickerInput<D> extends MatDatepickerInputBase<D | nu
     protected _openPopup(): void;
     protected _shouldHandleChangeEvent(event: DateSelectionModelChange<D>): boolean;
     getConnectedOverlayOrigin(): ElementRef;
+    getOverlayLabelId(): string | null;
     getStartValue(): D | null;
     getThemePalette(): ThemePalette;
     ngOnDestroy(): void;
@@ -360,6 +361,7 @@ export declare class MatDateRangeInput<D> implements MatFormFieldControl<DateRan
     _shouldHideSeparator(): boolean | "" | null;
     _updateFocus(origin: FocusOrigin): void;
     getConnectedOverlayOrigin(): ElementRef;
+    getOverlayLabelId(): string | null;
     getStartValue(): D | null;
     getThemePalette(): ThemePalette;
     ngAfterContentInit(): void;

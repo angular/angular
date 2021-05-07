@@ -199,6 +199,23 @@ describe('MatDateRangeInput', () => {
     expect(end.nativeElement.getAttribute('aria-labelledby')).toBeFalsy();
   });
 
+  it('should set aria-labelledby of the overlay to the form field label', fakeAsync(() => {
+    const fixture = createComponent(StandardRangePicker);
+    fixture.detectChanges();
+
+    const label: HTMLElement = fixture.nativeElement.querySelector('.mat-form-field-label');
+    expect(label).toBeTruthy();
+    expect(label.getAttribute('id')).toBeTruthy();
+
+    fixture.componentInstance.rangePicker.open();
+    fixture.detectChanges();
+    tick();
+
+    const popup = document.querySelector('.cdk-overlay-pane')!;
+    expect(popup).toBeTruthy();
+    expect(popup.getAttribute('aria-labelledby')).toBe(label.getAttribute('id'));
+  }));
+
   it('should float the form field label when either input is focused', () => {
     const fixture = createComponent(StandardRangePicker);
     fixture.detectChanges();

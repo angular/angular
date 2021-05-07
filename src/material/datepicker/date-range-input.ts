@@ -324,6 +324,11 @@ export class MatDateRangeInput<D> implements MatFormFieldControl<DateRange<D>>,
     return this._formField ? this._formField.getConnectedOverlayOrigin() : this._elementRef;
   }
 
+  /** Gets the ID of an element that should be used a description for the calendar overlay. */
+  getOverlayLabelId(): string | null {
+    return this._formField ? this._formField.getLabelId() : null;
+  }
+
   /** Gets the value that is used to mirror the state input. */
   _getInputMirrorValue() {
     return this._startInput ? this._startInput.getMirrorValue() : '';

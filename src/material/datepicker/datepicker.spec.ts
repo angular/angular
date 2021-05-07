@@ -249,6 +249,22 @@ describe('MatDatepicker', () => {
         expect(popup.getAttribute('role')).toBe('dialog');
       }));
 
+      it('should set aria-labelledby to the one from the input, if not placed inside ' +
+        'a mat-form-field', fakeAsync(() => {
+          expect(fixture.nativeElement.querySelector('mat-form-field')).toBeFalsy();
+
+          const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
+          input.setAttribute('aria-labelledby', 'test-label');
+
+          testComponent.datepicker.open();
+          fixture.detectChanges();
+          flush();
+
+          const popup = document.querySelector('.cdk-overlay-pane')!;
+          expect(popup).toBeTruthy();
+          expect(popup.getAttribute('aria-labelledby')).toBe('test-label');
+        }));
+
       it('close should close dialog', fakeAsync(() => {
         testComponent.touch = true;
         fixture.detectChanges();
@@ -1357,6 +1373,21 @@ describe('MatDatepicker', () => {
         expect(contentEl.classList).toContain('mat-accent');
         expect(contentEl.classList).not.toContain('mat-warn');
       }));
+
+      it('should set aria-labelledby of the overlay to the form field label', fakeAsync(() => {
+        const label: HTMLElement = fixture.nativeElement.querySelector('.mat-form-field-label');
+
+        expect(label).toBeTruthy();
+        expect(label.getAttribute('id')).toBeTruthy();
+
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+        flush();
+
+        const popup = document.querySelector('.cdk-overlay-pane')!;
+        expect(popup).toBeTruthy();
+        expect(popup.getAttribute('aria-labelledby')).toBe(label.getAttribute('id'));
+      }));
     });
 
     describe('datepicker with min and max dates and validation', () => {
@@ -2385,6 +2416,7 @@ class DatepickerWithCustomIcon {}
 @Component({
   template: `
       <mat-form-field>
+        <mat-label>Pick a date</mat-label>
         <input matInput [matDatepicker]="d">
         <mat-datepicker #d></mat-datepicker>
       </mat-form-field>

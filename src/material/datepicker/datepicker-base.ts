@@ -243,6 +243,7 @@ export interface MatDatepickerControl<D> {
   disabled: boolean;
   dateFilter: DateFilterFn<D>;
   getConnectedOverlayOrigin(): ElementRef;
+  getOverlayLabelId(): string | null;
   stateChanges: Observable<void>;
 }
 
@@ -615,6 +616,7 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
     this._destroyOverlay();
 
     const isDialog = this.touchUi;
+    const labelId = this.datepickerInput.getOverlayLabelId();
     const portal = new ComponentPortal<MatDatepickerContent<S, D>>(MatDatepickerContent,
       this._viewContainerRef);
     const overlayRef = this._overlayRef = this._overlay.create(new OverlayConfig({
@@ -628,10 +630,15 @@ export abstract class MatDatepickerBase<C extends MatDatepickerControl<D>, S,
       scrollStrategy: isDialog ? this._overlay.scrollStrategies.block() : this._scrollStrategy(),
       panelClass: `mat-datepicker-${isDialog ? 'dialog' : 'popup'}`,
     }));
-    overlayRef.overlayElement.setAttribute('role', 'dialog');
+    const overlayElement = overlayRef.overlayElement;
+    overlayElement.setAttribute('role', 'dialog');
+
+    if (labelId) {
+      overlayElement.setAttribute('aria-labelledby', labelId);
+    }
 
     if (isDialog) {
-      overlayRef.overlayElement.setAttribute('aria-modal', 'true');
+      overlayElement.setAttribute('aria-modal', 'true');
     }
 
     this._getCloseStream(overlayRef).subscribe(event => {
