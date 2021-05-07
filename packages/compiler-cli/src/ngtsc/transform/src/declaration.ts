@@ -22,20 +22,12 @@ import {addImports} from './utils';
  */
 export class DtsTransformRegistry {
   private ivyDeclarationTransforms = new Map<ts.SourceFile, IvyDeclarationDtsTransform>();
-  private returnTypeTransforms = new Map<ts.SourceFile, ReturnTypeTransform>();
 
   getIvyDeclarationTransform(sf: ts.SourceFile): IvyDeclarationDtsTransform {
     if (!this.ivyDeclarationTransforms.has(sf)) {
       this.ivyDeclarationTransforms.set(sf, new IvyDeclarationDtsTransform());
     }
     return this.ivyDeclarationTransforms.get(sf)!;
-  }
-
-  getReturnTypeTransform(sf: ts.SourceFile): ReturnTypeTransform {
-    if (!this.returnTypeTransforms.has(sf)) {
-      this.returnTypeTransforms.set(sf, new ReturnTypeTransform());
-    }
-    return this.returnTypeTransforms.get(sf)!;
   }
 
   /**
@@ -56,10 +48,6 @@ export class DtsTransformRegistry {
     if (this.ivyDeclarationTransforms.has(originalSf)) {
       transforms = [];
       transforms.push(this.ivyDeclarationTransforms.get(originalSf)!);
-    }
-    if (this.returnTypeTransforms.has(originalSf)) {
-      transforms = transforms || [];
-      transforms.push(this.returnTypeTransforms.get(originalSf)!);
     }
     return transforms;
   }
@@ -229,51 +217,4 @@ export class IvyDeclarationDtsTransform implements DtsTransform {
 function markForEmitAsSingleLine(node: ts.Node) {
   ts.setEmitFlags(node, ts.EmitFlags.SingleLine);
   ts.forEachChild(node, markForEmitAsSingleLine);
-}
-
-export class ReturnTypeTransform implements DtsTransform {
-  private typeReplacements = new Map<ts.Declaration, Type>();
-
-  addTypeReplacement(declaration: ts.Declaration, type: Type): void {
-    this.typeReplacements.set(declaration, type);
-  }
-
-  transformClassElement(element: ts.ClassElement, imports: ImportManager): ts.ClassElement {
-    if (ts.isMethodDeclaration(element)) {
-      const original = ts.getOriginalNode(element, ts.isMethodDeclaration);
-      if (!this.typeReplacements.has(original)) {
-        return element;
-      }
-      const returnType = this.typeReplacements.get(original)!;
-      const tsReturnType = translateType(returnType, imports);
-
-      return ts.updateMethod(
-          element, element.decorators, element.modifiers, element.asteriskToken, element.name,
-          element.questionToken, element.typeParameters, element.parameters, tsReturnType,
-          element.body);
-    }
-
-    return element;
-  }
-
-  transformFunctionDeclaration(element: ts.FunctionDeclaration, imports: ImportManager):
-      ts.FunctionDeclaration {
-    const original = ts.getOriginalNode(element) as ts.FunctionDeclaration;
-    if (!this.typeReplacements.has(original)) {
-      return element;
-    }
-    const returnType = this.typeReplacements.get(original)!;
-    const tsReturnType = translateType(returnType, imports);
-
-    return ts.updateFunctionDeclaration(
-        /* node */ element,
-        /* decorators */ element.decorators,
-        /* modifiers */ element.modifiers,
-        /* asteriskToken */ element.asteriskToken,
-        /* name */ element.name,
-        /* typeParameters */ element.typeParameters,
-        /* parameters */ element.parameters,
-        /* type */ tsReturnType,
-        /* body */ element.body);
-  }
 }
