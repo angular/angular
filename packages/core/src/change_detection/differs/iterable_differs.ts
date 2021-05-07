@@ -157,11 +157,17 @@ export interface IterableChangeRecord<V> {
  * @publicApi
  */
 export interface TrackByFunction<T> {
+  // Note: the type parameter `U` enables more accurate template type checking in case a trackBy
+  // function is declared using a base type of the iterated type. The `U` type gives TypeScript
+  // additional freedom to infer a narrower type for the `item` parameter type, instead of imposing
+  // the trackBy's declared item type as the inferred type for `T`.
+  // See https://github.com/angular/angular/issues/40125
+
   /**
    * @param index The index of the item within the iterable.
    * @param item The item in the iterable.
    */
-  (index: number, item: T): any;
+  <U extends T>(index: number, item: U): any;
 }
 
 /**
