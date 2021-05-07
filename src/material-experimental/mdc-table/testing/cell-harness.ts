@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {HarnessPredicate} from '@angular/cdk/testing';
 import {
-  HarnessPredicate,
-  ComponentHarnessConstructor,
-  ContentContainerComponentHarness,
-} from '@angular/cdk/testing';
-import {CellHarnessFilters} from './table-harness-filters';
+  MatCellHarness as BaseMatCellHarness,
+  MatHeaderCellHarness as BaseMatHeaderCellHarness,
+  MatFooterCellHarness as BaseMatFooterCellHarness,
+  CellHarnessFilters
+} from '@angular/material/table/testing';
 
 /** Harness for interacting with an MDC-based Angular Material table cell. */
-export class MatCellHarness extends ContentContainerComponentHarness {
+export class MatCellHarness extends BaseMatCellHarness {
   /** The selector for the host element of a `MatCellHarness` instance. */
   static hostSelector = '.mat-mdc-cell';
 
@@ -24,34 +25,12 @@ export class MatCellHarness extends ContentContainerComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: CellHarnessFilters = {}): HarnessPredicate<MatCellHarness> {
-    return getCellPredicate(MatCellHarness, options);
-  }
-
-  /** Gets the cell's text. */
-  async getText(): Promise<string> {
-    return (await this.host()).text();
-  }
-
-  /** Gets the name of the column that the cell belongs to. */
-  async getColumnName(): Promise<string> {
-    const host = await this.host();
-    const classAttribute = await host.getAttribute('class');
-
-    if (classAttribute) {
-      const prefix = 'mat-column-';
-      const name = classAttribute.split(' ').map(c => c.trim()).find(c => c.startsWith(prefix));
-
-      if (name) {
-        return name.split(prefix)[1];
-      }
-    }
-
-    throw Error('Could not determine column name of cell.');
+    return BaseMatCellHarness._getCellPredicate(MatCellHarness, options);
   }
 }
 
 /** Harness for interacting with an MDC-based Angular Material table header cell. */
-export class MatHeaderCellHarness extends MatCellHarness {
+export class MatHeaderCellHarness extends BaseMatHeaderCellHarness {
   /** The selector for the host element of a `MatHeaderCellHarness` instance. */
   static hostSelector = '.mat-mdc-header-cell';
 
@@ -62,12 +41,12 @@ export class MatHeaderCellHarness extends MatCellHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: CellHarnessFilters = {}): HarnessPredicate<MatHeaderCellHarness> {
-    return getCellPredicate(MatHeaderCellHarness, options);
+    return BaseMatHeaderCellHarness._getCellPredicate(MatHeaderCellHarness, options);
   }
 }
 
 /** Harness for interacting with an MDC-based Angular Material table footer cell. */
-export class MatFooterCellHarness extends MatCellHarness {
+export class MatFooterCellHarness extends BaseMatFooterCellHarness {
   /** The selector for the host element of a `MatFooterCellHarness` instance. */
   static hostSelector = '.mat-mdc-footer-cell';
 
@@ -78,17 +57,6 @@ export class MatFooterCellHarness extends MatCellHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: CellHarnessFilters = {}): HarnessPredicate<MatFooterCellHarness> {
-    return getCellPredicate(MatFooterCellHarness, options);
+    return BaseMatFooterCellHarness._getCellPredicate(MatFooterCellHarness, options);
   }
-}
-
-
-function getCellPredicate<T extends MatCellHarness>(
-  type: ComponentHarnessConstructor<T>,
-  options: CellHarnessFilters): HarnessPredicate<T> {
-  return new HarnessPredicate(type, options)
-    .addOption('text', options.text,
-        (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text))
-    .addOption('columnName', options.columnName,
-        (harness, name) => HarnessPredicate.stringMatches(harness.getColumnName(), name));
 }

@@ -97,6 +97,11 @@ export const config = {
       '_MatTableDataSource',
       '_MAT_TEXT_COLUMN_TEMPLATE'
     ],
+    'mdc-table/testing': [
+      // Private symbols that are only exported for MDC.
+      '_MatTableHarnessBase',
+      '_MatRowHarnessBase'
+    ],
     'mdc-tooltip': [
       // Private symbols that are only exported for MDC.
       '_MatTooltipBase',

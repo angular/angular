@@ -3,5 +3,5 @@ import {runHarnessTests} from '@angular/material/table/testing/shared.spec';
 import {MatTableHarness} from './table-harness';
 
 describe('MDC-based MatTableHarness', () => {
-  runHarnessTests(MatTableModule, MatTableHarness);
+  runHarnessTests(MatTableModule, MatTableHarness as any);
 });

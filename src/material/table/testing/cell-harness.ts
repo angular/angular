@@ -24,7 +24,7 @@ export class MatCellHarness extends ContentContainerComponentHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: CellHarnessFilters = {}): HarnessPredicate<MatCellHarness> {
-    return getCellPredicate(MatCellHarness, options);
+    return MatCellHarness._getCellPredicate(MatCellHarness, options);
   }
 
   /** Gets the cell's text. */
@@ -48,6 +48,16 @@ export class MatCellHarness extends ContentContainerComponentHarness {
 
     throw Error('Could not determine column name of cell.');
   }
+
+  protected static _getCellPredicate<T extends MatCellHarness>(
+    type: ComponentHarnessConstructor<T>,
+    options: CellHarnessFilters): HarnessPredicate<T> {
+    return new HarnessPredicate(type, options)
+      .addOption('text', options.text,
+          (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text))
+      .addOption('columnName', options.columnName,
+          (harness, name) => HarnessPredicate.stringMatches(harness.getColumnName(), name));
+  }
 }
 
 /** Harness for interacting with a standard Angular Material table header cell. */
@@ -62,7 +72,7 @@ export class MatHeaderCellHarness extends MatCellHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: CellHarnessFilters = {}): HarnessPredicate<MatHeaderCellHarness> {
-    return getCellPredicate(MatHeaderCellHarness, options);
+    return MatHeaderCellHarness._getCellPredicate(MatHeaderCellHarness, options);
   }
 }
 
@@ -78,17 +88,6 @@ export class MatFooterCellHarness extends MatCellHarness {
    * @return a `HarnessPredicate` configured with the given options.
    */
   static with(options: CellHarnessFilters = {}): HarnessPredicate<MatFooterCellHarness> {
-    return getCellPredicate(MatFooterCellHarness, options);
+    return MatFooterCellHarness._getCellPredicate(MatFooterCellHarness, options);
   }
-}
-
-
-function getCellPredicate<T extends MatCellHarness>(
-  type: ComponentHarnessConstructor<T>,
-  options: CellHarnessFilters): HarnessPredicate<T> {
-  return new HarnessPredicate(type, options)
-    .addOption('text', options.text,
-        (harness, text) => HarnessPredicate.stringMatches(harness.getText(), text))
-    .addOption('columnName', options.columnName,
-        (harness, name) => HarnessPredicate.stringMatches(harness.getColumnName(), name));
 }
