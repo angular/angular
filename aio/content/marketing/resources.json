@@ -388,7 +388,7 @@
             "url": "https://mdbootstrap.com/docs/angular/"
           },
           "mcc": {
-            "desc": "Material components made by the community",
+            "desc": "Material components made by the community that includes Color Picker, Timer Picker, Speed Dial and Scrollspy",
             "logo": "",
             "title": "Material Community Components",
             "url": "https://github.com/tiaguinho/material-community-components"
