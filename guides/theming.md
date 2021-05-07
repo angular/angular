@@ -318,7 +318,7 @@ file. The approach for this loading depends on your application.
 ### Scoping style customizations
 
 You can use Angular Material's Sass mixins to customize component styles within a specific scope
-in your application. The CSS rule declaration which you include a Sass mixin determines its scope.
+in your application. The CSS rule declaration in which you include a Sass mixin determines its scope.
 The example below shows how to customize the color of all buttons inside elements marked with the
 `.my-special-section` CSS class.
 
