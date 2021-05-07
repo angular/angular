@@ -28,7 +28,7 @@ By convention, the module class name is `AppRoutingModule` and it belongs in the
 
 Use the CLI to generate it.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate module app-routing --flat --module=app
 </code-example>
 
@@ -120,7 +120,7 @@ because `AppModule` imports `AppRoutingModule` which exported `RouterModule`. Th
 
 You should still be running with this CLI command.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng serve
 </code-example>
 
@@ -174,7 +174,7 @@ So far there's only the heroes view.
 
 Add a `DashboardComponent` using the CLI:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate component dashboard
 </code-example>
 

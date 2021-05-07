@@ -15,7 +15,7 @@ You can apply these settings at the workspace and project level.
 
 Using the basic `ng new` command to create a new workspace and application automatically uses strict mode, as in the following command:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 
 ng new [project-name]
 
@@ -23,7 +23,7 @@ ng new [project-name]
 
 To create a new application in the strict mode within an existing non-strict workspace, run the following command:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 
 ng generate application [project-name] --strict
 

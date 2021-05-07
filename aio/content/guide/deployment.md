@@ -29,7 +29,7 @@ You will need two terminals to get the live-reload experience.
 
 * On the first terminal, run the [`ng build` command](cli/build) in *watch* mode to compile the application to the `dist` folder.
 
-  <code-example language="none" class="code-shell">
+  <code-example language="sh">
 
    ng build --watch
 
@@ -39,7 +39,7 @@ You will need two terminals to get the live-reload experience.
 
 * On the second terminal, install a web server (such as [lite-server](https://github.com/johnpapa/lite-server)), and run it against the output folder. For example:
 
-  <code-example language="none" class="code-shell">
+  <code-example language="sh">
 
    lite-server --baseDir="dist/project-name"
 
@@ -61,7 +61,7 @@ When you add a package with deployment capability, it'll automatically update yo
 
 For example, the following command automatically deploys a project to Firebase.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh">
 ng add @angular/fire
 ng deploy
 </code-example>
@@ -90,12 +90,11 @@ For the simplest deployment, create a production build and copy the output direc
 
 1. Start with the production build:
 
-  <code-example language="none" class="code-shell">
+  <code-example language="sh">
 
     ng build
 
   </code-example>
-
 
 2. Copy _everything_ within the output folder (`dist/project-name/` by default) to a folder on the server.
 
@@ -121,6 +120,7 @@ To deploy your Angular application to [GitHub Pages](https://help.github.com/art
   git branch -M main
   git push -u origin main
   ```
+
   When you paste these commands from GitHub, they run automatically.
 
 1. Create and check out a `git` branch named `gh-pages`.
@@ -133,7 +133,7 @@ To deploy your Angular application to [GitHub Pages](https://help.github.com/art
 
   Be sure to include the slashes on either side of your project name as in `/your_project_name/`.
 
-  <code-example language="none" class="code-shell">
+  <code-example language="sh">
 
     ng build --output-path docs --base-href /your_project_name/
 
@@ -222,7 +222,7 @@ modified to serve `index.html`:
 
 * [Ruby](https://www.ruby-lang.org/): create a Ruby server using ([sinatra](http://sinatrarb.com/)) with a basic Ruby file that configures the server `server.rb`:
 
-  ``` ruby
+  ```ruby
   require 'sinatra'
 
   # Folder structure
@@ -385,7 +385,7 @@ tool is a great way to inspect the generated JavaScript bundles after a producti
 
 Install `source-map-explorer`:
 
-<code-example language="none" class="code-shell">
+<code-example language="sh">
 
   npm install source-map-explorer --save-dev
 
@@ -393,7 +393,7 @@ Install `source-map-explorer`:
 
 Build your application for production _including the source maps_
 
-<code-example language="none" class="code-shell">
+<code-example language="sh">
 
   ng build --source-map
 
@@ -401,7 +401,7 @@ Build your application for production _including the source maps_
 
 List the generated bundles in the `dist/project-name/` folder.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh">
 
   ls dist/project-name/*.js
 
@@ -410,7 +410,7 @@ List the generated bundles in the `dist/project-name/` folder.
 Run the explorer to generate a graphical representation of one of the bundles.
 The following example displays the graph for the _main_ bundle.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh">
 
   node_modules/.bin/source-map-explorer dist/project-name/main*
 
@@ -657,7 +657,7 @@ In `angular.json` add two new configuration sections under the `build` and `serv
 
 You can then run the `ng serve` command with this configuration. Make sure to replace `<app-name>` (in `"<app-name>:build:es5"`) with the actual name of the app, as it appears under `projects` in `angular.json`. For example, if your application name is `myAngularApp` the configuration will become `"browserTarget": "myAngularApp:build:es5"`.
 
-<code-example language="none" class="code-shell">
+<code-example language="sh">
 
 ng serve --configuration es5
 
@@ -698,7 +698,7 @@ Create a new file, `tsconfig-es5.spec.json` next to `tsconfig.spec.json` with th
 
 You can then run the tests with this configuration
 
-<code-example language="none" class="code-shell">
+<code-example language="sh">
 
 ng test --configuration es5
 

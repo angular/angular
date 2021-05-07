@@ -87,7 +87,7 @@ This file incorporates the mandatory and many of the optional polyfills as JavaS
 
 For example, if you need the optional [web animations polyfill](https://caniuse.com/web-animation), you could install it with `npm`, using the following command (or the `yarn` equivalent):
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   # install the optional web animations polyfill
   npm install --save web-animations-js
 </code-example>
