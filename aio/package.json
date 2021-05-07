@@ -108,7 +108,7 @@
     "@angular/compiler-cli": "12.0.0-rc.2",
     "@swc/cli": "^0.1.36",
     "@swc/core": "^1.2.51",
-    "@types/jasmine": "~3.6.9",
+    "@types/jasmine": "~3.7.0",
     "@types/lunr": "^2.3.3",
     "@types/node": "^12.7.9",
     "@types/stemmer": "^1.0.2",
