@@ -28,7 +28,7 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ThemePalette} from '@angular/material-experimental/mdc-core';
-import {MDCListAdapter} from '@material/list';
+import {MDCListAdapter, numbers as mdcListNumbers} from '@material/list';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {getInteractiveListAdapter, MatInteractiveListBase} from './interactive-list-base';
@@ -141,34 +141,28 @@ export class MatSelectionList extends MatInteractiveListBase<MatListOption>
     // binding can no longer be changed.
     this._initialized = true;
 
-    // Update the options if a control value has been set initially.
+    // Update the options if a control value has been set initially. Note that this should happen
+    // before watching for selection changes as otherwise we would sync options with MDC multiple
+    // times as part of view initialization (also the foundation would not be initialized yet).
     if (this._value) {
       this._setOptionsFromValues(this._value);
     }
 
-    // Sync external changes to the model back to the options.
-    this.selectedOptions.changed.pipe(takeUntil(this._destroyed)).subscribe(event => {
-      if (event.added) {
-        for (let item of event.added) {
-          item.selected = true;
-        }
-      }
+    // Start monitoring the selected options so that the list foundation can be
+    // updated accordingly.
+    this._watchForSelectionChange();
 
-      if (event.removed) {
-        for (let item of event.removed) {
-          item.selected = false;
-        }
-      }
+    // Initialize the list foundation, including the initial `layout()` invocation.
+    super.ngAfterViewInit();
 
-      // Sync the newly selected options with the foundation. Also reset tabindex for all
-      // items if the list is currently not focused. We do this so that always the first
-      // selected list item is focused when users tab into the selection list.
+    // List options can be pre-selected using the `selected` input. We need to sync the selected
+    // options after view initialization with the foundation so that focus can be managed
+    // accordingly. Note that this needs to happen after the initial `layout()` call because the
+    // list wouldn't know about multi-selection and throw.
+    if (this._items.length !== 0) {
       this._syncSelectedOptionsWithFoundation();
       this._resetTabindexForItemsIfBlurred();
-    });
-
-    // Complete the list foundation initialization.
-    super.ngAfterViewInit();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -262,13 +256,37 @@ export class MatSelectionList extends MatInteractiveListBase<MatListOption>
     }
   }
 
+  private _watchForSelectionChange() {
+    // Sync external changes to the model back to the options.
+    this.selectedOptions.changed.pipe(takeUntil(this._destroyed)).subscribe(event => {
+      if (event.added) {
+        for (let item of event.added) {
+          item.selected = true;
+        }
+      }
+
+      if (event.removed) {
+        for (let item of event.removed) {
+          item.selected = false;
+        }
+      }
+
+      // Sync the newly selected options with the foundation. Also reset tabindex for all
+      // items if the list is currently not focused. We do this so that always the first
+      // selected list item is focused when users tab into the selection list.
+      this._syncSelectedOptionsWithFoundation();
+      this._resetTabindexForItemsIfBlurred();
+    });
+  }
+
   private _syncSelectedOptionsWithFoundation() {
     if (this._multiple) {
       this._foundation.setSelectedIndex(this.selectedOptions.selected
           .map(o => this._itemsArr.indexOf(o)));
     } else {
       const selected = this.selectedOptions.selected[0];
-      const index = selected === undefined ? -1 : this._itemsArr.indexOf(selected);
+      const index = selected === undefined ?
+          mdcListNumbers.UNSET_INDEX : this._itemsArr.indexOf(selected);
       this._foundation.setSelectedIndex(index);
     }
   }

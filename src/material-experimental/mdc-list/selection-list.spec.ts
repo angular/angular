@@ -289,17 +289,24 @@ describe('MDC-based MatSelectionList without forms', () => {
       expect(listOptions.slice(1).every(o => o.nativeElement.tabIndex === -1)).toBe(true);
     });
 
-    it('should focus the previously focused option when the list takes focus a second time',
-        fakeAsync(() => {
-      expect(listOptions[0].nativeElement.tabIndex).toBe(0);
-      expect(listOptions[1].nativeElement.tabIndex).toBe(-1);
+    it('should focus the first selected option when list receives focus', fakeAsync(() => {
+      dispatchMouseEvent(listOptions[2].nativeElement, 'click');
+      fixture.detectChanges();
 
-      dispatchFakeEvent(listOptions[1].nativeElement, 'focusin', true);
-      dispatchFakeEvent(listOptions[1].nativeElement, 'focusout', true);
-      tick(1);
+      expect(listOptions.map(o => o.nativeElement.tabIndex)).toEqual([-1, -1, 0, -1, -1]);
 
-      expect(listOptions[0].nativeElement.tabIndex).toBe(-1);
-      expect(listOptions[1].nativeElement.tabIndex).toBe(0);
+      dispatchMouseEvent(listOptions[1].nativeElement, 'click');
+      fixture.detectChanges();
+
+      expect(listOptions.map(o => o.nativeElement.tabIndex)).toEqual([-1, 0, -1, -1, -1]);
+
+      // De-select both options to ensure that the first item in the list-item
+      // becomes the designated option for focus.
+      dispatchMouseEvent(listOptions[1].nativeElement, 'click');
+      dispatchMouseEvent(listOptions[2].nativeElement, 'click');
+      fixture.detectChanges();
+
+      expect(listOptions.map(o => o.nativeElement.tabIndex)).toEqual([0, -1, -1, -1, -1]);
     }));
 
     it('should focus previous item when press UP ARROW', () => {
@@ -567,7 +574,7 @@ describe('MDC-based MatSelectionList without forms', () => {
 
   describe('with list option selected', () => {
     let fixture: ComponentFixture<SelectionListWithSelectedOption>;
-    let listItemEl: DebugElement;
+    let listOptionElements: DebugElement[];
     let selectionList: DebugElement;
 
     beforeEach(waitForAsync(() => {
@@ -581,16 +588,28 @@ describe('MDC-based MatSelectionList without forms', () => {
 
     beforeEach(waitForAsync(() => {
       fixture = TestBed.createComponent(SelectionListWithSelectedOption);
-      listItemEl = fixture.debugElement.query(By.directive(MatListOption))!;
+      listOptionElements = fixture.debugElement.queryAll(By.directive(MatListOption))!;
       selectionList = fixture.debugElement.query(By.directive(MatSelectionList))!;
       fixture.detectChanges();
     }));
 
     it('should set its initial selected state in the selectedOptions', () => {
-      let optionEl = listItemEl.injector.get<MatListOption>(MatListOption);
+      let options = listOptionElements.map(optionEl =>
+          optionEl.injector.get<MatListOption>(MatListOption));
       let selectedOptions = selectionList.componentInstance.selectedOptions;
-      expect(selectedOptions.isSelected(optionEl)).toBeTruthy();
+      expect(selectedOptions.isSelected(options[0])).toBeFalse();
+      expect(selectedOptions.isSelected(options[1])).toBeTrue();
+      expect(selectedOptions.isSelected(options[2])).toBeTrue();
+      expect(selectedOptions.isSelected(options[3])).toBeFalse();
     });
+
+    it('should focus the first selected option on first focus if an item is pre-selected',
+        fakeAsync(() => {
+      // MDC manages the focus through setting a `tabindex` on the designated list item. We
+      // assert that the proper tabindex is set on the pre-selected option at index 1, and
+      // ensure that other options are not reachable through tab.
+      expect(listOptionElements.map(el => el.nativeElement.tabIndex)).toEqual([-1, 0, -1, -1]);
+    }));
   });
 
   describe('with option disabled', () => {
@@ -1414,7 +1433,10 @@ class SelectionListWithDisabledOption {
 
 @Component({template: `
   <mat-selection-list>
-    <mat-list-option [selected]="true">Item</mat-list-option>
+    <mat-list-option>Not selected - Item #1</mat-list-option>
+    <mat-list-option [selected]="true">Pre-selected - Item #2</mat-list-option>
+    <mat-list-option [selected]="true">Pre-selected - Item #3</mat-list-option>
+    <mat-list-option>Not selected - Item #4</mat-list-option>
   </mat-selection-list>`})
 class SelectionListWithSelectedOption {
 }

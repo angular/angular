@@ -82,6 +82,10 @@ export const config = {
       'should work in a step'
     ],
     'mdc-list': [
+      // MDC does focus previously focused options, but rather always selects the first selected
+      // option. We have different test in the MDC-based list that captures this behavior.
+      'should focus the previously focused option when the list takes focus a second time',
+
       // TODO: these tests need to be double-checked for missing functionality.
       'should not apply any additional class to a list without lines',
       'should not add the mat-list-single-selected-option class (in multiple mode)',
