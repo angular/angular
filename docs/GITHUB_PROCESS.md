@@ -1,6 +1,6 @@
 <a name="conversation-locking"></a>
 # Automatic conversation locking
-Closed issues and pull requests are locked automatically after 30 days of inactivity. 
+Closed issues and pull requests are locked automatically after 30 days of inactivity.
 
 ## I want to comment on a locked conversation, what should I do?
 When an issue has been closed and inactive for over 30 days, the original context is likely outdated.
@@ -17,26 +17,27 @@ providing any of the additional information the team needs to investigate.
 # Feature request process
 
 To manage the requests we receive at scale, we introduced automation in our feature request
-management process. After we triage a ticket and we identify it as a feature request, it goes
+management process. After we triage an issue and we identify it as a feature request, it goes
 through several steps.
 
 ## Manual review
 
-First, we manually review to verify if it aligns with any of the existing roadmap efforts. If it
-does, we prioritize it. Alternatively, we keep it open and our feature request bot initiates a
-voting process.
+First, we manually review the issue to see if it aligns with any of the existing roadmap efforts. If
+it does, we prioritize it accordingly. Alternatively, we keep it open and our feature request bot
+initiates a voting process.
 
 ## Voting phase
 
 To include the community in the feature request process, we open voting for 60 days. Anyone can cast
-a vote for the request with a thump-up (👍) reaction. If the feature request reaches 20 or more
-upvotes, we review it again manually. Alternatively, the bot closes the request.
+a vote for the request with a thumbs-up (👍) reaction. When a feature request reaches 20 or more
+upvotes, we formally consider the feature request. Alternatively, the bot closes the request.
 
 ## Consideration phase
 
-If the feature request receives 20 or more votes, we verify if we can afford to maintain it and
-whether it aligns with the long-term vision of Angular. If the answers of both questions are yes,
-we prioritize the request, alternatively we close it.
+If the feature request receives 20 or more votes, we verify the Angular team can afford to maintain
+the feature and whether it aligns with the long-term vision of Angular. If the answers to both of
+these questions are yes, we prioritize the request, alternatively we close it with an explanation of
+our decision.
 
 ## Diagram
 
