@@ -4215,6 +4215,14 @@ var PullRequestMergeTask = /** @class */ (function () {
                                     missing.push('public_repo');
                                 }
                             }
+                            // Pull requests can modify Github action workflow files. In such cases Github requires us to
+                            // push with a token that has the `workflow` oauth scope set. To avoid errors when the
+                            // caretaker intends to merge such PRs, we ensure the scope is always set on the token before
+                            // the merge process starts.
+                            // https://docs.github.com/en/developers/apps/scopes-for-oauth-apps#available-scopes
+                            if (!scopes.includes('workflow')) {
+                                missing.push('workflow');
+                            }
                         })];
                     case 1:
                         hasOauthScopes = _c.sent();
