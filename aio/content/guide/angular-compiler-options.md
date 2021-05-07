@@ -103,7 +103,7 @@ This allows `$localize` messages in application code to use the same id as ident
 
 Enables the [Ivy](guide/ivy) compilation and rendering pipeline. Default is `true`, as of version 9. In version 9, you can [opt out of Ivy](guide/ivy#opting-out-of-angular-ivy) to continue using the previous compiler, View Engine.
 
-For library projects generated with the CLI, the `prod` configuration default is `false` in version 9.
+For library projects generated with the CLI, the production configuration default is `false` in version 9.
 
 ### `enableResourceInlining`
 
@@ -111,7 +111,7 @@ When `true`, replaces the `templateUrl` and `styleUrls` property in all `@Compon
 
 When enabled, the `.js` output of `ngc` does not include any lazy-loaded template or style URLs.
 
-For library projects generated with the CLI, the dev configuration default is `true`.
+For library projects generated with the CLI, the development configuration default is `true`.
 
 
 {@a enablelegacytemplate}
@@ -184,7 +184,7 @@ When `true`, does not emit `.ngfactory.js` and `.ngstyle.js` files. This turns o
 
 Can be used to instruct the template compiler to produce `.metadata.json` files for distribution with an `npm` package while avoiding the production of `.ngfactory.js` and `.ngstyle.js` files that cannot be distributed to `npm`.
 
-For library projects generated with the CLI, the dev configuration default is `true`.
+For library projects generated with the CLI, the development configuration default is `true`.
 
 ### `strictMetadataEmit`
 
@@ -202,7 +202,7 @@ If the client of a library intends to use a symbol in an annotation, the templat
 This option allows detection of these errors during the build phase of
 the library and is used, for example, in producing Angular libraries themselves.
 
-For library projects generated with the CLI, the dev configuration default is `true`.
+For library projects generated with the CLI, the development configuration default is `true`.
 
 ### `strictInjectionParameters`
 
