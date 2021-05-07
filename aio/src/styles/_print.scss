@@ -70,7 +70,7 @@
     }
 
     code-example {
-        &.code-shell, &[language=sh], &[language=bash] {
+        &[language=sh], &[language=bash] {
             background: none;
 
             .pnk, .blk, .pln, .otl, .kwd, .typ, .tag, .str, .atv, .atn, .com, .lit, .pun, .dec {

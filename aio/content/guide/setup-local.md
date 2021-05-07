@@ -1,9 +1,7 @@
 # Setting up the local environment and workspace
 
-
 This guide explains how to set up your environment for Angular development using the [Angular CLI tool](cli "CLI command reference").
 It includes information about prerequisites, installing the CLI, creating an initial workspace and starter app, and running that app locally to verify your setup.
-
 
 <div class="callout is-helpful">
 <header>Try Angular without local setup</header>
@@ -60,7 +58,7 @@ You use the Angular CLI to create projects, generate application and library cod
 
 To install the Angular CLI, open a terminal window and run the following command:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   npm install -g @angular/cli
 </code-example>
 
@@ -74,7 +72,7 @@ To create a new workspace and initial starter app:
 
 1. Run the CLI command `ng new` and provide the name `my-app`, as shown here:
 
-    <code-example language="sh" class="code-shell">
+   <code-example language="sh">
       ng new my-app
 
     </code-example>
@@ -95,7 +93,7 @@ The Angular CLI includes a server, so that you can build and serve your app loca
 
 1. Run the following command:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   cd my-app
   ng serve --open
 </code-example>

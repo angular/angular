@@ -36,7 +36,7 @@ The Angular CLI downloads and installs everything you need to test an Angular ap
 The project you create with the CLI is immediately ready to test.
 Just run the [`ng test`](cli/test) CLI command:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng test
 </code-example>
 
@@ -45,7 +45,7 @@ and launches the [Karma test runner](https://karma-runner.github.io).
 
 The console output looks a bit like this:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 10% building modules 1/1 modules 0 active
 ...INFO [karma]: Karma v1.7.1 server started at http://0.0.0.0:9876/
 ...INFO [launcher]: Launching browser Chrome ...
@@ -324,7 +324,7 @@ customLaunchers: {
 
 Now you can run the following command to use the `--no-sandbox` flag:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng test --no-watch --no-progress --browsers=ChromeHeadlessCI
 </code-example>
 
