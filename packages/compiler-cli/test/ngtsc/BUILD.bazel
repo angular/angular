@@ -26,6 +26,7 @@ jasmine_node_test(
     timeout = "long",
     bootstrap = ["//tools/testing:node_no_angular_es5"],
     data = [
+        "//packages/compiler-cli/src/ngtsc/testing/fake_common:npm_package",
         "//packages/compiler-cli/src/ngtsc/testing/fake_core:npm_package",
     ],
     shard_count = 4,
