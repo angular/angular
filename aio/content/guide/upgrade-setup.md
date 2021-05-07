@@ -31,8 +31,7 @@ Setting up a new project on your machine is quick and easy with the [QuickStart 
 
 Perform the _clone-to-launch_ steps with these terminal commands.
 
-
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   git clone https://github.com/angular/quickstart.git quickstart
   cd quickstart
   npm install
@@ -60,8 +59,7 @@ Perform the _clone-to-launch_ steps with these terminal commands.
 <a href="https://github.com/angular/quickstart/archive/master.zip" title="Download the QuickStart seed repository">Download the QuickStart seed</a>
 and unzip it into your project folder. Then perform the remaining steps with these terminal commands.
 
-
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   cd quickstart
   npm install
   npm start
@@ -106,7 +104,7 @@ Open a terminal window in the project folder and enter the following commands fo
 
 ### OS/X (bash)
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   xargs rm -rf &lt; non-essential-files.osx.txt
   rm src/app/*.spec*.ts
   rm non-essential-files.osx.txt
@@ -117,7 +115,7 @@ Open a terminal window in the project folder and enter the following commands fo
 
 ### Windows
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   for /f %i in (non-essential-files.txt) do del %i /F /S /Q
   rd .git /s /q
   rd e2e /s /q

@@ -249,16 +249,16 @@ The <code class="no-auto-link">item</code> property is `true`.
 
 Ideally, you should source code snippets [from working sample code](#from-code-samples), though there are times when an inline snippet is necessary.
 
-For terminal input and output, place the content between `<code-example>` tags, set the CSS class to `code-shell`, and set the language attribute to `sh` as in this example:
+For terminal input and output, place the content between `<code-example>` tags and set the language attribute to `sh` as in this example:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 
   npm start
 
 </code-example>
 
 ```html
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 
   npm start
 
@@ -405,7 +405,7 @@ Specify the `<code-example>` output with the following attributes:
   The `number` option starts line numbering at the given value.
   For example, `linenums=4` sets the starting line number to 4.
 
-* `class`: code snippets can be styled with the CSS classes `no-box`, `code-shell`, and `avoid`.
+* `class`: code snippets can be styled with the CSS classes `no-box` and `avoid`.
 
 * `hideCopy`: hides the copy button.
 

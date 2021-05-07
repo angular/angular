@@ -20,7 +20,7 @@ The `HeroDetailComponent` will present details of a selected hero.
 
 Use the Angular CLI to generate a new component named `hero-detail`.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate component hero-detail
 </code-example>
 

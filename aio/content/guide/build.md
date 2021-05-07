@@ -94,6 +94,7 @@ export class AppComponent {
   title = 'app works!';
 }
 ```
+
 {@a file-replacement}
 
 ## Configure target-specific file replacements
@@ -140,7 +141,7 @@ Any option that your build supports can be overridden in a build target configur
 
 To build using the staging configuration, run the following command:
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
  ng build --configuration=staging
 </code-example>
 
@@ -503,7 +504,7 @@ module.exports = PROXY_CONFIG;
 If you work behind a corporate proxy, the backend cannot directly proxy calls to any URL outside your local network.
 In this case, you can configure the backend proxy to redirect calls through your corporate proxy using an agent:
 
-<code-example language="none" class="code-shell">
+<code-example language="sh">
 npm install --save-dev https-proxy-agent
 </code-example>
 

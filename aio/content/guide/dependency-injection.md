@@ -16,7 +16,7 @@ See the <live-example></live-example> for a working example containing the code 
 
 To generate a new `HeroService` class in the `src/app/heroes` folder use the following [Angular CLI](cli) command.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 ng generate service heroes/hero
 </code-example>
 
