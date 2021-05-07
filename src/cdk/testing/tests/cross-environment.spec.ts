@@ -246,6 +246,22 @@ export function crossEnvironmentSpecs(
       const subcomps = await harness.directAncestorSelectorSubcomponent();
       expect(subcomps.length).toBe(2);
     });
+
+    it('should handle a compound selector with an ancestor', async () => {
+      const elements = await harness.compoundSelectorWithAncestor();
+
+      expect(await parallel(() => elements.map(element => element.getText()))).toEqual([
+        'Div inside parent',
+        'Span inside parent'
+      ]);
+    });
+
+    it('should handle a selector with comma inside attribute with an ancestor', async () => {
+      const element = await harness.quotedContentSelectorWithAncestor();
+
+      expect(element).toBeTruthy();
+      expect(await element.getText()).toBe('Has comma inside attribute');
+    });
   });
 
   describe('HarnessPredicate', () => {

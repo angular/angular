@@ -57,6 +57,15 @@
   <test-sub title="other 1"></test-sub>
   <test-sub title="other 2"></test-sub>
 </div>
+<div class="parent">
+  <div class="some-div">Div inside parent</div>
+  <div class="some-span">Span inside parent</div>
+</div>
+<div class="some-div">Div outside parent</div>
+<div class="some-span">Span outside parent</div>
+<div class="quoted-comma-parent">
+  <div has-comma="a,b">Has comma inside attribute</div>
+</div>
 <div class="task-state-tests">
   <button (click)="runTaskOutsideZone()" id="task-state-test-trigger">
     Run task outside zone

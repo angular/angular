@@ -520,9 +520,25 @@ export class HarnessPredicate<T extends ComponentHarness> {
 
   /** Gets the selector used to find candidate elements. */
   getSelector() {
-    return this._ancestor.split(',')
-        .map(part => `${part.trim()} ${this.harnessType.hostSelector}`.trim())
-        .join(',');
+    // We don't have to go through the extra trouble if there are no ancestors.
+    if (!this._ancestor) {
+      return (this.harnessType.hostSelector || '').trim();
+    }
+
+    const [ancestors, ancestorPlaceholders] = _splitAndEscapeSelector(this._ancestor);
+    const [selectors, selectorPlaceholders] =
+      _splitAndEscapeSelector(this.harnessType.hostSelector || '');
+    const result: string[] = [];
+
+    // We have to add the ancestor to each part of the host compound selector, otherwise we can get
+    // incorrect results. E.g. `.ancestor .a, .ancestor .b` vs `.ancestor .a, .b`.
+    ancestors.forEach(escapedAncestor => {
+      const ancestor = _restoreSelector(escapedAncestor, ancestorPlaceholders);
+      return selectors.forEach(escapedSelector =>
+        result.push(`${ancestor} ${_restoreSelector(escapedSelector, selectorPlaceholders)}`));
+    });
+
+    return result.join(', ');
   }
 
   /** Adds base options common to all harness types. */
@@ -559,4 +575,35 @@ function _valueAsString(value: unknown) {
     // in this case the best we can do is report the value as `{...}`.
     return '{...}';
   }
+}
+
+/**
+ * Splits up a compound selector into its parts and escapes any quoted content. The quoted content
+ * has to be escaped, because it can contain commas which will throw throw us off when trying to
+ * split it.
+ * @param selector Selector to be split.
+ * @returns The escaped string where any quoted content is replaced with a placeholder. E.g.
+ * `[foo="bar"]` turns into `[foo=__cdkPlaceholder-0__]`. Use `_restoreSelector` to restore
+ * the placeholders.
+ */
+function _splitAndEscapeSelector(selector: string): [parts: string[], placeholders: string[]] {
+  const placeholders: string[] = [];
+
+  // Note that the regex doesn't account for nested quotes so something like `"ab'cd'e"` will be
+  // considered as two blocks. It's a bit of an edge case, but if we find that it's a problem,
+  // we can make it a bit smarter using a loop. Use this for now since it's more readable and
+  // compact. More complete implementation:
+  // https://github.com/angular/angular/blob/bd34bc9e89f18a/packages/compiler/src/shadow_css.ts#L655
+  const result = selector.replace(/(["'][^["']*["'])/g, (_, keep) => {
+    const replaceBy = `__cdkPlaceholder-${placeholders.length}__`;
+    placeholders.push(keep);
+    return replaceBy;
+  });
+
+  return [result.split(',').map(part => part.trim()), placeholders];
+}
+
+/** Restores a selector whose content was escaped in `_splitAndEscapeSelector`. */
+function _restoreSelector(selector: string, placeholders: string[]): string {
+  return selector.replace(/__cdkPlaceholder-(\d+)__/g, (_, index) => placeholders[+index]);
 }
