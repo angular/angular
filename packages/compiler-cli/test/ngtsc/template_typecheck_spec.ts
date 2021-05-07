@@ -940,6 +940,43 @@ export declare class AnimationEvent {
       env.driveMain();
     });
 
+    // https://github.com/angular/angular/issues/40125
+    it('should accept NgFor iteration when trackBy is used with a wider type', () => {
+      env.tsconfig({strictTemplates: true});
+      env.write('test.ts', `
+        import {CommonModule} from '@angular/common';
+        import {Component, NgModule} from '@angular/core';
+
+        interface Base {
+          id: string;
+        }
+
+        interface Derived extends Base {
+          name: string;
+        }
+
+        @Component({
+          selector: 'test',
+          template: '<div *ngFor="let derived of derivedList; trackBy: trackByBase">{{derived.name}}</div>',
+        })
+        class TestCmp {
+          derivedList!: Derived[];
+
+          trackByBase(index: number, item: Base): string {
+            return item.id;
+          }
+        }
+
+        @NgModule({
+          declarations: [TestCmp],
+          imports: [CommonModule],
+        })
+        class Module {}
+    `);
+
+      env.driveMain();
+    });
+
     it('should infer the context of NgFor', () => {
       env.tsconfig({strictTemplates: true});
       env.write('test.ts', `

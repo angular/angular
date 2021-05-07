@@ -952,7 +952,7 @@ export declare class TestabilityRegistry {
 }
 
 export declare interface TrackByFunction<T> {
-    (index: number, item: T): any;
+    <U extends T>(index: number, item: U): any;
 }
 
 export declare const TRANSLATIONS: InjectionToken<string>;
