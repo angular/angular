@@ -1,6 +1,6 @@
 import {TestBed, inject, fakeAsync} from '@angular/core/testing';
 import {Component, NgModule} from '@angular/core';
-import {dispatchMouseEvent} from '@angular/cdk/testing/private';
+import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {OverlayModule, OverlayContainer, Overlay} from '../index';
 import {OverlayOutsideClickDispatcher} from './overlay-outside-click-dispatcher';
 import {ComponentPortal} from '@angular/cdk/portal';
@@ -51,9 +51,7 @@ describe('OverlayOutsideClickDispatcher', () => {
     overlayTwo.dispose();
   });
 
-  it(
-    'should dispatch mouse click events to the attached overlays',
-    () => {
+  it('should dispatch mouse click events to the attached overlays', () => {
     const overlayOne = overlay.create();
     overlayOne.attach(new ComponentPortal(TestComponent));
     const overlayTwo = overlay.create();
@@ -80,26 +78,52 @@ describe('OverlayOutsideClickDispatcher', () => {
     overlayTwo.dispose();
   });
 
-  it(
-    'should dispatch mouse click events to the attached overlays even when propagation is stopped',
-    () => {
-    const overlayRef = overlay.create();
-    overlayRef.attach(new ComponentPortal(TestComponent));
-    const spy = jasmine.createSpy('overlay mouse click event spy');
-    overlayRef.outsidePointerEvents().subscribe(spy);
+  it('should dispatch auxiliary button click events to the attached overlays', () => {
+    const overlayOne = overlay.create();
+    overlayOne.attach(new ComponentPortal(TestComponent));
+    const overlayTwo = overlay.create();
+    overlayTwo.attach(new ComponentPortal(TestComponent));
 
-    outsideClickDispatcher.add(overlayRef);
+    const overlayOneSpy = jasmine.createSpy('overlayOne auxiliary click event spy');
+    const overlayTwoSpy = jasmine.createSpy('overlayTwo auxiliary click event spy');
+
+    overlayOne.outsidePointerEvents().subscribe(overlayOneSpy);
+    overlayTwo.outsidePointerEvents().subscribe(overlayTwoSpy);
+
+    outsideClickDispatcher.add(overlayOne);
+    outsideClickDispatcher.add(overlayTwo);
 
     const button = document.createElement('button');
     document.body.appendChild(button);
-    button.addEventListener('click', event => event.stopPropagation());
-    button.click();
+    dispatchFakeEvent(button, 'auxclick');
 
-    expect(spy).toHaveBeenCalled();
+    expect(overlayOneSpy).toHaveBeenCalled();
+    expect(overlayTwoSpy).toHaveBeenCalled();
 
     button.parentNode!.removeChild(button);
-    overlayRef.dispose();
+    overlayOne.dispose();
+    overlayTwo.dispose();
   });
+
+  it('should dispatch mouse click events to the attached overlays even when propagation is stopped',
+    () => {
+      const overlayRef = overlay.create();
+      overlayRef.attach(new ComponentPortal(TestComponent));
+      const spy = jasmine.createSpy('overlay mouse click event spy');
+      overlayRef.outsidePointerEvents().subscribe(spy);
+
+      outsideClickDispatcher.add(overlayRef);
+
+      const button = document.createElement('button');
+      document.body.appendChild(button);
+      button.addEventListener('click', event => event.stopPropagation());
+      button.click();
+
+      expect(spy).toHaveBeenCalled();
+
+      button.parentNode!.removeChild(button);
+      overlayRef.dispose();
+    });
 
   it('should dispose of the global click event handler correctly', () => {
     const overlayRef = overlay.create();
@@ -191,10 +215,8 @@ describe('OverlayOutsideClickDispatcher', () => {
     overlayRef.dispose();
   });
 
-  it(
-    'should not throw an error when when closing out related components via the' +
-      ' outsidePointerEvents emitter on background click',
-    fakeAsync(() => {
+  it('should not throw an error when when closing out related components via the ' +
+    'outsidePointerEvents emitter on background click', fakeAsync(() => {
       const firstOverlayRef = overlay.create();
       firstOverlayRef.attach(new ComponentPortal(TestComponent));
       const secondOverlayRef = overlay.create();
