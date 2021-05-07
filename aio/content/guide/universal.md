@@ -7,7 +7,7 @@ Angular Universal executes on the _server_, generating _static_ application page
 the client. This means that the application generally renders more quickly, giving users a chance to view the application
 layout before it becomes fully interactive.
 
-For a more detailed look at different techniques and concepts surrounding SSR, please check out this
+For a more detailed look at different techniques and concepts surrounding SSR, check out this
 [article](https://developers.google.com/web/updates/2019/02/rendering-on-the-web).
 
 You can easily prepare an application for server-side rendering using the [Angular CLI](guide/glossary#cli).
@@ -25,7 +25,7 @@ The CLI schematic `@nguniversal/express-engine` performs the required steps, as 
 
 The [Tour of Heroes tutorial](tutorial) is the foundation for this walkthrough.
 
-In this example, the Angular CLI compiles and bundles the Universal version of the app with the
+In this example, the Angular CLI compiles and bundles the Universal version of the application with the
 [Ahead-of-Time (AOT) compiler](guide/aot-compiler).
 A Node.js Express web server compiles HTML pages with Universal based on client requests.
 
@@ -58,7 +58,7 @@ The files marked with `*` are new and not in the original tutorial sample.
 
 ### Universal in action
 
-To start rendering your app with Universal on your local system, use the following command.
+To start rendering your application with Universal on your local system, use the following command.
 
 <code-example language="bash">
 npm run dev:ssr
@@ -67,7 +67,7 @@ npm run dev:ssr
 Open a browser and navigate to http://localhost:4200/.
 You should see the familiar Tour of Heroes dashboard page.
 
-Navigation via `routerLinks` works correctly because they use the native anchor (`<a>`) tags.
+Navigation using `routerLinks` works correctly because they use the native anchor (`<a>`) tags.
 You can go from the Dashboard to the Heroes page and back.
 You can click a hero on the Dashboard page to display its Details page.
 
@@ -78,11 +78,11 @@ you'll notice:
 * The *Back* and *Save* buttons on the Details page don't work.
 
 User events other than `routerLink` clicks aren't supported.
-You must wait for the full client app to bootstrap and run, or buffer the events using libraries like
+You must wait for the full client application to bootstrap and run, or buffer the events using libraries like
 [preboot](https://github.com/angular/preboot), which allow you to replay these events once the client-side scripts load.
 
-The transition from the server-rendered app to the client app happens quickly on a development machine, but you should
-always test your apps in real-world scenarios.
+The transition from the server-rendered application to the client application happens quickly on a development machine, but you should
+always test your applications in real-world scenarios.
 
 You can simulate a slower network to see the transition more clearly as follows:
 
@@ -91,12 +91,12 @@ You can simulate a slower network to see the transition more clearly as follows:
 dropdown on the far right of the menu bar.
 1. Try one of the "3G" speeds.
 
-The server-rendered application still launches quickly but the full client app may take seconds to load.
+The server-rendered application still launches quickly but the full client application may take seconds to load.
 
 {@a why-do-it}
 ## Why use server-side rendering?
 
-There are three main reasons to create a Universal version of your app.
+There are three main reasons to create a Universal version of your application.
 
 1. Facilitate web crawlers through [search engine optimization (SEO)](https://static.googleusercontent.com/media/www.google.com/en//webmasters/docs/search-engine-optimization-starter-guide.pdf)
 1. Improve performance on mobile and low-powered devices
@@ -110,32 +110,32 @@ Google, Bing, Facebook, Twitter, and other social media sites rely on web crawle
 make that content searchable on the web.
 These web crawlers may be unable to navigate and index your highly interactive Angular application as a human user could do.
 
-Angular Universal can generate a static version of your app that is easily searchable, linkable, and navigable without JavaScript.
+Angular Universal can generate a static version of your application that is easily searchable, linkable, and navigable without JavaScript.
 Universal also makes a site preview available since each URL returns a fully rendered page.
 
 {@a no-javascript}
 ### Improve performance on mobile and low-powered devices
 
 Some devices don't support JavaScript or execute JavaScript so poorly that the user experience is unacceptable.
-For these cases, you may require a server-rendered, no-JavaScript version of the app.
+For these cases, you may require a server-rendered, no-JavaScript version of the application.
 This version, however limited, may be the only practical alternative for
-people who otherwise couldn't use the app at all.
+people who otherwise couldn't use the application at all.
 
 {@a startup-performance}
 ### Show the first page quickly
 
 Displaying the first page quickly can be critical for user engagement.
 Pages that load faster perform better, [even with changes as small as 100ms](https://web.dev/shopping-for-speed-on-ebay/).
-Your app may have to launch faster to engage these users before they decide to do something else.
+Your application may have to launch faster to engage these users before they decide to do something else.
 
-With Angular Universal, you can generate landing pages for the app that look like the complete app.
+With Angular Universal, you can generate landing pages for the application that look like the complete application.
 The pages are pure HTML, and can display even if JavaScript is disabled.
 The pages don't handle browser events, but they _do_ support navigation through the site using [`routerLink`](guide/router-reference#router-link).
 
 In practice, you'll serve a static version of the landing page to hold the user's attention.
-At the same time, you'll load the full Angular app behind it.
+At the same time, you'll load the full Angular application behind it.
 The user perceives near-instant performance from the landing page
-and gets the full interactive experience after the full app loads.
+and gets the full interactive experience after the full application loads.
 
 {@a how-does-it-work}
 ## Universal web servers
@@ -148,7 +148,7 @@ The sample web server for this guide is based on the popular [Express](https://e
 
 <div class="alert is-helpful">
 
-  **Note:** _Any_ web server technology can serve a Universal app as long as it can call Universal's `renderModule()` function.
+  **Note:** _Any_ web server technology can serve a Universal application as long as it can call Universal's `renderModule()` function.
   The principles and decision points discussed here apply to any web server technology.
 
 </div>
@@ -172,7 +172,7 @@ Finally, the server returns the rendered page to the client.
 
 ### Working around the browser APIs
 
-Because a Universal app doesn't execute in the browser, some of the browser APIs and capabilities may be missing on the server.
+Because a Universal application doesn't execute in the browser, some of the browser APIs and capabilities may be missing on the server.
 
 For example, server-side applications can't reference browser-only global objects such as `window`, `document`, `navigator`, or `location`.
 
@@ -181,9 +181,9 @@ or [`DOCUMENT`](api/common/DOCUMENT); it may substitute adequately for these API
 If Angular doesn't provide it, it's possible to write new abstractions that delegate to the browser APIs while in the browser
 and to an alternative implementation while on the server (aka shimming).
 
-Similarly, without mouse or keyboard events, a server-side app can't rely on a user clicking a button to show a component.
-The app must determine what to render based solely on the incoming client request.
-This is a good argument for making the app [routable](guide/router).
+Similarly, without mouse or keyboard events, a server-side application can't rely on a user clicking a button to show a component.
+The application must determine what to render based solely on the incoming client request.
+This is a good argument for making the application [routable](guide/router).
 
 {@a universal-engine}
 ### Universal template engine
@@ -196,8 +196,8 @@ The important bit in the `server.ts` file is the `ngExpressEngine()` function.
 The `ngExpressEngine()` function is a wrapper around Universal's `renderModule()` function which turns a client's
 requests into server-rendered HTML pages. It accepts an object with the following properties:
 
-* `bootstrap`: The root `NgModule` or `NgModule` factory to use for bootstraping the app when rendering on the server. For the example app, it is `AppServerModule`. It's the bridge between the Universal server-side renderer and the Angular application.
-* `extraProviders`: This is optional and lets you specify dependency providers that apply only when rendering the app on the server. You can do this when your app needs information that can only be determined by the currently running server instance.
+* `bootstrap`: The root `NgModule` or `NgModule` factory to use for bootstraping the application when rendering on the server. For the example app, it is `AppServerModule`. It's the bridge between the Universal server-side renderer and the Angular application.
+* `extraProviders`: This is optional and lets you specify dependency providers that apply only when rendering the application on the server. You can do this when your application needs information that can only be determined by the currently running server instance.
 
 The `ngExpressEngine()` function returns a `Promise` callback that resolves to the rendered page.
 It's up to the engine to decide what to do with that page.
@@ -220,7 +220,7 @@ The web server must distinguish _app page requests_ from other kinds of requests
 
 It's not as simple as intercepting a request to the root address `/`.
 The browser could ask for one of the application routes such as `/dashboard`, `/heroes`, or `/detail:12`.
-In fact, if the app were only rendered by the server, _every_ app link clicked would arrive at the server
+In fact, if the application were only rendered by the server, _every_ application link clicked would arrive at the server
 as a navigation URL intended for the router.
 
 Fortunately, application routes have something in common: their URLs lack file extensions.
@@ -278,8 +278,8 @@ You don't need to do anything to make relative URLs work on the server.
 If, for some reason, you are not using an `@nguniversal/*-engine` package, you may need to handle it yourself.
 
 The recommended solution is to pass the full request URL to the `options` argument of [renderModule()](api/platform-server/renderModule) or [renderModuleFactory()](api/platform-server/renderModuleFactory) (depending on what you use to render `AppServerModule` on the server).
-This option is the least intrusive as it does not require any changes to the app.
-Here, "request URL" refers to the URL of the request as a response to which the app is being rendered on the server.
-For example, if the client requested `https://my-server.com/dashboard` and you are rendering the app on the server to respond to that request, `options.url` should be set to `https://my-server.com/dashboard`.
+This option is the least intrusive as it does not require any changes to the application.
+Here, "request URL" refers to the URL of the request as a response to which the application is being rendered on the server.
+For example, if the client requested `https://my-server.com/dashboard` and you are rendering the application on the server to respond to that request, `options.url` should be set to `https://my-server.com/dashboard`.
 
-Now, on every HTTP request made as part of rendering the app on the server, Angular can correctly resolve the request URL to an absolute URL, using the provided `options.url`.
+Now, on every HTTP request made as part of rendering the application on the server, Angular can correctly resolve the request URL to an absolute URL, using the provided `options.url`.
