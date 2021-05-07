@@ -22,6 +22,10 @@ export const ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES = [
     loadChildren: () => import('./search/file-not-found-search.module').then(m => m.FileNotFoundSearchModule)
   },
   {
+    selector: 'aio-major-version',
+    loadChildren: () => import('./major-version/major-version.module').then(m => m.MajorVersionModule)
+  },
+  {
     selector: 'aio-resource-list',
     loadChildren: () => import('./resource/resource-list.module').then(m => m.ResourceListModule)
   },
