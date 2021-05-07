@@ -37,7 +37,7 @@ You will need two terminals to get the live-reload experience.
 
   Like the `ng serve` command, this regenerates output files when source files change.
 
-- On the second terminal, install a web server (such as [lite-server](https://github.com/johnpapa/lite-server)), and run it against the output folder. For example:
+* On the second terminal, install a web server (such as [lite-server](https://github.com/johnpapa/lite-server)), and run it against the output folder. For example:
 
   <code-example language="sh">
 

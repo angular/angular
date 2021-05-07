@@ -258,7 +258,7 @@ For terminal input and output, place the content between `<code-example>` tags a
 </code-example>
 
 ```html
-<code-example language="sh"
+<code-example language="sh">
 
   npm start
 
