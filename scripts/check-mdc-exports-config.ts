@@ -1,6 +1,6 @@
 export const config = {
   // The MDC sidenav hasn't been implemented yet.
-  skippedPackages: ['mdc-sidenav'],
+  skippedPackages: ['mdc-sidenav', 'mdc-slider'],
   skippedExports: {
     'mdc-chips': [
       // These components haven't been implemented for MDC due to a different accessibility pattern.

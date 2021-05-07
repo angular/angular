@@ -65,6 +65,7 @@ export function dispatchPointerEvent(node: Node, type: string, clientX = 0, clie
  * Shorthand to dispatch a touch event on the specified coordinates.
  * @docs-private
  */
-export function dispatchTouchEvent(node: Node, type: string, x = 0, y = 0) {
-  return dispatchEvent(node, createTouchEvent(type, x, y));
+export function dispatchTouchEvent(node: Node, type: string, pageX = 0, pageY = 0, clientX = 0,
+                                   clientY = 0) {
+  return dispatchEvent(node, createTouchEvent(type, pageX, pageY, clientX, clientY));
 }

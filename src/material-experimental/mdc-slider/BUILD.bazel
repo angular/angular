@@ -17,7 +17,10 @@ ng_module(
         ["**/*.ts"],
         exclude = ["**/*.spec.ts"],
     ),
-    assets = [":slider_scss"] + glob(["**/*.html"]),
+    assets = [
+        ":slider_scss",
+        ":slider_thumb_scss",
+    ] + glob(["**/*.html"]),
     module_name = "@angular/material-experimental/mdc-slider",
     deps = [
         "//src/cdk/bidi",
@@ -35,6 +38,7 @@ sass_library(
     deps = [
         "//src/cdk/a11y:a11y_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
+        "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
     ],
 )
 
@@ -48,6 +52,11 @@ sass_binary(
         "//src/material-experimental/mdc-helpers:mdc_helpers_scss_lib",
         "//src/material-experimental/mdc-helpers:mdc_scss_deps_lib",
     ],
+)
+
+sass_binary(
+    name = "slider_thumb_scss",
+    src = "slider-thumb.scss",
 )
 
 ###########
@@ -66,8 +75,11 @@ ng_test_library(
         "//src/cdk/keycodes",
         "//src/cdk/platform",
         "//src/cdk/testing/private",
+        "//src/material/core",
         "@npm//@angular/forms",
         "@npm//@angular/platform-browser",
+        "@npm//@material/slider",
+        "@npm//rxjs",
     ],
 )
 
@@ -84,7 +96,9 @@ ng_e2e_test_library(
     name = "e2e_test_sources",
     srcs = glob(["**/*.e2e.spec.ts"]),
     deps = [
+        ":mdc-slider",
         "//src/cdk/testing/private/e2e",
+        "@npm//@material/slider",
     ],
 )
 

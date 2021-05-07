@@ -79,11 +79,11 @@ export function createPointerEvent(type: string, clientX = 0, clientY = 0,
  * Creates a browser TouchEvent with the specified pointer coordinates.
  * @docs-private
  */
-export function createTouchEvent(type: string, pageX = 0, pageY = 0) {
+export function createTouchEvent(type: string, pageX = 0, pageY = 0, clientX = 0, clientY = 0) {
   // In favor of creating events that work for most of the browsers, the event is created
   // as a basic UI Event. The necessary details for the event will be set manually.
   const event = document.createEvent('UIEvent');
-  const touchDetails = {pageX, pageY};
+  const touchDetails = {pageX, pageY, clientX, clientY};
 
   // TS3.6 removes the initUIEvent method and suggests porting to "new UIEvent()".
   (event as any).initUIEvent(type, true, true, window, 0);

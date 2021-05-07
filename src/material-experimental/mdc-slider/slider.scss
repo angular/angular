@@ -1,6 +1,8 @@
-// TODO: disabled until we implement the new MDC slider.
-// @use '@material/slider' as mdc-slider;
+@use '@material/slider/slider' as mdc-slider;
 @use '../../cdk/a11y';
+@use '../mdc-helpers/mdc-helpers';
+
+@include mdc-slider.without-ripple($query: mdc-helpers.$mat-base-styles-query);
 
 $mat-slider-min-size: 128px !default;
 $mat-slider-horizontal-margin: 8px !default;

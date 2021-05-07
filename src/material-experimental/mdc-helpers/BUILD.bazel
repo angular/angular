@@ -23,6 +23,7 @@ npm_sass_library(
         "@npm//@material/list",
         "@npm//@material/menu-surface",
         "@npm//@material/radio",
+        "@npm//@material/slider",
         "@npm//@material/snackbar",
         "@npm//@material/switch",
         "@npm//@material/tab",
