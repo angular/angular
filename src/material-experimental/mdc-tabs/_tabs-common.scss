@@ -129,8 +129,11 @@ $mat-tab-animation-duration: 500ms !default;
   .mat-mdc-tab-header-pagination-disabled {
     box-shadow: none;
     cursor: default;
-    opacity: 0.4;
     pointer-events: none;
+
+    .mat-mdc-tab-header-pagination-chevron {
+      opacity: 0.4;
+    }
   }
 
   .mat-mdc-tab-list {

@@ -9,12 +9,6 @@
   @include tabs-common.paginated-tab-header-container;
 }
 
-.mat-mdc-tab-header-pagination-disabled {
-  box-shadow: none;
-  cursor: default;
-  opacity: 0.4;
-}
-
 .mat-mdc-tab-labels {
   @include tabs-common.paginated-tab-header-item-wrapper('.mat-mdc-tab-header');
 }

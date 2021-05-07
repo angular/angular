@@ -117,12 +117,14 @@
   }
 
   // Set pagination chevrons to contrast background
+  > .mat-tab-header .mat-tab-header-pagination-chevron,
   > .mat-tab-header-pagination .mat-tab-header-pagination-chevron,
-  > .mat-tab-links .mat-focus-indicator::before,
+  > .mat-tab-link-container .mat-focus-indicator::before,
   > .mat-tab-header .mat-focus-indicator::before {
     border-color: theming.get-color-from-palette($background-color, default-contrast);
   }
 
+  > .mat-tab-header .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron,
   > .mat-tab-header-pagination-disabled .mat-tab-header-pagination-chevron {
     border-color: theming.get-color-from-palette($background-color, default-contrast, 0.4);
   }
@@ -130,7 +132,8 @@
   // Set ripples color to be the contrast color of the new background. Otherwise the ripple
   // color will be based on the app background color.
   > .mat-tab-header .mat-ripple-element,
-  > .mat-tab-link-container .mat-ripple-element {
+  > .mat-tab-link-container .mat-ripple-element,
+  > .mat-tab-header-pagination .mat-ripple-element {
     background-color: theming.get-color-from-palette($background-color, default-contrast, 0.12);
   }
 }
