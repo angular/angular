@@ -50,7 +50,7 @@ To use reactive form controls, import `ReactiveFormsModule` from the `@angular/f
 
 Use the [CLI command](cli "Using the Angular command-line interface.") `ng generate` to generate a component in your project to host the control.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 
   ng generate component NameEditor
 
@@ -146,7 +146,7 @@ Just as a form control instance gives you control over a single input field, a f
 
 Generate a `ProfileEditor` component and import the `FormGroup` and `FormControl` classes from the `@angular/forms` package.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 
   ng generate component ProfileEditor
 

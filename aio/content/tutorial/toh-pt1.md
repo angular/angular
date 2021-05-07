@@ -14,7 +14,7 @@ and place that component in the application shell.
 
 Using the Angular CLI, generate a new component named `heroes`.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
   ng generate component heroes
 </code-example>
 
@@ -146,7 +146,7 @@ Notice that the app stopped working when you added `[(ngModel)]`.
 To see the error, open the browser development tools and look in the console
 for a message like
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 Template parse errors:
 Can't bind to 'ngModel' since it isn't a known property of 'input'.
 </code-example>

@@ -41,7 +41,7 @@ code-example {
   }
 
   // TERMINAL / SHELL TEXT STYLES
-  &.code-shell, &[language=sh], &[language=bash] {
+  &[language=sh], &[language=bash] {
     background-color: $darkgray;
   }
 
@@ -242,7 +242,7 @@ aio-code {
 /* SHELL / TERMINAL CODE BLOCKS */
 
 code-example {
-  &.code-shell, &[language=sh], &[language=bash] {
+  &[language=sh], &[language=bash] {
     .pnk, .blk, .pln, .otl, .kwd, .typ, .tag, .str, .atv, .atn, .com, .lit, .pun, .dec {
       color: $codegreen;
     }

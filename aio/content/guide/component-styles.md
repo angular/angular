@@ -170,7 +170,7 @@ They are _not inherited_ by any components nested within the template nor by any
 
 The Angular CLI command [`ng generate component`](cli/generate) defines an empty `styles` array when you create the component with the `--inline-style` flag.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 ng generate component hero-app --inline-style
 </code-example>
 
@@ -199,7 +199,7 @@ They are _not inherited_ by any components nested within the template nor by any
 
 When you use the Angular CLI command [`ng generate component`](cli/generate) without the `--inline-style` flag, it creates an empty styles file for you and references that file in the component's generated `styleUrls`.
 
-<code-example language="sh" class="code-shell">
+<code-example language="sh">
 ng generate component hero-app
 </code-example>
 
