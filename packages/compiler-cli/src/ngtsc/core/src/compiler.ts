@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, NoopReferencesRegistry, PipeDecoratorHandler, ReferencesRegistry} from '../../annotations';
@@ -19,7 +18,6 @@ import {IncrementalBuildStrategy, IncrementalCompilation, IncrementalState} from
 import {SemanticSymbol} from '../../incremental/semantic_graph';
 import {generateAnalysis, IndexedComponent, IndexingContext} from '../../indexer';
 import {ComponentResources, CompoundMetadataReader, CompoundMetadataRegistry, DirectiveMeta, DtsMetadataReader, InjectableClassRegistry, LocalMetadataRegistry, MetadataReader, PipeMeta, ResourceRegistry} from '../../metadata';
-import {ModuleWithProvidersScanner} from '../../modulewithproviders';
 import {PartialEvaluator} from '../../partial_evaluator';
 import {ActivePerfRecorder, DelegatingPerfRecorder, PerfCheckpoint, PerfEvent, PerfPhase} from '../../perf';
 import {ProgramDriver, UpdateMode} from '../../program_driver';
@@ -51,7 +49,6 @@ interface LazyCompilationState {
   exportReferenceGraph: ReferenceGraph|null;
   routeAnalyzer: NgModuleRouteAnalyzer;
   dtsTransforms: DtsTransformRegistry;
-  mwpScanner: ModuleWithProvidersScanner;
   aliasingHost: AliasingHost|null;
   refEmitter: ReferenceEmitter;
   templateTypeChecker: TemplateTypeChecker;
@@ -565,7 +562,6 @@ export class NgCompiler {
         }
 
         let analysisPromise = this.compilation.traitCompiler.analyzeAsync(sf);
-        this.scanForMwp(sf);
         if (analysisPromise !== undefined) {
           promises.push(analysisPromise);
         }
@@ -693,7 +689,6 @@ export class NgCompiler {
           continue;
         }
         this.compilation.traitCompiler.analyzeSync(sf);
-        this.scanForMwp(sf);
       }
 
       this.perfRecorder.memory(PerfCheckpoint.Analysis);
@@ -888,16 +883,6 @@ export class NgCompiler {
     return this.nonTemplateDiagnostics;
   }
 
-  private scanForMwp(sf: ts.SourceFile): void {
-    this.compilation!.mwpScanner.scan(sf, {
-      addTypeReplacement: (node: ts.Declaration, type: Type): void => {
-        // Only obtain the return type transform for the source file once there's a type to replace,
-        // so that no transform is allocated when there's nothing to do.
-        this.compilation!.dtsTransforms!.getReturnTypeTransform(sf).addTypeReplacement(node, type);
-      }
-    });
-  }
-
   private makeCompilation(): LazyCompilationState {
     const checker = this.inputProgram.getTypeChecker();
 
@@ -992,8 +977,6 @@ export class NgCompiler {
 
     const dtsTransforms = new DtsTransformRegistry();
 
-    const mwpScanner = new ModuleWithProvidersScanner(reflector, evaluator, refEmitter);
-
     const isCore = isAngularCorePackage(this.inputProgram);
 
     const resourceRegistry = new ResourceRegistry();
@@ -1071,7 +1054,6 @@ export class NgCompiler {
       dtsTransforms,
       exportReferenceGraph,
       routeAnalyzer,
-      mwpScanner,
       metaReader,
       typeCheckScopeRegistry,
       aliasingHost,

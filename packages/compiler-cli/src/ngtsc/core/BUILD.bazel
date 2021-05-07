@@ -23,7 +23,6 @@ ts_library(
         "//packages/compiler-cli/src/ngtsc/incremental/semantic_graph",
         "//packages/compiler-cli/src/ngtsc/indexer",
         "//packages/compiler-cli/src/ngtsc/metadata",
-        "//packages/compiler-cli/src/ngtsc/modulewithproviders",
         "//packages/compiler-cli/src/ngtsc/partial_evaluator",
         "//packages/compiler-cli/src/ngtsc/perf",
         "//packages/compiler-cli/src/ngtsc/program_driver",
