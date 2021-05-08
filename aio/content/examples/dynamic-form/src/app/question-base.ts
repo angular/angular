@@ -19,7 +19,7 @@ export class QuestionBase<T> {
       type?: string;
       options?: {key: string, value: string}[];
     } = {}) {
-    this.value = options.value;
+    this.value = options.value as T;
     this.key = options.key || '';
     this.label = options.label || '';
     this.required = !!options.required;

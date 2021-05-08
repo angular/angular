@@ -9,9 +9,9 @@ const locations = new Observable((observer) => {
 
   // Simple geolocation API check provides values to publish
   if ('geolocation' in navigator) {
-    watchId = navigator.geolocation.watchPosition((position: Position) => {
+    watchId = navigator.geolocation.watchPosition((position: GeolocationPosition) => {
       observer.next(position);
-    }, (error: PositionError) => {
+    }, (error: GeolocationPositionError) => {
       observer.error(error);
     });
   } else {

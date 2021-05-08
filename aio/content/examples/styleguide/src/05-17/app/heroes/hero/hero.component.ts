@@ -7,7 +7,7 @@ import { Hero } from '../shared/hero.model';
   template: `...`
 })
 export class HeroComponent {
-  @Input() hero: Hero;
+  @Input() hero!: Hero;
 }
 
 

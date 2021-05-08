@@ -8,7 +8,7 @@ import { Hero, HeroService } from '../shared';
   template: `...`
 })
 export class HeroListComponent implements OnInit {
-  heroes: Hero[];
+  heroes: Hero[] = [];
   constructor(private heroService: HeroService) {}
   getHeroes() {
     this.heroes = [];

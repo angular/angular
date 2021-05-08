@@ -8,7 +8,7 @@
   <p>Current item name: {{currentItem.name}}</p>
   <p>
     <label for="without">without NgModel:</label>
-    <input [value]="currentItem.name" (input)="currentItem.name=getValue($event.target)" id="without">
+    <input [value]="currentItem.name" (input)="currentItem.name=getValue($event)" id="without">
   </p>
 
   <p>

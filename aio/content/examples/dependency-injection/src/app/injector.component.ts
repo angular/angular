@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion
-import { Component, Injector, OnInit } from '@angular/core';
+import { Component, Injector } from '@angular/core';
 
 import { Car, Engine, Tires } from './car/car';
 import { Hero } from './heroes/hero';
@@ -18,7 +18,7 @@ import { Logger } from './logger.service';
   `,
   providers: [Car, Engine, Tires, heroServiceProvider, Logger]
 })
-export class InjectorComponent implements OnInit {
+export class InjectorComponent {
   car: Car;
 
   // #docregion get-hero-service
@@ -26,9 +26,7 @@ export class InjectorComponent implements OnInit {
   // #enddocregion get-hero-service
   hero: Hero;
 
-  constructor(private injector: Injector) { }
-
-  ngOnInit() {
+  constructor(private injector: Injector) {
     this.car = this.injector.get(Car);
     this.heroService = this.injector.get(HeroService);
     this.hero = this.heroService.getHeroes()[0];

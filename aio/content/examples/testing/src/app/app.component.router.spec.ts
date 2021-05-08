@@ -159,7 +159,6 @@ class Page {
 
   // for debugging
   comp: AppComponent;
-  location: SpyLocation;
   router: Router;
   fixture: ComponentFixture<AppComponent>;
 

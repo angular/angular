@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Observable } from 'rxjs';
@@ -11,15 +11,13 @@ import { HeroService } from '../model/hero.service';
   templateUrl: './hero-list.component.html',
   styleUrls: [ './hero-list.component.css' ]
 })
-export class HeroListComponent implements OnInit {
+export class HeroListComponent {
   heroes: Observable<Hero[]>;
-  selectedHero: Hero;
+  selectedHero!: Hero;
 
   constructor(
     private router: Router,
-    private heroService: HeroService) { }
-
-  ngOnInit() {
+    private heroService: HeroService) {
     this.heroes = this.heroService.getHeroes();
   }
 

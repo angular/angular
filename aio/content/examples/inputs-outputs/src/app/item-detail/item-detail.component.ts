@@ -11,6 +11,6 @@ import { Component, Input } from '@angular/core'; // First, import Input
 
 // #docregion use-input
 export class ItemDetailComponent {
-  @Input() item: string; // decorate the property with @Input()
+  @Input() item = ''; // decorate the property with @Input()
 }
 // #enddocregion use-input

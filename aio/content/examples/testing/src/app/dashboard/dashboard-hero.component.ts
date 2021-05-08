@@ -14,7 +14,7 @@ import { Hero } from '../model/hero';
 })
 // #docregion class
 export class DashboardHeroComponent {
-  @Input() hero: Hero;
+  @Input() hero!: Hero;
   @Output() selected = new EventEmitter<Hero>();
   click() { this.selected.emit(this.hero); }
 }

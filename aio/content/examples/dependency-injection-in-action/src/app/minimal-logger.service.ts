@@ -2,8 +2,8 @@
 // Class used as a "narrowing" interface that exposes a minimal logger
 // Other members of the actual implementation are invisible
 export abstract class MinimalLogger {
-  logs: string[];
-  logInfo: (msg: string) => void;
+  abstract logs: string[];
+  abstract logInfo: (msg: string) => void;
 }
 // #enddocregion
 

@@ -2,12 +2,12 @@ import { Subject, throwError } from 'rxjs';
 import { docRegionDefault } from './error-handling';
 
 describe('error-handling', () => {
-  let mockConsole;
-  let ajaxSubject;
-  let ajax;
+  let consoleSpy: jasmine.Spy;
+  let ajaxSubject: Subject<any>;
+  let ajax: jasmine.Spy;
 
   beforeEach(() => {
-    mockConsole = {log: jasmine.createSpy('log')};
+    consoleSpy = spyOn(console, 'log');
     ajaxSubject = new Subject();
     ajax = jasmine
       .createSpy('ajax')
@@ -17,19 +17,19 @@ describe('error-handling', () => {
   afterEach(() => ajaxSubject.unsubscribe());
 
   it('should return the response object', () => {
-    docRegionDefault(mockConsole, ajax);
+    docRegionDefault(console, ajax);
 
     ajaxSubject.next({response: {foo: 'bar'}});
-    expect(mockConsole.log.calls.allArgs()).toEqual([
+    expect(consoleSpy.calls.allArgs()).toEqual([
       ['data: ', {foo: 'bar'}]
     ]);
   });
 
   it('should return an empty array when using an object without a `response` property', () => {
-    docRegionDefault(mockConsole, ajax);
+    docRegionDefault(console, ajax);
 
     ajaxSubject.next({foo: 'bar'});
-    expect(mockConsole.log.calls.allArgs()).toEqual([
+    expect(consoleSpy.calls.allArgs()).toEqual([
       ['data: ', []]
     ]);
   });
@@ -37,9 +37,9 @@ describe('error-handling', () => {
   it('should return an empty array when the ajax observable errors', () => {
     ajax.and.returnValue(throwError('Test Error'));
 
-    docRegionDefault(mockConsole, ajax);
+    docRegionDefault(console, ajax);
 
-    expect(mockConsole.log.calls.allArgs()).toEqual([
+    expect(consoleSpy.calls.allArgs()).toEqual([
       ['data: ', []]
     ]);
   });

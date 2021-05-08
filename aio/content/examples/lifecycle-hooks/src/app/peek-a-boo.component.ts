@@ -28,7 +28,7 @@ export class PeekABooComponent extends PeekABooDirective implements
              AfterContentInit, AfterContentChecked,
              AfterViewInit, AfterViewChecked,
              OnDestroy {
-  @Input()  name: string;
+  @Input() name = '';
 
   private verb = 'initialized';
 

@@ -7,17 +7,16 @@ const targetHero = { id: 16, name: 'RubberMan' };
 const nameSuffix = 'X';
 
 class Hero {
-  id: number;
-  name: string;
+  constructor(public id: number, public name: string) {}
 
   // Factory methods
 
   // Get hero from s formatted as '<id> <name>'.
   static fromString(s: string): Hero {
-    return {
-      id: +s.substr(0, s.indexOf(' ')),
-      name: s.substr(s.indexOf(' ') + 1),
-    };
+    return new Hero(
+      +s.substr(0, s.indexOf(' ')),
+      s.substr(s.indexOf(' ') + 1),
+    );
   }
 
   // Get hero id and name from the given detail element.
@@ -26,10 +25,10 @@ class Hero {
     const id = await detail.all(by.css('div')).first().getText();
     // Get name from the h2
     const name = await detail.element(by.css('h2')).getText();
-    return {
-      id: +id.substr(id.indexOf(' ') + 1),
-      name: name.substr(0, name.lastIndexOf(' '))
-    };
+    return new Hero(
+      +id.substr(id.indexOf(' ') + 1),
+      name.substr(0, name.lastIndexOf(' '))
+    );
   }
 }
 
@@ -80,12 +79,14 @@ function selectHeroTests() {
 
   it('shows selected hero details', async () => {
     const page = getPageElts();
-    const message = await getMessage();
+    const heroElement = element(by.cssContainingText('li span.badge', targetHero.id.toString()));
+    await heroElement.click();
+    const message = element.all(by.css('app-root > app-messages > div > div')).get(1);
     const hero = await Hero.fromDetail(page.heroDetail);
     expect(hero.id).toEqual(targetHero.id);
     expect(hero.name).toEqual(targetHero.name.toUpperCase());
     // Message text contain id number matches the hero.id number
-    expect(await message.getText()).toContain(hero.id);
+    expect(await message.getText()).toContain(await heroElement.getAttribute('id'));
   });
 }
 
@@ -130,10 +131,4 @@ function getPageElts() {
     selected: element(by.css('app-root li.selected')),
     heroDetail: element(by.css('app-root > div, app-root > app-heroes > app-hero-detail > div'))
   };
-}
-
-async function getMessage() {
-  const hero = element(by.cssContainingText('li span.badge', targetHero.id.toString()));
-  await hero.click();
-  return element.all(by.css('app-root > app-messages > div > div')).get(1);
 }

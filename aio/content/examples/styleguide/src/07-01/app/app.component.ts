@@ -8,7 +8,7 @@ import { Hero, HeroService } from './heroes';
   providers: [HeroService]
 })
 export class AppComponent implements OnInit {
-  heroes: Hero[];
+  heroes: Hero[] = [];
 
   constructor(private heroService: HeroService) { }
 

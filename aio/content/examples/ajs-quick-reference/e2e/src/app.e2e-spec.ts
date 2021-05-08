@@ -89,7 +89,7 @@ describe('AngularJS to Angular Quick Reference Tests', () => {
     return element.all(by.css('app-movie-list tbody > tr'));
   }
 
-  async function testFavoriteHero(heroName: string, expectedLabel: string) {
+  async function testFavoriteHero(heroName: string | null, expectedLabel: string) {
     const movieListComp = element(by.tagName('app-movie-list'));
     const heroInput = movieListComp.element(by.tagName('input'));
     const favoriteHeroLabel = movieListComp.element(by.tagName('h3'));

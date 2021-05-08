@@ -1,4 +1,4 @@
-export class Quote {
+export interface Quote {
   id: number;
   quote: string;
 }

@@ -43,7 +43,7 @@ export class ConfigService {
 
   getConfig_1() {
   // #docregion getConfig_1
-    return this.http.get(this.configUrl);
+    return this.http.get<Config>(this.configUrl);
   }
   // #enddocregion getConfig_1
 

@@ -3,6 +3,7 @@
 import { Component } from '@angular/core';
 import { Input } from '@angular/core';
 import { Output, EventEmitter } from '@angular/core';
+import { Product } from '../products';
 // #enddocregion imports
 
 @Component({
@@ -12,6 +13,6 @@ import { Output, EventEmitter } from '@angular/core';
 })
 // #docregion input-output
 export class ProductAlertsComponent {
-  @Input() product;
+  @Input() product!: Product;
   @Output() notify = new EventEmitter();
 }

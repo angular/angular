@@ -19,7 +19,7 @@ export class HighlightDirective {
   }
 
   @HostListener('mouseleave') onMouseLeave() {
-    this.highlight(null);
+    this.highlight('');
   }
 
   private highlight(color: string) {

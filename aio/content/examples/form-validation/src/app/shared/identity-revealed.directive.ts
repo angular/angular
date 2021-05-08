@@ -18,7 +18,7 @@ export const identityRevealedValidator: ValidatorFn = (control: AbstractControl)
   providers: [{ provide: NG_VALIDATORS, useExisting: IdentityRevealedValidatorDirective, multi: true }]
 })
 export class IdentityRevealedValidatorDirective implements Validator {
-  validate(control: AbstractControl): ValidationErrors {
+  validate(control: AbstractControl): ValidationErrors | null {
     return identityRevealedValidator(control);
   }
 }

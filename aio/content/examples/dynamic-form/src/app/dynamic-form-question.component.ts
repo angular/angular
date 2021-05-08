@@ -9,7 +9,7 @@ import { QuestionBase } from './question-base';
   templateUrl: './dynamic-form-question.component.html'
 })
 export class DynamicFormQuestionComponent {
-  @Input() question: QuestionBase<string>;
-  @Input() form: FormGroup;
+  @Input() question!: QuestionBase<string>;
+  @Input() form!: FormGroup;
   get isValid() { return this.form.controls[this.question.key].valid; }
 }

@@ -9,10 +9,10 @@ import { OnChangesComponent } from './on-changes.component';
   styles: ['']
 })
 export class OnChangesParentComponent {
-  hero: Hero;
-  power: string;
+  hero!: Hero;
+  power = '';
   title = 'OnChanges';
-  @ViewChild(OnChangesComponent) childView: OnChangesComponent;
+  @ViewChild(OnChangesComponent) childView!: OnChangesComponent;
 
   constructor() {
     this.reset();

@@ -2,10 +2,10 @@ import { docRegionDefault } from './operators';
 
 describe('squaredNums - operators.ts', () => {
   it('should return square odds', () => {
-    const console = {log: jasmine.createSpy('log')};
+    const spy = spyOn(console, 'log');
     docRegionDefault(console);
-    expect(console.log).toHaveBeenCalledTimes(3);
-    expect(console.log.calls.allArgs()).toEqual([
+    expect(spy).toHaveBeenCalledTimes(3);
+    expect(spy.calls.allArgs()).toEqual([
       [1],
       [4],
       [9],

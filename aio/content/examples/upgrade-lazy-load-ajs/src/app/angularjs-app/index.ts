@@ -5,7 +5,8 @@ const appModule = angular.module('myApp', [
   'ngRoute'
 ])
 .config(['$routeProvider', '$locationProvider',
-  function config($routeProvider, $locationProvider) {
+  function config($routeProvider: angular.route.IRouteProvider,
+                  $locationProvider: angular.ILocationProvider) {
     $locationProvider.html5Mode(true);
 
     $routeProvider.

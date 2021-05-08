@@ -15,7 +15,7 @@ import { HeroService } from './hero.service';
 export class HeroesBaseComponent implements OnInit {
   constructor(private heroService: HeroService) { }
 
-  heroes: Array<Hero>;
+  heroes: Hero[] = [];
 
   ngOnInit() {
     this.heroes = this.heroService.getAllHeroes();

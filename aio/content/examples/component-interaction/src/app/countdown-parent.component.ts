@@ -40,7 +40,7 @@ export class CountdownLocalVarParentComponent { }
 export class CountdownViewChildParentComponent implements AfterViewInit {
 
   @ViewChild(CountdownTimerComponent)
-  private timerComponent: CountdownTimerComponent;
+  private timerComponent!: CountdownTimerComponent;
 
   seconds() { return 0; }
 

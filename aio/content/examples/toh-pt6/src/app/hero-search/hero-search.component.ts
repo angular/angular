@@ -18,7 +18,7 @@ import { HeroService } from '../hero.service';
 })
 export class HeroSearchComponent implements OnInit {
   // #docregion heroes-stream
-  heroes$: Observable<Hero[]>;
+  heroes$!: Observable<Hero[]>;
   // #enddocregion heroes-stream
   // #docregion searchTerms
   private searchTerms = new Subject<string>();

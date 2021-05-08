@@ -22,11 +22,11 @@ import { getTestHeroes } from './test-heroes';
 export class TestHeroService extends HeroService {
 
   constructor() {
-    super(null);
+    super({} as any);
   }
 
   heroes = getTestHeroes();
-  lastResult: Observable<any>; // result from last method call
+  lastResult!: Observable<any>; // result from last method call
 
   addHero(hero: Hero): Observable<Hero> {
     throw new Error('Method not implemented.');
@@ -45,7 +45,8 @@ export class TestHeroService extends HeroService {
       id = parseInt(id, 10);
     }
     const hero = this.heroes.find(h => h.id === id);
-    return this.lastResult = asyncData(hero);
+    this.lastResult = asyncData(hero);
+    return this.lastResult;
   }
 
   updateHero(hero: Hero): Observable<Hero> {

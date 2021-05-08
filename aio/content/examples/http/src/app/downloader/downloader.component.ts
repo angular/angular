@@ -7,7 +7,7 @@ import { DownloaderService } from './downloader.service';
   providers: [ DownloaderService ]
 })
 export class DownloaderComponent {
-  contents: string;
+  contents: string | undefined;
   constructor(private downloaderService: DownloaderService) {}
 
   clear() {

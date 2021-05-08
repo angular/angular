@@ -7,7 +7,7 @@ import { HeroService } from './hero.service';
 // #docregion service
 @Injectable()
 export class HeroCacheService {
-  hero: Hero;
+  hero!: Hero;
   constructor(private heroService: HeroService) {}
 
   fetchCachedHero(id: number) {

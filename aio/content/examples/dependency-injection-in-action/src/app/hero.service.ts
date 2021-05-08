@@ -15,7 +15,7 @@ export class HeroService {
  ];
 
   getHeroById(id: number): Hero {
-    return this.heroes.find(hero => hero.id === id);
+    return this.heroes.find(hero => hero.id === id) as Hero;
   }
 
   getAllHeroes(): Array<Hero> {

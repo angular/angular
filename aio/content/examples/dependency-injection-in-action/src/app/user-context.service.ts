@@ -7,8 +7,8 @@ import { UserService } from './user.service';
   providedIn: 'root'
 })
 export class UserContextService {
-  name: string;
-  role: string;
+  name = '';
+  role = '';
   loggedInSince: Date;
 
   constructor(private userService: UserService, private loggerService: LoggerService) {

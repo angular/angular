@@ -10,8 +10,8 @@ import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browse
 export class BypassSecurityComponent {
   dangerousUrl: string;
   trustedUrl: SafeUrl;
-  dangerousVideoUrl: string;
-  videoUrl: SafeResourceUrl;
+  dangerousVideoUrl!: string;
+  videoUrl!: SafeResourceUrl;
 
   // #docregion trust-url
   constructor(private sanitizer: DomSanitizer) {

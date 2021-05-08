@@ -2,10 +2,10 @@ import { docRegionObserver } from './subscribing';
 
 describe('subscribing', () => {
   it('should subscribe and emit', () => {
-    const console = {log: jasmine.createSpy('log')};
+    const spy = spyOn(console, 'log');
     docRegionObserver(console);
-    expect(console.log).toHaveBeenCalledTimes(8);
-    expect(console.log.calls.allArgs()).toEqual([
+    expect(spy).toHaveBeenCalledTimes(8);
+    expect(spy.calls.allArgs()).toEqual([
       ['Observer got a next value: 1'],
       ['Observer got a next value: 2'],
       ['Observer got a next value: 3'],

@@ -65,7 +65,7 @@ describe('Getting Started', () => {
       await pageElements.productListLinks.get(0).click();
 
       const product = pageElements.productDetailsPage;
-      const buyButton = await product.element(by.css('button'));
+      const buyButton = product.element(by.css('button'));
       const checkoutLink = pageElements.topBarCheckoutLink;
 
       await buyButton.click();
@@ -89,12 +89,12 @@ describe('Getting Started', () => {
 
       const checkoutLink = pageElements.topBarCheckoutLink;
       const productDetailsPage = pageElements.productDetailsPage;
-      const buyButton = await productDetailsPage.element(by.css('button'));
+      const buyButton = productDetailsPage.element(by.css('button'));
 
       const cartPage = pageElements.cartPage;
       const inputFields = cartPage.all(by.css('form input'));
 
-      const purchaseButton = await cartPage.element(by.css('button'));
+      const purchaseButton = cartPage.element(by.css('button'));
       const nameField = inputFields.get(0);
       const addressField = inputFields.get(1);
 

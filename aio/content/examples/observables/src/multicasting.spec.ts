@@ -1,10 +1,8 @@
 import { docRegionDelaySequence, docRegionMulticastSequence } from './multicasting';
 
 describe('multicasting', () => {
-  let console;
   beforeEach(() => {
     jasmine.clock().install();
-    console = {log: jasmine.createSpy('log')};
   });
 
   afterEach(() => {
@@ -12,10 +10,11 @@ describe('multicasting', () => {
   });
 
   it('should create an observable and emit in sequence', () => {
+    const spy = spyOn(console, 'log');
     docRegionDelaySequence(console);
     jasmine.clock().tick(10000);
-    expect(console.log).toHaveBeenCalledTimes(12);
-    expect(console.log.calls.allArgs()).toEqual([
+    expect(spy).toHaveBeenCalledTimes(12);
+    expect(spy.calls.allArgs()).toEqual([
       [1],
       ['1st subscribe: 1'],
       ['2nd subscribe: 1'],
@@ -32,10 +31,11 @@ describe('multicasting', () => {
   });
 
   it('should create an observable and multicast the emissions', () => {
+    const spy = spyOn(console, 'log');
     docRegionMulticastSequence(console);
     jasmine.clock().tick(10000);
-    expect(console.log).toHaveBeenCalledTimes(7);
-    expect(console.log.calls.allArgs()).toEqual([
+    expect(spy).toHaveBeenCalledTimes(7);
+    expect(spy.calls.allArgs()).toEqual([
       ['1st subscribe: 1'],
       ['1st subscribe: 2'],
       ['2nd subscribe: 2'],

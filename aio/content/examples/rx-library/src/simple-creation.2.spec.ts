@@ -5,17 +5,17 @@ describe('simple-creation.2', () => {
   afterEach(() => jasmine.clock().uninstall());
 
   it('should create an Observable that will publish a value on an interval', () => {
-    const console = {log: jasmine.createSpy('log')};
+    const spy = spyOn(console, 'log');
     const subscription = docRegionInterval(console);
     jasmine.clock().tick(1000);
-    expect(console.log).toHaveBeenCalledWith('It\'s been 1 seconds since subscribing!');
-    console.log.calls.reset();
+    expect(spy).toHaveBeenCalledWith('It\'s been 1 seconds since subscribing!');
+    spy.calls.reset();
 
     jasmine.clock().tick(999);
-    expect(console.log).not.toHaveBeenCalled();
+    expect(spy).not.toHaveBeenCalled();
 
     jasmine.clock().tick(1);
-    expect(console.log).toHaveBeenCalledWith('It\'s been 2 seconds since subscribing!');
+    expect(spy).toHaveBeenCalledWith('It\'s been 2 seconds since subscribing!');
     subscription.unsubscribe();
   });
 });
