@@ -373,12 +373,12 @@ function getAnnotation<T>(type: any, name: string): T|null {
  * NgModule the component belongs to. We keep the list of compiled components here so that the
  * TestBed can reset it later.
  */
-let ownerNgModule = new Map<Type<any>, NgModuleType<any>>();
-let verifiedNgModule = new Map<NgModuleType<any>, boolean>();
+let ownerNgModule = new WeakMap<Type<any>, NgModuleType<any>>();
+let verifiedNgModule = new WeakMap<NgModuleType<any>, boolean>();
 
 export function resetCompiledComponents(): void {
-  ownerNgModule = new Map<Type<any>, NgModuleType<any>>();
-  verifiedNgModule = new Map<NgModuleType<any>, boolean>();
+  ownerNgModule = new WeakMap<Type<any>, NgModuleType<any>>();
+  verifiedNgModule = new WeakMap<NgModuleType<any>, boolean>();
   moduleQueue.length = 0;
 }
 
