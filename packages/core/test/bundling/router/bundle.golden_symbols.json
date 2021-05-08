@@ -1809,6 +1809,9 @@
     "name": "removeFromArray"
   },
   {
+    "name": "removeStyle"
+  },
+  {
     "name": "renderComponent"
   },
   {
