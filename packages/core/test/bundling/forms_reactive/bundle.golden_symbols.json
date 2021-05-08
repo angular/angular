@@ -1431,6 +1431,9 @@
     "name": "removeListItem"
   },
   {
+    "name": "removeStyle"
+  },
+  {
     "name": "renderComponent"
   },
   {
