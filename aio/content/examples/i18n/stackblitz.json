@@ -8,5 +8,6 @@
       "**/*.xlf"
     ],
     "file": "src/app/app.component.ts", 
-    "tags": ["Angular", "i18n", "internationalization"]
+    "tags": ["Angular", "i18n", "internationalization"],
+    "devDependencies": ["@angular/compiler-cli", "typescript"]
 }
