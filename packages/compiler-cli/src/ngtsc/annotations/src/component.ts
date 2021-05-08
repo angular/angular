@@ -23,7 +23,6 @@ import {ClassDeclaration, DeclarationNode, Decorator, ReflectionHost, reflectObj
 import {ComponentScopeReader, LocalModuleScopeRegistry, TypeCheckScopeRegistry} from '../../scope';
 import {AnalysisOutput, CompileResult, DecoratorHandler, DetectResult, HandlerFlags, HandlerPrecedence, ResolveResult} from '../../transform';
 import {TemplateSourceMapping, TypeCheckContext} from '../../typecheck/api';
-import {tsSourceMapBug29300Fixed} from '../../util/src/ts_source_map_bug_29300';
 import {SubsetOfKeys} from '../../util/src/typescript';
 
 import {ResourceLoader} from './api';
@@ -1231,7 +1230,7 @@ export class ComponentDecoratorHandler implements
           templateUrl,
           templateUrlExpression: templateUrlExpr,
           resolvedTemplateUrl: resourceUrl,
-          potentialSourceMapUrl: sourceMapUrl(resourceUrl),
+          potentialSourceMapUrl: resourceUrl,
         };
       } catch (e) {
         throw this.makeResourceNotFoundError(
@@ -1340,17 +1339,6 @@ function getTemplateRange(templateExpr: ts.Expression) {
     startCol: character,
     endPos: templateExpr.getEnd() - 1,
   };
-}
-
-function sourceMapUrl(resourceUrl: string): string {
-  if (!tsSourceMapBug29300Fixed()) {
-    // By removing the template URL we are telling the translator not to try to
-    // map the external source file to the generated code, since the version
-    // of TS that is running does not support it.
-    return '';
-  } else {
-    return resourceUrl;
-  }
 }
 
 /** Determines if the result of an evaluation is a string array. */
