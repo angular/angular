@@ -1416,7 +1416,7 @@ interface ExternalTemplateDeclaration extends CommonTemplateDeclaration {
 /**
  * The declaration of a template extracted from a component decorator.
  *
- * This data is extracted and stored separately to faciliate re-interpreting the template
+ * This data is extracted and stored separately to facilitate re-interpreting the template
  * declaration whenever the compiler is notified of a change to a template file. With this
  * information, `ComponentDecoratorHandler` is able to re-read the template and update the component
  * record without needing to parse the original decorator again.
