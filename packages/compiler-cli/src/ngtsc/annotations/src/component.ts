@@ -1081,7 +1081,7 @@ export class ComponentDecoratorHandler implements
           type: 'direct',
           node: template.expression,
         };
-        sourceMapUrl = template.potentialSourceMapUrl;
+        sourceMapUrl = template.resolvedTemplateUrl;
       } else {
         const resolvedTemplate = this.evaluator.evaluate(template.expression);
         if (typeof resolvedTemplate !== 'string') {
@@ -1122,7 +1122,7 @@ export class ComponentDecoratorHandler implements
         ...this._parseTemplate(
             template, /* sourceStr */ templateContent, /* sourceParseRange */ null,
             /* escapedString */ false,
-            /* sourceMapUrl */ template.potentialSourceMapUrl),
+            /* sourceMapUrl */ template.resolvedTemplateUrl),
         content: templateContent,
         sourceMapping: {
           type: 'external',
@@ -1229,7 +1229,6 @@ export class ComponentDecoratorHandler implements
           templateUrl,
           templateUrlExpression: templateUrlExpr,
           resolvedTemplateUrl: resourceUrl,
-          potentialSourceMapUrl: resourceUrl,
         };
       } catch (e) {
         throw this.makeResourceNotFoundError(
@@ -1243,7 +1242,6 @@ export class ComponentDecoratorHandler implements
         expression: component.get('template')!,
         templateUrl: containingFile,
         resolvedTemplateUrl: containingFile,
-        potentialSourceMapUrl: containingFile,
       };
     } else {
       throw new FatalDiagnosticError(
@@ -1393,7 +1391,6 @@ interface CommonTemplateDeclaration {
   interpolationConfig: InterpolationConfig;
   templateUrl: string;
   resolvedTemplateUrl: string;
-  potentialSourceMapUrl: string;
 }
 
 /**
