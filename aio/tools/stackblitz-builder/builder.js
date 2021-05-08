@@ -48,7 +48,7 @@ class StackblitzBuilder {
 
     // Add unit test packages from devDependencies for unit test examples
     const devDependencies = packageJson.devDependencies;
-    ['jasmine-core', 'jasmine-marbles'].forEach(dep => exampleDependencies[dep] = devDependencies[dep]);
+    (config.devDependencies || []).forEach(dep => exampleDependencies[dep] = devDependencies[dep]);
 
     postData.dependencies = JSON.stringify(exampleDependencies);
   }
