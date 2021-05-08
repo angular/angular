@@ -60,7 +60,7 @@ describe('demo (with TestBed):', () => {
 
     it('can inject a default value when service is not provided', () => {
       // #docregion testbed-get-w-null
-      service = TestBed.inject(NotProvided, null); // service is null
+      expect(TestBed.inject(NotProvided, null)).toBeNull();
       // #enddocregion testbed-get-w-null
     });
 
@@ -464,7 +464,7 @@ describe('demo (with TestBed):', () => {
         })
         .createComponent(TestComponent);
 
-      let testBedProvider: ValueService;
+      let testBedProvider!: ValueService;
       let tcProvider: ValueService;
       let tpcProvider: FakeValueService;
 

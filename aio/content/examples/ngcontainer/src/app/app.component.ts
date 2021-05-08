@@ -1,7 +1,7 @@
 // #docregion
 import { Component } from '@angular/core';
 
-import { heroes } from './hero';
+import { Hero, heroes } from './hero';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +10,7 @@ import { heroes } from './hero';
 })
 export class AppComponent {
   heroes = heroes;
-  hero = this.heroes[0];
+  hero: Hero | null = this.heroes[0];
   heroTraits = ['honest', 'brave', 'considerate'];
 
   // flags for the table

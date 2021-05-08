@@ -30,7 +30,7 @@ export class CustomersService implements OnDestroy {
   }
 
   getCustomer(id: number | string): Observable<Customer> {
-    const customer$ = of(CUSTOMERS.find(customer => customer.id === +id));
+    const customer$ = of(CUSTOMERS.find(customer => customer.id === +id)!);
     return customer$.pipe(delay(FETCH_LATENCY));
   }
 }

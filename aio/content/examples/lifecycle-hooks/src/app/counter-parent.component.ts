@@ -20,7 +20,7 @@ import { LoggerService } from './logger.service';
   providers: [LoggerService]
 })
 export class CounterParentComponent {
-  value: number;
+  value = 0;
   spyLog: string[] = [];
 
   private logger: LoggerService;

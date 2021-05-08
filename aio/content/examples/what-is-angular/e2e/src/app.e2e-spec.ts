@@ -16,7 +16,7 @@ describe('What is Angular', () => {
   beforeEach(() => browser.get(''));
 
   // helper function to test what's logged to the console
-  async function logChecker(contents) {
+  async function logChecker(contents: string) {
     const logs = await browser.manage().logs().get(logging.Type.BROWSER);
     const messages = logs.filter(({ message }) => message.indexOf(contents) !== -1 ? true : false);
     expect(messages.length).toBeGreaterThan(0);
@@ -55,7 +55,7 @@ describe('What is Angular', () => {
   // Test for DI section
   it('should log the count', async () => {
     await diButton.click();
-    await logChecker(0);
+    await logChecker('0');
   });
 
 });

@@ -1,17 +1,16 @@
 import { browser, by, element, ElementArrayFinder, ElementFinder, logging } from 'protractor';
 
 class Hero {
-  id: number;
-  name: string;
+  constructor(public id: number, public name: string) {}
 
   // Factory methods
 
   // Hero from string formatted as '<id> <name>'.
   static fromString(s: string): Hero {
-    return {
-      id: +s.substr(0, s.indexOf(' ')),
-      name: s.substr(s.indexOf(' ') + 1),
-    };
+    return new Hero(
+      +s.substr(0, s.indexOf(' ')),
+      s.substr(s.indexOf(' ') + 1),
+    );
   }
 
   // Hero from hero list <li> element.
@@ -62,7 +61,7 @@ describe('Universal', () => {
 
     const expectedViewNames = ['Dashboard', 'Heroes'];
     it(`has views ${expectedViewNames}`, async () => {
-      const viewNames = await getPageElts().navElts.map(el => el.getText());
+      const viewNames = await getPageElts().navElts.map(el => el!.getText());
       expect(viewNames).toEqual(expectedViewNames);
     });
 
@@ -285,7 +284,7 @@ describe('Universal', () => {
   }
 
   async function toHeroArray(allHeroes: ElementArrayFinder): Promise<Hero[]> {
-    return await allHeroes.map(Hero.fromLi);
+    return await allHeroes.map(hero => Hero.fromLi(hero!));
   }
 
   async function updateHeroNameInDetailView(): Promise<void> {

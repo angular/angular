@@ -11,12 +11,12 @@ export class AuthService {
   isLoggedIn = false;
 
   // store the URL so we can redirect after logging in
-  redirectUrl: string;
+  redirectUrl: string | null = null;
 
   login(): Observable<boolean> {
     return of(true).pipe(
       delay(1000),
-      tap(val => this.isLoggedIn = true)
+      tap(() => this.isLoggedIn = true)
     );
   }
 

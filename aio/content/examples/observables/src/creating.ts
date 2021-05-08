@@ -1,11 +1,11 @@
 // #docplaster
 
-import { Observable } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
 
-export function docRegionSubscriber(console) {
+export function docRegionSubscriber(console: Console) {
   // #docregion subscriber
   // This function runs when subscribe() is called
-  function sequenceSubscriber(observer) {
+  function sequenceSubscriber(observer: Observer<number>) {
     // synchronously deliver 1, 2, and 3, then complete
     observer.next(1);
     observer.next(2);
@@ -36,9 +36,9 @@ export function docRegionSubscriber(console) {
 
 // #docregion fromevent
 
-function fromEvent(target, eventName) {
-  return new Observable((observer) => {
-    const handler = (e) => observer.next(e);
+function fromEvent<T extends keyof HTMLElementEventMap>(target: HTMLElement, eventName: T) {
+  return new Observable<HTMLElementEventMap[T]>((observer) => {
+    const handler = (e: HTMLElementEventMap[T]) => observer.next(e);
 
     // Add the event handler to the target
     target.addEventListener(eventName, handler);
@@ -52,7 +52,7 @@ function fromEvent(target, eventName) {
 
 // #enddocregion fromevent
 
-export function docRegionFromEvent(document) {
+export function docRegionFromEvent(document: Document) {
   // #docregion fromevent_use
 
   const ESC_KEY = 27;

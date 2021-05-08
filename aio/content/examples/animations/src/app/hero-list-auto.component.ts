@@ -31,7 +31,7 @@ import { Hero } from './hero';
   // #enddocregion auto-calc
 })
 export class HeroListAutoComponent {
-   @Input() heroes: Hero[];
+   @Input() heroes: Hero[] = [];
 
    @Output() remove = new EventEmitter<number>();
 

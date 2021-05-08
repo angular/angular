@@ -44,7 +44,7 @@ import { Hero } from './hero';
   // #enddocregion animationdef
 })
 export class HeroListEnterLeaveComponent {
-  @Input() heroes: Hero[];
+  @Input() heroes: Hero[] = [];
 
   @Output() remove = new EventEmitter<number>();
 

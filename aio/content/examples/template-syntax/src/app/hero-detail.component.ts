@@ -14,13 +14,13 @@ import { Hero } from './hero';
   <div>
     <img src="{{heroImageUrl}}">
     <span [style.text-decoration]="lineThrough">
-      {{prefix}} {{hero?.name}}
+      {{prefix}} {{hero.name}}
     </span>
     <button (click)="delete()">Delete</button>
   </div>`
 })
 export class HeroDetailComponent {
-  hero: Hero = new Hero(-1, '', 'Zzzzzzzz'); // default sleeping hero
+  hero = new Hero(-1, '', 'Zzzzzzzz'); // default sleeping hero
   // heroImageUrl = 'https://wpclipart.com/cartoon/people/hero/hero_silhoutte_T.png';
   // Public Domain terms of use: https://wpclipart.com/terms.html
   heroImageUrl = 'assets/images/hero.png';
@@ -41,12 +41,12 @@ export class HeroDetailComponent {
   template: `
   <div class="detail">
     <img src="{{heroImageUrl}}">
-    <div><b>{{hero?.name}}</b></div>
-    <div>Name: {{hero?.name}}</div>
-    <div>Emotion: {{hero?.emotion}}</div>
-    <div>Birthdate: {{hero?.birthdate | date:'longDate'}}</div>
-    <div>Web: <a href="{{hero?.url}}" target="_blank">{{hero?.url}}</a></div>
-    <div>Rate/hr: {{hero?.rate | currency:'EUR'}}</div>
+    <div><b>{{hero.name}}</b></div>
+    <div>Name: {{hero.name}}</div>
+    <div>Emotion: {{hero.emotion}}</div>
+    <div>Birthdate: {{hero.birthdate | date:'longDate'}}</div>
+    <div>Web: <a href="{{hero.url}}" target="_blank">{{hero.url}}</a></div>
+    <div>Rate/hr: {{hero.rate | currency:'EUR'}}</div>
     <br clear="all">
     <button (click)="delete()">Delete</button>
   </div>
@@ -58,7 +58,7 @@ export class HeroDetailComponent {
 })
 export class BigHeroDetailComponent extends HeroDetailComponent {
 
-  @Input()  hero: Hero;
+  @Input() hero!: Hero;
   @Output() deleteRequest = new EventEmitter<Hero>();
 
   delete() {

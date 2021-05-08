@@ -1,7 +1,7 @@
 // #docplaster
 import { of } from 'rxjs';
 
-export function docRegionObserver(console) {
+export function docRegionObserver(console: Console) {
   // #docregion observer
 
   // Create simple observable that emits three values
@@ -9,8 +9,8 @@ export function docRegionObserver(console) {
 
   // Create observer object
   const myObserver = {
-    next: x => console.log('Observer got a next value: ' + x),
-    error: err => console.error('Observer got an error: ' + err),
+    next: (x: number) => console.log('Observer got a next value: ' + x),
+    error: (err: Error) => console.error('Observer got an error: ' + err),
     complete: () => console.log('Observer got a complete notification'),
   };
 

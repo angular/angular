@@ -1,4 +1,4 @@
 export class Item {
-  name: '';
+  name = '';
 }
 

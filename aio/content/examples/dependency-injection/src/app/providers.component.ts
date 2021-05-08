@@ -210,7 +210,7 @@ export class Provider8Component {
   // #enddocregion providers-9
 })
 export class Provider9Component implements OnInit {
-  log: string;
+  log = '';
   /*
    // #docregion provider-9-ctor-interface
    // Can't inject using the interface as the parameter type
@@ -237,7 +237,7 @@ const someMessage = 'Hello from the injected logger';
   providers: [{ provide: Logger, useValue: null }]
 })
 export class Provider10Component implements OnInit {
-  log: string;
+  log = '';
   constructor(@Optional() private logger?: Logger) {
     if (this.logger) {
       this.logger.log(someMessage);

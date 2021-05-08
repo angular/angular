@@ -1,17 +1,17 @@
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { docRegionTypeahead } from './typeahead';
 
 describe('typeahead', () => {
-  let document;
-  let ajax;
-  let triggertInputChange;
+  let document: Document;
+  let ajax: jasmine.Spy;
+  let triggertInputChange: (e: { target: { value: string } }) => void;
 
   beforeEach(() => {
     jasmine.clock().install();
     const input = {
       addEventListener: jasmine
         .createSpy('addEvent')
-        .and.callFake((eventName: string, cb: (e) => void) => {
+        .and.callFake((eventName: string, cb: (e: unknown) => void) => {
           if (eventName === 'input') {
             triggertInputChange = cb;
           }
@@ -19,7 +19,7 @@ describe('typeahead', () => {
       removeEventListener: jasmine.createSpy('removeEvent'),
     };
 
-    document = { getElementById: (id: string) => input };
+    document = { getElementById: (id: string) => input } as unknown as Document;
     ajax = jasmine.createSpy('ajax').and.callFake((url: string) => of('foo bar'));
   });
 

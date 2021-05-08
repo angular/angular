@@ -11,8 +11,8 @@ import { UserService } from '../greeting/user.service';
   styleUrls: [ './contact.component.css' ]
 })
 export class ContactComponent implements OnInit {
-  contact: Contact;
-  contacts: Contact[];
+  contact!: Contact;
+  contacts: Contact[] = [];
 
   msg = 'Loading contacts ...';
   userName = '';
@@ -34,7 +34,7 @@ export class ContactComponent implements OnInit {
       this.msg = '';
       this.contacts = contacts;
       this.contact = contacts[0];
-      this.contactForm.get('name').setValue(this.contact.name);
+      this.contactForm.get('name')!.setValue(this.contact.name);
     });
   }
 
@@ -46,14 +46,14 @@ export class ContactComponent implements OnInit {
   }
 
   onSubmit() {
-    const newName = this.contactForm.get('name').value;
+    const newName = this.contactForm.get('name')!.value;
     this.displayMessage('Saved ' + newName);
     this.contact.name = newName;
   }
 
   newContact() {
     this.displayMessage('New contact');
-    this.contactForm.get('name').setValue('');
+    this.contactForm.get('name')!.setValue('');
     this.contact = {id: 42, name: ''};
     this.contacts.push(this.contact);
   }

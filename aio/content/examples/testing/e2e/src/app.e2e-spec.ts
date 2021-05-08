@@ -17,7 +17,7 @@ describe('Testing Example', () => {
   });
 
   it(`has views ${expectedViewNames}`, async () => {
-    const viewNames = await getPageElts().navElts.map(el => el.getText());
+    const viewNames = await getPageElts().navElts.map(el => el!.getText());
 
     expect(viewNames).toEqual(expectedViewNames);
   });

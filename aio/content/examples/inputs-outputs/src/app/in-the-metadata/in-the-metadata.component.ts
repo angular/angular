@@ -17,7 +17,7 @@ export class InTheMetadataComponent  {
 
 
   buyEvent = new EventEmitter<string>();
-  clearanceItem: string;
+  clearanceItem = '';
 
   buyIt() {
     console.warn('Child says: emiting buyEvent with', this.clearanceItem);

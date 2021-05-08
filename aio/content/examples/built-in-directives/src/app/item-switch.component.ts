@@ -8,7 +8,7 @@ import { Item } from './item';
 
 // #docregion input
 export class StoutItemComponent {
-  @Input() item: Item;
+  @Input() item!: Item;
 }
 // #enddocregion input
 
@@ -18,7 +18,7 @@ export class StoutItemComponent {
   template: `This is the brightest {{item.name}} in town.`
 })
 export class BestItemComponent {
-  @Input() item: Item;
+  @Input() item!: Item;
 }
 
 @Component({
@@ -26,7 +26,7 @@ export class BestItemComponent {
   template: `Which is the slimmest {{item.name}}?`
 })
 export class DeviceItemComponent {
-  @Input() item: Item;
+  @Input() item!: Item;
 }
 
 @Component({
@@ -34,7 +34,7 @@ export class DeviceItemComponent {
   template: `Has anyone seen my {{item.name}}?`
 })
 export class LostItemComponent {
-  @Input() item: Item;
+  @Input() item!: Item;
 }
 
 @Component({
@@ -42,7 +42,7 @@ export class LostItemComponent {
   template: `{{message}}`
 })
 export class UnknownItemComponent {
-  @Input() item: Item;
+  @Input() item!: Item;
   get message() {
     return this.item && this.item.name ?
       `${this.item.name} is strange and mysterious.` :

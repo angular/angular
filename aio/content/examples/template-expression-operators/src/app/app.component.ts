@@ -23,7 +23,7 @@ export class AppComponent {
     price: 98,
   };
 
-  nullItem = null;
+  nullItem: Item | null = null;
 
 }
 

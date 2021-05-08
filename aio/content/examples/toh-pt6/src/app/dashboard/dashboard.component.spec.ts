@@ -12,7 +12,7 @@ describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let fixture: ComponentFixture<DashboardComponent>;
   let heroService;
-  let getHeroesSpy;
+  let getHeroesSpy: jasmine.Spy;
 
   beforeEach(waitForAsync(() => {
     heroService = jasmine.createSpyObj('HeroService', ['getHeroes']);

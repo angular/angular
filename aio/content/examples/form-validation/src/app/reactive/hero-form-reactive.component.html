@@ -18,13 +18,13 @@
           <div *ngIf="name.invalid && (name.dirty || name.touched)"
               class="alert alert-danger">
 
-            <div *ngIf="name.errors.required">
+            <div *ngIf="name.errors?.required">
               Name is required.
             </div>
-            <div *ngIf="name.errors.minlength">
+            <div *ngIf="name.errors?.minlength">
               Name must be at least 4 characters long.
             </div>
-            <div *ngIf="name.errors.forbiddenName">
+            <div *ngIf="name.errors?.forbiddenName">
               Name cannot be Bob.
             </div>
           </div>
@@ -59,7 +59,7 @@
         </select>
 
         <div *ngIf="power.invalid && power.touched" class="alert alert-danger">
-          <div *ngIf="power.errors.required">Power is required.</div>
+          <div *ngIf="power.errors?.required">Power is required.</div>
         </div>
       </div>
 

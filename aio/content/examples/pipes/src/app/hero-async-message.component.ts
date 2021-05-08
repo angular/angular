@@ -20,10 +20,16 @@ export class HeroAsyncMessageComponent {
     'Will you be my hero?'
   ];
 
-  constructor() { this.resend(); }
+  constructor() {
+    this.message$ = this.getResendObservable();
+  }
 
   resend() {
-    this.message$ = interval(500).pipe(
+    this.message$ = this.getResendObservable();
+  }
+
+  private getResendObservable() {
+    return interval(500).pipe(
       map(i => this.messages[i]),
       take(this.messages.length)
     );

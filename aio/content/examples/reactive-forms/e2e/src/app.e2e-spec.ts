@@ -56,7 +56,7 @@ describe('Reactive forms', () => {
     const streetInput = getInput('street');
     const addAliasButton = element(by.buttonText('Add Alias'));
     const updateButton = profileEditor.element(by.buttonText('Update Profile'));
-    const profile = {
+    const profile: Record<string, string | number> = {
       firstName: 'John',
       lastName: 'Smith',
       street: '345 South Lane',

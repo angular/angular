@@ -6,7 +6,7 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
   styleUrls: ['./input-output.component.css']
 })
 export class InputOutputComponent {
-  @Input() item: string;
+  @Input() item = '';
   @Output() deleteRequest = new EventEmitter<string>();
 
   lineThrough = '';

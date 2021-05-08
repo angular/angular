@@ -20,7 +20,7 @@
 
   <!-- #docregion event-binding-3-->
   <input [value]="currentItem.name"
-         (input)="currentItem.name=getValue($event.target)">
+         (input)="currentItem.name=getValue($event)">
   <!-- #enddocregion event-binding-3-->
   without NgModel
 </div>

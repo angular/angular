@@ -14,7 +14,7 @@ import { User, UserService } from './user.service';
 // #enddocregion component-providers
 export class AppComponent implements OnInit {
   title = 'Users list';
-  users: User[];
+  users: User[] = [];
 
   constructor(private userService: UserService) { }
 

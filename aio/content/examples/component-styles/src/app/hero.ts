@@ -1,5 +1,5 @@
 export class Hero {
-  active: boolean;
+  active = false;
 
   constructor(public name: string,
               public team: string[]) {

@@ -11,7 +11,7 @@ export class HighlightDirective implements OnChanges {
 
   defaultColor =  'rgb(211, 211, 211)'; // lightgray
 
-  @Input('highlight') bgColor: string;
+  @Input('highlight') bgColor = '';
 
   constructor(private el: ElementRef) {
     el.nativeElement.style.customProperty = true;

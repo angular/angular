@@ -27,7 +27,7 @@ export class ContactService implements OnDestroy {
   }
 
   getContact(id: number | string): Observable<Contact> {
-    const contact$ = of(CONTACTS.find(contact => contact.id === +id));
+    const contact$ = of(CONTACTS.find(contact => contact.id === +id)!);
     return contact$.pipe(delay(FETCH_LATENCY));
   }
 }

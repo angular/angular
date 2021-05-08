@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion
-import { Component, OnInit, HostBinding } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 
@@ -13,8 +13,8 @@ import { DialogService } from '../../dialog.service';
   styleUrls: ['./crisis-detail.component.css']
 })
 export class CrisisDetailComponent implements OnInit {
-  crisis: Crisis;
-  editName: string;
+  crisis!: Crisis;
+  editName = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -25,9 +25,10 @@ export class CrisisDetailComponent implements OnInit {
 // #docregion ngOnInit
   ngOnInit() {
     this.route.data
-      .subscribe((data: { crisis: Crisis }) => {
-        this.editName = data.crisis.name;
-        this.crisis = data.crisis;
+      .subscribe(data => {
+        const crisis: Crisis = data.crisis;
+        this.editName = crisis.name;
+        this.crisis = crisis;
       });
   }
 // #enddocregion ngOnInit

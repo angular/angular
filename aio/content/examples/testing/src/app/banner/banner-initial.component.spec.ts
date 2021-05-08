@@ -84,7 +84,7 @@ describe('BannerComponent (with beforeEach)', () => {
     // #docregion nativeElement
     const bannerElement: HTMLElement = fixture.nativeElement;
     // #enddocregion nativeElement
-    const p = bannerElement.querySelector('p');
+    const p = bannerElement.querySelector('p')!;
     expect(p.textContent).toEqual('banner works!');
   });
   // #enddocregion v4-test-3
@@ -96,7 +96,7 @@ describe('BannerComponent (with beforeEach)', () => {
     const bannerDe: DebugElement = fixture.debugElement;
     const bannerEl: HTMLElement = bannerDe.nativeElement;
     // #enddocregion debugElement-nativeElement
-    const p = bannerEl.querySelector('p');
+    const p = bannerEl.querySelector('p')!;
     expect(p.textContent).toEqual('banner works!');
   });
   // #enddocregion v4-test-4
