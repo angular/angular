@@ -2928,7 +2928,7 @@ function getTargetBranchesForPr(prNumber) {
         const labels = prData.labels.map(l => l.name);
         /** The branch targetted via the Github UI. */
         const githubTargetBranch = prData.base.ref;
-        /** The active label which is being used for targetting the PR. */
+        /** The active label which is being used for targeting the PR. */
         let targetLabel;
         try {
             targetLabel = getTargetLabelFromPullRequest(mergeConfig, labels);
