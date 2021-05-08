@@ -37,6 +37,6 @@ export class ZippyComponent {
   contentId = `zippy-${nextId++}`;
   @Input() expanded = false;
   // #docregion contentchild
-  @ContentChild(ZippyContentDirective) content: ZippyContentDirective;
+  @ContentChild(ZippyContentDirective) content!: ZippyContentDirective;
   // #enddocregion contentchild
 }

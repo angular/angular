@@ -16,7 +16,7 @@ import { HeroCacheService } from './hero-cache.service';
 })
 
 export class HeroBioComponent implements OnInit  {
-  @Input() heroId: number;
+  @Input() heroId = 0;
 
   constructor(private heroCache: HeroCacheService) { }
 

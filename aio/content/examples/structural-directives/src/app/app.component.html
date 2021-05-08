@@ -138,25 +138,25 @@
 <h4>NgSwitch</h4>
 
 <div [ngSwitch]="hero?.emotion">
-  <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="hero"></app-happy-hero>
-  <app-sad-hero      *ngSwitchCase="'sad'"      [hero]="hero"></app-sad-hero>
-  <app-confused-hero *ngSwitchCase="'confused'" [hero]="hero"></app-confused-hero>
-  <app-unknown-hero  *ngSwitchDefault           [hero]="hero"></app-unknown-hero>
+  <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="hero!"></app-happy-hero>
+  <app-sad-hero      *ngSwitchCase="'sad'"      [hero]="hero!"></app-sad-hero>
+  <app-confused-hero *ngSwitchCase="'confused'" [hero]="hero!"></app-confused-hero>
+  <app-unknown-hero  *ngSwitchDefault           [hero]="hero!"></app-unknown-hero>
 </div>
 
 <h4>NgSwitch with &lt;ng-template&gt;</h4>
 <div [ngSwitch]="hero?.emotion">
   <ng-template [ngSwitchCase]="'happy'">
-    <app-happy-hero [hero]="hero"></app-happy-hero>
+    <app-happy-hero [hero]="hero!"></app-happy-hero>
   </ng-template>
   <ng-template [ngSwitchCase]="'sad'">
-    <app-sad-hero [hero]="hero"></app-sad-hero>
+    <app-sad-hero [hero]="hero!"></app-sad-hero>
   </ng-template>
   <ng-template [ngSwitchCase]="'confused'">
-    <app-confused-hero [hero]="hero"></app-confused-hero>
+    <app-confused-hero [hero]="hero!"></app-confused-hero>
   </ng-template >
   <ng-template ngSwitchDefault>
-    <app-unknown-hero [hero]="hero"></app-unknown-hero>
+    <app-unknown-hero [hero]="hero!"></app-unknown-hero>
   </ng-template>
 </div>
 

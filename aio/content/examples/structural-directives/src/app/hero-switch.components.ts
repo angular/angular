@@ -7,7 +7,7 @@ import { Hero } from './hero';
   template: `Wow. You like {{hero.name}}. What a happy hero ... just like you.`
 })
 export class HappyHeroComponent {
-  @Input() hero: Hero;
+  @Input() hero!: Hero;
 }
 
 @Component({
@@ -15,7 +15,7 @@ export class HappyHeroComponent {
   template: `You like {{hero.name}}? Such a sad hero. Are you sad too?`
 })
 export class SadHeroComponent {
-  @Input() hero: Hero;
+  @Input() hero!: Hero;
 }
 
 @Component({
@@ -23,7 +23,7 @@ export class SadHeroComponent {
   template: `Are you as confused as {{hero.name}}?`
 })
 export class ConfusedHeroComponent {
-  @Input() hero: Hero;
+  @Input() hero!: Hero;
 }
 
 @Component({
@@ -31,7 +31,7 @@ export class ConfusedHeroComponent {
   template: `{{message}}`
 })
 export class UnknownHeroComponent {
-  @Input() hero: Hero;
+  @Input() hero!: Hero;
   get message() {
     return this.hero && this.hero.name ?
       `${this.hero.name} is strange and mysterious.` :

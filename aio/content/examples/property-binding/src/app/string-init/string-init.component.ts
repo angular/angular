@@ -7,7 +7,7 @@ import { Component, OnInit, Input } from '@angular/core';
 })
 export class StringInitComponent implements OnInit {
 
-  @Input() prefix: string;
+  @Input() prefix = '';
 
   constructor() { }
 

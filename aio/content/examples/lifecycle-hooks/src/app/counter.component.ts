@@ -16,7 +16,7 @@ import {
   `
 })
 export class MyCounterComponent implements OnChanges {
-  @Input() counter: number;
+  @Input() counter = 0;
   changeLog: string[] = [];
 
   ngOnChanges(changes: SimpleChanges) {

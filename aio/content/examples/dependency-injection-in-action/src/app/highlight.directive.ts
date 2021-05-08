@@ -7,7 +7,7 @@ import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 })
 export class HighlightDirective {
 
-  @Input('appHighlight') highlightColor: string;
+  @Input('appHighlight') highlightColor = '';
 
   private el: HTMLElement;
 
@@ -20,7 +20,7 @@ export class HighlightDirective {
   }
 
   @HostListener('mouseleave') onMouseLeave() {
-    this.highlight(null);
+    this.highlight('');
   }
 
   private highlight(color: string) {

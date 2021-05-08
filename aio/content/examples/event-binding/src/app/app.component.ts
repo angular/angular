@@ -27,8 +27,8 @@ export class AppComponent {
   }
 
   // #docregion getValue
-  getValue(target: EventTarget): string {
-    return (target as HTMLInputElement).value;
+  getValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
   }
   // #enddocregion getValue
 }

@@ -16,7 +16,7 @@ export class AppComponent {
   eventType = '<not clicked yet>';
   isActive = true;
   isImportant = true;
-  movie: IMovie = null;
+  movie: IMovie;
   movies: IMovie[] = [];
   showImage = true;
   title = 'AngularJS to Angular Quick Ref Cookbook';

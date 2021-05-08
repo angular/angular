@@ -17,7 +17,7 @@ import { Hero } from './hero';
 })
 // #enddocregion inlinestyles
 export class HeroControlsComponent {
-  @Input() hero: Hero;
+  @Input() hero!: Hero;
 
   activate() {
     this.hero.active = true;

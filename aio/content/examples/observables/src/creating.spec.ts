@@ -2,10 +2,10 @@ import { docRegionFromEvent, docRegionSubscriber } from './creating';
 
 describe('observables', () => {
   it('should create an observable using the constructor', () => {
-    const console = {log: jasmine.createSpy('log')};
-    docRegionSubscriber(console);
-    expect(console.log).toHaveBeenCalledTimes(4);
-    expect(console.log.calls.allArgs()).toEqual([
+    const consoleSpy = jasmine.createSpyObj<Console>('console', ['log']);
+    docRegionSubscriber(consoleSpy);
+    expect(consoleSpy.log).toHaveBeenCalledTimes(4);
+    expect(consoleSpy.log.calls.allArgs()).toEqual([
       [1],
       [2],
       [3],
@@ -14,12 +14,12 @@ describe('observables', () => {
   });
 
   it('should listen to input changes', () => {
-    let triggerInputChange;
+    let triggerInputChange!: (e: {keyCode: number}) => void;
     const input = {
       value: 'Test',
       addEventListener: jasmine
         .createSpy('addEvent')
-        .and.callFake((eventName: string, cb: (e) => void) => {
+        .and.callFake((eventName: string, cb: (e: {keyCode: number}) => void) => {
           if (eventName === 'keydown') {
             triggerInputChange = cb;
           }
@@ -27,7 +27,7 @@ describe('observables', () => {
       removeEventListener: jasmine.createSpy('removeEventListener'),
     };
 
-    const document = { getElementById: () => input };
+    const document = { getElementById: () => input } as unknown as Document;
     docRegionFromEvent(document);
     triggerInputChange({keyCode: 65});
     expect(input.value).toBe('Test');
@@ -41,14 +41,14 @@ describe('observables', () => {
       addEventListener: jasmine.createSpy('addEvent'),
       removeEventListener: jasmine
         .createSpy('removeEvent')
-        .and.callFake((eventName: string, cb: (e) => void) => {
+        .and.callFake((eventName: string) => {
           if (eventName === 'keydown') {
             doneFn();
           }
         })
     };
 
-    const document = { getElementById: () => input };
+    const document = { getElementById: () => input } as unknown as Document;
     const subscription = docRegionFromEvent(document);
     subscription.unsubscribe();
   });

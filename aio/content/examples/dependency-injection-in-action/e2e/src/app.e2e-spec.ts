@@ -1,4 +1,4 @@
-import { browser, element, by } from 'protractor';
+import { browser, element, by, ElementFinder } from 'protractor';
 
 describe('Dependency Injection Cookbook', () => {
 
@@ -19,7 +19,7 @@ describe('Dependency Injection Cookbook', () => {
       expect(await sortedHeroes.isPresent()).toBe(true);
 
       const sortedHeroElems = element.all(by.css('app-sorted-heroes div'));
-      const sortedHeroNames = await sortedHeroElems.map(elem => elem.getText());
+      const sortedHeroNames = await sortedHeroElems.map(elem => elem?.getText());
       expect(sortedHeroNames).toEqual(['Dr Nice', 'Magma', 'RubberMan']);
     });
 

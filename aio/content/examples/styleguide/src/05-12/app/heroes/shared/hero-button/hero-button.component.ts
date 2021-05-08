@@ -8,6 +8,6 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class HeroButtonComponent {
   @Output() heroChange = new EventEmitter<any>();
-  @Input() label: string;
+  @Input() label = '';
 }
 // #enddocregion example

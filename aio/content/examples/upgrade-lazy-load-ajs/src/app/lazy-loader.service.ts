@@ -5,7 +5,7 @@ import * as angular from 'angular';
   providedIn: 'root'
 })
 export class LazyLoaderService {
-  private app: angular.auto.IInjectorService;
+  private app: angular.auto.IInjectorService | undefined;
 
   load(el: HTMLElement): void {
     import('./angularjs-app').then(app => {

@@ -20,8 +20,8 @@ import { Hero } from '../hero';
 })
 // #docregion ctor
 export class HeroListComponent implements OnInit {
-  heroes$: Observable<Hero[]>;
-  selectedId: number;
+  heroes$!: Observable<Hero[]>;
+  selectedId = 0;
 
   constructor(
     private service: HeroService,
@@ -31,8 +31,7 @@ export class HeroListComponent implements OnInit {
   ngOnInit() {
     this.heroes$ = this.route.paramMap.pipe(
       switchMap(params => {
-        // (+) before `params.get()` turns the string into a number
-        this.selectedId = +params.get('id');
+        this.selectedId = parseInt(params.get('id')!, 10);
         return this.service.getHeroes();
       })
     );

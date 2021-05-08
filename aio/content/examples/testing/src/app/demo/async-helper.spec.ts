@@ -133,11 +133,11 @@ describe('Angular async helper', () => {
     it('should get Date diff correctly in fakeAsync with rxjs scheduler', fakeAsync(() => {
          // need to add `import 'zone.js/plugins/zone-patch-rxjs-fake-async'
          // to patch rxjs scheduler
-         let result = null;
+         let result = '';
          of('hello').pipe(delay(1000)).subscribe(v => {
            result = v;
          });
-         expect(result).toBeNull();
+         expect(result).toBe('');
          tick(1000);
          expect(result).toBe('hello');
 

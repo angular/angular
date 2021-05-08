@@ -4,8 +4,7 @@ const expectedH1 = 'Tour of Heroes';
 const expectedTitle = `${expectedH1}`;
 
 class Hero {
-  id: number;
-  name: string;
+  constructor(public id: number, public name: string) {}
 
   // Factory method
   // Get hero id and name from the given detail element.
@@ -14,10 +13,10 @@ class Hero {
     const id = await detail.all(by.css('div')).first().getText();
     // Get name from the h2
     const name = await detail.element(by.css('h2')).getText();
-    return {
-      id: +id.substr(id.indexOf(' ') + 1),
-      name: name.substr(0, name.lastIndexOf(' '))
-    };
+    return new Hero(
+      +id.substr(id.indexOf(' ') + 1),
+      name.substr(0, name.lastIndexOf(' '))
+    );
   }
 }
 

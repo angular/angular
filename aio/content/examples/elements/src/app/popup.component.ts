@@ -47,7 +47,7 @@ export class PopupComponent {
     this._message = message;
     this.state = 'opened';
   }
-  private _message: string;
+  private _message = '';
 
   @Output()
   closed = new EventEmitter();

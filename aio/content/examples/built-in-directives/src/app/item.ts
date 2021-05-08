@@ -3,7 +3,7 @@ export class Item {
 
   static items: Item[] = [
     new Item(
-      null,
+      0,
       'Teapot',
       'stout'
     ),
@@ -15,7 +15,7 @@ export class Item {
 
 
   constructor(
-    public id?: number,
+    public id: number,
     public name?: string,
     public feature?: string,
     public url?: string,
@@ -25,6 +25,6 @@ export class Item {
   }
 
   clone(): Item {
-    return Object.assign(new Item(), this);
+    return Object.assign(new Item(this.id), this);
   }
 }

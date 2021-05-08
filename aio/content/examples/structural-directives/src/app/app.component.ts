@@ -9,7 +9,7 @@ import { Hero, heroes } from './hero';
 })
 export class AppComponent {
   heroes = heroes;
-  hero = this.heroes[0];
+  hero: Hero | null = this.heroes[0];
   // #docregion condition
   condition = false;
   // #enddocregion condition

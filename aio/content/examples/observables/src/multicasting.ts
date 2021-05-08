@@ -1,16 +1,16 @@
 // #docplaster
 
-import { Observable } from 'rxjs';
+import { Observable, Observer } from 'rxjs';
 
-export function docRegionDelaySequence(console) {
+export function docRegionDelaySequence(console: Console) {
   // #docregion delay_sequence
-  function sequenceSubscriber(observer) {
+  function sequenceSubscriber(observer: Observer<number>) {
     const seq = [1, 2, 3];
-    let timeoutId;
+    let timeoutId: any;
 
     // Will run through an array of numbers, emitting one value
     // per second until it gets to the end of the array.
-    function doInSequence(arr, idx) {
+    function doInSequence(arr: number[], idx: number) {
       timeoutId = setTimeout(() => {
         observer.next(arr[idx]);
         if (idx === arr.length - 1) {
@@ -76,19 +76,19 @@ export function docRegionDelaySequence(console) {
   // #enddocregion subscribe_twice
 }
 
-export function docRegionMulticastSequence(console) {
+export function docRegionMulticastSequence(console: Console) {
   // #docregion multicast_sequence
   function multicastSequenceSubscriber() {
     const seq = [1, 2, 3];
     // Keep track of each observer (one for every active subscription)
-    const observers = [];
+    const observers: Observer<unknown>[] = [];
     // Still a single timeoutId because there will only ever be one
     // set of values being generated, multicasted to each subscriber
-    let timeoutId;
+    let timeoutId: any;
 
     // Return the subscriber function (runs when subscribe()
     // function is invoked)
-    return observer => {
+    return (observer: Observer<unknown>) => {
       observers.push(observer);
       // When this is the first subscription, start the sequence
       if (observers.length === 1) {
@@ -97,6 +97,7 @@ export function docRegionMulticastSequence(console) {
             // Iterate through observers and notify all subscriptions
             observers.forEach(obs => obs.next(val));
           },
+          error() { /* Handle the error... */ },
           complete() {
             // Notify all complete callbacks
             observers.slice(0).forEach(obs => obs.complete());
@@ -119,7 +120,7 @@ export function docRegionMulticastSequence(console) {
 
   // Run through an array of numbers, emitting one value
   // per second until it gets to the end of the array.
-  function doSequence(observer, arr, idx) {
+  function doSequence(observer: Observer<number>, arr: number[], idx: number) {
     return setTimeout(() => {
       observer.next(arr[idx]);
       if (idx === arr.length - 1) {

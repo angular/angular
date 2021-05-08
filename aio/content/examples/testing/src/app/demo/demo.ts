@@ -62,8 +62,8 @@ export class ReversePipe implements PipeTransform {
  `
 })
 export class BankAccountComponent {
-  @Input() bank: string;
-  @Input('account') id: string;
+  @Input() bank = '';
+  @Input('account') id = '';
 
   // Removed on 12/02/2016 when ceased public discussion of the `Renderer`. Revive in future?
   // constructor(private renderer: Renderer, private el: ElementRef ) {
@@ -118,7 +118,7 @@ export class Child1Component {
   template: '<div>Child-2({{text}})</div>'
 })
 export class Child2Component {
-  @Input() text: string;
+  @Input() text = '';
 }
 
 @Component({
@@ -126,7 +126,7 @@ export class Child2Component {
   template: '<div>Child-3({{text}})</div>'
 })
 export class Child3Component {
-  @Input() text: string;
+  @Input() text = '';
 }
 
 @Component({
@@ -187,7 +187,7 @@ export class ParentComponent { }
   template: `<div class="hero" (click)="click()">Original {{hero.name}}</div>`
 })
 export class IoComponent {
-  @Input() hero: Hero;
+  @Input() hero!: Hero;
   @Output() selected = new EventEmitter<Hero>();
   click() { this.selected.emit(this.hero); }
 }
@@ -206,7 +206,7 @@ export class IoComponent {
 })
 export class IoParentComponent {
   heroes: Hero[] = [ {name: 'Bob'}, {name: 'Carol'}, {name: 'Ted'}, {name: 'Alice'} ];
-  selectedHero: Hero;
+  selectedHero!: Hero;
   onSelect(hero: Hero) { this.selectedHero = hero; }
 }
 
@@ -242,7 +242,7 @@ export class TestViewProvidersComponent {
   templateUrl: './demo-external-template.html'
 })
 export class ExternalTemplateComponent implements OnInit {
-  serviceValue: string;
+  serviceValue = '';
 
   constructor(@Optional() private service?: ValueService) {  }
 

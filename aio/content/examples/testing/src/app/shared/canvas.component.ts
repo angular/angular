@@ -14,18 +14,18 @@ import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 })
 export class CanvasComponent implements AfterViewInit {
   blobSize = 0;
-  @ViewChild('sampleCanvas') sampleCanvas: ElementRef;
+  @ViewChild('sampleCanvas') sampleCanvas!: ElementRef;
 
   ngAfterViewInit() {
     const canvas: HTMLCanvasElement = this.sampleCanvas.nativeElement;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d')!;
 
     context.clearRect(0, 0, 200, 200);
     context.fillStyle = '#FF1122';
     context.fillRect(0, 0, 200, 200);
 
     canvas.toBlob(blob => {
-      this.blobSize = blob.size;
+      this.blobSize = blob?.size ?? 0;
     });
   }
 }

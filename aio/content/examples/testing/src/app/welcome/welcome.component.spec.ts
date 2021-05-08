@@ -32,7 +32,7 @@ describe('WelcomeComponent (class only)', () => {
 
   // #docregion class-only-tests
   it('should not have welcome message after construction', () => {
-    expect(comp.welcome).toBeUndefined();
+    expect(comp.welcome).toBe('');
   });
 
   it('should welcome logged in user after Angular calls ngOnInit', () => {

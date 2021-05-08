@@ -27,7 +27,7 @@ export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
   private prevHero = '';
 
   // Query for a VIEW child of type `ChildViewComponent`
-  @ViewChild(ChildViewComponent) viewChild: ChildViewComponent;
+  @ViewChild(ChildViewComponent) viewChild!: ChildViewComponent;
 
   // #enddocregion hooks
   constructor(private logger: LoggerService) {

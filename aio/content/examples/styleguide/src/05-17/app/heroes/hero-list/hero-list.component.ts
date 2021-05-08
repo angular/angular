@@ -19,7 +19,7 @@ import { Hero } from '../shared/hero.model';
 })
 export class HeroListComponent {
   heroes: Hero[];
-  totalPowers: number;
+  totalPowers = 0;
 
   // #enddocregion example
   // testing harness

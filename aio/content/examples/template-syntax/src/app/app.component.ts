@@ -28,8 +28,8 @@ export class AppComponent implements AfterViewInit, OnInit {
     trackChanges(this.heroesWithTrackBy, () => this.heroesWithTrackByCount++);
   }
 
-  @ViewChildren('noTrackBy')   heroesNoTrackBy: QueryList<ElementRef>;
-  @ViewChildren('withTrackBy') heroesWithTrackBy: QueryList<ElementRef>;
+  @ViewChildren('noTrackBy')   heroesNoTrackBy!: QueryList<ElementRef>;
+  @ViewChildren('withTrackBy') heroesWithTrackBy!: QueryList<ElementRef>;
 
   actionName = 'Go for it';
   badCurly = 'bad curly';
@@ -63,7 +63,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   color = Color.Red;
   colorToggle() {this.color = (this.color === Color.Red) ? Color.Blue : Color.Red; }
 
-  currentHero: Hero;
+  currentHero!: Hero;
 
   updateCurrentHeroName(event: Event) {
     this.currentHero.name = (event.target as any).value;
@@ -81,9 +81,9 @@ export class AppComponent implements AfterViewInit, OnInit {
 
   getVal(): number { return 2; }
 
-  name: string = Hero.heroes[0].name;
-  hero: Hero; // defined to demonstrate template context precedence
-  heroes: Hero[];
+  name: string = Hero.heroes[0].name || '';
+  hero!: Hero; // defined to demonstrate template context precedence
+  heroes: Hero[] = [];
 
   // trackBy change counting
   heroesNoTrackByCount   = 0;
@@ -104,7 +104,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   isSpecial = true;
   isUnchanged = true;
 
-  get nullHero(): Hero { return null; }
+  get nullHero(): Hero | null { return null; }
 
   onClickMe(event?: MouseEvent) {
     const evtMsg = event ? ' Event target class is ' + (event.target as HTMLElement).className  : '';
@@ -136,7 +136,7 @@ export class AppComponent implements AfterViewInit, OnInit {
     this.currentHero.name = name.toUpperCase();
   }
 
-  currentClasses: {};
+  currentClasses: Record<string, boolean> = {};
   setCurrentClasses() {
     // CSS classes: added/removed per current state of component properties
     this.currentClasses =  {
@@ -146,7 +146,7 @@ export class AppComponent implements AfterViewInit, OnInit {
     };
   }
 
-  currentStyles: {};
+  currentStyles: Record<string, string> = {};
   setCurrentStyles() {
     // CSS styles: set per current state of component properties
     this.currentStyles = {

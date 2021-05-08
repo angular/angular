@@ -13,7 +13,7 @@ import { AdItem } from './ad-item';
   `
 })
 export class AppComponent implements OnInit {
-  ads: AdItem[];
+  ads: AdItem[] = [];
 
   constructor(private adService: AdService) {}
 

@@ -7,7 +7,7 @@ describe('Binding syntax e2e tests', () => {
 
 
   // helper function used to test what's logged to the console
-  async function logChecker(contents) {
+  async function logChecker(contents: string) {
     const logs = await browser.manage().logs().get(logging.Type.BROWSER);
     const messages = logs.filter(({ message }) => message.indexOf(contents) !== -1 ? true : false);
     expect(messages.length).toBeGreaterThan(0);

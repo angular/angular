@@ -4,6 +4,7 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
 import { trigger, transition, animate, style, query, stagger } from '@angular/animations';
 import { HEROES } from './mock-heroes';
+import { Hero } from './hero';
 
 // #docregion filter-animations
 @Component({
@@ -58,7 +59,7 @@ export class HeroListPageComponent implements OnInit {
   heroTotal = -1;
 // #enddocregion filter-animations
   get heroes() { return this._heroes; }
-  private _heroes = [];
+  private _heroes: Hero[] = [];
 
   ngOnInit() {
     this._heroes = HEROES;

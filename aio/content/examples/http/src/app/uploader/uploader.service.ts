@@ -62,7 +62,7 @@ export class UploaderService {
 
       case HttpEventType.UploadProgress:
         // Compute and show the % done:
-        const percentDone = Math.round(100 * event.loaded / event.total);
+        const percentDone = Math.round(100 * event.loaded / (event.total ?? 0));
         return `File "${file.name}" is ${percentDone}% uploaded.`;
 
       case HttpEventType.Response:

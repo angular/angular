@@ -18,14 +18,14 @@ import { Customer,
   `
 })
 export class CustomersDetailComponent implements OnInit {
-  customer: Customer;
+  customer!: Customer;
 
   constructor(
     private route: ActivatedRoute,
     private customersService: CustomersService) { }
 
   ngOnInit() {
-    const id = parseInt(this.route.snapshot.paramMap.get('id'), 10);
+    const id = parseInt(this.route.snapshot.paramMap.get('id')!, 10);
     this.customersService.getCustomer(id).subscribe(customer => this.customer = customer);
   }
 }
