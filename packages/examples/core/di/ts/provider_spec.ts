@@ -30,7 +30,7 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
     describe('ValueProvider', () => {
       it('works', () => {
         // #docregion ValueProvider
-        const injector = Injector.create([{provide: String, useValue: 'Hello'}]);
+        const injector = Injector.create({providers: [{provide: String, useValue: 'Hello'}]});
 
         expect(injector.get(String)).toEqual('Hello');
         // #enddocregion
@@ -41,10 +41,12 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
       it('works', () => {
         // #docregion MultiProviderAspect
         const locale = new InjectionToken<string[]>('locale');
-        const injector = Injector.create([
-          {provide: locale, multi: true, useValue: 'en'},
-          {provide: locale, multi: true, useValue: 'sk'},
-        ]);
+        const injector = Injector.create({
+          providers: [
+            {provide: locale, multi: true, useValue: 'en'},
+            {provide: locale, multi: true, useValue: 'sk'},
+          ]
+        });
 
         const locales: string[] = injector.get(locale);
         expect(locales).toEqual(['en', 'sk']);
@@ -102,7 +104,8 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
           name = 'square';
         }
 
-        const injector = Injector.create([{provide: Shape, useClass: Square, deps: []}]);
+        const injector =
+            Injector.create({providers: [{provide: Shape, useClass: Square, deps: []}]});
 
         const shape: Shape = injector.get(Shape);
         expect(shape.name).toEqual('square');
@@ -120,10 +123,12 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
           salutation = 'Greetings';
         }
 
-        const injector = Injector.create([
-          {provide: FormalGreeting, useClass: FormalGreeting, deps: []},
-          {provide: Greeting, useClass: FormalGreeting, deps: []}
-        ]);
+        const injector = Injector.create({
+          providers: [
+            {provide: FormalGreeting, useClass: FormalGreeting, deps: []},
+            {provide: Greeting, useClass: FormalGreeting, deps: []}
+          ]
+        });
 
         // The injector returns different instances.
         // See: {provide: ?, useExisting: ?} if you want the same instance.
@@ -159,9 +164,11 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
           salutation = 'Greetings';
         }
 
-        const injector = Injector.create([
-          {provide: FormalGreeting, deps: []}, {provide: Greeting, useExisting: FormalGreeting}
-        ]);
+        const injector = Injector.create({
+          providers: [
+            {provide: FormalGreeting, deps: []}, {provide: Greeting, useExisting: FormalGreeting}
+          ]
+        });
 
         expect(injector.get(Greeting).salutation).toEqual('Greetings');
         expect(injector.get(FormalGreeting).salutation).toEqual('Greetings');
@@ -176,13 +183,15 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         const Location = new InjectionToken('location');
         const Hash = new InjectionToken('hash');
 
-        const injector = Injector.create([
-          {provide: Location, useValue: 'https://angular.io/#someLocation'}, {
-            provide: Hash,
-            useFactory: (location: string) => location.split('#')[1],
-            deps: [Location]
-          }
-        ]);
+        const injector = Injector.create({
+          providers: [
+            {provide: Location, useValue: 'https://angular.io/#someLocation'}, {
+              provide: Hash,
+              useFactory: (location: string) => location.split('#')[1],
+              deps: [Location]
+            }
+          ]
+        });
 
         expect(injector.get(Hash)).toEqual('someLocation');
         // #enddocregion
@@ -193,12 +202,14 @@ import {Injectable, InjectionToken, Injector, Optional, ReflectiveInjector} from
         const Location = new InjectionToken('location');
         const Hash = new InjectionToken('hash');
 
-        const injector = Injector.create([{
-          provide: Hash,
-          useFactory: (location: string) => `Hash for: ${location}`,
-          // use a nested array to define metadata for dependencies.
-          deps: [[new Optional(), Location]]
-        }]);
+        const injector = Injector.create({
+          providers: [{
+            provide: Hash,
+            useFactory: (location: string) => `Hash for: ${location}`,
+            // use a nested array to define metadata for dependencies.
+            deps: [[new Optional(), Location]]
+          }]
+        });
 
         expect(injector.get(Hash)).toEqual('Hash for: null');
         // #enddocregion
