@@ -4,9 +4,9 @@ import { WithCustomElementComponent } from '../element-registry';
 import { DistTagComponent } from './dist-tag.component';
 
 @NgModule({
-  declarations: [DistTagComponent],
-  entryComponents: [DistTagComponent],
+  declarations: [ DistTagComponent ],
+  entryComponents: [ DistTagComponent ],
 })
-export class MajorVersionModule implements WithCustomElementComponent {
+export class DistTagModule implements WithCustomElementComponent {
   customElementComponent: Type<any> = DistTagComponent;
 }

@@ -23,7 +23,7 @@ export const ELEMENT_MODULE_LOAD_CALLBACKS_AS_ROUTES = [
   },
   {
     selector: 'aio-angular-dist-tag',
-    loadChildren: () => import('./dist-tag/dist-tag.module').then(m => m.MajorVersionModule)
+    loadChildren: () => import('./dist-tag/dist-tag.module').then(m => m.DistTagModule)
   },
   {
     selector: 'aio-resource-list',
