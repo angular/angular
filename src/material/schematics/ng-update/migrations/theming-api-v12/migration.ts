@@ -101,7 +101,7 @@ function detectImports(content: string, prefix: string): DetectImportResult {
   return {imports, namespaces};
 }
 
-/** Migrates the Material symbls in a file. */
+/** Migrates the Material symbols in a file. */
 function migrateMaterialSymbols(content: string, importPath: string,
                                 detectedImports: DetectImportResult): string {
   const initialContent = content;
@@ -154,6 +154,7 @@ function migrateCdkSymbols(content: string, importPath: string,
  * Renames all Sass symbols in a file based on a pre-defined mapping.
  * @param content Content of a file to be migrated.
  * @param mapping Mapping between symbol names and their replacements.
+ * @param namespaces Names to iterate over and pass to getKeyPattern.
  * @param getKeyPattern Function used to turn each of the keys into a regex.
  * @param formatValue Formats the value that will replace any matches of the pattern returned by
  *  `getKeyPattern`.
@@ -205,7 +206,7 @@ function insertUseStatement(content: string, importPath: string, importsToIgnore
 /** Formats a migration key as a Sass mixin invocation. */
 function mixinKeyFormatter(namespace: string|null, name: string): RegExp {
   // Note that adding a `(` at the end of the pattern would be more accurate, but mixin
-  // invocations don't necessarily have to include the parantheses. We could add `[(;]`,
+  // invocations don't necessarily have to include the parentheses. We could add `[(;]`,
   // but then we won't know which character to include in the replacement string.
   return new RegExp(`@include +${escapeRegExp((namespace ? namespace + '.' : '') + name)}`, 'g');
 }
@@ -213,7 +214,7 @@ function mixinKeyFormatter(namespace: string|null, name: string): RegExp {
 /** Returns a function that can be used to format a Sass mixin replacement. */
 function getMixinValueFormatter(namespace: string): (name: string) => string {
   // Note that adding a `(` at the end of the pattern would be more accurate,
-  // but mixin invocations don't necessarily have to include the parantheses.
+  // but mixin invocations don't necessarily have to include the parentheses.
   return name => `@include ${namespace}.${name}`;
 }
 
