@@ -14,7 +14,7 @@ export class ItemsDetailComponent implements OnInit {
   constructor(private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.id = parseInt(this.route.snapshot.paramMap.get('id') || '0', 10);
+    this.id = parseInt(this.route.snapshot.paramMap.get('id')!, 10);
   }
 }
 

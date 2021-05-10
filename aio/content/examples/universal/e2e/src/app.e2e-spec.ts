@@ -61,7 +61,7 @@ describe('Universal', () => {
 
     const expectedViewNames = ['Dashboard', 'Heroes'];
     it(`has views ${expectedViewNames}`, async () => {
-      const viewNames = await getPageElts().navElts.map(el => (el as ElementFinder).getText());
+      const viewNames = await getPageElts().navElts.map(el => el!.getText());
       expect(viewNames).toEqual(expectedViewNames);
     });
 
@@ -284,7 +284,7 @@ describe('Universal', () => {
   }
 
   async function toHeroArray(allHeroes: ElementArrayFinder): Promise<Hero[]> {
-    return await allHeroes.map(hero => Hero.fromLi(hero as ElementFinder));
+    return await allHeroes.map(hero => Hero.fromLi(hero!));
   }
 
   async function updateHeroNameInDetailView(): Promise<void> {

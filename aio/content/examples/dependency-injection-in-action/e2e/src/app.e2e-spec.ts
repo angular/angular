@@ -19,7 +19,7 @@ describe('Dependency Injection Cookbook', () => {
       expect(await sortedHeroes.isPresent()).toBe(true);
 
       const sortedHeroElems = element.all(by.css('app-sorted-heroes div'));
-      const sortedHeroNames = await sortedHeroElems.map(elem => (elem as ElementFinder).getText());
+      const sortedHeroNames = await sortedHeroElems.map(elem => elem?.getText());
       expect(sortedHeroNames).toEqual(['Dr Nice', 'Magma', 'RubberMan']);
     });
 

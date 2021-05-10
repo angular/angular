@@ -1,6 +1,6 @@
 // #docregion
 export class QuestionBase<T> {
-  value: T;
+  value: T|undefined;
   key: string;
   label: string;
   required: boolean;
@@ -19,7 +19,7 @@ export class QuestionBase<T> {
       type?: string;
       options?: {key: string, value: string}[];
     } = {}) {
-    this.value = options.value as T;
+    this.value = options.value;
     this.key = options.key || '';
     this.label = options.label || '';
     this.required = !!options.required;

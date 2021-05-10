@@ -27,7 +27,7 @@ export class CrisisDetailComponent implements OnInit {
     this.route.paramMap
       .pipe(
         switchMap((params: ParamMap) =>
-          this.service.getCrisis(params.get('id') as string)))
+          this.service.getCrisis(params.get('id')!)))
       .subscribe((crisis: Crisis) => {
         if (crisis) {
           this.editName = crisis.name;

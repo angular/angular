@@ -34,11 +34,11 @@ export class HeroFormReactiveComponent implements OnInit {
     },  { validators: identityRevealedValidator }); // <-- add custom validator at the FormGroup level
   }
 
-  get name() { return this.heroForm.get('name') as FormControl; }
+  get name() { return this.heroForm.get('name')!; }
 
-  get power() { return this.heroForm.get('power') as FormControl; }
+  get power() { return this.heroForm.get('power')!; }
 
-  get alterEgo() { return this.heroForm.get('alterEgo') as FormControl; }
+  get alterEgo() { return this.heroForm.get('alterEgo')!; }
 
   constructor(private alterEgoValidator: UniqueAlterEgoValidator) { }
 }

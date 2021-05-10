@@ -11,7 +11,7 @@ import { Config, ConfigService } from './config.service';
 })
 export class ConfigComponent {
   error: any;
-  headers: string[] | undefined = [];
+  headers: string[] = [];
   // #docregion v2
   config: Config | undefined;
 
@@ -21,7 +21,7 @@ export class ConfigComponent {
   clear() {
     this.config = undefined;
     this.error = undefined;
-    this.headers = undefined;
+    this.headers = [];
   }
 
   // #docregion v1, v2
@@ -64,7 +64,7 @@ export class ConfigComponent {
           `${key}: ${resp.headers.get(key)}`);
 
         // access the body directly, which is typed as `Config`.
-        this.config = { ... resp.body as Config };
+        this.config = { ...resp.body! };
       });
   }
 // #enddocregion showConfigResponse

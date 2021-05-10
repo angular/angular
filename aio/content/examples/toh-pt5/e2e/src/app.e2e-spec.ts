@@ -66,7 +66,7 @@ describe('Tutorial part 5', () => {
 
     const expectedViewNames = ['Dashboard', 'Heroes'];
     it(`has views ${expectedViewNames}`, async () => {
-      const viewNames = await getPageElts().navElts.map(el => (el as ElementFinder).getText());
+      const viewNames = await getPageElts().navElts.map(el => el!.getText());
       expect(viewNames).toEqual(expectedViewNames);
     });
 

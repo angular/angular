@@ -22,7 +22,7 @@ import { getTestHeroes } from './test-heroes';
 export class TestHeroService extends HeroService {
 
   constructor() {
-    super({} as any);
+    super(null!);
   }
 
   heroes = getTestHeroes();

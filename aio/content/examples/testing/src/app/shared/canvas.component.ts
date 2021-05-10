@@ -18,17 +18,15 @@ export class CanvasComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     const canvas: HTMLCanvasElement = this.sampleCanvas.nativeElement;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext('2d')!;
 
-    if (context) {
-      context.clearRect(0, 0, 200, 200);
-      context.fillStyle = '#FF1122';
-      context.fillRect(0, 0, 200, 200);
+    context.clearRect(0, 0, 200, 200);
+    context.fillStyle = '#FF1122';
+    context.fillRect(0, 0, 200, 200);
 
-      canvas.toBlob(blob => {
-        this.blobSize = blob?.size || 0;
-      });
-    }
+    canvas.toBlob(blob => {
+      this.blobSize = blob?.size || 0;
+    });
   }
 }
 // #enddocregion main

@@ -15,7 +15,7 @@ import { CartService } from '../cart.service';
 // #docregion inject-cart-service, add-to-cart
 export class ProductDetailsComponent implements OnInit {
 // #enddocregion add-to-cart, inject-cart-service
-  product!: Product;
+  product: Product|undefined;
 
 // #docregion inject-cart-service
   constructor(
@@ -30,7 +30,7 @@ export class ProductDetailsComponent implements OnInit {
     const productIdFromRoute = Number(routeParams.get('productId'));
 
     // Find the product that correspond with the id provided in route.
-    this.product = products.find(product => product.id === productIdFromRoute) as Product;
+    this.product = products.find(product => product.id === productIdFromRoute);
   }
 
 // #docregion add-to-cart
