@@ -4,7 +4,7 @@ We recognize that you need stability from the Angular framework. Stability ensur
 
 We also share with you the desire for Angular to keep evolving. We strive to ensure that the foundation on top of which you are building is continuously improving and enabling you to stay up-to-date with the rest of the web ecosystem and your user needs.
 
-This document contains the practices that we follow to provide you with a leading-edge app development platform, balanced with stability. We strive to ensure that future changes are always introduced in a predictable way. We want everyone who depends on Angular to know when and how new features are added, and to be well-prepared when obsolete ones are removed.
+This document contains the practices that we follow to provide you with a leading-edge application development platform, balanced with stability. We strive to ensure that future changes are always introduced in a predictable way. We want everyone who depends on Angular to know when and how new features are added, and to be well-prepared when obsolete ones are removed.
 
 
 <div class="alert is-helpful">
@@ -26,7 +26,7 @@ The version number is incremented based on the level of change included in the r
 * **Major releases** contain significant new features, some but minimal developer assistance is expected during the update. When updating to a new major release, you may need to run update scripts, refactor code, run additional tests, and learn new APIs.
 
 
-* **Minor releases** contain new smaller features. Minor releases are fully backward-compatible; no developer assistance is expected during update, but you can optionally modify your apps and libraries to begin using new APIs, features, and capabilities that were added in the release. We update peer dependencies in minor versions by expanding the supported versions, but we do not require projects to update these dependencies.
+* **Minor releases** contain new smaller features. Minor releases are fully backward-compatible; no developer assistance is expected during update, but you can optionally modify your applications and libraries to begin using new APIs, features, and capabilities that were added in the release. We update peer dependencies in minor versions by expanding the supported versions, but we do not require projects to update these dependencies.
 
 
 * **Patch releases** are low risk, bug fix releases. No developer assistance is expected during update.
@@ -131,7 +131,7 @@ To make these transitions as easy as possible, we make these commitments to you:
 
 * We work hard to minimize the number of breaking changes and to provide migration tools when possible.
 
-* We follow the deprecation policy described here, so you have time to update your apps to the latest APIs and best practices.
+* We follow the deprecation policy described here, so you have time to update your applications to the latest APIs and best practices.
 
 To help ensure that you have sufficient time and a clear path to update, this is our deprecation policy:
 
@@ -141,7 +141,7 @@ To help ensure that you have sufficient time and a clear path to update, this is
 * **Deprecation period:** When an API or a feature is deprecated, it will still be present in the next two major releases. After that, deprecated APIs and features will be candidates for removal. A deprecation can be announced in any release, but the removal of a deprecated API or feature will happen only in major release. Until a deprecated API or feature is removed, it will be maintained according to the LTS support policy, meaning that only critical and security issues will be fixed.
 
 
-* **npm dependencies:** We only make npm dependency updates that require changes to your apps in a major release.
+* **npm dependencies:** We only make npm dependency updates that require changes to your applications in a major release.
 In minor releases, we update peer dependencies by expanding the supported versions, but we do not require projects to update these dependencies until a future major version. This means that during minor Angular releases, npm dependency updates within Angular applications and libraries are optional.
 
 

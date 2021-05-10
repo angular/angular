@@ -8,7 +8,7 @@ That said, some applications will likely need to apply some manual updates.
 {@a debugging}
 ## How to debug errors with Ivy
 
-If you're seeing errors, first temporarily [turn off Ivy](guide/ivy#opting-out-of-angular-ivy) in your `tsconfig.json` and re-start your app.
+If you're seeing errors, first temporarily [turn off Ivy](guide/ivy#opting-out-of-angular-ivy) in your `tsconfig.json` and re-start your application.
 
 If you're still seeing the errors, they are not specific to Ivy. In this case, you may want to consult the [general update guide](guide/updating-to-version-12). If you've opted into any of the new, stricter type-checking settings, you may also want to check out the [template type-checking guide](guide/template-typecheck).
 
@@ -24,13 +24,12 @@ Anything that you import outside lazy modules can end up in the main bundle.
 See more details in the original issue [here](https://github.com/angular/angular-cli/issues/16146#issuecomment-557559287).
 
 1. Check that imported libraries have been marked side-effect-free.
-If your app imports from shared libraries that are meant to be free from side effects, add "sideEffects": false to their `package.json`.
+If your application imports from shared libraries that are meant to be free from side effects, add "sideEffects": false to their `package.json`.
 This will ensure that the libraries will be properly tree-shaken if they are imported but not directly referenced.
 See more details in the original issue [here](https://github.com/angular/angular-cli/issues/16799#issuecomment-580912090).
 
-1. Projects not using Angular CLI will see a significant size regression unless they update their minifier settings and set compile-time constants `ngDevMode`, `ngI18nClosureMode` and `ngJitMode` to `false` (for Terser, please set these to `false` via [`global_defs` config option](https://terser.org/docs/api-reference.html#conditional-compilation)).
-Please note that these constants are not meant to be used by 3rd party library or application code as they are not part of our public API surface and might change in the future.
-
+1. Projects not using Angular CLI will see a significant size regression unless they update their minifier settings and set compile-time constants `ngDevMode`, `ngI18nClosureMode` and `ngJitMode` to `false` (for Terser, set these to `false` using [`global_defs` config option](https://terser.org/docs/api-reference.html#conditional-compilation)).
+Note that these constants are not meant to be used by 3rd party library or application code as they are not part of our public api surface and might change in the future.
 
 {@a common-changes}
 ### Changes you may see
@@ -39,7 +38,7 @@ Please note that these constants are not meant to be used by 3rd party library o
 
 * All classes that use Angular DI must have an Angular decorator like `@Directive()` or `@Injectable` (previously, undecorated classes were allowed in AOT mode only or if injection flags were used). See further [details](guide/ivy-compatibility-examples#undecorated-classes).
 
-* Unbound inputs for directives (e.g. name in `<my-comp name="">`) are now set upon creation of the view, before change detection runs (previously, all inputs were set during change detection).
+* Unbound inputs for directives (for example, name in `<my-comp name="">`) are now set upon creation of the view, before change detection runs (previously, all inputs were set during change detection).
 
 * Static attributes set directly in the HTML of a template will override any conflicting host attributes set by directives or components (previously, static host attributes set by directives / components would override static template attributes if conflicting).
 
@@ -48,7 +47,7 @@ Please note that these constants are not meant to be used by 3rd party library o
 
 * Properties like `host` inside `@Component` and `@Directive` decorators can be inherited (previously, only properties with explicit field decorators like `@HostBinding` would be inherited).
 
-* HammerJS support is opt-in through importing the `HammerModule` (previously, it was always included in production bundles regardless of whether the app used HammerJS).
+* HammerJS support is opt-in through importing the `HammerModule` (previously, it was always included in production bundles regardless of whether the application used HammerJS).
 
 * `@ContentChild` and `@ContentChildren` queries will no longer be able to match their directive's own host node (previously, these queries would match the host node in addition to its content children).
 
@@ -83,9 +82,9 @@ For more information about the updated style precedence in Ivy, refer to the [st
 
 * `DebugElement.classes` returns `undefined` for classes that were added and then subsequently removed (previously, classes added and later removed would have a value of `false`).
 
-* If selecting the native `<option>` element in a `<select>` where the `<option>`s are created via `*ngFor`, use the `[selected]` property of an `<option>` instead of binding to the `[value]` property of the `<select>` element (previously, you could bind to either.) [details](guide/ivy-compatibility-examples#select-value-binding)
+* If selecting the native `<option>` element in a `<select>` where the `<option>`s are created using `*ngFor`, use the `[selected]` property of an `<option>` instead of binding to the `[value]` property of the `<select>` element (previously, you could bind to either.) [details](guide/ivy-compatibility-examples#select-value-binding)
 
-* Embedded views (such as ones created by `*ngFor`) are now inserted in front of anchor DOM comment node (e.g. `<!--ng-for-of-->`) rather than behind it as was the case previously.
+* Embedded views (such as ones created by `*ngFor`) are now inserted in front of anchor DOM comment node (for example, `<!--ng-for-of-->`) rather than behind it as was the case previously.
 In most cases this does not have any impact on rendered DOM.
 In some cases (such as animations delaying the removal of an embedded view) any new embedded views will be inserted after the embedded view being animated away.
 This difference only last while the animation is active, and might alter the visual appearance of the animation.
