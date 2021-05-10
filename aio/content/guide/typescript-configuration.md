@@ -138,7 +138,7 @@ Many libraries&mdash;jQuery, Jasmine, and Lodash among them&mdash;do *not* inclu
 Fortunately, either their authors or community contributors have created separate `d.ts` files for these libraries and
 published them in well-known locations.
 
-You can install these typings via `npm` using the
+You can install these typings with `npm` using the
 [`@types/*` scoped package](https://www.typescriptlang.org/docs/handbook/declaration-files/consumption.html)
 and Typescript, starting at 2.0, automatically recognizes them.
 
