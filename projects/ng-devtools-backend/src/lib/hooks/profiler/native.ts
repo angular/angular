@@ -92,19 +92,19 @@ export class NgProfiler extends Profiler {
     }
   }
 
-  [ɵProfilerEvent.LifecycleHookStart](directive: any, hookOrListener: any): void {
+  [ɵProfilerEvent.LifecycleHookStart](directive: any, hook: any): void {
     const id = this._tracker.getDirectiveId(directive);
     const element = getDirectiveHostElement(directive);
-    const lifecycleHookName = getLifeCycleName(directive, hookOrListener);
+    const lifecycleHookName = getLifeCycleName(directive, hook);
     const isComponent = !!this._tracker.isComponent.get(directive);
 
     this._onLifecycleHookStart(directive, lifecycleHookName, element, id, isComponent);
   }
 
-  [ɵProfilerEvent.LifecycleHookEnd](directive: any, hookOrListener: any): void {
+  [ɵProfilerEvent.LifecycleHookEnd](directive: any, hook: any): void {
     const id = this._tracker.getDirectiveId(directive);
     const element = getDirectiveHostElement(directive);
-    const lifecycleHookName = getLifeCycleName(directive, hookOrListener);
+    const lifecycleHookName = getLifeCycleName(directive, hook);
     const isComponent = !!this._tracker.isComponent.get(directive);
 
     this._onLifecycleHookEnd(directive, lifecycleHookName, element, id, isComponent);
