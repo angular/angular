@@ -29,7 +29,6 @@ export class TimelineComponent implements OnDestroy {
     this._maxDuration = -Infinity;
     this._subscription = data.subscribe({
       next: (frames: ProfilerFrame[]): void => {
-        console.log(frames);
         this._processFrames(frames);
       },
       complete: (): void => {
