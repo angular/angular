@@ -103,7 +103,7 @@ For example, if you need the optional [web animations polyfill](https://caniuse.
 </code-example>
 
 You can then add the import statement in the `src/polyfills.ts` file.
-For many polyfills, you can simply un-comment the corresponding `import` statement in the file, as in the following example.
+For many polyfills, you can un-comment the corresponding `import` statement in the file, as in the following example.
 
 <code-example header="src/polyfills.ts">
   /**

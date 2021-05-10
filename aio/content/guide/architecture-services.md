@@ -1,6 +1,6 @@
 # Introduction to services and dependency injection
 
-*Service* is a broad category encompassing any value, function, or feature that an app needs.
+*Service* is a broad category encompassing any value, function, or feature that an application needs.
 A service is typically a class with a narrow, well-defined purpose.
 It should do something specific and do it well.
 
@@ -17,7 +17,7 @@ A component can delegate certain tasks to services, such as fetching data from t
 validating user input, or logging directly to the console.
 By defining such processing tasks in an *injectable service class*, you make those tasks
 available to any component.
-You can also make your app more adaptable by injecting different providers of the same kind of service,
+You can also make your application more adaptable by injecting different providers of the same kind of service,
 as appropriate in different circumstances.
 
 Angular doesn't *enforce* these principles. Angular does help you *follow* these principles
@@ -50,7 +50,7 @@ Similarly, use the `@Injectable()` decorator to indicate that a component or oth
 
 * A *provider* is an object that tells an injector how to obtain or create a dependency.
 
-For any dependency that you need in your app, you must register a provider with the app's injector,
+For any dependency that you need in your app, you must register a provider with the application's injector,
 so that the injector can use the provider to create new instances.
 For a service, the provider is typically the service class itself.
 
@@ -93,7 +93,7 @@ or in the `@NgModule()` or `@Component()` metadata
    When you provide the service at the root level, Angular creates a single, shared instance of `HeroService`
    and injects it into any class that asks for it.
    Registering the provider in the `@Injectable()` metadata also allows Angular to optimize an app
-   by removing the service from the compiled app if it isn't used, a process known as *tree-shaking*.
+   by removing the service from the compiled application if it isn't used, a process known as *tree-shaking*.
 
 * When you register a provider with a [specific NgModule](guide/architecture-modules), the same instance of a service is available to all components in that NgModule. To register at this level, use the `providers` property of the `@NgModule()` decorator.
 
