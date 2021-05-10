@@ -106,7 +106,7 @@ The import path is the relative path to the module.
 
 In Angular version 8, the string syntax for the `loadChildren` route specification [was deprecated](https://angular.io/guide/deprecations#loadchildren-string-syntax) in favor of the `import()` syntax. However, you can opt into using string-based lazy loading (`loadChildren: './path/to/module#Module'`) by including the lazy-loaded routes in your `tsconfig` file, which includes the lazy-loaded files in the compilation.
 
-By default the CLI will generate projects which stricter file inclusions intended to be used with the `import()` syntax.
+By default the CLI will generate projects with stricter file inclusions intended to be used with the `import()` syntax.
 
 </div>
 
