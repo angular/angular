@@ -15,7 +15,7 @@ about the features and tools that can help you develop and deliver Angular appli
 
 * The [NgModules](guide/ngmodules) guide provides in-depth information on the modular structure of an Angular application.
 
-* The [Routing and navigation](guide/router) guide provides in-depth information on how to construct applications that allow a user to navigate to different [views](guide/glossary#view) within your single-page app.
+* The [Routing and navigation](guide/router) guide provides in-depth information on how to construct applications that allow a user to navigate to different [views](guide/glossary#view) within your single-page application.
 
 * The [Dependency injection](guide/dependency-injection) guide provides in-depth information on how to construct an application such that each component class can acquire the services and objects it needs to perform its function.
 
@@ -23,7 +23,7 @@ about the features and tools that can help you develop and deliver Angular appli
 
 The [template syntax](guide/template-syntax) and related topics contain details about how to display your component data when and where you want it within a view, and how to collect input from users that you can respond to.
 
-Additional pages and sections describe some basic programming techniques for Angular apps.
+Additional pages and sections describe some basic programming techniques for Angular applications.
 
 * [Lifecycle hooks](guide/lifecycle-hooks): Tap into key moments in the lifetime of a component, from its creation to its destruction, by implementing the lifecycle hook interfaces.
 
@@ -38,13 +38,13 @@ without deep knowledge of animation techniques or CSS.
 
 ## Client-server interaction
 
-Angular provides a framework for single-page apps, where most of the logic and data resides on the client.
-Most apps still need to access a server using the `HttpClient` to access and save data.
+Angular provides a framework for single-page applications, where most of the logic and data resides on the client.
+Most applications still need to access a server using the `HttpClient` to access and save data.
 For some platforms and applications, you might also want to use the PWA (Progressive Web App) model to improve the user experience.
 
 * [HTTP](guide/http): Communicate with a server to get data, save data, and invoke server-side actions with an HTTP client.
 
-* [Server-side rendering](guide/universal): Angular Universal generates static application pages on the server through server-side rendering (SSR). This allows you to run your Angular app on the server in order to improve performance and show the first page quickly on mobile and low-powered devices, and also facilitate web crawlers.
+* [Server-side rendering](guide/universal): Angular Universal generates static application pages on the server through server-side rendering (SSR). This allows you to run your Angular application on the server in order to improve performance and show the first page quickly on mobile and low-powered devices, and also facilitate web crawlers.
 
 * [Service workers and PWA](guide/service-worker-intro): Use a service worker to reduce dependency on the network and significantly improve the user experience.
 
@@ -60,11 +60,11 @@ For some platforms and applications, you might also want to use the PWA (Progres
 
 * [Deployment](guide/deployment): Learn techniques for deploying your Angular application to a remote server.
 
-* [Security guidelines](guide/security): Learn about Angular's built-in protections against common web-app vulnerabilities and attacks such as cross-site scripting attacks.
+* [Security guidelines](guide/security): Learn about Angular's built-in protections against common web-application vulnerabilities and attacks such as cross-site scripting attacks.
 
-* [Internationalization](guide/i18n): Make your app available in multiple languages with Angular's internationalization (i18n) tools.
+* [Internationalization](guide/i18n): Make your application available in multiple languages with Angular's internationalization (i18n) tools.
 
-* [Accessibility](guide/accessibility): Make your app accessible to all users.
+* [Accessibility](guide/accessibility): Make your application accessible to all users.
 
 ## File structure, configuration, and dependencies
 
@@ -72,11 +72,11 @@ For some platforms and applications, you might also want to use the PWA (Progres
 
 * [Building and serving](guide/build): Learn to define different build and proxy server configurations for your project, such as development, staging, and production.
 
-* [npm packages](guide/npm-packages): The Angular Framework, Angular CLI, and components used by Angular applications are packaged as [npm](https://docs.npmjs.com/) packages and distributed via the npm registry. The Angular CLI creates a default `package.json` file, which specifies a starter set of packages that work well together and jointly support many common application scenarios.
+* [npm packages](guide/npm-packages): The Angular Framework, Angular CLI, and components used by Angular applications are packaged as [npm](https://docs.npmjs.com/) packages and distributed using the npm registry. The Angular CLI creates a default `package.json` file, which specifies a starter set of packages that work well together and jointly support many common application scenarios.
 
 * [TypeScript configuration](guide/typescript-configuration): TypeScript is the primary language for Angular application development.
 
-* [Browser support](guide/browser-support): Make your apps compatible across a wide range of browsers.
+* [Browser support](guide/browser-support): Make your applications compatible across a wide range of browsers.
 
 ## Extending Angular
 
