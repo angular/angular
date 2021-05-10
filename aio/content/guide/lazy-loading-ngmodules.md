@@ -267,7 +267,7 @@ Create a resolver service.
 With the CLI, the command to generate a service is as follows:
 
 
-<code-example language="sh">
+<code-example language="bash">
   ng generate service <service-name>
 </code-example>
 
