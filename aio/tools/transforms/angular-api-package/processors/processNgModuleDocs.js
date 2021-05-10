@@ -97,11 +97,12 @@ module.exports = function processNgModuleDocs(getDocFromAlias, createDocMessage,
       }
 
       // Check for `providedIn` property on an `ɵprov` static property
-      if (injectableDoc.symbol?.exports.has('ɵprov')) {
-        const declaration = injectableDoc.symbol?.exports.get('ɵprov')?.valueDeclaration;
-        const properties = declaration?.initializer?.arguments?.[0]?.properties;
-        const providedInProp = properties?.find(prop => prop.name.text === 'providedIn');
-        const providedInNode = providedInProp?.initializer;
+      if (injectableDoc.symbol && injectableDoc.symbol.exports.has('ɵprov')) {
+        const ɵprov = injectableDoc.symbol.exports.get('ɵprov');
+        const declaration = ɵprov && ɵprov.valueDeclaration;
+        const properties = declaration && declaration.initializer && declaration.initializer.arguments && declaration.initializer.arguments[0] && declaration.initializer.arguments[0].properties;
+        const providedInProp = properties && properties.find(prop => prop.name.text === 'providedIn');
+        const providedInNode = providedInProp && providedInProp.initializer;
         if (providedInNode) {
           const providedIn = providedInNode.getSourceFile().text.slice(providedInNode.pos, providedInNode.end).trim();
           this.processProvidedIn(providedIn, injectableDoc, ngModules, errors);
