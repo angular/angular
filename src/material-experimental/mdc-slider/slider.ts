@@ -989,8 +989,6 @@ class SliderAdapter implements MDCSliderAdapter {
     return this._delegate._getInput(thumbPosition)._isFocused();
   }
   getThumbKnobWidth = (thumbPosition: Thumb): number => {
-    // TODO(wagnermaciel): Check if this causes issues for SSR
-    // once the mdc-slider is added back to the kitchen sink SSR app.
     return this._delegate._getKnobElement(thumbPosition).getBoundingClientRect().width;
   }
   getThumbBoundingClientRect = (thumbPosition: Thumb): ClientRect => {
