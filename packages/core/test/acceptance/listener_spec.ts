@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {CommonModule} from '@angular/common';
 import {Component, Directive, ErrorHandler, EventEmitter, HostListener, Input, Output, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -396,6 +397,71 @@ describe('event listeners', () => {
     button.click();
     expect(comp.counter).toBe(1);
   });
+
+  onlyInIvy('issue has only been resolved for Ivy')
+      .it('should bind global event listeners on an ng-container directive host', () => {
+        let clicks = 0;
+
+        @Directive({selector: '[add-global-listener]'})
+        class AddGlobalListener {
+          @HostListener('document:click')
+          handleClick() {
+            clicks++;
+          }
+        }
+
+        @Component({
+          template: `
+            <ng-container add-global-listener>
+              <button>Click me!</button>
+            </ng-container>
+          `
+        })
+        class MyComp {
+        }
+
+        TestBed.configureTestingModule({declarations: [MyComp, AddGlobalListener]});
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+        const button = fixture.nativeElement.querySelector('button');
+        button.click();
+        fixture.detectChanges();
+        expect(clicks).toBe(1);
+      });
+
+  onlyInIvy('issue has only been resolved for Ivy')
+      .it('should bind global event listeners on an ng-template directive host', () => {
+        let clicks = 0;
+
+        @Directive({selector: '[add-global-listener]'})
+        class AddGlobalListener {
+          @HostListener('document:click')
+          handleClick() {
+            clicks++;
+          }
+        }
+
+        @Component({
+          template: `
+            <ng-template #template add-global-listener>
+              <button>Click me!</button>
+            </ng-template>
+
+            <ng-container [ngTemplateOutlet]="template"></ng-container>
+          `
+        })
+        class MyComp {
+        }
+
+        TestBed.configureTestingModule(
+            {declarations: [MyComp, AddGlobalListener], imports: [CommonModule]});
+        const fixture = TestBed.createComponent(MyComp);
+        fixture.detectChanges();
+        const button = fixture.nativeElement.querySelector('button');
+        button.click();
+        fixture.detectChanges();
+        expect(clicks).toBe(1);
+      });
 
   onlyInIvy('issue has only been resolved for Ivy')
       .it('should be able to access a property called $event using `this`', () => {
