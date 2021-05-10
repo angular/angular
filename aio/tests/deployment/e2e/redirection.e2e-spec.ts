@@ -34,8 +34,19 @@ describe(browser.baseUrl, () => {
       it(`should redirect '${fromUrl}' to '${toUrl}' (${i + 1}/${page.legacyUrls.length})`, async () => {
         await page.goTo(fromUrl);
 
-        const expectedUrl = stripTrailingSlash(/^https?:/.test(toUrl) ? toUrl : page.baseUrl + toUrl);
+        let expectedUrl = stripTrailingSlash(/^https?:/.test(toUrl) ? toUrl : page.baseUrl + toUrl);
         const actualUrl = await getCurrentUrl();
+
+        if (actualUrl !== expectedUrl) {
+          // If the actual URL does not match the expected URL, check whether the expected URL
+          // itself is also redirected to the actual URL.
+          await page.goTo(expectedUrl);
+          const redirectedExpectedUrl = await getCurrentUrl();
+
+          if (actualUrl === redirectedExpectedUrl) {
+            expectedUrl = redirectedExpectedUrl;
+          }
+        }
 
         expect(actualUrl).toBe(expectedUrl);
       }, 120000);
