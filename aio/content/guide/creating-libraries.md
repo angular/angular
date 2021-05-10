@@ -2,8 +2,8 @@
 
 This page provides a conceptual overview of how you can create and publish new libraries to extend Angular functionality.
 
-If you find that you need to solve the same problem in more than one app (or want to share your solution with other developers), you have a candidate for a library.
-A simple example might be a button that sends users to your company website, that would be included in all apps that your company builds.
+If you find that you need to solve the same problem in more than one application (or want to share your solution with other developers), you have a candidate for a library.
+A simple example might be a button that sends users to your company website, that would be included in all applications that your company builds.
 
 ## Getting started
 
@@ -50,7 +50,7 @@ You can build, test, and lint the project with CLI commands:
  ng lint my-lib
 </code-example>
 
-Notice that the configured builder for the project is different from the default builder for app projects.
+Notice that the configured builder for the project is different from the default builder for application projects.
 This builder, among other things, ensures that the library is always built with the [AOT compiler](guide/aot-compiler).
 
 To make library code reusable you must define a public API for it. This "user layer" defines what is available to consumers of your library. A user of your library should be able to access public functionality (such as NgModules, service providers and general utility functions) through a single import path.
@@ -89,7 +89,7 @@ Here are some things to consider in migrating application functionality to a lib
 
 ## Integrating with the CLI using code-generation schematics
 
-A library typically includes *reusable code* that defines components, services, and other Angular artifacts (pipes, directives, and so on) that you simply import into a project.
+A library typically includes *reusable code* that defines components, services, and other Angular artifacts (pipes, directives) that you import into a project.
 A library is packaged into an npm package for publishing and sharing.
 This package can also include [schematics](guide/glossary#schematic) that provide instructions for generating or transforming code directly in your project, in the same way that the CLI creates a generic new component with `ng generate component`.
 A schematic that is packaged with a library can, for example, provide the Angular CLI with the information it needs to generate a component that configures and uses a particular feature, or set of features, defined in that library.
@@ -99,13 +99,13 @@ You can create and include the following kinds of schematics:
 
 * Include an installation schematic so that `ng add` can add your library to a project.
 
-* Include generation schematics in your library so that `ng generate` can scaffold your defined artifacts (components, services, tests, and so on) in a project.
+* Include generation schematics in your library so that `ng generate` can scaffold your defined artifacts (components, services, tests) in a project.
 
 * Include an update schematic so that `ng update` can update your library’s dependencies and provide migrations for breaking changes in new releases.
 
 What you include in your library depends on your task.
-For example, you could define a schematic to create a dropdown that is pre-populated with canned data to show how to add it to an app.
-If you want a dropdown that would contain different passed-in values each time, your library could define a schematic to create it with a given configuration. Developers could then use `ng generate` to configure an instance for their own app.
+For example, you could define a schematic to create a dropdown that is pre-populated with canned data to show how to add it to an application.
+If you want a dropdown that would contain different passed-in values each time, your library could define a schematic to create it with a given configuration. Developers could then use `ng generate` to configure an instance for their own application.
 
 Suppose you want to read a configuration file and then generate a form based on that configuration.
 If that form will need additional customization by the developer who is using your library, it might work best as a schematic.
@@ -133,7 +133,6 @@ ng build my-lib
 cd dist/my-lib
 npm publish
 </code-example>
-
 
 
 {@a lib-assets}
@@ -166,7 +165,7 @@ A linked library will then have its own set of Angular libraries that it uses fo
 However, this can cause problems while building or running your application.
 
 To get around this problem you can use TypeScript path mapping to tell TypeScript that it should load some modules from a specific location.
-List all the peer dependencies that your library uses in the workspace TypeScript configuration file `./tsconfig.json`, and point them at the local copy in the app's `node_modules` folder.
+List all the peer dependencies that your library uses in the workspace TypeScript configuration file `./tsconfig.json`, and point them at the local copy in the application's `node_modules` folder.
 
 ```
 {
@@ -187,7 +186,7 @@ This mapping ensures that your library always loads the local copies of the modu
 
 ## Using your own library in apps
 
-You don't have to publish your library to the npm package manager in order to use it in your own apps, but you do have to build it first.
+You don't have to publish your library to the npm package manager in order to use it in your own applications, but you do have to build it first.
 
 To use your own library in an app:
 
@@ -196,14 +195,14 @@ To use your own library in an app:
  ng build my-lib
  </code-example>
 
-* In your apps, import from the library by name:
+* In your applications, import from the library by name:
  ```
  import { myExport } from 'my-lib';
  ```
 
 ### Building and rebuilding your library
 
-The build step is important if you haven't published your library as an npm package and then installed the package back into your app from npm.
+The build step is important if you haven't published your library as an npm package and then installed the package back into your application from npm.
 For instance, if you clone your git repository and run `npm install`, your editor will show the `my-lib` imports as missing if you haven't yet built your library.
 
 <div class="alert is-helpful">
@@ -216,13 +215,13 @@ The Angular CLI uses the `tsconfig` paths to tell the build system where to find
 
 </div>
 
-If you find that changes to your library are not reflected in your app, your app is probably using an old build of the library.
+If you find that changes to your library are not reflected in your application, your app is probably using an old build of the library.
 
 You can rebuild your library whenever you make changes to it, but this extra step takes time.
 *Incremental builds* functionality improves the library-development experience.
 Every time a file is changed a partial build is performed that emits the amended files.
 
-Incremental builds can be run as a background process in your dev environment. To take advantage of this feature add the `--watch` flag to the build command:
+Incremental builds can be run as a background process in your development environment. To take advantage of this feature add the `--watch` flag to the build command:
 
 <code-example language="bash">
 ng build my-lib --watch
@@ -232,13 +231,13 @@ ng build my-lib --watch
 
 The CLI `build` command uses a different builder and invokes a different build tool for libraries than it does for applications.
 
-* The build system for apps, `@angular-devkit/build-angular`, is based on `webpack`, and is included in all new Angular CLI projects.
+* The build system for applications, `@angular-devkit/build-angular`, is based on `webpack`, and is included in all new Angular CLI projects.
 * The build system for libraries is based on `ng-packagr`. It is only added to your dependencies when you add a library using `ng generate library my-lib`.
 
 The two build systems support different things, and even where they support the same things, they do those things differently.
 This means that the TypeScript source can result in different JavaScript code in a built library than it would in a built application.
 
-For this reason, an app that depends on a library should only use TypeScript path mappings that point to the *built library*.
+For this reason, an application that depends on a library should only use TypeScript path mappings that point to the *built library*.
 TypeScript path mappings should *not* point to the library source `.ts` files.
 
 </div>
