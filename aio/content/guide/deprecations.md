@@ -3,7 +3,7 @@
 Angular strives to balance innovation and stability.
 Sometimes, APIs and features become obsolete and need to be removed or replaced so that Angular can stay current with new best practices, changing dependencies, or changes in the (web) platform itself.
 
-To make these transitions as easy as possible, we deprecate APIs and features for a period of time before removing them. This gives you time to update your apps to the latest APIs and best practices.
+To make these transitions as easy as possible, we deprecate APIs and features for a period of time before removing them. This gives you time to update your applications to the latest APIs and best practices.
 
 This guide contains a summary of all Angular APIs and features that are currently deprecated.
 
@@ -20,7 +20,7 @@ For step-by-step instructions on how to update to the latest Angular release, us
 
 ## Index
 
-To help you future-proof your apps, the following table lists all deprecated APIs and features, organized by the release in which they are candidates for removal. Each item is linked to the section later in this guide that describes the deprecation reason and replacement options.
+To help you future-proof your projects, the following table lists all deprecated APIs and features, organized by the release in which they are candidates for removal. Each item is linked to the section later in this guide that describes the deprecation reason and replacement options.
 
 <!--
 deprecation -> removal cheat sheet
@@ -71,7 +71,7 @@ This section contains a complete list all of the currently-deprecated APIs, with
 
 <div class="alert is-helpful">
 
-Tip: In the [API reference section](api) of this doc site, deprecated APIs are indicated by ~~strikethrough.~~ You can filter the API list by [**Status: deprecated**](api?status=deprecated).
+Tip: In the [API reference section](api) of this site, deprecated APIs are indicated by ~~strikethrough.~~ You can filter the API list by [**Status: deprecated**](api?status=deprecated).
 
 </div>
 
@@ -230,7 +230,7 @@ this.value = 'some value';
 ```
 
 By default, when you use this pattern, you will see a deprecation warning once in dev
-mode. You can choose to silence this warning by providing a config for
+mode. You can choose to silence this warning by configuring
 `ReactiveFormsModule` at import time:
 
 ```ts
@@ -240,7 +240,7 @@ imports: [
 ```
 
 Alternatively, you can choose to surface a separate warning for each instance of this
-pattern with a config value of `"always"`. This may help to track down where in the code
+pattern with a configuration value of `"always"`. This may help to track down where in the code
 the pattern is being used as the code is being updated.
 
 
@@ -358,7 +358,7 @@ should be written when the `valueChange` event fires.
 <option *ngFor="let optionName of options" [(value)]="optionName"></option>
 ```
 
-However, in practice, Angular simply ignores two-way bindings to template variables. Starting in version 8, attempting to write to template variables is deprecated. In a future version, we will throw to indicate that the write is not supported.
+However, in practice, Angular ignores two-way bindings to template variables. Starting in version 8, attempting to write to template variables is deprecated. In a future version, we will throw to indicate that the write is not supported.
 
 ```html
 <option *ngFor="let optionName of options" [value]="optionName"></option>
@@ -385,7 +385,7 @@ Previously, the `entryComponents` array in the `NgModule` definition was used to
 {@a moduleWithProviders}
 ### `ModuleWithProviders` type without a generic
 
-Some Angular libraries, such as `@angular/router` and `@ngrx/store`, implement APIs that return a type called `ModuleWithProviders` (typically via a method named `forRoot()`).
+Some Angular libraries, such as `@angular/router` and `@ngrx/store`, implement APIs that return a type called `ModuleWithProviders` (typically using a method named `forRoot()`).
 This type represents an `NgModule` along with additional providers.
 Angular version 9 deprecates use of `ModuleWithProviders` without an explicitly generic type, where the generic type refers to the type of the `NgModule`.
 In a future version of Angular, the generic will no longer be optional.
@@ -483,7 +483,7 @@ The following APIs have been removed starting with version 11.0.0*:
 {@a esm5-fesm5}
 ### `esm5` and `fesm5` code formats in @angular/* npm packages
 
-As of Angular v8, the CLI primarily consumes the `fesm2015` variant of the code distributed via `@angular/*` npm packages.
+As of Angular v8, the CLI primarily consumes the `fesm2015` variant of the code distributed as part of `@angular/*` npm packages.
 This renders the `esm5` and `fesm5` distributions obsolete and unnecessary, adding bloat to the package size and slowing down npm installations.
 
 This removal has no impact on CLI users, unless they modified their build configuration to explicitly consume these code distributions.
