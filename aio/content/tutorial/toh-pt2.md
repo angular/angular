@@ -205,7 +205,7 @@ To apply the `.selected` class to the `<li>` when the user clicks it, use class 
 </div>
 
 Angular's [class binding](guide/attribute-binding#class-binding) can add and remove a CSS class conditionally.
-Just add `[class.some-css-class]="some-condition"` to the element you want to style.
+Add `[class.some-css-class]="some-condition"` to the element you want to style.
 
 Add the following `[class.selected]` binding to the `<li>` in the `HeroesComponent` template:
 
