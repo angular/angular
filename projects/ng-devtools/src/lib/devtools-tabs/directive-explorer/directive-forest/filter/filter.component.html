@@ -1,16 +1,17 @@
 <mat-card class="filter">
-  <div class="icon-outer">
-    <mat-icon color="primary">search</mat-icon>
-  </div>
-  <input
-    matInput
-    #filterInput
-    (input)="emitFilter($event)"
-    (keydown.enter)="emitNextMatched()"
-    (keydown.shift.enter)="emitPrevMatched()"
-    class="filter-input"
-    placeholder="Search components"
-  />
+  <label>
+    <div class="search-icon">
+      <mat-icon color="primary">search</mat-icon>
+    </div>
+    <input
+      matInput
+      (input)="emitFilter($event)"
+      (keydown.enter)="emitNextMatched()"
+      (keydown.shift.enter)="emitPrevMatched()"
+      class="filter-input"
+      placeholder="Search components"
+    />
+  </label>
   <div class="up-down-buttons" *ngIf="hasMatched">
     <button mat-icon-button matTooltip="Select previous element" (click)="emitPrevMatched()">
       <mat-icon class="mat-icon-rtl-mirror">

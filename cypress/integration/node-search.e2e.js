@@ -88,4 +88,9 @@ describe('Search items in component tree', () => {
     // should show correct component properties
     cy.get('ng-property-view').find('mat-tree-node');
   });
+
+  it('should focus search input when search icon is clicked', () => {
+    cy.get('.filter label .search-icon').click({ force: true });
+    cy.get('.filter label input').should('have.focus');
+  });
 });
