@@ -204,10 +204,10 @@ Focus on the following three TypeScript (`.ts`) files in the **`/src`** folder.
 All guides and cookbooks have _at least these core files_.
 Each file has a distinct purpose and evolves independently as the application grows.
 
-Files outside `src/` concern building, deploying, and testing your app.
+Files outside `src/` concern building, deploying, and testing your application.
 They include configuration files and external dependencies.
 
-Files inside `src/` "belong" to your app.
+Files inside `src/` "belong" to your application.
 Add new Typescript, HTML and CSS files inside the `src/` directory, most of them inside `src/app`,
 unless told to do otherwise.
 
@@ -299,10 +299,10 @@ The following are all in `src/`
 
 ## Appendix: Develop locally with IE
 
-If you develop Angular locally with `ng serve`, a `websocket` connection is set up automatically between browser and local dev server, so when your code changes, the browser can automatically refresh.
+If you develop Angular locally with `ng serve`, a `websocket` connection is set up automatically between browser and local development server, so when your code changes, the browser can automatically refresh.
 
 In Windows, by default, one application can only have 6 websocket connections, <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" title="MSDN WebSocket settings">MSDN WebSocket Settings</a>.
-So when IE is refreshed (manually or automatically by `ng serve`), sometimes the websocket does not close properly. When websocket connections exceed the limitations, a `SecurityError` will be thrown. This error will not affect the Angular application, you can just restart IE to clear this error, or modify the windows registry to update the limitations.
+So when IE is refreshed (manually or automatically by `ng serve`), sometimes the websocket does not close properly. When websocket connections exceed the limitations, a `SecurityError` will be thrown. This error will not affect the Angular application, you can restart IE to clear this error, or modify the windows registry to update the limitations.
 
 ## Appendix: Test using `fakeAsync()/waitForAsync()`
 
