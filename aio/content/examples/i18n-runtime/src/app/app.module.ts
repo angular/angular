@@ -10,8 +10,8 @@ import localeFr from '@angular/common/locales/fr';
 registerLocaleData(localeFr);
 
 @NgModule({
-  imports: [BrowserModule],
-  declarations: [AppComponent],
-  bootstrap: [AppComponent],
+  imports: [ BrowserModule ],
+  declarations: [ AppComponent ],
+  bootstrap: [ AppComponent ],
 })
 export class AppModule {}

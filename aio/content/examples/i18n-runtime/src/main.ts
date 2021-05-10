@@ -10,14 +10,14 @@ if (environment.production) {
   enableProdMode();
 }
 
-fetch('/assets/messages.fr.json')
-  .then((response) => {
+fetch('/locale/messages.fr.json')
+  .then(response => {
     if (!response.ok) {
-      throw new Error('HTTP error ' + response.status);
+      throw new Error(`HTTP error ${response.status}`);
     }
     return response.json();
   })
-  .then((messages) => {
+  .then(messages => {
     // Load translation
     loadTranslations(messages.translations);
     $localize.locale = messages.locale;
@@ -25,6 +25,4 @@ fetch('/assets/messages.fr.json')
     // Bootstrap app
     platformBrowserDynamic().bootstrapModule(AppModule);
   })
-  .catch(() => {
-    // Error
-  });
+  .catch(err => console.error(err));
