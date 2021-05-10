@@ -93,7 +93,7 @@ configures it with the `routes` in one step by calling
 
 </div>
 
-Next, `AppRoutingModule` exports `RouterModule` so it will be available throughout the app.
+Next, `AppRoutingModule` exports `RouterModule` so it will be available throughout the application.
 
 <code-example path="toh-pt5/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts (exports array)" region="export-routermodule">
 </code-example>
@@ -313,7 +313,7 @@ At this point, all application routes are in place.
 The `DashboardComponent` hero links do nothing at the moment.
 
 Now that the router has a route to `HeroDetailComponent`,
-fix the dashboard hero links to navigate via the _parameterized_ dashboard route.
+fix the dashboard hero links to navigate using the _parameterized_ dashboard route.
 
 <code-example
   path="toh-pt5/src/app/dashboard/dashboard.component.html"
@@ -370,7 +370,7 @@ This section explains the following:
 
 * Get the route that created it
 * Extract the `id` from the route
-* Acquire the hero with that `id` from the server via the `HeroService`
+* Acquire the hero with that `id` from the server using the `HeroService`
 
 Add the following imports:
 
