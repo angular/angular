@@ -47,6 +47,13 @@ function expectIdentifierToken(token: any, index: number, end: number, identifie
   expect(token.toString()).toEqual(identifier);
 }
 
+function expectPrivateIdentifierToken(token: any, index: number, end: number, identifier: string) {
+  expectToken(token, index, end);
+  expect(token.isPrivateIdentifier()).toBe(true);
+  expect(token.toString()).toEqual(identifier);
+}
+
+
 function expectKeywordToken(token: any, index: number, end: number, keyword: string) {
   expectToken(token, index, end);
   expect(token.isKeyword()).toBe(true);
@@ -81,6 +88,31 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
         expectCharacterToken(tokens[1], 1, 2, '.');
         expectIdentifierToken(tokens[2], 2, 3, 'k');
       });
+
+      it('should tokenize a private identifier', () => {
+        const tokens: number[] = lex('#a');
+        expect(tokens.length).toEqual(1);
+        expectPrivateIdentifierToken(tokens[0], 0, 2, '#a');
+      });
+
+      it('should tokenize a property access with private identifier', () => {
+        const tokens: number[] = lex('j.#k');
+        expect(tokens.length).toEqual(3);
+        expectIdentifierToken(tokens[0], 0, 1, 'j');
+        expectCharacterToken(tokens[1], 1, 2, '.');
+        expectPrivateIdentifierToken(tokens[2], 2, 4, '#k');
+      });
+
+      it('should throw an invalid character error when a hash character is discovered but ' +
+             'not indicating a private identifier',
+         () => {
+           expectErrorToken(
+               lex('#')[0], 0, 1,
+               `Lexer Error: Invalid character [#] at column 0 in expression [#]`);
+           expectErrorToken(
+               lex('#0')[0], 0, 1,
+               `Lexer Error: Invalid character [#] at column 0 in expression [#0]`);
+         });
 
       it('should tokenize an operator', () => {
         const tokens: number[] = lex('j-k');
@@ -246,10 +278,6 @@ function expectErrorToken(token: Token, index: any, end: number, message: string
         expectErrorToken(
             lex('\'\\u1\'\'bla\'')[0], 2, 2,
             'Lexer Error: Invalid unicode escape [\\u1\'\'b] at column 2 in expression [\'\\u1\'\'bla\']');
-      });
-
-      it('should tokenize hash as operator', () => {
-        expectOperatorToken(lex('#')[0], 0, 1, '#');
       });
 
       it('should tokenize ?. as operator', () => {

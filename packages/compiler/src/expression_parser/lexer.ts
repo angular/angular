@@ -11,6 +11,7 @@ import * as chars from '../chars';
 export enum TokenType {
   Character,
   Identifier,
+  PrivateIdentifier,
   Keyword,
   String,
   Operator,
@@ -56,6 +57,10 @@ export class Token {
 
   isIdentifier(): boolean {
     return this.type == TokenType.Identifier;
+  }
+
+  isPrivateIdentifier(): boolean {
+    return this.type == TokenType.PrivateIdentifier;
   }
 
   isKeyword(): boolean {
@@ -104,6 +109,7 @@ export class Token {
       case TokenType.Identifier:
       case TokenType.Keyword:
       case TokenType.Operator:
+      case TokenType.PrivateIdentifier:
       case TokenType.String:
       case TokenType.Error:
         return this.strValue;
@@ -121,6 +127,10 @@ function newCharacterToken(index: number, end: number, code: number): Token {
 
 function newIdentifierToken(index: number, end: number, text: string): Token {
   return new Token(index, end, TokenType.Identifier, 0, text);
+}
+
+function newPrivateIdentifierToken(index: number, end: number, text: string): Token {
+  return new Token(index, end, TokenType.PrivateIdentifier, 0, text);
 }
 
 function newKeywordToken(index: number, end: number, text: string): Token {
@@ -204,6 +214,7 @@ class _Scanner {
       case chars.$DQ:
         return this.scanString();
       case chars.$HASH:
+        return this.scanPrivateIdentifier();
       case chars.$PLUS:
       case chars.$MINUS:
       case chars.$STAR:
@@ -277,6 +288,18 @@ class _Scanner {
     const str: string = this.input.substring(start, this.index);
     return KEYWORDS.indexOf(str) > -1 ? newKeywordToken(start, this.index, str) :
                                         newIdentifierToken(start, this.index, str);
+  }
+
+  /** Scans an ECMAScript private identifier. */
+  scanPrivateIdentifier(): Token {
+    const start: number = this.index;
+    this.advance();
+    if (!isIdentifierStart(this.peek)) {
+      return this.error('Invalid character [#]', -1);
+    }
+    while (isIdentifierPart(this.peek)) this.advance();
+    const identifierName: string = this.input.substring(start, this.index);
+    return newPrivateIdentifierToken(start, this.index, identifierName);
   }
 
   scanNumber(start: number): Token {
