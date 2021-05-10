@@ -102,6 +102,7 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     this._messageBus.on('selectComponent', (id: number) => {
       this.selectNodeByComponentId(id);
       this.toggleInspector.emit();
+      this.expandParents();
     });
 
     this._messageBus.on('highlightComponent', (id: number) => {
@@ -331,7 +332,7 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     }
     const nodeIsVisible = this.dataSource.expandedDataValues.find((node) => node === nodeToSelect);
     if (!nodeIsVisible) {
-      this.parents.forEach((parent) => this.treeControl.expand(parent));
+      this.expandParents();
     }
   }
 
@@ -347,8 +348,12 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
     }
     const nodeIsVisible = this.dataSource.expandedDataValues.find((node) => node === nodeToSelect);
     if (!nodeIsVisible) {
-      this.parents.forEach((parent) => this.treeControl.expand(parent));
+      this.expandParents();
     }
+  }
+
+  expandParents(): void {
+    this.parents.forEach((parent) => this.treeControl.expand(parent));
   }
 
   highlightNode(position: ElementPosition): void {
