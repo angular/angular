@@ -72,7 +72,7 @@ Every hero needs a job. This form helps the agency match the right hero with the
 The form highlights some design features that make it easier to use. For instance, the two required fields have a green bar on the left to make them easy to spot. These fields have initial values, so the form is valid and the **Submit** button is enabled.
 
 As you work with this form, you will learn how to include validation logic, how to customize the presentation with standard CSS, and how to handle error conditions to ensure valid input.
-If the user deletes the hero name, for example, the form becomes invalid. The app detects the changed status, and displays a validation error in an attention-grabbing style.
+If the user deletes the hero name, for example, the form becomes invalid. The application detects the changed status, and displays a validation error in an attention-grabbing style.
 In addition, the **Submit** button is disabled, and the "required" bar to the left of the input control changes from green to red.
 
 <div class="lightbox">
@@ -138,7 +138,7 @@ template using the `<app-hero-form>` tag.
    At this point, the form  layout is all plain HTML5, with no bindings or directives.
 
 6. The sample form uses some style classes from [Twitter Bootstrap](https://getbootstrap.com/css/): `container`, `form-group`, `form-control`, and `btn`.
-   To use these styles, the app's style sheet imports the library.
+   To use these styles, the application's style sheet imports the library.
 
    <code-example path="forms/src/styles.1.css" header="src/styles.css"></code-example>
 
@@ -148,7 +148,7 @@ template using the `<app-hero-form>` tag.
 
    <code-example path="forms/src/app/hero-form/hero-form.component.html" header="src/app/hero-form/hero-form.component.html (powers)" region="powers"></code-example>
 
-If you run the app right now, you see the list of powers in the selection control. The input elements are not yet bound to data values or events, so they are still blank and have no behavior.
+If you run the application right now, you see the list of powers in the selection control. The input elements are not yet bound to data values or events, so they are still blank and have no behavior.
 
 <div class="lightbox">
   <img src="generated/images/guide/forms/hero-form-3.png" alt="Early form with no binding">
@@ -230,7 +230,7 @@ After these revisions, the form template should look like the following:
 
 * Each `<input>` element also has the required `name` property that Angular uses to register the control with the form.
 
-If you run the app now and change every hero model property, the form might display like this:
+If you run the application now and change every hero model property, the form might display like this:
 
 <div class="lightbox">
   <img src="generated/images/guide/forms/ng-model-in-action-2.png" alt="ngModel in action">
@@ -433,7 +433,7 @@ To let form users add a new hero, you will add a **New Hero** button that respon
 
 5. Enter a name and click **New Hero** again.
 
-   Now the app displays a _Name is required_ error message, because the input box is no longer pristine.
+   Now the application displays a _Name is required_ error message, because the input box is no longer pristine.
    The form remembers that you entered a name before clicking **New Hero**.
 
 6. To restore the pristine state of the form controls, clear all of the flags imperatively by calling the form's `reset()` method after calling the `newHero()` method.

@@ -8,10 +8,10 @@ See the [Angular Resources](resources) page for links to the most popular ones.
 Libraries are published as [npm packages](guide/npm-packages), usually together with schematics that integrate them with the Angular CLI.
 To integrate reusable library code into an application, you need to install the package and import the provided functionality where you will use it. For most published Angular libraries, you can use the Angular CLI `ng add <lib_name>` command.
 
-The `ng add` command uses a package manager such as [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) to install the library package, and invokes schematics that are included in the package to other scaffolding within the project code, such as adding import statements, fonts, themes, and so on.
+The `ng add` command uses a package manager such as [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/) to install the library package, and invokes schematics that are included in the package to other scaffolding within the project code, such as adding import statements, fonts, and themes.
 
-A published library typically provides a README or other documentation on how to add that lib to your app.
-For an example, see [Angular Material](https://material.angular.io/) docs.
+A published library typically provides a README or other documentation on how to add that lib to your application.
+For an example, see the [Angular Material](https://material.angular.io/) documents.
 
 ### Library typings
 
@@ -67,7 +67,7 @@ See the [Angular Update Guide](https://update.angular.io/) for help.
 
 ## Adding a library to the runtime global scope
 
-Legacy JavaScript libraries that are not imported into an app can be added to the runtime global scope and loaded as if they were in a script tag.
+Legacy JavaScript libraries that are not imported into an application can be added to the runtime global scope and loaded as if they were in a script tag.
 Configure the CLI to do this at build time using the "scripts" and "styles" options of the build target in the [CLI configuration file](guide/workspace-config), `angular.json`.
 
 For example, to use the [Bootstrap 4](https://getbootstrap.com/docs/4.0/getting-started/introduction/) library, first install the library and its dependencies using the npm package manager:
@@ -97,7 +97,7 @@ Add the Bootstrap CSS file to the "styles" array:
 ],
 ```
 
-Run or restart `ng serve` to see Bootstrap 4 working in your app.
+Run or restart `ng serve` to see Bootstrap 4 working in your application.
 
 ### Using runtime-global libraries inside your app
 
