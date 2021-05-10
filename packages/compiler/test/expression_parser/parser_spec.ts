@@ -120,6 +120,7 @@ describe('parser', () => {
       it('should only allow identifier, string, or keyword as map key', () => {
         expectActionError('{(:0}', 'expected identifier, keyword, or string');
         expectActionError('{1234:0}', 'expected identifier, keyword, or string');
+        expectActionError('{#myField:0}', 'expected identifier, keyword or string');
       });
     });
 
@@ -130,11 +131,20 @@ describe('parser', () => {
         checkAction('a.a');
       });
 
+      it('should error for private identifiers with implicit receiver', () => {
+        checkActionWithError(
+            '#privateField', '',
+            'Private identifiers are not supported. Unexpected private identifier: #privateField at column 1');
+      });
+
       it('should only allow identifier or keyword as member names', () => {
         checkActionWithError('x.', 'x.', 'identifier or keyword');
         checkActionWithError('x.(', 'x.', 'identifier or keyword');
         checkActionWithError('x. 1234', 'x.', 'identifier or keyword');
         checkActionWithError('x."foo"', 'x.', 'identifier or keyword');
+        checkActionWithError(
+            'x.#privateField', 'x.',
+            'Private identifiers are not supported. Unexpected private identifier: #privateField, expected identifier or keyword');
       });
 
       it('should parse safe field access', () => {
@@ -511,6 +521,7 @@ describe('parser', () => {
         expectBindingError('"Foo"|(', 'identifier or keyword');
         expectBindingError('"Foo"|1234', 'identifier or keyword');
         expectBindingError('"Foo"|"uppercase"', 'identifier or keyword');
+        expectBindingError('"Foo"|#privateIdentifier"', 'identifier or keyword');
       });
 
       it('should parse quoted expressions', () => {
