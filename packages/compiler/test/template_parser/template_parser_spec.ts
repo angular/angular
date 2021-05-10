@@ -1622,7 +1622,8 @@ Reference "#a" is defined several times ("<div #a></div><div [ERROR ->]#a></div>
     describe('inline templates', () => {
       it('should report an error on variables declared with #', () => {
         expect(() => humanizeTplAst(parse('<div *ngIf="#a=b">', [])))
-            .toThrowError(/Parser Error: Unexpected token # at column 1/);
+            .toThrowError(
+                /Parser Error: Private identifiers are not supported\. Unexpected private identifier: #a at column 1/);
       });
 
       it('should parse variables via let ...', () => {
