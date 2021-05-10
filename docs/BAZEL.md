@@ -256,6 +256,7 @@ Usually there is a single item (or multiple items of the same kind) where the ov
 
 ### Windows
 
+#### bazel run
 If you see the following error:
 
 ```
@@ -276,6 +277,25 @@ Require stack:
 `bazel run` only works in Bazel Windows with non-test targets. Ensure that you are using `bazel test` instead.
 
 e.g: `yarn bazel test packages/core/test/bundling/forms:symbol_test --config=ivy`
+
+#### mkdir missing
+If you see the following error::
+```
+ 
+ERROR: An error occurred during the fetch of repository 'npm':
+   Traceback (most recent call last):
+        File "C:/users/anusername/_bazel_anusername/idexbm2i/external/build_bazel_rules_nodejs/internal/npm_install/npm_install.bzl", line 618, column 15, in _yarn_install_impl
+                _copy_file(repository_ctx, repository_ctx.attr.package_json)
+        File "C:/users/anusername/_bazel_anusername/idexbm2i/external/build_bazel_rules_nodejs/internal/npm_install/npm_install.bzl", line 345, column 17, in _copy_file
+                fail("mkdir -p %s failed: \nSTDOUT:\n%s\nSTDERR:\n%s" % (dirname, result.stdout, result.stderr))
+Error in fail: mkdir -p _ failed:
+
+```
+The `msys64` library and associated tools (like `mkdir`) are required to build Angular.
+
+Make sure you have `C:\msys64\usr\bin` in the "system" `PATH` rather than the "user" `PATH`. 
+
+After that, a `git clean -xfd`, `yarn`, and `node scripts\build\build-packages-dist.js` should resolve this issue.
 
 ### Xcode
 
