@@ -3,7 +3,7 @@
 _Angular_ is the name for the Angular of today and tomorrow.<br />
 _AngularJS_ is the name for all 1.x versions of Angular.
 
-AngularJS apps are great.
+AngularJS applications are great.
 Always consider the business case before moving to Angular.
 An important part of that case is the time and effort to get there.
 This guide describes the built-in tools for efficiently migrating AngularJS projects over to the
@@ -30,7 +30,7 @@ make incremental upgrading seamless.
 There are many ways to structure AngularJS applications. When you begin
 to upgrade these applications to Angular, some will turn out to be
 much more easy to work with than others. There are a few key techniques
-and patterns that you can apply to future proof apps even before you
+and patterns that you can apply to future proof applications even before you
 begin the migration.
 
 {@a follow-the-angular-styleguide}
@@ -46,8 +46,8 @@ importantly - how **not** to write and organize AngularJS code.
 Angular is a reimagined version of the best parts of AngularJS. In that
 sense, its goals are the same as the AngularJS Style Guide's: To preserve
 the good parts of AngularJS, and to avoid the bad parts. There's a lot
-more to Angular than just that of course, but this does mean that
-*following the style guide helps make your AngularJS app more closely
+more to Angular than that of course, but this does mean that
+*following the style guide helps make your AngularJS application more closely
 aligned with Angular*.
 
 There are a few rules in particular that will make it much easier to do
@@ -284,7 +284,7 @@ owned by AngularJS, Angular treats it as if it didn't exist,
 and vice versa.
 
 So normally a hybrid application begins life as an AngularJS application,
-and it is AngularJS that processes the root template, e.g. the index.html.
+and it is AngularJS that processes the root template, for example, the index.html.
 Angular then steps into the picture when an Angular component is used somewhere
 in an AngularJS template. That component's template will then be managed
 by Angular, and it may contain any number of Angular components and
@@ -404,7 +404,7 @@ be used to bootstrap the AngularJS application.
 </code-example>
 
 Pure AngularJS applications can be automatically bootstrapped by using an `ng-app`
-directive somewhere on the HTML page. But for hybrid applications, you manually bootstrap via the
+directive somewhere on the HTML page. But for hybrid applications, you manually bootstrap using the
 `UpgradeModule`. Therefore, it is a good preliminary step to switch AngularJS applications to use the
 manual JavaScript [`angular.bootstrap`](https://docs.angularjs.org/api/ng/function/angular.bootstrap)
 method even before switching them to hybrid mode.
@@ -424,7 +424,7 @@ will result in the same thing:
 To begin converting your AngularJS application to a hybrid, you need to load the Angular framework.
 You can see how this can be done with SystemJS by following the instructions in [Setup for Upgrading to AngularJS](guide/upgrade-setup) for selectively copying code from the [QuickStart github repository](https://github.com/angular/quickstart).
 
-You also need to install the `@angular/upgrade` package via `npm install @angular/upgrade --save`
+You also need to install the `@angular/upgrade` package using `npm install @angular/upgrade --save`
 and add a mapping for the `@angular/upgrade/static` package:
 
 <code-example path="upgrade-module/src/systemjs.config.1.js" region="upgrade-static-umd" header="systemjs.config.js (map)">
@@ -435,12 +435,12 @@ Next, create an `app.module.ts` file and add the following `NgModule` class:
 <code-example path="upgrade-module/src/app/ajs-a-hybrid-bootstrap/app.module.ts" region="ngmodule" header="app.module.ts">
 </code-example>
 
-This bare minimum `NgModule` imports `BrowserModule`, the module every Angular browser-based app must have.
+This bare minimum `NgModule` imports `BrowserModule`, the module every Angular browser-based application must have.
 It also imports `UpgradeModule` from `@angular/upgrade/static`, which exports providers that will be used
 for upgrading and downgrading services and components.
 
 In the constructor of the `AppModule`, use dependency injection to get a hold of the `UpgradeModule` instance,
-and use it to bootstrap the AngularJS app in the `AppModule.ngDoBootstrap` method.
+and use it to bootstrap the AngularJS application in the `AppModule.ngDoBootstrap` method.
 The `upgrade.bootstrap` method takes the exact same arguments as [angular.bootstrap](https://docs.angularjs.org/api/ng/function/angular.bootstrap):
 
 <div class="alert is-helpful">
@@ -467,7 +467,7 @@ code. One of the more common patterns for doing that is to use an Angular compon
 in an AngularJS context. This could be a completely new component or one that was
 previously AngularJS but has been rewritten for Angular.
 
-Say you have a simple Angular component that shows information about a hero:
+Say you have an Angular component that shows information about a hero:
 
 <code-example path="upgrade-module/src/app/downgrade-static/hero-detail.component.ts" header="hero-detail.component.ts">
 </code-example>
@@ -482,7 +482,7 @@ using the `downgradeComponent()` method. The result is an AngularJS
 <div class="alert is-helpful">
 
 By default, Angular change detection will also run on the component for every
-AngularJS `$digest` cycle. If you wish to only have change detection run when
+AngularJS `$digest` cycle. If you want to only have change detection run when
 the inputs change, you can set `propagateDigest` to `false` when calling
 `downgradeComponent()`.
 
@@ -590,7 +590,7 @@ The safest bet for ensuring compatibility is using the
 [component API](https://docs.angularjs.org/api/ng/type/angular.Module)
 introduced in AngularJS 1.5.
 
-A simple example of an upgradable component is one that just has a template
+An example of an upgradable component is one that just has a template
 and a controller:
 
 <code-example path="upgrade-module/src/app/upgrade-static/hero-detail.component.ts" region="hero-detail" header="hero-detail.component.ts">
@@ -791,7 +791,7 @@ compilation can pick it up.
 <div class="alert is-helpful">
 
 **Note:** The 'heroes' string inside the factory refers to the AngularJS `HeroesService`.
-It is common in AngularJS apps to choose a service name for the token, for example "heroes",
+It is common in AngularJS applications to choose a service name for the token, for example "heroes",
 and append the "Service" suffix to create the class name.
 
 </div>
@@ -860,7 +860,7 @@ In most environments where both Angular and AngularJS are used to render the app
 
 Overall application performance is affected in cases where the user stays on Angular-rendered pages because the AngularJS framework and application are still loaded and running, even if they are never accessed.
 
-You can take steps to mitigate both bundle size and performance issues. By isolating your AngularJS app to a separate bundle, you can take advantage of [lazy loading](guide/glossary#lazy-loading) to load, bootstrap, and render the AngularJS application only when needed. This strategy reduces your initial bundle size, defers any potential impact from loading both frameworks until absolutely necessary, and keeps your application running as efficiently as possible.
+You can take steps to mitigate both bundle size and performance issues. By isolating your AngularJS application to a separate bundle, you can take advantage of [lazy loading](guide/glossary#lazy-loading) to load, bootstrap, and render the AngularJS application only when needed. This strategy reduces your initial bundle size, defers any potential impact from loading both frameworks until absolutely necessary, and keeps your application running as efficiently as possible.
 
 The steps below show you how to do the following:
 
@@ -871,19 +871,19 @@ The steps below show you how to do the following:
 
 ### Create a service to lazy load AngularJS
 
-As of Angular version 8, lazy loading code can be accomplished simply by using the dynamic import syntax `import('...')`. In your application, you create a new service that uses dynamic imports to lazy load AngularJS.
+As of Angular version 8, lazy loading code can be accomplished by using the dynamic import syntax `import('...')`. In your application, you create a new service that uses dynamic imports to lazy load AngularJS.
 
 <code-example path="upgrade-lazy-load-ajs/src/app/lazy-loader.service.ts" header="src/app/lazy-loader.service.ts">
 </code-example>
 
-The service uses the `import()` method to load your bundled AngularJS application lazily. This decreases the initial bundle size of your application as you're not loading code your user doesn't need yet. You also need to provide a way to _bootstrap_ the application manually after it has been loaded. AngularJS provides a way to manually bootstrap an application using the [angular.bootstrap()](https://docs.angularjs.org/api/ng/function/angular.bootstrap) method with a provided HTML element. Your AngularJS app should also expose a `bootstrap` method that bootstraps the AngularJS app.
+The service uses the `import()` method to load your bundled AngularJS application lazily. This decreases the initial bundle size of your application as you're not loading code your user doesn't need yet. You also need to provide a way to _bootstrap_ the application manually after it has been loaded. AngularJS provides a way to manually bootstrap an application using the [angular.bootstrap()](https://docs.angularjs.org/api/ng/function/angular.bootstrap) method with a provided HTML element. Your AngularJS application should also expose a `bootstrap` method that bootstraps the AngularJS app.
 
 To ensure any necessary teardown is triggered in the AngularJS app, such as removal of global listeners, you also implement a method to call the `$rootScope.destroy()` method.
 
 <code-example path="upgrade-lazy-load-ajs/src/app/angularjs-app/index.ts" header="angularjs-app">
 </code-example>
 
-Your AngularJS application is configured with only the routes it needs to render content. The remaining routes in your application are handled by the Angular Router. The exposed `bootstrap` method is called in your Angular app to bootstrap the AngularJS application after the bundle is loaded.
+Your AngularJS application is configured with only the routes it needs to render content. The remaining routes in your application are handled by the Angular Router. The exposed `bootstrap` method is called in your Angular application to bootstrap the AngularJS application after the bundle is loaded.
 
 <div class="alert is-important">
 
@@ -893,7 +893,7 @@ Your AngularJS application is configured with only the routes it needs to render
 
 ### Create a component to render AngularJS content
 
-In your Angular application, you need a component as a placeholder for your AngularJS content. This component uses the service you create to load and bootstrap your AngularJS app after the component is initialized.
+In your Angular application, you need a component as a placeholder for your AngularJS content. This component uses the service you create to load and bootstrap your AngularJS application after the component is initialized.
 
 <code-example path="upgrade-lazy-load-ajs/src/app/angular-js/angular-js.component.ts" header="src/app/angular-js/angular-js.component.ts">
 </code-example>
@@ -914,7 +914,7 @@ The following code adds a route object to your routing configuration using the `
 <code-example path="upgrade-lazy-load-ajs/src/app/app-routing.module.ts" header="src/app/app-routing.module.ts">
 </code-example>
 
-When your application matches a route that needs AngularJS, the AngularJS app is loaded and bootstrapped, the AngularJS routes match the necessary URL to render their content, and your application continues to run with both AngularJS and Angular frameworks.
+When your application matches a route that needs AngularJS, the AngularJS application is loaded and bootstrapped, the AngularJS routes match the necessary URL to render their content, and your application continues to run with both AngularJS and Angular frameworks.
 
 ## Using the Unified Angular Location Service
 
@@ -999,7 +999,7 @@ And that's all you need do to get the full benefit of AOT for Angular apps!
 ## PhoneCat Upgrade Tutorial
 
 In this section, you'll learn to prepare and upgrade an application with `ngUpgrade`.
-The example app is [Angular PhoneCat](https://github.com/angular/angular-phonecat)
+The example application is [Angular PhoneCat](https://github.com/angular/angular-phonecat)
 from [the original AngularJS tutorial](https://docs.angularjs.org/tutorial),
 which is where many of us began our Angular adventures. Now you'll see how to
 bring that application to the brave new world of Angular.
@@ -1220,7 +1220,7 @@ Keep this process running in the background, watching and recompiling as you mak
 
 Next, convert your current JavaScript files into TypeScript. Since
 TypeScript is a super-set of ECMAScript 2015, which in turn is a super-set
-of ECMAScript 5, you can simply switch the file extensions from `.js` to `.ts`
+of ECMAScript 5, you can switch the file extensions from `.js` to `.ts`
 and everything will work just like it did before. As the TypeScript compiler
 runs, it emits the corresponding `.js` file for every `.ts` file and the
 compiled JavaScript is what actually gets executed. If you start
@@ -1230,7 +1230,7 @@ application in your browser.
 Now that you have TypeScript though, you can start benefiting from some of its
 features. There's a lot of value the language can provide to AngularJS applications.
 
-For one thing, TypeScript is a superset of ES2015. Any app that has previously
+For one thing, TypeScript is a superset of ES2015. Any application that has previously
 been written in ES5 - like the PhoneCat example has - can with TypeScript
 start incorporating all of the JavaScript features that are new to ES2015.
 These include things like `let`s and `const`s, arrow functions, default function
@@ -1348,7 +1348,7 @@ Once these are done, run:
   npm install
 </code-example>
 
-Soon you can load Angular dependencies into the application via `index.html`,
+Soon you can load Angular dependencies into the application using `index.html`,
 but first you need to do some directory path adjustments.
 You'll need to load files from `node_modules` and the project root instead of
 from the `/app` directory as you've been doing to this point.
@@ -1369,8 +1369,8 @@ cause relative URLs to be resolved back to the `/app` directory:
 <code-example path="upgrade-phonecat-2-hybrid/index.html" region="base" header="index.html">
 </code-example>
 
-Now you can load Angular via SystemJS. You'll add the Angular polyfills and the
-SystemJS config to the end of the `<head>` section, and then you'll use `System.import`
+Now you can load Angular using SystemJS. You'll add the Angular polyfills and the
+SystemJS configuration to the end of the `<head>` section, and then you'll use `System.import`
 to load the actual application:
 
 <code-example path="upgrade-phonecat-2-hybrid/index.html" region="angular" header="index.html">
@@ -1382,7 +1382,7 @@ to the `systemjs.config.js` file installed during [upgrade setup](guide/upgrade-
 Point the browser to the project root when loading things through SystemJS,
 instead of using the `<base>` URL.
 
-Install the `upgrade` package via `npm install @angular/upgrade --save`
+Install the `upgrade` package using `npm install @angular/upgrade --save`
 and add a mapping for the `@angular/upgrade/static` package.
 
 <code-example path="upgrade-phonecat-2-hybrid/systemjs.config.1.js" region="paths" header="systemjs.config.js">
@@ -1411,7 +1411,7 @@ you can start converting the individual pieces to Angular.
 
 The application is currently bootstrapped using the AngularJS `ng-app` directive
 attached to the `<html>` element of the host page. This will no longer work in the hybrid
-app. Switch to the [ngUpgrade bootstrap](#bootstrapping-hybrid-applications) method
+application. Switch to the [ngUpgrade bootstrap](#bootstrapping-hybrid-applications) method
 instead.
 
 First, remove the `ng-app` attribute from `index.html`.
@@ -1442,12 +1442,12 @@ exciting! You're not running any actual Angular components yet. That's next.
 `@types/angular` is declared as a UMD module, and due to the way
 <a href="https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#support-for-umd-module-definitions">UMD typings</a>
 work, once you have an ES6 `import` statement in a file all UMD typed modules must also be
-imported via `import` statements instead of being globally available.
+imported using `import` statements instead of being globally available.
 
 AngularJS is currently loaded by a script tag in `index.html`, which means that the whole app
 has access to it as a global and uses the same instance of the `angular` variable.
 If you used `import * as angular from 'angular'` instead, you'd also have to
-load every file in the AngularJS app to use ES2015 modules in order to ensure AngularJS was being
+load every file in the AngularJS application to use ES2015 modules in order to ensure AngularJS was being
 loaded correctly.
 
 This is a considerable effort and it often isn't worth it, especially since you are in the
@@ -1624,7 +1624,7 @@ which was injected into `PhoneDetails` when it was still an AngularJS controller
 You intend to inject it into the new `PhoneDetailsComponent`.
 
 Unfortunately, AngularJS dependencies are not automatically available to Angular components.
-You must upgrade this service via a [factory provider](guide/upgrade#making-angularjs-dependencies-injectable-to-angular)
+You must upgrade this service using a [factory provider](guide/upgrade#making-angularjs-dependencies-injectable-to-angular)
 to make `$routeParams` an Angular injectable.
 Do that in a new file called `ajs-upgraded-providers.ts` and import it in `app.module.ts`:
 
@@ -1708,7 +1708,7 @@ as well:
 These files need to be copied together with the polyfills. The files the application
 needs at runtime, like the `.json` phone lists and images, also need to be copied.
 
-Install `fs-extra` via `npm install fs-extra --save-dev` for better file copying, and change
+Install `fs-extra` using `npm install fs-extra --save-dev` for better file copying, and change
 `copy-dist-files.js` to the following:
 
 <code-example path="upgrade-phonecat-2-hybrid/copy-dist-files.js" header="copy-dist-files.js">
@@ -1729,13 +1729,13 @@ Like all routers, it needs a place in the UI to display routed views.
 For Angular that's the `<router-outlet>` and it belongs in a *root component*
 at the top of the applications component tree.
 
-You don't yet have such a root component, because the app is still managed as an AngularJS app.
+You don't yet have such a root component, because the application is still managed as an AngularJS app.
 Create a new `app.component.ts` file with the following `AppComponent` class:
 
 <code-example path="upgrade-phonecat-3-final/app/app.component.ts" header="app/app.component.ts">
 </code-example>
 
-It has a simple template that only includes the `<router-outlet>`.
+It has a template that only includes the `<router-outlet>`.
 This component just renders the contents of the active route and nothing else.
 
 The selector tells Angular to plug this root component into the `<phonecat-app>`
@@ -1765,7 +1765,7 @@ instead of the default "push state" strategy.
 
 Now update the `AppModule` to import this `AppRoutingModule` and also the
 declare the root `AppComponent` as the bootstrap component.
-That tells Angular that it should bootstrap the app with the _root_ `AppComponent` and
+That tells Angular that it should bootstrap the application with the _root_ `AppComponent` and
 insert its view into the host web page.
 
 You must also remove the bootstrap of the AngularJS module from `ngDoBootstrap()` in `app.module.ts`
@@ -1868,7 +1868,7 @@ break during the upgrade. E2E tests are especially useful for this purpose.
 The PhoneCat project has both E2E Protractor tests and some Karma unit tests in it.
 Of these two, E2E tests can be dealt with much more easily: By definition,
 E2E tests access the application from the *outside* by interacting with
-the various UI elements the app puts on the screen. E2E tests aren't really that
+the various UI elements the application puts on the screen. E2E tests aren't really that
 concerned with the internal structure of the application components. That
 also means that, although you modify the project quite a bit during the upgrade, the E2E
 test suite should keep passing with just minor modifications. You
@@ -1878,7 +1878,7 @@ During TypeScript conversion, there is nothing to do to keep E2E tests
 working. But when you change the bootstrap to that of a Hybrid app,
 you must make a few changes.
 
-Update the `protractor-conf.js` to sync with hybrid apps:
+Update the `protractor-conf.js` to sync with hybrid applications:
 
 <code-example format="">
   ng12Hybrid: true
@@ -1991,7 +1991,7 @@ For PhoneCat you need to make the following changes in order to make things work
 When the bootstrap method is switched from that of `UpgradeModule` to
 pure Angular, AngularJS ceases to exist on the page completely.
 At this point, you need to tell Protractor that it should not be looking for
-an AngularJS app anymore, but instead it should find *Angular apps* from
+an AngularJS application anymore, but instead it should find *Angular apps* from
 the page.
 
 Replace the `ng12Hybrid` previously added with the following in `protractor-conf.js`:
