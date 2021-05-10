@@ -13,6 +13,7 @@ import { PropertyTabModule } from './property-tab/property-tab.module';
 import { DirectiveForestModule } from './directive-forest/directive-forest.module';
 import { ScrollingModule } from '@angular/cdk/scrolling';
 import { AngularSplitModule } from '../../vendor/angular-split/lib/module';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [DirectiveExplorerComponent, DirectiveForestComponent, FilterComponent],
@@ -28,6 +29,7 @@ import { AngularSplitModule } from '../../vendor/angular-split/lib/module';
     MatSnackBarModule,
     AngularSplitModule,
     DirectiveForestModule,
+    MatTooltipModule,
   ],
 })
 export class DirectiveExplorerModule {}

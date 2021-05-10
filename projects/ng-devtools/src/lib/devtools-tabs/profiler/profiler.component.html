@@ -6,6 +6,7 @@
       *ngIf="state === 'idle'"
       (click)="startRecording()"
       class="profiler-control start-recording-button"
+      matTooltip="Start recording"
     >
       <mat-icon> circle </mat-icon>
     </button>
@@ -14,6 +15,7 @@
       *ngIf="state === 'recording'"
       (click)="stopRecording()"
       class="profiler-control recording-button"
+      matTooltip="Stop recording"
     >
       <mat-icon> circle </mat-icon>
     </button>
@@ -23,6 +25,7 @@
       *ngIf="state === 'visualizing'"
       (click)="discardRecording()"
       class="profiler-control discard-button"
+      matTooltip="Clear recording"
     >
       <mat-icon> not_interested </mat-icon>
     </button>
