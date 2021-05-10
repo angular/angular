@@ -1,3 +1,26 @@
+<a name="12.0.0-rc.3"></a>
+# 12.0.0-rc.3 (2021-05-10)
+### compiler
+| Commit | Description |
+| -- | -- |
+| 3e365ba81e | fix(compiler): preserve @page rules in encapsulated styles (#41915) |
+### compiler-cli
+| Commit | Description |
+| -- | -- |
+| 7a4d9805ea | fix(compiler-cli): use '' for the source map URL of indirect templates (#41973) |
+### core
+| Commit | Description |
+| -- | -- |
+| 1449c5c8ff | fix(core): do not retain dynamically compiled components and modules (#42003) |
+| e9ddc57f94 | fix(core): invoke profiler around ngOnDestroy lifecycle hooks (#41969) |
+### platform-browser
+| Commit | Description |
+| -- | -- |
+| d5555558d0 | fix(platform-browser): prevent memory leak of style nodes if shadow DOM encapsulation is used (#42005) |
+## Special Thanks:
+Ajit Singh, Alan Agius, Alex Rickabaugh, Andrew J Asche, George Kalpakas, Georgii Dolzhykov, Igor Minar, Joey Perrott, JoostK, Julien Marcou, Kapunahele Wong, Kristiyan Kostadinov, Paul Gschwendtner, Pete Bacon Darwin, Renovate Bot, Richard Sithole, Teri Glover, iRealNirmal, mgechev, profanis and va-stefanek
+
+
 # 12.0.0-rc.2 (2021-05-05)
 
 
