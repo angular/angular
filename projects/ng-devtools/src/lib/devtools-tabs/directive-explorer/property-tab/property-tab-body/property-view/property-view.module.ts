@@ -12,6 +12,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { PropertyEditorComponent } from './property-view-body/property-view-tree/property-editor/property-editor.component';
 import { FormsModule } from '@angular/forms';
 import { PropertyPreviewComponent } from './property-view-body/property-view-tree/property-preview/property-preview.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   declarations: [
@@ -26,10 +27,11 @@ import { PropertyPreviewComponent } from './property-view-body/property-view-tre
     MatToolbarModule,
     MatIconModule,
     MatTreeModule,
+    MatTooltipModule,
     CommonModule,
     MatExpansionModule,
     DragDropModule,
-    FormsModule
+    FormsModule,
   ],
   exports: [PropertyViewBodyComponent, PropertyViewHeaderComponent, PropertyViewComponent],
 })

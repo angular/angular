@@ -2,7 +2,12 @@
   <p class="txt-frames" matTooltip="{{ selectionLabel }} / {{ (graphData$ | async)?.length }}">
     {{ selectionLabel }} / {{ (graphData$ | async)?.length }}
   </p>
-  <button mat-icon-button (click)="move(-1)" [disabled]="startFrameIndex <= 0 || selectedFrameIndexes.size > 1">
+  <button
+    mat-icon-button
+    matTooltip="Select previous frame"
+    (click)="move(-1)"
+    [disabled]="startFrameIndex <= 0 || selectedFrameIndexes.size > 1"
+  >
     <mat-icon>chevron_left</mat-icon>
   </button>
 
@@ -27,6 +32,7 @@
 
   <button
     mat-icon-button
+    matTooltip="Select next frame"
     (click)="move(1)"
     [disabled]="endFrameIndex >= (graphData$ | async)?.length - 1 || selectedFrameIndexes.size > 1"
   >
