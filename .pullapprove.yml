@@ -58,7 +58,6 @@
 #
 # aikidave
 # gkalpak
-# kapunahelewong
 # petebacondarwin
 
 
@@ -184,7 +183,6 @@ groups:
          - ayazhafiz               # Ayaz Hafiz
          - clydin                  # Charles Lyding
          - crisbeto                # Kristiyan Kostadinov
-         - dennispbrown            # Denny Brown
          - devversion              # Paul Gschwendtner
          - dgp1130                 # Doug Parker
          - filipesilva             # Filipe Silva
@@ -197,9 +195,6 @@ groups:
          - JiaLiPassion            # Jia Li
          - JoostK                  # Joost Koehoorn
          - josephperrott           # Joey Perrott
-         - juleskremer             # Jules Kremer
-         - kapunahelewong          # Kapunahele Wong
-         - kara                    # Kara Erickson
          - kyliau                  # Keen Yee Liau
          - manughub                # Manu Murthy
          - mgechev                 # Minko Gechev
@@ -431,7 +426,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - ~kara  # do not request reviews from Kara, but allow her to approve PRs
         - mhevery
         - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
@@ -455,7 +449,6 @@ groups:
         - alxhub
         - AndrewKushnir
         - atscott
-        - ~kara # do not request reviews from Kara, but allow her to approve PRs
         - mhevery
         - jessicajaniuk
         # OOO as of 2020-09-28 - pkozlowski-opensource
