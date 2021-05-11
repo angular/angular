@@ -37,6 +37,29 @@ const getId = (node: IndexedNode) => {
   return prefix + '-' + dirIds.join('-');
 };
 
+/**
+ * Takes an `IndexedNode` forest and returns a transformed forest without `#comment` nodes.
+ * The algorithm has linear complexity and O(depth(forest)) memory complexity.
+ *
+ * @param nodes indexed nodes, which have already have associated positions within the original
+ *  tree and associated indices.
+ * @returns forest with filtered `#comment` nodes.
+ */
+const filterCommentNodes = (nodes: IndexedNode[]) => {
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    if (node.element !== '#comment') {
+      continue;
+    }
+    nodes.splice(i, 1, ...node.children);
+    i--;
+  }
+  for (const node of nodes) {
+    filterCommentNodes(node.children);
+  }
+  return nodes;
+};
+
 export class ComponentDataSource extends DataSource<FlatNode> {
   private _differ = new DefaultIterableDiffer(trackBy);
   private _expandedData = new BehaviorSubject<FlatNode[]>([]);
@@ -92,12 +115,24 @@ export class ComponentDataSource extends DataSource<FlatNode> {
       return { newItems: [], movedItems: [], removedItems: [] };
     }
 
-    const indexedForest = indexForest(forest);
-    let flattenedCollection = this._treeFlattener.flattenNodes(indexedForest) as FlatNode[];
+    let indexedForest = indexForest(forest);
 
+    // We filter comment nodes here because we need to preserve the positions within the component tree.
+    //
+    // For example:
+    // ```
+    // - #comment
+    //   - bar
+    // ```
+    //
+    // #comment's position will be [0] and bar's will be [0, 0]. If we trim #comment nodes earlier
+    // before indexing, bar's position will be [0] which will be inaccurate and will make the backend
+    // enable to find the corresponding node when we request its properties.
     if (!showCommentNodes) {
-      flattenedCollection = flattenedCollection.filter((node) => node.original.element !== '#comment');
+      indexedForest = filterCommentNodes(indexedForest);
     }
+
+    const flattenedCollection = this._treeFlattener.flattenNodes(indexedForest) as FlatNode[];
 
     this.data.forEach((i) => (i.newItem = false));
 

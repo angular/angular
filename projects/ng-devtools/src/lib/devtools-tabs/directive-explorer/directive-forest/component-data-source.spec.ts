@@ -99,6 +99,79 @@ const tree3: DevToolsNode = {
   nativeElement: document.createElement('foo'),
 };
 
+const tree4: DevToolsNode = {
+  element: 'app',
+  directives: [
+    {
+      id: 1,
+      name: 'foo',
+    },
+  ],
+  component: null,
+  children: [
+    {
+      children: [
+        {
+          children: [
+            {
+              children: [
+                {
+                  children: [
+                    {
+                      children: [],
+                      component: {
+                        id: 6,
+                        isElement: false,
+                        name: 'qux',
+                      },
+                      directives: [],
+                      element: 'bar',
+                      nativeElement: document.createComment('bar'),
+                    },
+                  ],
+                  component: {
+                    id: 5,
+                    isElement: false,
+                    name: 'qux',
+                  },
+                  directives: [],
+                  element: '#comment',
+                  nativeElement: document.createComment('bar'),
+                },
+              ],
+              component: {
+                id: 4,
+                isElement: false,
+                name: 'qux',
+              },
+              directives: [],
+              element: '#comment',
+              nativeElement: document.createComment('bar'),
+            },
+          ],
+          component: {
+            id: 3,
+            isElement: false,
+            name: 'qux',
+          },
+          directives: [],
+          element: '#comment',
+          nativeElement: document.createComment('bar'),
+        },
+      ],
+      component: {
+        id: 2,
+        isElement: false,
+        name: 'bar',
+      },
+      directives: [],
+      element: '#comment',
+      nativeElement: document.createComment('bar'),
+    },
+  ],
+  nativeElement: document.createElement('foo'),
+};
+
 describe('ComponentDataSource', () => {
   let dataSource: ComponentDataSource;
   const treeControl = new FlatTreeControl<FlatNode>(
@@ -125,5 +198,17 @@ describe('ComponentDataSource', () => {
     expect(result.movedItems.length).toBe(0);
     expect(result.newItems.length).toBe(1);
     expect(result.newItems[0].name).toBe('app');
+  });
+
+  it('should not break nesting with nested comment nodes', () => {
+    const result = dataSource.update([tree4], false);
+    expect(result.newItems.length).toBe(2);
+    expect(result.newItems[0].name).toBe('app');
+    expect(result.newItems[1].name).toBe('qux');
+
+    expect(result.newItems[0].level).toBe(0);
+    expect(result.newItems[1].level).toBe(1);
+
+    expect(result.newItems[1].position).toEqual([0, 0, 0, 0, 0, 0]);
   });
 });

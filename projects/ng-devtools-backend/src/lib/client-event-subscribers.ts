@@ -197,7 +197,7 @@ export interface SerializableComponentTreeNode
 // Here we drop properties to prepare the tree for serialization.
 // We don't need the component instance, so we just traverse the tree
 // and leave the component name.
-export const prepareForestForSerialization = (roots: ComponentTreeNode[]): SerializableComponentTreeNode[] => {
+const prepareForestForSerialization = (roots: ComponentTreeNode[]): SerializableComponentTreeNode[] => {
   return roots.map((node) => {
     return {
       element: node.element,
