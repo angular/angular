@@ -2,12 +2,12 @@ import { docRegionEvent } from './simple-creation.3';
 
 describe('simple-creation.3', () => {
   let triggerMousemove: (event: Partial<MouseEvent>) => void;
-  let consoleSpy: jasmine.Spy;
+  let consoleSpy: jasmine.SpyObj<Console>;
   let input: HTMLInputElement;
   let mockDocument: Document;
 
   beforeEach(() => {
-    consoleSpy = spyOn(console, 'log');
+    consoleSpy = jasmine.createSpyObj<Console>('console', ['log']);
     input = {
       addEventListener: jasmine
         .createSpy('addEventListener')
@@ -22,15 +22,15 @@ describe('simple-creation.3', () => {
   });
 
   it('should log coords when subscribing', () => {
-    docRegionEvent(console, mockDocument);
+    docRegionEvent(consoleSpy, mockDocument);
 
-    expect(consoleSpy).not.toHaveBeenCalled();
+    expect(consoleSpy.log).not.toHaveBeenCalled();
 
     triggerMousemove({ clientX: 50, clientY: 50 });
     triggerMousemove({ clientX: 30, clientY: 50 });
     triggerMousemove({ clientX: 50, clientY: 30 });
-    expect(consoleSpy).toHaveBeenCalledTimes(3);
-    expect(consoleSpy.calls.allArgs()).toEqual([
+    expect(consoleSpy.log).toHaveBeenCalledTimes(3);
+    expect(consoleSpy.log.calls.allArgs()).toEqual([
       ['Coords: 50 X 50'],
       ['Coords: 30 X 50'],
       ['Coords: 50 X 30']
@@ -38,16 +38,16 @@ describe('simple-creation.3', () => {
   });
 
   it('should call unsubscribe when clientX and clientY are below < 40 ', () => {
-    docRegionEvent(console, mockDocument);
+    docRegionEvent(consoleSpy, mockDocument);
 
-    expect(consoleSpy).not.toHaveBeenCalled();
+    expect(consoleSpy.log).not.toHaveBeenCalled();
 
     // Ensure that we have unsubscribed.
     triggerMousemove({ clientX: 30, clientY: 30 });
     expect(input.removeEventListener).toHaveBeenCalledWith('mousemove', triggerMousemove, undefined);
-    consoleSpy.calls.reset();
+    consoleSpy.log.calls.reset();
 
     triggerMousemove({ clientX: 50, clientY: 50 });
-    expect(consoleSpy).not.toHaveBeenCalled();
+    expect(consoleSpy.log).not.toHaveBeenCalled();
   });
 });

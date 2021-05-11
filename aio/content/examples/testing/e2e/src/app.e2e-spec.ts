@@ -1,4 +1,4 @@
-import { browser, element, by, ElementFinder } from 'protractor';
+import { browser, element, by } from 'protractor';
 
 describe('Testing Example', () => {
   const expectedViewNames = ['Dashboard', 'Heroes', 'About'];

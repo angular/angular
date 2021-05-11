@@ -25,7 +25,7 @@ export class CrisisListComponent implements OnInit {
   ngOnInit() {
     this.crises$ = this.route.paramMap.pipe(
       switchMap((params: ParamMap) => {
-        this.selectedId = parseInt(params.get('id') as string, 10);
+        this.selectedId = parseInt(params.get('id')!, 10);
         return this.service.getCrises();
       })
     );

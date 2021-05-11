@@ -11,7 +11,7 @@
 
 export function docRegionEvent(console: Console, document: Document) {
   // #docregion event
-  const el = document.getElementById('my-element') as HTMLElement;
+  const el = document.getElementById('my-element')!;
 
   // Create an Observable that will publish mouse movements
   const mouseMoves = fromEvent<MouseEvent>(el, 'mousemove');

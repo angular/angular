@@ -10,11 +10,11 @@ describe('multicasting', () => {
   });
 
   it('should create an observable and emit in sequence', () => {
-    const spy = spyOn(console, 'log');
-    docRegionDelaySequence(console);
+    const consoleSpy = jasmine.createSpyObj<Console>('console', ['log']);
+    docRegionDelaySequence(consoleSpy);
     jasmine.clock().tick(10000);
-    expect(spy).toHaveBeenCalledTimes(12);
-    expect(spy.calls.allArgs()).toEqual([
+    expect(consoleSpy.log).toHaveBeenCalledTimes(12);
+    expect(consoleSpy.log.calls.allArgs()).toEqual([
       [1],
       ['1st subscribe: 1'],
       ['2nd subscribe: 1'],
@@ -31,11 +31,11 @@ describe('multicasting', () => {
   });
 
   it('should create an observable and multicast the emissions', () => {
-    const spy = spyOn(console, 'log');
-    docRegionMulticastSequence(console);
+    const consoleSpy = jasmine.createSpyObj<Console>('console', ['log']);
+    docRegionMulticastSequence(consoleSpy);
     jasmine.clock().tick(10000);
-    expect(spy).toHaveBeenCalledTimes(7);
-    expect(spy.calls.allArgs()).toEqual([
+    expect(consoleSpy.log).toHaveBeenCalledTimes(7);
+    expect(consoleSpy.log.calls.allArgs()).toEqual([
       ['1st subscribe: 1'],
       ['1st subscribe: 2'],
       ['2nd subscribe: 2'],

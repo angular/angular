@@ -25,7 +25,7 @@ export class CanvasComponent implements AfterViewInit {
     context.fillRect(0, 0, 200, 200);
 
     canvas.toBlob(blob => {
-      this.blobSize = blob?.size || 0;
+      this.blobSize = blob?.size ?? 0;
     });
   }
 }

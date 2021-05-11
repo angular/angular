@@ -97,7 +97,7 @@ export function docRegionMulticastSequence(console: Console) {
             // Iterate through observers and notify all subscriptions
             observers.forEach(obs => obs.next(val));
           },
-          error() {},
+          error() { /* Handle the error... */ },
           complete() {
             // Notify all complete callbacks
             observers.slice(0).forEach(obs => obs.complete());

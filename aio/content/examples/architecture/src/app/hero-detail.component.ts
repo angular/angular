@@ -7,5 +7,5 @@ import { Hero } from './hero';
   templateUrl: './hero-detail.component.html'
 })
 export class HeroDetailComponent {
-  @Input() hero: Hero = new Hero('Unknown');
+  @Input() hero!: Hero;
 }

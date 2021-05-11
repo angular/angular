@@ -22,6 +22,8 @@ import { getTestHeroes } from './test-heroes';
 export class TestHeroService extends HeroService {
 
   constructor() {
+    // This is a fake testing service that won't be making HTTP
+    // requests so we can pass in `null` as the HTTP client.
     super(null!);
   }
 

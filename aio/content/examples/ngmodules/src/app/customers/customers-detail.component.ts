@@ -25,7 +25,7 @@ export class CustomersDetailComponent implements OnInit {
     private customersService: CustomersService) { }
 
   ngOnInit() {
-    const id = parseInt(this.route.snapshot.paramMap.get('id') || '0', 10);
+    const id = parseInt(this.route.snapshot.paramMap.get('id')!, 10);
     this.customersService.getCustomer(id).subscribe(customer => this.customer = customer);
   }
 }

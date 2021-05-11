@@ -60,7 +60,7 @@ describe('demo (with TestBed):', () => {
 
     it('can inject a default value when service is not provided', () => {
       // #docregion testbed-get-w-null
-      expect(TestBed.inject(NotProvided, null)).toBeNull(); // service is null
+      expect(TestBed.inject(NotProvided, null)).toBeNull();
       // #enddocregion testbed-get-w-null
     });
 

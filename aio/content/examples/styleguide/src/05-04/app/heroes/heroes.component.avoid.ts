@@ -58,8 +58,8 @@ export class HeroesComponent {
   heroes: Observable<Hero[]>;
   selectedHero!: Hero;
 
- constructor(private heroService: HeroService) {
-   this.heroes = this.heroService.getHeroes();
- }
+  constructor(private heroService: HeroService) {
+    this.heroes = this.heroService.getHeroes();
+  }
 }
 // #enddocregion example
