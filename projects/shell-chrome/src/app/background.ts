@@ -64,7 +64,13 @@ const isNumeric = (str: string): boolean => {
 
 const installContentScript = (tabId: number) => {
   console.log('Installing the content-script');
-  chrome.tabs.executeScript(tabId, { file: '/content-script.js' }, () => {});
+  // We first inject the content-script and after that
+  // invoke the global that it exposes.
+  chrome.tabs.executeScript(tabId, { file: '/content-script.js' }, (result) => {
+    chrome.tabs.executeScript(tabId, {
+      code: '___devToolsContentScript.main()',
+    });
+  });
 };
 
 const doublePipe = (devtoolsPort: chrome.runtime.Port | null, contentScriptPort: chrome.runtime.Port, tab: string) => {
