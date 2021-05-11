@@ -358,7 +358,7 @@ is no need to remove such calls from existing code. Those calls just trigger
 additional AngularJS change detection checks in a hybrid application.
 
 When you downgrade an Angular component and then use it from AngularJS,
-the component's inputs will be watched using AngularJS change detection.
+the component's inputs will be watched using AngularJS change detection. 
 When those inputs change, the corresponding properties in the component
 are set. You can also hook into the changes by implementing the
 [OnChanges](api/core/OnChanges) interface in the component,
