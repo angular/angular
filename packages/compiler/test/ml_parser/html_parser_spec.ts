@@ -290,6 +290,19 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
               ]);
         });
 
+        it('should decode HTML entities in interpolated attributes', () => {
+          // Note that the detail of decoding corner-cases is tested in the
+          // "should decode HTML entities in interpolations" spec.
+          expect(humanizeDomSourceSpans(parser.parse('<div foo="{{&amp;}}"></div>', 'TestComp')))
+              .toEqual([
+                [
+                  html.Element, 'div', 0, '<div foo="{{&amp;}}"></div>', '<div foo="{{&amp;}}">',
+                  '</div>'
+                ],
+                [html.Attribute, 'foo', '{{&}}', 'foo="{{&amp;}}"']
+              ]);
+        });
+
         it('should normalize line endings within attribute values', () => {
           const result =
               parser.parse('<div key="  \r\n line 1 \r\n   line 2  "></div>', 'TestComp');
@@ -723,6 +736,32 @@ import {humanizeDom, humanizeDomSourceSpans, humanizeLineColumn, humanizeNodes} 
 
           expect(node.endSourceSpan!.start.offset).toEqual(6);
           expect(node.endSourceSpan!.end.offset).toEqual(12);
+        });
+
+        // This checks backward compatibility with a previous version of the lexer, which would
+        // treat interpolation expressions as regular HTML escapable text.
+        it('should decode HTML entities in interpolations', () => {
+          expect(humanizeDomSourceSpans(parser.parse(
+                     '{{&amp;}}' +
+                         '{{&#x25BE;}}' +
+                         '{{&#9662;}}' +
+                         '{{&amp (no semi-colon)}}' +
+                         '{{&#25BE; (invalid decimal)}}',
+                     'TestComp')))
+              .toEqual([[
+                html.Text,
+                '{{&}}' +
+                    '{{\u25BE}}' +
+                    '{{\u25BE}}' +
+                    '{{&amp (no semi-colon)}}' +
+                    '{{&#25BE; (invalid decimal)}}',
+                0,
+                '{{&amp;}}' +
+                    '{{&#x25BE;}}' +
+                    '{{&#9662;}}' +
+                    '{{&amp (no semi-colon)}}' +
+                    '{{&#25BE; (invalid decimal)}}',
+              ]]);
         });
 
         it('should not set the end source span for void elements', () => {
