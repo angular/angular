@@ -4,14 +4,14 @@ import { SamePageMessageBus } from './same-page-message-bus';
 let backgroundDisconnected = false;
 let backendInitialized = false;
 
-console.log('Content script executing');
+// console.log('Content script executing');
 
 const port = chrome.runtime.connect({
   name: 'content-script',
 });
 
 const handleDisconnect = (): void => {
-  console.log('Background disconnected');
+  // console.log('Background disconnected');
   localMessageBus.emit('shutdown');
   localMessageBus.destroy();
   chromeMessageBus.destroy();

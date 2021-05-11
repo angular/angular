@@ -15,7 +15,7 @@ export class ChromeMessageBus extends MessageBus<Events> {
     super();
 
     _port.onDisconnect.addListener(() => {
-      console.log('Disconnected the port');
+      // console.log('Disconnected the port');
       this._disconnected = true;
     });
   }
