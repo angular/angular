@@ -55,7 +55,8 @@
       "title": "Getting Started",
       "tooltip": "Set up your environment and learn basic concepts",
       "children": [
-        { "url": "guide/what-is-angular",
+        {
+          "url": "guide/what-is-angular",
           "title": "What is Angular?",
           "tooltip": "A brief description of the Angular platform."
         },
@@ -534,6 +535,11 @@
           "url": "guide/language-service",
           "title": "Language Service",
           "tooltip": "Use Angular Language Service to speed up dev time."
+        },
+        {
+          "title": "DevTools",
+          "tooltip": "DevTools",
+          "url": "guide/devtools"
         }
       ]
     },
