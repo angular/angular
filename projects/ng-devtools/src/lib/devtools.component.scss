@@ -69,14 +69,19 @@
 
   .info-icon {
     display: inline-block;
-    font-size: 1.2em;
+    font-size: 0.8em;
     border-radius: 50%;
-    border: solid 3px rgb(17, 17, 17);
+    border: solid 2px rgb(17, 17, 17);
     cursor: pointer;
     width: 16px;
-    transform: scale(0.9);
     height: 16px;
     font-weight: bold;
     text-align: center;
+  }
+}
+
+:host-context(.dark-theme) {
+  .info-icon {
+    border: solid 2px #bcc5ce;
   }
 }

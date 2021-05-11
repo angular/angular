@@ -24,7 +24,6 @@ export class AppComponent implements OnInit {
   constructor(private _cd: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    console.log('Initializing Angular DevTools');
     chrome.devtools.network.onNavigated.addListener(() => {
       window.location.reload();
     });

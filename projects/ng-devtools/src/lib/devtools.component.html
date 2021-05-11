@@ -21,12 +21,12 @@
   <ng-template #errorOrLoading>
     <ng-container *ngIf="angularExists === false; else loading">
       <p class="text-message">
-        Angular application not detected.
         <span
           class="info-icon"
           matTooltip="You see this message because the app is still loading, or this is not an Angular application"
           >i</span
         >
+        Angular application not detected.
       </p>
     </ng-container>
     <ng-template #loading>
