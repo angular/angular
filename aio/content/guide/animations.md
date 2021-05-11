@@ -73,6 +73,17 @@ In HTML, these attributes are set using ordinary CSS styles such as color and op
   <img src="generated/images/guide/animations/open-closed.png" alt="open and closed states">
 </div>
 
+<div class="alert is-helpful">
+
+  Let's create a new `open-close` component to animate with simple transitions.
+
+  Run the following command in terminal to generate the component:
+
+  `ng g component open-close`
+
+  This will create the component at `src/app/open-close.component.ts`.
+</div>
+
 ### Animation state and styles
 
 Use Angular's `state()` function to define different states to call at the end of each transition. This function takes two arguments: a unique name like `open` or `closed` and a `style()` function.
@@ -192,7 +203,7 @@ The animation is executed or triggered when the expression value changes to a ne
 The following code snippet binds the trigger to the value of the `isOpen` property.
 
 <code-example path="animations/src/app/open-close.component.1.html" header="src/app/open-close.component.html"
-region="compare">
+region="trigger">
 </code-example>
 
 In this example, when the `isOpen` expression evaluates to a defined state of `open` or `closed`, it notifies the trigger `openClose` of a state change. Then it's up to the `openClose` code to handle the state change and kick off a state change animation.
