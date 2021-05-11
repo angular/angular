@@ -22,13 +22,15 @@ export enum TokenType {
   TEXT,
   ESCAPABLE_RAW_TEXT,
   RAW_TEXT,
+  INTERPOLATION,
   COMMENT_START,
   COMMENT_END,
   CDATA_START,
   CDATA_END,
   ATTR_NAME,
   ATTR_QUOTE,
-  ATTR_VALUE,
+  ATTR_VALUE_TEXT,
+  ATTR_VALUE_INTERPOLATION,
   DOC_TYPE,
   EXPANSION_FORM_START,
   EXPANSION_CASE_VALUE,
@@ -227,7 +229,11 @@ class _Tokenizer {
             this._consumeTagOpen(start);
           }
         } else if (!(this._tokenizeIcu && this._tokenizeExpansionForm())) {
-          this._consumeText();
+          // In (possibly interpolated) text the end of the text is given by `isTextEnd()`, while
+          // the premature end of an interpolation is given by the start of a new HTML element.
+          this._consumeWithInterpolation(
+              TokenType.TEXT, TokenType.INTERPOLATION, () => this._isTextEnd(),
+              () => this._isTagStart());
         }
       } catch (e) {
         this.handleError(e);
@@ -285,7 +291,7 @@ class _Tokenizer {
     }
     const token = new Token(
         this._currentTokenType, parts,
-        this._cursor.getSpan(this._currentTokenStart, this._leadingTriviaCodePoints));
+        (end ?? this._cursor).getSpan(this._currentTokenStart, this._leadingTriviaCodePoints));
     this.tokens.push(token);
     this._currentTokenStart = null;
     this._currentTokenType = null;
@@ -594,27 +600,27 @@ class _Tokenizer {
   private _consumeAttributeValue() {
     let value: string;
     if (this._cursor.peek() === chars.$SQ || this._cursor.peek() === chars.$DQ) {
-      this._beginToken(TokenType.ATTR_QUOTE);
       const quoteChar = this._cursor.peek();
-      this._cursor.advance();
-      this._endToken([String.fromCodePoint(quoteChar)]);
-      this._beginToken(TokenType.ATTR_VALUE);
-      const parts: string[] = [];
-      while (this._cursor.peek() !== quoteChar) {
-        parts.push(this._readChar(true));
-      }
-      value = parts.join('');
-      this._endToken([this._processCarriageReturns(value)]);
-      this._beginToken(TokenType.ATTR_QUOTE);
-      this._cursor.advance();
-      this._endToken([String.fromCodePoint(quoteChar)]);
+      this._consumeQuote(quoteChar);
+      // In an attribute then end of the attribute value and the premature end to an interpolation
+      // are both triggered by the `quoteChar`.
+      const endPredicate = () => this._cursor.peek() === quoteChar;
+      this._consumeWithInterpolation(
+          TokenType.ATTR_VALUE_TEXT, TokenType.ATTR_VALUE_INTERPOLATION, endPredicate,
+          endPredicate);
+      this._consumeQuote(quoteChar);
     } else {
-      this._beginToken(TokenType.ATTR_VALUE);
-      const valueStart = this._cursor.clone();
-      this._requireCharCodeUntilFn(isNameEnd, 1);
-      value = this._cursor.getChars(valueStart);
-      this._endToken([this._processCarriageReturns(value)]);
+      const endPredicate = () => isNameEnd(this._cursor.peek());
+      this._consumeWithInterpolation(
+          TokenType.ATTR_VALUE_TEXT, TokenType.ATTR_VALUE_INTERPOLATION, endPredicate,
+          endPredicate);
     }
+  }
+
+  private _consumeQuote(quoteChar: number) {
+    this._beginToken(TokenType.ATTR_QUOTE);
+    this._requireCharCode(quoteChar);
+    this._endToken([String.fromCodePoint(quoteChar)]);
   }
 
   private _consumeTagOpenEnd() {
@@ -695,30 +701,110 @@ class _Tokenizer {
     this._expansionCaseStack.pop();
   }
 
-  private _consumeText() {
-    const start = this._cursor.clone();
-    this._beginToken(TokenType.TEXT, start);
+  /**
+   * Consume a string that may contain interpolation expressions.
+   *
+   * The first token consumed will be of `tokenType` and then there will be alternating
+   * `interpolationTokenType` and `tokenType` tokens until the `endPredicate()` returns true.
+   *
+   * If an interpolation token ends prematurely it will have no end marker in its `parts` array.
+   *
+   * @param textTokenType the kind of tokens to interleave around interpolation tokens.
+   * @param interpolationTokenType the kind of tokens that contain interpolation.
+   * @param endPredicate a function that should return true when we should stop consuming.
+   * @param endInterpolation a function that should return true if there is a premature end to an
+   *     interpolation expression - i.e. before we get to the normal interpolation closing marker.
+   */
+  private _consumeWithInterpolation(
+      textTokenType: TokenType, interpolationTokenType: TokenType, endPredicate: () => boolean,
+      endInterpolation: () => boolean) {
+    this._beginToken(textTokenType);
     const parts: string[] = [];
 
-    do {
+    while (!endPredicate()) {
+      const current = this._cursor.clone();
       if (this._interpolationConfig && this._attemptStr(this._interpolationConfig.start)) {
-        parts.push(this._interpolationConfig.start);
-        this._inInterpolation = true;
-      } else if (
-          this._interpolationConfig && this._inInterpolation &&
-          this._attemptStr(this._interpolationConfig.end)) {
-        parts.push(this._interpolationConfig.end);
-        this._inInterpolation = false;
+        this._endToken([this._processCarriageReturns(parts.join(''))], current);
+        this._consumeInterpolation(interpolationTokenType, current, endInterpolation);
+        parts.length = 0;
+        this._beginToken(textTokenType);
       } else {
         parts.push(this._readChar(true));
       }
-    } while (!this._isTextEnd());
+    }
 
     // It is possible that an interpolation was started but not ended inside this text token.
     // Make sure that we reset the state of the lexer correctly.
     this._inInterpolation = false;
 
     this._endToken([this._processCarriageReturns(parts.join(''))]);
+  }
+
+  /**
+   * Consume a block of text that has been interpreted as an Angular interpolation.
+   *
+   * @param interpolationTokenType the type of the interpolation token to generate.
+   * @param interpolationStart a cursor that points to the start of this interpolation.
+   * @param prematureEndPredicate a function that should return true if the next characters indicate
+   *     an end to the interpolation before its normal closing marker.
+   */
+  private _consumeInterpolation(
+      interpolationTokenType: TokenType, interpolationStart: CharacterCursor,
+      prematureEndPredicate: (() => boolean)|null) {
+    const parts: string[] = [];
+    this._beginToken(interpolationTokenType, interpolationStart);
+    parts.push(this._interpolationConfig.start);
+
+    // Find the end of the interpolation, ignoring content inside quotes.
+    const expressionStart = this._cursor.clone();
+    let inQuote: number|null = null;
+    let inComment = false;
+    while (this._cursor.peek() !== chars.$EOF &&
+           (prematureEndPredicate === null || !prematureEndPredicate())) {
+      const current = this._cursor.clone();
+
+      if (this._isTagStart()) {
+        // We are starting what looks like an HTML element in the middle of this interpolation.
+        // Reset the cursor to before the `<` character and end the interpolation token.
+        // (This is actually wrong but here for backward compatibility).
+        this._cursor = current;
+        parts.push(this._getProcessedChars(expressionStart, current));
+        return this._endToken(parts);
+      }
+
+      if (inQuote === null) {
+        if (this._attemptStr(this._interpolationConfig.end)) {
+          // We are not in a string, and we hit the end interpolation marker
+          parts.push(this._getProcessedChars(expressionStart, current));
+          parts.push(this._interpolationConfig.end);
+          return this._endToken(parts);
+        } else if (this._attemptStr('//')) {
+          // Once we are in a comment we ignore any quotes
+          inComment = true;
+        }
+      }
+
+      const char = this._cursor.peek();
+      this._cursor.advance();
+      if (char === chars.$BACKSLASH) {
+        // Skip the next character because it was escaped.
+        this._cursor.advance();
+      } else if (char === inQuote) {
+        // Exiting the current quoted string
+        inQuote = null;
+      } else if (!inComment && inQuote === null && chars.isQuote(char)) {
+        // Entering a new quoted string
+        inQuote = char;
+      }
+    }
+
+    // We hit EOF without finding a closing interpolation marker
+    parts.push(this._getProcessedChars(expressionStart, this._cursor));
+    return this._endToken(parts);
+  }
+
+  private _getProcessedChars(start: CharacterCursor, end: CharacterCursor): string {
+    return this._processCarriageReturns(end.getChars(start));
   }
 
   private _isTextEnd(): boolean {
