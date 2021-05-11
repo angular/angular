@@ -16,7 +16,7 @@ To improve test time and create better isolation across tests, we want to change
 
 ### Deprecate and remove IE11 support
 
-IE11 has been preventing Angular from taking advantage of some of the modern features of the Web platform. As part of this project we are going to deprecate and remove IE11 support to open the path for modern features that evergreen browsers provide.
+IE11 has been preventing Angular from taking advantage of some of the modern features of the Web platform. As part of this project we are going to deprecate and remove IE11 support to open the path for modern features that evergreen browsers provide. We ran an [RFC](https://github.com/angular/angular/issues/41840) to collected feedback from the community and decide on next steps to move forward.
 
 ### Leverage ES2017+ as the default output language
 
@@ -45,6 +45,14 @@ Develop and publish an in-depth guide on change detection. Develop content for p
 ### Update our e2e testing strategy
 
 To ensure we provide a future-proof e2e testing strategy, we want to evaluate the state of Protractor, community innovations, e2e best practices, and explore novel opportunities. As first steps of the effort, we shared an [RFC](https://github.com/angular/protractor/issues/5502) and worked with partners to ensure smooth integration between the Angular CLI and state of the art tooling for e2e testing. As the next step, we need to finalize the recommendations and compile a list of resources for the transition.
+
+### Angular libraries use Ivy
+
+Earlier in 2020, we shared an [RFC](https://github.com/angular/angular/issues/38366) for Ivy library distribution. After invaluable feedback from the community, we developed a design of the project. We are now investing in the development of Ivy library distribution, including an update of the library package format to use Ivy compilation, unblock the deprecation of the View Engine library format, and [ngcc](https://angular.io/guide/glossary#ngcc).
+
+### Ensure smooth adoption for future RxJS changes (v7 and beyond)
+
+We want to ensure Angular developers are taking advantage of the latest capabilities of RxJS and have a smooth transition to the next major releases of the framework. For this purpose, we will explore and document the scope of the changes in v7 and beyond RxJS and plan an update strategy.
 
 ## Future
 
@@ -77,7 +85,7 @@ To simplify the Angular mental model and learning journey, we’ll be working on
 A common problem with web applications is their slow initial load time. A way to improve it is to apply more granular code-splitting on a component level. To encourage this practice, we’ll be working on more ergonomic code-splitting APIs.
 
 <details class="roadmap-done-details">
-<summary class="roadmap-done-summary"><h2>Done</h2></summary>
+<summary class="roadmap-done-summary">Done</summary>
 
 ### Streamline releases with consolidated Angular versioning & branching
 
@@ -90,18 +98,6 @@ We want to consolidate release management tooling between Angular's multiple Git
 _Completed Q2 2021_
 
 We want to unify commit message requirements and conformance across Angular repositories ([angular/angular](https://github.com/angular/angular), [angular/components](https://github.com/angular/components), [angular/angular-cli](https://github.com/angular/angular-cli)) to bring consistency to our development process and reuse infrastructure tooling.
-
-### Angular libraries use Ivy
-
-_Completed Q2 2021_
-
-Earlier in 2020, we shared an [RFC](https://github.com/angular/angular/issues/38366) for Ivy library distribution. After invaluable feedback from the community, we developed a design of the project. We are now investing in the development of Ivy library distribution, including an update of the library package format to use Ivy compilation, unblock the deprecation of the View Engine library format, and [ngcc](https://angular.io/guide/glossary#ngcc).
-
-### Ensure smooth adoption for future RxJS changes (v7 and beyond)
-
-_Completed Q2 2021_
-
-We want to ensure Angular developers are taking advantage of the latest capabilities of RxJS and have a smooth transition to the next major releases of the framework. For this purpose, we will explore and document the scope of the changes in v7 and beyond RxJS and plan an update strategy.
 
 ### Transition the Angular language service to Ivy
 
@@ -157,7 +153,7 @@ _Completed Q4 2020_
 
 With the deprecation of TSLint we will be moving to ESLint. As part of the process, we will work on ensuring backward compatibility with our current recommended TSLint configuration, implement a migration strategy for existing Angular applications and introduce new tooling to the Angular CLI toolchain.
 
-### Operation Bye Bye Backlog (aka Operation Byelog)
+### Operation Bye Bye Backlog (aka Operation Byelog) 
 
 _Completed Q4 2020_
 
