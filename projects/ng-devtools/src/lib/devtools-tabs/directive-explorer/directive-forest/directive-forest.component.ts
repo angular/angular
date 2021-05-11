@@ -191,22 +191,16 @@ export class DirectiveForestComponent implements OnInit, OnDestroy {
   }
 
   populateParents(position: ElementPosition): void {
-    this.parents = position.reduce((nodes: FlatNode[], index: number) => {
-      let nodePosition = [index];
-      if (nodes.length > 0) {
-        nodePosition = nodes[nodes.length - 1].position.concat(index);
-      }
-      // It's possible selectedNode to be undefined
-      // In this case, we don't want to push it to the list
-      // of parent nodes. Instead, we want to report a warning.
-      const selectedNode = this.dataSource.data.find((item) => item.position.toString() === nodePosition.toString());
+    this.parents = [];
+    for (let i = 1; i <= position.length; i++) {
+      const current = position.slice(0, i);
+      const selectedNode = this.dataSource.data.find((item) => item.position.toString() === current.toString());
+
+      // We might not be able to find the parent if the user has hidden the comment nodes.
       if (selectedNode) {
-        nodes.push(selectedNode);
-      } else {
-        console.warn('Cant find node for position', nodePosition);
+        this.parents.push(selectedNode);
       }
-      return nodes;
-    }, []);
+    }
     this.setParents.emit(this.parents);
   }
 
