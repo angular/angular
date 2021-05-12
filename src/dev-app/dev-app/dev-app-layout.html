@@ -41,6 +41,9 @@
           <button mat-icon-button (click)="toggleFullscreen()" title="Toggle fullscreen">
             <mat-icon>fullscreen</mat-icon>
           </button>
+          <button mat-button (click)="toggleAnimations()">
+            {{animationsDisabled ? 'Enable' : 'Disable'}} animations
+          </button>
           <button mat-button (click)="isDark = !isDark">
             {{isDark ? 'Light' : 'Dark'}} theme
           </button>

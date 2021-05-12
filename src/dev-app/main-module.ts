@@ -19,10 +19,15 @@ import {DevAppDirectionality} from './dev-app/dev-app-directionality';
 import {DevAppModule} from './dev-app/dev-app-module';
 import {DEV_APP_ROUTES} from './dev-app/routes';
 import {DevAppRippleOptions} from './dev-app/ripple-options';
+import {ANIMATIONS_STORAGE_KEY} from './dev-app/dev-app-layout';
 
 @NgModule({
   imports: [
-    BrowserAnimationsModule,
+    BrowserAnimationsModule.withConfig({
+      // Note that this doesn't seem to work on ViewEngine, but it's
+      // not a compilation error either so we can live with it.
+      disableAnimations: localStorage.getItem(ANIMATIONS_STORAGE_KEY) === 'true'
+    }),
     BrowserModule,
     DevAppModule,
     HttpClientModule,
