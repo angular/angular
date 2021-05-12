@@ -17,10 +17,9 @@ export class Version {
   public readonly patch: string;
 
   constructor(public full: string) {
-    const [major, minor, ...rest] = full.split('.');
-    this.major = major;
-    this.minor = minor;
-    this.patch = rest.join('.');
+    this.major = full.split('.')[0];
+    this.minor = full.split('.')[1];
+    this.patch = full.split('.').slice(2).join('.');
   }
 }
 
