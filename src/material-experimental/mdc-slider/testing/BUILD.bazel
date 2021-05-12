@@ -24,7 +24,6 @@ ng_test_library(
         "//src/cdk/testing",
         "//src/cdk/testing/testbed",
         "//src/material-experimental/mdc-slider",
-        "//src/material/slider/testing:harness_tests_lib",
     ],
 )
 
