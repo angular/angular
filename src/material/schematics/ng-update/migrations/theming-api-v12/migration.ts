@@ -22,6 +22,12 @@ interface DetectImportResult {
   namespaces: string[];
 }
 
+/** Addition mixin and function names that can be updated when invoking migration directly. */
+interface ExtraSymbols {
+  mixins?: Record<string, string>;
+  functions?: Record<string, string>;
+}
+
 /**
  * Migrates the content of a file to the new theming API. Note that this migration is using plain
  * string manipulation, rather than the AST from PostCSS and the schematics string manipulation
@@ -40,13 +46,15 @@ export function migrateFileContent(content: string,
                                    oldMaterialPrefix: string,
                                    oldCdkPrefix: string,
                                    newMaterialImportPath: string,
-                                   newCdkImportPath: string): string {
+                                   newCdkImportPath: string,
+                                   extraMaterialSymbols: ExtraSymbols = {}): string {
   const materialResults = detectImports(content, oldMaterialPrefix);
   const cdkResults = detectImports(content, oldCdkPrefix);
 
   // Try to migrate the symbols even if there are no imports. This is used
   // to cover the case where the Components symbols were used transitively.
-  content = migrateMaterialSymbols(content, newMaterialImportPath, materialResults);
+  content = migrateMaterialSymbols(
+      content, newMaterialImportPath, materialResults, extraMaterialSymbols);
   content = migrateCdkSymbols(content, newCdkImportPath, cdkResults);
   content = replaceRemovedVariables(content, removedMaterialVariables);
 
@@ -103,16 +111,19 @@ function detectImports(content: string, prefix: string): DetectImportResult {
 
 /** Migrates the Material symbols in a file. */
 function migrateMaterialSymbols(content: string, importPath: string,
-                                detectedImports: DetectImportResult): string {
+                                detectedImports: DetectImportResult,
+                                extraMaterialSymbols: ExtraSymbols = {}): string {
   const initialContent = content;
   const namespace = 'mat';
+  const mixinsToUpdate = {...materialMixins, ...extraMaterialSymbols.mixins};
+  const functionsToUpdate = {...materialFunctions, ...extraMaterialSymbols.functions};
 
   // Migrate the mixins.
-  content = renameSymbols(content, materialMixins, detectedImports.namespaces, mixinKeyFormatter,
+  content = renameSymbols(content, mixinsToUpdate, detectedImports.namespaces, mixinKeyFormatter,
     getMixinValueFormatter(namespace));
 
   // Migrate the functions.
-  content = renameSymbols(content, materialFunctions, detectedImports.namespaces,
+  content = renameSymbols(content, functionsToUpdate, detectedImports.namespaces,
     functionKeyFormatter, getFunctionValueFormatter(namespace));
 
   // Migrate the variables.

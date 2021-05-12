@@ -1,5 +1,6 @@
 import {UnitTestTree} from '@angular-devkit/schematics/testing';
 import {createTestCaseSetup} from '@angular/cdk/schematics/testing';
+import {migrateFileContent} from '@angular/material/schematics/ng-update/migrations/theming-api-v12/migration';
 import {join} from 'path';
 import {MIGRATION_PATH} from '../../../../paths';
 
@@ -692,5 +693,27 @@ describe('v12 theming API migration', () => {
     ]);
   });
 
+  it('should migrate extra given mixins and functions', () => {
+    const originalContent = [
+      `@import '~@angular/material/theming';`,
+      `$something: mat-mdc-typography-config();`,
+      `@include mat-mdc-button-theme();`,
+    ].join('\n');
 
+    const migratedContent = migrateFileContent(
+        originalContent,
+        '~@angular/material/',
+        '~@angular/cdk/',
+        '~@angular/material',
+        '~@angular/cdk', {
+          mixins: {'mat-mdc-button-theme': 'mdc-button-theme'},
+          functions: {'mat-mdc-typography-config': 'mdc-typography-config'},
+        });
+
+    expect(migratedContent).toBe([
+      `@use '~@angular/material' as mat;`,
+      `$something: mat.mdc-typography-config();`,
+      `@include mat.mdc-button-theme();`,
+    ].join('\n'));
+  });
 });
