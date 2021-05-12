@@ -6,5 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export {SliderHarnessFilters} from '@angular/material/slider/testing';
-export {MatSliderHarness} from './slider-harness';
+export * from './slider-harness';
+export * from './slider-thumb-harness';
+export * from './slider-harness-filters';
