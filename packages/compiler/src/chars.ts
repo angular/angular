@@ -98,3 +98,7 @@ export function isNewLine(code: number): boolean {
 export function isOctalDigit(code: number): boolean {
   return $0 <= code && code <= $7;
 }
+
+export function isQuote(code: number): boolean {
+  return code === $SQ || code === $DQ || code === $BT;
+}
