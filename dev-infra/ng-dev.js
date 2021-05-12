@@ -1899,7 +1899,7 @@ function parseInternal(fullText) {
         breakingChanges,
         deprecations,
         body: commit.body || '',
-        footer: commit.footer || '',
+        footer: getPullUrlFromFooter(commit.footer),
         header: commit.header || '',
         references: commit.references,
         scope: commit.scope || '',
@@ -7595,6 +7595,11 @@ function getRelativePath(baseDir, path$1) {
 /** Converts the given reference chain to its string representation. */
 function convertReferenceChainToString(chain) {
     return chain.join(' → ');
+}
+
+/** Converts the given pr reference to its url. */
+function getPullUrlFromFooter(footer) {
+    return footer ? `[${footer}](https://github.com/angular/angular/pull/${footer})` : '';
 }
 
 yargs.scriptName('ng-dev')
