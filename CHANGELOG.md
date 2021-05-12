@@ -274,6 +274,21 @@ this property may need to be updated to account for the new type.
 
 
 
+<a name="11.2.14"></a>
+# 11.2.14 (2021-05-12)
+### core
+| Commit | Description |
+| -- | -- |
+| 5bb7c0ef3a | fix(core): do not retain dynamically compiled components and modules (#42003) |
+| 40cc29aa6e | fix(core): invoke profiler around ngOnDestroy lifecycle hooks (#41969) |
+### platform-browser
+| Commit | Description |
+| -- | -- |
+| f66c9ae749 | fix(platform-browser): prevent memory leak of style nodes if shadow DOM encapsulation is used (#42005) |
+## Special Thanks:
+Alex Rickabaugh, Andrew J Asche, Georgii Dolzhykov, Joey Perrott, Joost Koehoorn, Julien Marcou, Kapunahele Wong, Pete Bacon Darwin, Richard Sithole, Teri Glover, iRealNirmal, Minko Gechev, profanis and va-stefanek
+
+
 
 # 12.1.0-next.1 (2021-05-05)
 
