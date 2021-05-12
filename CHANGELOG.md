@@ -1,6 +1,7 @@
 <a name="12.0.0"></a>
 # 12.0.0 (2021-05-12)
 
+[Blog post "Angular v12 is now available"](https://blog.angular.io/angular-v12-is-now-available-32ed51fbfd49).
 
 ### Bug Fixes
 
